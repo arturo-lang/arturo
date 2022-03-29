@@ -201,7 +201,7 @@ proc defineSymbols*() =
             returns     = {Block},
             example     = """
             loop list "." 'file [
-            ___print file
+                print file
             ]
             
             ; tests

@@ -58,11 +58,11 @@ proc defineSymbols*() =
             },
             returns     = {Logical},
             example     = """
-                alert "Hello!" "This is a notification..."
-                ; show an OS notification without any styling
+            alert "Hello!" "This is a notification..."
+            ; show an OS notification without any styling
 
-                alert.error "Ooops!" "Something went wrong!"
-                ; show an OS notification with an error message
+            alert.error "Ooops!" "Something went wrong!"
+            ; show an OS notification with an error message
             """:
                 ##########################################################
                 var alertIcon = NoIcon
@@ -88,7 +88,7 @@ proc defineSymbols*() =
             attrs       = NoAttrs,
             returns     = {Nothing},
             example     = """
-                clip "this is something to be pasted into the clipboard"
+            clip "this is something to be pasted into the clipboard"
             """:
                 ##########################################################
                 setClipboard(x.s)
@@ -108,11 +108,11 @@ proc defineSymbols*() =
             },
             returns     = {String},
             example     = """
-                selectedFile: dialog "Select a file to open"
-                ; gets full path for selected file, after dialog closes
-                ..........
-                selectedFolder: dialog.folder "Select a folder"
-                ; same as above, only for folder selection
+            selectedFile: dialog "Select a file to open"
+            ; gets full path for selected file, after dialog closes
+            ..........
+            selectedFolder: dialog.folder "Select a folder"
+            ; same as above, only for folder selection
             """:
                 ##########################################################
                 var path = ""
@@ -145,20 +145,20 @@ proc defineSymbols*() =
             },
             returns     = {Logical,Literal},
             example     = """
-                popup "Hello!" "This is a popup message"
-                ; shows a message dialog with an OK button
-                ; when the dialog is closed, it returns: true
-                ..........
-                if popup.yesNo "Hmm..." "Are you sure you want to continue?" [
-                    ; a Yes/No dialog will appear - if the user clicks YES,
-                    ; then the function will return true; thus we can do what
-                    ; we want here
+            popup "Hello!" "This is a popup message"
+            ; shows a message dialog with an OK button
+            ; when the dialog is closed, it returns: true
+            ..........
+            if popup.yesNo "Hmm..." "Are you sure you want to continue?" [
+                ; a Yes/No dialog will appear - if the user clicks YES,
+                ; then the function will return true; thus we can do what
+                ; we want here
 
-                ]
-                ..........
-                popup.okCancel.literal "Hello" "Click on a button"
-                ; => 'ok (if user clicked OK)
-                ; => 'cancel (if user clicked Cancel)
+            ]
+            ..........
+            popup.okCancel.literal "Hello" "Click on a button"
+            ; => 'ok (if user clicked OK)
+            ; => 'cancel (if user clicked Cancel)
             """:
                 ##########################################################
                 var popupIcon = NoIcon
@@ -204,12 +204,12 @@ proc defineSymbols*() =
             attrs       = NoAttrs,
             returns     = {String},
             example     = """
-                ; paste something into the clipboard (optionally)
-                clip "this is something to be pasted into the clipboard"
+            ; paste something into the clipboard (optionally)
+            clip "this is something to be pasted into the clipboard"
 
-                ; now, let's fetch whatever there is in the clipboard
-                unclip 
-                ; => "this is something to be pasted into the clipboard"
+            ; now, let's fetch whatever there is in the clipboard
+            unclip 
+            ; => "this is something to be pasted into the clipboard"
             """:
                 ##########################################################
                 push newString(getClipboard())
@@ -238,19 +238,19 @@ proc defineSymbols*() =
             },
             returns     = {String,Nothing},
             example     = """
-                webview "Hello world!"
-                ; (opens a webview windows with "Hello world!")
-                ..........
-                webview .width:  200 
-                        .height: 300
-                        .title:  "My webview app"
-                ---
-                    <h1>This is my webpage</h1>
-                    <p>
-                        This is some content
-                    </p>
-                ---
-                ; (opens a webview with given attributes)
+            webview "Hello world!"
+            ; (opens a webview windows with "Hello world!")
+            ..........
+            webview .width:  200 
+                    .height: 300
+                    .title:  "My webview app"
+            ---
+                <h1>This is my webpage</h1>
+                <p>
+                    This is some content
+                </p>
+            ---
+            ; (opens a webview with given attributes)
             """:
                 ##########################################################
                 var title = "Arturo"

@@ -69,13 +69,13 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            ascii? `d`              ; true
-            ..........
-            ascii? `😀`             ; false
+        ascii? `d`              ; true
+        ..........
+        ascii? `😀`             ; false
 
-            ascii? "hello world"    ; true
-            ascii? "Hællø wœrld"    ; false
-            ascii? "Γειά!"          ; false
+        ascii? "hello world"    ; true
+        ascii? "Hællø wœrld"    ; false
+        ascii? "Γειά!"          ; false
         """:
             ##########################################################
             if x.kind==Char:
@@ -101,10 +101,10 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {String,Nothing},
         example     = """
-            print capitalize "hello World"      ; "Hello World"
-            ..........
-            str: "hello World"
-            capitalize 'str                     ; str: "Hello World"
+        print capitalize "hello World"      ; "Hello World"
+        ..........
+        str: "hello World"
+        capitalize 'str                     ; str: "Hello World"
         """:
             ##########################################################
             if x.kind==String: push(newString(x.s.capitalize()))
@@ -125,22 +125,22 @@ proc defineSymbols*() =
         },
         returns     = {String,Nothing},
         example     = """
-            str: {a long "string" + with \diffe\rent symbols.}
+        str: {a long "string" + with \diffe\rent symbols.}
 
-            print escape str
-            ; "a long \"string\" + with \\diffe\\rent symbols."
+        print escape str
+        ; "a long \"string\" + with \\diffe\\rent symbols."
 
-            print escape.json str
-            ; a long \"string\" + with \\diffe\\rent symbols.
+        print escape.json str
+        ; a long \"string\" + with \\diffe\\rent symbols.
 
-            print escape.regex str
-            ; a\x20long\x20\x22string\x22\x20\x2B\x20with\x20\x5Cdiffe\x5Crent\x20symbols\x2E
+        print escape.regex str
+        ; a\x20long\x20\x22string\x22\x20\x2B\x20with\x20\x5Cdiffe\x5Crent\x20symbols\x2E
 
-            print escape.shell str
-            ; 'a long "string" + with \diffe\rent symbols.'
+        print escape.shell str
+        ; 'a long "string" + with \diffe\rent symbols.'
 
-            print escape.xml str
-            ; a long &quot;string&quot; + with \diffe\rent symbols.
+        print escape.xml str
+        ; a long &quot;string&quot; + with \diffe\rent symbols.
         """:
             ##########################################################
             if x.kind==Literal:
@@ -181,17 +181,17 @@ proc defineSymbols*() =
         },
         returns     = {String,Nothing},
         example     = """
-            str: "one\ntwo\nthree"
+        str: "one\ntwo\nthree"
 
-            print indent str
-            ;     one
-            ;     two
-            ;     three
+        print indent str
+        ;     one
+        ;     two
+        ;     three
 
-            print indent .n:10 .with:"#" str
-            ; ##########one
-            ; ##########two
-            ; ##########three
+        print indent .n:10 .with:"#" str
+        ; ##########one
+        ; ##########two
+        ; ##########three
         """:
             ##########################################################
             var count = 4
@@ -219,13 +219,13 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Floating},
         example     = """
-            jaro "one" "one"        ; => 1.0
+        jaro "one" "one"        ; => 1.0
 
-            jaro "crate" "trace"    ; => 0.7333333333333334
-            jaro "dwayne" "duane"   ; => 0.8222222222222223
+        jaro "crate" "trace"    ; => 0.7333333333333334
+        jaro "dwayne" "duane"   ; => 0.8222222222222223
 
-            jaro "abcdef" "fedcba"  ; => 0.3888888888888888
-            jaro "abcde" "vwxyz"    ; => 0.0
+        jaro "abcdef" "fedcba"  ; => 0.3888888888888888
+        jaro "abcde" "vwxyz"    ; => 0.0
         """:
             push(newFloating(jaro(x.s,y.s)))    
 
@@ -242,21 +242,21 @@ proc defineSymbols*() =
         },
         returns     = {String,Nothing},
         example     = """
-            arr: ["one" "two" "three"]
-            print join arr
-            ; onetwothree
-            
-            print join.with:"," arr
-            ; one,two,three
-            
-            join 'arr
-            ; arr: "onetwothree"
-            ..........
-            print join [`H` `e` `l` `l` `o` `!`]
-            ; Hello!
+        arr: ["one" "two" "three"]
+        print join arr
+        ; onetwothree
+        
+        print join.with:"," arr
+        ; one,two,three
+        
+        join 'arr
+        ; arr: "onetwothree"
+        ..........
+        print join [`H` `e` `l` `l` `o` `!`]
+        ; Hello!
 
-            print join @["1 + 2 = " 1+2]
-            ; 1 + 2 = 3
+        print join @["1 + 2 = " 1+2]
+        ; 1 + 2 = 3
         """:
             ##########################################################
             if (popAttr("path") != VNULL):
@@ -288,12 +288,12 @@ proc defineSymbols*() =
         },
         returns     = {Integer,Block},
         example     = """
-            print levenshtein "for" "fur"         ; 1
-            print levenshtein "one" "one"         ; 0
-            ..........
-            print join.with:"\n" levenshtein .align "ACTGCACTGAC" "GCATGACTAT"
-            ; AC-TGCACTGAC
-            ; GCATG-ACT-AT
+        print levenshtein "for" "fur"         ; 1
+        print levenshtein "one" "one"         ; 0
+        ..........
+        print join.with:"\n" levenshtein .align "ACTGCACTGAC" "GCATGACTAT"
+        ; AC-TGCACTGAC
+        ; GCATG-ACT-AT
         """:
             if ( popAttr("align") != VNULL):
                 var filler:Rune = "-".runeAt(0)
@@ -314,14 +314,14 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {String,Char,Nothing},
         example     = """
-            print lower "hello World, 你好!"      ; "hello world, 你好!"
-            ..........
-            str: "hello World, 你好!"
-            lower 'str                           ; str: "hello world, 你好!"
-            ..........
-            ch: `A`
-            lower ch    
-            ; => `a`  
+        print lower "hello World, 你好!"      ; "hello world, 你好!"
+        ..........
+        str: "hello World, 你好!"
+        lower 'str                           ; str: "hello world, 你好!"
+        ..........
+        ch: `A`
+        lower ch    
+        ; => `a`  
         """:
             ##########################################################
             if x.kind==String: push(newString(x.s.toLower()))
@@ -342,10 +342,10 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            lower? "ñ"               ; => true
-            lower? "X"               ; => false
-            lower? "Hello World"     ; => false
-            lower? "hello"           ; => true
+        lower? "ñ"               ; => true
+        lower? "X"               ; => false
+        lower? "Hello World"     ; => false
+        lower? "hello"           ; => true
         """:
             ##########################################################
             if x.kind==Char:
@@ -374,9 +374,9 @@ proc defineSymbols*() =
         },
         returns     = {Block, Dictionary},
         example     = """
-            print match "hello" "hello"             ; => ["hello"]
-            match "x: 123, y: 456" "[0-9]+"         ; => [123 456]
-            match "this is a string" "[0-9]+"       ; => []
+        print match "hello" "hello"             ; => ["hello"]
+        match "x: 123, y: 456" "[0-9]+"         ; => [123 456]
+        match "this is a string" "[0-9]+"       ; => []
         """:
             ##########################################################
             var rgx : RegexObj
@@ -399,10 +399,10 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            numeric? "hello"           ; => false
-            numeric? "3.14"            ; => true
-            numeric? "18966"           ; => true
-            numeric? "123xxy"          ; => false
+        numeric? "hello"           ; => false
+        numeric? "3.14"            ; => true
+        numeric? "18966"           ; => true
+        numeric? "123xxy"          ; => false
         """:
             ##########################################################
             try:
@@ -427,24 +427,23 @@ proc defineSymbols*() =
         },
         returns     = {String,Nothing},
         example     = """
-            print outdent {:
-                one
-                    two
-                    three
-            :}
-            ; one
-            ;     two
-            ;     three
-            ..........
-            print outdent.n:1 {:
-                one
-                    two
-                    three
-            :}
-            ;  one
-            ;      two
-            ;      three
-
+        print outdent {:
+            one
+                two
+                three
+        :}
+        ; one
+        ;     two
+        ;     three
+        ..........
+        print outdent.n:1 {:
+            one
+                two
+                three
+        :}
+        ;  one
+        ;      two
+        ;      three
         """:
             ##########################################################
             var count = 0
@@ -481,15 +480,15 @@ proc defineSymbols*() =
         },
         returns     = {String},
         example     = """
-            pad "good" 10                 ; => "      good"
-            pad.right "good" 10           ; => "good      "
-            pad.center "good" 10          ; => "   good   "
-            ..........
-            a: "hello"
-            pad 'a 10                     ; a: "     hello"
-            ..........
-            pad.with:`0` to :string 123 5   
-            ; => 00123
+        pad "good" 10                 ; => "      good"
+        pad.right "good" 10           ; => "good      "
+        pad.center "good" 10          ; => "   good   "
+        ..........
+        a: "hello"
+        pad 'a 10                     ; a: "     hello"
+        ..........
+        pad.with:`0` to :string 123 5   
+        ; => 00123
         """:
             ##########################################################
             var padding = ' '.Rune
@@ -517,10 +516,10 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {String,Nothing},
         example     = """
-            prefix "ello" "h"                  ; => "hello"
-            ..........
-            str: "ello"
-            prefix 'str                        ; str: "hello"
+        prefix "ello" "h"                  ; => "hello"
+        ..........
+        str: "ello"
+        prefix 'str                        ; str: "hello"
         """:
             ##########################################################
             if x.kind==String: push(newString(y.s & x.s))
@@ -537,8 +536,8 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            prefix? "hello" "he"          ; => true
-            prefix? "boom" "he"           ; => false
+        prefix? "hello" "he"          ; => true
+        prefix? "boom" "he"           ; => false
         """:
             ##########################################################
             if y.kind==Regex:
@@ -649,13 +648,13 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {String,Nothing},
         example     = """
-            replace "hello" "l" "x"         ; => "hexxo"
-            ..........
-            str: "hello"
-            replace 'str "l" "x"            ; str: "hexxo"
-            ..........
-            replace "hello" ["h" "l"] "x"           ; => "xexxo"
-            replace "hello" ["h" "o"] ["x" "z"]     ; => "xellz"
+        replace "hello" "l" "x"         ; => "hexxo"
+        ..........
+        str: "hello"
+        replace 'str "l" "x"            ; str: "hexxo"
+        ..........
+        replace "hello" ["h" "l"] "x"           ; => "xexxo"
+        replace "hello" ["h" "o"] ["x" "z"]     ; => "xellz"
         """:
             ##########################################################
             if x.kind==String:
@@ -705,15 +704,15 @@ proc defineSymbols*() =
         },
         returns     = {String,Nothing},
         example     = """
-            str: "     Hello World     "
+        str: "     Hello World     "
 
-            print ["strip all:"      ">" strip str       "<"]
-            print ["strip leading:"  ">" strip.start str "<"]
-            print ["strip trailing:" ">" strip.end str   "<"]
+        print ["strip all:"      ">" strip str       "<"]
+        print ["strip leading:"  ">" strip.start str "<"]
+        print ["strip trailing:" ">" strip.end str   "<"]
 
-            ; strip all: > Hello World < 
-            ; strip leading: > Hello World      < 
-            ; strip trailing: >      Hello World <
+        ; strip all: > Hello World < 
+        ; strip leading: > Hello World      < 
+        ; strip trailing: >      Hello World <
         """:
             ##########################################################
             var leading = (popAttr("start")!=VNULL)
@@ -737,10 +736,10 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {String,Nothing},
         example     = """
-            suffix "hell" "o"                  ; => "hello"
-            ..........
-            str: "hell"
-            suffix 'str                        ; str: "hello"
+        suffix "hell" "o"                  ; => "hello"
+        ..........
+        str: "hell"
+        suffix 'str                        ; str: "hello"
         """:
             ##########################################################
             if x.kind==String: push(newString(x.s & y.s))
@@ -757,8 +756,8 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            suffix? "hello" "lo"          ; => true
-            suffix? "boom" "lo"           ; => false
+        suffix? "hello" "lo"          ; => true
+        suffix? "boom" "lo"           ; => false
         """:
             ##########################################################
             if y.kind==Regex:
@@ -781,19 +780,19 @@ proc defineSymbols*() =
         },
         returns     = {String,Nothing},
         example     = """
-            str: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse erat quam"
+        str: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse erat quam"
 
-            truncate str 30
-            ; => "Lorem ipsum dolor sit amet, con..."
+        truncate str 30
+        ; => "Lorem ipsum dolor sit amet, con..."
 
-            truncate.preserve str 30
-            ; => "Lorem ipsum dolor sit amet,..."
+        truncate.preserve str 30
+        ; => "Lorem ipsum dolor sit amet,..."
 
-            truncate.with:"---" str 30
-            ; => "Lorem ipsum dolor sit amet, con---"
+        truncate.with:"---" str 30
+        ; => "Lorem ipsum dolor sit amet, con---"
 
-            truncate.preserve.with:"---" str 30
-            ; => "Lorem ipsum dolor sit amet,---"
+        truncate.preserve.with:"---" str 30
+        ; => "Lorem ipsum dolor sit amet,---"
         """: 
             ##########################################################
             var with = "..."
@@ -817,14 +816,14 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {String,Char,Nothing},
         example     = """
-            print upper "hello World, 你好!"       ; "HELLO WORLD, 你好!"
-            ..........
-            str: "hello World, 你好!"
-            upper 'str                           ; str: "HELLO WORLD, 你好!"
-            ..........
-            ch: `a`
-            upper ch    
-            ; => `A`                     
+        print upper "hello World, 你好!"       ; "HELLO WORLD, 你好!"
+        ..........
+        str: "hello World, 你好!"
+        upper 'str                           ; str: "HELLO WORLD, 你好!"
+        ..........
+        ch: `a`
+        upper ch    
+        ; => `A`             
         """:
             ##########################################################
             if x.kind==String: push(newString(x.s.toUpper()))
@@ -845,10 +844,10 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            upper? "Ñ"               ; => true
-            upper? "x"               ; => false
-            upper? "Hello World"     ; => false
-            upper? "HELLO"           ; => true
+        upper? "Ñ"               ; => true
+        upper? "x"               ; => false
+        upper? "Hello World"     ; => false
+        upper? "HELLO"           ; => true
         """:
             ##########################################################
             if x.kind==Char:
@@ -876,22 +875,22 @@ proc defineSymbols*() =
         },
         returns     = {Logical},
         example     = """
-            print wordwrap {Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget mauris non justo mattis dignissim. Cras in lobortis felis, id ultricies ligula. Curabitur egestas tortor sed purus vestibulum auctor. Cras dui metus, euismod sit amet suscipit et, cursus ullamcorper felis. Integer elementum condimentum neque, et sagittis arcu rhoncus sed. In luctus congue eros, viverra dapibus mi rhoncus non. Pellentesque nisl diam, auctor quis sapien nec, suscipit aliquam velit. Nam ac nisi justo.}
-            ; Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget mauris non
-            ; justo mattis dignissim. Cras in lobortis felis, id ultricies ligula. Curabitur
-            ; egestas tortor sed purus vestibulum auctor. Cras dui metus, euismod sit amet
-            ; suscipit et, cursus ullamcorper felis. Integer elementum condimentum neque, et
-            ; sagittis arcu rhoncus sed. In luctus congue eros, viverra dapibus mi rhoncus
-            ; non. Pellentesque nisl diam, auctor quis sapien nec, suscipit aliquam velit. Nam
-            ; ac nisi justo.
-            ..........
-            print wordwrap.at: 10 "one two three four five six seven eight nine ten"
-            ; one two
-            ; three four
-            ; five six
-            ; seven 
-            ; eight nine
-            ; ten 
+        print wordwrap {Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget mauris non justo mattis dignissim. Cras in lobortis felis, id ultricies ligula. Curabitur egestas tortor sed purus vestibulum auctor. Cras dui metus, euismod sit amet suscipit et, cursus ullamcorper felis. Integer elementum condimentum neque, et sagittis arcu rhoncus sed. In luctus congue eros, viverra dapibus mi rhoncus non. Pellentesque nisl diam, auctor quis sapien nec, suscipit aliquam velit. Nam ac nisi justo.}
+        ; Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget mauris non
+        ; justo mattis dignissim. Cras in lobortis felis, id ultricies ligula. Curabitur
+        ; egestas tortor sed purus vestibulum auctor. Cras dui metus, euismod sit amet
+        ; suscipit et, cursus ullamcorper felis. Integer elementum condimentum neque, et
+        ; sagittis arcu rhoncus sed. In luctus congue eros, viverra dapibus mi rhoncus
+        ; non. Pellentesque nisl diam, auctor quis sapien nec, suscipit aliquam velit. Nam
+        ; ac nisi justo.
+        ..........
+        print wordwrap.at: 10 "one two three four five six seven eight nine ten"
+        ; one two
+        ; three four
+        ; five six
+        ; seven 
+        ; eight nine
+        ; ten 
         """:
             ##########################################################
             var cutoff = 80
@@ -913,9 +912,9 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            whitespace? "hello"           ; => false
-            whitespace? " "               ; => true
-            whitespace? "\n \n"           ; => true
+        whitespace? "hello"           ; => false
+        whitespace? " "               ; => true
+        whitespace? "\n \n"           ; => true
         """:
             ##########################################################
             push(newLogical(x.s.isEmptyOrWhitespace()))
