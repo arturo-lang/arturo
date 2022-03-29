@@ -142,37 +142,37 @@ proc defineSymbols*() =
             },
             returns     = {Dictionary},
             example     = """
-                print request "https://httpbin.org/get" #[some:"arg" another: 123]
-                ; [version:1.1 body:{
-                ;     "args": {
-                ;          "another": "123", 
-                ;          "some": "arg"
-                ;     }, 
-                ;     "headers": {
-                ;          "Content-Length": "0", 
-                ;          "Host": "httpbin.org", 
-                ;          "User-Agent": "Arturo HTTP Client / 0.9.75", 
-                ;          "X-Amzn-Trace-Id": "Root=1-608fd4b2-6b8a34291cc2fbd17a678b0f"
-                ;     }, 
-                ;     "origin": "92.59.209.80", 
-                ;     "url": "https://httpbin.org/get?some=arg&another=123"
-                ; } headers:[server:gunicorn/19.9.0 content-length:341 access-control-allow-credentials:true content-type:application/json date:2021-05-03T10:47:14+02:00 access-control-allow-origin:* connection:keep-alive] status:200]
-                ..........
-                r: request "https://httpbin.org/get" #[some:"arg" another: 123]
-                body: read.json r\body
-                inspect body\headers
-                ; [ :dictionary
-	            ;       Content-Length   :	0 :string
-	            ;       Host             :	httpbin.org :string
-	            ;       User-Agent       :	Arturo HTTP Client / 0.9.75 :string
-	            ;       X-Amzn-Trace-Id  :	Root=1-608fd5f3-7e47203117863c111a3aef3b :string
-                ; ]
-                ..........
-                print (request "https://httpbin.org/get" #[]) \ 'status
-                ; 200
-                ..........
-                print request.post "https://httpbin.org/post" #[some:"arg" another: 123]
-                ; ...same as above...
+            print request "https://httpbin.org/get" #[some:"arg" another: 123]
+            ; [version:1.1 body:{
+            ;     "args": {
+            ;          "another": "123", 
+            ;          "some": "arg"
+            ;     }, 
+            ;     "headers": {
+            ;          "Content-Length": "0", 
+            ;          "Host": "httpbin.org", 
+            ;          "User-Agent": "Arturo HTTP Client / 0.9.75", 
+            ;          "X-Amzn-Trace-Id": "Root=1-608fd4b2-6b8a34291cc2fbd17a678b0f"
+            ;     }, 
+            ;     "origin": "92.59.209.80", 
+            ;     "url": "https://httpbin.org/get?some=arg&another=123"
+            ; } headers:[server:gunicorn/19.9.0 content-length:341 access-control-allow-credentials:true content-type:application/json date:2021-05-03T10:47:14+02:00 access-control-allow-origin:* connection:keep-alive] status:200]
+            ..........
+            r: request "https://httpbin.org/get" #[some:"arg" another: 123]
+            body: read.json r\body
+            inspect body\headers
+            ; [ :dictionary
+            ;       Content-Length   :	0 :string
+            ;       Host             :	httpbin.org :string
+            ;       User-Agent       :	Arturo HTTP Client / 0.9.75 :string
+            ;       X-Amzn-Trace-Id  :	Root=1-608fd5f3-7e47203117863c111a3aef3b :string
+            ; ]
+            ..........
+            print (request "https://httpbin.org/get" #[]) \ 'status
+            ; 200
+            ..........
+            print request.post "https://httpbin.org/post" #[some:"arg" another: 123]
+            ; ...same as above...
             """:
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("request")
