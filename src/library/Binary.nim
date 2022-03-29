@@ -38,10 +38,10 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Integer,Nothing},
         example     = """
-            print and 2 3      ; 2
-            ..........
-            a: 2
-            and 'a 3           ; a: 2
+        print and 2 3      ; 2
+        ..........
+        a: 2
+        and 'a 3           ; a: 2
         """:
             ##########################################################
             if x.kind==Literal : InPlace &&= y
@@ -59,10 +59,10 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Integer,Nothing},
         example     = """
-            print nand 2 3     ; -3
-            ..........
-            a: 2
-            nand 'a 3          ; a: -3
+        print nand 2 3     ; -3
+        ..........
+        a: 2
+        nand 'a 3          ; a: -3
         """:
             ##########################################################
             if x.kind==Literal : InPlace &&= y; !!= InPlaced
@@ -79,10 +79,10 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Integer,Nothing},
         example     = """
-            print nor 2 3      ; -4
-            ..........
-            a: 2
-            nor 'a 3           ; a: -4
+        print nor 2 3      ; -4
+        ..........
+        a: 2
+        nor 'a 3           ; a: -4
         """:
             ##########################################################
             if x.kind==Literal : InPlace ||= y; !!= InPlaced
@@ -98,10 +98,10 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Integer,Nothing},
         example     = """
-            print not 123      ; -124
-            ..........
-            a: 123
-            not 'a             ; a: -124
+        print not 123      ; -124
+        ..........
+        a: 123
+        not 'a             ; a: -124
         """:
             ##########################################################
             if x.kind==Literal : !!= InPlace 
@@ -118,10 +118,10 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Integer,Nothing},
         example     = """
-            print or 2 3       ; 3
-            ..........
-            a: 2
-            or 'a 3            ; a: 3
+        print or 2 3       ; 3
+        ..........
+        a: 2
+        or 'a 3            ; a: 3
         """:
             ##########################################################
             if x.kind==Literal : InPlace ||= y
@@ -140,10 +140,10 @@ proc defineSymbols*() =
         },
         returns     = {Integer,Nothing},
         example     = """
-            print shl 2 3      ; 16
-            ..........
-            a: 2
-            shl 'a 3           ; a: 16
+        print shl 2 3      ; 16
+        ..........
+        a: 2
+        shl 'a 3           ; a: 16
         """:
             ##########################################################
             if x.kind==Literal : 
@@ -169,10 +169,10 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Integer,Nothing},
         example     = """
-            print shr 16 3     ; 2
-            ..........
-            a: 16
-            shr 'a 3           ; a: 2
+        print shr 16 3     ; 2
+        ..........
+        a: 16
+        shr 'a 3           ; a: 2
         """:
             ##########################################################
             if x.kind==Literal : InPlace >>= y
@@ -189,10 +189,10 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Integer,Nothing},
         example     = """
-            print xnor 2 3     ; -2
-            ..........
-            a: 2
-            xnor 'a 3          ; a: -2
+        print xnor 2 3     ; -2
+        ..........
+        a: 2
+        xnor 'a 3          ; a: -2
         """:
             ##########################################################
             if x.kind==Literal : InPlace ^^= y; !!= InPlaced
@@ -209,10 +209,10 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Integer,Nothing},
         example     = """
-            print xor 2 3      ; 1
-            ..........
-            a: 2
-            xor 'a 3           ; a: 1
+        print xor 2 3      ; 1
+        ..........
+        a: 2
+        xor 'a 3           ; a: 1
         """:
             ##########################################################
             if x.kind==Literal : InPlace ^^= y
