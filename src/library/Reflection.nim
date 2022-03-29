@@ -42,7 +42,7 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Dictionary},
         example     = """
-            print arity\print   ; 1
+        print arity\print   ; 1
         """:
             ##########################################################
             var ret = initOrderedTable[string,Value]()
@@ -61,20 +61,20 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Any,Null},
         example     = """
-            multiply: function [x][
-                if? attr? "with" [ 
-                    x * attr "with"
-                ] 
-                else [ 
-                    2*x 
-                ]
+        multiply: function [x][
+            if? attr? "with" [ 
+                x * attr "with"
+            ] 
+            else [ 
+                2*x 
             ]
-            
-            print multiply 5
-            ; 10
-            
-            print multiply.with: 6 5
-            ; 60
+        ]
+        
+        print multiply 5
+        ; 10
+        
+        print multiply.with: 6 5
+        ; 60
         """:
             ##########################################################
             push(popAttr(x.s))
@@ -89,18 +89,18 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            greet: function [x][
-                if? not? attr? 'later [
-                    print ["Hello" x "!"]
-                ]
-                else [
-                    print [x "I'm afraid I'll greet you later!"]
-                ]
+        greet: function [x][
+            if? not? attr? 'later [
+                print ["Hello" x "!"]
             ]
-            
-            greet.later "John"
-            
-            ; John I'm afraid I'll greet you later!
+            else [
+                print [x "I'm afraid I'll greet you later!"]
+            ]
+        ]
+        
+        greet.later "John"
+        
+        ; John I'm afraid I'll greet you later!
         """:
             ##########################################################
             if getAttr(x.s) != VNULL:
@@ -118,8 +118,8 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            attribute? first [.something x]
-            ; => true
+        attribute? first [.something x]
+        ; => true
         """:
             ##########################################################
             push(newLogical(x.kind==Attribute))
@@ -134,8 +134,8 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            attributeLabel? first [.something: x]
-            ; => true
+        attributeLabel? first [.something: x]
+        ; => true
         """:
             ##########################################################
             push(newLogical(x.kind==AttributeLabel))
@@ -148,17 +148,17 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Dictionary},
         example     = """
-            greet: function [x][
-                print ["Hello" x "!"]
-                print attrs
-            ]
-            
-            greet.later "John"
-            
-            ; Hello John!
-            ; [
-            ;    later:    true
-            ; ]
+        greet: function [x][
+            print ["Hello" x "!"]
+            print attrs
+        ]
+        
+        greet.later "John"
+        
+        ; Hello John!
+        ; [
+        ;    later:    true
+        ; ]
         """:
             ##########################################################
             push(getAttrsDict())
@@ -175,17 +175,17 @@ proc defineSymbols*() =
         },
         returns     = {Nothing,Floating},
         example     = """
-            benchmark [ 
-                ; some process that takes some time
-                loop 1..10000 => prime? 
-            ]
-            
-            ; [benchmark] time: 0.065s
-            ..........
-            benchmark.get [
-                loop 1..10000 => prime?
-            ]
-            ; => 0.3237628936767578
+        benchmark [ 
+            ; some process that takes some time
+            loop 1..10000 => prime? 
+        ]
+        
+        ; [benchmark] time: 0.065s
+        ..........
+        benchmark.get [
+            loop 1..10000 => prime?
+        ]
+        ; => 0.3237628936767578
         """:
             ##########################################################
             if (popAttr("get")!=VNULL):
@@ -207,8 +207,8 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            binary? to :binary "string"
-            ; => true
+        binary? to :binary "string"
+        ; => true
         """:
             ##########################################################
             push(newLogical(x.kind==Binary))
@@ -223,10 +223,10 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            print block? [1 2 3]            ; true
-            print block? #[name: "John"]    ; false
-            print block? "hello"            ; false
-            print block? 123                ; false
+        print block? [1 2 3]            ; true
+        print block? #[name: "John"]    ; false
+        print block? "hello"            ; false
+        print block? 123                ; false
         """:
             ##########################################################
             push(newLogical(x.kind==Block))
@@ -241,8 +241,8 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            print char? `a`         ; true
-            print char? 123         ; false
+        print char? `a`         ; true
+        print char? 123         ; false
         """:
             ##########################################################
             push(newLogical(x.kind==Char))
@@ -257,8 +257,8 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            database? open "my.db"
-            ; => true
+        database? open "my.db"
+        ; => true
         """:
             ##########################################################
             push(newLogical(x.kind==Database))
@@ -273,8 +273,8 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            print date? now             ; true
-            print date? "hello"         ; false
+        print date? now             ; true
+        print date? "hello"         ; false
         """:
             ##########################################################
             push(newLogical(x.kind==Date))
@@ -289,8 +289,8 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            print dictionary? #[name: "John"]   ; true
-            print dictionary? 123               ; false
+        print dictionary? #[name: "John"]   ; true
+        print dictionary? 123               ; false
         """:
             ##########################################################
             push(newLogical(x.kind==Dictionary))
@@ -373,8 +373,8 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            inline? first [(something) x]
-            ; => true
+        inline? first [(something) x]
+        ; => true
         """:
             ##########################################################
             push(newLogical(x.kind==Inline))
@@ -391,10 +391,10 @@ proc defineSymbols*() =
         },
         returns     = {Nothing},
         example     = """
-            inspect 3                 ; 3 :integer
-            
-            a: "some text"
-            inspect a                 ; some text :string
+        inspect 3                 ; 3 :integer
+        
+        a: "some text"
+        inspect a                 ; some text :string
         """:
             ##########################################################
             when defined(WEB):
@@ -414,11 +414,11 @@ proc defineSymbols*() =
         },
         returns     = {Logical},
         example     = """
-            print integer? 123                  ; true
-            print integer? "hello"              ; false
-            ..........
-            integer?.big 123                    ; => false
-            integer?.big 12345678901234567890   ; => true
+        print integer? 123                  ; true
+        print integer? "hello"              ; false
+        ..........
+        integer?.big 123                    ; => false
+        integer?.big 12345678901234567890   ; => true
         """:
             ##########################################################
             if (popAttr("big")!=VNULL):
@@ -437,12 +437,12 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            is? :string "hello"       ; => true
-            is? :block [1 2 3]        ; => true
-            is? :integer "boom"       ; => false
+        is? :string "hello"       ; => true
+        is? :block [1 2 3]        ; => true
+        is? :integer "boom"       ; => false
 
-            is? [:string] ["one" "two"]     ; => true
-            is? [:integer] [1 "two]         ; => false
+        is? [:string] ["one" "two"]     ; => true
+        is? [:integer] [1 "two]         ; => false
         """:
             ##########################################################
             if y.custom.isNil():
@@ -480,9 +480,9 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            print floating? 3.14        ; true
-            print floating? 123         ; false
-            print floating? "hello"     ; false
+        print floating? 3.14        ; true
+        print floating? 123         ; false
+        print floating? "hello"     ; false
         """:
             ##########################################################
             push(newLogical(x.kind==Floating))
@@ -499,17 +499,17 @@ proc defineSymbols*() =
         },
         returns     = {Logical},
         example     = """
-            print function? $[x][2*x]       ; true
-            print function? var 'print      ; true
-            print function? "print"         ; false
-            print function? 123             ; false
-            ..........
-            f: function [x][x+2]
+        print function? $[x][2*x]       ; true
+        print function? var 'print      ; true
+        print function? "print"         ; false
+        print function? 123             ; false
+        ..........
+        f: function [x][x+2]
 
-            function? var'f                 ; => true
-            function? var'print             ; => true
-            function?.builtin var'f         ; => false
-            function?.builtin var'print     ; => true
+        function? var'f                 ; => true
+        function? var'print             ; => true
+        function?.builtin var'f         ; => false
+        function?.builtin var'print     ; => true
         """:
             ##########################################################
             if (popAttr("builtin")!=VNULL):
@@ -527,8 +527,8 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            label? first [something: x]
-            ; => true
+        label? first [something: x]
+        ; => true
         """:
             ##########################################################
             push(newLogical(x.kind==Label))
@@ -543,9 +543,9 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            print literal? 'x           ; true
-            print literal? "x"          ; false
-            print literal? 123          ; false
+        print literal? 'x           ; true
+        print literal? "x"          ; false
+        print literal? 123          ; false
         """:
             ##########################################################
             push(newLogical(x.kind==Literal))
@@ -560,12 +560,12 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            print logical? true         ; true
-            print logical? false        ; true
-            print logical? maybe        ; true
-            ..........
-            print logical? 1=1          ; true
-            print logical? 123          ; false
+        print logical? true         ; true
+        print logical? false        ; true
+        print logical? maybe        ; true
+        ..........
+        print logical? 1=1          ; true
+        print logical? 123          ; false
         """:
             ##########################################################
             push(newLogical(x.kind==Logical))
@@ -580,10 +580,10 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            print null? null            ; true
-            print null? ø               ; true
+        print null? null            ; true
+        print null? ø               ; true
 
-            print null? 123             ; false
+        print null? 123             ; false
         """:
             ##########################################################
             push(newLogical(x.kind==Null))
@@ -598,8 +598,8 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            path? first [a\b\c x]
-            ; => true
+        path? first [a\b\c x]
+        ; => true
         """:
             ##########################################################
             push(newLogical(x.kind==Path))
@@ -614,8 +614,8 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            pathLabel? first [a\b\c: x]
-            ; => true
+        pathLabel? first [a\b\c: x]
+        ; => true
         """:
             ##########################################################
             push(newLogical(x.kind==PathLabel))
@@ -630,9 +630,9 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            print regex? {/[a-z]+/}     ; true
-            print regex? "[a-z]+"       ; false
-            print regex? 123            ; false
+        print regex? {/[a-z]+/}     ; true
+        print regex? "[a-z]+"       ; false
+        print regex? 123            ; false
         """:
             ##########################################################
             push(newLogical(x.kind==Regex))
@@ -647,10 +647,10 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            boom: 12
-            print set? 'boom          ; true
-            
-            print set? 'zoom          ; false
+        boom: 12
+        print set? 'boom          ; true
+        
+        print set? 'zoom          ; false
         """:
             ##########################################################
             push(newLogical(SymExists(x.s)))
@@ -663,10 +663,10 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Dictionary},
         example     = """
-            1 2 3 "done"
+        1 2 3 "done"
 
-            print stack
-            ; 1 2 3 done
+        print stack
+        ; 1 2 3 done
         """:
             ##########################################################
             push(newBlock(Stack[0..SP-1]))
@@ -679,14 +679,14 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            doSomething: function [x][
-                print ["I'm doing something with" x]
-            ]
-            
-            if standalone? [
-                print "It's running from command line and not included."
-                print "Nothing to do!"
-            ]
+        doSomething: function [x][
+            print ["I'm doing something with" x]
+        ]
+        
+        if standalone? [
+            print "It's running from command line and not included."
+            print "Nothing to do!"
+        ]
         """:
             ##########################################################
             push(newLogical(PathStack.len == 1))
@@ -701,9 +701,9 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            print string? "x"           ; true
-            print string? 'x            ; false
-            print string? 123           ; false
+        print string? "x"           ; true
+        print string? 'x            ; false
+        print string? 123           ; false
         """:
             ##########################################################
             push(newLogical(x.kind==String))
@@ -718,8 +718,8 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            symbol? first [+ x]
-            ; => true
+        symbol? first [+ x]
+        ; => true
         """:
             ##########################################################
             push(newLogical(x.kind==Symbol))
@@ -734,8 +734,8 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            symbolLiteral? '++
-            ; => true
+        symbolLiteral? '++
+        ; => true
         """:
             ##########################################################
             push(newLogical(x.kind==SymbolLiteral))
@@ -748,15 +748,15 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Dictionary},
         example     = """
-            a: 2
-            b: "hello"
-            
-            print symbols
-            
-            ; [
-            ;    a: 2
-            ;    b: "hello"
-            ;_]
+        a: 2
+        b: "hello"
+        
+        print symbols
+        
+        ; [
+        ;    a: 2
+        ;    b: "hello"
+        ;_]
         """:
             ##########################################################
             var symbols: ValueDict = initOrderedTable[string,Value]()
@@ -775,8 +775,8 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Type},
         example     = """
-            print type 18966          ; :integer
-            print type "hello world"  ; :string
+        print type 18966          ; :integer
+        print type "hello world"  ; :string
         """:
             ##########################################################
             if x.custom.isNil():
@@ -794,9 +794,9 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            print type? :string         ; true
-            print type? "string"        ; false
-            print type? 123             ; false
+        print type? :string         ; true
+        print type? "string"        ; false
+        print type? 123             ; false
         """:
             ##########################################################
             push(newLogical(x.kind==Type))
@@ -811,8 +811,8 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            word? first [something x]
-            ; => true
+        word? first [something x]
+        ; => true
         """:
             ##########################################################
             push(newLogical(x.kind==Word))

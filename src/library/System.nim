@@ -165,9 +165,9 @@ proc defineSymbols*() =
         },
         returns     = {Nothing},
         example     = """
-            exit              ; (terminates the program)
-            ..........
-            exit.with: 3      ; (terminates the program with code 3)
+        exit              ; (terminates the program)
+        ..........
+        exit.with: 3      ; (terminates the program with code 3)
         """:
             ##########################################################
             var errCode = QuitSuccess
@@ -189,13 +189,13 @@ proc defineSymbols*() =
         },
         returns     = {Logical},
         example     = """
-            panic.code:1 "something went terribly wrong. quitting..."
-            ; quits with the given code and 
-            ; prints a properly format error with the given message
-            ..........
-            panic.unstyled "oops! that was wrong"
-            ; quits with the default exit code (= 0) and
-            ; just outputs a simple - unformatted - message
+        panic.code:1 "something went terribly wrong. quitting..."
+        ; quits with the given code and 
+        ; prints a properly format error with the given message
+        ..........
+        panic.unstyled "oops! that was wrong"
+        ; quits with the default exit code (= 0) and
+        ; just outputs a simple - unformatted - message
         """:
             ##########################################################
             var code = 0
@@ -239,19 +239,19 @@ proc defineSymbols*() =
             attrs       = NoAttrs,
             returns     = {Dictionary},
             example     = """
-                print process\id
-                ; 78046
+            print process\id
+            ; 78046
 
-                inspect process
-                ; [ :dictionary
-                ;       id      :	78046 :integer
-                ;       memory  :	[ :dictionary
-                ;           occupied  :		1783104 :integer
-                ;           free      :		360448 :integer
-                ;           total     :		2379776 :integer
-                ;           max       :		2379776 :integer
-                ;       ]
-                ; ]
+            inspect process
+            ; [ :dictionary
+            ;       id      :	78046 :integer
+            ;       memory  :	[ :dictionary
+            ;           occupied  :		1783104 :integer
+            ;           free      :		360448 :integer
+            ;           total     :		2379776 :integer
+            ;           max       :		2379776 :integer
+            ;       ]
+            ; ]
             """:
                 ##########################################################
                 var ret = initOrderedTable[string,Value]()
@@ -289,14 +289,14 @@ proc defineSymbols*() =
             },
             returns     = {Nothing},
             example     = """
-                ; start process
-                pid: execute.async "someProcessThatDoesSomethingInTheBackground"
+            ; start process
+            pid: execute.async "someProcessThatDoesSomethingInTheBackground"
 
-                ; wait for 5 seconds
-                pause 5000 
+            ; wait for 5 seconds
+            pause 5000 
 
-                ; terminate background process
-                terminate pid
+            ; terminate background process
+            terminate pid
             """:
                 ##########################################################
                 var errCode = QuitSuccess
