@@ -38,10 +38,10 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            equal? 5 2            ; => false
-            equal? 5 6-1          ; => true
-            
-            print 3=3             ; true
+        equal? 5 2            ; => false
+        equal? 5 6-1          ; => true
+        
+        print 3=3             ; true
         """:
             ##########################################################
             push(newLogical(x == y))
@@ -57,10 +57,10 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            greater? 5 2          ; => true
-            greater? 5 6-1        ; => false
-            
-            print 3>2             ; true
+        greater? 5 2          ; => true
+        greater? 5 6-1        ; => false
+        
+        print 3>2             ; true
         """:
             ##########################################################
             push(newLogical(x > y))
@@ -76,10 +76,10 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            greaterOrEqual? 5 2   ; => true
-            greaterOrEqual? 5 4-1 ; => false
-            
-            print 2>=2            ; true
+        greaterOrEqual? 5 2   ; => true
+        greaterOrEqual? 5 4-1 ; => false
+        
+        print 2>=2            ; true
         """:
             ##########################################################
             push(newLogical(x >= y))
@@ -95,10 +95,10 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            less? 5 2             ; => false
-            less? 5 6+1           ; => true
-            
-            print 2<3             ; true
+        less? 5 2             ; => false
+        less? 5 6+1           ; => true
+        
+        print 2<3             ; true
         """:
             ##########################################################
             push(newLogical(x < y))
@@ -114,10 +114,10 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            lessOrEqual? 5 2      ; => false
-            lessOrEqual? 5 6-1    ; => true
-            
-            print 2=<3            ; true
+        lessOrEqual? 5 2      ; => false
+        lessOrEqual? 5 6-1    ; => true
+        
+        print 2=<3            ; true
         """:
             ##########################################################
             push(newLogical(x <= y))
@@ -133,10 +133,10 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            notEqual? 5 2         ; => true
-            notEqual? 5 6-1       ; => false
-            
-            print 2<>3            ; true
+        notEqual? 5 2         ; => true
+        notEqual? 5 6-1       ; => false
+        
+        print 2<>3            ; true
         """:
             ##########################################################
             push(newLogical(x != y))
@@ -152,9 +152,9 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            same? 1 2           ; => false
-            same? 3 3           ; => true
-            same? 3 3.0         ; => false
+        same? 1 2           ; => false
+        same? 3 3           ; => true
+        same? 3 3.0         ; => false
         """:
             ##########################################################
             push(newLogical(identical(x, y)))

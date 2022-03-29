@@ -47,8 +47,8 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {String,Nothing},
         example     = """
-            print crc "The quick brown fox jumps over the lazy dog"
-            ; 414FA339
+        print crc "The quick brown fox jumps over the lazy dog"
+        ; 414FA339
         """:
             ##########################################################
             if x.kind==Literal:
@@ -68,11 +68,11 @@ proc defineSymbols*() =
         },
         returns     = {String,Nothing},
         example     = """
-            print decode "TnVtcXVhbSBmdWdpZW5zIHJlc3BleGVyaXM="
-            ; Numquam fugiens respexeris
-            ..........
-            print decode.url "http%3A%2F%2Ffoo+bar%2F"
-            ; http://foo bar/
+        print decode "TnVtcXVhbSBmdWdpZW5zIHJlc3BleGVyaXM="
+        ; Numquam fugiens respexeris
+        ..........
+        print decode.url "http%3A%2F%2Ffoo+bar%2F"
+        ; http://foo bar/
         """:
             ##########################################################
             if (popAttr("url")!=VNULL):
@@ -105,11 +105,11 @@ proc defineSymbols*() =
         },
         returns     = {String,Nothing},
         example     = """
-            print encode "Numquam fugiens respexeris"
-            ; TnVtcXVhbSBmdWdpZW5zIHJlc3BleGVyaXM=
-            ..........
-            print encode.url "http://foo bar/"
-            ; http%3A%2F%2Ffoo+bar%2F
+        print encode "Numquam fugiens respexeris"
+        ; TnVtcXVhbSBmdWdpZW5zIHJlc3BleGVyaXM=
+        ..........
+        print encode.url "http://foo bar/"
+        ; http%3A%2F%2Ffoo+bar%2F
         """:
             ##########################################################
             if (popAttr("url")!=VNULL):
@@ -200,13 +200,13 @@ proc defineSymbols*() =
         },
         returns     = {Integer,String},
         example     = """
-            print hash "hello"      ; 613153351
-            print hash [1 2 3]      ; 645676735036410
-            print hash 123          ; 123
+        print hash "hello"      ; 613153351
+        print hash [1 2 3]      ; 645676735036410
+        print hash 123          ; 123
 
-            a: [1 2 3]
-            b: [1 2 3]
-            print (hash a)=(hash b) ; true
+        a: [1 2 3]
+        b: [1 2 3]
+        print (hash a)=(hash b) ; true
         """:
             ##########################################################
             if (popAttr("string") != VNULL):

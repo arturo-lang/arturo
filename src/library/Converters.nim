@@ -427,34 +427,34 @@ proc defineSymbols*() =
         },
         returns     = {Block},
         example     = """
-            none: @[]               ; none: []
-            a: @[1 2 3]             ; a: [1 2 3]
-            
-            b: 5
-            c: @[b b+1 b+2]         ; c: [5 6 7]
-            
-            d: @[
-                3+1
-                print "we are in the block"
-                123
-                print "yep"
-            ]
-            ; we are in the block
-            ; yep
-            ; => [4 123]
-            ..........
-            ; initializing empty array with initial value
-            x: array.of: 2 "done"
-            inspect.muted x
-            ; [ :block
-            ;     done :string
-            ;     done :string
-            ; ]
-            ..........
-            ; initializing empty n-dimensional array with initial value
-            x: array.of: [3 4] 0          ; initialize a 3x4 2D array
-                                            ; with zeros
-            ; => [[0 0 0 0] [0 0 0 0] [0 0 0 0]]
+        none: @[]               ; none: []
+        a: @[1 2 3]             ; a: [1 2 3]
+        
+        b: 5
+        c: @[b b+1 b+2]         ; c: [5 6 7]
+        
+        d: @[
+            3+1
+            print "we are in the block"
+            123
+            print "yep"
+        ]
+        ; we are in the block
+        ; yep
+        ; => [4 123]
+        ..........
+        ; initializing empty array with initial value
+        x: array.of: 2 "done"
+        inspect.muted x
+        ; [ :block
+        ;     done :string
+        ;     done :string
+        ; ]
+        ..........
+        ; initializing empty n-dimensional array with initial value
+        x: array.of: [3 4] 0          ; initialize a 3x4 2D array
+                                        ; with zeros
+        ; => [[0 0 0 0] [0 0 0 0] [0 0 0 0]]
         """:
             ##########################################################
             if (let aOf = popAttr("of"); aOf != VNULL):
@@ -523,12 +523,12 @@ proc defineSymbols*() =
         ,
         returns     = {Any},
         example     = """
-            print as.binary 123           ; 1111011
-            print as.octal 123            ; 173
-            print as.hex 123              ; 7b
-            ..........
-            print as.ascii "thís ìß ñot à tést"
-            ; this iss not a test
+        print as.binary 123           ; 1111011
+        print as.octal 123            ; 173
+        print as.hex 123              ; 7b
+        ..........
+        print as.ascii "thís ìß ñot à tést"
+        ; this iss not a test
         """:
             ##########################################################
             if (popAttr("binary") != VNULL):
@@ -576,55 +576,55 @@ proc defineSymbols*() =
         # TODO(Converters\define) add documentation example for `.as`
         #  labels: library, documentation, easy
         example     = """
-            define :person [name surname age][  
+        define :person [name surname age][  
 
-                ; magic method to be executed
-                ; after a new object has been created
-                init: [
-                    this\name: capitalize this\name
-                ]
-
-                ; magic method to be executed
-                ; when the object is about to be printed
-                print: [
-                    render "NAME: |this\name|, SURNAME: |this\surname|, AGE: |this\age|"
-                ]
-
-                ; magic method to be used
-                ; when comparing objects (e.g. when sorting)
-                compare: [
-                    if this\age = that\age -> return 0
-                    if this\age < that\age -> return neg 1
-                    if this\age > that\age -> return 1
-                ]
+            ; magic method to be executed
+            ; after a new object has been created
+            init: [
+                this\name: capitalize this\name
             ]
 
-            sayHello: function [this][
-                ensure -> is? :person this
-                print ["Hello" this\name]
+            ; magic method to be executed
+            ; when the object is about to be printed
+            print: [
+                render "NAME: |this\name|, SURNAME: |this\surname|, AGE: |this\age|"
             ]
 
-            a: to :person ["John" "Doe" 35]
-            b: to :person ["jane" "Doe" 33]
+            ; magic method to be used
+            ; when comparing objects (e.g. when sorting)
+            compare: [
+                if this\age = that\age -> return 0
+                if this\age < that\age -> return neg 1
+                if this\age > that\age -> return 1
+            ]
+        ]
 
-            print a
-            ; NAME: John, SURNAME: Doe, AGE: 35
-            print b
-            ; NAME: Jane, SURNAME: Doe, AGE: 33
+        sayHello: function [this][
+            ensure -> is? :person this
+            print ["Hello" this\name]
+        ]
 
-            sayHello a
-            ; Hello John 
+        a: to :person ["John" "Doe" 35]
+        b: to :person ["jane" "Doe" 33]
 
-            a > b 
-            ; => true (a\age > b\age)
+        print a
+        ; NAME: John, SURNAME: Doe, AGE: 35
+        print b
+        ; NAME: Jane, SURNAME: Doe, AGE: 33
 
-            print join.with:"\n" sort @[a b]
-            ; NAME: Jane, SURNAME: Doe, AGE: 33
-            ; NAME: John, SURNAME: Doe, AGE: 35
+        sayHello a
+        ; Hello John 
 
-            print join.with:"\n" sort.descending @[a b]
-            ; NAME: John, SURNAME: Doe, AGE: 35
-            ; NAME: Jane, SURNAME: Doe, AGE: 33
+        a > b 
+        ; => true (a\age > b\age)
+
+        print join.with:"\n" sort @[a b]
+        ; NAME: Jane, SURNAME: Doe, AGE: 33
+        ; NAME: John, SURNAME: Doe, AGE: 35
+
+        print join.with:"\n" sort.descending @[a b]
+        ; NAME: John, SURNAME: Doe, AGE: 35
+        ; NAME: Jane, SURNAME: Doe, AGE: 33
         """:
             ##########################################################
             x.prototype = y
@@ -691,29 +691,29 @@ proc defineSymbols*() =
         },
         returns     = {Dictionary},
         example     = """
-            none: #[]               ; none: []
-            a: #[
-                name: "John"
-                age: 34
-            ]             
-            ; a: [name: "John", age: 34]
-            
-            d: #[
-                name: "John"
-                print "we are in the block"
-                age: 34
-                print "yep"
-            ]
-            ; we are in the block
-            ; yep
-            ; d: [name: "John", age: 34]
-            ..........
-            e: #.lower [
-                Name: "John"
-                suRnaMe: "Doe"
-                AGE: 35
-            ]
-            ; e: [name:John, surname:Doe, age:35]
+        none: #[]               ; none: []
+        a: #[
+            name: "John"
+            age: 34
+        ]             
+        ; a: [name: "John", age: 34]
+        
+        d: #[
+            name: "John"
+            print "we are in the block"
+            age: 34
+            print "yep"
+        ]
+        ; we are in the block
+        ; yep
+        ; d: [name: "John", age: 34]
+        ..........
+        e: #.lower [
+            Name: "John"
+            suRnaMe: "Doe"
+            AGE: 35
+        ]
+        ; e: [name:John, surname:Doe, age:35]
         """:
             ##########################################################
             var dict: ValueDict
@@ -763,9 +763,9 @@ proc defineSymbols*() =
         },
         returns     = {Any},
         example     = """
-            print from.binary "1011"        ; 11
-            print from.octal "1011"         ; 521
-            print from.hex "0xDEADBEEF"     ; 3735928559
+        print from.binary "1011"        ; 11
+        print from.octal "1011"         ; 521
+        print from.hex "0xDEADBEEF"     ; 3735928559
         """:
             ##########################################################
             if (popAttr("binary") != VNULL):
@@ -802,83 +802,83 @@ proc defineSymbols*() =
         },
         returns     = {Function},
         example     = """
-            f: function [x][ x + 2 ]
-            print f 10                ; 12
-            
-            f: $[x][x+2]
-            print f 10                ; 12
-            ..........
-            multiply: function [x,y][
-                x * y
-            ]
-            print multiply 3 5        ; 15
-            ..........
-            ; forcing typed parameters
-            addThem: function [
-                x :integer
-                y :integer :floating
-            ][
-                x + y
-            ]
-            ..........
-            ; adding complete documentation for user function
-            ; using data comments within the body
-            addThem: function [
-                x :integer :floating
-                y :integer :floating
-            ][
-                ;; description: « takes two numbers and adds them up
-                ;; options: [
-                ;;      mul: :integer « also multiply by given number
-                ;; ]
-                ;; returns: :integer :floating
-                ;; example: {
-                ;;      addThem 10 20
-                ;;      addThem.mult:3 10 20
-                ;; }
+        f: function [x][ x + 2 ]
+        print f 10                ; 12
+        
+        f: $[x][x+2]
+        print f 10                ; 12
+        ..........
+        multiply: function [x,y][
+            x * y
+        ]
+        print multiply 3 5        ; 15
+        ..........
+        ; forcing typed parameters
+        addThem: function [
+            x :integer
+            y :integer :floating
+        ][
+            x + y
+        ]
+        ..........
+        ; adding complete documentation for user function
+        ; using data comments within the body
+        addThem: function [
+            x :integer :floating
+            y :integer :floating
+        ][
+            ;; description: « takes two numbers and adds them up
+            ;; options: [
+            ;;      mul: :integer « also multiply by given number
+            ;; ]
+            ;; returns: :integer :floating
+            ;; example: {
+            ;;      addThem 10 20
+            ;;      addThem.mult:3 10 20
+            ;; }
 
-                mult?: attr 'mult
-                if? not? null? mult? ->
-                    return mult? * x + y
-                else ->
-                    return x + y
-            ]
+            mult?: attr 'mult
+            if? not? null? mult? ->
+                return mult? * x + y
+            else ->
+                return x + y
+        ]
 
-            info'addThem
-            
-            ; |--------------------------------------------------------------------------------
-            ; |        addThem  :function                                          0x10EF0E528
-            ; |--------------------------------------------------------------------------------
-            ; |                 takes two numbers and adds them up
-            ; |--------------------------------------------------------------------------------
-            ; |          usage  addThem x :integer :floating
-            ; |                         y :integer :floating
-            ; |
-            ; |        options  .mult :integer -> also multiply by given number
-            ; |
-            ; |        returns  :integer :floating
-            ; |--------------------------------------------------------------------------------
-            ..........
-            publicF: function .export['x] [z][
-                print ["z =>" z]
-                x: 5
-            ]
-            
-            publicF 10
-            ; z => 10
-            
-            print x
-            ; 5
-            ..........
-            ; memoization
-            fib: $[x].memoize[
-                if? x<2 [1]
-                else [(fib x-1) + (fib x-2)]
-            ]
+        info'addThem
+        
+        ; |--------------------------------------------------------------------------------
+        ; |        addThem  :function                                          0x10EF0E528
+        ; |--------------------------------------------------------------------------------
+        ; |                 takes two numbers and adds them up
+        ; |--------------------------------------------------------------------------------
+        ; |          usage  addThem x :integer :floating
+        ; |                         y :integer :floating
+        ; |
+        ; |        options  .mult :integer -> also multiply by given number
+        ; |
+        ; |        returns  :integer :floating
+        ; |--------------------------------------------------------------------------------
+        ..........
+        publicF: function .export['x] [z][
+            print ["z =>" z]
+            x: 5
+        ]
+        
+        publicF 10
+        ; z => 10
+        
+        print x
+        ; 5
+        ..........
+        ; memoization
+        fib: $[x].memoize[
+            if? x<2 [1]
+            else [(fib x-1) + (fib x-2)]
+        ]
 
-            loop 1..25 [x][
-                print ["Fibonacci of" x "=" fib x]
-            ]
+        loop 1..25 [x][
+            print ["Fibonacci of" x "=" fib x]
+        ]
         """:
             ##########################################################
             var imports = VNULL
@@ -1001,61 +1001,61 @@ proc defineSymbols*() =
         },
         returns     = {Any},
         example     = """
-            to :integer "2020"            ; 2020
-            
-            to :integer `A`               ; 65
-            to :char 65                   ; `A`
-            
-            to :integer 4.3               ; 4
-            to :floating 4                ; 4.0
-
-            to :complex [1 2]             ; 1.0+2.0i
-            to :complex @[2.3 neg 4.5]    ; 2.3-4.5i
-            
-            to :boolean 0                 ; false
-            to :boolean 1                 ; true
-            to :boolean "true"            ; true
-
-            to :literal "symbol"          ; 'symbol
-            ..........
-            to :string 2020               ; "2020"
-            to :string 'symbol            ; "symbol"
-            to :string :word              ; "word"
+        to :integer "2020"            ; 2020
         
-            to :string .format:"dd/MM/yy" now
-            ; 22/03/21
+        to :integer `A`               ; 65
+        to :char 65                   ; `A`
+        
+        to :integer 4.3               ; 4
+        to :floating 4                ; 4.0
 
-            to :string .format:".2f" 123.12345
-            ; 123.12
-            ..........
-            to :block "one two three"       ; [one two three]
+        to :complex [1 2]             ; 1.0+2.0i
+        to :complex @[2.3 neg 4.5]    ; 2.3-4.5i
+        
+        to :boolean 0                 ; false
+        to :boolean 1                 ; true
+        to :boolean "true"            ; true
 
-            do to :block "print 123"        ; 123
-            ..........
-            to :date 0          ; => 1970-01-01T01:00:00+01:00
+        to :literal "symbol"          ; 'symbol
+        ..........
+        to :string 2020               ; "2020"
+        to :string 'symbol            ; "symbol"
+        to :string :word              ; "word"
+    
+        to :string .format:"dd/MM/yy" now
+        ; 22/03/21
 
-            print now           ; 2021-05-22T07:39:10+02:00
-            to :integer now     ; => 1621661950
+        to :string .format:".2f" 123.12345
+        ; 123.12
+        ..........
+        to :block "one two three"       ; [one two three]
 
-            to :date .format:"dd/MM/yyyy" "22/03/2021"
-            ; 2021-03-22T00:00:00+01:00
-            ..........
-            to [:string] [1 2 3 4]         
-            ; ["1" "2" "3" "4"]
+        do to :block "print 123"        ; 123
+        ..........
+        to :date 0          ; => 1970-01-01T01:00:00+01:00
 
-            to [:char] "hello"
-            ; [`h` `e` `l` `l` `o`]
-            ..........
-            define :person [name surname age][]
+        print now           ; 2021-05-22T07:39:10+02:00
+        to :integer now     ; => 1621661950
 
-            to :person ["John" "Doe" 35]
-            ; [name:John surname:Doe age:35]
-            ..........
-            to :color [255 0 10]
-            ; => #FF000A
+        to :date .format:"dd/MM/yyyy" "22/03/2021"
+        ; 2021-03-22T00:00:00+01:00
+        ..........
+        to [:string] [1 2 3 4]         
+        ; ["1" "2" "3" "4"]
 
-            to :color .hsl [255 0.2 0.4]
-            ; => #5C527A
+        to [:char] "hello"
+        ; [`h` `e` `l` `l` `o`]
+        ..........
+        define :person [name surname age][]
+
+        to :person ["John" "Doe" 35]
+        ; [name:John surname:Doe age:35]
+        ..........
+        to :color [255 0 10]
+        ; => #FF000A
+
+        to :color .hsl [255 0.2 0.4]
+        ; => #5C527A
         """:
             ##########################################################
             if x.kind==Type:
@@ -1087,16 +1087,16 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Block},
         example     = """
-            f: function [x][ 
-                with [x][ 
-                    "the multiple of" x "is" 2*x 
-                ] 
-            ]
+        f: function [x][ 
+            with [x][ 
+                "the multiple of" x "is" 2*x 
+            ] 
+        ]
 
-            multiplier: f 10
+        multiplier: f 10
 
-            print multiplier
-            ; the multiple of 10 is 20 
+        print multiplier
+        ; the multiple of 10 is 20 
         """:
             ##########################################################
             var blk: ValueArray = cleanBlock(y.a)

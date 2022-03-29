@@ -47,19 +47,19 @@ proc defineSymbols*() =
         },
         returns     = {Nothing},
         example     = """
-            addThem: function [x, y][
-                x + y
-            ]
-            alias --> 'addThem
-    
-            print --> 2 3
-            ; 5
-            ..........
-            multiplyThem: function [x, y][ x * y ]
-            alias.infix {<=>} 'multiplyThem
+        addThem: function [x, y][
+            x + y
+        ]
+        alias --> 'addThem
 
-            print 2 <=> 3
-            ; 6
+        print --> 2 3
+        ; 5
+        ..........
+        multiplyThem: function [x, y][ x * y ]
+        alias.infix {<=>} 'multiplyThem
+
+        print 2 <=> 3
+        ; 6
         """:
             ##########################################################
             var prec = PrefixPrecedence
@@ -87,19 +87,19 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Block},
         example     = """
-            loop 1..5 'x [
-                print ["x:" x]
-                if x=3 -> break
-                print "after check"
-            ]
-            print "after loop"
+        loop 1..5 'x [
+            print ["x:" x]
+            if x=3 -> break
+            print "after check"
+        ]
+        print "after loop"
 
-            ; x: 1
-            ; after check
-            ; x: 2
-            ; after check
-            ; x: 3
-            ; after loop
+        ; x: 1
+        ; after check
+        ; x: 2
+        ; after check
+        ; x: 3
+        ; after loop
         """:
             ##########################################################
             raise BreakTriggered()
@@ -121,13 +121,13 @@ proc defineSymbols*() =
         },
         returns     = {Any},
         example     = """
-            multiply: function [x y][
-                x * y
-            ]
-            
-            call 'multiply [3 5]          ; => 15
-            ..........
-            call $[x][x+2] [5]            ; 7
+        multiply: function [x y][
+            x * y
+        ]
+        
+        call 'multiply [3 5]          ; => 15
+        ..........
+        call $[x][x+2] [5]            ; 7
         """:
             ##########################################################
             if (let aExternal = popAttr("external"); aExternal != VNULL):
@@ -165,11 +165,11 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Nothing},
         example     = """
-            a: 2
-            case [a]
-                when? [<2] -> print "a is less than 2"
-                when? [=2] -> print "a is 2"
-                else       -> print "a is greater than 2"
+        a: 2
+        case [a]
+            when? [<2] -> print "a is less than 2"
+            when? [=2] -> print "a is 2"
+            else       -> print "a is greater than 2"
         """:
             ##########################################################
             push(x)
@@ -183,23 +183,23 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Block},
         example     = """
-            loop 1..5 'x [
-                print ["x:" x]
-                if x=3 -> continue
-                print "after check"
-            ]
-            print "after loop"
+        loop 1..5 'x [
+            print ["x:" x]
+            if x=3 -> continue
+            print "after check"
+        ]
+        print "after loop"
 
-            ; x: 1 
-            ; after check
-            ; x: 2 
-            ; after check
-            ; x: 3 
-            ; x: 4 
-            ; after check
-            ; x: 5 
-            ; after check
-            ; after loop
+        ; x: 1 
+        ; after check
+        ; x: 2 
+        ; after check
+        ; x: 3 
+        ; x: 4 
+        ; after check
+        ; x: 5 
+        ; after check
+        ; after loop
         """:
             ##########################################################
             raise ContinueTriggered()
@@ -217,27 +217,27 @@ proc defineSymbols*() =
         },
         returns     = {Any,Nothing},
         example     = """
-            do "print 123"                ; 123
-            ..........
-            do [
-                x: 3
-                print ["x =>" x]          ; x => 3
-            ]
-            ..........
-            do.import [
-                x: 3
-            ]
-            print ["x =>" x]              ; x => 3
-            ..........
-            print do "https://raw.githubusercontent.com/arturo-lang/arturo/master/examples/projecteuler/euler1.art"
-            ; 233168
-            ..........
-            do.times: 3 [
-                print "Hello!"
-            ]
-            ; Hello!
-            ; Hello!
-            ; Hello!
+        do "print 123"                ; 123
+        ..........
+        do [
+            x: 3
+            print ["x =>" x]          ; x => 3
+        ]
+        ..........
+        do.import [
+            x: 3
+        ]
+        print ["x =>" x]              ; x => 3
+        ..........
+        print do "https://raw.githubusercontent.com/arturo-lang/arturo/master/examples/projecteuler/euler1.art"
+        ; 233168
+        ..........
+        do.times: 3 [
+            print "Hello!"
+        ]
+        ; Hello!
+        ; Hello!
+        ; Hello!
         """:
             ##########################################################
             var times = 1
@@ -292,16 +292,16 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Nothing},
         example     = """
-            ; a label normally consumes its inputs
-            ; and returns nothing
+        ; a label normally consumes its inputs
+        ; and returns nothing
 
-            ; using dup before a call, the non-returning function
-            ; becomes a returning one
+        ; using dup before a call, the non-returning function
+        ; becomes a returning one
 
-            a: b: <= 3
+        a: b: <= 3
 
-            print a         ; 3
-            print b         ; 3
+        print a         ; 3
+        print b         ; 3
         """:
             ##########################################################
             push(x)
@@ -317,15 +317,15 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Nothing},
         example     = """
-            x: 2
-            z: 3
-            
-            if? x>z [
-                print "x was greater than z"
-            ]
-            else [
-                print "nope, x was not greater than z"
-            ]
+        x: 2
+        z: 3
+        
+        if? x>z [
+            print "x was greater than z"
+        ]
+        else [
+            print "nope, x was not greater than z"
+        ]
         """:
             ##########################################################
             let y = pop() # pop the value of the previous operation (hopefully an 'if?' or 'when?')
@@ -341,11 +341,11 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Nothing},
         example     = """
-            num: input "give me a positive number"
+        num: input "give me a positive number"
 
-            ensure [num > 0]
+        ensure [num > 0]
 
-            print "good, the number is positive indeed. let's continue..."
+        print "good, the number is positive indeed. let's continue..."
         """:
             ##########################################################
             discard execBlock(x)
@@ -363,10 +363,10 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Nothing},
         example     = """
-            x: 2
-            
-            if x=2 -> print "yes, that's right!"
-            ; yes, that's right!
+        x: 2
+        
+        if x=2 -> print "yes, that's right!"
+        ; yes, that's right!
         """:
             ##########################################################
             let condition = not (x.kind==Null or (x.kind==Logical and x.b==False))
@@ -384,23 +384,23 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            x: 2
-            
-            result: if? x=2 -> print "yes, that's right!"
-            ; yes, that's right!
-            
-            print result
-            ; true
-            ..........
-            x: 2
-            z: 3
-            
-            if? x>z [
-                print "x was greater than z"
-            ]
-            else [
-                print "nope, x was not greater than z"
-            ]
+        x: 2
+        
+        result: if? x=2 -> print "yes, that's right!"
+        ; yes, that's right!
+        
+        print result
+        ; true
+        ..........
+        x: 2
+        z: 3
+        
+        if? x>z [
+            print "x was greater than z"
+        ]
+        else [
+            print "nope, x was not greater than z"
+        ]
         """:
             ##########################################################
             let condition = not (x.kind==Null or (x.kind==Logical and x.b==False))
@@ -421,31 +421,31 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Nothing},
         example     = """
-            let 'x 10               ; x: 10
-            print x                 ; 10
-            ..........
-            ; variable assignments
-            "a": 2                  ; a: 2
-            
-            {_someValue}: 3
-            print var {_someValue}  ; 3
-            ..........
-            ; multiple assignments
-            [a b]: [1 2]
-            print a                 ; 1
-            print b                 ; 2
-            ..........
-            ; multiple assignment to single value
-            [a b c]: 5
-            print a                 ; 5
-            print b                 ; 5
-            print c                 ; 5
-            ..........
-            ; tuple unpacking
-            divmod: function [x,y][
-                @[x/y x%y]
-            ]
-            [d,m]: divmod 10 3      ; d: 3, m: 1
+        let 'x 10               ; x: 10
+        print x                 ; 10
+        ..........
+        ; variable assignments
+        "a": 2                  ; a: 2
+        
+        {_someValue}: 3
+        print var {_someValue}  ; 3
+        ..........
+        ; multiple assignments
+        [a b]: [1 2]
+        print a                 ; 1
+        print b                 ; 2
+        ..........
+        ; multiple assignment to single value
+        [a b c]: 5
+        print a                 ; 5
+        print b                 ; 5
+        print c                 ; 5
+        ..........
+        ; tuple unpacking
+        divmod: function [x,y][
+            @[x/y x%y]
+        ]
+        [d,m]: divmod 10 3      ; d: 3, m: 1
         """:
             ##########################################################
             if x.kind==Block:
@@ -471,15 +471,15 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Any},
         example     = """
-            c: "Hello"
-            d: new c        ; make a copy of the older string
+        c: "Hello"
+        d: new c        ; make a copy of the older string
 
-            ; changing one string in-place
-            ; will change only the string in question
+        ; changing one string in-place
+        ; will change only the string in question
 
-            'd ++ "World"
-            print d                 ; HelloWorld
-            print c                 ; Hello
+        'd ++ "World"
+        print d                 ; HelloWorld
+        print c                 ; Hello
         """:
             ##########################################################
             push(copyValue(x))
@@ -503,14 +503,14 @@ proc defineSymbols*() =
         },
         returns     = {Any},
         example     = """
-            1 2 3
-            a: pop 1        ; a: 3
+        1 2 3
+        a: pop 1        ; a: 3
 
-            1 2 3
-            b: pop 2        ; b: [3 2]
-            ..........
-            1 2 3
-            pop.discard 1   ; popped 3 from the stack
+        1 2 3
+        b: pop 2        ; b: [3 2]
+        ..........
+        1 2 3
+        pop.discard 1   ; popped 3 from the stack
         """:
             ##########################################################
             let doDiscard = (popAttr("discard") != VNULL)
@@ -545,15 +545,15 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Nothing},
         example     = """
-            f: function [x][ 
-                loop 1..x 'y [ 
-                    if y=5 [ return y*2 ] 
-                ] 
-                return x*2
-            ]
-            
-            print f 3         ; 6
-            print f 6         ; 10
+        f: function [x][ 
+            loop 1..x 'y [ 
+                if y=5 [ return y*2 ] 
+            ] 
+            return x*2
+        ]
+        
+        print f 3         ; 6
+        print f 6         ; 10
         """:
             ##########################################################
             push(x)
@@ -575,11 +575,11 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Nothing},
         example     = """
-            x: 2
-            
-            switch x=2 -> print "yes, that's right!"
-                       -> print "nope, that's not right!"
-            ; yes, that's right!
+        x: 2
+        
+        switch x=2 -> print "yes, that's right!"
+                    -> print "nope, that's not right!"
+        ; yes, that's right!
         """:
             ##########################################################
             let condition = not (x.kind==Null or (x.kind==Logical and x.b==False))
@@ -601,12 +601,12 @@ proc defineSymbols*() =
         },
         returns     = {Nothing},
         example     = """
-            try [
-                ; let's try something dangerous
-                print 10 / 0
-            ]
-            
-            ; we catch the exception but do nothing with it
+        try [
+            ; let's try something dangerous
+            print 10 / 0
+        ]
+        
+        ; we catch the exception but do nothing with it
         """:
             ##########################################################
             let verbose = (popAttr("verbose")!=VNULL)
@@ -631,15 +631,15 @@ proc defineSymbols*() =
         },
         returns     = {Logical},
         example     = """
-            try? [
-                ; let's try something dangerous
-                print 10 / 0
-            ]
-            else [
-                print "something went terribly wrong..."
-            ]
-            
-            ; something went terribly wrong...
+        try? [
+            ; let's try something dangerous
+            print 10 / 0
+        ]
+        else [
+            print "something went terribly wrong..."
+        ]
+        
+        ; something went terribly wrong...
         """:
             ##########################################################
             let verbose = (popAttr("verbose")!=VNULL)
@@ -664,10 +664,10 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Nothing},
         example     = """
-            x: 2
-            
-            unless x=1 -> print "yep, x is not 1!"
-            ; yep, x is not 1!
+        x: 2
+        
+        unless x=1 -> print "yep, x is not 1!"
+        ; yep, x is not 1!
         """:
             ##########################################################
             let condition = x.kind==Null or (x.kind==Logical and x.b==False)
@@ -685,23 +685,23 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            x: 2
-            
-            result: unless? x=1 -> print "yep, x is not 1!"
-            ; yep, x is not 1!
-            
-            print result
-            ; true
-            
-            z: 1
-            
-            unless? x>z [
-                print "yep, x was not greater than z"
-            ]
-            else [
-                print "x was greater than z"
-            ]
-            ; x was greater than z
+        x: 2
+        
+        result: unless? x=1 -> print "yep, x is not 1!"
+        ; yep, x is not 1!
+        
+        print result
+        ; true
+        
+        z: 1
+        
+        unless? x>z [
+            print "yep, x was not greater than z"
+        ]
+        else [
+            print "x was greater than z"
+        ]
+        ; x was greater than z
         """:
             ##########################################################
             let condition = x.kind==Null or (x.kind==Logical and x.b==False)
@@ -722,22 +722,22 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Nothing},
         example     = """
-            i: 0 
-            until [
-                print ["i =>" i] 
-                i: i + 1
-            ][i = 10]
-            
-            ; i => 0 
-            ; i => 1 
-            ; i => 2 
-            ; i => 3 
-            ; i => 4 
-            ; i => 5 
-            ; i => 6 
-            ; i => 7 
-            ; i => 8 
-            ; i => 9 
+        i: 0 
+        until [
+            print ["i =>" i] 
+            i: i + 1
+        ][i = 10]
+        
+        ; i => 0 
+        ; i => 1 
+        ; i => 2 
+        ; i => 3 
+        ; i => 4 
+        ; i => 5 
+        ; i => 6 
+        ; i => 7 
+        ; i => 8 
+        ; i => 9 
         """:
             ##########################################################
             let preevaledX = doEval(x)
@@ -764,14 +764,14 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Any},
         example     = """
-            a: 2
-            print var 'a            ; a
+        a: 2
+        print var 'a            ; a
 
-            f: function [x][x+2]
-            print f 10              ; 12
+        f: function [x][x+2]
+        print f 10              ; 12
 
-            g: var 'f               
-            print g 10              ; 12
+        g: var 'f               
+        print g 10              ; 12
         """:
             ##########################################################
             push(InPlace)
@@ -787,11 +787,11 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            a: 2
-            case [a]
-                when? [<2] -> print "a is less than 2"
-                when? [=2] -> print "a is 2"
-                else       -> print "a is greater than 2"
+        a: 2
+        case [a]
+            when? [<2] -> print "a is less than 2"
+            when? [=2] -> print "a is 2"
+            else       -> print "a is greater than 2"
         """:
             ##########################################################
             let z = pop()
@@ -828,26 +828,26 @@ proc defineSymbols*() =
         },
         returns     = {Nothing},
         example     = """
-            i: 0 
-            while [i<10][
-                print ["i =>" i] 
-                i: i + 1
-            ]
-            
-            ; i => 0 
-            ; i => 1 
-            ; i => 2 
-            ; i => 3 
-            ; i => 4 
-            ; i => 5 
-            ; i => 6 
-            ; i => 7 
-            ; i => 8 
-            ; i => 9 
+        i: 0 
+        while [i<10][
+            print ["i =>" i] 
+            i: i + 1
+        ]
+        
+        ; i => 0 
+        ; i => 1 
+        ; i => 2 
+        ; i => 3 
+        ; i => 4 
+        ; i => 5 
+        ; i => 6 
+        ; i => 7 
+        ; i => 8 
+        ; i => 9 
 
-            while ø [
-                print "something"   ; infinitely
-            ]
+        while ø [
+            print "something"   ; infinitely
+        ]
         """:
             ##########################################################
             var execInParent = (popAttr("import") != VNULL)
