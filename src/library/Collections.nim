@@ -51,20 +51,20 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {String,Block,Nothing},
         example     = """
-        append "hell" "o"         ; => "hello"
-        append [1 2 3] 4          ; => [1 2 3 4]
-        append [1 2 3] [4 5]      ; => [1 2 3 4 5]
-        ..........
-        print "hell" ++ "o!"      ; hello!             
-        print [1 2 3] ++ 4 ++ 5   ; [1 2 3 4 5]
-        ..........
-        a: "hell"
-        append 'a "o"
-        print a                   ; hello
-        ..........
-        b: [1 2 3]
-        'b ++ 4
-        print b                   ; [1 2 3 4]
+            append "hell" "o"         ; => "hello"
+            append [1 2 3] 4          ; => [1 2 3 4]
+            append [1 2 3] [4 5]      ; => [1 2 3 4 5]
+            ..........
+            print "hell" ++ "o!"      ; hello!             
+            print [1 2 3] ++ 4 ++ 5   ; [1 2 3 4 5]
+            ..........
+            a: "hell"
+            append 'a "o"
+            print a                   ; hello
+            ..........
+            b: [1 2 3]
+            'b ++ 4
+            print b                   ; [1 2 3 4]
         """:
             ##########################################################
             if x.kind==Literal:
@@ -116,13 +116,13 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {String,Block,Nothing},
         example     = """
-        print chop "books"          ; book
-        print chop chop "books"     ; boo
-        ..........
-        str: "books"
-        chop 'str                   ; str: "book"
-        ..........
-        chop [1 2 3 4]              ; => [1 2 3]
+            print chop "books"          ; book
+            print chop chop "books"     ; boo
+            ..........
+            str: "books"
+            chop 'str                   ; str: "book"
+            ..........
+            chop [1 2 3 4]              ; => [1 2 3]
         """:
             ##########################################################
             if x.kind==Literal:
@@ -147,8 +147,8 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Block},
         example     = """
-        combine ["one" "two" "three"] [1 2 3]
-        ; => [[1 "one"] [2 "two"] [3 "three"]]
+            combine ["one" "two" "three"] [1 2 3]
+            ; => [[1 "one"] [2 "two"] [3 "three"]]
         """:
             ##########################################################
             push(newBlock(zip(cleanBlock(x.a),cleanBlock(y.a)).map((z)=>newBlock(@[z[0],z[1]]))))
@@ -164,22 +164,22 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {String,Block,Dictionary,Nothing},
         example     = """
-        arr: [1 2 3 4]
-        
-        contains? arr 5             ; => false
-        contains? arr 2             ; => true
-        ..........
-        user: #[
-            name: "John"
-            surname: "Doe"
-        ]
-        
-        contains? dict "John"       ; => true
-        contains? dict "Paul"       ; => false
-        
-        contains? keys dict "name"  ; => true
-        ..........
-        contains? "hello" "x"       ; => false
+            arr: [1 2 3 4]
+            
+            contains? arr 5             ; => false
+            contains? arr 2             ; => true
+            ..........
+            user: #[
+                name: "John"
+                surname: "Doe"
+            ]
+            
+            contains? dict "John"       ; => true
+            contains? dict "Paul"       ; => false
+            
+            contains? keys dict "name"  ; => true
+            ..........
+            contains? "hello" "x"       ; => false
         """:
             ##########################################################
             case x.kind:
@@ -207,11 +207,11 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {String,Block,Nothing},
         example     = """
-        str: drop "some text" 5
-        print str                     ; text
-        ..........
-        arr: 1..10
-        drop 'arr 3                   ; arr: [4 5 6 7 8 9 10]
+            str: drop "some text" 5
+            print str                     ; text
+            ..........
+            arr: 1..10
+            drop 'arr 3                   ; arr: [4 5 6 7 8 9 10]
         """:
             ##########################################################
             if x.kind==Literal:
@@ -235,11 +235,11 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Nothing},
         example     = """
-        a: [1 2 3]
-        empty 'a              ; a: []
-        ..........
-        str: "some text"
-        empty 'str            ; str: ""
+            a: [1 2 3]
+            empty 'a              ; a: []
+            ..........
+            str: "some text"
+            empty 'str            ; str: ""
         """:
             ##########################################################
             case InPlace.kind:
@@ -258,11 +258,11 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-        empty? ""             ; => true
-        empty? []             ; => true
-        empty? #[]            ; => true
-        
-        empty? [1 "two" 3]    ; => false
+            empty? ""             ; => true
+            empty? []             ; => true
+            empty? #[]            ; => true
+            
+            empty? [1 "two" 3]    ; => false
         """:
             ##########################################################
             case x.kind:
@@ -283,10 +283,10 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Dictionary},
         example     = """
-        person: #[ name: "john" surname: "doe" ]
+            person: #[ name: "john" surname: "doe" ]
 
-        print extend person #[ age: 35 ]
-        ; [name:john surname:doe age:35]
+            print extend person #[ age: 35 ]
+            ; [name:john surname:doe age:35]
         """:
             ##########################################################
             if x.kind==Literal:
@@ -312,10 +312,10 @@ proc defineSymbols*() =
         },
         returns     = {Any},
         example     = """
-        print first "this is some text"       ; t
-        print first ["one" "two" "three"]     ; one
-        ..........
-        print first.n:2 ["one" "two" "three"] ; one two
+            print first "this is some text"       ; t
+            print first ["one" "two" "three"]     ; one
+            ..........
+            print first.n:2 ["one" "two" "three"] ; one two
         """:
             ##########################################################
             if (let aN = popAttr("n"); aN != VNULL):
@@ -338,19 +338,19 @@ proc defineSymbols*() =
         },
         returns     = {Block},
         example     = """
-        arr: [[1 2 3] [4 5 6]]
-        print flatten arr
-        ; 1 2 3 4 5 6
-        ..........
-        arr: [[1 2 3] [4 5 6]]
-        flatten 'arr
-        ; arr: [1 2 3 4 5 6]
-        ..........
-        flatten [1 [2 3] [4 [5 6]]]
-        ; => [1 2 3 4 5 6]
-        ..........
-        flatten.once [1 [2 3] [4 [5 6]]]
-        ; => [1 2 3 4 [5 6]]
+            arr: [[1 2 3] [4 5 6]]
+            print flatten arr
+            ; 1 2 3 4 5 6
+            ..........
+            arr: [[1 2 3] [4 5 6]]
+            flatten 'arr
+            ; arr: [1 2 3 4 5 6]
+            ..........
+            flatten [1 [2 3] [4 [5 6]]]
+            ; => [1 2 3 4 5 6]
+            ..........
+            flatten.once [1 [2 3] [4 [5 6]]]
+            ; => [1 2 3 4 [5 6]]
         """:
             ##########################################################
             if x.kind==Literal:
@@ -369,31 +369,31 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Any},
         example     = """
-        user: #[
-            name: "John"
-            surname: "Doe"
-        ]
-        
-        print user\name               ; John
-        
-        print get user 'surname       ; Doe
-        print user\["username"]       ; Doe
-        ..........
-        arr: ["zero" "one" "two"]
-        
-        print arr\1                   ; one
-        
-        print get arr 2               ; two
-        y: 2
-        print arr\[y]                 ; two
-        ..........
-        str: "Hello world!"
-        
-        print str\0                   ; H
-        
-        print get str 1               ; e
-        z: 0
-        print str\[z+1]               ; e
+            user: #[
+                name: "John"
+                surname: "Doe"
+            ]
+            
+            print user\name               ; John
+            
+            print get user 'surname       ; Doe
+            print user\["username"]       ; Doe
+            ..........
+            arr: ["zero" "one" "two"]
+            
+            print arr\1                   ; one
+            
+            print get arr 2               ; two
+            y: 2
+            print arr\[y]                 ; two
+            ..........
+            str: "Hello world!"
+            
+            print str\0                   ; H
+            
+            print get str 1               ; e
+            z: 0
+            print str\[z+1]               ; e
         """:
             ##########################################################
             var key: Value
@@ -425,22 +425,22 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {String,Block,Dictionary,Nothing},
         example     = """
-        arr: [1 2 3 4]
-        
-        in? 5 arr             ; => false
-        in? 2 arr             ; => true
-        ..........
-        user: #[
-            name: "John"
-            surname: "Doe"
-        ]
-        
-        in? "John" dict       ; => true
-        in? "Paul" dict       ; => false
-        
-        in? "name" keys dict  ; => true
-        ..........
-        in? "x" "hello"       ; => false
+            arr: [1 2 3 4]
+            
+            in? 5 arr             ; => false
+            in? 2 arr             ; => true
+            ..........
+            user: #[
+                name: "John"
+                surname: "Doe"
+            ]
+            
+            in? "John" dict       ; => true
+            in? "Paul" dict       ; => false
+            
+            in? "name" keys dict  ; => true
+            ..........
+            in? "x" "hello"       ; => false
         """:
             ##########################################################
             case y.kind:
@@ -468,13 +468,13 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Integer,String,Null},
         example     = """
-        ind: index "hello" "e"
-        print ind                 ; 1
-        ..........
-        print index [1 2 3] 3     ; 2
-        ..........
-        type index "hello" "x"
-        ; :null
+            ind: index "hello" "e"
+            print ind                 ; 1
+            ..........
+            print index [1 2 3] 3     ; 2
+            ..........
+            type index "hello" "x"
+            ; :null
         """:
             ##########################################################
             case x.kind:
@@ -510,18 +510,18 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {String,Block,Dictionary,Nothing},
         example     = """
-        insert [1 2 3 4] 0 "zero"
-        ; => ["zero" 1 2 3 4]
-        
-        print insert "heo" 2 "ll"
-        ; hello
-        ..........
-        dict: #[
-            name: John
-        ]
-        
-        insert 'dict 'name "Jane"
-        ; dict: [name: "Jane"]
+            insert [1 2 3 4] 0 "zero"
+            ; => ["zero" 1 2 3 4]
+            
+            print insert "heo" 2 "ll"
+            ; hello
+            ..........
+            dict: #[
+                name: John
+            ]
+            
+            insert 'dict 'name "Jane"
+            ; dict: [name: "Jane"]
         """:
             ##########################################################
             if x.kind==Literal:
@@ -558,16 +558,16 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-        user: #[
-            name: "John"
-            surname: "Doe"
-        ]
-        
-        key? user 'age            ; => false
-        if key? user 'name [
-            print ["Hello" user\name]
-        ]
-        ; Hello John
+            user: #[
+                name: "John"
+                surname: "Doe"
+            ]
+            
+            key? user 'age            ; => false
+            if key? user 'name [
+                print ["Hello" user\name]
+            ]
+            ; Hello John
         """:
             ##########################################################
             var needle: string
@@ -587,13 +587,13 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Block},
         example     = """
-        user: #[
-            name: "John"
-            surname: "Doe"
-        ]
-        
-        keys user
-        => ["name" "surname"]
+            user: #[
+                name: "John"
+                surname: "Doe"
+            ]
+            
+            keys user
+            => ["name" "surname"]
         """:
             ##########################################################
             let s = toSeq(x.d.keys)
@@ -611,10 +611,10 @@ proc defineSymbols*() =
         },
         returns     = {Any},
         example     = """
-        print last "this is some text"       ; t
-        print last ["one" "two" "three"]     ; three
-        ..........
-        print last.n:2 ["one" "two" "three"] ; two three
+            print last "this is some text"       ; t
+            print last ["one" "two" "three"]     ; three
+            ..........
+            print last.n:2 ["one" "two" "three"] ; two three
         """:
             ##########################################################
             if (let aN = getAttr("n"); aN != VNULL):
@@ -639,7 +639,7 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Any,Null},
         example     = """
-        print max [4 2 8 5 1 9]       ; 9
+            print max [4 2 8 5 1 9]       ; 9
         """:
             ##########################################################
             let blk = cleanBlock(x.a)
@@ -664,7 +664,7 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Any,Null},
         example     = """
-        print min [4 2 8 5 1 9]       ; 1
+            print min [4 2 8 5 1 9]       ; 1
         """:
             ##########################################################
             let blk = cleanBlock(x.a)
@@ -689,8 +689,8 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Block},
         example     = """
-        permutate [A B C]
-        ; => [[A B C] [A C B] [C A B] [B A C] [B C A] [C B A]]
+            permutate [A B C]
+            ; => [[A B C] [A C B] [C A B] [B A C] [B C A] [C B A]]
         """:
             ##########################################################
             var ret: ValueArray = @[]
@@ -718,17 +718,17 @@ proc defineSymbols*() =
         },
         returns     = {String,Block,Dictionary,Nothing},
         example     = """
-        remove "hello" "l"        ; => "heo"
-        print "hello" -- "l"      ; heo
-        ..........
-        str: "mystring"
-        remove 'str "str"         
-        print str                 ; mying
-        ..........
-        print remove.once "hello" "l"
-        ; helo
-        ..........
-        remove [1 2 3 4] 4        ; => [1 2 3]
+            remove "hello" "l"        ; => "heo"
+            print "hello" -- "l"      ; heo
+            ..........
+            str: "mystring"
+            remove 'str "str"         
+            print str                 ; mying
+            ..........
+            print remove.once "hello" "l"
+            ; helo
+            ..........
+            remove [1 2 3 4] 4        ; => [1 2 3]
         """:
             ##########################################################
             if x.kind==Literal:
@@ -793,17 +793,17 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {String,Block},
         example     = """
-        print repeat "hello" 3
-        ; hellohellohello
-        ..........
-        repeat [1 2 3] 3
-        ; => [1 2 3 1 2 3 1 2 3]
-        ..........
-        repeat 5 3
-        ; => [5 5 5]
-        ..........
-        repeat [[1 2 3]] 3
-        ; => [[1 2 3] [1 2 3] [1 2 3]]
+            print repeat "hello" 3
+            ; hellohellohello
+            ..........
+            repeat [1 2 3] 3
+            ; => [1 2 3 1 2 3 1 2 3]
+            ..........
+            repeat 5 3
+            ; => [5 5 5]
+            ..........
+            repeat [[1 2 3]] 3
+            ; => [[1 2 3] [1 2 3] [1 2 3]]
         """:
             ##########################################################
             if x.kind==Literal:
@@ -831,12 +831,12 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {String,Block,Nothing},
         example     = """
-        print reverse [1 2 3 4]           ; 4 3 2 1
-        print reverse "Hello World"       ; dlroW olleH
-        ..........
-        str: "my string"
-        reverse 'str
-        print str                         ; gnirts ym
+            print reverse [1 2 3 4]           ; 4 3 2 1
+            print reverse "Hello World"       ; dlroW olleH
+            ..........
+            str: "my string"
+            reverse 'str
+            print str                         ; gnirts ym
         """:
             ##########################################################
             proc reverse(s: var string) =
@@ -867,9 +867,9 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Any},
         example     = """
-        sample [1 2 3]        ; (return a random number from 1 to 3)
-        print sample ["apple" "appricot" "banana"]
-        ; apple
+            sample [1 2 3]        ; (return a random number from 1 to 3)
+            print sample ["apple" "appricot" "banana"]
+            ; apple
         """:
             ##########################################################
             push(sample(cleanBlock(x.a)))
@@ -886,25 +886,25 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Nothing},
         example     = """
-        myDict: #[ 
-            name: "John"
-            age: 34
-        ]
-        
-        set myDict 'name "Michael"        ; => [name: "Michael", age: 34]
-        ..........
-        arr: [1 2 3 4]
-        set arr 0 "one"                   ; => ["one" 2 3 4]
+            myDict: #[ 
+                name: "John"
+                age: 34
+            ]
+            
+            set myDict 'name "Michael"        ; => [name: "Michael", age: 34]
+            ..........
+            arr: [1 2 3 4]
+            set arr 0 "one"                   ; => ["one" 2 3 4]
 
-        arr\1: "dos"                      ; => ["one" "dos" 3 4]
+            arr\1: "dos"                      ; => ["one" "dos" 3 4]
 
-        x: 2    
-        arr\[x]: "tres"                   ; => ["one" "dos" "tres" 4]
-        ..........
-        str: "hello"
-        str\0: `x`
-        print str
-        ; xello
+            x: 2    
+            arr\[x]: "tres"                   ; => ["one" "dos" "tres" 4]
+            ..........
+            str: "hello"
+            str\0: `x`
+            print str
+            ; xello
         """:
             ##########################################################
             var key: Value
@@ -943,11 +943,11 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Block,Nothing},
         example     = """
-        shuffle [1 2 3 4 5 6]         ; => [1 5 6 2 3 4 ]
-        ..........
-        arr: [2 5 9]
-        shuffle 'arr
-        print arr                     ; 5 9 2
+            shuffle [1 2 3 4 5 6]         ; => [1 5 6 2 3 4 ]
+            ..........
+            arr: [2 5 9]
+            shuffle 'arr
+            print arr                     ; 5 9 2
         """:
             ##########################################################
             if x.kind==Literal:
@@ -965,16 +965,16 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Integer},
         example     = """
-        arr: ["one" "two" "three"]
-        print size arr                ; 3
-        ..........
-        dict: #[name: "John", surname: "Doe"]
-        print size dict               ; 2
-        ..........
-        str: "some text"      
-        print size str                ; 9
-        
-        print size "你好!"              ; 3
+            arr: ["one" "two" "three"]
+            print size arr                ; 3
+            ..........
+            dict: #[name: "John", surname: "Doe"]
+            print size dict               ; 2
+            ..........
+            str: "some text"      
+            print size str                ; 9
+            
+            print size "你好!"              ; 3
         """:
             ##########################################################
             if x.kind==String:
@@ -996,9 +996,9 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {String,Block},
         example     = """
-        slice "Hello" 0 3             ; => "Hell"
-        ..........
-        print slice 1..10 3 4         ; 4 5
+            slice "Hello" 0 3             ; => "Hell"
+            ..........
+            print slice 1..10 3 4         ; 4 5
         """:
             ##########################################################
             if x.kind==String:
@@ -1022,14 +1022,14 @@ proc defineSymbols*() =
         },
         returns     = {Block,Nothing},
         example     = """
-        a: [3 1 6]
-        print sort a                  ; 1 3 6
-        ..........
-        print sort.descending a       ; 6 3 1
-        ..........
-        b: ["one" "two" "three"]
-        sort 'b
-        print b                       ; one three two
+            a: [3 1 6]
+            print sort a                  ; 1 3 6
+            ..........
+            print sort.descending a       ; 6 3 1
+            ..........
+            b: ["one" "two" "three"]
+            sort 'b
+            print b                       ; one three two
         """:
             ##########################################################
             var sortOrdering = SortOrder.Ascending
@@ -1100,13 +1100,13 @@ proc defineSymbols*() =
         },
         returns     = {Logical},
         example     = """
-        sorted? [1 2 3 4 5]         ; => true
-        sorted? [4 3 2 1 5]         ; => false
-        sorted? [5 4 3 2 1]         ; => false
-        ..........
-        sorted?.descending [5 4 3 2 1]      ; => true
-        sorted?.descending [4 3 2 1 5]      ; => false
-        sorted?.descending [1 2 3 4 5]      ; => false
+            sorted? [1 2 3 4 5]         ; => true
+            sorted? [4 3 2 1 5]         ; => false
+            sorted? [5 4 3 2 1]         ; => false
+            ..........
+            sorted?.descending [5 4 3 2 1]      ; => true
+            sorted?.descending [4 3 2 1 5]      ; => false
+            sorted?.descending [1 2 3 4 5]      ; => false
         """:
             ##########################################################
             var ascending = true
@@ -1137,19 +1137,19 @@ proc defineSymbols*() =
         },
         returns     = {Block,Nothing},
         example     = """
-        split "hello"                 ; => [`h` `e` `l` `l` `o`]
-        ..........
-        split.words "hello world"     ; => ["hello" "world"]
-        ..........
-        split.every: 2 "helloworld"
-        ; => ["he" "ll" "ow" "or" "ld"]
-        ..........
-        split.at: 4 "helloworld"
-        ; => ["hell" "oworld"]
-        ..........
-        arr: 1..9
-        split.at:3 'arr
-        ; => [ [1 2 3 4] [5 6 7 8 9] ]
+            split "hello"                 ; => [`h` `e` `l` `l` `o`]
+            ..........
+            split.words "hello world"     ; => ["hello" "world"]
+            ..........
+            split.every: 2 "helloworld"
+            ; => ["he" "ll" "ow" "or" "ld"]
+            ..........
+            split.at: 4 "helloworld"
+            ; => ["hell" "oworld"]
+            ..........
+            arr: 1..9
+            split.at:3 'arr
+            ; => [ [1 2 3 4] [5 6 7 8 9] ]
         """:
             ##########################################################
             if x.kind==Literal:
@@ -1254,14 +1254,14 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {String,Block,Nothing},
         example     = """
-        print squeeze [1 1 2 3 4 2 3 4 4 5 5 6 7]
-        ; 1 2 3 4 2 3 4 5 6 7 
-        ..........
-        arr: [4 2 1 1 3 6 6]
-        squeeze 'arr            ; a: [4 2 1 3 6]
-        ..........
-        print squeeze "hello world"
-        ; helo world
+            print squeeze [1 1 2 3 4 2 3 4 4 5 5 6 7]
+            ; 1 2 3 4 2 3 4 5 6 7 
+            ..........
+            arr: [4 2 1 1 3 6 6]
+            squeeze 'arr            ; a: [4 2 1 3 6]
+            ..........
+            print squeeze "hello world"
+            ; helo world
         """:
             ##########################################################
             if x.kind==Literal:
@@ -1315,11 +1315,11 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {String,Block,Nothing},
         example     = """
-        str: take "some text" 5
-        print str                     ; some
-        ..........
-        arr: 1..10
-        take 'arr 3                   ; arr: [1 2 3]
+            str: take "some text" 5
+            print str                     ; some
+            ..........
+            arr: 1..10
+            take 'arr 3                   ; arr: [1 2 3]
         """:
             ##########################################################
             if x.kind==Literal:
@@ -1345,12 +1345,12 @@ proc defineSymbols*() =
         },
         returns     = {Block,Nothing},
         example     = """
-        arr: [1 2 4 1 3 2]
-        print unique arr              ; 1 2 4 3
-        ..........
-        arr: [1 2 4 1 3 2]
-        unique 'arr
-        print arr                     ; 1 2 4 3
+            arr: [1 2 4 1 3 2]
+            print unique arr              ; 1 2 4 3
+            ..........
+            arr: [1 2 4 1 3 2]
+            unique 'arr
+            print arr                     ; 1 2 4 3
         """:
             ##########################################################
             if (popAttr("id") != VNULL):
@@ -1372,13 +1372,13 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Block},
         example     = """
-        user: #[
-            name: "John"
-            surname: "Doe"
-        ]
-        
-        values user
-        => ["John" "Doe"]
+            user: #[
+                name: "John"
+                surname: "Doe"
+            ]
+            
+            values user
+            => ["John" "Doe"]
         """:
             ##########################################################
             let s = toSeq(x.d.values)
