@@ -44,10 +44,10 @@ proc defineSymbols*() =
         },
         returns     = {ValueKind.Color},
         example     = """
-            blend #red #CCCCCC                  ; => #E66666
-            ..........
-            blend .balance: 0.75 #red #CCCCCC   
-            ; => #D99999
+        blend #red #CCCCCC                  ; => #E66666
+        ..........
+        blend .balance: 0.75 #red #CCCCCC   
+        ; => #D99999
         """:
             ##########################################################
             var balance = 0.5
@@ -70,10 +70,10 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {ValueKind.Color},
         example     = """
-            darken #red 0.2         ; => #CC0000
-            darken #red 0.5         ; => #7F0000
+        darken #red 0.2         ; => #CC0000
+        darken #red 0.5         ; => #7F0000
 
-            darken #9944CC 0.3      ; => #6B308F
+        darken #9944CC 0.3      ; => #6B308F
         """:
             ##########################################################
             if x.kind == Literal:
@@ -92,10 +92,10 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {ValueKind.Color},
         example     = """
-            desaturate #red 0.2         ; => #E61919
-            desaturate #red 0.5         ; => #BF4040
+        desaturate #red 0.2         ; => #E61919
+        desaturate #red 0.5         ; => #BF4040
 
-            desaturate #9944CC 0.3      ; => #9558B8
+        desaturate #9944CC 0.3      ; => #9558B8
         """:
             ##########################################################
             if x.kind == Literal:
@@ -113,9 +113,9 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {ValueKind.Color},
         example     = """
-            print #orange               ; #FFA500
+        print #orange               ; #FFA500
 
-            invert #orange              ; => #0059FF
+        invert #orange              ; => #0059FF
         """:
             ##########################################################
             if x.kind == Literal:
@@ -134,12 +134,12 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {ValueKind.Color},
         example     = """
-            print #lightblue            ; #ADD8E6
+        print #lightblue            ; #ADD8E6
 
-            lighten #lightblue 0.2      ; => #D0FFFF
-            lighten #lightblue 0.5      ; => #FFFFFF
+        lighten #lightblue 0.2      ; => #D0FFFF
+        lighten #lightblue 0.5      ; => #FFFFFF
 
-            lighten #9944CC 0.3         ; => #C758FF
+        lighten #9944CC 0.3         ; => #C758FF
         """:
             ##########################################################
             if x.kind == Literal:
@@ -165,26 +165,26 @@ proc defineSymbols*() =
         },
         returns     = {Block},
         example     = """
-            palette.triad #red      ; => [#FF0000 #00FF00 #0000FF]
-            palette.tetrad #red     ; => [#FF0000 #80FF00 #00FFFF #7F00FF]
-            ..........
-            palette.monochrome #red
-            ; => [#FF0000 #D40000 #AA0000 #7F0000 #550000 #2A0000]
+        palette.triad #red      ; => [#FF0000 #00FF00 #0000FF]
+        palette.tetrad #red     ; => [#FF0000 #80FF00 #00FFFF #7F00FF]
+        ..........
+        palette.monochrome #red
+        ; => [#FF0000 #D40000 #AA0000 #7F0000 #550000 #2A0000]
 
-            palette.monochrome.size:10 #red
-            ; => [#FF0000 #E50000 #CC0000 #B20000 #990000 #7F0000 #660000 #4C0000 #330000 #190000]
-            ..........
-            palette.analogous #red
-            ; => [#FF0099 #FF0066 #FF0033 #FF0000 #FF3300 #FF6600]
+        palette.monochrome.size:10 #red
+        ; => [#FF0000 #E50000 #CC0000 #B20000 #990000 #7F0000 #660000 #4C0000 #330000 #190000]
+        ..........
+        palette.analogous #red
+        ; => [#FF0099 #FF0066 #FF0033 #FF0000 #FF3300 #FF6600]
 
-            palette.analogous.size:10 #red
-            ; => [#FF00FF #FF00CC #FF0099 #FF0066 #FF0033 #FF0000 #FF3300 #FF6600 #FF9900 #FFCC00]
-            ..........
-            palette.random #red
-            ; => [#FF0000 #00EC00 #0000D2 #00F000 #0000FF #00FF00]
+        palette.analogous.size:10 #red
+        ; => [#FF00FF #FF00CC #FF0099 #FF0066 #FF0033 #FF0000 #FF3300 #FF6600 #FF9900 #FFCC00]
+        ..........
+        palette.random #red
+        ; => [#FF0000 #00EC00 #0000D2 #00F000 #0000FF #00FF00]
 
-            palette.random.size:10 #red
-            ; => [#FF0000 #00FF00 #0000FF #00FE00 #F30000 #00FD00 #0000ED #EC0000 #00F800 #0000D8]
+        palette.random.size:10 #red
+        ; => [#FF0000 #00FF00 #0000FF #00FE00 #F30000 #00FD00 #0000ED #EC0000 #00F800 #0000D8]
         """:
             ##########################################################
             if (popAttr("triad") != VNULL):
@@ -222,12 +222,12 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {ValueKind.Color},
         example     = """
-            print #lightblue            ; #ADD8E6
+        print #lightblue            ; #ADD8E6
 
-            saturate #lightblue 0.2     ; => #A7DBEC
-            saturate #lightblue 0.5     ; => #9FDFF4
+        saturate #lightblue 0.2     ; => #A7DBEC
+        saturate #lightblue 0.5     ; => #9FDFF4
 
-            saturate #9944CC 0.3        ; => #A030E0
+        saturate #9944CC 0.3        ; => #A030E0
         """:
             ##########################################################
             if x.kind == Literal:
@@ -246,11 +246,11 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {ValueKind.Color},
         example     = """
-            spin #red 90            ; => #80FF00
-            spin #red 180           ; => #00FFFF
+        spin #red 90            ; => #80FF00
+        spin #red 180           ; => #00FFFF
 
-            spin #123456 45         ; => #231256
-            spin #123456 360        ; => #123456
+        spin #123456 45         ; => #231256
+        spin #123456 360        ; => #123456
         """:
             ##########################################################
             if x.kind == Literal:
