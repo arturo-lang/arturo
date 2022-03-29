@@ -1,0 +1,30 @@
+#!/usr/bin/env arturo
+
+wrong: new []
+
+isWrong?: function [example][
+    inBlock: false
+    loop.with:'i split.lines example 'line [
+        if and? [prefix? line {/\s{3,}/}] [not? inBlock] [
+            inspect example
+            return true
+        ]
+        inBlock: suffix? line {/\[\s*/} 
+    ]
+    return false
+]
+
+loop symbols 'k [
+    inf: info.get k
+    if :function = inf\type [
+        loop inf\example 'ex [
+            if isWrong? ex ->
+                'wrong ++ k
+        ]
+    ]
+]
+
+unique 'wrong
+
+inspect wrong
+print ["Found" size wrong "wrong ones"]
