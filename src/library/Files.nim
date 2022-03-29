@@ -382,9 +382,9 @@ proc defineSymbols*() =
             attrs       = NoAttrs,
             returns     = {Integer},
             example     = """
-                volume "README.md"
-                ; => 13704 
-                ; (size in bytes)
+            volume "README.md"
+            ; => 13704 
+            ; (size in bytes)
             """:
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("volume")
