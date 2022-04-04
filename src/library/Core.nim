@@ -489,8 +489,6 @@ proc defineSymbols*() =
         description = "the NULL constant":
             VNULL
 
-    # TODO(Core\pop) verify functionality
-    #  labels: library, unit-test,easy
     builtin "pop",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
