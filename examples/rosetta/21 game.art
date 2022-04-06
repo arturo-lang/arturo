@@ -1,0 +1,35 @@
+print "-----------------------------"
+print " Welcome to 21 Game"
+print "-----------------------------"
+
+players: ["A" "B"]
+currentPlayer: sample players
+nextPlayer: first players -- currentPlayer
+runningTotal: new 0
+num: 0
+
+getNum: function [][
+    result: strip input "Enter a number (1,2,3) / x to exit: "
+    if result="x" -> exit
+    return result
+]
+
+loop.forever @[currentPlayer nextPlayer] 'plays [
+    print ["Running total:" runningTotal]
+    print ["Player" plays "turn"]
+
+    num: getNum
+
+    while [or? [not? numeric? num][not? contains? 1..3 to :integer num]][
+        num: getNum
+    ]
+
+    runningTotal: runningTotal + to :integer num
+
+    print ""
+
+    if runningTotal=21 [
+        print ["Running total is 21. Player" plays "won!"]
+        exit
+    ]
+]
