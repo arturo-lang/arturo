@@ -1,0 +1,41 @@
+print "-----------------------------"
+print " Welcome to 24 Game"
+print "-----------------------------"
+
+digs: map 1..4 'x -> random 1 9
+
+print ["The numbers you can use are:" join.with:" " digs]
+
+print ""
+
+validExpression?: function [expr][
+    loop expr 'item [
+        if or? inline? item block? item [
+            if not? validExpression? item -> return false
+        ]
+        if symbol? item [
+            if not? contains? [+ / - *] item -> return false
+        ]
+        if integer? item [
+            if not? contains? digs item -> return false
+        ]
+    ]
+    return true
+]
+
+result: 0
+
+while [result<>24][
+    got: input "Enter an expression to form 24: "
+    blo: to :block got
+    if? validExpression? blo [
+        result: do blo
+        print ["The result is:" result]
+    ]
+    else [
+        print "Invalid expression. Please try again!"
+    ]
+    print ""
+]
+
+print "Well done!"
