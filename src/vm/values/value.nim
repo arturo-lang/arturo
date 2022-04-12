@@ -1128,52 +1128,72 @@ proc `//=`*(x: var Value, y: Value) =
                 x = newFloating((float)(x.i)/y.f)
 
 proc `%`*(x: Value, y: Value): Value =
-    if not (x.kind==Integer) or not (y.kind==Integer):
+    if not (x.kind in [Integer,Floating]) or not (y.kind in [Integer,Floating]):
         return VNULL
     else:
-        if x.iKind==NormalInteger:
-            if y.iKind==NormalInteger:
-                return newInteger(x.i mod y.i)
+        if x.kind==Integer and y.kind==Integer:
+            if x.iKind==NormalInteger:
+                if y.iKind==NormalInteger:
+                    return newInteger(x.i mod y.i)
+                else:
+                    when defined(WEB):
+                        return newInteger(big(x.i) mod y.bi)
+                    elif not defined(NOGMP):
+                        return newInteger(x.i mod y.bi)
             else:
                 when defined(WEB):
-                    return newInteger(big(x.i) mod y.bi)
+                    if y.iKind==BigInteger:
+                        return newInteger(x.bi mod y.bi)
+                    else:
+                        return newInteger(x.bi mod big(y.i))
                 elif not defined(NOGMP):
-                    return newInteger(x.i mod y.bi)
+                    if y.iKind==BigInteger:
+                        return newInteger(x.bi mod y.bi)
+                    else:
+                        return newInteger(x.bi mod y.i)
         else:
-            when defined(WEB):
-                if y.iKind==BigInteger:
-                    return newInteger(x.bi mod y.bi)
-                else:
-                    return newInteger(x.bi mod big(y.i))
-            elif not defined(NOGMP):
-                if y.iKind==BigInteger:
-                    return newInteger(x.bi mod y.bi)
-                else:
-                    return newInteger(x.bi mod y.i)
+            if x.kind==Floating:
+                if y.kind==Floating: return newFloating(x.f mod y.f)
+                else: 
+                    if y.iKind==NormalInteger:
+                        return newFloating(x.f mod (float)(y.i))
+            else:
+                if x.iKind==NormalInteger:
+                    return newFloating((float)(x.i) mod y.f)
 
 proc `%=`*(x: var Value, y: Value) =
-    if not (x.kind==Integer) or not (y.kind==Integer):
+    if not (x.kind in [Integer,Floating]) or not (y.kind in [Integer,Floating]):
         x = VNULL
     else:
-        if x.iKind==NormalInteger:
-            if y.iKind==NormalInteger: 
-                x.i = x.i mod y.i
-            else: 
+        if x.kind==Integer and y.kind==Integer:
+            if x.iKind==NormalInteger:
+                if y.iKind==NormalInteger: 
+                    x.i = x.i mod y.i
+                else: 
+                    when defined(WEB):
+                        x = newInteger(big(x.i) mod y.bi)
+                    elif not defined(NOGMP):
+                        x = newInteger(x.i mod y.bi)
+            else:
                 when defined(WEB):
-                    x = newInteger(big(x.i) mod y.bi)
+                    if y.iKind==NormalInteger: 
+                        x = newInteger(x.bi mod big(y.i))
+                    else: 
+                        x = newInteger(x.bi mod y.bi)
                 elif not defined(NOGMP):
-                    x = newInteger(x.i mod y.bi)
+                    if y.iKind==NormalInteger: 
+                        x = newInteger(x.bi mod y.i)
+                    else: 
+                        x = newInteger(x.bi mod y.bi)
         else:
-            when defined(WEB):
-                if y.iKind==NormalInteger: 
-                    x = newInteger(x.bi mod big(y.i))
+            if x.kind==Floating:
+                if y.kind==Floating: x = newFloating(x.f mod y.f)
                 else: 
-                    x = newInteger(x.bi mod y.bi)
-            elif not defined(NOGMP):
-                if y.iKind==NormalInteger: 
-                    x = newInteger(x.bi mod y.i)
-                else: 
-                    x = newInteger(x.bi mod y.bi)
+                    if y.iKind==NormalInteger:
+                        x = newFloating(x.f mod (float)(y.i))
+            else:
+                if x.iKind==NormalInteger:
+                    x = newFloating((float)(x.i) mod y.f)
 
 proc `^`*(x: Value, y: Value): Value =
     if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
