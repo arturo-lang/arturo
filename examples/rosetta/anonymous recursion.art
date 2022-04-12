@@ -1,0 +1,12 @@
+fib: function [x][
+    ; Using scoped function fibI inside fib
+    fibI: function [n][
+        (n<2)? -> n -> add fibI n-2 fibI n-1
+    ]
+    if x < 0 -> panic "Invalid argument"
+    return fibI x
+]
+
+loop 0..4 'x [
+    print fib x
+]
