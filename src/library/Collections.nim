@@ -180,12 +180,15 @@ proc defineSymbols*() =
             contains? keys dict "name"  ; => true
             ..........
             contains? "hello" "x"       ; => false
+            contains? "hello" `h`       ; => true
         """:
             ##########################################################
             case x.kind:
                 of String:
                     if y.kind==Regex:
                         push(newLogical(x.s.contains(y.rx)))
+                    elif y.kind==Char:
+                        push(newLogical($(y.c) in x.s))
                     else:
                         push(newLogical(y.s in x.s))
                 of Block:
@@ -441,12 +444,15 @@ proc defineSymbols*() =
             in? "name" keys dict  ; => true
             ..........
             in? "x" "hello"       ; => false
+            in? `h` "hello"       ; => true
         """:
             ##########################################################
             case y.kind:
                 of String:
                     if x.kind==Regex:
                         push(newLogical(y.s.contains(x.rx)))
+                    elif x.kind==Char:
+                        push(newLogical($(x.c) in y.s))
                     else:
                         push(newLogical(x.s in y.s))
                 of Block:
