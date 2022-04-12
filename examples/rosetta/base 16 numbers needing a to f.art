@@ -1,0 +1,10 @@
+needsAF?: function [x][
+    hex: as.hex x
+    loop `a`..`f` 'c [
+        if contains? hex c ->
+            return true
+    ]
+    return false
+]
+
+print select 0..500 => needsAF?
