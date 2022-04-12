@@ -1,0 +1,15 @@
+ascending?: function [x][
+    initial: digits x
+    and? [equal? sort initial initial][equal? size initial size unique initial]
+]
+
+candidates: select (1..1456789) ++ [
+    12345678, 12345679, 12345689, 12345789, 12346789,
+    12356789, 12456789, 13456789, 23456789, 123456789 
+] => prime?
+
+ascendingNums: select candidates => ascending?
+
+loop split.every:10 ascendingNums 'nums [
+    print map nums 'num -> pad to :string num 10
+]
