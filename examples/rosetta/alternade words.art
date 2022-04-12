@@ -1,0 +1,15 @@
+words: map read.lines relative "unixdict.txt" => strip
+
+loop words 'word [
+    sw: new size word
+    if 6 > sw ->
+        continue
+
+    dec 'sw
+
+    alt1: join map select 0..sw => odd? 'x -> word\[x]
+    alt2: join map select 0..sw => even? 'x -> word\[x]
+
+    if and? [contains? words alt1][contains? words alt2] ->
+        print [word "=>" alt1 alt2]
+]
