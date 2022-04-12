@@ -1,0 +1,27 @@
+getDifference: function [b1, b2][
+    r: (b2 - b1) % 360.0
+
+    if r >= 180.0 ->
+        r: r - 360.0
+
+    return r
+]
+
+print "Input in -180 to +180 range"
+print getDifference 20.0 45.0
+print getDifference neg 45.0 45.0
+print getDifference neg 85.0 90.0
+print getDifference neg 95.0 90.0
+print getDifference neg 45.0 125.0
+print getDifference neg 45.0 145.0
+print getDifference neg 45.0 125.0
+print getDifference neg 45.0 145.0
+print getDifference 29.4803 neg 88.6381
+print getDifference neg 78.3251 neg 159.036
+
+print ""
+print "Input in wider range"
+print getDifference neg 70099.74233810938 29840.67437876723
+print getDifference neg 165313.6666297357 33693.9894517456
+print getDifference 1174.8380510598456 neg 154146.66490124757
+print getDifference 60175.77306795546 42213.07192354373
