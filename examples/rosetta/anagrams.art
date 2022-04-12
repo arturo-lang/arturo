@@ -1,0 +1,14 @@
+wordset: map read.lines relative "unixdict.txt" => strip
+
+anagrams: #[]
+
+loop wordset 'word [
+    anagram: sort to [:char] word
+    unless key? anagrams anagram ->
+        anagrams\[anagram]: new []
+
+    anagrams\[anagram]: anagrams\[anagram] ++ word
+]
+
+loop select values anagrams 'x [5 =< size x] 'words ->
+    print join.with:", " words
