@@ -4,4 +4,4 @@
            | 
            | cannot perform add -> :integer :string
            | incorrect argument type for second parameter
-           | accepts :integer :floating :complex :color
+           | accepts :integer :floating :complex :rational :color
