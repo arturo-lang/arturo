@@ -10,6 +10,7 @@
 # Libraries
 #=======================================
 
+import rationals except Rational
 import lenientops, tables, unicode
 
 when defined(WEB):
@@ -29,7 +30,7 @@ import vm/values/value
 #=======================================
 
 proc `==`*(x: Value, y: Value): bool {.inline.}=
-    if x.kind in [Integer, Floating] and y.kind in [Integer, Floating]:
+    if x.kind in [Integer, Floating, Rational] and y.kind in [Integer, Floating, Rational]:
         if x.kind==Integer:
             if y.kind==Integer: 
                 if x.iKind==NormalInteger and y.iKind==NormalInteger:
@@ -47,6 +48,11 @@ proc `==`*(x: Value, y: Value): bool {.inline.}=
                 else:
                     when defined(WEB) or not defined(NOGMP):
                         return x.bi==y.bi
+            elif y.kind==Rational:
+                if x.iKind==NormalInteger:
+                    return toRational(x.i)==y.rat
+                else:
+                    return false
             else: 
                 if x.iKind==NormalInteger:
                     return (float)(x.i)==y.f
@@ -55,6 +61,16 @@ proc `==`*(x: Value, y: Value): bool {.inline.}=
                         return x.bi==big((int)(y.f))
                     elif not defined(NOGMP):
                         return (x.bi)==(int)(y.f)
+        elif x.kind==Rational:
+            if y.kind==Integer:
+                if y.iKind==NormalInteger:
+                    return x.rat == toRational(y.i)
+                else:
+                    return false
+            elif y.kind==Rational:
+                return x.rat == y.rat
+            else:
+                return x.rat == toRational(y.f)
         else:
             if y.kind==Integer: 
                 if y.iKind==NormalInteger:
@@ -64,6 +80,8 @@ proc `==`*(x: Value, y: Value): bool {.inline.}=
                         return big((int)(x.f))==y.bi
                     elif not defined(NOGMP):
                         return (int)(x.f)==y.bi        
+            elif y.kind==Rational:
+                return toRational(x.f)==y.rat
             else: return x.f==y.f
     else:
         if x.kind != y.kind: return false
@@ -72,7 +90,6 @@ proc `==`*(x: Value, y: Value): bool {.inline.}=
             of Null: return true
             of Logical: return x.b == y.b
             of Complex: return x.z == y.z
-            of Rational: return x.rat == y.rat
             of Version:
                 return x.major == y.major and x.minor == y.minor and x.patch == y.patch
             of Type: return x.t == y.t
@@ -127,7 +144,7 @@ proc `==`*(x: Value, y: Value): bool {.inline.}=
                 return false
 
 proc `<`*(x: Value, y: Value): bool {.inline.}=
-    if x.kind in [Integer, Floating] and y.kind in [Integer, Floating]:
+    if x.kind in [Integer, Floating, Rational] and y.kind in [Integer, Floating, Rational]:
         if x.kind==Integer:
             if y.kind==Integer: 
                 if x.iKind==NormalInteger and y.iKind==NormalInteger:
@@ -145,6 +162,8 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
                 else:
                     when defined(WEB) or not defined(NOGMP):
                         return x.bi<y.bi
+            elif y.kind==Rational:
+                return cmp(toRational(x.i), y.rat) < 0
             else: 
                 if x.iKind==NormalInteger:
                     return x.i<y.f
@@ -153,6 +172,16 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
                         return x.bi<big((int)(y.f))
                     elif not defined(NOGMP):
                         return (x.bi)<(int)(y.f)
+        elif x.kind==Rational:
+            if y.kind==Integer:
+                if y.iKind==NormalInteger:
+                    return cmp(x.rat,toRational(y.i))<0
+                else:
+                    return false
+            elif y.kind==Rational:
+                return cmp(x.rat,y.rat)<0
+            else:
+                return cmp(x.rat,toRational(y.f))<0
         else:
             if y.kind==Integer: 
                 if y.iKind==NormalInteger:
@@ -161,7 +190,9 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
                     when defined(WEB):
                         return big((int)(x.f))<y.bi
                     elif not defined(NOGMP):
-                        return (int)(x.f)<y.bi        
+                        return (int)(x.f)<y.bi      
+            elif y.kind==Rational:
+                return cmp(toRational(x.f), y.rat) < 0  
             else: return x.f<y.f
     else:
         if x.kind != y.kind: return false
@@ -201,7 +232,7 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
                 return false
 
 proc `>`*(x: Value, y: Value): bool {.inline.}=
-    if x.kind in [Integer, Floating] and y.kind in [Integer, Floating]:
+    if x.kind in [Integer, Floating, Rational] and y.kind in [Integer, Floating, Rational]:
         if x.kind==Integer:
             if y.kind==Integer: 
                 if x.iKind==NormalInteger and y.iKind==NormalInteger:
@@ -219,6 +250,8 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
                 else:
                     when defined(WEB) or not defined(NOGMP):
                         return x.bi>y.bi
+            elif y.kind==Rational:
+                return cmp(toRational(x.i), y.rat) > 0
             else: 
                 if x.iKind==NormalInteger:
                     return (float)(x.i)>y.f
@@ -227,6 +260,16 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
                         return x.bi>big((int)(y.f))
                     elif not defined(NOGMP):
                         return (x.bi)>(int)(y.f)
+        elif x.kind==Rational:
+            if y.kind==Integer:
+                if y.iKind==NormalInteger:
+                    return cmp(x.rat,toRational(y.i))>0
+                else:
+                    return false
+            elif y.kind==Rational:
+                return cmp(x.rat,y.rat)>0
+            else:
+                return cmp(x.rat,toRational(y.f))>0
         else:
             if y.kind==Integer: 
                 if y.iKind==NormalInteger:
@@ -235,7 +278,9 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
                     when defined(WEB):
                         return big((int)(x.f))>y.bi
                     elif not defined(NOGMP):
-                        return (int)(x.f)>y.bi        
+                        return (int)(x.f)>y.bi   
+            elif y.kind==Rational:
+                return cmp(toRational(x.f), y.rat) > 0     
             else: return x.f>y.f
     else:
         if x.kind != y.kind: return false
