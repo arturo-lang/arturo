@@ -11,8 +11,8 @@
 #=======================================
 
 import complex, hashes, lenientops
-import math, sequtils, strformat, strutils
-import sugar, tables, times, unicode
+import math, rationals, sequtils, strformat
+import strutils, sugar, tables, times, unicode
 
 when not defined(NOSQLITE):
     import db_sqlite as sqlite
@@ -149,34 +149,35 @@ type
         Integer         = 2
         Floating        = 3
         Complex         = 4
-        Version         = 5
-        Type            = 6
-        Char            = 7
-        String          = 8
-        Word            = 9
-        Literal         = 10
-        Label           = 11
-        Attribute       = 12
-        AttributeLabel  = 13
-        Path            = 14
-        PathLabel       = 15
-        Symbol          = 16
-        SymbolLiteral   = 17
+        Rational        = 5
+        Version         = 6
+        Type            = 7
+        Char            = 8
+        String          = 9
+        Word            = 10
+        Literal         = 11
+        Label           = 12
+        Attribute       = 13
+        AttributeLabel  = 14
+        Path            = 15
+        PathLabel       = 16
+        Symbol          = 17
+        SymbolLiteral   = 18
 
-        Regex           = 18
-        Color           = 19
-        Date            = 20
-        Binary          = 21
-        Dictionary      = 22
-        Function        = 23
-        Inline          = 24
-        Block           = 25
-        Database        = 26
-        Bytecode        = 27
+        Regex           = 19
+        Color           = 20
+        Date            = 21
+        Binary          = 22
+        Dictionary      = 23
+        Function        = 24
+        Inline          = 25
+        Block           = 26
+        Database        = 27
+        Bytecode        = 28
 
-        Newline         = 28
-        Nothing         = 29
-        Any             = 30
+        Newline         = 29
+        Nothing         = 30
+        Any             = 31
 
     ValueSpec* = set[ValueKind]
 
@@ -232,6 +233,7 @@ type
                             discard
             of Floating:    f*  : float
             of Complex:     z*  : Complex64
+            of Rational:    rat*: Rational[int]
             of Version: 
                 major*   : int
                 minor*   : int
@@ -1650,6 +1652,7 @@ func `$`(v: Value): string {.inline.} =
             elif v.f==NegInf: return "-∞"
             else: return $(v.f)
         of Complex      : return $(v.z.re) & (if v.z.im >= 0: "+" else: "") & $(v.z.im) & "i"
+        of Rational     : return $(v.rat)
         of Type         : 
             if v.tpKind==BuiltinType:
                 return ":" & ($v.t).toLowerAscii()
@@ -1758,6 +1761,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
             elif v.f==NegInf: dumpPrimitive("-∞", v)
             else: dumpPrimitive($(v.f), v)
         of Complex      : dumpPrimitive($(v.z.re) & (if v.z.im >= 0: "+" else: "") & $(v.z.im) & "i", v)
+        of Rational     : dumpPrimitive($(v.rat), v)
         of Version      : dumpPrimitive(fmt("{v.major}.{v.minor}.{v.patch}{v.extra}"), v)
         of Type         : 
             if v.tpKind==BuiltinType:
@@ -2114,6 +2118,7 @@ func hash*(v: Value): Hash {.inline.}=
             result = result !& cast[Hash](v.z.re)
             result = result !& cast[Hash](v.z.im)
             result = !$ result
+        of Rational     : result = hash(v.rat)
         of Version      : 
             result = 1
             result = result !& cast[Hash](v.major)
