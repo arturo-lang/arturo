@@ -146,6 +146,11 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                                 RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
                         else:
                             return newString($(y))
+                    of Block:
+                        return newBlock(@[
+                            newFloating(y.z.re),
+                            newFloating(y.z.im)
+                        ])
                     else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
             of Rational:
