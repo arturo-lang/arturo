@@ -1230,8 +1230,8 @@ proc `//=`*(x: var Value, y: Value) =
                 elif y.kind==Rational: x = newRational(toRational(x.f)/y.rat)
                 else: x.f /= (float)(y.i)
             elif x.kind==Rational:
-                if y.kind==Floating: x.rat /= toRational(y.f))
-                elif y.kind==Rational: x /= y.rat
+                if y.kind==Floating: x.rat /= toRational(y.f)
+                elif y.kind==Rational: x.rat /= y.rat
                 else: x.rat /= y.i
             else:
                 if y.kind==Floating: x = newFloating((float)(x.i)/y.f)
