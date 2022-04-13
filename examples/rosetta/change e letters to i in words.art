@@ -1,0 +1,11 @@
+words: map read.lines relative "unixdict.txt" => strip
+
+loop words 'word [
+    sw: new size word
+    if 6 > size word ->
+        continue
+
+    iw: replace word "e" "i"
+    if and? [contains? word "e"][contains? words iw] ->
+        print [word "=>" iw]
+]
