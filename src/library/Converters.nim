@@ -51,7 +51,7 @@ proc generateCustomObject*(customType: Value, arguments: ValueArray): Value =
 
     return res
 
-proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL, ): Value =
+proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
     if y.kind == tp and y.kind!=Dictionary:
         return y
     else:
@@ -146,6 +146,12 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL, ): Value
                                 RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
                         else:
                             return newString($(y))
+                    else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+
+            of Rational:
+                case tp:
+                    of String: 
+                        return newString($(y))
                     else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
             of Version:
@@ -274,6 +280,9 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL, ): Value
                     of Complex:
                         let blk = cleanBlock(y.a)
                         return newComplex(blk[0], blk[1])
+                    of Rational:
+                        let blk = cleanBlock(y.a)
+                        return newRational(blk[0], blk[1])
                     of Inline:
                         let blk = cleanBlock(y.a)
                         return newInline(blk)
@@ -397,7 +406,6 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL, ): Value
                         RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
             of Function,
-               Rational,
                Database,
                Newline,
                Nothing,
