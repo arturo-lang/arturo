@@ -1238,7 +1238,7 @@ proc `//=`*(x: var Value, y: Value) =
                 else: x = newRational(x.i / y.rat)
                 
 proc `%`*(x: Value, y: Value): Value =
-    if not (x.kind in [Integer,Floating]) or not (y.kind in [Integer,Floating]):
+    if not (x.kind in [Integer,Floating,Rational]) or not (y.kind in [Integer,Floating,Rational]):
         return VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
@@ -1264,15 +1264,23 @@ proc `%`*(x: Value, y: Value): Value =
         else:
             if x.kind==Floating:
                 if y.kind==Floating: return newFloating(x.f mod y.f)
+                elif y.kind==Rational: return newRational(toRational(x.f) mod y.rat)
                 else: 
                     if y.iKind==NormalInteger:
                         return newFloating(x.f mod (float)(y.i))
+            elif x.kind==Rational:
+                if y.kind==Floating: return newRational(x.rat mod toRational(y.f))
+                elif y.kind==Rational: return newRational(x.rat mod y.rat)
+                else: return newRational(x.rat mod toRational(y.i))
             else:
-                if x.iKind==NormalInteger:
-                    return newFloating((float)(x.i) mod y.f)
+                if y.kind==Rational:
+                    return newRational(toRational(x.i) mod y.rat)
+                else:
+                    if x.iKind==NormalInteger:
+                        return newFloating((float)(x.i) mod y.f)
 
 proc `%=`*(x: var Value, y: Value) =
-    if not (x.kind in [Integer,Floating]) or not (y.kind in [Integer,Floating]):
+    if not (x.kind in [Integer,Floating,Rational]) or not (y.kind in [Integer,Floating,Rational]):
         x = VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
@@ -1298,12 +1306,20 @@ proc `%=`*(x: var Value, y: Value) =
         else:
             if x.kind==Floating:
                 if y.kind==Floating: x = newFloating(x.f mod y.f)
+                elif y.kind==Rational: x = newRational(toRational(x.f) mod y.rat)
                 else: 
                     if y.iKind==NormalInteger:
                         x = newFloating(x.f mod (float)(y.i))
+            elif x.kind==Rational:
+                if y.kind==Floating: x = newRational(x.rat mod toRational(y.f))
+                elif y.kind==Rational: x = newRational(x.rat mod y.rat)
+                else: x = newRational(x.rat mod toRational(y.i))
             else:
-                if x.iKind==NormalInteger:
-                    x = newFloating((float)(x.i) mod y.f)
+                if y.kind==Rational:
+                    x = newRational(toRational(x.i) mod y.rat)
+                else:
+                    if x.iKind==NormalInteger:
+                        x = newFloating((float)(x.i) mod y.f)
 
 proc `^`*(x: Value, y: Value): Value =
     if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
