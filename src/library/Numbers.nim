@@ -17,6 +17,7 @@
 #=======================================
 
 import complex except Complex
+import rationals except Rational
 import math, random, sequtils, sugar
 
 when defined(WEB):
@@ -43,7 +44,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get the absolute value for given integer",
         args        = {
-            "value" : {Integer,Floating,Complex}
+            "value" : {Integer,Floating,Complex,Rational}
         },
         attrs       = NoAttrs,
         returns     = {Integer,Floating},
@@ -63,8 +64,10 @@ proc defineSymbols*() =
                         push(newInteger(abs(x.bi)))
             elif x.kind==Floating:
                 push(newFloating(abs(x.f)))
-            else:
+            elif x.kind==Complex:
                 push(newFloating(abs(x.z)))
+            else:
+                push(newRational(abs(x.rat)))
 
     builtin "acos",
         alias       = unaliased, 
@@ -986,6 +989,32 @@ proc defineSymbols*() =
                 push newBlock(res.map((x) => newChar(chr(x))))
             else:
                 push newBlock(res.map((x) => newInteger(x)))
+
+    builtin "reciprocal",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "calculate the reciprocal of given number",
+        args        = {
+            "value" : {Integer,Floating,Rational}
+        },
+        attrs       = NoAttrs,
+        returns     = {Rational},
+        example     = """
+            r: to :rational [3 2]
+
+            print reciprocal r
+            ; 2/3
+            ..........
+            reciprocal 3        ; => 1/3
+            reciprocal 3.2      ; => 5/16
+        """:
+            ##########################################################
+            if x.kind==Integer:
+                push(newRational(reciprocal(toRational(x.i))))
+            elif x.kind==Floating:
+                push(newRational(reciprocal(toRational(x.f))))
+            else:
+                push(newRational(reciprocal(x.rat)))
 
     builtin "round",
         alias       = unaliased, 

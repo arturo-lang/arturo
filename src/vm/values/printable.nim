@@ -10,6 +10,8 @@
 # Libraries
 #=======================================
 
+import rationals except Rational
+
 import sequtils, strformat, strutils
 import sugar, tables, times, unicode
 
@@ -139,6 +141,8 @@ proc `$`*(v: Value): string {.inline.} =
             else: return $(v.f)
         of Complex      : 
             return $(v.z.re) & (if v.z.im >= 0: "+" else: "") & $(v.z.im) & "i"
+        of Rational     :
+            return $(v.rat)
         of Version      : return fmt("{v.major}.{v.minor}.{v.patch}{v.extra}")
         of Type         : 
             if v.tpKind==BuiltinType:

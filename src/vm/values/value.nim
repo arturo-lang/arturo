@@ -11,8 +11,8 @@
 #=======================================
 
 import complex, hashes, lenientops
-import math, sequtils, strformat, strutils
-import sugar, tables, times, unicode
+import math, rationals, sequtils, strformat
+import strutils, sugar, tables, times, unicode
 
 when not defined(NOSQLITE):
     import db_sqlite as sqlite
@@ -149,34 +149,35 @@ type
         Integer         = 2
         Floating        = 3
         Complex         = 4
-        Version         = 5
-        Type            = 6
-        Char            = 7
-        String          = 8
-        Word            = 9
-        Literal         = 10
-        Label           = 11
-        Attribute       = 12
-        AttributeLabel  = 13
-        Path            = 14
-        PathLabel       = 15
-        Symbol          = 16
-        SymbolLiteral   = 17
+        Rational        = 5
+        Version         = 6
+        Type            = 7
+        Char            = 8
+        String          = 9
+        Word            = 10
+        Literal         = 11
+        Label           = 12
+        Attribute       = 13
+        AttributeLabel  = 14
+        Path            = 15
+        PathLabel       = 16
+        Symbol          = 17
+        SymbolLiteral   = 18
 
-        Regex           = 18
-        Color           = 19
-        Date            = 20
-        Binary          = 21
-        Dictionary      = 22
-        Function        = 23
-        Inline          = 24
-        Block           = 25
-        Database        = 26
-        Bytecode        = 27
+        Regex           = 19
+        Color           = 20
+        Date            = 21
+        Binary          = 22
+        Dictionary      = 23
+        Function        = 24
+        Inline          = 25
+        Block           = 26
+        Database        = 27
+        Bytecode        = 28
 
-        Newline         = 28
-        Nothing         = 29
-        Any             = 30
+        Newline         = 29
+        Nothing         = 30
+        Any             = 31
 
     ValueSpec* = set[ValueKind]
 
@@ -232,6 +233,7 @@ type
                             discard
             of Floating:    f*  : float
             of Complex:     z*  : Complex64
+            of Rational:    rat*: Rational[int]
             of Version: 
                 major*   : int
                 minor*   : int
@@ -440,13 +442,13 @@ func newFloating*(f: int): Value {.inline.} =
 func newFloating*(f: string): Value {.inline.} =
     newFloating(parseFloat(f))
 
-func newComplex*(com: Complex64): Value {.inline} =
+func newComplex*(com: Complex64): Value {.inline.} =
     Value(kind: Complex, z: com)
 
 func newComplex*(fre: float, fim: float): Value {.inline.} =
     Value(kind: Complex, z: Complex64(re: fre, im: fim))
 
-func newComplex*(fre: Value, fim: Value): Value {.inline} =
+func newComplex*(fre: Value, fim: Value): Value {.inline.} =
     var r: float
     var i: float
 
@@ -457,6 +459,21 @@ func newComplex*(fre: Value, fim: Value): Value {.inline} =
     else: i = fim.f
 
     newComplex(r,i)
+
+func newRational*(rat: Rational[int]): Value {.inline.} =
+    Value(kind: Rational, rat: rat)
+
+func newRational*(num: int, den: int): Value {.inline.} =
+    Value(kind: Rational, rat: initRational(num, den))
+
+func newRational*(n: int): Value {.inline.} =
+    Value(kind: Rational, rat: toRational(n))
+
+func newRational*(n: float): Value {.inline.} =
+    Value(kind: Rational, rat: toRational(n))
+
+func newRational*(num: Value, den: Value): Value {.inline.} =
+    newRational(num.i, den.i)
 
 func newVersion*(v: string): Value {.inline.} =
     var numPart = ""
@@ -656,6 +673,8 @@ proc copyValue*(v: Value): Value {.inline.} =
                 when defined(WEB) or not defined(NOGMP): 
                     result = newInteger(v.bi)
         of Floating:    result = newFloating(v.f)
+        of Complex:     result = newComplex(v.z)
+        of Rational:    result = newRational(v.rat)
         of Type:        
             if v.tpKind==BuiltinType:
                 result = newType(v.t)
@@ -730,7 +749,7 @@ template cleanBlock*(va: ValueArray, inplace: bool = false): untyped =
 proc `+`*(x: Value, y: Value): Value =
     if x.kind==Color and y.kind==Color:
         return newColor(x.l + y.l)
-    if not (x.kind in [Integer, Floating, Complex]) or not (y.kind in [Integer, Floating, Complex]):
+    if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
         return VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
@@ -765,19 +784,29 @@ proc `+`*(x: Value, y: Value): Value =
             if x.kind==Floating:
                 if y.kind==Floating: return newFloating(x.f+y.f)
                 elif y.kind==Complex: return newComplex(x.f+y.z)
+                elif y.kind==Rational: return newRational(toRational(x.f) + y.rat)
                 else: return newFloating(x.f+y.i)
             elif x.kind==Complex:
                 if y.kind==Integer:
                     if y.iKind==NormalInteger: return newComplex(x.z+(float)(y.i))
                     else: return VNULL
                 elif y.kind==Floating: return newComplex(x.z+y.f)
+                elif y.kind==Rational: return VNULL
                 else: return newComplex(x.z+y.z)
+            elif x.kind==Rational:
+                if y.kind==Integer:
+                    if y.iKind==NormalInteger: return newRational(x.rat+y.i)
+                    else: return VNULL
+                elif y.kind==Floating: return newRational(x.rat+toRational(y.f))
+                elif y.kind==Complex: return VNULL
+                else: return newRational(x.rat+y.rat)
             else:
                 if y.kind==Floating: return newFloating(x.i+y.f)
+                elif y.kind==Rational: return newRational(x.i+y.rat)
                 else: return newComplex((float)(x.i)+y.z)
 
 proc `+=`*(x: var Value, y: Value) =
-    if not (x.kind in [Integer, Floating, Complex]) or not (y.kind in [Integer, Floating, Complex]):
+    if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
         x = VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
@@ -813,21 +842,31 @@ proc `+=`*(x: var Value, y: Value) =
             if x.kind==Floating:
                 if y.kind==Floating: x.f += y.f
                 elif y.kind==Complex: x = newComplex(x.f + y.z)
+                elif y.kind==Rational: x = newRational(toRational(x.f) + y.rat)
                 else: x.f = x.f + y.i
             elif x.kind==Complex:
                 if y.kind==Integer:
                     if y.iKind==NormalInteger: x = newComplex(x.z + (float)(y.i))
                     else: discard
                 elif y.kind==Floating: x = newComplex(x.z + y.f)
+                elif y.kind==Rational: discard
                 else: x.z += y.z
+            elif x.kind==Rational:
+                if y.kind==Integer:
+                    if y.iKind==NormalInteger: x.rat += y.i
+                    else: discard
+                elif y.kind==Floating: x.rat += toRational(y.f)
+                elif y.kind==Complex: discard
+                else: x.rat += y.rat
             else:
                 if y.kind==Floating: x = newFloating(x.i+y.f)
+                elif y.kind==Rational: x = newRational(x.i+y.rat)
                 else: x = newComplex((float)(x.i)+y.z)
 
 proc `-`*(x: Value, y: Value): Value = 
     if x.kind==Color and y.kind==Color:
         return newColor(x.l - y.l)
-    if not (x.kind in [Integer, Floating, Complex]) or not (y.kind in [Integer, Floating, Complex]):
+    if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
         return VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
@@ -863,19 +902,29 @@ proc `-`*(x: Value, y: Value): Value =
             if x.kind==Floating:
                 if y.kind==Floating: return newFloating(x.f-y.f)
                 elif y.kind==Complex: return newComplex(x.f-y.z)
+                elif y.kind==Rational: return newRational(toRational(x.f)-y.rat)
                 else: return newFloating(x.f-y.i)
             elif x.kind==Complex:
                 if y.kind==Integer:
                     if y.iKind==NormalInteger: return newComplex(x.z-(float)(y.i))
                     else: return VNULL
                 elif y.kind==Floating: return newComplex(x.z-y.f)
+                elif y.kind==Rational: return VNULL
                 else: return newComplex(x.z-y.z)
+            elif x.kind==Rational:
+                if y.kind==Integer:
+                    if y.iKind==NormalInteger: return newRational(x.rat-y.i)
+                    else: return VNULL
+                elif y.kind==Floating: return newRational(x.rat-toRational(y.f))
+                elif y.kind==Complex: return VNULL
+                else: return newRational(x.rat-y.rat)
             else:
                 if y.kind==Floating: return newFloating(x.i-y.f)
+                elif y.kind==Rational: return newRational(x.i-y.rat)
                 else: return newComplex((float)(x.i)-y.z)
 
 proc `-=`*(x: var Value, y: Value) =
-    if not (x.kind in [Integer, Floating, Complex]) or not (y.kind in [Integer, Floating, Complex]):
+    if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
         x = VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
@@ -910,19 +959,29 @@ proc `-=`*(x: var Value, y: Value) =
             if x.kind==Floating:
                 if y.kind==Floating: x.f -= y.f
                 elif y.kind==Complex: x = newComplex(x.f - y.z)
+                elif y.kind==Rational: x = newRational(toRational(x.f) - y.rat)
                 else: x.f = x.f - y.i
             elif x.kind==Complex:
                 if y.kind==Integer:
                     if y.iKind==NormalInteger: x = newComplex(x.z - (float)(y.i))
                     else: discard
                 elif y.kind==Floating: x = newComplex(x.z - y.f)
+                elif y.kind==Rational: discard
                 else: x.z -= y.z
+            elif x.kind==Rational:
+                if y.kind==Integer:
+                    if y.iKind==NormalInteger: x.rat -= y.i
+                    else: discard
+                elif y.kind==Floating: x.rat -= toRational(y.f)
+                elif y.kind==Complex: discard
+                else: x.rat -= y.rat
             else:
                 if y.kind==Floating: x = newFloating(x.i-y.f)
+                elif y.kind==Rational: x = newRational(x.i-y.rat)
                 else: x = newComplex((float)(x.i)-y.z)
 
 proc `*`*(x: Value, y: Value): Value =
-    if not (x.kind in [Integer, Floating, Complex]) or not (y.kind in [Integer, Floating, Complex]):
+    if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
         return VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
@@ -957,19 +1016,29 @@ proc `*`*(x: Value, y: Value): Value =
             if x.kind==Floating:
                 if y.kind==Floating: return newFloating(x.f*y.f)
                 elif y.kind==Complex: return newComplex(x.f*y.z)
+                elif y.kind==Rational: return newRational(toRational(x.f)*y.rat)
                 else: return newFloating(x.f*y.i)
             elif x.kind==Complex:
                 if y.kind==Integer:
                     if y.iKind==NormalInteger: return newComplex(x.z*(float)(y.i))
                     else: return VNULL
                 elif y.kind==Floating: return newComplex(x.z*y.f)
+                elif y.kind==Rational: return VNULL
                 else: return newComplex(x.z*y.z)
+            elif x.kind==Rational:
+                if y.kind==Integer:
+                    if y.iKind==NormalInteger: return newRational(x.rat*y.i)
+                    else: return VNULL
+                elif y.kind==Floating: return newRational(x.rat*toRational(y.f))
+                elif y.kind==Complex: return VNULL
+                else: return newRational(x.rat*y.rat)
             else:
                 if y.kind==Floating: return newFloating(x.i*y.f)
+                elif y.kind==Rational: return newRational(x.i*y.rat)
                 else: return newComplex((float)(x.i)*y.z)
 
 proc `*=`*(x: var Value, y: Value) =
-    if not (x.kind in [Integer, Floating, Complex]) or not (y.kind in [Integer, Floating, Complex]):
+    if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
         x = VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
@@ -1004,6 +1073,7 @@ proc `*=`*(x: var Value, y: Value) =
             if x.kind==Floating:
                 if y.kind==Floating: x.f *= y.f
                 elif y.kind==Complex: x = newComplex(x.f * y.z)
+                elif y.kind==Rational: x = newRational(toRational(x.f) * y.rat)
                 else: x.f = x.f * y.i
             elif x.kind==Complex:
                 if y.kind==Integer:
@@ -1011,12 +1081,20 @@ proc `*=`*(x: var Value, y: Value) =
                     else: discard
                 elif y.kind==Floating: x = newComplex(x.z * y.f)
                 else: x.z *= y.z
+            elif x.kind==Rational:
+                if y.kind==Integer:
+                    if y.iKind==NormalInteger: x.rat *= y.i
+                    else: discard
+                elif y.kind==Floating: x.rat *= toRational(y.f)
+                elif y.kind==Complex: discard
+                else: x.rat *= y.rat
             else:
                 if y.kind==Floating: x = newFloating(x.i*y.f)
+                elif y.kind==Rational: x = newRational(x.i * y.rat)
                 else: x = newComplex((float)(x.i)*y.z)
 
 proc `/`*(x: Value, y: Value): Value =
-    if not (x.kind in [Integer, Floating, Complex]) or not (y.kind in [Integer, Floating, Complex]):
+    if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
         return VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
@@ -1043,19 +1121,29 @@ proc `/`*(x: Value, y: Value): Value =
             if x.kind==Floating:
                 if y.kind==Floating: return newFloating(x.f/y.f)
                 elif y.kind==Complex: return newComplex(x.f/y.z)
+                elif y.kind==Rational: return newInteger(toRational(x.f) div y.rat)
                 else: return newFloating(x.f/y.i)
             elif x.kind==Complex:
                 if y.kind==Integer:
                     if y.iKind==NormalInteger: return newComplex(x.z/(float)(y.i))
                     else: return VNULL
                 elif y.kind==Floating: return newComplex(x.z/y.f)
+                elif y.kind==Rational: return VNULL
                 else: return newComplex(x.z/y.z)
+            elif x.kind==Rational:
+                if y.kind==Integer:
+                    if y.iKind==NormalInteger: return newInteger(x.rat div toRational(y.i))
+                    else: return VNULL
+                elif y.kind==Floating: return newInteger(x.rat div toRational(y.f))
+                elif y.kind==Complex: return VNULL
+                else: return newInteger(x.rat div y.rat)
             else:
                 if y.kind==Floating: return newFloating(x.i/y.f)
+                elif y.kind==Rational: return newInteger(toRational(x.i) div y.rat)
                 else: return newComplex((float)(x.i)/y.z)
 
 proc `/=`*(x: var Value, y: Value) =
-    if not (x.kind in [Integer, Floating, Complex]) or not (y.kind in [Integer, Floating, Complex]):
+    if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
         x = VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
@@ -1090,6 +1178,7 @@ proc `/=`*(x: var Value, y: Value) =
             if x.kind==Floating:
                 if y.kind==Floating: x.f /= y.f
                 elif y.kind==Complex: x = newComplex(x.f / y.z)
+                elif y.kind==Rational: x = newInteger(toRational(x.f) div y.rat)
                 else: x.f = x.f / y.i
             elif x.kind==Complex:
                 if y.kind==Integer:
@@ -1097,12 +1186,20 @@ proc `/=`*(x: var Value, y: Value) =
                     else: discard
                 elif y.kind==Floating: x = newComplex(x.z / y.f)
                 else: x.z /= y.z
+            elif x.kind==Rational:
+                if y.kind==Integer:
+                    if y.iKind==NormalInteger: x = newInteger(x.rat div toRational(y.i))
+                    else: discard
+                elif y.kind==Floating: x = newInteger(x.rat div toRational(y.f))
+                elif y.kind==Complex: discard
+                else: x = newInteger(x.rat div y.rat)
             else:
                 if y.kind==Floating: x = newFloating(x.i / y.f)
+                elif y.kind==Rational: x = newInteger(toRational(x.i) div y.rat)
                 else: x = newComplex((float)(x.i)/y.z)
 
 proc `//`*(x: Value, y: Value): Value =
-    if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
+    if not (x.kind in [Integer, Floating, Rational]) or not (y.kind in [Integer, Floating, Rational]):
         return VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
@@ -1110,12 +1207,19 @@ proc `//`*(x: Value, y: Value): Value =
         else:
             if x.kind==Floating:
                 if y.kind==Floating: return newFloating(x.f / y.f)
+                elif y.kind==Rational: return newRational(toRational(x.f)/y.rat)
                 else: return newFloating(x.f/(float)(y.i))
+            elif x.kind==Rational:
+                if y.kind==Floating: return newRational(x.rat / toRational(y.f))
+                elif y.kind==Rational: return newRational(x.rat / y.rat)
+                else: return newRational(x.rat / y.i)
             else:
-                return newFloating((float)(x.i)/y.f)
+                if y.kind==Floating: return newFloating((float)(x.i)/y.f)
+                else: return newRational(x.i / y.rat)
+
 
 proc `//=`*(x: var Value, y: Value) =
-    if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
+    if not (x.kind in [Integer, Floating, Rational]) or not (y.kind in [Integer, Floating, Rational]):
         x = VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
@@ -1123,12 +1227,18 @@ proc `//=`*(x: var Value, y: Value) =
         else:
             if x.kind==Floating:
                 if y.kind==Floating: x.f /= y.f
+                elif y.kind==Rational: x = newRational(toRational(x.f)/y.rat)
                 else: x.f /= (float)(y.i)
+            elif x.kind==Rational:
+                if y.kind==Floating: x.rat /= toRational(y.f)
+                elif y.kind==Rational: x.rat /= y.rat
+                else: x.rat /= y.i
             else:
-                x = newFloating((float)(x.i)/y.f)
-
+                if y.kind==Floating: x = newFloating((float)(x.i)/y.f)
+                else: x = newRational(x.i / y.rat)
+                
 proc `%`*(x: Value, y: Value): Value =
-    if not (x.kind in [Integer,Floating]) or not (y.kind in [Integer,Floating]):
+    if not (x.kind in [Integer,Floating,Rational]) or not (y.kind in [Integer,Floating,Rational]):
         return VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
@@ -1154,15 +1264,23 @@ proc `%`*(x: Value, y: Value): Value =
         else:
             if x.kind==Floating:
                 if y.kind==Floating: return newFloating(x.f mod y.f)
+                elif y.kind==Rational: return newRational(toRational(x.f) mod y.rat)
                 else: 
                     if y.iKind==NormalInteger:
                         return newFloating(x.f mod (float)(y.i))
+            elif x.kind==Rational:
+                if y.kind==Floating: return newRational(x.rat mod toRational(y.f))
+                elif y.kind==Rational: return newRational(x.rat mod y.rat)
+                else: return newRational(x.rat mod toRational(y.i))
             else:
-                if x.iKind==NormalInteger:
-                    return newFloating((float)(x.i) mod y.f)
+                if y.kind==Rational:
+                    return newRational(toRational(x.i) mod y.rat)
+                else:
+                    if x.iKind==NormalInteger:
+                        return newFloating((float)(x.i) mod y.f)
 
 proc `%=`*(x: var Value, y: Value) =
-    if not (x.kind in [Integer,Floating]) or not (y.kind in [Integer,Floating]):
+    if not (x.kind in [Integer,Floating,Rational]) or not (y.kind in [Integer,Floating,Rational]):
         x = VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
@@ -1188,12 +1306,20 @@ proc `%=`*(x: var Value, y: Value) =
         else:
             if x.kind==Floating:
                 if y.kind==Floating: x = newFloating(x.f mod y.f)
+                elif y.kind==Rational: x = newRational(toRational(x.f) mod y.rat)
                 else: 
                     if y.iKind==NormalInteger:
                         x = newFloating(x.f mod (float)(y.i))
+            elif x.kind==Rational:
+                if y.kind==Floating: x = newRational(x.rat mod toRational(y.f))
+                elif y.kind==Rational: x = newRational(x.rat mod y.rat)
+                else: x = newRational(x.rat mod toRational(y.i))
             else:
-                if x.iKind==NormalInteger:
-                    x = newFloating((float)(x.i) mod y.f)
+                if y.kind==Rational:
+                    x = newRational(toRational(x.i) mod y.rat)
+                else:
+                    if x.iKind==NormalInteger:
+                        x = newFloating((float)(x.i) mod y.f)
 
 proc `^`*(x: Value, y: Value): Value =
     if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
@@ -1650,6 +1776,7 @@ func `$`(v: Value): string {.inline.} =
             elif v.f==NegInf: return "-∞"
             else: return $(v.f)
         of Complex      : return $(v.z.re) & (if v.z.im >= 0: "+" else: "") & $(v.z.im) & "i"
+        of Rational     : return $(v.rat)
         of Type         : 
             if v.tpKind==BuiltinType:
                 return ":" & ($v.t).toLowerAscii()
@@ -1758,6 +1885,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
             elif v.f==NegInf: dumpPrimitive("-∞", v)
             else: dumpPrimitive($(v.f), v)
         of Complex      : dumpPrimitive($(v.z.re) & (if v.z.im >= 0: "+" else: "") & $(v.z.im) & "i", v)
+        of Rational     : dumpPrimitive($(v.rat), v)
         of Version      : dumpPrimitive(fmt("{v.major}.{v.minor}.{v.patch}{v.extra}"), v)
         of Type         : 
             if v.tpKind==BuiltinType:
@@ -1901,6 +2029,7 @@ func codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                     result &= $(v.bi)
         of Floating     : result &= $(v.f)
         of Complex      : result &= fmt("to :complex [{v.z.re} {v.z.im}]")
+        of Rational     : result &= fmt("to :rational [{v.rat.num} {v.rat.den}]")
         of Version      : result &= fmt("{v.major}.{v.minor}.{v.patch}{v.extra}")
         of Type         : 
             if v.tpKind==BuiltinType:
@@ -2039,6 +2168,7 @@ func sameValue*(x: Value, y: Value): bool {.inline.}=
             of Null: return true
             of Logical: return x.b == y.b
             of Complex: return x.z == y.z
+            of Rational: return x.rat == y.rat
             of Version:
                 return x.major == y.major and x.minor == y.minor and x.patch == y.patch and x.extra == y.extra
             of Type: 
@@ -2114,6 +2244,7 @@ func hash*(v: Value): Hash {.inline.}=
             result = result !& cast[Hash](v.z.re)
             result = result !& cast[Hash](v.z.im)
             result = !$ result
+        of Rational     : result = hash(v.rat)
         of Version      : 
             result = 1
             result = result !& cast[Hash](v.major)

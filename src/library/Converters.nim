@@ -16,6 +16,7 @@
 # Libraries
 #=======================================
 
+import rationals except Rational
 import algorithm, sequtils, strformat, sugar, times, unicode
 when not defined(NOGMP):
     import extras/bignum
@@ -51,7 +52,7 @@ proc generateCustomObject*(customType: Value, arguments: ValueArray): Value =
 
     return res
 
-proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL, ): Value =
+proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
     if y.kind == tp and y.kind!=Dictionary:
         return y
     else:
@@ -83,6 +84,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL, ): Value
                 case tp:
                     of Logical: return newLogical(y.i!=0)
                     of Floating: return newFloating((float)y.i)
+                    of Rational: return newRational(y.i)
                     of Char: return newChar(toUTF8(Rune(y.i)))
                     of String: 
                         if y.iKind==NormalInteger: 
@@ -112,6 +114,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL, ): Value
                 case tp:
                     of Logical: return newLogical(y.f!=0.0)
                     of Integer: return newInteger((int)y.f)
+                    of Rational: return newRational(y.f)
                     of Char: return newChar(chr((int)y.f))
                     of String: 
                         if (aFormat != VNULL):
@@ -146,6 +149,26 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL, ): Value
                                 RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
                         else:
                             return newString($(y))
+                    of Block:
+                        return newBlock(@[
+                            newFloating(y.z.re),
+                            newFloating(y.z.im)
+                        ])
+                    else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+
+            of Rational:
+                case tp:
+                    of Integer:
+                        return newInteger(toInt(y.rat))
+                    of Floating:
+                        return newFloating(toFloat(y.rat))
+                    of String: 
+                        return newString($(y))
+                    of Block:
+                        return newBlock(@[
+                            newInteger(y.rat.num),
+                            newInteger(y.rat.den)
+                        ])
                     else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
             of Version:
@@ -274,6 +297,9 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL, ): Value
                     of Complex:
                         let blk = cleanBlock(y.a)
                         return newComplex(blk[0], blk[1])
+                    of Rational:
+                        let blk = cleanBlock(y.a)
+                        return newRational(blk[0], blk[1])
                     of Inline:
                         let blk = cleanBlock(y.a)
                         return newInline(blk)
