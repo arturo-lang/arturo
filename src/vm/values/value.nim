@@ -466,6 +466,12 @@ func newRational*(rat: Rational[int]): Value {.inline.} =
 func newRational*(num: int, den: int): Value {.inline.} =
     Value(kind: Rational, rat: initRational(num, den))
 
+func newRational*(n: int): Value {.inline.} =
+    Value(kind: Rational, rat: toRational(n))
+
+func newRational*(n: float): Value {.inline.} =
+    Value(kind: Rational, rat: toRational(n))
+
 func newRational*(num: Value, den: Value): Value {.inline.} =
     newRational(num.i, den.i)
 
