@@ -2054,6 +2054,7 @@ func sameValue*(x: Value, y: Value): bool {.inline.}=
             of Null: return true
             of Logical: return x.b == y.b
             of Complex: return x.z == y.z
+            of Rational: return x.rat == y.rat
             of Version:
                 return x.major == y.major and x.minor == y.minor and x.patch == y.patch and x.extra == y.extra
             of Type: 
