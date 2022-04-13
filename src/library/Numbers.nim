@@ -17,6 +17,7 @@
 #=======================================
 
 import complex except Complex
+import rationals except Rational
 import math, random, sequtils, sugar
 
 when defined(WEB):
@@ -43,7 +44,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get the absolute value for given integer",
         args        = {
-            "value" : {Integer,Floating,Complex}
+            "value" : {Integer,Floating,Complex,Rational}
         },
         attrs       = NoAttrs,
         returns     = {Integer,Floating},
@@ -63,8 +64,10 @@ proc defineSymbols*() =
                         push(newInteger(abs(x.bi)))
             elif x.kind==Floating:
                 push(newFloating(abs(x.f)))
-            else:
+            elif x.kind==Complex:
                 push(newFloating(abs(x.z)))
+            else:
+                push(newRational(abs(x.rat)))
 
     builtin "acos",
         alias       = unaliased, 
