@@ -10,6 +10,8 @@
 # Libraries
 #=======================================
 
+import rationals except Rational
+
 import sequtils, strformat, strutils
 import sugar, tables, times, unicode
 
