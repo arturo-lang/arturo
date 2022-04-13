@@ -1,0 +1,14 @@
+generateUniqueRandoms: function [][
+    result: new []
+
+    while [20 > size result][
+        rand: sample 1..20
+        if not? in? rand result ->
+            'result ++ rand
+    ]
+    return result
+]
+
+loop 3 'x [
+    print generateUniqueRandoms
+]
