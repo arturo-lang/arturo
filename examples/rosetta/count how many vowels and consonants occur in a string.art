@@ -1,0 +1,10 @@
+vRe: {/[aeiou]/}
+cRe: {/[bcdfghjklmnpqrstvwxyz]/}
+
+str: lower "Now is the time for all good men to come to the aid of their country."
+
+vowels: match str vRe
+consonants: match str cRe
+
+print ["Found" size vowels "vowels -" size unique vowels "unique"]
+print ["Found" size consonants "consonants -" size unique consonants "unique"]
