@@ -1,0 +1,7 @@
+i: 1
+while ø [
+    if 1000 < (i*i)-(dec i)*(dec i) 
+        -> break
+    i: i + 1
+]
+print i
