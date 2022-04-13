@@ -1000,6 +1000,13 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Rational},
         example     = """
+            r: to :rational [3 2]
+
+            print reciprocal r
+            ; 2/3
+            ..........
+            reciprocal 3        ; => 1/3
+            reciprocal 3.2      ; => 5/16
         """:
             ##########################################################
             if x.kind==Integer:
