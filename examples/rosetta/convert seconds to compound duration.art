@@ -1,0 +1,21 @@
+Units: [" wk", " d", " hr", " min", " sec"]
+Quantities: @[7 * 24 * 60 * 60, 24 * 60 * 60, 60 * 60, 60, 1]
+ 
+durationString: function [d][
+    dur: d
+    idx: 0
+    result: new []
+    while [not? zero? dur][
+        q: dur / Quantities\[idx]
+        if not? zero? q [
+            dur: dur % Quantities\[idx]
+            'result ++ ~{|q||Units\[idx]|}
+        ]
+        idx: idx +1
+    ]
+    return join.with:", " result
+]
+
+loop [7259 86400 6000000] 't [
+    print [t "s => " durationString t]
+]
