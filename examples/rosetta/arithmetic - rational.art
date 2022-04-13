@@ -1,0 +1,17 @@
+a: to :rational [1 2]
+b: to :rational [3 4]
+
+print ["a:" a]
+print ["b:" b]
+
+print ["a + b  :" a + b]
+print ["a - b  :" a - b]
+print ["a * b  :" a * b]
+print ["a / b  :" a / b]
+print ["a // b :" a // b]
+print ["a % b  :" a % b]
+
+print ["reciprocal b:" reciprocal b]
+print ["neg a:" neg a]
+
+print ["pi ~=" to :rational 3.14]
