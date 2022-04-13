@@ -332,6 +332,10 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 addTerminalValue(false):
                     addConst(consts, node, opPush)
 
+            of Rational:
+                addTerminalValue(false):
+                    addConst(consts, node, opPush)
+
             of Version:
                 addTerminalValue(false):
                     addConst(consts, node, opPush)
