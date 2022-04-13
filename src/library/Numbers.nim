@@ -903,7 +903,9 @@ proc defineSymbols*() =
         args        = {
             "collection"    : {Block}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "cartesian"  : ({Logical},"return the cartesian product of given sublists")
+        },
         returns     = {Integer,Floating},
         example     = """
             print product [3 4]       ; 12
@@ -912,14 +914,18 @@ proc defineSymbols*() =
             print product 1..10       ; 3628800
         """:
             ##########################################################
-            var i = 0
-            var product = I1.copyValue
-            let blk = cleanBlock(x.a)
-            while i<blk.len:
-                product *= blk[i]
-                i += 1
+            if (popAttr("cartesian")!=VNULL):
+                let blk = cleanBlock(x.a).map((z)=>z.a)
+                push(newBlock(cartesianProduct(blk).map((z) => newBlock(z))))
+            else:
+                var i = 0
+                var product = I1.copyValue
+                let blk = cleanBlock(x.a)
+                while i<blk.len:
+                    product *= blk[i]
+                    i += 1
 
-            push(product)
+                push(product)
 
     builtin "random",
         alias       = unaliased, 

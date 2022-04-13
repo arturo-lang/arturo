@@ -380,3 +380,11 @@ else:
                 z = t
                 result += q
 
+proc cartesianProduct*[T](a: varargs[seq[T]]): seq[seq[T]] =
+    if a.len == 1:
+        for x in a[0]:
+          result.add(@[x])
+    else:
+        for x in a[0]:
+            for s in cartesianProduct(a[1..^1]):
+                result.add(x & s)
