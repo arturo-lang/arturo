@@ -990,6 +990,25 @@ proc defineSymbols*() =
             else:
                 push newBlock(res.map((x) => newInteger(x)))
 
+    builtin "reciprocal",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "calculate the reciprocal of given number",
+        args        = {
+            "value" : {Integer,Floating,Rational}
+        },
+        attrs       = NoAttrs,
+        returns     = {Rational},
+        example     = """
+        """:
+            ##########################################################
+            if x.kind==Integer:
+                push(newRational(reciprocal(toRational(x.i))))
+            elif x.kind==Floating:
+                push(newRational(reciprocal(toRational(x.f))))
+            else:
+                push(newRational(reciprocal(x.rat)))
+
     builtin "round",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
