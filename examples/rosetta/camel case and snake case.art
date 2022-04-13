@@ -1,0 +1,41 @@
+camelToSnake: function [str][
+    i: new 0
+    result: new ""
+    while [i < size str][
+        ch: str\[i]
+        if? upper? ch [
+            'result ++ `_` ++ lower str\[i]
+        ]
+        else [
+            'result ++ str\[i]
+        ]
+
+        inc 'i
+    ]
+    return result
+]
+
+snakeToCamel: function [str][
+    i: new 0
+    result: new ""
+    while [i < size str][
+        ch: str\[i]
+        if? and? [ch=`_`][(i+1) < size str] [
+            'result ++ upper str\[i+1]
+            inc 'i
+        ]
+        else [
+            'result ++ str\[i]
+        ]
+
+        inc 'i
+    ]
+    return result
+]
+
+tests: ["snakeCase", "snake_case", "variable_10_case", "variable10Case", "ɛrgo rE tHis",
+"hurry-up-joe!", "c://my-docs/happy_Flag-Day/12.doc", "  spaces  "]
+
+loop tests 'test [
+    print [pad test 35 "=> camel:" snakeToCamel test "snake:" camelToSnake test]
+]
