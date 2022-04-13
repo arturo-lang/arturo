@@ -16,6 +16,7 @@
 # Libraries
 #=======================================
 
+import rationals except Rational
 import algorithm, sequtils, strformat, sugar, times, unicode
 when not defined(NOGMP):
     import extras/bignum
@@ -83,6 +84,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                 case tp:
                     of Logical: return newLogical(y.i!=0)
                     of Floating: return newFloating((float)y.i)
+                    of Rational: return newRational(y.i)
                     of Char: return newChar(toUTF8(Rune(y.i)))
                     of String: 
                         if y.iKind==NormalInteger: 
@@ -112,6 +114,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                 case tp:
                     of Logical: return newLogical(y.f!=0.0)
                     of Integer: return newInteger((int)y.f)
+                    of Rational: return newRational(y.f)
                     of Char: return newChar(chr((int)y.f))
                     of String: 
                         if (aFormat != VNULL):
@@ -155,6 +158,10 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
 
             of Rational:
                 case tp:
+                    of Integer:
+                        return newInteger(toInt(y.rat))
+                    of Floating:
+                        return newFloating(toFloat(y.rat))
                     of String: 
                         return newString($(y))
                     of Block:
