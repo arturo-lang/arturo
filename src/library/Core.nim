@@ -160,7 +160,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "initiate a case block to check for different cases",
         args        = {
-            "predicate" : {Block}
+            "predicate" : {Block,Null}
         },
         attrs       = NoAttrs,
         returns     = {Nothing},
@@ -172,7 +172,10 @@ proc defineSymbols*() =
                 else       -> print "a is greater than 2"
         """:
             ##########################################################
-            push(x)
+            if x.kind==Null:
+                push(newBlock())
+            else:
+                push(x)
             push(newLogical(false))
 
     builtin "continue",
