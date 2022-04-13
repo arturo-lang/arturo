@@ -2029,6 +2029,7 @@ func codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                     result &= $(v.bi)
         of Floating     : result &= $(v.f)
         of Complex      : result &= fmt("to :complex [{v.z.re} {v.z.im}]")
+        of Rational     : result &= fmt("to :rational [{v.rat.num} {v.rat.den}]")
         of Version      : result &= fmt("{v.major}.{v.minor}.{v.patch}{v.extra}")
         of Type         : 
             if v.tpKind==BuiltinType:
