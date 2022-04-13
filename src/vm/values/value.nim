@@ -866,7 +866,7 @@ proc `+=`*(x: var Value, y: Value) =
 proc `-`*(x: Value, y: Value): Value = 
     if x.kind==Color and y.kind==Color:
         return newColor(x.l - y.l)
-    if not (x.kind in [Integer, Floating, Complex]) or not (y.kind in [Integer, Floating, Complex]):
+    if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
         return VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
@@ -902,19 +902,29 @@ proc `-`*(x: Value, y: Value): Value =
             if x.kind==Floating:
                 if y.kind==Floating: return newFloating(x.f-y.f)
                 elif y.kind==Complex: return newComplex(x.f-y.z)
+                elif y.kind==Rational: return newRational(toRational(x.f)-y.rat)
                 else: return newFloating(x.f-y.i)
             elif x.kind==Complex:
                 if y.kind==Integer:
                     if y.iKind==NormalInteger: return newComplex(x.z-(float)(y.i))
                     else: return VNULL
                 elif y.kind==Floating: return newComplex(x.z-y.f)
+                elif y.kind==Rational: return VNULL
                 else: return newComplex(x.z-y.z)
+            elif x.kind==Rational:
+                if y.kind==Integer:
+                    if y.iKind==NormalInteger: return newRational(x.rat-y.i)
+                    else: return VNULL
+                elif y.kind==Floating: return newRational(x.rat-toRational(y.f))
+                elif y.kind==Complex: return VNULL
+                else: return newRational(x.rat-y.rat)
             else:
                 if y.kind==Floating: return newFloating(x.i-y.f)
+                elif y.kind==Rational: return newRational(x.i-y.rat)
                 else: return newComplex((float)(x.i)-y.z)
 
 proc `-=`*(x: var Value, y: Value) =
-    if not (x.kind in [Integer, Floating, Complex]) or not (y.kind in [Integer, Floating, Complex]):
+    if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
         x = VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
@@ -949,15 +959,25 @@ proc `-=`*(x: var Value, y: Value) =
             if x.kind==Floating:
                 if y.kind==Floating: x.f -= y.f
                 elif y.kind==Complex: x = newComplex(x.f - y.z)
+                elif y.kind==Rational: x = newRational(toRational(x.f) - y.rat)
                 else: x.f = x.f - y.i
             elif x.kind==Complex:
                 if y.kind==Integer:
                     if y.iKind==NormalInteger: x = newComplex(x.z - (float)(y.i))
                     else: discard
                 elif y.kind==Floating: x = newComplex(x.z - y.f)
+                elif y.kind==Rational: discard
                 else: x.z -= y.z
+            elif x.kind==Rational:
+                if y.kind==Integer:
+                    if y.iKind==NormalInteger: x.rat -= y.i
+                    else: discard
+                elif y.kind==Floating: x.rat -= toRational(y.f)
+                elif y.kind==Complex: discard
+                else: x.rat -= y.rat
             else:
                 if y.kind==Floating: x = newFloating(x.i-y.f)
+                elif y.kind==Rational: x = newRational(x.i-y.rat)
                 else: x = newComplex((float)(x.i)-y.z)
 
 proc `*`*(x: Value, y: Value): Value =
