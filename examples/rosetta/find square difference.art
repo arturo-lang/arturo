@@ -1,6 +1,6 @@
 i: 1
 while ø [
-    if 1000 < (i*i)-(dec i)*(dec i) 
+    if 1000 < (i^2)-(dec i)^2
         -> break
     i: i + 1
 ]
