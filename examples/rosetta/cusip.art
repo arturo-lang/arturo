@@ -1,0 +1,27 @@
+validCUSIP?: function [cusip][
+    s: 0
+    alpha: `A`..`Z`
+
+    loop.with:'i chop cusip 'c [
+        v: 0
+
+        case ø
+            when? [numeric? c] -> v: to :integer to :string c
+            when? [in? c alpha] -> v: (index alpha c) + 1 + 9
+            when? [c = `*`] -> v: 36
+            when? [c = `@`] -> v: 37
+            when? [c = `#`] -> v: 38
+            else []
+
+        if odd? i -> v: 2 * v
+
+        s: s + (v / 10) + (v % 10)
+    ]
+    check: (10 - (s % 10)) % 10
+
+    return check = to :integer to :string last cusip
+]
+
+loop ["037833100" "17275R102" "38259P508" "594918104" "68389X106" "68389X105"] 'cusip [
+    print [cusip "=>" (validCUSIP? cusip)? -> "VALID" -> "INVALID"]
+]
