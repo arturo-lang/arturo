@@ -16,6 +16,7 @@ Here, you'll find everything you may need to know about the language (and perhap
        - [:integer](#integer)
        - [:floating](#floating)
        - [:complex](#complex)
+       - [:rational](#rational)
        - [:version](#version)
        - [:type](#type)
        - [:char](#char)
@@ -185,6 +186,18 @@ b: to :complex @[pi pi]   ; b: 3.141592653589793+3.141592653589793i
 
 print a + b 
 ; 4.141592653589793+5.141592653589793i
+```
+
+<h4 id="rational">:rational</h4>
+
+As with complex numbers, rationals can be defined using `to`. And again, Arturo comes with full support for rational numbers and all the associated operations.
+
+```red
+a: to :rational [1 2]     ; 1/2
+b: to :rational [3 4]     ; 3/4
+
+print a + b 
+; 5/4
 ```
 
 <h4 id="version">:version</h4>
