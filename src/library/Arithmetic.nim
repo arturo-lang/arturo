@@ -94,7 +94,7 @@ proc defineSymbols*() =
         description = "divide given values and return result",
         args        = {
             "valueA": {Integer,Floating,Rational,Literal},
-            "valueB": {Integer,Floating,Rational
+            "valueB": {Integer,Floating,Rational}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Rational,Nothing},
