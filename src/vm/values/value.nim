@@ -1199,7 +1199,7 @@ proc `/=`*(x: var Value, y: Value) =
                 else: x = newComplex((float)(x.i)/y.z)
 
 proc `//`*(x: Value, y: Value): Value =
-    if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
+    if not (x.kind in [Integer, Floating, Rational]) or not (y.kind in [Integer, Floating, Rational]):
         return VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
@@ -1207,12 +1207,19 @@ proc `//`*(x: Value, y: Value): Value =
         else:
             if x.kind==Floating:
                 if y.kind==Floating: return newFloating(x.f / y.f)
+                elif y.kind==Rational: return newRational(toRational(x.f)/y.rat)
                 else: return newFloating(x.f/(float)(y.i))
+            elif x.kind==Rational:
+                if y.kind==Floating: return newRational(x.rat / toRational(y.f))
+                elif y.kind==Rational: return newRational(x.rat / y.rat)
+                else: return newRational(x.rat / y.i)
             else:
-                return newFloating((float)(x.i)/y.f)
+                if y.kind==Floating: return newFloating((float)(x.i)/y.f)
+                else: return newRational(x.i / y.rat)
+
 
 proc `//=`*(x: var Value, y: Value) =
-    if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
+    if not (x.kind in [Integer, Floating, Rational]) or not (y.kind in [Integer, Floating, Rational]):
         x = VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
@@ -1220,10 +1227,16 @@ proc `//=`*(x: var Value, y: Value) =
         else:
             if x.kind==Floating:
                 if y.kind==Floating: x.f /= y.f
+                elif y.kind==Rational: x = newRational(toRational(x.f)/y.rat)
                 else: x.f /= (float)(y.i)
+            elif x.kind==Rational:
+                if y.kind==Floating: x.rat /= toRational(y.f))
+                elif y.kind==Rational: x /= y.rat
+                else: x.rat /= y.i
             else:
-                x = newFloating((float)(x.i)/y.f)
-
+                if y.kind==Floating: x = newFloating((float)(x.i)/y.f)
+                else: x = newRational(x.i / y.rat)
+                
 proc `%`*(x: Value, y: Value): Value =
     if not (x.kind in [Integer,Floating]) or not (y.kind in [Integer,Floating]):
         return VNULL
