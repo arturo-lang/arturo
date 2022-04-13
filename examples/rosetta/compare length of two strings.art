@@ -1,0 +1,22 @@
+sortByLength: function [strs][
+    map sort.descending.by:'v 
+        map strs 'str -> #[s: str, v: size str] 
+        'z -> z\s
+]
+
+A: "I am string"
+B: "I am string too"
+
+sA: size A
+sB: size B
+
+if? sA < sB ->
+    print ["string ->" A "(" sA ") is smaller than string ->" B "(" sB ")"]
+else [
+    if? sA > sB ->
+        print ["string ->" A "(" sA ") is larger than string ->" B "(" sB ")"]
+    else ->
+        print ["string ->" A "(" sA ") and string ->" B "(" sB ") are of equal length"]
+]
+
+print ["sorted strings (by length):" sortByLength ["abcd" "123456789" "abcdef" "1234567"]]
