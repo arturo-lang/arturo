@@ -442,13 +442,13 @@ func newFloating*(f: int): Value {.inline.} =
 func newFloating*(f: string): Value {.inline.} =
     newFloating(parseFloat(f))
 
-func newComplex*(com: Complex64): Value {.inline} =
+func newComplex*(com: Complex64): Value {.inline.} =
     Value(kind: Complex, z: com)
 
 func newComplex*(fre: float, fim: float): Value {.inline.} =
     Value(kind: Complex, z: Complex64(re: fre, im: fim))
 
-func newComplex*(fre: Value, fim: Value): Value {.inline} =
+func newComplex*(fre: Value, fim: Value): Value {.inline.} =
     var r: float
     var i: float
 
@@ -459,6 +459,15 @@ func newComplex*(fre: Value, fim: Value): Value {.inline} =
     else: i = fim.f
 
     newComplex(r,i)
+
+func newRational*(rat: Rational[int]): Value {.inline.} =
+    Value(kind: Rational, rat: rat)
+
+func newRational*(num: int, den: int): Value {.inline.} =
+    Value(kind: Rational, rat: initRational(num, den))
+
+func newRational*(num: Value, den: Value): Value {.inline.} =
+    newRational(num.i, den.i)
 
 func newVersion*(v: string): Value {.inline.} =
     var numPart = ""
