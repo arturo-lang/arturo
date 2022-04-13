@@ -152,6 +152,11 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                 case tp:
                     of String: 
                         return newString($(y))
+                    of Block:
+                        return newBlock(@[
+                            newInteger(y.rat.num),
+                            newInteger(y.rat.den)
+                        ])
                     else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
             of Version:
