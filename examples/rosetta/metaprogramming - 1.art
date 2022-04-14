@@ -1,0 +1,9 @@
+sumThemUp: function [x,y][
+    x+y
+]
+
+alias.infix '--> 'sumThemUp
+
+do [
+    print 3 --> 4
+]

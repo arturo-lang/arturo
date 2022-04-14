@@ -1,0 +1,8 @@
+myvar: "iAmAVariable"
+
+let myvar 2
+
+print myvar         ; print the name of the variable
+
+print var myvar     ; print the value of the variable
+print iAmAVariable ; the same
