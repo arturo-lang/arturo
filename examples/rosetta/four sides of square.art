@@ -1,0 +1,10 @@
+drawSquare: function [side][
+    loop 1..side 'x ->
+        print map 1..side 'y [
+            (any? @[x=1 y=1 x=side y=side])? -> 1 -> 0
+        ]
+]
+
+drawSquare 4
+print ""
+drawSquare 6
