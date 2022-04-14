@@ -1,0 +1,20 @@
+H: function [n][
+    sum map 1..n => reciprocal
+]
+
+firstAbove: function [lim][
+    i: 1
+    while ø [
+        if lim < to :floating H i ->
+            return i
+        i: i + 1
+    ]
+]
+
+print "The first 20 harmonic numbers:" 
+print map 1..20 => H
+
+print ""
+loop 1..4 'l [
+    print ["Position of first term >" l ":" firstAbove l]
+]
