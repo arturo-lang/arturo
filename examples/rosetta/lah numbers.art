@@ -1,0 +1,15 @@
+factorial: function [n]-> product 1..n
+
+lah: function [n,k][
+    if k=1 -> return factorial n
+    if k=n -> return 1
+    if k>n -> return 0
+    if or? k<1 n<1 -> return 0
+    return (((factorial n)*factorial n-1) / ((factorial k) * factorial k-1)) / factorial n-k
+]
+
+print @["n/k"] ++ map to [:string] 1..12 's -> pad s 10
+print repeat "-" 136
+loop 1..12 'x [
+    print @[pad to :string x 3] ++ map to [:string] map 1..12 'y -> lah x y 's -> pad s 10
+]
