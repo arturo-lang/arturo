@@ -1,0 +1,11 @@
+identityM: function [n][
+    result: array.of: @[n n] 0
+    loop 0..dec n 'i -> result\[i]\[i]: 1
+    return result
+]
+
+loop 4..6 'sz [
+    print sz
+    loop identityM sz => print
+    print ""
+]
