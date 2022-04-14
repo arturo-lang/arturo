@@ -1,0 +1,1 @@
+print split.lines execute "ls"
