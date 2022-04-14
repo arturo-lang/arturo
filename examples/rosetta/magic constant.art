@@ -1,0 +1,21 @@
+a: function [n][
+    n: n+2
+    return (n*(1 + n^2))/2
+]
+
+aInv: function [x][
+    k: new 0
+    while [x > 2 + k*(1+k^2)/2]
+        -> inc 'k
+    return k
+]
+print "The first 20 magic constants are:"
+print map 1..19 => a
+
+print ""
+print "The 1,000th magic constant is:"
+print a 1000
+
+print ""
+loop 1..19 'z ->
+    print ["10 ^" z "=>" aInv 10^z]
