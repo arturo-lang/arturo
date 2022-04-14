@@ -1,0 +1,14 @@
+L: function [n l0 l1 ladd].memoize[
+    (n=0)? -> l0 [
+        (n=1)? -> l1
+               -> (L n-1 l0 l1 ladd) + (L n-2 l0 l1 ladd) + ladd
+    ]
+]
+
+Leonardo: function [z]-> L z 1 1 1
+
+print "The first 25 Leonardo numbers:"
+print map 0..24 => Leonardo
+print ""
+print "The first 25 Leonardo numbers with L0=0, L1=1, LADD=0"
+print map 0..24 'x -> L x 0 1 0
