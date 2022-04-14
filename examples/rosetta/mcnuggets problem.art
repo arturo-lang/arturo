@@ -1,0 +1,14 @@
+nonMcNuggets: function [lim][
+    result: new 0..lim
+
+    loop range.step:6 1 lim 'x [
+        loop range.step:9 1 lim 'y [
+            loop range.step:20 1 lim 'z 
+                -> 'result -- sum @[x y z]
+        ]
+    ]
+
+    return result
+]
+
+print max nonMcNuggets 100
