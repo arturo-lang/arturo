@@ -1,0 +1,26 @@
+powers: map 0..9 'x [
+    map 0..9 'y [
+        x ^ y
+    ]
+]
+
+getPair: function [p,sz].memoize[
+    if not? numeric? last p -> return powers\[to :integer to :string first p]\[sz]
+    return powers\[to :integer to :string first p]\[sz] + powers\[to :integer to :string last p]\[sz]
+]
+
+narcissistic?: function [n][
+    digs: digits n
+    sdigs: size digs
+    n = sum map split.every:2 to :string n 'p -> getPair p sdigs
+]
+
+i: new 0
+counter: new 0
+while [counter < 25][
+    if narcissistic? i [
+        print i
+        inc 'counter
+    ]
+    inc 'i
+]
