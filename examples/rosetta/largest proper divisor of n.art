@@ -1,0 +1,3 @@
+loop split.every:10 [1] ++ map 2..100 'x -> last chop factors x 'row [
+    print map to [:string] row 'r -> pad r 5
+]
