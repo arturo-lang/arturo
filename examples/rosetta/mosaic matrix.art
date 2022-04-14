@@ -1,0 +1,10 @@
+drawSquare: function [side][
+    loop 1..side 'x ->
+        print map 1..side 'y [
+            (equal? x%2 y%2)? -> 1 -> 0
+        ]
+]
+
+drawSquare 6
+print ""
+drawSquare 9
