@@ -1,0 +1,5 @@
+semiPrime?: function [x][
+    2 = size factors.prime x
+]
+
+print select 1..100 => semiPrime?
