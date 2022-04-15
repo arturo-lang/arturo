@@ -3,7 +3,7 @@
 ; RC publishing helper
 
 sanitizeName: function [s][
-    replace lower s {/[^\w ]/} ""
+    replace lower s {/[^\w\d\- ]/} ""
 ]
 
 scrPath: function [s][
@@ -12,6 +12,10 @@ scrPath: function [s][
 
 resPath: function [s][
     ~"examples/rosetta/|s|.res"
+]
+
+runScript: function [s][
+    execute ~{arturo "|scrPath scr|"}
 ]
 
 getTemplateRC: function [s][
@@ -24,6 +28,8 @@ getTemplateRC: function [s][
 
         <pre>OUT</pre>
     }
+
+    write resPath s strip runScript s
 
     replace templ ["SCR", "OUT"] @[read scrPath s, read resPath s]
 ]
@@ -51,7 +57,7 @@ case [cmd=]
     when? ["r"][
         print color #cyan "running RC example...\n"
 
-        print execute ~{arturo "|scrPath scr|"}
+        print runScript scr
     ]
     when? ["p"][
         print color #cyan "publishing RC example...\n"
