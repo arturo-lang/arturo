@@ -1,0 +1,17 @@
+sieve: function [upto][
+    composites: array.of: inc upto false
+    loop 2..to :integer sqrt upto 'x [
+        if not? composites\[x][
+            loop range.step: x x^2 upto 'c [
+                composites\[c]: true
+            ]
+        ]
+    ]
+    result: new []
+    loop.with:'i composites 'c [
+        unless c -> 'result ++ i
+    ]
+    return result -- [0,1]
+]
+
+print sieve 100
