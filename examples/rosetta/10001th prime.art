@@ -1,0 +1,2 @@
+primes: select 1..110000 => prime?
+print primes\[10001]
