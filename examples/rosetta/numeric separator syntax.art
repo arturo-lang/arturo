@@ -1,0 +1,5 @@
+a: 1234567
+b: 3.14
+
+print a
+print b
