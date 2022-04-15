@@ -1,0 +1,65 @@
+#!/usr/bin/env arturo
+
+; RC publishing helper
+
+sanitizeName: function [s][
+    replace lower s {/[^\w ]/} ""
+]
+
+scrPath: function [s][
+    ~"examples/rosetta/|s|.art"
+]
+
+resPath: function [s][
+    ~"examples/rosetta/|s|.res"
+]
+
+getTemplateRC: function [s][
+    templ: {
+        =={{header|Arturo}}== 
+
+        <lang rebol>SCR</lang>
+
+        {{out}}
+
+        <pre>OUT</pre>
+    }
+
+    replace templ ["SCR", "OUT"] @[read scrPath s, read resPath s]
+]
+
+commitGit: function [s][
+    print execute ~{git add "|scrPath s|" "|resPath s|"}
+    print execute ~{git commit -m 'added RC example for |capitalize s|' "|scrPath s|" "|resPath s|"}
+]
+
+scr: sanitizeName first arg
+cmd: last arg
+
+case [cmd=]
+    when? ["n"][
+        print color #cyan "creating new RC example...\n"
+    
+        write scrPath scr ""
+        write resPath scr ""
+    ]
+    when? ["c"][
+        print color #cyan "cleaning up RC res...\n"
+
+        delete resPath scr
+    ]
+    when? ["r"][
+        print color #cyan "running RC example...\n"
+
+        print execute ~{arturo "|scrPath scr|"}
+    ]
+    when? ["p"][
+        print color #cyan "publishing RC example...\n"
+
+        commitGit scr
+        print getTemplateRC scr
+
+    ]
+    else [
+        panic "unrecognized command"
+    ]
