@@ -1,0 +1,12 @@
+twoSum: function [numbers, s][
+    loop.with:'i numbers 'x [
+        if not? null? j: <= index numbers s-x ->
+            return @[i j]
+    ]
+    return @[]
+]
+
+nums: [0 2 11 19 90]
+
+print ["twoSum 21:" twoSum nums 21]
+print ["twoSum 25:" twoSum nums 25]
