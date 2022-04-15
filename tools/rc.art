@@ -3,7 +3,7 @@
 ; RC publishing helper
 
 sanitizeName: function [s][
-    replace lower s {/[^\w\d\- ]/} ""
+    replace lower s {/[^\w\d\-' ]/} ""
 ]
 
 scrPath: function [s][
@@ -36,7 +36,7 @@ getTemplateRC: function [s][
 
 commitGit: function [s][
     print execute ~{git add "|scrPath s|" "|resPath s|"}
-    print execute ~{git commit -m 'added RC example for |capitalize s|' "|scrPath s|" "|resPath s|"}
+    print execute ~{git commit -m "added RC example for |capitalize s|" "|scrPath s|" "|resPath s|"}
 ]
 
 scr: sanitizeName first arg
