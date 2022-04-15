@@ -1,0 +1,10 @@
+selfDescribing?: function [x][
+    digs: digits x
+    loop.with:'i digs 'd [
+        if d <> size select digs 'z [z=i] 
+            -> return false
+    ]
+    return true
+]
+
+print select 1..22000 => selfDescribing?
