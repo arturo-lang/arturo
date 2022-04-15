@@ -863,6 +863,38 @@ proc defineSymbols*() =
                 if x.kind==Block: push(newBlock(cleanBlock(x.a).reversed))
                 elif x.kind==String: push(newString(x.s.reversed))
 
+    builtin "rotate",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "right-rotate collection by given distance",
+        args        = {
+            "collection"    : {String,Block,Literal},
+            "distance"      : {Integer}
+        },
+        attrs       = {
+            "left"  : ({Logical},"left rotation")
+        },
+        returns     = {String,Block,Nothing},
+        example     = """
+            rotate [a b c d e] 1            ; => [e a b c d]
+            rotate.left [a b c d e] 1       ; => [b c d e a]
+
+            rotate 1..6 4                   ; => [3 4 5 6 1 2]
+        """:
+            ##########################################################
+            let distance = if (popAttr("left")==VNULL): -y.i else: y.i
+
+            if x.kind==Literal:
+                if InPlace.kind==String:
+                    InPlaced = newString(toSeq(runes(x.s)).map((x) => $(x)).rotatedLeft(distance).join(""))
+                elif InPlaced.kind==Block:
+                    InPlaced.a.rotateLeft(distance)
+            else:
+                if x.kind==String:
+                    push(newString(toSeq(runes(x.s)).map((x) => $(x)).rotatedLeft(distance).join("")))
+                elif x.kind==Block:
+                    push(newBlock(cleanBlock(x.a).rotatedLeft(distance)))
+
     builtin "sample",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
