@@ -1,0 +1,10 @@
+palindrome?: function [s][
+    s = reverse s
+]
+
+tests: [
+    [true? palindrome? "aba"]
+    [false? palindrome? "ab" ]
+]
+
+loop tests => ensure
