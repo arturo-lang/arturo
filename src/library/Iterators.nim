@@ -31,6 +31,76 @@ proc defineSymbols*() =
     when defined(VERBOSE):
         echo "- Importing: Iterators"
 
+    builtin "chunk",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "chunk together consecutive items in collection that fulfil given condition",
+        args        = {
+            "collection"    : {Block,Literal},
+            "params"        : {Literal,Block},
+            "action"        : {Block}
+        },
+        attrs       = {
+            "value" : ({Any},"also include condition values")
+        },
+        returns     = {Block,Nothing},
+        example     = """
+            chunk [1 1 2 2 3 22 3 5 5 7 9 2 5] => even?
+            ; => [[1 1] [2 2] [3] [22] [3 5 5 7 9] [2] [5]]
+            ..........
+            chunk.value [1 1 2 2 3 22 3 5 5 7 9 2 5] 'x [ odd? x ]
+            ; => [[true [1 1]] [false [2 2]] [true [3]] [false [22]] [true [3 5 5 7 9]] [false [2]] [true [5]]]
+        """:
+            ##########################################################
+            var args: ValueArray
+
+            if y.kind==Literal: args = @[y]
+            else: args = cleanBlock(y.a)
+
+            let showValue = (popAttr("value")!=VNULL)
+
+            let preevaled = doEval(z)
+
+            var res: ValueArray = @[]
+            var state = False
+            var currentSet: ValueArray = @[]
+
+            var blk: ValueArray
+            if x.kind==Literal:
+                blk = InPlace.a
+            else:
+                blk = x.a
+
+            for item in cleanBlock(blk):
+                handleBranching:
+                    push(item)
+                    discard execBlock(VNULL, evaluated=preevaled, args=args)
+                    let got = pop().b
+                    if got != state:
+                        if len(currentSet)>0:
+                            if showValue:
+                                res.add(newBlock(@[newLogical(state), newBlock(currentSet)]))
+                            else:
+                                res.add(newBlock(currentSet))
+                            currentSet = @[]
+                        state = got
+                    
+                    currentSet.add(item)
+                    
+                do:
+                    discard
+
+            if len(currentSet)>0:
+                if showValue:
+                    res.add(newBlock(@[newLogical(state), newBlock(currentSet)]))
+                else:
+                    res.add(newBlock(currentSet))
+                
+            if x.kind==Literal:
+                InPlaced = newBlock(res)
+            else:
+                push(newBlock(res))
+
     builtin "every?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
