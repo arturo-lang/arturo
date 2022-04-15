@@ -1,0 +1,6 @@
+valid?: function [n][
+    equal? sort unique digits n
+           sort unique digits.base:16 n
+]
+
+print select 0..100000 => valid?
