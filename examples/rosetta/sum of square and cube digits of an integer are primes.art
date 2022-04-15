@@ -1,0 +1,3 @@
+print select 1..100 'x ->
+    and? [prime? sum digits x^2]
+         [prime? sum digits x^3]
