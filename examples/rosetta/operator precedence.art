@@ -1,0 +1,2 @@
+print 2 + 3 * 5 ; same as 2 + (3 * 5)
+print 3 * 5 + 2 ; same as 3 * (5 + 2)
