@@ -1,0 +1,4 @@
+loop 0..7 'x [
+    num: to :integer(repeat "1" x) ++ "3"
+    print [num num^2]
+]
