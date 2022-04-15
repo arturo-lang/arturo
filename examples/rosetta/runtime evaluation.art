@@ -1,0 +1,5 @@
+a: {print ["The result is:" 2+3]}
+do a
+
+userCode: input "Give me some code: "
+do userCode
