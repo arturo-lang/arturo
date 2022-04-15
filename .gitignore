@@ -6,7 +6,6 @@
 test
 test2
 test*.nim
-test*.art
 testme*
 *testlib*
 *artlib*
