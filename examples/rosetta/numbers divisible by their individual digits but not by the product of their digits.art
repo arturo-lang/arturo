@@ -1,0 +1,8 @@
+valid?: function [n][
+    digs: digits n
+    facts: factors n
+    and? [not? in? product digs facts]
+         [every? digs 'd -> in? d facts]
+]
+
+print select 1..999 => valid?
