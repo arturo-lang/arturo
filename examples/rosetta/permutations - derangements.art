@@ -1,0 +1,33 @@
+isClean?: function [s,o][
+    loop.with:'i s 'a [
+        if a = o\[i] -> return false
+    ]
+    return true
+]
+
+derangements: function [n][
+    original: 1..n
+    select permutate original 'x ->
+        isClean? x original
+]
+
+subfactorial: function [n].memoize[
+    (n =< 1)? -> 1 - n
+              -> (n-1) * (add subfactorial n-1 subfactorial n-2)
+]
+
+print "Derangements of 1 2 3 4:"
+loop derangements 4 'x [
+    print x
+]
+
+print "\nNumber of derangements:"
+print [pad "n" 5 pad "counted" 15 pad "calculated" 15]
+print repeat "-" 39
+loop 0..9 'z [
+    counted: size derangements z
+    calculated: subfactorial z
+    print [pad to :string z 5 pad to :string counted 15 pad to :string calculated 15]
+]
+
+print ~"\n!20 = |subfactorial 20|"
