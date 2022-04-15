@@ -1,0 +1,11 @@
+i: new 0
+next: new 1
+MAX: 15
+while [next =< MAX][
+    if next = size factors i [
+        prints ~"|i| "
+        inc 'next
+    ]
+    inc 'i
+]
+print ""
