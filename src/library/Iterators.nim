@@ -34,7 +34,7 @@ proc defineSymbols*() =
     builtin "chunk",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "chunk together consecutive items in collection that fulfil given condition",
+        description = "chunk together consecutive items in collection that abide by given predicate",
         args        = {
             "collection"    : {Block,Literal},
             "params"        : {Literal,Block},
@@ -62,7 +62,7 @@ proc defineSymbols*() =
             let preevaled = doEval(z)
 
             var res: ValueArray = @[]
-            var state = False
+            var state = VNULL
             var currentSet: ValueArray = @[]
 
             var blk: ValueArray
@@ -75,11 +75,11 @@ proc defineSymbols*() =
                 handleBranching:
                     push(item)
                     discard execBlock(VNULL, evaluated=preevaled, args=args)
-                    let got = pop().b
+                    let got = pop()
                     if got != state:
                         if len(currentSet)>0:
                             if showValue:
-                                res.add(newBlock(@[newLogical(state), newBlock(currentSet)]))
+                                res.add(newBlock(@[state, newBlock(currentSet)]))
                             else:
                                 res.add(newBlock(currentSet))
                             currentSet = @[]
@@ -92,7 +92,7 @@ proc defineSymbols*() =
 
             if len(currentSet)>0:
                 if showValue:
-                    res.add(newBlock(@[newLogical(state), newBlock(currentSet)]))
+                    res.add(newBlock(@[state, newBlock(currentSet)]))
                 else:
                     res.add(newBlock(currentSet))
                 
