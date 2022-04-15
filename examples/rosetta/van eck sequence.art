@@ -1,0 +1,20 @@
+Max: 1000
+a: array.of: Max 0
+
+loop 0..Max-2 'n [
+    if 0 =< n-1 [
+        loop (n-1)..0 'm [
+            if a\[m]=a\[n] [
+                a\[n+1]: n-m
+                break
+            ]
+        ]
+    ]
+]
+
+print "The first ten terms of the Van Eck sequence are:"
+print first.n:10 a
+
+print ""
+print "Terms 991 to 1000 of the sequence are:"
+print last.n:10 a
