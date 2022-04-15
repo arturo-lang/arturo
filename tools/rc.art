@@ -61,10 +61,9 @@ case [cmd=]
     ]
     when? ["p"][
         print color #cyan "publishing RC example...\n"
-
-        commitGit scr
+        
         print getTemplateRC scr
-
+        commitGit scr
     ]
     else [
         panic "unrecognized command"
