@@ -1,0 +1,22 @@
+Position: 0
+
+stepUp: function [].export:[Position][
+    startPos: Position
+    until -> step [
+        Position = startPos + 1
+    ]
+]
+
+step: function [].export:[Position][
+    (0.5 > random 0 1.0)? [
+        Position: Position - 1
+        print ~"fall (|Position|)"
+        false
+    ][
+        Position: Position + 1
+        print ~"rise (|Position|)"
+        true
+    ]
+]
+
+stepUp
