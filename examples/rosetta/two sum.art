@@ -3,7 +3,7 @@ twoSum: function [numbers, s][
         if not? null? j: <= index numbers s-x ->
             return @[i j]
     ]
-    return @[]
+    return []
 ]
 
 nums: [0 2 11 19 90]
