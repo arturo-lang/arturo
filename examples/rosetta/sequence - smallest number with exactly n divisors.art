@@ -1,0 +1,9 @@
+firstNumWithDivisors: function [n][
+    i: 0
+    while ø [
+        if n = size factors i -> return i
+        i: i+1
+    ]
+]
+
+print map 1..15 => firstNumWithDivisors
