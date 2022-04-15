@@ -1,0 +1,50 @@
+nofTrials: 10000
+probabilities: #[
+    aleph: to :rational [1 5]
+    beth: to :rational [1 6]
+    gimel: to :rational [1 7]
+    daleth: to :rational [1 8]
+    he: to :rational [1 9]
+    waw: to :rational [1 10]
+    zayin: to :rational [1 11]
+    heth: to :rational [1759 27720]
+]
+
+samples: #[]
+
+loop 1..nofTrials 'x [
+    z: random 0.0 1.0
+    loop probabilities [item,prob][
+        if? z < prob [
+            unless key? samples item -> samples\[item]: 0
+            samples\[item]: samples\[item] + 1
+            break
+        ]
+        else [
+            z: z - prob
+        ]
+    ]
+]
+
+[s1, s2]: 0.0
+
+print [pad.right "Item" 10 pad "Target" 10 pad "Tesults" 10 pad "Differences" 15]
+print repeat "-" 50
+loop probabilities [item,prob][
+    r: samples\[item] // nofTrials
+    s1: s1 + r*100
+    s2: s2 + prob*100
+
+    print [
+        pad.right item 10
+        pad to :string prob 10 
+        pad to :string round.to:4 r 10 
+        pad to :string round.to:4 to :floating 100*1-r//prob 13 "%"
+    ]
+]
+print repeat "-" 50
+print [
+    pad.right "Total:" 10
+    pad to :string to :floating s2 10
+    pad to :string s1 10
+]
