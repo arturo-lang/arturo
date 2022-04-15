@@ -1,0 +1,21 @@
+runlengthEncode: function [s][
+    join map chunk split s => [&] 'x ->
+        (to :string size x) ++ first x
+]
+
+runlengthDecode: function [s][
+    result: new ""
+    loop (chunk split s 'x -> positive? size match x {/\d+/}) [a,b] ->
+        'result ++ repeat first b to :integer join to [:string] a
+    return result
+]
+
+str: "WWWWWWWWWWWWBWWWWWWWWWWWWBBBWWWWWWWWWWWWWWWWWWWWWWWWBWWWWWWWWWWWWWW"
+
+encoded: runlengthEncode str
+print ["encoded:" encoded]
+
+decoded: runlengthDecode encoded
+print ["decoded:" decoded]
+
+if decoded=str -> print "\nSuccess!"
