@@ -1,0 +1,6 @@
+phr: "rosetta code phrase reversal"
+
+print ["(0)" phr]
+print ["(1)" reverse phr]
+print ["(2)" join.with:" " map split.words phr => reverse] 
+print ["(3)" join.with:" " reverse split.words phr]
