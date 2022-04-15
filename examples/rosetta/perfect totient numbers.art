@@ -1,0 +1,40 @@
+totient: function [n][
+    tt: new n
+    nn: new n
+    i: new 2
+
+    while [nn >= i ^ 2][
+        if zero? nn % i [
+            while [zero? nn % i]->
+                'nn / i
+            'tt - tt/i
+        ]
+        if i = 2 -> 
+            i: new 1
+
+        'i + 2
+    ]
+    if nn > 1 ->
+        'tt - tt/nn
+
+    return tt
+]
+
+x: new 1
+num: new 0
+
+while [num < 20][
+    tot: new x
+    s: new 0
+
+    while [tot <> 1][
+        tot: totient tot
+        's + tot
+    ]
+    if s = x [
+        prints ~"|x| "
+        inc 'num
+    ]
+    'x + 2
+]
+print ""
