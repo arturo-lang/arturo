@@ -1,0 +1,28 @@
+spiralMatrix: function [n][
+    m: new array.of: @[n,n] null
+
+    [dx, dy, x, y]: [1, 0, 0, 0]
+
+    loop 0..dec n^2 'i [
+        m\[y]\[x]: i
+
+        [nx,ny]: @[x+dx, y+dy]
+
+        if? and? [and? [in? nx 0..n-1][in? ny 0..n-1]][
+            null? m\[ny]\[nx]
+        ][
+            [x,y]: @[nx, ny]
+        ]
+        else [
+            bdx: dx
+            [dx, dy]: @[neg dy, bdx]
+            [x, y]: @[x+dx, y+dy]
+        ]
+    ]
+
+    return m
+]
+
+loop spiralMatrix 5 'row [
+    print map row 'x -> pad to :string x 4
+]
