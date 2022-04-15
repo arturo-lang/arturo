@@ -1,0 +1,28 @@
+recamanSucc: function [seen, n, r].memoize[
+    back: r - n
+    (or? 0 > back contains? seen back)? -> n + r
+                                        -> back
+]
+
+recamanUntil: function [p][
+    n: new 1
+    r: 0
+    rs: new @[r]
+    seen: rs
+    blnNew: true
+    while [not? do p][
+        r: recamanSucc seen n r
+        blnNew: not? in? r seen
+        seen: unique seen ++ r
+        'rs ++ r
+        inc 'n
+    ]
+    return rs
+]
+
+print "First 15 Recaman numbers:"
+print recamanUntil [n = 15]
+
+print ""
+print "First duplicate Recaman number:"
+print last recamanUntil [not? blnNew]
