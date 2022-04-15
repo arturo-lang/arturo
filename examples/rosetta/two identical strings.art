@@ -1,0 +1,18 @@
+loop 0..1000 'i [
+    bin: as.binary i
+    if even? size bin [
+        half: (size bin)/2
+        if equal? slice bin 0 dec half
+                  slice bin half dec size bin ->
+            print [pad to :string i 4 ":" bin]
+    ]
+]
+; for i in 0 .. 1000
+;     bin = i.to_s(2)
+;     if bin.length % 2 == 0 then
+;         half = bin.length / 2
+;         if bin[0..half-1] == bin[half..] then
+;             print "%3d: %10s\n" % [i, bin]
+;         end
+;     end
+; end
