@@ -1,0 +1,78 @@
+pow10: map 0..18 'n -> 10^n
+
+fangs: function [n][
+    digs: join sort split to :string n
+    if odd? size digs -> return []
+    flen: (size digs)/2
+    inf: pow10\[flen-1]
+    sup: dec inf*10
+    result: new []
+    loop inf..sup 'd [
+        unless zero? n % d -> continue
+        q: n/d
+        if q < d -> return result
+        ddigs: to :string d
+        qdigs: to :string q
+        if flen < size qdigs -> continue
+        if flen > size qdigs -> return result
+        if digs <> join sort split ddigs ++ qdigs -> continue
+        if or? `0` <> last ddigs `0` <> last qdigs ->
+            'result ++ @[@[d q]]
+    ]
+    return result
+]
+
+count: 0
+n: 10
+limit: 100
+
+; while [count <> 25][
+;     fangList: fangs n
+;     unless empty? fangList [
+;         count: count + 1
+;         print [count n "=" fangList]
+;     ]
+;     n: n+1
+;     if n=limit [
+;         n: n*10
+;         limit: limit*10
+;     ]
+; ]
+
+inspect fangs 16758243290880
+; echo "First 25 vampire numbers with their fangs:"
+; var count = 0
+; var n = 10
+; var limit = 100
+; while count != 25:
+;   let fangList = n.fangs
+;   if fangList.len != 0:
+;     inc count
+;     echo &"{count:2}: {n:>6} = ", fangList.mapIt(&"{it[0]:3} × {it[1]:3}").join(" = ")
+;   inc n
+;   if n == limit:
+;     n *= 10
+;     limit *= 10
+; const Pow10 = collect(newSeq, for n in 0..18: 10 ^ n)
+ 
+; template isOdd(n: int): bool = (n and 1) != 0
+ 
+; proc fangs(n: Positive): seq[(int, int)] =
+;   ## Return the list fo fangs of "n" (empty if "n" is not vampiric).
+;   let nDigits = sorted($n)
+;   if nDigits.len.isOdd: return @[]
+;   let fangLen = nDigits.len div 2
+;   let inf = Pow10[fangLen - 1]
+;   let sup = inf * 10 - 1
+;   for d in inf..sup:
+;     if n mod d != 0: continue
+;     let q = n div d
+;     if q < d: return
+;     let dDigits = $d
+;     let qDigits = $q
+;     if qDigits.len > fangLen: continue
+;     if qDigits.len < fangLen: return
+;     if nDigits != sorted(dDigits & qDigits): continue
+;     if dDigits[^1] != '0' or qDigits[^1] != '0':
+;       # Finally, "n" is vampiric. Add the fangs to the result.
+;       result.add (d, q)
