@@ -1,0 +1,39 @@
+words: map read.lines relative "unixdict.txt" => strip
+hexWords: new []
+
+digRoot: function [num][
+    res: num
+    while [1 < size digits res][
+        res: sum digits res
+    ]
+    return res
+]
+
+printTable: function [wrds][
+    print [pad.center "Root" 10 pad.right "Word" 10 pad "Base-10" 15]
+    print repeat "-" 38
+    loop wrds 'wrd [
+        print [pad.center to :string wrd\root 10 pad.right wrd\hex 10 pad to :string wrd\decimal 15]
+    ]
+    print repeat "-" 38
+    print ["   Total count:" size wrds "\n"]
+]
+
+loop words 'word [
+    if 4 > size word ->
+        continue
+
+    if not? empty? match word {/^[a-f]+$/} [
+        base10: from.hex word
+        droot: digRoot base10
+        'hexWords ++ #[
+            root: droot
+            hex: word
+            decimal: base10
+        ]
+    ]
+]
+
+printTable sort.by:'root hexWords
+printTable sort.descending.by:'decimal select hexWords 'h ->
+    4 =< size unique split h\hex
