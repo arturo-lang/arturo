@@ -1,0 +1,18 @@
+bar: "▁▂▃▄▅▆▇█"
+barcount: to :floating dec size bar
+
+while ø [
+    line: input "Numbers separated by spaces: "
+    numbers: to [:floating] split.words line
+    mn: min numbers
+    mx: max numbers
+    extent: mx-mn
+    sparkLine: new ""
+    loop numbers 'n [
+        i: to :integer barcount*(n-mn)//extent
+        'sparkLine ++ bar\[i]
+    ]
+    print ["min:" round.to:1 mn "max:" round.to:1 mx]
+    print sparkLine
+    print ""
+]
