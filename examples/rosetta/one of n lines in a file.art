@@ -1,0 +1,21 @@
+oneOfN: function [n][
+    result: 0
+    loop 0..dec n 'x [
+        if zero? random 0 x ->
+            result: x
+    ]
+    return result
+]
+
+oneOfNTest: function [n,trials][
+    ret: array.of:n 0
+    if n > 0 [
+        loop 1..trials 'i [
+            oon: oneOfN n
+            ret\[oon]: ret\[oon] + 1
+        ]
+    ]
+    return ret
+]
+
+print oneOfNTest 10 1000000
