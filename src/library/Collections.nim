@@ -999,7 +999,7 @@ proc defineSymbols*() =
         description = "get size/length of given collection",
         args        = {
             "collection"    : {String,Block,Dictionary}
-        },
+        }, 
         attrs       = NoAttrs,
         returns     = {Integer},
         example     = """
