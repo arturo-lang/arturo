@@ -1,0 +1,32 @@
+orderDisjoint: function [m,n][
+    ms: split.words m
+    ns: split.words n
+
+    indexes: new []
+
+    loop ns 'item [
+        idx: index ms item
+        unless null? idx [
+            'indexes ++ idx
+            ms\[idx]: ""
+        ]
+    ]
+    sort 'indexes
+
+    loop.with:'i indexes 'idx ->
+        ms\[idx]: ns\[i]
+    
+    return join.with:" " ms
+]
+
+process: function [a,b][
+    print [a "|" b "->" orderDisjoint a b]
+]
+
+process "the cat sat on the mat" "mat cat"
+process "the cat sat on the mat" "cat mat"
+process "A B C A B C A B C" "C A C A"
+process "A B C A B D A B E" "E A D A"
+process "A B" "B"
+process "A B" "B A"
+process "A B B A" "B A"
