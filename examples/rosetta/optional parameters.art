@@ -1,4 +1,3 @@
-
 sortTable: function [tbl][
     column: "0"
     reversed?: false
