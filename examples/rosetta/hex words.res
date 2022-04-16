@@ -1,4 +1,4 @@
-Root    Word               Base-10 
+   Root    Word               Base-10 
 --------------------------------------
     1      ababa               703162 
     1      abbe                 43966 
