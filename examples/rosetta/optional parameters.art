@@ -1,0 +1,34 @@
+
+sortTable: function [tbl][
+    column: "0"
+    reversed?: false
+    unless null? c: <= attr 'column -> column: to :string c
+    unless null? attr 'reverse -> reversed?: true
+
+    result: new sort.by: column map tbl 'r [
+        to :dictionary flatten combine 0..dec size r r
+    ]
+
+    if reversed? -> reverse 'result
+
+    return map result 'r -> values r
+]
+
+printTable: function [tbl, title][
+    print ["==" title]
+    loop tbl 'row [
+        print row
+    ]
+    print ""
+]
+
+lst: [
+    ["a", "b", "c"]
+    ["", "q", "z"]
+    ["zap", "zip", "Zot"]
+]
+
+printTable sortTable lst "Default sort"
+printTable sortTable.column:1 lst "Sorting by column=1"
+printTable sortTable.reverse lst "Sorting, reversed"
+printTable sortTable.reverse.column:1 lst "Sorting by column=1, reversed"
