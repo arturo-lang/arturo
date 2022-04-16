@@ -1,0 +1,32 @@
+entropy: function [s][
+    if 1 >= size s -> return 0.0
+    strlen: to :floating size s
+    count0: to :floating size match s "0"
+    count1: strlen - count0
+    return neg add (count0/strlen) * log count0/strlen 2 (count1/strlen) * log count1/strlen 2
+]
+
+fibwords: function [n][
+    x: 0
+    a: "1"
+    b: "0"
+    result: @[a b]
+    while [x<n][
+        a: b ++ a
+
+        tmp: b
+        b: a 
+        a: tmp
+        result: result ++ b
+        x: x+1
+    ]
+    return result
+]
+
+loop.with:'i fibwords 37 'w [
+    print [
+        pad to :string i+1 4
+        pad to :string size w 10
+        pad to :string entropy w 20
+    ]
+]
