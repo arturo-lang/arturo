@@ -1,0 +1,25 @@
+endingsLa: #[
+    {are}: ["o" "as" "at" "amus" "atis" "ant"]
+    {ēre}: ["eo" "es" "et" "emus" "etis" "ent"]
+    {ere}: ["o" "is" "it" "imus" "itis" "unt"]
+    {ire}: ["io" "is" "it" "imus" "itis" "iunt"]
+]
+
+endingsEn: ["" "" "s" "" "" ""]
+
+conjugate: function [v][
+    suff: last.n:13 v
+    stem: slice v 0 (size v)-3
+
+    print [suff stem]
+    @[true true]
+]
+
+loop [] 'verb [
+    print repeat "=" 20
+    print verb
+    print repeat "=" 20
+    loop conjugate verb 'row [
+        print row
+    ]
+]
