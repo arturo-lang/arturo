@@ -1,25 +1,23 @@
-endingsLa: #[
+endings: #[
     {are}: ["o" "as" "at" "amus" "atis" "ant"]
     {ēre}: ["eo" "es" "et" "emus" "etis" "ent"]
     {ere}: ["o" "is" "it" "imus" "itis" "unt"]
     {ire}: ["io" "is" "it" "imus" "itis" "iunt"]
 ]
 
-endingsEn: ["" "" "s" "" "" ""]
-
 conjugate: function [v][
-    suff: last.n:13 v
-    stem: slice v 0 (size v)-3
+    suff: join last.n:3 split v
+    stem: slice v 0 (size v)-4
 
-    print [suff stem]
-    @[true true]
+    map endings\[suff] 'x -> stem ++ x
 ]
 
-loop [] 'verb [
+loop ["amare" "vidēre" "ducere" "audire"] 'verb [
     print repeat "=" 20
     print verb
     print repeat "=" 20
     loop conjugate verb 'row [
         print row
     ]
+    print ""
 ]
