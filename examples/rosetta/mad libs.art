@@ -1,0 +1,10 @@
+story: strip input "Enter a story: "
+vars: unique map match story {/\|([^\|]+)\|/} 'v -> replace v "|" ""
+
+i: 0
+while [i < size vars].import [
+    let vars\[i] input ~"Enter value for <|vars\[i]|>: "
+    i: i + 1
+]
+
+print ~story
