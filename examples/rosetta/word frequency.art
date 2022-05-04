@@ -1,0 +1,18 @@
+findFrequency: function [file, count][
+    freqs: #[]
+    r: {/[[:alpha:]]+/}
+    loop flatten map split.lines read file 'l -> match lower l r 'word [
+        if not? key? freqs word -> freqs\[word]: 0
+        freqs\[word]: freqs\[word] + 1
+    ]
+    freqs: sort.values.descending freqs
+    result: new []
+    loop 0..dec count 'x [
+        'result ++ @[@[get keys freqs x, get values freqs x]]
+    ]
+    return result
+]
+
+loop findFrequency "https://www.gutenberg.org/files/135/135-0.txt" 10 'pair [
+    print pair
+]
