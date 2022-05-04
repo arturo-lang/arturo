@@ -1,0 +1,35 @@
+wordset: map read.lines relative "unixdict.txt" => strip
+
+validAnswer?: function [answer][
+    if not? contains? wordset answer [
+        prints "\tNot a valid dictionary word."
+        return false
+    ]
+    if contains? pastWords answer [
+        prints "\tWord already used."
+        return false
+    ]
+    if 1 <> levenshtein answer last pastWords [
+        prints "\tNot a correct wordiff."
+        return false
+    ]
+    return true
+]
+
+playerA: input "player A: what is your name? "
+playerB: input "player B: what is your name? "
+
+pastWords: new @[sample select wordset 'word [ contains? [3 4] size word ]]
+
+print ["\nThe initial word is: " last pastWords "\n"]
+
+current: playerA
+while ø [
+    neww: strip input ~"|current|, what is the next word? "
+    while [not? validAnswer? neww][
+        neww: strip input " Try again: "
+    ]
+    'pastWords ++ neww
+    current: (current=playerA)? -> playerB -> playerA
+    print ""
+]
