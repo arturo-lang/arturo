@@ -1,0 +1,23 @@
+lcs: function [l][
+	ret: ""
+    idx: 0
+
+    lst: map l => reverse
+ 
+    while [true] [
+        thisLetter: ""
+        loop lst 'word [
+        	if idx=size word -> return reverse ret
+        	if thisLetter="" -> thisLetter: get split word idx
+        	if thisLetter<>get split word idx -> return reverse ret
+        ]
+        ret: ret ++ thisLetter
+        idx: idx + 1
+    ]
+]
+
+print lcs ["Sunday" "Monday" "Tuesday" "Wednesday" "Thursday" "Friday" "Saturday"]
+print lcs ["throne" "throne"]
+print lcs ["throne" "dungeon"]
+print lcs ["cheese"]
+print lcs ["prefix" "suffix"]
