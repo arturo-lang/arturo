@@ -1,0 +1,16 @@
+wordset: map read.lines relative "unixdict.txt" => strip
+
+wordset: select wordset 'word -> 12 =< size word
+results: new []
+loop wordset 'a [
+    loop select wordset 'word [equal? size a size word] 'b [
+        if a <> b [
+            if 1 = levenshtein a b [
+                'results ++ @[sort @[a b]]
+            ]
+        ]
+    ]
+]
+
+loop unique results 'result -> 
+    print join.with:" - " result
