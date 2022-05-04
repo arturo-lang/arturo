@@ -1,0 +1,34 @@
+isDeranged?: function [p][
+    [a,b]: p
+    loop 0..dec size a 'i [
+        if a\[i] = b\[i] [return false]
+    ]
+    return true
+]
+
+wordset: map read.lines relative "unixdict.txt" => strip
+
+anagrams: #[]
+
+loop wordset 'word [
+    anagram: sort to [:char] word
+    unless key? anagrams anagram ->
+        anagrams\[anagram]: new []
+
+    anagrams\[anagram]: anagrams\[anagram] ++ word
+]
+
+deranged: select values anagrams 'anagram [ 2 = size anagram]
+
+maxDeranged: ["" ""]
+
+loop deranged 'd [
+    if (size first d) > size first maxDeranged [
+        pair: @[first d, last d]
+        if isDeranged? pair [
+            maxDeranged: pair
+        ]
+    ]
+]
+
+print maxDeranged
