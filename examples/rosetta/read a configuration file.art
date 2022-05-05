@@ -1,0 +1,27 @@
+parseConfig: function [f][
+    lines: split.lines read f
+    lines: select map lines 'line [strip replace line {/[#;].*/} ""]
+                            'line [not? empty? line]
+    result: #[]
+
+    fields: loop lines 'line [
+        field: first match line {/^[A-Z]+/}
+        rest: strip replace line field ""
+        parts: select map split.by:"," rest => strip 'part -> not? empty? part
+
+        val: null
+        case [(size parts)]
+            when? [= 0] -> val: true
+            when? [= 1] -> val: first parts
+            else -> val: parts
+
+        result\[lower field]: val
+    ]
+
+    return result
+]
+
+loop parseConfig relative "config.file" [k,v][
+    if? block? v -> print [k "->" join.with:", " v]
+    else -> print [k "->" v]
+]
