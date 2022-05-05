@@ -1,0 +1,61 @@
+fft: function [x][
+    print ["FFT:" x]
+    n: size x
+    print n
+    if n=0 -> return null
+
+    result: new array.of: n 0
+
+    if n=1 -> 
+        return @[to :complex @[x\0, 1.0]]
+
+    evens: new []
+    odds: new []
+
+    loop.with:'i x 'v [
+        if? even? i -> 'evens ++ v
+        else -> 'odds ++ v
+    ]
+
+    [even, odd]: @[fft evens, fft odds]
+    halfn: n / 2
+    print n
+    loop 0..halfn 'k [
+        a: odd\[k] * exp to :complex @[0.0, (neg 2)*pi*(to :floating k)/(to :floating n)]
+        result\[k]: even\[k] + a
+        result\[k + halfn]: even\[k] -a
+    ]
+
+    return result
+]
+
+loop fft [1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0] 'i [
+    print i
+]
+
+;   let n = x.len
+;   if n == 0: return
+ 
+;   result.newSeq(n)
+ 
+;   if n == 1:
+;     result[0] = (when T is float: complex(x[0]) else: x[0])
+;     return
+
+
+ 
+;   var evens, odds = newSeq[T]()
+;   for i, v in x:
+;     if i mod 2 == 0: evens.add v
+;     else: odds.add v
+;   var (even, odd) = (fft(evens), fft(odds))
+ 
+;   let halfn = n div 2
+ 
+;   for k in 0 ..< halfn:
+;     let a = exp(complex(0.0, -2 * Pi * float(k) / float(n))) * odd[k]
+;     result[k] = even[k] + a
+;     result[k + halfn] = even[k] - a
+ 
+; for i in fft(@[1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0]):
+;   echo formatFloat(abs(i), ffDecimal, 3)
