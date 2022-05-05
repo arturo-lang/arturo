@@ -1,0 +1,15 @@
+wordset: map read.lines relative "unixdict.txt" => strip
+wordset: select wordset 'word -> 9 =< size word
+
+lastWord: ""
+newWord: "         "
+count: 0
+
+loop 0..(size wordset)-9 'i [
+    loop 0..8 'j -> newWord\[j]: wordset\[i+j]\[j]
+    if and? [in? newWord wordset][lastWord <> newWord][
+        count: count + 1
+        print [(pad to :string count 3)++":" newWord]
+        lastWord: new newWord
+    ]
+]
