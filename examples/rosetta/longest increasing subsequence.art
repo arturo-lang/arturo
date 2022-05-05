@@ -1,0 +1,27 @@
+lis: function [d][
+    l: new [[]]
+    loop d 'num [
+        x: []
+        loop l 'seq [
+            if positive? size seq [
+                if and? num > last seq
+                        (size seq) > size x ->
+                    x: seq
+            ]
+        ]
+        'l ++ @[x ++ @[num]]
+    ]
+    result: []
+    loop l 'x [
+        if (size x) > size result ->
+            result: x
+    ]
+    return result
+]
+
+loop [
+    [3 2 6 4 5 1]
+    [0 8 4 12 2 10 6 14 1 9 5 13 3 11 7 15]
+] 'seq [
+    print ["LIS of" seq "=>" lis seq]
+]
