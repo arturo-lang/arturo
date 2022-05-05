@@ -1,0 +1,21 @@
+wordset: map read.lines relative "unixdict.txt" => strip
+
+rotateable?: function [w][
+    loop 1..dec size w 'i [
+        rotated: rotate w i
+        if or? [rotated = w][not? contains? wordset rotated] -> 
+            return false
+    ]
+    return true
+]
+
+results: new []
+loop select wordset 'word [3 =< size word] 'word [
+    if rotateable? word ->
+        'results ++ @[ sort map 1..size word 'i [ rotate word i ]]
+]
+
+loop sort unique results 'result [
+    root: first result
+    print join.with: " -> " map 1..size root 'i [ rotate.left root i]
+]
