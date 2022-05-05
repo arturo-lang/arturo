@@ -1,0 +1,30 @@
+calc: function [f, n][
+    [a, b, temp]: 0.0
+
+    loop n..1 'i [
+        [a, b]: call f @[i]
+        temp: b // a + temp
+    ]
+    [a, b]: call f @[0]
+    return a + temp
+]
+
+sqrt2: function [n][
+    (n > 0)? -> [2.0, 1.0] -> [1.0, 1.0]
+]
+
+napier: function [n][
+    a: (n > 0)? -> to :floating n -> 2.0
+    b: (n > 1)? -> to :floating n-1 -> 1.0
+    @[a, b]
+]
+
+Pi: function [n][
+    a: (n > 0)? -> 6.0 -> 3.0
+    b: ((2 * to :floating n)-1) ^ 2
+    @[a, b]
+]
+
+print calc 'sqrt2 20
+print calc 'napier 15
+print calc 'Pi 10000
