@@ -1,0 +1,30 @@
+palindrome?: function [str]-> str = join reverse split str
+
+lps: function [s][
+    maxLength: 0
+    result: new []
+    loop 0..dec size s 'fst [
+        loop fst..dec size s 'lst [
+            candidate: slice s fst lst
+            if palindrome? candidate [
+                if? maxLength < size candidate [
+                    result: new @[candidate]
+                    maxLength: size candidate
+                ]
+                else [
+                    if maxLength = size candidate ->
+                        'result ++ candidate
+                ]
+            ]
+        ]
+    ]
+
+    return (maxLength > 1)? -> result
+                            -> []
+]
+
+loop ["babaccd", "rotator", "several", "palindrome", "piété", "tantôt", "étêté"] 'str [
+    palindromes: lps str
+    print [str "->" (0 < size palindromes)? -> join.with:", " palindromes 
+                                            -> "X"]
+]
