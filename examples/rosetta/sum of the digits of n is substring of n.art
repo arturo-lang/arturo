@@ -1,4 +1,3 @@
-print select 1..999 'num [
+print select 1..999 'num ->
     contains? to :string num 
               to :string sum digits num
-]
