@@ -1,0 +1,22 @@
+entropy: function [s][
+    t: #[]
+    loop s 'c [
+        unless key? t c -> t\[c]: 0
+        t\[c]: t\[c] + 1
+    ]
+    result: new 0
+    loop values t 'x ->
+        'result - (x//(size s)) * log x//(size s) 2
+
+    return result
+]
+
+print entropy "1223334444"
+; import tables, math
+ 
+; proc entropy(s: string): float =
+;   var t = initCountTable[char]()
+;   for c in s: t.inc(c)
+;   for x in t.values: result -= x/s.len * log2(x/s.len)
+ 
+; echo entropy("1223334444")
