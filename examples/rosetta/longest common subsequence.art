@@ -1,0 +1,27 @@
+lcs: function [a,b][
+    ls: new array.of: @[inc size a, inc size b] 0
+
+    loop.with:'i a 'x [
+        loop.with:'j b 'y [
+            ls\[i+1]\[j+1]: (x=y)? -> ls\[i]\[j] + 1
+                                   -> max @[ls\[i+1]\[j], ls\[i]\[j+1]]
+        ]
+    ]
+    [result, x, y]: @[new "", size a, size b]
+
+    while [and? [x > 0][y > 0]][
+        if? ls\[x]\[y] = ls\[x-1]\[y] -> x: x-1
+        else [
+            if? ls\[x]\[y] = ls\[x]\[y-1] -> y: y-1
+            else [
+                result: a\[x-1] ++ result
+                x: x-1
+                y: y-1
+            ]
+        ]
+    ]
+    return result
+]
+ 
+print lcs "1234" "1224533324"
+print lcs "thisisatest" "testing123testing"
