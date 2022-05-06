@@ -1,0 +1,6 @@
+wieferich?: function [n][
+    and? -> prime? n
+         -> zero? (dec 2 ^ n-1) % n ^ 2
+]
+
+print ["Wieferich primes less than 5000:" select 1..5000 => wieferich?]

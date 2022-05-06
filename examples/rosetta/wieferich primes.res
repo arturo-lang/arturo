@@ -1,0 +1,1 @@
+Wieferich primes less than 5000: [1093 3511]
