@@ -1,0 +1,29 @@
+abundant?: function [n, ff][
+    n < sum ff--n
+]
+
+semiperfect?: function [num,ff][
+    n: num
+    h: first ff
+    t: slice ff 1 dec size ff
+    print [n ff]
+
+    (and? [block? ff][positive? size ff])? [
+        (n < h)? -> semiperfect? n t
+                 -> any? @[
+                        n=h
+                        semiperfect? n-h, t
+                        semiperfect? n, t
+                 ]
+    ] -> false
+]
+
+cnt: 0
+i: 1
+while [cnt < 25][
+    f: factors i
+    if and? [abundant? i f][not? semiperfect? i f][
+        print color #cyan i
+    ]
+    i: i + 1
+]
