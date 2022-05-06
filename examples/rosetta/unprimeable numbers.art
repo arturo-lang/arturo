@@ -1,0 +1,30 @@
+unprimeable?: function [n][
+    if prime? n -> return false
+    nd: to :string n
+    loop.with:'i nd 'prevDigit [
+        loop `0`..`9` 'newDigit [
+            if newDigit <> prevDigit [
+                nd\[i]: newDigit
+                if prime? to :integer nd -> return false
+            ]
+        ]
+        nd\[i]: prevDigit
+    ]
+    return true
+]
+
+cnt: 0
+x: 1
+unprimeables: []
+while [cnt < 600][
+    if unprimeable? x [
+        unprimeables: unprimeables ++ x
+        cnt: cnt + 1
+    ]
+    x: x + 1
+]
+
+print "First 35 unprimeable numbers:"
+print first.n: 35 unprimeables
+print ""
+print ["600th unprimeable number:" last unprimeables]
