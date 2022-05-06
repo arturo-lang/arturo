@@ -19,7 +19,7 @@ newMaze: function [w,h][
     resetVisitingState: function [].export:[visited][
         visited: map 0..width-1 'w [ map 0..height-1 'h -> false ]
     ]
-
+ 
     validMove?: function [x,y][
         if not? and? contains? 0..width-1 x
                      contains? 0..height-1 y -> return false
