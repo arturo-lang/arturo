@@ -9,7 +9,8 @@ i: 1
 while [8 > size fortunates][
     m: 3
     pmi: primorial i
-    while [not? prime? m + pmi][m: m+2]
+    while -> not? prime? m + pmi
+          -> m: m+2
     fortunates: unique fortunates ++ m
     i: i + 1
 ]
