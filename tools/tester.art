@@ -30,6 +30,7 @@ canExecute?: function [scri][
             "iban"
             "integer overflow"
             "integer roots"
+            "jacobsthal numbers"
             "long multiplication"
             "lucas-lehmer test"
             "modular exponentation"
