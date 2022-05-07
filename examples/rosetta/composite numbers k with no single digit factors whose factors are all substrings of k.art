@@ -1,0 +1,17 @@
+valid?: function [n][
+    pf: factors.prime n
+    every? pf 'f ->
+        and? [contains? to :string n to :string f]
+             [1 <> size digits f]
+]
+
+cnt: 0
+i: new 3
+
+while [cnt < 10][
+    if and? [not? prime? i][valid? i][
+        print i
+        cnt: cnt + 1
+    ]
+    'i + 2
+]
