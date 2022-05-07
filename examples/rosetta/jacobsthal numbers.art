@@ -1,0 +1,28 @@
+J:  function [n]-> ((2^n) - (neg 1)^n)/3
+JL: function [n]-> (2^n) + (neg 1)^n
+JO: function [n]-> (J n) * (J n+1)
+
+printFirst: function [label, what, predicate, count][
+    print ["First" count label++":"]
+    result: new []
+    i: 0
+    while [count > size result][
+        num: do ~"|what| i"
+        if do predicate -> 'result ++ num
+        i: i + 1
+    ]
+
+    (predicate=[true])? [
+        loop split.every: 5 result 'row [
+            print map to [:string] row 'item -> pad item 12
+        ]
+    ][
+        loop result 'row -> print row
+    ]
+    print ""
+]
+
+printFirst "Jacobsthal numbers" 'J [true] 30
+printFirst "Jacobsthal-Lucas numbers" 'JL [true] 30
+printFirst "Jacobsthal oblong numbers" 'JO [true] 20
+printFirst "Jacobsthal primes" 'J [prime? num] 20
