@@ -30,5 +30,5 @@ while [15 > size first15][
 print ""
 print "The first 15 Duffinian triplets:"
 loop split.every: 5 first15 'row [
-    print map row 'item -> pad.center as.code item 17
+    print map row 'item -> pad.right as.code item 17
 ]
