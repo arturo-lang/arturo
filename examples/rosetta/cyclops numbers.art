@@ -1,0 +1,45 @@
+cyclops?: function [n][
+    digs: digits n
+    all? @[
+        -> odd? size digs
+        -> zero? digs\[(size digs)/2]
+        -> 1 = size match to :string n "0"
+    ]
+]
+
+blind: function [x][
+    s: to :string x 
+    half: (size s)/2 
+    to :integer (slice s 0 dec half)++(slice s inc half dec size s)
+]
+
+findFirst50: function [what, start, predicate][
+    print ["First 50" what++"cyclops numbers:"]
+    first50: new start
+    i: 100
+    while [50 > size first50][
+        if do predicate -> 'first50 ++ i
+        i: i + 1
+    ]
+
+    loop split.every:10 first50 'row [ 
+        print map to [:string] row 'item -> pad item 7
+    ]
+    print ""
+]
+
+findFirst50 "" [0] -> cyclops? i
+findFirst50 "prime " [] -> and? [prime? i][cyclops? i]
+findFirst50 "blind prime " [] -> all? @[
+    -> prime? i
+    -> cyclops? i
+    -> prime? blind i
+]
+
+candidates: map 1..999 'x ->
+    to :integer (to :string x)++"0"++(reverse to :string x)
+
+print "First 50 palindromic prime cyclops numbers:"
+loop split.every:10 first.n: 50 select candidates 'x -> and? [prime? x][cyclops? x] 'row [ 
+    print map to [:string] row 'item -> pad item 7
+]
