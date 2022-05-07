@@ -1,0 +1,15 @@
+deceptive?: function [n][
+    and? -> not? prime? n
+         -> zero? (to :integer repeat "1" n-1) % n
+]
+
+cnt: 0
+i: 3
+
+while [cnt < 10][
+    if deceptive? i [
+        print i
+        cnt: cnt + 1
+    ]
+    i: i + 2
+]
