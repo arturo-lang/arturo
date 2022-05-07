@@ -1,0 +1,34 @@
+duffinian?: function [n]->
+    and? [not? prime? n]
+         [
+             fn: factors n
+             [1] = intersection factors sum fn fn
+         ]
+
+first50: new []
+i: 0
+while [50 > size first50][
+    if duffinian? i -> 'first50 ++ i
+    i: i + 1
+]
+
+print "The first 50 Duffinian numbers:"
+loop split.every: 10 first50 'row [
+    print map to [:string] row 'item -> pad item 3
+]
+
+first15: new []
+i: 0
+while [15 > size first15][
+    if every? i..i+2 => duffinian? [
+        'first15 ++ @[@[i, i+1, i+2]]
+        i: i+2
+    ]
+    i: i + 1
+]
+
+print ""
+print "The first 15 Duffinian triplets:"
+loop split.every: 5 first15 'row [
+    print map row 'item -> pad.center as.code item 17
+]
