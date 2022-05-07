@@ -35,6 +35,7 @@ canExecute?: function [scri][
             "modular exponentation"
             "sylvester's sequence"
             "unicode strings"
+            "wieferich primes"
             "xml - input"
         ] -> return false
     ]
