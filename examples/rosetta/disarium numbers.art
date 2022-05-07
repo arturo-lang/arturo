@@ -1,0 +1,18 @@
+disarium?: function [x][
+    j: 0
+    psum: sum map digits x 'dig [
+        j: j + 1
+        dig ^ j
+    ]
+    return psum = x
+]
+
+cnt: 0
+i: 0
+while [cnt < 18][
+    if disarium? i [
+        print i
+        cnt: cnt + 1
+    ]
+    i: i + 1
+]
