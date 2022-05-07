@@ -1,0 +1,8 @@
+cullen: function [n]->
+    inc n * 2^n
+
+woodall: function [n]->
+    dec n * 2^n
+
+print ["First 20 cullen numbers:" join.with:" " to [:string] map 1..20 => cullen]
+print ["First 20 woodall numbers:" join.with:" " to [:string] map 1..20 => woodall]
