@@ -1,0 +1,16 @@
+G: function [n][
+    size select 2..n/2 'x ->
+        and? [prime? x][prime? n-x]
+]
+
+print "The first 100 G values:"
+loop split.every: 10 map select 4..202 => even? => G 'row [
+    print map to [:string] row 'item -> pad item 3
+]
+
+print ["\nG(1000000) =" G 1000000]
+
+csv: join.with:",\n" map select 4..2000 => even? 'x ->
+    ~"|x|, |G x|"
+
+write "comet.csv" csv
