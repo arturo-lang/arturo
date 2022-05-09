@@ -1,0 +1,53 @@
+partSum?: function [divs, sm][
+    if 0=sm -> return true
+    if 0=size divs -> return false
+    ; lst: 
+    ; dvs: 
+    ; print ["lst before:" lst]
+    result: partSum? slice divs 0 (size divs)-2 sm
+    if and? not? result (last divs) =< sum divs ->
+        result: partSum? slice divs 0 (size divs)-2 sm - lst
+    return result
+]
+; func isPartSum(divs: seq[int]; sum: int): bool =
+;   if sum == 0: return true
+;   if divs.len == 0: return false
+;   let last = divs[^1]
+;   let divs = divs[0..^2]
+;   result = isPartSum(divs, sum)
+;   if not result and last <= sum:
+;     result = isPartSum(divs, sum - last)
+ 
+zumkeller?: function [n][
+    divs: factors n
+    su: sum divs
+    if odd? su -> return false
+    if odd? n [
+        abundance: su - 2 * n
+        return and? abundance > 0 even? abundance
+    ]
+    return partSum? divs su/2
+]
+; func isZumkeller(n: int): bool =
+;   let divs = n.getDivisors()
+;   let sum = sum(divs)
+;   # If "sum" is odd, it can't be split into two partitions with equal sums.
+;   if sum.isOdd: return false
+;   # If "n" is odd use "abundant odd number" optimization.
+;   if n.isOdd:
+;     let abundance = sum - 2 * n
+;     return abundance > 0 and abundance.isEven
+;   # If "n" and "sum" are both even, check if there's a partition which totals "sum / 2".
+;   result = isPartSum(divs, sum div 2)
+
+zumkellers: new []
+i: 2
+while [220 > size zumkellers][
+    if zumkeller? i [
+        'zumkellers ++ i
+        print color #cyan to :string i
+    ]
+    i: i + 1
+]
+
+print zumkellers
