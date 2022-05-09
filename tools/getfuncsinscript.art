@@ -1,4 +1,4 @@
-stdLib: combine keys symbols values symbols
+stdLib: couple keys symbols values symbols
 stdLib: map select stdLib 'entry [
     result: false
     if function?.builtin entry\1 -> result: true
