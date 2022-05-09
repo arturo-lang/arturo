@@ -1,0 +1,17 @@
+do.import relative {getfuncsinscript.art}
+lookup: arg\0
+do [
+    lines: new 0
+    includedIn: new []
+    loop select list "examples/rosetta" 'p -> suffix? p ".art" 'file [
+        'lines + size read.lines file
+        sms: getFunctions file
+        if contains? sms to :word lookup ->
+            'includedIn ++ file
+    ]
+    print color #cyan "Searched through:"
+    print [lines "lines of code in total"]
+    print ""
+    print color #cyan "Found:"
+    inspect includedIn
+]
