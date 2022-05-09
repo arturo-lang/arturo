@@ -2,7 +2,7 @@ pascalTriangle: function [n][
     triangle: new [[1]]
 
     loop 1..dec n 'x [
-        'triangle ++ @[map combine (last triangle)++[0] [0]++(last triangle) 'x -> x\[0] + x\[1]]
+        'triangle ++ @[map couple (last triangle)++[0] [0]++(last triangle) 'x -> x\[0] + x\[1]]
     ]
 
     return triangle

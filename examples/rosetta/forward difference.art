@@ -3,7 +3,7 @@
 ; element-wise subtraction of two blocks. e.g.
 ; vsub [1 2 3] [1 2 3] ; [0 0 0]
 vsub: function [u v][
-    map combine u v 'pair -> pair\0 - pair\1
+    map couple u v 'pair -> pair\0 - pair\1
 ]
 
 differences: function [block][

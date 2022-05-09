@@ -5,7 +5,7 @@ perfectShuffle: function [deckSize][
 
     i: 1
     while [true][
-        deck: flatten combine first.n: halfDeck deck last.n: halfDeck deck
+        deck: flatten couple first.n: halfDeck deck last.n: halfDeck deck
         if deck = original -> return i
         i: i+1
     ]

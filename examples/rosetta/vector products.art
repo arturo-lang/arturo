@@ -2,7 +2,7 @@
 
 ; dot product
 dot: function [a b][
-    sum map combine a b => product
+    sum map couple a b => product
 ]
  
 ; cross product
