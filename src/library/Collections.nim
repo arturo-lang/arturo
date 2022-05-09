@@ -139,23 +139,6 @@ proc defineSymbols*() =
                     if blk.len == 0: push(newBlock())
                     else: push(newBlock(blk[0..^2]))
 
-    builtin "combine",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "get combination of elements in given collections",
-        args        = {
-            "collectionA"   : {Block},
-            "collectionB"   : {Block}
-        },
-        attrs       = NoAttrs,
-        returns     = {Block},
-        example     = """
-            combine ["one" "two" "three"] [1 2 3]
-            ; => [[1 "one"] [2 "two"] [3 "three"]]
-        """:
-            ##########################################################
-            push(newBlock(zip(cleanBlock(x.a),cleanBlock(y.a)).map((z)=>newBlock(@[z[0],z[1]]))))
-
     builtin "contains?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -201,6 +184,23 @@ proc defineSymbols*() =
                     push(newLogical(y in values))
                 else:
                     discard
+
+    builtin "couple",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "get combination of elements in given collections as array of tuples",
+        args        = {
+            "collectionA"   : {Block},
+            "collectionB"   : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Block},
+        example     = """
+            couple ["one" "two" "three"] [1 2 3]
+            ; => [[1 "one"] [2 "two"] [3 "three"]]
+        """:
+            ##########################################################
+            push(newBlock(zip(cleanBlock(x.a),cleanBlock(y.a)).map((z)=>newBlock(@[z[0],z[1]]))))
 
     builtin "drop",
         alias       = unaliased, 
