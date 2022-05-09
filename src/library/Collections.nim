@@ -319,7 +319,7 @@ proc defineSymbols*() =
         attrs       = {
             "n"     : ({Integer},"get first <n> items")
         },
-        returns     = {Any},
+        returns     = {Any,Null},
         example     = """
             print first "this is some text"       ; t
             print first ["one" "two" "three"]     ; one
@@ -328,11 +328,21 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (let aN = popAttr("n"); aN != VNULL):
-                if x.kind==String: push(newString(x.s[0..aN.i-1]))
-                else: push(newBlock(cleanBlock(x.a)[0..aN.i-1]))
+                if x.kind==String: 
+                    if x.s.len==0: push(newString(""))
+                    else: push(newString(x.s[0..aN.i-1]))
+                else: 
+                    let blk = cleanBlock(x.a)
+                    if blk.len==0: push(newBlock())
+                    else: push(newBlock(blk[0..aN.i-1]))
             else:
-                if x.kind==String: push(newChar(x.s.runeAt(0)))
-                else: push(cleanBlock(x.a)[0])
+                if x.kind==String: 
+                    if x.s.len==0: push(VNULL)
+                    else: push(newChar(x.s.runeAt(0)))
+                else: 
+                    let blk = cleanBlock(x.a)
+                    if blk.len==0: push(VNULL)
+                    else: push(blk[0])
 
     builtin "flatten",
         alias       = unaliased, 
@@ -630,16 +640,21 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (let aN = getAttr("n"); aN != VNULL):
-                if x.kind==String: push(newString(x.s[x.s.len-aN.i..^1]))
+                if x.kind==String: 
+                    if x.s.len==0: push(newString(""))
+                    else: push(newString(x.s[x.s.len-aN.i..^1]))
                 else: 
                     let blk = cleanBlock(x.a)
-                    push(newBlock(blk[blk.len-aN.i..^1]))
+                    if blk.len==0: push(newBlock())
+                    else: push(newBlock(blk[blk.len-aN.i..^1]))
             else:
                 if x.kind==String: 
-                    push(newChar(toRunes(x.s)[^1]))
+                    if x.s.len==0: push(VNULL)
+                    else: push(newChar(toRunes(x.s)[^1]))
                 else: 
                     let blk = cleanBlock(x.a)
-                    push(blk[blk.len-1])
+                    if blk.len==0: push(VNULL)
+                    else: push(blk[blk.len-1])
 
     builtin "max",
         alias       = unaliased, 
