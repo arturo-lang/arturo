@@ -224,12 +224,15 @@ proc defineSymbols*() =
                 if InPlace.kind==String:
                     InPlaced.s = InPlaced.s[y.i..^1]
                 elif InPlaced.kind==Block:
-                    InPlaced.a = InPlaced.a[y.i..^1]
+                    if InPlaced.a.len > 0:
+                        InPlaced.a = InPlaced.a[y.i..^1]
             else:
                 if x.kind==String:
                     push(newString(x.s[y.i..^1]))
                 elif x.kind==Block:
-                    push(newBlock(cleanBlock(x.a)[y.i..^1]))
+                    let blk = cleanBlock(x.a)
+                    if blk.len == 0: push(newBlock())
+                    else: push(newBlock(blk[y.i..^1]))
 
     builtin "empty",
         alias       = unaliased, 
