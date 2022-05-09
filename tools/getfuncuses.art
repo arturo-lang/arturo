@@ -3,15 +3,22 @@ lookup: arg\0
 do [
     lines: new 0
     includedIn: new []
+    asVariable: new []
     loop select list "examples/rosetta" 'p -> suffix? p ".art" 'file [
         'lines + size read.lines file
         sms: getFunctions file
-        if contains? sms to :word lookup ->
+        if contains? sms\0 to :word lookup ->
             'includedIn ++ file
+        if contains? sms\1 to :word lookup ->
+            'asVariable ++ file
     ]
     print color #cyan "Searched through:"
     print [lines "lines of code in total"]
     print ""
-    print color #cyan "Found:"
-    inspect includedIn
+    print color #cyan "Found as a function:"
+    (positive? size includedIn)? -> inspect sort includedIn -> print "NOT FOUND"
+
+    print ""
+    print color #cyan "Found as a variable:"
+    (positive? size asVariable)? -> inspect sort asVariable -> print "NOT FOUND"
 ]

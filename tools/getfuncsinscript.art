@@ -40,7 +40,7 @@ getFunctions: function [scr][
 
     getFunctionsInBlock code
 
-    if zero? size result -> return []
+    if zero? size result -> return [[][]]
 
     funcs: select sort unique result => word?
 
@@ -48,8 +48,11 @@ getFunctions: function [scr][
     syms: select syms 'sym -> key? symAliases to :string sym
     syms: map syms 'sym -> to :word symAliases\[to :string sym]
 
-    return select sort unique funcs ++ syms 'ss ->
+    ffs: select sort unique funcs ++ syms 'ss ->
         and? [contains? keys symbols to :string ss][function?.builtin var to :literal ss]
+    non: (sort unique funcs ++ syms)--ffs
+
+    return @[ffs, non]
 ]
 
 if? standalone? [
