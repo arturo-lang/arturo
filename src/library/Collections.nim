@@ -396,7 +396,7 @@ proc defineSymbols*() =
             print user\name               ; John
             
             print get user 'surname       ; Doe
-            print user\["username"]       ; Doe
+            print user\surname            ; Doe
             ..........
             arr: ["zero" "one" "two"]
             
