@@ -129,12 +129,15 @@ proc defineSymbols*() =
                 if InPlace.kind==String:
                     InPlaced.s = InPlaced.s[0..^2]
                 elif InPlaced.kind==Block:
-                    InPlaced.a = InPlaced.a[0..^2]
+                    if InPlaced.a.len > 0:
+                        InPlaced.a = InPlaced.a[0..^2]
             else:
                 if x.kind==String:
                     push(newString(x.s[0..^2]))
                 elif x.kind==Block:
-                    push(newBlock(cleanBlock(x.a)[0..^2]))
+                    let blk = cleanBlock(x.a)
+                    if blk.len == 0: push(newBlock())
+                    else: push(newBlock(blk[0..^2]))
 
     builtin "combine",
         alias       = unaliased, 
