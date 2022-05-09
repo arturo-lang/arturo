@@ -631,7 +631,7 @@ proc defineSymbols*() =
         attrs       = {
             "n"     : ({Integer},"get last <n> items")
         },
-        returns     = {Any},
+        returns     = {Any,Null},
         example     = """
             print last "this is some text"       ; t
             print last ["one" "two" "three"]     ; three
@@ -924,7 +924,7 @@ proc defineSymbols*() =
             "collection"    : {Block}
         },
         attrs       = NoAttrs,
-        returns     = {Any},
+        returns     = {Any, Null},
         example     = """
             sample [1 2 3]        ; (return a random number from 1 to 3)
             print sample ["apple" "appricot" "banana"]
