@@ -1,2 +1,2 @@
-h: dictionary.raw flatten combine [a b c d] [1 2 3 4]
+h: dictionary.raw flatten couple [a b c d] [1 2 3 4]
 print h

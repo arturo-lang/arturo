@@ -5,7 +5,7 @@ sortTable: function [tbl][
     unless null? attr 'reverse -> reversed?: true
 
     result: new sort.by: column map tbl 'r [
-        to :dictionary flatten combine 0..dec size r r
+        to :dictionary flatten couple 0..dec size r r
     ]
 
     if reversed? -> reverse 'result
