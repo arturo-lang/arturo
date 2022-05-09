@@ -931,7 +931,9 @@ proc defineSymbols*() =
             ; apple
         """:
             ##########################################################
-            push(sample(cleanBlock(x.a)))
+            let blk = cleanBlock(x.a)
+            if blk.len == 0: push(VNULL)
+            else: push(sample(blk))
 
     builtin "set",
         alias       = unaliased, 
