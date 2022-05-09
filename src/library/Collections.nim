@@ -1063,9 +1063,18 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==String:
-                push(newString(x.s.runeSubStr(y.i,z.i-y.i+1)))
+                if x.s.len==0: push(newString(""))
+                else:
+                    if y.i >= 0 and z.i <= x.s.runeLen:
+                        push(newString(x.s.runeSubStr(y.i,z.i-y.i+1)))
+                    else:
+                        push(newString(""))
             else:
-                push(newBlock(cleanBlock(x.a)[y.i..z.i]))
+                let blk = cleanBlock(x.a)
+                if y.i >= 0 and z.i <= blk.len-1:
+                    push(newBlock(blk[y.i..z.i]))
+                else:
+                    push(newBlock())
 
     builtin "sort",
         alias       = unaliased, 
@@ -1386,16 +1395,32 @@ proc defineSymbols*() =
             take 'arr 3                   ; arr: [1 2 3]
         """:
             ##########################################################
+            var upperLimit = y.i-1
             if x.kind==Literal:
                 if InPlace.kind==String:
-                    InPlaced.s = InPlaced.s[0..y.i-1]
+                    if x.s.len > 0:
+                        if upperLimit > InPlaced.s.len - 1:
+                            upperLimit = InPlaced.s.len-1
+                        InPlaced.s = InPlaced.s[0..upperLimit]
                 elif InPlaced.kind==Block:
-                    InPlaced.a = InPlaced.a[0..y.i-1]
+                    if InPlaced.a.len > 0:
+                        if upperLimit > InPlaced.a.len - 1:
+                            upperLimit = InPlaced.a.len-1
+                        InPlaced.a = InPlaced.a[0..upperLimit]
             else:
                 if x.kind==String:
-                    push(newString(x.s[0..y.i-1]))
+                    if x.s.len==0: push(newString(""))
+                    else: 
+                        if upperLimit > x.s.len - 1:
+                            upperLimit = x.s.len-1
+                        push(newString(x.s[0..upperLimit]))
                 elif x.kind==Block:
-                    push(newBlock(cleanBlock(x.a)[0..y.i-1]))
+                    let blk = cleanBlock(x.a)
+                    if blk.len==0: push(newBlock())
+                    else: 
+                        if upperLimit > x.a.len - 1:
+                            upperLimit = x.a.len-1
+                        push(newBlock(blk[0..upperLimit]))
 
     builtin "unique",
         alias       = unaliased, 
