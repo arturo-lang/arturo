@@ -1,0 +1,10 @@
+lists: [
+    [3,4,34,25,9,12,36,56,36]
+    [2,8,81,169,34,55,76,49,7]
+    [75,121,75,144,35,16,46,35]
+]
+
+squares: map 1..inc to :integer sqrt max flatten lists 'x -> x^2
+square?: function [n]-> contains? squares n
+
+print select sort fold.seed:[] lists [a,b][a++b] => square?
