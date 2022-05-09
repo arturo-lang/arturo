@@ -1076,23 +1076,25 @@ proc defineSymbols*() =
                 sortOrdering = SortOrder.Descending
 
             if x.kind==Block: 
-                if (let aBy = popAttr("by"); aBy != VNULL):
-                    var sorted: ValueArray = cleanBlock(x.a).sorted(
-                        proc (v1, v2: Value): int = 
-                            cmp(v1.d[aBy.s], v2.d[aBy.s]), order=sortOrdering)
-                    push(newBlock(sorted))
+                let blk = cleanBlock(x.a)
+                if blk.len==0: push(newBlock())
                 else:
-                    let blk = cleanBlock(x.a)
-                    if (let aAs = popAttr("as"); aAs != VNULL):
-                        push(newBlock(blk.unisorted(aAs.s, sensitive = popAttr("sensitive")!=VNULL, order = sortOrdering)))
+                    if (let aBy = popAttr("by"); aBy != VNULL):
+                        var sorted: ValueArray = blk.sorted(
+                            proc (v1, v2: Value): int = 
+                                cmp(v1.d[aBy.s], v2.d[aBy.s]), order=sortOrdering)
+                        push(newBlock(sorted))
                     else:
-                        if (popAttr("sensitive")!=VNULL):
-                            push(newBlock(blk.unisorted("en", sensitive=true, order = sortOrdering)))
+                        if (let aAs = popAttr("as"); aAs != VNULL):
+                            push(newBlock(blk.unisorted(aAs.s, sensitive = popAttr("sensitive")!=VNULL, order = sortOrdering)))
                         else:
-                            if blk[0].kind==String:
-                                push(newBlock(blk.unisorted("en", order = sortOrdering)))
+                            if (popAttr("sensitive")!=VNULL):
+                                push(newBlock(blk.unisorted("en", sensitive=true, order = sortOrdering)))
                             else:
-                                push(newBlock(blk.sorted(order = sortOrdering)))
+                                if blk[0].kind==String:
+                                    push(newBlock(blk.unisorted("en", order = sortOrdering)))
+                                else:
+                                    push(newBlock(blk.sorted(order = sortOrdering)))
 
             elif x.kind==Dictionary:
                 var sorted = x.d
@@ -1105,21 +1107,22 @@ proc defineSymbols*() =
 
             else: 
                 if InPlace.kind==Block:
-                    if (let aBy = popAttr("by"); aBy != VNULL):
-                        InPlace.a.sort(
-                            proc (v1, v2: Value): int = 
-                                cmp(v1.d[aBy.s], v2.d[aBy.s]), order=sortOrdering)
-                    else:
-                        if (let aAs = popAttr("as"); aAs != VNULL):
-                            InPlaced.a.unisort(aAs.s, sensitive = popAttr("sensitive")!=VNULL, order = sortOrdering)
+                    if InPlace.a.len > 0:
+                        if (let aBy = popAttr("by"); aBy != VNULL):
+                            InPlaced.a.sort(
+                                proc (v1, v2: Value): int = 
+                                    cmp(v1.d[aBy.s], v2.d[aBy.s]), order=sortOrdering)
                         else:
-                            if (popAttr("sensitive")!=VNULL):
-                                InPlaced.a.unisort("en", sensitive=true, order = sortOrdering)
+                            if (let aAs = popAttr("as"); aAs != VNULL):
+                                InPlaced.a.unisort(aAs.s, sensitive = popAttr("sensitive")!=VNULL, order = sortOrdering)
                             else:
-                                if InPlace.a[0].kind==String:
-                                    InPlaced.a.unisort("en", order = sortOrdering)
+                                if (popAttr("sensitive")!=VNULL):
+                                    InPlaced.a.unisort("en", sensitive=true, order = sortOrdering)
                                 else:
-                                    InPlaced.a.sort(order = sortOrdering)
+                                    if InPlace.a[0].kind==String:
+                                        InPlaced.a.unisort("en", order = sortOrdering)
+                                    else:
+                                        InPlaced.a.sort(order = sortOrdering)
                 else:
                     if (popAttr("values") != VNULL):
                         InPlaced.d.sort(proc (x, y: (string,Value)): int = cmp(x[1], y[1]), order=sortOrdering)
