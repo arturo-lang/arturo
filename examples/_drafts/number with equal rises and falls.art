@@ -1,0 +1,57 @@
+difs: #[]
+
+loop 0..9 'x [
+    difs\[@[x]]: @[0 x]
+    loop 0..9 'y [
+        res: (x=y)?-> 0 [(x>y)?->neg 1->1]
+        difs\[@[x y]]: @[res y]
+        loop 0..9 'z [
+            zz: (z=y)?->res [
+                (y>z)?->res-1
+                      ->res+1
+            ]
+            difs\[@[x y z]]: @[zz z]
+        ]
+    ]
+]
+
+equalRF?: function [n][
+    digs: digits n
+    (even? size digs)?[
+        (digs=squeeze digs)? -> return false []
+    ][]
+    (4 > size digs)? -> return difs\[digs]\0=0 [
+        parts: split.every: 3 digs
+        rezu: fold.seed: difs\[first parts] drop parts 1 [a,b]->
+            @[a\0 + difs\[b]\0 + difs\[@[a\1 b\0]]\0, last b]
+
+        return rezu\0=0
+    ]
+]
+
+i: 10
+first200: new 1..9
+while [200 > size first200][
+    if equalRF? i -> 'first200 ++ i
+    i: i + 1
+]
+
+print "First 200 numbers in the sequence:"
+loop split.every:20 first200 'row [
+    print map to [:string] row 'item -> pad item 3
+]
+
+cnt: new 9
+i: new 10 
+num: 0
+while [cnt < 10000000][
+    if equalRF? i [
+        inc 'cnt
+        if zero? cnt%1000 -> print cnt
+        num: i
+    ]
+    inc 'i
+]
+
+print ""
+print ["10,000,000th number in the sequence:" num]
