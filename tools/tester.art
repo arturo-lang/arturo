@@ -17,24 +17,25 @@ canExecute?: function [scri][
     scr: extract.filename scri
     if sys\release='mini [
         if in? scr [
-            "branching"
-            "ackermann function"
-            "loops - continue"
-            "next special primes"
-            "sorting algorithms - cycle sort"
-            "sorting algorithms - pancake sort"
-            
-            "trigonometric functions"
-
             "runtime.NumberOutOfPermittedRange"
+
+            "branching"
+
+            "ackermann function"
+            "curzon numbers"
             "iban"
             "integer overflow"
             "integer roots"
             "jacobsthal numbers"
             "long multiplication"
+            "loops - continue"
             "lucas-lehmer test"
             "modular exponentation"
+            "next special primes"
+            "sorting algorithms - cycle sort"
+            "sorting algorithms - pancake sort"
             "sylvester's sequence"
+            "trigonometric functions"
             "unicode strings"
             "wieferich primes"
             "xml - input"
