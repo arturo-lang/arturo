@@ -1,8 +1,8 @@
 define :point [x,y][]
 define :line [a, b][
     init: [
-        this\slope: (this\b\y-this\a\y)/(this\b\x-this\a\x)
-        this\yInt: this\a\y - this\slope * this\a\x
+        this\slope: div this\b\y-this\a\y this\b\x-this\a\x
+        this\yInt: this\a\y - this\slope*this\a\x
     ]
 ]
 
@@ -11,7 +11,7 @@ evalX: function [line, x][
 ]
 
 intersect: function [line1, line2][
-    x: (line2\yInt - line1\yInt) // (line1\slope - line2\slope)
+    x: div line2\yInt-line1\yInt line1\slope-line2\slope
     y: evalX line1 x
 
     to :point @[x y]
