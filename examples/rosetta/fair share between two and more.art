@@ -1,0 +1,16 @@
+thueMorse: function [base, howmany][
+    i: 0
+    result: new []
+    while [howmany > size result][
+        'result ++ (sum digits.base:base i) % base
+        i: i + 1
+    ]
+
+    return result
+]
+
+loop [2 3 5 11] 'b ->
+    print [
+        (pad.right "Base "++(to :string b) 7)++" =>" 
+        join.with:" " map to [:string] thueMorse b 25 'x -> pad x 2
+    ]
