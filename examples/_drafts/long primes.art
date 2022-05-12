@@ -1,0 +1,28 @@
+period: function [n][
+    r: 1
+    loop 1..n+1 'i ->
+        r: 10 * r % n
+    r1: r
+    result: new 0
+    while ø [
+        r: 10 * r % n
+        inc 'result
+        if r=r1 -> return result
+    ]
+    return result
+]
+
+count: 0
+loop select 3..32000 => prime? 'x [
+    ;print x
+    if (x-1) = period x [
+        count: count + 1
+        print x
+    ]
+]
+
+print ["Long primes up to 500:" join to [:string] select longPrimes 'lp -> lp =< 500]
+
+loop [500, 1000, 2000, 4000, 8000, 16000, 32000] 'lim [
+    print ["Number of long primes up to" lim "->" size select longPrimes 'lp -> lp =< lim ]
+]
