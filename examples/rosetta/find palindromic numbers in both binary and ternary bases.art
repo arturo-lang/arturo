@@ -1,0 +1,47 @@
+pal2?: function [n][
+    digs2: digits.base:2 n
+    return digs2 = reverse digs2
+]
+
+revNumber: function [z][
+    u: z
+    result: 0
+    while [u > 0][
+        result: result + (2*result) + u%3
+        u: u/3
+    ]
+    return result
+]
+
+pal23: function [][
+    p3: 1
+    cnt: 1
+    print [
+        pad (to :string 0)++" :" 14
+        pad.right join to [:string] digits.base:2 0 37 "->" 
+        join to [:string] digits.base:3 0
+    ]
+    loop 0..31 'p [
+        while [(p3*(1+3*p3)) < shl 1 2*p]-> p3: p3*3
+
+        bound: (shl 1 2*p)/3*p3
+        limDown: max @[p3/3, bound]
+        limUp: min @[2*bound, p3-1]
+        if limUp >= limDown [
+            loop limDown..limUp 'k [
+                n: (revNumber k) + (1+3*k)*p3
+                if pal2? n [
+                    print [
+                        pad (to :string n)++" :" 14
+                        pad.right join to [:string] digits.base:2 n 37 "->" 
+                        join to [:string] digits.base:3 n
+                    ]
+                    cnt: cnt + 1
+                    if cnt=6 -> return null
+                ]
+            ]
+        ]
+    ]
+]
+
+pal23
