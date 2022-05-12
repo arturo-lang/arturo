@@ -1,0 +1,61 @@
+jacobi: function [n,k][
+    N: n % k
+    K: k
+
+    result: 1
+    while [N <> 0][
+        while [even? N][
+            N: shr N 1
+            if contains? [3 5] and K 7 ->
+                result: neg result
+        ]
+        [N,K]: @[K,N]
+        if and? 3=and N 3 3=and K 3 ->
+            result: neg result
+        N: N % K
+    ]
+    if K <> 1 ->
+        result: 0
+
+    return result
+]
+
+print ["" "k/n" "|"] ++ map to [:string] 1..20 'item -> pad.left item 2
+print repeat "=" 67
+loop range.step:2 1 21 'k [
+    print [
+        "" pad to :string k 3 "|" join.with:" " map to [:string] map 1..20 'n -> jacobi n k
+                                                                     'item -> pad.left item 2
+    ]
+]
+
+; func jacobi(n, k: int): range[-1..1] =
+;   assert k > 0 and k.isOdd
+;   var n = n mod k
+;   var k = k
+;   result = 1
+;   while n != 0:
+;     while n.isEven:
+;       n = n shr 1
+;       if (k and 7) in [3, 5]:
+;         result = -result
+;     swap n, k
+;     if (n and 3) == 3 and (k and 3) == 3:
+;       result = -result
+;     n = n mod k
+;   if k != 1: result = 0
+ 
+; when isMainModule:
+ 
+;   import strutils
+ 
+;   stdout.write "n/k|"
+;   for n in 1..20:
+;     stdout.write align($n, 3)
+;   echo '\n' & repeat("—", 64)
+ 
+;   for k in countup(1, 21, 2):
+;     stdout.write align($k, 2), " |"
+;     for n in 1..20:
+;       stdout.write align($jacobi(n, k), 3)
+;     echo ""
