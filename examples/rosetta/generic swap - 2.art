@@ -1,0 +1,12 @@
+swap: function [a,b].exportable [ 
+    tmp: var b
+    let b var a
+    let a tmp 
+]
+
+c: 1
+d: 2
+print [c d]
+
+swap 'c 'd
+print [c d]
