@@ -1,0 +1,41 @@
+gen: function [n][
+    result: n
+    while [not? in? result [1 89]][
+        s: new 0
+        loop digits result 'd ->
+            's + d*d
+        result: s
+    ]
+    return result
+]
+
+chainsEndingWith89: function [ndigits][
+    [prevCount,currCount]: #[]
+    loop 0..9 'i -> prevCount\[i*i]: 1
+
+    res: new 0
+
+    loop 2..ndigits 'x [
+        currCount: #[]
+        loop prevCount [val,cnt][
+            v: to :integer val
+            loop 0..9 'newDigit [
+                mm: v + newDigit*newDigit
+                if not? key? currCount mm -> currCount\[mm]: 0
+                currCount\[mm]: currCount\[mm] + cnt
+            ]
+        ]
+        prevCount: currCount
+    ]
+    loop currCount [val,cnt][
+        v: to :integer val
+        if and? [v <> 0] [89=gen v] ->
+            'res + cnt
+    ]
+    return res
+]
+
+print [
+    "Number chains for integers <100000000 that end with an 89 value:" 
+    chainsEndingWith89 8
+]
