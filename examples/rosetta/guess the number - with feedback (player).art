@@ -1,0 +1,36 @@
+print {:
+Think of a number between 1 and 10 and wait for me to guess it.
+On every guess of mine you should state whether the guess was
+too high, too low, or equal to your number by typing h, l, or =
+:}
+
+rmin: 1
+rmax: 10
+
+while ø [
+    guess: random rmin rmax
+    print ["My guess is:" guess]
+    inputOk: false
+    while [not? inputOk][
+        hle: strip input "How did I do? (h)igh, (l)ow, (=): "
+        case [hle]
+            when? [="h"][
+                if? rmin =< dec guess [rmax: dec guess, inputOk: true]
+                else -> print "\tThat doesn't make any sense. I cannot find the number..."
+            ]
+            when? [="l"][
+                if? (inc guess) =< rmax [rmin: inc guess, inputOk: true]
+                else -> print "\tThat doesn't make any sense. I cannot find the number..."
+            ]
+            when? [="="][
+                print ""
+                print "Great! I found it! :)"
+                print "Thanks for keeping the score."
+                exit
+            ]
+            else [
+                print "\tPlease, check your input; it doesn't appear to be correct!"
+            ]
+    ]
+    print ""
+]
