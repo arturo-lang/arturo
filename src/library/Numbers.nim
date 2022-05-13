@@ -979,22 +979,27 @@ proc defineSymbols*() =
             var step = 1
             if (let aStep = popAttr("step"); aStep != VNULL):
                 step = aStep.i
+                if step < 0:
+                    step = -step
 
-            if limX < limY:
-                var j = limX
-                while j <= limY:
-                    res.add(j)
-                    j += step
+            if step==0:
+                push newBlock()
             else:
-                var j = limX
-                while j >= limY:
-                    res.add(j)
-                    j -= step
+                if limX < limY:
+                    var j = limX
+                    while j <= limY:
+                        res.add(j)
+                        j += step
+                else:
+                    var j = limX
+                    while j >= limY:
+                        res.add(j)
+                        j -= step
 
-            if x.kind==Char and y.kind==Char:
-                push newBlock(res.map((x) => newChar(chr(x))))
-            else:
-                push newBlock(res.map((x) => newInteger(x)))
+                if x.kind==Char and y.kind==Char:
+                    push newBlock(res.map((x) => newChar(chr(x))))
+                else:
+                    push newBlock(res.map((x) => newInteger(x)))
 
     builtin "reciprocal",
         alias       = unaliased, 
