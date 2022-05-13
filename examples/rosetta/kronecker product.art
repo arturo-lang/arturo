@@ -1,0 +1,52 @@
+define :matrix [X][
+    print: [
+        result: ""
+        loop this\X 'arr [
+            result: result ++ "[" ++ 
+                        (join.with:" " map to [:string] arr 'item -> pad item 3) ++ 
+                    "]\n"
+        ]
+        return result
+    ]
+]
+
+kroneckerProduct: function [a,b][
+    M: size a\X, N: size first a\X
+    P: size b\X, Q: size first b\X
+    result: to :matrix @[new array.of:M*P array.of:N*Q 0]
+
+    loop 0..dec M 'i [
+        loop 0..dec N 'j [
+            loop 0..dec P 'k [
+                loop 0..dec Q 'l [
+                    result\X\[k + i * P]\[l + j * Q]: a\X\[i]\[j] * b\X\[k]\[l]
+                ]
+            ]
+        ]
+    ]
+    return result
+] 
+ 
+A1: to :matrix [[[1 2] [3 4]]]
+B1: to :matrix [[[0 5] [6 7]]]
+
+print "Matrix A:"
+print A1
+
+print "Matrix B:"
+print B1
+
+print "Kronecker Product:"
+print kroneckerProduct A1 B1
+
+A2: to :matrix [[[0 1 0] [1 1 1] [0 1 0]]]
+B2: to :matrix [[[1 1 1 1] [1 0 0 1] [1 1 1 1]]]
+
+print "Matrix A:"
+print A2
+
+print "Matrix B:"
+print B2
+
+print "Kronecker Product:"
+print kroneckerProduct A2 B2
