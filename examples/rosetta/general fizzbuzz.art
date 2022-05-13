@@ -1,0 +1,11 @@
+maxNum: to :integer strip input "Set maximum number: "
+facts: map 1..3 'x -> split.words strip input ~"Enter factor |x|: "
+loop 1..maxNum 'i [
+    printNum: true
+    loop facts 'fact ->
+        if zero? i % to :integer fact\0 [
+            prints fact\1
+            printNum: false
+        ]
+    print (printNum)? -> i -> ""
+]
