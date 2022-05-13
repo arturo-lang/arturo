@@ -1,0 +1,1 @@
+Intersection at: [x:0.0 y:-5.0 z:5.0]

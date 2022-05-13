@@ -1,0 +1,28 @@
+define :vector [x, y, z][]
+
+addv: function [v1 :vector, v2 :vector]->
+    to :vector @[v1\x+v2\x, v1\y+v2\y, v1\z+v2\z]
+
+subv: function [v1 :vector, v2 :vector]->
+    to :vector @[v1\x-v2\x, v1\y-v2\y, v1\z-v2\z]
+
+mulv: function [v1 :vector, v2 :vector :floating][
+    if? is? :vector v2
+        -> return sum @[v1\x*v2\x v1\y*v2\y v1\z*v2\z]
+    else 
+        -> return to :vector @[v1\x*v2, v1\y*v2, v1\z*v2]
+]
+
+intersect: function [lV, lP, pV, pP][
+    tdenom: mulv pV lV
+    if zero? tdenom -> return to :vector @[∞, ∞, ∞]
+    t: (mulv pV subv pP lP) / tdenom
+    return addv mulv lV t lP
+]
+
+coords: intersect to :vector @[0.0, neg 1.0, neg 1.0]
+                  to :vector @[0.0, 0.0, 10.0]
+                  to :vector @[0.0, 0.0, 1.0]
+                  to :vector @[0.0, 0.0, 5.0]
+
+print ["Intersection at:" coords]
