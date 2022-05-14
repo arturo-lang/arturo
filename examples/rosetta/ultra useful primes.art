@@ -10,6 +10,5 @@ ultraUseful: function [n][
 
 print [pad "n" 3 "|" pad.right "k" 4]
 print repeat "-" 10
-loop 1..10 'x [
+loop 1..10 'x -> 
     print [(pad to :string x 3) "|" (pad.right to :string ultraUseful x 4)]
-]
