@@ -1,0 +1,9 @@
+n: 20
+triplets: @[
+    loop 1..n 'x [
+        loop x..n 'y [
+            loop y..n 'z [if (z^2) = (x^2)+(y^2) -> @[x y z]]
+        ]
+    ]
+]
+print triplets
