@@ -6,7 +6,6 @@ ultraUseful: function [n][
         p: p-2
         k: k+2
     ]
-    return null
 ]
 
 print [pad "n" 3 "|" pad.right "k" 4]
