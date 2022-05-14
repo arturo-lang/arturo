@@ -1,0 +1,13 @@
+f: function [x :integer, y :integer][
+    ;; description: « takes two integers and adds them up
+    ;; options: [
+    ;;      double: « also multiply by two
+    ;; ]
+    ;; returns: :integer
+
+    result: x+y
+    if not? null? attr 'double -> result: result * 2
+    return result
+]
+
+info'f
