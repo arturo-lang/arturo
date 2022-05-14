@@ -1,0 +1,7 @@
+define :myClass [name,surname][]
+
+myInstance: to :myClass ["John" "Doe"]
+print myInstance
+
+myInstance\age: 35
+print myInstance
