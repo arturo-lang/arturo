@@ -1,0 +1,30 @@
+LIM: 1000000
+
+findDiffs: function [r][
+    if r=[1] -> return [[2 3]]
+    i: 3
+    tupled: map 0..dec size r 'x -> fold slice r 0 x [a b][a+b]
+    diffs: new []
+    while [i < LIM][
+        if prime? i [
+            prset: map tupled 't -> i + t
+            if every? prset 'elem -> prime? elem [
+                'diffs ++ @[@[i] ++ prset]
+            ]
+        ]
+        i: i + 2
+    ]
+
+    diffs: filter diffs 'dd [
+        some? range (first dd)+1 (last dd)-1 'x -> and? [prime? x][not? contains? dd x]
+    ]
+    return diffs
+]
+
+loop [[2] [1] [2 2] [2 4] [4 2] [6 4 2]] 'rng [
+    print ["Differences of" join.with:", " to [:string] rng]
+    diffs: findDiffs rng
+    print ["\tFirst: " join.with:" " to [:string] first diffs]
+    print ["\tLast: " join.with:" " to [:string] last diffs]
+    print ["\tCount: " size diffs]
+]
