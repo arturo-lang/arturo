@@ -1,0 +1,20 @@
+cline: function [n,a,b,cde][
+    print (pad to :string first cde n+1) ++
+          (repeat to :string cde\1 dec 9*a)++
+          (to :string cde\0)++
+          (2 < size cde)? -> pad to :string cde\2 b+1 -> ""
+]
+
+cuboid: function [x,y,z][
+    cline y+1 x 0 "+-"
+    loop 1..y 'i -> cline 1+y-i x i-1 "/ |"
+    cline 0 x y "+-|"
+    loop 0..((4*z)-y)-3 'i -> cline 0 x y "| |"
+    cline 0 x y "| +"
+    loop (y-1)..0 'i -> cline 0 x i "| /"
+    cline 0 x 0 "+-\n"
+]
+
+cuboid 2 3 4
+cuboid 1 1 1
+cuboid 6 2 1
