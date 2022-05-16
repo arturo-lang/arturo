@@ -1,0 +1,22 @@
+setBits: function [inp, n][
+    l: size inp
+    result: inp
+    if n > 0 [
+        pattern: to :regex ~"1[01]{|,n|}"
+        replacement: repeat "1" n+1
+        inspect match inp ++ (repeat "0" l) pattern
+        result: replace inp ++ (repeat "0" l) pattern replacement
+    ]
+    return first.n: l result
+]
+
+loop ["1000" "0100" "0010" "0000"] 'x ->
+    print [x "=>" setBits x 2]
+
+print ""
+str: "010000000000100000000010000000010000000100000010000010000100010010"
+loop 0..3 'N [
+    print ["for n:" N "and e:" size str]
+    print ["\t" pad.left "input:" 8 str]
+    print ["\t" pad.left "result:" 8 setBits str N]
+]
