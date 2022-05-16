@@ -1,0 +1,27 @@
+descending: @[
+    loop 1..9 'a [
+        loop 1..dec a 'b [
+            loop 1..dec b 'c [
+                loop 1..dec c 'd [
+                    loop 1..dec d 'e [
+                        loop 1..dec e 'f [
+                            loop 1..dec f 'g [
+                                loop 1..dec g 'h [
+                                    loop 1..dec h 'i -> @[a b c d e f g h i]
+                                    @[a b c d e f g h]]
+                            @[a b c d e f g]]
+                        @[a b c d e f]]
+                    @[a b c d e]]
+                @[a b c d]]
+            @[a b c]]
+        @[a b]]
+    @[a]]
+]
+
+descending: filter descending 'd -> some? d 'n [not? positive? n] 
+descending: filter descending 'd -> d <> unique d
+descending: sort map descending 'd ->  to :integer join to [:string] d
+
+loop split.every:10 select descending => prime? 'row [
+    print map to [:string] row 'item -> pad item 8
+]
