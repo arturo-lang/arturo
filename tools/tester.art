@@ -22,6 +22,7 @@ canExecute?: function [scri][
             "branching"
 
             "ackermann function"
+            "arbitrary-precision integers - included"
             "curzon numbers"
             "iban"
             "integer overflow"
