@@ -1,0 +1,17 @@
+total: 12
+while ø [
+    tk: 0 
+    print "YOUR turn:"
+    while [not? contains? 1..3 tk: <= to :integer input "How many tokens will you take? (1-3) "][]
+    total: total-tk
+    print [total "tokens remaining\n"]
+
+    print ["COMPUTER's turn:"]
+    print ["taking:" 4-tk]
+    total: total-(4-tk)
+    print [total "tokens remaining\n"]
+    if total=0 [
+        print "COMPUTER won. :)"
+        break
+    ]
+]
