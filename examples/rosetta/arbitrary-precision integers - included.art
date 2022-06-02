@@ -1,0 +1,3 @@
+num: to :string 5^4^3^2
+
+print [first.n: 20 num ".." last.n: 20 num "=>" size num "digits"]
