@@ -52,14 +52,14 @@ jobs:
           mkdir nim
           curl -L https://nim-lang.org/download/dlls.zip -o dist/dlls.zip
           curl -L https://arturo-lang.s3.amazonaws.com/extra-dlls.zip -o dist/extradlls.zip
-          curl -L https://nim-lang.org/download/nim-1.6.4_x64.zip -o dist/nim.zip
+          curl -L https://nim-lang.org/download/nim-1.6.6_x64.zip -o dist/nim.zip
           7z x dist/dlls.zip -obin
           7z x dist/extradlls.zip -obin
           7z x dist/nim.zip -onim
 
           cp src/extras/webview/deps/dlls/x64/*.dll bin
           
-          export PATH="${{ github.workspace }}/nim/nim-1.6.4/bin":$PATH
+          export PATH="${{ github.workspace }}/nim/nim-1.6.6/bin":$PATH
 
           nim --version
 
@@ -73,11 +73,11 @@ jobs:
           mkdir dist
           mkdir nim
           curl -L https://nim-lang.org/download/dlls.zip -o dist/dlls.zip
-          curl -L https://nim-lang.org/download/nim-1.6.4_x64.zip -o dist/nim.zip
+          curl -L https://nim-lang.org/download/nim-1.6.6_x64.zip -o dist/nim.zip
           7z x dist/dlls.zip -obin
           7z x dist/nim.zip -onim
           
-          export PATH="${{ github.workspace }}/nim/nim-1.6.4/bin":$PATH
+          export PATH="${{ github.workspace }}/nim/nim-1.6.6/bin":$PATH
 
           ./build.nims install ${{ matrix.version }} log
 
