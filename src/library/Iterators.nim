@@ -31,6 +31,8 @@ proc defineSymbols*() =
     when defined(VERBOSE):
         echo "- Importing: Iterators"
 
+    # TODO(Iterators\chunk): Add support for indexes (via .with)
+    #  labels: enhancement, library
     builtin "chunk",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -101,6 +103,8 @@ proc defineSymbols*() =
             else:
                 push(newBlock(res))
 
+    # TODO(Iterators\every?): Add support for indexes (via .with)
+    #  labels: enhancement, library
     builtin "every?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -154,6 +158,8 @@ proc defineSymbols*() =
             if all:
                 push(newLogical(true))
 
+    # TODO(Iterators\filter): Add support for indexes (via .with)
+    #  labels: enhancement, library
     builtin "filter",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -210,6 +216,8 @@ proc defineSymbols*() =
 
                 push(newBlock(res))
 
+    # TODO(Iterators\fold): Add support for indexes (via .with)
+    #  labels: enhancement, library
     builtin "fold",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -494,6 +502,8 @@ proc defineSymbols*() =
 
     # TODO(Iterators\map): Make map work even without arguments
     #  labels: bug, library
+    # TODO(Iterators\map): Add support for indexes (via .with)
+    #  labels: enhancement, library
     builtin "map",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -546,6 +556,8 @@ proc defineSymbols*() =
                 
                 push(newBlock(res))
 
+    # TODO(Iterators\select): Add support for indexes (via .with)
+    #  labels: enhancement, library
     builtin "select",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -602,6 +614,8 @@ proc defineSymbols*() =
 
                 push(newBlock(res))
 
+    # TODO(Iterators\some?): Add support for indexes (via .with)
+    #  labels: enhancement, library
     builtin "some?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
