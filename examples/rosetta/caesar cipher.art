@@ -1,0 +1,23 @@
+ia: to :integer `a`
+iA: to :integer `A`
+lowAZ: `a`..`z`
+uppAZ: `A`..`Z`
+
+caesar: function [s, xx][
+    k: (not? null? attr 'decode)? -> 26-xx -> xx
+    result: new ""
+    loop s 'i [
+        (in? i lowAZ)? -> 'result ++ to :char ia + (k + (to :integer i) - ia) % 26
+        [
+            (in? i uppAZ)? -> 'result ++ to :char iA + (k + (to :integer i) - iA) % 26
+                              -> 'result ++ i
+        ]
+    ]
+    return result
+]
+
+msg: "The quick brown fox jumped over the lazy dogs"
+print ["Original :" msg]
+enc: caesar msg 11
+print [" Encoded :" enc]
+print [" Decoded :" caesar.decode enc 11]
