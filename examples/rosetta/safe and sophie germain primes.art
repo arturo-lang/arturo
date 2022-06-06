@@ -1,0 +1,14 @@
+sophieG?: function [p][
+    and? [prime? p][prime? 1 + 2*p]
+]
+
+sophieGermaines: new [2]
+i: 3
+while [50 > size sophieGermaines][
+    if sophieG? i ->
+        'sophieGermaines ++ i
+    i: i + 2
+]
+
+loop split.every:10 sophieGermaines 'a ->
+    print map a => [pad to :string & 4]
