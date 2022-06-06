@@ -1,0 +1,10 @@
+upTo100K: select select 2..99999 => odd? => prime?
+upTo1M: upTo100K ++ select select 100001..999999 => odd? => prime?
+
+contains123?: function [x] -> contains? to :string x "123"
+
+loop split.every:10 select upTo100K => contains123? 'a ->
+    print map a => [pad to :string & 5]
+
+print ""
+print ["'123' Numbers < 1000000:" size select upTo1M => contains123?]
