@@ -1,0 +1,40 @@
+primeSet: [2] ++ select select 3..9999999 => odd? => prime?
+
+safe?: {in? (i-1)/2 primeSet}
+unsafe?: {not? in? (i-1)/2 primeSet}
+
+getFirst: function [howMany, what][
+    result: new []
+    predicate: var what
+    loop primeSet 'i [
+        if do predicate ->
+            'result ++ i
+        if howMany = size result ->
+            break
+    ]
+    return result
+]
+
+countPrimes: function [upTo, what][
+    predicate: var what
+    counter: new 0
+    idx: 0
+    i: primeSet\[idx]
+    while [i < upTo][
+        if do predicate ->
+            inc 'counter
+        idx: idx+1
+        i: primeSet\[idx]
+    ]
+    return counter
+]
+
+print "First 35 safe primes:"
+print getFirst 35 'safe?
+print ["Safe primes < 1000000:" countPrimes 1000000 'safe?]
+print ["Safe primes < 10000000:" countPrimes 10000000 'safe?]
+
+print "First 40 unsafe primes:"
+print getFirst 40 'unsafe?
+print ["Unsafe primes < 1000000:" countPrimes 1000000 'unsafe?]
+print ["Unsafe primes < 10000000:" countPrimes 10000000 'unsafe?]
