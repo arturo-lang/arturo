@@ -1,0 +1,36 @@
+luhn?: function [n][
+    s1: new 0
+    s2: new 0
+    loop.with: 'i digits to :integer n 'd [
+        if? even? i -> 's1 + d
+        else [
+            'd * 2
+            if d > 9 -> 'd - 9
+            's2 + d
+        ]
+    ]
+    zero? (s1 + s2) % 10
+]
+
+to36: #[]
+loop 0..9 'x -> to36\[to :string x]: x
+loop `A`..`Z` 'x -> to36\[x]: (to :integer x)-55
+
+validISIN?: function [x][
+    if 12 <> size x -> return false
+    if 2 <> size first match slice x 0 1 {/[A-Z]+/} -> return false
+    if not? numeric? last x -> return false
+
+    result: join map split x 'z -> to36\[z]
+    print [x result]
+    return luhn? result
+]
+
+isins: [
+    US0378331005 US0373831005
+    U50378331005 US03378331005
+    AU0000XVGZA3 AU0000VXGZA3 FR0000988040
+]
+
+loop to [:string] isins 'isin ->
+    print [isin "=>" (validISIN? isin)? -> "valid" -> "not valid"]
