@@ -1,56 +1,66 @@
-printMatrix: function [m][
-    loop m 'row -> print map row 'val [pad to :string val 6]
-    print "--------------------------------"
-]
-
-multiply: function [a,b][
-    X: size a
-    Y: size first b
-    result: array.of: @[X Y] 0
-
-    loop 0..X-1 'i [
-        loop 0..Y-1 'j [
-            loop 0..(size first a)-1 'k ->
+mulM: function [a,b][
+    N: size a
+    T: size b
+    result: new array.of:N array.of:T 0
+    loop 1..dec N 'i [
+        loop 1..dec N 'j [
+            loop 1..dec N 'k [
                 result\[i]\[j]: result\[i]\[j] + a\[i]\[k] * b\[k]\[j]
+            ]
         ]
     ]
     return result
 ]
 
-identity: function [n][
-    res: new array.of: @[n n] 0
-    loop 0..dec n 'z -> res\[z]\[z]: 1
-    return res
+identityM: function [N,T][
+    new array.of:N array.of: T 1
 ]
 
-expo: function [M, N][
-    if N=0 -> return identity N
-    if N=1 -> return M
-
-    n: N
-    m: M
-
-    result: identity n
-    while [n>0][
-        if not? zero? and n 1 ->
-            result: multiply result m
-        n: shr n 1
-        m: multiply m m
+expM: function [m, n][
+    N: size m
+    T: size first m
+    if n=0 -> return identityM N T
+    if n=1 -> return m
+    nn: n
+    mm: m
+    result: identityM N T
+    while [nn > 0][
+        if not? zero? and nn 1 ->
+            result: mulM result m
+        nn: shr nn 1
+        mm: mulM mm mm
     ]
     return result
 ]
 
-m1: @[@[     3     2 neg 1 ]
-      @[ neg 1     0     5 ]
-      @[     2 neg 1     3 ]]
+; ; func `*`[N, T](a, b: Matrix[N, T]): Matrix[N, T] =
+; ;   for i in 1..N:
+; ;     for j in 1..N:
+; ;       for k in 1..N:
+; ;         result[i][j] += a[i][k] * b[k][j]
+ 
+ 
+; ; func identityMatrix[N; T](): Matrix[N, T] =
+; ;   for i in 1..N:
+; ;     result[i][i] = T(1)
+ 
+ 
+; func `^`[N, T](m: Matrix[N, T]; n: Natural): Matrix[N, T] =
+;   if n == 0: return identityMatrix[N, T]()
+;   if n == 1: return m
+;   var n = n
+;   var m = m
+;   result = identityMatrix[N, T]()
+;   while n > 0:
+;     if (n and 1) != 0:
+;       result = result * m
+;     n = n shr 1
+;     m = m * m
 
+matrix: @[
+    @[ 3, 2, neg 1],
+    @[neg 1, 0,  5],
+    @[ 2, neg 1, 3]
+]
 
-printMatrix expo m1 10
-
-C30: (sqrt 3.0) / 2
-S30: 1/2
-
-m2: @[@[C30 neg S30]
-      @[S30     C30]]
-
-printMatrix expo m2 12
+print expM matrix 10
