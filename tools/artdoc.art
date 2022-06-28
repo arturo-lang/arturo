@@ -1,0 +1,20 @@
+#!/usr/bin/env arturo
+;========================================================
+; ArtDoc
+;
+; Documentation generator for Arturo
+; in Arturo
+;--------------------------------------------------------
+;; name: artdoc
+;; version: 0.0.1
+;; author: drkameleon
+;; category: developer
+;========================================================
+
+print "ArtDoc"
+
+do.import relative arg\0
+
+loop symbols [k,v][
+    if and? [not? function? .builtin v][function? v] -> print ["FUNC:" k]
+]
