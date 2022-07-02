@@ -18,13 +18,62 @@
 
 import algorithm, sequtils, sugar, unicode
 
+import helpers/dictionaries
+
 import vm/lib
 import vm/[errors, eval, exec]
 
 #=======================================
-# Methods
+# Helpers
 #=======================================
 
+
+template iterateThrough*(
+    idx: Value, 
+    params: Value, 
+    collection: ValueArray, 
+    forever: bool,
+    performAction: untyped
+): untyped =
+
+    if collection.len==0:
+        return
+
+    var args: ValueArray
+    if params.kind==Literal: args = @[params]
+    else: args = cleanBlock(params.a)
+
+    var allArgs{.inject.}: ValueArray = args
+
+    var withIndex = false
+    if idx != VNULL:
+        withIndex = true
+        echo "Has index: " & $(idx)
+        allArgs = concat(@[idx], allArgs)
+
+    var keepGoing = true
+    while keepGoing:
+        var indx = 0
+        var run = 0
+        while indx+args.len<=collection.len:
+            handleBranching:
+                for item in collection[indx..indx+args.len-1].reversed:
+                    push(item)
+
+                if withIndex:
+                    push(newInteger(run))
+
+                performAction
+            do:
+                run += 1
+                indx += args.len
+
+                if not forever:
+                    keepGoing = false
+
+#=======================================
+# Methods
+#=======================================
 
 proc defineSymbols*() =
 
@@ -411,94 +460,111 @@ proc defineSymbols*() =
             ; 1 2 3 1 2 3 1 2 3 ...
         """:
             ##########################################################
-            var args: ValueArray
-
-            let forever = popAttr("forever")!=VNULL
-
-            var withIndex = false
-            let aWith = popAttr("with")
-            if aWith != VNULL:
-                withIndex = true
-
-            if y.kind==Literal: args = @[y]
-            else: args = cleanBlock(y.a)
-
-            var allArgs = args
-
-            if withIndex:
-                allArgs = concat(@[aWith], args)
+            var items: ValueArray
 
             let preevaled = doEval(z)
+            let withIndex = popAttr("with")
+            let doForever = popAttr("forever")!=VNULL
 
-            if x.kind==Dictionary:
-                # check if empty
-                if x.d.len==0: return
+            if x.kind == Dictionary: 
+                items = x.d.flattenedDictionary()
+            elif x.kind == String:
+                items = toSeq(runes(x.s)).map((x) => newChar(x))
+            elif x.kind == Integer:
+                items = (toSeq(1..x.i)).map((x) => newInteger(x))
+            else: # block
+                items = cleanBlock(x.a)
 
-                var keepGoing = true
-                while keepGoing:
-                    for k,v in pairs(x.d):
-                        handleBranching:
-                            push(v)
-                            push(newString(k))
-                            discard execBlock(VNULL, evaluated=preevaled, args=args)
-                        do:
-                            discard
-                    if not forever:
-                        keepGoing = false
-            elif x.kind==String:
-                var arr: seq[Value] = toSeq(runes(x.s)).map((x) => newChar(x))
+            iterateThrough(withIndex, y, items, doForever):
+                discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
+            # var args: ValueArray
 
-                # check if empty
-                if arr.len==0: return
+            # let forever = popAttr("forever")!=VNULL
 
-                var keepGoing = true
-                while keepGoing:
-                    var indx = 0
-                    var run = 0
-                    while indx+args.len<=arr.len:
-                        handleBranching:
-                            for item in arr[indx..indx+args.len-1].reversed:
-                                push(item)
+            # var withIndex = false
+            # let aWith = popAttr("with")
+            # if aWith != VNULL:
+            #     withIndex = true
 
-                            if withIndex:
-                                push(newInteger(run))
+            # if y.kind==Literal: args = @[y]
+            # else: args = cleanBlock(y.a)
 
-                            discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
-                        do:
-                            run += 1
-                            indx += args.len
+            # var allArgs = args
 
-                            if not forever:
-                                keepGoing = false
-            else:
-                var arr: seq[Value]
-                if x.kind==Integer:
-                    arr = (toSeq(1..x.i)).map((x) => newInteger(x))
-                else:
-                    arr = cleanBlock(x.a)
+            # if withIndex:
+            #     allArgs = concat(@[aWith], args)
 
-                # check if empty
-                if arr.len==0: return
+            # let preevaled = doEval(z)
 
-                var keepGoing = true
-                while keepGoing:
-                    var indx = 0
-                    var run = 0
-                    while indx+args.len<=arr.len:
-                        handleBranching:
-                            for item in arr[indx..indx+args.len-1].reversed:
-                                push(item)
+            # if x.kind==Dictionary:
+            #     # check if empty
+            #     if x.d.len==0: return
 
-                            if withIndex:
-                                push(newInteger(run))
+            #     var keepGoing = true
+            #     while keepGoing:
+            #         for k,v in pairs(x.d):
+            #             handleBranching:
+            #                 push(v)
+            #                 push(newString(k))
+            #                 discard execBlock(VNULL, evaluated=preevaled, args=args)
+            #             do:
+            #                 discard
+            #         if not forever:
+            #             keepGoing = false
+            # elif x.kind==String:
+            #     var arr: seq[Value] = toSeq(runes(x.s)).map((x) => newChar(x))
 
-                            discard execBlock(VNULL, evaluated=preevaled, args=allArgs)#, isBreakable=true)
-                        do:
-                            run += 1
-                            indx += args.len
+            #     # check if empty
+            #     if arr.len==0: return
 
-                            if not forever:
-                                keepGoing = false
+            #     var keepGoing = true
+            #     while keepGoing:
+            #         var indx = 0
+            #         var run = 0
+            #         while indx+args.len<=arr.len:
+            #             handleBranching:
+            #                 for item in arr[indx..indx+args.len-1].reversed:
+            #                     push(item)
+
+            #                 if withIndex:
+            #                     push(newInteger(run))
+
+            #                 discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
+            #             do:
+            #                 run += 1
+            #                 indx += args.len
+
+            #                 if not forever:
+            #                     keepGoing = false
+            # else:
+            #     var arr: seq[Value]
+            #     if x.kind==Integer:
+            #         arr = (toSeq(1..x.i)).map((x) => newInteger(x))
+            #     else:
+            #         arr = cleanBlock(x.a)
+
+            #     # check if empty
+            #     if arr.len==0: return
+
+            #     var keepGoing = true
+            #     while keepGoing:
+            #         var indx = 0
+            #         var run = 0
+            #         while indx+args.len<=arr.len:
+            #             handleBranching:
+            #                 for item in arr[indx..indx+args.len-1].reversed:
+            #                     push(item)
+
+            #                 if withIndex:
+            #                     push(newInteger(run))
+
+            #                 discard execBlock(VNULL, evaluated=preevaled, args=allArgs)#, isBreakable=true)
+            #             do:
+            #                 run += 1
+            #                 indx += args.len
+
+            #                 if not forever:
+            #                     keepGoing = false
 
     # TODO(Iterators\map): Make map work even without arguments
     #  labels: bug, library
