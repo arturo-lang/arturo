@@ -31,7 +31,7 @@ proc defineSymbols*() =
     when defined(VERBOSE):
         echo "- Importing: Iterators"
 
-    # TODO(Iterators\chunk): Add support for indexes (via .with)
+    # TODO(Iterators\chunk): Add support for indexes - via `.with`
     #  labels: enhancement, library
     builtin "chunk",
         alias       = unaliased, 
@@ -103,7 +103,7 @@ proc defineSymbols*() =
             else:
                 push(newBlock(res))
 
-    # TODO(Iterators\every?): Add support for indexes (via .with)
+    # TODO(Iterators\every?): Add support for indexes - via `.with`
     #  labels: enhancement, library
     builtin "every?",
         alias       = unaliased, 
@@ -158,7 +158,7 @@ proc defineSymbols*() =
             if all:
                 push(newLogical(true))
 
-    # TODO(Iterators\filter): Add support for indexes (via .with)
+    # TODO(Iterators\filter): Add support for indexes - via `.with`
     #  labels: enhancement, library
     builtin "filter",
         alias       = unaliased, 
@@ -216,7 +216,7 @@ proc defineSymbols*() =
 
                 push(newBlock(res))
 
-    # TODO(Iterators\fold): Add support for indexes (via .with)
+    # TODO(Iterators\fold): Add support for indexes - via `.with`
     #  labels: enhancement, library
     builtin "fold",
         alias       = unaliased, 
@@ -502,7 +502,7 @@ proc defineSymbols*() =
 
     # TODO(Iterators\map): Make map work even without arguments
     #  labels: bug, library
-    # TODO(Iterators\map): Add support for indexes (via .with)
+    # TODO(Iterators\map): Add support for indexes - via `.with`
     #  labels: enhancement, library
     builtin "map",
         alias       = unaliased, 
@@ -556,7 +556,7 @@ proc defineSymbols*() =
                 
                 push(newBlock(res))
 
-    # TODO(Iterators\select): Add support for indexes (via .with)
+    # TODO(Iterators\select): Add support for indexes - via `.with`
     #  labels: enhancement, library
     builtin "select",
         alias       = unaliased, 
@@ -614,7 +614,7 @@ proc defineSymbols*() =
 
                 push(newBlock(res))
 
-    # TODO(Iterators\some?): Add support for indexes (via .with)
+    # TODO(Iterators\some?): Add support for indexes - via `.with`
     #  labels: enhancement, library
     builtin "some?",
         alias       = unaliased, 
