@@ -48,7 +48,6 @@ template iterateThrough*(
     var withIndex = false
     if idx != VNULL:
         withIndex = true
-        echo "Has index: " & $(idx)
         allArgs = concat(@[idx], allArgs)
 
     var keepGoing = true
