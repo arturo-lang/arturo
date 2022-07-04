@@ -106,8 +106,6 @@ proc defineSymbols*() =
     when defined(VERBOSE):
         echo "- Importing: Iterators"
 
-    # TODO(Iterators\chunk): Add support for indexes - via `.with`
-    #  labels: enhancement, library
     builtin "chunk",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
