@@ -27,8 +27,17 @@ import vm/[errors, eval, exec]
 # Helpers
 #=======================================
 
+template iterableItemsFromParam(prm): untyped =
+    if prm.kind == Dictionary: 
+        prm.d.flattenedDictionary()
+    elif prm.kind == String:
+        toSeq(runes(prm.s)).map((w) => newChar(w))
+    elif x.kind == Integer:
+        (toSeq(1..prm.i)).map((w) => newInteger(w))
+    else: # block
+        cleanBlock(prm.a)
 
-template iterateThrough*(
+template iterateThrough(
     idx: Value, 
     params: Value, 
     collection: ValueArray, 
@@ -459,20 +468,11 @@ proc defineSymbols*() =
             ; 1 2 3 1 2 3 1 2 3 ...
         """:
             ##########################################################
-            var items: ValueArray
-
             let preevaled = doEval(z)
             let withIndex = popAttr("with")
             let doForever = popAttr("forever")!=VNULL
 
-            if x.kind == Dictionary: 
-                items = x.d.flattenedDictionary()
-            elif x.kind == String:
-                items = toSeq(runes(x.s)).map((x) => newChar(x))
-            elif x.kind == Integer:
-                items = (toSeq(1..x.i)).map((x) => newInteger(x))
-            else: # block
-                items = cleanBlock(x.a)
+            var items: ValueArray = iterableItemsFromParam(x)
 
             iterateThrough(withIndex, y, items, doForever):
                 discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
