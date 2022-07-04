@@ -476,10 +476,6 @@ proc defineSymbols*() =
             iterateThrough(withIndex, y, items, doForever):
                 discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
 
-    # TODO(Iterators\map): Make map work even without arguments
-    #  labels: bug, library
-    # TODO(Iterators\map): Add support for indexes - via `.with`
-    #  labels: enhancement, library
     builtin "map",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
