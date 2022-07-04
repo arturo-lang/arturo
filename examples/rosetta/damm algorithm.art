@@ -13,8 +13,7 @@ table: [
     [2 5 8 1 4 3 6 7 9 0]
 ]
 
-digits: function [x][map split x => [to :integer]]
-damm?: function [z][zero? fold digits z .seed: 0 => [get get table]]
+damm?: function [z][zero? fold digits to :integer z .seed: 0 [x y]-> table\[x]\[y] ]
 
 ; Or, being more explicit:
 digits2: function [str][

@@ -13,7 +13,7 @@ evolve: function [arr][
 ]
 
 printIt: function [arr][
-    print replace replace join map arr => [to :string] "0" "_" "1" "#"
+    print replace replace join map arr 'n -> to :string n "0" "_" "1" "#"
 ]
 
 arr: [0 1 1 1 0 1 1 0 1 0 1 0 1 0 1 0 0 1 0 0]

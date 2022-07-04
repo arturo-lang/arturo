@@ -1,4 +1,4 @@
-chars: map 97..122 => [to :string to :char]
+chars: map 97..122 => [to :string to :char &]
 pangram?: function [sentence][
     every? chars 'ch ->
         in? ch sentence

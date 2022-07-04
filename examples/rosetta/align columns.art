@@ -7,7 +7,7 @@ text: {
     justified,$right$justified,$or$center$justified$within$its$column.
 }
 
-output: map split.lines text => [split.by:"$"]
+output: map split.lines text => [split.by:"$" &]
 
 loop output 'line [
     loop line 'word -> prints pad word 12
