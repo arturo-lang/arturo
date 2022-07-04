@@ -526,8 +526,6 @@ proc defineSymbols*() =
                 
                 push(newBlock(res))
 
-    # TODO(Iterators\select): Add support for indexes - via `.with`
-    #  labels: enhancement, library
     builtin "select",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
