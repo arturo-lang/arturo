@@ -81,8 +81,8 @@ template iterateThrough(
             var run = 0
             while indx+argsLen<=collectionLen:
                 handleBranching:
+                    capturedItems = collection[indx..indx+argsLen-1]
                     if hasArgs:
-                        capturedItems = collection[indx..indx+argsLen-1]
                         for item in capturedItems.reversed:
                             push(item)
 
@@ -184,7 +184,7 @@ proc defineSymbols*() =
         description = "check if every item in collection satisfies given condition",
         args        = {
             "collection"    : {Integer,String,Block,Inline,Dictionary},
-            "params"        : {Literal,Block},
+            "params"        : {Literal,Block,Null},
             "condition"     : {Block}
         },
         attrs       = {
@@ -231,7 +231,7 @@ proc defineSymbols*() =
         description = "get collection's items by filtering those that do not fulfil given condition",
         args        = {
             "collection"    : {Integer,String,Block,Inline,Dictionary,Literal},
-            "params"        : {Literal,Block},
+            "params"        : {Literal,Block,Null},
             "condition"     : {Block}
         },
         attrs       = {
@@ -414,7 +414,7 @@ proc defineSymbols*() =
         description = "loop through collection, using given iterator and block",
         args        = {
             "collection"    : {Integer,String,Block,Inline,Dictionary},
-            "params"        : {Literal,Block},
+            "params"        : {Literal,Block,Null},
             "action"        : {Block}
         },
         attrs       = {
@@ -482,7 +482,7 @@ proc defineSymbols*() =
         description = "map collection's items by applying given action",
         args        = {
             "collection"    : {Integer,String,Block,Inline,Dictionary,Literal},
-            "params"        : {Literal,Block},
+            "params"        : {Literal,Block,Null},
             "condition"     : {Block}
         },
         attrs       = {
@@ -555,7 +555,7 @@ proc defineSymbols*() =
         description = "get collection's items that fulfil given condition",
         args        = {
             "collection"    : {Integer,String,Block,Inline,Dictionary,Literal},
-            "params"        : {Literal,Block},
+            "params"        : {Literal,Block,Null},
             "condition"     : {Block}
         },
         attrs       = {
@@ -601,7 +601,7 @@ proc defineSymbols*() =
         description = "check if any of collection's items satisfy given condition",
         args        = {
             "collection"    : {Integer,String,Block,Inline,Dictionary},
-            "params"        : {Literal,Block},
+            "params"        : {Literal,Block,Null},
             "condition"     : {Block}
         },
         attrs       = {
