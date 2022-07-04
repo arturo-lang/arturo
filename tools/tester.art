@@ -58,7 +58,7 @@ runSet: function [title,location].export:[supersuccess,supertotal,superskipped][
     print "====================================================================="
     print (color #cyan.bold ~"  |title|") ++ pad "passed?" 65 - size title
     print "====================================================================="
-    tests: sort select list relative location => [in? ".res"]
+    tests: sort select list relative location 'loc -> contains? loc ".res"
     success: 0
 
     loop tests 'test [

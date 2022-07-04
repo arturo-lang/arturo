@@ -1,3 +1,3 @@
 arr: [1 2 3 4 5]
 
-print map arr => [2*]
+print map arr => [2*&]

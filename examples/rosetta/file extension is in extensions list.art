@@ -1,4 +1,4 @@
-fileExtensions: map ["zip" "rar" "7z" "gz" "archive" "A##"] => ["." ++ lower]
+fileExtensions: map ["zip" "rar" "7z" "gz" "archive" "A##"] => ["." ++ lower &]
  
 hasExtension?: function [file][
     in? extract.extension lower file

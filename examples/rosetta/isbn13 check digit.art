@@ -1,6 +1,6 @@
 validISBN?: function [isbn][
     currentCheck: to :integer to :string last isbn
-    isbn: map split chop replace isbn "-" "" => [to :integer]
+    isbn: map split chop replace isbn "-" "" 'd -> to :integer d
 
     s: 0
     loop.with:'i isbn 'n [

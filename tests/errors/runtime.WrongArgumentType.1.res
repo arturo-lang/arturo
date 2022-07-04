@@ -3,4 +3,4 @@
            | 
            | cannot perform map -> :block :integer
            | incorrect argument type for second parameter
-           | accepts :literal :block
+           | accepts :null :literal :block
