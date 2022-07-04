@@ -13,7 +13,7 @@ records: map [
     ["Alexandria" 4.58]
     ["Abidjan" 4.4]
     ["Casablanca" 3.98]
-] => [to :city]
+] => [to :city &]
 
 find: function [block f][
     loop.with: 'i block 'elt [
