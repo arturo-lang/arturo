@@ -113,11 +113,12 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "chunk together consecutive items in collection that abide by given predicate",
         args        = {
-            "collection"    : {Block,Literal},
-            "params"        : {Literal,Block},
-            "action"        : {Block}
+            "collection"    : {Integer,String,Block,Inline,Dictionary,Literal},
+            "params"        : {Literal,Block,Null},
+            "condition"     : {Block}
         },
         attrs       = {
+            "with"  : ({Literal},"use given index"),
             "value" : ({Any},"also include condition values")
         },
         returns     = {Block,Nothing},
@@ -129,54 +130,90 @@ proc defineSymbols*() =
             ; => [[true [1 1]] [false [2 2]] [true [3]] [false [22]] [true [3 5 5 7 9]] [false [2]] [true [5]]]
         """:
             ##########################################################
-            var args: ValueArray
-
-            if y.kind==Literal: args = @[y]
-            else: args = cleanBlock(y.a)
-
-            let showValue = (popAttr("value")!=VNULL)
-
             let preevaled = doEval(z)
+            let withIndex = popAttr("with")
+            let showValue = (popAttr("value")!=VNULL)
+            let doForever = false
+
+            var items: ValueArray
+
+            let withLiteral = x.kind==Literal
+            if withLiteral: items = iterableItemsFromLiteralParam(x)
+            else: items = iterableItemsFromParam(x)
 
             var res: ValueArray = @[]
             var state = VNULL
             var currentSet: ValueArray = @[]
 
-            var blk: ValueArray
-            if x.kind==Literal:
-                blk = InPlace.a
-            else:
-                blk = x.a
-
-            for item in cleanBlock(blk):
-                handleBranching:
-                    push(item)
-                    discard execBlock(VNULL, evaluated=preevaled, args=args)
-                    let got = pop()
-                    if got != state:
-                        if len(currentSet)>0:
-                            if showValue:
-                                res.add(newBlock(@[state, newBlock(currentSet)]))
-                            else:
-                                res.add(newBlock(currentSet))
-                            currentSet = @[]
-                        state = got
-                    
-                    currentSet.add(item)
-                    
-                do:
-                    discard
+            iterateThrough(withIndex, y, items, doForever):
+                discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
+                let popped = pop()
+                if popped != state:
+                    if len(currentSet)>0:
+                        if showValue:
+                            res.add(newBlock(@[state, newBlock(currentSet)]))
+                        else:
+                            res.add(newBlock(currentSet))
+                        currentSet = @[]
+                    state = popped
+                
+                currentSet.add(capturedItems)
 
             if len(currentSet)>0:
                 if showValue:
                     res.add(newBlock(@[state, newBlock(currentSet)]))
                 else:
                     res.add(newBlock(currentSet))
+
+            if withLiteral: InPlaced = newBlock(res)
+            else: push(newBlock(res))
+
+            # var args: ValueArray
+
+            # if y.kind==Literal: args = @[y]
+            # else: args = cleanBlock(y.a)
+
+            # let showValue = (popAttr("value")!=VNULL)
+
+            # let preevaled = doEval(z)
+
+            
+
+            # var blk: ValueArray
+            # if x.kind==Literal:
+            #     blk = InPlace.a
+            # else:
+            #     blk = x.a
+
+            # for item in cleanBlock(blk):
+            #     handleBranching:
+            #         push(item)
+            #         discard execBlock(VNULL, evaluated=preevaled, args=args)
+            #         let got = pop()
+            #         if got != state:
+            #             if len(currentSet)>0:
+            #                 if showValue:
+            #                     res.add(newBlock(@[state, newBlock(currentSet)]))
+            #                 else:
+            #                     res.add(newBlock(currentSet))
+            #                 currentSet = @[]
+            #             state = got
+                    
+            #         currentSet.add(item)
+                    
+            #     do:
+            #         discard
+
+            # if len(currentSet)>0:
+            #     if showValue:
+            #         res.add(newBlock(@[state, newBlock(currentSet)]))
+            #     else:
+            #         res.add(newBlock(currentSet))
                 
-            if x.kind==Literal:
-                InPlaced = newBlock(res)
-            else:
-                push(newBlock(res))
+            # if x.kind==Literal:
+            #     InPlaced = newBlock(res)
+            # else:
+            #     push(newBlock(res))
 
     builtin "every?",
         alias       = unaliased, 
