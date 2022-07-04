@@ -594,8 +594,6 @@ proc defineSymbols*() =
 
                 push(newBlock(res))
 
-    # TODO(Iterators\some?): Add support for indexes - via `.with`
-    #  labels: enhancement, library
     builtin "some?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
