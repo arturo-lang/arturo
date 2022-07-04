@@ -27,14 +27,24 @@ import vm/[errors, eval, exec]
 # Helpers
 #=======================================
 
-template iterableItemsFromParam(prm): untyped =
-    if prm.kind == Dictionary: 
+template iterableItemsFromLiteralParam(prm: untyped): untyped =
+    if InPlace.kind==Dictionary: 
+        InPlaced.d.flattenedDictionary()
+    elif InPlaced.kind==String:
+        toSeq(runes(InPlaced.s)).map((w) => newChar(w))
+    elif InPlaced.kind==Integer:
+        (toSeq(1..InPlaced.i)).map((w) => newInteger(w))
+    else: # block or inline
+        cleanBlock(InPlaced.a)
+
+template iterableItemsFromParam(prm: untyped): untyped =
+    if prm.kind==Dictionary: 
         prm.d.flattenedDictionary()
-    elif prm.kind == String:
+    elif prm.kind==String:
         toSeq(runes(prm.s)).map((w) => newChar(w))
-    elif x.kind == Integer:
+    elif prm.kind==Integer:
         (toSeq(1..prm.i)).map((w) => newInteger(w))
-    else: # block
+    else: # block or inline
         cleanBlock(prm.a)
 
 template iterateThrough(
@@ -59,7 +69,7 @@ template iterateThrough(
         withIndex = true
         allArgs = concat(@[idx], allArgs)
 
-    var keepGoing = true
+    var keepGoing{.inject.}: bool = true
     while keepGoing:
         var indx = 0
         var run = 0
@@ -160,18 +170,18 @@ proc defineSymbols*() =
             else:
                 push(newBlock(res))
 
-    # TODO(Iterators\every?): Add support for indexes - via `.with`
-    #  labels: enhancement, library
     builtin "every?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "check if every single item in collection satisfy given condition",
+        description = "check if every item in collection satisfies given condition",
         args        = {
-            "collection"    : {Block},
+            "collection"    : {Integer,String,Block,Inline,Dictionary},
             "params"        : {Literal,Block},
             "condition"     : {Block}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "with"      : ({Literal},"use given index")
+        },
         returns     = {Logical},
         example     = """
             if every? [2 4 6 8] 'x [even? x] 
@@ -185,32 +195,24 @@ proc defineSymbols*() =
             ; false
         """:
             ##########################################################
-            var args: ValueArray
-
-            if y.kind==Literal: args = @[y]
-            else: args = cleanBlock(y.a)
-
-            let blk = cleanBlock(x.a)
-
-            # check if empty
-            if blk.len==0: 
-                push(newLogical(false))
-                return
-
             let preevaled = doEval(z)
+            let withIndex = popAttr("with")
+            let doForever = false
+
+            var items: ValueArray
+            items = iterableItemsFromParam(x)
+
             var all = true
 
-            for item in blk:
-                handleBranching:
-                    push(item)
-                    discard execBlock(VNULL, evaluated=preevaled, args=args)
-                    let popped = pop()
-                    if popped.kind==Logical and Not(popped.b)==True:
-                        push(newLogical(false))
-                        all = false
-                        break
-                do:
-                    discard
+            iterateThrough(withIndex, y, items, doForever):
+                discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
+
+                let popped = pop()
+                if popped.kind==Logical and Not(popped.b)==True:
+                    push(newLogical(false))
+                    all = false
+                    keepGoing = false
+                    break
 
             if all:
                 push(newLogical(true))
@@ -472,7 +474,8 @@ proc defineSymbols*() =
             let withIndex = popAttr("with")
             let doForever = popAttr("forever")!=VNULL
 
-            var items: ValueArray = iterableItemsFromParam(x)
+            var items: ValueArray
+            items = iterableItemsFromParam(x)
 
             iterateThrough(withIndex, y, items, doForever):
                 discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
