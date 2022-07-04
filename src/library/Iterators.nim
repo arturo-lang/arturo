@@ -50,7 +50,7 @@ template iterableItemsFromParam(prm: untyped): untyped =
 template iterateThrough(
     idx: Value, 
     params: Value, 
-    collection: ValueArray, 
+    collection: ValueArray,
     forever: bool,
     performAction: untyped
 ): untyped =
@@ -75,7 +75,8 @@ template iterateThrough(
         var run = 0
         while indx+args.len<=collection.len:
             handleBranching:
-                for item in collection[indx..indx+args.len-1].reversed:
+                let items{.inject} = collection[indx..indx+args.len-1]
+                for item in items.reversed:
                     push(item)
 
                 if withIndex:
@@ -224,11 +225,13 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get collection's items by filtering those that do not fulfil given condition",
         args        = {
-            "collection"    : {Block,Literal},
+            "collection"    : {Integer,String,Block,Inline,Dictionary,Literal},
             "params"        : {Literal,Block},
             "condition"     : {Block}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "with"      : ({Literal},"use given index")
+        },
         returns     = {Block,Nothing},
         example     = """
             print filter 1..10 [x][
@@ -242,38 +245,26 @@ proc defineSymbols*() =
             ; 1 3 5 7 9
         """:
             ##########################################################
-            var args: ValueArray
-
-            if y.kind==Literal: args = @[y]
-            else: args = cleanBlock(y.a)
-
             let preevaled = doEval(z)
+            let withIndex = popAttr("with")
+            let doForever = false
+
+            var items: ValueArray
+
+            let withLiteral = x.kind==Literal
+            if withLiteral: items = iterableItemsFromLiteralParam(x)
+            else: items = iterableItemsFromParam(x)
 
             var res: ValueArray = @[]
 
-            if x.kind==Literal:
-                discard InPlace
-                for i,item in cleanBlock(InPlaced.a):
-                    handleBranching:
-                        push(item)
-                        discard execBlock(VNULL, evaluated=preevaled, args=args)
-                        if Not(pop().b)==True:
-                            res.add(item)
-                    do:
-                        discard
+            iterateThrough(withIndex, y, items, doForever):
+                discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
+                let popped = pop()
+                if popped.kind==Logical and Not(popped.b)==True:
+                    res.add(items)
 
-                InPlaced.a = res
-            else:
-                for item in cleanBlock(x.a):
-                    handleBranching:
-                        push(item)
-                        discard execBlock(VNULL, evaluated=preevaled, args=args)
-                        if Not(pop().b)==True:
-                            res.add(item)
-                    do:
-                        discard
-
-                push(newBlock(res))
+            if withLiteral: InPlaced = newBlock(res)
+            else: push(newBlock(res))
 
     # TODO(Iterators\fold): Add support for indexes - via `.with`
     #  labels: enhancement, library
