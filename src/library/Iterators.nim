@@ -54,41 +54,42 @@ template iterateThrough(
     forever: bool,
     performAction: untyped
 ): untyped =
+    let collectionLen = collection.len
 
-    if collection.len==0:
-        return
+    if collectionLen > 0:
+        var args: ValueArray
+        if params.kind==Literal: args = @[params]
+        else: args = cleanBlock(params.a)
 
-    var args: ValueArray
-    if params.kind==Literal: args = @[params]
-    else: args = cleanBlock(params.a)
+        let argsLen = args.len
 
-    var allArgs{.inject.}: ValueArray = args
+        var allArgs{.inject.}: ValueArray = args
 
-    var withIndex = false
-    if idx != VNULL:
-        withIndex = true
-        allArgs = concat(@[idx], allArgs)
+        var withIndex = false
+        if idx != VNULL:
+            withIndex = true
+            allArgs = concat(@[idx], allArgs)
 
-    var keepGoing{.inject.}: bool = true
-    while keepGoing:
-        var indx = 0
-        var run = 0
-        while indx+args.len<=collection.len:
-            handleBranching:
-                let items{.inject} = collection[indx..indx+args.len-1]
-                for item in items.reversed:
-                    push(item)
+        var keepGoing{.inject.}: bool = true
+        while keepGoing:
+            var indx = 0
+            var run = 0
+            while indx+argsLen<=collectionLen:
+                handleBranching:
+                    let capturedItems{.inject} = collection[indx..indx+argsLen-1]
+                    for item in capturedItems.reversed:
+                        push(item)
 
-                if withIndex:
-                    push(newInteger(run))
+                    if withIndex:
+                        push(newInteger(run))
 
-                performAction
-            do:
-                run += 1
-                indx += args.len
+                    performAction
+                do:
+                    run += 1
+                    indx += argsLen
 
-                if not forever:
-                    keepGoing = false
+                    if not forever:
+                        keepGoing = false
 
 #=======================================
 # Methods
@@ -259,7 +260,7 @@ proc defineSymbols*() =
                 discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
                 let popped = pop()
                 if popped.kind==Logical and Not(popped.b)==True:
-                    res.add(items)
+                    res.add(capturedItems)
 
             if withLiteral: InPlaced = newBlock(res)
             else: push(newBlock(res))
@@ -532,11 +533,13 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get collection's items that fulfil given condition",
         args        = {
-            "collection"    : {Block,Literal},
+            "collection"    : {Integer,String,Block,Inline,Dictionary,Literal},
             "params"        : {Literal,Block},
-            "action"        : {Block}
+            "condition"     : {Block}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "with"      : ({Literal},"use given index")
+        },
         returns     = {Block,Nothing},
         example     = """
             print select 1..10 [x][
@@ -550,38 +553,26 @@ proc defineSymbols*() =
             ; 2 4 6 8 10
         """:
             ##########################################################
-            var args: ValueArray
-
-            if y.kind==Literal: args = @[y]
-            else: args = cleanBlock(y.a)
-
             let preevaled = doEval(z)
+            let withIndex = popAttr("with")
+            let doForever = false
+
+            var items: ValueArray
+
+            let withLiteral = x.kind==Literal
+            if withLiteral: items = iterableItemsFromLiteralParam(x)
+            else: items = iterableItemsFromParam(x)
 
             var res: ValueArray = @[]
 
-            if x.kind==Literal:
-                discard InPlace
-                for i,item in cleanBlock(InPlaced.a):
-                    handleBranching:
-                        push(item)
-                        discard execBlock(VNULL, evaluated=preevaled, args=args)
-                        if pop().b==True:
-                            res.add(item)
-                    do:
-                        discard
+            iterateThrough(withIndex, y, items, doForever):
+                discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
+                let popped = pop()
+                if popped.kind==Logical and popped.b==True:
+                    res.add(capturedItems)
 
-                InPlaced.a = res
-            else:
-                for item in cleanBlock(x.a):
-                    handleBranching:
-                        push(item)
-                        discard execBlock(VNULL, evaluated=preevaled, args=args)
-                        if pop().b==True:
-                            res.add(item)
-                    do:
-                        discard
-
-                push(newBlock(res))
+            if withLiteral: InPlaced = newBlock(res)
+            else: push(newBlock(res))
 
     builtin "some?",
         alias       = unaliased, 
