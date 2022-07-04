@@ -59,9 +59,12 @@ template iterateThrough(
     if collectionLen > 0:
         var args: ValueArray
         if params.kind==Literal: args = @[params]
-        else: args = cleanBlock(params.a)
+        elif params.kind==Block: args = cleanBlock(params.a)
 
-        let argsLen = args.len
+        var argsLen = args.len
+        let hasArgs = argsLen > 0
+        if not hasArgs:
+            argsLen = 1
 
         var allArgs{.inject.}: ValueArray = args
 
@@ -70,15 +73,18 @@ template iterateThrough(
             withIndex = true
             allArgs = concat(@[idx], allArgs)
 
+        var capturedItems{.inject}: ValueArray
+
         var keepGoing{.inject.}: bool = true
         while keepGoing:
             var indx = 0
             var run = 0
             while indx+argsLen<=collectionLen:
                 handleBranching:
-                    let capturedItems{.inject} = collection[indx..indx+argsLen-1]
-                    for item in capturedItems.reversed:
-                        push(item)
+                    if hasArgs:
+                        capturedItems = collection[indx..indx+argsLen-1]
+                        for item in capturedItems.reversed:
+                            push(item)
 
                     if withIndex:
                         push(newInteger(run))
@@ -479,11 +485,13 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "map collection's items by applying given action",
         args        = {
-            "collection"    : {Block,Literal},
+            "collection"    : {Integer,String,Block,Inline,Dictionary,Literal},
             "params"        : {Literal,Block},
-            "action"        : {Block}
+            "condition"     : {Block}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "with"      : ({Literal},"use given index")
+        },
         returns     = {Block,Nothing},
         example     = """
             print map 1..5 [x][
@@ -497,34 +505,53 @@ proc defineSymbols*() =
             ; 2 4 6 8 10
         """:
             ##########################################################
-            var args: ValueArray
-
-            if y.kind==Literal: args = @[y]
-            else: args = cleanBlock(y.a)
-
             let preevaled = doEval(z)
+            let withIndex = popAttr("with")
+            let doForever = false
+
+            var items: ValueArray
+
+            let withLiteral = x.kind==Literal
+            if withLiteral: items = iterableItemsFromLiteralParam(x)
+            else: items = iterableItemsFromParam(x)
 
             var res: ValueArray = @[]
 
-            if x.kind==Literal:
-                discard InPlace
-                for i,item in cleanBlock(InPlaced.a):
-                    handleBranching:
-                        push(item)
-                        discard execBlock(VNULL, evaluated=preevaled, args=args)
-                        InPlaced.a[i] = pop()
-                    do:
-                        discard
-            else:
-                for item in cleanBlock(x.a):
-                    handleBranching:
-                        push(item)
-                        discard execBlock(VNULL, evaluated=preevaled, args=args)
-                        res.add(pop())
-                    do:
-                        discard
+            iterateThrough(withIndex, y, items, doForever):
+                discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
+                res.add(pop())
+
+            if withLiteral: InPlaced = newBlock(res)
+            else: push(newBlock(res))
+
+            # var args: ValueArray
+
+            # if y.kind==Literal: args = @[y]
+            # else: args = cleanBlock(y.a)
+
+            # let preevaled = doEval(z)
+
+            # var res: ValueArray = @[]
+
+            # if x.kind==Literal:
+            #     discard InPlace
+            #     for i,item in cleanBlock(InPlaced.a):
+            #         handleBranching:
+            #             push(item)
+            #             discard execBlock(VNULL, evaluated=preevaled, args=args)
+            #             InPlaced.a[i] = pop()
+            #         do:
+            #             discard
+            # else:
+            #     for item in cleanBlock(x.a):
+            #         handleBranching:
+            #             push(item)
+            #             discard execBlock(VNULL, evaluated=preevaled, args=args)
+            #             res.add(pop())
+            #         do:
+            #             discard
                 
-                push(newBlock(res))
+            #     push(newBlock(res))
 
     builtin "select",
         alias       = unaliased, 
