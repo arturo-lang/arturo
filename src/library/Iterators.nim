@@ -27,7 +27,7 @@ import vm/[errors, eval, exec]
 # Helpers
 #=======================================
 
-template iterableItemsFromLiteralParam(prm: untyped): untyped =
+template iterableItemsFromLiteralParam(prm: untyped): ValueArray =
     if InPlace.kind==Dictionary: 
         InPlaced.d.flattenedDictionary()
     elif InPlaced.kind==String:
@@ -37,7 +37,7 @@ template iterableItemsFromLiteralParam(prm: untyped): untyped =
     else: # block or inline
         cleanBlock(InPlaced.a)
 
-template iterableItemsFromParam(prm: untyped): untyped =
+template iterableItemsFromParam(prm: untyped): ValueArray =
     if prm.kind==Dictionary: 
         prm.d.flattenedDictionary()
     elif prm.kind==String:
