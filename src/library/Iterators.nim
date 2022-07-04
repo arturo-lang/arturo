@@ -168,53 +168,6 @@ proc defineSymbols*() =
             if withLiteral: InPlaced = newBlock(res)
             else: push(newBlock(res))
 
-            # var args: ValueArray
-
-            # if y.kind==Literal: args = @[y]
-            # else: args = cleanBlock(y.a)
-
-            # let showValue = (popAttr("value")!=VNULL)
-
-            # let preevaled = doEval(z)
-
-            
-
-            # var blk: ValueArray
-            # if x.kind==Literal:
-            #     blk = InPlace.a
-            # else:
-            #     blk = x.a
-
-            # for item in cleanBlock(blk):
-            #     handleBranching:
-            #         push(item)
-            #         discard execBlock(VNULL, evaluated=preevaled, args=args)
-            #         let got = pop()
-            #         if got != state:
-            #             if len(currentSet)>0:
-            #                 if showValue:
-            #                     res.add(newBlock(@[state, newBlock(currentSet)]))
-            #                 else:
-            #                     res.add(newBlock(currentSet))
-            #                 currentSet = @[]
-            #             state = got
-                    
-            #         currentSet.add(item)
-                    
-            #     do:
-            #         discard
-
-            # if len(currentSet)>0:
-            #     if showValue:
-            #         res.add(newBlock(@[state, newBlock(currentSet)]))
-            #     else:
-            #         res.add(newBlock(currentSet))
-                
-            # if x.kind==Literal:
-            #     InPlaced = newBlock(res)
-            # else:
-            #     push(newBlock(res))
-
     builtin "every?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -556,35 +509,6 @@ proc defineSymbols*() =
 
             if withLiteral: InPlaced = newBlock(res)
             else: push(newBlock(res))
-
-            # var args: ValueArray
-
-            # if y.kind==Literal: args = @[y]
-            # else: args = cleanBlock(y.a)
-
-            # let preevaled = doEval(z)
-
-            # var res: ValueArray = @[]
-
-            # if x.kind==Literal:
-            #     discard InPlace
-            #     for i,item in cleanBlock(InPlaced.a):
-            #         handleBranching:
-            #             push(item)
-            #             discard execBlock(VNULL, evaluated=preevaled, args=args)
-            #             InPlaced.a[i] = pop()
-            #         do:
-            #             discard
-            # else:
-            #     for item in cleanBlock(x.a):
-            #         handleBranching:
-            #             push(item)
-            #             discard execBlock(VNULL, evaluated=preevaled, args=args)
-            #             res.add(pop())
-            #         do:
-            #             discard
-                
-            #     push(newBlock(res))
 
     builtin "select",
         alias       = unaliased, 
