@@ -601,11 +601,13 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "check if any of collection's items satisfy given condition",
         args        = {
-            "collection"    : {Block},
+            "collection"    : {Integer,String,Block,Inline,Dictionary},
             "params"        : {Literal,Block},
             "condition"     : {Block}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "with"      : ({Literal},"use given index")
+        },
         returns     = {Logical},
         example     = """
             if some? [1 3 5 6 7] 'x [even? x] 
@@ -619,32 +621,23 @@ proc defineSymbols*() =
             ; false
         """:
             ##########################################################
-            var args: ValueArray
-
-            if y.kind==Literal: args = @[y]
-            else: args = cleanBlock(y.a)
-
-            let blk = cleanBlock(x.a)
-
-            # check if empty
-            if blk.len==0: 
-                push(newLogical(false))
-                return
-
             let preevaled = doEval(z)
+            let withIndex = popAttr("with")
+            let doForever = false
+
+            var items: ValueArray
+            items = iterableItemsFromParam(x)
+
             var one = false
 
-            for item in blk:
-                handleBranching:
-                    push(item)
-                    discard execBlock(VNULL, evaluated=preevaled, args=args)
-                    let popped = pop()
-                    if popped.kind==Logical and popped.b==True:
-                        push(newLogical(true))
-                        one = true
-                        break
-                do:
-                    discard
+            iterateThrough(withIndex, y, items, doForever):
+                discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
+                let popped = pop()
+                if popped.kind==Logical and popped.b==True:
+                    push(newLogical(true))
+                    one = true
+                    keepGoing = false
+                    break
 
             if not one:
                 push(newLogical(false))
