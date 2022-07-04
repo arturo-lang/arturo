@@ -1,3 +1,3 @@
-loop split.every:5 to [:string] map 1..50 => [product factors] 'line [
+loop split.every:5 to [:string] map 1..50 => [product factors &] 'line [
     print map line 'i -> pad i 10
 ]
