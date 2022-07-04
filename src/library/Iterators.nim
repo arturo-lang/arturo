@@ -218,8 +218,6 @@ proc defineSymbols*() =
             if all:
                 push(newLogical(true))
 
-    # TODO(Iterators\filter): Add support for indexes - via `.with`
-    #  labels: enhancement, library
     builtin "filter",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
