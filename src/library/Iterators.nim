@@ -191,8 +191,6 @@ proc defineSymbols*() =
             "value" : ({Any},"also include condition values")
         },
         returns     = {Block,Nothing},
-        # TODO(Iterators\cluster) Add documentation example
-        #  labels: library,documentation
         example     = """
             cluster 1..10 => odd?
             ; => [[1 3 5 7 9] [2 4 6 8 10]]
