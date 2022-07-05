@@ -760,20 +760,26 @@ proc defineSymbols*() =
         args        = {
             "collection"    : {Block}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "by"        : ({Integer},"define size of each set"),
+            "repeated"  : ({Logical},"allow for permutations with repeated elements")
+        },
         returns     = {Block},
         example     = """
             permutate [A B C]
             ; => [[A B C] [A C B] [C A B] [B A C] [B C A] [C B A]]
         """:
             ##########################################################
-            var ret: ValueArray = @[]
-        
-            permutate(cleanBlock(x.a), proc(s: ValueArray)= 
-                ret.add(newBlock(s))
-            )
+            let doRepeat = popAttr("repeated")!=VNULL
 
-            push(newBlock(ret))
+            let blk = cleanBlock(x.a)
+
+            var sz = blk.len
+            if (let aBy = popAttr("by"); aBy != VNULL):
+                if aBy.i > 0 and aBy.i < sz:
+                    sz = aBy.i
+
+            push(newBlock(getPermutations(blk, sz, doRepeat).map((z)=>newBlock(z))))
 
     builtin "remove",
         alias       = doubleminus, 
