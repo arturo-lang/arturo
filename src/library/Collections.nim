@@ -24,6 +24,7 @@ import strutils, sugar, unicode
     
 
 import helpers/arrays
+import helpers/combinatorics
 import helpers/regex
 import helpers/strings
 import helpers/unisort
