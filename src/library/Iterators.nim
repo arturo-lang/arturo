@@ -177,6 +177,56 @@ proc defineSymbols*() =
             if withLiteral: InPlaced = newBlock(res)
             else: push(newBlock(res))
 
+    builtin "cluster",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "group together items in collection that abide by given predicate",
+        args        = {
+            "collection"    : {Integer,String,Block,Inline,Dictionary,Literal},
+            "params"        : {Literal,Block,Null},
+            "condition"     : {Block}
+        },
+        attrs       = {
+            "with"  : ({Literal},"use given index"),
+            "value" : ({Any},"also include condition values")
+        },
+        returns     = {Block,Nothing},
+        # TODO(Iterators\cluster) Add documentation example
+        #  labels: library,documentation
+        example     = """
+        """:
+            ##########################################################
+            let preevaled = doEval(z)
+            let withIndex = popAttr("with")
+            let showValue = (popAttr("value")!=VNULL)
+            let doForever = false
+
+            var items: ValueArray
+
+            let withLiteral = x.kind==Literal
+            if withLiteral: items = iterableItemsFromLiteralParam(x)
+            else: items = iterableItemsFromParam(x)
+
+            var res: ValueArray = @[]
+            var sets: OrderedTable[Value,ValueArray] = initOrderedTable[Value,ValueArray]()
+
+            iterateThrough(withIndex, y, items, doForever, false, false):
+                discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
+                let popped = pop()
+                if not sets.hasKey(popped):
+                    sets[popped] = @[]
+                sets[popped].add(capturedItems)
+
+            if showValue:
+                for k,v in sets.pairs:
+                    res.add(newBlock(@[k, newBlock(v)]))
+            else:
+                for v in sets.values:
+                    res.add(newBlock(v))
+
+            if withLiteral: InPlaced = newBlock(res)
+            else: push(newBlock(res))
+
     builtin "every?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
