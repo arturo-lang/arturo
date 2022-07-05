@@ -288,17 +288,25 @@ proc defineSymbols*() =
         },
         returns     = {Block,Null,Nothing},
         example     = """
-            fold 1..10 [res,y]-> res + y
+            fold 1..10 [x,y]-> x + y
             ; => 55 (1+2+3+4..) 
-            ..........
-            fold 1..10 .seed:1 [res,y][ res * y ]
+
+            fold 1..10 .seed:1 [x,y][ x * y ]
             ; => 3628800 (10!) 
             ..........
-            fold 1..3 [res,y]-> res - y
+            fold 1..3 [x,y]-> x - y
             ; => -6
-            ..........
-            fold.right 1..3 [res,y]-> y - res
+
+            fold.right 1..3 [x,y]-> x - y
             ; => 2
+            ..........
+            fold.seed:"0" to [:string] 1..5 [x,y] ->
+                "(" ++ x ++ "+" ++ y ++ ")"
+            ; => (((((0+1)+2)+3)+4)+5)
+
+            fold.right.seed:"0" to [:string] 1..5 [x,y] ->
+                "(" ++ x ++ "+" ++ y ++ ")"
+            ; => (1+(2+(3+(4+(5+0)))))
         """:
             ##########################################################
             let preevaled = doEval(z)
