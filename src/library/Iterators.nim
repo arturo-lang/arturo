@@ -270,8 +270,6 @@ proc defineSymbols*() =
             if withLiteral: InPlaced = newBlock(res)
             else: push(newBlock(res))
 
-    # TODO(Iterators\fold): Add support for indexes - via `.with`
-    #  labels: enhancement, library
     builtin "fold",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
