@@ -52,6 +52,8 @@ template iterateThrough(
     params: Value, 
     collection: ValueArray,
     forever: bool,
+    rolling: bool,
+    rollingRight: bool,
     performAction: untyped
 ): untyped =
     let collectionLen = collection.len
@@ -65,6 +67,9 @@ template iterateThrough(
         let hasArgs = argsLen > 0
         if not hasArgs:
             argsLen = 1
+        when rolling:
+            if hasArgs and argsLen>1:
+                argsLen -= 1
 
         var allArgs{.inject.}: ValueArray = args
 
@@ -83,8 +88,14 @@ template iterateThrough(
                 handleBranching:
                     capturedItems = collection[indx..indx+argsLen-1]
                     if hasArgs:
+                        when rolling:
+                            if rollingRight: push(res)
+
                         for item in capturedItems.reversed:
                             push(item)
+
+                        when rolling:
+                            if not rollingRight: push(res)
 
                     if withIndex:
                         push(newInteger(run))
@@ -143,7 +154,7 @@ proc defineSymbols*() =
             var state = VNULL
             var currentSet: ValueArray = @[]
 
-            iterateThrough(withIndex, y, items, doForever):
+            iterateThrough(withIndex, y, items, doForever, false, false):
                 discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
                 let popped = pop()
                 if popped != state:
@@ -200,7 +211,7 @@ proc defineSymbols*() =
 
             var all = true
 
-            iterateThrough(withIndex, y, items, doForever):
+            iterateThrough(withIndex, y, items, doForever, false, false):
                 discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
 
                 let popped = pop()
@@ -250,7 +261,7 @@ proc defineSymbols*() =
 
             var res: ValueArray = @[]
 
-            iterateThrough(withIndex, y, items, doForever):
+            iterateThrough(withIndex, y, items, doForever, false, false):
                 discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
                 let popped = pop()
                 if popped.kind==Logical and Not(popped.b)==True:
@@ -259,18 +270,17 @@ proc defineSymbols*() =
             if withLiteral: InPlaced = newBlock(res)
             else: push(newBlock(res))
 
-    # TODO(Iterators\fold): Add support for indexes - via `.with`
-    #  labels: enhancement, library
     builtin "fold",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "left-fold given collection returning accumulator",
         args        = {
-            "collection"    : {Block,Literal},
-            "params"        : {Literal,Block},
+            "collection"    : {Integer,String,Block,Inline,Dictionary},
+            "params"        : {Literal,Block,Null},
             "action"        : {Block}
         },
         attrs       = {
+            "with"  : ({Literal},"use given index"),
             "seed"  : ({Any},"use specific seed value"),
             "right" : ({Logical},"perform right folding")
         },
@@ -278,123 +288,56 @@ proc defineSymbols*() =
         example     = """
             fold 1..10 [x,y]-> x + y
             ; => 55 (1+2+3+4..) 
-            ..........
+
             fold 1..10 .seed:1 [x,y][ x * y ]
             ; => 3628800 (10!) 
             ..........
-            fold 1..3 [x y]-> x - y
+            fold 1..3 [x,y]-> x - y
             ; => -6
-            ..........
-            fold.right 1..3 [x y]-> x - y
+
+            fold.right 1..3 [x,y]-> x - y
             ; => 2
+            ..........
+            fold.seed:"0" to [:string] 1..5 [x,y] ->
+                "(" ++ x ++ "+" ++ y ++ ")"
+            ; => (((((0+1)+2)+3)+4)+5)
+
+            fold.right.seed:"0" to [:string] 1..5 [x,y] ->
+                "(" ++ x ++ "+" ++ y ++ ")"
+            ; => (1+(2+(3+(4+(5+0)))))
         """:
             ##########################################################
-            var args = cleanBlock(y.a)
             let preevaled = doEval(z)
+            let withIndex = popAttr("with")
+            let doRightFold = popAttr("right")!=VNULL
+            let doForever = false
+
+            var items: ValueArray
+
+            let withLiteral = x.kind==Literal
+            if withLiteral: items = iterableItemsFromLiteralParam(x)
+            else: items = iterableItemsFromParam(x)
+
+            if doRightFold:
+                items.reverse
 
             var seed = I0
-            var blk: ValueArray
-            if x.kind==Literal:
-                blk = cleanBlock(InPlaced.a)
-                # check if empty
-                if blk.len==0: 
-                    push(VNULL)
-                    return
-
-                if blk[0].kind == String:
-                    seed = newString("")
-            else:
-                blk = cleanBlock(x.a)
-                # check if empty
-                if blk.len==0: 
-                    push(VNULL)
-                    return
-
-                if blk[0].kind == String:
-                    seed = newString("")
+            if items.len > 0:
+                if items[0].kind == String:     seed = newString("")
+                elif items[0].kind == Floating: seed = newFloating(0.0)
+                elif items[0].kind == Block:    seed = newBlock()
 
             if (let aSeed = popAttr("seed"); aSeed != VNULL):
                 seed = aSeed
 
-            let doRightFold = (popAttr("right")!=VNULL)
+            var res: Value = seed
 
-            if (x.kind==Literal and blk.len==0):
-                discard
-            elif (x.kind!=Literal and blk.len==0):
-                push(x)
-            else:
-                if (doRightFold):
-                    # right fold
+            iterateThrough(withIndex, y, items, doForever, true, doRightFold):
+                discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
+                res = pop()
 
-                    if x.kind == Literal:
-                        var res: Value = seed
-                        for i in countdown(blk.len-1,0):
-                            handleBranching:
-                                let a = blk[i]
-                                let b = res
-
-                                push(b)
-                                push(a)
-
-                                discard execBlock(VNULL, evaluated=preevaled, args=args)
-                                res = pop()
-                            do:
-                                discard
-
-                        SetInPlace(res)
-
-                    else:
-                        var res: Value = seed
-                        for i in countdown(blk.len-1,0):
-                            handleBranching:
-                                let a = blk[i]
-                                let b = res
-
-                                push(b)
-                                push(a)
-
-                                discard execBlock(VNULL, evaluated=preevaled, args=args)
-                                res = pop()
-                            do:
-                                discard
-
-                        push(res)
-                else:
-                    # left fold
-
-                    if x.kind == Literal:
-                        var res: Value = seed
-                        for i in blk:
-                            handleBranching:
-                                let a = res
-                                let b = i
-
-                                push(b)
-                                push(a)
-
-                                discard execBlock(VNULL, evaluated=preevaled, args=args)
-                                res = pop()
-                            do:
-                                discard
-
-                        SetInPlace(res)
-
-                    else:
-                        var res: Value = seed
-                        for i in blk:
-                            handleBranching:
-                                let a = res
-                                let b = i
-
-                                push(b)
-                                push(a)
-
-                                discard execBlock(VNULL, evaluated=preevaled, args=args)
-                                res = pop()
-                            do:
-                                discard
-
-                        push(res)
+            if withLiteral: InPlaced = res
+            else: push(res)
 
     builtin "loop",
         alias       = unaliased, 
@@ -461,7 +404,7 @@ proc defineSymbols*() =
             var items: ValueArray
             items = iterableItemsFromParam(x)
 
-            iterateThrough(withIndex, y, items, doForever):
+            iterateThrough(withIndex, y, items, doForever, false, false):
                 discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
 
     builtin "map",
@@ -501,7 +444,7 @@ proc defineSymbols*() =
 
             var res: ValueArray = @[]
 
-            iterateThrough(withIndex, y, items, doForever):
+            iterateThrough(withIndex, y, items, doForever, false, false):
                 discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
                 res.add(pop())
 
@@ -545,7 +488,7 @@ proc defineSymbols*() =
 
             var res: ValueArray = @[]
 
-            iterateThrough(withIndex, y, items, doForever):
+            iterateThrough(withIndex, y, items, doForever, false, false):
                 discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
                 let popped = pop()
                 if popped.kind==Logical and popped.b==True:
@@ -588,7 +531,7 @@ proc defineSymbols*() =
 
             var one = false
 
-            iterateThrough(withIndex, y, items, doForever):
+            iterateThrough(withIndex, y, items, doForever, false, false):
                 discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
                 let popped = pop()
                 if popped.kind==Logical and popped.b==True:
