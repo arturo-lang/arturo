@@ -13,34 +13,73 @@
 import vm/values/value
 
 #=======================================
+# Helpers
+#=======================================
+
+# Code adapted using the very interesting contribution 
+# by Stefan Salewski here: https://forum.nim-lang.org/t/2812
+# Thanks! :)
+
+proc repeatedPermutations(a: ValueArray, n: int): seq[ValueArray] =
+    result = newSeq[ValueArray]()
+    if n <= 0: return
+    for i in 0 .. a.high:
+        if n == 1:
+            result.add(@[a[i]])
+        else:
+            for j in repeatedPermutations(a, n - 1):
+                result.add(a[i] & j)
+
+proc uniquePermutations(a: ValueArray, n: int, used: var seq[bool]): seq[ValueArray] =
+    result = newSeq[ValueArray]()
+    if n <= 0: return
+    for i in 0 .. a.high:
+        if not used[i]:
+            if n == 1:
+                result.add(@[a[i]])
+            else:
+                used[i] = true
+                for j in uniquePermutations(a, n - 1, used):
+                    result.add(a[i] & j)
+                used[i] = false
+
+proc repeatedCombinations(a: ValueArray; n: int; used: seq[bool]): seq[ValueArray] =
+    result = newSeq[ValueArray]()
+    var used = used
+    if n <= 0: return
+    for i in 0  .. a.high:
+        if not used[i]:
+            if n == 1:
+                result.add(@[a[i]])
+            else:
+                for j in repeatedCombinations(a, n - 1, used):
+                    result.add(a[i] & j)
+                used[i] = true
+
+proc uniqueCombinations(a: ValueArray; n: int; used: seq[bool]): seq[ValueArray] =
+    result = newSeq[ValueArray]()
+    var used = used
+    if n <= 0: return
+    for i in 0  .. a.high:
+        if not used[i]:
+            if n == 1:
+                result.add(@[a[i]])
+            else:
+                used[i] = true
+                for j in uniqueCombinations(a, n - 1, used):
+                    result.add(a[i] & j)
+
+#=======================================
 # Methods
 #=======================================
 
-proc permutate*(s: ValueArray, emit: proc(emit:ValueArray) ) =
-    var s = @s
-    if s.len == 0: 
-        emit(s)
-        return
- 
-    var rc {.cursor} : proc(np: int)
-    rc = proc(np: int) = 
+func getPermutations*(lst: ValueArray, size: int, repeated: bool = false): seq[ValueArray] =
+    if repeated: repeatedPermutations(lst, size)
+    else: 
+        var used = newSeq[bool](lst.len)
+        uniquePermutations(lst, size, used)
 
-        if np == 1: 
-            emit(s)
-            return
- 
-        var 
-            np1 = np - 1
-            pp = s.len - np1
- 
-        rc(np1) # recurs prior swaps
- 
-        for i in countDown(pp, 1):
-            swap s[i], s[i-1]
-            rc(np1) # recurs swap 
- 
-        let w = s[0]
-        s[0..<pp] = s[1..pp]
-        s[pp] = w
- 
-    rc(s.len)
+func getCombinations*(lst: ValueArray, size: int, repeated: bool = false): seq[ValueArray] =
+    var used = newSeq[bool](lst.len)
+    if repeated: repeatedCombinations(lst, size, used)
+    else: uniqueCombinations(lst, size, used)
