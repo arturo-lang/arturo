@@ -767,7 +767,7 @@ proc defineSymbols*() =
         returns     = {Block},
         example     = """
             permutate [A B C]
-            ; => [[A B C] [A C B] [C A B] [B A C] [B C A] [C B A]]
+            ; => [[A B C] [A C B] [B A C] [B C A] [C A B] [C B A]]
         """:
             ##########################################################
             let doRepeat = popAttr("repeated")!=VNULL
