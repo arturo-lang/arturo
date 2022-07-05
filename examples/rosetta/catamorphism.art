@@ -1,5 +1,5 @@
 ; find the sum, with seed:0 (default)
-print fold [1 2 3 4] => (+)
+print fold [1 2 3 4] => add
 
 ; find the product, with seed:1
-print fold [1 2 3 4] .seed:1 => (*)
+print fold [1 2 3 4] .seed:1 => mul
