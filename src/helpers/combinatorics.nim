@@ -16,7 +16,7 @@ import vm/values/value
 # Helpers
 #=======================================
 
-# Code adapted using the very interesting contribution 
+# Code adapted from the very interesting contribution 
 # by Stefan Salewski here: https://forum.nim-lang.org/t/2812
 # Thanks! :)
 
