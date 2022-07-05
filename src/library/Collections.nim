@@ -202,6 +202,26 @@ proc defineSymbols*() =
             ##########################################################
             push(newBlock(zip(cleanBlock(x.a),cleanBlock(y.a)).map((z)=>newBlock(@[z[0],z[1]]))))
 
+    builtin "decouple",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "get tuple of collections from a coupled collection of tuples",
+        args        = {
+            "collection"    : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Block},
+        example     = """
+            c: couple ["one" "two" "three"] [1 2 3]
+            ; c: [[1 "one"] [2 "two"] [3 "three"]]
+
+            decouple c
+            ; => ["one" "two" "three"] [1 2 3]
+        """:
+            ##########################################################
+            let res = unzip(cleanBlock(x.a).map((z)=>(z.a[0],z.a[1])))
+            push(newBlock(@[newBlock(res[0]), newBlock(res[1])]))
+
     builtin "drop",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
