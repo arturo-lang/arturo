@@ -194,6 +194,17 @@ proc defineSymbols*() =
         # TODO(Iterators\cluster) Add documentation example
         #  labels: library,documentation
         example     = """
+            cluster 1..10 => odd?
+            ; => [[1 3 5 7 9] [2 4 6 8 10]]
+            ..........
+            cluster 1..10 'x -> prime? x
+            ; => [[1 4 6 8 9 10] [2 3 5 7]]
+        
+            cluster.value 1..10 'x -> prime? x
+            ; => [[false [1 4 6 8 9 10]] [true [2 3 5 7]]]
+            ..........
+            #.raw flatten.once cluster.value 1..10 'x [(prime? x)?-> "prime" -> "composite"]
+            ; => [composite:[1 4 6 8 9 10] prime:[2 3 5 7]]
         """:
             ##########################################################
             let preevaled = doEval(z)
