@@ -225,7 +225,7 @@ proc defineSymbols*() =
     builtin "drop",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "drop first <number> of elements from given collection and return the remaining ones",
+        description = "drop first *number* of elements from given collection and return the remaining ones",
         args        = {
             "collection"    : {String,Block,Literal},
             "number"        : {Integer}
@@ -337,7 +337,7 @@ proc defineSymbols*() =
             "collection"    : {String,Block}
         },
         attrs       = {
-            "n"     : ({Integer},"get first <n> items")
+            "n"     : ({Integer},"get first *n* items")
         },
         returns     = {Any,Null},
         example     = """
@@ -649,7 +649,7 @@ proc defineSymbols*() =
             "collection"    : {String,Block}
         },
         attrs       = {
-            "n"     : ({Integer},"get last <n> items")
+            "n"     : ({Integer},"get last *n* items")
         },
         returns     = {Any,Null},
         example     = """
@@ -683,7 +683,9 @@ proc defineSymbols*() =
         args        = {
             "collection"    : {Block}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "index" : ({Logical},"retrieve index of maximum element"),
+        },
         returns     = {Any,Null},
         example     = """
             print max [4 2 8 5 1 9]       ; 9
@@ -693,13 +695,24 @@ proc defineSymbols*() =
             if blk.len==0: push(VNULL)
             else:
                 var maxElement = blk[0]
-                var i = 1
-                while i < blk.len:
-                    if (blk[i]>maxElement):
-                        maxElement = blk[i]
-                    inc(i)
+                if (popAttr("index")!=VNULL):
+                    var maxIndex = 0
+                    var i = 1
+                    while i < blk.len:
+                        if (blk[i]>maxElement):
+                            maxElement = blk[i]
+                            maxIndex = i
+                        inc(i)
 
-                push(maxElement)
+                    push(newInteger(maxIndex))
+                else:
+                    var i = 1
+                    while i < blk.len:
+                        if (blk[i]>maxElement):
+                            maxElement = blk[i]
+                        inc(i)
+
+                    push(maxElement)
 
     builtin "min",
         alias       = unaliased, 
@@ -708,7 +721,9 @@ proc defineSymbols*() =
         args        = {
             "collection"    : {Block}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "index" : ({Logical},"retrieve index of minimum element"),
+        },
         returns     = {Any,Null},
         example     = """
             print min [4 2 8 5 1 9]       ; 1
@@ -718,13 +733,24 @@ proc defineSymbols*() =
             if blk.len==0: push(VNULL)
             else:
                 var minElement = blk[0]
-                var i = 1
-                while i < blk.len:
-                    if (blk[i]<minElement):
-                        minElement = blk[i]
-                    inc(i)
-                    
-                push(minElement)
+                var minIndex = 0
+                if (popAttr("index")!=VNULL):
+                    var i = 1
+                    while i < blk.len:
+                        if (blk[i]<minElement):
+                            minElement = blk[i]
+                            minIndex = i
+                        inc(i)
+                        
+                    push(newInteger(minIndex))
+                else:
+                    var i = 1
+                    while i < blk.len:
+                        if (blk[i]<minElement):
+                            minElement = blk[i]
+                        inc(i)
+                        
+                    push(minElement)
 
     builtin "permutate",
         alias       = unaliased, 
@@ -1225,7 +1251,7 @@ proc defineSymbols*() =
             "lines"     : ({Logical},"split string by lines"),
             "by"        : ({String,Regex,Block},"split using given separator"),
             "at"        : ({Integer},"split collection at given position"),
-            "every"     : ({Integer},"split collection every <n> elements"),
+            "every"     : ({Integer},"split collection every *n* elements"),
             "path"      : ({Logical},"split path components in string")
         },
         returns     = {Block,Nothing},
