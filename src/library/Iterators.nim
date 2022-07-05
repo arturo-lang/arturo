@@ -53,6 +53,7 @@ template iterateThrough(
     collection: ValueArray,
     forever: bool,
     rolling: bool,
+    rollingRight: bool,
     performAction: untyped
 ): untyped =
     let collectionLen = collection.len
@@ -87,11 +88,14 @@ template iterateThrough(
                 handleBranching:
                     capturedItems = collection[indx..indx+argsLen-1]
                     if hasArgs:
+                        when rolling:
+                            if rollingRight: push(res)
+
                         for item in capturedItems.reversed:
                             push(item)
 
                         when rolling:
-                            push(res)
+                            if not rollingRight: push(res)
 
                     if withIndex:
                         push(newInteger(run))
@@ -150,7 +154,7 @@ proc defineSymbols*() =
             var state = VNULL
             var currentSet: ValueArray = @[]
 
-            iterateThrough(withIndex, y, items, doForever, false):
+            iterateThrough(withIndex, y, items, doForever, false, false):
                 discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
                 let popped = pop()
                 if popped != state:
@@ -207,7 +211,7 @@ proc defineSymbols*() =
 
             var all = true
 
-            iterateThrough(withIndex, y, items, doForever, false):
+            iterateThrough(withIndex, y, items, doForever, false, false):
                 discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
 
                 let popped = pop()
@@ -257,7 +261,7 @@ proc defineSymbols*() =
 
             var res: ValueArray = @[]
 
-            iterateThrough(withIndex, y, items, doForever, false):
+            iterateThrough(withIndex, y, items, doForever, false, false):
                 discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
                 let popped = pop()
                 if popped.kind==Logical and Not(popped.b)==True:
@@ -284,16 +288,16 @@ proc defineSymbols*() =
         },
         returns     = {Block,Null,Nothing},
         example     = """
-            fold 1..10 [x,y]-> x + y
+            fold 1..10 [res,y]-> res + y
             ; => 55 (1+2+3+4..) 
             ..........
-            fold 1..10 .seed:1 [x,y][ x * y ]
+            fold 1..10 .seed:1 [res,y][ res * y ]
             ; => 3628800 (10!) 
             ..........
-            fold 1..3 [x y]-> x - y
+            fold 1..3 [res,y]-> res - y
             ; => -6
             ..........
-            fold.right 1..3 [x y]-> x - y
+            fold.right 1..3 [res,y]-> y - res
             ; => 2
         """:
             ##########################################################
@@ -322,7 +326,7 @@ proc defineSymbols*() =
 
             var res: Value = seed
 
-            iterateThrough(withIndex, y, items, doForever, true):
+            iterateThrough(withIndex, y, items, doForever, true, doRightFold):
                 discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
                 res = pop()
 
@@ -502,7 +506,7 @@ proc defineSymbols*() =
             var items: ValueArray
             items = iterableItemsFromParam(x)
 
-            iterateThrough(withIndex, y, items, doForever, false):
+            iterateThrough(withIndex, y, items, doForever, false, false):
                 discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
 
     builtin "map",
@@ -542,7 +546,7 @@ proc defineSymbols*() =
 
             var res: ValueArray = @[]
 
-            iterateThrough(withIndex, y, items, doForever, false):
+            iterateThrough(withIndex, y, items, doForever, false, false):
                 discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
                 res.add(pop())
 
@@ -586,7 +590,7 @@ proc defineSymbols*() =
 
             var res: ValueArray = @[]
 
-            iterateThrough(withIndex, y, items, doForever, false):
+            iterateThrough(withIndex, y, items, doForever, false, false):
                 discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
                 let popped = pop()
                 if popped.kind==Logical and popped.b==True:
@@ -629,7 +633,7 @@ proc defineSymbols*() =
 
             var one = false
 
-            iterateThrough(withIndex, y, items, doForever, false):
+            iterateThrough(withIndex, y, items, doForever, false, false):
                 discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
                 let popped = pop()
                 if popped.kind==Logical and popped.b==True:
