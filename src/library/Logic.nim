@@ -117,7 +117,6 @@ proc defineSymbols*() =
                     discard execBlock(y)
                     push(newLogical(pop().b))
 
-
     builtin "any?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
