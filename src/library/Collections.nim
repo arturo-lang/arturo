@@ -24,6 +24,7 @@ import strutils, sugar, unicode
     
 
 import helpers/arrays
+import helpers/combinatorics
 import helpers/regex
 import helpers/strings
 import helpers/unisort
@@ -138,6 +139,53 @@ proc defineSymbols*() =
                     let blk = cleanBlock(x.a)
                     if blk.len == 0: push(newBlock())
                     else: push(newBlock(blk[0..^2]))
+
+    builtin "combine",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "get all possible combinations of the elements in given collection",
+        args        = {
+            "collection"    : {Block}
+        },
+        attrs       = {
+            "by"        : ({Integer},"define size of each set"),
+            "repeated"  : ({Logical},"allow for combinations with repeated elements"),
+            "count"     : ({Logical},"just count the number of combinations")
+        },
+        returns     = {Block,Integer},
+        example     = """
+            combine [A B C]
+            ; => [[A B C]]
+
+            combine.repeated [A B C]
+            ; => [[A A A] [A A B] [A A C] [A B B] [A B C] [A C C] [B B B] [B B C] [B C C] [C C C]]
+            ..........
+            combine.by:2 [A B C] 
+            ; => [[A B] [A C] [B C]]
+
+            combine.repeated.by:2 [A B C]
+            ; => [[A A] [A B] [A C] [B B] [B C] [C C]]
+            ..........
+            combine.count [A B C]
+            ; => 1
+
+            combine.count.repeated.by:2 [A B C]
+            ; => 6
+        """:
+            ##########################################################
+            let doRepeat = popAttr("repeated")!=VNULL
+
+            let blk = cleanBlock(x.a)
+
+            var sz = blk.len
+            if (let aBy = popAttr("by"); aBy != VNULL):
+                if aBy.i > 0 and aBy.i < sz:
+                    sz = aBy.i
+
+            if popAttr("count")!=VNULL:
+                push(countCombinations(blk, sz, doRepeat))
+            else:
+                push(newBlock(getCombinations(blk, sz, doRepeat).map((z)=>newBlock(z))))
 
     builtin "contains?",
         alias       = unaliased, 
@@ -759,20 +807,45 @@ proc defineSymbols*() =
         args        = {
             "collection"    : {Block}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "by"        : ({Integer},"define size of each set"),
+            "repeated"  : ({Logical},"allow for permutations with repeated elements"),
+            "count"     : ({Logical},"just count the number of permutations")
+        },
         returns     = {Block},
         example     = """
             permutate [A B C]
-            ; => [[A B C] [A C B] [C A B] [B A C] [B C A] [C B A]]
+            ; => [[A B C] [A C B] [B A C] [B C A] [C A B] [C B A]]
+
+            permutate.repeated [A B C]
+            ; => [[A A A] [A A B] [A A C] [A B A] [A B B] [A B C] [A C A] [A C B] [A C C] [B A A] [B A B] [B A C] [B B A] [B B B] [B B C] [B C A] [B C B] [B C C] [C A A] [C A B] [C A C] [C B A] [C B B] [C B C] [C C A] [C C B] [C C C]]
+            ..........
+            permutate.by:2 [A B C] 
+            ; => [[A B] [A C] [B A] [B C] [C A] [C B]]
+
+            permutate.repeated.by:2 [A B C]
+            ; => [[A A] [A B] [A C] [B A] [B B] [B C] [C A] [C B] [C C]]
+            ..........
+            permutate.count [A B C]
+            ; => 6
+
+            permutate.count.repeated.by:2 [A B C]
+            ; => 9
         """:
             ##########################################################
-            var ret: ValueArray = @[]
-        
-            permutate(cleanBlock(x.a), proc(s: ValueArray)= 
-                ret.add(newBlock(s))
-            )
+            let doRepeat = popAttr("repeated")!=VNULL
 
-            push(newBlock(ret))
+            let blk = cleanBlock(x.a)
+
+            var sz = blk.len
+            if (let aBy = popAttr("by"); aBy != VNULL):
+                if aBy.i > 0 and aBy.i < sz:
+                    sz = aBy.i
+
+            if popAttr("count")!=VNULL:
+                push(countPermutations(blk, sz, doRepeat))
+            else:
+                push(newBlock(getPermutations(blk, sz, doRepeat).map((z)=>newBlock(z))))
 
     builtin "remove",
         alias       = doubleminus, 
