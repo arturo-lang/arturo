@@ -1662,6 +1662,21 @@ proc `!!=`*(x: var Value) =
 # proc `!=`*[T](x,y:ref T){.error.}
 # proc cmp*[T](x,y:ref T){.error.}
 
+proc factorial*(x: Value): Value =
+    if not (x.kind == Integer):
+        return VNULL
+    else:
+        if x.iKind==NormalInteger:
+            if x.i < 21:
+                return newInteger(fac(x.i))
+            else:
+                when defined(WEB) or defined(NOGMP):
+                    RuntimeError_NumberOutOfPermittedRange("factorial",$(x), "")
+                else:
+                    return newInteger(newInt().fac(x.i))
+        else:
+            RuntimeError_NumberOutOfPermittedRange("factorial",$(x), "")
+
 func `$`*(b: logical): string =
     if b==True: return "true"
     elif b==False: return "false"
