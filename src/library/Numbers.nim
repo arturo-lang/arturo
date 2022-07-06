@@ -593,6 +593,23 @@ proc defineSymbols*() =
             if x.kind==Complex: push(newComplex(exp(x.z)))
             else: push(newFloating(exp(asFloat(x))))
 
+    builtin "factorial",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "calculate the factorial of given value",
+        args        = {
+            "value" : {Integer}
+        },
+        attrs       = NoAttrs,
+        returns     = {Integer},
+        example     = """
+            factorial 1         ; => 1
+            factorial 5         ; => 120
+            factorial 20        ; => 2432902008176640000
+        """:
+            ##########################################################
+            push(factorial(x))
+
     builtin "factors",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
