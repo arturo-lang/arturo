@@ -765,6 +765,8 @@ proc defineSymbols*() =
             "repeated"  : ({Logical},"allow for permutations with repeated elements")
         },
         returns     = {Block},
+        # TODO(Collections\permutate) Add better documentation examples - e.g. for `.by:` and `.repeated`
+        #  labels: library, documentation, easy
         example     = """
             permutate [A B C]
             ; => [[A B C] [A C B] [B A C] [B C A] [C A B] [C B A]]
