@@ -31,7 +31,7 @@ v0.9.8.1
 - Collections\take: fixed to also work with empty blocks
 - Converters\to: added support for `:complex` to `:block` conversion
 - Core\case: made function with null sets (ø)
-- Iterators: all iterator function re-implemented and now work with a `.with` option and also with a `null` param block
+- Iterators: all iterator methods re-implemented and now work with a `.with` option and also with a `null` param block
 - Numbers\product: added `.cartesian` option
 - Numbers\range: make function work even with .step =< 0
 
