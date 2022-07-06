@@ -16,12 +16,12 @@ v0.9.8.1
 **Enhancements & Fixes**
 
 - Arithmetic\mod: added support for floating number modulo operations
-- Collections\contains?: added `:char` support for string searches
-- Collections\in?: added `:char` support for string searches
 - Collections\chop: fixed to also work with empty blocks
 - Collections\combine: renamed to `couple`
+- Collections\contains?: added `:char` support for string searches
 - Collections\drop: fixed to also work with empty blocks
 - Collections\first: fixed to also work with empty blocks
+- Collections\in?: added `:char` support for string searches
 - Collections\last: fixed to also work with empty blocks
 - Collections\max: added `.index` option
 - Collections\min: added `.index` option
