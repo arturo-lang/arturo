@@ -10,6 +10,8 @@
 # Libraries
 #=======================================
 
+import math
+
 import vm/values/value
 
 #=======================================
@@ -83,3 +85,13 @@ func getCombinations*(lst: ValueArray, size: int, repeated: bool = false): seq[V
     var used = newSeq[bool](lst.len)
     if repeated: repeatedCombinations(lst, size, used)
     else: uniqueCombinations(lst, size, used)
+
+proc countPermutations*(lst: ValueArray, size: int, repeated: bool = false): Value =
+    let n = lst.len
+    if repeated: newInteger(n) ^ newInteger(size)
+    else: factorial(newInteger(n)) / factorial(newInteger(n-size))
+
+proc countCombinations*(lst: ValueArray, size: int, repeated: bool = false): Value =
+    let n = lst.len
+    if repeated: factorial(newInteger(n+size-1)) / (factorial(newInteger(size))*factorial(newInteger(n-1)))
+    else: factorial(newInteger(n)) / (factorial(newInteger(size))*factorial(newInteger(n-size)))
