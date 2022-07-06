@@ -1,1 +1,3 @@
+*.art linguist-language=Red
+*.art linguist-vendored
 tests/benchmarks/* linguist-vendored
