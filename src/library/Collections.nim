@@ -140,6 +140,34 @@ proc defineSymbols*() =
                     if blk.len == 0: push(newBlock())
                     else: push(newBlock(blk[0..^2]))
 
+    builtin "combine",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "get all possible combinations of the elements in given collection",
+        args        = {
+            "collection"    : {Block}
+        },
+        attrs       = {
+            "by"        : ({Integer},"define size of each set"),
+            "repeated"  : ({Logical},"allow for combinations with repeated elements")
+        },
+        returns     = {Block},
+        # TODO(Collections\combine) Add documentation example
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            let doRepeat = popAttr("repeated")!=VNULL
+
+            let blk = cleanBlock(x.a)
+
+            var sz = blk.len
+            if (let aBy = popAttr("by"); aBy != VNULL):
+                if aBy.i > 0 and aBy.i < sz:
+                    sz = aBy.i
+
+            push(newBlock(getCombinations(blk, sz, doRepeat).map((z)=>newBlock(z))))
+
     builtin "contains?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
