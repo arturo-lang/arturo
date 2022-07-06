@@ -1,3 +1,6 @@
 *.art linguist-language=Red
 *.art linguist-vendored
 tests/benchmarks/* linguist-vendored
+tests/errors/* linguist-vendored
+tests/unittests/* linguist-vendored
+examples/rosetta/* linguist-vendored
