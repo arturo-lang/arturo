@@ -602,9 +602,10 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Integer},
-        # TODO(Numbers\factorial) add documentation example
-        #  labels: library,documentation,easy
         example     = """
+            factorial 1         ; => 1
+            factorial 5         ; => 120
+            factorial 20        ; => 2432902008176640000
         """:
             ##########################################################
             push(factorial(x))
