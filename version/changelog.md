@@ -1,6 +1,11 @@
 v0.9.81
 ========
 
+### Documentation
+
+- Added numerous new Rosetta Code examples
+- Minor fixes in existing examples and/or function signatures
+
 ### Language
 
 - Added new `:rational` type (along with all relevant operations)
@@ -34,11 +39,11 @@ v0.9.81
 - Iterators: all iterator methods re-implemented and now work with a `.with` option and also with a `null` param block
 - Numbers\product: added `.cartesian` option
 - Numbers\range: make function work even with .step =< 0
+- Reflection\info: show origin module for built-in functions/constants
 
-### Documentation
+### Misc
 
-- Added numerous new Rosetta Code examples
-- Minor fixes in existing examples and/or function signatures
+- Fixed multi-line string handling in REPL
 
 v0.9.7.2
 ========
