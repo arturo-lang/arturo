@@ -1670,12 +1670,15 @@ proc factorial*(x: Value): Value =
             if x.i < 21:
                 return newInteger(fac(x.i))
             else:
-                when defined(WEB) or defined(NOGMP):
+                when defined(WEB):
+                    discard
+                elif defined(NOGMP):
                     RuntimeError_NumberOutOfPermittedRange("factorial",$(x), "")
                 else:
                     return newInteger(newInt().fac(x.i))
         else:
-            RuntimeError_NumberOutOfPermittedRange("factorial",$(x), "")
+            when not defined(WEB):
+                RuntimeError_NumberOutOfPermittedRange("factorial",$(x), "")
 
 func `$`*(b: logical): string =
     if b==True: return "true"
