@@ -533,9 +533,6 @@ proc defineSymbols*() =
                         i+=1
                     push(newBlock(res))
 
-    # TODO(Core\return): Verify return works right
-    #  seems to have been disrupted after changed to error handling & breaks
-    #  labels: bug, library, language, critical, unit-test
     builtin "return",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
