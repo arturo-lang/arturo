@@ -593,6 +593,8 @@ proc defineSymbols*() =
             if x.kind==Complex: push(newComplex(exp(x.z)))
             else: push(newFloating(exp(asFloat(x))))
 
+    # TODO(Numbers\factorial) not working for Web builds
+    #  labels: web,enhancement
     builtin "factorial",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
