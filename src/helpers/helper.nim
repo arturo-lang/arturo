@@ -256,7 +256,11 @@ proc printInfo*(n: string, v: Value, aliases: SymbolDict, withExamples = false) 
 
     # Print header
     printLine()
-    printOneData(n,fmt("{typeStr}{fg(grayColor)}{address}"),bold(magentaColor),resetColor)
+    if v.info.contains("]"):
+        let mdl = v.info.split("]")[0].strip().replace("[","").strip().split(":")[0].strip()
+        printOneData(n,fmt("{typeStr}{fg(grayColor)}{align(mdl,32)}"),bold(magentaColor),resetColor)
+    else:
+        printOneData(n,fmt("{typeStr}{fg(grayColor)}{address}"),bold(magentaColor),resetColor)
 
     # Print alias if it exists
     let alias = getAlias(n, aliases)
