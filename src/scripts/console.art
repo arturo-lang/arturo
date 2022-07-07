@@ -192,7 +192,7 @@ while [true] .import [
         if suffix? strip inp "[" [
             indentation: indentation ++ "\t"
         ]
-        inp: inp ++ input ".. " ++ indentation
+        inp: inp ++ "\n" ++ input ".. " ++ indentation
     ]
 
     try?.verbose.import [
