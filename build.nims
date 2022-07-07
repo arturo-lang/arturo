@@ -172,7 +172,8 @@ proc showBuildInfo*() =
 #=======================================
 # Helpers
 #=======================================
-
+# TODO(build.nims) JavaScript compression not working correctly
+#  labels: web,bug
 proc recompressJS*(jsFile: string) =
     let outputFile = jsFile #.replace(".min.js", ".final.min.js")
     var js = readFile(jsFile)
