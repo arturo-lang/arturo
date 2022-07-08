@@ -82,7 +82,7 @@ template iterateThrough(
 
         var keepGoing{.inject.}: bool = true
         while keepGoing:
-            var indx = 0
+            var indx{.inject.} = 0
             var run = 0
             while indx+argsLen<=collectionLen:
                 handleBranching:
@@ -296,7 +296,9 @@ proc defineSymbols*() =
             "condition"     : {Block}
         },
         attrs       = {
-            "with"      : ({Literal},"use given index")
+            "with"      : ({Literal},"use given index"),
+            "first"     : ({Logical,Integer},"only filter first element/s"),
+            "last"      : ({Logical,Integer},"only filter last element/s")
         },
         returns     = {Block,Nothing},
         example     = """
@@ -313,6 +315,19 @@ proc defineSymbols*() =
             ##########################################################
             let preevaled = doEval(z)
             let withIndex = popAttr("with")
+            var onlyFirst = false
+            var onlyLast = false
+            var elemLimit = -1
+            if (let aFirst = popAttr("first"); aFirst != VNULL):
+                onlyFirst = true
+                if aFirst.kind == Logical and aFirst.b == True: elemLimit = 1
+                else: elemLimit = aFirst.i
+
+            if (let aLast = popAttr("last"); aLast != VNULL):
+                onlyLast = true
+                if aLast.kind == Logical and aLast.b == True: elemLimit = 1
+                else: elemLimit = aLast.i
+
             let doForever = false
 
             var items: ValueArray
@@ -322,12 +337,31 @@ proc defineSymbols*() =
             else: items = iterableItemsFromParam(x)
 
             var res: ValueArray = @[]
+            var stoppedAt = -1
+
+            if onlyLast:
+                items.reverse()
+
+            var filteredItems = 0
 
             iterateThrough(withIndex, y, items, doForever, false, false):
                 discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
                 let popped = pop()
                 if popped.kind==Logical and Not(popped.b)==True:
                     res.add(capturedItems)
+                else:
+                    if onlyFirst or onlyLast:
+                        filteredItems += capturedItems.len
+                        if elemLimit == filteredItems:
+                            stoppedAt = indx+1
+                            keepGoing = false
+                            break
+
+            if (onlyFirst or onlyLast) and stoppedAt < items.len:
+                res.add(items[stoppedAt..items.len-1])
+            
+            if onlyLast:
+                res.reverse()
 
             if withLiteral: InPlaced = newBlock(res)
             else: push(newBlock(res))
@@ -523,7 +557,9 @@ proc defineSymbols*() =
             "condition"     : {Block}
         },
         attrs       = {
-            "with"      : ({Literal},"use given index")
+            "with"      : ({Literal},"use given index"),
+            "first"     : ({Logical,Integer},"only return first element/s"),
+            "last"      : ({Logical,Integer},"only return last element/s")
         },
         returns     = {Block,Nothing},
         example     = """
@@ -540,6 +576,19 @@ proc defineSymbols*() =
             ##########################################################
             let preevaled = doEval(z)
             let withIndex = popAttr("with")
+            var onlyFirst = false
+            var onlyLast = false
+            var elemLimit = -1
+            if (let aFirst = popAttr("first"); aFirst != VNULL):
+                onlyFirst = true
+                if aFirst.kind == Logical and aFirst.b == True: elemLimit = 1
+                else: elemLimit = aFirst.i
+
+            if (let aLast = popAttr("last"); aLast != VNULL):
+                onlyLast = true
+                if aLast.kind == Logical and aLast.b == True: elemLimit = 1
+                else: elemLimit = aLast.i
+
             let doForever = false
 
             var items: ValueArray
@@ -555,6 +604,18 @@ proc defineSymbols*() =
                 let popped = pop()
                 if popped.kind==Logical and popped.b==True:
                     res.add(capturedItems)
+
+                    if onlyFirst:
+                        if elemLimit == res.len:
+                            keepGoing = false
+                            break
+
+            if onlyLast:
+                let rlen = res.len
+                var startFrom = 0
+                if rlen-elemLimit > 0:
+                    startFrom = rlen-elemLimit
+                res = res[startFrom..rlen-1]
 
             if withLiteral: InPlaced = newBlock(res)
             else: push(newBlock(res))
