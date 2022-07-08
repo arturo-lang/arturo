@@ -296,7 +296,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
         i -= 1
         ret
 
-    template processThickArrowRight(): untyped =
+    template processThickArrowRight(argblock: var seq[Value], subblock: var seq[Value]): untyped =
         while n.a[i+1].kind == Newline:
             when not defined(NOERRORLINES):
                 addEol(n.a[i+1].line)
@@ -308,8 +308,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
         # we'll want to create the two blocks, 
         # for functions like loop, map, select, filter
         # so let's get them ready
-        var argblock: seq[Value] = @[]
-        var subblock: seq[Value] = @[subnode]
+        argblock = @[]
+        subblock = @[subnode]
 
         var funcArity{.inject.}: int = 0
 
@@ -338,13 +338,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     fnd += 1
                 idx += 1
             funcArity = fnd
-            subblock = subnode.a
-
-        # add the blocks
-        addTerminalValue(false):
-            addConst(consts, newBlock(argblock), opPush)
-        addTerminalValue(false):
-            addConst(consts, newBlock(subblock), opPush)  
+            subblock = subnode.a 
 
     #------------------------
     # Main Eval Loop
@@ -421,12 +415,16 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
             of Label: 
                 let funcIndx = node.s
+                var hasThickArrow = false
+                var ab: seq[Value]
+                var sb: seq[Value]
                 if (n.a[i+1].kind == Word and n.a[i+1].s == "function") or
                    (n.a[i+1].kind == Symbol and n.a[i+1].m == dollar):
                     if n.a[i+2].kind == Symbol and n.a[i+2].m == thickarrowright:
                         i += 2
-                        processThickArrowRight()
+                        processThickArrowRight(ab,sb)
                         TmpArities[funcIndx] = funcArity
+                        hasThickArrow = true
                     else:
                         TmpArities[funcIndx] = n.a[i+2].a.countIt(it.kind != Type) #n.a[i+2].a.len
                 else:
@@ -435,6 +433,16 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                 addConst(consts, node, opStore)
                 argStack.add(1)
+
+                if hasThickArrow:
+                    addConst(consts, newWord("function"), opCall)
+                    argStack.add(2)
+
+                    # add the blocks
+                    addTerminalValue(false):
+                        addConst(consts, newBlock(ab), opPush)
+                    addTerminalValue(false):
+                        addConst(consts, newBlock(sb), opPush) 
 
             of Attribute:
                 addAttr(consts, node)
@@ -505,7 +513,15 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of thickarrowright  : 
                         # TODO(Eval\addTerminalValue) Thick arrow-right not working with pipes
                         # labels: vm,evaluator,enhancement,bug
-                        processThickArrowRight()                     
+                        var ab: seq[Value]
+                        var sb: seq[Value]
+                        processThickArrowRight(ab, sb)          
+
+                        # add the blocks
+                        addTerminalValue(false):
+                            addConst(consts, newBlock(ab), opPush)
+                        addTerminalValue(false):
+                            addConst(consts, newBlock(sb), opPush)            
 
                         i += 1
                     else:
