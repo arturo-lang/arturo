@@ -296,6 +296,53 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
         i -= 1
         ret
 
+    template processThickArrowRight(): untyped =
+        while n.a[i+1].kind == Newline:
+            when not defined(NOERRORLINES):
+                addEol(n.a[i+1].line)
+            i += 1
+
+        # get next node
+        let subnode = n.a[i+1]
+
+        # we'll want to create the two blocks, 
+        # for functions like loop, map, select, filter
+        # so let's get them ready
+        var argblock: seq[Value] = @[]
+        var subblock: seq[Value] = @[subnode]
+
+        # if it's a word
+        if subnode.kind==Word:
+            # check if it's a function
+            if TmpArities.hasKey(subnode.s):
+                    # automatically "push" all its required arguments
+                let funcArity = TmpArities[subnode.s]
+
+                for i in 0..(funcArity-1):
+                    let arg = newWord("_" & $(i))
+                    argblock.add(arg)
+                    subblock.add(arg)
+
+        elif subnode.kind==Block:
+            # replace ampersand symbols, 
+            # sequentially, with arguments
+            var idx = 0
+            var fnd = 0
+            while idx<subnode.a.len:
+                if subnode.a[idx].kind==Symbol and subnode.a[idx].m==ampersand:
+                    let arg = newWord("_" & $(fnd))
+                    argblock.add(arg)
+                    subnode.a[idx] = arg
+                    fnd += 1
+                idx += 1
+            subblock = subnode.a
+
+        # add the blocks
+        addTerminalValue(false):
+            addConst(consts, newBlock(argblock), opPush)
+        addTerminalValue(false):
+            addConst(consts, newBlock(subblock), opPush)  
+
     #------------------------
     # Main Eval Loop
     #------------------------
@@ -452,51 +499,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of thickarrowright  : 
                         # TODO(Eval\addTerminalValue) Thick arrow-right not working with pipes
                         # labels: vm,evaluator,enhancement,bug
-                        while n.a[i+1].kind == Newline:
-                            when not defined(NOERRORLINES):
-                                addEol(n.a[i+1].line)
-                            i += 1
-
-                        # get next node
-                        let subnode = n.a[i+1]
-
-                        # we'll want to create the two blocks, 
-                        # for functions like loop, map, select, filter
-                        # so let's get them ready
-                        var argblock: seq[Value] = @[]
-                        var subblock: seq[Value] = @[subnode]
-
-                        # if it's a word
-                        if subnode.kind==Word:
-                            # check if it's a function
-                            if TmpArities.hasKey(subnode.s):
-                                 # automatically "push" all its required arguments
-                                let funcArity = TmpArities[subnode.s]
-
-                                for i in 0..(funcArity-1):
-                                    let arg = newWord("_" & $(i))
-                                    argblock.add(arg)
-                                    subblock.add(arg)
-
-                        elif subnode.kind==Block:
-                            # replace ampersand symbols, 
-                            # sequentially, with arguments
-                            var idx = 0
-                            var fnd = 0
-                            while idx<subnode.a.len:
-                                if subnode.a[idx].kind==Symbol and subnode.a[idx].m==ampersand:
-                                    let arg = newWord("_" & $(fnd))
-                                    argblock.add(arg)
-                                    subnode.a[idx] = arg
-                                    fnd += 1
-                                idx += 1
-                            subblock = subnode.a
-
-                        # add the blocks
-                        addTerminalValue(false):
-                            addConst(consts, newBlock(argblock), opPush)
-                        addTerminalValue(false):
-                            addConst(consts, newBlock(subblock), opPush)                       
+                        processThickArrowRight()                     
 
                         i += 1
                     else:
