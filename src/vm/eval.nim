@@ -311,12 +311,14 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
         var argblock: seq[Value] = @[]
         var subblock: seq[Value] = @[subnode]
 
+        var funcArity{.inject.}: int = 0
+
         # if it's a word
         if subnode.kind==Word:
             # check if it's a function
             if TmpArities.hasKey(subnode.s):
                     # automatically "push" all its required arguments
-                let funcArity = TmpArities[subnode.s]
+                funcArity = TmpArities[subnode.s]
 
                 for i in 0..(funcArity-1):
                     let arg = newWord("_" & $(i))
@@ -335,6 +337,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     subnode.a[idx] = arg
                     fnd += 1
                 idx += 1
+            funcArity = fnd
             subblock = subnode.a
 
         # add the blocks
