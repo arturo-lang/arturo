@@ -303,6 +303,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
     var i = 0
     while i < n.a.len:
         let node = n.a[i]
+        echo "evaluating node @ " & $(i) & " => " & $(node.kind)
 
         case node.kind:
             of Null:    addToCommand((byte)opConstN)
@@ -448,25 +449,30 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                             addConst(consts, newBlock(subblock), opPush)
 
                     of thickarrowright  : 
+                        echo "FOUND: thick arrow right"
                         # TODO(Eval\addTerminalValue) Thick arrow-right not working with pipes
                         # labels: vm,evaluator,enhancement,bug
                         while n.a[i+1].kind == Newline:
                             when not defined(NOERRORLINES):
                                 addEol(n.a[i+1].line)
                             i += 1
+                        echo "\t>> added newlines"
                         # get next node
                         let subnode = n.a[i+1]
-
+                        echo "\t>> got next node"
                         # we'll want to create the two blocks, 
                         # for functions like loop, map, select, filter
                         # so let's get them ready
                         var argblock: seq[Value] = @[]
                         var subblock: seq[Value] = @[subnode]
+                        echo "\t>> initialized sub-blocks"
 
                         # if it's a word
                         if subnode.kind==Word:
+                            echo "\t>> subnode is a :word"
                             # check if it's a function
                             if TmpArities.hasKey(subnode.s):
+                                echo "\t>> It's a known function"
                                  # automatically "push" all its required arguments
                                 let funcArity = TmpArities[subnode.s]
 
@@ -474,8 +480,11 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                                     let arg = newWord("_" & $(i))
                                     argblock.add(arg)
                                     subblock.add(arg)
+                            else:
+                                echo "\t>> It's not a known function"
 
                         elif subnode.kind==Block:
+                            echo "\t>> subnode is a :block"
                             # replace ampersand symbols, 
                             # sequentially, with arguments
                             var idx = 0
@@ -488,20 +497,25 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                                     fnd += 1
                                 idx += 1
                             subblock = subnode.a
+                            echo "\t>> Replaced ampersands"
 
                         # add the blocks
                         addTerminalValue(false):
                             addConst(consts, newBlock(argblock), opPush)
                         addTerminalValue(false):
                             addConst(consts, newBlock(subblock), opPush)
-                        
+
+                        echo "\t>> added blocks"                        
+
                         i += 1
                     else:
                         let symalias = node.m
+                        echo "FOUND SYMBOL: " & $(node.m)
                         if Aliases.hasKey(symalias):
                             let symfunc = Syms[Aliases[symalias].name.s]
                             if symfunc.kind==Function:
                                 if symfunc.fnKind == BuiltinFunction and symfunc.arity!=0:
+                                    echo ">>> FOUND function/symbol with arity: " & $(symfunc.arity)
                                     addConst(consts, Aliases[symalias].name, opCall)
                                     argStack.add(symfunc.arity)
                                 elif symfunc.fnKind == UserFunction and symfunc.params.a.len!=0:
