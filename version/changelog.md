@@ -35,7 +35,7 @@ v0.9.81
 - Collections\sort: fixed to also work with empty blocks
 - Collections\take: fixed to also work with empty blocks
 - Converters\to: added support for `:complex` to `:block` conversion
-- Core\case: made function with null sets (ø)
+- Core\case: made function work with null sets (ø)
 - Iterators: all iterator methods re-implemented and now work with a `.with` option and also with a `null` param block
 - Iterators\filter: added `.first` and `.last` options
 - Iterators\select: added `.first` and `.last` options
