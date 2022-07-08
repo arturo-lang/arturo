@@ -296,6 +296,50 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
         i -= 1
         ret
 
+    template processThickArrowRight(argblock: var seq[Value], subblock: var seq[Value]): untyped =
+        while n.a[i+1].kind == Newline:
+            when not defined(NOERRORLINES):
+                addEol(n.a[i+1].line)
+            i += 1
+
+        # get next node
+        let subnode = n.a[i+1]
+
+        # we'll want to create the two blocks, 
+        # for functions like loop, map, select, filter
+        # so let's get them ready
+        argblock = @[]
+        subblock = @[subnode]
+
+        var funcArity{.inject.}: int = 0
+
+        # if it's a word
+        if subnode.kind==Word:
+            # check if it's a function
+            if TmpArities.hasKey(subnode.s):
+                    # automatically "push" all its required arguments
+                funcArity = TmpArities[subnode.s]
+
+                for i in 0..(funcArity-1):
+                    let arg = newWord("_" & $(i))
+                    argblock.add(arg)
+                    subblock.add(arg)
+
+        elif subnode.kind==Block:
+            # replace ampersand symbols, 
+            # sequentially, with arguments
+            var idx = 0
+            var fnd = 0
+            while idx<subnode.a.len:
+                if subnode.a[idx].kind==Symbol and subnode.a[idx].m==ampersand:
+                    let arg = newWord("_" & $(fnd))
+                    argblock.add(arg)
+                    subnode.a[idx] = arg
+                    fnd += 1
+                idx += 1
+            funcArity = fnd
+            subblock = subnode.a 
+
     #------------------------
     # Main Eval Loop
     #------------------------
@@ -371,15 +415,35 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
             of Label: 
                 let funcIndx = node.s
+                var hasThickArrow = false
+                var ab: seq[Value]
+                var sb: seq[Value]
                 if (n.a[i+1].kind == Word and n.a[i+1].s == "function") or
                    (n.a[i+1].kind == Symbol and n.a[i+1].m == dollar):
-                    TmpArities[funcIndx] = n.a[i+2].a.countIt(it.kind != Type) #n.a[i+2].a.len
+                    if n.a[i+2].kind == Symbol and n.a[i+2].m == thickarrowright:
+                        i += 2
+                        processThickArrowRight(ab,sb)
+                        TmpArities[funcIndx] = funcArity
+                        hasThickArrow = true
+                        i += 1
+                    else:
+                        TmpArities[funcIndx] = n.a[i+2].a.countIt(it.kind != Type) #n.a[i+2].a.len
                 else:
                     if not isDictionary:
                         TmpArities.del(funcIndx)
 
                 addConst(consts, node, opStore)
                 argStack.add(1)
+
+                if hasThickArrow:
+                    addConst(consts, newWord("function"), opCall)
+                    argStack.add(2)
+
+                    # add the blocks
+                    addTerminalValue(false):
+                        addConst(consts, newBlock(ab), opPush)
+                    addTerminalValue(false):
+                        addConst(consts, newBlock(sb), opPush) 
 
             of Attribute:
                 addAttr(consts, node)
@@ -450,51 +514,16 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of thickarrowright  : 
                         # TODO(Eval\addTerminalValue) Thick arrow-right not working with pipes
                         # labels: vm,evaluator,enhancement,bug
-                        while n.a[i+1].kind == Newline:
-                            when not defined(NOERRORLINES):
-                                addEol(n.a[i+1].line)
-                            i += 1
-                        # get next node
-                        let subnode = n.a[i+1]
-
-                        # we'll want to create the two blocks, 
-                        # for functions like loop, map, select, filter
-                        # so let's get them ready
-                        var argblock: seq[Value] = @[]
-                        var subblock: seq[Value] = @[subnode]
-
-                        # if it's a word
-                        if subnode.kind==Word:
-                            # check if it's a function
-                            if TmpArities.hasKey(subnode.s):
-                                 # automatically "push" all its required arguments
-                                let funcArity = TmpArities[subnode.s]
-
-                                for i in 0..(funcArity-1):
-                                    let arg = newWord("_" & $(i))
-                                    argblock.add(arg)
-                                    subblock.add(arg)
-
-                        elif subnode.kind==Block:
-                            # replace ampersand symbols, 
-                            # sequentially, with arguments
-                            var idx = 0
-                            var fnd = 0
-                            while idx<subnode.a.len:
-                                if subnode.a[idx].kind==Symbol and subnode.a[idx].m==ampersand:
-                                    let arg = newWord("_" & $(fnd))
-                                    argblock.add(arg)
-                                    subnode.a[idx] = arg
-                                    fnd += 1
-                                idx += 1
-                            subblock = subnode.a
+                        var ab: seq[Value]
+                        var sb: seq[Value]
+                        processThickArrowRight(ab, sb)          
 
                         # add the blocks
                         addTerminalValue(false):
-                            addConst(consts, newBlock(argblock), opPush)
+                            addConst(consts, newBlock(ab), opPush)
                         addTerminalValue(false):
-                            addConst(consts, newBlock(subblock), opPush)
-                        
+                            addConst(consts, newBlock(sb), opPush)            
+
                         i += 1
                     else:
                         let symalias = node.m

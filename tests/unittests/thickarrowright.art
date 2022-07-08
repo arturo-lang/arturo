@@ -18,3 +18,34 @@ print map 1..10 => double
 
 print map 1..10 => [&+2]
 print map 5..10 => [&-2]
+
+; AS FUNCTION WITH NO PARAMS, RETURNING A CONSTANT
+
+f: function => 2
+print f
+
+g: $ => 2
+print g
+
+; AS A FUNCTION-ALIAS
+
+h: function => upper
+print h "hello"
+
+l: $ => upper
+print l "hello"
+
+; AS A FUNCTION WITH BLOCK
+
+m: function => [& + 3]
+print m 10
+
+n: $ => [& + 3]
+print n 10
+
+; AS A FUNCTION WITH MULTIPLE PARAMS
+p: function => [& * &]
+print p 3 6
+
+q: function => [& * &]
+print q 3 6
