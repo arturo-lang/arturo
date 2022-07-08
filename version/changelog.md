@@ -18,7 +18,7 @@ v0.9.81
 - Iterators: added new `chunk` & `cluster` methods
 - Numbers: added new `factorial` method
 
-**Enhancements & Fixes**
+**Enhancements, Changes & Fixes**
 
 - Arithmetic\mod: added support for floating number modulo operations
 - Collections\chop: fixed to also work with empty blocks
