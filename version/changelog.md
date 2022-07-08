@@ -44,6 +44,7 @@ v0.9.81
 ### Misc
 
 - Fixed multi-line string handling in REPL
+- Fixed thick-arrow-right (`=>`) syntac sugar handling in label + function assignments
 
 v0.9.7.2
 ========
