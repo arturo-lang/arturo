@@ -131,6 +131,8 @@ proc defineSymbols*() =
             "value" : ({Any},"also include condition values")
         },
         returns     = {Block,Nothing},
+        # TODO(Iterators\chunk) add documentation examples for `.with` and multiple arguments
+        #  labels: library,documentation,easy
         example     = """
             chunk [1 1 2 2 3 22 3 5 5 7 9 2 5] => even?
             ; => [[1 1] [2 2] [3] [22] [3 5 5 7 9] [2] [5]]
@@ -191,6 +193,8 @@ proc defineSymbols*() =
             "value" : ({Any},"also include condition values")
         },
         returns     = {Block,Nothing},
+        # TODO(Iterators\cluster) add documentation examples for `.with` and multiple arguments
+        #  labels: library,documentation,easy
         example     = """
             cluster 1..10 => odd?
             ; => [[1 3 5 7 9] [2 4 6 8 10]]
@@ -252,6 +256,8 @@ proc defineSymbols*() =
             "with"      : ({Literal},"use given index")
         },
         returns     = {Logical},
+        # TODO(Iterators\every?) add documentation examples for `.with` and multiple arguments
+        #  labels: library,documentation,easy
         example     = """
             if every? [2 4 6 8] 'x [even? x] 
                 -> print "every number is an even integer"
@@ -301,6 +307,11 @@ proc defineSymbols*() =
             "last"      : ({Logical,Integer},"only filter last element/s")
         },
         returns     = {Block,Nothing},
+        # TODO(Iterators\filter) add documentation examples for `.with`, `.first`, `.last` and multiple arguments
+        #  labels: library,documentation,easy
+        # TODO(Iterators\filter) add unit-test tests for `.first` and `.last`
+        #  it should go in tests/unittests/lib.iterators.art
+        #  labels: unit-test,easy
         example     = """
             print filter 1..10 [x][
                 even? x
@@ -381,6 +392,8 @@ proc defineSymbols*() =
             "right" : ({Logical},"perform right folding")
         },
         returns     = {Block,Null,Nothing},
+        # TODO(Iterators\fold) add documentation examples for `.with` and multiple arguments
+        #  labels: library,documentation,easy
         example     = """
             fold 1..10 [x,y]-> x + y
             ; => 55 (1+2+3+4..) 
@@ -516,6 +529,8 @@ proc defineSymbols*() =
             "with"      : ({Literal},"use given index")
         },
         returns     = {Block,Nothing},
+        # TODO(Iterators\map) add documentation examples for `.with` and multiple arguments
+        #  labels: library,documentation,easy
         example     = """
             print map 1..5 [x][
                 2*x
@@ -562,6 +577,11 @@ proc defineSymbols*() =
             "last"      : ({Logical,Integer},"only return last element/s")
         },
         returns     = {Block,Nothing},
+        # TODO(Iterators\select) add documentation examples for `.with`, `.first`, `.last` and multiple arguments
+        #  labels: library,documentation,easy
+        # TODO(Iterators\select) add unit-test tests for `.first` and `.last`
+        #  it should go in tests/unittests/lib.iterators.art
+        #  labels: unit-test,easy
         example     = """
             print select 1..10 [x][
                 even? x
@@ -633,6 +653,8 @@ proc defineSymbols*() =
             "with"      : ({Literal},"use given index")
         },
         returns     = {Logical},
+        # TODO(Iterators\some?) add documentation examples for `.with` and multiple arguments
+        #  labels: library,documentation,easy
         example     = """
             if some? [1 3 5 6 7] 'x [even? x] 
                 -> print "at least one number is an even integer"
