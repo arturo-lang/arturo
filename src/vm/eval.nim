@@ -425,6 +425,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         processThickArrowRight(ab,sb)
                         TmpArities[funcIndx] = funcArity
                         hasThickArrow = true
+                        i += 1
                     else:
                         TmpArities[funcIndx] = n.a[i+2].a.countIt(it.kind != Type) #n.a[i+2].a.len
                 else:
