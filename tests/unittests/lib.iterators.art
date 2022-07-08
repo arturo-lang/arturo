@@ -1,0 +1,107 @@
+; helpers
+newTest: function [func][
+    print ~"\n|upper func|\n"
+]
+
+printPerLine: function [arr][
+    loop arr => print
+]
+
+; test different ways of calling 
+; a null-parameter iterator method
+loop 1..3 [][ print "hello 1" ]
+loop 1..3 ø [ print "hello 2" ]
+loop 1..3 ø -> print "hello 3"
+loop 1..3 => [print "hello 4"]
+
+; loop
+newTest "loop"
+loop 1..3 'x -> print x
+loop 1..3 [x]-> print x
+loop 1..5 [x y][ print [x y] ]
+loop 1..5 [x y]-> print [x y]
+loop.with:'i 1..5 [x]-> print [i x]
+loop.with:'i 1..5 [x y]-> print [i x y]
+
+; map
+newTest "map"
+printPerLine map 1..3 'x -> true
+printPerLine map 1..3 [x]-> x
+printPerLine map 1..5 [x y][@[x y]]
+printPerLine map 1..5 [x y]-> @[x y]
+printPerLine map.with:'i 1..5 [x]-> @[i x]
+printPerLine map.with:'i 1..5 [x y]-> @[i x y]
+
+; select
+newTest "select"
+printPerLine select 1..5 ø -> true
+printPerLine select 1..5 [] -> true
+printPerLine select 1..5 => true
+printPerLine select 1..5 'x -> even? x
+printPerLine select.with:'i 1..5 'x -> even? i
+printPerLine select.with:'i 1..5 [x y] -> even? i+x+y
+
+; filter
+newTest "filter"
+printPerLine filter 1..5 ø -> false
+printPerLine filter 1..5 [] -> false
+printPerLine filter 1..5 => false
+printPerLine filter 1..5 'x -> odd? x
+printPerLine filter.with:'i 1..5 'x -> odd? i
+printPerLine filter.with:'i 1..5 [x y] -> odd? i+x+y
+
+; some?
+newTest "some?"
+print some? 1..5 ø -> true
+print some? 1..5 [] -> true
+print some? 1..5 => true
+print some? 1..5 'x -> even? x
+print some? 1..5 'x -> x > 5
+print some? 1..5 'x -> x < 6
+print some?.with:'i 1..5 'x -> odd? i
+print some?.with:'i 1..5 'x -> i > 5
+print some?.with:'i 1..5 'x -> i < 6
+print some?.with:'i 1..5 [x y] -> odd? i+x+y
+print some?.with:'i 1..5 [x y] -> 9 < i+x+y
+print some?.with:'i 1..5 [x y] -> 9 > i+x+y
+
+; every?
+newTest "every?"
+print every? 1..5 ø -> true
+print every? 1..5 [] -> true
+print every? 1..5 => true
+print every? 1..5 'x -> even? x
+print every? 1..5 'x -> x > 5
+print every? 1..5 'x -> x < 6
+print every?.with:'i 1..5 'x -> odd? i
+print every?.with:'i 1..5 'x -> i > 5
+print every?.with:'i 1..5 'x -> i < 6
+print every?.with:'i 1..5 [x y] -> odd? i+x+y
+print every?.with:'i 1..5 [x y] -> 9 < i+x+y
+print every?.with:'i 1..5 [x y] -> 9 > i+x+y
+
+; fold
+newTest "fold"
+print fold 1..10 [x,y]-> x + y
+print fold 1..10 .seed:1 [x,y][ x * y ]
+print fold 1..3 [x,y]-> x - y
+print fold.right 1..3 [x,y]-> x - y
+print fold.seed:"0" to [:string] 1..5 [x,y] ->
+                "(" ++ x ++ "+" ++ y ++ ")"
+print fold.right.seed:"0" to [:string] 1..5 [x,y] ->
+                "(" ++ x ++ "+" ++ y ++ ")"
+
+; chunk
+newTest "chunk"
+print chunk [1 1 2 2 3 22 3 5 5 7 9 2 5] => even?
+print chunk.value [1 1 2 2 3 22 3 5 5 7 9 2 5] 'x [ odd? x ]
+
+; cluster
+newTest "cluster"
+print cluster 1..10 => odd?
+print cluster 1..10 'x -> prime? x
+print cluster.value 1..10 'x -> prime? x
+print #.raw flatten.once cluster.value 1..10 'x [
+        (prime? x)? -> "prime" 
+                    -> "composite"
+    ]
