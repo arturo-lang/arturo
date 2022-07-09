@@ -131,14 +131,18 @@ proc defineSymbols*() =
             "value" : ({Any},"also include condition values")
         },
         returns     = {Block,Nothing},
-        # TODO(Iterators\chunk) add documentation examples for `.with` and multiple arguments
-        #  labels: library,documentation,easy
         example     = """
             chunk [1 1 2 2 3 22 3 5 5 7 9 2 5] => even?
             ; => [[1 1] [2 2] [3] [22] [3 5 5 7 9] [2] [5]]
             ..........
             chunk.value [1 1 2 2 3 22 3 5 5 7 9 2 5] 'x [ odd? x ]
             ; => [[true [1 1]] [false [2 2]] [true [3]] [false [22]] [true [3 5 5 7 9]] [false [2]] [true [5]]]
+            ..........
+            chunk.with:'i ["one" "two" "three" "four" "five" "six"] [] -> i < 4
+            ; => [["one" "two" "three" "four"] ["five" "six"]]
+            ..........
+            chunk [1 7 5 4 3 6 8 2] [x y]-> even? x+y
+            ; => [[1 7] [5 4 3 6] [8 2]]
         """:
             ##########################################################
             let preevaled = doEval(z)
