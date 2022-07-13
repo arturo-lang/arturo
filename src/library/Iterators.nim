@@ -319,9 +319,6 @@ proc defineSymbols*() =
             "last"      : ({Logical,Integer},"only filter last element/s")
         },
         returns     = {Block,Nothing},
-        # TODO(Iterators\filter) add unit-test tests for `.first` and `.last`
-        #  it should go in tests/unittests/lib.iterators.art
-        #  labels: unit-test,easy
         example     = """
             print filter 1..10 [x][
                 even? x
