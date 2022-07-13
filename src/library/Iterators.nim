@@ -319,8 +319,6 @@ proc defineSymbols*() =
             "last"      : ({Logical,Integer},"only filter last element/s")
         },
         returns     = {Block,Nothing},
-        # TODO(Iterators\filter) add documentation examples for `.with`, `.first`, `.last` and multiple arguments
-        #  labels: library,documentation,easy
         # TODO(Iterators\filter) add unit-test tests for `.first` and `.last`
         #  it should go in tests/unittests/lib.iterators.art
         #  labels: unit-test,easy
@@ -334,6 +332,24 @@ proc defineSymbols*() =
             filter 'arr 'x -> even? x
             print arr
             ; 1 3 5 7 9
+            ..........
+            filter [1 1 2 3 5 8 13 21] [x y]-> odd? x+y
+            ; => [1 1 13 21]
+            ..........
+            filter.with:'i ["zero" "one" "two" "three" "four" "five"] []-> even? i
+            ; => ["one" "three" "five"]
+            ..........
+            filter.first 1..10 => odd?
+            => [2 3 4 5 6 7 8 9 10]
+
+            filter.first:3 1..10 => odd?
+            => [2 4 6 7 8 9 10]
+            ..........
+            filter.last 1..10 => odd?
+            => [1 2 3 4 5 6 7 8 10]
+
+            filter.last:3 1..10 => odd?
+            => [1 2 3 4 6 8 10]
         """:
             ##########################################################
             let preevaled = doEval(z)
