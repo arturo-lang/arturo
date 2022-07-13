@@ -197,14 +197,15 @@ proc defineSymbols*() =
             "value" : ({Any},"also include condition values")
         },
         returns     = {Block,Nothing},
-        # TODO(Iterators\cluster) add documentation examples for `.with` and multiple arguments
-        #  labels: library,documentation,easy
         example     = """
             cluster 1..10 => odd?
             ; => [[1 3 5 7 9] [2 4 6 8 10]]
             
             cluster 1..10 'x -> prime? x
             ; => [[1 4 6 8 9 10] [2 3 5 7]]
+            ..........
+            cluster 1..10 [x y] -> 10 < x+y
+            ; => [[1 2 3 4] [5 6 7 8 9 10]]
             ..........
             cluster.value 1..10 'x -> prime? x
             ; => [[false [1 4 6 8 9 10]] [true [2 3 5 7]]]
@@ -214,6 +215,9 @@ proc defineSymbols*() =
                             -> "composite"
             ]
             ; => [composite:[1 4 6 8 9 10] prime:[2 3 5 7]]
+            ..........
+            cluster.with: 'i ["one" "two" "three" "four" "five" "six"] [] -> even? i
+            ; => [["one" "three" "five"] ["two" "four" "six"]]
         """:
             ##########################################################
             let preevaled = doEval(z)
