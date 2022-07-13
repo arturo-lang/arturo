@@ -577,8 +577,6 @@ proc defineSymbols*() =
             "with"      : ({Literal},"use given index")
         },
         returns     = {Block,Nothing},
-        # TODO(Iterators\map) add documentation examples for `.with` and multiple arguments
-        #  labels: library,documentation,easy
         example     = """
             print map 1..5 [x][
                 2*x
@@ -589,6 +587,20 @@ proc defineSymbols*() =
             map 'arr 'x -> 2*x
             print arr
             ; 2 4 6 8 10
+            ..........
+            map 1..6 [x y][ 
+                print ["mapping" x "and" y "->" x+y] 
+                x+y
+            ]
+            ; mapping 1 and 2 -> 3 
+            ; mapping 3 and 4 -> 7 
+            ; mapping 5 and 6 -> 11
+            ; => [3 7 11]
+            ..........
+            map.with:'i ["one" "two" "three" "four"] 'x [ 
+                (even? i)? -> upper x -> x 
+            ]
+            ; => ["ONE" "two" "THREE" "four"]
         """:
             ##########################################################
             let preevaled = doEval(z)
