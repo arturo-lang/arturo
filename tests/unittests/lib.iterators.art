@@ -40,6 +40,10 @@ printPerLine select 1..5 => true
 printPerLine select 1..5 'x -> even? x
 printPerLine select.with:'i 1..5 'x -> even? i
 printPerLine select.with:'i 1..5 [x y] -> even? i+x+y
+printPerLine select.first 1..10 => odd?
+printPerLine select.first:3 1..10 => odd?
+printPerLine select.last 1..10 => odd?
+printPerLine select.last:3 1..10 => odd?
 
 ; filter
 newTest "filter"
