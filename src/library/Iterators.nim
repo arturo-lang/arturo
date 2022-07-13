@@ -264,8 +264,6 @@ proc defineSymbols*() =
             "with"      : ({Literal},"use given index")
         },
         returns     = {Logical},
-        # TODO(Iterators\every?) add documentation examples for `.with` and multiple arguments
-        #  labels: library,documentation,easy
         example     = """
             if every? [2 4 6 8] 'x [even? x] 
                 -> print "every number is an even integer"
@@ -274,8 +272,14 @@ proc defineSymbols*() =
             print every? 1..10 'x -> x < 11
             ; true
             ..........
+            print every? 1..10 [x y]-> 20 > x+y
+            ; true
+            ..........
             print every? [2 3 5 7 11 14] 'x [prime? x]
             ; false
+            ..........
+            print every?.with:'i ["one" "two" "three"] 'x -> 4 > (size x)-i
+            ; true
         """:
             ##########################################################
             let preevaled = doEval(z)
