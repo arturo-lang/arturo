@@ -637,8 +637,6 @@ proc defineSymbols*() =
             "last"      : ({Logical,Integer},"only return last element/s")
         },
         returns     = {Block,Nothing},
-        # TODO(Iterators\select) add documentation examples for `.with`, `.first`, `.last` and multiple arguments
-        #  labels: library,documentation,easy
         # TODO(Iterators\select) add unit-test tests for `.first` and `.last`
         #  it should go in tests/unittests/lib.iterators.art
         #  labels: unit-test,easy
@@ -652,6 +650,24 @@ proc defineSymbols*() =
             select 'arr 'x -> even? x
             print arr
             ; 2 4 6 8 10
+            ..........
+            select [1 1 2 3 5 8 13 21] [x y]-> odd? x+y
+            ; => [2 3 5 8]
+            ..........
+            select.with:'i ["zero" "one" "two" "three" "four" "five"] []-> even? i
+            ; => ["zero" "two" "four"]
+            ..........
+            select.first 1..10 => odd?
+            => [1]
+
+            select.first:3 1..10 => odd?
+            => [1 3 5]
+            ..........
+            select.last 1..10 => odd?
+            => [9]
+
+            select.last:3 1..10 => odd?
+            => [5 7 9]
         """:
             ##########################################################
             let preevaled = doEval(z)
