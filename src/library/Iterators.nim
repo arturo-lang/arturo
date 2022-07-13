@@ -420,8 +420,6 @@ proc defineSymbols*() =
             "right" : ({Logical},"perform right folding")
         },
         returns     = {Block,Null,Nothing},
-        # TODO(Iterators\fold) add documentation examples for `.with` and multiple arguments
-        #  labels: library,documentation,easy
         example     = """
             fold 1..10 [x,y]-> x + y
             ; => 55 (1+2+3+4..) 
@@ -442,6 +440,28 @@ proc defineSymbols*() =
             fold.right.seed:"0" to [:string] 1..5 [x,y] ->
                 "(" ++ x ++ "+" ++ y ++ ")"
             ; => (1+(2+(3+(4+(5+0)))))
+            ..........
+            fold 1..10 [x y z] [
+                print [x y z] 
+                x + z - y 
+            ]
+            ; 0 1 2
+            ; 1 3 4
+            ; 2 5 6
+            ; 3 7 8
+            ; 4 9 10
+            ; => 5
+            ..........
+            fold.with:'i 1..5 [x y][ 
+                print [i x y] 
+                i * x+y
+            ]
+            ; 0 0 1 
+            ; 1 0 2 
+            ; 2 2 3 
+            ; 3 10 4 
+            ; 4 42 5 
+            ; => 188
         """:
             ##########################################################
             let preevaled = doEval(z)
