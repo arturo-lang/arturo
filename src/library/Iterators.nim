@@ -637,9 +637,6 @@ proc defineSymbols*() =
             "last"      : ({Logical,Integer},"only return last element/s")
         },
         returns     = {Block,Nothing},
-        # TODO(Iterators\select) add unit-test tests for `.first` and `.last`
-        #  it should go in tests/unittests/lib.iterators.art
-        #  labels: unit-test,easy
         example     = """
             print select 1..10 [x][
                 even? x
