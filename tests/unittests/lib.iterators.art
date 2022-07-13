@@ -53,6 +53,10 @@ printPerLine filter 1..5 => false
 printPerLine filter 1..5 'x -> odd? x
 printPerLine filter.with:'i 1..5 'x -> odd? i
 printPerLine filter.with:'i 1..5 [x y] -> odd? i+x+y
+printPerLine filter.first 1..10 => odd?
+printPerLine filter.first:3 1..10 => odd?
+printPerLine filter.last 1..10 => odd?
+printPerLine filter.last:3 1..10 => odd?
 
 ; some?
 newTest "some?"
