@@ -24,6 +24,7 @@ import std/editdistance, json, os
 import sequtils, strutils, sugar
 import unicode, std/wordwrap, xmltree
 
+import helpers/charsets
 import helpers/regex
 import helpers/strings
 
@@ -58,6 +59,40 @@ proc defineSymbols*() =
 
     when defined(VERBOSE):
         echo "- Importing: Strings"
+
+    builtin "alphabet",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "get dictionary-index charset for given locale",
+        args        = {
+            "locale": {String,Literal}
+        },
+        attrs       = {
+            "lower" : ({Logical},"return lowercase characters (default)"),
+            "upper" : ({Logical},"return uppercase characters"),
+            "all"   : ({Logical},"also return non-dictionary characters")
+        },
+        returns     = {Block,Null},
+        # TODO(Strings\alphabet): added documentation example
+        #  label: library, documentation, easy
+        example     = """
+        """:
+            ##########################################################
+            let lower = popAttr("lower")!=VNULL
+            let upper = popAttr("upper")!=VNULL
+            let all = popAttr("all")!=VNULL
+
+            var got: ValueArray = @[]
+
+            if upper:
+                if lower:
+                    got = getCharset(x.s, withExtras=all)
+
+                got.add(getCharset(x.s, withExtras=all, doUppercase=true))
+            else:
+                got = getCharset(x.s, withExtras=all)
+
+            push(newBlock(got))
 
     builtin "ascii?",
         alias       = unaliased, 
