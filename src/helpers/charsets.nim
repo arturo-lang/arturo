@@ -112,7 +112,7 @@ import vm/values/value
 #  label: library, enhancement, easy
 
 const
-    # the main alphabet, by ISO-2 code, 
+    # the main alphabet, by ISO 639-1 code, 
     # containing only characters that can be found in a dictionary index
     # and in the exact same order as found in a dictionary
     charsets = {
@@ -121,7 +121,7 @@ const
         "es": "abcdefghijklmnñopqrstuvwxyz"
     }.toTable
 
-    # extra characters that can be found in a given language, by ISO-2 code,
+    # extra characters that can be found in a given language, by ISO 639-1 code,
     # but would not form part of its dictionary index
     extras = {
         "el": "άέίόύϊϋΐΰ",
