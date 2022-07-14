@@ -86,8 +86,6 @@ import vm/values/value
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Polish alphabet -> pl
 #  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for Portuguese alphabet -> pt
-#  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Romanian alphabet -> ro
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Russian alphabet -> ru
@@ -118,7 +116,8 @@ const
     charsets = {
         "el": "αβγδεζηθικλμνξοπρστυφχψω",
         "en": "abcdefghijklmnopqrstuvwxyz",
-        "es": "abcdefghijklmnñopqrstuvwxyz"
+        "es": "abcdefghijklmnñopqrstuvwxyz",
+        "pt": "abcdefghijklmnopqrstuvwxyz"
     }.toTable
 
     # extra characters that can be found in a given language, by ISO 639-1 code,
@@ -126,7 +125,8 @@ const
     extras = {
         "el": "άέίόύϊϋΐΰ",
         "en": "",
-        "es": "áéíóúü"
+        "es": "áéíóúü",
+        "pt": "áàâãçéêíóõú"
     }.toTable
 
 #=======================================
