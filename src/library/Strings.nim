@@ -73,7 +73,7 @@ proc defineSymbols*() =
             "all"   : ({Logical},"also return non-dictionary characters")
         },
         returns     = {Block,Null},
-        # TODO(Strings\alphabet): added documentation example
+        # TODO(Strings\alphabet): add documentation example
         #  label: library, documentation, easy
         example     = """
         """:
