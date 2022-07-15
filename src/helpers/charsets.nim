@@ -18,8 +18,6 @@ import vm/values/value
 # Constants
 #=======================================
 
-# TODO(Strings\alphabet) add support for Afrikaans alphabet -> af
-#  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Albanian alphabet -> sq
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Armenian alphabet -> hy
@@ -106,6 +104,7 @@ const
     # containing only characters that can be found in a dictionary index
     # and in the exact same order as found in a dictionary
     charsets = {
+        "af": "abcdefghijklmnopqrstuvwxyz",
         "da": "abcdefghijklmnopqrstuvwxyzæøå",
         "el": "αβγδεζηθικλμνξοπρστυφχψω",
         "en": "abcdefghijklmnopqrstuvwxyz",
@@ -119,6 +118,7 @@ const
     # extra characters that can be found in a given language, by ISO 639-1 code,
     # but would not form part of its dictionary index
     extras = {
+        "af": "áäéèêëíîïóôöúûüý"
         "da": "",
         "el": "άέίόύϊϋΐΰ",
         "en": "",
