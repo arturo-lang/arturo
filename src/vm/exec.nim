@@ -362,8 +362,11 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
                 else:
                     discard
 
+            of opCallF:
+                discard
+
             # reserved
-            of opRsrv1..opRsrv2     : discard
+            of opRsrv1              : discard
 
             # [0xA0-AF] #
             # arithmetic & logical operators
@@ -381,7 +384,7 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
                opShl, opShr         : discard
 
             # reserved
-            of opRsrv3..opRsrv4     : discard
+            of opRsrv2..opRsrv4     : discard
 
             # TODO(VM\exec) re-add missing bytecode opCodes in main loop
             #  labels: execution,vm,enhancement,cleanup
