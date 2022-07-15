@@ -80,8 +80,6 @@ import vm/values/value
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Maori alphabet -> mi
 #  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for Norwegian alphabet -> no
-#  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Polish alphabet -> pl
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Romanian alphabet -> ro
@@ -114,6 +112,7 @@ const
         "el": "αβγδεζηθικλμνξοπρστυφχψω",
         "en": "abcdefghijklmnopqrstuvwxyz",
         "es": "abcdefghijklmnñopqrstuvwxyz",
+        "no": "abcdefghijklmnopqrstuvwxyzæøå",
         "pt": "abcdefghijklmnopqrstuvwxyz",
         "sv": "abcdefghijklmnopqrstuvwxyzåäö"
     }.toTable
@@ -125,6 +124,7 @@ const
         "el": "άέίόύϊϋΐΰ",
         "en": "",
         "es": "áéíóúü",
+        "no": "",
         "pt": "áàâãäçéêëíïóõöúü",
         "sv": ""
     }.toTable
