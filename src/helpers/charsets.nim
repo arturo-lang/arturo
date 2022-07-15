@@ -46,8 +46,6 @@ import vm/values/value
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Georgian alphabet -> ka
 #  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for German alphabet -> de
-#  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Hungarian alphabet -> hu
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Icelandic alphabet -> is
@@ -106,6 +104,7 @@ const
     charsets = {
         "af": "abcdefghijklmnopqrstuvwxyz",
         "da": "abcdefghijklmnopqrstuvwxyzæøå",
+        "de": "abcedfghijklmnopqrstuvwxyz",
         "el": "αβγδεζηθικλμνξοπρστυφχψω",
         "en": "abcdefghijklmnopqrstuvwxyz",
         "es": "abcdefghijklmnñopqrstuvwxyz",
@@ -118,8 +117,9 @@ const
     # extra characters that can be found in a given language, by ISO 639-1 code,
     # but would not form part of its dictionary index
     extras = {
-        "af": "áäéèêëíîïóôöúûüý"
+        "af": "áäéèêëíîïóôöúûüý",
         "da": "",
+        "de": "äöüß",
         "el": "άέίόύϊϋΐΰ",
         "en": "",
         "es": "áéíóúü",
