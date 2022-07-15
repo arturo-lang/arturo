@@ -36,8 +36,6 @@ import vm/values/value
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Czech alphabet -> cs
 #  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for Danish alphabet -> da
-#  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Dutch alphabet -> nl
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Esperanto alphabet -> eo
@@ -112,6 +110,7 @@ const
     # containing only characters that can be found in a dictionary index
     # and in the exact same order as found in a dictionary
     charsets = {
+        "da": "abcdefghijklmnopqrstuvwxyzæøå",
         "el": "αβγδεζηθικλμνξοπρστυφχψω",
         "en": "abcdefghijklmnopqrstuvwxyz",
         "es": "abcdefghijklmnñopqrstuvwxyz",
@@ -122,6 +121,7 @@ const
     # extra characters that can be found in a given language, by ISO 639-1 code,
     # but would not form part of its dictionary index
     extras = {
+        "da": "",
         "el": "άέίόύϊϋΐΰ",
         "en": "",
         "es": "áéíóúü",
