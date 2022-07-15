@@ -214,8 +214,8 @@ type
         opEol           = 0x9D
         
         # reserved
-        opCallF         = 0x9E
-        opRsrv1         = 0x9F
+        opRsrv1         = 0x9E
+        opRsrv2         = 0x9F
 
         # [0xA0-AF] #
         # arithmetic & logical operators
@@ -238,8 +238,8 @@ type
         opShr           = 0xAD
 
         # reserved
-        opRsrv2         = 0xAE
-        opRsrv3         = 0xAF
+        opRsrv3         = 0xAE
+        opRsrv4         = 0xAF
 
         # [0xB0-BF] #
         # comparison operators
