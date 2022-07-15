@@ -36,8 +36,6 @@ import vm/values/value
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Czech alphabet -> cs
 #  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for Dutch alphabet -> nl
-#  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Esperanto alphabet -> eo
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Estonian alphabet -> et
@@ -112,6 +110,7 @@ const
         "el": "αβγδεζηθικλμνξοπρστυφχψω",
         "en": "abcdefghijklmnopqrstuvwxyz",
         "es": "abcdefghijklmnñopqrstuvwxyz",
+        "nl": "abcdefghijklmnopqrstuvwxyz",
         "no": "abcdefghijklmnopqrstuvwxyzæøå",
         "pt": "abcdefghijklmnopqrstuvwxyz",
         "sv": "abcdefghijklmnopqrstuvwxyzåäö"
@@ -124,6 +123,7 @@ const
         "el": "άέίόύϊϋΐΰ",
         "en": "",
         "es": "áéíóúü",
+        "nl": "",
         "no": "",
         "pt": "áàâãäçéêëíïóõöúü",
         "sv": ""
