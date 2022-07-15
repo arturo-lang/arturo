@@ -100,8 +100,6 @@ import vm/values/value
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Swahili alphabet -> sw
 #  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for Swedish alphabet -> sv
-#  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Turkish alphabet -> tr
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Ukrainian alphabet -> uk
@@ -117,7 +115,8 @@ const
         "el": "αβγδεζηθικλμνξοπρστυφχψω",
         "en": "abcdefghijklmnopqrstuvwxyz",
         "es": "abcdefghijklmnñopqrstuvwxyz",
-        "pt": "abcdefghijklmnopqrstuvwxyz"
+        "pt": "abcdefghijklmnopqrstuvwxyz",
+        "sv": "abcdefghijklmnopqrstuvwxyzåäö"
     }.toTable
 
     # extra characters that can be found in a given language, by ISO 639-1 code,
@@ -126,7 +125,8 @@ const
         "el": "άέίόύϊϋΐΰ",
         "en": "",
         "es": "áéíóúü",
-        "pt": "áàâãäçéêëíïóõöúü"
+        "pt": "áàâãäçéêëíïóõöúü",
+        "sv": ""
     }.toTable
 
 #=======================================
