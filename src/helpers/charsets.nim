@@ -100,7 +100,7 @@ import vm/values/value
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Swahili alphabet -> sw
 #  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for Swedish alphabet -> se
+# TODO(Strings\alphabet) add support for Swedish alphabet -> sv
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Turkish alphabet -> tr
 #  label: library, enhancement, easy
