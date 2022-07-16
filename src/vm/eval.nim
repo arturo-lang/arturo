@@ -454,25 +454,41 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 argStack[argStack.len-1] += 1
 
             of Path:
-                addTerminalValue(false):
-                    addConst(consts, newWord("get"), opCall)
+                var isPathCall = false
+                var pathCallV = VNULL
+                if Syms.hasKey(node.p[0].s):
+                    let curr = Syms[node.p[0].s]
+                    let next = node.p[1]
 
-                    var i=1
-                    while i<node.p.len-1:
+                    if curr.kind==Dictionary and (next.kind==Literal or next.kind==Word):
+                        let item: Value = curr.d[next.s]
+                        if item.kind == Function:
+                            isPathCall = true
+                            pathCallV = item
+
+                if isPathCall:
+                    addConst(consts, pathCallV, opCall)
+                    argStack.add(pathCallV.params.a.len)
+                else:
+                    addTerminalValue(false):
                         addConst(consts, newWord("get"), opCall)
-                        i += 1
+                        
+                        var i=1
+                        while i<node.p.len-1:
+                            addConst(consts, newWord("get"), opCall)
+                            i += 1
 
-                    let baseNode = node.p[0]
+                        let baseNode = node.p[0]
 
-                    if TmpArities.hasKey(baseNode.s) and TmpArities[baseNode.s]==0:
-                        addConst(consts, baseNode, opCall)
-                    else:
-                        addConst(consts, baseNode, opLoad)
+                        if TmpArities.hasKey(baseNode.s) and TmpArities[baseNode.s]==0:
+                            addConst(consts, baseNode, opCall)
+                        else:
+                            addConst(consts, baseNode, opLoad)
 
-                    i = 1
-                    while i<node.p.len:
-                        addConst(consts, node.p[i], opPush)
-                        i += 1
+                        i = 1
+                        while i<node.p.len:
+                            addConst(consts, node.p[i], opPush)
+                            i += 1
 
             of PathLabel:
                 addConst(consts, newWord("set"), opCall)
