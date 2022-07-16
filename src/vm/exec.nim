@@ -67,8 +67,11 @@ template callByName*(symIndx: string):untyped =
     callFunction(fun)
 
 template callByIndex(idx: int):untyped =
-    let symIndx = cnst[idx].s
-    callByName(symIndx)
+    if cnst[idx].kind==Function:
+        callFunction(cnst[idx])
+    else:
+        let symIndx = cnst[idx].s
+        callByName(symIndx)
 
 template fetchAttributeByIndex(idx: int):untyped =
     let attr = cnst[idx]
