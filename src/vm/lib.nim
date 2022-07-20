@@ -57,6 +57,16 @@ else:
     let funcs {.compileTime.}: seq[string] = @[]
     let compact {.compileTime.} = false
 
+# template expandTypesets*(args: untyped): untyped =
+#     when (static args.len)==1 and args!=NoArgs:
+#         #echo($(args))
+#         when args[0][1].contains(Block):
+#             [(args[0][0], args[0][1] + {Inline})]
+#         else:
+#             args
+#     else:
+#         args
+
 template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, description: string, args: untyped, attrs: untyped, returns: ValueSpec, example: string, act: untyped):untyped =
     when not defined(PORTABLE) or not compact or funcs.contains(n):
         
