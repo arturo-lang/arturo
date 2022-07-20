@@ -88,8 +88,6 @@ import vm/values/value
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Slovenian alphabet -> sl
 #  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for Swahili alphabet -> sw
-#  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Turkish alphabet -> tr
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Ukrainian alphabet -> uk
@@ -111,7 +109,8 @@ const
         "nl": "abcdefghijklmnopqrstuvwxyz",
         "no": "abcdefghijklmnopqrstuvwxyzæøå",
         "pt": "abcdefghijklmnopqrstuvwxyz",
-        "sv": "abcdefghijklmnopqrstuvwxyzåäö"
+        "sv": "abcdefghijklmnopqrstuvwxyzåäö",
+        "sw": "abcdefghijklmnoprstuvwyz"
     }.toTable
 
     # extra characters that can be found in a given language, by ISO 639-1 code,
@@ -126,7 +125,8 @@ const
         "nl": "",
         "no": "",
         "pt": "áàâãäçéêëíïóõöúü",
-        "sv": ""
+        "sv": "",
+        "sw": ""
     }.toTable
 
 #=======================================
