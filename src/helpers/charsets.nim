@@ -48,8 +48,6 @@ import vm/values/value
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Hungarian alphabet -> hu
 #  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for Icelandic alphabet -> is
-#  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Igbo alphabet -> ig
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Indonesian alphabet -> id
@@ -104,6 +102,7 @@ const
         "el": "αβγδεζηθικλμνξοπρστυφχψω",
         "en": "abcdefghijklmnopqrstuvwxyz",
         "es": "abcdefghijklmnñopqrstuvwxyz",
+        "is": "aábdðeéfghiíjklmnoóprstuúvxyýþæö",
         "it": "abcdefghilmnopqrstuvz",
         "nl": "abcdefghijklmnopqrstuvwxyz",
         "no": "abcdefghijklmnopqrstuvwxyzæøå",
@@ -121,6 +120,7 @@ const
         "el": "άέίόύϊϋΐΰ",
         "en": "",
         "es": "áéíóúü",
+        "is": "",
         "it": "àéèíìîóòúù",
         "nl": "",
         "no": "",
