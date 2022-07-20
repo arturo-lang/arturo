@@ -70,8 +70,6 @@ import vm/values/value
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Polish alphabet -> pl
 #  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for Romanian alphabet -> ro
-#  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Russian alphabet -> ru
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Serbian alphabet -> sr
@@ -106,6 +104,7 @@ const
         "nl": "abcdefghijklmnopqrstuvwxyz",
         "no": "abcdefghijklmnopqrstuvwxyzæøå",
         "pt": "abcdefghijklmnopqrstuvwxyz",
+        "ro": "aăâbcdefghiîjklmnopqrsștțuvwxyz",
         "sv": "abcdefghijklmnopqrstuvwxyzåäö",
         "sw": "abcdefghijklmnoprstuvwyz"
     }.toTable
@@ -125,6 +124,7 @@ const
         "nl": "",
         "no": "",
         "pt": "áàâãäçéêëíïóõöúü",
+        "ro": "",
         "sv": "",
         "sw": ""
     }.toTable
