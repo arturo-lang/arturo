@@ -42,8 +42,6 @@ import vm/values/value
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Finnish alphabet -> fi
 #  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for French alphabet -> fr
-#  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Georgian alphabet -> ka
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Hungarian alphabet -> hu
@@ -98,6 +96,7 @@ const
         "el": "αβγδεζηθικλμνξοπρστυφχψω",
         "en": "abcdefghijklmnopqrstuvwxyz",
         "es": "abcdefghijklmnñopqrstuvwxyz",
+        "fr": "abcdefghijklmnopqrstuvwxyz",
         "is": "aábdðeéfghiíjklmnoóprstuúvxyýþæö",
         "it": "abcdefghilmnopqrstuvz",
         "la": "abcdefghijklmnopqrstuvwxyz",
@@ -118,6 +117,7 @@ const
         "el": "άέίόύϊϋΐΰ",
         "en": "",
         "es": "áéíóúü",
+        "fr": "àâæçéèêëîïôœùûüÿ",
         "is": "",
         "it": "àéèíìîóòúù",
         "la": "",
