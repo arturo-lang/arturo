@@ -49,6 +49,9 @@ type
         # Speed
         KPH, MPH, KN
 
+        # Temperature
+        C, F, K
+
         NoName
 
     QuantitySpec* = object
@@ -66,6 +69,7 @@ func quantityKindForName(un: UnitName): UnitKind =
         of M2..AC       :   AreaUnit
         of M3..GAL      :   VolumeUnit
         of KPH..KN      :   SpeedUnit
+        of C..K         :   TemperatureUnit
         else:
             NoUnit
 
