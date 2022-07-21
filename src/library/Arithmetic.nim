@@ -32,11 +32,11 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "add given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Complex,Rational,Color,Literal},
-            "valueB": {Integer,Floating,Complex,Rational,Color}
+            "valueA": {Integer,Floating,Complex,Rational,Color,Quantity,Literal},
+            "valueB": {Integer,Floating,Complex,Rational,Color,Quantity}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Complex,Rational,Color,Nothing},
+        returns     = {Integer,Floating,Complex,Rational,Color,Quantity,Nothing},
         example     = """
             print add 1 2      ; 3
             print 1 + 3        ; 4
