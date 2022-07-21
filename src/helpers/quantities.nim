@@ -39,6 +39,9 @@ type
         # Length
         M, CM, MM, KM, IN, FT, FM, YD, MI
 
+        # Area
+        M2, CM2, MM2, KM2, IN2, FT2, YD2, MI2, AC
+
         NoName
 
     QuantitySpec* = object
@@ -55,6 +58,8 @@ func quantityKindForName(un: UnitName): UnitKind =
             CurrencyUnit
         of M..MI:
             LengthUnit
+        of M2..AC:
+            AreaUnit
         else:
             NoUnit
 
