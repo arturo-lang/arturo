@@ -760,10 +760,10 @@ proc `+`*(x: Value, y: Value): Value =
         return newColor(x.l + y.l)
     if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
         if x.kind == Quantity and y.kind == Quantity:
-            if x.unit.kind==y.unit.kind:
-                return newQuantity(x.nm + y.nm, x.unit)
-            else:
-                return newQuantity(x.nm + y.nm * newFloating(getQuantityMultiplier(x.unit, y.unit)), x.unit)
+            # if x.unit.kind==y.unit.kind:
+            #     return newQuantity(x.nm + y.nm, x.unit)
+            # else:
+            return newQuantity(x.nm + y.nm * newFloating(getQuantityMultiplier(x.unit, y.unit)), x.unit)
         else:
             return VNULL
     else:
