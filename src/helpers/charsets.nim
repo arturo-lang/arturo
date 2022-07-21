@@ -30,8 +30,6 @@ import vm/values/value
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Indonesian alphabet -> id
 #  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for Malay alphabet -> ms
-#  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Maltese alphabet -> mt
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Maori alphabet -> mi
@@ -72,6 +70,7 @@ const
         "lt": "aąbcčdeęėfghiįyjklmnoprsštuųūvzž",
         "lv": "aābcčdeēfgģhiījkķlļmnņoprsštuūvzž",
         "mk": "абвгдѓежзѕијклљмнњопрстќуфхцчџш",
+        "ms": "abcdefghijklmnopqrstuvwxyz",
         "nl": "abcdefghijklmnopqrstuvwxyz",
         "no": "abcdefghijklmnopqrstuvwxyzæøå",
         "pl": "aąbcćdeęfghijklłmnńoópqrsśtuvwxyzźż",
@@ -115,6 +114,7 @@ const
         "lt": "",
         "lv": "",
         "mk": "",
+        "ms": "",
         "nl": "",
         "no": "",
         "pl": "",
