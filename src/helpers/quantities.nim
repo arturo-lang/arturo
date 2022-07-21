@@ -22,6 +22,7 @@ type
         LengthUnit
         AreaUnit
         VolumeUnit
+        SpeedUnit
         WeightUnit
         TimeUnit
         TemperatureUnit
@@ -45,6 +46,9 @@ type
         # Volume
         M3, CM3, MM3, KM3, IN3, FT3, YD3, MI3, L, ML, PT, QT, GAL
 
+        # Speed
+        KPH, MPH, KN
+
         NoName
 
     QuantitySpec* = object
@@ -61,6 +65,7 @@ func quantityKindForName(un: UnitName): UnitKind =
         of M..MI        :   LengthUnit
         of M2..AC       :   AreaUnit
         of M3..GAL      :   VolumeUnit
+        of KPH..KN      :   SpeedUnit
         else:
             NoUnit
 
