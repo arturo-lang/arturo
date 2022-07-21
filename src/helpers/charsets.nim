@@ -46,8 +46,6 @@ import vm/values/value
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Irish Gaelic alphabet -> ga
 #  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for Lithuanian alphabet -> lt
-#  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Luxemourgish alphabet -> lb
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Macedonian alphabet -> mk
@@ -93,6 +91,7 @@ const
         "is": "aábdðeéfghiíjklmnoóprstuúvxyýþæö",
         "it": "abcdefghilmnopqrstuvz",
         "la": "abcdefghijklmnopqrstuvwxyz",
+        "lt": "aąbcčdeęėfghiįyjklmnoprsštuųūvzž",
         "lv": "aābcčdeēfgģhiījkķlļmnņoprsštuūvzž",
         "nl": "abcdefghijklmnopqrstuvwxyz",
         "no": "abcdefghijklmnopqrstuvwxyzæøå",
@@ -119,6 +118,7 @@ const
         "is": "",
         "it": "àéèíìîóòúù",
         "la": "",
+        "lt": "",
         "lv": "",
         "nl": "",
         "no": "",
