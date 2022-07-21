@@ -36,6 +36,9 @@ type
         SGD, SOS, THB, TRY, UAH, USD, UYU, VND, XAF, XAG,
         XAU, XOF, ZAR
 
+        # Length
+        M, CM, MM, KM, IN, FT, FM, YD, MI
+
         NoName
 
     QuantitySpec* = object
@@ -50,6 +53,8 @@ func quantityKindForName(un: UnitName): UnitKind =
     case un:
         of AED..ZAR:
             CurrencyUnit
+        of M..MI:
+            LengthUnit
         else:
             NoUnit
 
