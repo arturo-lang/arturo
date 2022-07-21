@@ -49,6 +49,9 @@ type
         # Speed
         KPH, MPH, KN
 
+        # Weight
+        G, MG, KG, T, ST, OZ, LB
+
         # Temperature
         C, F, K
 
@@ -69,6 +72,7 @@ func quantityKindForName(un: UnitName): UnitKind =
         of M2..AC       :   AreaUnit
         of M3..GAL      :   VolumeUnit
         of KPH..KN      :   SpeedUnit
+        of G..LB        :   WeightUnit
         of C..K         :   TemperatureUnit
         else:
             NoUnit
