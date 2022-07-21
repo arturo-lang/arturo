@@ -48,4 +48,5 @@ proc `$`*(qs: QuantitySpec): string =
 #=======================================
 
 proc parseQuantitySpec*(str: string): QuantitySpec =
+    echo "parsing quantity spec: " & str
     QuantitySpec(kind: CurrencyUnit, name: USD)
