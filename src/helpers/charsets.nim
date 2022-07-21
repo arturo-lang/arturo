@@ -36,8 +36,6 @@ import vm/values/value
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Esperanto alphabet -> eo
 #  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for Estonian alphabet -> et
-#  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Georgian alphabet -> ka
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Hungarian alphabet -> hu
