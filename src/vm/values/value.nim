@@ -574,6 +574,9 @@ func newSymbolLiteral*(m: SymbolKind): Value {.inline.} =
 func newSymbolLiteral*(m: string): Value {.inline.} =
     newSymbolLiteral(parseEnum[SymbolKind](m))
 
+func newQuantity*(nm: Value, unit: string, unitKind: UnitKind): Value {.inline.} =
+    Value(kind: Quantity, nm: nm, unit: unit, unitKind: unitKind)
+
 func newRegex*(rx: RegexObj): Value {.inline.} =
     Value(kind: Regex, rx: rx)
 
