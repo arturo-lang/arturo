@@ -22,6 +22,9 @@ type
         LengthUnit
         AreaUnit
         VolumeUnit
+        PressureUnit
+        EnergyUnit
+        AngleUnit
         SpeedUnit
         WeightUnit
         CapacityUnit
@@ -45,6 +48,15 @@ type
 
         # Volume
         M3, CM3, MM3, KM3, IN3, FT3, YD3, MI3, L, ML, PT, QT, GAL
+
+        # Pressure
+        ATM, BAR, PA
+
+        # Energy
+        J, KJ, MJ, WH, KWH, ERG, HP
+
+        # Angle
+        DEG, RAD
 
         # Speed
         KPH, MPH, KN
@@ -74,6 +86,9 @@ func quantityKindForName(un: UnitName): UnitKind =
         of M..MI        :   LengthUnit
         of M2..AC       :   AreaUnit
         of M3..GAL      :   VolumeUnit
+        of ATM..PA      :   PressureUnit
+        of DEG..RAD     :   AngleUnit
+        of J..HP        :   EnergyUnit
         of KPH..KN      :   SpeedUnit
         of G..LB        :   WeightUnit
         of BIT..TB      :   CapacityUnit
