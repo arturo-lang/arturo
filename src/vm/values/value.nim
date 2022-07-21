@@ -186,6 +186,15 @@ type
         NormalInteger
         BigInteger
 
+    UnitKind* = enum
+        CurrencyUnit
+        LengthUnit
+        AreaUnit
+        VolumeUnit
+        WeightUnit
+        TimeUnit
+        TemperatureUnit
+
     FunctionKind* = enum
         UserFunction
         BuiltinFunction
