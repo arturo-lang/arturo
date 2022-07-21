@@ -28,15 +28,24 @@ type
     UnitName* = enum
         AUD, CAD, EUR, USD
 
-    QuantitySpec* = (UnitKind, UnitName)
+    QuantitySpec* = object
+        kind*: UnitKind
+        name*: UnitName
 
 #=======================================
 # Helpers
 #=======================================
 
 #=======================================
+# Overloads
+#=======================================
+
+proc `$`*(qs: QuantitySpec): string =
+    $(qs.name)
+
+#=======================================
 # Methods
 #=======================================
 
 proc parseQuantitySpec*(str: string): QuantitySpec =
-    (CurrencyUnit,USD)
+    QuantitySpec(kind: CurrencyUnit, name: USD)
