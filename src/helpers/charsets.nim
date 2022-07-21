@@ -52,8 +52,6 @@ import vm/values/value
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Maori alphabet -> mi
 #  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for Polish alphabet -> pl
-#  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Scots Gaelic alphabet -> gd
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Slovak alphabet -> sk
