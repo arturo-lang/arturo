@@ -56,8 +56,6 @@ import vm/values/value
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Russian alphabet -> ru
 #  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for Serbian alphabet -> sr
-#  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Scots Gaelic alphabet -> gd
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Slovak alphabet -> sk
@@ -96,6 +94,7 @@ const
         "pl": "aąbcćdeęfghijklłmnńoópqrsśtuvwxyzźż",
         "pt": "abcdefghijklmnopqrstuvwxyz",
         "ro": "aăâbcdefghiîjklmnopqrsștțuvwxyz",
+        "sr": "абвгдђежзијклљмнњопрстћуфхцчџш",
         "sv": "abcdefghijklmnopqrstuvwxyzåäö",
         "sw": "abcdefghijklmnoprstuvwyz",
         "tr": "abcçdefgğhıijklmnoöprsştuüvyz"
@@ -126,6 +125,7 @@ const
         "pl": "",
         "pt": "áàâãäçéêëíïóõöúü",
         "ro": "",
+        "sr": "",
         "sv": "",
         "sw": "",
         "tr": ""
