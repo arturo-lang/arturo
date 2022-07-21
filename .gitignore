@@ -5,6 +5,8 @@
 /.cache
 test
 test2
+test*.art
+test*.rb
 test*.nim
 testme*
 *testlib*
