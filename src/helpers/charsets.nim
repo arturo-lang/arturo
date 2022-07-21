@@ -20,8 +20,6 @@ import vm/values/value
 
 # TODO(Strings\alphabet) add support for Albanian alphabet -> sq
 #  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for Basque alphabet -> eu
-#  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Croatian alphabet -> hr
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Czech alphabet -> cs
@@ -68,6 +66,7 @@ const
         "en": "abcdefghijklmnopqrstuvwxyz",
         "es": "abcdefghijklmnñopqrstuvwxyz",
         "et": "abcdefghijklmnopqrsšzžtuvwõäöüxy",
+        "eu": "abcdefghijklmnñopqrstuvwxyz",
         "fi": "abcdefghijklmnopqrstuvwxyzåäö",
         "fo": "aábdðefghiíjklmnoóprstuúvxyýæø",
         "fr": "abcdefghijklmnopqrstuvwxyz",
@@ -105,6 +104,7 @@ const
         "en": "",
         "es": "áéíóúü",
         "et": "",
+        "eu": "ç",
         "fi": "",
         "fo": "ö",
         "fr": "àâæçéèêëîïôœùûüÿ",
