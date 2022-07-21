@@ -38,8 +38,6 @@ import vm/values/value
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Maori alphabet -> mi
 #  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for Scots Gaelic alphabet -> gd
-#  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Slovak alphabet -> sk
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Vietnamese alphabet -> vi
@@ -65,6 +63,7 @@ const
         "fo": "aábdðefghiíjklmnoóprstuúvxyýæø",
         "fr": "abcdefghijklmnopqrstuvwxyz",
         "ga": "abcdefghijklmnopqrstuvwxyz",
+        "gd": "abcdefghilmnoprstu",
         "hy": "աբգդեզէըթժիլխծկհձղճմյնշոչպջռսվտրցւփքօֆուև",
         "is": "aábdðeéfghiíjklmnoóprstuúvxyýþæö",
         "it": "abcdefghilmnopqrstuvz",
@@ -106,6 +105,7 @@ const
         "fo": "ö",
         "fr": "àâæçéèêëîïôœùûüÿ",
         "ga": "áḃċḋéḟġíṁóṗṡṫú",
+        "gd": "àèìòù",
         "hy": "",
         "is": "",
         "it": "àéèíìîóòúù",
