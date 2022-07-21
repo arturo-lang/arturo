@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import strutils
+import strutils, tables
 
 #=======================================
 # Types
@@ -41,7 +41,7 @@ type
         XAU, XOF, ZAR
 
         # Length
-        M, CM, MM, KM, IN, FT, FM, YD, MI
+        M, CM, MM, KM, IN, FT, FM, YD, MI, NMI
 
         # Area
         M2, CM2, MM2, KM2, IN2, FT2, YD2, MI2, AC
@@ -75,6 +75,25 @@ type
     QuantitySpec* = object
         kind*: UnitKind
         name*: UnitName
+        
+#=======================================
+# Constants
+#=======================================
+
+const
+    CannotConvert = -18966.0
+    ConversionRatio = {
+        M: 1.0,
+        CM: 0.01,
+        MM: 0.001,
+        KM: 1000.0,
+        IN: 0.0254,
+        FT: 0.3048,
+        FM: 1.8288,
+        YD: 0.9144,
+        MI: 1609.34,
+        NMI: 1852.0
+    }.toTable
 
 #=======================================
 # Helpers
@@ -83,7 +102,7 @@ type
 func quantityKindForName(un: UnitName): UnitKind =
     case un:
         of AED..ZAR     :   CurrencyUnit
-        of M..MI        :   LengthUnit
+        of M..NMI       :   LengthUnit
         of M2..AC       :   AreaUnit
         of M3..GAL      :   VolumeUnit
         of ATM..PA      :   PressureUnit
@@ -106,6 +125,11 @@ proc `$`*(qs: QuantitySpec): string =
 #=======================================
 # Methods
 #=======================================
+
+proc getQuantityMultiplier*(src: QuantitySpec, tgt: QuantitySpec): float =
+    if src.kind != tgt.kind: return CannotConvert
+
+    return ConversionRatio[src.name] / ConversionRatio[tgt.name]
 
 proc parseQuantitySpec*(str: string): QuantitySpec =
     let unitName = parseEnum[UnitName](toUpperAscii(str))
