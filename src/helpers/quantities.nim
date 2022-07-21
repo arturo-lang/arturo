@@ -28,7 +28,14 @@ type
         NoUnit
 
     UnitName* = enum
-        AUD, CAD, EUR, USD
+        # Currency
+        AED, ALL, ARS, AUD, BGN, BRL, BTC, CAD, CHF, CLP, 
+        CNY, COP, CRC, CZK, DZD, EGP, ETB, EUR, GBP, HKD,
+        IDR, ILS, INR, IRR, ISK, JPY, KES, KRW, MXN, MYR,
+        NGN, NOK, NZD, PAB, PHP, PLN, QAR, RSD, RUB, SEK,
+        SGD, SOS, THB, TRY, UAH, USD, UYU, VND, XAF, XAG,
+        XAU, XOF, ZAR
+
         NoName
 
     QuantitySpec* = object
@@ -41,7 +48,7 @@ type
 
 func quantityKindForName(un: UnitName): UnitKind =
     case un:
-        of AUD, CAD, EUR, USD:
+        of AED..ZAR:
             CurrencyUnit
         else:
             NoUnit
