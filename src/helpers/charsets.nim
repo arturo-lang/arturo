@@ -34,8 +34,6 @@ import vm/values/value
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Esperanto alphabet -> eo
 #  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for Georgian alphabet -> ka
-#  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Hungarian alphabet -> hu
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Igbo alphabet -> ig
@@ -89,6 +87,7 @@ const
         "hy": "աբգդեզէըթժիլխծկհձղճմյնշոչպջռսվտրցւփքօֆուև",
         "is": "aábdðeéfghiíjklmnoóprstuúvxyýþæö",
         "it": "abcdefghilmnopqrstuvz",
+        "ka": "აბგდევზთიკლმნოპჟრსტუფქღყშჩცძწჭხჯჰ",
         "la": "abcdefghijklmnopqrstuvwxyz",
         "lt": "aąbcčdeęėfghiįyjklmnoprsštuųūvzž",
         "lv": "aābcčdeēfgģhiījkķlļmnņoprsštuūvzž",
@@ -117,6 +116,7 @@ const
         "hy": "",
         "is": "",
         "it": "àéèíìîóòúù",
+        "ka": "",
         "la": "",
         "lt": "",
         "lv": "",
