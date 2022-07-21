@@ -25,6 +25,7 @@ when not defined(NOGMP):
     import extras/bignum
 
 import helpers/colors as ColorsHelper
+import helpers/quantities as QuantitiesHelper
 import helpers/regex as RegexHelper
 import helpers/terminal as TerminalHelper
 
@@ -185,15 +186,6 @@ type
     IntegerKind* = enum
         NormalInteger
         BigInteger
-
-    UnitKind* = enum
-        CurrencyUnit
-        LengthUnit
-        AreaUnit
-        VolumeUnit
-        WeightUnit
-        TimeUnit
-        TemperatureUnit
 
     FunctionKind* = enum
         UserFunction
