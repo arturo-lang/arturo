@@ -785,6 +785,7 @@ template parseLiteral(p: var Parser) =
     p.bufpos = pos
 
 template parseQuantity(p: var Parser) =
+    setLen(p.value, 0)
     var pos = p.bufpos
     inc(pos)
     while p.buf[pos] in PermittedColorChars:
