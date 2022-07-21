@@ -28,8 +28,6 @@ import vm/values/value
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Hungarian alphabet -> hu
 #  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for Igbo alphabet -> ig
-#  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Indonesian alphabet -> id
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Malay alphabet -> ms
@@ -65,6 +63,7 @@ const
         "ga": "abcdefghijklmnopqrstuvwxyz",
         "gd": "abcdefghilmnoprstu",
         "hy": "աբգդեզէըթժիլխծկհձղճմյնշոչպջռսվտրցւփքօֆուև",
+        "ig": "abɓcdɗeǝẹfghiịjkƙlmnoọprsṣtuụvwyz",
         "is": "aábdðeéfghiíjklmnoóprstuúvxyýþæö",
         "it": "abcdefghilmnopqrstuvz",
         "ka": "აბგდევზთიკლმნოპჟრსტუფქღყშჩცძწჭხჯჰ",
@@ -107,6 +106,7 @@ const
         "ga": "áḃċḋéḟġíṁóṗṡṫú",
         "gd": "àèìòù",
         "hy": "",
+        "ig": "áàâéèêíìîóòȏúùû",
         "is": "",
         "it": "àéèíìîóòúù",
         "ka": "",
