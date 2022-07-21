@@ -24,7 +24,7 @@ type
         VolumeUnit
         SpeedUnit
         WeightUnit
-        TimeUnit
+        CapacityUnit
         TemperatureUnit
         NoUnit
 
@@ -52,6 +52,9 @@ type
         # Weight
         G, MG, KG, T, ST, OZ, LB
 
+        # Capacity
+        BIT, B, KB, MB, GB, TB
+
         # Temperature
         C, F, K
 
@@ -73,6 +76,7 @@ func quantityKindForName(un: UnitName): UnitKind =
         of M3..GAL      :   VolumeUnit
         of KPH..KN      :   SpeedUnit
         of G..LB        :   WeightUnit
+        of BIT..TB      :   CapacityUnit
         of C..K         :   TemperatureUnit
         else:
             NoUnit
