@@ -10,6 +10,7 @@
 # Libraries
 #=======================================
 
+import strutils
 
 #=======================================
 # Types
@@ -24,9 +25,11 @@ type
         WeightUnit
         TimeUnit
         TemperatureUnit
+        NoUnit
 
     UnitName* = enum
         AUD, CAD, EUR, USD
+        NoName
 
     QuantitySpec* = object
         kind*: UnitKind
@@ -35,6 +38,13 @@ type
 #=======================================
 # Helpers
 #=======================================
+
+func quantityKindForName(un: UnitName): UnitKind =
+    case un:
+        of AUD, CAD, EUR, USD:
+            CurrencyUnit
+        else:
+            NoUnit
 
 #=======================================
 # Overloads
@@ -48,5 +58,8 @@ proc `$`*(qs: QuantitySpec): string =
 #=======================================
 
 proc parseQuantitySpec*(str: string): QuantitySpec =
-    echo "parsing quantity spec: " & str
-    QuantitySpec(kind: CurrencyUnit, name: USD)
+    echo "quantity to parse: |" & str & "|"
+    let unitName = parseEnum[UnitName](toUpperAscii(str))
+    let unitKind = quantityKindForName(unitName)
+
+    QuantitySpec(kind: unitKind, name: unitName)
