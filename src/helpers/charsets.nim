@@ -24,8 +24,6 @@ import vm/values/value
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Bulgarian alphabet -> bg
 #  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for Byelorussian alphabet -> be
-#  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Croatian alphabet -> hr
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Czech alphabet -> cs
