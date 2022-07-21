@@ -763,7 +763,7 @@ proc `+`*(x: Value, y: Value): Value =
             # if x.unit.kind==y.unit.kind:
             #     return newQuantity(x.nm + y.nm, x.unit)
             # else:
-            return newQuantity(x.nm + y.nm * newFloating(getQuantityMultiplier(x.unit, y.unit)), x.unit)
+            return newQuantity(x.nm + y.nm * newFloating(getQuantityMultiplier(y.unit, x.unit)), x.unit)
         else:
             return VNULL
     else:
