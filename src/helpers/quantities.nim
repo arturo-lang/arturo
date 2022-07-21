@@ -51,7 +51,7 @@ func quantityKindForName(un: UnitName): UnitKind =
 #=======================================
 
 proc `$`*(qs: QuantitySpec): string =
-    $(qs.name)
+    $(toLowerAscii(qs.name))
 
 #=======================================
 # Methods
