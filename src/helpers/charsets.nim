@@ -20,8 +20,6 @@ import vm/values/value
 
 # TODO(Strings\alphabet) add support for Albanian alphabet -> sq
 #  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for Armenian alphabet -> hy
-#  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Basque alphabet -> eu
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Bulgarian alphabet -> bg
@@ -88,6 +86,7 @@ const
         "fi": "abcdefghijklmnopqrstuvwxyzåäö",
         "fo": "aábdðefghiíjklmnoóprstuúvxyýæø",
         "fr": "abcdefghijklmnopqrstuvwxyz",
+        "hy": "աբգդեզէըթժիլխծկհձղճմյնշոչպջռսվտրցւփքօֆուև",
         "is": "aábdðeéfghiíjklmnoóprstuúvxyýþæö",
         "it": "abcdefghilmnopqrstuvz",
         "la": "abcdefghijklmnopqrstuvwxyz",
@@ -115,6 +114,7 @@ const
         "fi": "",
         "fo": "ö",
         "fr": "àâæçéèêëîïôœùûüÿ",
+        "hy": "",
         "is": "",
         "it": "àéèíìîóòúù",
         "la": "",
