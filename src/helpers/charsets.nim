@@ -22,8 +22,6 @@ import vm/values/value
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Basque alphabet -> eu
 #  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for Bulgarian alphabet -> bg
-#  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Croatian alphabet -> hr
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Czech alphabet -> cs
@@ -62,6 +60,7 @@ const
     charsets = {
         "af": "abcdefghijklmnopqrstuvwxyz",
         "be": "абвгдеёжзійклмнопрстуўфхцчшыьэюя",
+        "bg": "абвгдежзийклмнопрстуфхцчшщъьюя",
         "ca": "abcdefghijklmnopqrstuvwxyz",
         "da": "abcdefghijklmnopqrstuvwxyzæøå",
         "de": "abcedfghijklmnopqrstuvwxyz",
@@ -98,6 +97,7 @@ const
     extras = {
         "af": "áäéèêëíîïóôöúûüý",
         "be": "",
+        "bg": "",
         "ca": "àéèçíïóòúü",
         "da": "",
         "de": "äöüß",
