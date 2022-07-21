@@ -44,8 +44,6 @@ import vm/values/value
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Slovak alphabet -> sk
 #  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for Slovenian alphabet -> sl
-#  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Vietnamese alphabet -> vi
 #  label: library, enhancement, easy
 
@@ -83,6 +81,7 @@ const
         "pt": "abcdefghijklmnopqrstuvwxyz",
         "ro": "aăâbcdefghiîjklmnopqrsștțuvwxyz",
         "ru": "абвгдеёжзийклмнопрстуфхцчшщъыьэюя",
+        "sl": "abcčdefghijklmnoprsštuvzž",
         "sr": "абвгдђежзијклљмнњопрстћуфхцчџш",
         "sv": "abcdefghijklmnopqrstuvwxyzåäö",
         "sw": "abcdefghijklmnoprstuvwyz",
@@ -122,6 +121,7 @@ const
         "pt": "áàâãäçéêëíïóõöúü",
         "ro": "",
         "ru": "а́е́и́о́у́э́",
+        "sl": "áȃȁćđéèȇẹ́ẹ̑ȅíȋȉóȏọ́ọ̑ȍqŕȓúȗȕwxy",
         "sr": "",
         "sv": "",
         "sw": "",
