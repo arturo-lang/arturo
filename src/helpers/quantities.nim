@@ -51,14 +51,13 @@ func quantityKindForName(un: UnitName): UnitKind =
 #=======================================
 
 proc `$`*(qs: QuantitySpec): string =
-    $(toLowerAscii(qs.name))
+    toLowerAscii($(qs.name))
 
 #=======================================
 # Methods
 #=======================================
 
 proc parseQuantitySpec*(str: string): QuantitySpec =
-    echo "quantity to parse: |" & str & "|"
     let unitName = parseEnum[UnitName](toUpperAscii(str))
     let unitKind = quantityKindForName(unitName)
 
