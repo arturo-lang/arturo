@@ -2309,6 +2309,12 @@ func hash*(v: Value): Hash {.inline.}=
         of Symbol,
            SymbolLiteral: result = cast[Hash](ord(v.m))
 
+        of Quantity:
+            result = 1
+            result = result !& hash(v.nm)
+            result = result !& hash(v.unit)
+            result = !$ result
+
         of Regex: result = hash(v.rx)
 
         of Color        : result = cast[Hash](v.l)
