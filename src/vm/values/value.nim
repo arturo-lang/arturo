@@ -764,9 +764,10 @@ proc `+`*(x: Value, y: Value): Value =
                 let fmultiplier = getQuantityMultiplier(y.unit, x.unit)
                 if fmultiplier == CannotConvertQuantity:
                     discard # we should throw an error here
+                elif fmultiplier == 1.0:
+                    return newQuantity(x.nm + y.nm, x.unit)
                 else:
                     return newQuantity(x.nm + y.nm * newFloating(fmultiplier), x.unit)
-                
             else:
                 return newQuantity(x.nm + y, x.unit)
         else:
