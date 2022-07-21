@@ -264,6 +264,10 @@ type
                SymbolLiteral:      
                    m*  : SymbolKind
             of Regex:       rx* : RegexObj
+            of Quantity:
+                nm*: Value
+                unit*: string
+                unitKind*: UnitKind
             of Color:       l*  : VColor
             of Date:        
                 e*     : ValueDict         
