@@ -833,7 +833,6 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                             AddToken newFloating(p.value)
                         else:
                             let pv = newFloating(p.value)
-                            inc(p.bufpos)
                             parseQuantity(p)
                             AddToken newQuantity(pv, parseQuantitySpec(p.value))
                 else: 
@@ -841,7 +840,6 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                         AddToken newInteger(p.value, p.lineNumber)
                     else:
                         let pv = newInteger(p.value, p.lineNumber)
-                        inc(p.bufpos)
                         parseQuantity(p)
                         AddToken newQuantity(pv, parseQuantitySpec(p.value))
 
