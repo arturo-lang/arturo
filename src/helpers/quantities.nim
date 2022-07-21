@@ -25,6 +25,11 @@ type
         TimeUnit
         TemperatureUnit
 
+    UnitName* = enum
+        AUD, CAD, EUR, USD
+
+    UnitSpec* = (UnitKind, UnitName)
+
 #=======================================
 # Helpers
 #=======================================
@@ -33,3 +38,5 @@ type
 # Methods
 #=======================================
 
+proc parseQuantityUnit*(str: string): UnitSpec =
+    (CurrencyUnit,USD)
