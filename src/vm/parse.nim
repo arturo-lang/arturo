@@ -13,6 +13,8 @@
 import lexbase, os, streams
 import strutils, tables, unicode
 
+import helpers/quantities as QuantitiesHelper
+
 import vm/[errors, values/value]
 
 #=======================================
@@ -782,6 +784,14 @@ template parseLiteral(p: var Parser) =
         inc(pos)
     p.bufpos = pos
 
+template parseQuantity(p: var Parser) =
+    var pos = p.bufpos
+    inc(pos)
+    while p.buf[pos] in PermittedColorChars:
+        add(p.value, p.buf[pos])
+        inc(pos)
+    p.bufpos = pos
+
 proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.inline.} =
     var topBlock: Value
     var scriptStr: string = ""
@@ -819,8 +829,22 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                     if p.value.count(Dot)>1:
                         AddToken newVersion(p.value)
                     else:
-                        AddToken newFloating(p.value)
-                else: AddToken newInteger(p.value, p.lineNumber)
+                        if p.buf[p.bufpos+1]!=Colon:
+                            AddToken newFloating(p.value)
+                        else:
+                            let pv = newFloating(p.value)
+                            inc(p.bufpos)
+                            parseQuantity(p)
+                            AddToken newQuantity(pv, parseQuantitySpec(p.value))
+                else: 
+                    if p.buf[p.bufpos+1]!=Colon:
+                        AddToken newInteger(p.value, p.lineNumber)
+                    else:
+                        let pv = newInteger(p.value, p.lineNumber)
+                        inc(p.bufpos)
+                        parseQuantity(p)
+                        AddToken newQuantity(pv, parseQuantitySpec(p.value))
+
             of Symbols:
                 parseAndAddSymbol(p,topBlock)
             of PermittedIdentifiers_Start:
