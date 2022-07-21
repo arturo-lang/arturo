@@ -16,6 +16,14 @@
 #=======================================
 
 type
+    UnitKind* = enum
+        CurrencyUnit
+        LengthUnit
+        AreaUnit
+        VolumeUnit
+        WeightUnit
+        TimeUnit
+        TemperatureUnit
 
 #=======================================
 # Helpers
