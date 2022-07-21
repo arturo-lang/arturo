@@ -164,20 +164,21 @@ type
         Symbol          = 17
         SymbolLiteral   = 18
 
-        Regex           = 19
-        Color           = 20
-        Date            = 21
-        Binary          = 22
-        Dictionary      = 23
-        Function        = 24
-        Inline          = 25
-        Block           = 26
-        Database        = 27
-        Bytecode        = 28
+        Quantity        = 19
+        Regex           = 20
+        Color           = 21
+        Date            = 22
+        Binary          = 23
+        Dictionary      = 24
+        Function        = 25
+        Inline          = 26
+        Block           = 27
+        Database        = 28
+        Bytecode        = 29
 
-        Newline         = 29
-        Nothing         = 30
-        Any             = 31
+        Newline         = 30
+        Nothing         = 31
+        Any             = 32
 
     ValueSpec* = set[ValueKind]
 
