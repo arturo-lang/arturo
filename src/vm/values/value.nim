@@ -267,8 +267,7 @@ type
             of Regex:       rx* : RegexObj
             of Quantity:
                 nm*: Value
-                unit*: string
-                unitKind*: UnitKind
+                unit*: QuantitySpec
             of Color:       l*  : VColor
             of Date:        
                 e*     : ValueDict         
@@ -566,8 +565,8 @@ func newSymbolLiteral*(m: SymbolKind): Value {.inline.} =
 func newSymbolLiteral*(m: string): Value {.inline.} =
     newSymbolLiteral(parseEnum[SymbolKind](m))
 
-func newQuantity*(nm: Value, unit: string, unitKind: UnitKind): Value {.inline.} =
-    Value(kind: Quantity, nm: nm, unit: unit, unitKind: unitKind)
+func newQuantity*(nm: Value, unit: QuantitySpec): Value {.inline.} =
+    Value(kind: Quantity, nm: nm, unit: unit)
 
 func newRegex*(rx: RegexObj): Value {.inline.} =
     Value(kind: Regex, rx: rx)
@@ -1826,7 +1825,7 @@ func `$`(v: Value): string {.inline.} =
            SymbolLiteral:
             return $(v.m)
         of Quantity:
-            return $(v.nm) & v.unit
+            return $(v.nm) & $(v.unit)
         of Regex:
             return $(v.rx)
         of Date     : return $(v.eobj)
@@ -1945,7 +1944,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
         of Symbol, 
            SymbolLiteral: dumpSymbol(v)
 
-        of Quantity     : dumpPrimitive($(v.nm) & ":" & v.unit, v)
+        of Quantity     : dumpPrimitive($(v.nm) & ":" & $(v.unit), v)
 
         of Regex        : dumpPrimitive($(v.rx), v)
 
