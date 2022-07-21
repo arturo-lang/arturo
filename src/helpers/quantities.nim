@@ -81,7 +81,7 @@ type
 #=======================================
 
 const
-    CannotConvert = -18966.0
+    CannotConvertQuantity* = -18966.0
     ConversionRatio = {
         M: 1.0,
         CM: 0.01,
@@ -127,7 +127,7 @@ proc `$`*(qs: QuantitySpec): string =
 #=======================================
 
 proc getQuantityMultiplier*(src: QuantitySpec, tgt: QuantitySpec): float =
-    if src.kind != tgt.kind: return CannotConvert
+    if src.kind != tgt.kind: return CannotConvertQuantity
 
     return ConversionRatio[src.name] / ConversionRatio[tgt.name]
 
