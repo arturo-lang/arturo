@@ -28,7 +28,7 @@ type
     UnitName* = enum
         AUD, CAD, EUR, USD
 
-    UnitSpec* = (UnitKind, UnitName)
+    QuantitySpec* = (UnitKind, UnitName)
 
 #=======================================
 # Helpers
@@ -38,5 +38,5 @@ type
 # Methods
 #=======================================
 
-proc parseQuantityUnit*(str: string): UnitSpec =
+proc parseQuantitySpec*(str: string): QuantitySpec =
     (CurrencyUnit,USD)
