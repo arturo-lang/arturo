@@ -58,8 +58,6 @@ import vm/values/value
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Slovenian alphabet -> sl
 #  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for Ukrainian alphabet -> uk
-#  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Vietnamese alphabet -> vi
 #  label: library, enhancement, easy
 
@@ -94,7 +92,8 @@ const
         "sr": "абвгдђежзијклљмнњопрстћуфхцчџш",
         "sv": "abcdefghijklmnopqrstuvwxyzåäö",
         "sw": "abcdefghijklmnoprstuvwyz",
-        "tr": "abcçdefgğhıijklmnoöprsştuüvyz"
+        "tr": "abcçdefgğhıijklmnoöprsştuüvyz",
+        "uk": "абвгґдеєжзиіїйклмнопрстуфхцчшщьюя"
     }.toTable
 
     # extra characters that can be found in a given language, by ISO 639-1 code,
@@ -126,7 +125,8 @@ const
         "sr": "",
         "sv": "",
         "sw": "",
-        "tr": ""
+        "tr": "",
+        "uk": ""
     }.toTable
 
 #=======================================
