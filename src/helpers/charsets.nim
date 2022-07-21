@@ -38,8 +38,6 @@ import vm/values/value
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Estonian alphabet -> et
 #  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for Faroese alphabet -> fo
-#  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Finnish alphabet -> fi
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Georgian alphabet -> ka
@@ -94,6 +92,7 @@ const
         "el": "αβγδεζηθικλμνξοπρστυφχψω",
         "en": "abcdefghijklmnopqrstuvwxyz",
         "es": "abcdefghijklmnñopqrstuvwxyz",
+        "fo": "aábdðefghiíjklmnoóprstuúvxyýæø",
         "fr": "abcdefghijklmnopqrstuvwxyz",
         "is": "aábdðeéfghiíjklmnoóprstuúvxyýþæö",
         "it": "abcdefghilmnopqrstuvz",
@@ -116,6 +115,7 @@ const
         "el": "άέίόύϊϋΐΰ",
         "en": "",
         "es": "áéíóúü",
+        "fo": "ö",
         "fr": "àâæçéèêëîïôœùûüÿ",
         "is": "",
         "it": "àéèíìîóòúù",
