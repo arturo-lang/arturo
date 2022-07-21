@@ -837,7 +837,7 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                             parseQuantity(p)
                             AddToken newQuantity(pv, parseQuantitySpec(p.value))
                 else: 
-                    if p.buf[p.bufpos+1]!=Colon:
+                    if p.buf[p.bufpos]!=Colon:
                         AddToken newInteger(p.value, p.lineNumber)
                     else:
                         let pv = newInteger(p.value, p.lineNumber)
