@@ -67,6 +67,7 @@ const
     # and in the exact same order as found in a dictionary
     charsets = {
         "af": "abcdefghijklmnopqrstuvwxyz",
+        "be": "абвгдеёжзійклмнопрстуўфхцчшыьэюя",
         "da": "abcdefghijklmnopqrstuvwxyzæøå",
         "de": "abcedfghijklmnopqrstuvwxyz",
         "el": "αβγδεζηθικλμνξοπρστυφχψω",
@@ -100,6 +101,7 @@ const
     # but would not form part of its dictionary index
     extras = {
         "af": "áäéèêëíîïóôöúûüý",
+        "be": "",
         "da": "",
         "de": "äöüß",
         "el": "άέίόύϊϋΐΰ",
