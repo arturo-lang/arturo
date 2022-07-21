@@ -759,11 +759,16 @@ proc `+`*(x: Value, y: Value): Value =
     if x.kind==Color and y.kind==Color:
         return newColor(x.l + y.l)
     if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
-        if x.kind == Quantity and y.kind == Quantity:
-            # if x.unit.kind==y.unit.kind:
-            #     return newQuantity(x.nm + y.nm, x.unit)
-            # else:
-            return newQuantity(x.nm + y.nm * newFloating(getQuantityMultiplier(y.unit, x.unit)), x.unit)
+        if x.kind == Quantity:
+            var multiplier = F1
+            if y.kind == Quantity:
+                let fmultiplier = getQuantityMultiplier(y.unit, x.unit)
+                if fmultiplier == CannotConvertQuantity:
+                    discard # we should throw an error here
+                else:
+                    multiplier = newFloating(fmultiplier)
+            
+            return newQuantity(x.nm + y.nm * multiplier, x.unit)
         else:
             return VNULL
     else:
