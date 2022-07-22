@@ -2467,6 +2467,7 @@ func sameValue*(x: Value, y: Value): bool {.inline.}=
                AttributeLabel: return x.r == y.r
             of Symbol,
                SymbolLiteral: return x.m == y.m
+            of Quantity: return x.nm == y.nm and x.unit == y.unit
             of Regex: return x.rx == y.rx
             of Color: return x.l == y.l
             of Inline,
