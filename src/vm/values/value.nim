@@ -1497,7 +1497,7 @@ proc `%=`*(x: var Value, y: Value) =
                 x.nm %= y.nm
             else:
                 if x.unit.kind == TemperatureUnit:
-                    return newQuantity(x.nm % convertToTemperatureUnit(y.nm, y.unit.name, x.unit.name), x.unit)
+                    x.nm %= convertToTemperatureUnit(y.nm, y.unit.name, x.unit.name)
                 else:
                     let fmultiplier = getQuantityMultiplier(y.unit, x.unit)
                     if fmultiplier == 1.0:
