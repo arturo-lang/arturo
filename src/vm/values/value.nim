@@ -761,13 +761,16 @@ proc `+`*(x: Value, y: Value): Value =
     if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
         if x.kind == Quantity:
             if y.kind == Quantity:
-                let fmultiplier = getQuantityMultiplier(y.unit, x.unit)
-                if fmultiplier == CannotConvertQuantity:
-                    RuntimeError_IncompatibleQuantityOperation("add", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
-                elif fmultiplier == 1.0:
+                if x.unit.name == y.unit.name:
                     return newQuantity(x.nm + y.nm, x.unit)
                 else:
-                    return newQuantity(x.nm + y.nm * newFloating(fmultiplier), x.unit)
+                    let fmultiplier = getQuantityMultiplier(y.unit, x.unit)
+                    if fmultiplier == CannotConvertQuantity:
+                        RuntimeError_IncompatibleQuantityOperation("add", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
+                    elif fmultiplier == 1.0:
+                        return newQuantity(x.nm + y.nm, x.unit)
+                    else:
+                        return newQuantity(x.nm + y.nm * newFloating(fmultiplier), x.unit)
             else:
                 return newQuantity(x.nm + y, x.unit)
         else:
