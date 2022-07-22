@@ -1550,7 +1550,23 @@ proc `%=`*(x: var Value, y: Value) =
 
 proc `^`*(x: Value, y: Value): Value =
     if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
-        return VNULL
+        if x.kind == Quantity:
+            if y.kind==Integer and (y.i > 0 and y.i < 4):
+                if y.i == 1: return x
+                elif y.i == 2: return x * x
+                elif y.i == 3: return x * x * x
+                else:
+                    RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), stringify(y.kind))
+            elif y.kind==Floating and (y.f > 0 and y.f < 4):
+                if y.f == 1.0: return x
+                elif y.f == 2.0: return x * x
+                elif y.f == 3.0: return x * x * x
+                else:
+                    RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), stringify(y.kind))
+            else:
+                RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), stringify(y.kind))
+        else: 
+            return VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
             if x.iKind==NormalInteger:
@@ -1600,7 +1616,23 @@ proc `^`*(x: Value, y: Value): Value =
 
 proc `^=`*(x: var Value, y: Value) =
     if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
-        x = VNULL
+        if x.kind == Quantity:
+            if y.kind==Integer and (y.i > 0 and y.i < 4):
+                if y.i == 1: discard
+                elif y.i == 2: x *= x
+                elif y.i == 3: x *= x * x
+                else:
+                    RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), stringify(y.kind))
+            elif y.kind==Floating and (y.f > 0 and y.f < 4):
+                if y.f == 1.0: discard
+                elif y.f == 2.0: x *= x
+                elif y.f == 3.0: x *= x * x
+                else:
+                    RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), stringify(y.kind))
+            else:
+                RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), stringify(y.kind))
+        else: 
+            return VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
             let res = pow((float)x.i,(float)y.i)
