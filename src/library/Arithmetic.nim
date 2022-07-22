@@ -132,11 +132,11 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "calculate the modulo of given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Rational,Literal},
-            "valueB": {Integer,Floating,Rational}
+            "valueA": {Integer,Floating,Rational,Quantity,Literal},
+            "valueB": {Integer,Floating,Rational,Quantity}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Rational,Nothing},
+        returns     = {Integer,Floating,Rational,Quantity,Nothing},
         example     = """
             print mod 5 2      ; 1
             print 9 % 3        ; 0
