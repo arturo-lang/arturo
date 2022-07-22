@@ -1363,7 +1363,23 @@ proc `/=`*(x: var Value, y: Value) =
 
 proc `//`*(x: Value, y: Value): Value =
     if not (x.kind in [Integer, Floating, Rational]) or not (y.kind in [Integer, Floating, Rational]):
-        return VNULL
+        if x.kind == Quantity:
+            if y.kind == Quantity:
+                let finalSpec = getFinalUnitAfterOperation("fdiv", x.unit, y.unit)
+                if finalSpec == ErrorQuantity:
+                    RuntimeError_IncompatibleQuantityOperation("fdiv", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
+                elif finalSpec == NumericQuantity:
+                    return x.nm // y.nm
+                else:
+                    let fmultiplier = getQuantityMultiplier(y.unit, getCleanCorrelatedUnit(y.unit, x.unit))
+                    if fmultiplier == 1.0:
+                        return newQuantity(x.nm // y.nm, finalSpec)
+                    else:
+                        return newQuantity(x.nm // y.nm * newFloating(fmultiplier), finalSpec)
+            else:
+                return newQuantity(x.nm // y, x.unit)
+        else:
+            return VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
             return newFloating(x.i / y.i)
@@ -1383,7 +1399,23 @@ proc `//`*(x: Value, y: Value): Value =
 
 proc `//=`*(x: var Value, y: Value) =
     if not (x.kind in [Integer, Floating, Rational]) or not (y.kind in [Integer, Floating, Rational]):
-        x = VNULL
+        if x.kind == Quantity:
+            if y.kind == Quantity:
+                let finalSpec = getFinalUnitAfterOperation("fdiv", x.unit, y.unit)
+                if finalSpec == ErrorQuantity:
+                    RuntimeError_IncompatibleQuantityOperation("fdiv", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
+                elif finalSpec == NumericQuantity:
+                    x = x.nm // y.nm
+                else:
+                    let fmultiplier = getQuantityMultiplier(y.unit, getCleanCorrelatedUnit(y.unit, x.unit))
+                    if fmultiplier == 1.0:
+                        x = newQuantity(x.nm // y.nm, finalSpec)
+                    else:
+                        x = newQuantity(x.nm // y.nm * newFloating(fmultiplier), finalSpec)
+            else:
+                x.nm //= y
+        else:
+            x = VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
             x = newFloating(x.i / y.i)
