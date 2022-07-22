@@ -24,6 +24,7 @@ when not defined(NOGMP):
 import helpers/arrays
 import helpers/colors
 import helpers/datasource
+import helpers/quantities
 when not defined(NOASCIIDECODE):
     import helpers/strings
 
@@ -327,6 +328,10 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                             SP = stop
 
                             return generateCustomObject(x, arr)
+
+                    of Quantity:
+                        let blk = cleanBlock(y.a)
+                        return newQuantity(blk[0], parseQuantitySpec(blk[1].s))
 
                     of Color:
                         let blk = cleanBlock(y.a)
