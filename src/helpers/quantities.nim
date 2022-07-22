@@ -122,6 +122,9 @@ func quantityKindForName(un: UnitName): UnitKind =
 proc `$`*(qs: QuantitySpec): string =
     toLowerAscii($(qs.name)).replace("2","²").replace("3", "³")
 
+proc `$`*(uk: UnitKind): string =
+    toLowerAscii($(uk)).replace("unit","")
+
 #=======================================
 # Methods
 #=======================================
