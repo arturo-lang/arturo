@@ -29,6 +29,8 @@ import vm/values/value
 # Methods
 #=======================================
 
+# TODO(Values/comparison) No `==` overload for Regex values
+#  labels: bug, values
 proc `==`*(x: Value, y: Value): bool {.inline.}=
     if x.kind in [Integer, Floating, Rational] and y.kind in [Integer, Floating, Rational]:
         if x.kind==Integer:
