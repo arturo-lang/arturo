@@ -32,6 +32,8 @@ type
         WeightUnit
         CapacityUnit
         TemperatureUnit
+
+        # Error value
         NoUnit
 
     UnitName* = enum
@@ -73,6 +75,7 @@ type
         # Temperature
         C, F, K
 
+        # Error value
         NoName
 
     QuantitySpec* = object
@@ -219,6 +222,56 @@ proc getQuantityMultiplier*(src: QuantitySpec, tgt: QuantitySpec): float =
         return getExchangeRate(src.name, tgt.name)
     else:
         return ConversionRatio[src.name] / ConversionRatio[tgt.name]
+
+proc getFinalUnitAfterOperation*(op: string, argA: UnitName, argB: UnitName): UnitName =
+    let tup = (argA, argB)
+
+    case op:
+        of "mul":
+            if tup == (M,M): return M2
+            elif tup == (CM,CM): return CM2
+            elif tup == (MM,MM): return MM2
+            elif tup == (KM,KM): return KM2
+            elif tup == (IN,IN): return IN2
+            elif tup == (FT,FT): return FT2
+            elif tup == (YD,YD): return YD2
+            elif tup == (MI,MI): return MI2
+            elif (tup == (M,M2)) or (tup == (M2,M)): return M3
+            elif (tup == (CM,CM2)) or (tup == (CM2,CM)): return CM3
+            elif (tup == (MM,MM2)) or (tup == (MM2,MM)): return MM3
+            elif (tup == (KM,KM2)) or (tup == (KM2,KM)): return KM3
+            elif (tup == (IN,IN2)) or (tup == (IN2,IN)): return IN3
+            elif (tup == (FT,FT2)) or (tup == (FT2,FT)): return FT3
+            elif (tup == (YD,YD2)) or (tup == (YD2,YD)): return YD3
+            elif (tup == (MI,MI2)) or (tup == (MI2,MI)): return MI3
+            else: return NoName
+        of "div", "mod", "fdiv":
+            if tup == (M2,M): return M
+            elif tup == (CM2,CM): return CM
+            elif tup == (KM2,KM): return KM
+            elif tup == (IN2,IN): return IN
+            elif tup == (FT2,FT): return FT
+            elif tup == (YD2,YD): return YD
+            elif tup == (MI2,MI): return MI
+            elif tup == (M3,M): return M2
+            elif tup == (CM3,CM): return CM2
+            elif tup == (MM3,MM): return MM2
+            elif tup == (KM3,KM): return KM2
+            elif tup == (IN3,IN): return IN2
+            elif tup == (FT3,FT): return FT2
+            elif tup == (YD3,YD): return YD2
+            elif tup == (MI3,MI): return MI2
+            elif tup == (M3,M2): return M
+            elif tup == (CM3,CM2): return CM
+            elif tup == (MM3,MM2): return MM
+            elif tup == (KM3,KM2): return KM
+            elif tup == (IN3,IN2): return IN
+            elif tup == (FT3,FT2): return FT
+            elif tup == (YD3,YD2): return YD
+            elif tup == (MI3,MI2): return MI
+            else: return NoName
+        else:
+            discard
 
 proc parseQuantitySpec*(str: string): QuantitySpec =
     let unitName = parseEnum[UnitName](toUpperAscii(str))
