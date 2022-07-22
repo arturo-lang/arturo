@@ -382,6 +382,8 @@ proc identical*(x: Value, y: Value): bool {.inline.} =
                     return false
 
             return true
+        elif x.kind==Quantity:
+            return identical(x.nm, y.nm) and x.unit == y.unit
         else:
             return true
     else:
