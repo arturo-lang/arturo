@@ -1291,7 +1291,23 @@ proc `/`*(x: Value, y: Value): Value =
 
 proc `/=`*(x: var Value, y: Value) =
     if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
-        x = VNULL
+        if x.kind == Quantity:
+            if y.kind == Quantity:
+                let finalSpec = getFinalUnitAfterOperation("div", x.unit, y.unit)
+                if finalSpec == ErrorQuantity:
+                    RuntimeError_IncompatibleQuantityOperation("div", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
+                elif finalSpec == NumericQuantity:
+                    x = x.nm / y.nm
+                else:
+                    let fmultiplier = getQuantityMultiplier(y.unit, getCleanCorrelatedUnit(y.unit, x.unit))
+                    if fmultiplier == 1.0:
+                        x = newQuantity(x.nm / y.nm, finalSpec)
+                    else:
+                        x = newQuantity(x.nm / y.nm * newFloating(fmultiplier), finalSpec)
+            else:
+                x.nm /= y
+        else:
+            x = VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
             if x.iKind==NormalInteger:
