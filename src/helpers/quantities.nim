@@ -53,7 +53,7 @@ type
         ATM, BAR, PA
 
         # Energy
-        J, KJ, MJ, WH, KWH, ERG, HP
+        J, KJ, MJ, WH, KWH, ERG
 
         # Angle
         DEG, RAD
@@ -125,7 +125,15 @@ const
         # Pressure
         ATM: 1.0,
         BAR: 0.986923,
-        PA: 9.86923e-6
+        PA: 9.86923e-6,
+
+        # Energy
+        J: 1.0,
+        KJ: 1000.0,
+        MJ: 1000000.0,
+        WH: 3600.0,
+        KWH: 3.6e+6,
+        ERG: 1e-7,
 
     }.toTable
 
@@ -141,7 +149,7 @@ func quantityKindForName(un: UnitName): UnitKind =
         of M3..GAL      :   VolumeUnit
         of ATM..PA      :   PressureUnit
         of DEG..RAD     :   AngleUnit
-        of J..HP        :   EnergyUnit
+        of J..ERG       :   EnergyUnit
         of KPH..KN      :   SpeedUnit
         of G..LB        :   WeightUnit
         of BIT..TB      :   CapacityUnit
