@@ -1632,7 +1632,7 @@ proc `^=`*(x: var Value, y: Value) =
             else:
                 RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), $(y.kind))
         else: 
-            return VNULL
+            x = VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
             let res = pow((float)x.i,(float)y.i)
