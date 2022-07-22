@@ -364,6 +364,8 @@ var
 
 func newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline.}
 func `$`(v: Value): string {.inline.}
+proc `+`*(x: Value, y: Value): Value
+proc `-`*(x: Value, y: Value): Value
 proc `*`*(x: Value, y: Value): Value
 func hash*(v: Value): Hash {.inline.}
 
@@ -569,6 +571,20 @@ func newSymbolLiteral*(m: string): Value {.inline.} =
 func newQuantity*(nm: Value, unit: QuantitySpec): Value {.inline.} =
     Value(kind: Quantity, nm: nm, unit: unit)
 
+proc convertToTemperatureUnit*(v: Value, src: UnitName, tgt: UnitName): Value =
+    case src:
+        of C:
+            if tgt==F: return v * newFloating(9/5) + newInteger(32)
+            else: return v + newFloating(273.15)
+        of F:
+            if tgt==C: return (v - newInteger(32)) * newFloating(5/9)
+            else: return (v - newInteger(32)) * newFloating(5/9) + newFloating(273.15)
+        of K: 
+            if tgt==C: return v - newFloating(273.15)
+            else: return (v-newFloating(273.15)) * newFloating(9/5) + newInteger(32)
+
+        else: discard
+
 func newRegex*(rx: RegexObj): Value {.inline.} =
     Value(kind: Regex, rx: rx)
 
@@ -764,13 +780,17 @@ proc `+`*(x: Value, y: Value): Value =
                 if x.unit.name == y.unit.name:
                     return newQuantity(x.nm + y.nm, x.unit)
                 else:
-                    let fmultiplier = getQuantityMultiplier(y.unit, x.unit)
-                    if fmultiplier == CannotConvertQuantity:
+                    if x.unit.kind != y.unit.kind:
                         RuntimeError_IncompatibleQuantityOperation("add", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
-                    elif fmultiplier == 1.0:
-                        return newQuantity(x.nm + y.nm, x.unit)
                     else:
-                        return newQuantity(x.nm + y.nm * newFloating(fmultiplier), x.unit)
+                        if x.unit.kind == TemperatureUnit:
+                            return newQuantity(x.nm + convertToTemperatureUnit(y.nm, y.unit.name, x.unit.name), x.unit)
+                        else:
+                            let fmultiplier = getQuantityMultiplier(y.unit, x.unit)
+                            if fmultiplier == 1.0:
+                                return newQuantity(x.nm + y.nm, x.unit)
+                            else:
+                                return newQuantity(x.nm + y.nm * newFloating(fmultiplier), x.unit)
             else:
                 return newQuantity(x.nm + y, x.unit)
         else:
