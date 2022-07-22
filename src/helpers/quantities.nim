@@ -44,7 +44,7 @@ type
         M, CM, MM, KM, IN, FT, FM, YD, MI, NMI
 
         # Area
-        M2, CM2, MM2, KM2, IN2, FT2, YD2, MI2, AC
+        M2, CM2, MM2, KM2, IN2, FT2, YD2, MI2, AC, HA
 
         # Volume
         M3, CM3, MM3, KM3, IN3, FT3, YD3, MI3, L, ML, PT, QT, GAL
@@ -103,7 +103,7 @@ func quantityKindForName(un: UnitName): UnitKind =
     case un:
         of AED..ZAR     :   CurrencyUnit
         of M..NMI       :   LengthUnit
-        of M2..AC       :   AreaUnit
+        of M2..HA       :   AreaUnit
         of M3..GAL      :   VolumeUnit
         of ATM..PA      :   PressureUnit
         of DEG..RAD     :   AngleUnit
