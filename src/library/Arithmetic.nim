@@ -153,8 +153,8 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "calculate the product of given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Complex,Rational,Literal},
-            "valueB": {Integer,Floating,Complex,Rational}
+            "valueA": {Integer,Floating,Complex,Rational,Quantity,Literal},
+            "valueB": {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Integer,Floating,Complex,Rational,Nothing},
