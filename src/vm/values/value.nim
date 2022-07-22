@@ -367,6 +367,8 @@ func `$`(v: Value): string {.inline.}
 proc `+`*(x: Value, y: Value): Value
 proc `-`*(x: Value, y: Value): Value
 proc `*`*(x: Value, y: Value): Value
+proc `/`*(x: Value, y: Value): Value
+proc `//`*(x: Value, y: Value): Value
 func hash*(v: Value): Hash {.inline.}
 
 #=======================================
