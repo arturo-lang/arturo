@@ -170,6 +170,7 @@ const
     }.toTable
 
     ErrorQuantity* = QuantitySpec(kind: NoUnit, name: NoName)
+    NumericQuantity* = QuantitySpec(kind: NoUnit, name: B)
 
 #=======================================
 # Helpers
@@ -251,6 +252,9 @@ proc getFinalUnitAfterOperation*(op: string, argA: QuantitySpec, argB: QuantityS
 
             elif ((argA.name in M3..MI3)) and (argB.kind==AreaUnit) and argA.kind!=argB.kind:
                return QuantitySpec(kind: LengthUnit, name: parseEnum[UnitName](($(argA.name)).replace("3","")))
+
+            else:
+                return NumericQuantity
 
         else:
             discard
