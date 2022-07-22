@@ -763,7 +763,7 @@ proc `+`*(x: Value, y: Value): Value =
             if y.kind == Quantity:
                 let fmultiplier = getQuantityMultiplier(y.unit, x.unit)
                 if fmultiplier == CannotConvertQuantity:
-                    discard # we should throw an error here
+                    RuntimeError_IncompatibleQuantityOperation("add", $(x), $(y), $(x.kind), $(y.kind))
                 elif fmultiplier == 1.0:
                     return newQuantity(x.nm + y.nm, x.unit)
                 else:
