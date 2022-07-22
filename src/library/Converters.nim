@@ -54,7 +54,7 @@ proc generateCustomObject*(customType: Value, arguments: ValueArray): Value =
     return res
 
 proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
-    if y.kind == tp and y.kind!=Dictionary:
+    if y.kind == tp and y.kind!=Dictionary and y.kind!=Quantity:
         return y
     else:
         case y.kind:
@@ -101,6 +101,11 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                         else:
                             when not defined(NOGMP): 
                                 return newString($(y.bi))
+                    of Quantity:
+                        if (let aUnit = popAttr("unit"); aUnit != VNULL):
+                            return newQuantity(y, parseQuantitySpec(aUnit.s))
+                        else:
+                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
                     of Date:
                         return newDate(local(fromUnix(y.i)))
                     of Binary:
@@ -127,6 +132,11 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                                 RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
                         else:
                             return newString($(y.f))
+                    of Quantity:
+                        if (let aUnit = popAttr("unit"); aUnit != VNULL):
+                            return newQuantity(y, parseQuantitySpec(aUnit.s))
+                        else:
+                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
                     of Binary:
                         let str = $(y.f)
                         var ret: ByteArray = newSeq[byte](str.len)
@@ -403,6 +413,13 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                         return convertedValueToType(x, y.nm, tp, aFormat)
                     of String:
                         return newString($(y))
+                    of Quantity:
+                        if (let aUnit = popAttr("unit"); aUnit != VNULL):
+                            # TODO(Converters\to) Add `:quantity` to `:quantity` conversion, with different units
+                            #  labels: library,bug
+                            return y
+                        else:
+                            return y
                     else:
                         RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
@@ -1036,6 +1053,7 @@ proc defineSymbols*() =
         },
         attrs       = {
             "format": ({String},"use given format (for dates)"),
+            "unit"  : ({String,Literal},"use given unit (for quantities)"),
             "hsl"   : ({Logical},"convert HSL block to color"),
             "hsv"   : ({Logical},"convert HSV block to color")
         },
