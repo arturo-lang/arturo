@@ -93,11 +93,11 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "divide given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Rational,Literal},
-            "valueB": {Integer,Floating,Rational}
+            "valueA": {Integer,Floating,Rational,Quantity,Literal},
+            "valueB": {Integer,Floating,Rational,Quantity}
         },
         attrs       = NoAttrs,
-        returns     = {Floating,Rational,Nothing},
+        returns     = {Floating,Rational,Quantity,Nothing},
         example     = """
             print fdiv 5 2     ; 2.5
             ..........
