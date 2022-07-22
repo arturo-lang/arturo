@@ -930,7 +930,26 @@ proc `-`*(x: Value, y: Value): Value =
     if x.kind==Color and y.kind==Color:
         return newColor(x.l - y.l)
     if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
-        return VNULL
+        if x.kind == Quantity:
+            if y.kind == Quantity:
+                if x.unit.name == y.unit.name:
+                    return newQuantity(x.nm - y.nm, x.unit)
+                else:
+                    if x.unit.kind != y.unit.kind:
+                        RuntimeError_IncompatibleQuantityOperation("sub", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
+                    else:
+                        if x.unit.kind == TemperatureUnit:
+                            return newQuantity(x.nm - convertToTemperatureUnit(y.nm, y.unit.name, x.unit.name), x.unit)
+                        else:
+                            let fmultiplier = getQuantityMultiplier(y.unit, x.unit)
+                            if fmultiplier == 1.0:
+                                return newQuantity(x.nm - y.nm, x.unit)
+                            else:
+                                return newQuantity(x.nm - y.nm * newFloating(fmultiplier), x.unit)
+            else:
+                return newQuantity(x.nm - y, x.unit)
+        else:
+            return VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
             if x.iKind==NormalInteger:
@@ -988,7 +1007,26 @@ proc `-`*(x: Value, y: Value): Value =
 
 proc `-=`*(x: var Value, y: Value) =
     if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
-        x = VNULL
+        if x.kind == Quantity:
+            if y.kind == Quantity:
+                if x.unit.name == y.unit.name:
+                    x.nm -= y.nm
+                else:
+                    if x.unit.kind != y.unit.kind:
+                        RuntimeError_IncompatibleQuantityOperation("sub", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
+                    else:
+                        if x.unit.kind == TemperatureUnit:
+                            x.nm -= convertToTemperatureUnit(y.nm, y.unit.name, x.unit.name)
+                        else:
+                            let fmultiplier = getQuantityMultiplier(y.unit, x.unit)
+                            if fmultiplier == 1.0:
+                                x.nm -= y.nm
+                            else:
+                                x.nm -= y.nm * newFloating(fmultiplier)
+            else:
+                x.nm -= y
+        else:
+            x = VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
             if x.iKind==NormalInteger:
