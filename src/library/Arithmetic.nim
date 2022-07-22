@@ -214,11 +214,11 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "subtract given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Complex,Rational,Color,Literal},
-            "valueB": {Integer,Floating,Complex,Rational,Color}
+            "valueA": {Integer,Floating,Complex,Rational,Color,Quantity,Literal},
+            "valueB": {Integer,Floating,Complex,Rational,Color,Quantity}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Complex,Rational,Color,Nothing},
+        returns     = {Integer,Floating,Complex,Rational,Color,Quantity,Nothing},
         example     = """
             print sub 2 1      ; 1
             print 5 - 3        ; 2
