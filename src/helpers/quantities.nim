@@ -199,7 +199,11 @@ proc getExchangeRate(src: UnitName, tgt: UnitName): float =
 #=======================================
 
 proc `$`*(qs: QuantitySpec): string =
-    toLowerAscii($(qs.name)).replace("2","²").replace("3", "³")
+    case qs.kind:
+        of CurrencyUnit     : $(qs.name)
+        of TemperatureUnit  : "°" & $(qs.name)
+        else: 
+            toLowerAscii($(qs.name)).replace("2","²").replace("3", "³")
 
 proc `stringify`*(uk: UnitKind): string =
     toLowerAscii($(uk)).replace("unit","")
