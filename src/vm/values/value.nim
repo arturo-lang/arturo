@@ -1089,7 +1089,9 @@ proc `*`*(x: Value, y: Value): Value =
                 if finalSpec == ErrorQuantity:
                     RuntimeError_IncompatibleQuantityOperation("mul", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
                 else:
-                    let fmultiplier = getQuantityMultiplier(y.unit, getCleanCorrelatedUnit(y.unit, x.unit))
+                    let ccu = getCleanCorrelatedUnit(y.unit, x.unit)
+                    echo "we are going to convert: " & $(y.unit) & " to: " & $(ccu)
+                    let fmultiplier = getQuantityMultiplier(y.unit, ccu)
                     if fmultiplier == 1.0:
                         return newQuantity(x.nm * y.nm, finalSpec)
                     else:
