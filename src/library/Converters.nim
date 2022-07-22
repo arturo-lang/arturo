@@ -392,6 +392,15 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                     else:
                         RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
+            of Quantity:
+                case tp:
+                    of Integer, Floating:
+                        return convertedValueToType(x, y.nm, tp, aFormat)
+                    of String:
+                        return newString($(y))
+                    else:
+                        RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+
             of Regex:
                 case tp:
                     of String:
