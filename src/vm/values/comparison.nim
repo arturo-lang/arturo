@@ -129,6 +129,13 @@ proc `==`*(x: Value, y: Value): bool {.inline.}=
                         if not (v==y.d[k]): return false
 
                     return true
+            of Quantity:
+                if x.unit.kind != y.unit.kind: return false
+                if x.unit.name == y.unit.name:
+                    return x.nm == y.nm
+                else:
+                    let fmultiplier = getQuantityMultiplier(y.unit, x.unit)
+                    return x.nm == y.nm * newFloating(fmultiplier)
             of ValueKind.Color:
                 return x.l == y.l
             of Function:
@@ -231,6 +238,13 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
                     return (pop().i == -1)
                 else:
                     return false
+            of Quantity:
+                if x.unit.kind != y.unit.kind: return false
+                if x.unit.name == y.unit.name:
+                    return x.nm < y.nm
+                else:
+                    let fmultiplier = getQuantityMultiplier(y.unit, x.unit)
+                    return x.nm < y.nm * newFloating(fmultiplier)
             else:
                 return false
 
@@ -319,6 +333,13 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
                     return (pop().i == 1)
                 else:
                     return false
+            of Quantity:
+                if x.unit.kind != y.unit.kind: return false
+                if x.unit.name == y.unit.name:
+                    return x.nm > y.nm
+                else:
+                    let fmultiplier = getQuantityMultiplier(y.unit, x.unit)
+                    return x.nm > y.nm * newFloating(fmultiplier)
             else:
                 return false
 
