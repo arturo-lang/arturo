@@ -431,8 +431,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                     else:
                         RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
-            of Quantity,
-               Function,
+            of Function,
                Database,
                Newline,
                Nothing,
