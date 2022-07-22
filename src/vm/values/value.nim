@@ -1434,7 +1434,23 @@ proc `//=`*(x: var Value, y: Value) =
                 
 proc `%`*(x: Value, y: Value): Value =
     if not (x.kind in [Integer,Floating,Rational]) or not (y.kind in [Integer,Floating,Rational]):
-        return VNULL
+        if (x.kind == Quantity and y.kind == Quantity) and (x.unit.kind==y.unit.kind):
+            if x.unit.name == y.unit.name:
+                return newQuantity(x.nm % y.nm, x.unit)
+            else:
+                if x.unit.kind == TemperatureUnit:
+                    return newQuantity(x.nm % convertToTemperatureUnit(y.nm, y.unit.name, x.unit.name), x.unit)
+                else:
+                    let fmultiplier = getQuantityMultiplier(y.unit, x.unit)
+                    if fmultiplier == 1.0:
+                        return newQuantity(x.nm % y.nm, x.unit)
+                    else:
+                        return newQuantity(x.nm % (y.nm * newFloating(fmultiplier)), x.unit)
+        else:
+            if x.unit.kind != y.unit.kind:
+                RuntimeError_IncompatibleQuantityOperation("mod", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
+            else:
+                return VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
             if x.iKind==NormalInteger:
