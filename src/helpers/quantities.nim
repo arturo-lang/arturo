@@ -169,6 +169,8 @@ const
 
     }.toTable
 
+    ErrorQuantity* = QuantitySpec(kind: NoUnit, name: NoName)
+
 #=======================================
 # Helpers
 #=======================================
@@ -223,55 +225,80 @@ proc getQuantityMultiplier*(src: QuantitySpec, tgt: QuantitySpec): float =
     else:
         return ConversionRatio[src.name] / ConversionRatio[tgt.name]
 
-proc getFinalUnitAfterOperation*(op: string, argA: UnitName, argB: UnitName): UnitName =
+proc getCleanCorrelatedUnit*(b: QuantitySpec, a: QuantitySpec): QuantitySpec = 
+    let s = ($(a.name)).replace("2","").replace("3","")
+    if ($(b.name)).contains("2"):
+        return QuantitySpec(kind: b.kind, name: parseEnum[UnitName](s & "2"))
+    elif ($(b.name)).contains("3"):
+        return QuantitySpec(kind: b.kind, name: parseEnum[UnitName](s & "3"))
+    else:
+        return b
+
+proc getFinalUnitAfterOperation*(op: string, argA: QuantitySpec, argB: QuantitySpec): QuantitySpec =
     let tup = (argA, argB)
 
     case op:
         of "mul":
-            if tup == (M,M): return M2
-            elif tup == (CM,CM): return CM2
-            elif tup == (MM,MM): return MM2
-            elif tup == (KM,KM): return KM2
-            elif tup == (IN,IN): return IN2
-            elif tup == (FT,FT): return FT2
-            elif tup == (YD,YD): return YD2
-            elif tup == (MI,MI): return MI2
-            elif (tup == (M,M2)) or (tup == (M2,M)): return M3
-            elif (tup == (CM,CM2)) or (tup == (CM2,CM)): return CM3
-            elif (tup == (MM,MM2)) or (tup == (MM2,MM)): return MM3
-            elif (tup == (KM,KM2)) or (tup == (KM2,KM)): return KM3
-            elif (tup == (IN,IN2)) or (tup == (IN2,IN)): return IN3
-            elif (tup == (FT,FT2)) or (tup == (FT2,FT)): return FT3
-            elif (tup == (YD,YD2)) or (tup == (YD2,YD)): return YD3
-            elif (tup == (MI,MI2)) or (tup == (MI2,MI)): return MI3
-            else: return NoName
+            if argA.kind == LengthUnit and argB.kind == LengthUnit and argA.name in M..MI:
+                return QuantitySpec(kind: AreaUnit, name: parseEnum[UnitName]($(argA.name)&"2"))
+
+            if ((argA.name in M..MI) or (argA.name in M2..MI2)) and (argB.kind in {LengthUnit,AreaUnit}) and argA.kind!=argB.kind:
+               return QuantitySpec(kind: VolumeUnit, name: parseEnum[UnitName](($(argA.name)).replace("2","")&"3"))
+
+            # if tup == (M,M): return QuantitySpec(kind: AreaUnit, name: M2)
+            # elif tup == (CM,CM): return QuantitySpec(kind: AreaUnit, name: CM2)
+            # elif tup == (MM,MM): return QuantitySpec(kind: AreaUnit, name: MM2)
+            # elif tup == (KM,KM): return QuantitySpec(kind: AreaUnit, name: KM2)
+            # elif tup == (IN,IN): return QuantitySpec(kind: AreaUnit, name: IN2)
+            # elif tup == (FT,FT): return QuantitySpec(kind: AreaUnit, name: FT2)
+            # elif tup == (YD,YD): return QuantitySpec(kind: AreaUnit, name: YD2)
+            # elif tup == (MI,MI): return QuantitySpec(kind: AreaUnit, name: MI2)
+            # elif (tup == (M,M2)) or (tup == (M2,M)): return QuantitySpec(kind: VolumeUnit, name: M3)
+            # elif (tup == (CM,CM2)) or (tup == (CM2,CM)): return QuantitySpec(kind: VolumeUnit, name: CM3)
+            # elif (tup == (MM,MM2)) or (tup == (MM2,MM)): return QuantitySpec(kind: VolumeUnit, name: MM3)
+            # elif (tup == (KM,KM2)) or (tup == (KM2,KM)): return QuantitySpec(kind: VolumeUnit, name: KM3)
+            # elif (tup == (IN,IN2)) or (tup == (IN2,IN)): return QuantitySpec(kind: VolumeUnit, name: IN3)
+            # elif (tup == (FT,FT2)) or (tup == (FT2,FT)): return QuantitySpec(kind: VolumeUnit, name: FT3)
+            # elif (tup == (YD,YD2)) or (tup == (YD2,YD)): return QuantitySpec(kind: VolumeUnit, name: YD3)
+            # elif (tup == (MI,MI2)) or (tup == (MI2,MI)): return QuantitySpec(kind: VolumeUnit, name: MI3)
+            else: return ErrorQuantity
         of "div", "mod", "fdiv":
-            if tup == (M2,M): return M
-            elif tup == (CM2,CM): return CM
-            elif tup == (KM2,KM): return KM
-            elif tup == (IN2,IN): return IN
-            elif tup == (FT2,FT): return FT
-            elif tup == (YD2,YD): return YD
-            elif tup == (MI2,MI): return MI
-            elif tup == (M3,M): return M2
-            elif tup == (CM3,CM): return CM2
-            elif tup == (MM3,MM): return MM2
-            elif tup == (KM3,KM): return KM2
-            elif tup == (IN3,IN): return IN2
-            elif tup == (FT3,FT): return FT2
-            elif tup == (YD3,YD): return YD2
-            elif tup == (MI3,MI): return MI2
-            elif tup == (M3,M2): return M
-            elif tup == (CM3,CM2): return CM
-            elif tup == (MM3,MM2): return MM
-            elif tup == (KM3,KM2): return KM
-            elif tup == (IN3,IN2): return IN
-            elif tup == (FT3,FT2): return FT
-            elif tup == (YD3,YD2): return YD
-            elif tup == (MI3,MI2): return MI
-            else: return NoName
+            if ((argA.name in M2..MI2)) and (argB.kind==LengthUnit):
+               return QuantitySpec(kind: LengthUnit, name: parseEnum[UnitName](($(argA.name)).replace("2","")))
+
+            if ((argA.name in M3..MI3)) and (argB.kind==LengthUnit):
+               return QuantitySpec(kind: AreaUnit, name: parseEnum[UnitName](($(argA.name)).replace("3","2")))
+
+            if ((argA.name in M3..MI3)) and (argB.kind==AreaUnit) and argA.kind!=argB.kind:
+               return QuantitySpec(kind: LengthUnit, name: parseEnum[UnitName](($(argA.name)).replace("3","")))
+            # if tup == (M2,M): return QuantitySpec(kind: LengthUnit, name: M)
+            # elif tup == (CM2,CM): return QuantitySpec(kind: LengthUnit, name: CM)
+            # elif tup == (KM2,KM): return QuantitySpec(kind: LengthUnit, name: KM)
+            # elif tup == (IN2,IN): return QuantitySpec(kind: LengthUnit, name: IN)
+            # elif tup == (FT2,FT): return QuantitySpec(kind: LengthUnit, name: FT)
+            # elif tup == (YD2,YD): return QuantitySpec(kind: LengthUnit, name: YD)
+            # elif tup == (MI2,MI): return QuantitySpec(kind: LengthUnit, name: MI)
+            # elif tup == (M3,M): return QuantitySpec(kind: AreaUnit, name: M2)
+            # elif tup == (CM3,CM): return QuantitySpec(kind: AreaUnit, name: CM2)
+            # elif tup == (MM3,MM): return QuantitySpec(kind: AreaUnit, name: MM2)
+            # elif tup == (KM3,KM): return QuantitySpec(kind: AreaUnit, name: KM2)
+            # elif tup == (IN3,IN): return QuantitySpec(kind: AreaUnit, name: IN2)
+            # elif tup == (FT3,FT): return QuantitySpec(kind: AreaUnit, name: FT2)
+            # elif tup == (YD3,YD): return QuantitySpec(kind: AreaUnit, name: YD2)
+            # elif tup == (MI3,MI): return QuantitySpec(kind: AreaUnit, name: MI2)
+            # elif tup == (M3,M2): return QuantitySpec(kind: LengthUnit, name: M)
+            # elif tup == (CM3,CM2): return QuantitySpec(kind: LengthUnit, name: CM)
+            # elif tup == (MM3,MM2): return QuantitySpec(kind: LengthUnit, name: MM)
+            # elif tup == (KM3,KM2): return QuantitySpec(kind: LengthUnit, name: KM)
+            # elif tup == (IN3,IN2): return QuantitySpec(kind: LengthUnit, name: IN)
+            # elif tup == (FT3,FT2): return QuantitySpec(kind: LengthUnit, name: FT)
+            # elif tup == (YD3,YD2): return QuantitySpec(kind: LengthUnit, name: YD)
+            # elif tup == (MI3,MI2): return QuantitySpec(kind: LengthUnit, name: MI)
+            # else: return ErrorQuantity
         else:
             discard
+
+    return ErrorQuantity
 
 proc parseQuantitySpec*(str: string): QuantitySpec =
     let unitName = parseEnum[UnitName](toUpperAscii(str))
