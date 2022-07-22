@@ -174,10 +174,10 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "reverse sign of given value and return it",
         args        = {
-            "value" : {Integer,Floating,Complex,Rational,Literal}
+            "value" : {Integer,Floating,Complex,Rational,Quantity,Literal}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Complex,Rational,Nothing},
+        returns     = {Integer,Floating,Complex,Rational,Quantity,Nothing},
         example     = """
             print neg 1        ; -1
             ..........
