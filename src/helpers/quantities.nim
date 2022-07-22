@@ -10,7 +10,10 @@
 # Libraries
 #=======================================
 
-import strutils, tables
+import std/json, strformat, strutils, tables
+
+when not defined(WEB):
+    import asyncdispatch, httpClient
 
 #=======================================
 # Types
@@ -182,6 +185,14 @@ func quantityKindForName(un: UnitName): UnitKind =
         of C..K         :   TemperatureUnit
         else:
             NoUnit
+
+proc getExchangeRate(src: UnitName, tgt: UnitName): float =
+    let s = toLowerAscii($(src))
+    let t = toLowerAscii($(tgt))
+    let url = "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/{s}/{t}.json".fmt
+    let content = waitFor (newAsyncHttpClient().getContent(url))
+    let response = parseJson(content)
+    return parseFloat(response[t].str)
 
 #=======================================
 # Overloads
