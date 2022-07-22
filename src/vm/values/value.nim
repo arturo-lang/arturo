@@ -1622,15 +1622,15 @@ proc `^=`*(x: var Value, y: Value) =
                 elif y.i == 2: x *= x
                 elif y.i == 3: x *= x * x
                 else:
-                    RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), stringify(y.kind))
+                    RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), $(y.kind))
             elif y.kind==Floating and (y.f > 0 and y.f < 4):
                 if y.f == 1.0: discard
                 elif y.f == 2.0: x *= x
                 elif y.f == 3.0: x *= x * x
                 else:
-                    RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), stringify(y.kind))
+                    RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), $(y.kind))
             else:
-                RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), stringify(y.kind))
+                RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), $(y.kind))
         else: 
             return VNULL
     else:
