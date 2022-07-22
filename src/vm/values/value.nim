@@ -1231,12 +1231,14 @@ proc `/`*(x: Value, y: Value): Value =
                 let finalSpec = getFinalUnitAfterOperation("div", x.unit, y.unit)
                 if finalSpec == ErrorQuantity:
                     RuntimeError_IncompatibleQuantityOperation("div", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
+                elif finalSpec == NumericQuantity:
+                    return x.nm / y.nm
                 else:
                     let fmultiplier = getQuantityMultiplier(y.unit, getCleanCorrelatedUnit(y.unit, x.unit))
                     if fmultiplier == 1.0:
                         return newQuantity(x.nm / y.nm, finalSpec)
                     else:
-                        return newQuantity(x.nm // y.nm * newFloating(fmultiplier), finalSpec)
+                        return newQuantity(x.nm / y.nm * newFloating(fmultiplier), finalSpec)
             else:
                 return newQuantity(x.nm / y, x.unit)
         else:
