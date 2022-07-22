@@ -192,7 +192,7 @@ proc getExchangeRate(src: UnitName, tgt: UnitName): float =
     let url = "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/{s}/{t}.json".fmt
     let content = waitFor (newAsyncHttpClient().getContent(url))
     let response = parseJson(content)
-    return parseFloat(response[t].str)
+    return response[t].fnum
 
 #=======================================
 # Overloads
@@ -211,7 +211,10 @@ proc `stringify`*(uk: UnitKind): string =
 proc getQuantityMultiplier*(src: QuantitySpec, tgt: QuantitySpec): float =
     if src.kind != tgt.kind: return CannotConvertQuantity
 
-    return ConversionRatio[src.name] / ConversionRatio[tgt.name]
+    if src.kind == CurrencyUnit:
+        return getExchangeRate(src.name, tgt.name)
+    else:
+        return ConversionRatio[src.name] / ConversionRatio[tgt.name]
 
 proc parseQuantitySpec*(str: string): QuantitySpec =
     let unitName = parseEnum[UnitName](toUpperAscii(str))
