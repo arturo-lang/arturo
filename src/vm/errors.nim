@@ -199,6 +199,12 @@ proc RuntimeError_NumberOutOfPermittedRange*(operation: string, argA, argB: stri
             "attempted: " & operation & ";" &
             "with: " & truncate(argA & " " & argB, 30)
 
+proc RuntimeError_IncompatibleQuantityOperation*(operation: string, argA, argB, kindA, kindB: string) =
+    panic RuntimeError,
+            "incompatible operation between quantities" & ";" &
+            "attempted: " & operation & ";" &
+            "with: " & truncate(argA & " (" & kindA & ") " & argB & " (" & kindB & ")", 60)
+
 proc RuntimeError_OutOfBounds*(indx: int, maxRange: int) =
     panic RuntimeError,
           "array index out of bounds: " & $(indx) & ";" & 
