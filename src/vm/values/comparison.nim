@@ -20,6 +20,7 @@ when not defined(NOGMP):
     import extras/bignum
 
 import helpers/colors as ColorsHelper
+import helpers/quantities as QuantitiesHelper
  
 import vm/exec
 import vm/stack
@@ -128,6 +129,8 @@ proc `==`*(x: Value, y: Value): bool {.inline.}=
                         if not (v==y.d[k]): return false
 
                     return true
+            of ValueKind.Color:
+                return x.l == y.l
             of Function:
                 if x.fnKind==UserFunction:
                     return x.params == y.params and x.main == y.main and x.exports == y.exports
@@ -138,8 +141,6 @@ proc `==`*(x: Value, y: Value): bool {.inline.}=
                 when not defined(NOSQLITE):
                     if x.dbKind==SqliteDatabase: return cast[ByteAddress](x.sqlitedb) == cast[ByteAddress](y.sqlitedb)
                     #elif x.dbKind==MysqlDatabase: return cast[ByteAddress](x.mysqldb) == cast[ByteAddress](y.mysqldb)
-            of ValueKind.Color:
-                return x.l == y.l
             of Date:
                 return x.eobj == y.eobj
             else:
