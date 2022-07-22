@@ -830,7 +830,7 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                     if p.value.count(Dot)>1:
                         AddToken newVersion(p.value)
                     else:
-                        if p.buf[p.bufpos+1]!=Colon:
+                        if p.buf[p.bufpos]!=Colon:
                             AddToken newFloating(p.value)
                         else:
                             let pv = newFloating(p.value)
