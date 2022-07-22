@@ -226,13 +226,12 @@ proc getQuantityMultiplier*(src: QuantitySpec, tgt: QuantitySpec): float =
         return ConversionRatio[src.name] / ConversionRatio[tgt.name]
 
 proc getCleanCorrelatedUnit*(b: QuantitySpec, a: QuantitySpec): QuantitySpec = 
-    let s = ($(a.name)).replace("2","").replace("3","")
-    if ($(b.name)).contains("2"):
-        return QuantitySpec(kind: b.kind, name: parseEnum[UnitName](s & "2"))
-    elif ($(b.name)).contains("3"):
-        return QuantitySpec(kind: b.kind, name: parseEnum[UnitName](s & "3"))
-    else:
-        return QuantitySpec(kind: b.kind, name: parseEnum[UnitName](s))
+    var s = ($(a.name)).replace("2","").replace("3","")
+    
+    if ($(b.name)).contains("2")    :   s &= "2"
+    elif ($(b.name)).contains("3")  :   s &= "3"
+
+    return QuantitySpec(kind: b.kind, name: parseEnum[UnitName](s))
 
 proc getFinalUnitAfterOperation*(op: string, argA: QuantitySpec, argB: QuantitySpec): QuantitySpec =
     case op:
