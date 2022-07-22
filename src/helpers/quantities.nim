@@ -232,11 +232,9 @@ proc getCleanCorrelatedUnit*(b: QuantitySpec, a: QuantitySpec): QuantitySpec =
     elif ($(b.name)).contains("3"):
         return QuantitySpec(kind: b.kind, name: parseEnum[UnitName](s & "3"))
     else:
-        return b
+        return QuantitySpec(kind: b.kind, name: parseEnum[UnitName](s))
 
 proc getFinalUnitAfterOperation*(op: string, argA: QuantitySpec, argB: QuantitySpec): QuantitySpec =
-    let tup = (argA, argB)
-
     case op:
         of "mul":
             if argA.kind == LengthUnit and argB.kind == LengthUnit and argA.name in M..MI:
