@@ -68,7 +68,7 @@ type
         DEG, RAD
 
         # Speed
-        KPH, MPH, KN
+        KPH, MPS, MPH, KN
 
         # Weight
         G, MG, KG, T, ST, OZ, LB
@@ -169,6 +169,7 @@ const
 
         # Speed
         KPH: 1.0,
+        MPS: 3.6,
         MPH: 1.60934,
         KN: 1.85,
 
@@ -243,6 +244,7 @@ proc `$`*(qs: QuantitySpec): string =
         of KWH      : result = "kWh"
         of DEG      : result = "°"
         of KPH      : result = "km/h"
+        of MPS      : result = "m/s"
         of BIT      : result = "b"
 
         else:
