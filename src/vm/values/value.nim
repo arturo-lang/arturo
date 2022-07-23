@@ -577,13 +577,20 @@ proc convertToTemperatureUnit*(v: Value, src: UnitName, tgt: UnitName): Value =
     case src:
         of C:
             if tgt==F: return v * newFloating(9/5) + newInteger(32)
-            else: return v + newFloating(273.15)
+            elif tgt==K: return v + newFloating(273.15)
+            else: return v * newFloating(9/5) + newFloating(491.67)
         of F:
             if tgt==C: return (v - newInteger(32)) * newFloating(5/9)
-            else: return (v - newInteger(32)) * newFloating(5/9) + newFloating(273.15)
+            elif tgt==K: return (v - newInteger(32)) * newFloating(5/9) + newFloating(273.15)
+            else: return v + newFloating(459.67)
         of K: 
             if tgt==C: return v - newFloating(273.15)
-            else: return (v-newFloating(273.15)) * newFloating(9/5) + newInteger(32)
+            elif tgt==F: return (v-newFloating(273.15)) * newFloating(9/5) + newInteger(32)
+            else: return v * newFloating(1.8)
+        of R:
+            if tgt==C: return (v - newFloating(491.67)) * newFloating(5/9)
+            elif tgt==F: return v - newFloating(459.67)
+            else: return v * newFloating(5/9)
 
         else: discard
 
