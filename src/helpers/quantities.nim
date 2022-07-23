@@ -77,7 +77,7 @@ type
         BIT, B, KB, MB, GB, TB
 
         # Temperature
-        C, F, K
+        C, F, K, R
 
         # Error value
         NoName
@@ -212,7 +212,7 @@ func quantityKindForName(un: UnitName): UnitKind =
         of KPH..KN      :   SpeedUnit
         of G..LB        :   WeightUnit
         of BIT..TB      :   CapacityUnit
-        of C..K         :   TemperatureUnit
+        of C..R         :   TemperatureUnit
         else:
             NoUnit
 
@@ -234,7 +234,7 @@ proc `$`*(qs: QuantitySpec): string =
     case un:
         of AED..ZAR, J, MJ, B..TB   : result = toUpperAscii(result)
         of PA, BQ, CI, RD           : result = capitalizeAscii(result)
-        of C..K                     : result = "°" & toUpperAscii(result)
+        of C..R                     : result = "°" & toUpperAscii(result)
         of MIM, MIM2, MIM3          : result = result.replace("mim","μm")
         of ANG, ANG2, ANG3          : result = result.replace("ang","Å")
 
