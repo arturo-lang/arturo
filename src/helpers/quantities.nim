@@ -72,7 +72,7 @@ type
         KPH, MPS, MPH, KN
 
         # Weight
-        G, MG, KG, T, ST, OZ, LB
+        G, MG, KG, T, ST, OZ, LB, CT, OZT, LBT
 
         # Capacity
         BIT, B, KB, MB, GB, TB
@@ -189,6 +189,9 @@ const
         ST: 6350.29, 
         OZ: 28.3495, 
         LB: 453.592,
+        CT: 0.2,
+        OZT: 31.1035,
+        LBT: 373.242,
 
         # Capacity
         BIT: 1.0, 
@@ -229,7 +232,7 @@ func quantityKindForName(un: UnitName): UnitKind =
         of J..ERG       :   EnergyUnit
         of BQ..RD       :   RadioactivityUnit
         of KPH..KN      :   SpeedUnit
-        of G..LB        :   WeightUnit
+        of G..LBT       :   WeightUnit
         of BIT..TB      :   CapacityUnit
         of MIN..NS      :   TimeUnit
         of C..R         :   TemperatureUnit
@@ -265,6 +268,8 @@ proc `$`*(qs: QuantitySpec): string =
         of DEG      : result = "°"
         of KPH      : result = "km/h"
         of MPS      : result = "m/s"
+        of OZT      : result = "oz.t"
+        of LBT      : result = "lb.t"
         of BIT      : result = "b"
 
         else:
