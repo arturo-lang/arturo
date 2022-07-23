@@ -53,7 +53,7 @@ type
         M2, DM2, CM2, MM2, MIM2, NM2, KM2, IN2, FT2, YD2, ANG2, MI2, AC, HA
 
         # Volume
-        M3, DM3, CM3, MM3, MIM3, NM3, KM3, IN3, FT3, YD3, ANG3, MI3, L, ML, PT, QT, GAL
+        M3, DM3, CM3, MM3, MIM3, NM3, KM3, IN3, FT3, YD3, ANG3, MI3, L, ML, FLOZ, PT, QT, GAL
 
         # Pressure
         ATM, BAR, PA
@@ -140,6 +140,7 @@ const
         MI3: 4.168e+9, 
         L: 0.001,
         ML: 1e-6, 
+        FLOZ: 2.95735e-5,
         PT: 0.000473, 
         QT: 0.000946353, 
         GAL: 0.00378541,
@@ -226,12 +227,28 @@ proc getExchangeRate(src: UnitName, tgt: UnitName): float =
 # Overloads
 #=======================================
 
-# proc `$`*(qs: QuantitySpec): string =
-#     case qs.kind:
-#         of CurrencyUnit     : $(qs.name)
-#         of TemperatureUnit  : "°" & $(qs.name)
-#         else: 
-#             toLowerAscii($(qs.name)).replace("2","²").replace("3", "³")
+proc `$`*(qs: QuantitySpec): string =
+    let un = qs.name
+    result = toLowerAscii($(un))
+    case un:
+        of AED..ZAR, J, MJ, B..TB   : result = toUpperAscii(result)
+        of PA, BQ, CI, RD           : result = capitalizeAscii(result)
+        of C..K                     : result = "°" & toUpperAscii(result)
+        of MIM, MIM2, MIM3          : result = result.replace("mim","μm")
+        of ANG, ANG2, ANG3          : result = result.replace("ang","Å")
+
+        of FLOZ     : result = "fl.oz"
+        of KJ       : result = "kJ"
+        of WH       : result = "Wh"
+        of KWH      : result = "kWh"
+        of DEG      : result = "°"
+        of KPH      : result = "km/h"
+        of BIT      : result = "b"
+
+        else:
+            discard
+    
+    result = result.replace("2","²").replace("3","³")
 
 proc `stringify`*(uk: UnitKind): string =
     toLowerAscii($(uk)).replace("unit","")
