@@ -32,6 +32,7 @@ type
         SpeedUnit
         WeightUnit
         CapacityUnit
+        TimeUnit
         TemperatureUnit
 
         # Error value
@@ -75,6 +76,9 @@ type
 
         # Capacity
         BIT, B, KB, MB, GB, TB
+
+        # Time
+        MIN, HR, D, WK, MO, YR, S, MS, NS
 
         # Temperature
         C, F, K, R
@@ -188,7 +192,18 @@ const
         KB: 8.0 * 1024, 
         MB: 8.0 * 1024 * 1024, 
         GB: 8.0 * 1024 * 1024 * 1024, 
-        TB: 8.0 * 1024 * 1024 * 1024
+        TB: 8.0 * 1024 * 1024 * 1024,
+
+        # Time
+        MIN: 1.0, 
+        HR: 60.0, 
+        D: 1440.0,
+        WK: 10080.0,
+        MO: 43800.0,
+        YR: 526000.0,
+        S: 0.0166667,
+        MS: 1.66667e-5, 
+        NS: 1.66667e-11
 
     }.toTable
 
@@ -212,6 +227,7 @@ func quantityKindForName(un: UnitName): UnitKind =
         of KPH..KN      :   SpeedUnit
         of G..LB        :   WeightUnit
         of BIT..TB      :   CapacityUnit
+        of MIN..NS      :   TimeUnit
         of C..R         :   TemperatureUnit
         else:
             NoUnit
