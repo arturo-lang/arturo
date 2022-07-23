@@ -46,13 +46,13 @@ type
         XAU, XOF, ZAR
 
         # Length
-        M, CM, MM, KM, IN, FT, FM, YD, MI, NMI
+        M, DM, CM, MM, MIM, NM, KM, IN, FT, FM, YD, ANG, MI, NMI
 
         # Area
-        M2, CM2, MM2, KM2, IN2, FT2, YD2, MI2, AC, HA
+        M2, DM2, CM2, MM2, MIM2, NM2, KM2, IN2, FT2, YD2, ANG2, MI2, AC, HA
 
         # Volume
-        M3, CM3, MM3, KM3, IN3, FT3, YD3, MI3, L, ML, PT, QT, GAL
+        M3, DM3, CM3, MM3, MIM3, NM3, KM3, IN3, FT3, YD3, ANG3, MI3, L, ML, PT, QT, GAL
 
         # Pressure
         ATM, BAR, PA
@@ -91,36 +91,48 @@ const
     ConversionRatio = {
         # Length
         M: 1.0,
+        DM: 0.1,
         CM: 0.01,
         MM: 0.001,
+        MIM: 1e-6,
+        NM: 1e-9,
         KM: 1000.0,
         IN: 0.0254,
         FT: 0.3048,
         FM: 1.8288,
         YD: 0.9144,
+        ANG: 1e-10,
         MI: 1609.34,
         NMI: 1852.0,
 
         # Area
         M2: 1.0, 
+        DM2: 0.01,
         CM2: 0.0001, 
         MM2: 1e-6,
+        MIM2: 1e-12,
+        NM2: 1e-18,
         KM2: 1000000.0,
         IN2: 0.00064516,
         FT2: 0.092903,
         YD2: 0.836127,
+        ANG2: 1e-20,
         MI2: 2592931.2786432, 
         AC: 4046.86,
         HA: 10000.0,
 
         # Volume
         M3: 1.0, 
+        DM3: 0.001,
         CM3: 1e-6,
         MM3: 1e-9,
+        MIM3: 1e-18,
+        NM3: 1e-27,
         KM3: 1e+9,
         IN3: 1.63871e-5,
         FT3: 0.0283168, 
         YD3: 0.764555, 
+        ANG3: 1e-30,
         MI3: 4.168e+9, 
         L: 0.001,
         ML: 1e-6, 
