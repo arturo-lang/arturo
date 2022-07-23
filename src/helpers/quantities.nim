@@ -27,6 +27,7 @@ type
         VolumeUnit
         PressureUnit
         EnergyUnit
+        RadioactivityUnit
         AngleUnit
         SpeedUnit
         WeightUnit
@@ -59,6 +60,9 @@ type
 
         # Energy
         J, KJ, MJ, WH, KWH, ERG
+
+        # Radioactivity
+        BQ, CI, RD
 
         # Angle
         DEG, RAD
@@ -153,6 +157,11 @@ const
         KWH: 3.6e+6,
         ERG: 1e-7,
 
+        # Radioactivity
+        BQ: 1.0,
+        CI: 3.7e+10,
+        RD: 1000000.0,
+
         # Angle
         DEG: 1.0,
         RAD: 57.2958,
@@ -197,6 +206,7 @@ func quantityKindForName(un: UnitName): UnitKind =
         of ATM..PA      :   PressureUnit
         of DEG..RAD     :   AngleUnit
         of J..ERG       :   EnergyUnit
+        of BQ..RD       :   RadioactivityUnit
         of KPH..KN      :   SpeedUnit
         of G..LB        :   WeightUnit
         of BIT..TB      :   CapacityUnit
@@ -216,12 +226,12 @@ proc getExchangeRate(src: UnitName, tgt: UnitName): float =
 # Overloads
 #=======================================
 
-proc `$`*(qs: QuantitySpec): string =
-    case qs.kind:
-        of CurrencyUnit     : $(qs.name)
-        of TemperatureUnit  : "°" & $(qs.name)
-        else: 
-            toLowerAscii($(qs.name)).replace("2","²").replace("3", "³")
+# proc `$`*(qs: QuantitySpec): string =
+#     case qs.kind:
+#         of CurrencyUnit     : $(qs.name)
+#         of TemperatureUnit  : "°" & $(qs.name)
+#         else: 
+#             toLowerAscii($(qs.name)).replace("2","²").replace("3", "³")
 
 proc `stringify`*(uk: UnitKind): string =
     toLowerAscii($(uk)).replace("unit","")
