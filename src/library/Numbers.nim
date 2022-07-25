@@ -200,7 +200,7 @@ proc defineSymbols*() =
             ; => 0.2946214403408572-0.09996750087543603i
         """:
             ##########################################################
-            processMath(actanh)
+            processMath(arccoth)
 
     builtin "angle",
         alias       = unaliased, 
