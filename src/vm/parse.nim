@@ -850,7 +850,7 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                             let pv = newFloating(p.value)
                             parseQuantity(p)
                             AddToken newQuantity(pv, parseQuantitySpec(p.value))
-                        elif p.buf[p.bufpos]==ScientificNotation_Start and p.buf[p.bufpos+1] in ScientificNotation:
+                        elif p.buf[p.bufpos] in ScientificNotation_Start and p.buf[p.bufpos+1] in ScientificNotation:
                             let pv = p.value
                             parseExponent(p)
                             AddToken newFloating(pv & "e" & p.value)
