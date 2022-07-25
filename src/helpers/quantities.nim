@@ -61,7 +61,7 @@ type
         ATM, BAR, PA
 
         # Energy
-        J, KJ, MJ, WH, KWH, ERG
+        J, KJ, MJ, CAL, KCAL, WH, KWH, ERG
 
         # Force
         N, DYN, KGF, LBF, PDL, KIP
@@ -169,6 +169,8 @@ const
         J: 1.0,
         KJ: 1000.0,
         MJ: 1000000.0,
+        CAL: 4.184,
+        KCAL: 4184.0,
         WH: 3600.0,
         KWH: 3.6e+6,
         ERG: 1e-7,
