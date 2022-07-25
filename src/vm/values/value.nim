@@ -594,9 +594,14 @@ proc convertToTemperatureUnit*(v: Value, src: UnitName, tgt: UnitName): Value =
 
         else: discard
 
-proc convertQuantityValue*(nm: Value, fromU: UnitName, toU: UnitName): Value =
-    let fromK = quantityKindForName(fromU)
-    let toK = quantityKindForName(toU)
+proc convertQuantityValue*(nm: Value, fromU: UnitName, toU: UnitName, fromKind = NoUnit, toKind = NoUnit, op = ""): Value =
+    var fromK = fromKind
+    var toK = toKind
+    if fromK==NoUnit: fromK = quantityKindForName(fromU)
+    if toK==NoUnit: toK = quantityKindForName(toU)
+
+    if fromK!=toK:
+        RuntimeError_CannotConvertQuantity($(nm), $(fromU), stringify(fromK), $(toU), stringify(toK))
     
     if toK == TemperatureUnit:
         return convertToTemperatureUnit(nm, fromU, toU)
@@ -802,10 +807,7 @@ proc `+`*(x: Value, y: Value): Value =
                 if x.unit.name == y.unit.name:
                     return newQuantity(x.nm + y.nm, x.unit)
                 else:
-                    if x.unit.kind != y.unit.kind:
-                        RuntimeError_IncompatibleQuantityOperation("add", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
-                    else:
-                        return newQuantity(x.nm + convertQuantityValue(y.nm, y.unit.name, x.unit.name), x.unit)
+                    return newQuantity(x.nm + convertQuantityValue(y.nm, y.unit.name, x.unit.name), x.unit)
             else:
                 return newQuantity(x.nm + y, x.unit)
         else:
