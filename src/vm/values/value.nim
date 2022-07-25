@@ -776,6 +776,13 @@ func asFloat*(v: Value): float =
     else:
         result = (float)(v.i)
 
+func asInt*(v: Value): int = 
+    # get number value forcefully as an int
+    if v.kind == Integer:
+        result = v.i
+    else:
+        result = (int)(v.f)
+
 func getArity*(x: Value): int =
     if x.fnKind==BuiltinFunction:
         return x.arity
