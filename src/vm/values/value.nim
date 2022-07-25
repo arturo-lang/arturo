@@ -1399,11 +1399,12 @@ proc `//`*(x: Value, y: Value): Value =
                 elif finalSpec == NumericQuantity:
                     return x.nm // y.nm
                 else:
-                    let fmultiplier = getQuantityMultiplier(y.unit, getCleanCorrelatedUnit(y.unit, x.unit))
-                    if fmultiplier == 1.0:
-                        return newQuantity(x.nm // y.nm, finalSpec)
-                    else:
-                        return newQuantity(x.nm // y.nm * newFloating(fmultiplier), finalSpec)
+                    return newQuantity(x.nm // convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
+                    # let fmultiplier = getQuantityMultiplier(y.unit, getCleanCorrelatedUnit(y.unit, x.unit))
+                    # if fmultiplier == 1.0:
+                    #     return newQuantity(x.nm // y.nm, finalSpec)
+                    # else:
+                    #     return newQuantity(x.nm // y.nm * newFloating(fmultiplier), finalSpec)
             else:
                 return newQuantity(x.nm // y, x.unit)
         else:
@@ -1435,11 +1436,12 @@ proc `//=`*(x: var Value, y: Value) =
                 elif finalSpec == NumericQuantity:
                     x = x.nm // y.nm
                 else:
-                    let fmultiplier = getQuantityMultiplier(y.unit, getCleanCorrelatedUnit(y.unit, x.unit))
-                    if fmultiplier == 1.0:
-                        x = newQuantity(x.nm // y.nm, finalSpec)
-                    else:
-                        x = newQuantity(x.nm // y.nm * newFloating(fmultiplier), finalSpec)
+                    x = newQuantity(x.nm // convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
+                    # let fmultiplier = getQuantityMultiplier(y.unit, getCleanCorrelatedUnit(y.unit, x.unit))
+                    # if fmultiplier == 1.0:
+                    #     x = newQuantity(x.nm // y.nm, finalSpec)
+                    # else:
+                    #     x = newQuantity(x.nm // y.nm * newFloating(fmultiplier), finalSpec)
             else:
                 x.nm //= y
         else:
