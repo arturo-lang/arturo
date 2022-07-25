@@ -26,6 +26,8 @@ when not defined(WEB):
     
 import sequtils
 
+import helpers/quantities as QuantitiesHelper
+
 import vm/lib
 import vm/[env, errors]
 
@@ -217,7 +219,7 @@ proc defineSymbols*() =
             rule        = PrefixPrecedence,
             description = "pause program's execution~for the given amount of time",
             args        = {
-                "time"  : {Integer}
+                "time"  : {Integer, Quantity}
             },
             attrs       = NoAttrs,
             returns     = {Nothing},
@@ -229,7 +231,10 @@ proc defineSymbols*() =
             print "done. let's continue..."
             """:
                 ##########################################################
-                sleep(x.i)
+                if x.kind == Integer:
+                    sleep(x.i)
+                else:
+                    sleep(asInt(convertQuantityValue(x.nm, x.unit.name, MS)))
 
         builtin "process",
             alias       = unaliased, 
