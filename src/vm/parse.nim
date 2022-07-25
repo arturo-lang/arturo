@@ -798,9 +798,14 @@ template parseExponent(p: var Parser) =
     setLen(p.value, 0)
     var pos = p.bufpos
     inc(pos)
-    while p.buf[pos] in ScientificNotation:
+    if p.buf[pos] in {'+', '-'}:
         add(p.value, p.buf[pos])
         inc(pos)
+
+    while p.buf[pos] in Digits:
+        add(p.value, p.buf[pos])
+        inc(pos)
+
     p.bufpos = pos
 
 proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.inline.} =
