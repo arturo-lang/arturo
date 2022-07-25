@@ -57,6 +57,8 @@ const
     Whitespace                  = {' ', Tab}
 
     PermittedNumbers_Start      = {'0'..'9'}
+    ScientificNotation          = PermittedNumbers_Start + {'+', '-'}
+    ScientificNotation_Start    = {'e', 'E'}
     Symbols                     = {'~', '!', '@', '#', '$', '%', '^', '&', '*', '-', '_', '=', '+', '<', '>', '/', '\\', '|', '?'}
     Letters                     = {'a'..'z', 'A'..'Z'}
     PermittedIdentifiers_Start  = Letters
@@ -793,6 +795,20 @@ template parseQuantity(p: var Parser) =
         inc(pos)
     p.bufpos = pos
 
+template parseExponent(p: var Parser) =
+    setLen(p.value, 0)
+    var pos = p.bufpos
+    inc(pos)
+    if p.buf[pos] in {'+', '-'}:
+        add(p.value, p.buf[pos])
+        inc(pos)
+
+    while p.buf[pos] in Digits:
+        add(p.value, p.buf[pos])
+        inc(pos)
+
+    p.bufpos = pos
+
 proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.inline.} =
     var topBlock: Value
     var scriptStr: string = ""
@@ -830,20 +846,27 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                     if p.value.count(Dot)>1:
                         AddToken newVersion(p.value)
                     else:
-                        if p.buf[p.bufpos]!=Colon:
-                            AddToken newFloating(p.value)
-                        else:
+                        if p.buf[p.bufpos]==Colon:
                             let pv = newFloating(p.value)
                             parseQuantity(p)
                             AddToken newQuantity(pv, parseQuantitySpec(p.value))
+                        elif p.buf[p.bufpos] in ScientificNotation_Start and p.buf[p.bufpos+1] in ScientificNotation:
+                            let pv = p.value
+                            parseExponent(p)
+                            AddToken newFloating(pv & "e" & p.value)
+                        else:
+                            AddToken newFloating(p.value)
                 else: 
-                    if p.buf[p.bufpos]!=Colon:
-                        AddToken newInteger(p.value, p.lineNumber)
-                    else:
+                    if p.buf[p.bufpos]==Colon:
                         let pv = newInteger(p.value, p.lineNumber)
                         parseQuantity(p)
                         AddToken newQuantity(pv, parseQuantitySpec(p.value))
-
+                    elif p.buf[p.bufpos]=='e' and p.buf[p.bufpos+1] in ScientificNotation:
+                        let pv = p.value
+                        parseExponent(p)
+                        AddToken newFloating(pv & "e" & p.value)
+                    else:
+                        AddToken newInteger(p.value, p.lineNumber)
             of Symbols:
                 parseAndAddSymbol(p,topBlock)
             of PermittedIdentifiers_Start:
