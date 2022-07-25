@@ -2151,7 +2151,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
         of Symbol, 
            SymbolLiteral: dumpSymbol(v)
 
-        of Quantity     : dumpPrimitive($(v.nm) & ":" & toLowerAscii($(v.unit)), v)
+        of Quantity     : dumpPrimitive($(v.nm) & ":" & toLowerAscii($(v.unit.name)), v)
 
         of Regex        : dumpPrimitive($(v.rx), v)
 
@@ -2290,7 +2290,7 @@ func codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         of AttributeLabel    : result &= "." & v.r & ":"
         of Symbol       :  result &= $(v.m)
         of SymbolLiteral: result &= "'" & $(v.m)
-        of Quantity     : result &= $(v.nm) & ":" & toLowerAscii($(v.unit))
+        of Quantity     : result &= $(v.nm) & ":" & toLowerAscii($(v.unit.name))
         of Regex        : result &= "{/" & $(v.rx) & "/}"
         of Color        : result &= $(v.l)
 

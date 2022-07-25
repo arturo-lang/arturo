@@ -305,8 +305,8 @@ proc stringify*(un: UnitName): string =
 proc stringify*(uk: UnitKind): string =
     toLowerAscii($(uk)).replace("unit","")
 
-# func `$`(qs: QuantitySpec): string =
-#     stringify(qs.name)
+func `$`*(qs: QuantitySpec): string =
+    stringify(qs.name)
 
 #=======================================
 # Methods
