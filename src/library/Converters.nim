@@ -1048,7 +1048,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "convert quantity to given unit",
         args        = {
-            "unit"  : {Literal,String},
+            "unit"  : {Literal,String,Word},
             "value" : {Integer,Floating,Quantity},
         },
         attrs       = NoAttrs,
@@ -1060,7 +1060,7 @@ proc defineSymbols*() =
             ##########################################################
             let qs = parseQuantitySpec(x.s)
             if y.kind==Quantity:
-                push newQuantity(convertQuantityValue(y, y.unit.name, qs.name), qs)
+                push newQuantity(convertQuantityValue(y.nm, y.unit.name, qs.name), qs)
             else:
                 push newQuantity(y, qs)
 
