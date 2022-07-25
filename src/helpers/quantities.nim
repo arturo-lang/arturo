@@ -32,7 +32,7 @@ type
         AngleUnit
         SpeedUnit
         WeightUnit
-        CapacityUnit
+        InformationUnit
         TimeUnit
         TemperatureUnit
 
@@ -81,8 +81,8 @@ type
         # Weight
         G, MG, KG, T, ST, OZ, LB, CT, OZT, LBT
 
-        # Capacity
-        BIT, B, KB, MB, GB, TB
+        # Information
+        BIT, B, KB, MB, GB, TB, KIB, MIB, GIB, TIB, 
 
         # Time
         MIN, HR, D, WK, MO, YR, S, MS, NS
@@ -216,10 +216,14 @@ const
         # Capacity
         BIT: 1.0, 
         B: 8.0, 
-        KB: 8.0 * 1024, 
-        MB: 8.0 * 1024 * 1024, 
-        GB: 8.0 * 1024 * 1024 * 1024, 
-        TB: 8.0 * 1024 * 1024 * 1024,
+        KB: 8.0 * 1000, 
+        MB: 8.0 * 1000 * 1000, 
+        GB: 8.0 * 1000 * 1000 * 1000, 
+        TB: 8.0 * 1000 * 1000 * 1000,
+        KIB: 8.0 * 1024, 
+        MIB: 8.0 * 1024 * 1024, 
+        GIB: 8.0 * 1024 * 1024 * 1024, 
+        TIB: 8.0 * 1024 * 1024 * 1024,
 
         # Time
         MIN: 1.0, 
@@ -254,7 +258,7 @@ func quantityKindForName(un: UnitName): UnitKind =
         of BQ..RD       :   RadioactivityUnit
         of KPH..KN      :   SpeedUnit
         of G..LBT       :   WeightUnit
-        of BIT..TB      :   CapacityUnit
+        of BIT..TIB     :   InformationUnit
         of MIN..NS      :   TimeUnit
         of C..R         :   TemperatureUnit
         else:
@@ -281,6 +285,7 @@ proc `$`*(qs: QuantitySpec): string =
         of C..R                         : result = "°" & toUpperAscii(result)
         of MIM, MIM2, MIM3              : result = result.replace("mim","μm")
         of ANG, ANG2, ANG3              : result = result.replace("ang","Å")
+        of KIB..TIB                     : result = toUpperAscii(result).replace("I","i")
 
         of FLOZ     : result = "fl.oz"
         of KJ       : result = "kJ"
