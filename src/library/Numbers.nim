@@ -32,6 +32,18 @@ import helpers/quantities
 import vm/lib
 
 #=======================================
+# Helpers
+#=======================================
+
+template processMath*(fun: untyped): untyped =
+    var v = x
+    if x.kind == Quantity:
+        v = convertQuantityValue(x.nm, x.unit.name, RAD)
+
+    if v.kind==Complex: push(newComplex(fun(v.z)))
+    else: push(newFloating(fun(asFloat(v))))
+
+#=======================================
 # Methods
 #=======================================
 
@@ -88,12 +100,13 @@ proc defineSymbols*() =
             ; => 0.3222532939814587-1.86711439316026i
         """:
             ##########################################################
-            var v = x
-            if x.kind == Quantity:
-                v = convertQuantityValue(x.nm, x.unit.name, RAD)
+            processMath(arccos)
+            # var v = x
+            # if x.kind == Quantity:
+            #     v = convertQuantityValue(x.nm, x.unit.name, RAD)
 
-            if v.kind==Complex: push(newComplex(arccos(v.z)))
-            else: push(newFloating(arccos(asFloat(v))))
+            # if v.kind==Complex: push(newComplex(arccos(v.z)))
+            # else: push(newFloating(arccos(asFloat(v))))
 
     builtin "acosh",
         alias       = unaliased, 
@@ -113,12 +126,13 @@ proc defineSymbols*() =
             ; => 1.86711439316026+0.3222532939814587i
         """:
             ##########################################################
-            var v = x
-            if x.kind == Quantity:
-                v = convertQuantityValue(x.nm, x.unit.name, RAD)
+            processMath(arccosh)
+            # var v = x
+            # if x.kind == Quantity:
+            #     v = convertQuantityValue(x.nm, x.unit.name, RAD)
 
-            if v.kind==Complex: push(newComplex(arccosh(v.z)))
-            else: push(newFloating(arccosh(asFloat(v))))
+            # if v.kind==Complex: push(newComplex(arccosh(v.z)))
+            # else: push(newFloating(arccosh(asFloat(v))))
 
     builtin "acsec",
         alias       = unaliased, 
@@ -138,12 +152,13 @@ proc defineSymbols*() =
             ; => 0.2918255976444114-0.0959139808172324i
         """:
             ##########################################################
-            var v = x
-            if x.kind == Quantity:
-                v = convertQuantityValue(x.nm, x.unit.name, RAD)
+            processMath(arccsc)
+            # var v = x
+            # if x.kind == Quantity:
+            #     v = convertQuantityValue(x.nm, x.unit.name, RAD)
 
-            if v.kind==Complex: push(newComplex(arccsc(v.z)))
-            else: push(newFloating(arccsc(asFloat(v))))
+            # if v.kind==Complex: push(newComplex(arccsc(v.z)))
+            # else: push(newFloating(arccsc(asFloat(v))))
 
     builtin "acsech",
         alias       = unaliased, 
@@ -163,12 +178,13 @@ proc defineSymbols*() =
             ; => 0.2862356627279947-0.08847073864038091i
         """:
             ##########################################################
-            var v = x
-            if x.kind == Quantity:
-                v = convertQuantityValue(x.nm, x.unit.name, RAD)
+            processMath(arccsch)
+            # var v = x
+            # if x.kind == Quantity:
+            #     v = convertQuantityValue(x.nm, x.unit.name, RAD)
 
-            if v.kind==Complex: push(newComplex(arccsch(v.z)))
-            else: push(newFloating(arccsch(asFloat(v))))
+            # if v.kind==Complex: push(newComplex(arccsch(v.z)))
+            # else: push(newFloating(arccsch(asFloat(v))))
 
     builtin "actan",
         alias       = unaliased, 
