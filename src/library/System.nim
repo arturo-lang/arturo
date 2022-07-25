@@ -226,9 +226,15 @@ proc defineSymbols*() =
             example     = """
             print "wait a moment"
 
-            pause 1000      ; sleeping for one second
+            pause 1000      ; sleeping for 1000ms = one second
 
             print "done. let's continue..."
+            ..........
+            print "waiting for 2 seconds
+
+            pause 2:s       ; let's sleep for a while
+
+            print "done!"
             """:
                 ##########################################################
                 if x.kind == Integer:
