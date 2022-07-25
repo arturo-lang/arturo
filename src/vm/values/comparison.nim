@@ -86,6 +86,15 @@ proc `==`*(x: Value, y: Value): bool {.inline.}=
             elif y.kind==Rational:
                 return toRational(x.f)==y.rat
             else: return x.f==y.f
+    elif x.kind == Quantity or y.kind == Quantity:
+        if x.kind == Quantity:
+            if y.kind == Quantity:
+                if x.unit.kind != y.unit.kind: return false
+                return x.nm == convertQuantityValue(y.nm, y.unit.name, x.unit.name)
+            else:
+                return x.nm == y
+        else:
+            return x == y.nm
     else:
         if x.kind != y.kind: return false
 
@@ -129,13 +138,6 @@ proc `==`*(x: Value, y: Value): bool {.inline.}=
                         if not (v==y.d[k]): return false
 
                     return true
-            of Quantity:
-                if x.unit.kind != y.unit.kind: return false
-                if x.unit.name == y.unit.name:
-                    return x.nm == y.nm
-                else:
-                    let fmultiplier = getQuantityMultiplier(y.unit, x.unit)
-                    return x.nm == y.nm * newFloating(fmultiplier)
             of ValueKind.Color:
                 return x.l == y.l
             of Function:
@@ -204,6 +206,15 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
             elif y.kind==Rational:
                 return cmp(toRational(x.f), y.rat) < 0  
             else: return x.f<y.f
+    elif x.kind == Quantity or y.kind == Quantity:
+        if x.kind == Quantity:
+            if y.kind == Quantity:
+                if x.unit.kind != y.unit.kind: return false
+                return x.nm < convertQuantityValue(y.nm, y.unit.name, x.unit.name)
+            else:
+                return x.nm < y
+        else:
+            return x < y.nm
     else:
         if x.kind != y.kind: return false
         case x.kind:
@@ -238,13 +249,6 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
                     return (pop().i == -1)
                 else:
                     return false
-            of Quantity:
-                if x.unit.kind != y.unit.kind: return false
-                if x.unit.name == y.unit.name:
-                    return x.nm < y.nm
-                else:
-                    let fmultiplier = getQuantityMultiplier(y.unit, x.unit)
-                    return x.nm < y.nm * newFloating(fmultiplier)
             else:
                 return false
 
@@ -299,6 +303,15 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
             elif y.kind==Rational:
                 return cmp(toRational(x.f), y.rat) > 0     
             else: return x.f>y.f
+    elif x.kind == Quantity or y.kind == Quantity:
+        if x.kind == Quantity:
+            if y.kind == Quantity:
+                if x.unit.kind != y.unit.kind: return false
+                return x.nm > convertQuantityValue(y.nm, y.unit.name, x.unit.name)
+            else:
+                return x.nm > y
+        else:
+            return x > y.nm
     else:
         if x.kind != y.kind: return false
         case x.kind:
@@ -333,13 +346,6 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
                     return (pop().i == 1)
                 else:
                     return false
-            of Quantity:
-                if x.unit.kind != y.unit.kind: return false
-                if x.unit.name == y.unit.name:
-                    return x.nm > y.nm
-                else:
-                    let fmultiplier = getQuantityMultiplier(y.unit, x.unit)
-                    return x.nm > y.nm * newFloating(fmultiplier)
             else:
                 return false
 

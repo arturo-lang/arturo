@@ -1043,6 +1043,27 @@ proc defineSymbols*() =
             
             push(ret)
 
+    builtin "in",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "convert quantity to given unit",
+        args        = {
+            "unit"  : {Literal,String,Word},
+            "value" : {Integer,Floating,Quantity},
+        },
+        attrs       = NoAttrs,
+        returns     = {Quantity},
+        # TODO(Converters\in) add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            ##########################################################
+            let qs = parseQuantitySpec(x.s)
+            if y.kind==Quantity:
+                push newQuantity(convertQuantityValue(y.nm, y.unit.name, qs.name), qs)
+            else:
+                push newQuantity(y, qs)
+
     builtin "to",
         alias       = unaliased, 
         rule        = PrefixPrecedence,

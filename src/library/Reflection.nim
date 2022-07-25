@@ -20,7 +20,8 @@ import helpers/benchmark
 when not defined(WEB):
     import helpers/helper
 
-import helpers/terminal as terminalHelper
+import helpers/quantities as QuantitiesHelper
+import helpers/terminal as TerminalHelper
 
 import vm/lib
 import vm/[env, errors, exec]
@@ -192,7 +193,7 @@ proc defineSymbols*() =
                 let time = getBenchmark:
                     discard execBlock(x)
 
-                push newFloating(time)
+                push newQuantity(newFloating(time), newQuantitySpec(MS))
             else:
                 benchmark "":
                     discard execBlock(x)

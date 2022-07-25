@@ -27,11 +27,12 @@ type
         VolumeUnit
         PressureUnit
         EnergyUnit
+        ForceUnit
         RadioactivityUnit
         AngleUnit
         SpeedUnit
         WeightUnit
-        CapacityUnit
+        InformationUnit
         TimeUnit
         TemperatureUnit
 
@@ -40,18 +41,21 @@ type
 
     UnitName* = enum
         # Currency
-        AED, ALL, ARS, AUD, BGN, BRL, BTC, CAD, CHF, CLP, 
-        CNY, COP, CRC, CZK, DZD, EGP, ETB, EUR, GBP, HKD,
-        IDR, ILS, INR, IRR, ISK, JPY, KES, KRW, MXN, MYR,
-        NGN, NOK, NZD, PAB, PHP, PLN, QAR, RSD, RUB, SEK,
-        SGD, SOS, THB, TRY, UAH, USD, UYU, VND, XAF, XAG,
-        XAU, XOF, ZAR
+        AED, ALL, ARS, AUD, BGN, BHD, BNB, BND, BOB, BRL, BTC, BWP, 
+        CAD, CHF, CLP, CNY, COP, CRC, CZK, DKK, DOP, DZD, EGP, ETB,
+        ETH, EUR, FJD, GBP, HKD, HNL, HRK, HUF, IDR, ILS, INR, IRR, 
+        ISK, JMD, JOD, JPY, KES, KRW, KWD, KYD, KZT, LBP, LKR, MAD, 
+        MDL, MKD, MXN, MUR, MYR, NAD, NGN, NIO, NOK, NPR, NZD, OMR, 
+        PAB, PEN, PGK, PHP, PKR, PLN, PYG, QAR, RON, RSD, RUB, SAR,
+        SCR, SEK, SGD, SLL, SOS, SVC, THB, TND, TRY, TTD, TWD, TZS, 
+        UAH, UGX, USD, UYU, UZS, VND, XAF, XAG, XAU, XOF, YER, ZAR, 
+        ZMW
 
         # Length
-        M, DM, CM, MM, MIM, NM, KM, IN, FT, FM, YD, ANG, LY, MI, NMI
+        M, DM, CM, MM, MIM, NM, KM, IN, FT, FM, YD, ANG, LY, PC, MI, NMI
 
         # Area
-        M2, DM2, CM2, MM2, MIM2, NM2, KM2, IN2, FT2, YD2, ANG2, MI2, AC, HA
+        M2, DM2, CM2, MM2, MIM2, NM2, KM2, IN2, FT2, YD2, ANG2, MI2, AC, A, HA
 
         # Volume
         M3, DM3, CM3, MM3, MIM3, NM3, KM3, IN3, FT3, YD3, ANG3, MI3, L, DL, CL, ML, FLOZ, TSP, TBSP, PT, QT, GAL
@@ -60,7 +64,10 @@ type
         ATM, BAR, PA
 
         # Energy
-        J, KJ, MJ, WH, KWH, ERG
+        J, KJ, MJ, CAL, KCAL, WH, KWH, ERG
+
+        # Force
+        N, DYN, KGF, LBF, PDL, KIP
 
         # Radioactivity
         BQ, CI, RD
@@ -74,8 +81,8 @@ type
         # Weight
         G, MG, KG, T, ST, OZ, LB, CT, OZT, LBT
 
-        # Capacity
-        BIT, B, KB, MB, GB, TB
+        # Information
+        BIT, B, KB, MB, GB, TB, KIB, MIB, GIB, TIB, 
 
         # Time
         MIN, HR, D, WK, MO, YR, S, MS, NS
@@ -111,6 +118,7 @@ const
         YD: 0.9144,
         ANG: 1e-10,
         LY: 9.461e+15,
+        PC: 3.086e+16,
         MI: 1609.34,
         NMI: 1852.0,
 
@@ -128,6 +136,7 @@ const
         ANG2: 1e-20,
         MI2: 2592931.2786432, 
         AC: 4046.86,
+        A: 100.0,
         HA: 10000.0,
 
         # Volume
@@ -163,9 +172,19 @@ const
         J: 1.0,
         KJ: 1000.0,
         MJ: 1000000.0,
+        CAL: 4.184,
+        KCAL: 4184.0,
         WH: 3600.0,
         KWH: 3.6e+6,
         ERG: 1e-7,
+
+        # Force
+        N: 1.0, 
+        DYN: 1e-5, 
+        KGF: 9.80665, 
+        LBF: 8.89644, 
+        PDL: 0.138255, 
+        KIP: 4448.22,
 
         # Radioactivity
         BQ: 1.0,
@@ -197,10 +216,14 @@ const
         # Capacity
         BIT: 1.0, 
         B: 8.0, 
-        KB: 8.0 * 1024, 
-        MB: 8.0 * 1024 * 1024, 
-        GB: 8.0 * 1024 * 1024 * 1024, 
-        TB: 8.0 * 1024 * 1024 * 1024,
+        KB: 8.0 * 1000, 
+        MB: 8.0 * 1000 * 1000, 
+        GB: 8.0 * 1000 * 1000 * 1000, 
+        TB: 8.0 * 1000 * 1000 * 1000,
+        KIB: 8.0 * 1024, 
+        MIB: 8.0 * 1024 * 1024, 
+        GIB: 8.0 * 1024 * 1024 * 1024, 
+        TIB: 8.0 * 1024 * 1024 * 1024,
 
         # Time
         MIN: 1.0, 
@@ -222,19 +245,20 @@ const
 # Helpers
 #=======================================
 
-func quantityKindForName(un: UnitName): UnitKind =
+func quantityKindForName*(un: UnitName): UnitKind {.inline.} =
     case un:
-        of AED..ZAR     :   CurrencyUnit
+        of AED..ZMW     :   CurrencyUnit
         of M..NMI       :   LengthUnit
         of M2..HA       :   AreaUnit
         of M3..GAL      :   VolumeUnit
         of ATM..PA      :   PressureUnit
         of DEG..RAD     :   AngleUnit
         of J..ERG       :   EnergyUnit
+        of N..KIP       :   ForceUnit
         of BQ..RD       :   RadioactivityUnit
         of KPH..KN      :   SpeedUnit
         of G..LBT       :   WeightUnit
-        of BIT..TB      :   CapacityUnit
+        of BIT..TIB     :   InformationUnit
         of MIN..NS      :   TimeUnit
         of C..R         :   TemperatureUnit
         else:
@@ -252,15 +276,15 @@ proc getExchangeRate(src: UnitName, tgt: UnitName): float =
 # Overloads
 #=======================================
 
-proc `$`*(qs: QuantitySpec): string =
-    let un = qs.name
+proc stringify*(un: UnitName): string =
     result = toLowerAscii($(un))
     case un:
-        of AED..ZAR, J, MJ, B..TB   : result = toUpperAscii(result)
-        of PA, BQ, CI, RD           : result = capitalizeAscii(result)
-        of C..R                     : result = "°" & toUpperAscii(result)
-        of MIM, MIM2, MIM3          : result = result.replace("mim","μm")
-        of ANG, ANG2, ANG3          : result = result.replace("ang","Å")
+        of AED..ZMW, J, MJ, N, B..TB    : result = toUpperAscii(result)
+        of PA, BQ, CI, RD               : result = capitalizeAscii(result)
+        of C..R                         : result = "°" & toUpperAscii(result)
+        of MIM, MIM2, MIM3              : result = result.replace("mim","μm")
+        of ANG, ANG2, ANG3              : result = result.replace("ang","Å")
+        of KIB..TIB                     : result = toUpperAscii(result).replace("I","i")
 
         of FLOZ     : result = "fl.oz"
         of KJ       : result = "kJ"
@@ -278,12 +302,18 @@ proc `$`*(qs: QuantitySpec): string =
     
     result = result.replace("2","²").replace("3","³")
 
-proc `stringify`*(uk: UnitKind): string =
+proc stringify*(uk: UnitKind): string =
     toLowerAscii($(uk)).replace("unit","")
+
+func `$`*(qs: QuantitySpec): string =
+    stringify(qs.name)
 
 #=======================================
 # Methods
 #=======================================
+
+proc newQuantitySpec*(un: UnitName): QuantitySpec {.inline.} =
+    QuantitySpec(kind: quantityKindForName(un), name: un)
 
 proc getQuantityMultiplier*(src: QuantitySpec, tgt: QuantitySpec): float =
     if src.kind != tgt.kind: return CannotConvertQuantity
@@ -292,6 +322,16 @@ proc getQuantityMultiplier*(src: QuantitySpec, tgt: QuantitySpec): float =
         return getExchangeRate(src.name, tgt.name)
     else:
         return ConversionRatio[src.name] / ConversionRatio[tgt.name]
+
+proc getQuantityMultiplier*(src: UnitName, tgt: UnitName, isCurrency=false): float =
+    # let srcKind = quantityKindForName(src)
+    # let tgtKind = quantityKindForName(tgt)
+    # if srcKind != tgtKind: return CannotConvertQuantity
+
+    if isCurrency:
+        return getExchangeRate(src, tgt)
+    else:
+        return ConversionRatio[src] / ConversionRatio[tgt]
 
 proc getCleanCorrelatedUnit*(b: QuantitySpec, a: QuantitySpec): QuantitySpec = 
     var s = ($(a.name)).replace("2","").replace("3","")
@@ -305,20 +345,20 @@ proc getFinalUnitAfterOperation*(op: string, argA: QuantitySpec, argB: QuantityS
     case op:
         of "mul":
             if argA.kind == LengthUnit and argB.kind == LengthUnit and argA.name in M..MI:
-                return QuantitySpec(kind: AreaUnit, name: parseEnum[UnitName]($(argA.name)&"2"))
+                return newQuantitySpec(parseEnum[UnitName]($(argA.name)&"2"))
 
             elif ((argA.name in M..MI) or (argA.name in M2..MI2)) and (argB.kind in {LengthUnit,AreaUnit}) and argA.kind!=argB.kind:
-               return QuantitySpec(kind: VolumeUnit, name: parseEnum[UnitName](($(argA.name)).replace("2","")&"3"))
+               return newQuantitySpec(parseEnum[UnitName](($(argA.name)).replace("2","")&"3"))
 
         of "div", "mod", "fdiv":
             if ((argA.name in M2..MI2)) and (argB.kind==LengthUnit):
-               return QuantitySpec(kind: LengthUnit, name: parseEnum[UnitName](($(argA.name)).replace("2","")))
+               return newQuantitySpec(parseEnum[UnitName](($(argA.name)).replace("2","")))
 
             elif ((argA.name in M3..MI3)) and (argB.kind==LengthUnit):
-               return QuantitySpec(kind: AreaUnit, name: parseEnum[UnitName](($(argA.name)).replace("3","2")))
+               return newQuantitySpec(parseEnum[UnitName](($(argA.name)).replace("3","2")))
 
             elif ((argA.name in M3..MI3)) and (argB.kind==AreaUnit) and argA.kind!=argB.kind:
-               return QuantitySpec(kind: LengthUnit, name: parseEnum[UnitName](($(argA.name)).replace("3","")))
+               return newQuantitySpec(parseEnum[UnitName](($(argA.name)).replace("3","")))
 
             else:
                 return NumericQuantity
@@ -330,6 +370,4 @@ proc getFinalUnitAfterOperation*(op: string, argA: QuantitySpec, argB: QuantityS
 
 proc parseQuantitySpec*(str: string): QuantitySpec =
     let unitName = parseEnum[UnitName](toUpperAscii(str))
-    let unitKind = quantityKindForName(unitName)
-
-    QuantitySpec(kind: unitKind, name: unitName)
+    newQuantitySpec(unitName)

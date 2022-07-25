@@ -205,6 +205,12 @@ proc RuntimeError_IncompatibleQuantityOperation*(operation: string, argA, argB, 
             "attempted: " & operation & ";" &
             "with: " & truncate(argA & " (" & kindA & ") " & argB & " (" & kindB & ")", 60)
 
+proc RuntimeError_CannotConvertQuantity*(val, argA, kindA, argB, kindB: string) =
+    panic RuntimeError,
+          "cannot convert quantity: " & val & ";" &
+          "from: " & argA & " (" & kindA & ") " & ";" &
+          "to: " & argB & " (" & kindB & ")"
+
 proc RuntimeError_OutOfBounds*(indx: int, maxRange: int) =
     panic RuntimeError,
           "array index out of bounds: " & $(indx) & ";" & 
