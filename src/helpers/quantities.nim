@@ -27,6 +27,7 @@ type
         VolumeUnit
         PressureUnit
         EnergyUnit
+        ForceUnit
         RadioactivityUnit
         AngleUnit
         SpeedUnit
@@ -61,6 +62,9 @@ type
 
         # Energy
         J, KJ, MJ, WH, KWH, ERG
+
+        # Force
+        N, DYN, KGF, LBF, PDL, KIP
 
         # Radioactivity
         BQ, CI, RD
@@ -168,6 +172,14 @@ const
         KWH: 3.6e+6,
         ERG: 1e-7,
 
+        # Force
+        N: 1.0, 
+        DYN: 1e-5, 
+        KGF: 9.80665, 
+        LBF: 8.89644, 
+        PDL: 0.138255, 
+        KIP: 4448.22,
+
         # Radioactivity
         BQ: 1.0,
         CI: 3.7e+10,
@@ -232,6 +244,7 @@ func quantityKindForName(un: UnitName): UnitKind =
         of ATM..PA      :   PressureUnit
         of DEG..RAD     :   AngleUnit
         of J..ERG       :   EnergyUnit
+        of N..KIP       :   ForceUnit
         of BQ..RD       :   RadioactivityUnit
         of KPH..KN      :   SpeedUnit
         of G..LBT       :   WeightUnit
@@ -257,11 +270,11 @@ proc `$`*(qs: QuantitySpec): string =
     let un = qs.name
     result = toLowerAscii($(un))
     case un:
-        of AED..ZAR, J, MJ, B..TB   : result = toUpperAscii(result)
-        of PA, BQ, CI, RD           : result = capitalizeAscii(result)
-        of C..R                     : result = "°" & toUpperAscii(result)
-        of MIM, MIM2, MIM3          : result = result.replace("mim","μm")
-        of ANG, ANG2, ANG3          : result = result.replace("ang","Å")
+        of AED..ZAR, J, MJ, N, B..TB    : result = toUpperAscii(result)
+        of PA, BQ, CI, RD               : result = capitalizeAscii(result)
+        of C..R                         : result = "°" & toUpperAscii(result)
+        of MIM, MIM2, MIM3              : result = result.replace("mim","μm")
+        of ANG, ANG2, ANG3              : result = result.replace("ang","Å")
 
         of FLOZ     : result = "fl.oz"
         of KJ       : result = "kJ"
