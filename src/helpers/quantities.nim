@@ -276,8 +276,7 @@ proc getExchangeRate(src: UnitName, tgt: UnitName): float =
 # Overloads
 #=======================================
 
-proc `$`*(qs: QuantitySpec): string =
-    let un = qs.name
+proc stringify*(un: UnitName): string =
     result = toLowerAscii($(un))
     case un:
         of AED..ZMW, J, MJ, N, B..TB    : result = toUpperAscii(result)
@@ -303,8 +302,11 @@ proc `$`*(qs: QuantitySpec): string =
     
     result = result.replace("2","²").replace("3","³")
 
-proc `stringify`*(uk: UnitKind): string =
+proc stringify*(uk: UnitKind): string =
     toLowerAscii($(uk)).replace("unit","")
+
+func `$`(qs: QuantitySpec): string =
+    stringify(qs.name)
 
 #=======================================
 # Methods
