@@ -193,7 +193,7 @@ proc defineSymbols*() =
                 let time = getBenchmark:
                     discard execBlock(x)
 
-                push newQuantity(newFloating(time), newQuantitySpec(S))
+                push newQuantity(newFloating(time), newQuantitySpec(MS))
             else:
                 benchmark "":
                     discard execBlock(x)
