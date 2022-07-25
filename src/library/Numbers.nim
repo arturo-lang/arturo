@@ -434,7 +434,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the cosecant of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex}
+            "angle" : {Integer,Floating,Complex,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -447,15 +447,14 @@ proc defineSymbols*() =
             ; => 0.6215180171704283-0.3039310016284264i
         """:
             ##########################################################
-            if x.kind==Complex: push(newComplex(csc(x.z)))
-            else: push(newFloating(csc(asFloat(x))))
+            processMath(csc)
 
     builtin "csech",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic cosecant of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex}
+            "angle" : {Integer,Floating,Complex,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -468,15 +467,14 @@ proc defineSymbols*() =
             ; => 0.3039310016284264-0.6215180171704283i
         """:
             ##########################################################
-            if x.kind==Complex: push(newComplex(csch(x.z)))
-            else: push(newFloating(csch(asFloat(x))))
+            processMath(csch)
 
     builtin "ctan",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the cotangent of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex}
+            "angle" : {Integer,Floating,Complex,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -489,15 +487,14 @@ proc defineSymbols*() =
             ; => 0.2176215618544027-0.8680141428959249i
         """:
             ##########################################################
-            if x.kind==Complex: push(newComplex(cot(x.z)))
-            else: push(newFloating(cot(asFloat(x))))
+            processMath(cot)
 
     builtin "ctanh",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic cotangent of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex}
+            "angle" : {Integer,Floating,Complex,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -510,8 +507,7 @@ proc defineSymbols*() =
             ; => 0.8680141428959249-0.2176215618544027i
         """:
             ##########################################################
-            if x.kind==Complex: push(newComplex(coth(x.z)))
-            else: push(newFloating(coth(asFloat(x))))
+            processMath(coth)
 
     builtin "digits",
         alias       = unaliased, 
@@ -1078,7 +1074,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the secant of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex}
+            "angle" : {Integer,Floating,Complex,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -1091,15 +1087,14 @@ proc defineSymbols*() =
             ; => 0.4983370305551868+0.591083841721045i
         """:
             ##########################################################
-            if x.kind==Complex: push(newComplex(sec(x.z)))
-            else: push(newFloating(sec(asFloat(x))))
+            processMath(sec)
 
     builtin "sech",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic secant of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex}
+            "angle" : {Integer,Floating,Complex,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -1112,8 +1107,7 @@ proc defineSymbols*() =
             ; => 0.4983370305551868-0.5910838417210451i
         """:
             ##########################################################
-            if x.kind==Complex: push(newComplex(sech(x.z)))
-            else: push(newFloating(sech(asFloat(x))))
+            processMath(sech)
 
     builtin "sin",
         alias       = unaliased, 
