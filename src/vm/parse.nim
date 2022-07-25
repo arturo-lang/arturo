@@ -58,6 +58,7 @@ const
 
     PermittedNumbers_Start      = {'0'..'9'}
     ScientificNotation          = PermittedNumbers_Start + {'+', '-'}
+    ScientificNotation_Start    = {'e', 'E'}
     Symbols                     = {'~', '!', '@', '#', '$', '%', '^', '&', '*', '-', '_', '=', '+', '<', '>', '/', '\\', '|', '?'}
     Letters                     = {'a'..'z', 'A'..'Z'}
     PermittedIdentifiers_Start  = Letters
@@ -849,7 +850,7 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                             let pv = newFloating(p.value)
                             parseQuantity(p)
                             AddToken newQuantity(pv, parseQuantitySpec(p.value))
-                        elif p.buf[p.bufpos]=='e' and p.buf[p.bufpos+1] in ScientificNotation:
+                        elif p.buf[p.bufpos]==ScientificNotation_Start and p.buf[p.bufpos+1] in ScientificNotation:
                             let pv = p.value
                             parseExponent(p)
                             AddToken newFloating(pv & "e" & p.value)
