@@ -125,7 +125,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse cosecant of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex}
+            "angle" : {Integer,Floating,Complex,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -138,15 +138,19 @@ proc defineSymbols*() =
             ; => 0.2918255976444114-0.0959139808172324i
         """:
             ##########################################################
-            if x.kind==Complex: push(newComplex(arccsc(x.z)))
-            else: push(newFloating(arccsc(asFloat(x))))
+            var v = x
+            if x.kind == Quantity:
+                v = convertQuantityValue(x.nm, x.unit.name, RAD)
+
+            if v.kind==Complex: push(newComplex(arccsc(v.z)))
+            else: push(newFloating(arccsc(asFloat(v))))
 
     builtin "acsech",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic cosecant of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex}
+            "angle" : {Integer,Floating,Complex,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -159,8 +163,12 @@ proc defineSymbols*() =
             ; => 0.2862356627279947-0.08847073864038091i
         """:
             ##########################################################
-            if x.kind==Complex: push(newComplex(arccsch(x.z)))
-            else: push(newFloating(arccsch(asFloat(x))))
+            var v = x
+            if x.kind == Quantity:
+                v = convertQuantityValue(x.nm, x.unit.name, RAD)
+
+            if v.kind==Complex: push(newComplex(arccsch(v.z)))
+            else: push(newFloating(arccsch(asFloat(v))))
 
     builtin "actan",
         alias       = unaliased, 
