@@ -794,6 +794,15 @@ template parseQuantity(p: var Parser) =
         inc(pos)
     p.bufpos = pos
 
+template parseExponent(p: var Parser) =
+    setLen(p.value, 0)
+    var pos = p.bufpos
+    inc(pos)
+    while p.buf[pos] in PermittedColorChars:
+        add(p.value, p.buf[pos])
+        inc(pos)
+    p.bufpos = pos
+
 proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.inline.} =
     var topBlock: Value
     var scriptStr: string = ""
