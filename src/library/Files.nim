@@ -390,7 +390,7 @@ proc defineSymbols*() =
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("volume")
 
-                push newQuantity(newInteger(getFileSize(x.s)), QuantitySpec(InformationUnit, B))
+                push newQuantity(newInteger(getFileSize(x.s)), QuantitySpec(kind: InformationUnit, name: B))
 
         builtin "write",
             alias       = doublearrowright, 
