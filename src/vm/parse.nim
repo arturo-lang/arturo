@@ -798,7 +798,7 @@ template parseExponent(p: var Parser) =
     setLen(p.value, 0)
     var pos = p.bufpos
     inc(pos)
-    while p.buf[pos] in PermittedColorChars:
+    while p.buf[pos] in ScientificNotation:
         add(p.value, p.buf[pos])
         inc(pos)
     p.bufpos = pos
@@ -847,6 +847,7 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                         elif p.buf[p.bufpos]=='e' and p.buf[p.bufpos+1] in ScientificNotation:
                             let pv = p.value
                             parseExponent(p)
+                            AddToken newFloating(pv & "e" & p.value)
                         else:
                             AddToken newFloating(p.value)
                 else: 
@@ -857,6 +858,7 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                     elif p.buf[p.bufpos]=='e' and p.buf[p.bufpos+1] in ScientificNotation:
                         let pv = p.value
                         parseExponent(p)
+                        AddToken newFloating(pv & "e" & p.value)
                     else:
                         AddToken newInteger(p.value, p.lineNumber)
             of Symbols:
