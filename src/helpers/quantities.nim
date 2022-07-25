@@ -48,7 +48,7 @@ type
         XAU, XOF, ZAR
 
         # Length
-        M, DM, CM, MM, MIM, NM, KM, IN, FT, FM, YD, ANG, LY, MI, NMI
+        M, DM, CM, MM, MIM, NM, KM, IN, FT, FM, YD, ANG, LY, PC, MI, NMI
 
         # Area
         M2, DM2, CM2, MM2, MIM2, NM2, KM2, IN2, FT2, YD2, ANG2, MI2, AC, HA
@@ -111,6 +111,7 @@ const
         YD: 0.9144,
         ANG: 1e-10,
         LY: 9.461e+15,
+        PC: 3.086e+16,
         MI: 1609.34,
         NMI: 1852.0,
 
