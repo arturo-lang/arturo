@@ -223,7 +223,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse secant of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex}
+            "angle" : {Integer,Floating,Complex,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -236,15 +236,14 @@ proc defineSymbols*() =
             ; => 1.278970729150485+0.09591398081723231i
         """:
             ##########################################################
-            if x.kind==Complex: push(newComplex(arcsec(x.z)))
-            else: push(newFloating(arcsec(asFloat(x))))
+            processMath(arcsec)
 
     builtin "asech",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic secant of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex}
+            "angle" : {Integer,Floating,Complex,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -257,15 +256,14 @@ proc defineSymbols*() =
             ; => 0.09591398081723221-1.278970729150485i
         """:
             ##########################################################
-            if x.kind==Complex: push(newComplex(arcsech(x.z)))
-            else: push(newFloating(arcsech(asFloat(x))))
+            processMath(arcsech)
 
     builtin "asin",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the inverse sine of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex}
+            "angle" : {Integer,Floating,Complex,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -278,15 +276,14 @@ proc defineSymbols*() =
             ; => 1.248543032813438+1.867114393160262i
         """:
             ##########################################################
-            if x.kind==Complex: push(newComplex(arcsin(x.z)))
-            else: push(newFloating(arcsin(asFloat(x))))
+            processMath(arcsin)
 
     builtin "asinh",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic sine of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex}
+            "angle" : {Integer,Floating,Complex,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -299,15 +296,14 @@ proc defineSymbols*() =
             ; => 1.904627686970658+0.2955850342116299i
         """:
             ##########################################################
-            if x.kind==Complex: push(newComplex(arcsinh(x.z)))
-            else: push(newFloating(arcsinh(asFloat(x))))
+            processMath(arcsinh)
 
     builtin "atan",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the inverse tangent of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex}
+            "angle" : {Integer,Floating,Complex,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -320,8 +316,7 @@ proc defineSymbols*() =
             ; => 1.287340574324392+0.08505998507745416i
         """:
             ##########################################################
-            if x.kind==Complex: push(newComplex(arctan(x.z)))
-            else: push(newFloating(arctan(asFloat(x))))
+            processMath(arctan)
 
     builtin "atan2",
         alias       = unaliased, 
@@ -345,7 +340,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic tangent of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex}
+            "angle" : {Integer,Floating,Complex,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -358,8 +353,7 @@ proc defineSymbols*() =
             ; => 0.2946214403408571+1.470828825919461i
         """:
             ##########################################################
-            if x.kind==Complex: push(newComplex(arctanh(x.z)))
-            else: push(newFloating(arctanh(asFloat(x))))
+            processMath(arctanh)
 
     builtin "ceil",
         alias       = unaliased, 
@@ -400,7 +394,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the cosine of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex}
+            "angle" : {Integer,Floating,Complex,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -413,15 +407,14 @@ proc defineSymbols*() =
             ; => 0.8337300251311491-0.9888977057628651i
         """:
             ##########################################################
-            if x.kind==Complex: push(newComplex(cos(x.z)))
-            else: push(newFloating(cos(asFloat(x))))
+            processMath(cos)
 
     builtin "cosh",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic cosine of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex}
+            "angle" : {Integer,Floating,Complex,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -434,8 +427,7 @@ proc defineSymbols*() =
             ; => 2.032723007019666+3.0518977991518i
         """:
             ##########################################################
-            if x.kind==Complex: push(newComplex(cosh(x.z)))
-            else: push(newFloating(cosh(asFloat(x))))
+            processMath(cosh)
 
     builtin "csec",
         alias       = unaliased, 
