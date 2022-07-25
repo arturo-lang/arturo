@@ -205,7 +205,7 @@ proc RuntimeError_IncompatibleQuantityOperation*(operation: string, argA, argB, 
             "attempted: " & operation & ";" &
             "with: " & truncate(argA & " (" & kindA & ") " & argB & " (" & kindB & ")", 60)
 
-proc RuntimeError_CannotConvertQuantity*(val,argA, argB, kindA, kindB: string) =
+proc RuntimeError_CannotConvertQuantity*(val, argA, kindA, argB, kindB: string) =
     panic RuntimeError,
           "cannot convert quantity: " & val & ";" &
           "from :" & argA & " (" & kindA & ") " & ";" &
