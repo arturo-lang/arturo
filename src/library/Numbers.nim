@@ -101,12 +101,6 @@ proc defineSymbols*() =
         """:
             ##########################################################
             processMath(arccos)
-            # var v = x
-            # if x.kind == Quantity:
-            #     v = convertQuantityValue(x.nm, x.unit.name, RAD)
-
-            # if v.kind==Complex: push(newComplex(arccos(v.z)))
-            # else: push(newFloating(arccos(asFloat(v))))
 
     builtin "acosh",
         alias       = unaliased, 
@@ -127,12 +121,6 @@ proc defineSymbols*() =
         """:
             ##########################################################
             processMath(arccosh)
-            # var v = x
-            # if x.kind == Quantity:
-            #     v = convertQuantityValue(x.nm, x.unit.name, RAD)
-
-            # if v.kind==Complex: push(newComplex(arccosh(v.z)))
-            # else: push(newFloating(arccosh(asFloat(v))))
 
     builtin "acsec",
         alias       = unaliased, 
@@ -153,12 +141,6 @@ proc defineSymbols*() =
         """:
             ##########################################################
             processMath(arccsc)
-            # var v = x
-            # if x.kind == Quantity:
-            #     v = convertQuantityValue(x.nm, x.unit.name, RAD)
-
-            # if v.kind==Complex: push(newComplex(arccsc(v.z)))
-            # else: push(newFloating(arccsc(asFloat(v))))
 
     builtin "acsech",
         alias       = unaliased, 
@@ -179,19 +161,13 @@ proc defineSymbols*() =
         """:
             ##########################################################
             processMath(arccsch)
-            # var v = x
-            # if x.kind == Quantity:
-            #     v = convertQuantityValue(x.nm, x.unit.name, RAD)
-
-            # if v.kind==Complex: push(newComplex(arccsch(v.z)))
-            # else: push(newFloating(arccsch(asFloat(v))))
 
     builtin "actan",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the inverse cotangent of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex}
+            "angle" : {Integer,Floating,Complex,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -204,15 +180,14 @@ proc defineSymbols*() =
             ; => 0.2834557524705047-0.08505998507745414i
         """:
             ##########################################################
-            if x.kind==Complex: push(newComplex(arccot(x.z)))
-            else: push(newFloating(arccot(asFloat(x))))
+            processMath(arccot)
 
     builtin "actanh",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic cotangent of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex}
+            "angle" : {Integer,Floating,Complex,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -225,8 +200,7 @@ proc defineSymbols*() =
             ; => 0.2946214403408572-0.09996750087543603i
         """:
             ##########################################################
-            if x.kind==Complex: push(newComplex(arccoth(x.z)))
-            else: push(newFloating(arccoth(asFloat(x))))
+            processMath(actanh)
 
     builtin "angle",
         alias       = unaliased, 
