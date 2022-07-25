@@ -806,14 +806,6 @@ proc `+`*(x: Value, y: Value): Value =
                         RuntimeError_IncompatibleQuantityOperation("add", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
                     else:
                         return newQuantity(x.nm + convertQuantityValue(y.nm, y.unit.name, x.unit.name), x.unit)
-                        # if x.unit.kind == TemperatureUnit:
-                        #     return newQuantity(x.nm + convertToTemperatureUnit(y.nm, y.unit.name, x.unit.name), x.unit)
-                        # else:
-                        #     let fmultiplier = getQuantityMultiplier(y.unit, x.unit)
-                        #     if fmultiplier == 1.0:
-                        #         return newQuantity(x.nm + y.nm, x.unit)
-                        #     else:
-                        #         return newQuantity(x.nm + y.nm * newFloating(fmultiplier), x.unit)
             else:
                 return newQuantity(x.nm + y, x.unit)
         else:
@@ -883,14 +875,6 @@ proc `+=`*(x: var Value, y: Value) =
                         RuntimeError_IncompatibleQuantityOperation("add", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
                     else:
                         x.nm += convertQuantityValue(y.nm, y.unit.name, x.unit.name)
-                        # if x.unit.kind == TemperatureUnit:
-                        #     x.nm += convertToTemperatureUnit(y.nm, y.unit.name, x.unit.name)
-                        # else:
-                        #     let fmultiplier = getQuantityMultiplier(y.unit, x.unit)
-                        #     if fmultiplier == 1.0:
-                        #         x.nm += y.nm
-                        #     else:
-                        #         x.nm += y.nm * newFloating(fmultiplier)
             else:
                 x.nm += y
         else:
@@ -963,14 +947,6 @@ proc `-`*(x: Value, y: Value): Value =
                         RuntimeError_IncompatibleQuantityOperation("sub", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
                     else:
                         return newQuantity(x.nm - convertQuantityValue(y.nm, y.unit.name, x.unit.name), x.unit)
-                        # if x.unit.kind == TemperatureUnit:
-                        #     return newQuantity(x.nm - convertToTemperatureUnit(y.nm, y.unit.name, x.unit.name), x.unit)
-                        # else:
-                        #     let fmultiplier = getQuantityMultiplier(y.unit, x.unit)
-                        #     if fmultiplier == 1.0:
-                        #         return newQuantity(x.nm - y.nm, x.unit)
-                        #     else:
-                        #         return newQuantity(x.nm - y.nm * newFloating(fmultiplier), x.unit)
             else:
                 return newQuantity(x.nm - y, x.unit)
         else:
@@ -1041,14 +1017,6 @@ proc `-=`*(x: var Value, y: Value) =
                         RuntimeError_IncompatibleQuantityOperation("sub", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
                     else:
                         x.nm -= convertQuantityValue(y.nm, y.unit.name, x.unit.name)
-                        # if x.unit.kind == TemperatureUnit:
-                        #     x.nm -= convertToTemperatureUnit(y.nm, y.unit.name, x.unit.name)
-                        # else:
-                        #     let fmultiplier = getQuantityMultiplier(y.unit, x.unit)
-                        #     if fmultiplier == 1.0:
-                        #         x.nm -= y.nm
-                        #     else:
-                        #         x.nm -= y.nm * newFloating(fmultiplier)
             else:
                 x.nm -= y
         else:
@@ -1116,11 +1084,6 @@ proc `*`*(x: Value, y: Value): Value =
                     RuntimeError_IncompatibleQuantityOperation("mul", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
                 else:
                     return newQuantity(x.nm * convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
-                    # let fmultiplier = getQuantityMultiplier(y.unit, getCleanCorrelatedUnit(y.unit, x.unit))
-                    # if fmultiplier == 1.0:
-                    #     return newQuantity(x.nm * y.nm, finalSpec)
-                    # else:
-                    #     return newQuantity(x.nm * y.nm * newFloating(fmultiplier), finalSpec)
             else:
                 return newQuantity(x.nm * y, x.unit)
         else:
@@ -1188,11 +1151,6 @@ proc `*=`*(x: var Value, y: Value) =
                     RuntimeError_IncompatibleQuantityOperation("mul", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
                 else:
                     x = newQuantity(x.nm * convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
-                    # let fmultiplier = getQuantityMultiplier(y.unit, getCleanCorrelatedUnit(y.unit, x.unit))
-                    # if fmultiplier == 1.0:
-                    #     x = newQuantity(x.nm * y.nm, finalSpec)
-                    # else:
-                    #     x = newQuantity(x.nm * y.nm * newFloating(fmultiplier), finalSpec)
             else:
                 x.nm *= y
         else:
@@ -1261,11 +1219,6 @@ proc `/`*(x: Value, y: Value): Value =
                     return x.nm / y.nm
                 else:
                     return newQuantity(x.nm / convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
-                    # let fmultiplier = getQuantityMultiplier(y.unit, getCleanCorrelatedUnit(y.unit, x.unit))
-                    # if fmultiplier == 1.0:
-                    #     return newQuantity(x.nm / y.nm, finalSpec)
-                    # else:
-                    #     return newQuantity(x.nm / y.nm * newFloating(fmultiplier), finalSpec)
             else:
                 return newQuantity(x.nm / y, x.unit)
         else:
@@ -1327,11 +1280,6 @@ proc `/=`*(x: var Value, y: Value) =
                     x = x.nm / y.nm
                 else:
                     x = newQuantity(x.nm / convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
-                    # let fmultiplier = getQuantityMultiplier(y.unit, getCleanCorrelatedUnit(y.unit, x.unit))
-                    # if fmultiplier == 1.0:
-                    #     x = newQuantity(x.nm / y.nm, finalSpec)
-                    # else:
-                    #     x = newQuantity(x.nm / y.nm * newFloating(fmultiplier), finalSpec)
             else:
                 x.nm /= y
         else:
@@ -1400,11 +1348,6 @@ proc `//`*(x: Value, y: Value): Value =
                     return x.nm // y.nm
                 else:
                     return newQuantity(x.nm // convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
-                    # let fmultiplier = getQuantityMultiplier(y.unit, getCleanCorrelatedUnit(y.unit, x.unit))
-                    # if fmultiplier == 1.0:
-                    #     return newQuantity(x.nm // y.nm, finalSpec)
-                    # else:
-                    #     return newQuantity(x.nm // y.nm * newFloating(fmultiplier), finalSpec)
             else:
                 return newQuantity(x.nm // y, x.unit)
         else:
@@ -1437,11 +1380,6 @@ proc `//=`*(x: var Value, y: Value) =
                     x = x.nm // y.nm
                 else:
                     x = newQuantity(x.nm // convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
-                    # let fmultiplier = getQuantityMultiplier(y.unit, getCleanCorrelatedUnit(y.unit, x.unit))
-                    # if fmultiplier == 1.0:
-                    #     x = newQuantity(x.nm // y.nm, finalSpec)
-                    # else:
-                    #     x = newQuantity(x.nm // y.nm * newFloating(fmultiplier), finalSpec)
             else:
                 x.nm //= y
         else:
@@ -1469,14 +1407,6 @@ proc `%`*(x: Value, y: Value): Value =
                 return newQuantity(x.nm % y.nm, x.unit)
             else:
                 return newQuantity(x.nm % convertQuantityValue(y.nm, y.unit.name, x.unit.name), x.unit)
-                # if x.unit.kind == TemperatureUnit:
-                #     return newQuantity(x.nm % convertToTemperatureUnit(y.nm, y.unit.name, x.unit.name), x.unit)
-                # else:
-                #     let fmultiplier = getQuantityMultiplier(y.unit, x.unit)
-                #     if fmultiplier == 1.0:
-                #         return newQuantity(x.nm % y.nm, x.unit)
-                #     else:
-                #         return newQuantity(x.nm % (y.nm * newFloating(fmultiplier)), x.unit)
         else:
             if x.unit.kind != y.unit.kind:
                 RuntimeError_IncompatibleQuantityOperation("mod", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
@@ -1528,14 +1458,6 @@ proc `%=`*(x: var Value, y: Value) =
                 x.nm %= y.nm
             else:
                 x.nm %= convertQuantityValue(y.nm, y.unit.name, x.unit.name)
-                # if x.unit.kind == TemperatureUnit:
-                #     x.nm %= convertToTemperatureUnit(y.nm, y.unit.name, x.unit.name)
-                # else:
-                #     let fmultiplier = getQuantityMultiplier(y.unit, x.unit)
-                #     if fmultiplier == 1.0:
-                #         x.nm %= y.nm
-                #     else:
-                #         x.nm %= (y.nm * newFloating(fmultiplier))
         else:
             if x.unit.kind != y.unit.kind:
                 RuntimeError_IncompatibleQuantityOperation("mod", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
