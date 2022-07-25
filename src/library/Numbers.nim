@@ -27,6 +27,7 @@ when not defined(NOGMP):
     import extras/bignum
 
 import helpers/maths
+import helpers/quantities
 
 import vm/lib
 
@@ -74,7 +75,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse cosine of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex}
+            "angle" : {Integer,Floating,Complex,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -87,15 +88,19 @@ proc defineSymbols*() =
             ; => 0.3222532939814587-1.86711439316026i
         """:
             ##########################################################
-            if x.kind==Complex: push(newComplex(arccos(x.z)))
-            else: push(newFloating(arccos(asFloat(x))))
+            var v = x
+            if x.kind == Quantity:
+                v = convertQuantityValue(x.nm, x.unit.name, RAD)
+
+            if v.kind==Complex: push(newComplex(arccos(v.z)))
+            else: push(newFloating(arccos(asFloat(v))))
 
     builtin "acosh",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic cosine of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex}
+            "angle" : {Integer,Floating,Complex,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -108,8 +113,12 @@ proc defineSymbols*() =
             ; => 1.86711439316026+0.3222532939814587i
         """:
             ##########################################################
-            if x.kind==Complex: push(newComplex(arccosh(x.z)))
-            else: push(newFloating(arccosh(asFloat(x))))
+            var v = x
+            if x.kind == Quantity:
+                v = convertQuantityValue(x.nm, x.unit.name, RAD)
+
+            if v.kind==Complex: push(newComplex(arccosh(v.z)))
+            else: push(newFloating(arccosh(asFloat(v))))
 
     builtin "acsec",
         alias       = unaliased, 
