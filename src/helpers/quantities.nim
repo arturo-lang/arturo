@@ -41,12 +41,15 @@ type
 
     UnitName* = enum
         # Currency
-        AED, ALL, ARS, AUD, BGN, BRL, BTC, CAD, CHF, CLP, 
-        CNY, COP, CRC, CZK, DZD, EGP, ETB, EUR, GBP, HKD,
-        IDR, ILS, INR, IRR, ISK, JPY, KES, KRW, MXN, MYR,
-        NGN, NOK, NZD, PAB, PHP, PLN, QAR, RSD, RUB, SEK,
-        SGD, SOS, THB, TRY, UAH, USD, UYU, VND, XAF, XAG,
-        XAU, XOF, ZAR
+        AED, ALL, ARS, AUD, BGN, BHD, BNB, BND, BOB, BRL, BTC, BWP, 
+        CAD, CHF, CLP, CNY, COP, CRC, CZK, DKK, DOP, DZD, EGP, ETB,
+        ETH, EUR, FJD, GBP, HKD, HNL, HRK, HUF, IDR, ILS, INR, IRR, 
+        ISK, JMD, JOD, JPY, KES, KRW, KWD, KYD, KZT, LBP, LKR, MAD, 
+        MDL, MKD, MXN, MUR, MYR, NAD, NGN, NIO, NOK, NPR, NZD, OMR, 
+        PAB, PEN, PGK, PHP, PKR, PLN, PYG, QAR, RON, RSD, RUB, SAR,
+        SCR, SEK, SGD, SLL, SOS, SVC, THB, TND, TRY, TTD, TWD, TZS, 
+        UAH, UGX, USD, UYU, UZS, VND, XAF, XAG, XAU, XOF, YER, ZAR, 
+        ZMW
 
         # Length
         M, DM, CM, MM, MIM, NM, KM, IN, FT, FM, YD, ANG, LY, PC, MI, NMI
@@ -240,7 +243,7 @@ const
 
 func quantityKindForName(un: UnitName): UnitKind =
     case un:
-        of AED..ZAR     :   CurrencyUnit
+        of AED..ZMW     :   CurrencyUnit
         of M..NMI       :   LengthUnit
         of M2..HA       :   AreaUnit
         of M3..GAL      :   VolumeUnit
@@ -273,7 +276,7 @@ proc `$`*(qs: QuantitySpec): string =
     let un = qs.name
     result = toLowerAscii($(un))
     case un:
-        of AED..ZAR, J, MJ, N, B..TB    : result = toUpperAscii(result)
+        of AED..ZMW, J, MJ, N, B..TB    : result = toUpperAscii(result)
         of PA, BQ, CI, RD               : result = capitalizeAscii(result)
         of C..R                         : result = "°" & toUpperAscii(result)
         of MIM, MIM2, MIM3              : result = result.replace("mim","μm")
