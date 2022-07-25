@@ -57,6 +57,7 @@ const
     Whitespace                  = {' ', Tab}
 
     PermittedNumbers_Start      = {'0'..'9'}
+    ScientificNotation          = PermittedNumbers_Start + {'+', '-'}
     Symbols                     = {'~', '!', '@', '#', '$', '%', '^', '&', '*', '-', '_', '=', '+', '<', '>', '/', '\\', '|', '?'}
     Letters                     = {'a'..'z', 'A'..'Z'}
     PermittedIdentifiers_Start  = Letters
@@ -830,20 +831,25 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                     if p.value.count(Dot)>1:
                         AddToken newVersion(p.value)
                     else:
-                        if p.buf[p.bufpos]!=Colon:
-                            AddToken newFloating(p.value)
-                        else:
+                        if p.buf[p.bufpos]==Colon:
                             let pv = newFloating(p.value)
                             parseQuantity(p)
                             AddToken newQuantity(pv, parseQuantitySpec(p.value))
+                        elif p.buf[p.bufpos]=='e' and p.buf[p.bufpos+1] in ScientificNotation:
+                            let pv = p.value
+                            parseExponent(p)
+                        else:
+                            AddToken newFloating(p.value)
                 else: 
-                    if p.buf[p.bufpos]!=Colon:
-                        AddToken newInteger(p.value, p.lineNumber)
-                    else:
+                    if p.buf[p.bufpos]==Colon:
                         let pv = newInteger(p.value, p.lineNumber)
                         parseQuantity(p)
                         AddToken newQuantity(pv, parseQuantitySpec(p.value))
-
+                    elif p.buf[p.bufpos]=='e' and p.buf[p.bufpos+1] in ScientificNotation:
+                        let pv = p.value
+                        parseExponent(p)
+                    else:
+                        AddToken newInteger(p.value, p.lineNumber)
             of Symbols:
                 parseAndAddSymbol(p,topBlock)
             of PermittedIdentifiers_Start:
