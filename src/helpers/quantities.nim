@@ -52,7 +52,7 @@ type
         M, DM, CM, MM, MIM, NM, KM, IN, FT, FM, YD, ANG, LY, PC, MI, NMI
 
         # Area
-        M2, DM2, CM2, MM2, MIM2, NM2, KM2, IN2, FT2, YD2, ANG2, MI2, AC, HA
+        M2, DM2, CM2, MM2, MIM2, NM2, KM2, IN2, FT2, YD2, ANG2, MI2, AC, A, HA
 
         # Volume
         M3, DM3, CM3, MM3, MIM3, NM3, KM3, IN3, FT3, YD3, ANG3, MI3, L, DL, CL, ML, FLOZ, TSP, TBSP, PT, QT, GAL
@@ -133,6 +133,7 @@ const
         ANG2: 1e-20,
         MI2: 2592931.2786432, 
         AC: 4046.86,
+        A: 100.0,
         HA: 10000.0,
 
         # Volume
