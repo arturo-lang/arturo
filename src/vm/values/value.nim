@@ -594,6 +594,19 @@ proc convertToTemperatureUnit*(v: Value, src: UnitName, tgt: UnitName): Value =
 
         else: discard
 
+proc convertQuantityValue*(nm: Value, fromU: UnitName, toU: UnitName): Value =
+    let fromK = quantityKindForName(fromU)
+    let toK = quantityKindForName(toU)
+    
+    if toK == TemperatureUnit:
+        return convertToTemperatureUnit(nm, fromU, toU)
+    else:
+        let fmultiplier = getQuantityMultiplier(fromU, toU, isCurrency=fromK==CurrencyUnit)
+        if fmultiplier == 1.0:
+            return nm
+        else:
+            return nm * newFloating(fmultiplier)
+
 func newRegex*(rx: RegexObj): Value {.inline.} =
     Value(kind: Regex, rx: rx)
 
@@ -792,14 +805,15 @@ proc `+`*(x: Value, y: Value): Value =
                     if x.unit.kind != y.unit.kind:
                         RuntimeError_IncompatibleQuantityOperation("add", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
                     else:
-                        if x.unit.kind == TemperatureUnit:
-                            return newQuantity(x.nm + convertToTemperatureUnit(y.nm, y.unit.name, x.unit.name), x.unit)
-                        else:
-                            let fmultiplier = getQuantityMultiplier(y.unit, x.unit)
-                            if fmultiplier == 1.0:
-                                return newQuantity(x.nm + y.nm, x.unit)
-                            else:
-                                return newQuantity(x.nm + y.nm * newFloating(fmultiplier), x.unit)
+                        return newQuantity(x.nm + convertQuantityValue(y.nm, y.unit.name, x.unit.name), x.unit)
+                        # if x.unit.kind == TemperatureUnit:
+                        #     return newQuantity(x.nm + convertToTemperatureUnit(y.nm, y.unit.name, x.unit.name), x.unit)
+                        # else:
+                        #     let fmultiplier = getQuantityMultiplier(y.unit, x.unit)
+                        #     if fmultiplier == 1.0:
+                        #         return newQuantity(x.nm + y.nm, x.unit)
+                        #     else:
+                        #         return newQuantity(x.nm + y.nm * newFloating(fmultiplier), x.unit)
             else:
                 return newQuantity(x.nm + y, x.unit)
         else:
@@ -868,14 +882,15 @@ proc `+=`*(x: var Value, y: Value) =
                     if x.unit.kind != y.unit.kind:
                         RuntimeError_IncompatibleQuantityOperation("add", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
                     else:
-                        if x.unit.kind == TemperatureUnit:
-                            x.nm += convertToTemperatureUnit(y.nm, y.unit.name, x.unit.name)
-                        else:
-                            let fmultiplier = getQuantityMultiplier(y.unit, x.unit)
-                            if fmultiplier == 1.0:
-                                x.nm += y.nm
-                            else:
-                                x.nm += y.nm * newFloating(fmultiplier)
+                        x.nm += convertQuantityValue(y.nm, y.unit.name, x.unit.name)
+                        # if x.unit.kind == TemperatureUnit:
+                        #     x.nm += convertToTemperatureUnit(y.nm, y.unit.name, x.unit.name)
+                        # else:
+                        #     let fmultiplier = getQuantityMultiplier(y.unit, x.unit)
+                        #     if fmultiplier == 1.0:
+                        #         x.nm += y.nm
+                        #     else:
+                        #         x.nm += y.nm * newFloating(fmultiplier)
             else:
                 x.nm += y
         else:

@@ -245,7 +245,7 @@ const
 # Helpers
 #=======================================
 
-func quantityKindForName(un: UnitName): UnitKind =
+func quantityKindForName*(un: UnitName): UnitKind {.inline.} =
     case un:
         of AED..ZMW     :   CurrencyUnit
         of M..NMI       :   LengthUnit
@@ -320,6 +320,16 @@ proc getQuantityMultiplier*(src: QuantitySpec, tgt: QuantitySpec): float =
         return getExchangeRate(src.name, tgt.name)
     else:
         return ConversionRatio[src.name] / ConversionRatio[tgt.name]
+
+proc getQuantityMultiplier*(src: UnitName, tgt: UnitName, isCurrency=false): float =
+    # let srcKind = quantityKindForName(src)
+    # let tgtKind = quantityKindForName(tgt)
+    # if srcKind != tgtKind: return CannotConvertQuantity
+
+    if isCurrency:
+        return getExchangeRate(src, tgt)
+    else:
+        return ConversionRatio[src] / ConversionRatio[tgt]
 
 proc getCleanCorrelatedUnit*(b: QuantitySpec, a: QuantitySpec): QuantitySpec = 
     var s = ($(a.name)).replace("2","").replace("3","")

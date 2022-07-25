@@ -215,7 +215,7 @@ proc defineSymbols*() =
         builtin "pause",
             alias       = unaliased, 
             rule        = PrefixPrecedence,
-            description = "pause program's execution~for the given amount of milliseconds",
+            description = "pause program's execution~for the given amount of time",
             args        = {
                 "time"  : {Integer}
             },
