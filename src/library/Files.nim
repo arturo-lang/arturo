@@ -384,7 +384,7 @@ proc defineSymbols*() =
             returns     = {Quantity},
             example     = """
             volume "README.md"
-            ; => 13704 
+            ; => 13704B 
             ; (size in bytes)
             """:
                 ##########################################################
