@@ -35,7 +35,7 @@ import vm/lib
 # Helpers
 #=======================================
 
-template processMath*(fun: untyped): untyped =
+template processTrigonometric*(fun: untyped): untyped =
     var v = x
     if x.kind == Quantity:
         v = convertQuantityValue(x.nm, x.unit.name, RAD)
@@ -100,7 +100,7 @@ proc defineSymbols*() =
             ; => 0.3222532939814587-1.86711439316026i
         """:
             ##########################################################
-            processMath(arccos)
+            processTrigonometric(arccos)
 
     builtin "acosh",
         alias       = unaliased, 
@@ -120,7 +120,7 @@ proc defineSymbols*() =
             ; => 1.86711439316026+0.3222532939814587i
         """:
             ##########################################################
-            processMath(arccosh)
+            processTrigonometric(arccosh)
 
     builtin "acsec",
         alias       = unaliased, 
@@ -140,7 +140,7 @@ proc defineSymbols*() =
             ; => 0.2918255976444114-0.0959139808172324i
         """:
             ##########################################################
-            processMath(arccsc)
+            processTrigonometric(arccsc)
 
     builtin "acsech",
         alias       = unaliased, 
@@ -160,7 +160,7 @@ proc defineSymbols*() =
             ; => 0.2862356627279947-0.08847073864038091i
         """:
             ##########################################################
-            processMath(arccsch)
+            processTrigonometric(arccsch)
 
     builtin "actan",
         alias       = unaliased, 
@@ -180,7 +180,7 @@ proc defineSymbols*() =
             ; => 0.2834557524705047-0.08505998507745414i
         """:
             ##########################################################
-            processMath(arccot)
+            processTrigonometric(arccot)
 
     builtin "actanh",
         alias       = unaliased, 
@@ -200,7 +200,7 @@ proc defineSymbols*() =
             ; => 0.2946214403408572-0.09996750087543603i
         """:
             ##########################################################
-            processMath(arccoth)
+            processTrigonometric(arccoth)
 
     builtin "angle",
         alias       = unaliased, 
@@ -236,7 +236,7 @@ proc defineSymbols*() =
             ; => 1.278970729150485+0.09591398081723231i
         """:
             ##########################################################
-            processMath(arcsec)
+            processTrigonometric(arcsec)
 
     builtin "asech",
         alias       = unaliased, 
@@ -256,7 +256,7 @@ proc defineSymbols*() =
             ; => 0.09591398081723221-1.278970729150485i
         """:
             ##########################################################
-            processMath(arcsech)
+            processTrigonometric(arcsech)
 
     builtin "asin",
         alias       = unaliased, 
@@ -276,7 +276,7 @@ proc defineSymbols*() =
             ; => 1.248543032813438+1.867114393160262i
         """:
             ##########################################################
-            processMath(arcsin)
+            processTrigonometric(arcsin)
 
     builtin "asinh",
         alias       = unaliased, 
@@ -296,7 +296,7 @@ proc defineSymbols*() =
             ; => 1.904627686970658+0.2955850342116299i
         """:
             ##########################################################
-            processMath(arcsinh)
+            processTrigonometric(arcsinh)
 
     builtin "atan",
         alias       = unaliased, 
@@ -316,7 +316,7 @@ proc defineSymbols*() =
             ; => 1.287340574324392+0.08505998507745416i
         """:
             ##########################################################
-            processMath(arctan)
+            processTrigonometric(arctan)
 
     builtin "atan2",
         alias       = unaliased, 
@@ -353,7 +353,7 @@ proc defineSymbols*() =
             ; => 0.2946214403408571+1.470828825919461i
         """:
             ##########################################################
-            processMath(arctanh)
+            processTrigonometric(arctanh)
 
     builtin "ceil",
         alias       = unaliased, 
@@ -407,7 +407,7 @@ proc defineSymbols*() =
             ; => 0.8337300251311491-0.9888977057628651i
         """:
             ##########################################################
-            processMath(cos)
+            processTrigonometric(cos)
 
     builtin "cosh",
         alias       = unaliased, 
@@ -427,7 +427,7 @@ proc defineSymbols*() =
             ; => 2.032723007019666+3.0518977991518i
         """:
             ##########################################################
-            processMath(cosh)
+            processTrigonometric(cosh)
 
     builtin "csec",
         alias       = unaliased, 
@@ -447,7 +447,7 @@ proc defineSymbols*() =
             ; => 0.6215180171704283-0.3039310016284264i
         """:
             ##########################################################
-            processMath(csc)
+            processTrigonometric(csc)
 
     builtin "csech",
         alias       = unaliased, 
@@ -467,7 +467,7 @@ proc defineSymbols*() =
             ; => 0.3039310016284264-0.6215180171704283i
         """:
             ##########################################################
-            processMath(csch)
+            processTrigonometric(csch)
 
     builtin "ctan",
         alias       = unaliased, 
@@ -487,7 +487,7 @@ proc defineSymbols*() =
             ; => 0.2176215618544027-0.8680141428959249i
         """:
             ##########################################################
-            processMath(cot)
+            processTrigonometric(cot)
 
     builtin "ctanh",
         alias       = unaliased, 
@@ -507,7 +507,7 @@ proc defineSymbols*() =
             ; => 0.8680141428959249-0.2176215618544027i
         """:
             ##########################################################
-            processMath(coth)
+            processTrigonometric(coth)
 
     builtin "digits",
         alias       = unaliased, 
@@ -1087,7 +1087,7 @@ proc defineSymbols*() =
             ; => 0.4983370305551868+0.591083841721045i
         """:
             ##########################################################
-            processMath(sec)
+            processTrigonometric(sec)
 
     builtin "sech",
         alias       = unaliased, 
@@ -1107,7 +1107,7 @@ proc defineSymbols*() =
             ; => 0.4983370305551868-0.5910838417210451i
         """:
             ##########################################################
-            processMath(sech)
+            processTrigonometric(sech)
 
     builtin "sin",
         alias       = unaliased, 
@@ -1127,7 +1127,7 @@ proc defineSymbols*() =
             ; => 0.4983370305551868-0.5910838417210451i
         """:
             ##########################################################
-            processMath(sin)
+            processTrigonometric(sin)
 
     builtin "sinh",
         alias       = unaliased, 
@@ -1147,7 +1147,7 @@ proc defineSymbols*() =
             ; => 0.6349639147847361+1.298457581415977i
         """:
             ##########################################################
-            processMath(sinh)
+            processTrigonometric(sinh)
 
     builtin "sqrt",
         alias       = unaliased, 
@@ -1223,7 +1223,7 @@ proc defineSymbols*() =
             ; => 0.2717525853195119+1.083923327338695i
         """:
             ##########################################################
-            processMath(tan)
+            processTrigonometric(tan)
 
     builtin "tanh",
         alias       = unaliased, 
@@ -1243,7 +1243,7 @@ proc defineSymbols*() =
             ; => 1.083923327338695+0.2717525853195117i
         """:
             ##########################################################
-            processMath(tanh)
+            processTrigonometric(tanh)
 
     builtin "zero?",
         alias       = unaliased, 
