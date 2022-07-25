@@ -310,6 +310,9 @@ proc `stringify`*(uk: UnitKind): string =
 # Methods
 #=======================================
 
+proc newQuantitySpec*(un: UnitName): QuantitySpec {.inline.} =
+    QuantitySpec(kind: quantityKindForName(un), name: un)
+
 proc getQuantityMultiplier*(src: QuantitySpec, tgt: QuantitySpec): float =
     if src.kind != tgt.kind: return CannotConvertQuantity
 
@@ -330,20 +333,20 @@ proc getFinalUnitAfterOperation*(op: string, argA: QuantitySpec, argB: QuantityS
     case op:
         of "mul":
             if argA.kind == LengthUnit and argB.kind == LengthUnit and argA.name in M..MI:
-                return QuantitySpec(kind: AreaUnit, name: parseEnum[UnitName]($(argA.name)&"2"))
+                return newQuantitySpec(parseEnum[UnitName]($(argA.name)&"2"))
 
             elif ((argA.name in M..MI) or (argA.name in M2..MI2)) and (argB.kind in {LengthUnit,AreaUnit}) and argA.kind!=argB.kind:
-               return QuantitySpec(kind: VolumeUnit, name: parseEnum[UnitName](($(argA.name)).replace("2","")&"3"))
+               return newQuantitySpec(parseEnum[UnitName](($(argA.name)).replace("2","")&"3"))
 
         of "div", "mod", "fdiv":
             if ((argA.name in M2..MI2)) and (argB.kind==LengthUnit):
-               return QuantitySpec(kind: LengthUnit, name: parseEnum[UnitName](($(argA.name)).replace("2","")))
+               return newQuantitySpec(parseEnum[UnitName](($(argA.name)).replace("2","")))
 
             elif ((argA.name in M3..MI3)) and (argB.kind==LengthUnit):
-               return QuantitySpec(kind: AreaUnit, name: parseEnum[UnitName](($(argA.name)).replace("3","2")))
+               return newQuantitySpec(parseEnum[UnitName](($(argA.name)).replace("3","2")))
 
             elif ((argA.name in M3..MI3)) and (argB.kind==AreaUnit) and argA.kind!=argB.kind:
-               return QuantitySpec(kind: LengthUnit, name: parseEnum[UnitName](($(argA.name)).replace("3","")))
+               return newQuantitySpec(parseEnum[UnitName](($(argA.name)).replace("3","")))
 
             else:
                 return NumericQuantity
@@ -355,6 +358,4 @@ proc getFinalUnitAfterOperation*(op: string, argA: QuantitySpec, argB: QuantityS
 
 proc parseQuantitySpec*(str: string): QuantitySpec =
     let unitName = parseEnum[UnitName](toUpperAscii(str))
-    let unitKind = quantityKindForName(unitName)
-
-    QuantitySpec(kind: unitKind, name: unitName)
+    newQuantitySpec(unitName)
