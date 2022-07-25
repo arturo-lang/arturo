@@ -208,8 +208,8 @@ proc RuntimeError_IncompatibleQuantityOperation*(operation: string, argA, argB, 
 proc RuntimeError_CannotConvertQuantity*(val, argA, kindA, argB, kindB: string) =
     panic RuntimeError,
           "cannot convert quantity: " & val & ";" &
-          "from :" & argA & " (" & kindA & ") " & ";" &
-          "to   :" & argB & " (" & kindB & ")"
+          "from: " & argA & " (" & kindA & ") " & ";" &
+          "to: " & argB & " (" & kindB & ")"
 
 proc RuntimeError_OutOfBounds*(indx: int, maxRange: int) =
     panic RuntimeError,
