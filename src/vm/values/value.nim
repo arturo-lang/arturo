@@ -573,6 +573,9 @@ func newSymbolLiteral*(m: string): Value {.inline.} =
 func newQuantity*(nm: Value, unit: QuantitySpec): Value {.inline.} =
     Value(kind: Quantity, nm: nm, unit: unit)
 
+proc newQuantity*(nm: Value, name: UnitName): Value {.inline.} =
+    newQuantity(nm, newQuantitySpec(name))
+
 proc convertToTemperatureUnit*(v: Value, src: UnitName, tgt: UnitName): Value =
     case src:
         of C:
