@@ -1468,14 +1468,15 @@ proc `%`*(x: Value, y: Value): Value =
             if x.unit.name == y.unit.name:
                 return newQuantity(x.nm % y.nm, x.unit)
             else:
-                if x.unit.kind == TemperatureUnit:
-                    return newQuantity(x.nm % convertToTemperatureUnit(y.nm, y.unit.name, x.unit.name), x.unit)
-                else:
-                    let fmultiplier = getQuantityMultiplier(y.unit, x.unit)
-                    if fmultiplier == 1.0:
-                        return newQuantity(x.nm % y.nm, x.unit)
-                    else:
-                        return newQuantity(x.nm % (y.nm * newFloating(fmultiplier)), x.unit)
+                return newQuantity(x.nm % convertQuantityValue(y.nm, y.unit.name, x.unit.name), x.unit)
+                # if x.unit.kind == TemperatureUnit:
+                #     return newQuantity(x.nm % convertToTemperatureUnit(y.nm, y.unit.name, x.unit.name), x.unit)
+                # else:
+                #     let fmultiplier = getQuantityMultiplier(y.unit, x.unit)
+                #     if fmultiplier == 1.0:
+                #         return newQuantity(x.nm % y.nm, x.unit)
+                #     else:
+                #         return newQuantity(x.nm % (y.nm * newFloating(fmultiplier)), x.unit)
         else:
             if x.unit.kind != y.unit.kind:
                 RuntimeError_IncompatibleQuantityOperation("mod", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
@@ -1526,14 +1527,15 @@ proc `%=`*(x: var Value, y: Value) =
             if x.unit.name == y.unit.name:
                 x.nm %= y.nm
             else:
-                if x.unit.kind == TemperatureUnit:
-                    x.nm %= convertToTemperatureUnit(y.nm, y.unit.name, x.unit.name)
-                else:
-                    let fmultiplier = getQuantityMultiplier(y.unit, x.unit)
-                    if fmultiplier == 1.0:
-                        x.nm %= y.nm
-                    else:
-                        x.nm %= (y.nm * newFloating(fmultiplier))
+                x.nm %= convertQuantityValue(y.nm, y.unit.name, x.unit.name)
+                # if x.unit.kind == TemperatureUnit:
+                #     x.nm %= convertToTemperatureUnit(y.nm, y.unit.name, x.unit.name)
+                # else:
+                #     let fmultiplier = getQuantityMultiplier(y.unit, x.unit)
+                #     if fmultiplier == 1.0:
+                #         x.nm %= y.nm
+                #     else:
+                #         x.nm %= (y.nm * newFloating(fmultiplier))
         else:
             if x.unit.kind != y.unit.kind:
                 RuntimeError_IncompatibleQuantityOperation("mod", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
