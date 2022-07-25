@@ -269,10 +269,10 @@ proc defineSymbols*() =
 
                 ret["id"] = newInteger(getCurrentProcessId())
                 ret["memory"] = newDictionary({
-                    "occupied": newInteger(getOccupiedMem()),
-                    "free": newInteger(getFreeMem()),
-                    "total": newInteger(getTotalMem()),
-                    "max": newInteger(getMaxMem())
+                    "occupied": newQuantity(newInteger(getOccupiedMem()), B),
+                    "free": newQuantity(newInteger(getFreeMem()), B),
+                    "total": newQuantity(newInteger(getTotalMem()), B),
+                    "max": newQuantity(newInteger(getMaxMem()), B)
                 }.toOrderedTable)
 
                 push newDictionary(ret)
