@@ -58,7 +58,7 @@ type
         M2, DM2, CM2, MM2, MIM2, NM2, KM2, IN2, FT2, YD2, ANG2, MI2, AC, A, HA
 
         # Volume
-        M3, DM3, CM3, MM3, MIM3, NM3, KM3, IN3, FT3, YD3, ANG3, MI3, L, DL, CL, ML, FLOZ, TSP, TBSP, PT, QT, GAL
+        M3, DM3, CM3, MM3, MIM3, NM3, KM3, IN3, FT3, YD3, ANG3, MI3, L, DL, CL, ML, FLOZ, TSP, TBSP, CP, PT, QT, GAL
 
         # Pressure
         ATM, BAR, PA
@@ -163,6 +163,7 @@ const
         PT: 0.000473, 
         TSP: 4.9289e-6,
         TBSP: 1.47868e-5,
+        CP: 0.000236588,
         QT: 0.000946353, 
         GAL: 0.00378541,
 
