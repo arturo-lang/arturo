@@ -187,6 +187,14 @@ type
         NormalInteger
         BigInteger
 
+    FloatingKind* = enum
+        NormalFloating
+        BigFloating
+
+    RationalKind* = enum
+        NormalRational
+        BigRational
+
     FunctionKind* = enum
         UserFunction
         BuiltinFunction
@@ -233,9 +241,23 @@ type
                             bi* : Int    
                         else:
                             discard
-            of Floating:    f*  : float
+            of Floating:    
+                case fKind*: FloatingKind:
+                    of NormalFloating:   f*  : float
+                    of BigFloating:     
+                        when not defined(WEB) and not defined(NOGMP):
+                            bf* : Float
+                        else:
+                            discard
             of Complex:     z*  : Complex64
-            of Rational:    rat*: Rational[int]
+            of Rational:    
+                case rKind*: RationalKind:
+                    of NormalRational:   rat*  : Rational[int]
+                    of BigRational:
+                        when not defined(WEB) and not defined(NOGMP):
+                            brat* : Rat
+                        else:
+                            discard
             of Version: 
                 major*   : int
                 minor*   : int
@@ -339,8 +361,8 @@ let I10* = Value(kind: Integer, iKind: NormalInteger, i: 10)
 
 let I1M* = Value(kind: Integer, iKind: NormalInteger, i: -1)
 
-let F0*  = Value(kind: Floating, f: 0.0)
-let F1*  = Value(kind: Floating, f: 1.0)
+let F0*  = Value(kind: Floating, f: 0.0, fKind: NormalFloating)
+let F1*  = Value(kind: Floating, f: 1.0, fKind: NormalFloating)
 
 let VTRUE*  = Value(kind: Logical, b: True)
 let VFALSE* = Value(kind: Logical, b: False)
@@ -444,10 +466,10 @@ func newBigInteger*(i: int): Value {.inline.} =
         result = Value(kind: Integer, iKind: BigInteger, bi: newInt(i))
 
 func newFloating*(f: float): Value {.inline.} =
-    Value(kind: Floating, f: f)
+    Value(kind: Floating, f: f, fKind: NormalFloating)
 
 func newFloating*(f: int): Value {.inline.} =
-    Value(kind: Floating, f: (float)(f))
+    Value(kind: Floating, f: (float)(f), fKind: NormalFloating)
 
 func newFloating*(f: string): Value {.inline.} =
     newFloating(parseFloat(f))
@@ -471,16 +493,16 @@ func newComplex*(fre: Value, fim: Value): Value {.inline.} =
     newComplex(r,i)
 
 func newRational*(rat: Rational[int]): Value {.inline.} =
-    Value(kind: Rational, rat: rat)
+    Value(kind: Rational, rat: rat, rKind: NormalRational)
 
 func newRational*(num: int, den: int): Value {.inline.} =
-    Value(kind: Rational, rat: initRational(num, den))
+    Value(kind: Rational, rat: initRational(num, den), rKind: NormalRational)
 
 func newRational*(n: int): Value {.inline.} =
-    Value(kind: Rational, rat: toRational(n))
+    Value(kind: Rational, rat: toRational(n), rKind: NormalRational)
 
 func newRational*(n: float): Value {.inline.} =
-    Value(kind: Rational, rat: toRational(n))
+    Value(kind: Rational, rat: toRational(n), rKind: NormalRational)
 
 func newRational*(num: Value, den: Value): Value {.inline.} =
     newRational(num.i, den.i)
