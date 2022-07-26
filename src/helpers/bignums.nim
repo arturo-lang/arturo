@@ -20,6 +20,7 @@ import extras/gmp
 
 type 
     Int* = ref mpz_t
+    Float* = ref mpf_t
 
 #=======================================
 # Methods
