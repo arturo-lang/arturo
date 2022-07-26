@@ -85,7 +85,7 @@ type
         BIT, B, KB, MB, GB, TB, KIB, MIB, GIB, TIB, 
 
         # Time
-        MIN, HR, D, WK, MO, YR, S, MS, NS
+        MIN, H, D, WK, MO, YR, S, MS, NS
 
         # Temperature
         C, F, K, R
@@ -230,7 +230,7 @@ const
 
         # Time
         MIN: 1.0, 
-        HR: 60.0, 
+        H: 60.0, 
         D: 1440.0,
         WK: 10080.0,
         MO: 43800.0,
