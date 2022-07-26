@@ -278,12 +278,15 @@ func quantityKindForName*(un: UnitName): UnitKind {.inline.} =
             NoUnit
 
 proc getExchangeRate(src: UnitName, tgt: UnitName): float =
-    let s = toLowerAscii($(src))
-    let t = toLowerAscii($(tgt))
-    let url = "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/{s}/{t}.json".fmt
-    let content = waitFor (newAsyncHttpClient().getContent(url))
-    let response = parseJson(content)
-    return response[t].fnum
+    when not defined(WEB):
+        let s = toLowerAscii($(src))
+        let t = toLowerAscii($(tgt))
+        let url = "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/{s}/{t}.json".fmt
+        let content = waitFor (newAsyncHttpClient().getContent(url))
+        let response = parseJson(content)
+        return response[t].fnum
+    else:
+        return 1.0
 
 #=======================================
 # Overloads
