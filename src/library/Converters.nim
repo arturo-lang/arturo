@@ -1052,9 +1052,12 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Quantity},
-        # TODO(Converters\in) add documentation example
-        #  labels: library, documentation, easy
         example     = """
+            print in'cm 3:m
+            ; 300.0cm
+
+            print in'm2 1:yd2
+            ; 0.836127m²
         """:
             ##########################################################
             let qs = parseQuantitySpec(x.s)
