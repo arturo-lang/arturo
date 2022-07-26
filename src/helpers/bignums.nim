@@ -14,8 +14,11 @@ import os
 
 import extras/gmp
 
-type Int* = ref mpz_t
-  ## An Int represents a signed multi-precision integer.
+type 
+    Int* = ref mpz_t
+
+# type Int* = ref mpz_t
+## An Int represents a signed multi-precision integer.
 
 func isLLP64: bool {.compileTime.} =
   # LLP64 programming model

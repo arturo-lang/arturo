@@ -25,7 +25,7 @@
 #=======================================
 
 type 
-    INNER_C_UNION_5532179898798000430* {.union, importc: "no_name".} = object  
+    MP_ALG_DATA* {.union, importc: "no_name".} = object  
         mp_lc* {.importc: "_mp_lc".}: pointer
   
     mp_limb_t* {.importc, nodecl.} = uint
@@ -60,7 +60,7 @@ type
     mm_gmp_randstate_struct* {.importc: "__gmp_randstate_struct".} = object 
         mp_seed* {.importc: "_mp_seed".}: mpz_t
         mp_alg* {.importc: "_mp_alg".}: gmp_randalg_t
-        mp_algdata* {.importc: "_mp_algdata".}: INNER_C_UNION_5532179898798000430
+        mp_algdata* {.importc: "_mp_algdata".}: MP_ALG_DATA
 
     gmp_randstate_t* = mm_gmp_randstate_struct
     mpz_srcptr* = ptr mm_mpz_struct
@@ -74,9 +74,6 @@ type
     mpz* = mm_mpz_struct
     mpf* = mm_mpf_struct
     mpq* = mm_mpq_struct
-
-type 
-    Int* = ref mpz_t
 
 #=======================================
 # Constants
@@ -797,6 +794,9 @@ func mpz_xor*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc.}
 
 {.pop.}
 
-func finalizeInt*(z: Int) =
-    # Finalizer - release the memory allocated to the mpz.
+#=======================================
+# Methods
+#=======================================
+
+func finalizeInt*(z: ref mpz_t) =
     mpz_clear(z[])
