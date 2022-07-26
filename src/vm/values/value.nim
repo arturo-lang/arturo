@@ -604,7 +604,8 @@ proc convertQuantityValue*(nm: Value, fromU: UnitName, toU: UnitName, fromKind =
     if toK==NoUnit: toK = quantityKindForName(toU)
 
     if fromK!=toK:
-        RuntimeError_CannotConvertQuantity($(nm), stringify(fromU), stringify(fromK), stringify(toU), stringify(toK))
+        when not defined(WEB):
+            RuntimeError_CannotConvertQuantity($(nm), stringify(fromU), stringify(fromK), stringify(toU), stringify(toK))
     
     if toK == TemperatureUnit:
         return convertToTemperatureUnit(nm, fromU, toU)
