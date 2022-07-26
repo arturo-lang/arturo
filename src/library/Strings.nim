@@ -73,9 +73,18 @@ proc defineSymbols*() =
             "all"   : ({Logical},"also return non-dictionary characters")
         },
         returns     = {Block,Null},
-        # TODO(Strings\alphabet): add documentation example
-        #  label: library, documentation, easy
         example     = """
+            alphabet'es
+            ; => [a b c d e f g h i j k l m n ñ o p q r s t u v w x y z]
+
+            alphabet.upper 'es
+            ; => [A B C D E F G H I J K L M N Ñ O P Q R S T U V W X Y Z]
+
+            alphabet.all 'es
+            ; => [a b c d e f g h i j k l m n ñ o p q r s t u v w x y z á é í ó ú ü]
+
+            alphabet.lower.upper.all 'es
+            ; => [a b c d e f g h i j k l m n ñ o p q r s t u v w x y z á é í ó ú ü A B C D E F G H I J K L M N Ñ O P Q R S T U V W X Y Z Á É Í Ó Ú Ü]
         """:
             ##########################################################
             let lower = popAttr("lower")!=VNULL
