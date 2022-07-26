@@ -1,12 +1,20 @@
+######################################################
+# nim-gmp
+# GMP BigNum library wrapper
+# for Nim
 #
-# Nim GMP wrapper 
-# (c) Copyright 2014 Will Szumski
-#
-# See the file "COPYING", included in this
-# distribution, for details about the copyright.
-#
+# (c) 2022 Yanis Zafirópulos
+# 
+# @license: see LICENSE file
+# @file: extras/gmp.nim
+######################################################
 
-import os
+# Code based on Nim GMP wrapper
+# (c) Copyright 2014 Will Szumski
+
+#=======================================
+# Compilation & Linking
+#=======================================
 
 {.passL: "-lgmp".}
 
