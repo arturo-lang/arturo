@@ -20,9 +20,9 @@ type
     INNER_C_UNION_5532179898798000430* {.union, importc: "no_name".} = object  
         mp_lc* {.importc: "_mp_lc".}: pointer
   
-    mp_limb_t* {.importc: "mp_limb_t", nodecl.} = uint
-    mp_limb_signed_t* {.importc: "mp_limb_signed_t", nodecl.} = int
-    mp_bitcnt_t* {.importc: "mp_bitcnt_t", nodecl.} = culong
+    mp_limb_t* {.importc, nodecl.} = uint
+    mp_limb_signed_t* {.importc, nodecl.} = int
+    mp_bitcnt_t* {.importc, nodecl.} = culong
     mm_mpz_struct* {.byref, importc: "__mpz_struct".} = object 
         mp_alloc* {.importc: "_mp_alloc".}: cint
         mp_size* {.importc: "_mp_size".}: cint
@@ -32,8 +32,8 @@ type
     mpz_t* = mm_mpz_struct
     mp_ptr* = ptr mp_limb_t
     mp_srcptr* = ptr mp_limb_t
-    mp_size_t* {.importc: "mp_size_t", nodecl.} = clong
-    mp_exp_t* {.importc: "mp_exp_t", nodecl.} = clong
+    mp_size_t* {.importc, nodecl.} = clong
+    mp_exp_t* {.importc, nodecl.} = clong
     mm_mpq_struct* {.byref, importc: "__mpq_struct".} = object 
         mp_num* {.importc: "_mp_num".}: mm_mpz_struct
         mp_den* {.importc: "_mp_den".}: mm_mpz_struct
@@ -79,701 +79,705 @@ const
     GMP_ERROR_INVALID_ARGUMENT* = 8
 
 #=======================================
+# Variable prototypes
+#=======================================
+
+var mp_bits_per_limb* {.importc.}: cint
+var gmp_errno* {.importc.}: cint
+var gmp_version* {.importc.}: cstring
+
+#=======================================
 # Function prototypes
 #=======================================
 
-var mp_bits_per_limb* {.importc: "mp_bits_per_limb".}: cint
-var gmp_errno* {.importc: "gmp_errno".}: cint
-var gmp_version* {.importc: "gmp_version".}: cstring
-
-func mpq_numref*(a2: mpq_ptr): mpz_ptr {.importc: "mpq_numref".}
-func mpq_numref*(a2: var mpq_t): mpz_ptr {.importc: "mpq_numref".}
-func mpq_denref*(a2: mpq_ptr): mpz_ptr {.importc: "mpq_denref".}
-func mpq_denref*(a2: var mpq_t): mpz_ptr {.importc: "mpq_denref".}
-func mp_set_memory_functions*(a2: proc (a2: csize_t): pointer; a3: proc (a2: pointer; a3: csize_t; a4: csize_t): pointer; a4: proc (a2: pointer; a3: csize_t)) {.importc: "mp_set_memory_functions".}
-func mp_get_memory_functions*(a2: proc (a2: csize_t): pointer; a3: proc (a2: pointer; a3: csize_t; a4: csize_t): pointer; a4: proc (a2: pointer; a3: csize_t)) {.importc: "mp_get_memory_functions".}
-func gmp_randinit*(a2: gmp_randstate_t; a3: gmp_randalg_t) {.varargs,importc: "gmp_randinit".}
-func gmp_randinit_default*(a2: gmp_randstate_t) {.importc: "gmp_randinit_default".}
-func gmp_randinit_lc_2exp*(a2: gmp_randstate_t; a3: mpz_srcptr; a4: culong; a5: mp_bitcnt_t) {.importc: "gmp_randinit_lc_2exp".}
-func gmp_randinit_lc_2exp*(a2: gmp_randstate_t; a3: mpz_t; a4: culong; a5: mp_bitcnt_t) {.importc: "gmp_randinit_lc_2exp".}
-func gmp_randinit_lc_2exp_size*(a2: gmp_randstate_t; a3: mp_bitcnt_t): cint {.importc: "gmp_randinit_lc_2exp_size".}
-func gmp_randinit_mt*(a2: gmp_randstate_t) {.importc: "gmp_randinit_mt".}
-func gmp_randinit_set*(a2: gmp_randstate_t; a3: ptr mm_gmp_randstate_struct) {.importc: "gmp_randinit_set".}
-func gmp_randseed*(a2: gmp_randstate_t; a3: mpz_srcptr) {.importc: "gmp_randseed".}
-func gmp_randseed*(a2: gmp_randstate_t; a3: mpz_t) {.importc: "gmp_randseed".}
-func gmp_randseed_ui*(a2: gmp_randstate_t; a3: culong) {.importc: "gmp_randseed_ui".}
-func gmp_randclear*(a2: gmp_randstate_t) {.importc: "gmp_randclear".}
-func gmp_urandomb_ui*(a2: gmp_randstate_t; a3: culong): culong {.importc: "gmp_urandomb_ui".}
-func gmp_urandomm_ui*(a2: gmp_randstate_t; a3: culong): culong {.importc: "gmp_urandomm_ui".}
-func gmp_asprintf*(a2: cstringArray; a3: cstring): cint {.varargs,importc: "gmp_asprintf".}
-func gmp_fprintf*(a2: File; a3: cstring): cint {.varargs,importc: "gmp_fprintf".}
-func gmp_printf*(a2: cstring): cint {.varargs,importc: "gmp_printf".}
-func gmp_snprintf*(a2: cstring; a3: csize_t; a4: cstring): cint {.varargs,importc: "gmp_snprintf".}
-func gmp_sprintf*(a2: cstring; a3: cstring): cint {.varargs,importc: "gmp_sprintf".}
-func gmp_fscanf*(a2: File; a3: cstring): cint {.varargs,importc: "gmp_fscanf".}
-func gmp_scanf*(a2: cstring): cint {.varargs,importc: "gmp_scanf".}
-func gmp_sscanf*(a2: cstring; a3: cstring): cint {.varargs,importc: "gmp_sscanf".}
+func mpq_numref*(a2: mpq_ptr): mpz_ptr {.importc.}
+func mpq_numref*(a2: var mpq_t): mpz_ptr {.importc.}
+func mpq_denref*(a2: mpq_ptr): mpz_ptr {.importc.}
+func mpq_denref*(a2: var mpq_t): mpz_ptr {.importc.}
+func mp_set_memory_functions*(a2: proc (a2: csize_t): pointer; a3: proc (a2: pointer; a3: csize_t; a4: csize_t): pointer; a4: proc (a2: pointer; a3: csize_t)) {.importc.}
+func mp_get_memory_functions*(a2: proc (a2: csize_t): pointer; a3: proc (a2: pointer; a3: csize_t; a4: csize_t): pointer; a4: proc (a2: pointer; a3: csize_t)) {.importc.}
+func gmp_randinit*(a2: gmp_randstate_t; a3: gmp_randalg_t) {.varargs, importc.}
+func gmp_randinit_default*(a2: gmp_randstate_t) {.importc.}
+func gmp_randinit_lc_2exp*(a2: gmp_randstate_t; a3: mpz_srcptr; a4: culong; a5: mp_bitcnt_t) {.importc.}
+func gmp_randinit_lc_2exp*(a2: gmp_randstate_t; a3: mpz_t; a4: culong; a5: mp_bitcnt_t) {.importc.}
+func gmp_randinit_lc_2exp_size*(a2: gmp_randstate_t; a3: mp_bitcnt_t): cint {.importc.}
+func gmp_randinit_mt*(a2: gmp_randstate_t) {.importc.}
+func gmp_randinit_set*(a2: gmp_randstate_t; a3: ptr mm_gmp_randstate_struct) {.importc.}
+func gmp_randseed*(a2: gmp_randstate_t; a3: mpz_srcptr) {.importc.}
+func gmp_randseed*(a2: gmp_randstate_t; a3: mpz_t) {.importc.}
+func gmp_randseed_ui*(a2: gmp_randstate_t; a3: culong) {.importc.}
+func gmp_randclear*(a2: gmp_randstate_t) {.importc.}
+func gmp_urandomb_ui*(a2: gmp_randstate_t; a3: culong): culong {.importc.}
+func gmp_urandomm_ui*(a2: gmp_randstate_t; a3: culong): culong {.importc.}
+func gmp_asprintf*(a2: cstringArray; a3: cstring): cint {.varargs, importc.}
+func gmp_fprintf*(a2: File; a3: cstring): cint {.varargs, importc.}
+func gmp_printf*(a2: cstring): cint {.varargs, importc.}
+func gmp_snprintf*(a2: cstring; a3: csize_t; a4: cstring): cint {.varargs, importc.}
+func gmp_sprintf*(a2: cstring; a3: cstring): cint {.varargs, importc.}
+func gmp_fscanf*(a2: File; a3: cstring): cint {.varargs, importc.}
+func gmp_scanf*(a2: cstring): cint {.varargs, importc.}
+func gmp_sscanf*(a2: cstring; a3: cstring): cint {.varargs, importc.}
 func m_mpz_realloc*(a2: mpz_ptr; a3: mp_size_t): pointer {.importc: "_mpz_realloc".}
 func m_mpz_realloc*(a2: var mpz_t; a3: mp_size_t): pointer {.importc: "_mpz_realloc".}
-func mpz_add*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_add".}
-func mpz_add*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_add".}
-func mpz_add_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.importc: "mpz_add_ui".}
-func mpz_add_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.importc: "mpz_add_ui".}
-func mpz_addmul*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_addmul".}
-func mpz_addmul*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_addmul".}
-func mpz_addmul_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.importc: "mpz_addmul_ui".}
-func mpz_addmul_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.importc: "mpz_addmul_ui".}
-func mpz_and*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_and".}
-func mpz_and*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_and".}
-func mpz_array_init*(a2: mpz_ptr; a3: mp_size_t; a4: mp_size_t) {.importc: "mpz_array_init".}
-func mpz_array_init*(a2: var mpz_t; a3: mp_size_t; a4: mp_size_t) {.importc: "mpz_array_init".}
-func mpz_bin_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.importc: "mpz_bin_ui".}
-func mpz_bin_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.importc: "mpz_bin_ui".}
-func mpz_bin_uiui*(a2: mpz_ptr; a3: culong; a4: culong) {.importc: "mpz_bin_uiui".}
-func mpz_bin_uiui*(a2: var mpz_t; a3: culong; a4: culong) {.importc: "mpz_bin_uiui".}
-func mpz_cdiv_q*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_cdiv_q".}
-func mpz_cdiv_q*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_cdiv_q".}
-func mpz_cdiv_q_2exp*(a2: mpz_ptr; a3: mpz_srcptr; a4: mp_bitcnt_t) {.importc: "mpz_cdiv_q_2exp".}
-func mpz_cdiv_q_2exp*(a2: var mpz_t; a3: mpz_t; a4: mp_bitcnt_t) {.importc: "mpz_cdiv_q_2exp".}
-func mpz_cdiv_q_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong): culong {.importc: "mpz_cdiv_q_ui".}
-func mpz_cdiv_q_ui*(a2: var mpz_t; a3: mpz_t; a4: culong): culong {.importc: "mpz_cdiv_q_ui".}
-func mpz_cdiv_qr*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_srcptr; a5: mpz_srcptr) {.importc: "mpz_cdiv_qr".}
-func mpz_cdiv_qr*(a2: var mpz_t; a3: var mpz_t; a4: mpz_t; a5: mpz_t) {.importc: "mpz_cdiv_qr".}
-func mpz_cdiv_qr_ui*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_srcptr; a5: culong): culong {.importc: "mpz_cdiv_qr_ui".}
-func mpz_cdiv_qr_ui*(a2: var mpz_t; a3: var mpz_t; a4: mpz_t; a5: culong): culong {.importc: "mpz_cdiv_qr_ui".}
-func mpz_cdiv_r*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_cdiv_r".}
-func mpz_cdiv_r*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_cdiv_r".}
-func mpz_cdiv_r_2exp*(a2: mpz_ptr; a3: mpz_srcptr; a4: mp_bitcnt_t) {.importc: "mpz_cdiv_r_2exp".}
-func mpz_cdiv_r_2exp*(a2: var mpz_t; a3: mpz_t; a4: mp_bitcnt_t) {.importc: "mpz_cdiv_r_2exp".}
-func mpz_cdiv_r_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong): culong {.importc: "mpz_cdiv_r_ui".}
-func mpz_cdiv_r_ui*(a2: var mpz_t; a3: mpz_t; a4: culong): culong {.importc: "mpz_cdiv_r_ui".}
-func mpz_cdiv_ui*(a2: mpz_srcptr; a3: culong): culong {.importc: "mpz_cdiv_ui".}
-func mpz_cdiv_ui*(a2: mpz_t; a3: culong): culong {.importc: "mpz_cdiv_ui".}
-func mpz_clear*(a2: mpz_ptr) {.importc: "mpz_clear".}
-func mpz_clear*(a2: var mpz_t) {.importc: "mpz_clear".}
-func mpz_clears*(a2: mpz_ptr) {.varargs,importc: "mpz_clears".}
-func mpz_clears*(a2: var mpz_t) {.varargs,importc: "mpz_clears".}
-func mpz_clrbit*(a2: mpz_ptr; a3: mp_bitcnt_t) {.importc: "mpz_clrbit".}
-func mpz_clrbit*(a2: var mpz_t; a3: mp_bitcnt_t) {.importc: "mpz_clrbit".}
-func mpz_cmp*(a2: mpz_srcptr; a3: mpz_srcptr): cint {.importc: "mpz_cmp".}
-func mpz_cmp*(a2: mpz_t; a3: mpz_t): cint {.importc: "mpz_cmp".}
-func mpz_cmp_d*(a2: mpz_srcptr; a3: cdouble): cint {.importc: "mpz_cmp_d".}
-func mpz_cmp_d*(a2: mpz_t; a3: cdouble): cint {.importc: "mpz_cmp_d".}
+func mpz_add*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc.}
+func mpz_add*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc.}
+func mpz_add_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.importc.}
+func mpz_add_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.importc.}
+func mpz_addmul*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc.}
+func mpz_addmul*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc.}
+func mpz_addmul_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.importc.}
+func mpz_addmul_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.importc.}
+func mpz_and*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc.}
+func mpz_and*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc.}
+func mpz_array_init*(a2: mpz_ptr; a3: mp_size_t; a4: mp_size_t) {.importc.}
+func mpz_array_init*(a2: var mpz_t; a3: mp_size_t; a4: mp_size_t) {.importc.}
+func mpz_bin_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.importc.}
+func mpz_bin_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.importc.}
+func mpz_bin_uiui*(a2: mpz_ptr; a3: culong; a4: culong) {.importc.}
+func mpz_bin_uiui*(a2: var mpz_t; a3: culong; a4: culong) {.importc.}
+func mpz_cdiv_q*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc.}
+func mpz_cdiv_q*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc.}
+func mpz_cdiv_q_2exp*(a2: mpz_ptr; a3: mpz_srcptr; a4: mp_bitcnt_t) {.importc.}
+func mpz_cdiv_q_2exp*(a2: var mpz_t; a3: mpz_t; a4: mp_bitcnt_t) {.importc.}
+func mpz_cdiv_q_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong): culong {.importc.}
+func mpz_cdiv_q_ui*(a2: var mpz_t; a3: mpz_t; a4: culong): culong {.importc.}
+func mpz_cdiv_qr*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_srcptr; a5: mpz_srcptr) {.importc.}
+func mpz_cdiv_qr*(a2: var mpz_t; a3: var mpz_t; a4: mpz_t; a5: mpz_t) {.importc.}
+func mpz_cdiv_qr_ui*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_srcptr; a5: culong): culong {.importc.}
+func mpz_cdiv_qr_ui*(a2: var mpz_t; a3: var mpz_t; a4: mpz_t; a5: culong): culong {.importc.}
+func mpz_cdiv_r*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc.}
+func mpz_cdiv_r*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc.}
+func mpz_cdiv_r_2exp*(a2: mpz_ptr; a3: mpz_srcptr; a4: mp_bitcnt_t) {.importc.}
+func mpz_cdiv_r_2exp*(a2: var mpz_t; a3: mpz_t; a4: mp_bitcnt_t) {.importc.}
+func mpz_cdiv_r_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong): culong {.importc.}
+func mpz_cdiv_r_ui*(a2: var mpz_t; a3: mpz_t; a4: culong): culong {.importc.}
+func mpz_cdiv_ui*(a2: mpz_srcptr; a3: culong): culong {.importc.}
+func mpz_cdiv_ui*(a2: mpz_t; a3: culong): culong {.importc.}
+func mpz_clear*(a2: mpz_ptr) {.importc.}
+func mpz_clear*(a2: var mpz_t) {.importc.}
+func mpz_clears*(a2: mpz_ptr) {.varargs, importc.}
+func mpz_clears*(a2: var mpz_t) {.varargs, importc.}
+func mpz_clrbit*(a2: mpz_ptr; a3: mp_bitcnt_t) {.importc.}
+func mpz_clrbit*(a2: var mpz_t; a3: mp_bitcnt_t) {.importc.}
+func mpz_cmp*(a2: mpz_srcptr; a3: mpz_srcptr): cint {.importc.}
+func mpz_cmp*(a2: mpz_t; a3: mpz_t): cint {.importc.}
+func mpz_cmp_d*(a2: mpz_srcptr; a3: cdouble): cint {.importc.}
+func mpz_cmp_d*(a2: mpz_t; a3: cdouble): cint {.importc.}
 func mpz_cmp_si*(a2: mpz_srcptr; a3: clong): cint {.importc: "_mpz_cmp_si".}
 func mpz_cmp_si*(a2: mpz_t; a3: clong): cint {.importc: "_mpz_cmp_si".}
 func mpz_cmp_ui*(a2: mpz_srcptr; a3: culong): cint {.importc: "_mpz_cmp_ui".}
 func mpz_cmp_ui*(a2: mpz_t; a3: culong): cint {.importc: "_mpz_cmp_ui".}
-func mpz_cmpabs*(a2: mpz_srcptr; a3: mpz_srcptr): cint {.importc: "mpz_cmpabs".}
-func mpz_cmpabs*(a2: mpz_t; a3: mpz_t): cint {.importc: "mpz_cmpabs".}
-func mpz_cmpabs_d*(a2: mpz_srcptr; a3: cdouble): cint {.importc: "mpz_cmpabs_d".}
-func mpz_cmpabs_d*(a2: mpz_t; a3: cdouble): cint {.importc: "mpz_cmpabs_d".}
-func mpz_cmpabs_ui*(a2: mpz_srcptr; a3: culong): cint {.importc: "mpz_cmpabs_ui".}
-func mpz_cmpabs_ui*(a2: mpz_t; a3: culong): cint {.importc: "mpz_cmpabs_ui".}
-func mpz_com*(a2: mpz_ptr; a3: mpz_srcptr) {.importc: "mpz_com".}
-func mpz_com*(a2: var mpz_t; a3: mpz_t) {.importc: "mpz_com".}
-func mpz_combit*(a2: mpz_ptr; a3: mp_bitcnt_t) {.importc: "mpz_combit".}
-func mpz_combit*(a2: var mpz_t; a3: mp_bitcnt_t) {.importc: "mpz_combit".}
-func mpz_congruent_p*(a2: mpz_srcptr; a3: mpz_srcptr; a4: mpz_srcptr): cint {.importc: "mpz_congruent_p".}
-func mpz_congruent_p*(a2: mpz_t; a3: mpz_t; a4: mpz_t): cint {.importc: "mpz_congruent_p".}
-func mpz_congruent_2exp_p*(a2: mpz_srcptr; a3: mpz_srcptr; a4: mp_bitcnt_t): cint {.importc: "mpz_congruent_2exp_p".}
-func mpz_congruent_2exp_p*(a2: mpz_t; a3: mpz_t; a4: mp_bitcnt_t): cint {.importc: "mpz_congruent_2exp_p".}
-func mpz_congruent_ui_p*(a2: mpz_srcptr; a3: culong; a4: culong): cint {.importc: "mpz_congruent_ui_p".}
-func mpz_congruent_ui_p*(a2: mpz_t; a3: culong; a4: culong): cint {.importc: "mpz_congruent_ui_p".}
-func mpz_divexact*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_divexact".}
-func mpz_divexact*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_divexact".}
-func mpz_divexact_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.importc: "mpz_divexact_ui".}
-func mpz_divexact_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.importc: "mpz_divexact_ui".}
-func mpz_divisible_p*(a2: mpz_srcptr; a3: mpz_srcptr): cint {.importc: "mpz_divisible_p".}
-func mpz_divisible_p*(a2: mpz_t; a3: mpz_t): cint {.importc: "mpz_divisible_p".}
-func mpz_divisible_ui_p*(a2: mpz_srcptr; a3: culong): cint {.importc: "mpz_divisible_ui_p".}
-func mpz_divisible_ui_p*(a2: mpz_t; a3: culong): cint {.importc: "mpz_divisible_ui_p".}
-func mpz_divisible_2exp_p*(a2: mpz_srcptr; a3: mp_bitcnt_t): cint {.importc: "mpz_divisible_2exp_p".}
-func mpz_divisible_2exp_p*(a2: mpz_t; a3: mp_bitcnt_t): cint {.importc: "mpz_divisible_2exp_p".}
-func mpz_dump*(a2: mpz_srcptr) {.importc: "mpz_dump".}
-func mpz_dump*(a2: mpz_t) {.importc: "mpz_dump".}
-func mpz_export*(a2: pointer; a3: ptr csize_t; a4: cint; a5: csize_t; a6: cint; a7: csize_t; a8: mpz_srcptr): pointer {.importc: "mpz_export".}
-func mpz_export*(a2: pointer; a3: ptr csize_t; a4: cint; a5: csize_t; a6: cint; a7: csize_t; a8: mpz_t): pointer {.importc: "mpz_export".}
-func mpz_fac_ui*(a2: mpz_ptr; a3: culong) {.importc: "mpz_fac_ui".}
-func mpz_fac_ui*(a2: var mpz_t; a3: culong) {.importc: "mpz_fac_ui".}
-func mpz_2fac_ui*(a2: mpz_ptr; a3: culong) {.importc: "mpz_2fac_ui".}
-func mpz_2fac_ui*(a2: var mpz_t; a3: culong) {.importc: "mpz_2fac_ui".}
-func mpz_mfac_uiui*(a2: mpz_ptr; a3: culong; a4: culong) {.importc: "mpz_mfac_uiui".}
-func mpz_mfac_uiui*(a2: var mpz_t; a3: culong; a4: culong) {.importc: "mpz_mfac_uiui".}
-func mpz_primorial_ui*(a2: mpz_ptr; a3: culong) {.importc: "mpz_primorial_ui".}
-func mpz_primorial_ui*(a2: var mpz_t; a3: culong) {.importc: "mpz_primorial_ui".}
-func mpz_fdiv_q*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_fdiv_q".}
-func mpz_fdiv_q*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_fdiv_q".}
-func mpz_fdiv_q_2exp*(a2: mpz_ptr; a3: mpz_srcptr; a4: mp_bitcnt_t) {.importc: "mpz_fdiv_q_2exp".}
-func mpz_fdiv_q_2exp*(a2: var mpz_t; a3: mpz_t; a4: mp_bitcnt_t) {.importc: "mpz_fdiv_q_2exp".}
-func mpz_fdiv_q_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong): culong {.importc: "mpz_fdiv_q_ui".}
-func mpz_fdiv_q_ui*(a2: var mpz_t; a3: mpz_t; a4: culong): culong {.importc: "mpz_fdiv_q_ui".}
-func mpz_fdiv_qr*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_srcptr; a5: mpz_srcptr) {.importc: "mpz_fdiv_qr".}
-func mpz_fdiv_qr*(a2: var mpz_t; a3: var mpz_t; a4: mpz_t; a5: mpz_t) {.importc: "mpz_fdiv_qr".}
-func mpz_fdiv_qr_ui*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_srcptr; a5: culong): culong {.importc: "mpz_fdiv_qr_ui".}
-func mpz_fdiv_qr_ui*(a2: var mpz_t; a3: var mpz_t; a4: mpz_t; a5: culong): culong {.importc: "mpz_fdiv_qr_ui".}
-func mpz_fdiv_r*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_fdiv_r".}
-func mpz_fdiv_r*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_fdiv_r".}
-func mpz_fdiv_r_2exp*(a2: mpz_ptr; a3: mpz_srcptr; a4: mp_bitcnt_t) {.importc: "mpz_fdiv_r_2exp".}
-func mpz_fdiv_r_2exp*(a2: var mpz_t; a3: mpz_t; a4: mp_bitcnt_t) {.importc: "mpz_fdiv_r_2exp".}
-func mpz_fdiv_r_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong): culong {.importc: "mpz_fdiv_r_ui".}
-func mpz_fdiv_r_ui*(a2: var mpz_t; a3: mpz_t; a4: culong): culong {.importc: "mpz_fdiv_r_ui".}
-func mpz_fdiv_ui*(a2: mpz_srcptr; a3: culong): culong {.importc: "mpz_fdiv_ui".}
-func mpz_fdiv_ui*(a2: mpz_t; a3: culong): culong {.importc: "mpz_fdiv_ui".}
-func mpz_fib_ui*(a2: mpz_ptr; a3: culong) {.importc: "mpz_fib_ui".}
-func mpz_fib_ui*(a2: var mpz_t; a3: culong) {.importc: "mpz_fib_ui".}
-func mpz_fib2_ui*(a2: mpz_ptr; a3: mpz_ptr; a4: culong) {.importc: "mpz_fib2_ui".}
-func mpz_fib2_ui*(a2: var mpz_t; a3: var mpz_t; a4: culong) {.importc: "mpz_fib2_ui".}
-func mpz_fits_sint_p*(a2: mpz_srcptr): cint {.importc: "mpz_fits_sint_p".}
-func mpz_fits_sint_p*(a2: mpz_t): cint {.importc: "mpz_fits_sint_p".}
-func mpz_fits_slong_p*(a2: mpz_srcptr): cint {.importc: "mpz_fits_slong_p".}
-func mpz_fits_slong_p*(a2: mpz_t): cint {.importc: "mpz_fits_slong_p".}
-func mpz_fits_sshort_p*(a2: mpz_srcptr): cint {.importc: "mpz_fits_sshort_p".}
-func mpz_fits_sshort_p*(a2: mpz_t): cint {.importc: "mpz_fits_sshort_p".}
-func mpz_gcd*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_gcd".}
-func mpz_gcd*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_gcd".}
-func mpz_gcd_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong): culong {.importc: "mpz_gcd_ui".}
-func mpz_gcd_ui*(a2: var mpz_t; a3: mpz_t; a4: culong): culong {.importc: "mpz_gcd_ui".}
-func mpz_gcdext*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_ptr; a5: mpz_srcptr; a6: mpz_srcptr) {.importc: "mpz_gcdext".}
-func mpz_gcdext*(a2: var mpz_t; a3: var mpz_t; a4: var mpz_t; a5: mpz_t; a6: mpz_t) {.importc: "mpz_gcdext".}
-func mpz_get_d*(a2: mpz_srcptr): cdouble {.importc: "mpz_get_d".}
-func mpz_get_d*(a2: mpz_t): cdouble {.importc: "mpz_get_d".}
-func mpz_get_d_2exp*(a2: ptr clong; a3: mpz_srcptr): cdouble {.importc: "mpz_get_d_2exp".}
-func mpz_get_d_2exp*(a2: ptr clong; a3: mpz_t): cdouble {.importc: "mpz_get_d_2exp".}
-func mpz_get_si*(a2: mpz_srcptr): clong {.importc: "mpz_get_si".}
-func mpz_get_si*(a2: mpz_t): clong {.importc: "mpz_get_si".}
-func mpz_get_str*(a2: cstring; a3: cint; a4: mpz_srcptr): cstring {.importc: "mpz_get_str".}
-func mpz_get_str*(a2: cstring; a3: cint; a4: mpz_t): cstring {.importc: "mpz_get_str".}
-func mpz_hamdist*(a2: mpz_srcptr; a3: mpz_srcptr): mp_bitcnt_t {.importc: "mpz_hamdist".}
-func mpz_hamdist*(a2: mpz_t; a3: mpz_t): mp_bitcnt_t {.importc: "mpz_hamdist".}
-func mpz_import*(a2: mpz_ptr; a3: csize_t; a4: cint; a5: csize_t; a6: cint; a7: csize_t; a8: pointer) {.importc: "mpz_import".}
-func mpz_import*(a2: var mpz_t; a3: csize_t; a4: cint; a5: csize_t; a6: cint; a7: csize_t; a8: pointer) {.importc: "mpz_import".}
-func mpz_init*(a2: mpz_ptr) {.importc: "mpz_init".}
-func mpz_init*(a2: var mpz_t) {.importc: "mpz_init".}
-func mpz_init2*(a2: mpz_ptr; a3: mp_bitcnt_t) {.importc: "mpz_init2".}
-func mpz_init2*(a2: var mpz_t; a3: mp_bitcnt_t) {.importc: "mpz_init2".}
-func mpz_inits*(a2: mpz_ptr) {.varargs,importc: "mpz_inits".}
-func mpz_inits*(a2: var mpz_t) {.varargs,importc: "mpz_inits".}
-func mpz_init_set*(a2: mpz_ptr; a3: mpz_srcptr) {.importc: "mpz_init_set".}
-func mpz_init_set*(a2: var mpz_t; a3: mpz_t) {.importc: "mpz_init_set".}
-func mpz_init_set_d*(a2: mpz_ptr; a3: cdouble) {.importc: "mpz_init_set_d".}
-func mpz_init_set_d*(a2: var mpz_t; a3: cdouble) {.importc: "mpz_init_set_d".}
-func mpz_init_set_si*(a2: mpz_ptr; a3: clong) {.importc: "mpz_init_set_si".}
-func mpz_init_set_si*(a2: var mpz_t; a3: clong) {.importc: "mpz_init_set_si".}
-func mpz_init_set_str*(a2: mpz_ptr; a3: cstring; a4: cint): cint {.importc: "mpz_init_set_str".}
-func mpz_init_set_str*(a2: var mpz_t; a3: cstring; a4: cint): cint {.importc: "mpz_init_set_str".}
-func mpz_init_set_ui*(a2: mpz_ptr; a3: culong) {.importc: "mpz_init_set_ui".}
-func mpz_init_set_ui*(a2: var mpz_t; a3: culong) {.importc: "mpz_init_set_ui".}
-func mpz_inp_raw*(a2: mpz_ptr; a3: File): csize_t {.importc: "mpz_inp_raw".}
-func mpz_inp_raw*(a2: var mpz_t; a3: File): csize_t {.importc: "mpz_inp_raw".}
-func mpz_inp_str*(a2: mpz_ptr; a3: File; a4: cint): csize_t {.importc: "mpz_inp_str".}
-func mpz_inp_str*(a2: var mpz_t; a3: File; a4: cint): csize_t {.importc: "mpz_inp_str".}
-func mpz_invert*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr): cint {.importc: "mpz_invert".}
-func mpz_invert*(a2: var mpz_t; a3: mpz_t; a4: mpz_t): cint {.importc: "mpz_invert".}
-func mpz_ior*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_ior".}
-func mpz_ior*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_ior".}
-func mpz_jacobi*(a2: mpz_srcptr; a3: mpz_srcptr): cint {.importc: "mpz_jacobi".}
-func mpz_jacobi*(a2: mpz_t; a3: mpz_t): cint {.importc: "mpz_jacobi".}
-func mpz_kronecker_si*(a2: mpz_srcptr; a3: clong): cint {.importc: "mpz_kronecker_si".}
-func mpz_kronecker_si*(a2: mpz_t; a3: clong): cint {.importc: "mpz_kronecker_si".}
-func mpz_kronecker_ui*(a2: mpz_srcptr; a3: culong): cint {.importc: "mpz_kronecker_ui".}
-func mpz_kronecker_ui*(a2: mpz_t; a3: culong): cint {.importc: "mpz_kronecker_ui".}
-func mpz_si_kronecker*(a2: clong; a3: mpz_srcptr): cint {.importc: "mpz_si_kronecker".}
-func mpz_si_kronecker*(a2: clong; a3: mpz_t): cint {.importc: "mpz_si_kronecker".}
-func mpz_ui_kronecker*(a2: culong; a3: mpz_srcptr): cint {.importc: "mpz_ui_kronecker".}
-func mpz_ui_kronecker*(a2: culong; a3: mpz_t): cint {.importc: "mpz_ui_kronecker".}
-func mpz_lcm*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_lcm".}
-func mpz_lcm*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_lcm".}
-func mpz_lcm_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.importc: "mpz_lcm_ui".}
-func mpz_lcm_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.importc: "mpz_lcm_ui".}
-func mpz_lucnum_ui*(a2: mpz_ptr; a3: culong) {.importc: "mpz_lucnum_ui".}
-func mpz_lucnum_ui*(a2: var mpz_t; a3: culong) {.importc: "mpz_lucnum_ui".}
-func mpz_lucnum2_ui*(a2: mpz_ptr; a3: mpz_ptr; a4: culong) {.importc: "mpz_lucnum2_ui".}
-func mpz_lucnum2_ui*(a2: var mpz_t; a3: var mpz_t; a4: culong) {.importc: "mpz_lucnum2_ui".}
-func mpz_millerrabin*(a2: mpz_srcptr; a3: cint): cint {.importc: "mpz_millerrabin".}
-func mpz_millerrabin*(a2: mpz_t; a3: cint): cint {.importc: "mpz_millerrabin".}
-func mpz_mod*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_mod".}
-func mpz_mod*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_mod".}
-func mpz_mul*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_mul".}
-func mpz_mul*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_mul".}
-func mpz_mul_2exp*(a2: mpz_ptr; a3: mpz_srcptr; a4: mp_bitcnt_t) {.importc: "mpz_mul_2exp".}
-func mpz_mul_2exp*(a2: var mpz_t; a3: mpz_t; a4: mp_bitcnt_t) {.importc: "mpz_mul_2exp".}
-func mpz_mul_si*(a2: mpz_ptr; a3: mpz_srcptr; a4: clong) {.importc: "mpz_mul_si".}
-func mpz_mul_si*(a2: var mpz_t; a3: mpz_t; a4: clong) {.importc: "mpz_mul_si".}
-func mpz_mul_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.importc: "mpz_mul_ui".}
-func mpz_mul_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.importc: "mpz_mul_ui".}
-func mpz_nextprime*(a2: mpz_ptr; a3: mpz_srcptr) {.importc: "mpz_nextprime".}
-func mpz_nextprime*(a2: var mpz_t; a3: mpz_t) {.importc: "mpz_nextprime".}
-func mpz_out_raw*(a2: File; a3: mpz_srcptr): csize_t {.importc: "mpz_out_raw".}
-func mpz_out_raw*(a2: File; a3: mpz_t): csize_t {.importc: "mpz_out_raw".}
-func mpz_out_str*(a2: File; a3: cint; a4: mpz_srcptr): csize_t {.importc: "mpz_out_str".}
-func mpz_out_str*(a2: File; a3: cint; a4: mpz_t): csize_t {.importc: "mpz_out_str".}
-func mpz_perfect_power_p*(a2: mpz_srcptr): cint {.importc: "mpz_perfect_power_p".}
-func mpz_perfect_power_p*(a2: mpz_t): cint {.importc: "mpz_perfect_power_p".}
-func mpz_pow_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.importc: "mpz_pow_ui".}
-func mpz_pow_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.importc: "mpz_pow_ui".}
-func mpz_powm*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr; a5: mpz_srcptr) {.importc: "mpz_powm".}
-func mpz_powm*(a2: var mpz_t; a3: mpz_t; a4: mpz_t; a5: mpz_t) {.importc: "mpz_powm".}
-func mpz_powm_sec*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr; a5: mpz_srcptr) {.importc: "mpz_powm_sec".}
-func mpz_powm_sec*(a2: var mpz_t; a3: mpz_t; a4: mpz_t; a5: mpz_t) {.importc: "mpz_powm_sec".}
-func mpz_powm_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong; a5: mpz_srcptr) {.importc: "mpz_powm_ui".}
-func mpz_powm_ui*(a2: var mpz_t; a3: mpz_t; a4: culong; a5: mpz_t) {.importc: "mpz_powm_ui".}
-func mpz_probab_prime_p*(a2: mpz_srcptr; a3: cint): cint {.importc: "mpz_probab_prime_p".}
-func mpz_probab_prime_p*(a2: mpz_t; a3: cint): cint {.importc: "mpz_probab_prime_p".}
-func mpz_random*(a2: mpz_ptr; a3: mp_size_t) {.importc: "mpz_random".}
-func mpz_random*(a2: var mpz_t; a3: mp_size_t) {.importc: "mpz_random".}
-func mpz_random2*(a2: mpz_ptr; a3: mp_size_t) {.importc: "mpz_random2".}
-func mpz_random2*(a2: var mpz_t; a3: mp_size_t) {.importc: "mpz_random2".}
-func mpz_realloc2*(a2: mpz_ptr; a3: mp_bitcnt_t) {.importc: "mpz_realloc2".}
-func mpz_realloc2*(a2: var mpz_t; a3: mp_bitcnt_t) {.importc: "mpz_realloc2".}
-func mpz_remove*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr): mp_bitcnt_t {.importc: "mpz_remove".}
-func mpz_remove*(a2: var mpz_t; a3: mpz_t; a4: mpz_t): mp_bitcnt_t {.importc: "mpz_remove".}
-func mpz_root*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong): cint {.importc: "mpz_root".}
-func mpz_root*(a2: var mpz_t; a3: mpz_t; a4: culong): cint {.importc: "mpz_root".}
-func mpz_rootrem*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_srcptr; a5: culong) {.importc: "mpz_rootrem".}
-func mpz_rootrem*(a2: var mpz_t; a3: var mpz_t; a4: mpz_t; a5: culong) {.importc: "mpz_rootrem".}
-func mpz_rrandomb*(a2: mpz_ptr; a3: gmp_randstate_t; a4: mp_bitcnt_t) {.importc: "mpz_rrandomb".}
-func mpz_rrandomb*(a2: var mpz_t; a3: gmp_randstate_t; a4: mp_bitcnt_t) {.importc: "mpz_rrandomb".}
-func mpz_scan0*(a2: mpz_srcptr; a3: mp_bitcnt_t): mp_bitcnt_t {.importc: "mpz_scan0".}
-func mpz_scan0*(a2: mpz_t; a3: mp_bitcnt_t): mp_bitcnt_t {.importc: "mpz_scan0".}
-func mpz_scan1*(a2: mpz_srcptr; a3: mp_bitcnt_t): mp_bitcnt_t {.importc: "mpz_scan1".}
-func mpz_scan1*(a2: mpz_t; a3: mp_bitcnt_t): mp_bitcnt_t {.importc: "mpz_scan1".}
-func mpz_set*(a2: mpz_ptr; a3: mpz_srcptr) {.importc: "mpz_set".}
-func mpz_set*(a2: var mpz_t; a3: mpz_t) {.importc: "mpz_set".}
-func mpz_set_d*(a2: mpz_ptr; a3: cdouble) {.importc: "mpz_set_d".}
-func mpz_set_d*(a2: var mpz_t; a3: cdouble) {.importc: "mpz_set_d".}
-func mpz_set_f*(a2: mpz_ptr; a3: mpf_srcptr) {.importc: "mpz_set_f".}
-func mpz_set_f*(a2: var mpz_t; a3: mpf_t) {.importc: "mpz_set_f".}
-func mpz_set_si*(a2: mpz_ptr; a3: clong) {.importc: "mpz_set_si".}
-func mpz_set_si*(a2: var mpz_t; a3: clong) {.importc: "mpz_set_si".}
-func mpz_set_str*(a2: mpz_ptr; a3: cstring; a4: cint): cint {.importc: "mpz_set_str".}
-func mpz_set_str*(a2: var mpz_t; a3: cstring; a4: cint): cint {.importc: "mpz_set_str".}
-func mpz_set_ui*(a2: mpz_ptr; a3: culong) {.importc: "mpz_set_ui".}
-func mpz_set_ui*(a2: var mpz_t; a3: culong) {.importc: "mpz_set_ui".}
-func mpz_setbit*(a2: mpz_ptr; a3: mp_bitcnt_t) {.importc: "mpz_setbit".}
-func mpz_setbit*(a2: var mpz_t; a3: mp_bitcnt_t) {.importc: "mpz_setbit".}
-func mpz_sizeinbase*(a2: mpz_srcptr; a3: cint): csize_t {.importc: "mpz_sizeinbase".}
-func mpz_sizeinbase*(a2: mpz_t; a3: cint): csize_t {.importc: "mpz_sizeinbase".}
-func mpz_sqrt*(a2: mpz_ptr; a3: mpz_srcptr) {.importc: "mpz_sqrt".}
-func mpz_sqrt*(a2: var mpz_t; a3: mpz_t) {.importc: "mpz_sqrt".}
-func mpz_sqrtrem*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_srcptr) {.importc: "mpz_sqrtrem".}
-func mpz_sqrtrem*(a2: var mpz_t; a3: var mpz_t; a4: mpz_t) {.importc: "mpz_sqrtrem".}
-func mpz_sub*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_sub".}
-func mpz_sub*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_sub".}
-func mpz_sub_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.importc: "mpz_sub_ui".}
-func mpz_sub_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.importc: "mpz_sub_ui".}
-func mpz_ui_sub*(a2: mpz_ptr; a3: culong; a4: mpz_srcptr) {.importc: "mpz_ui_sub".}
-func mpz_ui_sub*(a2: var mpz_t; a3: culong; a4: mpz_t) {.importc: "mpz_ui_sub".}
-func mpz_submul*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_submul".}
-func mpz_submul*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_submul".}
-func mpz_submul_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.importc: "mpz_submul_ui".}
-func mpz_submul_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.importc: "mpz_submul_ui".}
-func mpz_swap*(a2: mpz_ptr; a3: mpz_ptr) {.importc: "mpz_swap".}
-func mpz_swap*(a2: var mpz_t; a3: var mpz_t) {.importc: "mpz_swap".}
-func mpz_tdiv_ui*(a2: mpz_srcptr; a3: culong): culong {.importc: "mpz_tdiv_ui".}
-func mpz_tdiv_ui*(a2: mpz_t; a3: culong): culong {.importc: "mpz_tdiv_ui".}
-func mpz_tdiv_q*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_tdiv_q".}
-func mpz_tdiv_q*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_tdiv_q".}
-func mpz_tdiv_q_2exp*(a2: mpz_ptr; a3: mpz_srcptr; a4: mp_bitcnt_t) {.importc: "mpz_tdiv_q_2exp".}
-func mpz_tdiv_q_2exp*(a2: var mpz_t; a3: mpz_t; a4: mp_bitcnt_t) {.importc: "mpz_tdiv_q_2exp".}
-func mpz_tdiv_q_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong): culong {.importc: "mpz_tdiv_q_ui".}
-func mpz_tdiv_q_ui*(a2: var mpz_t; a3: mpz_t; a4: culong): culong {.importc: "mpz_tdiv_q_ui".}
-func mpz_tdiv_qr*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_srcptr; a5: mpz_srcptr) {.importc: "mpz_tdiv_qr".}
-func mpz_tdiv_qr*(a2: var mpz_t; a3: var mpz_t; a4: mpz_t; a5: mpz_t) {.importc: "mpz_tdiv_qr".}
-func mpz_tdiv_qr_ui*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_srcptr; a5: culong): culong {.importc: "mpz_tdiv_qr_ui".}
-func mpz_tdiv_qr_ui*(a2: var mpz_t; a3: var mpz_t; a4: mpz_t; a5: culong): culong {.importc: "mpz_tdiv_qr_ui".}
-func mpz_tdiv_r*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_tdiv_r".}
-func mpz_tdiv_r*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_tdiv_r".}
-func mpz_tdiv_r_2exp*(a2: mpz_ptr; a3: mpz_srcptr; a4: mp_bitcnt_t) {.importc: "mpz_tdiv_r_2exp".}
-func mpz_tdiv_r_2exp*(a2: var mpz_t; a3: mpz_t; a4: mp_bitcnt_t) {.importc: "mpz_tdiv_r_2exp".}
-func mpz_tdiv_r_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong): culong {.importc: "mpz_tdiv_r_ui".}
-func mpz_tdiv_r_ui*(a2: var mpz_t; a3: mpz_t; a4: culong): culong {.importc: "mpz_tdiv_r_ui".}
-func mpz_tstbit*(a2: mpz_srcptr; a3: mp_bitcnt_t): cint {.importc: "mpz_tstbit".}
-func mpz_tstbit*(a2: mpz_t; a3: mp_bitcnt_t): cint {.importc: "mpz_tstbit".}
-func mpz_ui_pow_ui*(a2: mpz_ptr; a3: culong; a4: culong) {.importc: "mpz_ui_pow_ui".}
-func mpz_ui_pow_ui*(a2: var mpz_t; a3: culong; a4: culong) {.importc: "mpz_ui_pow_ui".}
-func mpz_urandomb*(a2: mpz_ptr; a3: gmp_randstate_t; a4: mp_bitcnt_t) {.importc: "mpz_urandomb".}
-func mpz_urandomb*(a2: var mpz_t; a3: gmp_randstate_t; a4: mp_bitcnt_t) {.importc: "mpz_urandomb".}
-func mpz_urandomm*(a2: mpz_ptr; a3: gmp_randstate_t; a4: mpz_srcptr) {.importc: "mpz_urandomm".}
-func mpz_urandomm*(a2: var mpz_t; a3: gmp_randstate_t; a4: mpz_t) {.importc: "mpz_urandomm".}
-func mpz_xor*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_xor".}
-func mpz_xor*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_xor".}
-func mpz_limbs_read*(a2: mpz_srcptr): mp_srcptr {.importc: "mpz_limbs_read".}
-func mpz_limbs_read*(a2: mpz_t): mp_srcptr {.importc: "mpz_limbs_read".}
-func mpz_limbs_write*(a2: mpz_ptr; a3: mp_size_t): mp_ptr {.importc: "mpz_limbs_write".}
-func mpz_limbs_write*(a2: var mpz_t; a3: mp_size_t): mp_ptr {.importc: "mpz_limbs_write".}
-func mpz_limbs_modify*(a2: mpz_ptr; a3: mp_size_t): mp_ptr {.importc: "mpz_limbs_modify".}
-func mpz_limbs_modify*(a2: var mpz_t; a3: mp_size_t): mp_ptr {.importc: "mpz_limbs_modify".}
-func mpz_limbs_finish*(a2: mpz_ptr; a3: mp_size_t) {.importc: "mpz_limbs_finish".}
-func mpz_limbs_finish*(a2: var mpz_t; a3: mp_size_t) {.importc: "mpz_limbs_finish".}
-func mpz_roinit_n*(a2: mpz_ptr; a3: mp_srcptr; a4: mp_size_t): mpz_srcptr {.importc: "mpz_roinit_n".}
-func mpz_roinit_n*(a2: var mpz_t; a3: var mp_limb_t; a4: mp_size_t): mpz_srcptr {.importc: "mpz_roinit_n".}
-func mpq_add*(a2: mpq_ptr; a3: mpq_srcptr; a4: mpq_srcptr) {.importc: "mpq_add".}
-func mpq_add*(a2: var mpq_t; a3: mpq_t; a4: mpq_t) {.importc: "mpq_add".}
-func mpq_canonicalize*(a2: mpq_ptr) {.importc: "mpq_canonicalize".}
-func mpq_canonicalize*(a2: var mpq_t) {.importc: "mpq_canonicalize".}
-func mpq_clear*(a2: mpq_ptr) {.importc: "mpq_clear".}
-func mpq_clear*(a2: var mpq_t) {.importc: "mpq_clear".}
-func mpq_clears*(a2: mpq_ptr) {.varargs,importc: "mpq_clears".}
-func mpq_clears*(a2: var mpq_t) {.varargs,importc: "mpq_clears".}
-func mpq_cmp*(a2: mpq_srcptr; a3: mpq_srcptr): cint {.importc: "mpq_cmp".}
-func mpq_cmp*(a2: mpq_t; a3: mpq_t): cint {.importc: "mpq_cmp".}
+func mpz_cmpabs*(a2: mpz_srcptr; a3: mpz_srcptr): cint {.importc.}
+func mpz_cmpabs*(a2: mpz_t; a3: mpz_t): cint {.importc.}
+func mpz_cmpabs_d*(a2: mpz_srcptr; a3: cdouble): cint {.importc.}
+func mpz_cmpabs_d*(a2: mpz_t; a3: cdouble): cint {.importc.}
+func mpz_cmpabs_ui*(a2: mpz_srcptr; a3: culong): cint {.importc.}
+func mpz_cmpabs_ui*(a2: mpz_t; a3: culong): cint {.importc.}
+func mpz_com*(a2: mpz_ptr; a3: mpz_srcptr) {.importc.}
+func mpz_com*(a2: var mpz_t; a3: mpz_t) {.importc.}
+func mpz_combit*(a2: mpz_ptr; a3: mp_bitcnt_t) {.importc.}
+func mpz_combit*(a2: var mpz_t; a3: mp_bitcnt_t) {.importc.}
+func mpz_congruent_p*(a2: mpz_srcptr; a3: mpz_srcptr; a4: mpz_srcptr): cint {.importc.}
+func mpz_congruent_p*(a2: mpz_t; a3: mpz_t; a4: mpz_t): cint {.importc.}
+func mpz_congruent_2exp_p*(a2: mpz_srcptr; a3: mpz_srcptr; a4: mp_bitcnt_t): cint {.importc.}
+func mpz_congruent_2exp_p*(a2: mpz_t; a3: mpz_t; a4: mp_bitcnt_t): cint {.importc.}
+func mpz_congruent_ui_p*(a2: mpz_srcptr; a3: culong; a4: culong): cint {.importc.}
+func mpz_congruent_ui_p*(a2: mpz_t; a3: culong; a4: culong): cint {.importc.}
+func mpz_divexact*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc.}
+func mpz_divexact*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc.}
+func mpz_divexact_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.importc.}
+func mpz_divexact_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.importc.}
+func mpz_divisible_p*(a2: mpz_srcptr; a3: mpz_srcptr): cint {.importc.}
+func mpz_divisible_p*(a2: mpz_t; a3: mpz_t): cint {.importc.}
+func mpz_divisible_ui_p*(a2: mpz_srcptr; a3: culong): cint {.importc.}
+func mpz_divisible_ui_p*(a2: mpz_t; a3: culong): cint {.importc.}
+func mpz_divisible_2exp_p*(a2: mpz_srcptr; a3: mp_bitcnt_t): cint {.importc.}
+func mpz_divisible_2exp_p*(a2: mpz_t; a3: mp_bitcnt_t): cint {.importc.}
+func mpz_dump*(a2: mpz_srcptr) {.importc.}
+func mpz_dump*(a2: mpz_t) {.importc.}
+func mpz_export*(a2: pointer; a3: ptr csize_t; a4: cint; a5: csize_t; a6: cint; a7: csize_t; a8: mpz_srcptr): pointer {.importc.}
+func mpz_export*(a2: pointer; a3: ptr csize_t; a4: cint; a5: csize_t; a6: cint; a7: csize_t; a8: mpz_t): pointer {.importc.}
+func mpz_fac_ui*(a2: mpz_ptr; a3: culong) {.importc.}
+func mpz_fac_ui*(a2: var mpz_t; a3: culong) {.importc.}
+func mpz_2fac_ui*(a2: mpz_ptr; a3: culong) {.importc.}
+func mpz_2fac_ui*(a2: var mpz_t; a3: culong) {.importc.}
+func mpz_mfac_uiui*(a2: mpz_ptr; a3: culong; a4: culong) {.importc.}
+func mpz_mfac_uiui*(a2: var mpz_t; a3: culong; a4: culong) {.importc.}
+func mpz_primorial_ui*(a2: mpz_ptr; a3: culong) {.importc.}
+func mpz_primorial_ui*(a2: var mpz_t; a3: culong) {.importc.}
+func mpz_fdiv_q*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc.}
+func mpz_fdiv_q*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc.}
+func mpz_fdiv_q_2exp*(a2: mpz_ptr; a3: mpz_srcptr; a4: mp_bitcnt_t) {.importc.}
+func mpz_fdiv_q_2exp*(a2: var mpz_t; a3: mpz_t; a4: mp_bitcnt_t) {.importc.}
+func mpz_fdiv_q_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong): culong {.importc.}
+func mpz_fdiv_q_ui*(a2: var mpz_t; a3: mpz_t; a4: culong): culong {.importc.}
+func mpz_fdiv_qr*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_srcptr; a5: mpz_srcptr) {.importc.}
+func mpz_fdiv_qr*(a2: var mpz_t; a3: var mpz_t; a4: mpz_t; a5: mpz_t) {.importc.}
+func mpz_fdiv_qr_ui*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_srcptr; a5: culong): culong {.importc.}
+func mpz_fdiv_qr_ui*(a2: var mpz_t; a3: var mpz_t; a4: mpz_t; a5: culong): culong {.importc.}
+func mpz_fdiv_r*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc.}
+func mpz_fdiv_r*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc.}
+func mpz_fdiv_r_2exp*(a2: mpz_ptr; a3: mpz_srcptr; a4: mp_bitcnt_t) {.importc.}
+func mpz_fdiv_r_2exp*(a2: var mpz_t; a3: mpz_t; a4: mp_bitcnt_t) {.importc.}
+func mpz_fdiv_r_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong): culong {.importc.}
+func mpz_fdiv_r_ui*(a2: var mpz_t; a3: mpz_t; a4: culong): culong {.importc.}
+func mpz_fdiv_ui*(a2: mpz_srcptr; a3: culong): culong {.importc.}
+func mpz_fdiv_ui*(a2: mpz_t; a3: culong): culong {.importc.}
+func mpz_fib_ui*(a2: mpz_ptr; a3: culong) {.importc.}
+func mpz_fib_ui*(a2: var mpz_t; a3: culong) {.importc.}
+func mpz_fib2_ui*(a2: mpz_ptr; a3: mpz_ptr; a4: culong) {.importc.}
+func mpz_fib2_ui*(a2: var mpz_t; a3: var mpz_t; a4: culong) {.importc.}
+func mpz_fits_sint_p*(a2: mpz_srcptr): cint {.importc.}
+func mpz_fits_sint_p*(a2: mpz_t): cint {.importc.}
+func mpz_fits_slong_p*(a2: mpz_srcptr): cint {.importc.}
+func mpz_fits_slong_p*(a2: mpz_t): cint {.importc.}
+func mpz_fits_sshort_p*(a2: mpz_srcptr): cint {.importc.}
+func mpz_fits_sshort_p*(a2: mpz_t): cint {.importc.}
+func mpz_gcd*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc.}
+func mpz_gcd*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc.}
+func mpz_gcd_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong): culong {.importc.}
+func mpz_gcd_ui*(a2: var mpz_t; a3: mpz_t; a4: culong): culong {.importc.}
+func mpz_gcdext*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_ptr; a5: mpz_srcptr; a6: mpz_srcptr) {.importc.}
+func mpz_gcdext*(a2: var mpz_t; a3: var mpz_t; a4: var mpz_t; a5: mpz_t; a6: mpz_t) {.importc.}
+func mpz_get_d*(a2: mpz_srcptr): cdouble {.importc.}
+func mpz_get_d*(a2: mpz_t): cdouble {.importc.}
+func mpz_get_d_2exp*(a2: ptr clong; a3: mpz_srcptr): cdouble {.importc.}
+func mpz_get_d_2exp*(a2: ptr clong; a3: mpz_t): cdouble {.importc.}
+func mpz_get_si*(a2: mpz_srcptr): clong {.importc.}
+func mpz_get_si*(a2: mpz_t): clong {.importc.}
+func mpz_get_str*(a2: cstring; a3: cint; a4: mpz_srcptr): cstring {.importc.}
+func mpz_get_str*(a2: cstring; a3: cint; a4: mpz_t): cstring {.importc.}
+func mpz_hamdist*(a2: mpz_srcptr; a3: mpz_srcptr): mp_bitcnt_t {.importc.}
+func mpz_hamdist*(a2: mpz_t; a3: mpz_t): mp_bitcnt_t {.importc.}
+func mpz_import*(a2: mpz_ptr; a3: csize_t; a4: cint; a5: csize_t; a6: cint; a7: csize_t; a8: pointer) {.importc.}
+func mpz_import*(a2: var mpz_t; a3: csize_t; a4: cint; a5: csize_t; a6: cint; a7: csize_t; a8: pointer) {.importc.}
+func mpz_init*(a2: mpz_ptr) {.importc.}
+func mpz_init*(a2: var mpz_t) {.importc.}
+func mpz_init2*(a2: mpz_ptr; a3: mp_bitcnt_t) {.importc.}
+func mpz_init2*(a2: var mpz_t; a3: mp_bitcnt_t) {.importc.}
+func mpz_inits*(a2: mpz_ptr) {.varargs, importc.}
+func mpz_inits*(a2: var mpz_t) {.varargs, importc.}
+func mpz_init_set*(a2: mpz_ptr; a3: mpz_srcptr) {.importc.}
+func mpz_init_set*(a2: var mpz_t; a3: mpz_t) {.importc.}
+func mpz_init_set_d*(a2: mpz_ptr; a3: cdouble) {.importc.}
+func mpz_init_set_d*(a2: var mpz_t; a3: cdouble) {.importc.}
+func mpz_init_set_si*(a2: mpz_ptr; a3: clong) {.importc.}
+func mpz_init_set_si*(a2: var mpz_t; a3: clong) {.importc.}
+func mpz_init_set_str*(a2: mpz_ptr; a3: cstring; a4: cint): cint {.importc.}
+func mpz_init_set_str*(a2: var mpz_t; a3: cstring; a4: cint): cint {.importc.}
+func mpz_init_set_ui*(a2: mpz_ptr; a3: culong) {.importc.}
+func mpz_init_set_ui*(a2: var mpz_t; a3: culong) {.importc.}
+func mpz_inp_raw*(a2: mpz_ptr; a3: File): csize_t {.importc.}
+func mpz_inp_raw*(a2: var mpz_t; a3: File): csize_t {.importc.}
+func mpz_inp_str*(a2: mpz_ptr; a3: File; a4: cint): csize_t {.importc.}
+func mpz_inp_str*(a2: var mpz_t; a3: File; a4: cint): csize_t {.importc.}
+func mpz_invert*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr): cint {.importc.}
+func mpz_invert*(a2: var mpz_t; a3: mpz_t; a4: mpz_t): cint {.importc.}
+func mpz_ior*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc.}
+func mpz_ior*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc.}
+func mpz_jacobi*(a2: mpz_srcptr; a3: mpz_srcptr): cint {.importc.}
+func mpz_jacobi*(a2: mpz_t; a3: mpz_t): cint {.importc.}
+func mpz_kronecker_si*(a2: mpz_srcptr; a3: clong): cint {.importc.}
+func mpz_kronecker_si*(a2: mpz_t; a3: clong): cint {.importc.}
+func mpz_kronecker_ui*(a2: mpz_srcptr; a3: culong): cint {.importc.}
+func mpz_kronecker_ui*(a2: mpz_t; a3: culong): cint {.importc.}
+func mpz_si_kronecker*(a2: clong; a3: mpz_srcptr): cint {.importc.}
+func mpz_si_kronecker*(a2: clong; a3: mpz_t): cint {.importc.}
+func mpz_ui_kronecker*(a2: culong; a3: mpz_srcptr): cint {.importc.}
+func mpz_ui_kronecker*(a2: culong; a3: mpz_t): cint {.importc.}
+func mpz_lcm*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc.}
+func mpz_lcm*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc.}
+func mpz_lcm_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.importc.}
+func mpz_lcm_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.importc.}
+func mpz_lucnum_ui*(a2: mpz_ptr; a3: culong) {.importc.}
+func mpz_lucnum_ui*(a2: var mpz_t; a3: culong) {.importc.}
+func mpz_lucnum2_ui*(a2: mpz_ptr; a3: mpz_ptr; a4: culong) {.importc.}
+func mpz_lucnum2_ui*(a2: var mpz_t; a3: var mpz_t; a4: culong) {.importc.}
+func mpz_millerrabin*(a2: mpz_srcptr; a3: cint): cint {.importc.}
+func mpz_millerrabin*(a2: mpz_t; a3: cint): cint {.importc.}
+func mpz_mod*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc.}
+func mpz_mod*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc.}
+func mpz_mul*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc.}
+func mpz_mul*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc.}
+func mpz_mul_2exp*(a2: mpz_ptr; a3: mpz_srcptr; a4: mp_bitcnt_t) {.importc.}
+func mpz_mul_2exp*(a2: var mpz_t; a3: mpz_t; a4: mp_bitcnt_t) {.importc.}
+func mpz_mul_si*(a2: mpz_ptr; a3: mpz_srcptr; a4: clong) {.importc.}
+func mpz_mul_si*(a2: var mpz_t; a3: mpz_t; a4: clong) {.importc.}
+func mpz_mul_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.importc.}
+func mpz_mul_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.importc.}
+func mpz_nextprime*(a2: mpz_ptr; a3: mpz_srcptr) {.importc.}
+func mpz_nextprime*(a2: var mpz_t; a3: mpz_t) {.importc.}
+func mpz_out_raw*(a2: File; a3: mpz_srcptr): csize_t {.importc.}
+func mpz_out_raw*(a2: File; a3: mpz_t): csize_t {.importc.}
+func mpz_out_str*(a2: File; a3: cint; a4: mpz_srcptr): csize_t {.importc.}
+func mpz_out_str*(a2: File; a3: cint; a4: mpz_t): csize_t {.importc.}
+func mpz_perfect_power_p*(a2: mpz_srcptr): cint {.importc.}
+func mpz_perfect_power_p*(a2: mpz_t): cint {.importc.}
+func mpz_pow_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.importc.}
+func mpz_pow_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.importc.}
+func mpz_powm*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr; a5: mpz_srcptr) {.importc.}
+func mpz_powm*(a2: var mpz_t; a3: mpz_t; a4: mpz_t; a5: mpz_t) {.importc.}
+func mpz_powm_sec*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr; a5: mpz_srcptr) {.importc.}
+func mpz_powm_sec*(a2: var mpz_t; a3: mpz_t; a4: mpz_t; a5: mpz_t) {.importc.}
+func mpz_powm_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong; a5: mpz_srcptr) {.importc.}
+func mpz_powm_ui*(a2: var mpz_t; a3: mpz_t; a4: culong; a5: mpz_t) {.importc.}
+func mpz_probab_prime_p*(a2: mpz_srcptr; a3: cint): cint {.importc.}
+func mpz_probab_prime_p*(a2: mpz_t; a3: cint): cint {.importc.}
+func mpz_random*(a2: mpz_ptr; a3: mp_size_t) {.importc.}
+func mpz_random*(a2: var mpz_t; a3: mp_size_t) {.importc.}
+func mpz_random2*(a2: mpz_ptr; a3: mp_size_t) {.importc.}
+func mpz_random2*(a2: var mpz_t; a3: mp_size_t) {.importc.}
+func mpz_realloc2*(a2: mpz_ptr; a3: mp_bitcnt_t) {.importc.}
+func mpz_realloc2*(a2: var mpz_t; a3: mp_bitcnt_t) {.importc.}
+func mpz_remove*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr): mp_bitcnt_t {.importc.}
+func mpz_remove*(a2: var mpz_t; a3: mpz_t; a4: mpz_t): mp_bitcnt_t {.importc.}
+func mpz_root*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong): cint {.importc.}
+func mpz_root*(a2: var mpz_t; a3: mpz_t; a4: culong): cint {.importc.}
+func mpz_rootrem*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_srcptr; a5: culong) {.importc.}
+func mpz_rootrem*(a2: var mpz_t; a3: var mpz_t; a4: mpz_t; a5: culong) {.importc.}
+func mpz_rrandomb*(a2: mpz_ptr; a3: gmp_randstate_t; a4: mp_bitcnt_t) {.importc.}
+func mpz_rrandomb*(a2: var mpz_t; a3: gmp_randstate_t; a4: mp_bitcnt_t) {.importc.}
+func mpz_scan0*(a2: mpz_srcptr; a3: mp_bitcnt_t): mp_bitcnt_t {.importc.}
+func mpz_scan0*(a2: mpz_t; a3: mp_bitcnt_t): mp_bitcnt_t {.importc.}
+func mpz_scan1*(a2: mpz_srcptr; a3: mp_bitcnt_t): mp_bitcnt_t {.importc.}
+func mpz_scan1*(a2: mpz_t; a3: mp_bitcnt_t): mp_bitcnt_t {.importc.}
+func mpz_set*(a2: mpz_ptr; a3: mpz_srcptr) {.importc.}
+func mpz_set*(a2: var mpz_t; a3: mpz_t) {.importc.}
+func mpz_set_d*(a2: mpz_ptr; a3: cdouble) {.importc.}
+func mpz_set_d*(a2: var mpz_t; a3: cdouble) {.importc.}
+func mpz_set_f*(a2: mpz_ptr; a3: mpf_srcptr) {.importc.}
+func mpz_set_f*(a2: var mpz_t; a3: mpf_t) {.importc.}
+func mpz_set_si*(a2: mpz_ptr; a3: clong) {.importc.}
+func mpz_set_si*(a2: var mpz_t; a3: clong) {.importc.}
+func mpz_set_str*(a2: mpz_ptr; a3: cstring; a4: cint): cint {.importc.}
+func mpz_set_str*(a2: var mpz_t; a3: cstring; a4: cint): cint {.importc.}
+func mpz_set_ui*(a2: mpz_ptr; a3: culong) {.importc.}
+func mpz_set_ui*(a2: var mpz_t; a3: culong) {.importc.}
+func mpz_setbit*(a2: mpz_ptr; a3: mp_bitcnt_t) {.importc.}
+func mpz_setbit*(a2: var mpz_t; a3: mp_bitcnt_t) {.importc.}
+func mpz_sizeinbase*(a2: mpz_srcptr; a3: cint): csize_t {.importc.}
+func mpz_sizeinbase*(a2: mpz_t; a3: cint): csize_t {.importc.}
+func mpz_sqrt*(a2: mpz_ptr; a3: mpz_srcptr) {.importc.}
+func mpz_sqrt*(a2: var mpz_t; a3: mpz_t) {.importc.}
+func mpz_sqrtrem*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_srcptr) {.importc.}
+func mpz_sqrtrem*(a2: var mpz_t; a3: var mpz_t; a4: mpz_t) {.importc.}
+func mpz_sub*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc.}
+func mpz_sub*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc.}
+func mpz_sub_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.importc.}
+func mpz_sub_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.importc.}
+func mpz_ui_sub*(a2: mpz_ptr; a3: culong; a4: mpz_srcptr) {.importc.}
+func mpz_ui_sub*(a2: var mpz_t; a3: culong; a4: mpz_t) {.importc.}
+func mpz_submul*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc.}
+func mpz_submul*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc.}
+func mpz_submul_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.importc.}
+func mpz_submul_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.importc.}
+func mpz_swap*(a2: mpz_ptr; a3: mpz_ptr) {.importc.}
+func mpz_swap*(a2: var mpz_t; a3: var mpz_t) {.importc.}
+func mpz_tdiv_ui*(a2: mpz_srcptr; a3: culong): culong {.importc.}
+func mpz_tdiv_ui*(a2: mpz_t; a3: culong): culong {.importc.}
+func mpz_tdiv_q*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc.}
+func mpz_tdiv_q*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc.}
+func mpz_tdiv_q_2exp*(a2: mpz_ptr; a3: mpz_srcptr; a4: mp_bitcnt_t) {.importc.}
+func mpz_tdiv_q_2exp*(a2: var mpz_t; a3: mpz_t; a4: mp_bitcnt_t) {.importc.}
+func mpz_tdiv_q_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong): culong {.importc.}
+func mpz_tdiv_q_ui*(a2: var mpz_t; a3: mpz_t; a4: culong): culong {.importc.}
+func mpz_tdiv_qr*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_srcptr; a5: mpz_srcptr) {.importc.}
+func mpz_tdiv_qr*(a2: var mpz_t; a3: var mpz_t; a4: mpz_t; a5: mpz_t) {.importc.}
+func mpz_tdiv_qr_ui*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_srcptr; a5: culong): culong {.importc.}
+func mpz_tdiv_qr_ui*(a2: var mpz_t; a3: var mpz_t; a4: mpz_t; a5: culong): culong {.importc.}
+func mpz_tdiv_r*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc.}
+func mpz_tdiv_r*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc.}
+func mpz_tdiv_r_2exp*(a2: mpz_ptr; a3: mpz_srcptr; a4: mp_bitcnt_t) {.importc.}
+func mpz_tdiv_r_2exp*(a2: var mpz_t; a3: mpz_t; a4: mp_bitcnt_t) {.importc.}
+func mpz_tdiv_r_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong): culong {.importc.}
+func mpz_tdiv_r_ui*(a2: var mpz_t; a3: mpz_t; a4: culong): culong {.importc.}
+func mpz_tstbit*(a2: mpz_srcptr; a3: mp_bitcnt_t): cint {.importc.}
+func mpz_tstbit*(a2: mpz_t; a3: mp_bitcnt_t): cint {.importc.}
+func mpz_ui_pow_ui*(a2: mpz_ptr; a3: culong; a4: culong) {.importc.}
+func mpz_ui_pow_ui*(a2: var mpz_t; a3: culong; a4: culong) {.importc.}
+func mpz_urandomb*(a2: mpz_ptr; a3: gmp_randstate_t; a4: mp_bitcnt_t) {.importc.}
+func mpz_urandomb*(a2: var mpz_t; a3: gmp_randstate_t; a4: mp_bitcnt_t) {.importc.}
+func mpz_urandomm*(a2: mpz_ptr; a3: gmp_randstate_t; a4: mpz_srcptr) {.importc.}
+func mpz_urandomm*(a2: var mpz_t; a3: gmp_randstate_t; a4: mpz_t) {.importc.}
+func mpz_xor*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc.}
+func mpz_xor*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc.}
+func mpz_limbs_read*(a2: mpz_srcptr): mp_srcptr {.importc.}
+func mpz_limbs_read*(a2: mpz_t): mp_srcptr {.importc.}
+func mpz_limbs_write*(a2: mpz_ptr; a3: mp_size_t): mp_ptr {.importc.}
+func mpz_limbs_write*(a2: var mpz_t; a3: mp_size_t): mp_ptr {.importc.}
+func mpz_limbs_modify*(a2: mpz_ptr; a3: mp_size_t): mp_ptr {.importc.}
+func mpz_limbs_modify*(a2: var mpz_t; a3: mp_size_t): mp_ptr {.importc.}
+func mpz_limbs_finish*(a2: mpz_ptr; a3: mp_size_t) {.importc.}
+func mpz_limbs_finish*(a2: var mpz_t; a3: mp_size_t) {.importc.}
+func mpz_roinit_n*(a2: mpz_ptr; a3: mp_srcptr; a4: mp_size_t): mpz_srcptr {.importc.}
+func mpz_roinit_n*(a2: var mpz_t; a3: var mp_limb_t; a4: mp_size_t): mpz_srcptr {.importc.}
+func mpq_add*(a2: mpq_ptr; a3: mpq_srcptr; a4: mpq_srcptr) {.importc.}
+func mpq_add*(a2: var mpq_t; a3: mpq_t; a4: mpq_t) {.importc.}
+func mpq_canonicalize*(a2: mpq_ptr) {.importc.}
+func mpq_canonicalize*(a2: var mpq_t) {.importc.}
+func mpq_clear*(a2: mpq_ptr) {.importc.}
+func mpq_clear*(a2: var mpq_t) {.importc.}
+func mpq_clears*(a2: mpq_ptr) {.varargs, importc.}
+func mpq_clears*(a2: var mpq_t) {.varargs, importc.}
+func mpq_cmp*(a2: mpq_srcptr; a3: mpq_srcptr): cint {.importc.}
+func mpq_cmp*(a2: mpq_t; a3: mpq_t): cint {.importc.}
 func m_mpq_cmp_si*(a2: mpq_srcptr; a3: clong; a4: culong): cint {.importc: "_mpq_cmp_si".}
 func m_mpq_cmp_si*(a2: mpq_t; a3: clong; a4: culong): cint {.importc: "_mpq_cmp_si".}
 func m_mpq_cmp_ui*(a2: mpq_srcptr; a3: culong; a4: culong): cint {.importc: "_mpq_cmp_ui".}
 func m_mpq_cmp_ui*(a2: mpq_t; a3: culong; a4: culong): cint {.importc: "_mpq_cmp_ui".}
-func mpq_div*(a2: mpq_ptr; a3: mpq_srcptr; a4: mpq_srcptr) {.importc: "mpq_div".}
-func mpq_div*(a2: var mpq_t; a3: mpq_t; a4: mpq_t) {.importc: "mpq_div".}
-func mpq_div_2exp*(a2: mpq_ptr; a3: mpq_srcptr; a4: mp_bitcnt_t) {.importc: "mpq_div_2exp".}
-func mpq_div_2exp*(a2: var mpq_t; a3: mpq_t; a4: mp_bitcnt_t) {.importc: "mpq_div_2exp".}
-func mpq_equal*(a2: mpq_srcptr; a3: mpq_srcptr): cint {.importc: "mpq_equal".}
-func mpq_equal*(a2: mpq_t; a3: mpq_t): cint {.importc: "mpq_equal".}
-func mpq_get_num*(a2: mpz_ptr; a3: mpq_srcptr) {.importc: "mpq_get_num".}
-func mpq_get_num*(a2: var mpz_t; a3: mpq_t) {.importc: "mpq_get_num".}
-func mpq_get_den*(a2: mpz_ptr; a3: mpq_srcptr) {.importc: "mpq_get_den".}
-func mpq_get_den*(a2: var mpz_t; a3: mpq_t) {.importc: "mpq_get_den".}
-func mpq_get_d*(a2: mpq_srcptr): cdouble {.importc: "mpq_get_d".}
-func mpq_get_d*(a2: mpq_t): cdouble {.importc: "mpq_get_d".}
-func mpq_get_str*(a2: cstring; a3: cint; a4: mpq_srcptr): cstring {.importc: "mpq_get_str".}
-func mpq_get_str*(a2: cstring; a3: cint; a4: mpq_t): cstring {.importc: "mpq_get_str".}
-func mpq_init*(a2: mpq_ptr) {.importc: "mpq_init".}
-func mpq_init*(a2: var mpq_t) {.importc: "mpq_init".}
-func mpq_inits*(a2: mpq_ptr) {.varargs,importc: "mpq_inits".}
-func mpq_inits*(a2: var mpq_t) {.varargs,importc: "mpq_inits".}
-func mpq_inp_str*(a2: mpq_ptr; a3: File; a4: cint): csize_t {.importc: "mpq_inp_str".}
-func mpq_inp_str*(a2: var mpq_t; a3: File; a4: cint): csize_t {.importc: "mpq_inp_str".}
-func mpq_inv*(a2: mpq_ptr; a3: mpq_srcptr) {.importc: "mpq_inv".}
-func mpq_inv*(a2: var mpq_t; a3: mpq_t) {.importc: "mpq_inv".}
-func mpq_mul*(a2: mpq_ptr; a3: mpq_srcptr; a4: mpq_srcptr) {.importc: "mpq_mul".}
-func mpq_mul*(a2: var mpq_t; a3: mpq_t; a4: mpq_t) {.importc: "mpq_mul".}
-func mpq_mul_2exp*(a2: mpq_ptr; a3: mpq_srcptr; a4: mp_bitcnt_t) {.importc: "mpq_mul_2exp".}
-func mpq_mul_2exp*(a2: var mpq_t; a3: mpq_t; a4: mp_bitcnt_t) {.importc: "mpq_mul_2exp".}
-func mpq_out_str*(a2: File; a3: cint; a4: mpq_srcptr): csize_t {.importc: "mpq_out_str".}
-func mpq_out_str*(a2: File; a3: cint; a4: mpq_t): csize_t {.importc: "mpq_out_str".}
-func mpq_set*(a2: mpq_ptr; a3: mpq_srcptr) {.importc: "mpq_set".}
-func mpq_set*(a2: var mpq_t; a3: mpq_t) {.importc: "mpq_set".}
-func mpq_set_d*(a2: mpq_ptr; a3: cdouble) {.importc: "mpq_set_d".}
-func mpq_set_d*(a2: var mpq_t; a3: cdouble) {.importc: "mpq_set_d".}
-func mpq_set_den*(a2: mpq_ptr; a3: mpz_srcptr) {.importc: "mpq_set_den".}
-func mpq_set_den*(a2: var mpq_t; a3: mpz_t) {.importc: "mpq_set_den".}
-func mpq_set_f*(a2: mpq_ptr; a3: mpf_srcptr) {.importc: "mpq_set_f".}
-func mpq_set_f*(a2: var mpq_t; a3: mpf_t) {.importc: "mpq_set_f".}
-func mpq_set_num*(a2: mpq_ptr; a3: mpz_srcptr) {.importc: "mpq_set_num".}
-func mpq_set_num*(a2: var mpq_t; a3: mpz_t) {.importc: "mpq_set_num".}
-func mpq_set_si*(a2: mpq_ptr; a3: clong; a4: culong) {.importc: "mpq_set_si".}
-func mpq_set_si*(a2: var mpq_t; a3: clong; a4: culong) {.importc: "mpq_set_si".}
-func mpq_set_str*(a2: mpq_ptr; a3: cstring; a4: cint): cint {.importc: "mpq_set_str".}
-func mpq_set_str*(a2: var mpq_t; a3: cstring; a4: cint): cint {.importc: "mpq_set_str".}
-func mpq_set_ui*(a2: mpq_ptr; a3: culong; a4: culong) {.importc: "mpq_set_ui".}
-func mpq_set_ui*(a2: var mpq_t; a3: culong; a4: culong) {.importc: "mpq_set_ui".}
-func mpq_set_z*(a2: mpq_ptr; a3: mpz_srcptr) {.importc: "mpq_set_z".}
-func mpq_set_z*(a2: var mpq_t; a3: mpz_t) {.importc: "mpq_set_z".}
-func mpq_sub*(a2: mpq_ptr; a3: mpq_srcptr; a4: mpq_srcptr) {.importc: "mpq_sub".}
-func mpq_sub*(a2: var mpq_t; a3: mpq_t; a4: mpq_t) {.importc: "mpq_sub".}
-func mpq_swap*(a2: mpq_ptr; a3: mpq_ptr) {.importc: "mpq_swap".}
-func mpq_swap*(a2: var mpq_t; a3: var mpq_t) {.importc: "mpq_swap".}
-func mpf_abs*(a2: mpf_ptr; a3: mpf_srcptr) {.importc: "mpf_abs".}
-func mpf_abs*(a2: var mpf_t; a3: mpf_t) {.importc: "mpf_abs".}
-func mpf_add*(a2: mpf_ptr; a3: mpf_srcptr; a4: mpf_srcptr) {.importc: "mpf_add".}
-func mpf_add*(a2: var mpf_t; a3: mpf_t; a4: mpf_t) {.importc: "mpf_add".}
-func mpf_add_ui*(a2: mpf_ptr; a3: mpf_srcptr; a4: culong) {.importc: "mpf_add_ui".}
-func mpf_add_ui*(a2: var mpf_t; a3: mpf_t; a4: culong) {.importc: "mpf_add_ui".}
-func mpf_ceil*(a2: mpf_ptr; a3: mpf_srcptr) {.importc: "mpf_ceil".}
-func mpf_ceil*(a2: var mpf_t; a3: mpf_t) {.importc: "mpf_ceil".}
-func mpf_clear*(a2: mpf_ptr) {.importc: "mpf_clear".}
-func mpf_clear*(a2: var mpf_t) {.importc: "mpf_clear".}
-func mpf_clears*(a2: mpf_ptr) {.varargs,importc: "mpf_clears".}
-func mpf_clears*(a2: var mpf_t) {.varargs,importc: "mpf_clears".}
-func mpf_cmp*(a2: mpf_srcptr; a3: mpf_srcptr): cint {.importc: "mpf_cmp".}
-func mpf_cmp*(a2: mpf_t; a3: mpf_t): cint {.importc: "mpf_cmp".}
-func mpf_cmp_d*(a2: mpf_srcptr; a3: cdouble): cint {.importc: "mpf_cmp_d".}
-func mpf_cmp_d*(a2: mpf_t; a3: cdouble): cint {.importc: "mpf_cmp_d".}
-func mpf_cmp_si*(a2: mpf_srcptr; a3: clong): cint {.importc: "mpf_cmp_si".}
-func mpf_cmp_si*(a2: mpf_t; a3: clong): cint {.importc: "mpf_cmp_si".}
-func mpf_cmp_ui*(a2: mpf_srcptr; a3: culong): cint {.importc: "mpf_cmp_ui".}
-func mpf_cmp_ui*(a2: mpf_t; a3: culong): cint {.importc: "mpf_cmp_ui".}
-func mpf_div*(a2: mpf_ptr; a3: mpf_srcptr; a4: mpf_srcptr) {.importc: "mpf_div".}
-func mpf_div*(a2: var mpf_t; a3: mpf_t; a4: mpf_t) {.importc: "mpf_div".}
-func mpf_div_2exp*(a2: mpf_ptr; a3: mpf_srcptr; a4: mp_bitcnt_t) {.importc: "mpf_div_2exp".}
-func mpf_div_2exp*(a2: var mpf_t; a3: mpf_t; a4: mp_bitcnt_t) {.importc: "mpf_div_2exp".}
-func mpf_div_ui*(a2: mpf_ptr; a3: mpf_srcptr; a4: culong) {.importc: "mpf_div_ui".}
-func mpf_div_ui*(a2: var mpf_t; a3: mpf_t; a4: culong) {.importc: "mpf_div_ui".}
-func mpf_dump*(a2: mpf_srcptr) {.importc: "mpf_dump".}
-func mpf_dump*(a2: mpf_t) {.importc: "mpf_dump".}
-func mpf_eq*(a2: mpf_srcptr; a3: mpf_srcptr; a4: mp_bitcnt_t): cint {.importc: "mpf_eq".}
-func mpf_eq*(a2: mpf_t; a3: mpf_t; a4: mp_bitcnt_t): cint {.importc: "mpf_eq".}
-func mpf_fits_sint_p*(a2: mpf_srcptr): cint {.importc: "mpf_fits_sint_p".}
-func mpf_fits_sint_p*(a2: mpf_t): cint {.importc: "mpf_fits_sint_p".}
-func mpf_fits_slong_p*(a2: mpf_srcptr): cint {.importc: "mpf_fits_slong_p".}
-func mpf_fits_slong_p*(a2: mpf_t): cint {.importc: "mpf_fits_slong_p".}
-func mpf_fits_sshort_p*(a2: mpf_srcptr): cint {.importc: "mpf_fits_sshort_p".}
-func mpf_fits_sshort_p*(a2: mpf_t): cint {.importc: "mpf_fits_sshort_p".}
-func mpf_fits_uint_p*(a2: mpf_srcptr): cint {.importc: "mpf_fits_uint_p".}
-func mpf_fits_uint_p*(a2: mpf_t): cint {.importc: "mpf_fits_uint_p".}
-func mpf_fits_ulong_p*(a2: mpf_srcptr): cint {.importc: "mpf_fits_ulong_p".}
-func mpf_fits_ulong_p*(a2: mpf_t): cint {.importc: "mpf_fits_ulong_p".}
-func mpf_fits_ushort_p*(a2: mpf_srcptr): cint {.importc: "mpf_fits_ushort_p".}
-func mpf_fits_ushort_p*(a2: mpf_t): cint {.importc: "mpf_fits_ushort_p".}
-func mpf_floor*(a2: mpf_ptr; a3: mpf_srcptr) {.importc: "mpf_floor".}
-func mpf_floor*(a2: var mpf_t; a3: mpf_t) {.importc: "mpf_floor".}
-func mpf_get_d*(a2: mpf_srcptr): cdouble {.importc: "mpf_get_d".}
-func mpf_get_d*(a2: mpf_t): cdouble {.importc: "mpf_get_d".}
-func mpf_get_d_2exp*(a2: ptr clong; a3: mpf_srcptr): cdouble {.importc: "mpf_get_d_2exp".}
-func mpf_get_d_2exp*(a2: ptr clong; a3: mpf_t): cdouble {.importc: "mpf_get_d_2exp".}
-func mpf_get_default_prec*(): mp_bitcnt_t {.importc: "mpf_get_default_prec".}
-func mpf_get_prec*(a2: mpf_srcptr): mp_bitcnt_t {.importc: "mpf_get_prec".}
-func mpf_get_prec*(a2: mpf_t): mp_bitcnt_t {.importc: "mpf_get_prec".}
-func mpf_get_si*(a2: mpf_srcptr): clong {.importc: "mpf_get_si".}
-func mpf_get_si*(a2: mpf_t): clong {.importc: "mpf_get_si".}
-func mpf_get_str*(a2: cstring; a3: ptr mp_exp_t; a4: cint; a5: csize_t; a6: mpf_srcptr): cstring {.importc: "mpf_get_str".}
-func mpf_get_str*(a2: cstring; a3: var mp_exp_t; a4: cint; a5: csize_t; a6: mpf_t): cstring {.importc: "mpf_get_str".}
-func mpf_get_ui*(a2: mpf_srcptr): culong {.importc: "mpf_get_ui".}
-func mpf_get_ui*(a2: mpf_t): culong {.importc: "mpf_get_ui".}
-func mpf_init*(a2: mpf_ptr) {.importc: "mpf_init".}
-func mpf_init*(a2: var mpf_t) {.importc: "mpf_init".}
-func mpf_init2*(a2: mpf_ptr; a3: mp_bitcnt_t) {.importc: "mpf_init2".}
-func mpf_init2*(a2: var mpf_t; a3: mp_bitcnt_t) {.importc: "mpf_init2".}
-func mpf_inits*(a2: mpf_ptr) {.varargs,importc: "mpf_inits".}
-func mpf_inits*(a2: var mpf_t) {.varargs,importc: "mpf_inits".}
-func mpf_init_set*(a2: mpf_ptr; a3: mpf_srcptr) {.importc: "mpf_init_set".}
-func mpf_init_set*(a2: var mpf_t; a3: mpf_t) {.importc: "mpf_init_set".}
-func mpf_init_set_d*(a2: mpf_ptr; a3: cdouble) {.importc: "mpf_init_set_d".}
-func mpf_init_set_d*(a2: var mpf_t; a3: cdouble) {.importc: "mpf_init_set_d".}
-func mpf_init_set_si*(a2: mpf_ptr; a3: clong) {.importc: "mpf_init_set_si".}
-func mpf_init_set_si*(a2: var mpf_t; a3: clong) {.importc: "mpf_init_set_si".}
-func mpf_init_set_str*(a2: mpf_ptr; a3: cstring; a4: cint): cint {.importc: "mpf_init_set_str".}
-func mpf_init_set_str*(a2: var mpf_t; a3: cstring; a4: cint): cint {.importc: "mpf_init_set_str".}
-func mpf_init_set_ui*(a2: mpf_ptr; a3: culong) {.importc: "mpf_init_set_ui".}
-func mpf_init_set_ui*(a2: var mpf_t; a3: culong) {.importc: "mpf_init_set_ui".}
-func mpf_inp_str*(a2: mpf_ptr; a3: File; a4: cint): csize_t {.importc: "mpf_inp_str".}
-func mpf_inp_str*(a2: var mpf_t; a3: File; a4: cint): csize_t {.importc: "mpf_inp_str".}
-func mpf_integer_p*(a2: mpf_srcptr): cint {.importc: "mpf_integer_p".}
-func mpf_integer_p*(a2: mpf_t): cint {.importc: "mpf_integer_p".}
-func mpf_mul*(a2: mpf_ptr; a3: mpf_srcptr; a4: mpf_srcptr) {.importc: "mpf_mul".}
-func mpf_mul*(a2: var mpf_t; a3: mpf_t; a4: mpf_t) {.importc: "mpf_mul".}
-func mpf_mul_2exp*(a2: mpf_ptr; a3: mpf_srcptr; a4: mp_bitcnt_t) {.importc: "mpf_mul_2exp".}
-func mpf_mul_2exp*(a2: var mpf_t; a3: mpf_t; a4: mp_bitcnt_t) {.importc: "mpf_mul_2exp".}
-func mpf_mul_ui*(a2: mpf_ptr; a3: mpf_srcptr; a4: culong) {.importc: "mpf_mul_ui".}
-func mpf_mul_ui*(a2: var mpf_t; a3: mpf_t; a4: culong) {.importc: "mpf_mul_ui".}
-func mpf_neg*(a2: mpf_ptr; a3: mpf_srcptr) {.importc: "mpf_neg".}
-func mpf_neg*(a2: var mpf_t; a3: mpf_t) {.importc: "mpf_neg".}
-func mpf_out_str*(a2: File; a3: cint; a4: csize_t; a5: mpf_srcptr): csize_t {.importc: "mpf_out_str".}
-func mpf_out_str*(a2: File; a3: cint; a4: csize_t; a5: mpf_t): csize_t {.importc: "mpf_out_str".}
-func mpf_pow_ui*(a2: mpf_ptr; a3: mpf_srcptr; a4: culong) {.importc: "mpf_pow_ui".}
-func mpf_pow_ui*(a2: var mpf_t; a3: mpf_t; a4: culong) {.importc: "mpf_pow_ui".}
-func mpf_random2*(a2: mpf_ptr; a3: mp_size_t; a4: mp_exp_t) {.importc: "mpf_random2".}
-func mpf_random2*(a2: var mpf_t; a3: mp_size_t; a4: mp_exp_t) {.importc: "mpf_random2".}
-func mpf_reldiff*(a2: mpf_ptr; a3: mpf_srcptr; a4: mpf_srcptr) {.importc: "mpf_reldiff".}
-func mpf_reldiff*(a2: var mpf_t; a3: mpf_t; a4: mpf_t) {.importc: "mpf_reldiff".}
-func mpf_set*(a2: mpf_ptr; a3: mpf_srcptr) {.importc: "mpf_set".}
-func mpf_set*(a2: var mpf_t; a3: mpf_t) {.importc: "mpf_set".}
-func mpf_set_d*(a2: mpf_ptr; a3: cdouble) {.importc: "mpf_set_d".}
-func mpf_set_d*(a2: var mpf_t; a3: cdouble) {.importc: "mpf_set_d".}
-func mpf_set_default_prec*(a2: mp_bitcnt_t) {.importc: "mpf_set_default_prec".}
-func mpf_set_prec*(a2: mpf_ptr; a3: mp_bitcnt_t) {.importc: "mpf_set_prec".}
-func mpf_set_prec*(a2: var mpf_t; a3: mp_bitcnt_t) {.importc: "mpf_set_prec".}
-func mpf_set_prec_raw*(a2: mpf_ptr; a3: mp_bitcnt_t) {.importc: "mpf_set_prec_raw".}
-func mpf_set_prec_raw*(a2: var mpf_t; a3: mp_bitcnt_t) {.importc: "mpf_set_prec_raw".}
-func mpf_set_q*(a2: mpf_ptr; a3: mpq_srcptr) {.importc: "mpf_set_q".}
-func mpf_set_q*(a2: var mpf_t; a3: mpq_t) {.importc: "mpf_set_q".}
-func mpf_set_si*(a2: mpf_ptr; a3: clong) {.importc: "mpf_set_si".}
-func mpf_set_si*(a2: var mpf_t; a3: clong) {.importc: "mpf_set_si".}
-func mpf_set_str*(a2: mpf_ptr; a3: cstring; a4: cint): cint {.importc: "mpf_set_str".}
-func mpf_set_str*(a2: var mpf_t; a3: cstring; a4: cint): cint {.importc: "mpf_set_str".}
-func mpf_set_ui*(a2: mpf_ptr; a3: culong) {.importc: "mpf_set_ui".}
-func mpf_set_ui*(a2: var mpf_t; a3: culong) {.importc: "mpf_set_ui".}
-func mpf_set_z*(a2: mpf_ptr; a3: mpz_srcptr) {.importc: "mpf_set_z".}
-func mpf_set_z*(a2: var mpf_t; a3: mpz_t) {.importc: "mpf_set_z".}
-func mpf_size*(a2: mpf_srcptr): csize_t {.importc: "mpf_size".}
-func mpf_size*(a2: mpf_t): csize_t {.importc: "mpf_size".}
-func mpf_sqrt*(a2: mpf_ptr; a3: mpf_srcptr) {.importc: "mpf_sqrt".}
-func mpf_sqrt*(a2: var mpf_t; a3: mpf_t) {.importc: "mpf_sqrt".}
-func mpf_sqrt_ui*(a2: mpf_ptr; a3: culong) {.importc: "mpf_sqrt_ui".}
-func mpf_sqrt_ui*(a2: var mpf_t; a3: culong) {.importc: "mpf_sqrt_ui".}
-func mpf_sub*(a2: mpf_ptr; a3: mpf_srcptr; a4: mpf_srcptr) {.importc: "mpf_sub".}
-func mpf_sub*(a2: var mpf_t; a3: mpf_t; a4: mpf_t) {.importc: "mpf_sub".}
-func mpf_sub_ui*(a2: mpf_ptr; a3: mpf_srcptr; a4: culong) {.importc: "mpf_sub_ui".}
-func mpf_sub_ui*(a2: var mpf_t; a3: mpf_t; a4: culong) {.importc: "mpf_sub_ui".}
-func mpf_swap*(a2: mpf_ptr; a3: mpf_ptr) {.importc: "mpf_swap".}
-func mpf_swap*(a2: var mpf_t; a3: var mpf_t) {.importc: "mpf_swap".}
-func mpf_trunc*(a2: mpf_ptr; a3: mpf_srcptr) {.importc: "mpf_trunc".}
-func mpf_trunc*(a2: var mpf_t; a3: mpf_t) {.importc: "mpf_trunc".}
-func mpf_ui_div*(a2: mpf_ptr; a3: culong; a4: mpf_srcptr) {.importc: "mpf_ui_div".}
-func mpf_ui_div*(a2: var mpf_t; a3: culong; a4: mpf_t) {.importc: "mpf_ui_div".}
-func mpf_ui_sub*(a2: mpf_ptr; a3: culong; a4: mpf_srcptr) {.importc: "mpf_ui_sub".}
-func mpf_ui_sub*(a2: var mpf_t; a3: culong; a4: mpf_t) {.importc: "mpf_ui_sub".}
-func mpf_urandomb*(a2: mpf_t; a3: gmp_randstate_t; a4: mp_bitcnt_t) {.importc: "mpf_urandomb".}
-func mpn_add_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t): mp_limb_t {.importc: "mpn_add_n".}
-func mpn_add_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; a5: mp_size_t): mp_limb_t {.importc: "mpn_add_n".}
-func mpn_addmul_1*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_limb_t): mp_limb_t {.importc: "mpn_addmul_1".}
-func mpn_addmul_1*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: mp_limb_t): mp_limb_t {.importc: "mpn_addmul_1".}
-func mpn_divexact_by3c*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_limb_t): mp_limb_t {.importc: "mpn_divexact_by3c".}
-func mpn_divexact_by3c*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: mp_limb_t): mp_limb_t {.importc: "mpn_divexact_by3c".}
-func mpn_divrem*(a2: mp_ptr; a3: mp_size_t; a4: mp_ptr; a5: mp_size_t; a6: mp_srcptr; a7: mp_size_t): mp_limb_t {.importc: "mpn_divrem".}
-func mpn_divrem*(a2: var mp_limb_t; a3: mp_size_t; a4: var mp_limb_t; a5: mp_size_t; a6: var mp_limb_t; a7: mp_size_t): mp_limb_t {.importc: "mpn_divrem".}
-func mpn_divrem_1*(a2: mp_ptr; a3: mp_size_t; a4: mp_srcptr; a5: mp_size_t; a6: mp_limb_t): mp_limb_t {.importc: "mpn_divrem_1".}
-func mpn_divrem_1*(a2: var mp_limb_t; a3: mp_size_t; a4: var mp_limb_t; a5: mp_size_t; a6: mp_limb_t): mp_limb_t {.importc: "mpn_divrem_1".}
-func mpn_divrem_2*(a2: mp_ptr; a3: mp_size_t; a4: mp_ptr; a5: mp_size_t; a6: mp_srcptr): mp_limb_t {.importc: "mpn_divrem_2".}
-func mpn_divrem_2*(a2: var mp_limb_t; a3: mp_size_t; a4: var mp_limb_t; a5: mp_size_t; a6: var mp_limb_t): mp_limb_t {.importc: "mpn_divrem_2".}
-func mpn_div_qr_1*(a2: mp_ptr; a3: ptr mp_limb_t; a4: mp_srcptr; a5: mp_size_t; a6: mp_limb_t): mp_limb_t {.importc: "mpn_div_qr_1".}
-func mpn_div_qr_1*(a2: var mp_limb_t; a3: ptr mp_limb_t; a4: var mp_limb_t; a5: mp_size_t; a6: mp_limb_t): mp_limb_t {.importc: "mpn_div_qr_1".}
-func mpn_div_qr_2*(a2: mp_ptr; a3: mp_ptr; a4: mp_srcptr; a5: mp_size_t; a6: mp_srcptr): mp_limb_t {.importc: "mpn_div_qr_2".}
-func mpn_div_qr_2*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; a5: mp_size_t; a6: var mp_limb_t): mp_limb_t {.importc: "mpn_div_qr_2".}
-func mpn_gcd*(a2: mp_ptr; a3: mp_ptr; a4: mp_size_t; a5: mp_ptr; a6: mp_size_t): mp_size_t {.importc: "mpn_gcd".}
-func mpn_gcd*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: var mp_limb_t; a6: mp_size_t): mp_size_t {.importc: "mpn_gcd".}
-func mpn_gcd_1*(a2: mp_srcptr; a3: mp_size_t; a4: mp_limb_t): mp_limb_t {.importc: "mpn_gcd_1".}
-func mpn_gcd_1*(a2: var mp_limb_t; a3: mp_size_t; a4: mp_limb_t): mp_limb_t {.importc: "mpn_gcd_1".}
-func mpn_gcdext_1*(a2: ptr mp_limb_signed_t; a3: ptr mp_limb_signed_t; a4: mp_limb_t; a5: mp_limb_t): mp_limb_t {.importc: "mpn_gcdext_1".}
-func mpn_gcdext*(a2: mp_ptr; a3: mp_ptr; a4: ptr mp_size_t; a5: mp_ptr; a6: mp_size_t; a7: mp_ptr; a8: mp_size_t): mp_size_t {.importc: "mpn_gcdext".}
-func mpn_gcdext*(a2: var mp_limb_t; a3: var mp_limb_t; a4: ptr mp_size_t; a5: var mp_limb_t; a6: mp_size_t; a7: var mp_limb_t; a8: mp_size_t): mp_size_t {.importc: "mpn_gcdext".}
-func mpn_get_str*(a2: ptr uint8; a3: cint; a4: mp_ptr; a5: mp_size_t): csize_t {.importc: "mpn_get_str".}
-func mpn_get_str*(a2: ptr uint8; a3: cint; a4: var mp_limb_t; a5: mp_size_t): csize_t {.importc: "mpn_get_str".}
-func mpn_hamdist*(a2: mp_srcptr; a3: mp_srcptr; a4: mp_size_t): mp_bitcnt_t {.importc: "mpn_hamdist".}
-func mpn_hamdist*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t): mp_bitcnt_t {.importc: "mpn_hamdist".}
-func mpn_lshift*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: cuint): mp_limb_t {.importc: "mpn_lshift".}
-func mpn_lshift*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: cuint): mp_limb_t {.importc: "mpn_lshift".}
-func mpn_mod_1*(a2: mp_srcptr; a3: mp_size_t; a4: mp_limb_t): mp_limb_t {.importc: "mpn_mod_1".}
-func mpn_mod_1*(a2: var mp_limb_t; a3: mp_size_t; a4: mp_limb_t): mp_limb_t {.importc: "mpn_mod_1".}
-func mpn_mul*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_srcptr; a6: mp_size_t): mp_limb_t {.importc: "mpn_mul".}
-func mpn_mul*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: var mp_limb_t; a6: mp_size_t): mp_limb_t {.importc: "mpn_mul".}
-func mpn_mul_1*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_limb_t): mp_limb_t {.importc: "mpn_mul_1".}
-func mpn_mul_1*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: mp_limb_t): mp_limb_t {.importc: "mpn_mul_1".}
-func mpn_mul_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.importc: "mpn_mul_n".}
-func mpn_mul_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; a5: mp_size_t) {.importc: "mpn_mul_n".}
-func mpn_sqr*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t) {.importc: "mpn_sqr".}
-func mpn_sqr*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t) {.importc: "mpn_sqr".}
-func mpn_neg*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t): mp_limb_t {.importc: "mpn_neg".}
-func mpn_neg*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t): mp_limb_t {.importc: "mpn_neg".}
-func mpn_com*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t) {.importc: "mpn_com".}
-func mpn_com*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t) {.importc: "mpn_com".}
-func mpn_perfect_square_p*(a2: mp_srcptr; a3: mp_size_t): cint {.importc: "mpn_perfect_square_p".}
-func mpn_perfect_square_p*(a2: var mp_limb_t; a3: mp_size_t): cint {.importc: "mpn_perfect_square_p".}
-func mpn_perfect_power_p*(a2: mp_srcptr; a3: mp_size_t): cint {.importc: "mpn_perfect_power_p".}
-func mpn_perfect_power_p*(a2: var mp_limb_t; a3: mp_size_t): cint {.importc: "mpn_perfect_power_p".}
-func mpn_popcount*(a2: mp_srcptr; a3: mp_size_t): mp_bitcnt_t {.importc: "mpn_popcount".}
-func mpn_popcount*(a2: var mp_limb_t; a3: mp_size_t): mp_bitcnt_t {.importc: "mpn_popcount".}
-func mpn_pow_1*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_limb_t; a6: mp_ptr): mp_size_t {.importc: "mpn_pow_1".}
-func mpn_pow_1*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: mp_limb_t; a6: var mp_limb_t): mp_size_t {.importc: "mpn_pow_1".}
-func mpn_preinv_mod_1*(a2: mp_srcptr; a3: mp_size_t; a4: mp_limb_t; a5: mp_limb_t): mp_limb_t {.importc: "mpn_preinv_mod_1".}
-func mpn_preinv_mod_1*(a2: var mp_limb_t; a3: mp_size_t; a4: mp_limb_t; a5: mp_limb_t): mp_limb_t {.importc: "mpn_preinv_mod_1".}
-func mpn_random*(a2: mp_ptr; a3: mp_size_t) {.importc: "mpn_random".}
-func mpn_random*(a2: var mp_limb_t; a3: mp_size_t) {.importc: "mpn_random".}
-func mpn_random2*(a2: mp_ptr; a3: mp_size_t) {.importc: "mpn_random2".}
-func mpn_random2*(a2: var mp_limb_t; a3: mp_size_t) {.importc: "mpn_random2".}
-func mpn_rshift*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: cuint): mp_limb_t {.importc: "mpn_rshift".}
-func mpn_rshift*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: cuint): mp_limb_t {.importc: "mpn_rshift".}
-func mpn_scan0*(a2: mp_srcptr; a3: mp_bitcnt_t): mp_bitcnt_t {.importc: "mpn_scan0".}
-func mpn_scan0*(a2: var mp_limb_t; a3: mp_bitcnt_t): mp_bitcnt_t {.importc: "mpn_scan0".}
-func mpn_scan1*(a2: mp_srcptr; a3: mp_bitcnt_t): mp_bitcnt_t {.importc: "mpn_scan1".}
-func mpn_scan1*(a2: var mp_limb_t; a3: mp_bitcnt_t): mp_bitcnt_t {.importc: "mpn_scan1".}
-func mpn_set_str*(a2: mp_ptr; a3: ptr uint8; a4: csize_t; a5: cint): mp_size_t {.importc: "mpn_set_str".}
-func mpn_set_str*(a2: var mp_limb_t; a3: ptr uint8; a4: csize_t; a5: cint): mp_size_t {.importc: "mpn_set_str".}
-func mpn_sizeinbase*(a2: mp_srcptr; a3: mp_size_t; a4: cint): csize_t {.importc: "mpn_sizeinbase".}
-func mpn_sizeinbase*(a2: var mp_limb_t; a3: mp_size_t; a4: cint): csize_t {.importc: "mpn_sizeinbase".}
-func mpn_sqrtrem*(a2: mp_ptr; a3: mp_ptr; a4: mp_srcptr; a5: mp_size_t): mp_size_t {.importc: "mpn_sqrtrem".}
-func mpn_sqrtrem*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; a5: mp_size_t): mp_size_t {.importc: "mpn_sqrtrem".}
-func mpn_sub*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_srcptr; a6: mp_size_t): mp_limb_t {.importc: "mpn_sub".}
-func mpn_sub*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: var mp_limb_t; a6: mp_size_t): mp_limb_t {.importc: "mpn_sub".}
-func mpn_sub_1*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_limb_t): mp_limb_t {.importc: "mpn_sub_1".}
-func mpn_sub_1*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: mp_limb_t): mp_limb_t {.importc: "mpn_sub_1".}
-func mpn_sub_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t): mp_limb_t {.importc: "mpn_sub_n".}
-func mpn_sub_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; a5: mp_size_t): mp_limb_t {.importc: "mpn_sub_n".}
-func mpn_submul_1*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_limb_t): mp_limb_t {.importc: "mpn_submul_1".}
-func mpn_submul_1*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: mp_limb_t): mp_limb_t {.importc: "mpn_submul_1".}
-func mpn_tdiv_qr*(a2: mp_ptr; a3: mp_ptr; a4: mp_size_t; a5: mp_srcptr; a6: mp_size_t; a7: mp_srcptr; a8: mp_size_t) {.importc: "mpn_tdiv_qr".}
-func mpn_tdiv_qr*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: var mp_limb_t; a6: mp_size_t; a7: var mp_limb_t; a8: mp_size_t) {.importc: "mpn_tdiv_qr".}
-func mpn_and_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.importc: "mpn_and_n".}
-func mpn_and_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; a5: mp_size_t) {.importc: "mpn_and_n".}
-func mpn_andn_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.importc: "mpn_andn_n".}
-func mpn_andn_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; a5: mp_size_t) {.importc: "mpn_andn_n".}
-func mpn_nand_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.importc: "mpn_nand_n".}
-func mpn_nand_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; a5: mp_size_t) {.importc: "mpn_nand_n".}
-func mpn_ior_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.importc: "mpn_ior_n".}
-func mpn_ior_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; a5: mp_size_t) {.importc: "mpn_ior_n".}
-func mpn_iorn_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.importc: "mpn_iorn_n".}
-func mpn_iorn_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; a5: mp_size_t) {.importc: "mpn_iorn_n".}
-func mpn_nior_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.importc: "mpn_nior_n".}
-func mpn_nior_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; a5: mp_size_t) {.importc: "mpn_nior_n".}
-func mpn_xor_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.importc: "mpn_xor_n".}
-func mpn_xor_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; a5: mp_size_t) {.importc: "mpn_xor_n".}
-func mpn_xnor_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.importc: "mpn_xnor_n".}
-func mpn_xnor_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; a5: mp_size_t) {.importc: "mpn_xnor_n".}
-func mpn_copyi*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t) {.importc: "mpn_copyi".}
-func mpn_copyi*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t) {.importc: "mpn_copyi".}
-func mpn_copyd*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t) {.importc: "mpn_copyd".}
-func mpn_copyd*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t) {.importc: "mpn_copyd".}
-func mpn_zero*(a2: mp_ptr; a3: mp_size_t) {.importc: "mpn_zero".}
-func mpn_zero*(a2: var mp_limb_t; a3: mp_size_t) {.importc: "mpn_zero".}
-func mpn_cnd_add_n*(a2: mp_limb_t; a3: mp_ptr; a4: mp_srcptr; a5: mp_srcptr; a6: mp_size_t): mp_limb_t {.importc: "mpn_cnd_add_n".}
-func mpn_cnd_add_n*(a2: mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; a5: var mp_limb_t; a6: mp_size_t): mp_limb_t {.importc: "mpn_cnd_add_n".}
-func mpn_cnd_sub_n*(a2: mp_limb_t; a3: mp_ptr; a4: mp_srcptr; a5: mp_srcptr; a6: mp_size_t): mp_limb_t {.importc: "mpn_cnd_sub_n".}
-func mpn_cnd_sub_n*(a2: mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; a5: var mp_limb_t; a6: mp_size_t): mp_limb_t {.importc: "mpn_cnd_sub_n".}
-func mpn_sec_add_1*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_limb_t; a6: mp_ptr): mp_limb_t {.importc: "mpn_sec_add_1".}
-func mpn_sec_add_1*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: mp_limb_t; a6: var mp_limb_t): mp_limb_t {.importc: "mpn_sec_add_1".}
-func mpn_sec_add_1_itch*(a2: mp_size_t): mp_size_t {.importc: "mpn_sec_add_1_itch".}
-func mpn_sec_sub_1*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_limb_t; a6: mp_ptr): mp_limb_t {.importc: "mpn_sec_sub_1".}
-func mpn_sec_sub_1*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: mp_limb_t; a6: var mp_limb_t): mp_limb_t {.importc: "mpn_sec_sub_1".}
-func mpn_sec_sub_1_itch*(a2: mp_size_t): mp_size_t {.importc: "mpn_sec_sub_1_itch".}
-func mpn_sec_mul*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_srcptr; a6: mp_size_t; a7: mp_ptr) {.importc: "mpn_sec_mul".}
-func mpn_sec_mul*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: var mp_limb_t; a6: mp_size_t; a7: var mp_limb_t) {.importc: "mpn_sec_mul".}
-func mpn_sec_mul_itch*(a2: mp_size_t; a3: mp_size_t): mp_size_t {.importc: "mpn_sec_mul_itch".}
-func mpn_sec_sqr*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_ptr) {.importc: "mpn_sec_sqr".}
-func mpn_sec_sqr*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: var mp_limb_t) {.importc: "mpn_sec_sqr".}
-func mpn_sec_sqr_itch*(a2: mp_size_t): mp_size_t {.importc: "mpn_sec_sqr_itch".}
-func mpn_sec_powm*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_srcptr; a6: mp_bitcnt_t; a7: mp_srcptr; a8: mp_size_t; a9: mp_ptr) {.importc: "mpn_sec_powm".}
-func mpn_sec_powm*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: var mp_limb_t; a6: mp_bitcnt_t; a7: var mp_limb_t; a8: mp_size_t; a9: var mp_limb_t) {.importc: "mpn_sec_powm".}
-func mpn_sec_powm_itch*(a2: mp_size_t; a3: mp_bitcnt_t; a4: mp_size_t): mp_size_t {.importc: "mpn_sec_powm_itch".}
-func mpn_sec_tabselect*(a2: ptr mp_limb_t; a3: ptr mp_limb_t; a4: mp_size_t; a5: mp_size_t; a6: mp_size_t) {.importc: "mpn_sec_tabselect".}
-func mpn_sec_div_qr*(a2: mp_ptr; a3: mp_ptr; a4: mp_size_t; a5: mp_srcptr; a6: mp_size_t; a7: mp_ptr): mp_limb_t {.importc: "mpn_sec_div_qr".}
-func mpn_sec_div_qr*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: var mp_limb_t; a6: mp_size_t; a7: var mp_limb_t): mp_limb_t {.importc: "mpn_sec_div_qr".}
-func mpn_sec_div_qr_itch*(a2: mp_size_t; a3: mp_size_t): mp_size_t {.importc: "mpn_sec_div_qr_itch".}
-func mpn_sec_div_r*(a2: mp_ptr; a3: mp_size_t; a4: mp_srcptr; a5: mp_size_t; a6: mp_ptr) {.importc: "mpn_sec_div_r".}
-func mpn_sec_div_r*(a2: var mp_limb_t; a3: mp_size_t; a4: var mp_limb_t; a5: mp_size_t; a6: var mp_limb_t) {.importc: "mpn_sec_div_r".}
-func mpn_sec_div_r_itch*(a2: mp_size_t; a3: mp_size_t): mp_size_t {.importc: "mpn_sec_div_r_itch".}
-func mpn_sec_invert*(a2: mp_ptr; a3: mp_ptr; a4: mp_srcptr; a5: mp_size_t; a6: mp_bitcnt_t; a7: mp_ptr): cint {.importc: "mpn_sec_invert".}
-func mpn_sec_invert*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; a5: mp_size_t; a6: mp_bitcnt_t; a7: var mp_limb_t): cint {.importc: "mpn_sec_invert".}
-func mpn_sec_invert_itch*(a2: mp_size_t): mp_size_t {.importc: "mpn_sec_invert_itch".}
-func mpz_abs*(mm_gmp_w: mpz_ptr; mm_gmp_u: mpz_srcptr) {.importc: "mpz_abs".}
-func mpz_abs*(mm_gmp_w: var mpz_t; mm_gmp_u: mpz_t) {.importc: "mpz_abs".}
-func mpz_fits_uint_p*(mm_gmp_z: mpz_srcptr): cint {.importc: "mpz_fits_uint_p".}
-func mpz_fits_uint_p*(mm_gmp_z: mpz_t): cint {.importc: "mpz_fits_uint_p".}
-func mpz_fits_ulong_p*(mm_gmp_z: mpz_srcptr): cint {.importc: "mpz_fits_ulong_p".}
-func mpz_fits_ulong_p*(mm_gmp_z: mpz_t): cint {.importc: "mpz_fits_ulong_p".}
-func mpz_fits_ushort_p*(mm_gmp_z: mpz_srcptr): cint {.importc: "mpz_fits_ushort_p".}
-func mpz_fits_ushort_p*(mm_gmp_z: mpz_t): cint {.importc: "mpz_fits_ushort_p".}
-func mpz_get_ui*(mm_gmp_z: mpz_srcptr): culong {.importc: "mpz_get_ui".}
-func mpz_get_ui*(mm_gmp_z: mpz_t): culong {.importc: "mpz_get_ui".}
-func mpz_getlimbn*(mm_gmp_z: mpz_srcptr; mm_gmp_n: mp_size_t): mp_limb_t {.importc: "mpz_getlimbn".}
-func mpz_getlimbn*(mm_gmp_z: mpz_t; mm_gmp_n: mp_size_t): mp_limb_t {.importc: "mpz_getlimbn".}
-func mpz_neg*(mm_gmp_w: mpz_ptr; mm_gmp_u: mpz_srcptr) {.importc: "mpz_neg".}
-func mpz_neg*(mm_gmp_w: var mpz_t; mm_gmp_u: mpz_t) {.importc: "mpz_neg".}
-func mpz_perfect_square_p*(mm_gmp_a: mpz_srcptr): cint {.importc: "mpz_perfect_square_p".}
-func mpz_perfect_square_p*(mm_gmp_a: mpz_t): cint {.importc: "mpz_perfect_square_p".}
-func mpz_popcount*(mm_gmp_u: mpz_srcptr): mp_bitcnt_t {.importc: "mpz_popcount".}
-func mpz_popcount*(mm_gmp_u: mpz_t): mp_bitcnt_t {.importc: "mpz_popcount".}
-func mpz_set_q*(mm_gmp_w: mpz_ptr; mm_gmp_u: mpq_srcptr) {.importc: "mpz_set_q".}
-func mpz_set_q*(mm_gmp_w: var mpz_t; mm_gmp_u: mpq_t) {.importc: "mpz_set_q".}
-func mpz_size*(mm_gmp_z: mpz_srcptr): csize_t {.importc: "mpz_size".}
-func mpz_size*(mm_gmp_z: mpz_t): csize_t {.importc: "mpz_size".}
-func mpq_abs*(mm_gmp_w: mpq_ptr; mm_gmp_u: mpq_srcptr) {.importc: "mpq_abs".}
-func mpq_abs*(mm_gmp_w: var mpq_t; mm_gmp_u: mpq_t) {.importc: "mpq_abs".}
-func mpq_neg*(mm_gmp_w: mpq_ptr; mm_gmp_u: mpq_srcptr) {.importc: "mpq_neg".}
-func mpq_neg*(mm_gmp_w: var mpq_t; mm_gmp_u: mpq_t) {.importc: "mpq_neg".}
-func mpn_add*(mm_gmp_wp: mp_ptr; mm_gmp_xp: mp_srcptr; mm_gmp_xsize: mp_size_t; mm_gmp_yp: mp_srcptr; mm_gmp_ysize: mp_size_t): mp_limb_t {.importc: "mpn_add".}
-func mpn_add*(mm_gmp_wp: var mp_limb_t; mm_gmp_xp: var mp_limb_t; mm_gmp_xsize: mp_size_t; mm_gmp_yp: var mp_limb_t; mm_gmp_ysize: mp_size_t): mp_limb_t {.importc: "mpn_add".}
-func mpn_add_1*(mm_gmp_dst: mp_ptr; mm_gmp_src: mp_srcptr; mm_gmp_size: mp_size_t; mm_gmp_n: mp_limb_t): mp_limb_t {.importc: "mpn_add_1".}
-func mpn_add_1*(mm_gmp_dst: var mp_limb_t; mm_gmp_src: var mp_limb_t; mm_gmp_size: mp_size_t; mm_gmp_n: mp_limb_t): mp_limb_t {.importc: "mpn_add_1".}
-func mpn_cmp*(mm_gmp_xp: mp_srcptr; mm_gmp_yp: mp_srcptr; mm_gmp_size: mp_size_t): cint {.importc: "mpn_cmp".}
-func mpn_cmp*(mm_gmp_xp: var mp_limb_t; mm_gmp_yp: var mp_limb_t; mm_gmp_size: mp_size_t): cint {.importc: "mpn_cmp".}
-func mpz_sgn*(a2: mpz_srcptr): cint {.importc: "mpz_sgn".}
-func mpz_sgn*(a2: mpz_t): cint {.importc: "mpz_sgn".}
-func mpf_sgn*(a2: mpf_srcptr): cint {.importc: "mpf_sgn".}
-func mpf_sgn*(a2: mpf_t): cint {.importc: "mpf_sgn".}
-func mpq_sgn*(a2: mpq_srcptr): cint {.importc: "mpq_sgn".}
-func mpq_sgn*(a2: mpq_t): cint {.importc: "mpq_sgn".}
-func mpz_odd_p*(a2: mpz_srcptr): cint {.importc: "mpz_odd_p".}
-func mpz_odd_p*(a2: mpz_t): cint {.importc: "mpz_odd_p".}
-func mpz_even_p*(a2: mpz_srcptr): cint {.importc: "mpz_even_p".}
-func mpz_even_p*(a2: mpz_t): cint {.importc: "mpz_even_p".}
+func mpq_div*(a2: mpq_ptr; a3: mpq_srcptr; a4: mpq_srcptr) {.importc.}
+func mpq_div*(a2: var mpq_t; a3: mpq_t; a4: mpq_t) {.importc.}
+func mpq_div_2exp*(a2: mpq_ptr; a3: mpq_srcptr; a4: mp_bitcnt_t) {.importc.}
+func mpq_div_2exp*(a2: var mpq_t; a3: mpq_t; a4: mp_bitcnt_t) {.importc.}
+func mpq_equal*(a2: mpq_srcptr; a3: mpq_srcptr): cint {.importc.}
+func mpq_equal*(a2: mpq_t; a3: mpq_t): cint {.importc.}
+func mpq_get_num*(a2: mpz_ptr; a3: mpq_srcptr) {.importc.}
+func mpq_get_num*(a2: var mpz_t; a3: mpq_t) {.importc.}
+func mpq_get_den*(a2: mpz_ptr; a3: mpq_srcptr) {.importc.}
+func mpq_get_den*(a2: var mpz_t; a3: mpq_t) {.importc.}
+func mpq_get_d*(a2: mpq_srcptr): cdouble {.importc.}
+func mpq_get_d*(a2: mpq_t): cdouble {.importc.}
+func mpq_get_str*(a2: cstring; a3: cint; a4: mpq_srcptr): cstring {.importc.}
+func mpq_get_str*(a2: cstring; a3: cint; a4: mpq_t): cstring {.importc.}
+func mpq_init*(a2: mpq_ptr) {.importc.}
+func mpq_init*(a2: var mpq_t) {.importc.}
+func mpq_inits*(a2: mpq_ptr) {.varargs, importc.}
+func mpq_inits*(a2: var mpq_t) {.varargs, importc.}
+func mpq_inp_str*(a2: mpq_ptr; a3: File; a4: cint): csize_t {.importc.}
+func mpq_inp_str*(a2: var mpq_t; a3: File; a4: cint): csize_t {.importc.}
+func mpq_inv*(a2: mpq_ptr; a3: mpq_srcptr) {.importc.}
+func mpq_inv*(a2: var mpq_t; a3: mpq_t) {.importc.}
+func mpq_mul*(a2: mpq_ptr; a3: mpq_srcptr; a4: mpq_srcptr) {.importc.}
+func mpq_mul*(a2: var mpq_t; a3: mpq_t; a4: mpq_t) {.importc.}
+func mpq_mul_2exp*(a2: mpq_ptr; a3: mpq_srcptr; a4: mp_bitcnt_t) {.importc.}
+func mpq_mul_2exp*(a2: var mpq_t; a3: mpq_t; a4: mp_bitcnt_t) {.importc.}
+func mpq_out_str*(a2: File; a3: cint; a4: mpq_srcptr): csize_t {.importc.}
+func mpq_out_str*(a2: File; a3: cint; a4: mpq_t): csize_t {.importc.}
+func mpq_set*(a2: mpq_ptr; a3: mpq_srcptr) {.importc.}
+func mpq_set*(a2: var mpq_t; a3: mpq_t) {.importc.}
+func mpq_set_d*(a2: mpq_ptr; a3: cdouble) {.importc.}
+func mpq_set_d*(a2: var mpq_t; a3: cdouble) {.importc.}
+func mpq_set_den*(a2: mpq_ptr; a3: mpz_srcptr) {.importc.}
+func mpq_set_den*(a2: var mpq_t; a3: mpz_t) {.importc.}
+func mpq_set_f*(a2: mpq_ptr; a3: mpf_srcptr) {.importc.}
+func mpq_set_f*(a2: var mpq_t; a3: mpf_t) {.importc.}
+func mpq_set_num*(a2: mpq_ptr; a3: mpz_srcptr) {.importc.}
+func mpq_set_num*(a2: var mpq_t; a3: mpz_t) {.importc.}
+func mpq_set_si*(a2: mpq_ptr; a3: clong; a4: culong) {.importc.}
+func mpq_set_si*(a2: var mpq_t; a3: clong; a4: culong) {.importc.}
+func mpq_set_str*(a2: mpq_ptr; a3: cstring; a4: cint): cint {.importc.}
+func mpq_set_str*(a2: var mpq_t; a3: cstring; a4: cint): cint {.importc.}
+func mpq_set_ui*(a2: mpq_ptr; a3: culong; a4: culong) {.importc.}
+func mpq_set_ui*(a2: var mpq_t; a3: culong; a4: culong) {.importc.}
+func mpq_set_z*(a2: mpq_ptr; a3: mpz_srcptr) {.importc.}
+func mpq_set_z*(a2: var mpq_t; a3: mpz_t) {.importc.}
+func mpq_sub*(a2: mpq_ptr; a3: mpq_srcptr; a4: mpq_srcptr) {.importc.}
+func mpq_sub*(a2: var mpq_t; a3: mpq_t; a4: mpq_t) {.importc.}
+func mpq_swap*(a2: mpq_ptr; a3: mpq_ptr) {.importc.}
+func mpq_swap*(a2: var mpq_t; a3: var mpq_t) {.importc.}
+func mpf_abs*(a2: mpf_ptr; a3: mpf_srcptr) {.importc.}
+func mpf_abs*(a2: var mpf_t; a3: mpf_t) {.importc.}
+func mpf_add*(a2: mpf_ptr; a3: mpf_srcptr; a4: mpf_srcptr) {.importc.}
+func mpf_add*(a2: var mpf_t; a3: mpf_t; a4: mpf_t) {.importc.}
+func mpf_add_ui*(a2: mpf_ptr; a3: mpf_srcptr; a4: culong) {.importc.}
+func mpf_add_ui*(a2: var mpf_t; a3: mpf_t; a4: culong) {.importc.}
+func mpf_ceil*(a2: mpf_ptr; a3: mpf_srcptr) {.importc.}
+func mpf_ceil*(a2: var mpf_t; a3: mpf_t) {.importc.}
+func mpf_clear*(a2: mpf_ptr) {.importc.}
+func mpf_clear*(a2: var mpf_t) {.importc.}
+func mpf_clears*(a2: mpf_ptr) {.varargs, importc.}
+func mpf_clears*(a2: var mpf_t) {.varargs, importc.}
+func mpf_cmp*(a2: mpf_srcptr; a3: mpf_srcptr): cint {.importc.}
+func mpf_cmp*(a2: mpf_t; a3: mpf_t): cint {.importc.}
+func mpf_cmp_d*(a2: mpf_srcptr; a3: cdouble): cint {.importc.}
+func mpf_cmp_d*(a2: mpf_t; a3: cdouble): cint {.importc.}
+func mpf_cmp_si*(a2: mpf_srcptr; a3: clong): cint {.importc.}
+func mpf_cmp_si*(a2: mpf_t; a3: clong): cint {.importc.}
+func mpf_cmp_ui*(a2: mpf_srcptr; a3: culong): cint {.importc.}
+func mpf_cmp_ui*(a2: mpf_t; a3: culong): cint {.importc.}
+func mpf_div*(a2: mpf_ptr; a3: mpf_srcptr; a4: mpf_srcptr) {.importc.}
+func mpf_div*(a2: var mpf_t; a3: mpf_t; a4: mpf_t) {.importc.}
+func mpf_div_2exp*(a2: mpf_ptr; a3: mpf_srcptr; a4: mp_bitcnt_t) {.importc.}
+func mpf_div_2exp*(a2: var mpf_t; a3: mpf_t; a4: mp_bitcnt_t) {.importc.}
+func mpf_div_ui*(a2: mpf_ptr; a3: mpf_srcptr; a4: culong) {.importc.}
+func mpf_div_ui*(a2: var mpf_t; a3: mpf_t; a4: culong) {.importc.}
+func mpf_dump*(a2: mpf_srcptr) {.importc.}
+func mpf_dump*(a2: mpf_t) {.importc.}
+func mpf_eq*(a2: mpf_srcptr; a3: mpf_srcptr; a4: mp_bitcnt_t): cint {.importc.}
+func mpf_eq*(a2: mpf_t; a3: mpf_t; a4: mp_bitcnt_t): cint {.importc.}
+func mpf_fits_sint_p*(a2: mpf_srcptr): cint {.importc.}
+func mpf_fits_sint_p*(a2: mpf_t): cint {.importc.}
+func mpf_fits_slong_p*(a2: mpf_srcptr): cint {.importc.}
+func mpf_fits_slong_p*(a2: mpf_t): cint {.importc.}
+func mpf_fits_sshort_p*(a2: mpf_srcptr): cint {.importc.}
+func mpf_fits_sshort_p*(a2: mpf_t): cint {.importc.}
+func mpf_fits_uint_p*(a2: mpf_srcptr): cint {.importc.}
+func mpf_fits_uint_p*(a2: mpf_t): cint {.importc.}
+func mpf_fits_ulong_p*(a2: mpf_srcptr): cint {.importc.}
+func mpf_fits_ulong_p*(a2: mpf_t): cint {.importc.}
+func mpf_fits_ushort_p*(a2: mpf_srcptr): cint {.importc.}
+func mpf_fits_ushort_p*(a2: mpf_t): cint {.importc.}
+func mpf_floor*(a2: mpf_ptr; a3: mpf_srcptr) {.importc.}
+func mpf_floor*(a2: var mpf_t; a3: mpf_t) {.importc.}
+func mpf_get_d*(a2: mpf_srcptr): cdouble {.importc.}
+func mpf_get_d*(a2: mpf_t): cdouble {.importc.}
+func mpf_get_d_2exp*(a2: ptr clong; a3: mpf_srcptr): cdouble {.importc.}
+func mpf_get_d_2exp*(a2: ptr clong; a3: mpf_t): cdouble {.importc.}
+func mpf_get_default_prec*(): mp_bitcnt_t {.importc.}
+func mpf_get_prec*(a2: mpf_srcptr): mp_bitcnt_t {.importc.}
+func mpf_get_prec*(a2: mpf_t): mp_bitcnt_t {.importc.}
+func mpf_get_si*(a2: mpf_srcptr): clong {.importc.}
+func mpf_get_si*(a2: mpf_t): clong {.importc.}
+func mpf_get_str*(a2: cstring; a3: ptr mp_exp_t; a4: cint; a5: csize_t; a6: mpf_srcptr): cstring {.importc.}
+func mpf_get_str*(a2: cstring; a3: var mp_exp_t; a4: cint; a5: csize_t; a6: mpf_t): cstring {.importc.}
+func mpf_get_ui*(a2: mpf_srcptr): culong {.importc.}
+func mpf_get_ui*(a2: mpf_t): culong {.importc.}
+func mpf_init*(a2: mpf_ptr) {.importc.}
+func mpf_init*(a2: var mpf_t) {.importc.}
+func mpf_init2*(a2: mpf_ptr; a3: mp_bitcnt_t) {.importc.}
+func mpf_init2*(a2: var mpf_t; a3: mp_bitcnt_t) {.importc.}
+func mpf_inits*(a2: mpf_ptr) {.varargs, importc.}
+func mpf_inits*(a2: var mpf_t) {.varargs, importc.}
+func mpf_init_set*(a2: mpf_ptr; a3: mpf_srcptr) {.importc.}
+func mpf_init_set*(a2: var mpf_t; a3: mpf_t) {.importc.}
+func mpf_init_set_d*(a2: mpf_ptr; a3: cdouble) {.importc.}
+func mpf_init_set_d*(a2: var mpf_t; a3: cdouble) {.importc.}
+func mpf_init_set_si*(a2: mpf_ptr; a3: clong) {.importc.}
+func mpf_init_set_si*(a2: var mpf_t; a3: clong) {.importc.}
+func mpf_init_set_str*(a2: mpf_ptr; a3: cstring; a4: cint): cint {.importc.}
+func mpf_init_set_str*(a2: var mpf_t; a3: cstring; a4: cint): cint {.importc.}
+func mpf_init_set_ui*(a2: mpf_ptr; a3: culong) {.importc.}
+func mpf_init_set_ui*(a2: var mpf_t; a3: culong) {.importc.}
+func mpf_inp_str*(a2: mpf_ptr; a3: File; a4: cint): csize_t {.importc.}
+func mpf_inp_str*(a2: var mpf_t; a3: File; a4: cint): csize_t {.importc.}
+func mpf_integer_p*(a2: mpf_srcptr): cint {.importc.}
+func mpf_integer_p*(a2: mpf_t): cint {.importc.}
+func mpf_mul*(a2: mpf_ptr; a3: mpf_srcptr; a4: mpf_srcptr) {.importc.}
+func mpf_mul*(a2: var mpf_t; a3: mpf_t; a4: mpf_t) {.importc.}
+func mpf_mul_2exp*(a2: mpf_ptr; a3: mpf_srcptr; a4: mp_bitcnt_t) {.importc.}
+func mpf_mul_2exp*(a2: var mpf_t; a3: mpf_t; a4: mp_bitcnt_t) {.importc.}
+func mpf_mul_ui*(a2: mpf_ptr; a3: mpf_srcptr; a4: culong) {.importc.}
+func mpf_mul_ui*(a2: var mpf_t; a3: mpf_t; a4: culong) {.importc.}
+func mpf_neg*(a2: mpf_ptr; a3: mpf_srcptr) {.importc.}
+func mpf_neg*(a2: var mpf_t; a3: mpf_t) {.importc.}
+func mpf_out_str*(a2: File; a3: cint; a4: csize_t; a5: mpf_srcptr): csize_t {.importc.}
+func mpf_out_str*(a2: File; a3: cint; a4: csize_t; a5: mpf_t): csize_t {.importc.}
+func mpf_pow_ui*(a2: mpf_ptr; a3: mpf_srcptr; a4: culong) {.importc.}
+func mpf_pow_ui*(a2: var mpf_t; a3: mpf_t; a4: culong) {.importc.}
+func mpf_random2*(a2: mpf_ptr; a3: mp_size_t; a4: mp_exp_t) {.importc.}
+func mpf_random2*(a2: var mpf_t; a3: mp_size_t; a4: mp_exp_t) {.importc.}
+func mpf_reldiff*(a2: mpf_ptr; a3: mpf_srcptr; a4: mpf_srcptr) {.importc.}
+func mpf_reldiff*(a2: var mpf_t; a3: mpf_t; a4: mpf_t) {.importc.}
+func mpf_set*(a2: mpf_ptr; a3: mpf_srcptr) {.importc.}
+func mpf_set*(a2: var mpf_t; a3: mpf_t) {.importc.}
+func mpf_set_d*(a2: mpf_ptr; a3: cdouble) {.importc.}
+func mpf_set_d*(a2: var mpf_t; a3: cdouble) {.importc.}
+func mpf_set_default_prec*(a2: mp_bitcnt_t) {.importc.}
+func mpf_set_prec*(a2: mpf_ptr; a3: mp_bitcnt_t) {.importc.}
+func mpf_set_prec*(a2: var mpf_t; a3: mp_bitcnt_t) {.importc.}
+func mpf_set_prec_raw*(a2: mpf_ptr; a3: mp_bitcnt_t) {.importc.}
+func mpf_set_prec_raw*(a2: var mpf_t; a3: mp_bitcnt_t) {.importc.}
+func mpf_set_q*(a2: mpf_ptr; a3: mpq_srcptr) {.importc.}
+func mpf_set_q*(a2: var mpf_t; a3: mpq_t) {.importc.}
+func mpf_set_si*(a2: mpf_ptr; a3: clong) {.importc.}
+func mpf_set_si*(a2: var mpf_t; a3: clong) {.importc.}
+func mpf_set_str*(a2: mpf_ptr; a3: cstring; a4: cint): cint {.importc.}
+func mpf_set_str*(a2: var mpf_t; a3: cstring; a4: cint): cint {.importc.}
+func mpf_set_ui*(a2: mpf_ptr; a3: culong) {.importc.}
+func mpf_set_ui*(a2: var mpf_t; a3: culong) {.importc.}
+func mpf_set_z*(a2: mpf_ptr; a3: mpz_srcptr) {.importc.}
+func mpf_set_z*(a2: var mpf_t; a3: mpz_t) {.importc.}
+func mpf_size*(a2: mpf_srcptr): csize_t {.importc.}
+func mpf_size*(a2: mpf_t): csize_t {.importc.}
+func mpf_sqrt*(a2: mpf_ptr; a3: mpf_srcptr) {.importc.}
+func mpf_sqrt*(a2: var mpf_t; a3: mpf_t) {.importc.}
+func mpf_sqrt_ui*(a2: mpf_ptr; a3: culong) {.importc.}
+func mpf_sqrt_ui*(a2: var mpf_t; a3: culong) {.importc.}
+func mpf_sub*(a2: mpf_ptr; a3: mpf_srcptr; a4: mpf_srcptr) {.importc.}
+func mpf_sub*(a2: var mpf_t; a3: mpf_t; a4: mpf_t) {.importc.}
+func mpf_sub_ui*(a2: mpf_ptr; a3: mpf_srcptr; a4: culong) {.importc.}
+func mpf_sub_ui*(a2: var mpf_t; a3: mpf_t; a4: culong) {.importc.}
+func mpf_swap*(a2: mpf_ptr; a3: mpf_ptr) {.importc.}
+func mpf_swap*(a2: var mpf_t; a3: var mpf_t) {.importc.}
+func mpf_trunc*(a2: mpf_ptr; a3: mpf_srcptr) {.importc.}
+func mpf_trunc*(a2: var mpf_t; a3: mpf_t) {.importc.}
+func mpf_ui_div*(a2: mpf_ptr; a3: culong; a4: mpf_srcptr) {.importc.}
+func mpf_ui_div*(a2: var mpf_t; a3: culong; a4: mpf_t) {.importc.}
+func mpf_ui_sub*(a2: mpf_ptr; a3: culong; a4: mpf_srcptr) {.importc.}
+func mpf_ui_sub*(a2: var mpf_t; a3: culong; a4: mpf_t) {.importc.}
+func mpf_urandomb*(a2: mpf_t; a3: gmp_randstate_t; a4: mp_bitcnt_t) {.importc.}
+func mpn_add_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t): mp_limb_t {.importc.}
+func mpn_add_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; a5: mp_size_t): mp_limb_t {.importc.}
+func mpn_addmul_1*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_limb_t): mp_limb_t {.importc.}
+func mpn_addmul_1*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: mp_limb_t): mp_limb_t {.importc.}
+func mpn_divexact_by3c*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_limb_t): mp_limb_t {.importc.}
+func mpn_divexact_by3c*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: mp_limb_t): mp_limb_t {.importc.}
+func mpn_divrem*(a2: mp_ptr; a3: mp_size_t; a4: mp_ptr; a5: mp_size_t; a6: mp_srcptr; a7: mp_size_t): mp_limb_t {.importc.}
+func mpn_divrem*(a2: var mp_limb_t; a3: mp_size_t; a4: var mp_limb_t; a5: mp_size_t; a6: var mp_limb_t; a7: mp_size_t): mp_limb_t {.importc.}
+func mpn_divrem_1*(a2: mp_ptr; a3: mp_size_t; a4: mp_srcptr; a5: mp_size_t; a6: mp_limb_t): mp_limb_t {.importc.}
+func mpn_divrem_1*(a2: var mp_limb_t; a3: mp_size_t; a4: var mp_limb_t; a5: mp_size_t; a6: mp_limb_t): mp_limb_t {.importc.}
+func mpn_divrem_2*(a2: mp_ptr; a3: mp_size_t; a4: mp_ptr; a5: mp_size_t; a6: mp_srcptr): mp_limb_t {.importc.}
+func mpn_divrem_2*(a2: var mp_limb_t; a3: mp_size_t; a4: var mp_limb_t; a5: mp_size_t; a6: var mp_limb_t): mp_limb_t {.importc.}
+func mpn_div_qr_1*(a2: mp_ptr; a3: ptr mp_limb_t; a4: mp_srcptr; a5: mp_size_t; a6: mp_limb_t): mp_limb_t {.importc.}
+func mpn_div_qr_1*(a2: var mp_limb_t; a3: ptr mp_limb_t; a4: var mp_limb_t; a5: mp_size_t; a6: mp_limb_t): mp_limb_t {.importc.}
+func mpn_div_qr_2*(a2: mp_ptr; a3: mp_ptr; a4: mp_srcptr; a5: mp_size_t; a6: mp_srcptr): mp_limb_t {.importc.}
+func mpn_div_qr_2*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; a5: mp_size_t; a6: var mp_limb_t): mp_limb_t {.importc.}
+func mpn_gcd*(a2: mp_ptr; a3: mp_ptr; a4: mp_size_t; a5: mp_ptr; a6: mp_size_t): mp_size_t {.importc.}
+func mpn_gcd*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: var mp_limb_t; a6: mp_size_t): mp_size_t {.importc.}
+func mpn_gcd_1*(a2: mp_srcptr; a3: mp_size_t; a4: mp_limb_t): mp_limb_t {.importc.}
+func mpn_gcd_1*(a2: var mp_limb_t; a3: mp_size_t; a4: mp_limb_t): mp_limb_t {.importc.}
+func mpn_gcdext_1*(a2: ptr mp_limb_signed_t; a3: ptr mp_limb_signed_t; a4: mp_limb_t; a5: mp_limb_t): mp_limb_t {.importc.}
+func mpn_gcdext*(a2: mp_ptr; a3: mp_ptr; a4: ptr mp_size_t; a5: mp_ptr; a6: mp_size_t; a7: mp_ptr; a8: mp_size_t): mp_size_t {.importc.}
+func mpn_gcdext*(a2: var mp_limb_t; a3: var mp_limb_t; a4: ptr mp_size_t; a5: var mp_limb_t; a6: mp_size_t; a7: var mp_limb_t; a8: mp_size_t): mp_size_t {.importc.}
+func mpn_get_str*(a2: ptr uint8; a3: cint; a4: mp_ptr; a5: mp_size_t): csize_t {.importc.}
+func mpn_get_str*(a2: ptr uint8; a3: cint; a4: var mp_limb_t; a5: mp_size_t): csize_t {.importc.}
+func mpn_hamdist*(a2: mp_srcptr; a3: mp_srcptr; a4: mp_size_t): mp_bitcnt_t {.importc.}
+func mpn_hamdist*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t): mp_bitcnt_t {.importc.}
+func mpn_lshift*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: cuint): mp_limb_t {.importc.}
+func mpn_lshift*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: cuint): mp_limb_t {.importc.}
+func mpn_mod_1*(a2: mp_srcptr; a3: mp_size_t; a4: mp_limb_t): mp_limb_t {.importc.}
+func mpn_mod_1*(a2: var mp_limb_t; a3: mp_size_t; a4: mp_limb_t): mp_limb_t {.importc.}
+func mpn_mul*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_srcptr; a6: mp_size_t): mp_limb_t {.importc.}
+func mpn_mul*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: var mp_limb_t; a6: mp_size_t): mp_limb_t {.importc.}
+func mpn_mul_1*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_limb_t): mp_limb_t {.importc.}
+func mpn_mul_1*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: mp_limb_t): mp_limb_t {.importc.}
+func mpn_mul_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.importc.}
+func mpn_mul_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; a5: mp_size_t) {.importc.}
+func mpn_sqr*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t) {.importc.}
+func mpn_sqr*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t) {.importc.}
+func mpn_neg*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t): mp_limb_t {.importc.}
+func mpn_neg*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t): mp_limb_t {.importc.}
+func mpn_com*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t) {.importc.}
+func mpn_com*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t) {.importc.}
+func mpn_perfect_square_p*(a2: mp_srcptr; a3: mp_size_t): cint {.importc.}
+func mpn_perfect_square_p*(a2: var mp_limb_t; a3: mp_size_t): cint {.importc.}
+func mpn_perfect_power_p*(a2: mp_srcptr; a3: mp_size_t): cint {.importc.}
+func mpn_perfect_power_p*(a2: var mp_limb_t; a3: mp_size_t): cint {.importc.}
+func mpn_popcount*(a2: mp_srcptr; a3: mp_size_t): mp_bitcnt_t {.importc.}
+func mpn_popcount*(a2: var mp_limb_t; a3: mp_size_t): mp_bitcnt_t {.importc.}
+func mpn_pow_1*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_limb_t; a6: mp_ptr): mp_size_t {.importc.}
+func mpn_pow_1*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: mp_limb_t; a6: var mp_limb_t): mp_size_t {.importc.}
+func mpn_preinv_mod_1*(a2: mp_srcptr; a3: mp_size_t; a4: mp_limb_t; a5: mp_limb_t): mp_limb_t {.importc.}
+func mpn_preinv_mod_1*(a2: var mp_limb_t; a3: mp_size_t; a4: mp_limb_t; a5: mp_limb_t): mp_limb_t {.importc.}
+func mpn_random*(a2: mp_ptr; a3: mp_size_t) {.importc.}
+func mpn_random*(a2: var mp_limb_t; a3: mp_size_t) {.importc.}
+func mpn_random2*(a2: mp_ptr; a3: mp_size_t) {.importc.}
+func mpn_random2*(a2: var mp_limb_t; a3: mp_size_t) {.importc.}
+func mpn_rshift*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: cuint): mp_limb_t {.importc.}
+func mpn_rshift*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: cuint): mp_limb_t {.importc.}
+func mpn_scan0*(a2: mp_srcptr; a3: mp_bitcnt_t): mp_bitcnt_t {.importc.}
+func mpn_scan0*(a2: var mp_limb_t; a3: mp_bitcnt_t): mp_bitcnt_t {.importc.}
+func mpn_scan1*(a2: mp_srcptr; a3: mp_bitcnt_t): mp_bitcnt_t {.importc.}
+func mpn_scan1*(a2: var mp_limb_t; a3: mp_bitcnt_t): mp_bitcnt_t {.importc.}
+func mpn_set_str*(a2: mp_ptr; a3: ptr uint8; a4: csize_t; a5: cint): mp_size_t {.importc.}
+func mpn_set_str*(a2: var mp_limb_t; a3: ptr uint8; a4: csize_t; a5: cint): mp_size_t {.importc.}
+func mpn_sizeinbase*(a2: mp_srcptr; a3: mp_size_t; a4: cint): csize_t {.importc.}
+func mpn_sizeinbase*(a2: var mp_limb_t; a3: mp_size_t; a4: cint): csize_t {.importc.}
+func mpn_sqrtrem*(a2: mp_ptr; a3: mp_ptr; a4: mp_srcptr; a5: mp_size_t): mp_size_t {.importc.}
+func mpn_sqrtrem*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; a5: mp_size_t): mp_size_t {.importc.}
+func mpn_sub*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_srcptr; a6: mp_size_t): mp_limb_t {.importc.}
+func mpn_sub*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: var mp_limb_t; a6: mp_size_t): mp_limb_t {.importc.}
+func mpn_sub_1*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_limb_t): mp_limb_t {.importc.}
+func mpn_sub_1*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: mp_limb_t): mp_limb_t {.importc.}
+func mpn_sub_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t): mp_limb_t {.importc.}
+func mpn_sub_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; a5: mp_size_t): mp_limb_t {.importc.}
+func mpn_submul_1*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_limb_t): mp_limb_t {.importc.}
+func mpn_submul_1*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: mp_limb_t): mp_limb_t {.importc.}
+func mpn_tdiv_qr*(a2: mp_ptr; a3: mp_ptr; a4: mp_size_t; a5: mp_srcptr; a6: mp_size_t; a7: mp_srcptr; a8: mp_size_t) {.importc.}
+func mpn_tdiv_qr*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: var mp_limb_t; a6: mp_size_t; a7: var mp_limb_t; a8: mp_size_t) {.importc.}
+func mpn_and_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.importc.}
+func mpn_and_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; a5: mp_size_t) {.importc.}
+func mpn_andn_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.importc.}
+func mpn_andn_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; a5: mp_size_t) {.importc.}
+func mpn_nand_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.importc.}
+func mpn_nand_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; a5: mp_size_t) {.importc.}
+func mpn_ior_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.importc.}
+func mpn_ior_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; a5: mp_size_t) {.importc.}
+func mpn_iorn_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.importc.}
+func mpn_iorn_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; a5: mp_size_t) {.importc.}
+func mpn_nior_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.importc.}
+func mpn_nior_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; a5: mp_size_t) {.importc.}
+func mpn_xor_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.importc.}
+func mpn_xor_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; a5: mp_size_t) {.importc.}
+func mpn_xnor_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.importc.}
+func mpn_xnor_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; a5: mp_size_t) {.importc.}
+func mpn_copyi*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t) {.importc.}
+func mpn_copyi*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t) {.importc.}
+func mpn_copyd*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t) {.importc.}
+func mpn_copyd*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t) {.importc.}
+func mpn_zero*(a2: mp_ptr; a3: mp_size_t) {.importc.}
+func mpn_zero*(a2: var mp_limb_t; a3: mp_size_t) {.importc.}
+func mpn_cnd_add_n*(a2: mp_limb_t; a3: mp_ptr; a4: mp_srcptr; a5: mp_srcptr; a6: mp_size_t): mp_limb_t {.importc.}
+func mpn_cnd_add_n*(a2: mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; a5: var mp_limb_t; a6: mp_size_t): mp_limb_t {.importc.}
+func mpn_cnd_sub_n*(a2: mp_limb_t; a3: mp_ptr; a4: mp_srcptr; a5: mp_srcptr; a6: mp_size_t): mp_limb_t {.importc.}
+func mpn_cnd_sub_n*(a2: mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; a5: var mp_limb_t; a6: mp_size_t): mp_limb_t {.importc.}
+func mpn_sec_add_1*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_limb_t; a6: mp_ptr): mp_limb_t {.importc.}
+func mpn_sec_add_1*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: mp_limb_t; a6: var mp_limb_t): mp_limb_t {.importc.}
+func mpn_sec_add_1_itch*(a2: mp_size_t): mp_size_t {.importc.}
+func mpn_sec_sub_1*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_limb_t; a6: mp_ptr): mp_limb_t {.importc.}
+func mpn_sec_sub_1*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: mp_limb_t; a6: var mp_limb_t): mp_limb_t {.importc.}
+func mpn_sec_sub_1_itch*(a2: mp_size_t): mp_size_t {.importc.}
+func mpn_sec_mul*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_srcptr; a6: mp_size_t; a7: mp_ptr) {.importc.}
+func mpn_sec_mul*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: var mp_limb_t; a6: mp_size_t; a7: var mp_limb_t) {.importc.}
+func mpn_sec_mul_itch*(a2: mp_size_t; a3: mp_size_t): mp_size_t {.importc.}
+func mpn_sec_sqr*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_ptr) {.importc.}
+func mpn_sec_sqr*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: var mp_limb_t) {.importc.}
+func mpn_sec_sqr_itch*(a2: mp_size_t): mp_size_t {.importc.}
+func mpn_sec_powm*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_srcptr; a6: mp_bitcnt_t; a7: mp_srcptr; a8: mp_size_t; a9: mp_ptr) {.importc.}
+func mpn_sec_powm*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: var mp_limb_t; a6: mp_bitcnt_t; a7: var mp_limb_t; a8: mp_size_t; a9: var mp_limb_t) {.importc.}
+func mpn_sec_powm_itch*(a2: mp_size_t; a3: mp_bitcnt_t; a4: mp_size_t): mp_size_t {.importc.}
+func mpn_sec_tabselect*(a2: ptr mp_limb_t; a3: ptr mp_limb_t; a4: mp_size_t; a5: mp_size_t; a6: mp_size_t) {.importc.}
+func mpn_sec_div_qr*(a2: mp_ptr; a3: mp_ptr; a4: mp_size_t; a5: mp_srcptr; a6: mp_size_t; a7: mp_ptr): mp_limb_t {.importc.}
+func mpn_sec_div_qr*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: var mp_limb_t; a6: mp_size_t; a7: var mp_limb_t): mp_limb_t {.importc.}
+func mpn_sec_div_qr_itch*(a2: mp_size_t; a3: mp_size_t): mp_size_t {.importc.}
+func mpn_sec_div_r*(a2: mp_ptr; a3: mp_size_t; a4: mp_srcptr; a5: mp_size_t; a6: mp_ptr) {.importc.}
+func mpn_sec_div_r*(a2: var mp_limb_t; a3: mp_size_t; a4: var mp_limb_t; a5: mp_size_t; a6: var mp_limb_t) {.importc.}
+func mpn_sec_div_r_itch*(a2: mp_size_t; a3: mp_size_t): mp_size_t {.importc.}
+func mpn_sec_invert*(a2: mp_ptr; a3: mp_ptr; a4: mp_srcptr; a5: mp_size_t; a6: mp_bitcnt_t; a7: mp_ptr): cint {.importc.}
+func mpn_sec_invert*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; a5: mp_size_t; a6: mp_bitcnt_t; a7: var mp_limb_t): cint {.importc.}
+func mpn_sec_invert_itch*(a2: mp_size_t): mp_size_t {.importc.}
+func mpz_abs*(mm_gmp_w: mpz_ptr; mm_gmp_u: mpz_srcptr) {.importc.}
+func mpz_abs*(mm_gmp_w: var mpz_t; mm_gmp_u: mpz_t) {.importc.}
+func mpz_fits_uint_p*(mm_gmp_z: mpz_srcptr): cint {.importc.}
+func mpz_fits_uint_p*(mm_gmp_z: mpz_t): cint {.importc.}
+func mpz_fits_ulong_p*(mm_gmp_z: mpz_srcptr): cint {.importc.}
+func mpz_fits_ulong_p*(mm_gmp_z: mpz_t): cint {.importc.}
+func mpz_fits_ushort_p*(mm_gmp_z: mpz_srcptr): cint {.importc.}
+func mpz_fits_ushort_p*(mm_gmp_z: mpz_t): cint {.importc.}
+func mpz_get_ui*(mm_gmp_z: mpz_srcptr): culong {.importc.}
+func mpz_get_ui*(mm_gmp_z: mpz_t): culong {.importc.}
+func mpz_getlimbn*(mm_gmp_z: mpz_srcptr; mm_gmp_n: mp_size_t): mp_limb_t {.importc.}
+func mpz_getlimbn*(mm_gmp_z: mpz_t; mm_gmp_n: mp_size_t): mp_limb_t {.importc.}
+func mpz_neg*(mm_gmp_w: mpz_ptr; mm_gmp_u: mpz_srcptr) {.importc.}
+func mpz_neg*(mm_gmp_w: var mpz_t; mm_gmp_u: mpz_t) {.importc.}
+func mpz_perfect_square_p*(mm_gmp_a: mpz_srcptr): cint {.importc.}
+func mpz_perfect_square_p*(mm_gmp_a: mpz_t): cint {.importc.}
+func mpz_popcount*(mm_gmp_u: mpz_srcptr): mp_bitcnt_t {.importc.}
+func mpz_popcount*(mm_gmp_u: mpz_t): mp_bitcnt_t {.importc.}
+func mpz_set_q*(mm_gmp_w: mpz_ptr; mm_gmp_u: mpq_srcptr) {.importc.}
+func mpz_set_q*(mm_gmp_w: var mpz_t; mm_gmp_u: mpq_t) {.importc.}
+func mpz_size*(mm_gmp_z: mpz_srcptr): csize_t {.importc.}
+func mpz_size*(mm_gmp_z: mpz_t): csize_t {.importc.}
+func mpq_abs*(mm_gmp_w: mpq_ptr; mm_gmp_u: mpq_srcptr) {.importc.}
+func mpq_abs*(mm_gmp_w: var mpq_t; mm_gmp_u: mpq_t) {.importc.}
+func mpq_neg*(mm_gmp_w: mpq_ptr; mm_gmp_u: mpq_srcptr) {.importc.}
+func mpq_neg*(mm_gmp_w: var mpq_t; mm_gmp_u: mpq_t) {.importc.}
+func mpn_add*(mm_gmp_wp: mp_ptr; mm_gmp_xp: mp_srcptr; mm_gmp_xsize: mp_size_t; mm_gmp_yp: mp_srcptr; mm_gmp_ysize: mp_size_t): mp_limb_t {.importc.}
+func mpn_add*(mm_gmp_wp: var mp_limb_t; mm_gmp_xp: var mp_limb_t; mm_gmp_xsize: mp_size_t; mm_gmp_yp: var mp_limb_t; mm_gmp_ysize: mp_size_t): mp_limb_t {.importc.}
+func mpn_add_1*(mm_gmp_dst: mp_ptr; mm_gmp_src: mp_srcptr; mm_gmp_size: mp_size_t; mm_gmp_n: mp_limb_t): mp_limb_t {.importc.}
+func mpn_add_1*(mm_gmp_dst: var mp_limb_t; mm_gmp_src: var mp_limb_t; mm_gmp_size: mp_size_t; mm_gmp_n: mp_limb_t): mp_limb_t {.importc.}
+func mpn_cmp*(mm_gmp_xp: mp_srcptr; mm_gmp_yp: mp_srcptr; mm_gmp_size: mp_size_t): cint {.importc.}
+func mpn_cmp*(mm_gmp_xp: var mp_limb_t; mm_gmp_yp: var mp_limb_t; mm_gmp_size: mp_size_t): cint {.importc.}
+func mpz_sgn*(a2: mpz_srcptr): cint {.importc.}
+func mpz_sgn*(a2: mpz_t): cint {.importc.}
+func mpf_sgn*(a2: mpf_srcptr): cint {.importc.}
+func mpf_sgn*(a2: mpf_t): cint {.importc.}
+func mpq_sgn*(a2: mpq_srcptr): cint {.importc.}
+func mpq_sgn*(a2: mpq_t): cint {.importc.}
+func mpz_odd_p*(a2: mpz_srcptr): cint {.importc.}
+func mpz_odd_p*(a2: mpz_t): cint {.importc.}
+func mpz_even_p*(a2: mpz_srcptr): cint {.importc.}
+func mpz_even_p*(a2: mpz_t): cint {.importc.}
 
 {.pop.}
 
