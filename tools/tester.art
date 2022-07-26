@@ -123,7 +123,7 @@ rate: to :string .format:".1f" 100 * supersuccess//supertotal
 print color #cyan "====================================================================="
 if? supersuccess=supertotal -> print [color #cyan "|" "Success rate:" color #green append rate "%" color #cyan pad "|" 51 - size rate]
 else -> print [color #cyan "|" "Success rate:" append rate "%" color #cyan pad "|" 51 - size rate]
-print [color #cyan "|" "Total time:" supertime color #cyan pad "|" 53 - size to :string supertime]
+print [color #cyan "|" "Total time:" supertime color #cyan pad "|" 54 - size to :string supertime]
 print color #cyan "====================================================================="
 
 exit
