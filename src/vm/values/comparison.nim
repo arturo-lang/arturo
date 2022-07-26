@@ -30,8 +30,6 @@ import vm/values/value
 # Methods
 #=======================================
 
-# TODO(Values/comparison) No `==` overload for Regex values
-#  labels: bug, values
 proc `==`*(x: Value, y: Value): bool {.inline.}=
     if x.kind in [Integer, Floating, Rational] and y.kind in [Integer, Floating, Rational]:
         if x.kind==Integer:
@@ -113,6 +111,7 @@ proc `==`*(x: Value, y: Value): bool {.inline.}=
             of Attribute,
                AttributeLabel: return x.r == y.r
             of Symbol: return x.m == y.m
+            of Regex: return x.rx == y.rx
             of Inline,
                Block:
                 let cleanX = cleanBlock(x.a)
