@@ -1,0 +1,71 @@
+; currencies
+print 100:eur
+print 100:usd
+
+; adding/subtracting/multiplying/dividing currencies
+print 100:eur + 20:eur
+print 100.5:usd - 30:usd
+print 33:CHF * 3
+print 99:JPY / 3
+
+; Length
+print 3:m + 2:m
+print 1:m + 2:yd
+print in'cm 1:in
+
+; Complicated metric operations
+print 2:m * 3
+print 2:m * 3:m
+print 2:m * 3:m2
+print 3:m2 * 2:m
+print 3:m2 * 2
+print 3:m3 * 2
+
+print 9:m3 / 3
+print 9:m3 / 3:m
+print 9:m3 / 3:m2
+print 9:m3 / 3:m3
+
+print 3:m2 * 2:yd
+print 45:yd2 / 3:m
+
+; Pressure
+print in'atm 1:bar
+
+; Energy
+print in'J 1:KJ
+print in'kJ 1:J
+
+; Power
+print in'W 1:KW
+print in'hp 1:W
+
+; Force
+print in'N 1:dyn
+
+; Radioactivity
+print in'Bq 1:Ci
+
+; Angle
+print in'deg 1:rad
+
+; Speed
+print in'kph 30:mps
+
+; Weight
+print in'g 1:kg
+print in'g 1:oz
+
+; Information
+print in'bit 10:kB
+print in'bit 10:KiB
+
+; Time
+print in'min 1:h
+print in'min 1:d
+print in'h 1:d
+
+; Temperature
+print in'C 32:F
+print in'C 95:F
+print in'K 40:C
