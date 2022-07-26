@@ -52,7 +52,7 @@ type
         ZMW
 
         # Length
-        M, DM, CM, MM, MIM, NM, KM, IN, FT, FM, YD, ANG, LY, PC, AU, CHAIN, ROD, MI, NMI
+        M, DM, CM, MM, MIM, NM, KM, IN, FT, FM, YD, ANG, LY, PC, AU, CHAIN, ROD, FUR, MI, NMI
 
         # Area
         M2, DM2, CM2, MM2, MIM2, NM2, KM2, IN2, FT2, YD2, ANG2, MI2, AC, A, HA
@@ -122,6 +122,7 @@ const
         AU: 1.496e+11,
         CHAIN: 20.1168,
         ROD: 5.0292,
+        FUR: 201.168,
         MI: 1609.34,
         NMI: 1852.0,
 
