@@ -37,23 +37,6 @@ func isLLP64: bool {.compileTime.} =
 # Methods
 #=======================================
 
-{.push hints: off.}
-
-# DECLARED_BUT_NOT_USED
-
-when defined(windows):
-    const LLP64_ULONG_MAX = 0xFFFFFFFF
-
-    proc fitsLLP64Long(x: int): bool =
-        # Returns whether `x` fits in a LLP64 signed long int.
-        return x >= low(clong) and x <= high(clong)
-
-    proc fitsLLP64ULong(x: int): bool =
-        # Returns whether `x` fits in a LLP64 unsigned long int.
-        return x >= 0 and x <= LLP64_ULONG_MAX
-
-{.pop.}
-
 func validBase(base: cint) =
     # Validates the given base.
     if base < -36 or (base > -2 and base < 2) or base > 62:
