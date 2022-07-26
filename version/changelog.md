@@ -42,6 +42,7 @@ v0.9.81
 - Iterators: all iterator methods re-implemented and now work with a `.with` option and also with a `null` param block
 - Iterators\filter: added `.first` and `.last` options
 - Iterators\select: added `.first` and `.last` options
+- Numbers: made all trigonometric function work with `:quantity` values
 - Numbers\product: added `.cartesian` option
 - Numbers\range: make function work even with .step =< 0
 - Reflection\info: show origin module for built-in functions/constants
