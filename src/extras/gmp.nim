@@ -802,4 +802,4 @@ func finalizeInt*(z: ref mpz_t) =
     mpz_clear(z[])
 
 func finalizeFloat*(z: ref mpf_t) =
-    mpz_clear(z[])
+    mpf_clear(z[])
