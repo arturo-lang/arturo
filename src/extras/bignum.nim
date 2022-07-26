@@ -12,40 +12,41 @@ import os
 
 {.push header: "<gmp.h>", cdecl.}
 
+#=======================================
+# Types
+#=======================================
+
 type 
-    INNER_C_UNION_5532179898798000430* {.union,importc: "no_name".} = object  
+    INNER_C_UNION_5532179898798000430* {.union, importc: "no_name".} = object  
         mp_lc* {.importc: "_mp_lc".}: pointer
   
-    # should check limb sizes / import them directly?
     mp_limb_t* {.importc: "mp_limb_t", nodecl.} = uint
     mp_limb_signed_t* {.importc: "mp_limb_signed_t", nodecl.} = int
     mp_bitcnt_t* {.importc: "mp_bitcnt_t", nodecl.} = culong
-    mm_mpz_struct* {.byref,importc: "__mpz_struct".} = object 
+    mm_mpz_struct* {.byref, importc: "__mpz_struct".} = object 
         mp_alloc* {.importc: "_mp_alloc".}: cint
         mp_size* {.importc: "_mp_size".}: cint
         mp_d* {.importc: "_mp_d".}: ptr mp_limb_t
 
     MP_INT* = mm_mpz_struct
-    #mpz_t* = array[1, mm_mpz_struct]
     mpz_t* = mm_mpz_struct
     mp_ptr* = ptr mp_limb_t
     mp_srcptr* = ptr mp_limb_t
     mp_size_t* {.importc: "mp_size_t", nodecl.} = clong
     mp_exp_t* {.importc: "mp_exp_t", nodecl.} = clong
-    mm_mpq_struct* {.byref,importc: "__mpq_struct".} = object 
+    mm_mpq_struct* {.byref, importc: "__mpq_struct".} = object 
         mp_num* {.importc: "_mp_num".}: mm_mpz_struct
         mp_den* {.importc: "_mp_den".}: mm_mpz_struct
 
     MP_RAT* = mm_mpq_struct
-    #mpq_t* = array[1, mm_mpq_struct]
     mpq_t* = mm_mpq_struct
-    mm_mpf_struct* {.byref,importc: "__mpf_struct".} = object 
+    mm_mpf_struct* {.byref, importc: "__mpf_struct".} = object 
         mp_prec* {.importc: "_mp_prec".}: cint
         mp_size* {.importc: "_mp_size".}: cint
         mp_exp* {.importc: "_mp_exp".}: mp_exp_t
         mp_d* {.importc: "_mp_d".}: ptr mp_limb_t
 
-    #mpf_t* = array[1, mm_mpf_struct]
+    MP_FLT* = mm_mpf_struct
     mpf_t* = mm_mpf_struct
     gmp_randalg_t* = distinct cint
     mm_gmp_randstate_struct* {.importc: "__gmp_randstate_struct".} = object 
@@ -53,7 +54,6 @@ type
         mp_alg* {.importc: "_mp_alg".}: gmp_randalg_t
         mp_algdata* {.importc: "_mp_algdata".}: INNER_C_UNION_5532179898798000430
 
-    #gmp_randstate_t* = array[1, mm_gmp_randstate_struct]
     gmp_randstate_t* = mm_gmp_randstate_struct
     mpz_srcptr* = ptr mm_mpz_struct
     mpz_ptr* = ptr mm_mpz_struct
@@ -62,16 +62,29 @@ type
     mpq_srcptr* = ptr mm_mpq_struct
     mpq_ptr* = ptr mm_mpq_struct
 
-## some extra type aliases that are common to header and pure
 type
     mpz* = mm_mpz_struct
     mpf* = mm_mpf_struct
     mpq* = mm_mpq_struct
-  
 
-#const
-  #GMP_RAND_ALG_DEFAULT: gmp_randalg_t = 0.gmp_randalg_t
-  #GMP_RAND_ALG_LC: gmp_randalg_t = GMP_RAND_ALG_DEFAULT
+#=======================================
+# Constants
+#=======================================
+  
+const 
+    GMP_ERROR_NONE* = 0
+    GMP_ERROR_UNSUPPORTED_ARGUMENT* = 1
+    GMP_ERROR_DIVISION_BY_ZERO* = 2
+    GMP_ERROR_SQRT_OF_NEGATIVE* = 4
+    GMP_ERROR_INVALID_ARGUMENT* = 8
+
+#=======================================
+# Function prototypes
+#=======================================
+
+var mp_bits_per_limb* {.importc: "mp_bits_per_limb".}: cint
+var gmp_errno* {.importc: "gmp_errno".}: cint
+var gmp_version* {.importc: "gmp_version".}: cstring
 
 func mpq_numref*(a2: mpq_ptr): mpz_ptr {.importc: "mpq_numref".}
 func mpq_numref*(a2: var mpq_t): mpz_ptr {.importc: "mpq_numref".}
@@ -79,9 +92,6 @@ func mpq_denref*(a2: mpq_ptr): mpz_ptr {.importc: "mpq_denref".}
 func mpq_denref*(a2: var mpq_t): mpz_ptr {.importc: "mpq_denref".}
 func mp_set_memory_functions*(a2: proc (a2: csize_t): pointer; a3: proc (a2: pointer; a3: csize_t; a4: csize_t): pointer; a4: proc (a2: pointer; a3: csize_t)) {.importc: "mp_set_memory_functions".}
 func mp_get_memory_functions*(a2: proc (a2: csize_t): pointer; a3: proc (a2: pointer; a3: csize_t; a4: csize_t): pointer; a4: proc (a2: pointer; a3: csize_t)) {.importc: "mp_get_memory_functions".}
-var mp_bits_per_limb* {.importc: "mp_bits_per_limb".}: cint
-var gmp_errno* {.importc: "gmp_errno".}: cint
-var gmp_version* {.importc: "gmp_version".}: cstring
 func gmp_randinit*(a2: gmp_randstate_t; a3: gmp_randalg_t) {.varargs,importc: "gmp_randinit".}
 func gmp_randinit_default*(a2: gmp_randstate_t) {.importc: "gmp_randinit_default".}
 func gmp_randinit_lc_2exp*(a2: gmp_randstate_t; a3: mpz_srcptr; a4: culong; a5: mp_bitcnt_t) {.importc: "gmp_randinit_lc_2exp".}
@@ -767,12 +777,7 @@ func mpz_even_p*(a2: mpz_t): cint {.importc: "mpz_even_p".}
 
 {.pop.}
 
-const 
-  GMP_ERROR_NONE* = 0
-  GMP_ERROR_UNSUPPORTED_ARGUMENT* = 1
-  GMP_ERROR_DIVISION_BY_ZERO* = 2
-  GMP_ERROR_SQRT_OF_NEGATIVE* = 4
-  GMP_ERROR_INVALID_ARGUMENT* = 8
+
 
 
   
