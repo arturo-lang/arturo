@@ -24,10 +24,16 @@ import extras/gmp
 type 
     Int* = ref mpz_t
     Float* = ref mpf_t
+    Rat* = ref mpq_t
 
 #=======================================
 # Helpers
 #=======================================
+
+func validBase(base: cint) =
+    # Validates the given base.
+    if base < -36 or (base > -2 and base < 2) or base > 62:
+        raise newException(ValueError, "Invalid base")
 
 func isLLP64: bool {.compileTime.} =
     # LLP64 programming model
@@ -47,13 +53,6 @@ when defined(windows):
 #=======================================
 # Methods
 #=======================================
-
-func validBase(base: cint) =
-    # Validates the given base.
-    if base < -36 or (base > -2 and base < 2) or base > 62:
-        raise newException(ValueError, "Invalid base")
-
-
 
 func newInt*(x: culong): Int =
     ## Allocates and returns a new Int set to `x`.
