@@ -13,60 +13,60 @@ import os
 {.push header: "<gmp.h>", cdecl.}
 
 type 
-  INNER_C_UNION_5532179898798000430* {.union,importc: "no_name".} = object  
-    mp_lc* {.importc: "_mp_lc".}: pointer
+    INNER_C_UNION_5532179898798000430* {.union,importc: "no_name".} = object  
+        mp_lc* {.importc: "_mp_lc".}: pointer
   
-  # should check limb sizes / import them directly?
-  mp_limb_t* {.importc: "mp_limb_t", nodecl.} = uint
-  mp_limb_signed_t* {.importc: "mp_limb_signed_t", nodecl.} = int
-  mp_bitcnt_t* {.importc: "mp_bitcnt_t", nodecl.} = culong
-  mm_mpz_struct* {.byref,importc: "__mpz_struct".} = object 
-    mp_alloc* {.importc: "_mp_alloc".}: cint
-    mp_size* {.importc: "_mp_size".}: cint
-    mp_d* {.importc: "_mp_d".}: ptr mp_limb_t
+    # should check limb sizes / import them directly?
+    mp_limb_t* {.importc: "mp_limb_t", nodecl.} = uint
+    mp_limb_signed_t* {.importc: "mp_limb_signed_t", nodecl.} = int
+    mp_bitcnt_t* {.importc: "mp_bitcnt_t", nodecl.} = culong
+    mm_mpz_struct* {.byref,importc: "__mpz_struct".} = object 
+        mp_alloc* {.importc: "_mp_alloc".}: cint
+        mp_size* {.importc: "_mp_size".}: cint
+        mp_d* {.importc: "_mp_d".}: ptr mp_limb_t
 
-  MP_INT* = mm_mpz_struct
-  #mpz_t* = array[1, mm_mpz_struct]
-  mpz_t* = mm_mpz_struct
-  mp_ptr* = ptr mp_limb_t
-  mp_srcptr* = ptr mp_limb_t
-  mp_size_t* {.importc: "mp_size_t", nodecl.} = clong
-  mp_exp_t* {.importc: "mp_exp_t", nodecl.} = clong
-  mm_mpq_struct* {.byref,importc: "__mpq_struct".} = object 
-    mp_num* {.importc: "_mp_num".}: mm_mpz_struct
-    mp_den* {.importc: "_mp_den".}: mm_mpz_struct
+    MP_INT* = mm_mpz_struct
+    #mpz_t* = array[1, mm_mpz_struct]
+    mpz_t* = mm_mpz_struct
+    mp_ptr* = ptr mp_limb_t
+    mp_srcptr* = ptr mp_limb_t
+    mp_size_t* {.importc: "mp_size_t", nodecl.} = clong
+    mp_exp_t* {.importc: "mp_exp_t", nodecl.} = clong
+    mm_mpq_struct* {.byref,importc: "__mpq_struct".} = object 
+        mp_num* {.importc: "_mp_num".}: mm_mpz_struct
+        mp_den* {.importc: "_mp_den".}: mm_mpz_struct
 
-  MP_RAT* = mm_mpq_struct
-  #mpq_t* = array[1, mm_mpq_struct]
-  mpq_t* = mm_mpq_struct
-  mm_mpf_struct* {.byref,importc: "__mpf_struct".} = object 
-    mp_prec* {.importc: "_mp_prec".}: cint
-    mp_size* {.importc: "_mp_size".}: cint
-    mp_exp* {.importc: "_mp_exp".}: mp_exp_t
-    mp_d* {.importc: "_mp_d".}: ptr mp_limb_t
+    MP_RAT* = mm_mpq_struct
+    #mpq_t* = array[1, mm_mpq_struct]
+    mpq_t* = mm_mpq_struct
+    mm_mpf_struct* {.byref,importc: "__mpf_struct".} = object 
+        mp_prec* {.importc: "_mp_prec".}: cint
+        mp_size* {.importc: "_mp_size".}: cint
+        mp_exp* {.importc: "_mp_exp".}: mp_exp_t
+        mp_d* {.importc: "_mp_d".}: ptr mp_limb_t
 
-  #mpf_t* = array[1, mm_mpf_struct]
-  mpf_t* = mm_mpf_struct
-  gmp_randalg_t* = distinct cint
-  mm_gmp_randstate_struct* {.importc: "__gmp_randstate_struct".} = object 
-    mp_seed* {.importc: "_mp_seed".}: mpz_t
-    mp_alg* {.importc: "_mp_alg".}: gmp_randalg_t
-    mp_algdata* {.importc: "_mp_algdata".}: INNER_C_UNION_5532179898798000430
+    #mpf_t* = array[1, mm_mpf_struct]
+    mpf_t* = mm_mpf_struct
+    gmp_randalg_t* = distinct cint
+    mm_gmp_randstate_struct* {.importc: "__gmp_randstate_struct".} = object 
+        mp_seed* {.importc: "_mp_seed".}: mpz_t
+        mp_alg* {.importc: "_mp_alg".}: gmp_randalg_t
+        mp_algdata* {.importc: "_mp_algdata".}: INNER_C_UNION_5532179898798000430
 
-  #gmp_randstate_t* = array[1, mm_gmp_randstate_struct]
-  gmp_randstate_t* = mm_gmp_randstate_struct
-  mpz_srcptr* = ptr mm_mpz_struct
-  mpz_ptr* = ptr mm_mpz_struct
-  mpf_srcptr* = ptr mm_mpf_struct
-  mpf_ptr* = ptr mm_mpf_struct
-  mpq_srcptr* = ptr mm_mpq_struct
-  mpq_ptr* = ptr mm_mpq_struct
+    #gmp_randstate_t* = array[1, mm_gmp_randstate_struct]
+    gmp_randstate_t* = mm_gmp_randstate_struct
+    mpz_srcptr* = ptr mm_mpz_struct
+    mpz_ptr* = ptr mm_mpz_struct
+    mpf_srcptr* = ptr mm_mpf_struct
+    mpf_ptr* = ptr mm_mpf_struct
+    mpq_srcptr* = ptr mm_mpq_struct
+    mpq_ptr* = ptr mm_mpq_struct
 
 ## some extra type aliases that are common to header and pure
 type
-  mpz* = mm_mpz_struct
-  mpf* = mm_mpf_struct
-  mpq* = mm_mpq_struct
+    mpz* = mm_mpz_struct
+    mpf* = mm_mpf_struct
+    mpq* = mm_mpq_struct
   
 
 #const
