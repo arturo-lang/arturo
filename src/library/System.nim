@@ -23,10 +23,10 @@ when not defined(WEB):
         import winlean
     else:
         import std/posix_utils
+
+    import helpers/quantities as QuantitiesHelper
     
 import sequtils
-
-import helpers/quantities as QuantitiesHelper
 
 import vm/lib
 import vm/[env, errors]
