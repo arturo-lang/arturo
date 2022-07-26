@@ -33,6 +33,7 @@ when not defined(WEB):
     import helpers/datasource
     import helpers/io
     import helpers/jsonobject
+    import helpers/quantities
     
 import vm/lib
 when defined(SAFE):
@@ -380,16 +381,16 @@ proc defineSymbols*() =
                 "file"      : {String}
             },
             attrs       = NoAttrs,
-            returns     = {Integer},
+            returns     = {Quantity},
             example     = """
             volume "README.md"
-            ; => 13704 
+            ; => 13704B 
             ; (size in bytes)
             """:
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("volume")
 
-                push newInteger(getFileSize(x.s))
+                push newQuantity(newInteger(getFileSize(x.s)), newQuantitySpec(B))
 
         builtin "write",
             alias       = doublearrowright, 

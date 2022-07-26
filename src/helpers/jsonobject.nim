@@ -46,6 +46,7 @@ proc generateJsonNode*(n: Value): JsonNode =
                 result.add(generateJsonNode(v))
         of Symbol,
            SymbolLiteral: result = newJString($(n.m))
+        of Quantity     : result = generateJsonNode(n.nm)
         of Regex        : result = newJString($(n.rx))
         of Color        : result = newJString($(n))
         of Date         : discard
@@ -114,6 +115,7 @@ when defined(WEB):
                 result = toJs(ret)
             of Symbol,
                SymbolLiteral: result = toJs($(n.m))
+            of Quantity     : result = generateJsObject(n.nm)
             of Regex        : result = toJs($(n.rx))
             of Color        : discard
             of Date         : discard

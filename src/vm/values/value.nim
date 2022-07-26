@@ -25,6 +25,7 @@ when not defined(NOGMP):
     import extras/bignum
 
 import helpers/colors as ColorsHelper
+import helpers/quantities as QuantitiesHelper
 import helpers/regex as RegexHelper
 import helpers/terminal as TerminalHelper
 
@@ -164,20 +165,21 @@ type
         Symbol          = 17
         SymbolLiteral   = 18
 
-        Regex           = 19
-        Color           = 20
-        Date            = 21
-        Binary          = 22
-        Dictionary      = 23
-        Function        = 24
-        Inline          = 25
-        Block           = 26
-        Database        = 27
-        Bytecode        = 28
+        Quantity        = 19
+        Regex           = 20
+        Color           = 21
+        Date            = 22
+        Binary          = 23
+        Dictionary      = 24
+        Function        = 25
+        Inline          = 26
+        Block           = 27
+        Database        = 28
+        Bytecode        = 29
 
-        Newline         = 29
-        Nothing         = 30
-        Any             = 31
+        Newline         = 30
+        Nothing         = 31
+        Any             = 32
 
     ValueSpec* = set[ValueKind]
 
@@ -263,6 +265,9 @@ type
                SymbolLiteral:      
                    m*  : SymbolKind
             of Regex:       rx* : RegexObj
+            of Quantity:
+                nm*: Value
+                unit*: QuantitySpec
             of Color:       l*  : VColor
             of Date:        
                 e*     : ValueDict         
@@ -359,6 +364,11 @@ var
 
 func newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline.}
 func `$`(v: Value): string {.inline.}
+proc `+`*(x: Value, y: Value): Value
+proc `-`*(x: Value, y: Value): Value
+proc `*`*(x: Value, y: Value): Value
+proc `/`*(x: Value, y: Value): Value
+proc `//`*(x: Value, y: Value): Value
 func hash*(v: Value): Hash {.inline.}
 
 #=======================================
@@ -560,6 +570,52 @@ func newSymbolLiteral*(m: SymbolKind): Value {.inline.} =
 func newSymbolLiteral*(m: string): Value {.inline.} =
     newSymbolLiteral(parseEnum[SymbolKind](m))
 
+func newQuantity*(nm: Value, unit: QuantitySpec): Value {.inline.} =
+    Value(kind: Quantity, nm: nm, unit: unit)
+
+proc newQuantity*(nm: Value, name: UnitName): Value {.inline.} =
+    newQuantity(nm, newQuantitySpec(name))
+
+proc convertToTemperatureUnit*(v: Value, src: UnitName, tgt: UnitName): Value =
+    case src:
+        of C:
+            if tgt==F: return v * newFloating(9/5) + newInteger(32)
+            elif tgt==K: return v + newFloating(273.15)
+            else: return v * newFloating(9/5) + newFloating(491.67)
+        of F:
+            if tgt==C: return (v - newInteger(32)) * newFloating(5/9)
+            elif tgt==K: return (v - newInteger(32)) * newFloating(5/9) + newFloating(273.15)
+            else: return v + newFloating(459.67)
+        of K: 
+            if tgt==C: return v - newFloating(273.15)
+            elif tgt==F: return (v-newFloating(273.15)) * newFloating(9/5) + newInteger(32)
+            else: return v * newFloating(1.8)
+        of R:
+            if tgt==C: return (v - newFloating(491.67)) * newFloating(5/9)
+            elif tgt==F: return v - newFloating(459.67)
+            else: return v * newFloating(5/9)
+
+        else: discard
+
+proc convertQuantityValue*(nm: Value, fromU: UnitName, toU: UnitName, fromKind = NoUnit, toKind = NoUnit, op = ""): Value =
+    var fromK = fromKind
+    var toK = toKind
+    if fromK==NoUnit: fromK = quantityKindForName(fromU)
+    if toK==NoUnit: toK = quantityKindForName(toU)
+
+    if fromK!=toK:
+        when not defined(WEB):
+            RuntimeError_CannotConvertQuantity($(nm), stringify(fromU), stringify(fromK), stringify(toU), stringify(toK))
+    
+    if toK == TemperatureUnit:
+        return convertToTemperatureUnit(nm, fromU, toU)
+    else:
+        let fmultiplier = getQuantityMultiplier(fromU, toU, isCurrency=fromK==CurrencyUnit)
+        if fmultiplier == 1.0:
+            return nm
+        else:
+            return nm * newFloating(fmultiplier)
+
 func newRegex*(rx: RegexObj): Value {.inline.} =
     Value(kind: Regex, rx: rx)
 
@@ -724,6 +780,13 @@ func asFloat*(v: Value): float =
     else:
         result = (float)(v.i)
 
+func asInt*(v: Value): int = 
+    # get number value forcefully as an int
+    if v.kind == Integer:
+        result = v.i
+    else:
+        result = (int)(v.f)
+
 func getArity*(x: Value): int =
     if x.fnKind==BuiltinFunction:
         return x.arity
@@ -750,7 +813,16 @@ proc `+`*(x: Value, y: Value): Value =
     if x.kind==Color and y.kind==Color:
         return newColor(x.l + y.l)
     if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
-        return VNULL
+        if x.kind == Quantity:
+            if y.kind == Quantity:
+                if x.unit.name == y.unit.name:
+                    return newQuantity(x.nm + y.nm, x.unit)
+                else:
+                    return newQuantity(x.nm + convertQuantityValue(y.nm, y.unit.name, x.unit.name), x.unit)
+            else:
+                return newQuantity(x.nm + y, x.unit)
+        else:
+            return VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
             if x.iKind==NormalInteger:
@@ -807,7 +879,16 @@ proc `+`*(x: Value, y: Value): Value =
 
 proc `+=`*(x: var Value, y: Value) =
     if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
-        x = VNULL
+        if x.kind == Quantity:
+            if y.kind == Quantity:
+                if x.unit.name == y.unit.name:
+                    x.nm += y.nm
+                else:
+                    x.nm += convertQuantityValue(y.nm, y.unit.name, x.unit.name)
+            else:
+                x.nm += y
+        else:
+            x = VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
             if x.iKind==NormalInteger:
@@ -867,7 +948,16 @@ proc `-`*(x: Value, y: Value): Value =
     if x.kind==Color and y.kind==Color:
         return newColor(x.l - y.l)
     if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
-        return VNULL
+        if x.kind == Quantity:
+            if y.kind == Quantity:
+                if x.unit.name == y.unit.name:
+                    return newQuantity(x.nm - y.nm, x.unit)
+                else:
+                    return newQuantity(x.nm - convertQuantityValue(y.nm, y.unit.name, x.unit.name), x.unit)
+            else:
+                return newQuantity(x.nm - y, x.unit)
+        else:
+            return VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
             if x.iKind==NormalInteger:
@@ -925,7 +1015,16 @@ proc `-`*(x: Value, y: Value): Value =
 
 proc `-=`*(x: var Value, y: Value) =
     if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
-        x = VNULL
+        if x.kind == Quantity:
+            if y.kind == Quantity:
+                if x.unit.name == y.unit.name:
+                    x.nm -= y.nm
+                else:
+                    x.nm -= convertQuantityValue(y.nm, y.unit.name, x.unit.name)
+            else:
+                x.nm -= y
+        else:
+            x = VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
             if x.iKind==NormalInteger:
@@ -982,7 +1081,18 @@ proc `-=`*(x: var Value, y: Value) =
 
 proc `*`*(x: Value, y: Value): Value =
     if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
-        return VNULL
+        if x.kind == Quantity:
+            if y.kind == Quantity:
+                let finalSpec = getFinalUnitAfterOperation("mul", x.unit, y.unit)
+                if finalSpec == ErrorQuantity:
+                    when not defined(WEB):
+                        RuntimeError_IncompatibleQuantityOperation("mul", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
+                else:
+                    return newQuantity(x.nm * convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
+            else:
+                return newQuantity(x.nm * y, x.unit)
+        else:
+            return VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
             if x.iKind==NormalInteger:
@@ -1039,7 +1149,18 @@ proc `*`*(x: Value, y: Value): Value =
 
 proc `*=`*(x: var Value, y: Value) =
     if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
-        x = VNULL
+        if x.kind == Quantity:
+            if y.kind == Quantity:
+                let finalSpec = getFinalUnitAfterOperation("mul", x.unit, y.unit)
+                if finalSpec == ErrorQuantity:
+                    when not defined(WEB):
+                        RuntimeError_IncompatibleQuantityOperation("mul", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
+                else:
+                    x = newQuantity(x.nm * convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
+            else:
+                x.nm *= y
+        else:
+            x = VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
             if x.iKind==NormalInteger:
@@ -1095,7 +1216,20 @@ proc `*=`*(x: var Value, y: Value) =
 
 proc `/`*(x: Value, y: Value): Value =
     if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
-        return VNULL
+        if x.kind == Quantity:
+            if y.kind == Quantity:
+                let finalSpec = getFinalUnitAfterOperation("div", x.unit, y.unit)
+                if finalSpec == ErrorQuantity:
+                    when not defined(WEB):
+                        RuntimeError_IncompatibleQuantityOperation("div", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
+                elif finalSpec == NumericQuantity:
+                    return x.nm / y.nm
+                else:
+                    return newQuantity(x.nm / convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
+            else:
+                return newQuantity(x.nm / y, x.unit)
+        else:
+            return VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
             if x.iKind==NormalInteger:
@@ -1144,7 +1278,20 @@ proc `/`*(x: Value, y: Value): Value =
 
 proc `/=`*(x: var Value, y: Value) =
     if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
-        x = VNULL
+        if x.kind == Quantity:
+            if y.kind == Quantity:
+                let finalSpec = getFinalUnitAfterOperation("div", x.unit, y.unit)
+                if finalSpec == ErrorQuantity:
+                    when not defined(WEB):
+                        RuntimeError_IncompatibleQuantityOperation("div", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
+                elif finalSpec == NumericQuantity:
+                    x = x.nm / y.nm
+                else:
+                    x = newQuantity(x.nm / convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
+            else:
+                x.nm /= y
+        else:
+            x = VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
             if x.iKind==NormalInteger:
@@ -1200,7 +1347,20 @@ proc `/=`*(x: var Value, y: Value) =
 
 proc `//`*(x: Value, y: Value): Value =
     if not (x.kind in [Integer, Floating, Rational]) or not (y.kind in [Integer, Floating, Rational]):
-        return VNULL
+        if x.kind == Quantity:
+            if y.kind == Quantity:
+                let finalSpec = getFinalUnitAfterOperation("fdiv", x.unit, y.unit)
+                if finalSpec == ErrorQuantity:
+                    when not defined(WEB):
+                        RuntimeError_IncompatibleQuantityOperation("fdiv", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
+                elif finalSpec == NumericQuantity:
+                    return x.nm // y.nm
+                else:
+                    return newQuantity(x.nm // convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
+            else:
+                return newQuantity(x.nm // y, x.unit)
+        else:
+            return VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
             return newFloating(x.i / y.i)
@@ -1220,7 +1380,20 @@ proc `//`*(x: Value, y: Value): Value =
 
 proc `//=`*(x: var Value, y: Value) =
     if not (x.kind in [Integer, Floating, Rational]) or not (y.kind in [Integer, Floating, Rational]):
-        x = VNULL
+        if x.kind == Quantity:
+            if y.kind == Quantity:
+                let finalSpec = getFinalUnitAfterOperation("fdiv", x.unit, y.unit)
+                if finalSpec == ErrorQuantity:
+                    when not defined(WEB):
+                        RuntimeError_IncompatibleQuantityOperation("fdiv", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
+                elif finalSpec == NumericQuantity:
+                    x = x.nm // y.nm
+                else:
+                    x = newQuantity(x.nm // convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
+            else:
+                x.nm //= y
+        else:
+            x = VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
             x = newFloating(x.i / y.i)
@@ -1239,7 +1412,17 @@ proc `//=`*(x: var Value, y: Value) =
                 
 proc `%`*(x: Value, y: Value): Value =
     if not (x.kind in [Integer,Floating,Rational]) or not (y.kind in [Integer,Floating,Rational]):
-        return VNULL
+        if (x.kind == Quantity and y.kind == Quantity) and (x.unit.kind==y.unit.kind):
+            if x.unit.name == y.unit.name:
+                return newQuantity(x.nm % y.nm, x.unit)
+            else:
+                return newQuantity(x.nm % convertQuantityValue(y.nm, y.unit.name, x.unit.name), x.unit)
+        else:
+            if x.unit.kind != y.unit.kind:
+                when not defined(WEB):
+                    RuntimeError_IncompatibleQuantityOperation("mod", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
+            else:
+                return VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
             if x.iKind==NormalInteger:
@@ -1281,7 +1464,17 @@ proc `%`*(x: Value, y: Value): Value =
 
 proc `%=`*(x: var Value, y: Value) =
     if not (x.kind in [Integer,Floating,Rational]) or not (y.kind in [Integer,Floating,Rational]):
-        x = VNULL
+        if (x.kind == Quantity and y.kind == Quantity) and (x.unit.kind==y.unit.kind):
+            if x.unit.name == y.unit.name:
+                x.nm %= y.nm
+            else:
+                x.nm %= convertQuantityValue(y.nm, y.unit.name, x.unit.name)
+        else:
+            if x.unit.kind != y.unit.kind:
+                when not defined(WEB):
+                    RuntimeError_IncompatibleQuantityOperation("mod", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
+            else:
+                x = VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
             if x.iKind==NormalInteger:
@@ -1323,7 +1516,26 @@ proc `%=`*(x: var Value, y: Value) =
 
 proc `^`*(x: Value, y: Value): Value =
     if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
-        return VNULL
+        if x.kind == Quantity:
+            if y.kind==Integer and (y.i > 0 and y.i < 4):
+                if y.i == 1: return x
+                elif y.i == 2: return x * x
+                elif y.i == 3: return x * x * x
+                else:
+                    when not defined(WEB):
+                        RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
+            elif y.kind==Floating and (y.f > 0 and y.f < 4):
+                if y.f == 1.0: return x
+                elif y.f == 2.0: return x * x
+                elif y.f == 3.0: return x * x * x
+                else:
+                    when not defined(WEB):
+                        RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
+            else:
+                when not defined(WEB):
+                    RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
+        else: 
+            return VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
             if x.iKind==NormalInteger:
@@ -1373,7 +1585,26 @@ proc `^`*(x: Value, y: Value): Value =
 
 proc `^=`*(x: var Value, y: Value) =
     if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
-        x = VNULL
+        if x.kind == Quantity:
+            if y.kind==Integer and (y.i > 0 and y.i < 4):
+                if y.i == 1: discard
+                elif y.i == 2: x *= x
+                elif y.i == 3: x *= x * x
+                else:
+                    when not defined(WEB):
+                        RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
+            elif y.kind==Floating and (y.f > 0 and y.f < 4):
+                if y.f == 1.0: discard
+                elif y.f == 2.0: x *= x
+                elif y.f == 3.0: x *= x * x
+                else:
+                    when not defined(WEB):
+                        RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
+            else:
+                when not defined(WEB):
+                    RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
+        else: 
+            x = VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
             let res = pow((float)x.i,(float)y.i)
@@ -1816,6 +2047,8 @@ func `$`(v: Value): string {.inline.} =
         of Symbol,
            SymbolLiteral:
             return $(v.m)
+        of Quantity:
+            return $(v.nm) & stringify(v.unit.name)
         of Regex:
             return $(v.rx)
         of Date     : return $(v.eobj)
@@ -1933,6 +2166,8 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
 
         of Symbol, 
            SymbolLiteral: dumpSymbol(v)
+
+        of Quantity     : dumpPrimitive($(v.nm) & ":" & stringify(v.unit.name), v)
 
         of Regex        : dumpPrimitive($(v.rx), v)
 
@@ -2071,6 +2306,7 @@ func codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         of AttributeLabel    : result &= "." & v.r & ":"
         of Symbol       :  result &= $(v.m)
         of SymbolLiteral: result &= "'" & $(v.m)
+        of Quantity     : result &= $(v.nm) & ":" & toLowerAscii($(v.unit.name))
         of Regex        : result &= "{/" & $(v.rx) & "/}"
         of Color        : result &= $(v.l)
 
@@ -2204,6 +2440,7 @@ func sameValue*(x: Value, y: Value): bool {.inline.}=
                AttributeLabel: return x.r == y.r
             of Symbol,
                SymbolLiteral: return x.m == y.m
+            of Quantity: return x.nm == y.nm and x.unit == y.unit
             of Regex: return x.rx == y.rx
             of Color: return x.l == y.l
             of Inline,
@@ -2290,6 +2527,12 @@ func hash*(v: Value): Hash {.inline.}=
 
         of Symbol,
            SymbolLiteral: result = cast[Hash](ord(v.m))
+
+        of Quantity:
+            result = 1
+            result = result !& hash(v.nm)
+            result = result !& hash(v.unit)
+            result = !$ result
 
         of Regex: result = hash(v.rx)
 

@@ -9,6 +9,8 @@ v0.9.81
 ### Language
 
 - Added new `:rational` type (along with all relevant operations)
+- Added new `:quantity` type (measurements + unit support, along with all relevant operations)
+- Added scientific notation support for number literals
 
 ### Library
 

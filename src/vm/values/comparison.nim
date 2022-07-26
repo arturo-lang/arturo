@@ -20,6 +20,7 @@ when not defined(NOGMP):
     import extras/bignum
 
 import helpers/colors as ColorsHelper
+import helpers/quantities as QuantitiesHelper
  
 import vm/exec
 import vm/stack
@@ -29,6 +30,8 @@ import vm/values/value
 # Methods
 #=======================================
 
+# TODO(Values/comparison) No `==` overload for Regex values
+#  labels: bug, values
 proc `==`*(x: Value, y: Value): bool {.inline.}=
     if x.kind in [Integer, Floating, Rational] and y.kind in [Integer, Floating, Rational]:
         if x.kind==Integer:
@@ -83,6 +86,15 @@ proc `==`*(x: Value, y: Value): bool {.inline.}=
             elif y.kind==Rational:
                 return toRational(x.f)==y.rat
             else: return x.f==y.f
+    elif x.kind == Quantity or y.kind == Quantity:
+        if x.kind == Quantity:
+            if y.kind == Quantity:
+                if x.unit.kind != y.unit.kind: return false
+                return x.nm == convertQuantityValue(y.nm, y.unit.name, x.unit.name)
+            else:
+                return x.nm == y
+        else:
+            return x == y.nm
     else:
         if x.kind != y.kind: return false
 
@@ -126,6 +138,8 @@ proc `==`*(x: Value, y: Value): bool {.inline.}=
                         if not (v==y.d[k]): return false
 
                     return true
+            of ValueKind.Color:
+                return x.l == y.l
             of Function:
                 if x.fnKind==UserFunction:
                     return x.params == y.params and x.main == y.main and x.exports == y.exports
@@ -136,8 +150,6 @@ proc `==`*(x: Value, y: Value): bool {.inline.}=
                 when not defined(NOSQLITE):
                     if x.dbKind==SqliteDatabase: return cast[ByteAddress](x.sqlitedb) == cast[ByteAddress](y.sqlitedb)
                     #elif x.dbKind==MysqlDatabase: return cast[ByteAddress](x.mysqldb) == cast[ByteAddress](y.mysqldb)
-            of ValueKind.Color:
-                return x.l == y.l
             of Date:
                 return x.eobj == y.eobj
             else:
@@ -194,6 +206,15 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
             elif y.kind==Rational:
                 return cmp(toRational(x.f), y.rat) < 0  
             else: return x.f<y.f
+    elif x.kind == Quantity or y.kind == Quantity:
+        if x.kind == Quantity:
+            if y.kind == Quantity:
+                if x.unit.kind != y.unit.kind: return false
+                return x.nm < convertQuantityValue(y.nm, y.unit.name, x.unit.name)
+            else:
+                return x.nm < y
+        else:
+            return x < y.nm
     else:
         if x.kind != y.kind: return false
         case x.kind:
@@ -282,6 +303,15 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
             elif y.kind==Rational:
                 return cmp(toRational(x.f), y.rat) > 0     
             else: return x.f>y.f
+    elif x.kind == Quantity or y.kind == Quantity:
+        if x.kind == Quantity:
+            if y.kind == Quantity:
+                if x.unit.kind != y.unit.kind: return false
+                return x.nm > convertQuantityValue(y.nm, y.unit.name, x.unit.name)
+            else:
+                return x.nm > y
+        else:
+            return x > y.nm
     else:
         if x.kind != y.kind: return false
         case x.kind:
@@ -358,6 +388,8 @@ proc identical*(x: Value, y: Value): bool {.inline.} =
                     return false
 
             return true
+        elif x.kind==Quantity:
+            return identical(x.nm, y.nm) and x.unit == y.unit
         else:
             return true
     else:

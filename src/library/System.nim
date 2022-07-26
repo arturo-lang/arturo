@@ -23,6 +23,8 @@ when not defined(WEB):
         import winlean
     else:
         import std/posix_utils
+
+    import helpers/quantities as QuantitiesHelper
     
 import sequtils
 
@@ -215,21 +217,30 @@ proc defineSymbols*() =
         builtin "pause",
             alias       = unaliased, 
             rule        = PrefixPrecedence,
-            description = "pause program's execution~for the given amount of milliseconds",
+            description = "pause program's execution~for the given amount of time",
             args        = {
-                "time"  : {Integer}
+                "time"  : {Integer, Quantity}
             },
             attrs       = NoAttrs,
             returns     = {Nothing},
             example     = """
             print "wait a moment"
 
-            pause 1000      ; sleeping for one second
+            pause 1000      ; sleeping for 1000ms = one second
 
             print "done. let's continue..."
+            ..........
+            print "waiting for 2 seconds
+
+            pause 2:s       ; let's sleep for a while
+
+            print "done!"
             """:
                 ##########################################################
-                sleep(x.i)
+                if x.kind == Integer:
+                    sleep(x.i)
+                else:
+                    sleep(asInt(convertQuantityValue(x.nm, x.unit.name, MS)))
 
         builtin "process",
             alias       = unaliased, 
@@ -258,10 +269,10 @@ proc defineSymbols*() =
 
                 ret["id"] = newInteger(getCurrentProcessId())
                 ret["memory"] = newDictionary({
-                    "occupied": newInteger(getOccupiedMem()),
-                    "free": newInteger(getFreeMem()),
-                    "total": newInteger(getTotalMem()),
-                    "max": newInteger(getMaxMem())
+                    "occupied": newQuantity(newInteger(getOccupiedMem()), B),
+                    "free": newQuantity(newInteger(getFreeMem()), B),
+                    "total": newQuantity(newInteger(getTotalMem()), B),
+                    "max": newQuantity(newInteger(getMaxMem()), B)
                 }.toOrderedTable)
 
                 push newDictionary(ret)
