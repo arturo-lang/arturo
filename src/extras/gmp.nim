@@ -803,3 +803,6 @@ func finalizeInt*(z: ref mpz_t) =
 
 func finalizeFloat*(z: ref mpf_t) =
     mpf_clear(z[])
+
+func finalizeRat(z: ref mpq_t) =
+    mpq_clear(z[])
