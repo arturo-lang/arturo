@@ -66,6 +66,9 @@ type
         # Energy
         J, KJ, MJ, CAL, KCAL, WH, KWH, ERG
 
+        # Power
+        W, KW, HP
+
         # Force
         N, DYN, KGF, LBF, PDL, KIP
 
@@ -183,6 +186,11 @@ const
         KWH: 3.6e+6,
         ERG: 1e-7,
 
+        # Power
+        W: 1.0,
+        KW: 1000.0, 
+        HP: 735.499,
+
         # Force
         N: 1.0, 
         DYN: 1e-5, 
@@ -284,7 +292,7 @@ proc getExchangeRate(src: UnitName, tgt: UnitName): float =
 proc stringify*(un: UnitName): string =
     result = toLowerAscii($(un))
     case un:
-        of AED..ZMW, J, MJ, N, B..TB    : result = toUpperAscii(result)
+        of AED..ZMW, J, MJ, W, N, B..TB : result = toUpperAscii(result)
         of PA, BQ, CI, RD               : result = capitalizeAscii(result)
         of C..R                         : result = "°" & toUpperAscii(result)
         of MIM, MIM2, MIM3              : result = result.replace("mim","μm")
@@ -295,6 +303,7 @@ proc stringify*(un: UnitName): string =
         of KJ       : result = "kJ"
         of WH       : result = "Wh"
         of KWH      : result = "kWh"
+        of KW       : result = "kW"
         of DEG      : result = "°"
         of KPH      : result = "km/h"
         of MPS      : result = "m/s"
