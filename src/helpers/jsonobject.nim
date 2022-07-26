@@ -115,7 +115,7 @@ when defined(WEB):
                 result = toJs(ret)
             of Symbol,
                SymbolLiteral: result = toJs($(n.m))
-            of Quantity     : result = generateJsonNode(n.nm)
+            of Quantity     : result = generateJsObject(n.nm)
             of Regex        : result = toJs($(n.rx))
             of Color        : discard
             of Date         : discard
