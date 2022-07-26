@@ -15,7 +15,7 @@ import algorithm, bitops, std/math, sequtils, sugar
 when defined(WEB):
     import std/jsbigints
 elif not defined(NOGMP):
-    import extras/bignum
+    import helpers/bignums as BignumsHelper
 
 import vm/values/value
 

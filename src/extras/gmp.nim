@@ -75,6 +75,9 @@ type
     mpf* = mm_mpf_struct
     mpq* = mm_mpq_struct
 
+type 
+    Int* = ref mpz_t
+
 #=======================================
 # Constants
 #=======================================
@@ -793,3 +796,7 @@ func mpz_xor*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc.}
 func mpz_xor*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc.}
 
 {.pop.}
+
+func finalizeInt*(z: Int) =
+    # Finalizer - release the memory allocated to the mpz.
+    mpz_clear(z[])
