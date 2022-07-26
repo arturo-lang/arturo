@@ -6,6 +6,9 @@
 # @file: helpers/bignums.nim
 ######################################################
 
+# Code based on Nim GMP wrapper
+# (c) Copyright 2014 Will Szumski
+
 #=======================================
 # Libraries
 #=======================================
@@ -23,15 +26,16 @@ type
     Float* = ref mpf_t
 
 #=======================================
-# Methods
+# Helpers
 #=======================================
-
-# type Int* = ref mpz_t
-## An Int represents a signed multi-precision integer.
 
 func isLLP64: bool {.compileTime.} =
     # LLP64 programming model
     sizeof(clong) != sizeof(int)
+
+#=======================================
+# Methods
+#=======================================
 
 {.push hints: off.}
 
