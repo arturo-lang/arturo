@@ -12,7 +12,7 @@
 
 import os
 
-import extras/bignum
+import extras/gmp
 
 type Int* = ref mpz_t
   ## An Int represents a signed multi-precision integer.
@@ -43,9 +43,7 @@ func validBase(base: cint) =
   if base < -36 or (base > -2 and base < 2) or base > 62:
     raise newException(ValueError, "Invalid base")
 
-func finalizeInt(z: Int) =
-  # Finalizer - release the memory allocated to the mpz.
-  mpz_clear(z[])
+
 
 func newInt*(x: culong): Int =
   ## Allocates and returns a new Int set to `x`.

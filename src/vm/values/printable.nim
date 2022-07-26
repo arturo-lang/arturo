@@ -19,7 +19,7 @@ when defined(WEB):
     import std/jsbigints
 
 when not defined(NOGMP):
-    import extras/bignum
+    import helpers/bignums as BignumsHelper
 
 import helpers/colors as ColorsHelper
 import helpers/quantities as QuantitiesHelper

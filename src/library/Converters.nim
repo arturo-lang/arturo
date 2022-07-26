@@ -18,10 +18,10 @@
 
 import rationals except Rational
 import algorithm, sequtils, strformat, sugar, times, unicode
-when not defined(NOGMP):
-    import extras/bignum
 
 import helpers/arrays
+when not defined(NOGMP):
+    import helpers/bignums
 import helpers/colors
 import helpers/datasource
 import helpers/quantities
