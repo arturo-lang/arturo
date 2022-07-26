@@ -22,6 +22,7 @@ when not defined(NOGMP):
     import extras/bignum
 
 import helpers/colors as ColorsHelper
+import helpers/quantities as QuantitiesHelper
 import helpers/regex as RegexHelper
 
 import vm/exec
@@ -162,6 +163,8 @@ proc `$`*(v: Value): string {.inline.} =
         of Symbol,
            SymbolLiteral:
             return $(v.m)
+        of Quantity:
+            return $(v.nm) & stringify(v.unit.name)
         of Regex:
             return $(v.rx)
         of Color        :
