@@ -14,8 +14,16 @@ import os
 
 import extras/gmp
 
+#=======================================
+# Types
+#=======================================
+
 type 
     Int* = ref mpz_t
+
+#=======================================
+# Methods
+#=======================================
 
 # type Int* = ref mpz_t
 ## An Int represents a signed multi-precision integer.
