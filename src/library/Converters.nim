@@ -415,9 +415,8 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                         return newString($(y))
                     of Quantity:
                         if (let aUnit = popAttr("unit"); aUnit != VNULL):
-                            # TODO(Converters\to) Add `:quantity` to `:quantity` conversion, with different units
-                            #  labels: library,bug
-                            return y
+                            let target = parseQuantitySpec(aUnit.s).name
+                            return newQuantity(convertQuantityValue(y.nm, y.unit.name, target), target)
                         else:
                             return y
                     else:
