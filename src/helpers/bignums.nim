@@ -213,10 +213,78 @@ func cmp*(x: Int, y: int): cint =
     elif result > 0:
         result = 1
 
+func cmp*(x, y: Float): cint =
+    result = mpf_cmp(x[], y[])
+    if result < 0:
+        result = -1
+    elif result > 0:
+        result = 1
+
+func cmp*(x: Float, y: culong): cint =
+    result = mpf_cmp_ui(x[], y)
+    if result < 0:
+        result = -1
+    elif result > 0:
+        result = 1
+
+func cmp*(x: Float, y: cdouble): cint =
+    result = mpf_cmp_d(x[], y)
+    if result < 0:
+        result = -1
+    elif result > 0:
+        result = 1
+
+func cmp*(x: Float, y: int): cint =
+    when isLLP64():
+        if y.fitsLLP64Long:
+            result = mpf_cmp_si(x[], y.clong)
+        elif y.fitsLLP64ULong:
+            return x.cmp(y.culong)
+        else:
+            var size: cint
+            if y < 0: size = -1 else: size = 1
+            if x[].mp_size != size:
+                if x[].mp_size != 0:
+                    result = x[].mp_size
+                else:
+                    if size == -1: result = 1 else: result = -1
+            else:
+                var op1, op2: mp_limb_t
+                if size == -1 and y > low(int):
+                    op1 = (-y).mp_limb_t
+                    op2 = x[].mp_d[]
+                else:
+                    if y == low(int):
+                        op1 = y.mp_limb_t
+                        op2 = x[].mp_d[]
+                    else:
+                        op1 = x[].mp_d[]
+                        op2 = y.mp_limb_t
+
+                if op1 == op2:
+                    result = 0
+                elif op1 > op2:
+                    result = 1
+                else:
+                    result = -1
+    else:
+        result = mpf_cmp_si(x[], y.clong)
+
+    if result < 0:
+        result = -1
+    elif result > 0:
+        result = 1
+
 func `==`*(x: Int, y: int | culong | Int): bool =
     cmp(x, y) == 0
 
 func `==`*(x: int | culong, y: Int): bool =
+    cmp(y, x) == 0
+
+func `==`*(x: Float, y: int | float | culong | Float): bool =
+    cmp(x, y) == 0
+
+func `==`*(x: float | int | culong, y: Float): bool =
     cmp(y, x) == 0
 
 func `<`*(x: Int, y: int | culong | Int): bool =
