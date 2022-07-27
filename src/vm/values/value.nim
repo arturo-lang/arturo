@@ -246,7 +246,7 @@ type
                     of NormalFloating:   f*  : float
                     of BigFloating:     
                         when not defined(WEB) and not defined(NOGMP):
-                            bf* : Float
+                            bf* : RFloat
                         else:
                             discard
             of Complex:     z*  : Complex64
@@ -466,7 +466,7 @@ func newBigInteger*(i: int): Value {.inline.} =
         result = Value(kind: Integer, iKind: BigInteger, bi: newInt(i))
 
 when not defined(NOGMP):
-    proc newFloating*(bf: Float): Value {.inline.} =
+    proc newFloating*(bf: RFloat): Value {.inline.} =
         result = Value(kind: Floating, fKind: BigFloating, bf: bf)
 
 func newFloating*(f: float): Value {.inline.} =
@@ -477,7 +477,7 @@ func newFloating*(f: int): Value {.inline.} =
 
 proc newFloating*(f: string): Value {.inline.} =
     when not defined(NOGMP):
-        let bf = newFloat(f)
+        let bf = newRFloat(f)
         let cf = toCDouble(bf)
         if cf != FloatOverflow:
             return newFloating(cf)
@@ -488,7 +488,7 @@ proc newFloating*(f: string): Value {.inline.} =
 
 func newBigFloating*(f: float): Value {.inline} =
     when not defined(NOGMP):
-        result = Value(kind: Floating, fKind: BigFloating, bf: newFloat(f))
+        result = Value(kind: Floating, fKind: BigFloating, bf: newRFloat(f))
 
 func newComplex*(com: Complex64): Value {.inline.} =
     Value(kind: Complex, z: com)
@@ -1300,9 +1300,9 @@ proc `/`*(x: Value, y: Value): Value =
                     else:
                         when not defined(NOGMP):
                             if x.fKind==NormalFloating:
-                                return newFloating(newFloat(x.f)/newFloat(y.bi))
+                                return newFloating(newRFloat(x.f)/newRFloat(y.bi))
                             else:
-                                return newFloating(x.bf / newFloat(y.bi))
+                                return newFloating(x.bf / newRFloat(y.bi))
             elif x.kind==Complex:
                 if y.kind==Integer:
                     if y.iKind==NormalInteger: return newComplex(x.z/(float)(y.i))
