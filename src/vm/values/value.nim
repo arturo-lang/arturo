@@ -478,8 +478,8 @@ func newFloating*(f: int): Value {.inline.} =
 func newFloating*(f: string): Value {.inline.} =
     when not defined(NOGMP):
         let bf = newFloat(f)
-        let cf = parseFloat(f)
-        if bf == cf:
+        let cf = toCDouble(bf)
+        if cf != FloatOverflow:
             return newFloating(cf)
         else:
             return newFloating(bf)
@@ -2059,9 +2059,13 @@ func `$`(v: Value): string {.inline.} =
                     return $(v.bi)
         of Version      : return fmt("{v.major}.{v.minor}.{v.patch}{v.extra}")
         of Floating     : 
-            if v.f==Inf: return "∞"
-            elif v.f==NegInf: return "-∞"
-            else: return $(v.f)
+            if v.fKind==NormalFloating: 
+                if v.f==Inf: return "∞"
+                elif v.f==NegInf: return "-∞"
+                else: return $(v.f)
+            else:
+                when defined(WEB) or not defined(NOGMP): 
+                    return $(v.bf)
         of Complex      : return $(v.z.re) & (if v.z.im >= 0: "+" else: "") & $(v.z.im) & "i"
         of Rational     : return $(v.rat)
         of Type         : 

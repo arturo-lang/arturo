@@ -137,9 +137,13 @@ proc `$`*(v: Value): string {.inline.} =
                 when defined(WEB) or not defined(NOGMP): 
                     return $(v.bi)
         of Floating     : 
-            if v.f==Inf: return "∞"
-            elif v.f==NegInf: return "-∞"
-            else: return $(v.f)
+            if v.fKind==NormalFloating: 
+                if v.f==Inf: return "∞"
+                elif v.f==NegInf: return "-∞"
+                else: return $(v.f)
+            else:
+                when defined(WEB) or not defined(NOGMP): 
+                    return $(v.bf)
         of Complex      : 
             return $(v.z.re) & (if v.z.im >= 0: "+" else: "") & $(v.z.im) & "i"
         of Rational     :
