@@ -17,7 +17,7 @@
 #=======================================
 
 import rationals except Rational
-import algorithm, sequtils, strformat, sugar, times, unicode
+import algorithm, parseutils, sequtils, strformat, sugar, times, unicode
 
 import helpers/arrays
 when not defined(NOGMP):
@@ -30,6 +30,16 @@ when not defined(NOASCIIDECODE):
 
 import vm/lib
 import vm/[errors, exec, parse]
+
+proc parseFL*(s: string): float =
+    echo "got string: " & s
+    echo "with length: " & $(s.len)
+
+    result = 0.0
+    let L = parseutils.parseFloat(s, result, 0)
+    echo "parsed characters: " & $(L)
+    if L != s.len or L == 0:
+        raise newException(ValueError, "invalid float: " & s)
 
 #=======================================
 # Helpers
@@ -211,7 +221,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                             RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
                     of Floating:
                         try:
-                            return newFloating(parseFloat(y.s))
+                            return newFloating(parseFL(y.s))
                         except ValueError:
                             RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
                     of Version:
