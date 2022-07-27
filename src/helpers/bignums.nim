@@ -149,6 +149,7 @@ func set*(z: Int, s: string, base: cint = 10): Int =
     if mpz_set_str(result[], s, base) == -1:
         raise newException(ValueError, "String not in correct base")
 
+
 #=======================================
 # Overloads
 #=======================================
