@@ -51,16 +51,14 @@ when defined(windows):
         return x >= 0 and x <= LLP64_ULONG_MAX
 
 #=======================================
-# Methods
+# Constructors
 #=======================================
 
 func newInt*(x: culong): Int =
-    ## Allocates and returns a new Int set to `x`.
     new(result, finalizeInt)
     mpz_init_set_ui(result[], x)
 
 func newInt*(x: int = 0): Int =
-    ## Allocates and returns a new Int set to `x`.
     new(result, finalizeInt)
     when isLLP64():
         if x.fitsLLP64Long:
@@ -78,19 +76,26 @@ func newInt*(x: int = 0): Int =
         mpz_init_set_si(result[], x.clong)
 
 func newInt*(s: string, base: cint = 10): Int =
-    ## Allocates and returns a new Int set to `s`, interpreted in the given `base`.
     validBase(base)
     new(result, finalizeInt)
     if mpz_init_set_str(result[], s, base) == -1:
         raise newException(ValueError, "String not in correct base")
 
+#=======================================
+# Destructors
+#=======================================
+
 func clear*(z: Int) =
-    ## Clears the allocated space used by the number.
-    ##
-    ## This normally happens on a finalizer call, but if you want immediate
-    ## deallocation you can call it.
     GCunref(z)
     finalizeInt(z)
+
+func clear*(z: Float) =
+    GCunref(z)
+    finalizeFloat(z)
+
+func clear*(z: Rat) =
+    GCunref(z)
+    finalizeRat(z)
 
 func clone*(z: Int): Int =
     ## Returns a clone of `z`.
