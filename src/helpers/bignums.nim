@@ -16,6 +16,7 @@
 import os
 
 import extras/gmp
+import extras/mpfr
 export gmp
 
 #=======================================
