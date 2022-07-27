@@ -27,6 +27,13 @@ type
     Rat* = ref mpq_t
 
 #=======================================
+# Constants
+#=======================================
+
+const
+    FloatOverflow* = -18966.18966
+
+#=======================================
 # Helpers
 #=======================================
 
@@ -592,12 +599,51 @@ func `$`*(z: Int, base: cint = 10): string =
     result = newString(digits(z, base) + 2)
     result.setLen(mpz_get_str((cstring)result, base, z[]).len)
 
+func `$`*(z: Float, base: range[(2.cint) .. (62.cint)] = 10, n_digits = 0): string =
+    # result = newString(mpf_size(z[]) + 2)
+    # var xpt: mp_exp_t
+    # result.setLen(mpf_get_str((cstring)result, xpt, 10, 0, z[]).len)
+    var outOfRange = false
+    var floatVal: float
+  
+    floatVal = mpf_get_d(z[])
+    if floatVal == 0.0 and mpf_cmp_d(z[],0.0) != 0:
+        outOfRange = true
+    if floatVal == Inf:
+        outOfRange = true
+      
+    if base == 10 and not outOfRange:
+        return $floatVal
+  
+    var exp: mp_exp_t
+  # +1 for possible minus sign
+    var str = newString(n_digits + 1)
+    let coeff = $mpf_get_str((cstring)str,exp,base,(csize_t)n_digits,z[])
+    if (exp != 0):
+        return coeff & "e" & $exp
+    if coeff == "":
+        return "0.0"
+    result = coeff
+    # result = newString(mpf_size(z[])*2)
+    # var xpt: mp_exp_t
+    # result.setLen(mpf_get_str((cstring)result, xpt, 10, 0, z[]).len)
+
 #=======================================
 # Converters
 #=======================================
 
 func toCLong*(x: Int): clong =
     mpz_get_si(x[])
+
+func toCDouble*(x: Float): cdouble =
+    var outOfRange = false
+    var floatVal: float
+  
+    floatVal = mpf_get_d(x[])
+    if (floatVal == 0.0 and mpf_cmp_d(x[],0.0) != 0) or floatVal == Inf:
+        return FloatOverflow
+    
+    return floatVal
 
 #=======================================
 # Methods
