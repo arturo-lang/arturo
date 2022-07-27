@@ -465,6 +465,10 @@ func newBigInteger*(i: int): Value {.inline.} =
     elif not defined(NOGMP):
         result = Value(kind: Integer, iKind: BigInteger, bi: newInt(i))
 
+when not defined(NOGMP):
+    proc newFloating*(bf: Float): Value {.inline.} =
+        result = Value(kind: Floating, fKind: BigFloating, bf: bf)
+
 func newFloating*(f: float): Value {.inline.} =
     Value(kind: Floating, f: f, fKind: NormalFloating)
 
@@ -473,6 +477,10 @@ func newFloating*(f: int): Value {.inline.} =
 
 func newFloating*(f: string): Value {.inline.} =
     newFloating(parseFloat(f))
+
+func newBigFloating*(f: float): Value {.inline} =
+    when not defined(NOGMP):
+        result = Value(kind: Floating, fKind: BigFloating, bf: newFloat(f))
 
 func newComplex*(com: Complex64): Value {.inline.} =
     Value(kind: Complex, z: com)
