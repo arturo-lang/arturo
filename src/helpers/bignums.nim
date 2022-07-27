@@ -16,6 +16,7 @@
 import os
 
 import extras/gmp
+export gmp
 
 #=======================================
 # Types
@@ -85,6 +86,11 @@ func newInt*(x: int = 0): Int =
     else:
         mpz_init_set_si(result[], x.clong)
 
+func newInt*(x: Float): Int =
+    new(result,finalizeInt)
+    mpz_init(result[])
+    mpz_set_f(result[], x[])
+
 func newInt*(s: string, base: cint = 10): Int =
     validBase(base)
     new(result, finalizeInt)
@@ -115,6 +121,11 @@ func newFloat*(x: int = 0): Float =
                 result[].mp_d[] = x.mp_limb_t
     else:
         mpf_init_set_si(result[], x.clong)
+
+func newFloat*(x: Int): Float =
+    new(result,finalizeFloat)
+    mpf_init(result[])
+    mpf_set_z(result[], x[])
 
 func newFloat*(s: string, base: cint = 10): Float =
     validBase(base)
@@ -441,6 +452,10 @@ func `div`*(x: Int, y: int | culong | Int): Int =
 func `div`*(x: int | culong, y: Int): Int =
     newInt().`div`(newInt(x), y)
 
+func `div`*(z, x, y: Float): Float =
+    result = z
+    mpf_div(result[], x[], y[])
+
 func fdiv*(z, x, y: Int): Int =
     if y == 0: raise newException(DivByZeroDefect, "Division by zero")
     result = z
@@ -468,6 +483,9 @@ func `//`*(x: Int, y: int | culong | Int): Int =
 
 func `//`*(x: int | culong, y: Int): Int =
     fdiv(x, y)
+
+func `/`*(x: Float, y: Float): Float =
+    newFloat().div(x, y)
 
 func `mod`*(z, x, y: Int): Int =
     if y == 0: raise newException(DivByZeroDefect, "Division by zero")
@@ -615,7 +633,7 @@ func `$`*(z: Int, base: cint = 10): string =
     result = newString(digits(z, base) + 2)
     result.setLen(mpz_get_str((cstring)result, base, z[]).len)
 
-func `$`*(z: Float, base: range[(2.cint) .. (62.cint)] = 10, n_digits = 0): string =
+func `$`*(z: Float, base: range[(2.cint) .. (62.cint)] = 10, n_digits = 30): string =
     let outOfRange = toCDouble(z)
     if base == 10 and outOfRange != FloatOverflow:
         return $outOfRange
