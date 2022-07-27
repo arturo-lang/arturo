@@ -475,7 +475,7 @@ func newFloating*(f: float): Value {.inline.} =
 func newFloating*(f: int): Value {.inline.} =
     Value(kind: Floating, f: (float)(f), fKind: NormalFloating)
 
-func newFloating*(f: string): Value {.inline.} =
+proc newFloating*(f: string): Value {.inline.} =
     when not defined(NOGMP):
         let bf = newFloat(f)
         let cf = toCDouble(bf)
@@ -1294,7 +1294,15 @@ proc `/`*(x: Value, y: Value): Value =
                 if y.kind==Floating: return newFloating(x.f/y.f)
                 elif y.kind==Complex: return newComplex(x.f/y.z)
                 elif y.kind==Rational: return newInteger(toRational(x.f) div y.rat)
-                else: return newFloating(x.f/y.i)
+                else: 
+                    if y.iKind==NormalInteger:
+                        return newFloating(x.f/y.i)
+                    else:
+                        when not defined(NOGMP):
+                            if x.fKind==NormalFloating:
+                                return newFloating(newFloat(x.f)/newFloat(y.bi))
+                            else:
+                                return newFloating(x.bf / newFloat(y.bi))
             elif x.kind==Complex:
                 if y.kind==Integer:
                     if y.iKind==NormalInteger: return newComplex(x.z/(float)(y.i))
@@ -2173,10 +2181,14 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
             else: 
                 when defined(WEB) or not defined(NOGMP):
                     dumpPrimitive($(v.bi), v)
-        of Floating     : 
-            if v.f==Inf: dumpPrimitive("∞", v)
-            elif v.f==NegInf: dumpPrimitive("-∞", v)
-            else: dumpPrimitive($(v.f), v)
+        of Floating     :
+            if v.fKind==NormalFloating:
+                if v.f==Inf: dumpPrimitive("∞", v)
+                elif v.f==NegInf: dumpPrimitive("-∞", v)
+                else: dumpPrimitive($(v.f), v)
+            else:
+                when defined(WEB) or not defined(NOGMP): 
+                    dumpPrimitive($(v.bf), v)
         of Complex      : dumpPrimitive($(v.z.re) & (if v.z.im >= 0: "+" else: "") & $(v.z.im) & "i", v)
         of Rational     : dumpPrimitive($(v.rat), v)
         of Version      : dumpPrimitive(fmt("{v.major}.{v.minor}.{v.patch}{v.extra}"), v)
