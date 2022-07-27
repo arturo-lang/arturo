@@ -93,7 +93,7 @@ var
     MODE                = ""       
 
     FLAGS*              = "--skipUserCfg:on --colors:off -d:release -d:danger " &
-                          "--panics:off --mm:orc --checks:off --overflowChecks:on " &
+                          "--panics:off --mm:orc --checks:off --overflowChecks:on --floatChecks:on " &
                           "-d:ssl --cincludes:extras --nimcache:.cache " & 
                           "--path:src --opt:speed --passC:-O3"
     CONFIG              ="@full"
