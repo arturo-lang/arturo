@@ -84,6 +84,37 @@ func newInt*(s: string, base: cint = 10): Int =
     if mpz_init_set_str(result[], s, base) == -1:
         raise newException(ValueError, "String not in correct base")
 
+func newFloat*(x: float): Float =
+    new(result, finalizeFloat)
+    mpf_init_set_d(result[], x)
+
+func newFloat*(x: culong): Float =
+    new(result, finalizeFloat)
+    mpf_init_set_ui(result[], x)
+
+func newFloat*(x: int = 0): Float =
+    new(result, finalizeFloat)
+    when isLLP64():
+        if x.fitsLLP64Long:
+            mpf_init_set_si(result[], x.clong)
+        elif x.fitsLLP64ULong:
+            mpf_init_set_ui(result[], x.culong)
+        else:
+            mpf_init(result[])
+            if x < 0: result[].mp_size = -1 else: result[].mp_size = 1
+            if x < 0 and x > low(int):
+                result[].mp_d[] = (-x).mp_limb_t
+            else:
+                result[].mp_d[] = x.mp_limb_t
+    else:
+        mpf_init_set_si(result[], x.clong)
+
+func newFloat*(s: string, base: cint = 10): Float =
+    validBase(base)
+    new(result, finalizeFloat)
+    if mpf_init_set_str(result[], s, base) == -1:
+        raise newException(ValueError, "String not in correct base")
+
 #=======================================
 # Setters
 #=======================================
