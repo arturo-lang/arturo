@@ -476,7 +476,15 @@ func newFloating*(f: int): Value {.inline.} =
     Value(kind: Floating, f: (float)(f), fKind: NormalFloating)
 
 func newFloating*(f: string): Value {.inline.} =
-    newFloating(parseFloat(f))
+    when not defined(NOGMP):
+        let bf = newFloat(f)
+        let cf = parseFloat(f)
+        if bf == cf:
+            return newFloating(cf)
+        else:
+            return newFloating(bf)
+    else:
+        return newFloating(parseFloat(f))
 
 func newBigFloating*(f: float): Value {.inline} =
     when not defined(NOGMP):
