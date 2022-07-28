@@ -140,6 +140,7 @@ func mpfr_fits_uint_p*(a: mpfr, b: mpfr_rnd_t): cint {.importc.}
 
 func mpfr_mul*(a: var mpfr, b: mpfr, c: mpfr, d: mpfr_rnd_t) {.importc.}
 func mpfr_div*(a: var mpfr, b: mpfr, c: mpfr, d: mpfr_rnd_t) {.importc.}
+func mpfr_div_d*(a: var mpfr, b: mpfr, c: cdouble, d: mpfr_rnd_t) {.importc.}
 
 # func gmp_asprintf*(a2: cstringArray; a3: cstring): cint {.varargs, importc.}
 # func gmp_fprintf*(a2: File; a3: cstring): cint {.varargs, importc.}
