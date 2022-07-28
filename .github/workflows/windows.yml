@@ -47,7 +47,7 @@ jobs:
         if: matrix.version == 'full'
         shell: msys2 {0}
         run: |
-          pacman --noconfirm -S p7zip mingw-w64-x86_64-toolchain
+          pacman --noconfirm -S p7zip mingw-w64-x86_64-toolchain mingw-w64-x86_64-mpfr
           mkdir dist
           mkdir nim
           curl -L https://nim-lang.org/download/dlls.zip -o dist/dlls.zip
