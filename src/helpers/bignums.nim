@@ -474,6 +474,12 @@ func `div`*(z, x, y: Float): Float =
     result = z
     mpfr_div(result[], x[], y[], MPFR_RNDN)
 
+func `div`* (z, x: Float, y: int): Float =
+    mpfr_div(result[], x[], newFloat(newInt(y))[], MPFR_RNDN)
+
+func `div`* (z, x: Float, y: Int): Float =
+    mpfr_div(result[], x[], newFloat(y)[], MPFR_RNDN)
+
 func fdiv*(z, x, y: Int): Int =
     if y == 0: raise newException(DivByZeroDefect, "Division by zero")
     result = z
@@ -502,7 +508,7 @@ func `//`*(x: Int, y: int | culong | Int): Int =
 func `//`*(x: int | culong, y: Int): Int =
     fdiv(x, y)
 
-func `/`*(x: Float, y: Float): Float =
+func `/`*(x: Float, y: Float | int | Int): Float =
     newFloat().div(x, y)
 
 func `mod`*(z, x, y: Int): Int =
