@@ -25,8 +25,7 @@ export gmp
 
 type 
     Int* = ref mpz_t
-    Float* = ref mpf_t
-    RFloat* = ref mpfr
+    Float* = ref mpfr
     Rat* = ref mpq_t
 
 #=======================================
@@ -99,17 +98,17 @@ func newInt*(s: string, base: cint = 10): Int =
     if mpz_init_set_str(result[], s, base) == -1:
         raise newException(ValueError, "String not in correct base")
 
-func newRFloat*(x: float): RFloat =
+func newFloat*(x: float): Float =
     new(result, finalizeRFloat)
     mpfr_init(result[])
     mpfr_set_d(result[], x, MPFR_RNDN)
 
-func newRFloat*(x: culong): RFloat =
+func newFloat*(x: culong): Float =
     new(result, finalizeRFloat)
     mpfr_init(result[])
     mpfr_set_ui(result[], x, MPFR_RNDN)
 
-func newRFloat*(x: int = 0): RFloat =
+func newFloat*(x: int = 0): Float =
     new(result, finalizeRFloat)
     mpfr_init(result[])
     when isLLP64():
@@ -126,52 +125,16 @@ func newRFloat*(x: int = 0): RFloat =
     else:
         mpfr_set_si(result[], x.clong, MPFR_RNDN)
 
-func newRFloat*(x: Int): RFloat =
+func newFloat*(x: Int): Float =
     new(result,finalizeRFloat)
     mpfr_init(result[])
     mpfr_set_z(result[], x[], MPFR_RNDN)
 
-func newRFloat*(s: string, base: cint = 10): RFloat =
+func newFloat*(s: string, base: cint = 10): Float =
     validBase(base)
     new(result, finalizeRFloat)
     mpfr_init(result[])
     if mpfr_set_str(result[], s, base, MPFR_RNDN) == -1:
-        raise newException(ValueError, "String not in correct base")
-
-func newFloat*(x: float): Float =
-    new(result, finalizeFloat)
-    mpf_init_set_d(result[], x)
-
-func newFloat*(x: culong): Float =
-    new(result, finalizeFloat)
-    mpf_init_set_ui(result[], x)
-
-func newFloat*(x: int = 0): Float =
-    new(result, finalizeFloat)
-    when isLLP64():
-        if x.fitsLLP64Long:
-            mpf_init_set_si(result[], x.clong)
-        elif x.fitsLLP64ULong:
-            mpf_init_set_ui(result[], x.culong)
-        else:
-            mpf_init(result[])
-            if x < 0: result[].mp_size = -1 else: result[].mp_size = 1
-            if x < 0 and x > low(int):
-                result[].mp_d[] = (-x).mp_limb_t
-            else:
-                result[].mp_d[] = x.mp_limb_t
-    else:
-        mpf_init_set_si(result[], x.clong)
-
-func newFloat*(x: Int): Float =
-    new(result,finalizeFloat)
-    mpf_init(result[])
-    mpf_set_z(result[], x[])
-
-func newFloat*(s: string, base: cint = 10): Float =
-    validBase(base)
-    new(result, finalizeFloat)
-    if mpf_init_set_str(result[], s, base) == -1:
         raise newException(ValueError, "String not in correct base")
 
 #=======================================
@@ -216,16 +179,6 @@ func toCLong*(x: Int): clong =
     mpz_get_si(x[])
 
 func toCDouble*(x: Float): cdouble =
-    var outOfRange = false
-    var floatVal: float
-  
-    floatVal = mpf_get_d(x[])
-    if (floatVal == 0.0 and mpf_cmp_d(x[],0.0) != 0) or floatVal == Inf:
-        return FloatOverflow
-    
-    return floatVal
-
-func toCDouble*(x: RFloat): cdouble =
     var outOfRange = false
     var floatVal: float
   
@@ -298,28 +251,28 @@ func cmp*(x: Int, y: int): cint =
     elif result > 0:
         result = 1
 
-func cmp*(x, y: RFloat): cint =
+func cmp*(x, y: Float): cint =
     result = mpfr_cmp(x[], y[])
     if result < 0:
         result = -1
     elif result > 0:
         result = 1
 
-func cmp*(x: RFloat, y: culong): cint =
+func cmp*(x: Float, y: culong): cint =
     result = mpfr_cmp_ui(x[], y)
     if result < 0:
         result = -1
     elif result > 0:
         result = 1
 
-func cmp*(x: RFloat, y: cdouble): cint =
+func cmp*(x: Float, y: cdouble): cint =
     result = mpfr_cmp_d(x[], y)
     if result < 0:
         result = -1
     elif result > 0:
         result = 1
 
-func cmp*(x: RFloat, y: int): cint =
+func cmp*(x: Float, y: int): cint =
     when isLLP64():
         if y.fitsLLP64Long:
             result = mpfr_cmp_si(x[], y.clong)
@@ -360,78 +313,10 @@ func cmp*(x: RFloat, y: int): cint =
     elif result > 0:
         result = 1
 
-func cmp*(x, y: Float): cint =
-    result = mpf_cmp(x[], y[])
-    if result < 0:
-        result = -1
-    elif result > 0:
-        result = 1
-
-func cmp*(x: Float, y: culong): cint =
-    result = mpf_cmp_ui(x[], y)
-    if result < 0:
-        result = -1
-    elif result > 0:
-        result = 1
-
-func cmp*(x: Float, y: cdouble): cint =
-    result = mpf_cmp_d(x[], y)
-    if result < 0:
-        result = -1
-    elif result > 0:
-        result = 1
-
-func cmp*(x: Float, y: int): cint =
-    when isLLP64():
-        if y.fitsLLP64Long:
-            result = mpf_cmp_si(x[], y.clong)
-        elif y.fitsLLP64ULong:
-            return x.cmp(y.culong)
-        else:
-            var size: cint
-            if y < 0: size = -1 else: size = 1
-            if x[].mp_size != size:
-                if x[].mp_size != 0:
-                    result = x[].mp_size
-                else:
-                    if size == -1: result = 1 else: result = -1
-            else:
-                var op1, op2: mp_limb_t
-                if size == -1 and y > low(int):
-                    op1 = (-y).mp_limb_t
-                    op2 = x[].mp_d[]
-                else:
-                    if y == low(int):
-                        op1 = y.mp_limb_t
-                        op2 = x[].mp_d[]
-                    else:
-                        op1 = x[].mp_d[]
-                        op2 = y.mp_limb_t
-
-                if op1 == op2:
-                    result = 0
-                elif op1 > op2:
-                    result = 1
-                else:
-                    result = -1
-    else:
-        result = mpf_cmp_si(x[], y.clong)
-
-    if result < 0:
-        result = -1
-    elif result > 0:
-        result = 1
-
 func `==`*(x: Int, y: int | culong | Int): bool =
     cmp(x, y) == 0
 
 func `==`*(x: int | culong, y: Int): bool =
-    cmp(y, x) == 0
-
-func `==`*(x: RFloat, y: int | float | culong | RFloat): bool =
-    cmp(x, y) == 0
-
-func `==`*(x: float | int | culong, y: RFloat): bool =
     cmp(y, x) == 0
 
 func `==`*(x: Float, y: int | float | culong | Float): bool =
@@ -571,13 +456,9 @@ func `div`*(x: Int, y: int | culong | Int): Int =
 func `div`*(x: int | culong, y: Int): Int =
     newInt().`div`(newInt(x), y)
 
-func `div`*(z, x, y: RFloat): RFloat =
-    result = z
-    mpfr_div(result[], x[], y[], MPFR_RNDN)
-
 func `div`*(z, x, y: Float): Float =
     result = z
-    mpf_div(result[], x[], y[])
+    mpfr_div(result[], x[], y[], MPFR_RNDN)
 
 func fdiv*(z, x, y: Int): Int =
     if y == 0: raise newException(DivByZeroDefect, "Division by zero")
@@ -607,11 +488,8 @@ func `//`*(x: Int, y: int | culong | Int): Int =
 func `//`*(x: int | culong, y: Int): Int =
     fdiv(x, y)
 
-func `/`*(x: RFloat, y: RFloat): RFloat =
-    newRFloat().div(x, y)
-
 func `/`*(x: Float, y: Float): Float =
-    newFloat().div(x, y)
+    newRFloat().div(x, y)
 
 func `mod`*(z, x, y: Int): Int =
     if y == 0: raise newException(DivByZeroDefect, "Division by zero")
@@ -759,18 +637,6 @@ func `$`*(z: Int, base: cint = 10): string =
     result = newString(digits(z, base) + 2)
     result.setLen(mpz_get_str((cstring)result, base, z[]).len)
 
-func `$`*(z: RFloat, base: range[(2.cint) .. (62.cint)] = 10, n_digits = 30): string =
-    let outOfRange = toCDouble(z)
-    if base == 10 and outOfRange != FloatOverflow:
-        return $outOfRange
-  
-    var exp: mp_exp_t
-    var str = newString(n_digits + 1)
-    let coeff = $mpfr_get_str((cstring)str,exp,base,(csize_t)n_digits,z[],MPFR_RNDN)
-    if (exp != 0):  return coeff & "e" & $exp
-    if coeff == "": return "0.0"
-    result = coeff
-
 func `$`*(z: Float, base: range[(2.cint) .. (62.cint)] = 10, n_digits = 30): string =
     let outOfRange = toCDouble(z)
     if base == 10 and outOfRange != FloatOverflow:
@@ -778,7 +644,7 @@ func `$`*(z: Float, base: range[(2.cint) .. (62.cint)] = 10, n_digits = 30): str
   
     var exp: mp_exp_t
     var str = newString(n_digits + 1)
-    let coeff = $mpf_get_str((cstring)str,exp,base,(csize_t)n_digits,z[])
+    let coeff = $mpfr_get_str((cstring)str,exp,base,(csize_t)n_digits,z[],MPFR_RNDN)
     if (exp != 0):  return coeff & "e" & $exp
     if coeff == "": return "0.0"
     result = coeff
@@ -888,10 +754,6 @@ func nextPrime*(x: Int): Int =
 func clear*(z: Int) =
     GCunref(z)
     finalizeInt(z)
-
-func clear*(z: RFloat) =
-    GCunref(z)
-    finalizeRFloat(z)
 
 func clear*(z: Float) =
     GCunref(z)

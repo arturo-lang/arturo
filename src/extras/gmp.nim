@@ -801,8 +801,8 @@ func mpz_xor*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc.}
 func finalizeInt*(z: ref mpz_t) =
     mpz_clear(z[])
 
-func finalizeFloat*(z: ref mpf_t) =
-    mpf_clear(z[])
+# func finalizeFloat*(z: ref mpf_t) =
+#     mpf_clear(z[])
 
 func finalizeRat*(z: ref mpq_t) =
     mpq_clear(z[])
