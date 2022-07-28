@@ -836,5 +836,5 @@ func mpfr_div*(a: var mpfr, b: mpfr, c: mpfr, d: cint) {.importc.}
 # Methods
 #=======================================
 
-func finalizeRFloat*(z: ref mpfr) =
+func finalizeFloat*(z: ref mpfr) =
     mpfr_clear(z[])

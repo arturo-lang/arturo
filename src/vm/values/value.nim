@@ -246,7 +246,7 @@ type
                     of NormalFloating:   f*  : float
                     of BigFloating:     
                         when not defined(WEB) and not defined(NOGMP):
-                            bf* : RFloat
+                            bf* : Float
                         else:
                             discard
             of Complex:     z*  : Complex64
@@ -466,7 +466,7 @@ func newBigInteger*(i: int): Value {.inline.} =
         result = Value(kind: Integer, iKind: BigInteger, bi: newInt(i))
 
 when not defined(NOGMP):
-    proc newFloating*(bf: RFloat): Value {.inline.} =
+    proc newFloating*(bf: Float): Value {.inline.} =
         result = Value(kind: Floating, fKind: BigFloating, bf: bf)
 
 func newFloating*(f: float): Value {.inline.} =
@@ -477,7 +477,7 @@ func newFloating*(f: int): Value {.inline.} =
 
 proc newFloating*(f: string): Value {.inline.} =
     when not defined(NOGMP):
-        let bf = newRFloat(f)
+        let bf = newFloat(f)
         let cf = toCDouble(bf)
         if cf != FloatOverflow:
             return newFloating(cf)
