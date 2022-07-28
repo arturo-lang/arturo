@@ -59,6 +59,12 @@ when defined(windows):
         # Returns whether `x` fits in a LLP64 unsigned long int.
         return x >= 0 and x <= LLP64_ULONG_MAX
 
+proc fitsDouble*(x: Float): bool =
+    if mpfr_fits_uint_p(x[], MPFR_RNDN)==0:
+        return false
+    else:
+        return true
+
 func sign*(x: Int): cint =
     mpz_sgn(x[])
 
@@ -90,7 +96,7 @@ func newInt*(x: int = 0): Int =
 func newInt*(x: Float): Int =
     new(result,finalizeInt)
     mpz_init(result[])
-    mpz_set_f(result[], x[])
+    mpz_set_d(result[], mpfr_get_d(x[], MPFR_RNDN))
 
 func newInt*(s: string, base: cint = 10): Int =
     validBase(base)
@@ -99,17 +105,17 @@ func newInt*(s: string, base: cint = 10): Int =
         raise newException(ValueError, "String not in correct base")
 
 func newFloat*(x: float): Float =
-    new(result, finalizeRFloat)
+    new(result, finalizeFloat)
     mpfr_init(result[])
     mpfr_set_d(result[], x, MPFR_RNDN)
 
 func newFloat*(x: culong): Float =
-    new(result, finalizeRFloat)
+    new(result, finalizeFloat)
     mpfr_init(result[])
     mpfr_set_ui(result[], x, MPFR_RNDN)
 
 func newFloat*(x: int = 0): Float =
-    new(result, finalizeRFloat)
+    new(result, finalizeFloat)
     mpfr_init(result[])
     when isLLP64():
         if x.fitsLLP64Long:
@@ -126,13 +132,13 @@ func newFloat*(x: int = 0): Float =
         mpfr_set_si(result[], x.clong, MPFR_RNDN)
 
 func newFloat*(x: Int): Float =
-    new(result,finalizeRFloat)
+    new(result,finalizeFloat)
     mpfr_init(result[])
     mpfr_set_z(result[], x[], MPFR_RNDN)
 
 func newFloat*(s: string, base: cint = 10): Float =
     validBase(base)
-    new(result, finalizeRFloat)
+    new(result, finalizeFloat)
     mpfr_init(result[])
     if mpfr_set_str(result[], s, base, MPFR_RNDN) == -1:
         raise newException(ValueError, "String not in correct base")
@@ -409,6 +415,10 @@ func mul*(z, x, y: Int): Int =
     result = z
     mpz_mul(result[], x[], y[])
 
+func mul*(z, x, y: Float): Float =
+    result = z
+    mpfr_mul(result[], x[], y[], MPFR_RNDN)
+
 func mul*(z, x: Int, y: culong): Int =
     result = z
     mpz_mul_ui(result[], x[], y)
@@ -430,6 +440,10 @@ func `*`*(x: Int, y: int | culong | Int): Int =
 
 func `*`*(x: int | culong, y: Int): Int =
     newInt().mul(y, x)
+
+func `*`*(x: Float, y: Float): Float =
+    newFloat().mul(x, y)
+
 
 func `*=`*(z: Int, x: int | culong | Int) =
     discard z.mul(z, x)
@@ -489,7 +503,7 @@ func `//`*(x: int | culong, y: Int): Int =
     fdiv(x, y)
 
 func `/`*(x: Float, y: Float): Float =
-    newRFloat().div(x, y)
+    newFloat().div(x, y)
 
 func `mod`*(z, x, y: Int): Int =
     if y == 0: raise newException(DivByZeroDefect, "Division by zero")
@@ -637,10 +651,10 @@ func `$`*(z: Int, base: cint = 10): string =
     result = newString(digits(z, base) + 2)
     result.setLen(mpz_get_str((cstring)result, base, z[]).len)
 
-func `$`*(z: Float, base: range[(2.cint) .. (62.cint)] = 10, n_digits = 30): string =
-    let outOfRange = toCDouble(z)
-    if base == 10 and outOfRange != FloatOverflow:
-        return $outOfRange
+func `$`*(z: Float, base: range[(2.cint) .. (62.cint)] = 10, n_digits = 0): string =
+    # let outOfRange = toCDouble(z)
+    # if base == 10 and outOfRange != FloatOverflow:
+    #     return $outOfRange
   
     var exp: mp_exp_t
     var str = newString(n_digits + 1)
