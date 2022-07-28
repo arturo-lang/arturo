@@ -223,6 +223,12 @@ type
         True = 1,
         Maybe = 2
 
+    FloatingValue* = ref object of RootObj
+    NormalFloatingV* = ref object of FloatingValue
+        fv*: float
+    BigFloatingV* = ref object of FloatingValue
+        fv*: Float
+
     Value* {.acyclic.} = ref object 
         info*: string
         custom*: Value
@@ -493,6 +499,13 @@ proc newFloating*(f: string): Value {.inline.} =
 func newBigFloating*(f: float): Value {.inline} =
     when not defined(NOGMP):
         result = Value(kind: Floating, fKind: BigFloating, bf: newFloat(f))
+
+func getFloating*(v: Value): FloatingValue =
+    if v.fKind == NormalFloating:
+        return NormalFloatingV(fv: v.f)
+    else:
+        when not defined(WEB) and not defined(NOGMP):
+            return BigFloatingV(fv: v.bf)
 
 func newComplex*(com: Complex64): Value {.inline.} =
     Value(kind: Complex, z: com)
@@ -1263,6 +1276,14 @@ proc `*=`*(x: var Value, y: Value) =
                 if y.kind==Floating: x = newFloating(x.i*y.f)
                 elif y.kind==Rational: x = newRational(x.i * y.rat)
                 else: x = newComplex((float)(x.i)*y.z)
+
+method `/`*(x: FloatingValue, y: Float): Float {.base.} =
+    discard
+method `/`*(x: NormalFloatingV, y: Float): Float = 
+    newFloat(x.fv) / y
+
+method `/`*(x: BigFloatingV, y: Float): Float =
+    x.fv / y
 
 proc `/`*(x: Value, y: Value): Value =
     if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
