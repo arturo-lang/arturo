@@ -479,16 +479,20 @@ proc newFloating*(f: string): Value {.inline.} =
     when not defined(NOGMP):
         let bf = newFloat(f)
         let cf = toCDouble(bf)
-        if cf != FloatOverflow:
+        # echo "got: " & f
+        # echo "fitsDouble: " & $(fitsDouble(bf))
+        if fitsDouble(bf): #cf != FloatOverflow:
+            echo "FITS double"
             return newFloating(cf)
         else:
+            echo "DOESN'T fit double"
             return newFloating(bf)
     else:
         return newFloating(parseFloat(f))
 
 func newBigFloating*(f: float): Value {.inline} =
     when not defined(NOGMP):
-        result = Value(kind: Floating, fKind: BigFloating, bf: newRFloat(f))
+        result = Value(kind: Floating, fKind: BigFloating, bf: newFloat(f))
 
 func newComplex*(com: Complex64): Value {.inline.} =
     Value(kind: Complex, z: com)
@@ -1165,7 +1169,15 @@ proc `*`*(x: Value, y: Value): Value =
                 if y.kind==Floating: return newFloating(x.f*y.f)
                 elif y.kind==Complex: return newComplex(x.f*y.z)
                 elif y.kind==Rational: return newRational(toRational(x.f)*y.rat)
-                else: return newFloating(x.f*y.i)
+                else:
+                    if y.iKind==NormalInteger:
+                        return newFloating(x.f*y.i)
+                    else:
+                        when not defined(NOGMP):
+                            if x.fKind==NormalFloating:
+                                return newFloating(newFloat(x.f)*newFloat(y.bi))
+                            else:
+                                return newFloating(x.bf * newFloat(y.bi))
             elif x.kind==Complex:
                 if y.kind==Integer:
                     if y.iKind==NormalInteger: return newComplex(x.z*(float)(y.i))
@@ -1300,9 +1312,9 @@ proc `/`*(x: Value, y: Value): Value =
                     else:
                         when not defined(NOGMP):
                             if x.fKind==NormalFloating:
-                                return newFloating(newRFloat(x.f)/newRFloat(y.bi))
+                                return newFloating(newFloat(x.f)/newFloat(y.bi))
                             else:
-                                return newFloating(x.bf / newRFloat(y.bi))
+                                return newFloating(x.bf / newFloat(y.bi))
             elif x.kind==Complex:
                 if y.kind==Integer:
                     if y.iKind==NormalInteger: return newComplex(x.z/(float)(y.i))
@@ -2187,7 +2199,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
                 elif v.f==NegInf: dumpPrimitive("-∞", v)
                 else: dumpPrimitive($(v.f), v)
             else:
-                when defined(WEB) or not defined(NOGMP): 
+                when not defined(WEB) and not defined(NOGMP): 
                     dumpPrimitive($(v.bf), v)
         of Complex      : dumpPrimitive($(v.z.re) & (if v.z.im >= 0: "+" else: "") & $(v.z.im) & "i", v)
         of Rational     : dumpPrimitive($(v.rat), v)
