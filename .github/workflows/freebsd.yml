@@ -46,7 +46,7 @@ jobs:
         uses: vmactions/freebsd-vm@v0.1.5
         with:
           usesh: true
-          prepare: pkg install -y nim gmp bash databases/sqlite3
+          prepare: pkg install -y nim gmp mpfr bash databases/sqlite3
           run: |
             ./build.nims install ${{ matrix.version }} log
             export PATH="$HOME/.arturo/bin:$PATH"
