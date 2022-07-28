@@ -31,6 +31,8 @@ type
     mpfr_prec_t = clong
     mpfr_sign_t = cint
     mpfr_exp_t = clong
+    mpfr_rnd_t = cint
+
     mm_mpfr_struct* {.byref, importc: "__mpfr_struct"} = object
         mpfr_prec* {.importc: "_mpfr_prec".}: mpfr_prec_t
         mpfr_sign* {.importc: "_mpfr_sign".}: mpfr_sign_t
@@ -120,21 +122,24 @@ const
 
 func mpfr_clear*(a: var mpfr) {.importc.}
 func mpfr_init*(a: var mpfr) {.importc.}
-func mpfr_set_d*(a: var mpfr, b: cdouble, c: cint) {.importc.}
-func mpfr_set_si*(a: var mpfr, b: clong, c: cint) {.importc.}
-func mpfr_set_ui*(a: var mpfr, b: culong, c: cint) {.importc.}
-func mpfr_set_z*(a: var mpfr, b: mpz_t, c: cint) {.importc.}
-func mpfr_set_str*(a: var mpfr, b: cstring, c: cint, d: cint):cint {.importc.}
+func mpfr_set_d*(a: var mpfr, b: cdouble, c: mpfr_rnd_t) {.importc.}
+func mpfr_set_si*(a: var mpfr, b: clong, c: mpfr_rnd_t) {.importc.}
+func mpfr_set_ui*(a: var mpfr, b: culong, c: mpfr_rnd_t) {.importc.}
+func mpfr_set_z*(a: var mpfr, b: mpz_t, c: mpfr_rnd_t) {.importc.}
+func mpfr_set_str*(a: var mpfr, b: cstring, c: cint, d: mpfr_rnd_t):cint {.importc.}
 
-func mpfr_get_d*(a: mpfr, b: cint): cdouble {.importc.}
+func mpfr_get_d*(a: mpfr, b: mpfr_rnd_t): cdouble {.importc.}
 func mpfr_cmp*(a: mpfr, b: mpfr): cint {.importc.}
 func mpfr_cmp_d*(a: mpfr, b: cdouble): cint {.importc.}
 func mpfr_cmp_si*(a: mpfr, b: clong): cint {.importc.}
 func mpfr_cmp_ui*(a: mpfr, b: culong): cint {.importc.}
 
-func mpfr_get_str*(a: cstring; b: var mp_exp_t; c: cint; d: csize_t; e: mpfr, f: cint): cstring {.importc.}
+func mpfr_get_str*(a: cstring; b: var mp_exp_t; c: cint; d: csize_t; e: mpfr, f: mpfr_rnd_t): cstring {.importc.}
 
-func mpfr_div*(a: var mpfr, b: mpfr, c: mpfr, d: cint) {.importc.}
+func mpfr_fits_uint_p*(a: mpfr, b: mpfr_rnd_t): cint {.importc.}
+
+func mpfr_mul*(a: var mpfr, b: mpfr, c: mpfr, d: mpfr_rnd_t) {.importc.}
+func mpfr_div*(a: var mpfr, b: mpfr, c: mpfr, d: mpfr_rnd_t) {.importc.}
 
 # func gmp_asprintf*(a2: cstringArray; a3: cstring): cint {.varargs, importc.}
 # func gmp_fprintf*(a2: File; a3: cstring): cint {.varargs, importc.}
