@@ -142,8 +142,8 @@ proc `$`*(v: Value): string {.inline.} =
                 elif v.f==NegInf: return "-∞"
                 else: return $(v.f)
             else:
-                when defined(WEB) or not defined(NOGMP): 
-                    return $(v.bf)
+                when not defined(WEB) and not defined(NOGMP): 
+                    return "BIG:" & $(v.bf)
         of Complex      : 
             return $(v.z.re) & (if v.z.im >= 0: "+" else: "") & $(v.z.im) & "i"
         of Rational     :
