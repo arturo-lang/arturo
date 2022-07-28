@@ -135,7 +135,7 @@ func newRFloat*(s: string, base: cint = 10): RFloat =
     validBase(base)
     new(result, finalizeRFloat)
     mpfr_init(result[])
-    if mpfr_set_str(result[], s, base) == -1:
+    if mpfr_set_str(result[], s, base, MPFR_RNDN) == -1:
         raise newException(ValueError, "String not in correct base")
 
 func newFloat*(x: float): Float =
@@ -229,7 +229,7 @@ func toCDouble*(x: RFloat): cdouble =
     var outOfRange = false
     var floatVal: float
   
-    floatVal = mpfr_get_d(x[])
+    floatVal = mpfr_get_d(x[], MPFR_RNDN)
     if (floatVal == 0.0 and mpfr_cmp_d(x[],0.0) != 0) or floatVal == Inf:
         return FloatOverflow
     
@@ -573,7 +573,7 @@ func `div`*(x: int | culong, y: Int): Int =
 
 func `div`*(z, x, y: RFloat): RFloat =
     result = z
-    mpfr_div(result[], x[], y[])
+    mpfr_div(result[], x[], y[], MPFR_RNDN)
 
 func `div`*(z, x, y: Float): Float =
     result = z
