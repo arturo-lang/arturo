@@ -140,15 +140,21 @@ func mpfr_fits_uint_p*(a: mpfr, b: mpfr_rnd_t): cint {.importc.}
 
 func mpfr_add*(a: var mpfr, b: mpfr, c: mpfr, d: mpfr_rnd_t) {.importc.}
 func mpfr_add_z*(a: var mpfr, b: mpfr, c: mpz_t, d: mpfr_rnd_t) {.importc.}
+func mpfr_add_d*(a: var mpfr, b: mpfr, c: cdouble, d: mpfr_rnd_t) {.importc.}
 func mpfr_sub*(a: var mpfr, b: mpfr, c: mpfr, d: mpfr_rnd_t) {.importc.}
 func mpfr_sub_z*(a: var mpfr, b: mpfr, c: mpz_t, d: mpfr_rnd_t) {.importc.}
+func mpfr_sub_d*(a: var mpfr, b: mpfr, c: cdouble, d: mpfr_rnd_t) {.importc.}
 func mpfr_mul*(a: var mpfr, b: mpfr, c: mpfr, d: mpfr_rnd_t) {.importc.}
 func mpfr_mul_z*(a: var mpfr, b: mpfr, c: mpz_t, d: mpfr_rnd_t) {.importc.}
+func mpfr_mul_d*(a: var mpfr, b: mpfr, c: cdouble, d: mpfr_rnd_t) {.importc.}
 func mpfr_div*(a: var mpfr, b: mpfr, c: mpfr, d: mpfr_rnd_t) {.importc.}
 func mpfr_div_z*(a: var mpfr, b: mpfr, c: mpz_t, d: mpfr_rnd_t) {.importc.}
-func mpfr_mod*(a: var mpfr, b: mpfr, c: mpfr, d: mpfr_rnd_t) {.importc.}
-func mpfr_mod_z*(a: var mpfr, b: mpfr, c: mpz_t, d: mpfr_rnd_t) {.importc.}
 func mpfr_div_d*(a: var mpfr, b: mpfr, c: cdouble, d: mpfr_rnd_t) {.importc.}
+func mpfr_pow*(a: var mpfr, b: mpfr, c: mpfr, d: mpfr_rnd_t) {.importc.}
+func mpfr_pow_z*(a: var mpfr, b: mpfr, c: mpz_t, d: mpfr_rnd_t) {.importc.}
+# func mpfr_pow_d*(a: var mpfr, b: mpfr, c: cdouble, d: mpfr_rnd_t) {.importc.}
+# func mpfr_mod*(a: var mpfr, b: mpfr, c: mpfr, d: mpfr_rnd_t) {.importc.}
+# func mpfr_mod_z*(a: var mpfr, b: mpfr, c: mpz_t, d: mpfr_rnd_t) {.importc.}
 
 # func gmp_asprintf*(a2: cstringArray; a3: cstring): cint {.varargs, importc.}
 # func gmp_fprintf*(a2: File; a3: cstring): cint {.varargs, importc.}

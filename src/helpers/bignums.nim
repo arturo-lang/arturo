@@ -366,7 +366,9 @@ func `+`*(x: float, y: Int): float =
     result = toCDouble(res)
 
 func `+`*(x:Int, y: float): float =
-    y + x
+    let res = newFloat()
+    mpfr_add_d(res[], newFloat(x)[], y, MPFR_RNDN)
+    result = toCDouble(res)
 
 func `+=`*(z: Int, x: int | culong | Int) =
     z.inc(x)
@@ -410,8 +412,8 @@ func `-`*(x: float, y: Int): float =
     result = toCDouble(res)
 
 func `-`*(x:Int, y: float): float =
-    var res = newFloat()
-    mpfr_sub(res[], newFloat(x)[], newFloat(y)[], MPFR_RNDN)
+    let res = newFloat()
+    mpfr_sub_d(res[], newFloat(x)[], y, MPFR_RNDN)
     result = toCDouble(res)
 
 func `-=`*(z: Int, x: int | culong | Int) =
@@ -453,7 +455,9 @@ func `*`*(x: float, y: Int): float =
     result = toCDouble(res)
 
 func `*`*(x:Int, y: float): float =
-    y * x
+    let res = newFloat()
+    mpfr_mul_d(res[], newFloat(x)[], y, MPFR_RNDN)
+    result = toCDouble(res)
 
     # toCDouble(newFloat().mul(newFloat(x), y))
 
@@ -537,8 +541,8 @@ func `/`*(x: float, y: Int): float =
     result = toCDouble(res)
 
 func `/`*(x: Int, y: float): float =
-    var res = newFloat()
-    mpfr_div(res[], newFloat(x)[], newFloat(y)[], MPFR_RNDN)
+    let res = newFloat()
+    mpfr_div_d(res[], newFloat(x)[], y, MPFR_RNDN)
     result = toCDouble(res)
 
 func `mod`*(z, x, y: Int): Int =
@@ -563,15 +567,15 @@ func `mod`*(x: Int, y: int | culong | Int): Int =
 func `mod`*(x: int | culong, y: Int): Int =
     newInt().`mod`(newInt(x), y)
 
-func `mod`*(x: float, y: Int): float =
-    var res = newFloat()
-    mpfr_mod_z(res[], newFloat(x)[], y[], MPFR_RNDN)
-    result = toCDouble(res)
+# func `mod`*(x: float, y: Int): float =
+#     var res = newFloat()
+#     mpfr_mod_z(res[], newFloat(x)[], y[], MPFR_RNDN)
+#     result = toCDouble(res)
 
-func `mod`*(x:Int, y: float): float =
-    var res = newFloat()
-    mpfr_mod(res[], newFloat(x)[], newFloat(y)[], MPFR_RNDN)
-    result = toCDouble(res)
+# func `mod`*(x:Int, y: float): float =
+#     var res = newFloat()
+#     mpfr_mod(res[], newFloat(x)[], newFloat(y)[], MPFR_RNDN)
+#     result = toCDouble(res)
 
 func pow*(z, x: Int, y: culong): Int =
     result = z
@@ -589,6 +593,16 @@ func pow*(x: int, y: culong): Int =
         if x.fitsLLP64ULong: pow(x.culong, y) else: pow(newInt(x), y)
     else:
         if x >= 0: pow(x.culong, y) else: pow(newInt(x), y)
+
+func pow*(x: float, y: Int): float =
+    var res = newFloat()
+    mpfr_pow_z(res[], newFloat(x)[], y[], MPFR_RNDN)
+    result = toCDouble(res)
+
+func pow*(x: Int, y: float): float =
+    let res = newFloat()
+    mpfr_pow(res[], newFloat(x)[], newFloat(y)[], MPFR_RNDN)
+    result = toCDouble(res)
 
 func `^`*(x: int | culong | Int, y: culong): Int =
     pow(x, y)
@@ -697,19 +711,19 @@ func `$`*(z: Int, base: cint = 10): string =
     result = newString(digits(z, base) + 2)
     result.setLen(mpz_get_str((cstring)result, base, z[]).len)
 
-func `$`*(z: Float, base: range[(2.cint) .. (62.cint)] = 10, n_digits = 0): string =
-    # let outOfRange = toCDouble(z)
-    # if base == 10 and outOfRange != FloatOverflow:
-    #     return $outOfRange
+# func `$`*(z: Float, base: range[(2.cint) .. (62.cint)] = 10, n_digits = 0): string =
+#     # let outOfRange = toCDouble(z)
+#     # if base == 10 and outOfRange != FloatOverflow:
+#     #     return $outOfRange
   
-    var exp: mp_exp_t
-    var str = newString(n_digits + 1)
-    var coeff = $mpfr_get_str((cstring)str,exp,base,(csize_t)n_digits,z[],MPFR_RNDN)
-    coeff.insert(".", abs(exp))
-    return "str: " & str & ", coeff: " & coeff & ", exp: " & $exp
-    if (exp != 0):  return coeff & "e" & (if exp>0: "+" else: "") & $exp
-    if coeff == "": return "0.0"
-    result = coeff
+#     var exp: mp_exp_t
+#     var str = newString(n_digits + 1)
+#     var coeff = $mpfr_get_str((cstring)str,exp,base,(csize_t)n_digits,z[],MPFR_RNDN)
+#     coeff.insert(".", abs(exp))
+#     return "str: " & str & ", coeff: " & coeff & ", exp: " & $exp
+#     if (exp != 0):  return coeff & "e" & (if exp>0: "+" else: "") & $exp
+#     if coeff == "": return "0.0"
+#     result = coeff
 
 #=======================================
 # Methods

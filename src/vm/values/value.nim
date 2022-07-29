@@ -1560,8 +1560,9 @@ proc `%`*(x: Value, y: Value): Value =
                     if y.iKind==NormalInteger:
                         return newFloating(x.f mod (float)(y.i))
                     else:
-                        when not defined(NOGMP):
-                            return newFloating(x.f mod y.bi)
+                        discard
+                        # when not defined(NOGMP):
+                        #     return newFloating(x.f mod y.bi)
             elif x.kind==Rational:
                 if y.kind==Floating: return newRational(x.rat mod toRational(y.f))
                 elif y.kind==Rational: return newRational(x.rat mod y.rat)
@@ -1573,8 +1574,9 @@ proc `%`*(x: Value, y: Value): Value =
                     if x.iKind==NormalInteger:
                         return newFloating((float)(x.i) mod y.f)
                     else:
-                        when not defined(NOGMP):
-                            return newFloating(x.bi mod y.f)
+                        discard
+                        # when not defined(NOGMP):
+                        #     return newFloating(x.bi mod y.f)
 
 proc `%=`*(x: var Value, y: Value) =
     if not (x.kind in [Integer,Floating,Rational]) or not (y.kind in [Integer,Floating,Rational]):
@@ -1686,7 +1688,12 @@ proc `^`*(x: Value, y: Value): Value =
             if x.kind==Floating:
                 if y.kind==Floating: return newFloating(pow(x.f,y.f))
                 elif y.kind==Complex: return VNULL
-                else: return newFloating(pow(x.f,(float)(y.i)))
+                else: 
+                    if y.iKind==NormalInteger:
+                        return newFloating(pow(x.f,(float)(y.i)))
+                    else:
+                        when not defined(NOGMP):
+                            return newFloating(pow(x.f,y.bi))
             elif x.kind==Complex:
                 if y.kind==Integer:
                     if y.iKind==NormalInteger: return newComplex(pow(x.z,(float)(y.i)))
@@ -1694,7 +1701,12 @@ proc `^`*(x: Value, y: Value): Value =
                 elif y.kind==Floating: return newComplex(pow(x.z,y.f))
                 else: return newComplex(pow(x.z,y.z))
             else:
-                if y.kind==Floating: return newFloating(pow((float)(x.i),y.f))
+                if y.kind==Floating: 
+                    if x.iKind==NormalInteger:
+                        return newFloating(pow((float)(x.i),y.f))
+                    else:
+                        when not defined(NOGMP):
+                            return newFloating(pow(x.bi,y.f))
                 else: return VNULL
 
 proc `^=`*(x: var Value, y: Value) =
