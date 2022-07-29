@@ -138,6 +138,10 @@ func mpfr_get_str*(a: cstring; b: var mp_exp_t; c: cint; d: csize_t; e: mpfr, f:
 
 func mpfr_fits_uint_p*(a: mpfr, b: mpfr_rnd_t): cint {.importc.}
 
+func mpfr_add*(a: var mpfr, b: mpfr, c: mpfr, d: mpfr_rnd_t) {.importc.}
+func mpfr_add_z*(a: var mpfr, b: mpfr, c: mpz_t, d: mpfr_rnd_t) {.importc.}
+func mpfr_sub*(a: var mpfr, b: mpfr, c: mpfr, d: mpfr_rnd_t) {.importc.}
+func mpfr_sub_z*(a: var mpfr, b: mpfr, c: mpz_t, d: mpfr_rnd_t) {.importc.}
 func mpfr_mul*(a: var mpfr, b: mpfr, c: mpfr, d: mpfr_rnd_t) {.importc.}
 func mpfr_mul_z*(a: var mpfr, b: mpfr, c: mpz_t, d: mpfr_rnd_t) {.importc.}
 func mpfr_div*(a: var mpfr, b: mpfr, c: mpfr, d: mpfr_rnd_t) {.importc.}
