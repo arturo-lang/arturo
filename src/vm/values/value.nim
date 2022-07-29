@@ -1185,11 +1185,6 @@ proc `*`*(x: Value, y: Value): Value =
                     else:
                         when not defined(NOGMP):
                             return newFloating(x.f * y.bi)
-                        # when not defined(NOGMP):
-                        #     if x.fKind==NormalFloating:
-                        #         return newFloating(newFloat(x.f)*newFloat(y.bi))
-                        #     else:
-                        #         return newFloating(x.bf * newFloat(y.bi))
             elif x.kind==Complex:
                 if y.kind==Integer:
                     if y.iKind==NormalInteger: return newComplex(x.z*(float)(y.i))
@@ -1205,7 +1200,12 @@ proc `*`*(x: Value, y: Value): Value =
                 elif y.kind==Complex: return VNULL
                 else: return newRational(x.rat*y.rat)
             else:
-                if y.kind==Floating: return newFloating(x.i*y.f)
+                if y.kind==Floating: 
+                    if x.iKind==NormalInteger:
+                        return newFloating(x.i*y.f)
+                    else:
+                        when not defined(NOGMP):
+                            return newFloating(x.bi * y.f)
                 elif y.kind==Rational: return newRational(x.i*y.rat)
                 else: return newComplex((float)(x.i)*y.z)
 
@@ -1330,12 +1330,8 @@ proc `/`*(x: Value, y: Value): Value =
                     if y.iKind==NormalInteger:
                         return newFloating(x.f/y.i)
                     else:
-                        return newFloating(x.f / y.bi)
-                        # when not defined(NOGMP):
-                        #     if x.fKind==NormalFloating:
-                        #         return newFloating(toCDouble(x.f / y.bi))
-                        #     else:
-                        #         return newFloating(x.bf / y.bi)
+                        when not defined(NOGMP):
+                            return newFloating(x.f / y.bi)
             elif x.kind==Complex:
                 if y.kind==Integer:
                     if y.iKind==NormalInteger: return newComplex(x.z/(float)(y.i))
@@ -1351,7 +1347,11 @@ proc `/`*(x: Value, y: Value): Value =
                 elif y.kind==Complex: return VNULL
                 else: return newInteger(x.rat div y.rat)
             else:
-                if y.kind==Floating: return newFloating(x.i/y.f)
+                if y.kind==Floating: 
+                    if x.iKind==NormalInteger:
+                        return newFloating(x.i/y.f)
+                    else:
+                        return newFloating(x.bi/y.f)
                 elif y.kind==Rational: return newInteger(toRational(x.i) div y.rat)
                 else: return newComplex((float)(x.i)/y.z)
 
