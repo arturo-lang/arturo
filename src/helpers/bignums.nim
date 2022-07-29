@@ -434,6 +434,9 @@ func `*`*(x: float, y: Int): float =
     mpfr_mul_z(res[], newFloat(x)[], y[], MPFR_RNDN)
     result = toCDouble(res)
 
+func `*`*(x:Int, y: float): float =
+    y * x
+
     # toCDouble(newFloat().mul(newFloat(x), y))
 
 func `*=`*(z: Int, x: int | culong | Int) =
@@ -513,6 +516,11 @@ func `/`*(x: Float, y: float): Float =
 func `/`*(x: float, y: Int): float =
     var res = newFloat()
     mpfr_div_z(res[], newFloat(x)[], y[], MPFR_RNDN)
+    result = toCDouble(res)
+
+func `/`*(x: Int, y: float): float =
+    var res = newFloat()
+    mpfr_div(res[], newFloat(x)[], newFloat(y)[], MPFR_RNDN)
     result = toCDouble(res)
 
 func `mod`*(z, x, y: Int): Int =
