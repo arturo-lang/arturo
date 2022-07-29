@@ -1371,7 +1371,8 @@ proc `/`*(x: Value, y: Value): Value =
                     if x.iKind==NormalInteger:
                         return newFloating(x.i/y.f)
                     else:
-                        return newFloating(x.bi/y.f)
+                        when not defined(NOGMP):
+                            return newFloating(x.bi/y.f)
                 elif y.kind==Rational: return newInteger(toRational(x.i) div y.rat)
                 else: return newComplex((float)(x.i)/y.z)
 
@@ -1482,7 +1483,8 @@ proc `//`*(x: Value, y: Value): Value =
                     if x.iKind==NormalInteger:
                         return newFloating((float)(x.i)/y.f)
                     else:
-                        return newFloating(x.bi/y.f)
+                        when not defined(NOGMP):
+                            return newFloating(x.bi/y.f)
                 else: return newRational(x.i / y.rat)
 
 
