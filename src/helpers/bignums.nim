@@ -403,13 +403,13 @@ func mul*(z, x, y: Int): Int =
     result = z
     mpz_mul(result[], x[], y[])
 
-func mul*(z, x, y: Float): Float =
-    result = z
-    mpfr_mul(result[], x[], y[], MPFR_RNDN)
-
 func mul*(z, x: Int, y: culong): Int =
     result = z
     mpz_mul_ui(result[], x[], y)
+
+func mul*(z, x: Float, y: Int): Float =
+    result = z
+    mpfr_mul_z(result[], x[], y[], MPFR_RNDN)
 
 func mul*(z, x: Int, y: int): Int =
     result = z
@@ -429,9 +429,12 @@ func `*`*(x: Int, y: int | culong | Int): Int =
 func `*`*(x: int | culong, y: Int): Int =
     newInt().mul(y, x)
 
-func `*`*(x: Float, y: Float): Float =
-    newFloat().mul(x, y)
+func `*`*(x: float, y: Int): float =
+    var res = newFloat()
+    mpfr_mul_z(res[], newFloat(x)[], y[], MPFR_RNDN)
+    result = toCDouble(res)
 
+    # toCDouble(newFloat().mul(newFloat(x), y))
 
 func `*=`*(z: Int, x: int | culong | Int) =
     discard z.mul(z, x)
@@ -506,6 +509,11 @@ func `/`*(x: Float, y: Float | int | Int): Float =
 
 func `/`*(x: Float, y: float): Float = 
     newFloat().div(x, y)
+
+func `/`*(x: float, y: Int): float =
+    var res = newFloat()
+    mpfr_div_z(res[], newFloat(x)[], y[], MPFR_RNDN)
+    result = toCDouble(res)
 
 func `mod`*(z, x, y: Int): Int =
     if y == 0: raise newException(DivByZeroDefect, "Division by zero")
@@ -660,8 +668,10 @@ func `$`*(z: Float, base: range[(2.cint) .. (62.cint)] = 10, n_digits = 0): stri
   
     var exp: mp_exp_t
     var str = newString(n_digits + 1)
-    let coeff = $mpfr_get_str((cstring)str,exp,base,(csize_t)n_digits,z[],MPFR_RNDN)
-    if (exp != 0):  return coeff & "e" & $exp
+    var coeff = $mpfr_get_str((cstring)str,exp,base,(csize_t)n_digits,z[],MPFR_RNDN)
+    coeff.insert(".", abs(exp))
+    return "str: " & str & ", coeff: " & coeff & ", exp: " & $exp
+    if (exp != 0):  return coeff & "e" & (if exp>0: "+" else: "") & $exp
     if coeff == "": return "0.0"
     result = coeff
 

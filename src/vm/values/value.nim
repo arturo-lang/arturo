@@ -187,9 +187,9 @@ type
         NormalInteger
         BigInteger
 
-    FloatingKind* = enum
-        NormalFloating
-        BigFloating
+    # FloatingKind* = enum
+    #     NormalFloating
+    #     BigFloating
 
     RationalKind* = enum
         NormalRational
@@ -247,14 +247,15 @@ type
                             bi* : Int    
                         else:
                             discard
-            of Floating:    
-                case fKind*: FloatingKind:
-                    of NormalFloating:   f*  : float
-                    of BigFloating:     
-                        when not defined(WEB) and not defined(NOGMP):
-                            bf* : Float
-                        else:
-                            discard
+            of Floating: f*: float
+                # case fKind*: FloatingKind:
+
+                #     of NormalFloating:   f*  : float
+                #     of BigFloating:     
+                #         when not defined(WEB) and not defined(NOGMP):
+                #             bf* : Float
+                #         else:
+                #             discard
             of Complex:     z*  : Complex64
             of Rational:    
                 case rKind*: RationalKind:
@@ -367,8 +368,8 @@ let I10* = Value(kind: Integer, iKind: NormalInteger, i: 10)
 
 let I1M* = Value(kind: Integer, iKind: NormalInteger, i: -1)
 
-let F0*  = Value(kind: Floating, f: 0.0, fKind: NormalFloating)
-let F1*  = Value(kind: Floating, f: 1.0, fKind: NormalFloating)
+let F0*  = Value(kind: Floating, f: 0.0)
+let F1*  = Value(kind: Floating, f: 1.0)
 
 let VTRUE*  = Value(kind: Logical, b: True)
 let VFALSE* = Value(kind: Logical, b: False)
@@ -471,30 +472,30 @@ func newBigInteger*(i: int): Value {.inline.} =
     elif not defined(NOGMP):
         result = Value(kind: Integer, iKind: BigInteger, bi: newInt(i))
 
-when not defined(NOGMP):
-    proc newFloating*(bf: Float): Value {.inline.} =
-        result = Value(kind: Floating, fKind: BigFloating, bf: bf)
+# when not defined(NOGMP):
+#     proc newFloating*(bf: Float): Value {.inline.} =
+#         result = Value(kind: Floating, fKind: BigFloating, bf: bf)
 
 func newFloating*(f: float): Value {.inline.} =
-    Value(kind: Floating, f: f, fKind: NormalFloating)
+    Value(kind: Floating, f: f)
 
 func newFloating*(f: int): Value {.inline.} =
-    Value(kind: Floating, f: (float)(f), fKind: NormalFloating)
+    Value(kind: Floating, f: (float)(f))
 
 proc newFloating*(f: string): Value {.inline.} =
-    when not defined(NOGMP):
-        let bf = newFloat(f)
-        let cf = toCDouble(bf)
-        if fitsDouble(bf):
-            return newFloating(cf)
-        else:
-            return newFloating(bf)
-    else:
-        return newFloating(parseFloat(f))
+    # when not defined(NOGMP):
+    #     let bf = newFloat(f)
+    #     let cf = toCDouble(bf)
+    #     if fitsDouble(bf):
+    #         return newFloating(cf)
+    #     else:
+    #         return newFloating(bf)
+    # else:
+    return newFloating(parseFloat(f))
 
-func newBigFloating*(f: float): Value {.inline} =
-    when not defined(NOGMP):
-        result = Value(kind: Floating, fKind: BigFloating, bf: newFloat(f))
+# func newBigFloating*(f: float): Value {.inline} =
+#     when not defined(NOGMP):
+#         result = Value(kind: Floating, fKind: BigFloating, bf: newFloat(f))
 
 # func getFloating*(v: Value): FloatingValue =
 #     if v.fKind == NormalFloating:
@@ -1183,10 +1184,12 @@ proc `*`*(x: Value, y: Value): Value =
                         return newFloating(x.f*y.i)
                     else:
                         when not defined(NOGMP):
-                            if x.fKind==NormalFloating:
-                                return newFloating(newFloat(x.f)*newFloat(y.bi))
-                            else:
-                                return newFloating(x.bf * newFloat(y.bi))
+                            return newFloating(x.f * y.bi)
+                        # when not defined(NOGMP):
+                        #     if x.fKind==NormalFloating:
+                        #         return newFloating(newFloat(x.f)*newFloat(y.bi))
+                        #     else:
+                        #         return newFloating(x.bf * newFloat(y.bi))
             elif x.kind==Complex:
                 if y.kind==Integer:
                     if y.iKind==NormalInteger: return newComplex(x.z*(float)(y.i))
@@ -1327,11 +1330,12 @@ proc `/`*(x: Value, y: Value): Value =
                     if y.iKind==NormalInteger:
                         return newFloating(x.f/y.i)
                     else:
-                        when not defined(NOGMP):
-                            if x.fKind==NormalFloating:
-                                return newFloating(toCDouble(newFloat(x.f)/newFloat(y.bi)))
-                            else:
-                                return newFloating(x.bf / newFloat(y.bi))
+                        return newFloating(x.f / y.bi)
+                        # when not defined(NOGMP):
+                        #     if x.fKind==NormalFloating:
+                        #         return newFloating(toCDouble(x.f / y.bi))
+                        #     else:
+                        #         return newFloating(x.bf / y.bi)
             elif x.kind==Complex:
                 if y.kind==Integer:
                     if y.iKind==NormalInteger: return newComplex(x.z/(float)(y.i))
@@ -2096,13 +2100,13 @@ func `$`(v: Value): string {.inline.} =
                     return $(v.bi)
         of Version      : return fmt("{v.major}.{v.minor}.{v.patch}{v.extra}")
         of Floating     : 
-            if v.fKind==NormalFloating: 
-                if v.f==Inf: return "∞"
-                elif v.f==NegInf: return "-∞"
-                else: return $(v.f)
-            else:
-                when defined(WEB) or not defined(NOGMP): 
-                    return $(v.bf)
+            #if v.fKind==NormalFloating: 
+            if v.f==Inf: return "∞"
+            elif v.f==NegInf: return "-∞"
+            else: return $(v.f)
+            # else:
+            #     when defined(WEB) or not defined(NOGMP): 
+            #         return $(v.bf)
         of Complex      : return $(v.z.re) & (if v.z.im >= 0: "+" else: "") & $(v.z.im) & "i"
         of Rational     : return $(v.rat)
         of Type         : 
@@ -2211,13 +2215,13 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
                 when defined(WEB) or not defined(NOGMP):
                     dumpPrimitive($(v.bi), v)
         of Floating     :
-            if v.fKind==NormalFloating:
-                if v.f==Inf: dumpPrimitive("∞", v)
-                elif v.f==NegInf: dumpPrimitive("-∞", v)
-                else: dumpPrimitive($(v.f), v)
-            else:
-                when not defined(WEB) and not defined(NOGMP): 
-                    dumpPrimitive($(v.bf), v)
+            #if v.fKind==NormalFloating:
+            if v.f==Inf: dumpPrimitive("∞", v)
+            elif v.f==NegInf: dumpPrimitive("-∞", v)
+            else: dumpPrimitive($(v.f), v)
+            # else:
+            #     when not defined(WEB) and not defined(NOGMP): 
+            #         dumpPrimitive($(v.bf), v)
         of Complex      : dumpPrimitive($(v.z.re) & (if v.z.im >= 0: "+" else: "") & $(v.z.im) & "i", v)
         of Rational     : dumpPrimitive($(v.rat), v)
         of Version      : dumpPrimitive(fmt("{v.major}.{v.minor}.{v.patch}{v.extra}"), v)
