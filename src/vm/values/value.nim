@@ -1467,13 +1467,22 @@ proc `//`*(x: Value, y: Value): Value =
             if x.kind==Floating:
                 if y.kind==Floating: return newFloating(x.f / y.f)
                 elif y.kind==Rational: return newRational(toRational(x.f)/y.rat)
-                else: return newFloating(x.f/(float)(y.i))
+                else: 
+                    if y.iKind==NormalInteger:
+                        return newFloating(x.f/(float)(y.i))
+                    else:
+                        when not defined(NOGMP):
+                            return newFloating(x.f / y.bi)
             elif x.kind==Rational:
                 if y.kind==Floating: return newRational(x.rat / toRational(y.f))
                 elif y.kind==Rational: return newRational(x.rat / y.rat)
                 else: return newRational(x.rat / y.i)
             else:
-                if y.kind==Floating: return newFloating((float)(x.i)/y.f)
+                if y.kind==Floating:
+                    if x.iKind==NormalInteger:
+                        return newFloating((float)(x.i)/y.f)
+                    else:
+                        return newFloating(x.bi/y.f)
                 else: return newRational(x.i / y.rat)
 
 
