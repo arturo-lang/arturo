@@ -986,7 +986,12 @@ proc `+=`*(x: var Value, y: Value) =
                 if y.kind==Floating: x.f += y.f
                 elif y.kind==Complex: x = newComplex(x.f + y.z)
                 elif y.kind==Rational: x = newRational(toRational(x.f) + y.rat)
-                else: x.f = x.f + y.i
+                else: 
+                    if y.iKind == NormalInteger:
+                        x.f = x.f + y.i
+                    else:
+                        when not defined(NOGMP):
+                            x = newFloating(x.f + y.bi)
             elif x.kind==Complex:
                 if y.kind==Integer:
                     if y.iKind==NormalInteger: x = newComplex(x.z + (float)(y.i))
@@ -1002,7 +1007,12 @@ proc `+=`*(x: var Value, y: Value) =
                 elif y.kind==Complex: discard
                 else: x.rat += y.rat
             else:
-                if y.kind==Floating: x = newFloating(x.i+y.f)
+                if y.kind==Floating: 
+                    if x.iKind==NormalInteger:
+                        x = newFloating(x.i+y.f)
+                    else:
+                        when not defined(NOGMP):
+                            x = newFloating(x.bi+y.f)
                 elif y.kind==Rational: x = newRational(x.i+y.rat)
                 else: x = newComplex((float)(x.i)+y.z)
 
@@ -1131,7 +1141,12 @@ proc `-=`*(x: var Value, y: Value) =
                 if y.kind==Floating: x.f -= y.f
                 elif y.kind==Complex: x = newComplex(x.f - y.z)
                 elif y.kind==Rational: x = newRational(toRational(x.f) - y.rat)
-                else: x.f = x.f - y.i
+                else: 
+                    if y.iKind == NormalInteger:
+                        x.f = x.f - y.i
+                    else:
+                        when not defined(NOGMP):
+                            x = newFloating(x.f - y.bi)
             elif x.kind==Complex:
                 if y.kind==Integer:
                     if y.iKind==NormalInteger: x = newComplex(x.z - (float)(y.i))
@@ -1147,7 +1162,12 @@ proc `-=`*(x: var Value, y: Value) =
                 elif y.kind==Complex: discard
                 else: x.rat -= y.rat
             else:
-                if y.kind==Floating: x = newFloating(x.i-y.f)
+                if y.kind==Floating: 
+                    if x.iKind==NormalInteger:
+                        x = newFloating(x.i-y.f)
+                    else:
+                        when not defined(NOGMP):
+                            x = newFloating(x.bi-y.f)
                 elif y.kind==Rational: x = newRational(x.i-y.rat)
                 else: x = newComplex((float)(x.i)-y.z)
 
@@ -1277,7 +1297,12 @@ proc `*=`*(x: var Value, y: Value) =
                 if y.kind==Floating: x.f *= y.f
                 elif y.kind==Complex: x = newComplex(x.f * y.z)
                 elif y.kind==Rational: x = newRational(toRational(x.f) * y.rat)
-                else: x.f = x.f * y.i
+                else: 
+                    if y.iKind == NormalInteger:
+                        x.f = x.f * y.i
+                    else:
+                        when not defined(NOGMP):
+                            x = newFloating(x.f * y.bi)
             elif x.kind==Complex:
                 if y.kind==Integer:
                     if y.iKind==NormalInteger: x = newComplex(x.z * (float)(y.i))
@@ -1292,7 +1317,12 @@ proc `*=`*(x: var Value, y: Value) =
                 elif y.kind==Complex: discard
                 else: x.rat *= y.rat
             else:
-                if y.kind==Floating: x = newFloating(x.i*y.f)
+                if y.kind==Floating: 
+                    if x.iKind==NormalInteger:
+                        x = newFloating(x.i*y.f)
+                    else:
+                        when not defined(NOGMP):
+                            x = newFloating(x.bi*y.f)
                 elif y.kind==Rational: x = newRational(x.i * y.rat)
                 else: x = newComplex((float)(x.i)*y.z)
 
@@ -1426,7 +1456,12 @@ proc `/=`*(x: var Value, y: Value) =
                 if y.kind==Floating: x.f /= y.f
                 elif y.kind==Complex: x = newComplex(x.f / y.z)
                 elif y.kind==Rational: x = newInteger(toRational(x.f) div y.rat)
-                else: x.f = x.f / y.i
+                else:                     
+                    if y.iKind == NormalInteger:
+                        x.f = x.f / y.i
+                    else:
+                        when not defined(NOGMP):
+                            x = newFloating(x.f / y.bi)
             elif x.kind==Complex:
                 if y.kind==Integer:
                     if y.iKind==NormalInteger: x = newComplex(x.z / (float)(y.i))
@@ -1441,7 +1476,12 @@ proc `/=`*(x: var Value, y: Value) =
                 elif y.kind==Complex: discard
                 else: x = newInteger(x.rat div y.rat)
             else:
-                if y.kind==Floating: x = newFloating(x.i / y.f)
+                if y.kind==Floating: 
+                    if x.iKind==NormalInteger:
+                        x = newFloating(x.i/y.f)
+                    else:
+                        when not defined(NOGMP):
+                            x = newFloating(x.bi/y.f)
                 elif y.kind==Rational: x = newInteger(toRational(x.i) div y.rat)
                 else: x = newComplex((float)(x.i)/y.z)
 
@@ -1511,13 +1551,23 @@ proc `//=`*(x: var Value, y: Value) =
             if x.kind==Floating:
                 if y.kind==Floating: x.f /= y.f
                 elif y.kind==Rational: x = newRational(toRational(x.f)/y.rat)
-                else: x.f /= (float)(y.i)
+                else: 
+                    if y.iKind == NormalInteger:
+                        x.f = x.f / (float)(y.i)
+                    else:
+                        when not defined(NOGMP):
+                            x = newFloating(x.f / y.bi)
             elif x.kind==Rational:
                 if y.kind==Floating: x.rat /= toRational(y.f)
                 elif y.kind==Rational: x.rat /= y.rat
                 else: x.rat /= y.i
             else:
-                if y.kind==Floating: x = newFloating((float)(x.i)/y.f)
+                if y.kind==Floating:
+                    if x.iKind==NormalInteger:
+                        x = newFloating((float)(x.i)/y.f)
+                    else:
+                        when not defined(NOGMP):
+                            x = newFloating(x.bi/y.f)
                 else: x = newRational(x.i / y.rat)
                 
 proc `%`*(x: Value, y: Value): Value =
@@ -1741,7 +1791,12 @@ proc `^=`*(x: var Value, y: Value) =
             if x.kind==Floating:
                 if y.kind==Floating: x = newFloating(pow(x.f,y.f))
                 elif y.kind==Complex: discard
-                else: x = newFloating(pow(x.f,(float)(y.i)))
+                else: 
+                    if x.iKind==NormalInteger:
+                        x = newFloating(pow(x.f,(float)(y.i)))
+                    else:
+                        when not defined(NOGMP):
+                            x = newFloating(pow(x.f,y.bi))
             elif x.kind==Complex:
                 if y.kind==Integer:
                     if y.iKind==NormalInteger: x = newComplex(pow(x.z,(float)(y.i)))
@@ -1749,7 +1804,12 @@ proc `^=`*(x: var Value, y: Value) =
                 elif y.kind==Floating: x = newComplex(pow(x.z,y.f))
                 else: x = newComplex(pow(x.z,y.z))
             else:
-                if y.kind==Floating: x = newFloating(pow((float)(x.i),y.f))
+                if y.kind==Floating:
+                    if x.iKind==NormalInteger:
+                        x = newFloating(pow((float)(x.i),y.f))
+                    else:
+                        when not defined(NOGMP):
+                            x = newFloating(pow(x.bi,y.f))
                 else: discard
 
 proc `&&`*(x: Value, y: Value): Value =
