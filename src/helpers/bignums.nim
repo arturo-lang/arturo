@@ -177,8 +177,8 @@ func toCDouble*(x: Float): cdouble =
     var floatVal: float
   
     floatVal = mpfr_get_d(x[], MPFR_RNDN)
-    if (floatVal == 0.0 and mpfr_cmp_d(x[],0.0) != 0) or floatVal == Inf:
-        return FloatOverflow
+    # if (floatVal == 0.0 and mpfr_cmp_d(x[],0.0) != 0) or floatVal == Inf:
+    #     return FloatOverflow
     
     return floatVal
 
