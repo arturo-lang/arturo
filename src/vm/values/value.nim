@@ -187,14 +187,6 @@ type
         NormalInteger
         BigInteger
 
-    # FloatingKind* = enum
-    #     NormalFloating
-    #     BigFloating
-
-    RationalKind* = enum
-        NormalRational
-        BigRational
-
     FunctionKind* = enum
         UserFunction
         BuiltinFunction
@@ -223,12 +215,6 @@ type
         True = 1,
         Maybe = 2
 
-    # FloatingValue* = ref object of RootObj
-    # NormalFloatingV* = ref object of FloatingValue
-    #     fv*: float
-    # BigFloatingV* = ref object of FloatingValue
-    #     fv*: Float
-
     Value* {.acyclic.} = ref object 
         info*: string
         custom*: Value
@@ -248,23 +234,8 @@ type
                         else:
                             discard
             of Floating: f*: float
-                # case fKind*: FloatingKind:
-
-                #     of NormalFloating:   f*  : float
-                #     of BigFloating:     
-                #         when not defined(WEB) and not defined(NOGMP):
-                #             bf* : Float
-                #         else:
-                #             discard
             of Complex:     z*  : Complex64
-            of Rational:    
-                case rKind*: RationalKind:
-                    of NormalRational:   rat*  : Rational[int]
-                    of BigRational:
-                        when not defined(WEB) and not defined(NOGMP):
-                            brat* : Rat
-                        else:
-                            discard
+            of Rational:    rat*  : Rational[int]
             of Version: 
                 major*   : int
                 minor*   : int
@@ -472,10 +443,6 @@ func newBigInteger*(i: int): Value {.inline.} =
     elif not defined(NOGMP):
         result = Value(kind: Integer, iKind: BigInteger, bi: newInt(i))
 
-# when not defined(NOGMP):
-#     proc newFloating*(bf: Float): Value {.inline.} =
-#         result = Value(kind: Floating, fKind: BigFloating, bf: bf)
-
 func newFloating*(f: float): Value {.inline.} =
     Value(kind: Floating, f: f)
 
@@ -483,26 +450,7 @@ func newFloating*(f: int): Value {.inline.} =
     Value(kind: Floating, f: (float)(f))
 
 proc newFloating*(f: string): Value {.inline.} =
-    # when not defined(NOGMP):
-    #     let bf = newFloat(f)
-    #     let cf = toCDouble(bf)
-    #     if fitsDouble(bf):
-    #         return newFloating(cf)
-    #     else:
-    #         return newFloating(bf)
-    # else:
     return newFloating(parseFloat(f))
-
-# func newBigFloating*(f: float): Value {.inline} =
-#     when not defined(NOGMP):
-#         result = Value(kind: Floating, fKind: BigFloating, bf: newFloat(f))
-
-# func getFloating*(v: Value): FloatingValue =
-#     if v.fKind == NormalFloating:
-#         return NormalFloatingV(fv: v.f)
-#     else:
-#         when not defined(WEB) and not defined(NOGMP):
-#             return BigFloatingV(fv: v.bf)
 
 func newComplex*(com: Complex64): Value {.inline.} =
     Value(kind: Complex, z: com)
@@ -523,16 +471,16 @@ func newComplex*(fre: Value, fim: Value): Value {.inline.} =
     newComplex(r,i)
 
 func newRational*(rat: Rational[int]): Value {.inline.} =
-    Value(kind: Rational, rat: rat, rKind: NormalRational)
+    Value(kind: Rational, rat: rat)
 
 func newRational*(num: int, den: int): Value {.inline.} =
-    Value(kind: Rational, rat: initRational(num, den), rKind: NormalRational)
+    Value(kind: Rational, rat: initRational(num, den))
 
 func newRational*(n: int): Value {.inline.} =
-    Value(kind: Rational, rat: toRational(n), rKind: NormalRational)
+    Value(kind: Rational, rat: toRational(n))
 
 func newRational*(n: float): Value {.inline.} =
-    Value(kind: Rational, rat: toRational(n), rKind: NormalRational)
+    Value(kind: Rational, rat: toRational(n))
 
 func newRational*(num: Value, den: Value): Value {.inline.} =
     newRational(num.i, den.i)
