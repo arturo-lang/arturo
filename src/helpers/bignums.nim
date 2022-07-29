@@ -74,20 +74,20 @@ func newInt*(x: culong): Int =
 
 func newInt*(x: int = 0): Int =
     new(result, finalizeInt)
-    when isLLP64():
-        if x.fitsLLP64Long:
-            mpz_init_set_si(result[], x.clong)
-        elif x.fitsLLP64ULong:
-            mpz_init_set_ui(result[], x.culong)
-        else:
-            mpz_init(result[])
-            if x < 0: result[].mp_size = -1 else: result[].mp_size = 1
-            if x < 0 and x > low(int):
-                result[].mp_d[] = (-x).mp_limb_t
-            else:
-                result[].mp_d[] = x.mp_limb_t
-    else:
-        mpz_init_set_si(result[], x.clong)
+    # when isLLP64():
+    #     if x.fitsLLP64Long:
+    #         mpz_init_set_si(result[], x.clong)
+    #     elif x.fitsLLP64ULong:
+    #         mpz_init_set_ui(result[], x.culong)
+    #     else:
+    #         mpz_init(result[])
+    #         if x < 0: result[].mp_size = -1 else: result[].mp_size = 1
+    #         if x < 0 and x > low(int):
+    #             result[].mp_d[] = (-x).mp_limb_t
+    #         else:
+    #             result[].mp_d[] = x.mp_limb_t
+    # else:
+    mpz_init_set_si(result[], x.clong)
 
 func newInt*(x: Float): Int =
     new(result,finalizeInt)
@@ -141,19 +141,19 @@ func set*(z: Int, x: culong): Int =
 
 func set*(z: Int, x: int): Int =
     result = z
-    when isLLP64():
-        if x.fitsLLP64Long:
-            mpz_set_si(result[], x.clong)
-        elif x.fitsLLP64ULong:
-            mpz_set_ui(result[], x.culong)
-        else:
-            if x < 0: result[].mp_size = -1 else: result[].mp_size = 1
-            if x < 0 and x > low(int):
-                result[].mp_d[] = (-x).mp_limb_t
-            else:
-                result[].mp_d[] = x.mp_limb_t
-    else:
-        mpz_set_si(result[], x.clong)
+    # when isLLP64():
+    #     if x.fitsLLP64Long:
+    #         mpz_set_si(result[], x.clong)
+    #     elif x.fitsLLP64ULong:
+    #         mpz_set_ui(result[], x.culong)
+    #     else:
+    #         if x < 0: result[].mp_size = -1 else: result[].mp_size = 1
+    #         if x < 0 and x > low(int):
+    #             result[].mp_d[] = (-x).mp_limb_t
+    #         else:
+    #             result[].mp_d[] = x.mp_limb_t
+    # else:
+    mpz_set_si(result[], x.clong)
 
 func set*(z: Int, s: string, base: cint = 10): Int =
     validBase(base)
@@ -194,40 +194,40 @@ func cmp*(x: Int, y: culong): cint =
         result = 1
 
 func cmp*(x: Int, y: int): cint =
-    when isLLP64():
-        if y.fitsLLP64Long:
-            result = mpz_cmp_si(x[], y.clong)
-        elif y.fitsLLP64ULong:
-            return x.cmp(y.culong)
-        else:
-            var size: cint
-            if y < 0: size = -1 else: size = 1
-            if x[].mp_size != size:
-                if x[].mp_size != 0:
-                    result = x[].mp_size
-                else:
-                    if size == -1: result = 1 else: result = -1
-            else:
-                var op1, op2: mp_limb_t
-                if size == -1 and y > low(int):
-                    op1 = (-y).mp_limb_t
-                    op2 = x[].mp_d[]
-                else:
-                    if y == low(int):
-                        op1 = y.mp_limb_t
-                        op2 = x[].mp_d[]
-                    else:
-                        op1 = x[].mp_d[]
-                        op2 = y.mp_limb_t
+    # when isLLP64():
+    #     if y.fitsLLP64Long:
+    #         result = mpz_cmp_si(x[], y.clong)
+    #     elif y.fitsLLP64ULong:
+    #         return x.cmp(y.culong)
+    #     else:
+    #         var size: cint
+    #         if y < 0: size = -1 else: size = 1
+    #         if x[].mp_size != size:
+    #             if x[].mp_size != 0:
+    #                 result = x[].mp_size
+    #             else:
+    #                 if size == -1: result = 1 else: result = -1
+    #         else:
+    #             var op1, op2: mp_limb_t
+    #             if size == -1 and y > low(int):
+    #                 op1 = (-y).mp_limb_t
+    #                 op2 = x[].mp_d[]
+    #             else:
+    #                 if y == low(int):
+    #                     op1 = y.mp_limb_t
+    #                     op2 = x[].mp_d[]
+    #                 else:
+    #                     op1 = x[].mp_d[]
+    #                     op2 = y.mp_limb_t
 
-                if op1 == op2:
-                    result = 0
-                elif op1 > op2:
-                    result = 1
-                else:
-                    result = -1
-    else:
-        result = mpz_cmp_si(x[], y.clong)
+    #             if op1 == op2:
+    #                 result = 0
+    #             elif op1 > op2:
+    #                 result = 1
+    #             else:
+    #                 result = -1
+    # else:
+    result = mpz_cmp_si(x[], y.clong)
 
     if result < 0:
         result = -1
@@ -256,40 +256,40 @@ func cmp*(x: Float, y: cdouble): cint =
         result = 1
 
 func cmp*(x: Float, y: int): cint =
-    when isLLP64():
-        if y.fitsLLP64Long:
-            result = mpfr_cmp_si(x[], y.clong)
-        elif y.fitsLLP64ULong:
-            return x.cmp(y.culong)
-        else:
-            var size: cint
-            if y < 0: size = -1 else: size = 1
-            if x[].mp_size != size:
-                if x[].mp_size != 0:
-                    result = x[].mp_size
-                else:
-                    if size == -1: result = 1 else: result = -1
-            else:
-                var op1, op2: mp_limb_t
-                if size == -1 and y > low(int):
-                    op1 = (-y).mp_limb_t
-                    op2 = x[].mp_d[]
-                else:
-                    if y == low(int):
-                        op1 = y.mp_limb_t
-                        op2 = x[].mp_d[]
-                    else:
-                        op1 = x[].mp_d[]
-                        op2 = y.mp_limb_t
+    # when isLLP64():
+    #     if y.fitsLLP64Long:
+    #         result = mpfr_cmp_si(x[], y.clong)
+    #     elif y.fitsLLP64ULong:
+    #         return x.cmp(y.culong)
+    #     else:
+    #         var size: cint
+    #         if y < 0: size = -1 else: size = 1
+    #         if x[].mp_size != size:
+    #             if x[].mp_size != 0:
+    #                 result = x[].mp_size
+    #             else:
+    #                 if size == -1: result = 1 else: result = -1
+    #         else:
+    #             var op1, op2: mp_limb_t
+    #             if size == -1 and y > low(int):
+    #                 op1 = (-y).mp_limb_t
+    #                 op2 = x[].mp_d[]
+    #             else:
+    #                 if y == low(int):
+    #                     op1 = y.mp_limb_t
+    #                     op2 = x[].mp_d[]
+    #                 else:
+    #                     op1 = x[].mp_d[]
+    #                     op2 = y.mp_limb_t
 
-                if op1 == op2:
-                    result = 0
-                elif op1 > op2:
-                    result = 1
-                else:
-                    result = -1
-    else:
-        result = mpfr_cmp_si(x[], y.clong)
+    #             if op1 == op2:
+    #                 result = 0
+    #             elif op1 > op2:
+    #                 result = 1
+    #             else:
+    #                 result = -1
+    # else:
+    result = mpfr_cmp_si(x[], y.clong)
 
     if result < 0:
         result = -1
