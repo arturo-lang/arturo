@@ -16,7 +16,7 @@
 # Compilation & Linking
 #=======================================
 
-{.passL: "-lgmp".}
+{.passL: "-lmpfr -lgmp".}
 
 {.push header: "<gmp.h>", cdecl.}
 
