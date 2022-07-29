@@ -360,6 +360,14 @@ func `+`*(x: Int, y: int | culong | Int): Int =
 func `+`*(x: int | culong, y: Int): Int =
     newInt().add(y, x)
 
+func `+`*(x: float, y: Int): float =
+    var res = newFloat()
+    mpfr_add_z(res[], newFloat(x)[], y[], MPFR_RNDN)
+    result = toCDouble(res)
+
+func `+`*(x:Int, y: float): float =
+    y + x
+
 func `+=`*(z: Int, x: int | culong | Int) =
     z.inc(x)
 
@@ -395,6 +403,16 @@ func `-`*(x: Int, y: int | culong | Int): Int =
 
 func `-`*(x: int | culong, y: Int): Int =
     newInt().sub(x, y)
+
+func `-`*(x: float, y: Int): float =
+    var res = newFloat()
+    mpfr_sub_z(res[], newFloat(x)[], y[], MPFR_RNDN)
+    result = toCDouble(res)
+
+func `-`*(x:Int, y: float): float =
+    var res = newFloat()
+    mpfr_sub(res[], newFloat(x)[], newFloat(y)[], MPFR_RNDN)
+    result = toCDouble(res)
 
 func `-=`*(z: Int, x: int | culong | Int) =
     z.dec(x)
