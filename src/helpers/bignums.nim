@@ -40,23 +40,19 @@ const
 #=======================================
 
 func validBase(base: cint) =
-    # Validates the given base.
     if base < -36 or (base > -2 and base < 2) or base > 62:
         raise newException(ValueError, "Invalid base")
 
 func isLLP64: bool {.compileTime.} =
-    # LLP64 programming model
     sizeof(clong) != sizeof(int)
 
 when defined(windows):
     const LLP64_ULONG_MAX = 0xFFFFFFFF
 
     proc fitsLLP64Long(x: int): bool =
-        # Returns whether `x` fits in a LLP64 signed long int.
         return x >= low(clong) and x <= high(clong)
 
     proc fitsLLP64ULong(x: int): bool =
-        # Returns whether `x` fits in a LLP64 unsigned long int.
         return x >= 0 and x <= LLP64_ULONG_MAX
 
 proc fitsDouble*(x: Float): bool =
@@ -177,8 +173,6 @@ func toCDouble*(x: Float): cdouble =
     var floatVal: float
   
     floatVal = mpfr_get_d(x[], MPFR_RNDN)
-    # if (floatVal == 0.0 and mpfr_cmp_d(x[],0.0) != 0) or floatVal == Inf:
-    #     return FloatOverflow
     
     return floatVal
 
@@ -459,8 +453,6 @@ func `*`*(x:Int, y: float): float =
     mpfr_mul_d(res[], newFloat(x)[], y, MPFR_RNDN)
     result = toCDouble(res)
 
-    # toCDouble(newFloat().mul(newFloat(x), y))
-
 func `*=`*(z: Int, x: int | culong | Int) =
     discard z.mul(z, x)
 
@@ -566,16 +558,6 @@ func `mod`*(x: Int, y: int | culong | Int): Int =
 
 func `mod`*(x: int | culong, y: Int): Int =
     newInt().`mod`(newInt(x), y)
-
-# func `mod`*(x: float, y: Int): float =
-#     var res = newFloat()
-#     mpfr_mod_z(res[], newFloat(x)[], y[], MPFR_RNDN)
-#     result = toCDouble(res)
-
-# func `mod`*(x:Int, y: float): float =
-#     var res = newFloat()
-#     mpfr_mod(res[], newFloat(x)[], newFloat(y)[], MPFR_RNDN)
-#     result = toCDouble(res)
 
 func pow*(z, x: Int, y: culong): Int =
     result = z
