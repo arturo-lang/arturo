@@ -117,19 +117,7 @@ func newFloat*(x: culong): Float =
 func newFloat*(x: int = 0): Float =
     new(result, finalizeFloat)
     mpfr_init(result[])
-    when isLLP64():
-        if x.fitsLLP64Long:
-            mpfr_set_si(result[], x.clong, MPFR_RNDN)
-        elif x.fitsLLP64ULong:
-            mpfr_set_ui(result[], x.culong, MPFR_RNDN)
-        else:
-            if x < 0: result[].mp_size = -1 else: result[].mp_size = 1
-            if x < 0 and x > low(int):
-                result[].mp_d[] = (-x).mp_limb_t
-            else:
-                result[].mp_d[] = x.mp_limb_t
-    else:
-        mpfr_set_si(result[], x.clong, MPFR_RNDN)
+    mpfr_set_si(result[], x.clong, MPFR_RNDN)
 
 func newFloat*(x: Int): Float =
     new(result,finalizeFloat)
