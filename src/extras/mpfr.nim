@@ -19,8 +19,6 @@ import extras/gmp
 # Compilation & Linking
 #=======================================
 
-{.passL: "-lmpfr".}
-
 {.push header: "<mpfr.h>", cdecl.}
 
 #=======================================
