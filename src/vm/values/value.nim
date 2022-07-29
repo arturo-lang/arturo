@@ -1559,6 +1559,9 @@ proc `%`*(x: Value, y: Value): Value =
                 else: 
                     if y.iKind==NormalInteger:
                         return newFloating(x.f mod (float)(y.i))
+                    else:
+                        when not defined(NOGMP):
+                            return newFloating(x.f mod y.bi)
             elif x.kind==Rational:
                 if y.kind==Floating: return newRational(x.rat mod toRational(y.f))
                 elif y.kind==Rational: return newRational(x.rat mod y.rat)
@@ -1569,6 +1572,9 @@ proc `%`*(x: Value, y: Value): Value =
                 else:
                     if x.iKind==NormalInteger:
                         return newFloating((float)(x.i) mod y.f)
+                    else:
+                        when not defined(NOGMP):
+                            return newFloating(x.bi mod y.f)
 
 proc `%=`*(x: var Value, y: Value) =
     if not (x.kind in [Integer,Floating,Rational]) or not (y.kind in [Integer,Floating,Rational]):

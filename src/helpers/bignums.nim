@@ -563,6 +563,16 @@ func `mod`*(x: Int, y: int | culong | Int): Int =
 func `mod`*(x: int | culong, y: Int): Int =
     newInt().`mod`(newInt(x), y)
 
+func `mod`*(x: float, y: Int): float =
+    var res = newFloat()
+    mpfr_mod_z(res[], newFloat(x)[], y[], MPFR_RNDN)
+    result = toCDouble(res)
+
+func `mod`*(x:Int, y: float): float =
+    var res = newFloat()
+    mpfr_mod(res[], newFloat(x)[], newFloat(y)[], MPFR_RNDN)
+    result = toCDouble(res)
+
 func pow*(z, x: Int, y: culong): Int =
     result = z
     mpz_pow_ui(z[], x[], y)

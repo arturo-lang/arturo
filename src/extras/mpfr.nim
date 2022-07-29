@@ -146,6 +146,8 @@ func mpfr_mul*(a: var mpfr, b: mpfr, c: mpfr, d: mpfr_rnd_t) {.importc.}
 func mpfr_mul_z*(a: var mpfr, b: mpfr, c: mpz_t, d: mpfr_rnd_t) {.importc.}
 func mpfr_div*(a: var mpfr, b: mpfr, c: mpfr, d: mpfr_rnd_t) {.importc.}
 func mpfr_div_z*(a: var mpfr, b: mpfr, c: mpz_t, d: mpfr_rnd_t) {.importc.}
+func mpfr_mod*(a: var mpfr, b: mpfr, c: mpfr, d: mpfr_rnd_t) {.importc.}
+func mpfr_mod_z*(a: var mpfr, b: mpfr, c: mpz_t, d: mpfr_rnd_t) {.importc.}
 func mpfr_div_d*(a: var mpfr, b: mpfr, c: cdouble, d: mpfr_rnd_t) {.importc.}
 
 # func gmp_asprintf*(a2: cstringArray; a3: cstring): cint {.varargs, importc.}
