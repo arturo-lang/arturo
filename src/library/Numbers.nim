@@ -745,6 +745,43 @@ proc defineSymbols*() =
         description = "the IEEE floating point value of positive infinity":
             newFloating(Inf)
 
+    builtin "lcm",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "calculate least common multiplier for given collection of integers",
+        args        = {
+            "numbers"   : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Integer},
+        # TODO(Numbers\lcm) add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            ##########################################################
+            let blk = cleanBlock(x.a)
+            var current = blk[0]
+
+            var i = 1
+            # TODO(Numbers\gcd) not working for Web builds
+            # labels: web,enhancement
+            while i<blk.len:
+                if current.iKind==NormalInteger:
+                    if blk[i].iKind==BigInteger:
+                        when not defined(NOGMP):
+                            current = newInteger(gcd(current.i, blk[i].bi))
+                    else:
+                        current = newInteger(gcd(current.i, blk[i].i))
+                else:
+                    when not defined(NOGMP):
+                        if blk[i].iKind==BigInteger:
+                            current = newInteger(gcd(current.bi, blk[i].bi))
+                        else:
+                            current = newInteger(gcd(current.bi, blk[i].i))
+                inc(i)
+
+            push(current)
+
     builtin "ln",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
