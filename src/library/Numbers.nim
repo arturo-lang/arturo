@@ -763,21 +763,21 @@ proc defineSymbols*() =
             var current = blk[0]
 
             var i = 1
-            # TODO(Numbers\gcd) not working for Web builds
+            # TODO(Numbers\lcm) not working for Web builds
             # labels: web,enhancement
             while i<blk.len:
                 if current.iKind==NormalInteger:
                     if blk[i].iKind==BigInteger:
                         when not defined(NOGMP):
-                            current = newInteger(gcd(current.i, blk[i].bi))
+                            current = newInteger(lcm(current.i, blk[i].bi))
                     else:
-                        current = newInteger(gcd(current.i, blk[i].i))
+                        current = newInteger(lcm(current.i, blk[i].i))
                 else:
                     when not defined(NOGMP):
                         if blk[i].iKind==BigInteger:
-                            current = newInteger(gcd(current.bi, blk[i].bi))
+                            current = newInteger(lcm(current.bi, blk[i].bi))
                         else:
-                            current = newInteger(gcd(current.bi, blk[i].i))
+                            current = newInteger(lcm(current.bi, blk[i].i))
                 inc(i)
 
             push(current)
