@@ -52,6 +52,7 @@ v0.9.81
 
 - Fixed multi-line string handling in REPL
 - Fixed thick-arrow-right (`=>`) syntac sugar handling in label + function assignments
+- Fixed handling of arithmetic operations between `:floating` values and *big* `:integer` values
 - Functions in dictionaries are now directly callable (e.g. `dict\f 10`)
 
 v0.9.7.2
