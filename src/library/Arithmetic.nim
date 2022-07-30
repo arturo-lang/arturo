@@ -89,7 +89,7 @@ proc defineSymbols*() =
             else                : push(x/y)
 
     builtin "divmod",
-        alias       = slash, 
+        alias       = slashpercent, 
         rule        = InfixPrecedence,
         description = "perform integer division between given values and return tuple with quotient and remainder",
         args        = {
