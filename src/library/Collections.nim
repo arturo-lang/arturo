@@ -538,7 +538,9 @@ proc defineSymbols*() =
             "value"         : {Any},
             "collection"    : {String,Block,Dictionary}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "at"    : ({Integer},"check at given location within collection")
+        },
         returns     = {String,Block,Dictionary,Nothing},
         example     = """
             arr: [1 2 3 4]
@@ -558,23 +560,50 @@ proc defineSymbols*() =
             ..........
             in? "x" "hello"       ; => false
             in? `h` "hello"       ; => true
+            ..........
+            in?.at:1 "el" "hello" ; => true
+            in?.at:4 `o` "hello"  ; => true
+            ..........
+            print in?.at:2 "two" ["one" "two" "three"] 
+            ; false
+
+            print in?.at:1 "two" ["one" "two" "three"] 
+            ; true
         """:
             ##########################################################
-            case y.kind:
-                of String:
-                    if x.kind==Regex:
-                        push(newLogical(y.s.contains(x.rx)))
-                    elif x.kind==Char:
-                        push(newLogical($(x.c) in y.s))
+            if (let aAt = popAttr("at"); aAt != VNULL):
+                let at = aAt.i
+                case y.kind:
+                    of String:
+                        if x.kind==Regex:
+                            push(newLogical(y.s.contains(x.rx, at)))
+                        elif x.kind==Char:
+                            push(newLogical(toRunes(y.s)[at] == x.c))
+                        else:
+                            push(newLogical(y.s.continuesWith(x.s, at)))
+                    of Block:
+                        push(newLogical(cleanBlock(y.a)[at] == x))
+                    of Dictionary: 
+                        let values = toSeq(y.d.values)
+                        push(newLogical(values[at] == x))
                     else:
-                        push(newLogical(x.s in y.s))
-                of Block:
-                    push(newLogical(x in y.a))
-                of Dictionary: 
-                    let values = toSeq(y.d.values)
-                    push(newLogical(x in values))
-                else:
-                    discard
+                        discard
+            else:
+                case y.kind:
+                    of String:
+                        if x.kind==Regex:
+                            push(newLogical(y.s.contains(x.rx)))
+                        elif x.kind==Char:
+                            push(newLogical($(x.c) in y.s))
+                        else:
+                            push(newLogical(x.s in y.s))
+                    of Block:
+                        push(newLogical(x in y.a))
+                    of Dictionary: 
+                        let values = toSeq(y.d.values)
+                        push(newLogical(x in values))
+                    else:
+                        discard
 
     builtin "index",
         alias       = unaliased, 
