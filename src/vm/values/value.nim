@@ -2222,6 +2222,7 @@ func `$`(s: SymbolKind): string =
         of lessthan                 : result = "<"
         of greaterthan              : result = ">"
         of slash                    : result = "/"
+        of slashpercent             : result = "/%"
         of doubleslash              : result = "//"
         of backslash                : result = "\\"
         of doublebackslash          : result = "\\\\"
