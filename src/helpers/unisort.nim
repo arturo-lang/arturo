@@ -10,7 +10,9 @@
 # Libraries
 #=======================================
 
-import algorithm, tables, unicode
+import algorithm, sequtils, sets, tables, unicode
+
+import helpers/charsets as CharsetsHelper
 
 import vm/values/value
 
@@ -21,33 +23,24 @@ import vm/values/value
 const
     onlySafeCode = true
 
-    charsets = {
-        "en": toRunes("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"),
-        "es": toRunes("0123456789ABCDEFGHIJKLMNÑOPQRSTUVWXYZabcdefghijklmnñopqrstuvwxyz")
-    }.toOrderedTable()
+    transformations = {
+        "Á".runeAt(0): static "A".runeAt(0),
+        "É".runeAt(0): static "E".runeAt(0),
+        "Í".runeAt(0): static "I".runeAt(0),
+        "Ó".runeAt(0): static "O".runeAt(0),
+        "Ú".runeAt(0): static "U".runeAt(0),
+        "á".runeAt(0): static "a".runeAt(0),
+        "é".runeAt(0): static "e".runeAt(0),
+        "í".runeAt(0): static "i".runeAt(0),
+        "ó".runeAt(0): static "o".runeAt(0),
+        "ú".runeAt(0): static "u".runeAt(0)
+    }.toTable()
 
-    transform = {
-        "en": func (r: var Rune) =
-            discard,
-        "es": func (r: var Rune) =
-            case $(r):
-                of "Á": r = "A".runeAt(0)
-                of "É": r = "E".runeAt(0)
-                of "Í": r = "I".runeAt(0)
-                of "Ó": r = "O".runeAt(0)
-                of "Ú": r = "U".runeAt(0)
-                of "á": r = "a".runeAt(0)
-                of "é": r = "e".runeAt(0)
-                of "í": r = "i".runeAt(0)
-                of "ó": r = "o".runeAt(0)
-                of "ú": r = "u".runeAt(0)
-                else: discard
-    }.toOrderedTable()
+func unicmp(x,y: Value, charset: seq[Rune], transformable: HashSet[Rune], sensitive:bool = false):int =
+    func transformRune(ru: var Rune) =
+        if transformable.contains(ru):
+            ru = transformations[ru]
 
-func unicmp(x,y: Value, lang: string, sensitive:bool = false):int =
-    let charset = charsets[lang]
-
-    # echo "sorting: " & lang & " => sensitive: " & $(sensitive)
     var i = 0
     var j = 0
     var xr, yr: Rune
@@ -59,12 +52,8 @@ func unicmp(x,y: Value, lang: string, sensitive:bool = false):int =
             xr = toLower(xr)
             yr = toLower(yr)
 
-        # echo "comparing => xr: " & $(xr) & ", yr: " & $(yr)
-
-        transform[lang](xr)
-        transform[lang](yr)
-
-        # echo "transformed => xr: " & $(xr) & ", yr: " & $(yr)
+        transformRune(xr)
+        transformRune(yr)
 
         result = charset.find(xr) - charset.find(yr)
 
@@ -89,11 +78,14 @@ template `<-` (a, b) =
 #=======================================
 
 func unimerge(a, b: var openArray[Value], lo, m, hi: int, lang: string, 
-              cmp: proc (x, y: Value, lang: string, sensitive: bool): int {.closure.}, 
+              cmp: proc (x, y: Value, charset: seq[Rune], transformable: HashSet[Rune], sensitive: bool): int {.closure.}, 
               sensitive:bool = false,
               order: SortOrder) =
 
-    if cmp(a[m], a[m+1], lang, sensitive) * order <= 0: return
+    let charset = getCharsetForSorting(lang)
+    let transformable = toHashSet(charset) * toHashSet(toSeq(keys(transformations)))
+
+    if cmp(a[m], a[m+1], charset, transformable, sensitive) * order <= 0: return
     var j = lo
 
     assert j <= m
@@ -111,7 +103,7 @@ func unimerge(a, b: var openArray[Value], lo, m, hi: int, lang: string,
     var k = lo
 
     while k < j and j <= hi:
-        if cmp(b[i], a[j], lang, sensitive) * order <= 0:
+        if cmp(b[i], a[j], charset, transformable, sensitive) * order <= 0:
             a[k] <- b[i]
             inc(i)
         else:
@@ -131,7 +123,7 @@ func unimerge(a, b: var openArray[Value], lo, m, hi: int, lang: string,
 #  The `unisort` implementation looks like hack - or incomplete. Also, add unit tests
 #  labels: library,bug,unit-test
 func unisort*(a: var openArray[Value], lang: string, 
-              cmp: proc (x, y: Value, lang: string, sensitive: bool): int {.closure.},
+              cmp: proc (x, y: Value, charset: seq[Rune], transformable: HashSet[Rune], sensitive: bool): int {.closure.},
               sensitive:bool = false,
               order = SortOrder.Ascending) =
     var n = a.len
@@ -148,7 +140,7 @@ func unisort*(a: var openArray[Value], lang: string,
 func unisort*(a: var openArray[Value], lang: string, sensitive:bool = false, order = SortOrder.Ascending) = 
     unisort(a, lang, unicmp, sensitive, order)
 
-func unisorted*(a: openArray[Value], lang: string, cmp: proc(x, y: Value, lang: string, insensitive: bool): int {.closure.},
+func unisorted*(a: openArray[Value], lang: string, cmp: proc(x, y: Value, charset: seq[Rune], transformable: HashSet[Rune], insensitive: bool): int {.closure.},
                 sensitive:bool = false,
                 order = SortOrder.Ascending): seq[Value] =
     result = newSeq[Value](a.len)
