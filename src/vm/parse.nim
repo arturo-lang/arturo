@@ -586,6 +586,9 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
             if p.buf[pos+1]=='/': 
                 inc(pos)
                 p.symbol = doubleslash
+            elif p.buf[pos+1]=='%':
+                inc(pos)
+                p.symbol = percentslash
             elif p.buf[pos+1]==Backslash:
                 inc(pos)
                 p.symbol = logicaland
