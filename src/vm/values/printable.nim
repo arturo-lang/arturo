@@ -19,7 +19,7 @@ when defined(WEB):
     import std/jsbigints
 
 when not defined(NOGMP):
-    import extras/bignum
+    import helpers/bignums as BignumsHelper
 
 import helpers/colors as ColorsHelper
 import helpers/quantities as QuantitiesHelper
@@ -137,9 +137,13 @@ proc `$`*(v: Value): string {.inline.} =
                 when defined(WEB) or not defined(NOGMP): 
                     return $(v.bi)
         of Floating     : 
+            #if v.fKind==NormalFloating: 
             if v.f==Inf: return "∞"
             elif v.f==NegInf: return "-∞"
             else: return $(v.f)
+            # else:
+            #     when not defined(WEB) and not defined(NOGMP): 
+            #         return "BIG:" & $(v.bf)
         of Complex      : 
             return $(v.z.re) & (if v.z.im >= 0: "+" else: "") & $(v.z.im) & "i"
         of Rational     :

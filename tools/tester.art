@@ -102,11 +102,11 @@ print color #green.bold "\n  Arturo"
 print color #white.bold "  Unit Tester\n"
 print color #gray ~"  Release: @|sys\release|\n"
 
-supertime: to :string .format: ".2f" fdiv benchmark.get [
+supertime: in's benchmark.get [
     runSet "Unit Tests" "../tests/unittests"
     runSet "Errors" "../tests/errors"
     runSet "Examples" "../examples/rosetta"
-] 1000
+]
 
 if supersuccess < supertotal-errorMargin [ 
     panic.code: 1 "Some unit-tests failed!"
@@ -123,7 +123,7 @@ rate: to :string .format:".1f" 100 * supersuccess//supertotal
 print color #cyan "====================================================================="
 if? supersuccess=supertotal -> print [color #cyan "|" "Success rate:" color #green append rate "%" color #cyan pad "|" 51 - size rate]
 else -> print [color #cyan "|" "Success rate:" append rate "%" color #cyan pad "|" 51 - size rate]
-print [color #cyan "|" "Total time:" append supertime "s" color #cyan pad "|" 53 - size supertime]
+print [color #cyan "|" "Total time:" supertime color #cyan pad "|" 54 - size to :string supertime]
 print color #cyan "====================================================================="
 
 exit

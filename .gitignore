@@ -8,6 +8,7 @@ test2
 test*.art
 test*.rb
 test*.nim
+test*.c
 testme*
 *testlib*
 *artlib*
