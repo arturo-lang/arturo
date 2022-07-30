@@ -645,8 +645,8 @@ func mpz_kronecker_ui*(a2: mpz_srcptr; a3: culong): cint {.importc.}
 func mpz_kronecker_ui*(a2: mpz_t; a3: culong): cint {.importc.}
 func mpz_lcm*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc.}
 func mpz_lcm*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc.}
-func mpz_lcm_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.importc.}
-func mpz_lcm_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.importc.}
+func mpz_lcm_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong): culong {.importc.}
+func mpz_lcm_ui*(a2: var mpz_t; a3: mpz_t; a4: culong): culong {.importc.}
 func mpz_limbs_finish*(a2: mpz_ptr; a3: mp_size_t) {.importc.}
 func mpz_limbs_finish*(a2: var mpz_t; a3: mp_size_t) {.importc.}
 func mpz_limbs_modify*(a2: mpz_ptr; a3: mp_size_t): mp_ptr {.importc.}
