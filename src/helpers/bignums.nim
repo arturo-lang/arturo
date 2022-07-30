@@ -789,6 +789,26 @@ func gcd*(x: Int, y: int | culong | Int): Int =
 
 func gcd*(x: int | culong, y: Int): Int =
     newInt().gcd(newInt(x), y)
+    
+func lcm*(z, x, y: Int): Int =
+    result = z
+    mpz_lcm(z[], x[], y[])
+
+func lcm*(z, x: Int, y: culong): Int =
+    result = z
+    discard mpz_lcm_ui(z[], x[], y)
+
+func lcm*(z, x: Int, y: int): Int =
+    when isLLP64():
+        if y.fitsLLP64ULong: z.lcm(x, y.culong) else: z.lcm(x, newInt(y))
+    else:
+        if y >= 0: z.lcm(x, y.culong) else: z.lcm(x, newInt(y))
+
+func lcm*(x: Int, y: int | culong | Int): Int =
+    newInt().lcm(x, y)
+
+func lcm*(x: int | culong, y: Int): Int =
+    newInt().lcm(newInt(x), y)
 
 func probablyPrime*(x: Int, n: cint): cint =
     mpz_probab_prime_p(x[], n)
