@@ -53,13 +53,13 @@ jobs:
         if: matrix.version == 'full'
         run: |
           sudo apt-get update
-          sudo apt-get install libwebkit2gtk-4.0-dev
+          sudo apt-get install libwebkit2gtk-4.0-dev libmpfr-dev
 
       - name: Install dependencies
         if: matrix.version == 'safe'
         run: |
           sudo apt-get update
-          sudo apt-get install libwebkit2gtk-4.0-dev
+          sudo apt-get install libwebkit2gtk-4.0-dev libmpfr-dev
           
       - name: Verify dependecies
         run: |
