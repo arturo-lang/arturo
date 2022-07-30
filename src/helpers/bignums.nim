@@ -554,6 +554,41 @@ func `mod`*(x: Int, y: int | culong | Int): Int =
 func `mod`*(x: int | culong, y: Int): Int =
     newInt().`mod`(newInt(x), y)
 
+func modInverse*(z, g, n: Int): bool =
+    mpz_invert(z[], g[], n[]) != 0
+
+func modInverse*(g: Int, n: Int): Int =
+    result = newInt()
+    discard modInverse(result, g, n)
+
+func modInverse*(g: Int, n: int | culong): Int =
+    modInverse(g, newInt(n))
+
+func modInverse*(g: int | culong, n: Int): Int =
+    modInverse(newInt(g), n)
+
+func divMod*(q, r, x, y: Int): tuple[q, r: Int] =
+    if y == 0: raise newException(DivByZeroDefect, "Division by zero")
+    result = (q: q, r: r)
+    mpz_tdiv_qr(q[], r[], x[], y[])
+
+func divMod*(q, r, x: Int, y: culong): tuple[q, r: Int] =
+    if y == 0: raise newException(DivByZeroDefect, "Division by zero")
+    result = (q: q, r: r)
+    discard mpz_tdiv_qr_ui(q[], r[], x[], y)
+
+func divMod*(q, r, x: Int, y: int): tuple[q, r: Int] =
+    when isLLP64():
+        if y.fitsLLP64ULong: divMod(q, r, x, y.culong) else: divMod(q, r, x, newInt(y))
+    else:
+        if y >= 0: divMod(q, r, x, y.culong) else: divMod(q, r, x, newInt(y))
+
+func divMod*(x: Int, y: int | culong | Int): tuple[q, r: Int] =
+    divMod(newInt(), newInt(), x, y)
+
+func divMod*(x: int | culong, y: Int): tuple[q, r: Int] =
+    divMod(newInt(), newInt(), newInt(x), y)
+
 func pow*(z, x: Int, y: culong): Int =
     result = z
     mpz_pow_ui(z[], x[], y)
@@ -932,69 +967,7 @@ func clear*(z: Rat) =
 #   let step = 1
 #   countupImpl: inc(res, step)
 
-# func modInverse*(z, g, n: Int): bool =
-#     ## Computes the inverse of `g` modulo `n` and put the result in `z`. If the
-#     ## inverse exists, the return value is `true` and `z` will satisfy
-#     ## 0 < `z` < abs(`n`). If an inverse doesn't exist the return value is `false`
-#     ## and `z` is undefined. The behaviour of this proc is undefined when `n` is
-#     ## zero.
-#     mpz_invert(z[], g[], n[]) != 0
 
-# func modInverse*(g: Int, n: Int): Int =
-#     ## Computes the inverse of `g` modulo `n`. If an inverse doesn't exist the
-#     ## return value is undefined. The behaviour of this proc is undefined when `n`
-#     ## is zero.
-#     result = newInt()
-#     discard modInverse(result, g, n)
-
-# func modInverse*(g: Int, n: int | culong): Int =
-#     ## Computes the inverse of `g` modulo `n`. If an inverse doesn't exist the
-#     ## return value is undefined. The behaviour of this proc is undefined when `n`
-#     ## is zero.
-#     modInverse(g, newInt(n))
-
-# func modInverse*(g: int | culong, n: Int): Int =
-#     ## Computes the inverse of `g` modulo `n`. If an inverse doesn't exist the
-#     ## return value is undefined. The behaviour of this proc is undefined when `n`
-#     ## is zero.
-#     modInverse(newInt(g), n)
-
-# func divMod*(q, r, x, y: Int): tuple[q, r: Int] =
-#     ## Sets `q` to the quotient and `r` to the remainder resulting from x/y for
-#     ## `y` != 0 and returns the tuple (`q`, `r`).
-#     ## `divMod` implements truncated division towards zero.
-#     if y == 0: raise newException(DivByZeroDefect, "Division by zero")
-#     result = (q: q, r: r)
-#     mpz_tdiv_qr(q[], r[], x[], y[])
-
-# func divMod*(q, r, x: Int, y: culong): tuple[q, r: Int] =
-#     ## Sets `q` to the quotient and `r` to the remainder resulting from x/y for
-#     ## `y` != 0 and returns the tuple (`q`, `r`).
-#     ## `divMod` implements truncated division towards zero.
-#     if y == 0: raise newException(DivByZeroDefect, "Division by zero")
-#     result = (q: q, r: r)
-#     discard mpz_tdiv_qr_ui(q[], r[], x[], y)
-
-# func divMod*(q, r, x: Int, y: int): tuple[q, r: Int] =
-#     ## Sets `q` to the quotient and `r` to the remainder resulting from x/y for
-#     ## `y` != 0 and returns the tuple (`q`, `r`).
-#     ## `divMod` implements truncated division towards zero.
-#     when isLLP64():
-#         if y.fitsLLP64ULong: divMod(q, r, x, y.culong) else: divMod(q, r, x, newInt(y))
-#     else:
-#         if y >= 0: divMod(q, r, x, y.culong) else: divMod(q, r, x, newInt(y))
-
-# func divMod*(x: Int, y: int | culong | Int): tuple[q, r: Int] =
-#     ## Returns a tuple consisting of the quotient and remainder resulting from x/y
-#     ## for `y` != 0.
-#     ## `divMod` implements truncated division towards zero.
-#     divMod(newInt(), newInt(), x, y)
-
-# func divMod*(x: int | culong, y: Int): tuple[q, r: Int] =
-#     ## Returns a tuple consisting of the quotient and remainder resulting from x/y
-#     ## for `y` != 0.
-#     ## `divMod` implements truncated division towards zero.
-#     divMod(newInt(), newInt(), newInt(x), y)
 
 # func fmod*(z, x, y: Int): Int =
 #     ## Sets `z` to the remainder x/y for `y` != 0 and returns `z`.
