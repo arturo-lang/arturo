@@ -796,7 +796,7 @@ func lcm*(z, x, y: Int): Int =
 
 func lcm*(z, x: Int, y: culong): Int =
     result = z
-    discard mpz_lcm_ui(z[], x[], y)
+    mpz_lcm_ui(z[], x[], y)
 
 func lcm*(z, x: Int, y: int): Int =
     when isLLP64():
