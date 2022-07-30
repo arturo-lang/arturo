@@ -19,7 +19,7 @@ v0.9.81
 - Collections: added new `combine`, `decouple` & `rotate` methods
 - Converters: added new `in` method
 - Iterators: added new `chunk` & `cluster` methods
-- Numbers: added new `factorial` method
+- Numbers: added new `factorial` & `lcm` methods
 - Strings: added new `alphabet` method
 
 **Enhancements, Changes & Fixes**
