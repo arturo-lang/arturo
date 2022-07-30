@@ -88,6 +88,24 @@ proc defineSymbols*() =
             if x.kind==Literal  : InPlace /= y
             else                : push(x/y)
 
+    builtin "divmod",
+        alias       = slash, 
+        rule        = InfixPrecedence,
+        description = "perform integer division between given values and return tuple with quotient and remainder",
+        args        = {
+            "valueA": {Integer,Floating,Complex,Rational,Quantity,Literal},
+            "valueB": {Integer,Floating,Complex,Rational,Quantity}
+        },
+        attrs       = NoAttrs,
+        returns     = {Integer,Floating,Complex,Rational,Quantity,Nothing},
+        # TODO(Arithmetic\divmod): add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            ##########################################################
+            if x.kind==Literal  : InPlace /%= y
+            else                : push(x/%y)
+
     builtin "fdiv",
         alias       = doubleslash, 
         rule        = InfixPrecedence,
