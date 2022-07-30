@@ -1291,31 +1291,6 @@ func clear*(z: Rat) =
 #     ## Returns the length of the absolute value of `x` in bits.
 #     digits(x, 2)
 
-# func lcm*(z, x, y: Int): Int =
-#     ## Sets `z` to the least common multiple of `x` and `y` and returns `z`.
-#     result = z
-#     mpz_lcm(z[], x[], y[])
-
-# func lcm*(z, x: Int, y: culong): Int =
-#     ## Sets `z` to the least common multiple of `x` and `y` and returns `z`.
-#     result = z
-#     mpz_lcm_ui(z[], x[], y)
-
-# func lcm*(z, x: Int, y: int): Int =
-#     ## Sets `z` to the least common multiple of `x` and `y` and returns `z`.
-#     when isLLP64():
-#         if y.fitsLLP64ULong: z.lcm(x, y.culong) else: z.lcm(x, newInt(y))
-#     else:
-#         if y >= 0: z.lcm(x, y.culong) else: z.lcm(x, newInt(y))
-
-# func lcm*(x: Int, y: int | culong | Int): Int =
-#     ## Returns the least common multiple of `x` and `y`.
-#     newInt().lcm(x, y)
-
-# func lcm*(x: int | culong, y: Int): Int =
-#     ## Returns the least common multiple of `x` and `y`.
-#     newInt().lcm(newInt(x), y)
-
 # func fitsCULong*(x: Int): bool =
 #     ## Returns whether `x` fits in a culong.
 #     mpz_fits_ulong_p(x[]) != 0
