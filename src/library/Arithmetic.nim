@@ -98,9 +98,14 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Integer,Floating,Complex,Rational,Quantity,Nothing},
-        # TODO(Arithmetic\divmod): add documentation example
-        #  labels: library, documentation, easy
         example     = """
+            print divmod 15 5       ; 3 0
+            print 14 /% 3           ; 4 2
+            ..........
+            [q,r]: 10 /% 3          ; q: 3, r: 1
+            ..........
+            a: 6
+            divmod 'a 4             ; a: [1, 2]
         """:
             ##########################################################
             if x.kind==Literal  : InPlace /%= y
