@@ -754,9 +754,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Integer},
-        # TODO(Numbers\lcm) add documentation example
-        #  labels: library, documentation, easy
         example     = """
+            print lcm [48 60 120]         ; 240
         """:
             ##########################################################
             let blk = cleanBlock(x.a)
