@@ -15,7 +15,7 @@ v0.9.81
 ### Library
 
 **New**
-
+- Arithmetic: added new `divmod` method
 - Collections: added new `combine`, `decouple` & `rotate` methods
 - Converters: added new `in` method
 - Iterators: added new `chunk` & `cluster` methods
