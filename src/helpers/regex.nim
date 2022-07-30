@@ -60,6 +60,13 @@ proc contains*(str: string, rx: RegexObj): bool =
     else:
         nre.contains(str, rx)
 
+proc contains*(str: string, rx: RegexObj, at: int): bool =
+    let robj = newRegexObj(".{" & $(at) & "}" & $(rx))
+    when defined(WEB):
+        cstring(str).contains(robj)
+    else:
+        nre.contains(str, robj)
+
 proc startsWith*(str: string, rx: RegexObj): bool =
     when defined(WEB):
         cstring(str).startsWith(rx)
