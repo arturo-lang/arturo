@@ -123,6 +123,7 @@ type
         greaterthan             # >
        
         slash                   # /
+        slashpercent            # %/
         doubleslash             # //
         backslash               # 
         doublebackslash         #
