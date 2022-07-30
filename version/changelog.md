@@ -27,10 +27,10 @@ v0.9.81
 - Arithmetic\mod: added support for floating number modulo operations
 - Collections\chop: fixed to also work with empty blocks
 - Collections\combine: renamed to `couple`
-- Collections\contains?: added `:char` support for string searches
+- Collections\contains?: added `.at:` option & `:char` support for string searches
 - Collections\drop: fixed to also work with empty blocks
 - Collections\first: fixed to also work with empty blocks
-- Collections\in?: added `:char` support for string searches
+- Collections\in?: added `.at:` option & `:char` support for string searches
 - Collections\last: fixed to also work with empty blocks
 - Collections\max: added `.index` option
 - Collections\min: added `.index` option
