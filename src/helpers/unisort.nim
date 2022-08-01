@@ -77,13 +77,12 @@ template `<-` (a, b) =
 # Methods
 #=======================================
 
-func unimerge(a, b: var openArray[Value], lo, m, hi: int, lang: string, 
+proc unimerge(a, b: var openArray[Value], lo, m, hi: int, lang: string, 
               cmp: proc (x, y: Value, charset: seq[Rune], transformable: HashSet[Rune], sensitive: bool): int {.closure.}, 
+              charset: seq[Rune], 
+              transformable: HashSet[Rune],
               sensitive:bool = false,
               order: SortOrder) =
-
-    let charset = getCharsetForSorting(lang)
-    let transformable = toHashSet(charset) * toHashSet(toSeq(keys(transformations)))
 
     if cmp(a[m], a[m+1], charset, transformable, sensitive) * order <= 0: return
     var j = lo
@@ -122,10 +121,13 @@ func unimerge(a, b: var openArray[Value], lo, m, hi: int, lang: string,
 # TODO(Helpers\unisort) Verify string sorting works properly
 #  The `unisort` implementation looks like hack - or incomplete. Also, add unit tests
 #  labels: library,bug,unit-test
-func unisort*(a: var openArray[Value], lang: string, 
+proc unisort*(a: var openArray[Value], lang: string, 
               cmp: proc (x, y: Value, charset: seq[Rune], transformable: HashSet[Rune], sensitive: bool): int {.closure.},
               sensitive:bool = false,
               order = SortOrder.Ascending) =
+    let charset = getCharsetForSorting(lang)
+    let transformable = toHashSet(charset) * toHashSet(toSeq(keys(transformations)))
+
     var n = a.len
     var b: seq[Value]
     newSeq(b, n div 2)
@@ -133,14 +135,14 @@ func unisort*(a: var openArray[Value], lang: string,
     while s < n:
         var m = n-1-s
         while m >= 0:
-            unimerge(a, b, max(m-s+1, 0), m, m+s, lang, cmp, sensitive, order)
+            unimerge(a, b, max(m-s+1, 0), m, m+s, lang, cmp, charset, transformable, sensitive, order)
             dec(m, s*2)
         s = s*2
 
-func unisort*(a: var openArray[Value], lang: string, sensitive:bool = false, order = SortOrder.Ascending) = 
+proc unisort*(a: var openArray[Value], lang: string, sensitive:bool = false, order = SortOrder.Ascending) = 
     unisort(a, lang, unicmp, sensitive, order)
 
-func unisorted*(a: openArray[Value], lang: string, cmp: proc(x, y: Value, charset: seq[Rune], transformable: HashSet[Rune], insensitive: bool): int {.closure.},
+proc unisorted*(a: openArray[Value], lang: string, cmp: proc(x, y: Value, charset: seq[Rune], transformable: HashSet[Rune], insensitive: bool): int {.closure.},
                 sensitive:bool = false,
                 order = SortOrder.Ascending): seq[Value] =
     result = newSeq[Value](a.len)
@@ -148,5 +150,6 @@ func unisorted*(a: openArray[Value], lang: string, cmp: proc(x, y: Value, charse
         result[i] = a[i]
     unisort(result, lang, cmp, sensitive, order)
 
-func unisorted*(a: openArray[Value], lang: string, sensitive:bool = false, order = SortOrder.Ascending): seq[Value] =
+proc unisorted*(a: openArray[Value], lang: string, sensitive:bool = false, order = SortOrder.Ascending): seq[Value] =
+    echo ":: unisorted :: with lang=" & lang & ", sensitive=" & $(sensitive) & ", order=" & $(order)
     unisorted(a, lang, unicmp, sensitive, order)
