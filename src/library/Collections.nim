@@ -1264,6 +1264,7 @@ proc defineSymbols*() =
             "as"        : ({Literal},"localized by ISO 639-1 language code"),
             "sensitive" : ({Logical},"case-sensitive sorting"),
             "descending": ({Logical},"sort in ascending order"),
+            "ascii"     : ({Logical},"sort by ASCII transliterations"),
             "values"    : ({Logical},"sort dictionary by values"),
             "by"        : ({String,Literal},"sort array of dictionaries by given key")
         },
@@ -1294,14 +1295,16 @@ proc defineSymbols*() =
                                 cmp(v1.d[aBy.s], v2.d[aBy.s]), order=sortOrdering)
                         push(newBlock(sorted))
                     else:
+                        var sortAscii = (popAttr("ascii") != VNULL)
+
                         if (let aAs = popAttr("as"); aAs != VNULL):
-                            push(newBlock(blk.unisorted(aAs.s, sensitive = popAttr("sensitive")!=VNULL, order = sortOrdering)))
+                            push(newBlock(blk.unisorted(aAs.s, sensitive = popAttr("sensitive")!=VNULL, order = sortOrdering, ascii = sortAscii)))
                         else:
                             if (popAttr("sensitive")!=VNULL):
-                                push(newBlock(blk.unisorted("en", sensitive=true, order = sortOrdering)))
+                                push(newBlock(blk.unisorted("en", sensitive=true, order = sortOrdering, ascii = sortAscii)))
                             else:
                                 if blk[0].kind==String:
-                                    push(newBlock(blk.unisorted("en", order = sortOrdering)))
+                                    push(newBlock(blk.unisorted("en", order = sortOrdering, ascii = sortAscii)))
                                 else:
                                     push(newBlock(blk.sorted(order = sortOrdering)))
 
