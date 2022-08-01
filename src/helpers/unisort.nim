@@ -59,7 +59,7 @@ func unicmp(x,y: Value, charset: seq[Rune], transformable: HashSet[Rune], sensit
         let yri = charset.find(yr)
 
         if xri == -1 or yri == -1:
-            result = cmp(xr, yr)
+            result = cmp((int)(xr), (int)(yr))
         else:
             result = xri - yri
 
@@ -132,7 +132,8 @@ proc unisort*(a: var openArray[Value], lang: string,
               sensitive:bool = false,
               order = SortOrder.Ascending) =
     let charset = getCharsetForSorting(lang)
-    let transformable = difference(toHashSet(toSeq(keys(transformations))),toHashSet(charset))
+    let fullCharset = getFullCharsetForSorting(lang)
+    let transformable = intersection(toHashSet(toSeq(keys(transformations))),toHashSet(fullCharset))
 
     echo "\tcharset=" & $(charset)
     echo "\ttransformable=" & $(transformable)
