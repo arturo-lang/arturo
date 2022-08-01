@@ -133,13 +133,11 @@ const
 # Methods
 #=======================================
 
-proc getCharset*(locale: string, withExtras = false, doUppercase = false): ValueArray =
-    var ret: seq[Rune] = @[]
-
+proc getCharsetRunes*(locale: string, withExtras = false, doUppercase = false): seq[Rune] =
     if doUppercase:
-        ret = toSeq(runes(charsets[locale])).map((x)=>toUpper(x))
+        result = toSeq(runes(charsets[locale])).map((x)=>toUpper(x))
     else:
-        ret = toSeq(runes(charsets[locale]))
+        result = toSeq(runes(charsets[locale]))
 
     if withExtras:
         var extra: seq[Rune] = @[]
@@ -148,6 +146,16 @@ proc getCharset*(locale: string, withExtras = false, doUppercase = false): Value
         else:
             extra = toSeq(runes(extras[locale]))
 
-        ret.add(extra)
-        
-    result = ret.map((x)=>newChar(x))
+        result.add(extra)
+
+proc getCharsetForSorting*(locale: string): seq[Rune] =
+    toRunes("0123456789") & 
+    getCharsetRunes(locale, false, true) & 
+    getCharsetRunes(locale, false, false)
+
+proc getExtraCharsetForSorting*(locale: string): seq[Rune] =
+    toSeq(runes(extras[locale])).map((x)=>toUpper(x)) & 
+    toSeq(runes(extras[locale]))
+
+proc getCharset*(locale: string, withExtras = false, doUppercase = false): ValueArray =
+    return getCharsetRunes(locale, withExtras, doUppercase).map((x)=>newChar(x))

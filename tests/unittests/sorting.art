@@ -1,0 +1,70 @@
+AlsoRunRuby: positive? size arg
+
+runWithRuby: function [lst, pattern][
+    (AlsoRunRuby)?[
+        arr: replace write.json ø lst "\n" ""
+        patt: replace pattern "%ARR" arr
+        replace strip execute.args:@[
+            "-e"
+            "require 'twitter_cldr'"
+            "-e"
+            patt
+        ] "ruby" "\n" " "
+    ][""]
+]
+
+testBlank: function [lst][
+    print color #cyan repeat "=" 110
+    print [color #cyan " > PROCESSING:" color #cyan join.with:" " lst]
+    print color #cyan repeat "=" 110
+
+    print ""
+    print "---------------------------------"
+    print " NO-LOCALE"
+    print "---------------------------------"
+    print ""
+    print ["Ruby:NONE               :" runWithRuby lst {puts %ARR.sort_by { |x| x.downcase }}]
+    print ["Arturo:NONE             :" join.with:" " sort lst]
+    print ""
+    print ["Arturo:ASCII            :" join.with:" " sort.ascii lst]
+    print ["Arturo:ASCII+Sensitive  :" join.with:" " sort.ascii.sensitive lst]
+    print ""
+    print ["Ruby:Sensitive          :" runWithRuby lst {puts %ARR.sort}]
+    print ["Arturo:Sensitive        :" join.with:" " sort.sensitive lst]
+    print ""
+]
+
+testSort: function [lst, lang][
+    print "---------------------------------"
+    print [" LANG:" lang]
+    print "---------------------------------"
+    print ""
+    rloc: runWithRuby lst ~{puts %ARR.localize(:|lang|).sort.to_a}
+    aloc: join.with:" " sort.as:lang lst
+    print ["Ruby:Locale             :" rloc]
+    print ["Arturo:Locale           :" aloc]
+    print ""
+    print ["Ruby:Locale+Sensitive   :" runWithRuby lst "collator = TwitterCldr::Collation::Collator.new(:"++(to :string lang)++")\n" ++
+          "puts %ARR.sort_by{|x| collator.get_sort_key(x.downcase)}.to_a"]
+    print ["Arturo:Locale+Sensitive :" join.with:" " sort.sensitive.as:lang lst]
+    print ""
+    (AlsoRunRuby)?[
+        return rloc = aloc
+    ][ 
+        return true
+    ]
+]
+
+lsts: [
+    [["uno","dos","tres","Uno","Dos","Tres","pero","pértiga","perversión","ábaco","abismo","aberración"], 'es]
+    [["art", "Wasa", "Älg", "ved"], 'de]
+    [["alpha", "bók", "Bob", "bor", "móðir", "mother", "mode", "það"], 'is]
+]
+
+loop lsts 'l [
+    testBlank l\0
+
+    res: testSort l\0 l\1
+    (res)? [print color #green "== OK\n"]
+           [print color #red "== Nope\n"]
+]
