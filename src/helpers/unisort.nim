@@ -135,9 +135,6 @@ proc unisort*(a: var openArray[Value], lang: string,
     let fullCharset = getFullCharsetForSorting(lang)
     let transformable = intersection(toHashSet(toSeq(keys(transformations))),toHashSet(fullCharset))
 
-    echo "\tcharset=" & $(charset)
-    echo "\ttransformable=" & $(transformable)
-
     var n = a.len
     var b: seq[Value]
     newSeq(b, n div 2)
