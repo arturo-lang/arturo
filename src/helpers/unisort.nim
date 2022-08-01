@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import algorithm, sequtils, sets, tables, unicode
+import algorithm, sequtils, sets, sugar, tables, unicode
 
 when not defined(NOASCIIDECODE):
     import unidecode
@@ -18,6 +18,16 @@ when not defined(NOASCIIDECODE):
 import helpers/charsets as CharsetsHelper
 
 import vm/values/value
+
+#=======================================
+# Compile-Time Helpers
+#=======================================
+
+proc fixTransformations(x: openArray[(Rune,string)]): seq[(Rune,Rune)] {.compileTime.} =
+    result = @[]
+    for item in x:
+        for rn in toRunes(item[1]):
+            result &= ((rn, item[0]))
 
 #=======================================
 # Types
@@ -39,18 +49,33 @@ type
 const
     onlySafeCode = true
 
+    simpleA_cap = static ("A".runeAt(0))
+    simpleE_cap = static ("E".runeAt(0))
+    simpleI_cap = static ("I".runeAt(0))
+    simpleO_cap = static ("O".runeAt(0))
+    simpleU_cap = static ("U".runeAt(0))
+    simpleA     = static ("a".runeAt(0))
+    simpleE     = static ("e".runeAt(0))
+    simpleI     = static ("i".runeAt(0))
+    simpleO     = static ("o".runeAt(0))
+    simpleU     = static ("u".runeAt(0))
+
     transformations = {
-        "Á".runeAt(0): static "A".runeAt(0),
-        "É".runeAt(0): static "E".runeAt(0),
-        "Í".runeAt(0): static "I".runeAt(0),
-        "Ó".runeAt(0): static "O".runeAt(0),
-        "Ú".runeAt(0): static "U".runeAt(0),
-        "á".runeAt(0): static "a".runeAt(0),
-        "é".runeAt(0): static "e".runeAt(0),
-        "í".runeAt(0): static "i".runeAt(0),
-        "ó".runeAt(0): static "o".runeAt(0),
-        "ú".runeAt(0): static "u".runeAt(0)
-    }.toTable()
+        simpleA_cap: "ÁÀÂÃÄ",
+        simpleE_cap: "ÉÈÊË",
+        simpleI_cap: "ÍÌÎÏ",
+        simpleO_cap: "ÓÒÔÕÖ",
+        simpleU_cap: "ÚÙÛÜ",
+        simpleA:     "áàâãä",
+        simpleE:     "éèêë",
+        simpleI:     "íìîï",
+        simpleO:     "óòôõö",
+        simpleU:     "úùûü"
+    }.fixTransformations().toTable
+
+#=======================================
+# Helpers
+#=======================================
 
 func unicmp(x,y: Value, charset: seq[Rune], transformable: HashSet[Rune], sensitive:bool = false, ascii:bool = false):int =
     func transformRune(ru: var Rune) =
