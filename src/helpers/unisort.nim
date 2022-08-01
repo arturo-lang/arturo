@@ -183,8 +183,6 @@ proc unimerge(a, b: var openArray[Value], lo, m, hi: int, lang: string,
     else:
         if k < j: copyMem(addr(a[k]), addr(b[i]), sizeof(Value)*(j-k))
 
-# TODO(Helpers\unisort) Add unit-tests to verify everything is working fine
-#  labels: library, unit-test
 proc unisort*(a: var openArray[Value], lang: string, 
               cmp: CompProc,
               sensitive:bool = false,
