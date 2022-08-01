@@ -1,14 +1,16 @@
-#!/usr/bin/env arturo
+AlsoRunRuby: positive? size arg
 
 runWithRuby: function [lst, pattern][
-    arr: replace write.json ø lst "\n" ""
-    patt: replace pattern "%ARR" arr
-    replace strip execute.args:@[
-        "-e"
-        "require 'twitter_cldr'"
-        "-e"
-        patt
-    ] "ruby" "\n" " "
+    (AlsoRunRuby)?[
+        arr: replace write.json ø lst "\n" ""
+        patt: replace pattern "%ARR" arr
+        replace strip execute.args:@[
+            "-e"
+            "require 'twitter_cldr'"
+            "-e"
+            patt
+        ] "ruby" "\n" " "
+    ][""]
 ]
 
 testBlank: function [lst][
@@ -46,7 +48,11 @@ testSort: function [lst, lang][
           "puts %ARR.sort_by{|x| collator.get_sort_key(x.downcase)}.to_a"]
     print ["Arturo:Locale+Sensitive :" join.with:" " sort.sensitive.as:lang lst]
     print ""
-    return rloc = aloc
+    (AlsoRunRuby)?[
+        return rloc = aloc
+    ][ 
+        return true
+    ]
 ]
 
 lsts: [
