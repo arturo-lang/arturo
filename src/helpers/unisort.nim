@@ -59,7 +59,10 @@ func unicmp(x,y: Value, charset: seq[Rune], transformable: HashSet[Rune], sensit
         let yri = charset.find(yr)
 
         if xri == -1 or yri == -1:
-            result = cmp((int)(xr), (int)(yr))
+            if sensitive:
+                result = cmp((int)(xr), (int)(yr))
+            else:
+                result = cmp((int)(toLower(xr)), (int)(toLower(yr)))
         else:
             result = xri - yri
 
