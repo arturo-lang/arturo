@@ -36,7 +36,7 @@ v0.9.81
 - Collections\min: added `.index` option
 - Collections\permutate: re-implemented and now works with a `.by` and `.repeated` option
 - Collections\sample: fixed to also work with empty blocks
-- Collections\sort: fixed to also work with empty blocks
+- Collections\sort: added `.ascii` option & fixed to also work with empty blocks
 - Collections\take: fixed to also work with empty blocks
 - Converters\to: added support for `:complex` to `:block` conversion
 - Core\case: made function work with null sets (ø)
@@ -53,6 +53,7 @@ v0.9.81
 - Fixed multi-line string handling in REPL
 - Fixed thick-arrow-right (`=>`) syntac sugar handling in label + function assignments
 - Fixed handling of arithmetic operations between `:floating` values and *big* `:integer` values
+- Fixed handling of Unicode, locale-dependent sorting
 - Functions in dictionaries are now directly callable (e.g. `dict\f 10`)
 
 v0.9.7.2
