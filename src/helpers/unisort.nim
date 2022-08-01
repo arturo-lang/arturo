@@ -158,5 +158,5 @@ proc unisorted*(a: openArray[Value], lang: string, cmp: proc(x, y: Value, charse
     unisort(result, lang, cmp, sensitive, order)
 
 proc unisorted*(a: openArray[Value], lang: string, sensitive:bool = false, order = SortOrder.Ascending): seq[Value] =
-    echo ":: unisorted :: with lang=" & lang & ", sensitive=" & $(sensitive) & ", order=" & $(order)
+    #echo ":: unisorted :: with lang=" & lang & ", sensitive=" & $(sensitive) & ", order=" & $(order)
     unisorted(a, lang, unicmp, sensitive, order)
