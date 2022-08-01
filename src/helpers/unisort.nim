@@ -156,8 +156,8 @@ proc unisort*(a: var openArray[Value], lang: string,
               order = SortOrder.Ascending,
               ascii:bool = false) =
     let charset = getCharsetForSorting(lang)
-    let fullCharset = getFullCharsetForSorting(lang)
-    let transformable = intersection(toHashSet(toSeq(keys(transformations))),toHashSet(fullCharset))
+    let extraCharset = getExtraCharsetForSorting(lang)
+    let transformable = intersection(toHashSet(toSeq(keys(transformations))),toHashSet(extraCharset))
 
     var n = a.len
     var b: seq[Value]
