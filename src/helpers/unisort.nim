@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import algorithm, sequtils, sets, sugar, tables, unicode
+import algorithm, sequtils, sets, tables, unicode
 
 when not defined(NOASCIIDECODE):
     import unidecode
