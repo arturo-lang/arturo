@@ -87,7 +87,10 @@ func unicmp(x,y: Value, charset: seq[Rune], transformable: HashSet[Rune], sensit
     var xr, yr: Rune
     when not defined(NOASCIIDECODE):
         if ascii:
-            return cmp(unidecode(x.s), unidecode(y.s))
+            if sensitive:
+                return cmp(unidecode(x.s), unidecode(y.s))
+            else:
+                return cmp(unidecode(toLower(x.s)), unidecode(toLower(y.s)))
         
     while i < x.s.len and j < y.s.len:
         fastRuneAt(x.s, i, xr)
