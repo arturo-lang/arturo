@@ -100,8 +100,15 @@ func unicmp(x,y: Value, charset: seq[Rune], transformable: HashSet[Rune], sensit
         transformRune(xr)
         transformRune(yr)
 
-        let xri = charset.find(xr)
-        let yri = charset.find(yr)
+        var xri: int
+        var yri: int
+
+        if sensitive:
+            xri = charset.find(xr)
+            yri = charset.find(yr)
+        else:
+            xri = charset.find(toLower(xr))
+            yri = charset.find(toLower(yr))
 
         if xri == -1 or yri == -1:
             if sensitive:
