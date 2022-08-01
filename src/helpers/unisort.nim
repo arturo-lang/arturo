@@ -10,9 +10,37 @@
 # Libraries
 #=======================================
 
-import algorithm, tables, unicode
+import algorithm, sequtils, sets, tables, unicode
+
+when not defined(NOASCIIDECODE):
+    import unidecode
+
+import helpers/charsets as CharsetsHelper
 
 import vm/values/value
+
+#=======================================
+# Compile-Time Helpers
+#=======================================
+
+proc fixTransformations(x: openArray[(Rune,string)]): seq[(Rune,Rune)] {.compileTime.} =
+    result = @[]
+    for item in x:
+        for rn in toRunes(item[1]):
+            result &= ((rn, item[0]))
+
+#=======================================
+# Types
+#=======================================
+
+type
+    CompProc = proc (
+        x, y: Value, 
+        charset: seq[Rune], 
+        transformable: HashSet[Rune], 
+        sensitive: bool, 
+        ascii:bool = false
+    ): int {.closure.}
 
 #=======================================
 # Constants
@@ -21,36 +49,49 @@ import vm/values/value
 const
     onlySafeCode = true
 
-    charsets = {
-        "en": toRunes("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"),
-        "es": toRunes("0123456789ABCDEFGHIJKLMNÑOPQRSTUVWXYZabcdefghijklmnñopqrstuvwxyz")
-    }.toOrderedTable()
+    simpleA_cap = static ("A".runeAt(0))
+    simpleE_cap = static ("E".runeAt(0))
+    simpleI_cap = static ("I".runeAt(0))
+    simpleO_cap = static ("O".runeAt(0))
+    simpleU_cap = static ("U".runeAt(0))
+    simpleA     = static ("a".runeAt(0))
+    simpleE     = static ("e".runeAt(0))
+    simpleI     = static ("i".runeAt(0))
+    simpleO     = static ("o".runeAt(0))
+    simpleU     = static ("u".runeAt(0))
 
-    transform = {
-        "en": func (r: var Rune) =
-            discard,
-        "es": func (r: var Rune) =
-            case $(r):
-                of "Á": r = "A".runeAt(0)
-                of "É": r = "E".runeAt(0)
-                of "Í": r = "I".runeAt(0)
-                of "Ó": r = "O".runeAt(0)
-                of "Ú": r = "U".runeAt(0)
-                of "á": r = "a".runeAt(0)
-                of "é": r = "e".runeAt(0)
-                of "í": r = "i".runeAt(0)
-                of "ó": r = "o".runeAt(0)
-                of "ú": r = "u".runeAt(0)
-                else: discard
-    }.toOrderedTable()
+    transformations = {
+        simpleA_cap: "ÁÀÂÃÄ",
+        simpleE_cap: "ÉÈÊË",
+        simpleI_cap: "ÍÌÎÏ",
+        simpleO_cap: "ÓÒÔÕÖ",
+        simpleU_cap: "ÚÙÛÜ",
+        simpleA:     "áàâãä",
+        simpleE:     "éèêë",
+        simpleI:     "íìîï",
+        simpleO:     "óòôõö",
+        simpleU:     "úùûü"
+    }.fixTransformations().toTable
 
-func unicmp(x,y: Value, lang: string, sensitive:bool = false):int =
-    let charset = charsets[lang]
+#=======================================
+# Helpers
+#=======================================
 
-    # echo "sorting: " & lang & " => sensitive: " & $(sensitive)
+func unicmp(x,y: Value, charset: seq[Rune], transformable: HashSet[Rune], sensitive:bool = false, ascii:bool = false):int =
+    func transformRune(ru: var Rune) =
+        if transformable.contains(ru):
+            ru = transformations[ru]
+
     var i = 0
     var j = 0
     var xr, yr: Rune
+    when not defined(NOASCIIDECODE):
+        if ascii:
+            if sensitive:
+                return cmp(unidecode(x.s), unidecode(y.s))
+            else:
+                return cmp(unidecode(toLower(x.s)), unidecode(toLower(y.s)))
+        
     while i < x.s.len and j < y.s.len:
         fastRuneAt(x.s, i, xr)
         fastRuneAt(y.s, j, yr)
@@ -59,14 +100,26 @@ func unicmp(x,y: Value, lang: string, sensitive:bool = false):int =
             xr = toLower(xr)
             yr = toLower(yr)
 
-        # echo "comparing => xr: " & $(xr) & ", yr: " & $(yr)
+        transformRune(xr)
+        transformRune(yr)
 
-        transform[lang](xr)
-        transform[lang](yr)
+        var xri: int
+        var yri: int
 
-        # echo "transformed => xr: " & $(xr) & ", yr: " & $(yr)
+        if sensitive:
+            xri = charset.find(xr)
+            yri = charset.find(yr)
+        else:
+            xri = charset.find(toLower(xr))
+            yri = charset.find(toLower(yr))
 
-        result = charset.find(xr) - charset.find(yr)
+        if xri == -1 or yri == -1:
+            if sensitive:
+                result = cmp((int)(xr), (int)(yr))
+            else:
+                result = cmp((int)(toLower(xr)), (int)(toLower(yr)))
+        else:
+            result = xri - yri
 
         if result != 0: return
   
@@ -88,12 +141,15 @@ template `<-` (a, b) =
 # Methods
 #=======================================
 
-func unimerge(a, b: var openArray[Value], lo, m, hi: int, lang: string, 
-              cmp: proc (x, y: Value, lang: string, sensitive: bool): int {.closure.}, 
+proc unimerge(a, b: var openArray[Value], lo, m, hi: int, lang: string, 
+              cmp: CompProc, 
+              charset: seq[Rune], 
+              transformable: HashSet[Rune],
               sensitive:bool = false,
-              order: SortOrder) =
+              order: SortOrder,
+              ascii:bool = false) =
 
-    if cmp(a[m], a[m+1], lang, sensitive) * order <= 0: return
+    if cmp(a[m], a[m+1], charset, transformable, sensitive, ascii) * order <= 0: return
     var j = lo
 
     assert j <= m
@@ -111,7 +167,7 @@ func unimerge(a, b: var openArray[Value], lo, m, hi: int, lang: string,
     var k = lo
 
     while k < j and j <= hi:
-        if cmp(b[i], a[j], lang, sensitive) * order <= 0:
+        if cmp(b[i], a[j], charset, transformable, sensitive, ascii) * order <= 0:
             a[k] <- b[i]
             inc(i)
         else:
@@ -127,13 +183,15 @@ func unimerge(a, b: var openArray[Value], lo, m, hi: int, lang: string,
     else:
         if k < j: copyMem(addr(a[k]), addr(b[i]), sizeof(Value)*(j-k))
 
-# TODO(Helpers\unisort) Verify string sorting works properly
-#  The `unisort` implementation looks like hack - or incomplete. Also, add unit tests
-#  labels: library,bug,unit-test
-func unisort*(a: var openArray[Value], lang: string, 
-              cmp: proc (x, y: Value, lang: string, sensitive: bool): int {.closure.},
+proc unisort*(a: var openArray[Value], lang: string, 
+              cmp: CompProc,
               sensitive:bool = false,
-              order = SortOrder.Ascending) =
+              order = SortOrder.Ascending,
+              ascii:bool = false) =
+    let charset = getCharsetForSorting(lang)
+    let extraCharset = getExtraCharsetForSorting(lang)
+    let transformable = intersection(toHashSet(toSeq(keys(transformations))),toHashSet(extraCharset))
+
     var n = a.len
     var b: seq[Value]
     newSeq(b, n div 2)
@@ -141,20 +199,21 @@ func unisort*(a: var openArray[Value], lang: string,
     while s < n:
         var m = n-1-s
         while m >= 0:
-            unimerge(a, b, max(m-s+1, 0), m, m+s, lang, cmp, sensitive, order)
+            unimerge(a, b, max(m-s+1, 0), m, m+s, lang, cmp, charset, transformable, sensitive, order, ascii)
             dec(m, s*2)
         s = s*2
 
-func unisort*(a: var openArray[Value], lang: string, sensitive:bool = false, order = SortOrder.Ascending) = 
-    unisort(a, lang, unicmp, sensitive, order)
+proc unisort*(a: var openArray[Value], lang: string, sensitive:bool = false, order = SortOrder.Ascending, ascii:bool = false) = 
+    unisort(a, lang, unicmp, sensitive, order, ascii)
 
-func unisorted*(a: openArray[Value], lang: string, cmp: proc(x, y: Value, lang: string, insensitive: bool): int {.closure.},
+proc unisorted*(a: openArray[Value], lang: string, cmp: CompProc,
                 sensitive:bool = false,
-                order = SortOrder.Ascending): seq[Value] =
+                order = SortOrder.Ascending,
+                ascii:bool = false): seq[Value] =
     result = newSeq[Value](a.len)
     for i in 0 .. a.high:
         result[i] = a[i]
-    unisort(result, lang, cmp, sensitive, order)
+    unisort(result, lang, cmp, sensitive, order, ascii)
 
-func unisorted*(a: openArray[Value], lang: string, sensitive:bool = false, order = SortOrder.Ascending): seq[Value] =
-    unisorted(a, lang, unicmp, sensitive, order)
+proc unisorted*(a: openArray[Value], lang: string, sensitive:bool = false, order = SortOrder.Ascending, ascii:bool = false): seq[Value] =
+    unisorted(a, lang, unicmp, sensitive, order, ascii)
