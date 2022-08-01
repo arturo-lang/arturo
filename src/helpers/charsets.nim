@@ -100,7 +100,7 @@ const
         "eu": "ç",
         "fi": "",
         "fo": "ö",
-        "fr": "àâæçéèêëîïôœùûüÿ",
+        "fr": "áàâæçéèêëîïôœùûüÿ",
         "ga": "áḃċḋéḟġíṁóṗṡṫú",
         "gd": "àèìòù",
         "hy": "",
@@ -153,9 +153,9 @@ proc getCharsetForSorting*(locale: string): seq[Rune] =
     getCharsetRunes(locale, false, true) & 
     getCharsetRunes(locale, false, false)
 
-proc getFullCharsetForSorting*(locale: string): seq[Rune] =
-    getCharsetRunes(locale, true, true) & 
-    getCharsetRunes(locale, true, false)
+proc getExtraCharsetForSorting*(locale: string): seq[Rune] =
+    toSeq(runes(extras[locale])).map((x)=>toUpper(x)) & 
+    toSeq(runes(extras[locale]))
 
 proc getCharset*(locale: string, withExtras = false, doUppercase = false): ValueArray =
     return getCharsetRunes(locale, withExtras, doUppercase).map((x)=>newChar(x))
