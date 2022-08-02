@@ -646,7 +646,7 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Logical},
-        # TODO(Reflection\quantity) add documentation example
+        # TODO(Reflection\quantity?) add documentation example
         #  labels: library, documentation, easy
         example     = """
         """:
@@ -662,7 +662,7 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Logical},
-        # TODO(Reflection\rational) add documentation example
+        # TODO(Reflection\rational?) add documentation example
         #  labels: library, documentation, easy
         example     = """
         """:
