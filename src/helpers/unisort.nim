@@ -39,6 +39,7 @@ type
         charset: seq[Rune], 
         transformable: HashSet[Rune], 
         ngraphs: seq[string],
+        ngraphset: seq[string],
         sensitive: bool, 
         ascii:bool = false
     ): int {.closure.}
@@ -78,7 +79,38 @@ const
 # Helpers
 #=======================================
 
-func unicmp(x,y: Value, charset: seq[Rune], transformable: HashSet[Rune], ngraphs: seq[string], sensitive:bool = false, ascii:bool = false):int =
+iterator getNextSymbol*(str: string, ngraphset: seq[string]): string =
+    var i = 0
+    var comb,combb,combc: string = ""
+    let runes = toRunes(str)
+    while i < runes.len:
+        comb = $(runes[i])
+        if i + 1 < runes.len:
+            combb = comb & $(runes[i+1])
+            if i + 2 < runes.len:
+                combc = combb & $(runes[i+2])
+                
+                if ngraphset.contains(combc):
+                    i += 2
+                    yield combc
+                else:
+                    if ngraphset.contains(combb):
+                        i += 1
+                        yield combb
+                    else:
+                        yield comb
+            else:
+                if ngraphset.contains(combb):
+                    i += 1
+                    yield combb
+                else:
+                    yield comb
+        else:
+            yield comb
+
+        i += 1
+
+func unicmp(x,y: Value, charset: seq[Rune], transformable: HashSet[Rune], ngraphs: seq[string], ngraphset: seq[string], sensitive:bool = false, ascii:bool = false):int =
     func transformRune(ru: var Rune) =
         if transformable.contains(ru):
             ru = transformations[ru]
@@ -93,37 +125,67 @@ func unicmp(x,y: Value, charset: seq[Rune], transformable: HashSet[Rune], ngraph
             else:
                 return cmp(unidecode(toLower(x.s)), unidecode(toLower(y.s)))
         
-    while i < x.s.len and j < y.s.len:
-        fastRuneAt(x.s, i, xr)
-        fastRuneAt(y.s, j, yr)
+    if ngraphset == @[]:
+        while i < x.s.len and j < y.s.len:
+            fastRuneAt(x.s, i, xr)
+            fastRuneAt(y.s, j, yr)
 
-        if not sensitive:
-            xr = toLower(xr)
-            yr = toLower(yr)
+            if not sensitive:
+                xr = toLower(xr)
+                yr = toLower(yr)
 
-        transformRune(xr)
-        transformRune(yr)
+            transformRune(xr)
+            transformRune(yr)
 
-        var xri: int
-        var yri: int
+            var xri: int
+            var yri: int
 
-        if sensitive:
-            xri = charset.find(xr)
-            yri = charset.find(yr)
-        else:
-            xri = charset.find(toLower(xr))
-            yri = charset.find(toLower(yr))
-
-        if xri == -1 or yri == -1:
             if sensitive:
-                result = cmp((int)(xr), (int)(yr))
+                xri = charset.find(xr)
+                yri = charset.find(yr)
             else:
-                result = cmp((int)(toLower(xr)), (int)(toLower(yr)))
-        else:
-            result = xri - yri
+                xri = charset.find(toLower(xr))
+                yri = charset.find(toLower(yr))
 
-        if result != 0: return
-  
+            if xri == -1 or yri == -1:
+                if sensitive:
+                    result = cmp((int)(xr), (int)(yr))
+                else:
+                    result = cmp((int)(toLower(xr)), (int)(toLower(yr)))
+            else:
+                result = xri - yri
+
+            if result != 0: return
+    else:
+        let xsyms = toSeq(getNextSymbol(x.s, ngraphset))
+        let ysyms = toSeq(getNextSymbol(y.s, ngraphset))
+
+        while i<xsyms.len and j<ysyms.len:
+            let xs = xsyms[i]
+            let ys = ysyms[j]
+
+            var xri: int
+            var yri: int
+
+            if sensitive:
+                xri = ngraphset.find(xs)
+                yri = ngraphset.find(ys)
+            else:
+                xri = ngraphset.find(toLower(xs))
+                yri = ngraphset.find(toLower(ys))
+
+            if xri == -1 or yri == -1:
+                if sensitive:
+                    result = cmp(xs, ys)
+                else:
+                    result = cmp(toLower(xs), toLower(ys))
+            else:
+                result = xri - yri
+
+            if result != 0: return
+            i += 1
+            j += 1
+
     result = x.s.len - y.s.len
 
 #=======================================
@@ -147,11 +209,12 @@ proc unimerge(a, b: var openArray[Value], lo, m, hi: int, lang: string,
               charset: seq[Rune], 
               transformable: HashSet[Rune],
               ngraphs: seq[string],
+              ngraphset: seq[string],
               sensitive:bool = false,
               order: SortOrder,
               ascii:bool = false) =
 
-    if cmp(a[m], a[m+1], charset, transformable, ngraphs, sensitive, ascii) * order <= 0: return
+    if cmp(a[m], a[m+1], charset, transformable, ngraphs, ngraphset, sensitive, ascii) * order <= 0: return
     var j = lo
 
     assert j <= m
@@ -169,7 +232,7 @@ proc unimerge(a, b: var openArray[Value], lo, m, hi: int, lang: string,
     var k = lo
 
     while k < j and j <= hi:
-        if cmp(b[i], a[j], charset, transformable, ngraphs, sensitive, ascii) * order <= 0:
+        if cmp(b[i], a[j], charset, transformable, ngraphs, ngraphset, sensitive, ascii) * order <= 0:
             a[k] <- b[i]
             inc(i)
         else:
@@ -194,6 +257,9 @@ proc unisort*(a: var openArray[Value], lang: string,
     let extraCharset = getExtraCharsetForSorting(lang)
     let transformable = intersection(toHashSet(toSeq(keys(transformations))),toHashSet(extraCharset))
     let ngraphs = getNgraphs(lang)
+    var ngraphset: seq[string]
+    if ngraphs != []:
+        ngraphset = getCharsetWithNgraphs(lang)
 
     var n = a.len
     var b: seq[Value]
@@ -202,7 +268,7 @@ proc unisort*(a: var openArray[Value], lang: string,
     while s < n:
         var m = n-1-s
         while m >= 0:
-            unimerge(a, b, max(m-s+1, 0), m, m+s, lang, cmp, charset, transformable, ngraphs, sensitive, order, ascii)
+            unimerge(a, b, max(m-s+1, 0), m, m+s, lang, cmp, charset, transformable, ngraphs, ngraphset, sensitive, order, ascii)
             dec(m, s*2)
         s = s*2
 
