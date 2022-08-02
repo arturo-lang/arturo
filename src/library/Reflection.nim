@@ -637,6 +637,22 @@ proc defineSymbols*() =
             ##########################################################
             push(newLogical(x.kind==Null))
 
+    builtin "object?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "checks if given value is a custom-type object",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        # TODO(Reflection\object?) add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            ##########################################################
+            push(newLogical(x.kind==Dictionary and (not x.custom.isNil())))
+
     builtin "path?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
