@@ -118,7 +118,7 @@ func unicmp(x,y: Value, charset: seq[Rune], transformable: HashSet[Rune], ngraph
     var j = 0
     var xr, yr: Rune
     when not defined(NOASCIIDECODE):
-        if ascii:
+        if ascii or charset.len==0:
             if sensitive:
                 return cmp(unidecode(x.s), unidecode(y.s))
             else:

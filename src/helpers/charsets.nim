@@ -137,9 +137,10 @@ proc getCharsetRunes*(locale: string, withExtras = false, doUppercase = false, f
         result = result.filter((x) => x!=NgraphReplacement)
 
 proc getCharsetForSorting*(locale: string): seq[Rune] =
-    toRunes("0123456789") & 
-    getCharsetRunes(locale, false, true) & 
-    getCharsetRunes(locale, false, false)
+    if charsets.hasKey(locale):
+        result = toRunes("0123456789") & 
+                 getCharsetRunes(locale, false, true) & 
+                 getCharsetRunes(locale, false, false)
 
 proc getExtraCharsetForSorting*(locale: string): seq[Rune] =
     if extras.hasKey(locale):
