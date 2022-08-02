@@ -248,6 +248,22 @@ proc defineSymbols*() =
             ##########################################################
             push(newLogical(x.kind==Char))
 
+    builtin "complex?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "checks if given value is of type :complex",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        # TODO(Reflection\complex?) add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            ##########################################################
+            push(newLogical(x.kind==Complex))
+
     builtin "database?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
