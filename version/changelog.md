@@ -20,7 +20,7 @@ v0.9.81
 - Converters: added new `in` method
 - Iterators: added new `chunk` & `cluster` methods
 - Numbers: added new `factorial` & `lcm` methods
-- Reflection: added new `bytecode?`, `color?`, `complex?`, `quantity?`, `rational?` & `version?` predicates
+- Reflection: added new `bytecode?`, `color?`, `complex?`, `object?`, `quantity?`, `rational?` & `version?` predicates
 - Strings: added new `alphabet` method
 
 **Enhancements, Changes & Fixes**
