@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import sequtils, sugar, tables, unicode
+import sequtils, strutils, sugar, tables, unicode
 
 import vm/values/value
 
@@ -18,8 +18,6 @@ import vm/values/value
 # Constants
 #=======================================
 
-# TODO(Strings\alphabet) add support for Czech alphabet -> cs
-#  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Maltese alphabet -> mt
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Maori alphabet -> mi
@@ -40,6 +38,7 @@ const
         "be": "абвгдеёжзійклмнопрстуўфхцчшыьэюя",
         "bg": "абвгдежзийклмнопрстуфхцчшщъьюя",
         "ca": "abcdefghijklmnopqrstuvwxyz",
+        "cs": "aábcčdďeéěfgh%iíjklmnňoópqrřsštťuúůvwxyýzž",
         "da": "abcdefghijklmnopqrstuvwxyzæøå",
         "de": "abcedfghijklmnopqrstuvwxyz",
         "el": "αβγδεζηθικλμνξοπρστυφχψω",
@@ -106,9 +105,10 @@ const
     # with the exact order as in the NgraphReplacement placeholders (`%`) 
     # found in the main charset
     ngraphs = {
-        "hr": ["dž", "lj", "nj"],
-        "hu": ["cs", "dz", "dzs", "gy", "ly", "ny", "sz", "ty", "zs"],
-        "sq": ["dh", "gj", "ll", "nj", "rr", "sh", "th", "xh", "zh"]
+        "cs": "ch",
+        "hr": "dž,lj,nj",
+        "hu": "cs,dz,dzs,gy,ly,ny,sz,ty,zs",
+        "sq": "dh,gj,ll,nj,rr,sh,th,xh,zh"
     }.toTable
 
 #=======================================
@@ -149,7 +149,7 @@ proc getCharsetWithNgraphs*(locale: string): seq[string] =
               getCharsetRunes(locale, false, true, false).map((x) => $(x)) &
               getCharsetRunes(locale, false, false, false).map((x) => $(x))
 
-    var ngr = ngraphs[locale]
+    var ngr = ngraphs[locale].split(",")
     var i = 0
     var doCapitalize = true
     for item in ret:
