@@ -10,10 +10,10 @@
 # Libraries
 #=======================================
 
-import std/json, strformat, strutils, tables
+import std/json, strutils, tables
 
 when not defined(WEB):
-    import asyncdispatch, httpClient
+    import asyncdispatch, httpClient, strformat
 
 #=======================================
 # Types
