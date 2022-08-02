@@ -22,8 +22,6 @@ import vm/values/value
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Maori alphabet -> mi
 #  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for Slovak alphabet -> sk
-#  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Vietnamese alphabet -> vi
 #  label: library, enhancement, easy
 
@@ -72,6 +70,7 @@ const
         "pt": "abcdefghijklmnopqrstuvwxyz",
         "ro": "aăâbcdefghiîjklmnopqrsștțuvwxyz",
         "ru": "абвгдеёжзийклмнопрстуфхцчшщъыьэюя",
+        "sk": "aáäbcčdď%%eéfgh%iíjklĺľmnňoóôpqrŕsštťuúvwxyýzž",
         "sl": "abcčdefghijklmnoprsštuvzž",
         "sq": "abcçd%eëfg%hijkl%mn%opqr%s%t%uvx%yz%",
         "sr": "абвгдђежзијклљмнњопрстћуфхцчџш",
@@ -108,6 +107,7 @@ const
         "cs": "ch",
         "hr": "dž,lj,nj",
         "hu": "cs,dz,dzs,gy,ly,ny,sz,ty,zs",
+        "sk": "dz,dž,ch",
         "sq": "dh,gj,ll,nj,rr,sh,th,xh,zh"
     }.toTable
 
