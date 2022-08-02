@@ -38,7 +38,6 @@ type
         x, y: Value, 
         charset: seq[Rune], 
         transformable: HashSet[Rune], 
-        ngraphs: seq[string],
         ngraphset: seq[string],
         sensitive: bool, 
         ascii:bool = false
@@ -110,7 +109,7 @@ iterator getNextSymbol*(str: string, ngraphset: seq[string]): string =
 
         i += 1
 
-func unicmp(x,y: Value, charset: seq[Rune], transformable: HashSet[Rune], ngraphs: seq[string], ngraphset: seq[string], sensitive:bool = false, ascii:bool = false):int =
+func unicmp(x,y: Value, charset: seq[Rune], transformable: HashSet[Rune], ngraphset: seq[string], sensitive:bool = false, ascii:bool = false):int =
     func transformRune(ru: var Rune) =
         if transformable.contains(ru):
             ru = transformations[ru]
@@ -208,13 +207,12 @@ proc unimerge(a, b: var openArray[Value], lo, m, hi: int, lang: string,
               cmp: CompProc, 
               charset: seq[Rune], 
               transformable: HashSet[Rune],
-              ngraphs: seq[string],
               ngraphset: seq[string],
               sensitive:bool = false,
               order: SortOrder,
               ascii:bool = false) =
 
-    if cmp(a[m], a[m+1], charset, transformable, ngraphs, ngraphset, sensitive, ascii) * order <= 0: return
+    if cmp(a[m], a[m+1], charset, transformable, ngraphset, sensitive, ascii) * order <= 0: return
     var j = lo
 
     assert j <= m
@@ -232,7 +230,7 @@ proc unimerge(a, b: var openArray[Value], lo, m, hi: int, lang: string,
     var k = lo
 
     while k < j and j <= hi:
-        if cmp(b[i], a[j], charset, transformable, ngraphs, ngraphset, sensitive, ascii) * order <= 0:
+        if cmp(b[i], a[j], charset, transformable, ngraphset, sensitive, ascii) * order <= 0:
             a[k] <- b[i]
             inc(i)
         else:
@@ -256,9 +254,8 @@ proc unisort*(a: var openArray[Value], lang: string,
     let charset = getCharsetForSorting(lang)
     let extraCharset = getExtraCharsetForSorting(lang)
     let transformable = intersection(toHashSet(toSeq(keys(transformations))),toHashSet(extraCharset))
-    let ngraphs = getNgraphs(lang)
     var ngraphset: seq[string]
-    if ngraphs != []:
+    if hasNgraphs(lang):
         ngraphset = getCharsetWithNgraphs(lang)
 
     var n = a.len
@@ -268,7 +265,7 @@ proc unisort*(a: var openArray[Value], lang: string,
     while s < n:
         var m = n-1-s
         while m >= 0:
-            unimerge(a, b, max(m-s+1, 0), m, m+s, lang, cmp, charset, transformable, ngraphs, ngraphset, sensitive, order, ascii)
+            unimerge(a, b, max(m-s+1, 0), m, m+s, lang, cmp, charset, transformable, ngraphset, sensitive, order, ascii)
             dec(m, s*2)
         s = s*2
 
