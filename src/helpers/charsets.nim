@@ -40,6 +40,8 @@ import vm/values/value
 #  label: library, enhancement, easy
 
 const
+    NgraphReplacement = "%".runeAt(0)
+
     # the main alphabet, by ISO 639-1 code, 
     # containing only characters that can be found in a dictionary index
     # and in the exact same order as found in a dictionary
@@ -126,6 +128,8 @@ proc getCharsetRunes*(locale: string, withExtras = false, doUppercase = false): 
                 extra = toSeq(runes(extras[locale]))
 
         result.add(extra)
+
+    result = result.filter((x) => x!=NgraphReplacement)
 
 proc getCharsetForSorting*(locale: string): seq[Rune] =
     toRunes("0123456789") & 
