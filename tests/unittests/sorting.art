@@ -59,6 +59,7 @@ lsts: [
     [["uno","dos","tres","Uno","Dos","Tres","pero","pértiga","perversión","ábaco","abismo","aberración"], 'es]
     [["art", "Wasa", "Älg", "ved"], 'de]
     [["alpha", "bók", "Bob", "bor", "móðir", "mother", "mode", "það"], 'is]
+    [["köszönöm", "Örvendek", "szia", "csardas", "cúgos", "cárnő", "cárné", "czink"], 'hu]
 ]
 
 loop lsts 'l [

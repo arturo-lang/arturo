@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import sequtils, sugar, tables, unicode
+import sequtils, strutils, sugar, tables, unicode
 
 import vm/values/value
 
@@ -18,26 +18,12 @@ import vm/values/value
 # Constants
 #=======================================
 
-# TODO(Strings\alphabet) add support for Albanian alphabet -> sq
-#  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for Croatian alphabet -> hr
-#  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for Czech alphabet -> cs
-#  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for Esperanto alphabet -> eo
-#  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for Hungarian alphabet -> hu
-#  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for Maltese alphabet -> mt
-#  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for Maori alphabet -> mi
-#  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for Slovak alphabet -> sk
-#  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Vietnamese alphabet -> vi
 #  label: library, enhancement, easy
 
 const
+    NgraphReplacement = "%".runeAt(0)
+
     # the main alphabet, by ISO 639-1 code, 
     # containing only characters that can be found in a dictionary index
     # and in the exact same order as found in a dictionary
@@ -46,10 +32,12 @@ const
         "be": "абвгдеёжзійклмнопрстуўфхцчшыьэюя",
         "bg": "абвгдежзийклмнопрстуфхцчшщъьюя",
         "ca": "abcdefghijklmnopqrstuvwxyz",
+        "cs": "aábcčdďeéěfgh%iíjklmnňoópqrřsštťuúůvwxyýzž",
         "da": "abcdefghijklmnopqrstuvwxyzæøå",
         "de": "abcedfghijklmnopqrstuvwxyz",
         "el": "αβγδεζηθικλμνξοπρστυφχψω",
         "en": "abcdefghijklmnopqrstuvwxyz",
+        "eo": "abcĉdefgĝhĥijĵklmnoprsŝtuŭvz",
         "es": "abcdefghijklmnñopqrstuvwxyz",
         "et": "abcdefghijklmnopqrsšzžtuvwõäöüxy",
         "eu": "abcdefghijklmnñopqrstuvwxyz",
@@ -58,6 +46,8 @@ const
         "fr": "abcdefghijklmnopqrstuvwxyz",
         "ga": "abcdefghijklmnopqrstuvwxyz",
         "gd": "abcdefghilmnoprstu",
+        "hr": "abcčćd%đefghijkl%m%n%oprsštuvzž",
+        "hu": "aábc%d%%eéfg%hiíjkl%mn%oóöőpqrs%t%uúüűvwxyz%",
         "hy": "աբգդեզէըթժիլխծկհձղճմյնշոչպջռսվտրցւփքօֆուև",
         "id": "abcdefghijklmnopqrstuvwxyz",
         "ig": "abɓcdɗeǝẹfghiịjkƙlmnoọprsṣtuụvwyz",
@@ -68,18 +58,23 @@ const
         "lb": "abcdefghijklmnopqrstuvwxyzäëé",
         "lt": "aąbcčdeęėfghiįyjklmnoprsštuųūvzž",
         "lv": "aābcčdeēfgģhiījkķlļmnņoprsštuūvzž",
+        "mi": "aeghikmnoprtuw%%",
         "mk": "абвгдѓежзѕијклљмнњопрстќуфхцчџш",
         "ms": "abcdefghijklmnopqrstuvwxyz",
+        "mt": "abċdefġg%hħi%jklmnopqrstuvwxżz",
         "nl": "abcdefghijklmnopqrstuvwxyz",
         "no": "abcdefghijklmnopqrstuvwxyzæøå",
         "pl": "aąbcćdeęfghijklłmnńoópqrsśtuvwxyzźż",
         "pt": "abcdefghijklmnopqrstuvwxyz",
         "ro": "aăâbcdefghiîjklmnopqrsștțuvwxyz",
         "ru": "абвгдеёжзийклмнопрстуфхцчшщъыьэюя",
+        "sk": "aáäbcčdď%%eéfgh%iíjklĺľmnňoóôpqrŕsštťuúvwxyýzž",
         "sl": "abcčdefghijklmnoprsštuvzž",
+        "sq": "abcçd%eëfg%hijkl%mn%opqr%s%t%uvx%yz%",
         "sr": "абвгдђежзијклљмнњопрстћуфхцчџш",
         "sv": "abcdefghijklmnopqrstuvwxyzåäö",
         "sw": "abcdefghijklmnoprstuvwyz",
+        "tl": "abcdefghijklmnñ%opqrstuvwxyz",
         "tr": "abcçdefgğhıijklmnoöprsştuüvyz",
         "uk": "абвгґдеєжзиіїйклмнопрстуфхцчшщьюя"
     }.toTable
@@ -88,52 +83,41 @@ const
     # but would not form part of its dictionary index
     extras = {
         "af": "áäéèêëíîïóôöúûüý",
-        "be": "",
-        "bg": "",
         "ca": "àéèçíïóòúü",
-        "da": "",
         "de": "äöüß",
         "el": "άέίόύϊϋΐΰ",
-        "en": "",
         "es": "áéíóúü",
-        "et": "",
         "eu": "ç",
-        "fi": "",
         "fo": "ö",
         "fr": "àâæçéèêëîïôœùûüÿ",
         "ga": "áḃċḋéḟġíṁóṗṡṫú",
         "gd": "àèìòù",
-        "hy": "",
-        "id": "",
         "ig": "áàâéèêíìîóòȏúùû",
-        "is": "",
         "it": "àéèíìîóòúù",
-        "ka": "",
-        "la": "",
-        "lb": "",
-        "lt": "",
-        "lv": "",
-        "mk": "",
-        "ms": "",
-        "nl": "",
-        "no": "",
-        "pl": "",
         "pt": "áàâãäçéêëíïóõöúü",
-        "ro": "",
         "ru": "а́е́и́о́у́э́",
-        "sl": "áȃȁćđéèȇẹ́ẹ̑ȅíȋȉóȏọ́ọ̑ȍqŕȓúȗȕwxy",
-        "sr": "",
-        "sv": "",
-        "sw": "",
-        "tr": "",
-        "uk": ""
+        "sl": "áȃȁćđéèȇẹ́ẹ̑ȅíȋȉóȏọ́ọ̑ȍqŕȓúȗȕwxy"
+    }.toTable
+
+    # di- or tri-graphs that can be found in a given language, by ISO 639-1 code,
+    # with the exact order as in the NgraphReplacement placeholders (`%`) 
+    # found in the main charset
+    ngraphs = {
+        "cs": "ch",
+        "hr": "dž,lj,nj",
+        "hu": "cs,dz,dzs,gy,ly,ny,sz,ty,zs",
+        "mi": "ng,wh",
+        "mt": "għ,ie",
+        "sk": "dz,dž,ch",
+        "sq": "dh,gj,ll,nj,rr,sh,th,xh,zh",
+        "tl": "ng"
     }.toTable
 
 #=======================================
 # Methods
 #=======================================
 
-proc getCharsetRunes*(locale: string, withExtras = false, doUppercase = false): seq[Rune] =
+proc getCharsetRunes*(locale: string, withExtras = false, doUppercase = false, filterNgraphs = true): seq[Rune] =
     if doUppercase:
         result = toSeq(runes(charsets[locale])).map((x)=>toUpper(x))
     else:
@@ -141,21 +125,52 @@ proc getCharsetRunes*(locale: string, withExtras = false, doUppercase = false): 
 
     if withExtras:
         var extra: seq[Rune] = @[]
-        if doUppercase:
-            extra = toSeq(runes(extras[locale])).map((x)=>toUpper(x))
-        else:
-            extra = toSeq(runes(extras[locale]))
+        if extras.hasKey(locale):
+            if doUppercase:
+                extra = toSeq(runes(extras[locale])).map((x)=>toUpper(x))
+            else:
+                extra = toSeq(runes(extras[locale]))
 
         result.add(extra)
 
+    if filterNgraphs:
+        result = result.filter((x) => x!=NgraphReplacement)
+
 proc getCharsetForSorting*(locale: string): seq[Rune] =
-    toRunes("0123456789") & 
-    getCharsetRunes(locale, false, true) & 
-    getCharsetRunes(locale, false, false)
+    if charsets.hasKey(locale):
+        result = toRunes("0123456789") & 
+                 getCharsetRunes(locale, false, true) & 
+                 getCharsetRunes(locale, false, false)
 
 proc getExtraCharsetForSorting*(locale: string): seq[Rune] =
-    toSeq(runes(extras[locale])).map((x)=>toUpper(x)) & 
-    toSeq(runes(extras[locale]))
+    if extras.hasKey(locale):
+        result = toSeq(runes(extras[locale])).map((x)=>toUpper(x)) & 
+                 toSeq(runes(extras[locale]))
+
+proc getCharsetWithNgraphs*(locale: string): seq[string] =
+    let ret = toRunes("0123456789").map((x) => $(x)) &
+              getCharsetRunes(locale, false, true, false).map((x) => $(x)) &
+              getCharsetRunes(locale, false, false, false).map((x) => $(x))
+
+    var ngr = ngraphs[locale].split(",")
+    var i = 0
+    var doCapitalize = true
+    for item in ret:
+        if item == "%":
+            if doCapitalize:
+                result.add(ngr[i].capitalize())
+            else:
+                result.add(ngr[i])
+            if i+1 < ngr.len:
+                i+=1
+            else:
+                i = 0
+                doCapitalize = false
+        else:
+            result.add(item)
+
+proc hasNgraphs*(locale: string): bool =
+    ngraphs.hasKey(locale)
 
 proc getCharset*(locale: string, withExtras = false, doUppercase = false): ValueArray =
     return getCharsetRunes(locale, withExtras, doUppercase).map((x)=>newChar(x))
