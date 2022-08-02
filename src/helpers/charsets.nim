@@ -12,8 +12,6 @@
 
 import sequtils, sugar, tables, unicode
 
-import helpers/strings as StringsHelper
-
 import vm/values/value
 
 #=======================================
