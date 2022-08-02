@@ -18,8 +18,6 @@ import vm/values/value
 # Constants
 #=======================================
 
-# TODO(Strings\alphabet) add support for Maori alphabet -> mi
-#  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Vietnamese alphabet -> vi
 #  label: library, enhancement, easy
 
@@ -60,6 +58,7 @@ const
         "lb": "abcdefghijklmnopqrstuvwxyzäëé",
         "lt": "aąbcčdeęėfghiįyjklmnoprsštuųūvzž",
         "lv": "aābcčdeēfgģhiījkķlļmnņoprsštuūvzž",
+        "mi": "aeghikmnoprtuw%%",
         "mk": "абвгдѓежзѕијклљмнњопрстќуфхцчџш",
         "ms": "abcdefghijklmnopqrstuvwxyz",
         "mt": "abċdefġg%hħi%jklmnopqrstuvwxżz",
@@ -106,6 +105,7 @@ const
         "cs": "ch",
         "hr": "dž,lj,nj",
         "hu": "cs,dz,dzs,gy,ly,ny,sz,ty,zs",
+        "mi": "ng,wh",
         "mt": "għ,ie",
         "sk": "dz,dž,ch",
         "sq": "dh,gj,ll,nj,rr,sh,th,xh,zh"
