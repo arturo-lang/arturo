@@ -109,6 +109,13 @@ const
         "sl": "áȃȁćđéèȇẹ́ẹ̑ȅíȋȉóȏọ́ọ̑ȍqŕȓúȗȕwxy"
     }.toTable
 
+    # di- or tri-graphs that can be found in a given language, by ISO 639-1 code,
+    # with the exact order as in the NgraphReplacement placeholders (`%`) 
+    # found in the main charset
+    ngraphs = {
+        "hu": ["cs", "dz", "dzs", "gy", "ly", "ny", "sz", "ty", "zs"]
+    }.toTable
+
 #=======================================
 # Methods
 #=======================================
