@@ -74,6 +74,7 @@ const
         "sr": "абвгдђежзијклљмнњопрстћуфхцчџш",
         "sv": "abcdefghijklmnopqrstuvwxyzåäö",
         "sw": "abcdefghijklmnoprstuvwyz",
+        "tl": "abcdefghijklmnñ%opqrstuvwxyz",
         "tr": "abcçdefgğhıijklmnoöprsştuüvyz",
         "uk": "абвгґдеєжзиіїйклмнопрстуфхцчшщьюя"
     }.toTable
@@ -108,7 +109,8 @@ const
         "mi": "ng,wh",
         "mt": "għ,ie",
         "sk": "dz,dž,ch",
-        "sq": "dh,gj,ll,nj,rr,sh,th,xh,zh"
+        "sq": "dh,gj,ll,nj,rr,sh,th,xh,zh",
+        "tl": "ng"
     }.toTable
 
 #=======================================
