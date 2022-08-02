@@ -148,5 +148,9 @@ proc getExtraCharsetForSorting*(locale: string): seq[Rune] =
         result = toSeq(runes(extras[locale])).map((x)=>toUpper(x)) & 
                  toSeq(runes(extras[locale]))
 
+proc getNgraphs*(locale: string): seq[string] =
+    if ngraphs.hasKey(locale):
+        result = toSeq(ngraphs[locale])
+
 proc getCharset*(locale: string, withExtras = false, doUppercase = false): ValueArray =
     return getCharsetRunes(locale, withExtras, doUppercase).map((x)=>newChar(x))
