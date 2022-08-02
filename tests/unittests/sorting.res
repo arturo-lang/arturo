@@ -84,3 +84,32 @@ Ruby:Locale+Sensitive   :
 Arturo:Locale+Sensitive : Bob alpha bor bók mode mother móðir það 
 
 == OK
+
+==============================================================================================================
+ > PROCESSING: köszönöm Örvendek szia csardas cúgos cárnő cárné czink 
+==============================================================================================================
+
+---------------------------------
+ NO-LOCALE
+---------------------------------
+
+Ruby:NONE               :  
+Arturo:NONE             : csardas czink cárné cárnő cúgos köszönöm szia Örvendek 
+
+Arturo:ASCII            : cárné cárnő csardas cúgos czink köszönöm Örvendek szia 
+Arturo:ASCII+Sensitive  : Örvendek cárné cárnő csardas cúgos czink köszönöm szia 
+
+Ruby:Sensitive          :  
+Arturo:Sensitive        : csardas czink cárné cárnő cúgos köszönöm szia Örvendek 
+
+---------------------------------
+ LANG: hu 
+---------------------------------
+
+Ruby:Locale             :  
+Arturo:Locale           : cárné cárnő cúgos czink csardas köszönöm Örvendek szia 
+
+Ruby:Locale+Sensitive   :  
+Arturo:Locale+Sensitive : Örvendek cárné cárnő cúgos czink csardas köszönöm szia 
+
+== OK

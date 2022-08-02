@@ -147,4 +147,21 @@ func jaro*(s1, s2: string): float =
 
 template replaceAll*(original, match, replacement: string): string =
     original.replace(match, replacement)
-    
+
+func replaceOnce*(s, sub: string, by = ""): string =
+    result = ""
+    let subLen = sub.len
+    if subLen == 0:
+        result = s
+    else:
+        var a {.noinit.}: SkipTable
+        initSkipTable(a, sub)
+        let last = s.high
+        var i = 0
+        let j = find(a, s, sub, i, last)
+        if j >= 0: 
+            add result, substr(s, i, j - 1)
+            add result, by
+            i = j + subLen
+
+        add result, substr(s, i)
