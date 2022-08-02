@@ -58,6 +58,7 @@ const
         "fr": "abcdefghijklmnopqrstuvwxyz",
         "ga": "abcdefghijklmnopqrstuvwxyz",
         "gd": "abcdefghilmnoprstu",
+        "hu": "aábc%d%%eéfg%hiíjkl%mn%oóöőpqrs%t%uúüűvwxyz%",
         "hy": "աբգդեզէըթժիլխծկհձղճմյնշոչպջռսվտրցւփքօֆուև",
         "id": "abcdefghijklmnopqrstuvwxyz",
         "ig": "abɓcdɗeǝẹfghiịjkƙlmnoọprsṣtuụvwyz",
