@@ -18,8 +18,6 @@ import vm/values/value
 # Constants
 #=======================================
 
-# TODO(Strings\alphabet) add support for Albanian alphabet -> sq
-#  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Croatian alphabet -> hr
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Czech alphabet -> cs
@@ -77,6 +75,7 @@ const
         "ro": "aăâbcdefghiîjklmnopqrsștțuvwxyz",
         "ru": "абвгдеёжзийклмнопрстуфхцчшщъыьэюя",
         "sl": "abcčdefghijklmnoprsštuvzž",
+        "sq": "abcçd%eëfg%hijkl%mn%opqr%s%t%uvx%yz%",
         "sr": "абвгдђежзијклљмнњопрстћуфхцчџш",
         "sv": "abcdefghijklmnopqrstuvwxyzåäö",
         "sw": "abcdefghijklmnoprstuvwyz",
@@ -108,7 +107,8 @@ const
     # with the exact order as in the NgraphReplacement placeholders (`%`) 
     # found in the main charset
     ngraphs = {
-        "hu": ["cs", "dz", "dzs", "gy", "ly", "ny", "sz", "ty", "zs"]
+        "hu": ["cs", "dz", "dzs", "gy", "ly", "ny", "sz", "ty", "zs"],
+        "sq": ["dh", "gj", "ll", "nj", "rr", "sh", "th", "xh", "zh"]
     }.toTable
 
 #=======================================
