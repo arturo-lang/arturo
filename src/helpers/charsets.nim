@@ -88,45 +88,20 @@ const
     # but would not form part of its dictionary index
     extras = {
         "af": "áäéèêëíîïóôöúûüý",
-        "be": "",
-        "bg": "",
         "ca": "àéèçíïóòúü",
-        "da": "",
         "de": "äöüß",
         "el": "άέίόύϊϋΐΰ",
-        "en": "",
         "es": "áéíóúü",
-        "et": "",
         "eu": "ç",
-        "fi": "",
         "fo": "ö",
         "fr": "àâæçéèêëîïôœùûüÿ",
         "ga": "áḃċḋéḟġíṁóṗṡṫú",
         "gd": "àèìòù",
-        "hy": "",
-        "id": "",
         "ig": "áàâéèêíìîóòȏúùû",
-        "is": "",
         "it": "àéèíìîóòúù",
-        "ka": "",
-        "la": "",
-        "lb": "",
-        "lt": "",
-        "lv": "",
-        "mk": "",
-        "ms": "",
-        "nl": "",
-        "no": "",
-        "pl": "",
         "pt": "áàâãäçéêëíïóõöúü",
-        "ro": "",
         "ru": "а́е́и́о́у́э́",
-        "sl": "áȃȁćđéèȇẹ́ẹ̑ȅíȋȉóȏọ́ọ̑ȍqŕȓúȗȕwxy",
-        "sr": "",
-        "sv": "",
-        "sw": "",
-        "tr": "",
-        "uk": ""
+        "sl": "áȃȁćđéèȇẹ́ẹ̑ȅíȋȉóȏọ́ọ̑ȍqŕȓúȗȕwxy"
     }.toTable
 
 #=======================================
@@ -141,10 +116,11 @@ proc getCharsetRunes*(locale: string, withExtras = false, doUppercase = false): 
 
     if withExtras:
         var extra: seq[Rune] = @[]
-        if doUppercase:
-            extra = toSeq(runes(extras[locale])).map((x)=>toUpper(x))
-        else:
-            extra = toSeq(runes(extras[locale]))
+        if extras.hasKey(locale):
+            if doUppercase:
+                extra = toSeq(runes(extras[locale])).map((x)=>toUpper(x))
+            else:
+                extra = toSeq(runes(extras[locale]))
 
         result.add(extra)
 
@@ -154,8 +130,9 @@ proc getCharsetForSorting*(locale: string): seq[Rune] =
     getCharsetRunes(locale, false, false)
 
 proc getExtraCharsetForSorting*(locale: string): seq[Rune] =
-    toSeq(runes(extras[locale])).map((x)=>toUpper(x)) & 
-    toSeq(runes(extras[locale]))
+    if extras.hasKey(locale):
+        result = toSeq(runes(extras[locale])).map((x)=>toUpper(x)) & 
+                 toSeq(runes(extras[locale]))
 
 proc getCharset*(locale: string, withExtras = false, doUppercase = false): ValueArray =
     return getCharsetRunes(locale, withExtras, doUppercase).map((x)=>newChar(x))
