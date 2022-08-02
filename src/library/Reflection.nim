@@ -621,6 +621,22 @@ proc defineSymbols*() =
             ##########################################################
             push(newLogical(x.kind==PathLabel))
 
+    builtin "rational?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "checks if given value is of type :rational",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        # TODO(Reflection\rational) add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            ##########################################################
+            push(newLogical(x.kind==Rational))
+
     builtin "regex?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
