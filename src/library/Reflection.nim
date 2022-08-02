@@ -621,6 +621,22 @@ proc defineSymbols*() =
             ##########################################################
             push(newLogical(x.kind==PathLabel))
 
+    builtin "quantity?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "checks if given value is of type :quantity",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        # TODO(Reflection\quantity) add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            ##########################################################
+            push(newLogical(x.kind==Quantity))
+
     builtin "rational?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
