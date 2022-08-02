@@ -26,8 +26,6 @@ import vm/values/value
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Esperanto alphabet -> eo
 #  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for Hungarian alphabet -> hu
-#  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Maltese alphabet -> mt
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Maori alphabet -> mi
