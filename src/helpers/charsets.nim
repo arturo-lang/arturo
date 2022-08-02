@@ -120,7 +120,7 @@ const
 # Methods
 #=======================================
 
-proc getCharsetRunes*(locale: string, withExtras = false, doUppercase = false): seq[Rune] =
+proc getCharsetRunes*(locale: string, withExtras = false, doUppercase = false, filterNgraphs = true): seq[Rune] =
     if doUppercase:
         result = toSeq(runes(charsets[locale])).map((x)=>toUpper(x))
     else:
@@ -136,7 +136,8 @@ proc getCharsetRunes*(locale: string, withExtras = false, doUppercase = false): 
 
         result.add(extra)
 
-    result = result.filter((x) => x!=NgraphReplacement)
+    if filterNgraphs:
+        result = result.filter((x) => x!=NgraphReplacement)
 
 proc getCharsetForSorting*(locale: string): seq[Rune] =
     toRunes("0123456789") & 
@@ -147,6 +148,28 @@ proc getExtraCharsetForSorting*(locale: string): seq[Rune] =
     if extras.hasKey(locale):
         result = toSeq(runes(extras[locale])).map((x)=>toUpper(x)) & 
                  toSeq(runes(extras[locale]))
+
+proc getCharsetWithNgraphs*(locale: string): seq[string] =
+    let ret = toRunes("0123456789").map((x) => $(x)) &
+              getCharsetRunes(locale, false, true, false).map((x) => $(x)) &
+              getCharsetRunes(locale, false, false, false).map((x) => $(x))
+
+    var ngr = ngraphs[locale]
+    var i = 0
+    var doCapitalize = true
+    for item in ret:
+        if item == "%":
+            if doCapitalize:
+                result.add(ngr[i].capitalize())
+            else:
+                result.add(ngr[i])
+            if i+1 < ngr.len:
+                i+=1
+            else:
+                i = 0
+                doCapitalize = false
+        else:
+            result.add(item)
 
 proc getNgraphs*(locale: string): seq[string] =
     if ngraphs.hasKey(locale):
