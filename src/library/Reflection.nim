@@ -342,7 +342,7 @@ proc defineSymbols*() =
             print dictionary? 123               ; false
         """:
             ##########################################################
-            push(newLogical(x.kind==Dictionary))
+            push(newLogical(x.kind==Dictionary and x.custom.isNil()))
 
     when not defined(WEB):
 
