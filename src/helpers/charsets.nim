@@ -24,8 +24,6 @@ import vm/values/value
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Czech alphabet -> cs
 #  label: library, enhancement, easy
-# TODO(Strings\alphabet) add support for Esperanto alphabet -> eo
-#  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Maltese alphabet -> mt
 #  label: library, enhancement, easy
 # TODO(Strings\alphabet) add support for Maori alphabet -> mi
@@ -50,6 +48,7 @@ const
         "de": "abcedfghijklmnopqrstuvwxyz",
         "el": "αβγδεζηθικλμνξοπρστυφχψω",
         "en": "abcdefghijklmnopqrstuvwxyz",
+        "eo": "abcĉdefgĝhĥijĵklmnoprsŝtuŭvz",
         "es": "abcdefghijklmnñopqrstuvwxyz",
         "et": "abcdefghijklmnopqrsšzžtuvwõäöüxy",
         "eu": "abcdefghijklmnñopqrstuvwxyz",
