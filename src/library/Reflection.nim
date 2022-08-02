@@ -850,6 +850,22 @@ proc defineSymbols*() =
             ##########################################################
             push(newLogical(x.kind==Type))
 
+    builtin "version?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "checks if given value is of type :version",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        # TODO(Reflection\version?) add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            ##########################################################
+            push(newLogical(x.kind==Version))
+
     builtin "word?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
