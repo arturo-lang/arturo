@@ -169,9 +169,8 @@ proc getCharsetWithNgraphs*(locale: string): seq[string] =
         else:
             result.add(item)
 
-proc getNgraphs*(locale: string): seq[string] =
-    if ngraphs.hasKey(locale):
-        result = toSeq(ngraphs[locale])
+proc hasNgraphs*(locale: string): bool =
+    ngraphs.hasKey(locale)
 
 proc getCharset*(locale: string, withExtras = false, doUppercase = false): ValueArray =
     return getCharsetRunes(locale, withExtras, doUppercase).map((x)=>newChar(x))
