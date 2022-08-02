@@ -232,6 +232,22 @@ proc defineSymbols*() =
             ##########################################################
             push(newLogical(x.kind==Block))
 
+    builtin "bytecode?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "checks if given value is of type :bytecode",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        # TODO(Reflection\bytecode?) add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            ##########################################################
+            push(newLogical(x.kind==Bytecode))
+
     builtin "char?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -247,6 +263,22 @@ proc defineSymbols*() =
         """:
             ##########################################################
             push(newLogical(x.kind==Char))
+
+    builtin "color?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "checks if given value is of type :color",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        # TODO(Reflection\color?) add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            ##########################################################
+            push(newLogical(x.kind==Color))
 
     builtin "complex?",
         alias       = unaliased, 
