@@ -2132,10 +2132,23 @@ proc factorial*(x: Value): Value =
     else:
         if x.iKind==NormalInteger:
             if x.i < 21:
-                return newInteger(fac(x.i))
+                when defined(WEB):
+                    if x.i < 13:
+                        return newInteger(fac(x.i))
+                    else:
+                        let items = (toSeq(1..x.i)).map((w)=>newInteger(w))
+                        var res = newInteger(1)
+                        for item in items:
+                            res = res * item
+                        return res
+                else:
+                    return newInteger(fac(x.i))
             else:
                 when defined(WEB):
-                    discard
+                    let items = (toSeq(1..x.i)).map((w)=>newInteger(w))
+                    var res = newInteger(1)
+                    for item in items:
+                        res = res * item
                 elif defined(NOGMP):
                     RuntimeError_NumberOutOfPermittedRange("factorial",$(x), "")
                 else:
