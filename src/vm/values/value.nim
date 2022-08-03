@@ -236,9 +236,9 @@ type
 
     Value* {.acyclic.} = ref object 
         info*: string
-        # TODO(VM/values/value) Convert objects into a distinct type
-        #  `.custom` is - I think - solely used for custom-type user-defined objects that actually reside in a `:dictionary` value. The right way to go about it would be to define them internally as a distinct - e.g. `:object` value
-        #  labels: vm, values, enhancement
+        # TODO(VM/values/value) remove unused `.custom` field
+        #  and... rename the corresponding field in Object values
+        #  labels: vm, values, cleanup, easy
         custom*: Value
         case kind*: ValueKind:
             of Null,
