@@ -482,7 +482,7 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "get collection's item by given index",
         args        = {
-            "collection"    : {String,Block,Dictionary,Date},
+            "collection"    : {String,Block,Dictionary,Object,Date},
             "index"         : {Any}
         },
         attrs       = NoAttrs,
@@ -528,6 +528,8 @@ proc defineSymbols*() =
                 of Block: push(GetArrayIndex(cleanBlock(x.a), key.i))
                 of Dictionary: 
                     push(GetKey(x.d, $(key)))
+                of Object:
+                    push(GetKey(x.o, $(key)))
                 of String: push(newChar(x.s.runeAtPos(key.i)))
                 of Date: 
                     push(GetKey(x.e, key.s))
