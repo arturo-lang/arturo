@@ -16,6 +16,10 @@ import vm/values/value
 # Methods
 #=======================================
 
+# TODO(VM/values/logic) Add `Nand`, `Nor`, etc helpers
+#  Since we already have helper methods for AND, OR, NOT, XOR - why not add the remaining ones, instead of having hack-ish code in our Arithmetic module?
+#  labels: vm, values, enhancement
+
 func And*(x,y: logical): logical =
     if x==False: return False
     if y==False: return False
