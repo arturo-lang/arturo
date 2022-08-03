@@ -6,6 +6,12 @@
 # @file: library/Crypto.nim
 ######################################################
 
+# TODO(Crypto) more potential built-in function candidates?
+#  labels: library, enhancement, open discussion
+
+# TODO(Crypto) is module's name a misnomer?
+#  labels: library, enhancement, open discussion
+
 #=======================================
 # Pragmas
 #=======================================

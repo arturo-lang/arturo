@@ -30,6 +30,9 @@ import vm/values/value
 # Methods
 #=======================================
 
+# TODO(VM/values/comparison) Verify all value types are properly handled by all overloads
+#  labels: vm, values, enhancement, unit-test
+
 proc `==`*(x: Value, y: Value): bool {.inline.}=
     if x.kind in [Integer, Floating, Rational] and y.kind in [Integer, Floating, Rational]:
         if x.kind==Integer:

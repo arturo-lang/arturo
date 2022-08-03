@@ -223,6 +223,11 @@ proc defineSymbols*() =
 
                 push(newStringBlock(contents))
 
+        # TODO(Paths\module) Re-implement & change behavior of built-in function
+        #  This should actually check if the aforementioned module/package is installed first.
+        #  If not, it should look it up - and if available online - download it and install it.
+        #  This obviously goes hand-in-hand with the development & implementation of Arturo's new package manager.
+        #  labels: library, package manager, enhancement
         builtin "module",
             alias       = unaliased, 
             rule        = PrefixPrecedence,
@@ -298,6 +303,9 @@ proc defineSymbols*() =
             description = "common path constants":
                 newDictionary(getPathInfo())
 
+        # TODO(Paths\relative) Test and possible re-implement built-in function
+        #  Right now, Arturo's path handling is a complete mess IMHO. And `relative` is one of the main culprits - along with our handling of the "PathStack" in VM/Env.
+        #  labels: vm, library, enhancement, bug, critical
         builtin "relative",
             alias       = dotslash, 
             rule        = PrefixPrecedence,

@@ -63,6 +63,9 @@ proc generateCustomObject*(customType: Value, arguments: ValueArray): Value =
 
     return res
 
+# TODO(Converters) Make sure `convertedValueToType` works fine + add tests
+#  labels: library, cleanup, unit-test
+
 proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
     if y.kind == tp and y.kind!=Dictionary and y.kind!=Quantity:
         return y
@@ -480,6 +483,11 @@ proc defineSymbols*() =
 
     when defined(VERBOSE):
         echo "- Importing: Converters"
+
+    # TODO(Converters) resolving `from`/`to`/`as`/`in` clutter?
+    #  Right now, we have 4 different built-in function performing different-but-similar actions.
+    #  Is there any way to remove all ambiguity - by either reducing them, merging them, extending them or explaining their functionality more thoroughly?
+    #  labels: library, enhancement, open discussion, documentation
 
     builtin "array",
         alias       = at, 

@@ -6,6 +6,10 @@
 # @file: helpers/datasource.nim
 ######################################################
 
+# TODO(Helpers/helper) General cleanup needed
+#  Too much commented-out code, that's - probably - not needed whatsoever...
+#  labels: helpers, cleanup
+
 #=======================================
 # Libraries
 #=======================================
@@ -240,6 +244,10 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
             result["infix?"] = newLogical(alias[1]==InfixPrecedence)
 
         result["example"] = newStringBlock(splitExamples(v.example))
+
+# TODO(Helpers/helper) embed "see also" functions in info screens
+#  related: https://github.com/arturo-lang/arturo/issues/466#issuecomment-1065274429
+#  labels: helpers, library, repl, enhancement
 
 proc printInfo*(n: string, v: Value, aliases: SymbolDict, withExamples = false) =
     # Get type + possible module (if it's a builtin)
