@@ -6,6 +6,9 @@
 # @file: vm/exec.nim
 ######################################################
 
+# TODO(VM/exec) General cleanup needed
+#  labels: vm, execution, enhancement, cleanup
+
 #=======================================
 # Libraries
 #=======================================
