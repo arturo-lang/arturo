@@ -149,6 +149,19 @@ type
 
         unaliased               # used only for builtins
 
+    # TODO(VM/values/value) add new `:matrix` type?
+    #  this would normally go with a separate Linear Algebra-related stdlib module
+    #  labels: vm, values, enhancement, open discussion
+
+    # TODO(VM/values/value) add new `:typeset` type?
+    #  or... could this be encapsulated in our existing `:type` values?
+    #  labels: vm, values, enhancement, open discussion
+
+    # TODO(VM/values/value) add new lazy-sequence/range type?
+    #  Right now, declaring a block or a range - e.g. `1..10` - actually pushes all required elements into a new block.
+    #  If their number is quite high, then there are some obvious performance-related drawbacks.
+    #  It would be great if we could define some special sequences, only by their limits - including infinity - and have our regular functions, especially iterators, operate on them!
+    #  labels: vm, values, library, enhancement, open discussion
     ValueKind* = enum
         Null            = 0
         Logical         = 1
