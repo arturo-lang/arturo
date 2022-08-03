@@ -494,7 +494,7 @@ proc defineSymbols*() =
             is? [:integer] [1 "two]         ; => false
         """:
             ##########################################################
-            if y.custom.isNil():
+            if y.kind != Object:
                 if x.kind == Type:
                     if x.t == Any:
                         push(VTRUE)
@@ -517,7 +517,10 @@ proc defineSymbols*() =
                                         break
                     push newLogical(res)
             else:
-                push(newLogical(x.name == y.custom.name))
+                if x.t in {Object,Any}:
+                    push(VTRUE)
+                else:
+                    push(newLogical(x.name == y.cust.name))
 
     builtin "floating?",
         alias       = unaliased, 
