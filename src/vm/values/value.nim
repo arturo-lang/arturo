@@ -2406,7 +2406,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
 
     proc dumpBlockStart(v: Value) =
         var tp = ($(v.kind)).toLowerAscii()
-        if not v.custom.isNil(): tp = v.custom.name
+        if v.kind==Object: tp = v.cust.name
         if not muted:   stdout.write fmt("{bold(magentaColor)}[{fg(grayColor)} :{tp}{resetColor}\n")
         else:           stdout.write fmt("[ :{tp}\n")
 
@@ -2529,6 +2529,24 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
                     dump(value, level+1, false, muted=muted)
 
             dumpBlockEnd()
+        
+        of Object   : 
+            dumpBlockStart(v)
+
+            let keys = toSeq(v.o.keys)
+
+            if keys.len > 0:
+                let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
+
+                for key,value in v.o:
+                    for i in 0..level: stdout.write "\t"
+
+                    stdout.write unicode.alignLeft(key & " ", maxLen) & ":"
+
+                    dump(value, level+1, false, muted=muted)
+
+            dumpBlockEnd()
+
         of Function     : 
             dumpBlockStart(v)
 
@@ -2852,6 +2870,13 @@ func hash*(v: Value): Hash {.inline.}=
             for k,v in pairs(v.d):
                 result = result !& hash(k)
                 result = result !& hash(v)
+
+        of Object       :
+            result = 1
+            for k,v in pairs(v.o):
+                result = result !& hash(k)
+                result = result !& hash(v)
+        
         of Function     : 
             if v.fnKind==UserFunction:
                 result = 1
