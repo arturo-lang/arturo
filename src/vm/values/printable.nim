@@ -192,13 +192,20 @@ proc `$`*(v: Value): string {.inline.} =
             result = "[" & cleanBlock(v.a).map((child) => $(child)).join(" ") & "]"
 
         of Dictionary   :
-            if not v.custom.isNil and v.custom.methods.d.hasKey("print"):
+            var items: seq[string] = @[]
+            for key,value in v.d:
+                items.add(key  & ":" & $(value))
+
+            result = "[" & items.join(" ") & "]"
+
+        of Object:
+            if v.cust.methods.d.hasKey("print"):
                 push v
-                callFunction(v.custom.methods.d["print"])
+                callFunction(v.cust.methods.d["print"])
                 result = pop().s
             else:
                 var items: seq[string] = @[]
-                for key,value in v.d:
+                for key,value in v.o:
                     items.add(key  & ":" & $(value))
 
                 result = "[" & items.join(" ") & "]"
