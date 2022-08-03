@@ -27,6 +27,10 @@ var
 # Constants
 #=======================================
 
+# TODO(Helpers/terminal) Verify terminal color codes
+#  Preferrably, across different terminals
+#  labels: helpers, command line, unit-test
+
 const
     noColor*     = "\e[0m"
 
