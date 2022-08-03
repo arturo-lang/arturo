@@ -686,8 +686,17 @@ func newBinary*(n: ByteArray = @[]): Value {.inline.} =
 func newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
     Value(kind: Dictionary, d: d)
 
-func newObject*(o: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
-    Value(kind: Object, o: o)
+proc newObject*(args: ValueArray, tp: Value, initializer: proc (self: Value, tp: Value), o: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
+    var fields = o
+    var i = 0
+    while i<args.len and i<tp.prototype.a.len:
+        let k = tp.prototype.a[i]
+        fields[k.s] = args[i]
+        i += 1
+
+    result = Value(kind: Object, o: fields, cust: tp)
+    
+    initializer(result, tp)
 
 func newFunction*(params: Value, main: Value, imports: Value = VNULL, exports: Value = VNULL, exportable: bool = false, memoize: bool = false): Value {.inline.} =
     Value(kind: Function, fnKind: UserFunction, params: params, main: main, imports: imports, exports: exports, exportable: exportable, memoize: memoize)
