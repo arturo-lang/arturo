@@ -879,10 +879,10 @@ proc defineSymbols*() =
             print type "hello world"  ; :string
         """:
             ##########################################################
-            if x.custom.isNil():
+            if x.kind != Object:
                 push(newType(x.kind))
             else:
-                push(x.custom)
+                push(x.cust)
 
     builtin "type?",
         alias       = unaliased, 
