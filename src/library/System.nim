@@ -125,6 +125,12 @@ proc defineSymbols*() =
                 let code = (popAttr("code") != VNULL)
                 let directly = (popAttr("directly") != VNULL)
 
+                # TODO(System\execute) Fix handling of `.async`
+                #  It currently "works" but in a very - very - questionable way.
+                #  This has to be implemented properly.
+                #  Also: having a globally-available array of "processes" makes things looking even worse.
+                #  labels: library, enhancement, windows, linux, macos
+
                 if (popAttr("async") != VNULL):
                     let newProcess = startProcess(command = cmd, args = args)
                     let pid = processID(newProcess)
@@ -277,6 +283,10 @@ proc defineSymbols*() =
 
                 push newDictionary(ret)
 
+    # TODO(System\script) verify it's working properly & potentially re-implement
+    #  Right now, it picks script-comments from the entire script, but these are not accessible from an included script, nor from the includer. 
+    #  So, its current usefulness is very much doubtable.
+    #  labels: library, enhancement, open discussion
     constant "script",
         alias       = unaliased,
         description = "embedded information about the current script":

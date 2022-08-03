@@ -6,6 +6,10 @@
 # @file: vm/values/printable.nim
 ######################################################
 
+# TODO(VM/values/printable) Do we even need to have this?
+#  This module include a carbon copy of the `$` overloads for Value and SymbolKind values, copied verbatim from VM/values/value. Obviously, the reason for its existence must have been Nim's awkward way of resolving module imports; but there *must* be a better way.
+#  labels: vm, values, cleanup
+
 #=======================================
 # Libraries
 #=======================================

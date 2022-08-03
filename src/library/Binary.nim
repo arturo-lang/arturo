@@ -27,6 +27,12 @@ proc defineSymbols*() =
     when defined(VERBOSE):
         echo "- Importing: Binary"
 
+    # TODO(Binary) more potential built-in function candidates?
+    #  I'm thinking that we could probably add functions that allows to either clear or "set" a specific bit.
+    #  Potentially, this could lead to the need of having another - e.g. `:bitset` - type.
+    #  Is it worth the fuss?
+    #  labels: library, enhancement, open discussion
+
     builtin "and",
         alias       = unaliased, 
         rule        = InfixPrecedence,

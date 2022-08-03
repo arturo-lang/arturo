@@ -44,6 +44,15 @@ when not defined(WEB):
     # Helpers
     #=======================================
 
+    # TODO(Helpers/repl) Add Ctrl+D capabilities for REPL
+    #  Our REPL should be able to handle Ctrl+D, but it's not working yet. Given that it's based on the LineNoise library, this the place we should start looking first.
+    #  labels: helpers, 3rd-party, enhancement
+
+    # TODO(Helpers/repl) Add multi-line copy-paste capabilities for REPL
+    #  It would be great to be able to copy-paste multi-line text into our REPL and handle it properly!
+    #  As with Ctrl+D, given that it's based on the LineNoise library, this the place we should start looking first.
+    #  labels: helpers, 3rd-party, enhancement
+
     proc initRepl*(path: string, completionsArray: ValueArray = @[], hintsTable: ValueDict = initOrderedTable[string,Value]()) =
         completions = completionsArray
         hints = hintsTable

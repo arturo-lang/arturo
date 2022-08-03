@@ -18,6 +18,10 @@ import vm/[errors, values/value]
 # Globals
 #=======================================
 
+# TODO(VM/globals) Is there any way to actually avoid them altogether?
+#  Having all these global variables is practical, but it actually causes problems when we end up wanting to work with multiple threads. An idea would be to add them as fields in a VM object, and pass this object around. But it would still need to be properly benchmark as it would - undoubtedly - add some serious overhead.
+#  labels: vm, enhancement, benchmark, open discussion
+
 var
     # symbols
     Syms* {.global.}      : ValueDict

@@ -60,6 +60,10 @@ proc defineSymbols*() =
     when defined(VERBOSE):
         echo "- Importing: Strings"
 
+    # TODO(Strings\alphabet) Should we move it to the Sets module?
+    #  yes, strings are composed by characters which - together - form an alphabet.
+    #  But what does this function return, if it's not a Set?
+    #  labels: library, enhancement, cleanup, open discussion
     builtin "alphabet",
         alias       = unaliased, 
         rule        = PrefixPrecedence,

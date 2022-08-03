@@ -19,6 +19,9 @@ when not defined(WEB):
 # Types
 #=======================================
 
+# TODO(Helpers/quantities) More units to add?
+#  labels: helpers, enhancement, open discussion
+
 type
     UnitKind* = enum
         CurrencyUnit
@@ -341,6 +344,10 @@ proc getQuantityMultiplier*(src: QuantitySpec, tgt: QuantitySpec): float =
         return ConversionRatio[src.name] / ConversionRatio[tgt.name]
 
 proc getQuantityMultiplier*(src: UnitName, tgt: UnitName, isCurrency=false): float =
+    # TODO(Helpers/quantities) Clean up `getQuantityMultiplier`
+    #  Do we need this?
+    #  labels: helpers, values, cleanup
+
     # let srcKind = quantityKindForName(src)
     # let tgtKind = quantityKindForName(tgt)
     # if srcKind != tgtKind: return CannotConvertQuantity

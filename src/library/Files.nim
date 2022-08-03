@@ -48,6 +48,9 @@ proc defineSymbols*() =
     when defined(VERBOSE):
         echo "- Importing: Files"
 
+    # TODO(Files) more potential built-in function candidates?
+    #  labels: library, enhancement, open discussion
+
     when not defined(WEB):
 
         builtin "copy",
@@ -131,6 +134,9 @@ proc defineSymbols*() =
                     push(newLogical(dirExists(x.s)))
                 else: 
                     push(newLogical(fileExists(x.s)))
+
+        # TODO(Files) add `move` built-in function
+        #  labels: library, enhancement
 
         builtin "permissions",
             alias       = unaliased, 
