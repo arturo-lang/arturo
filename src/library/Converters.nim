@@ -46,20 +46,12 @@ proc parseFL*(s: string): float =
 #=======================================
 
 proc generateCustomObject*(customType: Value, arguments: ValueArray): Value =
-    var dict = initOrderedTable[string,Value]()
-
-    var i = 0
-    while i<arguments.len and i<customType.prototype.a.len:
-        let k = customType.prototype.a[i]
-        dict[k.s] = arguments[i]
-        i += 1
-
-    var res = newDictionary(dict)
-    res.custom = customType
-
-    if customType.methods.d.hasKey("init"):
-        push res
-        callFunction(customType.methods.d["init"])
+    var res = newObject(arguments, customType, proc (self: Value, tp: Value) =
+        if tp.methods.d.hasKey("init"):
+            push self
+            callFunction(tp.methods.d["init"])
+        callFunction(tp.methods.d["init"])
+    )
 
     return res
 
