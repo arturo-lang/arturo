@@ -189,15 +189,16 @@ type
         Date            = 22
         Binary          = 23
         Dictionary      = 24
-        Function        = 25
-        Inline          = 26
-        Block           = 27
-        Database        = 28
-        Bytecode        = 29
+        Object          = 25
+        Function        = 26
+        Inline          = 27
+        Block           = 28
+        Database        = 29
+        Bytecode        = 30
 
-        Newline         = 30
-        Nothing         = 31
-        Any             = 32
+        Newline         = 31
+        Nothing         = 32
+        Any             = 33
 
     ValueSpec* = set[ValueKind]
 
