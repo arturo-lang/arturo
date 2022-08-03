@@ -401,6 +401,9 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                             return(res)
                     else:
                         RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+            of Object:
+                # TODO(Converters) should add support for `:object` values
+                discard
 
             of Symbol:
                 case tp:
