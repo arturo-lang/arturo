@@ -6,6 +6,11 @@
 # @file: helpers/json.nim
 ######################################################
 
+# TODO(Helpers/jsonobject) Rename file?
+#  The filename seems a bit confusing even to me? Could we not change it to something more... self-explanatory? 
+#  The only catch is that it shouldn't clash with any of Nim's stdlib modules.
+#  labels: helpers, cleanup
+
 #=======================================
 # Libraries
 #=======================================
@@ -23,6 +28,10 @@ import vm/values/[printable, value]
 #=======================================
 # Helpers
 #=======================================
+
+# TODO(Helpers/jsonobject) Verify it's working properly & add missing types, if any
+#  This is both for `generateJsonNode` and `parseJsonNode` - and their WEB-specific equivalents
+#  labels: helpers, enhancement, unit-test
 
 proc generateJsonNode*(n: Value): JsonNode =
     case n.kind
