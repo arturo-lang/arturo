@@ -20,8 +20,13 @@ import vm/values/value
 # Methods
 #=======================================
 
+# TODO(Helpers/url) verify `isUrl` is working right & testing for valid URLs
+#  Currently, our `isUrl` works with a RegEx - which looks pretty shady. If there's a better and more standards-compliant way to do it, we should - since lot's of things are based on this one.
+#  labels: helpers, enhancement, open discussion
+
 func isUrl*(s: string): bool {.inline.} =
     when not defined(WEB):
+        
         return s.contains("localhost:") or s.match(re"^(?:http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$")
     else:
         return false
