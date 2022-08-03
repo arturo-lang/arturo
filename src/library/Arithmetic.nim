@@ -232,6 +232,9 @@ proc defineSymbols*() =
             if x.kind==Literal  : InPlace ^= y
             else                : push(x^y)
 
+    # TODO(Arithmetic) add `powmod` built-in function?
+    #  labels: library, enhancement, open discussion
+
     builtin "sub",
         alias       = minus, 
         rule        = InfixPrecedence,

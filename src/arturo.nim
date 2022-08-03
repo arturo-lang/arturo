@@ -129,6 +129,9 @@ when isMainModule and not defined(WEB):
                             action = evalCode
                             code = runModule
                             break
+                        # TODO(Arturo/main) remove debug command-line option?
+                        #  I'm not really sure myself how it's working right now - so a good idea would be to either re-visit it and make it work properly, or ignore it altogether and remove it.
+                        #  labels: command line, open discussion
                         of "d","debug":
                             debug = true
                         of "no-color":
@@ -138,6 +141,9 @@ when isMainModule and not defined(WEB):
                         of "v","version":
                             action = showVersion
                         else:
+                            # TODO(Arturo/main) do we need to print this?
+                            #  looks like a debugging message - or not
+                            #  labels: command line, easy, cleanup
                             #echo "error: unrecognized option (" & token.key & ")"
                             discard
                 of cmdEnd: break

@@ -21,6 +21,9 @@ import vm/values/value
 # Constants
 #=======================================
 
+# TODO(VM/stack) Re-consider the starting values for our StackSize & AttrsSize
+#  How does it influence the overall performance? This has to be thoroughly tested & benchmarked.
+#  labels: vm, benchmark, unit-test
 const StackSize* = 100000
 const AttrsSize* = 10
 

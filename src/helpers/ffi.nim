@@ -6,6 +6,10 @@
 # @file: helpers/ffi.nim
 ######################################################
 
+# TODO(Helpers/ffi) Re-visit & re-implement the whole thing
+#  Current, this "works". However, even if it works, it's not the best way to do it. Plus, we're totally limited regarding what type of functions we can "import".
+#  labels: helpers, enhancement, cleanup, open discussion
+
 when not defined(WEB):
     #=======================================
     # Libraries

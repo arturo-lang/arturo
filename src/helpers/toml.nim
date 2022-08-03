@@ -19,6 +19,9 @@ import vm/values/value
 # Methods
 #=======================================
 
+# TODO(Helpers/toml) Verify it's working properly & add missing types, if any
+#  labels: helpers, enhancement, unit-test
+
 proc parseTomlNode*(n: TomlValueRef): Value =
     case n.kind
         of TomlValueKind.String  : result = newString(n.stringVal)

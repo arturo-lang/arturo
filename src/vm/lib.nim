@@ -57,6 +57,11 @@ else:
     let funcs {.compileTime.}: seq[string] = @[]
     let compact {.compileTime.} = false
 
+# TODO(VM/lib) Introduce typeset data type?
+#  It would be ideal to have a `:typeset` data type which would serve as an umbrella-set for different types, and used mainly in function signatures: primarily, the built-in ones, and of course the user-defined ones. But we have to figure out how this could work in a viable way...
+#  The code below is just an attempt of "unfolding" typesets, by force-embedding them into each function's list of accepted types. But this may be messy for documentation generation.
+#  labels: vm, language, values, enhancement, open discussion
+
 # template expandTypesets*(args: untyped): untyped =
 #     when (static args.len)==1 and args!=NoArgs:
 #         #echo($(args))
@@ -83,6 +88,8 @@ template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, descriptio
         else:
             const cleanExample = replace(strutils.strip(example),"\n            ","\n")
             
+        # TODO(VM/lib) Rewrite in a cleaner way
+        #  labels: vm, cleanup
         when not defined(WEB):
             let b = newBuiltin(n, alias, rule, "[" & static (instantiationInfo().filename).replace(".nim") & ":" & $(static (instantiationInfo().line)) & "] " & description, static argsLen, args.toOrderedTable, attrs.toOrderedTable, returns, cleanExample, proc () =
                 require(n, args)
@@ -103,6 +110,11 @@ template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, descriptio
                 name: newWord(n)
             )
 
+# TODO(VM/lib) Merge constants and builtin's?
+#  Do we really - really - need another "constant" type? I doubt it whether it makes any serious performance difference, with the only exception being constants like `true`, `false`, etc.
+#  But then, it also over-complicates documentation generation for constants.
+#  So, we should either make documentation possible for constants as well, or merge the two things into one concept
+#  labels: vm, library, enhancement, open discussion
 template constant*(n: string, alias: SymbolKind, description: string, v: Value):untyped =
     Syms[n] = (v)
     Syms[n].info = "[" & static (instantiationInfo().filename).replace(".nim") & ":" & $(static (instantiationInfo().line)) & "] " & description

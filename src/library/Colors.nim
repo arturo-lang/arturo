@@ -31,6 +31,9 @@ proc defineSymbols*() =
     when defined(VERBOSE):
         echo "- Importing: Converters"
 
+    # TODO(Colors) more potential built-in function candidates?
+    #  labels: library, enhancement, open discussion
+
     builtin "blend",
         alias       = at, 
         rule        = PrefixPrecedence,

@@ -599,6 +599,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             of Bytecode: discard
 
             of Newline: 
+                # TODO(Eval/evalOne) verify Newline handling works properly
+                #  Also, we have to figure out whether the commented-out code is needed at all
+                #  labels: vm, evaluator, cleanup
                 when not defined(NOERRORLINES):
                     addEol(node.line)
                 else:
@@ -640,6 +643,9 @@ proc doEval*(root: Value, isDictionary=false): Translation =
 #=======================================
 
 when not defined(PORTABLE):
+    # TODO(Eval/dump) Needs some serious cleanup
+    #  The whole implementation currenly looks like a patchwork of ideas.
+    #  labels: vm, evaluator, cleanup
     proc dump*(evaled: Translation) =
         var lines: seq[string] = @[] 
         # for l in showDebugHeader("Constants"):

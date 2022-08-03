@@ -6,6 +6,10 @@
 # @file: vm/package.nim
 ######################################################
 
+# TODO(VM/package) Needs thorough revision & testing
+#  This looks - and is - very draft-ish. First, we have to see whether it's working at all. Then, probably re-write the whole thing from scratch...
+#  labels: vm, package manager, unit-test
+
 #=======================================
 # Libraries
 #=======================================
