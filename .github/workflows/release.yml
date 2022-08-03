@@ -141,7 +141,7 @@ jobs:
 
   freebsd:
     name: "Package FreeBSD"
-    runs-on: macos-10.15
+    runs-on: macos-12
     strategy:
       matrix:
         os:
@@ -169,7 +169,7 @@ jobs:
 
       - name: Setup environment & Build Arturo
         id: test
-        uses: vmactions/freebsd-vm@v0.1.5
+        uses: vmactions/freebsd-vm@v0
         with:
           usesh: true
           prepare: pkg install -y nim gmp bash databases/sqlite3
