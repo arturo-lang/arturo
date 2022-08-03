@@ -15,8 +15,8 @@
 #=======================================
 # Libraries
 #=======================================
-x
-import os, parseopt,sequtils
+
+import os, parseopt, sequtils
 import strformat, strutils, tables
 
 import src/helpers/terminal
@@ -265,7 +265,7 @@ proc compressBinary() =
             discard
         # TODO(build.nims) Check & fix upx-based compression on Linux
         #  right now, especially on Linux, `upx` seems to be destroying the final binary
-        # labels: bug, enhancement, linux, installer
+        #  labels: bug, enhancement, linux, installer
         
         #     let upx = "upx"
 
