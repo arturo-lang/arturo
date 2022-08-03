@@ -304,6 +304,9 @@ type
                    data* : Value
                    #refs*: IntArray
             of Dictionary:  d*  : ValueDict
+            of Object:
+                o*: ValueDict
+                cust*: Value
             of Function:    
                 args*   : OrderedTable[string,ValueSpec]
                 attrs*  : OrderedTable[string,(ValueSpec,string)]
