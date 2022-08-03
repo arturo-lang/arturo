@@ -686,6 +686,9 @@ func newBinary*(n: ByteArray = @[]): Value {.inline.} =
 func newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
     Value(kind: Dictionary, d: d)
 
+func newObject*(o: ValueDict = initOrderedTable[string,Value](), tp: Value): Value {.inline.} =
+    Value(kind: Object, o: o, tp: tp)
+
 proc newObject*(args: ValueArray, tp: Value, initializer: proc (self: Value, tp: Value), o: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
     var fields = o
     var i = 0
@@ -694,7 +697,7 @@ proc newObject*(args: ValueArray, tp: Value, initializer: proc (self: Value, tp:
         fields[k.s] = args[i]
         i += 1
 
-    result = Value(kind: Object, o: fields, cust: tp)
+    result = newObject(fields, tp)
     
     initializer(result, tp)
 
@@ -802,6 +805,7 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Block:       result = newBlock(v.a.map((vv)=>copyValue(vv)), copyValue(v.data))
 
         of Dictionary:  result = newDictionary(v.d)
+        of Object:      result = newObject(v.o, v.cust)
 
         of Function:    result = newFunction(v.params, v.main, v.imports, v.exports, v.exportable, v.memoize)
 
