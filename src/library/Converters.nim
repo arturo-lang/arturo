@@ -50,7 +50,6 @@ proc generateCustomObject*(customType: Value, arguments: ValueArray): Value =
         if tp.methods.d.hasKey("init"):
             push self
             callFunction(tp.methods.d["init"])
-        callFunction(tp.methods.d["init"])
     )
 
     return res
