@@ -22,6 +22,9 @@ import vm/[parse,values/value]
 # Globals
 #=======================================
 
+# TODO(Env) Paths need to be sanitized - on a global level
+#  Right now, there is a lot of confusion when it comes to paths, what the current one is and what happens when we include/import other scripts. This has to be solved.
+#  labels: vm, bug, enhancement
 var 
     PathStack*  {.threadvar.}: seq[string]
     HomeDir*    : string
