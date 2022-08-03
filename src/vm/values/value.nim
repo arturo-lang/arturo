@@ -687,7 +687,7 @@ func newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.in
     Value(kind: Dictionary, d: d)
 
 func newObject*(o: ValueDict = initOrderedTable[string,Value](), tp: Value): Value {.inline.} =
-    Value(kind: Object, o: o, tp: tp)
+    Value(kind: Object, o: o, cust: tp)
 
 proc newObject*(args: ValueArray, tp: Value, initializer: proc (self: Value, tp: Value), o: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
     var fields = o
