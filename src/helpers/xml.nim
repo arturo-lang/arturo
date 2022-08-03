@@ -23,7 +23,7 @@ import vm/values/value
 
 when not defined(NOPARSERS):
     # TODO(Helpers/xml) re-implement XML parsing
-    #  This `parseXMLNode` supposedly "works", but we first have to define what this means: basically, what would an XMP-parsing function normally yield? How are children/nodes/attributes supposed to fit in Arturo's value system: arrays, dictionaries, scalars, etc?
+    #  This `parseXMLNode` supposedly "works", but we first have to define what this means: basically, what would an XML-parsing function normally yield? How are children/nodes/attributes supposed to fit in Arturo's value system: arrays, dictionaries, scalars, etc?
     #  labels: helpers, library, enhancement, bug, open discussion
     proc parseXMLNode*(n: XmlNode, level: int = 0): Value =
         let items = toSeq(n.items)
