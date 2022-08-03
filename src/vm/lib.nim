@@ -57,6 +57,11 @@ else:
     let funcs {.compileTime.}: seq[string] = @[]
     let compact {.compileTime.} = false
 
+# TODO(VM/lib) Introduce typeset data type?
+#  It would be ideal to have a `:typeset` data type which would serve as an umbrella-set for different types, and used mainly in function signatures: primarily, the built-in ones, and of course the user-defined ones. But we have to figure out how this could work in a viable way...
+#  The code below is just an attempt of "unfolding" typesets, by force-embedding them into each function's list of accepted types. But this may be messy for documentation generation.
+#  labels: vm, language, values, enhancement, open discussion
+
 # template expandTypesets*(args: untyped): untyped =
 #     when (static args.len)==1 and args!=NoArgs:
 #         #echo($(args))
@@ -83,6 +88,8 @@ template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, descriptio
         else:
             const cleanExample = replace(strutils.strip(example),"\n            ","\n")
             
+        # TODO(VM/lib) Rewrite in a cleaner way
+        #  labels: vm, cleanup
         when not defined(WEB):
             let b = newBuiltin(n, alias, rule, "[" & static (instantiationInfo().filename).replace(".nim") & ":" & $(static (instantiationInfo().line)) & "] " & description, static argsLen, args.toOrderedTable, attrs.toOrderedTable, returns, cleanExample, proc () =
                 require(n, args)
