@@ -110,6 +110,11 @@ template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, descriptio
                 name: newWord(n)
             )
 
+# TODO(VM/lib) Merge constants and builtin's?
+#  Do we really - really - need another "constant" type? I doubt it whether it makes any serious performance difference, with the only exception being constants like `true`, `false`, etc.
+#  But then, it also over-complicates documentation generation for constants.
+#  So, we should either make documentation possible for constants as well, or merge the two things into one concept
+#  labels: vm, library, enhancement, open discussion
 template constant*(n: string, alias: SymbolKind, description: string, v: Value):untyped =
     Syms[n] = (v)
     Syms[n].info = "[" & static (instantiationInfo().filename).replace(".nim") & ":" & $(static (instantiationInfo().line)) & "] " & description
