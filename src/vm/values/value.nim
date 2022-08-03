@@ -6,6 +6,10 @@
 # @file: vm/value.nim
 ######################################################
 
+# TODO(VM/values/value) General cleanup needed
+#  There are various pieces of commented-out code that make the final result pretty much illegible. Let's clean this up.
+#  labels: vm, values, cleanup
+
 #=======================================
 # Libraries
 #=======================================
@@ -218,6 +222,9 @@ type
 
     Value* {.acyclic.} = ref object 
         info*: string
+        # TODO(VM/values/value) Convert objects into a distinct type
+        #  `.custom` is - I think - solely used for custom-type user-defined objects that actually reside in a `:dictionary` value. The right way to go about it would be to define them internally as a distinct - e.g. `:object` value
+        #  labels: vm, values, enhancement
         custom*: Value
         case kind*: ValueKind:
             of Null,
@@ -226,6 +233,9 @@ type
             of Logical:     b*  : logical
             of Integer:  
                 case iKind*: IntegerKind:
+                    # TODO(VM/values/value) Wrap Normal and BigInteger in one type
+                    #  Perhaps, we could do that via class inheritance, with the two types inheriting a new `Integer` type, provided that it's properly benchmarked first.
+                    #  labels: vm, values, enhancement, benchmark, open discussion 
                     of NormalInteger:   i*  : int
                     of BigInteger:      
                         when defined(WEB):
@@ -287,6 +297,8 @@ type
                 example*: string
                 case fnKind*: FunctionKind:
                     of UserFunction:
+                        # TODO(VM/values/value) merge Function `params` and `args` into one field?
+                        #  labels: vm, values, enhancement
                         params*     : Value
                         main*       : Value
                         imports*    : Value
@@ -297,6 +309,9 @@ type
                         fname*      : string
                         alias*      : SymbolKind
                         prec*       : PrecedenceKind
+                        # TODO(VM/values/value) `arity` should be common to both User and BuiltIn functions
+                        #  Usually, when we want to get a User function's arity, we access its `params.a.len` - this doesn't make any sense. Plus, it's slower.
+                        #  labels: vm, values, enhancement
                         arity*      : int
                         action*     : BuiltinAction
 
@@ -809,6 +824,10 @@ template cleanBlock*(va: ValueArray, inplace: bool = false): untyped =
 #=======================================
 # Methods
 #=======================================
+
+# TODO(VM/values/value) Verify that all errors are properly thrown
+#  Various core arithmetic operations between Value values may lead to errors. Are we catching - and reporting - them all properly?
+#  labels: vm, values, error handling, unit-test
 
 proc `+`*(x: Value, y: Value): Value =
     if x.kind==Color and y.kind==Color:
