@@ -651,7 +651,7 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            push(newLogical(x.kind==Dictionary and (not x.custom.isNil())))
+            push(newLogical(x.kind==Object))
 
     builtin "path?",
         alias       = unaliased, 
