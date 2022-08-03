@@ -245,6 +245,10 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
 
         result["example"] = newStringBlock(splitExamples(v.example))
 
+# TODO(Helpers/helper) embed "see also" functions in info screens
+#  related: https://github.com/arturo-lang/arturo/issues/466#issuecomment-1065274429
+#  labels: helpers, library, repl, enhancement
+
 proc printInfo*(n: string, v: Value, aliases: SymbolDict, withExamples = false) =
     # Get type + possible module (if it's a builtin)
     var typeStr = ":" & ($(v.kind)).toLowerAscii
