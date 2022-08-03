@@ -6,6 +6,10 @@
 # @file: vm/parse.nim
 ######################################################
 
+# TODO(VM/parser) General cleanup needed
+#  There are various pieces of commented-out code that make the final result pretty much illegible. Let's clean this up.
+#  labels: vm, parser, cleanup
+
 #=======================================
 # Libraries
 #=======================================
