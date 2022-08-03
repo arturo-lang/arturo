@@ -1122,7 +1122,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "set collection's item at index to given value",
         args        = {
-            "collection"    : {String,Block,Dictionary},
+            "collection"    : {String,Block,Dictionary,Object},
             "index"         : {Any},
             "value"         : {Any}
         },
@@ -1165,6 +1165,8 @@ proc defineSymbols*() =
                     SetArrayIndex(x.a, key.i, z)
                 of Dictionary:
                     x.d[$(key)] = z
+                of Object:
+                    x.o[$(key)] = z
                 of String:
                     var res: string = ""
                     var idx = 0
