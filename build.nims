@@ -15,7 +15,7 @@
 #=======================================
 # Libraries
 #=======================================
-
+x
 import os, parseopt,sequtils
 import strformat, strutils, tables
 
@@ -263,9 +263,9 @@ proc compressBinary() =
                 recompressJS(minBin)
         else:
             discard
-        # TODO(build.nims) Check compression
+        # TODO(build.nims) Check & fix upx-based compression on Linux
         #  right now, especially on Linux, `upx` seems to be destroying the final binary
-        # labels: bug, enhancement, installer
+        # labels: bug, enhancement, linux, installer
         
         #     let upx = "upx"
 
