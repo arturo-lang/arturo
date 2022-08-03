@@ -10,6 +10,10 @@
 # Libraries
 #=======================================
 
+# TODO(Helpers/markdown) verify & benchmark Markdown parsing
+#  Which of the libraries are we using in the end? What are the pros and cons of each one? Let's benchmark it!
+#  labels: helpers, 3rd-party, benchmark, unit-test
+
 when not defined(NOPARSERS):
     when defined(USE_NIM_MARKDOWN):
         import extras/markdown

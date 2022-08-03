@@ -32,6 +32,11 @@ type
 # Methods
 #=======================================
 
+# TODO(Helpers/database) Re-add MySQL-related helper functions
+#  Apparently, we already have MySQL support for the core helper function - as with Sqlite. Why are they not in? Was it because of the extra dependencies?
+#  This has to be resolved at some point.
+#  labels: helpers, 3rd-party, enhancement, cleanup
+
 #-----------------------
 # MySQL
 #-----------------------

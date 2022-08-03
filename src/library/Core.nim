@@ -6,6 +6,9 @@
 # @file: library/Core.nim
 ######################################################
 
+# TODO(Core) General cleanup needed
+#  labels: library, enhancement, cleanup
+
 #=======================================
 # Pragmas
 #=======================================
@@ -285,6 +288,8 @@ proc defineSymbols*() =
                 
                 currentTime += 1
 
+    # TODO(Core\dup) verify this works correctly
+    #  labels: library, unit-test
     builtin "dup",
         alias       = thickarrowleft, 
         rule        = PrefixPrecedence,

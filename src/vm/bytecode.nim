@@ -255,6 +255,10 @@ type
 # Methods
 #=======================================
 
+# TODO(Bytecode) Re-visit bytecode reading & writing
+#  Right now, we're using Nim's "marshalling". This looks a bit unnecessary.
+#  labels: enhancement, cleanup, vm
+
 proc writeBytecode*(trans: Translation, target: string): bool =
     when not defined(WEB):
         let marshaled = $$(trans[0])

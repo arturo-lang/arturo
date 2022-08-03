@@ -9,6 +9,9 @@
 # initial conversion to NimScript thanks to:
 # - Patrick (skydive241@gmx.de)
 
+# TODO(build.nims) General cleanup needed
+#  labels: installer, enhancement, cleanup
+
 #=======================================
 # Libraries
 #=======================================

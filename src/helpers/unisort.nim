@@ -125,6 +125,9 @@ func unicmp(x,y: Value, charset: seq[Rune], transformable: HashSet[Rune], ngraph
                 return cmp(unidecode(toLower(x.s)), unidecode(toLower(y.s)))
         
     if ngraphset == @[]:
+        # TODO(Helpers/unisort) Re-visit & test digraph/trigraph sorting
+        #  The code below - apparently - works ok. The problem is: a) it hasn't been thoroughly tested, b) it looks obviously too repetitive, c) it must be the most inefficient code written on Earth
+        #  labels: helpers, enhancement, cleanup
         while i < x.s.len and j < y.s.len:
             fastRuneAt(x.s, i, xr)
             fastRuneAt(y.s, j, yr)
