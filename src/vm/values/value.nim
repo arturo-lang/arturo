@@ -686,6 +686,9 @@ func newBinary*(n: ByteArray = @[]): Value {.inline.} =
 func newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
     Value(kind: Dictionary, d: d)
 
+func newObject*(o: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
+    Value(kind: Object, o: o)
+
 func newFunction*(params: Value, main: Value, imports: Value = VNULL, exports: Value = VNULL, exportable: bool = false, memoize: bool = false): Value {.inline.} =
     Value(kind: Function, fnKind: UserFunction, params: params, main: main, imports: imports, exports: exports, exportable: exportable, memoize: memoize)
 
