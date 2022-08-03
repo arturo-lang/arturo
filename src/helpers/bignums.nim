@@ -9,6 +9,14 @@
 # Code based on Nim GMP wrapper
 # (c) Copyright 2014 Will Szumski
 
+# TODO(Helpers/bignums) General cleanup needed
+#  labels: helpers, cleanup
+
+# TODO(Helper/bignums) Is there any way *not* to use the GMP/MPFR library?
+#  Right now, Arturo's BigNum handling capabilities are based exclusively on the GMP & MPFR libraries, and available only in the "full" builds. Could we replace them - with whatever shortcomings this might bring? For example: https://bellard.org/libbf/ seems like a good-enough candidate. It's small, fast enough - apparently - written in C, supports Integers and Floats + it's MIT-licensed.
+#  Of course, we could just use it for the MINI builds - for its lack of external dependencies. Or use it for both. Or just have 2 different "full" builds: one with the GMP dependency, and one - slower but - without any dependencies. This could get messy, implementation-wise, but it's definitely doable.
+#  labels: helpers, enhancement, open discussion
+
 #=======================================
 # Libraries
 #=======================================
