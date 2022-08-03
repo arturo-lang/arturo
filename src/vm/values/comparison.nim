@@ -126,18 +126,28 @@ proc `==`*(x: Value, y: Value): bool {.inline.}=
                     if not (child==cleanY[i]): return false
 
                 return true
+
             of Dictionary:
-                if not x.custom.isNil and x.custom.methods.d.hasKey("compare"):
+                if x.d.len != y.d.len: return false
+
+                for k,v in pairs(x.d):
+                    if not y.d.hasKey(k): return false
+                    if not (v==y.d[k]): return false
+
+                return true
+
+            of Object:
+                if x.cust.methods.d.hasKey("compare"):
                     push y
                     push x
-                    callFunction(x.custom.methods.d["compare"])
+                    callFunction(x.cust.methods.d["compare"])
                     return (pop().i == 0)
                 else:
-                    if x.d.len != y.d.len: return false
+                    if x.o.len != y.o.len: return false
 
-                    for k,v in pairs(x.d):
-                        if not y.d.hasKey(k): return false
-                        if not (v==y.d[k]): return false
+                    for k,v in pairs(x.o):
+                        if not y.o.hasKey(k): return false
+                        if not (v==y.o[k]): return false
 
                     return true
             of ValueKind.Color:
@@ -244,10 +254,12 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
                Block:
                 return cleanBlock(x.a).len < cleanBlock(y.a).len
             of Dictionary:
-                if not x.custom.isNil and x.custom.methods.d.hasKey("compare"):
+                return false
+            of Object:
+                if x.cust.methods.d.hasKey("compare"):
                     push y
                     push x
-                    callFunction(x.custom.methods.d["compare"])
+                    callFunction(x.cust.methods.d["compare"])
                     return (pop().i == -1)
                 else:
                     return false
@@ -341,10 +353,12 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
                Block:
                 return x.a.len > y.a.len
             of Dictionary:
-                if not x.custom.isNil and x.custom.methods.d.hasKey("compare"):
+                return false
+            of Object:
+                if x.cust.methods.d.hasKey("compare"):
                     push y
                     push x
-                    callFunction(x.custom.methods.d["compare"])
+                    callFunction(x.cust.methods.d["compare"])
                     return (pop().i == 1)
                 else:
                     return false
