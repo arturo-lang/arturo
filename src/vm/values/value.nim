@@ -2795,6 +2795,16 @@ func sameValue*(x: Value, y: Value): bool {.inline.}=
                     if not (sameValue(v,y.d[k])): return false
 
                 return true
+            of Object:
+                if x.o.len != y.o.len: return false
+
+                for k,v in pairs(x.o):
+                    if not y.o.hasKey(k): return false
+                    if not (sameValue(v,y.o[k])): return false
+
+                if x.cust != y.cust: return false
+
+                return true
             of Function:
                 if x.fnKind==UserFunction:
                     return sameValue(x.params, y.params) and sameValue(x.main, y.main) and x.exports == y.exports
