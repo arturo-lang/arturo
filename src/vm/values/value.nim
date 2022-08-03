@@ -2356,6 +2356,13 @@ func `$`(v: Value): string {.inline.} =
 
             result = "[" & items.join(" ") & "]"
 
+        of Object       :
+            var items: seq[string] = @[]
+            for key,value in v.o:
+                items.add(key  & ":" & $(value))
+
+            result = "[" & items.join(" ") & "]"
+
         of Function     : 
             result = ""
             if v.fnKind==UserFunction:
