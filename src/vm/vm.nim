@@ -112,6 +112,10 @@ template initialize*(args: seq[string], filename: string, isFile:bool, scriptDat
     # attributes
     createAttrsStack()
 
+    # TODO(VM/vm) Completely remove DoDebug code blocks?
+    #  There seem to be various DoDebug code blocks that have been commented out. I honestly cannot remember what their purpose is and how they worked. Is it the right moment to simply... remove them?
+    #  labels: vm, cleanup
+    
     # # opstack
     # if DoDebug:
     #     OpStack[0] = opNop
