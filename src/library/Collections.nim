@@ -1212,7 +1212,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get size/length of given collection",
         args        = {
-            "collection"    : {String,Block,Dictionary}
+            "collection"    : {String,Block,Dictionary,Object}
         }, 
         attrs       = NoAttrs,
         returns     = {Integer},
@@ -1233,6 +1233,8 @@ proc defineSymbols*() =
                 push(newInteger(runeLen(x.s)))
             elif x.kind==Dictionary:
                 push(newInteger(x.d.len))
+            elif x.kind==Object:
+                push(newInteger(x.o.len))
             else:
                 push(newInteger(cleanBlock(x.a).len))
             
