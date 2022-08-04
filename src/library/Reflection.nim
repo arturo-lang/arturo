@@ -520,7 +520,7 @@ proc defineSymbols*() =
                 if x.t in {Object,Any}:
                     push(VTRUE)
                 else:
-                    push(newLogical(x.name == y.cust.name))
+                    push(newLogical(x.ts.name == y.os.name))
 
     builtin "floating?",
         alias       = unaliased, 
@@ -882,7 +882,7 @@ proc defineSymbols*() =
             if x.kind != Object:
                 push(newType(x.kind))
             else:
-                push(x.cust)
+                push(newUserType(x.os.name))
 
     builtin "type?",
         alias       = unaliased, 

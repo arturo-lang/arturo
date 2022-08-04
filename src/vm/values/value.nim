@@ -308,8 +308,8 @@ type
                    #refs*: IntArray
             of Dictionary:  d*  : ValueDict
             of Object:
-                o*: ValueDict
-                os*: ObjectSpec
+                o*: ValueDict   # fields
+                os*: ObjectSpec # custom type pointer
             of Function:    
                 args*   : OrderedTable[string,ValueSpec]
                 attrs*  : OrderedTable[string,(ValueSpec,string)]
@@ -548,7 +548,7 @@ proc newUserType*(n: string, p: Value = VNULL): Value {.inline.} =
     if TypeLookup.hasKey(n):
         return TypeLookup[n]
     else:
-        result = Value(kind: Type, tpKind: UserType, t: Dictionary, name: n, prototype: p, inherits: VNULL)
+        result = Value(kind: Type, tpKind: UserType, t: Dictionary, ts: ObjectSpec(name: n, prototype: p, methods: VNULL, inherits: VNULL))
         TypeLookup[n] = result
 
 proc newType*(t: string): Value {.inline.} =
@@ -689,20 +689,20 @@ func newBinary*(n: ByteArray = @[]): Value {.inline.} =
 func newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
     Value(kind: Dictionary, d: d)
 
-func newObject*(o: ValueDict = initOrderedTable[string,Value](), tp: Value): Value {.inline.} =
-    Value(kind: Object, o: o, cust: tp)
+func newObject*(o: ValueDict = initOrderedTable[string,Value](), os: ObjectSpec): Value {.inline.} =
+    Value(kind: Object, o: o, os: os)
 
-proc newObject*(args: ValueArray, tp: Value, initializer: proc (self: Value, tp: Value), o: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
+proc newObject*(args: ValueArray, prot: ObjectSpec, initializer: proc (self: Value, prot: ObjectSpec), o: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
     var fields = o
     var i = 0
-    while i<args.len and i<tp.prototype.a.len:
-        let k = tp.prototype.a[i]
+    while i<args.len and i<prot.prototype.a.len:
+        let k = prot.prototype.a[i]
         fields[k.s] = args[i]
         i += 1
 
-    result = newObject(fields, tp)
+    result = newObject(fields, prot)
     
-    initializer(result, tp)
+    initializer(result, prot)
 
 func newFunction*(params: Value, main: Value, imports: Value = VNULL, exports: Value = VNULL, exportable: bool = false, memoize: bool = false): Value {.inline.} =
     Value(kind: Function, fnKind: UserFunction, params: params, main: main, imports: imports, exports: exports, exportable: exportable, memoize: memoize)
@@ -786,7 +786,7 @@ proc copyValue*(v: Value): Value {.inline.} =
             if v.tpKind==BuiltinType:
                 result = newType(v.t)
             else:
-                result = newUserType(v.name, v.prototype)
+                result = newUserType(v.ts.name, v.ts.prototype)
         of Char:        result = newChar(v.c)
 
         of String:      result = newString(v.s)
@@ -808,7 +808,7 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Block:       result = newBlock(v.a.map((vv)=>copyValue(vv)), copyValue(v.data))
 
         of Dictionary:  result = newDictionary(v.d)
-        of Object:      result = newObject(v.o, v.cust)
+        of Object:      result = newObject(v.o, v.os)
 
         of Function:    result = newFunction(v.params, v.main, v.imports, v.exports, v.exportable, v.memoize)
 
@@ -2336,7 +2336,7 @@ func `$`(v: Value): string {.inline.} =
             if v.tpKind==BuiltinType:
                 return ":" & ($v.t).toLowerAscii()
             else:
-                return ":" & v.name
+                return ":" & v.ts.name
         of Char         : return $(v.c)
         of String,
            Word, 
@@ -2425,7 +2425,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
 
     proc dumpBlockStart(v: Value) =
         var tp = ($(v.kind)).toLowerAscii()
-        if v.kind==Object: tp = v.cust.name
+        if v.kind==Object: tp = v.os.name
         if not muted:   stdout.write fmt("{bold(magentaColor)}[{fg(grayColor)} :{tp}{resetColor}\n")
         else:           stdout.write fmt("[ :{tp}\n")
 
@@ -2459,7 +2459,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
             if v.tpKind==BuiltinType:
                 dumpPrimitive(($(v.t)).toLowerAscii(), v)
             else:
-                dumpPrimitive(v.name, v)
+                dumpPrimitive(v.ts.name, v)
         of Char         : dumpPrimitive($(v.c), v)
         of String       : dumpPrimitive(v.s, v)
         
@@ -2623,7 +2623,7 @@ func codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
             if v.tpKind==BuiltinType:
                 result &= ":" & ($v.t).toLowerAscii()
             else:
-                result &= ":" & v.name
+                result &= ":" & v.ts.name
         of Char         : result &= "`" & $(v.c) & "`"
         of String       : 
             if safeStrings:
@@ -2765,7 +2765,7 @@ func sameValue*(x: Value, y: Value): bool {.inline.}=
                 if x.tpKind==BuiltinType:
                     return x.t == y.t
                 else:
-                    return x.name == y.name
+                    return x.ts.name == y.ts.name
             of Char: return x.c == y.c
             of String,
                Word,
@@ -2803,7 +2803,7 @@ func sameValue*(x: Value, y: Value): bool {.inline.}=
                     if not y.o.hasKey(k): return false
                     if not (sameValue(v,y.o[k])): return false
 
-                if x.cust != y.cust: return false
+                if x.os != y.os: return false
 
                 return true
             of Function:
