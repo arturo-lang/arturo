@@ -1150,6 +1150,11 @@ proc defineSymbols*() =
             ; => #5C527A
         """:
             ##########################################################
+            echo "asked to convert value: " & $(y)
+            echo "of type: " & $(y.kind)
+            echo "to value: " & $(x)
+            echo "of type: " & $(x.kind)
+            echo "inner type: " & $(x.t)
             if x.kind==Type:
                 let tp = x.t
                 push convertedValueToType(x, y, tp, popAttr("format"))
