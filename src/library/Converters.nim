@@ -45,11 +45,11 @@ proc parseFL*(s: string): float =
 # Helpers
 #=======================================
 
-proc generateCustomObject*(customType: Value, arguments: ValueArray): Value =
-    var res = newObject(arguments, customType, proc (self: Value, tp: Value) =
-        if tp.methods.d.hasKey("init"):
+proc generateCustomObject*(prot: ObjectSpec, arguments: ValueArray): Value =
+    var res = newObject(arguments, prot, proc (self: Value, prot: ObjectSpec) =
+        if prot.methods.d.hasKey("init"):
             push self
-            callFunction(tp.methods.d["init"])
+            callFunction(prot.methods.d["init"])
     )
 
     return res
@@ -341,7 +341,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                             let arr: ValueArray = sTopsFrom(stop)
                             SP = stop
 
-                            return generateCustomObject(x, arr)
+                            return generateCustomObject(x.ts, arr)
 
                     of Quantity:
                         let blk = cleanBlock(y.a)
@@ -383,11 +383,11 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                             var dict = initOrderedTable[string,Value]()
 
                             for k,v in pairs(y.d):
-                                for item in x.prototype.a:
+                                for item in x.ts.prototype.a:
                                     if item.s == k:
                                         dict[k] = v
 
-                            var res = newObject(dict, x)
+                            var res = newObject(dict, x.ts)
                             #res.custom = x
                             return(res)
                     else:
@@ -695,33 +695,33 @@ proc defineSymbols*() =
             ; NAME: Jane, SURNAME: Doe, AGE: 33
         """:
             ##########################################################
-            x.prototype = y
-            cleanBlock(x.prototype.a, inplace=true)
+            x.ts.prototype = y
+            cleanBlock(x.ts.prototype.a, inplace=true)
 
             if (let aAs = popAttr("as"); aAs != VNULL):
-                x.inherits = aAs
+                x.ts.inherits = aAs
 
-            x.methods = newDictionary(execBlock(z,dictionary=true))
-            if x.methods.d.hasKey("init"):
-                x.methods.d["init"] = newFunction(
+            x.ts.methods = newDictionary(execBlock(z,dictionary=true))
+            if x.ts.methods.d.hasKey("init"):
+                x.ts.methods.d["init"] = newFunction(
                     newBlock(@[newWord("this")]),
-                    x.methods.d["init"] 
+                    x.ts.methods.d["init"] 
                 )
-            if x.methods.d.hasKey("print"):
-                x.methods.d["print"] = newFunction(
+            if x.ts.methods.d.hasKey("print"):
+                x.ts.methods.d["print"] = newFunction(
                     newBlock(@[newWord("this")]),
-                    x.methods.d["print"] 
+                    x.ts.methods.d["print"] 
                 )
 
-            if x.methods.d.hasKey("compare"):
-                if x.methods.d["compare"].kind==Block:
-                    x.methods.d["compare"] = newFunction(
+            if x.ts.methods.d.hasKey("compare"):
+                if x.ts.methods.d["compare"].kind==Block:
+                    x.ts.methods.d["compare"] = newFunction(
                         newBlock(@[newWord("this"),newWord("that")]),
-                        x.methods.d["compare"] 
+                        x.ts.methods.d["compare"] 
                     )
                 else:
-                    let key = x.methods.d["compare"]
-                    x.methods.d["compare"] = newFunction(
+                    let key = x.ts.methods.d["compare"]
+                    x.ts.methods.d["compare"] = newFunction(
                         newBlock(@[newWord("this"),newWord("that")]),
                         newBlock(@[
                             newWord("if"), newPath(@[newWord("this"), key]), newSymbol(greaterthan), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(1)]),

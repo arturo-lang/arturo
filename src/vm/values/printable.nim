@@ -158,7 +158,7 @@ proc `$`*(v: Value): string {.inline.} =
             if v.tpKind==BuiltinType:
                 return ":" & ($v.t).toLowerAscii()
             else:
-                return ":" & v.name
+                return ":" & v.ts.name
         of Char         : return $(v.c)
         of String,
            Word, 
@@ -199,9 +199,9 @@ proc `$`*(v: Value): string {.inline.} =
             result = "[" & items.join(" ") & "]"
 
         of Object:
-            if v.cust.methods.d.hasKey("print"):
+            if v.os.methods.d.hasKey("print"):
                 push v
-                callFunction(v.cust.methods.d["print"])
+                callFunction(v.os.methods.d["print"])
                 result = pop().s
             else:
                 var items: seq[string] = @[]

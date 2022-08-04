@@ -137,10 +137,10 @@ proc `==`*(x: Value, y: Value): bool {.inline.}=
                 return true
 
             of Object:
-                if x.cust.methods.d.hasKey("compare"):
+                if x.os.methods.d.hasKey("compare"):
                     push y
                     push x
-                    callFunction(x.cust.methods.d["compare"])
+                    callFunction(x.os.methods.d["compare"])
                     return (pop().i == 0)
                 else:
                     if x.o.len != y.o.len: return false
@@ -256,10 +256,10 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
             of Dictionary:
                 return false
             of Object:
-                if x.cust.methods.d.hasKey("compare"):
+                if x.os.methods.d.hasKey("compare"):
                     push y
                     push x
-                    callFunction(x.cust.methods.d["compare"])
+                    callFunction(x.os.methods.d["compare"])
                     return (pop().i == -1)
                 else:
                     return false
@@ -355,10 +355,10 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
             of Dictionary:
                 return false
             of Object:
-                if x.cust.methods.d.hasKey("compare"):
+                if x.os.methods.d.hasKey("compare"):
                     push y
                     push x
-                    callFunction(x.cust.methods.d["compare"])
+                    callFunction(x.os.methods.d["compare"])
                     return (pop().i == 1)
                 else:
                     return false
