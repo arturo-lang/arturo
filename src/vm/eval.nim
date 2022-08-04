@@ -348,6 +348,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
     while i < n.a.len:
         let node = n.a[i]
 
+        # TODO(VM/eval) Eval loop: Unify all subcases that simply push a value onto the stack
+        #  labels:vm, evaluator, enhancement, easy
+
         case node.kind:
             of Null:    addToCommand((byte)opConstN)
             of Logical: 
@@ -582,6 +585,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             of Binary : discard
 
             of Dictionary,
+               Object,
                Function: 
                    addTerminalValue(false):
                         addConst(consts, node, opPush)
