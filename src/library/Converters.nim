@@ -32,12 +32,8 @@ import vm/lib
 import vm/[errors, exec, parse]
 
 proc parseFL*(s: string): float =
-    echo "got string: " & s
-    echo "with length: " & $(s.len)
-
     result = 0.0
     let L = parseutils.parseFloat(s, result, 0)
-    echo "parsed characters: " & $(L)
     if L != s.len or L == 0:
         raise newException(ValueError, "invalid float: " & s)
 
@@ -1157,11 +1153,6 @@ proc defineSymbols*() =
             ; => #5C527A
         """:
             ##########################################################
-            echo "asked to convert value: " & $(y)
-            echo "of type: " & $(y.kind)
-            echo "to value: " & $(x)
-            echo "of type: " & $(x.kind)
-            echo "inner type: " & $(x.t)
             if x.kind==Type:
                 let tp = x.t
                 push convertedValueToType(x, y, tp, popAttr("format"))
