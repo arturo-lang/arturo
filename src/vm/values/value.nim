@@ -229,7 +229,7 @@ type
 
     Prototype* = ref object
         name*       : string
-        fields*     : Value
+        fields*     : ValueArray
         methods*    : Value
         inherits*   : Value
 
