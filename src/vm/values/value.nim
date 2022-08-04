@@ -242,9 +242,6 @@ type
 
     Value* {.acyclic.} = ref object 
         info*: string
-        # TODO(VM/values/value) remove unused `.custom` field
-        #  and... rename the corresponding field in Object values
-        #  labels: vm, values, cleanup, easy
 
         case kind*: ValueKind:
             of Null,
