@@ -31,33 +31,22 @@ when not defined(NOASCIIDECODE):
 import vm/lib
 import vm/[errors, exec, parse]
 
+#=======================================
+# Helpers
+#=======================================
+
 proc parseFL*(s: string): float =
     result = 0.0
     let L = parseutils.parseFloat(s, result, 0)
     if L != s.len or L == 0:
         raise newException(ValueError, "invalid float: " & s)
 
-#=======================================
-# Helpers
-#=======================================
-
-proc generateCustomObject*(prot: Prototype, arguments: ValueArray): Value =
-    var res = newObject(arguments, prot, proc (self: Value, prot: Prototype) =
+proc generateCustomObject*(prot: Prototype, arguments: ValueArray | ValueDict): Value =
+    newObject(arguments, prot, proc (self: Value, prot: Prototype) =
         if prot.methods.hasKey("init"):
             push self
             callFunction(prot.methods["init"])
     )
-
-    return res
-
-proc generateCustomObject*(prot: Prototype, arguments: ValueDict): Value =
-    var res = newObject(arguments, prot, proc (self: Value, prot: Prototype) =
-        if prot.methods.hasKey("init"):
-            push self
-            callFunction(prot.methods["init"])
-    )
-
-    return res
 
 template throwCannotConvert(): untyped = 
     RuntimeError_CannotConvert(codify(y), $(y.kind), (if x.tpKind==UserType: x.ts.name else: $(x.t)))
