@@ -1282,7 +1282,7 @@ proc defineSymbols*() =
             "descending": ({Logical},"sort in ascending order"),
             "ascii"     : ({Logical},"sort by ASCII transliterations"),
             "values"    : ({Logical},"sort dictionary by values"),
-            "by"        : ({String,Literal},"sort array of dictionaries by given key")
+            "by"        : ({String,Literal},"sort array of collections by given key")
         },
         returns     = {Block,Nothing},
         example     = """
@@ -1306,10 +1306,21 @@ proc defineSymbols*() =
                 if blk.len==0: push(newBlock())
                 else:
                     if (let aBy = popAttr("by"); aBy != VNULL):
-                        var sorted: ValueArray = blk.sorted(
-                            proc (v1, v2: Value): int = 
-                                cmp(v1.d[aBy.s], v2.d[aBy.s]), order=sortOrdering)
-                        push(newBlock(sorted))
+                        if blk.len > 0:
+                            var sorted: ValueArray 
+
+                            if blk[0].kind==Dictionary:
+                                sorted = blk.sorted(
+                                    proc (v1, v2: Value): int = 
+                                        cmp(v1.d[aBy.s], v2.d[aBy.s]), order=sortOrdering)
+                            else:
+                                sorted = blk.sorted(
+                                    proc (v1, v2: Value): int = 
+                                        cmp(v1.o[aBy.s], v2.o[aBy.s]), order=sortOrdering)
+
+                            push(newBlock(sorted))
+                        else:
+                            push(newDictionary())
                     else:
                         var sortAscii = (popAttr("ascii") != VNULL)
 
