@@ -239,7 +239,7 @@ type
         # TODO(VM/values/value) remove unused `.custom` field
         #  and... rename the corresponding field in Object values
         #  labels: vm, values, cleanup, easy
-        custom*: Value
+        #custom*: Value
         case kind*: ValueKind:
             of Null,
                Nothing,
