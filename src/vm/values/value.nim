@@ -227,7 +227,7 @@ type
         precedence*: PrecedenceKind
         name*:       Value
 
-    ObjectPrototype* = ref object
+    Prototype* = ref object
         name*       : string
         fields*     : Value
         methods*    : Value
@@ -276,7 +276,7 @@ type
                 t*  : ValueKind
                 case tpKind*: TypeKind:
                     of UserType:
-                        ts* : ObjectPrototype
+                        ts* : Prototype
                     of BuiltinType:
                         discard
 
@@ -309,7 +309,7 @@ type
             of Dictionary:  d*  : ValueDict
             of Object:
                 o*: ValueDict   # fields
-                proto*: ObjectPrototype # custom type pointer
+                proto*: Prototype # custom type pointer
             of Function:    
                 args*   : OrderedTable[string,ValueSpec]
                 attrs*  : OrderedTable[string,(ValueSpec,string)]
@@ -548,7 +548,7 @@ proc newUserType*(n: string, f: Value = VNULL): Value {.inline.} =
     if TypeLookup.hasKey(n):
         return TypeLookup[n]
     else:
-        result = Value(kind: Type, tpKind: UserType, t: Dictionary, ts: ObjectPrototype(name: n, fields: f, methods: VNULL, inherits: VNULL))
+        result = Value(kind: Type, tpKind: UserType, t: Dictionary, ts: Prototype(name: n, fields: f, methods: VNULL, inherits: VNULL))
         TypeLookup[n] = result
 
 proc newType*(t: string): Value {.inline.} =
@@ -689,10 +689,10 @@ func newBinary*(n: ByteArray = @[]): Value {.inline.} =
 func newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
     Value(kind: Dictionary, d: d)
 
-func newObject*(o: ValueDict = initOrderedTable[string,Value](), proto: ObjectPrototype): Value {.inline.} =
+func newObject*(o: ValueDict = initOrderedTable[string,Value](), proto: Prototype): Value {.inline.} =
     Value(kind: Object, o: o, proto: proto)
 
-proc newObject*(args: ValueArray, prot: ObjectPrototype, initializer: proc (self: Value, prot: ObjectPrototype), o: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
+proc newObject*(args: ValueArray, prot: Prototype, initializer: proc (self: Value, prot: Prototype), o: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
     var fields = o
     var i = 0
     while i<args.len and i<prot.fields.a.len:
