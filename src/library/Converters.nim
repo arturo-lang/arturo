@@ -376,20 +376,17 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
 
             of Dictionary:
                 case tp:
-                    of Dictionary:
-                        if x.tpKind==BuiltinType:
-                            return(y)
-                        else:
-                            var dict = initOrderedTable[string,Value]()
+                    of Object:
+                        var dict = initOrderedTable[string,Value]()
 
-                            for k,v in pairs(y.d):
-                                for item in x.ts.fields:
-                                    if item.s == k:
-                                        dict[k] = v
+                        for k,v in pairs(y.d):
+                            for item in x.ts.fields:
+                                if item.s == k:
+                                    dict[k] = v
 
-                            var res = newObject(dict, x.ts)
-                            #res.custom = x
-                            return(res)
+                        var res = newObject(dict, x.ts)
+                        #res.custom = x
+                        return(res)
                     else:
                         RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
             of Object:
