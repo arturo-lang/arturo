@@ -389,7 +389,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
             of Object:
                 case tp:
                     of Dictionary:
-                        return newDictionary(y.fields)
+                        return newDictionary(y.o)
                     else:
                         RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
