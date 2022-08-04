@@ -272,11 +272,8 @@ type
             of Type:        
                 t*  : ValueKind
                 case tpKind*: TypeKind:
-                    of UserType:
-                        ts* : Prototype
-                    of BuiltinType:
-                        discard
-
+                    of UserType:    ts* : Prototype
+                    of BuiltinType: discard
             of Char:        c*  : Rune
             of String,
                Word,
