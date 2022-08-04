@@ -70,6 +70,11 @@ proc generateJsonNode*(n: Value): JsonNode =
             for k,v in pairs(n.d):
                 result.add(k, generateJsonNode(v))
 
+        of Object       :
+            result = newJObject()
+            for k,v in pairs(n.o):
+                result.add(k, generateJsonNode(v))
+
         of Complex,
            Rational,
            Function,

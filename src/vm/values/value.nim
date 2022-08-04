@@ -189,15 +189,16 @@ type
         Date            = 22
         Binary          = 23
         Dictionary      = 24
-        Function        = 25
-        Inline          = 26
-        Block           = 27
-        Database        = 28
-        Bytecode        = 29
+        Object          = 25
+        Function        = 26
+        Inline          = 27
+        Block           = 28
+        Database        = 29
+        Bytecode        = 30
 
-        Newline         = 30
-        Nothing         = 31
-        Any             = 32
+        Newline         = 31
+        Nothing         = 32
+        Any             = 33
 
     ValueSpec* = set[ValueKind]
 
@@ -226,6 +227,12 @@ type
         precedence*: PrecedenceKind
         name*:       Value
 
+    Prototype* = ref object
+        name*       : string
+        fields*     : ValueArray
+        methods*    : ValueDict
+        inherits*   : Prototype
+
     SymbolDict*   = OrderedTable[SymbolKind,AliasBinding]
 
     logical* = enum
@@ -235,10 +242,7 @@ type
 
     Value* {.acyclic.} = ref object 
         info*: string
-        # TODO(VM/values/value) Convert objects into a distinct type
-        #  `.custom` is - I think - solely used for custom-type user-defined objects that actually reside in a `:dictionary` value. The right way to go about it would be to define them internally as a distinct - e.g. `:object` value
-        #  labels: vm, values, enhancement
-        custom*: Value
+
         case kind*: ValueKind:
             of Null,
                Nothing,
@@ -268,14 +272,8 @@ type
             of Type:        
                 t*  : ValueKind
                 case tpKind*: TypeKind:
-                    of UserType:
-                        name*       : string
-                        prototype*  : Value
-                        methods*    : Value
-                        inherits*   : Value
-                    of BuiltinType:
-                        discard
-
+                    of UserType:    ts* : Prototype
+                    of BuiltinType: discard
             of Char:        c*  : Rune
             of String,
                Word,
@@ -303,6 +301,9 @@ type
                    data* : Value
                    #refs*: IntArray
             of Dictionary:  d*  : ValueDict
+            of Object:
+                o*: ValueDict   # fields
+                proto*: Prototype # custom type pointer
             of Function:    
                 args*   : OrderedTable[string,ValueSpec]
                 attrs*  : OrderedTable[string,(ValueSpec,string)]
@@ -537,11 +538,11 @@ func newVersion*(v: string): Value {.inline.} =
 func newType*(t: ValueKind): Value {.inline.} =
     Value(kind: Type, tpKind: BuiltinType, t: t)
 
-proc newUserType*(n: string, p: Value = VNULL): Value {.inline.} =
+proc newUserType*(n: string, f: ValueArray = @[]): Value {.inline.} =
     if TypeLookup.hasKey(n):
         return TypeLookup[n]
     else:
-        result = Value(kind: Type, tpKind: UserType, t: Dictionary, name: n, prototype: p, inherits: VNULL)
+        result = Value(kind: Type, tpKind: UserType, t: Object, ts: Prototype(name: n, fields: f, methods: initOrderedTable[string,Value](), inherits: nil))
         TypeLookup[n] = result
 
 proc newType*(t: string): Value {.inline.} =
@@ -682,6 +683,32 @@ func newBinary*(n: ByteArray = @[]): Value {.inline.} =
 func newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
     Value(kind: Dictionary, d: d)
 
+func newObject*(o: ValueDict = initOrderedTable[string,Value](), proto: Prototype): Value {.inline.} =
+    Value(kind: Object, o: o, proto: proto)
+
+proc newObject*(args: ValueArray, prot: Prototype, initializer: proc (self: Value, prot: Prototype), o: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
+    var fields = o
+    var i = 0
+    while i<args.len and i<prot.fields.len:
+        let k = prot.fields[i]
+        fields[k.s] = args[i]
+        i += 1
+
+    result = newObject(fields, prot)
+    
+    initializer(result, prot)
+
+proc newObject*(args: ValueDict, prot: Prototype, initializer: proc (self: Value, prot: Prototype), o: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
+    var fields = o
+    for k,v in pairs(args):
+        for item in prot.fields:
+            if item.s == k:
+                fields[k] = v
+
+    result = newObject(fields, prot)
+    
+    initializer(result, prot)
+
 func newFunction*(params: Value, main: Value, imports: Value = VNULL, exports: Value = VNULL, exportable: bool = false, memoize: bool = false): Value {.inline.} =
     Value(kind: Function, fnKind: UserFunction, params: params, main: main, imports: imports, exports: exports, exportable: exportable, memoize: memoize)
 
@@ -764,7 +791,7 @@ proc copyValue*(v: Value): Value {.inline.} =
             if v.tpKind==BuiltinType:
                 result = newType(v.t)
             else:
-                result = newUserType(v.name, v.prototype)
+                result = newUserType(v.ts.name, v.ts.fields)
         of Char:        result = newChar(v.c)
 
         of String:      result = newString(v.s)
@@ -786,6 +813,7 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Block:       result = newBlock(v.a.map((vv)=>copyValue(vv)), copyValue(v.data))
 
         of Dictionary:  result = newDictionary(v.d)
+        of Object:      result = newObject(v.o, v.proto)
 
         of Function:    result = newFunction(v.params, v.main, v.imports, v.exports, v.exportable, v.memoize)
 
@@ -2313,7 +2341,7 @@ func `$`(v: Value): string {.inline.} =
             if v.tpKind==BuiltinType:
                 return ":" & ($v.t).toLowerAscii()
             else:
-                return ":" & v.name
+                return ":" & v.ts.name
         of Char         : return $(v.c)
         of String,
            Word, 
@@ -2348,6 +2376,13 @@ func `$`(v: Value): string {.inline.} =
         of Dictionary   :
             var items: seq[string] = @[]
             for key,value in v.d:
+                items.add(key  & ":" & $(value))
+
+            result = "[" & items.join(" ") & "]"
+
+        of Object       :
+            var items: seq[string] = @[]
+            for key,value in v.o:
                 items.add(key  & ":" & $(value))
 
             result = "[" & items.join(" ") & "]"
@@ -2395,7 +2430,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
 
     proc dumpBlockStart(v: Value) =
         var tp = ($(v.kind)).toLowerAscii()
-        if not v.custom.isNil(): tp = v.custom.name
+        if v.kind==Object: tp = v.proto.name
         if not muted:   stdout.write fmt("{bold(magentaColor)}[{fg(grayColor)} :{tp}{resetColor}\n")
         else:           stdout.write fmt("[ :{tp}\n")
 
@@ -2429,7 +2464,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
             if v.tpKind==BuiltinType:
                 dumpPrimitive(($(v.t)).toLowerAscii(), v)
             else:
-                dumpPrimitive(v.name, v)
+                dumpPrimitive(v.ts.name, v)
         of Char         : dumpPrimitive($(v.c), v)
         of String       : dumpPrimitive(v.s, v)
         
@@ -2518,6 +2553,24 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
                     dump(value, level+1, false, muted=muted)
 
             dumpBlockEnd()
+        
+        of Object   : 
+            dumpBlockStart(v)
+
+            let keys = toSeq(v.o.keys)
+
+            if keys.len > 0:
+                let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
+
+                for key,value in v.o:
+                    for i in 0..level: stdout.write "\t"
+
+                    stdout.write unicode.alignLeft(key & " ", maxLen) & ":"
+
+                    dump(value, level+1, false, muted=muted)
+
+            dumpBlockEnd()
+
         of Function     : 
             dumpBlockStart(v)
 
@@ -2575,7 +2628,7 @@ func codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
             if v.tpKind==BuiltinType:
                 result &= ":" & ($v.t).toLowerAscii()
             else:
-                result &= ":" & v.name
+                result &= ":" & v.ts.name
         of Char         : result &= "`" & $(v.c) & "`"
         of String       : 
             if safeStrings:
@@ -2717,7 +2770,7 @@ func sameValue*(x: Value, y: Value): bool {.inline.}=
                 if x.tpKind==BuiltinType:
                     return x.t == y.t
                 else:
-                    return x.name == y.name
+                    return x.ts.name == y.ts.name
             of Char: return x.c == y.c
             of String,
                Word,
@@ -2741,17 +2794,21 @@ func sameValue*(x: Value, y: Value): bool {.inline.}=
 
                 return true
             of Dictionary:
-                # if not x.custom.isNil and x.custom.methods.d.hasKey("print"):
-                #     push y
-                #     push x
-                #     callFunction(x.custom.methods.d["compare"])
-                #     return pop().b
-                # else:
                 if x.d.len != y.d.len: return false
 
                 for k,v in pairs(x.d):
                     if not y.d.hasKey(k): return false
                     if not (sameValue(v,y.d[k])): return false
+
+                return true
+            of Object:
+                if x.o.len != y.o.len: return false
+
+                for k,v in pairs(x.o):
+                    if not y.o.hasKey(k): return false
+                    if not (sameValue(v,y.o[k])): return false
+
+                if x.proto != y.proto: return false
 
                 return true
             of Function:
@@ -2841,6 +2898,13 @@ func hash*(v: Value): Hash {.inline.}=
             for k,v in pairs(v.d):
                 result = result !& hash(k)
                 result = result !& hash(v)
+
+        of Object       :
+            result = 1
+            for k,v in pairs(v.o):
+                result = result !& hash(k)
+                result = result !& hash(v)
+        
         of Function     : 
             if v.fnKind==UserFunction:
                 result = 1

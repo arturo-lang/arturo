@@ -342,7 +342,7 @@ proc defineSymbols*() =
             print dictionary? 123               ; false
         """:
             ##########################################################
-            push(newLogical(x.kind==Dictionary and x.custom.isNil()))
+            push(newLogical(x.kind==Dictionary))
 
     when not defined(WEB):
 
@@ -494,7 +494,7 @@ proc defineSymbols*() =
             is? [:integer] [1 "two]         ; => false
         """:
             ##########################################################
-            if y.custom.isNil():
+            if y.kind != Object:
                 if x.kind == Type:
                     if x.t == Any:
                         push(VTRUE)
@@ -517,7 +517,13 @@ proc defineSymbols*() =
                                         break
                     push newLogical(res)
             else:
-                push(newLogical(x.name == y.custom.name))
+                if x.t in {Object,Any}:
+                    push(VTRUE)
+                else:
+                    if x.tpKind == BuiltinType:
+                        push(newLogical(x == newType(y.proto.name)))
+                    else:
+                        push(newLogical(x.ts.name == y.proto.name))
 
     builtin "floating?",
         alias       = unaliased, 
@@ -651,7 +657,7 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            push(newLogical(x.kind==Dictionary and (not x.custom.isNil())))
+            push(newLogical(x.kind==Object))
 
     builtin "path?",
         alias       = unaliased, 
@@ -876,10 +882,10 @@ proc defineSymbols*() =
             print type "hello world"  ; :string
         """:
             ##########################################################
-            if x.custom.isNil():
+            if x.kind != Object:
                 push(newType(x.kind))
             else:
-                push(x.custom)
+                push(newUserType(x.proto.name))
 
     builtin "type?",
         alias       = unaliased, 

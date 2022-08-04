@@ -30,6 +30,8 @@ import vm/[errors, eval, exec]
 template iterableItemsFromLiteralParam(prm: untyped): ValueArray =
     if InPlace.kind==Dictionary: 
         InPlaced.d.flattenedDictionary()
+    elif InPlaced.kind==Object:
+        InPlaced.o.flattenedDictionary()
     elif InPlaced.kind==String:
         toSeq(runes(InPlaced.s)).map((w) => newChar(w))
     elif InPlaced.kind==Integer:
@@ -40,6 +42,8 @@ template iterableItemsFromLiteralParam(prm: untyped): ValueArray =
 template iterableItemsFromParam(prm: untyped): ValueArray =
     if prm.kind==Dictionary: 
         prm.d.flattenedDictionary()
+    elif prm.kind==Object:
+        prm.o.flattenedDictionary()
     elif prm.kind==String:
         toSeq(runes(prm.s)).map((w) => newChar(w))
     elif prm.kind==Integer:
@@ -122,7 +126,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "chunk together consecutive items in collection that abide by given predicate",
         args        = {
-            "collection"    : {Integer,String,Block,Inline,Dictionary,Literal},
+            "collection"    : {Integer,String,Block,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
             "condition"     : {Block}
         },
@@ -188,7 +192,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "group together items in collection that abide by given predicate",
         args        = {
-            "collection"    : {Integer,String,Block,Inline,Dictionary,Literal},
+            "collection"    : {Integer,String,Block,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
             "condition"     : {Block}
         },
@@ -256,7 +260,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "check if every item in collection satisfies given condition",
         args        = {
-            "collection"    : {Integer,String,Block,Inline,Dictionary},
+            "collection"    : {Integer,String,Block,Inline,Dictionary,Object},
             "params"        : {Literal,Block,Null},
             "condition"     : {Block}
         },
@@ -309,7 +313,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get collection's items by filtering those that do not fulfil given condition",
         args        = {
-            "collection"    : {Integer,String,Block,Inline,Dictionary,Literal},
+            "collection"    : {Integer,String,Block,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
             "condition"     : {Block}
         },
@@ -407,7 +411,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "left-fold given collection returning accumulator",
         args        = {
-            "collection"    : {Integer,String,Block,Inline,Dictionary},
+            "collection"    : {Integer,String,Block,Inline,Dictionary,Object},
             "params"        : {Literal,Block,Null},
             "action"        : {Block}
         },
@@ -498,7 +502,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "loop through collection, using given iterator and block",
         args        = {
-            "collection"    : {Integer,String,Block,Inline,Dictionary},
+            "collection"    : {Integer,String,Block,Inline,Dictionary,Object},
             "params"        : {Literal,Block,Null},
             "action"        : {Block}
         },
@@ -566,7 +570,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "map collection's items by applying given action",
         args        = {
-            "collection"    : {Integer,String,Block,Inline,Dictionary,Literal},
+            "collection"    : {Integer,String,Block,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
             "condition"     : {Block}
         },
@@ -624,7 +628,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get collection's items that fulfil given condition",
         args        = {
-            "collection"    : {Integer,String,Block,Inline,Dictionary,Literal},
+            "collection"    : {Integer,String,Block,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
             "condition"     : {Block}
         },
@@ -715,7 +719,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "check if any of collection's items satisfy given condition",
         args        = {
-            "collection"    : {Integer,String,Block,Inline,Dictionary},
+            "collection"    : {Integer,String,Block,Inline,Dictionary,Object},
             "params"        : {Literal,Block,Null},
             "condition"     : {Block}
         },

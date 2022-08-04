@@ -31,43 +31,34 @@ when not defined(NOASCIIDECODE):
 import vm/lib
 import vm/[errors, exec, parse]
 
-proc parseFL*(s: string): float =
-    echo "got string: " & s
-    echo "with length: " & $(s.len)
-
-    result = 0.0
-    let L = parseutils.parseFloat(s, result, 0)
-    echo "parsed characters: " & $(L)
-    if L != s.len or L == 0:
-        raise newException(ValueError, "invalid float: " & s)
-
 #=======================================
 # Helpers
 #=======================================
 
-proc generateCustomObject*(customType: Value, arguments: ValueArray): Value =
-    var dict = initOrderedTable[string,Value]()
+proc parseFL*(s: string): float =
+    result = 0.0
+    let L = parseutils.parseFloat(s, result, 0)
+    if L != s.len or L == 0:
+        raise newException(ValueError, "invalid float: " & s)
 
-    var i = 0
-    while i<arguments.len and i<customType.prototype.a.len:
-        let k = customType.prototype.a[i]
-        dict[k.s] = arguments[i]
-        i += 1
+proc generateCustomObject*(prot: Prototype, arguments: ValueArray | ValueDict): Value =
+    newObject(arguments, prot, proc (self: Value, prot: Prototype) =
+        if prot.methods.hasKey("init"):
+            push self
+            callFunction(prot.methods["init"])
+    )
 
-    var res = newDictionary(dict)
-    res.custom = customType
+template throwCannotConvert(): untyped = 
+    RuntimeError_CannotConvert(codify(y), $(y.kind), (if x.tpKind==UserType: x.ts.name else: $(x.t)))
 
-    if customType.methods.d.hasKey("init"):
-        push res
-        callFunction(customType.methods.d["init"])
-
-    return res
+template throwConversionFailed(): untyped =
+    RuntimeError_ConversionFailed(codify(y), $(y.kind), (if x.tpKind==UserType: x.ts.name else: $(x.t)))
 
 # TODO(Converters) Make sure `convertedValueToType` works fine + add tests
 #  labels: library, cleanup, unit-test
 
 proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
-    if y.kind == tp and y.kind!=Dictionary and y.kind!=Quantity:
+    if y.kind == tp and y.kind!=Quantity:
         return y
     else:
         case y.kind:
@@ -76,7 +67,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                     of Logical: return VFALSE
                     of Integer: return I0
                     of String: return newString("null")
-                    else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+                    else: throwCannotConvert()
 
             of Logical:
                 case tp:
@@ -92,7 +83,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                         if y.b==True: return newString("true")
                         elif y.b==False: return newString("false")
                         else: return newString("maybe")
-                    else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+                    else: throwCannotConvert()
 
             of Integer:
                 case tp:
@@ -108,7 +99,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                                     formatValue(ret, y.i, aFormat.s)
                                     return newString(ret)
                                 except:
-                                    RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                                    throwConversionFailed()
                             else:
                                 return newString($(y.i))
                         else:
@@ -118,7 +109,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                         if (let aUnit = popAttr("unit"); aUnit != VNULL):
                             return newQuantity(y, parseQuantitySpec(aUnit.s))
                         else:
-                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                            throwConversionFailed()
                     of Date:
                         return newDate(local(fromUnix(y.i)))
                     of Binary:
@@ -127,7 +118,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                         for i,ch in str:
                             ret[i] = (byte)(ord(ch))
                         return newBinary(ret)
-                    else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+                    else: throwCannotConvert()
 
             of Floating:
                 case tp:
@@ -142,21 +133,21 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                                 formatValue(ret, y.f, aFormat.s)
                                 return newString(ret)
                             except:
-                                RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                                throwConversionFailed()
                         else:
                             return newString($(y.f))
                     of Quantity:
                         if (let aUnit = popAttr("unit"); aUnit != VNULL):
                             return newQuantity(y, parseQuantitySpec(aUnit.s))
                         else:
-                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                            throwConversionFailed()
                     of Binary:
                         let str = $(y.f)
                         var ret: ByteArray = newSeq[byte](str.len)
                         for i,ch in str:
                             ret[i] = (byte)(ord(ch))
                         return newBinary(ret)
-                    else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+                    else: throwCannotConvert()
 
             of Complex:
                 case tp:
@@ -170,7 +161,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
 
                                 return newString($(ret) & (if y.z.im >= 0: "+" else: "") & $(ret2) & "i")
                             except:
-                                RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                                throwConversionFailed()
                         else:
                             return newString($(y))
                     of Block:
@@ -178,7 +169,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                             newFloating(y.z.re),
                             newFloating(y.z.im)
                         ])
-                    else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+                    else: throwCannotConvert()
 
             of Rational:
                 case tp:
@@ -193,15 +184,15 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                             newInteger(y.rat.num),
                             newInteger(y.rat.den)
                         ])
-                    else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+                    else: throwCannotConvert()
 
             of Version:
                 if tp==String: return newString($(y))
-                else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+                else: throwCannotConvert()
 
             of Type:
                 if tp==String: return newString(($(y.t)).toLowerAscii())
-                else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+                else: throwCannotConvert()
 
             of Char:
                 case tp:
@@ -209,39 +200,39 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                     of Floating: return newFloating((float)ord(y.c))
                     of String: return newString($(y.c))
                     of Binary: return newBinary(@[(byte)(ord(y.c))])
-                    else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+                    else: throwCannotConvert()
 
             of String:
                 case tp:
                     of Logical: 
                         if y.s=="true": return VTRUE
                         elif y.s=="false": return VFALSE
-                        else: RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                        else: throwConversionFailed()
                     of Integer:
                         try:
                             return newInteger(y.s)
                         except ValueError:
-                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                            throwConversionFailed()
                     of Floating:
                         try:
                             return newFloating(parseFL(y.s))
                         except ValueError:
-                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                            throwConversionFailed()
                     of Version:
                         try:
                             return newVersion(y.s)
                         except ValueError:
-                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                            throwConversionFailed()
                     of Type:
                         try:
                             return newType(y.s)
                         except ValueError:
-                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                            throwConversionFailed()
                     of Char:
                         if y.s.runeLen() == 1:
                             return newChar(y.s)
                         else:
-                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                            throwConversionFailed()
                     of Word:
                         return newWord(y.s)
                     of Literal:
@@ -256,7 +247,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                         try:
                             return newSymbol(y.s)
                         except ValueError:
-                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                            throwConversionFailed()
                     of Regex:
                         return newRegex(y.s)
                     of Binary:
@@ -270,7 +261,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                         try:
                             return newColor(y.s)
                         except:
-                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                            throwConversionFailed()
                     of Date:
                         var dateFormat = "yyyy-MM-dd'T'HH:mm:sszzz"
                         if (aFormat != VNULL):
@@ -280,9 +271,9 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                         try:
                             return newDate(parse(y.s, timeFormat))
                         except:
-                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                            throwConversionFailed()
                     else:
-                        RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+                        throwCannotConvert()
 
             of Literal, 
                Word,
@@ -295,7 +286,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                     of Word:
                         return newWord(y.s)
                     else:
-                        RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+                        throwCannotConvert()
 
             of Attribute,
                AttributeLabel:
@@ -307,14 +298,14 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                     of Word:
                         return newWord(y.r)
                     else:
-                        RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+                        throwCannotConvert()
 
             of Inline:
                 case tp:
                     of Block:
                         return newBlock(cleanBlock(y.a))
                     else:
-                        RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+                        throwCannotConvert()
 
             of Block:
                 case tp:
@@ -328,29 +319,32 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                         let blk = cleanBlock(y.a)
                         return newInline(blk)
                     of Dictionary:
-                        if x.tpKind==BuiltinType:
+                        let stop = SP
+                        discard execBlock(y)
+
+                        let arr: ValueArray = sTopsFrom(stop)
+                        var dict: ValueDict = initOrderedTable[string,Value]()
+                        SP = stop
+
+                        var i = 0
+                        while i<arr.len:
+                            if i+1<arr.len:
+                                dict[$(arr[i])] = arr[i+1]
+                            i += 2
+
+                        return(newDictionary(dict))
+
+                    of Object:
+                        if x.tpKind==UserType:
                             let stop = SP
                             discard execBlock(y)
 
                             let arr: ValueArray = sTopsFrom(stop)
-                            var dict: ValueDict = initOrderedTable[string,Value]()
                             SP = stop
 
-                            var i = 0
-                            while i<arr.len:
-                                if i+1<arr.len:
-                                    dict[$(arr[i])] = arr[i+1]
-                                i += 2
-
-                            return(newDictionary(dict))
+                            return generateCustomObject(x.ts, arr)
                         else:
-                            let stop = SP
-                            discard execBlock(y)
-
-                            let arr: ValueArray = sTopsFrom(stop)
-                            SP = stop
-
-                            return generateCustomObject(x, arr)
+                            throwCannotConvert()
 
                     of Quantity:
                         let blk = cleanBlock(y.a)
@@ -385,22 +379,20 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
 
             of Dictionary:
                 case tp:
-                    of Dictionary:
-                        if x.tpKind==BuiltinType:
-                            return(y)
+                    of Object:
+                        if x.tpKind==UserType:
+                            return generateCustomObject(x.ts, y.d)
                         else:
-                            var dict = initOrderedTable[string,Value]()
-
-                            for k,v in pairs(y.d):
-                                for item in x.prototype.a:
-                                    if item.s == k:
-                                        dict[k] = v
-
-                            var res = newDictionary(dict)
-                            res.custom = x
-                            return(res)
+                            throwCannotConvert()
                     else:
-                        RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+                        throwCannotConvert()
+            
+            of Object:
+                case tp:
+                    of Dictionary:
+                        return newDictionary(y.o)
+                    else:
+                        throwCannotConvert()
 
             of Symbol:
                 case tp:
@@ -409,7 +401,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                     of Literal:
                         return newLiteral($(y))
                     else:
-                        RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+                        throwCannotConvert()
 
             of SymbolLiteral:
                 case tp:
@@ -418,7 +410,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                     of Literal:
                         return newLiteral($(y))
                     else:
-                        RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+                        throwCannotConvert()
 
             of Quantity:
                 case tp:
@@ -433,14 +425,14 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                         else:
                             return y
                     else:
-                        RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+                        throwCannotConvert()
 
             of Regex:
                 case tp:
                     of String:
                         return newString($(y))
                     else:
-                        RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+                        throwCannotConvert()
 
             of Date:
                 case tp:
@@ -454,16 +446,16 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                         try:
                             return newString(format(y.eobj, dateFormat))
                         except:
-                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                            throwConversionFailed()
                     else: 
-                        RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+                        throwCannotConvert()
             
             of Color:
                 case tp:
                     of String:
                         return newString($(y))
                     else:
-                        RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+                        throwCannotConvert()
 
             of Function,
                Database,
@@ -637,10 +629,10 @@ proc defineSymbols*() =
     builtin "define",
         alias       = dollar, 
         rule        = PrefixPrecedence,
-        description = "define new type with given characteristics",
+        description = "define new type with given prototype",
         args        = {
             "type"      : {Type},
-            "prototype" : {Block},
+            "fields"    : {Block},
             "methods"   : {Block}
         },
         attrs       = {
@@ -701,33 +693,32 @@ proc defineSymbols*() =
             ; NAME: Jane, SURNAME: Doe, AGE: 33
         """:
             ##########################################################
-            x.prototype = y
-            cleanBlock(x.prototype.a, inplace=true)
+            x.ts.fields = cleanBlock(y.a)
 
             if (let aAs = popAttr("as"); aAs != VNULL):
-                x.inherits = aAs
+                x.ts.inherits = aAs.ts
 
-            x.methods = newDictionary(execBlock(z,dictionary=true))
-            if x.methods.d.hasKey("init"):
-                x.methods.d["init"] = newFunction(
+            x.ts.methods = newDictionary(execBlock(z,dictionary=true)).d
+            if x.ts.methods.hasKey("init"):
+                x.ts.methods["init"] = newFunction(
                     newBlock(@[newWord("this")]),
-                    x.methods.d["init"] 
+                    x.ts.methods["init"] 
                 )
-            if x.methods.d.hasKey("print"):
-                x.methods.d["print"] = newFunction(
+            if x.ts.methods.hasKey("print"):
+                x.ts.methods["print"] = newFunction(
                     newBlock(@[newWord("this")]),
-                    x.methods.d["print"] 
+                    x.ts.methods["print"] 
                 )
 
-            if x.methods.d.hasKey("compare"):
-                if x.methods.d["compare"].kind==Block:
-                    x.methods.d["compare"] = newFunction(
+            if x.ts.methods.hasKey("compare"):
+                if x.ts.methods["compare"].kind==Block:
+                    x.ts.methods["compare"] = newFunction(
                         newBlock(@[newWord("this"),newWord("that")]),
-                        x.methods.d["compare"] 
+                        x.ts.methods["compare"] 
                     )
                 else:
-                    let key = x.methods.d["compare"]
-                    x.methods.d["compare"] = newFunction(
+                    let key = x.ts.methods["compare"]
+                    x.ts.methods["compare"] = newFunction(
                         newBlock(@[newWord("this"),newWord("that")]),
                         newBlock(@[
                             newWord("if"), newPath(@[newWord("this"), key]), newSymbol(greaterthan), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(1)]),

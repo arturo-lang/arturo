@@ -201,7 +201,7 @@ proc defineSymbols*() =
         attrs       = {
             "at"    : ({Integer},"check at given location within collection")
         },
-        returns     = {String,Block,Dictionary,Nothing},
+        returns     = {Logical},
         example     = """
             arr: [1 2 3 4]
             
@@ -482,7 +482,7 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "get collection's item by given index",
         args        = {
-            "collection"    : {String,Block,Dictionary,Date},
+            "collection"    : {String,Block,Dictionary,Object,Date},
             "index"         : {Any}
         },
         attrs       = NoAttrs,
@@ -528,6 +528,8 @@ proc defineSymbols*() =
                 of Block: push(GetArrayIndex(cleanBlock(x.a), key.i))
                 of Dictionary: 
                     push(GetKey(x.d, $(key)))
+                of Object:
+                    push(GetKey(x.o, $(key)))
                 of String: push(newChar(x.s.runeAtPos(key.i)))
                 of Date: 
                     push(GetKey(x.e, key.s))
@@ -544,7 +546,7 @@ proc defineSymbols*() =
         attrs       = {
             "at"    : ({Integer},"check at given location within collection")
         },
-        returns     = {String,Block,Dictionary,Nothing},
+        returns     = {Logical},
         example     = """
             arr: [1 2 3 4]
             
@@ -701,9 +703,9 @@ proc defineSymbols*() =
     builtin "key?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "check if dictionary contains given key",
+        description = "check if collection contains given key",
         args        = {
-            "collection"    : {Dictionary},
+            "collection"    : {Dictionary,Object},
             "key"           : {Any}
         },
         attrs       = NoAttrs,
@@ -722,18 +724,20 @@ proc defineSymbols*() =
         """:
             ##########################################################
             var needle: string
-            if y.kind==String:
-                needle = y.s
+            if y.kind==String: needle = y.s
+            else: needle = $(y)
+
+            if x.kind==Dictionary:
+                push(newLogical(x.d.hasKey(needle)))
             else:
-                needle = $(y)
-            push(newLogical(x.d.hasKey(needle)))
+                push(newLogical(x.o.hasKey(needle)))
 
     builtin "keys",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "get list of keys for given dictionary",
+        description = "get list of keys for given collection",
         args        = {
-            "dictionary"    : {Dictionary}
+            "dictionary"    : {Dictionary,Object}
         },
         attrs       = NoAttrs,
         returns     = {Block},
@@ -747,7 +751,12 @@ proc defineSymbols*() =
             => ["name" "surname"]
         """:
             ##########################################################
-            let s = toSeq(x.d.keys)
+            var s: seq[string]
+            if x.kind==Dictionary:
+                s = toSeq(x.d.keys)
+            else:
+                s = toSeq(x.o.keys)
+
             push(newStringBlock(s))
 
     builtin "last",
@@ -1120,7 +1129,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "set collection's item at index to given value",
         args        = {
-            "collection"    : {String,Block,Dictionary},
+            "collection"    : {String,Block,Dictionary,Object},
             "index"         : {Any},
             "value"         : {Any}
         },
@@ -1163,6 +1172,8 @@ proc defineSymbols*() =
                     SetArrayIndex(x.a, key.i, z)
                 of Dictionary:
                     x.d[$(key)] = z
+                of Object:
+                    x.o[$(key)] = z
                 of String:
                     var res: string = ""
                     var idx = 0
@@ -1201,7 +1212,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get size/length of given collection",
         args        = {
-            "collection"    : {String,Block,Dictionary}
+            "collection"    : {String,Block,Dictionary,Object}
         }, 
         attrs       = NoAttrs,
         returns     = {Integer},
@@ -1222,6 +1233,8 @@ proc defineSymbols*() =
                 push(newInteger(runeLen(x.s)))
             elif x.kind==Dictionary:
                 push(newInteger(x.d.len))
+            elif x.kind==Object:
+                push(newInteger(x.o.len))
             else:
                 push(newInteger(cleanBlock(x.a).len))
             
@@ -1269,7 +1282,7 @@ proc defineSymbols*() =
             "descending": ({Logical},"sort in ascending order"),
             "ascii"     : ({Logical},"sort by ASCII transliterations"),
             "values"    : ({Logical},"sort dictionary by values"),
-            "by"        : ({String,Literal},"sort array of dictionaries by given key")
+            "by"        : ({String,Literal},"sort array of collections by given key")
         },
         returns     = {Block,Nothing},
         example     = """
@@ -1293,10 +1306,21 @@ proc defineSymbols*() =
                 if blk.len==0: push(newBlock())
                 else:
                     if (let aBy = popAttr("by"); aBy != VNULL):
-                        var sorted: ValueArray = blk.sorted(
-                            proc (v1, v2: Value): int = 
-                                cmp(v1.d[aBy.s], v2.d[aBy.s]), order=sortOrdering)
-                        push(newBlock(sorted))
+                        if blk.len > 0:
+                            var sorted: ValueArray 
+
+                            if blk[0].kind==Dictionary:
+                                sorted = blk.sorted(
+                                    proc (v1, v2: Value): int = 
+                                        cmp(v1.d[aBy.s], v2.d[aBy.s]), order=sortOrdering)
+                            else:
+                                sorted = blk.sorted(
+                                    proc (v1, v2: Value): int = 
+                                        cmp(v1.o[aBy.s], v2.o[aBy.s]), order=sortOrdering)
+
+                            push(newBlock(sorted))
+                        else:
+                            push(newDictionary())
                     else:
                         var sortAscii = (popAttr("ascii") != VNULL)
 
@@ -1637,9 +1661,9 @@ proc defineSymbols*() =
     builtin "values",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "get list of values for given dictionary",
+        description = "get list of values for given collection",
         args        = {
-            "dictionary"    : {Dictionary}
+            "dictionary"    : {Block,Dictionary,Object}
         },
         attrs       = NoAttrs,
         returns     = {Block},
@@ -1653,8 +1677,14 @@ proc defineSymbols*() =
             => ["John" "Doe"]
         """:
             ##########################################################
-            let s = toSeq(x.d.values)
-            push(newBlock(s))
+            if x.kind==Block:
+                push x
+            elif x.kind==Dictionary:
+                let s = toSeq(x.d.values)
+                push(newBlock(s))
+            else:
+                let s = toSeq(x.o.values)
+                push(newBlock(s))
 
 #=======================================
 # Add Library
