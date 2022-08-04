@@ -319,29 +319,29 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                         let blk = cleanBlock(y.a)
                         return newInline(blk)
                     of Dictionary:
-                        if x.tpKind==BuiltinType:
-                            let stop = SP
-                            discard execBlock(y)
+                        let stop = SP
+                        discard execBlock(y)
 
-                            let arr: ValueArray = sTopsFrom(stop)
-                            var dict: ValueDict = initOrderedTable[string,Value]()
-                            SP = stop
+                        let arr: ValueArray = sTopsFrom(stop)
+                        var dict: ValueDict = initOrderedTable[string,Value]()
+                        SP = stop
 
-                            var i = 0
-                            while i<arr.len:
-                                if i+1<arr.len:
-                                    dict[$(arr[i])] = arr[i+1]
-                                i += 2
+                        var i = 0
+                        while i<arr.len:
+                            if i+1<arr.len:
+                                dict[$(arr[i])] = arr[i+1]
+                            i += 2
 
-                            return(newDictionary(dict))
-                        else:
-                            let stop = SP
-                            discard execBlock(y)
+                        return(newDictionary(dict))
 
-                            let arr: ValueArray = sTopsFrom(stop)
-                            SP = stop
+                    of Object:
+                        let stop = SP
+                        discard execBlock(y)
 
-                            return generateCustomObject(x.ts, arr)
+                        let arr: ValueArray = sTopsFrom(stop)
+                        SP = stop
+
+                        return generateCustomObject(x.ts, arr)
 
                     of Quantity:
                         let blk = cleanBlock(y.a)
