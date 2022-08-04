@@ -385,7 +385,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                                     dict[k] = v
 
                         var res = newObject(dict, x.ts)
-                        #res.custom = x
+
                         return(res)
                     else:
                         RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
