@@ -544,7 +544,7 @@ func newVersion*(v: string): Value {.inline.} =
 func newType*(t: ValueKind): Value {.inline.} =
     Value(kind: Type, tpKind: BuiltinType, t: t)
 
-proc newUserType*(n: string, f: Value = VNULL): Value {.inline.} =
+proc newUserType*(n: string, f: ValueArray = @[]): Value {.inline.} =
     if TypeLookup.hasKey(n):
         return TypeLookup[n]
     else:
@@ -695,8 +695,8 @@ func newObject*(o: ValueDict = initOrderedTable[string,Value](), proto: Prototyp
 proc newObject*(args: ValueArray, prot: Prototype, initializer: proc (self: Value, prot: Prototype), o: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
     var fields = o
     var i = 0
-    while i<args.len and i<prot.fields.a.len:
-        let k = prot.fields.a[i]
+    while i<args.len and i<prot.fields.len:
+        let k = prot.fields[i]
         fields[k.s] = args[i]
         i += 1
 
