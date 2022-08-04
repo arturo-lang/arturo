@@ -735,9 +735,9 @@ proc defineSymbols*() =
     builtin "keys",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "get list of keys for given dictionary",
+        description = "get list of keys for given collection",
         args        = {
-            "dictionary"    : {Dictionary}
+            "dictionary"    : {Dictionary,Object}
         },
         attrs       = NoAttrs,
         returns     = {Block},
@@ -751,7 +751,12 @@ proc defineSymbols*() =
             => ["name" "surname"]
         """:
             ##########################################################
-            let s = toSeq(x.d.keys)
+            var s: seq[string]
+            if x.kind==Dictionary:
+                s = toSeq(x.d.keys)
+            else:
+                s = toSeq(x.o.keys)
+
             push(newStringBlock(s))
 
     builtin "last",
