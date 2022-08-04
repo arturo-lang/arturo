@@ -229,7 +229,7 @@ type
 
     ObjectPrototype* = ref object
         name*       : string
-        prototype*  : Value
+        fields*     : Value
         methods*    : Value
         inherits*   : Value
 
