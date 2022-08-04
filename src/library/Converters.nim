@@ -382,22 +382,16 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
             of Dictionary:
                 case tp:
                     of Object:
-                        var res = generateCustomObject(x.ts, y.d)
-                        # var dict = initOrderedTable[string,Value]()
-
-                        # for k,v in pairs(y.d):
-                        #     for item in x.ts.fields:
-                        #         if item.s == k:
-                        #             dict[k] = v
-
-                        # var res = newObject(dict, x.ts)
-
-                        return(res)
+                        return generateCustomObject(x.ts, y.d)
                     else:
                         RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+            
             of Object:
-                # TODO(Converters) should add support for `:object` values
-                discard
+                case tp:
+                    of Dictionary:
+                        return newDictionary(y.fields)
+                    else:
+                        RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
             of Symbol:
                 case tp:
