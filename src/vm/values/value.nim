@@ -239,7 +239,7 @@ type
         # TODO(VM/values/value) remove unused `.custom` field
         #  and... rename the corresponding field in Object values
         #  labels: vm, values, cleanup, easy
-        #custom*: Value
+
         case kind*: ValueKind:
             of Null,
                Nothing,
@@ -2786,12 +2786,6 @@ func sameValue*(x: Value, y: Value): bool {.inline.}=
 
                 return true
             of Dictionary:
-                # if not x.custom.isNil and x.custom.methods.d.hasKey("print"):
-                #     push y
-                #     push x
-                #     callFunction(x.custom.methods.d["compare"])
-                #     return pop().b
-                # else:
                 if x.d.len != y.d.len: return false
 
                 for k,v in pairs(x.d):
