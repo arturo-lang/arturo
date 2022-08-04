@@ -227,6 +227,12 @@ type
         precedence*: PrecedenceKind
         name*:       Value
 
+    ObjectSpec* = ref object
+        name*       : string
+        prototype*  : Value
+        methods*    : Value
+        inherits*   : Value
+
     SymbolDict*   = OrderedTable[SymbolKind,AliasBinding]
 
     logical* = enum
@@ -270,10 +276,7 @@ type
                 t*  : ValueKind
                 case tpKind*: TypeKind:
                     of UserType:
-                        name*       : string
-                        prototype*  : Value
-                        methods*    : Value
-                        inherits*   : Value
+                        ts* : ObjectSpec
                     of BuiltinType:
                         discard
 
@@ -306,7 +309,7 @@ type
             of Dictionary:  d*  : ValueDict
             of Object:
                 o*: ValueDict
-                cust*: Value
+                os*: ObjectSpec
             of Function:    
                 args*   : OrderedTable[string,ValueSpec]
                 attrs*  : OrderedTable[string,(ValueSpec,string)]
