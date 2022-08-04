@@ -258,6 +258,8 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
     let cnst = input[0]
     let it = input[1]
 
+    # TODO(VM/exec) should we store opCode pointer as a register?
+    #  labels: vm, execution, enhancement, performance
     var i = 0
     var op: OpCode
     var oldSyms: ValueDict
@@ -277,6 +279,10 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             CurrentDump = (input[0], input[1])
 
     while true:
+        # TODO(VM/exec) should we use computed goto?
+        #  In my benchmarks, for this particular use case - which *is* the main use case - a `{.computedGoTo.}` gives roughly a 10% boost.
+        #  labels: vm, execution, enhancement, performance, open discussion
+
         # if vmBreak:
         #     break
 
