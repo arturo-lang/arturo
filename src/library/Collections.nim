@@ -703,9 +703,9 @@ proc defineSymbols*() =
     builtin "key?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "check if dictionary contains given key",
+        description = "check if dictionary or object contains given key",
         args        = {
-            "collection"    : {Dictionary},
+            "collection"    : {Dictionary,Object},
             "key"           : {Any}
         },
         attrs       = NoAttrs,
@@ -724,11 +724,13 @@ proc defineSymbols*() =
         """:
             ##########################################################
             var needle: string
-            if y.kind==String:
-                needle = y.s
+            if y.kind==String: needle = y.s
+            else: needle = $(y)
+
+            if x.kind==Dictionary:
+                push(newLogical(x.d.hasKey(needle)))
             else:
-                needle = $(y)
-            push(newLogical(x.d.hasKey(needle)))
+                push(newLogical(x.o.hasKey(needle)))
 
     builtin "keys",
         alias       = unaliased, 
