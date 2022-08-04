@@ -698,7 +698,7 @@ proc defineSymbols*() =
             x.ts.fields = cleanBlock(y.a)
 
             if (let aAs = popAttr("as"); aAs != VNULL):
-                x.ts.inherits = aAs
+                x.ts.inherits = aAs.ts
 
             x.ts.methods = newDictionary(execBlock(z,dictionary=true)).d
             if x.ts.methods.hasKey("init"):
