@@ -45,8 +45,8 @@ proc parseFL*(s: string): float =
 # Helpers
 #=======================================
 
-proc generateCustomObject*(prot: ObjectSpec, arguments: ValueArray): Value =
-    var res = newObject(arguments, prot, proc (self: Value, prot: ObjectSpec) =
+proc generateCustomObject*(prot: ObjectPrototype, arguments: ValueArray): Value =
+    var res = newObject(arguments, prot, proc (self: Value, prot: ObjectPrototype) =
         if prot.methods.d.hasKey("init"):
             push self
             callFunction(prot.methods.d["init"])
