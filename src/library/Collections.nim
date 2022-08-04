@@ -1661,9 +1661,9 @@ proc defineSymbols*() =
     builtin "values",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "get list of values for given dictionary",
+        description = "get list of values for given collection",
         args        = {
-            "dictionary"    : {Dictionary}
+            "dictionary"    : {Block,Dictionary,Object}
         },
         attrs       = NoAttrs,
         returns     = {Block},
@@ -1677,8 +1677,14 @@ proc defineSymbols*() =
             => ["John" "Doe"]
         """:
             ##########################################################
-            let s = toSeq(x.d.values)
-            push(newBlock(s))
+            if x.kind==Block:
+                push x
+            elif x.kind==Dictionary:
+                let s = toSeq(x.d.values)
+                push(newBlock(s))
+            else:
+                let s = toSeq(x.o.values)
+                push(newBlock(s))
 
 #=======================================
 # Add Library
