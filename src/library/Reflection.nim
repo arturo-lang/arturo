@@ -520,7 +520,10 @@ proc defineSymbols*() =
                 if x.t in {Object,Any}:
                     push(VTRUE)
                 else:
-                    push(newLogical(x.ts.name == y.os.name))
+                    if x.tpKind == BuiltinType:
+                        push(newLogical(x.t == newType(y.os.name)))
+                    else:
+                        push(newLogical(x.ts.name == y.os.name))
 
     builtin "floating?",
         alias       = unaliased, 
