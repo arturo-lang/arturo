@@ -59,8 +59,11 @@ proc generateCustomObject*(prot: Prototype, arguments: ValueDict): Value =
 
     return res
 
-template throwCannotConvert*(): untyped = 
+template throwCannotConvert(): untyped = 
     RuntimeError_CannotConvert(codify(y), $(y.kind), (if x.tpKind==UserType: x.ts.name else: $(x.t)))
+
+template throwConversionFailed(): untyped =
+    RuntimeError_ConversionFailed(codify(y), $(y.kind), (if x.tpKind==UserType: x.ts.name else: $(x.t)))
 
 # TODO(Converters) Make sure `convertedValueToType` works fine + add tests
 #  labels: library, cleanup, unit-test
@@ -107,7 +110,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                                     formatValue(ret, y.i, aFormat.s)
                                     return newString(ret)
                                 except:
-                                    RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                                    throwConversionFailed()
                             else:
                                 return newString($(y.i))
                         else:
@@ -117,7 +120,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                         if (let aUnit = popAttr("unit"); aUnit != VNULL):
                             return newQuantity(y, parseQuantitySpec(aUnit.s))
                         else:
-                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                            throwConversionFailed()
                     of Date:
                         return newDate(local(fromUnix(y.i)))
                     of Binary:
@@ -141,14 +144,14 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                                 formatValue(ret, y.f, aFormat.s)
                                 return newString(ret)
                             except:
-                                RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                                throwConversionFailed()
                         else:
                             return newString($(y.f))
                     of Quantity:
                         if (let aUnit = popAttr("unit"); aUnit != VNULL):
                             return newQuantity(y, parseQuantitySpec(aUnit.s))
                         else:
-                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                            throwConversionFailed()
                     of Binary:
                         let str = $(y.f)
                         var ret: ByteArray = newSeq[byte](str.len)
@@ -169,7 +172,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
 
                                 return newString($(ret) & (if y.z.im >= 0: "+" else: "") & $(ret2) & "i")
                             except:
-                                RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                                throwConversionFailed()
                         else:
                             return newString($(y))
                     of Block:
@@ -215,32 +218,32 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                     of Logical: 
                         if y.s=="true": return VTRUE
                         elif y.s=="false": return VFALSE
-                        else: RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                        else: throwConversionFailed()
                     of Integer:
                         try:
                             return newInteger(y.s)
                         except ValueError:
-                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                            throwConversionFailed()
                     of Floating:
                         try:
                             return newFloating(parseFL(y.s))
                         except ValueError:
-                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                            throwConversionFailed()
                     of Version:
                         try:
                             return newVersion(y.s)
                         except ValueError:
-                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                            throwConversionFailed()
                     of Type:
                         try:
                             return newType(y.s)
                         except ValueError:
-                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                            throwConversionFailed()
                     of Char:
                         if y.s.runeLen() == 1:
                             return newChar(y.s)
                         else:
-                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                            throwConversionFailed()
                     of Word:
                         return newWord(y.s)
                     of Literal:
@@ -255,7 +258,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                         try:
                             return newSymbol(y.s)
                         except ValueError:
-                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                            throwConversionFailed()
                     of Regex:
                         return newRegex(y.s)
                     of Binary:
@@ -269,7 +272,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                         try:
                             return newColor(y.s)
                         except:
-                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                            throwConversionFailed()
                     of Date:
                         var dateFormat = "yyyy-MM-dd'T'HH:mm:sszzz"
                         if (aFormat != VNULL):
@@ -279,7 +282,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                         try:
                             return newDate(parse(y.s, timeFormat))
                         except:
-                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                            throwConversionFailed()
                     else:
                         throwCannotConvert()
 
@@ -454,7 +457,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                         try:
                             return newString(format(y.eobj, dateFormat))
                         except:
-                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                            throwConversionFailed()
                     else: 
                         throwCannotConvert()
             
