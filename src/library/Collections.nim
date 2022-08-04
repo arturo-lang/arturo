@@ -703,7 +703,7 @@ proc defineSymbols*() =
     builtin "key?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "check if dictionary or object contains given key",
+        description = "check if collection contains given key",
         args        = {
             "collection"    : {Dictionary,Object},
             "key"           : {Any}
