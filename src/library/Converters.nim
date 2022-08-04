@@ -383,7 +383,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                             var dict = initOrderedTable[string,Value]()
 
                             for k,v in pairs(y.d):
-                                for item in x.ts.fields.a:
+                                for item in x.ts.fields:
                                     if item.s == k:
                                         dict[k] = v
 
@@ -695,8 +695,7 @@ proc defineSymbols*() =
             ; NAME: Jane, SURNAME: Doe, AGE: 33
         """:
             ##########################################################
-            x.ts.fields = y
-            cleanBlock(x.ts.fields.a, inplace=true)
+            x.ts.fields = cleanBlock(y.a)
 
             if (let aAs = popAttr("as"); aAs != VNULL):
                 x.ts.inherits = aAs
