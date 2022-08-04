@@ -54,6 +54,15 @@ proc generateCustomObject*(prot: Prototype, arguments: ValueArray): Value =
 
     return res
 
+proc generateCustomObject*(prot: Prototype, arguments: ValueDict): Value =
+    var res = newObject(arguments, prot, proc (self: Value, prot: Prototype) =
+        if prot.methods.hasKey("init"):
+            push self
+            callFunction(prot.methods["init"])
+    )
+
+    return res
+
 # TODO(Converters) Make sure `convertedValueToType` works fine + add tests
 #  labels: library, cleanup, unit-test
 
@@ -377,14 +386,15 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
             of Dictionary:
                 case tp:
                     of Object:
-                        var dict = initOrderedTable[string,Value]()
+                        var res = generateCustomObject(x.ts, y.d)
+                        # var dict = initOrderedTable[string,Value]()
 
-                        for k,v in pairs(y.d):
-                            for item in x.ts.fields:
-                                if item.s == k:
-                                    dict[k] = v
+                        # for k,v in pairs(y.d):
+                        #     for item in x.ts.fields:
+                        #         if item.s == k:
+                        #             dict[k] = v
 
-                        var res = newObject(dict, x.ts)
+                        # var res = newObject(dict, x.ts)
 
                         return(res)
                     else:
