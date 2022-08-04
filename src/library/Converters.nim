@@ -383,7 +383,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                             var dict = initOrderedTable[string,Value]()
 
                             for k,v in pairs(y.d):
-                                for item in x.ts.prototype.a:
+                                for item in x.ts.fields.a:
                                     if item.s == k:
                                         dict[k] = v
 
@@ -631,10 +631,10 @@ proc defineSymbols*() =
     builtin "define",
         alias       = dollar, 
         rule        = PrefixPrecedence,
-        description = "define new type with given characteristics",
+        description = "define new type with given prototype",
         args        = {
             "type"      : {Type},
-            "prototype" : {Block},
+            "fields"    : {Block},
             "methods"   : {Block}
         },
         attrs       = {
@@ -695,8 +695,8 @@ proc defineSymbols*() =
             ; NAME: Jane, SURNAME: Doe, AGE: 33
         """:
             ##########################################################
-            x.ts.prototype = y
-            cleanBlock(x.ts.prototype.a, inplace=true)
+            x.ts.fields = y
+            cleanBlock(x.ts.fields.a, inplace=true)
 
             if (let aAs = popAttr("as"); aAs != VNULL):
                 x.ts.inherits = aAs

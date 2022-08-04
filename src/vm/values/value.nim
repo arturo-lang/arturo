@@ -544,11 +544,11 @@ func newVersion*(v: string): Value {.inline.} =
 func newType*(t: ValueKind): Value {.inline.} =
     Value(kind: Type, tpKind: BuiltinType, t: t)
 
-proc newUserType*(n: string, p: Value = VNULL): Value {.inline.} =
+proc newUserType*(n: string, f: Value = VNULL): Value {.inline.} =
     if TypeLookup.hasKey(n):
         return TypeLookup[n]
     else:
-        result = Value(kind: Type, tpKind: UserType, t: Dictionary, ts: ObjectPrototype(name: n, prototype: p, methods: VNULL, inherits: VNULL))
+        result = Value(kind: Type, tpKind: UserType, t: Dictionary, ts: ObjectPrototype(name: n, fields: f, methods: VNULL, inherits: VNULL))
         TypeLookup[n] = result
 
 proc newType*(t: string): Value {.inline.} =
@@ -695,8 +695,8 @@ func newObject*(o: ValueDict = initOrderedTable[string,Value](), os: ObjectProto
 proc newObject*(args: ValueArray, prot: ObjectPrototype, initializer: proc (self: Value, prot: ObjectPrototype), o: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
     var fields = o
     var i = 0
-    while i<args.len and i<prot.prototype.a.len:
-        let k = prot.prototype.a[i]
+    while i<args.len and i<prot.fields.a.len:
+        let k = prot.fields.a[i]
         fields[k.s] = args[i]
         i += 1
 
@@ -786,7 +786,7 @@ proc copyValue*(v: Value): Value {.inline.} =
             if v.tpKind==BuiltinType:
                 result = newType(v.t)
             else:
-                result = newUserType(v.ts.name, v.ts.prototype)
+                result = newUserType(v.ts.name, v.ts.fields)
         of Char:        result = newChar(v.c)
 
         of String:      result = newString(v.s)
