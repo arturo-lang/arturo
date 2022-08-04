@@ -201,7 +201,7 @@ proc defineSymbols*() =
         attrs       = {
             "at"    : ({Integer},"check at given location within collection")
         },
-        returns     = {String,Block,Dictionary,Nothing},
+        returns     = {Logical},
         example     = """
             arr: [1 2 3 4]
             
@@ -546,7 +546,7 @@ proc defineSymbols*() =
         attrs       = {
             "at"    : ({Integer},"check at given location within collection")
         },
-        returns     = {String,Block,Dictionary,Nothing},
+        returns     = {Logical},
         example     = """
             arr: [1 2 3 4]
             
