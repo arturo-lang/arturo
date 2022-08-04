@@ -309,7 +309,7 @@ type
             of Dictionary:  d*  : ValueDict
             of Object:
                 o*: ValueDict   # fields
-                os*: ObjectPrototype # custom type pointer
+                proto*: ObjectPrototype # custom type pointer
             of Function:    
                 args*   : OrderedTable[string,ValueSpec]
                 attrs*  : OrderedTable[string,(ValueSpec,string)]
@@ -689,8 +689,8 @@ func newBinary*(n: ByteArray = @[]): Value {.inline.} =
 func newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
     Value(kind: Dictionary, d: d)
 
-func newObject*(o: ValueDict = initOrderedTable[string,Value](), os: ObjectPrototype): Value {.inline.} =
-    Value(kind: Object, o: o, os: os)
+func newObject*(o: ValueDict = initOrderedTable[string,Value](), proto: ObjectPrototype): Value {.inline.} =
+    Value(kind: Object, o: o, proto: proto)
 
 proc newObject*(args: ValueArray, prot: ObjectPrototype, initializer: proc (self: Value, prot: ObjectPrototype), o: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
     var fields = o
@@ -808,7 +808,7 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Block:       result = newBlock(v.a.map((vv)=>copyValue(vv)), copyValue(v.data))
 
         of Dictionary:  result = newDictionary(v.d)
-        of Object:      result = newObject(v.o, v.os)
+        of Object:      result = newObject(v.o, v.proto)
 
         of Function:    result = newFunction(v.params, v.main, v.imports, v.exports, v.exportable, v.memoize)
 
@@ -2425,7 +2425,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
 
     proc dumpBlockStart(v: Value) =
         var tp = ($(v.kind)).toLowerAscii()
-        if v.kind==Object: tp = v.os.name
+        if v.kind==Object: tp = v.proto.name
         if not muted:   stdout.write fmt("{bold(magentaColor)}[{fg(grayColor)} :{tp}{resetColor}\n")
         else:           stdout.write fmt("[ :{tp}\n")
 
@@ -2803,7 +2803,7 @@ func sameValue*(x: Value, y: Value): bool {.inline.}=
                     if not y.o.hasKey(k): return false
                     if not (sameValue(v,y.o[k])): return false
 
-                if x.os != y.os: return false
+                if x.proto != y.proto: return false
 
                 return true
             of Function:

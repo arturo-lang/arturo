@@ -521,9 +521,9 @@ proc defineSymbols*() =
                     push(VTRUE)
                 else:
                     if x.tpKind == BuiltinType:
-                        push(newLogical(x.t == newType(y.os.name)))
+                        push(newLogical(x == newType(y.proto.name)))
                     else:
-                        push(newLogical(x.ts.name == y.os.name))
+                        push(newLogical(x.ts.name == y.proto.name))
 
     builtin "floating?",
         alias       = unaliased, 
@@ -885,7 +885,7 @@ proc defineSymbols*() =
             if x.kind != Object:
                 push(newType(x.kind))
             else:
-                push(newUserType(x.os.name))
+                push(newUserType(x.proto.name))
 
     builtin "type?",
         alias       = unaliased, 
