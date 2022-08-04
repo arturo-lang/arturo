@@ -230,7 +230,7 @@ type
     Prototype* = ref object
         name*       : string
         fields*     : ValueArray
-        methods*    : Value
+        methods*    : ValueDict
         inherits*   : Value
 
     SymbolDict*   = OrderedTable[SymbolKind,AliasBinding]
@@ -548,7 +548,7 @@ proc newUserType*(n: string, f: ValueArray = @[]): Value {.inline.} =
     if TypeLookup.hasKey(n):
         return TypeLookup[n]
     else:
-        result = Value(kind: Type, tpKind: UserType, t: Dictionary, ts: Prototype(name: n, fields: f, methods: VNULL, inherits: VNULL))
+        result = Value(kind: Type, tpKind: UserType, t: Dictionary, ts: Prototype(name: n, fields: f, methods: initOrderedTable[string,Value](), inherits: VNULL))
         TypeLookup[n] = result
 
 proc newType*(t: string): Value {.inline.} =

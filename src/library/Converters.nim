@@ -47,9 +47,9 @@ proc parseFL*(s: string): float =
 
 proc generateCustomObject*(prot: Prototype, arguments: ValueArray): Value =
     var res = newObject(arguments, prot, proc (self: Value, prot: Prototype) =
-        if prot.methods.d.hasKey("init"):
+        if prot.methods.hasKey("init"):
             push self
-            callFunction(prot.methods.d["init"])
+            callFunction(prot.methods["init"])
     )
 
     return res
@@ -700,27 +700,27 @@ proc defineSymbols*() =
             if (let aAs = popAttr("as"); aAs != VNULL):
                 x.ts.inherits = aAs
 
-            x.ts.methods = newDictionary(execBlock(z,dictionary=true))
-            if x.ts.methods.d.hasKey("init"):
-                x.ts.methods.d["init"] = newFunction(
+            x.ts.methods = newDictionary(execBlock(z,dictionary=true)).d
+            if x.ts.methods.hasKey("init"):
+                x.ts.methods["init"] = newFunction(
                     newBlock(@[newWord("this")]),
-                    x.ts.methods.d["init"] 
+                    x.ts.methods["init"] 
                 )
-            if x.ts.methods.d.hasKey("print"):
-                x.ts.methods.d["print"] = newFunction(
+            if x.ts.methods.hasKey("print"):
+                x.ts.methods["print"] = newFunction(
                     newBlock(@[newWord("this")]),
-                    x.ts.methods.d["print"] 
+                    x.ts.methods["print"] 
                 )
 
-            if x.ts.methods.d.hasKey("compare"):
-                if x.ts.methods.d["compare"].kind==Block:
-                    x.ts.methods.d["compare"] = newFunction(
+            if x.ts.methods.hasKey("compare"):
+                if x.ts.methods["compare"].kind==Block:
+                    x.ts.methods["compare"] = newFunction(
                         newBlock(@[newWord("this"),newWord("that")]),
-                        x.ts.methods.d["compare"] 
+                        x.ts.methods["compare"] 
                     )
                 else:
-                    let key = x.ts.methods.d["compare"]
-                    x.ts.methods.d["compare"] = newFunction(
+                    let key = x.ts.methods["compare"]
+                    x.ts.methods["compare"] = newFunction(
                         newBlock(@[newWord("this"),newWord("that")]),
                         newBlock(@[
                             newWord("if"), newPath(@[newWord("this"), key]), newSymbol(greaterthan), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(1)]),
