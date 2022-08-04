@@ -704,6 +704,17 @@ proc newObject*(args: ValueArray, prot: Prototype, initializer: proc (self: Valu
     
     initializer(result, prot)
 
+proc newObject*(args: ValueDict, prot: Prototype, initializer: proc (self: Value, prot: Prototype), o: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
+    var fields = o
+    for k,v in pairs(args):
+        for item in prot.fields:
+            if item.s == k:
+                fields[k] = v
+
+    result = newObject(fields, prot)
+    
+    initializer(result, prot)
+
 func newFunction*(params: Value, main: Value, imports: Value = VNULL, exports: Value = VNULL, exportable: bool = false, memoize: bool = false): Value {.inline.} =
     Value(kind: Function, fnKind: UserFunction, params: params, main: main, imports: imports, exports: exports, exportable: exportable, memoize: memoize)
 
