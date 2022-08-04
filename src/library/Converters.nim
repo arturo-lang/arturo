@@ -63,7 +63,7 @@ proc generateCustomObject*(prot: Prototype, arguments: ValueDict): Value =
 #  labels: library, cleanup, unit-test
 
 proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
-    if y.kind == tp and y.kind!=Dictionary and y.kind!=Quantity:
+    if y.kind == tp and y.kind!=Quantity:
         return y
     else:
         case y.kind:
