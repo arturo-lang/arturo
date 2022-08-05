@@ -2,7 +2,7 @@ name: "Run benchmarks"
 on:
   push:
     branches:
-      - 'create-real-benchmarking-tool'
+      - 'master'
     tags-ignore:
       - '**'
 concurrency: 
