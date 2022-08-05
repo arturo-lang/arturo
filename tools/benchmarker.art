@@ -40,6 +40,8 @@ canExecute?: function [scri][
     return true
 ]
 
+Results: #[]
+
 runSet: function [title,location][
     print "====================================================================="
     print (color #cyan.bold ~"  |title|") ++ pad "time" 65 - size title
@@ -52,12 +54,16 @@ runSet: function [title,location][
         expected: split.lines strip read test
 
         if canExecute? script [
-            prints pad.right ((color #magenta "\n- Running: ") ++ truncate.preserve extract.filename script 40) 70 
+            prints pad.right ((color #magenta "\n- Running: ") ++ truncate.preserve extract.filename script 40) 71 
             result: benchmark.get [
-                execute ~{arturo --no-color "|script|"}
+                do.times:3 [
+                    execute ~{arturo --no-color "|script|"}
+                ]
             ]
-
-            prints result
+            result: result / 3
+            result: (to :string .format:".2f" to :floating result)
+            Results\[script]: result
+            prints result++"ms"
 
         ]
     ] 
@@ -72,3 +78,5 @@ print color #gray ~"  Release: @|sys\release|\n"
 runSet "Unit Tests" "../tests/unittests"
 runSet "Errors" "../tests/errors"
 runSet "Examples" "../examples/rosetta"
+
+inspect Results
