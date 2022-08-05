@@ -68,7 +68,7 @@ jobs:
       - name: Run benchmark tests
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
-          arturo tools/benchmarker.art
+          arturo tools/benchmarker.art write
 
       - name: Push to benchmark repo
         id: push_directory
