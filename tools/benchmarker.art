@@ -47,12 +47,12 @@ if WriteMode? ->
 
 Results: #[
     benchmarks: #[]
-    total: 0.0
+    total: 0
 ]
 
 runSet: function [title,location][
     print "====================================================================="
-    print (color #cyan.bold ~"  |title|") ++ pad "time" 65 - size title
+    print (color #cyan.bold ~"  |title|") ++ pad "(ms) time" 66 - size title
     print "====================================================================="
     tests: sort select list relative location 'loc -> contains? loc ".res"
     success: 0
@@ -62,16 +62,13 @@ runSet: function [title,location][
         expected: split.lines strip read test
 
         if canExecute? script [
-            prints pad.right ((color #magenta "\n- Running: ") ++ truncate.preserve extract.filename script 40) 71 
+            prints pad.right ((color #magenta "\n- Running: ") ++ truncate.preserve extract.filename script 40) 70
             result: map NofRuns ø [
                 benchmark.get -> execute ~{arturo "|script|"}
             ]
-            result: min result
-            result: (to :string .format:".2f" to :floating result)
+            result: to :integer min result
+            prints pad.left to :string result 10
 
-            prints result++"ms"
-
-            result: to :floating result
             Results\benchmarks\[script]: result
             Results\total: Results\total + result
         ]
@@ -81,7 +78,7 @@ runSet: function [title,location][
 ]
 
 print color #green.bold "\n  Arturo"
-print color #white.bold "  Unit Tester\n"
+print color #white.bold "  Benchmarker\n"
 print color #gray ~"  Release: @|sys\release|\n"
 
 runSet "Unit Tests" "../tests/unittests"
