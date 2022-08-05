@@ -87,8 +87,8 @@ print color #white.bold "  Unit Tester\n"
 print color #gray ~"  Release: @|sys\release|\n"
 
 runSet "Unit Tests" "../tests/unittests"
-; runSet "Errors" "../tests/errors"
-; runSet "Examples" "../examples/rosetta"
+runSet "Errors" "../tests/errors"
+runSet "Examples" "../examples/rosetta"
 
 if WriteMode? [
     outFile: "benchmarks/" ++ (to :string now\day)++"-"++(to :string now\month)++"-"++(to :string now\year) ++ ".json"
