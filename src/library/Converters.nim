@@ -127,6 +127,9 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                     of Rational: return newRational(y.f)
                     of Char: return newChar(chr((int)y.f))
                     of String: 
+                        # TODO(Converters\to) add `.format` support for Quantity to String conversions
+                        #  It should be working pretty much like Floating to String conversions work
+                        #  labels: library, enhancement
                         if (aFormat != VNULL):
                             try:
                                 var ret = ""
@@ -1084,7 +1087,7 @@ proc defineSymbols*() =
             "value" : {Any}
         },
         attrs       = {
-            "format": ({String},"use given format (for dates)"),
+            "format": ({String},"use given format (for dates or floating-point numbers)"),
             "unit"  : ({String,Literal},"use given unit (for quantities)"),
             "hsl"   : ({Logical},"convert HSL block to color"),
             "hsv"   : ({Logical},"convert HSV block to color")

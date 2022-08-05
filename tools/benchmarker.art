@@ -1,73 +1,96 @@
-#!/usr/bin/env arturo
-;==========================================
-; Tester
-;
-; @file: tools/tester.art
-; @author: drkameleon
-;==========================================
+canExecute?: function [scri][
+    scr: extract.filename scri
+    if sys\release='mini [
+        if in? scr [
+            "runtime.NumberOutOfPermittedRange"
 
-langs: #[
-    Arturo:     #[ext:".art"    bin:"arturo"]
-    Lisp:       #[ext:".lisp"   bin:"clisp"]
-    Lua:        #[ext:".lua"    bin:"lua"]
-    PHP:        #[ext:".php"    bin:"php"]
-    Python:     #[ext:".py"     bin:"python"]
-    Python3:    #[ext:".py3"    bin:"python3"]
-    Rebol3:     #[ext:".r"      bin:"r3"]
-    Ruby:       #[ext:".rb"     bin:"ruby"]
-    Tcl:        #[ext:".tcl"    bin:"tclsh"]
+            "branching"
+            "sorting"
+
+            "ackermann function"
+            "arbitrary-precision integers - included"
+            "curzon numbers"
+            "iban"
+            "integer overflow"
+            "integer roots"
+            "jacobsthal numbers"
+            "long multiplication"
+            "loops - continue"
+            "lucas-lehmer test"
+            "modular exponentation"
+            "next special primes"
+            "sorting algorithms - cycle sort"
+            "sorting algorithms - pancake sort"
+            "sylvester's sequence"
+            "trigonometric functions"
+            "ultra useful primes"
+            "unicode strings"
+            "wieferich primes"
+            "xml - input"
+        ] -> return false
+    ]
+
+    if sys\release='full [
+        if in? scr [
+            "runtime.IntegerOperationOverflow"
+            "runtime.IntegerParsingOverflow"
+        ] -> return false
+    ]
+
+    return true
 ]
 
-padding: 12
-bigPadding: 36
+WriteMode?: contains? arg "write"
+NofRuns: 1
+if WriteMode? ->
+    NofRuns: 3
 
-printHeader: function [][
-    print ""
-    
-    loop 1 + size keys langs 'l [
-        if? l=1 -> prints pad.right "------------------------------------|" bigPadding
-        else -> prints pad.right (repeat "-" padding)++"|" padding+1
-    ]
-    print "" prints pad.right "" bigPadding
-    loop keys langs 'lang -> prints "|" ++ pad.center lang padding
-    print "|"
-
-    loop 1 + size keys langs 'l [
-        if? l=1 -> prints pad.right "====================================|" bigPadding
-        else -> prints pad.right (repeat "=" padding)++"|" padding+1
-    ]
-    print ""
+Results: #[
+    benchmarks: #[]
+    total: 0.0
 ]
 
-runBenchmark: function [bench][
-    dir: extract.directory bench
-    name: extract.filename bench
-    prints color.bold #cyan pad.right ~{: |replace name "_" " "|:} bigPadding
-    loop langs [lang,data][
-        scr: join.path @[dir name++data\ext]
-        expected: read join.path @[dir name++".res"]
-        ;print scr
-        ;print expected
+runSet: function [title,location][
+    print "====================================================================="
+    print (color #cyan.bold ~"  |title|") ++ pad "time" 65 - size title
+    print "====================================================================="
+    tests: sort select list relative location 'loc -> contains? loc ".res"
+    success: 0
 
-        if? exists? scr [
-            result: execute ~{/usr/bin/time -lp |data\bin| |scr|}
-            result: strip replace first match result "real [0-9\.]+" "real " ""
+    loop tests 'test [
+        script: replace test ".res" ".art"
+        expected: split.lines strip read test
 
-            prints "|" ++ color #green pad.center to :string result padding
+        if canExecute? script [
+            prints pad.right ((color #magenta "\n- Running: ") ++ truncate.preserve extract.filename script 40) 71 
+            result: benchmark.get [
+                do.times:NofRuns [
+                    execute ~{arturo --no-color "|script|"}
+                ]
+            ]
+            result: result / NofRuns
+            result: (to :string .format:".2f" to :floating result)
+
+            prints result++"ms"
+
+            result: to :floating result
+            Results\benchmarks\[script]: result
+            Results\total: Results\total + result
         ]
-        else [
-            prints "|" ++ color #red pad.center "-" padding
-        ]
-    ]
-    print "|"
+    ] 
+
+    print "\n"
 ]
 
-printHeader
+print color #green.bold "\n  Arturo"
+print color #white.bold "  Unit Tester\n"
+print color #gray ~"  Release: @|sys\release|\n"
 
-loop sort select list relative "../tests/benchmarks" => [".art" = extract.extension] 'b [
-    runBenchmark b
+runSet "Unit Tests" "../tests/unittests"
+runSet "Errors" "../tests/errors"
+runSet "Examples" "../examples/rosetta"
+
+if WriteMode? [
+    outFile: "benchmarks/" ++ (to :string now\day)++"-"++(to :string now\month)++"-"++(to :string now\year) ++ ".json"
+    write.json outFile Results
 ]
-
-print "\n"
-
-exit
