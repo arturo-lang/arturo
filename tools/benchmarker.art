@@ -63,12 +63,10 @@ runSet: function [title,location][
 
         if canExecute? script [
             prints pad.right ((color #magenta "\n- Running: ") ++ truncate.preserve extract.filename script 40) 71 
-            result: benchmark.get [
-                do.times:NofRuns [
-                    execute ~{arturo --no-color "|script|"}
-                ]
+            result: map NofRuns ø [
+                benchmark.get -> execute ~{arturo "|script|"}
             ]
-            result: result / NofRuns
+            result: min result
             result: (to :string .format:".2f" to :floating result)
 
             prints result++"ms"
