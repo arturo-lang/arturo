@@ -40,7 +40,10 @@ canExecute?: function [scri][
     return true
 ]
 
-Results: #[]
+Results: #[
+    benchmarks: #[]
+    total: 0.0
+]
 
 runSet: function [title,location][
     print "====================================================================="
@@ -62,9 +65,12 @@ runSet: function [title,location][
             ]
             result: result / 3
             result: (to :string .format:".2f" to :floating result)
-            Results\[script]: result
+
             prints result++"ms"
 
+            result: to :floating result
+            Results\benchmarks\[script]: result
+            Results\total: Results\total + result
         ]
     ] 
 
@@ -76,7 +82,9 @@ print color #white.bold "  Unit Tester\n"
 print color #gray ~"  Release: @|sys\release|\n"
 
 runSet "Unit Tests" "../tests/unittests"
-runSet "Errors" "../tests/errors"
-runSet "Examples" "../examples/rosetta"
+;runSet "Errors" "../tests/errors"
+;runSet "Examples" "../examples/rosetta"
 
-inspect Results
+write.json "benchmark-results.json" Results
+
+;inspect Results
