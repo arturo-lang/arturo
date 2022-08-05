@@ -1,0 +1,65 @@
+name: "Run benchmarks"
+on:
+  push:
+    branches:
+      - 'master'
+    tags-ignore:
+      - '**'
+concurrency: 
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash -l {0}
+
+jobs:  
+  build:
+    name: "Build & Test"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-20.04
+        version:
+          - full
+    steps:
+      - name: "Cancel similar actions in progress"
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{ github.token }}
+
+      - name: "Checkout"
+        uses: actions/checkout@main
+        with:
+          submodules: recursive
+
+      - name: Install Nim
+        run: |
+          wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
+          echo "$HOME/.nimble/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install libwebkit2gtk-4.0-dev libmpfr-dev
+
+      - name: Verify dependecies
+        run: |
+          nim --version
+          
+      - name: Build Arturo
+        run: |
+          ./build.nims install ${{ matrix.version }} log
+          echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
+
+      - name: Upload Artifacts
+        uses: 'actions/upload-artifact@v2'
+        with:
+          name: "arturo-${{matrix.version}}-${{matrix.os}}"
+          path: bin/arturo
+
+      - name: Run benchmark tests
+        run: |
+          echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
+          arturo tools/benchmarker.art
