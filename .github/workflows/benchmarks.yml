@@ -2,7 +2,7 @@ name: "Run benchmarks"
 on:
   push:
     branches:
-      - 'master'
+      - 'create-real-benchmarking-tool'
     tags-ignore:
       - '**'
 concurrency: 
@@ -63,3 +63,16 @@ jobs:
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
           arturo tools/benchmarker.art
+
+      - name: Push to benchmark repo
+        id: push_directory
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          source-directory: benchmarks/
+          destination-github-username: 'arturo-lang'
+          destination-repository-name: 'benchmarks'
+          user-email: yaniszaf@gmail.com
+          commit-message: See ORIGIN_COMMIT from $GITHUB_REF
+          target-branch: main
