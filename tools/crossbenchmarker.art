@@ -1,0 +1,73 @@
+#!/usr/bin/env arturo
+;==========================================
+; Tester
+;
+; @file: tools/tester.art
+; @author: drkameleon
+;==========================================
+
+langs: #[
+    Arturo:     #[ext:".art"    bin:"arturo"]
+    Lisp:       #[ext:".lisp"   bin:"clisp"]
+    Lua:        #[ext:".lua"    bin:"lua"]
+    PHP:        #[ext:".php"    bin:"php"]
+    Python:     #[ext:".py"     bin:"python"]
+    Python3:    #[ext:".py3"    bin:"python3"]
+    Rebol3:     #[ext:".r"      bin:"r3"]
+    Ruby:       #[ext:".rb"     bin:"ruby"]
+    Tcl:        #[ext:".tcl"    bin:"tclsh"]
+]
+
+padding: 12
+bigPadding: 36
+
+printHeader: function [][
+    print ""
+    
+    loop 1 + size keys langs 'l [
+        if? l=1 -> prints pad.right "------------------------------------|" bigPadding
+        else -> prints pad.right (repeat "-" padding)++"|" padding+1
+    ]
+    print "" prints pad.right "" bigPadding
+    loop keys langs 'lang -> prints "|" ++ pad.center lang padding
+    print "|"
+
+    loop 1 + size keys langs 'l [
+        if? l=1 -> prints pad.right "====================================|" bigPadding
+        else -> prints pad.right (repeat "=" padding)++"|" padding+1
+    ]
+    print ""
+]
+
+runBenchmark: function [bench][
+    dir: extract.directory bench
+    name: extract.filename bench
+    prints color.bold #cyan pad.right ~{: |replace name "_" " "|:} bigPadding
+    loop langs [lang,data][
+        scr: join.path @[dir name++data\ext]
+        expected: read join.path @[dir name++".res"]
+        ;print scr
+        ;print expected
+
+        if? exists? scr [
+            result: execute ~{/usr/bin/time -lp |data\bin| |scr|}
+            result: strip replace first match result "real [0-9\.]+" "real " ""
+
+            prints "|" ++ color #green pad.center to :string result padding
+        ]
+        else [
+            prints "|" ++ color #red pad.center "-" padding
+        ]
+    ]
+    print "|"
+]
+
+printHeader
+
+loop sort select list relative "../tests/benchmarks" => [".art" = extract.extension] 'b [
+    runBenchmark b
+]
+
+print "\n"
+
+exit
