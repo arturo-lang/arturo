@@ -40,6 +40,11 @@ canExecute?: function [scri][
     return true
 ]
 
+WriteMode?: contains? arg "write"
+NofRuns: 1
+if WriteMode? ->
+    NofRuns: 3
+
 Results: #[
     benchmarks: #[]
     total: 0.0
@@ -59,11 +64,11 @@ runSet: function [title,location][
         if canExecute? script [
             prints pad.right ((color #magenta "\n- Running: ") ++ truncate.preserve extract.filename script 40) 71 
             result: benchmark.get [
-                do.times:3 [
+                do.times:NofRuns [
                     execute ~{arturo --no-color "|script|"}
                 ]
             ]
-            result: result / 3
+            result: result / NofRuns
             result: (to :string .format:".2f" to :floating result)
 
             prints result++"ms"
@@ -82,12 +87,10 @@ print color #white.bold "  Unit Tester\n"
 print color #gray ~"  Release: @|sys\release|\n"
 
 runSet "Unit Tests" "../tests/unittests"
-;runSet "Errors" "../tests/errors"
-;runSet "Examples" "../examples/rosetta"
+runSet "Errors" "../tests/errors"
+runSet "Examples" "../examples/rosetta"
 
-outFile: "benchmarks/" ++ (to :string now\day)++"-"++(to :string now\month)++"-"++(to :string now\year) ++ ".json"
-
-;write.directory "benchmarks" ø
-write.json outFile Results
-
-;inspect Results
+if WriteMode? [
+    outFile: "benchmarks/" ++ (to :string now\day)++"-"++(to :string now\month)++"-"++(to :string now\year) ++ ".json"
+    write.json outFile Results
+]
