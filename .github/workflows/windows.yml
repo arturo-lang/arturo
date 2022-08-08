@@ -2,7 +2,7 @@ name: Windows
 on:
   push:
     branches:
-      - '**'
+      - 'master'
     tags-ignore:
       - '**'
   pull_request:
@@ -29,8 +29,9 @@ jobs:
           - full
     steps:
       - name: "Cancel similar actions in progress"
-        uses: styfle/cancel-workflow-action@0.6.0
+        uses: styfle/cancel-workflow-action@0.10.0
         with:
+          all_but_latest: true
           access_token: ${{ github.token }}
 
       - name: "Checkout"
