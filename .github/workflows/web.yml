@@ -2,7 +2,7 @@ name: "Web"
 on:
   push:
     branches:
-      - '**'
+      - 'master'
     tags-ignore:
       - '**'
   pull_request:
