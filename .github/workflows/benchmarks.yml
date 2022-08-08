@@ -82,7 +82,7 @@ jobs:
         env:
           API_TOKEN_GITHUB: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
         with:
-          source-directory: bench_out/
+          source-directory: benchmarks/results/macro/
           destination-github-username: 'arturo-lang'
           destination-repository-name: 'benchmarks'
           target-directory: results/macro
