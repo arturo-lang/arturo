@@ -2,7 +2,7 @@ name: "Web"
 on:
   push:
     branches:
-      - '**'
+      - 'master'
     tags-ignore:
       - '**'
   pull_request:
@@ -32,8 +32,9 @@ jobs:
           - web
     steps:
       - name: "Cancel similar actions in progress"
-        uses: styfle/cancel-workflow-action@0.6.0
+        uses: styfle/cancel-workflow-action@0.10.0
         with:
+          all_but_latest: true
           access_token: ${{ github.token }}
 
       - name: "Checkout"
@@ -41,10 +42,31 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install Nim
-        run: |
-          wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
-          echo "$HOME/.nimble/bin" >> $GITHUB_PATH
+      - name: Get Date
+        id: get-date
+        run: echo "::set-output name=date::$(date "+%Y-%m-%d")"
+        shell: bash
+
+      - name: Cache ChooseNim
+        id: cache-choosenim
+        uses: actions/cache@v3
+        with:
+          path: ~/.choosenim
+          key: ${{ matrix.os }}-choosenim-${{ steps.get-date.outputs.date }}
+        if: runner.os != 'Windows'
+
+      - name: Cache Nimble
+        id: cache-nimble
+        uses: actions/cache@v3
+        with:
+          path: ~/.nimble
+          key: ${{ matrix.os }}-nimble-${{ hashFiles('*.nimble') }}
+        if: runner.os != 'Windows'
+
+      - name: Setup nim
+        uses: jiro4989/setup-nim-action@v1
+        with:
+          nim-version: '1.6.6'
           
       - name: Verify dependecies
         run: |
@@ -52,8 +74,8 @@ jobs:
           
       - name: Build Arturo
         run: |
-          ./build.nims install ${{ matrix.version }} log
           echo "$HOME/.arturo/bin" >> $GITHUB_PATH
+          ./build.nims install ${{ matrix.version }} log
 
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'

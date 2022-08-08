@@ -25,8 +25,9 @@ jobs:
           - full
     steps:
       - name: "Cancel similar actions in progress"
-        uses: styfle/cancel-workflow-action@0.6.0
+        uses: styfle/cancel-workflow-action@0.10.0
         with:
+          all_but_latest: true
           access_token: ${{ github.token }}
 
       - name: "Checkout"
@@ -50,8 +51,8 @@ jobs:
           
       - name: Build Arturo
         run: |
-          ./build.nims install ${{ matrix.version }} log
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
+          ./build.nims install ${{ matrix.version }} log
 
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
