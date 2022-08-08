@@ -144,6 +144,10 @@ when defined(WEB):
                 result = newJsObject()
                 for k,v in pairs(n.d):
                     result[cstring(k)] = generateJsObject(v)
+            of Object       :
+                result = newJsObject()
+                for k,v in pairs(n.o):
+                    result[cstring(k)] = generateJsObject(v)
             of Complex,
                Rational,
                Function,
