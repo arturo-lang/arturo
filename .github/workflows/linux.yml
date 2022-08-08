@@ -44,7 +44,20 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Cache resources
+      - name: Get Date
+        id: get-date
+        run: echo "::set-output name=date::$(date "+%Y-%m-%d")"
+        shell: bash
+
+      - name: Cache ChooseNim
+        id: cache-choosenim
+        uses: actions/cache@v3
+        with:
+          path: ~/.choosenim
+          key: ${{ matrix.os }}-choosenim-${{ steps.get-date.outputs.date }}
+        if: runner.os != 'Windows'
+
+      - name: Cache Nimble
         id: cache-nimble
         uses: actions/cache@v3
         with:
@@ -56,11 +69,6 @@ jobs:
         uses: jiro4989/setup-nim-action@v1
         with:
           nim-version: '1.6.6'
-
-      # - name: Install Nim
-      #   run: |
-      #     wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
-      #     echo "$HOME/.nimble/bin" >> $GITHUB_PATH
 
       - name: Install dependencies
         if: matrix.version == 'full'
