@@ -44,6 +44,13 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Cache nimble
+        id: cache-nimble
+        uses: actions/cache@v3
+        with:
+          path: ~/.nimble
+          key: ${{matrix.os}}-nimble-${{ hashFiles('*.nimble') }}
+
       - name: Install Nim
         run: |
           wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
