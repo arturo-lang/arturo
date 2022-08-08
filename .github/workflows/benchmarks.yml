@@ -73,7 +73,7 @@ jobs:
           ls benchmarks
           mkdir bench_out
           cp benchmarks/*.json bench_out
-          cp benchmarks/*.md bench_out
+          cp benchmarks/results/macro/*.json bench_out
 
       - name: Push to benchmark repo
         id: push_directory
@@ -84,6 +84,7 @@ jobs:
           source-directory: bench_out/
           destination-github-username: 'arturo-lang'
           destination-repository-name: 'benchmarks'
+          target-directory: results/macro
           user-email: yaniszaf@gmail.com
           commit-message: See ORIGIN_COMMIT from $GITHUB_REF
           target-branch: main
