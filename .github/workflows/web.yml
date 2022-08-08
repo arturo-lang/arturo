@@ -74,8 +74,8 @@ jobs:
           
       - name: Build Arturo
         run: |
-          ./build.nims install ${{ matrix.version }} log
           echo "$HOME/.arturo/bin" >> $GITHUB_PATH
+          ./build.nims install ${{ matrix.version }} log
 
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
