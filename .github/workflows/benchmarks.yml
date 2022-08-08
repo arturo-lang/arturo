@@ -70,10 +70,11 @@ jobs:
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
           arturo tools/benchmarker.art write
-          ls benchmarks
-          mkdir bench_out
-          cp benchmarks/*.json bench_out
-          cp benchmarks/results/macro/*.json bench_out
+          rm -rf benchmarks/.git
+        # ls benchmarks
+        # mkdir bench_out
+        # cp benchmarks/*.json bench_out
+        # cp benchmarks/results/macro/*.json bench_out
 
       - name: Push to benchmark repo
         id: push_directory
