@@ -1,7 +1,0 @@
-maxLimit: 1000
-
-i: new 0
-while [i<1001][
-	print product 1..i
-	inc 'i
-]
