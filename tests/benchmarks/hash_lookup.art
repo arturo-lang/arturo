@@ -1,8 +1,0 @@
-dict: #[
-	name: "john"
-	surname: "doe"
-	country: "Spain"
-]
-
-do.times: 200000 ->
-	print dict\surname
