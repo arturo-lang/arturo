@@ -73,6 +73,9 @@ let
         "nounzip"           : "-d:NOUNZIP",
         "nowebview"         : "-d:NOWEBVIEW",
         "profile"           : "-d:PROFILE --profiler:on --stackTrace:on",
+        # TODO(build.nims) Thoroughly test `-flto` for release builds
+        #  in various tests, it seems to be performing roughly 10-15% better
+        #  labels: performance, benchmark, installer
         "release"           : "--passC:'-flto'",
         "safe"              : "-d:SAFE",
         "vcc"               : "",
