@@ -60,6 +60,7 @@ let
         "dontinstall"       : "",
         "full"              : "",
         "log"               : "",
+        "memprofile"        : "-d:PROFILE --profiler:off --stackTrace:on --d:memProfiler",
         "mini"              : "",
         "noasciidecode"     : "-d:NOASCIIDECODE",
         "noclipboard"       : "-d:NOCLIPBOARD",
