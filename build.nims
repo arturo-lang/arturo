@@ -505,6 +505,7 @@ while true:
         of cmdShortOption, cmdLongOption:   
             if p.key=="as":
                 BINARY = "bin/" & p.val
+                TARGET_FILE = toExe(r"{TARGET_DIR}/{p.val}".fmt)
             else:
                 if p.key != "hints":
                     showLogo()
