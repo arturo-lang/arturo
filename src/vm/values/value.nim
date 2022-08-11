@@ -850,6 +850,9 @@ func getArity*(x: Value): int =
     else:
         return x.params.a.len
 
+# TODO(VM/values/value) `cleanBlock` is too slow
+#  when built without NOERRORLINES - which is our normal setup - this specific piece of code could be slowing down the whole language by up to 20%
+#  labels: vm, values, performance, enhancement, benchmark, critical
 template cleanBlock*(va: ValueArray, inplace: bool = false): untyped =
     when not defined(NOERRORLINES):
         when inplace:
