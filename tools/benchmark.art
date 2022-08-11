@@ -54,18 +54,21 @@ sanitizeResults: function [num][
 ]
 
 presentResults: function [results][
+    clCyan: function [str]-> color.bold #cyan str
+    clYellow: function [str]-> color.bold #yellow str
+
     topResult: first results
     metric: topResult\speed
     verb: (metric < 1.0)? -> "⬇️  decreased" -> "⬆️  increased"
     if metric > 1.0 -> metric: metric - 1.0
     metric: metric * 100.0
     print ""
-    print color.bold #cyan repeat "=" 120
-    print (color.bold #cyan "| ") ++ color.bold #yellow "Best compiler"
-    print [(color.bold #cyan "| ") ++ "\t" topResult\compiler]
-    print (color.bold #cyan "| ") ++ color.bold #yellow "Performance"
-    print [(color.bold #cyan "| ") ++ "\t" verb "by approximately" ~"|to :string .format:{.2f} metric|%"]
-    print color.bold #cyan repeat "=" 120
+    print clCyan repeat "=" 120
+    print (clCyan "| ") ++ clYellow "Best compiler"
+    print [(clCyan "| ") ++ "\t" topResult\compiler]
+    print (clCyan "| ") ++ clYellow "Performance"
+    print [(clCyan "| ") ++ "\t" verb "by approximately" ~"|to :string .format:{.2f} metric|%"]
+    print clCyan repeat "=" 120
     print ""
 ]
 
