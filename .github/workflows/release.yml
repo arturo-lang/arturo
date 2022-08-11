@@ -1,5 +1,7 @@
 name: "Release"
 
+# TODO(Workflows) Add `release` flag to -all?- Release builds
+#  labels: workflows, performance, easy, critical
 on:
   push:
     tags:
