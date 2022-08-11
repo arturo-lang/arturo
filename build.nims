@@ -46,7 +46,6 @@ let
     # paths
     ROOT_DIR    = r"{getHomeDir()}.arturo".fmt
     TARGET_DIR  = r"{ROOT_DIR}/bin".fmt
-    TARGET_FILE = toExe(r"{TARGET_DIR}/arturo".fmt)
     TARGET_LIB  = r"{ROOT_DIR}/lib".fmt
     MAIN        = r"src/arturo.nim"
 
@@ -86,6 +85,7 @@ let
 
 var
     BINARY              = "bin/arturo"
+    TARGET_FILE         = toExe(r"{TARGET_DIR}/arturo".fmt)
     COMPILER            = "c"
     COMPRESS            = true
     INSTALL             = true
