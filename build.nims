@@ -65,6 +65,7 @@ let
         "noclipboard"       : "-d:NOCLIPBOARD",
         "nodev"             : "",
         "nodialogs"         : "-d:NODIALOGS",
+        "noerrorlines"      : "-d:NOERRORLINES",
         "noexamples"        : "-d:NOEXAMPLES",
         "nogmp"             : "-d:NOGMP",
         "noparsers"         : "-d:NOPARSERS",
