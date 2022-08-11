@@ -503,9 +503,12 @@ while true:
                     else:
                         ARGS.add(p.key)
         of cmdShortOption, cmdLongOption:   
-            if p.key != "hints":
-                showLogo()
-                showHelp(error=true, errorMsg="Erroneous argument supplied!")
+            if p.key=="as":
+                BINARY = "bin/" & p.val
+            else:
+                if p.key != "hints":
+                    showLogo()
+                    showHelp(error=true, errorMsg="Erroneous argument supplied!")
         of cmdEnd: 
             break
 
