@@ -944,6 +944,8 @@ proc defineSymbols*() =
                 when not defined(NOGMP):
                     push(newLogical(probablyPrime(x.bi,25)>0))
 
+    # TODO(Numbers\product) returns 1 for empty array
+    #  labels: library, easy, bug, critical
     builtin "product",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
