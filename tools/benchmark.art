@@ -54,8 +54,8 @@ sanitizeResults: function [num][
 ]
 
 presentResults: function [results][
-    clCyan: function [str]-> color.bold #cyan str
-    clYellow: function [str]-> color.bold #yellow str
+    clCyan: function [str][color.bold #cyan str]
+    clYellow: function [str][color.bold #yellow str]
 
     topResult: first results
     metric: topResult\speed
