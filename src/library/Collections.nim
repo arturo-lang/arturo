@@ -44,6 +44,9 @@ proc defineSymbols*() =
     # TODO(collections) Add Ruby's equivalent of `sort_by`
     #  labels: library, enhancement
 
+    # TODO(collections) Add Ruby's equivalent of `group_by`
+    #  labels: library, enhancement
+
     builtin "append",
         alias       = doubleplus, 
         rule        = InfixPrecedence,
