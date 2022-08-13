@@ -1,7 +1,11 @@
 #!/usr/bin/env arturo
 
-Compilers: ["arturo"] ++ (key? args 'with)? -> split.by:"," args\with
-                                            -> "art2"
+Compilers: (key? args 'with)? -> split.by:"," args\with
+                              -> ["arturo","arturo-new"]
+
+Runs: (key? args 'runs)? -> ~"--max-runs |args\runs|"
+                         -> ""
+
 LookUp: args\values\0
 
 BenchmarkFile: "benchmark_results.json"
@@ -68,6 +72,8 @@ presentResults: function [results][
     print [(clCyan "| ") ++ "\t" topResult\compiler]
     print (clCyan "| ") ++ clYellow "Performance"
     print [(clCyan "| ") ++ "\t" verb "by approximately" ~"|to :string .format:{.2f} metric|%"]
+    print (clCyan "| ") ++ clYellow "Runner-up"
+    print [(clCyan "| ") ++ "\t" results\1\compiler]
     print clCyan repeat "=" 120
     print ""
 ]
@@ -80,7 +86,7 @@ loop.with:'i tests 'test [
     showHeader i total test
     scr: replace escape.shell test {"} {\"}
     execute.directly ~{!sh
-        hyperfine -L compiler |join.with:"," Compilers| --export-json |BenchmarkFile| "{compiler} |scr|"
+        hyperfine -L compiler |join.with:"," Compilers| |Runs| --export-json |BenchmarkFile| "{compiler} |scr|"
     }
     processPartialResults read.json BenchmarkFile
 ]
