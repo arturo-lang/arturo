@@ -971,11 +971,13 @@ proc defineSymbols*() =
                 var i = 0
                 var product = I1.copyValue
                 let blk = cleanBlock(x.a)
-                while i<blk.len:
-                    product *= blk[i]
-                    i += 1
+                if blk.len==0: push(I0.copyValue)
+                else:
+                    while i<blk.len:
+                        product *= blk[i]
+                        i += 1
 
-                push(product)
+                    push(product)
 
     builtin "random",
         alias       = unaliased, 
