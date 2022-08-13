@@ -22,7 +22,8 @@ when defined(PROFILE):
     import nimprof
 
 when not defined(WEB) and not defined(PORTABLE):
-    import parseopt
+    import parseopt, re
+    import helpers/terminal
     import vm/[bytecode, env, package, version]
 
 import vm/vm
@@ -49,32 +50,47 @@ when not defined(WEB) and not defined(PORTABLE):
 
     const helpTxt = """
 
+Arturo 
+Programming Language + Bytecode VM compiler
+
 Usage:
     arturo [options] <path>
 
+Arguments:
+    <path>
+        Path to the source code file to execute -
+        usually with an .art extension
+
 Options:
-    -c --compile              Compile script and write bytecode
-    -x --execute              Execute script from bytecode
+    -c, --compile              Compile script and write bytecode
+    -x, --execute              Execute script from bytecode
 
-    -e --evaluate             Evaluate given code
-    -r --repl                 Show repl / interactive console
+    -e, --evaluate             Evaluate given code
+    -r, --repl                 Show repl / interactive console
 
-    -u --update               Update to latest version
+    -u, --update               Update to latest version
 
-    -m --module           
-            list                List all available modules
-            remote              List all available remote modules
-            info <name>         Get info about given module
-            install <name>      Install remote module by name
-            uninstall <name>    Uninstall module by name
-            update              Update all local modules
+    -m, --module           
+            list               List all available modules
+            remote             List all available remote modules
+            info <name>        Get info about given module
+            install <name>     Install remote module by name
+            uninstall <name>   Uninstall module by name
+            update             Update all local modules
 
-    -d --debug                Show debugging information
-    --no-color                Mute all colors from output
+    -d, --debug                Show debugging information
+    --no-color                 Mute all colors from output
 
-    -h --help                 Show this help screen
-    -v --version              Show current version
-    """
+    -h, --help                 Show this help screen
+    -v, --version              Show current version
+"""
+
+proc printHelp() =
+    echo helpTxt.replacef(re"(\-\-?[\w\-]+)", fg(magentaColor) & "$1" & resetColor())
+                .replacef(re"    <path>", fg(magentaColor) & "    <path>" & resetColor())
+                .replacef(re"(\w+:)", bold(cyanColor) & "$1" & resetColor())
+                .replacef(re"Arturo", bold(greenColor) & "Arturo" & resetColor())
+                .replacef(re"(\n            [\w]+(?:\s[\w<>]+)?)",bold(whiteColor) & "$1" & resetColor())
     
 #=======================================
 # Main entry
@@ -175,7 +191,7 @@ when isMainModule and not defined(WEB):
                 showPackageInfo(code)
 
             of showHelp:
-                echo helpTxt
+                printHelp()
             of showVersion:
                 echo ArturoVersionTxt
     else:
