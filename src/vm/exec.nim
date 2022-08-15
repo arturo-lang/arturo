@@ -395,8 +395,6 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             # reserved
             of opRsrv3..opRsrv4     : discard
 
-            # TODO(VM\exec) re-add missing bytecode opCodes in main loop
-            #  labels: execution,vm,enhancement,cleanup
             # [0xB0-BF] #
             # comparison operators
             of opEq                 : stack.push(newLogical(Stack[SP-1]==Stack[SP-2]))
