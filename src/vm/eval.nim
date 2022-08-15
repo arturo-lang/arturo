@@ -375,30 +375,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     if node.f==1.0: addToCommand((byte)opConstF1)
                     else: addConst(consts, node, opPush)
 
-            of Complex:
-                addTerminalValue(false):
-                    addConst(consts, node, opPush)
-
-            of Rational:
-                addTerminalValue(false):
-                    addConst(consts, node, opPush)
-
-            of Version:
-                addTerminalValue(false):
-                    addConst(consts, node, opPush)
-
-            of Type:
-                addTerminalValue(false):
-                    addConst(consts, node, opPush)
-
-            of Char:
-                addTerminalValue(false):
-                    addConst(consts, node, opPush)
-
-            of String:
-                addTerminalValue(false):
-                    addConst(consts, node, opPush)
-
             of Word:
                 if TmpArities.hasKey(node.s):
                     let funcArity = TmpArities[node.s]
@@ -411,10 +387,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 else:
                     addTerminalValue(false):
                         addConst(consts, node, opLoad)
-
-            of Literal: 
-                addTerminalValue(false):
-                    addConst(consts, node, opPush)
 
             of Label: 
                 let funcIndx = node.s
@@ -565,42 +537,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                             addTerminalValue(false):
                                 addConst(consts, node, opPush)
 
-            of SymbolLiteral:
-                addTerminalValue(false):
-                    addConst(consts, node, opPush)
-
-            of Quantity:
-                addTerminalValue(false):
-                    addConst(consts, node, opPush)
-
-            of Regex:
-                addTerminalValue(false):
-                    addConst(consts, node, opPush)
-
-            of Color : 
-                addTerminalValue(false):
-                    addConst(consts, node, opPush)
-            of Date : discard
-
-            of Binary : discard
-
-            of Dictionary,
-               Object,
-               Function: 
-                   addTerminalValue(false):
-                        addConst(consts, node, opPush)
-
             of Inline: 
                 addTerminalValue(false):
                     evalOne(node, consts, currentCommand, inBlock=true, isDictionary=isDictionary)
-
-            of Block:
-                addTerminalValue(false):
-                    addConst(consts, node, opPush)
-
-            of Database: discard
-
-            of Bytecode: discard
 
             of Newline: 
                 # TODO(Eval/evalOne) verify Newline handling works properly
@@ -615,8 +554,19 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 # it.add((byte)node.line shr 8)
                 # it.add((byte)node.line)
 
-            of Nothing: discard
-            of Any: discard
+            of Date, Binary, Database, Bytecode,
+               Nothing, Any: 
+
+                discard
+
+            else:
+            # of Complex, Rational, Version, Type, Char,
+            #    String, Literal, SymbolLiteral, Quantity,
+            #    Regex, Color, Dictionary, Object, Function, 
+            #    Block:
+
+                addTerminalValue(false):
+                    addConst(consts, node, opPush)
 
         i += 1
 
