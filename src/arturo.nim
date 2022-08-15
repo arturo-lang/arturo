@@ -85,12 +85,16 @@ Options:
     -v, --version              Show current version
 """
 
-proc printHelp() =
-    echo helpTxt.replacef(re"(\-\-?[\w\-]+)", fg(magentaColor) & "$1" & resetColor())
-                .replacef(re"    <path>", fg(magentaColor) & "    <path>" & resetColor())
-                .replacef(re"(\w+:)", bold(cyanColor) & "$1" & resetColor())
-                .replacef(re"Arturo", bold(greenColor) & "Arturo" & resetColor())
-                .replacef(re"(\n            [\w]+(?:\s[\w<>]+)?)",bold(whiteColor) & "$1" & resetColor())
+    #=======================================
+    # Helpers
+    #=======================================
+
+    proc printHelp() =
+        echo helpTxt.replacef(re"(\-\-?[\w\-]+)", fg(magentaColor) & "$1" & resetColor())
+                    .replacef(re"    <path>", fg(magentaColor) & "    <path>" & resetColor())
+                    .replacef(re"(\w+:)", bold(cyanColor) & "$1" & resetColor())
+                    .replacef(re"Arturo", bold(greenColor) & "Arturo" & resetColor())
+                    .replacef(re"(\n            [\w]+(?:\s[\w<>]+)?)",bold(whiteColor) & "$1" & resetColor())
     
 #=======================================
 # Main entry
