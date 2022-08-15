@@ -100,12 +100,10 @@ var
     IS_DEV              = false 
     MODE                = ""       
 
-    # TODO(build.nims) Benchmark performance difference between `-O2`, `-O3` and `-Ofast`
-    #  labels: performance, benchmark, installer
-    FLAGS*              = "--skipUserCfg:on --colors:off -d:release -d:danger " &
+    FLAGS*              = "--skipUserCfg:on --colors:off -d:danger " &
                           "--panics:off --mm:orc --checks:off --overflowChecks:on " &
                           "-d:ssl --cincludes:extras --nimcache:.cache " & 
-                          "--path:src --opt:speed --passC:-O3"
+                          "--path:src "
     CONFIG              ="@full"
 
     ARGS: seq[string]   = @[] 
