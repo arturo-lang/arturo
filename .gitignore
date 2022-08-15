@@ -3,5 +3,6 @@
 /.cache
 /test*.*
 .sass-cache
+benchmark_results*
 profile_results.txt
 *.icloud
