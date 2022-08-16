@@ -377,7 +377,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                     of Bytecode:
                         # TODO(Converters/to) update Block -> Bytecode conversion
                         #  labels: vm, library, enhancement
-                        return newBytecode(doEval(cleanBlock(y.a)))
+                        return newBytecode(doEval(y))
                        
                     else:
                         discard
