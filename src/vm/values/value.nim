@@ -33,6 +33,8 @@ import helpers/quantities as QuantitiesHelper
 import helpers/regex as RegexHelper
 import helpers/terminal as TerminalHelper
 
+import vm/opcodes
+
 when not defined(WEB):
     import vm/errors
 
@@ -2595,9 +2597,20 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
         of Bytecode     : 
             dumpBlockStart(v)
 
+            var instrs: ValueArray = @[]
+            var j = 0
+            while j < v.trans[1].len:
+                let op = (OpCode)(v.trans[1][j])
+                instrs.add(newWord(stringify(((OpCode)(op)))))
+                if op in [opPush, opStore, opCall, opLoad, opAttr]:
+                    j += 1
+                    instrs.add(newInteger((int)v.trans[1][j]))
+
+                j += 1
+
             let subval = newDictionary({
                 "constants": newBlock(v.trans[0]),
-                "instructions": newBlock(v.trans[1].map((z)=>newInteger((int)z)))
+                "instructions": newBlock(instrs)
             }.toOrderedTable)
 
             let keys = toSeq(subval.d.keys)
