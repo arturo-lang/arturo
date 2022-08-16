@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import hashes
+import hashes, strutils
 
 #=======================================
 # Types 
@@ -251,5 +251,8 @@ type
 # Methods
 #=======================================
 
-func hash*(x: OpCode): Hash {.inline.}=
+func stringify*(x: OpCode): string {.inline.} =
+    ($(x)).replace("op").toUpperAscii()
+
+func hash*(x: OpCode): Hash {.inline.} =
     cast[Hash](ord(x))
