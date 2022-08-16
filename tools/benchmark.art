@@ -14,6 +14,8 @@ Results: new []
 getList: function [pa][
     pattern: to :regex ".*" ++ LookUp ++ ".*\.art"
     result: select list.recursive pa 'x -> contains? x pattern
+    result: filter result 'x -> or? contains? x "_draft"
+                                    contains? x "projecteuler"
     (contains? pa "examples")? [
         return select result 're -> exists? replace re ".art" ".res"
     ] -> return result
