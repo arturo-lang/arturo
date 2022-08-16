@@ -29,13 +29,6 @@ var
     TmpArities*    : Table[string,int]
 
 #=======================================
-# Forward Declarations
-#=======================================
-
-when defined(VERBOSE):
-    proc dump*(evaled: Translation)
-
-#=======================================
 # Helpers
 #=======================================
 
@@ -584,58 +577,3 @@ proc doEval*(root: Value, isDictionary=false): Translation =
         result.dump()
 
     result = (cnsts,newit)
-        
-#=======================================
-# Inspection
-#=======================================
-
-when not defined(PORTABLE):
-    # TODO(Eval/dump) Needs some serious cleanup
-    #  The whole implementation currenly looks like a patchwork of ideas.
-    #  labels: vm, evaluator, cleanup
-    proc dump*(evaled: Translation) =
-        var lines: seq[string] = @[] 
-        # for l in showDebugHeader("Constants"):
-        #     lines.add(l)
-
-        # var i = 0
-
-        # let consts = evaled[0]
-        let it = evaled[1]
-
-        # while i < consts.len:
-        #     var cnst = consts[i]
-        #     lines.add(fmt("{i}: "))
-        #     # stdout.write fmt("{i}: ")
-        #     # cnst.dump(0, false)
-
-        #     i += 1
-        
-        # for l in showDebugHeader("Instruction Table"):
-        #     lines.add(l)
-
-        var i = 0
-
-        while i < it.len:
-            #stdout.write fmt("{i}: ")
-            var instr = (OpCode)(it[i])
-
-            #stdout.write ($instr).replace("op").toLowerAscii()
-
-            case instr:
-                of opPush, opStore, opLoad, opCall, opAttr:
-                    i += 1
-                    let indx = it[i]
-                    lines.add(($instr).replace("op").toUpperAscii() & fmt("\t#{indx}"))
-                # of opExtra:
-                #     i += 1
-                #     let extra = ($((OpCode)((int)(it[i])+(int)(opExtra)))).replace("op").toLowerAscii()
-                #     stdout.write fmt("\t%{extra}\n")
-                else:
-                    lines.add(($instr).replace("op").toUpperAscii())
-
-            i += 1
- 
-        echo ""
-        echo bold(grayColor) & ">>      VM | " & fg(grayColor) & 
-             lines.join(bold(grayColor) & "\n           | " & fg(grayColor)) & resetColor
