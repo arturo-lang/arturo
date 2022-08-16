@@ -2403,7 +2403,7 @@ func `$`(v: Value): string {.inline.} =
                 #elif v.dbKind==MysqlDatabase: result = fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
 
         of Bytecode:
-            result = "<bytecode>"
+            result = "<bytecode>" & "(" & fmt("{cast[ByteAddress](v):#X}") & ")"
         
         of Newline: discard
         of Nothing: discard
@@ -2592,7 +2592,27 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
                 if v.dbKind==SqliteDatabase: stdout.write fmt("[sqlite db] {cast[ByteAddress](v.sqlitedb):#X}")
                 #elif v.dbKind==MysqlDatabase: stdout.write fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
         
-        of Bytecode     : stdout.write("<bytecode>")
+        of Bytecode     : 
+            dumpBlockStart(v)
+
+            let subval = newDictionary({
+                "constants": newBlock(v.trans[0]),
+                "instructions": newBlock(v.trans[1].map((z)=>newInteger((int)z)))
+            }.toOrderedTable)
+
+            let keys = toSeq(subval.d.keys)
+
+            if keys.len > 0:
+                let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
+
+                for key,value in subval.d:
+                    for i in 0..level: stdout.write "\t"
+
+                    stdout.write unicode.alignLeft(key & " ", maxLen) & ":"
+
+                    dump(value, level+1, false, muted=muted)
+
+            dumpBlockEnd()
 
         of Newline      : discard
         of Nothing      : discard
