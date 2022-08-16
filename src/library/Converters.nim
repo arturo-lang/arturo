@@ -375,8 +375,10 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                                     return newColor((blk[0].i, blk[1].i, blk[2].i, blk[3].i))
 
                     of Bytecode:
-                        let blk = cleanBlock(y.a)
-                        return(newBytecode(blk[0].a, blk[1].a.map(proc (x:Value):byte = (byte)(x.i))))
+                        # TODO(Converters/to) update Block -> Bytecode conversion
+                        #  labels: vm, library, enhancement
+                        discard
+                       
                     else:
                         discard
 
@@ -387,6 +389,8 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                             return generateCustomObject(x.ts, y.d)
                         else:
                             throwCannotConvert()
+                    of Bytecode:
+                        return(newBytecode((x.d["const"].a, x.d["instructions"].a.map(proc (x:Value):byte = (byte)(x.i)))))
                     else:
                         throwCannotConvert()
             
