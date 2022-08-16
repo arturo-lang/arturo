@@ -252,7 +252,7 @@ type
 #=======================================
 
 func stringify*(x: OpCode): string {.inline.} =
-    ($(x)).replace("op").toUpperAscii()
+    ($(x)).replace("op").toLowerAscii()
 
 func hash*(x: OpCode): Hash {.inline.} =
     cast[Hash](ord(x))
