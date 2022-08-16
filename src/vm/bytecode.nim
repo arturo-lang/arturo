@@ -15,7 +15,7 @@ when not defined(WEB):
 import hashes
 
 when defined(VERBOSE):
-    import strutils
+    import strformat, strutils
     import helpers/terminal as terminalHelper
 
 import vm/values/value

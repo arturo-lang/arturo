@@ -16,7 +16,7 @@ when defined(VERBOSE):
     import sugar
 
 when not defined(PORTABLE):
-    import strformat
+    import strformat, strutils
 
 import vm/[bytecode, globals, values/value]
 
