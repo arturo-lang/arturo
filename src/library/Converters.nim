@@ -29,7 +29,7 @@ when not defined(NOASCIIDECODE):
     import helpers/strings
 
 import vm/lib
-import vm/[errors, exec, parse]
+import vm/[errors, eval, exec, parse]
 
 #=======================================
 # Helpers
@@ -377,7 +377,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                     of Bytecode:
                         # TODO(Converters/to) update Block -> Bytecode conversion
                         #  labels: vm, library, enhancement
-                        discard
+                        return newBytecode(doEval(cleanBlock(y.a)))
                        
                     else:
                         discard
