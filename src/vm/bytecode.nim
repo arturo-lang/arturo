@@ -308,7 +308,7 @@ func hash*(x: OpCode): Hash {.inline.}=
 # Inspection
 #=======================================
 
-when not defined(PORTABLE):
+when defined(VERBOSE):
     # TODO(Eval/dump) Needs some serious cleanup
     #  The whole implementation currenly looks like a patchwork of ideas.
     #  labels: vm, evaluator, cleanup
