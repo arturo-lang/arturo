@@ -263,9 +263,9 @@ proc defineSymbols*() =
                         discard execBlock(x)
                 elif x.kind==Bytecode:
                     if execInParent:
-                        discard execBlock(x, evaluated=(x.consts, x.instrs), execInParent=true)
+                        discard execBlock(x, evaluated=x.trans, execInParent=true)
                     else:
-                        discard execBlock(x, evaluated=(x.consts, x.instrs))
+                        discard execBlock(x, evaluated=x.trans)
                     
                 else: # string
                     let (src, tp) = getSource(x.s)
