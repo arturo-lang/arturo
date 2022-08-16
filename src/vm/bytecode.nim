@@ -14,6 +14,10 @@ when not defined(WEB):
     import marshal, streams
 import hashes
 
+when defined(VERBOSE):
+    import strutils
+    import helpers/terminal as terminalHelper
+
 import vm/values/value
 
 #=======================================
