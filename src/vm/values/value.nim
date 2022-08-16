@@ -734,8 +734,8 @@ when not defined(NOSQLITE):
 # proc newDatabase*(db: mysql.DbConn): Value {.inline.} =
 #     Value(kind: Database, dbKind: MysqlDatabase, mysqldb: db)
 
-func newBytecode*(c: ValueArray, i: ByteArray): Value {.inline.} =
-    Value(kind: Bytecode, consts: c, instrs: i)
+func newBytecode*(t: Translation): Value {.inline.} =
+    Value(kind: Bytecode, trans: t)
 
 func newInline*(a: ValueArray = @[]): Value {.inline.} = #, refs: seq[int] = @[]): Value {.inline.} = 
     Value(kind: Inline, a: a)#, refs: refs)
