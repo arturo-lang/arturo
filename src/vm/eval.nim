@@ -13,10 +13,10 @@
 import algorithm, sequtils, tables, unicode
 
 when defined(VERBOSE):
-    import sugar
+    import strutils, sugar
 
 when not defined(PORTABLE):
-    import strformat, strutils
+    import strformat
 
 import vm/[bytecode, globals, values/value]
 
