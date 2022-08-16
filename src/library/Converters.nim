@@ -390,7 +390,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                         else:
                             throwCannotConvert()
                     of Bytecode:
-                        return(newBytecode((x.d["const"].a, x.d["instructions"].a.map(proc (x:Value):byte = (byte)(x.i)))))
+                        return(newBytecode((y.d["const"].a, y.d["instructions"].a.map(proc (x:Value):byte = (byte)(x.i)))))
                     else:
                         throwCannotConvert()
             
