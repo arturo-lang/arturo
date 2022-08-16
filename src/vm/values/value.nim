@@ -337,8 +337,7 @@ type
                     of MysqlDatabase: discard
                     #mysqldb*: mysql.DbConn
             of Bytecode:
-                consts*: ValueArray
-                instrs*: ByteArray
+                trans*: Translation
 
             of Newline:
                 line*: int
