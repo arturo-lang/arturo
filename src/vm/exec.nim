@@ -261,7 +261,7 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
     # TODO(VM/exec) should we store opCode pointer as a register?
     #  labels: vm, execution, enhancement, performance
     var i = 0
-    var op: OpCode
+    var op {.register.}: OpCode
     var oldSyms: ValueDict
 
     oldSyms = Syms
