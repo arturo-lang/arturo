@@ -224,7 +224,7 @@ proc `$`*(v: Value): string {.inline.} =
                 #elif v.dbKind==MysqlDatabase: result = fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
 
         of Bytecode:
-            result = "<bytecode>"
+            result = "<bytecode>" & "(" & fmt("{cast[ByteAddress](v):#X}") & ")"
             
         of Newline: discard
         of Nothing: discard
