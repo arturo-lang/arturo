@@ -2410,7 +2410,7 @@ func `$`(v: Value): string {.inline.} =
         of Nothing: discard
         of ANY: discard
 
-proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.exportc.} = 
+proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepend="") {.exportc.} = 
     proc dumpPrimitive(str: string, v: Value) =
         if not muted:   stdout.write fmt("{bold(greenColor)}{str}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
         else:           stdout.write fmt("{str} :{($(v.kind)).toLowerAscii()}")
@@ -2442,7 +2442,21 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
         if not muted:   stdout.write fmt("{bold(magentaColor)}]{resetColor}")
         else:           stdout.write fmt("]")
 
+    proc dumpHeader(str: string) =
+        if not muted: stdout.write fmt("{resetColor}{fg(cyanColor)}")
+        let lln = "================================\n"
+        for i in 0..level: stdout.write "\t"
+        stdout.write lln
+        for i in 0..level: stdout.write "\t"
+        stdout.write " " & str & "\n"
+        for i in 0..level: stdout.write "\t"
+        stdout.write lln
+        if not muted: stdout.write fmt("{resetColor}")
+
     for i in 0..level-1: stdout.write "\t"
+
+    if prepend!="":
+        stdout.write prepend
 
     case v.kind:
         of Null         : dumpPrimitive("null",v)
@@ -2607,22 +2621,28 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
 
                 j += 1
 
-            let subval = newDictionary({
-                "constants": newBlock(v.trans[0]),
-                "instructions": newBlock(instrs)
-            }.toOrderedTable)
+            dumpHeader("DATA")
 
-            let keys = toSeq(subval.d.keys)
+            for i,child in v.trans[0]:
+                var prep: string
+                if not muted:   prep=fmt("{resetColor}{bold(whiteColor)}{i}: {resetColor}")
+                else:           prep=fmt("{i}: ")
 
-            if keys.len > 0:
-                let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
+                dump(child, level+1, false, muted=muted, prepend=prep)
 
-                for key,value in subval.d:
-                    for i in 0..level: stdout.write "\t"
+            stdout.write "\n"
 
-                    stdout.write unicode.alignLeft(key & " ", maxLen) & ":"
+            dumpHeader("CODE")
 
-                    dump(value, level+1, false, muted=muted)
+            var i = 0
+            while i < instrs.len:
+                for i in 0..level: stdout.write "\t"
+                stdout.write instrs[i].s
+                i += 1
+                while i < instrs.len and instrs[i].kind==Integer:
+                    stdout.write " #" & $(instrs[i].i)
+                    i += 1
+                stdout.write "\n"
 
             dumpBlockEnd()
 
