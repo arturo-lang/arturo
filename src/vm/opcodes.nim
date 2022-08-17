@@ -10,7 +10,9 @@
 # Libraries
 #=======================================
 
-import hashes, re, strutils
+import hashes, strutils
+
+import helpers/regex
 
 #=======================================
 # Types 
@@ -253,10 +255,10 @@ type
 
 proc parseOpCode*(x: string): OpCode =
     var str = x.toLowerAscii().capitalizeAscii()
-    str = str.replacef(re"i(\d)$", "I$1")
-             .replacef(re"(\w+)x$", "$1X")
-             .replacef(re"bt$","BT").replacef(re"bf$","BF").replacef(re"bm$", "BM")
-             .replacef(re"n$", "N")
+    str = str.replaceAll(newRegexObj("i(\\d)$"), "I$1")
+             .replaceAll(newRegexObj("(\\w+)x$"), "$1X")
+             .replaceAll(newRegexObj("bt$"),"BT").replaceAll(newRegexObj("bf$"),"BF").replaceAll(newRegexObj("bm$"), "BM")
+             .replaceAll(newRegexObj("n$"), "N")
              .replace("jumpifnot","jumpIfNot")
              .replace("jumpif","jumpIf")
              .multiReplace([
