@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import hashes, strutils
+import hashes, re, strutils
 
 #=======================================
 # Types 
@@ -250,6 +250,31 @@ type
 #=======================================
 # Methods
 #=======================================
+
+proc parseOpCode*(x: string): OpCode =
+    var str = x.toLowerAscii().capitalizeAscii()
+    str = str.replacef(re"i(\d)$", "I$1")
+             .replacef(re"(\w+)x$", "$1X")
+             .replacef(re"bt$","BT").replacef(re"bf$","BF").replacef(re"bm$", "BM")
+             .replacef(re"n$", "N")
+             .replace("jumpifnot","jumpIfNot")
+             .replace("jumpif","jumpIf")
+             .multiReplace([
+                ("Iadd","IAdd"),
+                ("Isub","ISub"),
+                ("Imul","IMul"),
+                ("Idiv","IDiv"),
+                ("Ifdiv","IFDiv"),  
+                ("Imod","IMod"),
+                ("Ipow","IPow"),
+                ("Ineg","INeg")
+            ])
+    str = "op" & str
+
+    try:
+        return parseEnum[OpCode](str)
+    except:
+        return opNop
 
 func stringify*(x: OpCode): string {.inline.} =
     ($(x)).replace("op").toLowerAscii()
