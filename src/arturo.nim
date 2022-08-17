@@ -78,7 +78,6 @@ Options:
             uninstall <name>   Uninstall module by name
             update             Update all local modules
 
-    -d, --debug                Show debugging information
     --no-color                 Mute all colors from output
 
     -h, --help                 Show this help screen
@@ -149,11 +148,6 @@ when isMainModule and not defined(WEB):
                             action = evalCode
                             code = runModule
                             break
-                        # TODO(Arturo/main) remove debug command-line option?
-                        #  I'm not really sure myself how it's working right now - so a good idea would be to either re-visit it and make it work properly, or ignore it altogether and remove it.
-                        #  labels: command line, open discussion
-                        of "d","debug":
-                            debug = true
                         of "no-color":
                             muted = true
                         of "h","help":
@@ -179,9 +173,9 @@ when isMainModule and not defined(WEB):
 
                 when defined(BENCHMARK):
                     benchmark "doParse / doEval":
-                        discard run(code, arguments, action==execFile, debug=debug)
+                        discard run(code, arguments, action==execFile)
                 else:
-                    discard run(code, arguments, action==execFile, debug=debug)
+                    discard run(code, arguments, action==execFile)
                     
             of writeBcode:
                 let filename = code

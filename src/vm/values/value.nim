@@ -387,7 +387,6 @@ let VNOTHING* = Value(kind: Nothing)
 
 var 
     TypeLookup = initOrderedTable[string,Value]()
-    #DoDebug* = false
 
 #=======================================
 # Forward Declarations
