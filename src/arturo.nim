@@ -112,7 +112,6 @@ when isMainModule and not defined(WEB):
         var runUpdate   = static readFile("src/scripts/update.art")
         var runModule   = static readFile("src/scripts/module.art")
         var muted: bool = false
-        var debug: bool = false
 
         while true:
             token.next()
