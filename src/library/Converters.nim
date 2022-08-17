@@ -29,7 +29,7 @@ when not defined(NOASCIIDECODE):
     import helpers/strings
 
 import vm/lib
-import vm/[errors, exec, parse]
+import vm/[errors, eval, exec, opcodes, parse]
 
 #=======================================
 # Helpers
@@ -375,8 +375,10 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                                     return newColor((blk[0].i, blk[1].i, blk[2].i, blk[3].i))
 
                     of Bytecode:
-                        let blk = cleanBlock(y.a)
-                        return(newBytecode(blk[0].a, blk[1].a.map(proc (x:Value):byte = (byte)(x.i))))
+                        # TODO(Converters/to) update Block -> Bytecode conversion
+                        #  labels: vm, library, enhancement
+                        return newBytecode(doEval(y))
+                       
                     else:
                         discard
 
@@ -387,6 +389,8 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                             return generateCustomObject(x.ts, y.d)
                         else:
                             throwCannotConvert()
+                    of Bytecode:
+                        return(newBytecode((y.d["const"].a, y.d["instructions"].a.map(proc (x:Value):byte = (byte)(x.i)))))
                     else:
                         throwCannotConvert()
             
@@ -817,19 +821,26 @@ proc defineSymbols*() =
                     
             push(newDictionary(dict))
 
+    # TODO(Converters\from) Do we really need this?
+    #  We can definitely support hex/binary literals, but how would we support string to number conversion? Perhaps, with `.to` and option?
+    #  It's basically rather confusing...
+    #  labels: library, cleanup, enhancement, open discussion
     builtin "from",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "get value from string, using given representation",
         args        = {
-            "value" : {String}
+            "value" : {String,Literal}
         },
         attrs       = {
             "binary"    : ({Logical},"get integer from binary representation"),
             "hex"       : ({Logical},"get integer from hexadecimal representation"),
-            "octal"     : ({Logical},"get integer from octal representation")
+            "octal"     : ({Logical},"get integer from octal representation"),
+            "opcode"    : ({Logical},"get opcode by from opcode literal")
         },
         returns     = {Any},
+        # TODO(Converters\from) add documentation example for `.opcode`
+        #  labels: library, documentation, easy
         example     = """
             print from.binary "1011"        ; 11
             print from.octal "1011"         ; 521
@@ -851,6 +862,8 @@ proc defineSymbols*() =
                     push(newInteger(parseOctInt(x.s)))
                 except ValueError:
                     push(VNULL)
+            elif (popAttr("opcode") != VNULL):
+                push(newInteger((int)parseOpcode(x.s)))
             else:
                 push(x)
 

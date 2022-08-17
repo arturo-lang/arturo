@@ -16,8 +16,6 @@
 
 when not defined(WEB):
     import re
-when not defined(PORTABLE):
-    import algorithm
     
 import sequtils, strformat, strutils, sugar
 
@@ -55,7 +53,6 @@ var
     CurrentFile* = "<repl>"
     CurrentPath* = ""
     CurrentLine* = 0
-    DoDebug* = false
     ExecStack*: seq[int] = @[]
 
 #=======================================
@@ -118,23 +115,6 @@ proc showVMErrors*(e: ref Exception) =
     if errMsgParts.len > 1:
         errMsg &= errMsgParts[1..^1].join(fmt("\n{indent}{bold(redColor)}{separator}{resetColor} "))
     echo fmt("{bold(redColor)}{marker} {header} {separator}{resetColor} {errMsg}")
-
-    when not defined(PORTABLE):
-        if DoDebug:
-            if CurrentPath != "":
-                let src = toSeq(readFile(CurrentPath).splitLines())
-
-                if ExecStack.len > 1:
-                    echo ""
-                    var outp: string = bold(grayColor) & ">>   Trace | " & fg(grayColor)
-                    var lines: seq[string] = @[]
-                    # echo repr ExecStack[1..^1].reversed
-                    for i in ExecStack[1..^1].reversed:
-                        var curline = i
-                        if curline==0: curline=1
-                        lines.add($(curline) & "> " & src[curline-1].strip())
-                    echo outp & lines.join(bold(grayColor) & "\n           | " & fg(grayColor)) & resetColor
-
 
 #=======================================
 # Methods
