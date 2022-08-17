@@ -29,7 +29,7 @@ when not defined(NOASCIIDECODE):
     import helpers/strings
 
 import vm/lib
-import vm/[errors, eval, exec, parse]
+import vm/[errors, eval, exec, opcodes, parse]
 
 #=======================================
 # Helpers
@@ -826,14 +826,17 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get value from string, using given representation",
         args        = {
-            "value" : {String}
+            "value" : {String,Literal}
         },
         attrs       = {
             "binary"    : ({Logical},"get integer from binary representation"),
             "hex"       : ({Logical},"get integer from hexadecimal representation"),
-            "octal"     : ({Logical},"get integer from octal representation")
+            "octal"     : ({Logical},"get integer from octal representation"),
+            "opcode"    : ({Logical},"get opcode by from opcode literal")
         },
         returns     = {Any},
+        # TODO(Converters\from) add documentation example for `.opcode`
+        #  labels: library, documentation, easy
         example     = """
             print from.binary "1011"        ; 11
             print from.octal "1011"         ; 521
@@ -855,6 +858,8 @@ proc defineSymbols*() =
                     push(newInteger(parseOctInt(x.s)))
                 except ValueError:
                     push(VNULL)
+            elif (popAttr("opcode") != VNULL):
+                push(newInteger((int)parseOpcode(x.s)))
             else:
                 push(x)
 
