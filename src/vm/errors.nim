@@ -16,8 +16,6 @@
 
 when not defined(WEB):
     import re
-when not defined(PORTABLE):
-    import algorithm
     
 import sequtils, strformat, strutils, sugar
 
