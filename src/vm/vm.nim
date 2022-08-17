@@ -11,7 +11,7 @@
 #=======================================
 
 import macros, os, random
-import strutils, sugar, tables
+import strutils, tables
 
 when defined(WEB):
     import jsffi, json
