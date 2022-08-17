@@ -33,6 +33,8 @@ import helpers/quantities as QuantitiesHelper
 import helpers/regex as RegexHelper
 import helpers/terminal as TerminalHelper
 
+import vm/opcodes
+
 when not defined(WEB):
     import vm/errors
 
@@ -337,8 +339,7 @@ type
                     of MysqlDatabase: discard
                     #mysqldb*: mysql.DbConn
             of Bytecode:
-                consts*: ValueArray
-                instrs*: ByteArray
+                trans*: Translation
 
             of Newline:
                 line*: int
@@ -386,7 +387,6 @@ let VNOTHING* = Value(kind: Nothing)
 
 var 
     TypeLookup = initOrderedTable[string,Value]()
-    #DoDebug* = false
 
 #=======================================
 # Forward Declarations
@@ -735,8 +735,8 @@ when not defined(NOSQLITE):
 # proc newDatabase*(db: mysql.DbConn): Value {.inline.} =
 #     Value(kind: Database, dbKind: MysqlDatabase, mysqldb: db)
 
-func newBytecode*(c: ValueArray, i: ByteArray): Value {.inline.} =
-    Value(kind: Bytecode, consts: c, instrs: i)
+func newBytecode*(t: Translation): Value {.inline.} =
+    Value(kind: Bytecode, trans: t)
 
 func newInline*(a: ValueArray = @[]): Value {.inline.} = #, refs: seq[int] = @[]): Value {.inline.} = 
     Value(kind: Inline, a: a)#, refs: refs)
@@ -2404,13 +2404,13 @@ func `$`(v: Value): string {.inline.} =
                 #elif v.dbKind==MysqlDatabase: result = fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
 
         of Bytecode:
-            result = "<bytecode>"
+            result = "<bytecode>" & "(" & fmt("{cast[ByteAddress](v):#X}") & ")"
         
         of Newline: discard
         of Nothing: discard
         of ANY: discard
 
-proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.exportc.} = 
+proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepend="") {.exportc.} = 
     proc dumpPrimitive(str: string, v: Value) =
         if not muted:   stdout.write fmt("{bold(greenColor)}{str}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
         else:           stdout.write fmt("{str} :{($(v.kind)).toLowerAscii()}")
@@ -2442,7 +2442,21 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
         if not muted:   stdout.write fmt("{bold(magentaColor)}]{resetColor}")
         else:           stdout.write fmt("]")
 
+    proc dumpHeader(str: string) =
+        if not muted: stdout.write fmt("{resetColor}{fg(cyanColor)}")
+        let lln = "================================\n"
+        for i in 0..level: stdout.write "\t"
+        stdout.write lln
+        for i in 0..level: stdout.write "\t"
+        stdout.write " " & str & "\n"
+        for i in 0..level: stdout.write "\t"
+        stdout.write lln
+        if not muted: stdout.write fmt("{resetColor}")
+
     for i in 0..level-1: stdout.write "\t"
+
+    if prepend!="":
+        stdout.write prepend
 
     case v.kind:
         of Null         : dumpPrimitive("null",v)
@@ -2593,7 +2607,44 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
                 if v.dbKind==SqliteDatabase: stdout.write fmt("[sqlite db] {cast[ByteAddress](v.sqlitedb):#X}")
                 #elif v.dbKind==MysqlDatabase: stdout.write fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
         
-        of Bytecode     : stdout.write("<bytecode>")
+        of Bytecode     : 
+            dumpBlockStart(v)
+
+            var instrs: ValueArray = @[]
+            var j = 0
+            while j < v.trans[1].len:
+                let op = (OpCode)(v.trans[1][j])
+                instrs.add(newWord(stringify(((OpCode)(op)))))
+                if op in [opPush, opStore, opCall, opLoad, opAttr]:
+                    j += 1
+                    instrs.add(newInteger((int)v.trans[1][j]))
+
+                j += 1
+
+            dumpHeader("DATA")
+
+            for i,child in v.trans[0]:
+                var prep: string
+                if not muted:   prep=fmt("{resetColor}{bold(whiteColor)}{i}: {resetColor}")
+                else:           prep=fmt("{i}: ")
+
+                dump(child, level+1, false, muted=muted, prepend=prep)
+
+            stdout.write "\n"
+
+            dumpHeader("CODE")
+
+            var i = 0
+            while i < instrs.len:
+                for i in 0..level: stdout.write "\t"
+                stdout.write instrs[i].s
+                i += 1
+                while i < instrs.len and instrs[i].kind==Integer:
+                    stdout.write " #" & $(instrs[i].i)
+                    i += 1
+                stdout.write "\n"
+
+            dumpBlockEnd()
 
         of Newline      : discard
         of Nothing      : discard

@@ -252,9 +252,6 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
         if depth==0:
             showDebugHeader("VM")
 
-    #if DoDebug:
-    #    ConstStack = input[0]
-
     let cnst = input[0]
     let it = input[1]
 
@@ -271,11 +268,6 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             # pop argument and set it
             Syms[symIndx] = stack.pop()
 
-    when not defined(PORTABLE):
-        if DoDebug: 
-            ExecStack.add(CurrentLine)
-            CurrentDump = (input[0], input[1])
-
     while true:
         # TODO(VM/exec) should we use computed goto?
         #  In my benchmarks, for this particular use case - which *is* the main use case - a `{.computedGoTo.}` gives roughly a 10% boost.
@@ -285,10 +277,6 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
         #     break
 
         op = (OpCode)(it[i])
-
-        # if DoDebug:
-        #     OpStack.rotateLeft(1)
-        #     OpStack[0] = op
 
         when defined(VERBOSE):
             echo "exec: " & $(op)
@@ -430,8 +418,5 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
 
     let newSyms = Syms
     Syms = oldSyms
-
-    when not defined(PORTABLE):
-        if DoDebug: discard ExecStack.pop()
 
     return newSyms

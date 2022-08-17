@@ -11,7 +11,7 @@
 #=======================================
 
 import macros, os, random
-import strutils, sugar, tables
+import strutils, tables
 
 when defined(WEB):
     import jsffi, json
@@ -111,18 +111,6 @@ template initialize*(args: seq[string], filename: string, isFile:bool, scriptDat
 
     # attributes
     createAttrsStack()
-
-    # TODO(VM/vm) Completely remove DoDebug code blocks?
-    #  There seem to be various DoDebug code blocks that have been commented out. I honestly cannot remember what their purpose is and how they worked. Is it the right moment to simply... remove them?
-    #  labels: vm, cleanup
-    
-    # # opstack
-    # if DoDebug:
-    #     OpStack[0] = opNop
-    #     OpStack[1] = opNop
-    #     OpStack[2] = opNop
-    #     OpStack[3] = opNop
-    #     OpStack[4] = opNop
     
     # random number generator
     randomize()
@@ -157,9 +145,7 @@ template handleVMErrors*(blk: untyped): untyped =
     except:
         let e = getCurrentException()
         showVMErrors(e)
-        when not defined(PORTABLE):
-            if DoDebug:
-                dump(CurrentDump)
+
         if e.name == ProgramError:
             let code = parseInt(e.msg.split(";;")[1].split("<:>")[0])
             quit(code)
@@ -178,10 +164,8 @@ when not defined(WEB):
 
             discard doExec(code)
 
-    proc run*(code: var string, args: seq[string], isFile: bool, doExecute: bool = true, debug: bool = false, withData=""): Translation {.exportc:"run".} =
+    proc run*(code: var string, args: seq[string], isFile: bool, doExecute: bool = true, withData=""): Translation {.exportc:"run".} =
         handleVMErrors:
-
-            DoDebug = debug
 
             if isFile:
                 when defined(SAFE):
