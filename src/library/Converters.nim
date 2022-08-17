@@ -821,6 +821,10 @@ proc defineSymbols*() =
                     
             push(newDictionary(dict))
 
+    # TODO(Converters\from) Do we really need this?
+    #  We can definitely support hex/binary literals, but how would we support string to number conversion? Perhaps, with `.to` and option?
+    #  It's basically rather confusing...
+    #  labels: library, cleanup, enhancement, open discussion
     builtin "from",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
