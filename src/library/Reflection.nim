@@ -711,9 +711,11 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Logical},
-        # TODO(Reflection\quantity?) add documentation example
-        #  labels: library, documentation, easy
         example     = """
+            quantity? 1:m               ; true
+            quantity? 2:yd2             ; true    
+
+            quantity? 3                 ; false 
         """:
             ##########################################################
             push(newLogical(x.kind==Quantity))
