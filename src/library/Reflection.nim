@@ -928,9 +928,9 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Logical},
-        # TODO(Reflection\version?) add documentation example
-        #  labels: library, documentation, easy
         example     = """
+            print version? 1.0.2        ; true
+            print version? "1.0.2"      ; false
         """:
             ##########################################################
             push(newLogical(x.kind==Version))
