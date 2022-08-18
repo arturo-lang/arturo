@@ -1,7 +1,5 @@
 name: "Release"
 
-# TODO(Workflows) Add `release` flag to -all?- Release builds
-#  labels: workflows, performance, easy, critical
 on:
   push:
     tags:
@@ -65,7 +63,7 @@ jobs:
       - name: Build Arturo
         run: |
           export MACOSX_DEPLOYMENT_TARGET=10.10
-          ./build.nims install ${{ matrix.version }} log
+          ./build.nims install ${{ matrix.version }} log release
           echo "$HOME/.arturo/bin" >> $GITHUB_PATH
 
       - name: Create artifact
@@ -127,7 +125,7 @@ jobs:
       - name: Build Arturo
         run: |
           export MACOSX_DEPLOYMENT_TARGET=10.10
-          ./build.nims install ${{ matrix.version }} ${{ matrix.arch }} log
+          ./build.nims install ${{ matrix.version }} ${{ matrix.arch }} log release
           echo "$HOME/.arturo/bin" >> $GITHUB_PATH
           file bin/arturo
 
@@ -177,7 +175,7 @@ jobs:
           usesh: true
           prepare: pkg install -y nim gmp bash databases/sqlite3
           run: |
-            ./build.nims install ${{ matrix.version }} ${{ matrix.arch }} log
+            ./build.nims install ${{ matrix.version }} ${{ matrix.arch }} log release
             export PATH="$HOME/.arturo/bin:$PATH"
 
       - name: Create artifact
@@ -245,7 +243,7 @@ jobs:
 
           nim --version
 
-          ./build.nims install ${{ matrix.version }} log
+          ./build.nims install ${{ matrix.version }} log release
 
       - name: Install dependencies + Build Arturo (mini)
         if: matrix.version == 'mini'
@@ -261,7 +259,7 @@ jobs:
           
           export PATH="${{ github.workspace }}/nim/nim-1.6.4/bin":$PATH
 
-          ./build.nims install ${{ matrix.version }} log
+          ./build.nims install ${{ matrix.version }} log release
 
       - name: Create artifact (full)
         if: matrix.version == 'full'
