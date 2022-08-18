@@ -2543,6 +2543,9 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
 
             dumpBlockEnd()
 
+        # TODO(VM/values/value) `dump` doesn't print nested blocks/dictionaries properly
+        #  try: `inspect #[a:#[b: 'c]]`
+        #  labels: enhancement, values
         of Inline,
             Block        :
             dumpBlockStart(v)
