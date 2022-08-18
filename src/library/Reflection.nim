@@ -241,9 +241,12 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Logical},
-        # TODO(Reflection\bytecode?) add documentation example
-        #  labels: library, documentation, easy
         example     = """
+            code: [print 1 + 2]
+            bcode: to :bytecode code
+
+            print bytecode? bcode      ; true
+            print bytecode? code       ; false
         """:
             ##########################################################
             push(newLogical(x.kind==Bytecode))
