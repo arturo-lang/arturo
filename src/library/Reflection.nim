@@ -659,9 +659,13 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Logical},
-        # TODO(Reflection\object?) add documentation example
-        #  labels: library, documentation, easy
         example     = """
+            define :person [name,surname][]
+            
+            x: to :person ["John","Doe"]
+
+            print object? x             ; true
+            print object? "hello"       ; false
         """:
             ##########################################################
             push(newLogical(x.kind==Object))
