@@ -712,10 +712,10 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            quantity? 1:m               ; true
-            quantity? 2:yd2             ; true    
+            print quantity? 1:m         ; true
+            print quantity? 2:yd2       ; true    
 
-            quantity? 3                 ; false 
+            print quantity? 3           ; false 
         """:
             ##########################################################
             push(newLogical(x.kind==Quantity))
@@ -729,9 +729,11 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Logical},
-        # TODO(Reflection\rational?) add documentation example
-        #  labels: library, documentation, easy
         example     = """
+            r: to :rational 3.14        ; r: 157/50
+
+            print rational? r           ; true
+            print rational? 3.14        ; false
         """:
             ##########################################################
             push(newLogical(x.kind==Rational))
