@@ -273,9 +273,11 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Logical},
-        # TODO(Reflection\color?) add documentation example
-        #  labels: library, documentation, easy
         example     = """
+            print color? #FF0000        ; true
+            print color? #green         ; true
+
+            print color? 123            ; false
         """:
             ##########################################################
             push(newLogical(x.kind==Color))
