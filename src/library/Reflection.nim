@@ -291,9 +291,11 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Logical},
-        # TODO(Reflection\complex?) add documentation example
-        #  labels: library, documentation, easy
         example     = """
+            c: to :complex [1 2]
+            print complex? c            ; true
+
+            print complex? 123          ; false
         """:
             ##########################################################
             push(newLogical(x.kind==Complex))
