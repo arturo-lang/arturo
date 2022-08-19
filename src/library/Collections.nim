@@ -24,6 +24,7 @@ import strutils, sugar, unicode
     
 
 import helpers/arrays
+import helpers/bytes
 import helpers/combinatorics
 import helpers/regex
 import helpers/strings
@@ -1136,7 +1137,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "set collection's item at index to given value",
         args        = {
-            "collection"    : {String,Block,Dictionary,Object},
+            "collection"    : {String,Block,Dictionary,Object,Binary},
             "index"         : {Any},
             "value"         : {Any}
         },
@@ -1177,6 +1178,16 @@ proc defineSymbols*() =
                 of Block: 
                     cleanBlock(x.a, inplace=true)
                     SetArrayIndex(x.a, key.i, z)
+                of Binary:
+                    let bn = numberToBinary(z.i)
+                    if bn.len == 1:
+                        x.n[key.i] = bn[0]
+                    else:
+                        for bi, bt in bn:
+                            if not (bi+key.i < x.n.len):
+                                x.n.add((byte)0)
+
+                            x.n[bi + key.i] = bt
                 of Dictionary:
                     x.d[$(key)] = z
                 of Object:
