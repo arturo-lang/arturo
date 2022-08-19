@@ -22,6 +22,7 @@ import algorithm, parseutils, sequtils, strformat, sugar, times, unicode
 import helpers/arrays
 when not defined(NOGMP):
     import helpers/bignums
+import helpers/bytes
 import helpers/colors
 import helpers/datasource
 import helpers/quantities
@@ -113,11 +114,10 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                     of Date:
                         return newDate(local(fromUnix(y.i)))
                     of Binary:
-                        let str = $(y.i)
-                        var ret: ByteArray = newSeq[byte](str.len)
-                        for i,ch in str:
-                            ret[i] = (byte)(ord(ch))
-                        return newBinary(ret)
+                        if y.iKind==NormalInteger:
+                            return newBinary(numberToBinary(y.i))
+                        else:
+                            throwConversionFailed()
                     else: throwCannotConvert()
 
             of Floating:
@@ -145,11 +145,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                         else:
                             throwConversionFailed()
                     of Binary:
-                        let str = $(y.f)
-                        var ret: ByteArray = newSeq[byte](str.len)
-                        for i,ch in str:
-                            ret[i] = (byte)(ord(ch))
-                        return newBinary(ret)
+                        return newBinary(numberToBinary(y.f))
                     else: throwCannotConvert()
 
             of Complex:
