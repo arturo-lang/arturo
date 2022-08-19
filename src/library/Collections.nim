@@ -24,6 +24,7 @@ import strutils, sugar, unicode
     
 
 import helpers/arrays
+import helpers/bytes
 import helpers/combinatorics
 import helpers/regex
 import helpers/strings
@@ -52,7 +53,7 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "append value to given collection",
         args        = {
-            "collection"    : {String,Char,Block,Literal},
+            "collection"    : {String,Char,Block,Binary,Literal},
             "value"         : {Any}
         },
         attrs       = NoAttrs,
@@ -104,7 +105,12 @@ proc defineSymbols*() =
                     if y.kind==String:
                         push(newString($(x.c) & y.s))
                     elif y.kind==Char:
-                        push(newString($(x.c) & $(y.c)))          
+                        push(newString($(x.c) & $(y.c))) 
+                elif x.kind==Binary:
+                    if y.kind==Binary:
+                        push(newBinary(x.n & y.n))
+                    elif y.kind==Integer:
+                        push(newBinary(x.n & numberToBinary(y.i)))
                 else:
                     var ret = newBlock(cleanBlock(x.a))
 
@@ -488,7 +494,7 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "get collection's item by given index",
         args        = {
-            "collection"    : {String,Block,Dictionary,Object,Date},
+            "collection"    : {String,Block,Dictionary,Object,Date,Binary},
             "index"         : {Any}
         },
         attrs       = NoAttrs,
@@ -532,6 +538,7 @@ proc defineSymbols*() =
 
             case x.kind:
                 of Block: push(GetArrayIndex(cleanBlock(x.a), key.i))
+                of Binary: push(newInteger((int)x.n[key.i]))
                 of Dictionary: 
                     push(GetKey(x.d, $(key)))
                 of Object:
@@ -1135,7 +1142,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "set collection's item at index to given value",
         args        = {
-            "collection"    : {String,Block,Dictionary,Object},
+            "collection"    : {String,Block,Dictionary,Object,Binary},
             "index"         : {Any},
             "value"         : {Any}
         },
@@ -1176,6 +1183,16 @@ proc defineSymbols*() =
                 of Block: 
                     cleanBlock(x.a, inplace=true)
                     SetArrayIndex(x.a, key.i, z)
+                of Binary:
+                    let bn = numberToBinary(z.i)
+                    if bn.len == 1:
+                        x.n[key.i] = bn[0]
+                    else:
+                        for bi, bt in bn:
+                            if not (bi+key.i < x.n.len):
+                                x.n.add((byte)0)
+
+                            x.n[bi + key.i] = bt
                 of Dictionary:
                     x.d[$(key)] = z
                 of Object:
