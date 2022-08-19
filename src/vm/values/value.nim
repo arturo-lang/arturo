@@ -1922,7 +1922,7 @@ proc `^=`*(x: var Value, y: Value) =
 proc `&&`*(x: Value, y: Value): Value =
     if (x.kind == Binary or y.kind==Binary) and (x.kind in [Integer, Binary] and y.kind in [Integer, Binary]):
         var a = (if x.kind==Binary: x.n else: numberToBinary(x.i))
-        var b = (if x.kind==Binary: y.n else: numberToBinary(y.i))
+        var b = (if y.kind==Binary: y.n else: numberToBinary(y.i))
         return newBinary(a and b)
     elif not (x.kind==Integer) or not (y.kind==Integer):
         return VNULL
@@ -1950,7 +1950,7 @@ proc `&&`*(x: Value, y: Value): Value =
 proc `&&=`*(x: var Value, y: Value) =
     if (x.kind == Binary or y.kind==Binary) and (x.kind in [Integer, Binary] and y.kind in [Integer, Binary]):
         var a = (if x.kind==Binary: x.n else: numberToBinary(x.i))
-        var b = (if x.kind==Binary: y.n else: numberToBinary(y.i))
+        var b = (if y.kind==Binary: y.n else: numberToBinary(y.i))
         x = newBinary(a and b)
     elif not (x.kind==Integer) or not (y.kind==Integer):
         x = VNULL
@@ -1978,7 +1978,7 @@ proc `&&=`*(x: var Value, y: Value) =
 proc `||`*(x: Value, y: Value): Value =
     if (x.kind == Binary or y.kind==Binary) and (x.kind in [Integer, Binary] and y.kind in [Integer, Binary]):
         var a = (if x.kind==Binary: x.n else: numberToBinary(x.i))
-        var b = (if x.kind==Binary: y.n else: numberToBinary(y.i))
+        var b = (if y.kind==Binary: y.n else: numberToBinary(y.i))
         return newBinary(a or b)
     elif not (x.kind==Integer) or not (y.kind==Integer):
         return VNULL
@@ -2007,7 +2007,7 @@ proc `||`*(x: Value, y: Value): Value =
 proc `||=`*(x: var Value, y: Value) =
     if (x.kind == Binary or y.kind==Binary) and (x.kind in [Integer, Binary] and y.kind in [Integer, Binary]):
         var a = (if x.kind==Binary: x.n else: numberToBinary(x.i))
-        var b = (if x.kind==Binary: y.n else: numberToBinary(y.i))
+        var b = (if y.kind==Binary: y.n else: numberToBinary(y.i))
         x = newBinary(a or b)
     elif not (x.kind==Integer) or not (y.kind==Integer):
         x = VNULL
@@ -2035,7 +2035,7 @@ proc `||=`*(x: var Value, y: Value) =
 proc `^^`*(x: Value, y: Value): Value =
     if (x.kind == Binary or y.kind==Binary) and (x.kind in [Integer, Binary] and y.kind in [Integer, Binary]):
         var a = (if x.kind==Binary: x.n else: numberToBinary(x.i))
-        var b = (if x.kind==Binary: y.n else: numberToBinary(y.i))
+        var b = (if y.kind==Binary: y.n else: numberToBinary(y.i))
         return newBinary(a xor b)
     elif not (x.kind==Integer) or not (y.kind==Integer):
         return VNULL
@@ -2063,7 +2063,7 @@ proc `^^`*(x: Value, y: Value): Value =
 proc `^^=`*(x: var Value, y: Value) =
     if (x.kind == Binary or y.kind==Binary) and (x.kind in [Integer, Binary] and y.kind in [Integer, Binary]):
         var a = (if x.kind==Binary: x.n else: numberToBinary(x.i))
-        var b = (if x.kind==Binary: y.n else: numberToBinary(y.i))
+        var b = (if y.kind==Binary: y.n else: numberToBinary(y.i))
         x = newBinary(a xor b)
     elif not (x.kind==Integer) or not (y.kind==Integer):
         x = VNULL
