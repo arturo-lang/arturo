@@ -10,9 +10,31 @@
 # Libraries
 #=======================================
 
-import algorithm, sequtils
+import algorithm, sequtils, sugar
 
-import vm/[values/value]
+#=======================================
+# Types
+#=======================================
+
+type
+    Byte* = byte
+    ByteArray*  = seq[Byte]
+
+#=======================================
+# Overloads
+#=======================================
+
+proc `and`*(a: ByteArray, b: ByteArray): ByteArray =
+    zip(a, b).map((tup) => tup[0] and tup[1])
+
+proc `or`*(a: ByteArray, b: ByteArray): ByteArray =
+    zip(a, b).map((tup) => tup[0] or tup[1])
+
+proc `xor`*(a: ByteArray, b: ByteArray): ByteArray =
+    zip(a, b).map((tup) => tup[0] xor tup[1])
+
+proc `not`*(a: ByteArray): ByteArray =
+    a.map((w) => not w)
 
 #=======================================
 # Methods
