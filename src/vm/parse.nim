@@ -1103,9 +1103,7 @@ proc doParse*(input: string, isFile: bool = true): Value =
         var filePath = input
         when not defined(WEB):
             if not fileExists(filePath):
-                filePath &= ".art"
-                if not fileExists(filePath):
-                    CompilerError_ScriptNotExists(input)
+                CompilerError_ScriptNotExists(input)
 
         var stream = newFileStream(filePath)
         lexbase.open(p, stream)
