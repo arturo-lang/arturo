@@ -24,7 +24,7 @@ when defined(PROFILE):
 when not defined(WEB) and not defined(PORTABLE):
     import parseopt, re
     import helpers/terminal
-    import vm/[bytecode, env, package, version]
+    import vm/[bytecode, env, errors, package, version]
 
 import vm/vm
 
@@ -48,11 +48,14 @@ when not defined(WEB) and not defined(PORTABLE):
     # Constants
     #=======================================
 
-    const helpTxt = """
+    const helpTxtHeader = """
 
 Arturo 
 Programming Language + Bytecode VM compiler
 
+"""
+
+    const helpTxt = """
 Usage:
     arturo [options] <path>
 
@@ -88,12 +91,17 @@ Options:
     # Helpers
     #=======================================
 
-    proc printHelp() =
-        echo helpTxt.replacef(re"(\-\-?[\w\-]+)", fg(magentaColor) & "$1" & resetColor())
-                    .replacef(re"    <path>", fg(magentaColor) & "    <path>" & resetColor())
-                    .replacef(re"(\w+:)", bold(cyanColor) & "$1" & resetColor())
-                    .replacef(re"Arturo", bold(greenColor) & "Arturo" & resetColor())
-                    .replacef(re"(\n            [\w]+(?:\s[\w<>]+)?)",bold(whiteColor) & "$1" & resetColor())
+    proc printHelp(withHeader=true) =
+        var txt = helpTxt
+
+        if withHeader:
+            txt = helpTxtHeader & txt
+
+        echo txt.replacef(re"(\-\-?[\w\-]+)", fg(magentaColor) & "$1" & resetColor())
+                .replacef(re"    <path>", fg(magentaColor) & "    <path>" & resetColor())
+                .replacef(re"(\w+:)", bold(cyanColor) & "$1" & resetColor())
+                .replacef(re"Arturo", bold(greenColor) & "Arturo" & resetColor())
+                .replacef(re"(\n            [\w]+(?:\s[\w<>]+)?)",bold(whiteColor) & "$1" & resetColor())
     
 #=======================================
 # Main entry
@@ -112,6 +120,7 @@ when isMainModule and not defined(WEB):
         var runUpdate   = static readFile("src/scripts/update.art")
         var runModule   = static readFile("src/scripts/module.art")
         var muted: bool = false
+        var unrecognizedOption = ""
 
         while true:
             token.next()
@@ -154,16 +163,18 @@ when isMainModule and not defined(WEB):
                         of "v","version":
                             action = showVersion
                         else:
-                            # TODO(Arturo/main) do we need to print this?
-                            #  looks like a debugging message - or not
-                            #  labels: command line, easy, cleanup
-                            #echo "error: unrecognized option (" & token.key & ")"
-                            discard
+                            unrecognizedOption = token.key
                 of cmdEnd: break
 
         arguments = token.remainingArgs()
 
         setColors(muted = muted)
+
+        if unrecognizedOption!="" and ((action==evalCode and code=="") or (action notin [execFile, evalCode])):
+            CompilerError_UnrecognizedOption(unrecognizedOption)
+            echo ""
+            printHelp(withHeader=false)
+            quit(1)
 
         case action:
             of execFile, evalCode:

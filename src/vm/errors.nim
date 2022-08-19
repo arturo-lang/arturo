@@ -56,6 +56,12 @@ var
     ExecStack*: seq[int] = @[]
 
 #=======================================
+# Forward declarations
+#=======================================
+
+proc showVMErrors*(e: ref Exception)
+
+#=======================================
 # Main
 #=======================================
 
@@ -67,14 +73,18 @@ proc getLineError*(): string =
             ExecStack.add(CurrentLine)
         result &= (bold(grayColor)).replace(";","%&") & "File: " & resetColor & (fg(grayColor)).replace(";","%&") & CurrentFile & ";" & (bold(grayColor)).replace(";","%&") & "Line: " & resetColor & (fg(grayColor)).replace(";","%&") & $(CurrentLine) & resetColor & ";;"
 
-proc panic*(context: string, error: string) =
+proc panic*(context: string, error: string, throw=true) =
     var errorMsg = error
     if $(context) notin [CompilerError]:
         when not defined(NOERRORLINES):
             errorMsg = getLineError() & errorMsg
         else:
             discard 
-    raise VMError(name: context, msg:move errorMsg)
+    let err = VMError(name: context, msg:move errorMsg)
+    if throw:
+        raise err
+    else:
+        showVMErrors(err)
 
 #=======================================
 # Helpers
@@ -126,6 +136,12 @@ proc CompilerError_ScriptNotExists*(name: string) =
     panic CompilerError,
           "given script path doesn't exist:" & ";" &
           "_" & name & "_"
+
+proc CompilerError_UnrecognizedOption*(name: string) =
+    panic CompilerError,
+          "unrecognized command-line option:" & ";" &
+          "_" & name & "_",
+          throw=false
 
 ## Syntax errors
 
