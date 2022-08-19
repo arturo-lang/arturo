@@ -1100,11 +1100,14 @@ proc doParse*(input: string, isFile: bool = true): Value =
 
     # open stream
     if isFile:
+        var filePath = input
         when not defined(WEB):
-            if not fileExists(input):
-                CompilerError_ScriptNotExists(input)
+            if not fileExists(filePath):
+                filePath &= ".art"
+                if not fileExists(filePath):
+                    CompilerError_ScriptNotExists(input)
 
-        var stream = newFileStream(input)
+        var stream = newFileStream(filePath)
         lexbase.open(p, stream)
     else:
         when defined(PYTHONIC):
