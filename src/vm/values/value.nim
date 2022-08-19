@@ -2366,7 +2366,7 @@ func `$`(v: Value): string {.inline.} =
         of Regex:
             return $(v.rx)
         of Date     : return $(v.eobj)
-        of Binary   : return v.n.map((child) => fmt"{child:X}").join(" ")
+        of Binary   : return v.n.map((child) => fmt"{child:02X}").join(" ")
         of Inline,
            Block     :
             # result = "["
@@ -2428,8 +2428,8 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
         else:           stdout.write fmt("{v.m} :{($(v.kind)).toLowerAscii()}")
 
     proc dumpBinary(b: Byte) =
-        if not muted:   stdout.write fmt("{resetColor}{fg(grayColor)}{b:X} {resetColor}")
-        else:           stdout.write fmt("{b:X} ")
+        if not muted:   stdout.write fmt("{resetColor}{fg(grayColor)}{b:02X} {resetColor}")
+        else:           stdout.write fmt("{b:02X} ")
 
     proc dumpBlockStart(v: Value) =
         var tp = ($(v.kind)).toLowerAscii()
