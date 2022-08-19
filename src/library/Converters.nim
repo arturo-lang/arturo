@@ -370,6 +370,16 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                                 elif blk.len==4:
                                     return newColor((blk[0].i, blk[1].i, blk[2].i, blk[3].i))
 
+                    of Binary:
+                        var res: ByteArray = @[]
+                        for item in cleanBlock(y.a):
+                            if item.kind==Integer:
+                                res &= numberToBinary(item.i)
+                            else:
+                                res &= numberToBinary(item.f)
+                        
+                        return newBinary(res)
+
                     of Bytecode:
                         # TODO(Converters/to) update Block -> Bytecode conversion
                         #  labels: vm, library, enhancement
