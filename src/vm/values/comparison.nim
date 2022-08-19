@@ -115,6 +115,7 @@ proc `==`*(x: Value, y: Value): bool {.inline.}=
                AttributeLabel: return x.r == y.r
             of Symbol: return x.m == y.m
             of Regex: return x.rx == y.rx
+            of Binary: return x.n == y.n
             of Inline,
                Block:
                 let cleanX = cleanBlock(x.a)
