@@ -53,7 +53,7 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "append value to given collection",
         args        = {
-            "collection"    : {String,Char,Block,Literal},
+            "collection"    : {String,Char,Block,Binary,Literal},
             "value"         : {Any}
         },
         attrs       = NoAttrs,
@@ -105,7 +105,12 @@ proc defineSymbols*() =
                     if y.kind==String:
                         push(newString($(x.c) & y.s))
                     elif y.kind==Char:
-                        push(newString($(x.c) & $(y.c)))          
+                        push(newString($(x.c) & $(y.c))) 
+                elif x.kind==Binary:
+                    if y.kind==Binary:
+                        push(newBinary(x.n & y.n))
+                    elif y.kind==Integer:
+                        push(newBinary(x.n & numberToBinary(y.i)))
                 else:
                     var ret = newBlock(cleanBlock(x.a))
 
