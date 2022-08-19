@@ -28,6 +28,8 @@ when defined(WEB):
 when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
+import helpers/bytes as BytesHelper
+export Byte, ByteArray
 import helpers/colors as ColorsHelper
 import helpers/quantities as QuantitiesHelper
 import helpers/regex as RegexHelper
@@ -45,9 +47,6 @@ when not defined(WEB):
 type
     ValueArray* = seq[Value]
     ValueDict*  = OrderedTable[string,Value]
-
-    Byte* = byte
-    ByteArray*  = seq[Byte]
 
     Translation* = (ValueArray, ByteArray) # (constants, instructions)
 
@@ -1921,7 +1920,11 @@ proc `^=`*(x: var Value, y: Value) =
                 else: discard
 
 proc `&&`*(x: Value, y: Value): Value =
-    if not (x.kind==Integer) or not (y.kind==Integer):
+    if (x.kind == Binary or y.kind==Binary) and (x.kind in [Integer, Binary] and y.kind in [Integer, Binary]):
+        var a = (if x.kind==Binary: x.n else: numberToBinary(x.i))
+        var b = (if y.kind==Binary: y.n else: numberToBinary(y.i))
+        return newBinary(a and b)
+    elif not (x.kind==Integer) or not (y.kind==Integer):
         return VNULL
     else:
         if x.iKind==NormalInteger:
@@ -1945,7 +1948,11 @@ proc `&&`*(x: Value, y: Value): Value =
                     return newInteger(x.bi and y.i)
 
 proc `&&=`*(x: var Value, y: Value) =
-    if not (x.kind==Integer) or not (y.kind==Integer):
+    if (x.kind == Binary or y.kind==Binary) and (x.kind in [Integer, Binary] and y.kind in [Integer, Binary]):
+        var a = (if x.kind==Binary: x.n else: numberToBinary(x.i))
+        var b = (if y.kind==Binary: y.n else: numberToBinary(y.i))
+        x = newBinary(a and b)
+    elif not (x.kind==Integer) or not (y.kind==Integer):
         x = VNULL
     else:
         if x.iKind==NormalInteger:
@@ -1969,7 +1976,11 @@ proc `&&=`*(x: var Value, y: Value) =
                     x = newInteger(x.bi and y.i)
 
 proc `||`*(x: Value, y: Value): Value =
-    if not (x.kind==Integer) or not (y.kind==Integer):
+    if (x.kind == Binary or y.kind==Binary) and (x.kind in [Integer, Binary] and y.kind in [Integer, Binary]):
+        var a = (if x.kind==Binary: x.n else: numberToBinary(x.i))
+        var b = (if y.kind==Binary: y.n else: numberToBinary(y.i))
+        return newBinary(a or b)
+    elif not (x.kind==Integer) or not (y.kind==Integer):
         return VNULL
     else:
         if x.iKind==NormalInteger:
@@ -1994,7 +2005,11 @@ proc `||`*(x: Value, y: Value): Value =
                     return newInteger(x.bi or y.i)
 
 proc `||=`*(x: var Value, y: Value) =
-    if not (x.kind==Integer) or not (y.kind==Integer):
+    if (x.kind == Binary or y.kind==Binary) and (x.kind in [Integer, Binary] and y.kind in [Integer, Binary]):
+        var a = (if x.kind==Binary: x.n else: numberToBinary(x.i))
+        var b = (if y.kind==Binary: y.n else: numberToBinary(y.i))
+        x = newBinary(a or b)
+    elif not (x.kind==Integer) or not (y.kind==Integer):
         x = VNULL
     else:
         if x.iKind==NormalInteger:
@@ -2018,7 +2033,11 @@ proc `||=`*(x: var Value, y: Value) =
                     x = newInteger(x.bi or y.i)
 
 proc `^^`*(x: Value, y: Value): Value =
-    if not (x.kind==Integer) or not (y.kind==Integer):
+    if (x.kind == Binary or y.kind==Binary) and (x.kind in [Integer, Binary] and y.kind in [Integer, Binary]):
+        var a = (if x.kind==Binary: x.n else: numberToBinary(x.i))
+        var b = (if y.kind==Binary: y.n else: numberToBinary(y.i))
+        return newBinary(a xor b)
+    elif not (x.kind==Integer) or not (y.kind==Integer):
         return VNULL
     else:
         if x.iKind==NormalInteger:
@@ -2042,7 +2061,11 @@ proc `^^`*(x: Value, y: Value): Value =
                     return newInteger(x.bi xor y.i)
 
 proc `^^=`*(x: var Value, y: Value) =
-    if not (x.kind==Integer) or not (y.kind==Integer):
+    if (x.kind == Binary or y.kind==Binary) and (x.kind in [Integer, Binary] and y.kind in [Integer, Binary]):
+        var a = (if x.kind==Binary: x.n else: numberToBinary(x.i))
+        var b = (if y.kind==Binary: y.n else: numberToBinary(y.i))
+        x = newBinary(a xor b)
+    elif not (x.kind==Integer) or not (y.kind==Integer):
         x = VNULL
     else:
         if x.iKind==NormalInteger:
@@ -2162,7 +2185,9 @@ proc `<<=`*(x: var Value, y: Value) =
                     x = newInteger(x.bi shl (culong)(y.i))
 
 proc `!!`*(x: Value): Value =
-    if not (x.kind==Integer):
+    if x.kind == Binary:
+        return newBinary(not x.n)
+    elif not (x.kind==Integer):
         return VNULL
     else:
         if x.iKind==NormalInteger:
@@ -2172,7 +2197,9 @@ proc `!!`*(x: Value): Value =
                 return newInteger(not x.bi)
 
 proc `!!=`*(x: var Value) =
-    if not (x.kind==Integer):
+    if x.kind == Binary:
+        x = newBinary(not x.n)
+    elif not (x.kind==Integer):
         x = VNULL
     else:
         if x.iKind==NormalInteger:
@@ -2366,7 +2393,7 @@ func `$`(v: Value): string {.inline.} =
         of Regex:
             return $(v.rx)
         of Date     : return $(v.eobj)
-        of Binary   : return v.n.map((child) => fmt"{child:X}").join(" ")
+        of Binary   : return v.n.map((child) => fmt"{child:02X}").join(" ")
         of Inline,
            Block     :
             # result = "["
@@ -2428,8 +2455,8 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
         else:           stdout.write fmt("{v.m} :{($(v.kind)).toLowerAscii()}")
 
     proc dumpBinary(b: Byte) =
-        if not muted:   stdout.write fmt("{resetColor}{fg(grayColor)}{b:X} {resetColor}")
-        else:           stdout.write fmt("{b:X} ")
+        if not muted:   stdout.write fmt("{resetColor}{fg(grayColor)}{b:02X} {resetColor}")
+        else:           stdout.write fmt("{b:02X} ")
 
     proc dumpBlockStart(v: Value) =
         var tp = ($(v.kind)).toLowerAscii()
