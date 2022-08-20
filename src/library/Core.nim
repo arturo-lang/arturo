@@ -107,9 +107,6 @@ proc defineSymbols*() =
             ##########################################################
             raise BreakTriggered()
 
-    # TODO(Core\call) Needs fix
-    #  The function seems to be working fine with function 'literals but not with function values passed directly
-    #  labels: library,bug,critical
     builtin "call",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
