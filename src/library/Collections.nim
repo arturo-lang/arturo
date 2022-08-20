@@ -112,15 +112,10 @@ proc defineSymbols*() =
                     elif y.kind==Integer:
                         push(newBinary(x.n & numberToBinary(y.i)))
                 else:
-                    var ret = newBlock(cleanBlock(x.a))
-
                     if y.kind==Block:
-                        for item in cleanBlock(y.a):
-                            ret.a.add(item)
+                        push newBlock(cleanBlock(x.a) & cleanBlock(y.a))
                     else:
-                        ret.a.add(y)
-                        
-                    push(ret)
+                        push newBlock(cleanBlock(x.a) & y)
 
     builtin "chop",
         alias       = unaliased, 
