@@ -57,17 +57,20 @@ template loadByIndex(idx: int):untyped =
     let item = GetSym(symIndx)
     stack.push(item)
 
-template callFunction*(f: Value):untyped =
+template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
     if f.fnKind==UserFunction:
         var memoized: Value = VNULL
         if f.memoize: memoized = f
+        let fArity = f.params.a.len
+        if SP<fArity:
+            RuntimeError_NotEnoughArguments(fnName, fArity)
         discard execBlock(f.main, args=f.params.a, isFuncBlock=true, imports=f.imports, exports=f.exports, exportable=f.exportable, memoized=memoized)
     else:
         f.action()
 
 template callByName*(symIndx: string):untyped =
     let fun = GetSym(symIndx)
-    callFunction(fun)
+    callFunction(fun, symIndx)
 
 template callByIndex(idx: int):untyped =
     if cnst[idx].kind==Function:
