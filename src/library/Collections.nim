@@ -116,7 +116,7 @@ proc defineSymbols*() =
                         push newBlock(cleanBlock(x.a) & cleanBlock(y.a))
                     else:
                         push newBlock(cleanBlock(x.a) & y)
-
+ 
     builtin "chop",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
