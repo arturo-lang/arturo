@@ -35,7 +35,7 @@ when not defined(WEB):
     import helpers/jsonobject
     import helpers/quantities
     
-import vm/[bytecode, lib]
+import vm/[bytecode, lib, parse]
 when defined(SAFE):
     import vm/[errors]
 
@@ -281,7 +281,9 @@ proc defineSymbols*() =
                     elif (popAttr("csv") != VNULL):
                         push(parseCsvInput(src, withHeaders=(popAttr("withHeaders")!=VNULL)))
                     elif (popAttr("bytecode") != VNULL):
-                        push(newBytecode(readBytecode(src)))
+                        let bcode = readBytecode(x.s)
+                        let parsed = doParse(bcode[0], isFile=false).a[0]
+                        push(newBytecode((parsed.a, bcode[1])))
                     else:
                         when not defined(NOPARSERS):
                             if (popAttr("toml") != VNULL):
@@ -431,7 +433,9 @@ proc defineSymbols*() =
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("write")
                 if y.kind==Bytecode:
-                    discard writeBytecode(y.trans, x.s)
+                    let dataS = codify(newBlock(y.trans[0]), unwrapped=true, safeStrings=true)
+                    let codeS = y.trans[1]
+                    discard writeBytecode(dataS, codeS, x.s)
                 else:
                     if (popAttr("directory") != VNULL):
                         createDir(x.s)
