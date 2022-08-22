@@ -77,7 +77,7 @@ proc readBytecode*(origin: string): Translation =
 proc optimizeBytecode*(bc: Translation): Translation =
     var ba: ByteArray
     ba = bc[1].substitute(@[(Byte)opStore0, (Byte)opLoad0], @[(Byte)opStorl0])
-    result = (bc[0], @[])
+    result = (bc[0], ba)
 
 #=======================================
 # Inspection
