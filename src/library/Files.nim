@@ -35,7 +35,7 @@ when not defined(WEB):
     import helpers/jsonobject
     import helpers/quantities
     
-import vm/lib
+import vm/[bytecode, lib]
 when defined(SAFE):
     import vm/[errors]
 
@@ -426,20 +426,23 @@ proc defineSymbols*() =
             """:
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("write")
-                if (popAttr("directory") != VNULL):
-                    createDir(x.s)
+                if y.kind==Bytecode:
+                    discard writeBytecode(y.trans, x.s)
                 else:
-                    if (popAttr("binary") != VNULL):
-                        writeToFile(x.s, y.n, append = (popAttr("append")!=VNULL))
+                    if (popAttr("directory") != VNULL):
+                        createDir(x.s)
                     else:
-                        if (popAttr("json") != VNULL):
-                            let rez = jsonFromValue(y, pretty=(popAttr("compact")==VNULL))
-                            if x.kind==String:
-                                writeToFile(x.s, rez, append = (popAttr("append")!=VNULL))
-                            else:
-                                push(newString(rez))
+                        if (popAttr("binary") != VNULL):
+                            writeToFile(x.s, y.n, append = (popAttr("append")!=VNULL))
                         else:
-                            writeToFile(x.s, y.s, append = (popAttr("append")!=VNULL))
+                            if (popAttr("json") != VNULL):
+                                let rez = jsonFromValue(y, pretty=(popAttr("compact")==VNULL))
+                                if x.kind==String:
+                                    writeToFile(x.s, rez, append = (popAttr("append")!=VNULL))
+                                else:
+                                    push(newString(rez))
+                            else:
+                                writeToFile(x.s, y.s, append = (popAttr("append")!=VNULL))
 
         when not defined(NOUNZIP):
             builtin "zip",
