@@ -49,6 +49,7 @@ proc readBytecode*(origin: string): (string, seq[byte]) =
         if not f.isNil:
             var sz: int
             f.read(sz)                      # read data segment size
+            echo "going to read: " & $(sz)
             var dataSegment: string
             f.readStr(sz, dataSegment)      # read the data segment contents
 
