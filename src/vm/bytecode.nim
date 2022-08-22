@@ -72,6 +72,9 @@ proc readBytecode*(origin: string): Translation =
     else:
         discard
 
+proc optimizeBytecode*(bc: Translation): Translation =
+    result = bc
+
 #=======================================
 # Inspection
 #=======================================
