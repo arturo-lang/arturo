@@ -187,67 +187,103 @@ type
         opCall          = 0x8E
         opCallX         = 0x8F
 
+        # [0x30-0x4F]
+        # store variables (from <- stack)
+        opStorl0        = 0x90   
+        opStorl1        = 0x91
+        opStorl2        = 0x92
+        opStorl3        = 0x93
+        opStorl4        = 0x94
+        opStorl5        = 0x95
+        opStorl6        = 0x96
+        opStorl7        = 0x97
+        opStorl8        = 0x98
+        opStorl9        = 0x99
+        opStorl10       = 0x9A
+        opStorl11       = 0x9B
+        opStorl12       = 0x9C
+        opStorl13       = 0x9D
+        opStorl14       = 0x9E
+        opStorl15       = 0x9F
+        opStorl16       = 0xA0
+        opStorl17       = 0xA1
+        opStorl18       = 0xA2
+        opStorl19       = 0xA3
+        opStorl20       = 0xA4
+        opStorl21       = 0xA5
+        opStorl22       = 0xA6
+        opStorl23       = 0xA7
+        opStorl24       = 0xA8
+        opStorl25       = 0xA9
+        opStorl26       = 0xAA
+        opStorl27       = 0xAB
+        opStorl28       = 0xAC
+        opStorl29       = 0xAD
+
+        opStorl         = 0xAE
+        opStorlX        = 0xAF
+
         #-----------------------
 
-        # [0x90-9F] #
+        # [0xB0-BF] #
         # generators
-        opAttr          = 0x90
-        opArray         = 0x91
-        opDict          = 0x92
-        opFunc          = 0x93
+        opAttr          = 0xB0
+        opArray         = 0xB1
+        opDict          = 0xB2
+        opFunc          = 0xB3
 
         # stack operations
-        opPop           = 0x94
-        opDup           = 0x95
-        opSwap          = 0x96
+        opPop           = 0xB4
+        opDup           = 0xB5
+        opSwap          = 0xB6
 
         # flow control
-        opJump          = 0x97
-        opJumpIf        = 0x98
-        opJumpIfNot     = 0x99
-        opRet           = 0x9A
-        opEnd           = 0x9B
+        opJump          = 0xB7
+        opJumpIf        = 0xB8
+        opJumpIfNot     = 0xB9
+        opRet           = 0xBA
+        opEnd           = 0xBB
 
-        opNop           = 0x9C
-        opEol           = 0x9D
+        opNop           = 0xBC
+        opEol           = 0xBD
         
         # reserved
-        opRsrv1         = 0x9E
-        opRsrv2         = 0x9F
+        opRsrv1         = 0xBE
+        opRsrv2         = 0xBF
 
-        # [0xA0-AF] #
+        # [0xC0-CF] #
         # arithmetic & logical operators
-        opIAdd          = 0xA0
-        opISub          = 0xA1
-        opIMul          = 0xA2
-        opIDiv          = 0xA3
-        opIFDiv         = 0xA4
-        opIMod          = 0xA5
-        opIPow          = 0xA6
+        opIAdd          = 0xC0
+        opISub          = 0xC1
+        opIMul          = 0xC2
+        opIDiv          = 0xC3
+        opIFDiv         = 0xC4
+        opIMod          = 0xC5
+        opIPow          = 0xC6
 
-        opINeg          = 0xA7
+        opINeg          = 0xC7
 
-        opBNot          = 0xA8
-        opBAnd          = 0xA9
-        opOr            = 0xAA
-        opXor           = 0xAB
+        opBNot          = 0xC8
+        opBAnd          = 0xC9
+        opOr            = 0xCA
+        opXor           = 0xCB
 
-        opShl           = 0xAC
-        opShr           = 0xAD
+        opShl           = 0xCC
+        opShr           = 0xCD
 
         # reserved
-        opRsrv3         = 0xAE
-        opRsrv4         = 0xAF
+        opRsrv3         = 0xCE
+        opRsrv4         = 0xCF
 
-        # [0xB0-BF] #
+        # [0xD0-DF] #
         # comparison operators
 
-        opEq            = 0xB0
-        opNe            = 0xB1
-        opGt            = 0xB2
-        opGe            = 0xB3
-        opLt            = 0xB4
-        opLe            = 0xB5
+        opEq            = 0xD0
+        opNe            = 0xD1
+        opGt            = 0xD2
+        opGe            = 0xD3
+        opLt            = 0xD4
+        opLe            = 0xD5
 
 #=======================================
 # Methods
