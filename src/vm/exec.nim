@@ -48,7 +48,7 @@ template storeByIndex(idx: int, doPop = true):untyped =
         Syms[symIndx] = stack.pop()
     else:
         Syms[symIndx] = stack.peek(0)
-        
+
     if Syms[symIndx].kind==Function:
         let fun = Syms[symIndx]
         if fun.fnKind==BuiltinFunction:
@@ -337,9 +337,9 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
 
             # [0x90-0xAF]
             # store variables without popping (from <- stack)
-            of opStorl0..opStorl29  : storeByIndex((int)(op)-(int)(opStore0))
-            of opStorl              : i += 1; storeByIndex((int)(it[i]))   
-            of opStorlX             : i += 2; storeByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i])))              
+            of opStorl0..opStorl29  : storeByIndex((int)(op)-(int)(opStore0), doPop=false)
+            of opStorl              : i += 1; storeByIndex((int)(it[i]), doPop=false)   
+            of opStorlX             : i += 2; storeByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i])), doPop=false)              
 
             # [0xB0-BF] #
             # generators
