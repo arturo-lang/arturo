@@ -572,7 +572,7 @@ proc doEval*(root: Value, isDictionary=false): Translation =
 
     result = (cnsts, newit)
     when defined(OPTIMIZED):
-        result = optimize(result)
+        result = optimizeBytecode(result)
 
     when defined(VERBOSE):
         result.dump()
