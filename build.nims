@@ -73,6 +73,7 @@ let
         "nosqlite"          : "-d:NOSQLITE",
         "nounzip"           : "-d:NOUNZIP",
         "nowebview"         : "-d:NOWEBVIEW",
+        "optimized"         : "-d:OPTIMIZED",
         "profile"           : "-d:PROFILE --profiler:on --stackTrace:on",
         # TODO(build.nims) Thoroughly test `-flto` for release builds
         #  in various tests, it seems to be performing roughly 10-15% better
