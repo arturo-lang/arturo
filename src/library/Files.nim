@@ -235,6 +235,7 @@ proc defineSymbols*() =
                         "xml"           : ({Logical},"read XML into node dictionary"),
                         "markdown"      : ({Logical},"read Markdown and convert to HTML"),
                         "toml"          : ({Logical},"read TOML into value"),
+                        "bytecode"      : ({Logical},"read file as Arturo bytecode"),
                         "binary"        : ({Logical},"read as binary")
                     }
                 else:
@@ -243,6 +244,7 @@ proc defineSymbols*() =
                         "json"          : ({Logical},"read Json into value"),
                         "csv"           : ({Logical},"read CSV file into a block of rows"),
                         "withHeaders"   : ({Logical},"read CSV headers"),
+                        "bytecode"      : ({Logical},"read file as Arturo bytecode"),
                         "binary"        : ({Logical},"read as binary")
                     },
             returns     = {String,Block,Binary},
@@ -278,6 +280,8 @@ proc defineSymbols*() =
                         push(valueFromJson(src))
                     elif (popAttr("csv") != VNULL):
                         push(parseCsvInput(src, withHeaders=(popAttr("withHeaders")!=VNULL)))
+                    elif (popAttr("bytecode") != VNULL):
+                        push(newBytecode(readBytecode(src)))
                     else:
                         when not defined(NOPARSERS):
                             if (popAttr("toml") != VNULL):
