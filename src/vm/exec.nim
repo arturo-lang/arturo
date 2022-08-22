@@ -42,9 +42,13 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
 template pushByIndex(idx: int):untyped =
     stack.push(cnst[idx])
 
-template storeByIndex(idx: int):untyped =
+template storeByIndex(idx: int, doPop = true):untyped =
     let symIndx = cnst[idx].s
-    Syms[symIndx] = stack.pop()
+    when doPop:
+        Syms[symIndx] = stack.pop()
+    else:
+        Syms[symIndx] = stack.peek(0)
+        
     if Syms[symIndx].kind==Function:
         let fun = Syms[symIndx]
         if fun.fnKind==BuiltinFunction:
@@ -331,7 +335,13 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             of opCall               : i += 1; callByIndex((int)(it[i]))
             of opCallX              : i += 2; callByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
 
-            # [0x90-9F] #
+            # [0x90-0xAF]
+            # store variables without popping (from <- stack)
+            of opStorl0..opStorl29  : storeByIndex((int)(op)-(int)(opStore0))
+            of opStorl              : i += 1; storeByIndex((int)(it[i]))   
+            of opStorlX             : i += 2; storeByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i])))              
+
+            # [0xB0-BF] #
             # generators
             of opAttr               : i += 1; fetchAttributeByIndex((int)(it[i]))            
             of opArray, opDict,
@@ -366,7 +376,7 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             # reserved
             of opRsrv1..opRsrv2     : discard
 
-            # [0xA0-AF] #
+            # [0xC0-CF] #
             # arithmetic & logical operators
             of opIAdd               : stack.push(newInteger(Stack[SP-1].i + Stack[SP-2].i))
             of opISub               : stack.push(newInteger(Stack[SP-1].i - Stack[SP-2].i))
@@ -384,7 +394,7 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             # reserved
             of opRsrv3..opRsrv4     : discard
 
-            # [0xB0-BF] #
+            # [0xD0-DF] #
             # comparison operators
             of opEq                 : stack.push(newLogical(Stack[SP-1]==Stack[SP-2]))
             of opNe                 : stack.push(newLogical(Stack[SP-1]!=Stack[SP-2]))
