@@ -574,5 +574,3 @@ proc doEval*(root: Value, isDictionary=false): Translation =
 
     when defined(VERBOSE):
         result.dump()
-
-    result = (cnsts,newit)
