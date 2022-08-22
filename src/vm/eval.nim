@@ -571,6 +571,8 @@ proc doEval*(root: Value, isDictionary=false): Translation =
     newit.add((byte)opEnd)
 
     result = (cnsts, newit)
+    when defined(OPTIMIZED):
+        result = optimize(result)
 
     when defined(VERBOSE):
         result.dump()
