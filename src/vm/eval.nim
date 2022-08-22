@@ -575,4 +575,4 @@ proc doEval*(root: Value, isDictionary=false): Translation =
         result = optimizeBytecode(result)
 
     when defined(VERBOSE):
-        result.dump()
+        echo $(newBytecode(result))
