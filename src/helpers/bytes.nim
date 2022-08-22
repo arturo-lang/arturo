@@ -40,6 +40,19 @@ proc `not`*(a: ByteArray): ByteArray =
 # Methods
 #=======================================
 
+proc substitute*(a: ByteArray, needle: ByteArray, replacement: ByteArray): ByteArray =
+    var i = 0
+    let aLen = a.len
+    let needleLen = needle.len
+    while i < aLen-needleLen+1:
+        if a[i..i+needleLen-1] == needle:
+            result.add(replacement)
+            i += needleLen
+        else:
+            result.add(a[i])
+            i = i + 1
+    result.add(a[i..^1])
+
 proc numberToBinary*(i: int | float): ByteArray =
     if i==0: return @[(byte)0]
     var bytes = toSeq(cast[array[0..7, byte]](i)).reversed
