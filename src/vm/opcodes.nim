@@ -187,7 +187,7 @@ type
         opCall          = 0x8E
         opCallX         = 0x8F
 
-        # [0x30-0x4F]
+        # [0x90-0xAF]
         # store variables (from <- stack)
         opStorl0        = 0x90   
         opStorl1        = 0x91
