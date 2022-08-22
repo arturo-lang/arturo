@@ -17,6 +17,8 @@ when defined(VERBOSE):
     import strformat, strutils
     import helpers/terminal as terminalHelper
 
+import helpers/bytes as bytesHelper
+
 import opcodes
 export opcodes
 
