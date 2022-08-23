@@ -73,6 +73,7 @@ let
         "nosqlite"          : "-d:NOSQLITE",
         "nounzip"           : "-d:NOUNZIP",
         "nowebview"         : "-d:NOWEBVIEW",
+        "optimized"         : "-d:OPTIMIZED",
         "profile"           : "-d:PROFILE --profiler:on --stackTrace:on",
         # TODO(build.nims) Thoroughly test `-flto` for release builds
         #  in various tests, it seems to be performing roughly 10-15% better
@@ -100,6 +101,10 @@ var
     IS_DEV              = false 
     MODE                = ""       
 
+    # TODO(build.nims) remove `--overflowChecks:on`?
+    #  actually, we could forcibly enable only for the exact blocks that we need them - 
+    #  that is integer arithmetic
+    #  labels: vm, performance, benchmark, installer, enhancement
     FLAGS*              = "--skipUserCfg:on --colors:off -d:danger " &
                           "--panics:off --mm:orc --checks:off --overflowChecks:on " &
                           "-d:ssl --cincludes:extras --nimcache:.cache " & 

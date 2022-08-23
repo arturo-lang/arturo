@@ -534,7 +534,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 # TODO(Eval/evalOne) verify Newline handling works properly
                 #  Also, we have to figure out whether the commented-out code is needed at all
                 #  labels: vm, evaluator, cleanup
-                when not defined(NOERRORLINES):
+                when not defined(NOERRORLINES) and not defined(OPTIMIZED):
                     addEol(node.line)
                 else:
                     discard
@@ -570,9 +570,10 @@ proc doEval*(root: Value, isDictionary=false): Translation =
     evalOne(root, cnsts, newit, isDictionary=isDictionary)
     newit.add((byte)opEnd)
 
+    when defined(OPTIMIZED):
+        newit = optimizeBytecode(newit)
+
     result = (cnsts, newit)
 
     when defined(VERBOSE):
-        result.dump()
-
-    result = (cnsts,newit)
+        echo $(newBytecode(result))
