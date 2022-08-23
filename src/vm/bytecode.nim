@@ -65,12 +65,8 @@ proc readBytecode*(origin: string): (string, seq[byte]) =
     else:
         discard
 
+# TODO(VM/bytecode) `optimizeBytecode` should have access to full bytecode
+#  that is: including the data segment
+#  labels: enhancement, cleanup, vm, bytecode
 proc optimizeBytecode*(bc: seq[byte]): seq[byte] =
-    result = bc.substitute2to1r((opStore0, opLoad0), opStorl0)
-    # result = bc
-    # for i in 0..29:
-    #     let b = (Byte)(i)
-    #     result = result.substitute(
-    #         @[(Byte)(opStore0)+b, (Byte)(opLoad0)+b], 
-    #         @[(Byte)(opStorl0)+b]
-    #     )
+    result = bc.substitute2to1r(opStore0, opLoad0, opStorl0)
