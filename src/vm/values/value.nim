@@ -898,10 +898,6 @@ proc `+`*(x: Value, y: Value): Value =
                 if y.iKind==NormalInteger:
                     try:
                         return newInteger(x.i+y.i)
-                        # TODO(VM/values/value) totally eliminate OverflowDefect errors
-                        #  actually, we could forcibly enable only for the exact blocks that we need them - 
-                        #  that is every single OverflowDefect in here - and disable it on a global basis @ build.nims
-                        #  labels: vm, performance, benchmark, installer, enhancement, values
                     except OverflowDefect:
                         when defined(WEB):
                             return newInteger(big(x.i)+big(y.i))
