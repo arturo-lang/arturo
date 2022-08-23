@@ -570,9 +570,10 @@ proc doEval*(root: Value, isDictionary=false): Translation =
     evalOne(root, cnsts, newit, isDictionary=isDictionary)
     newit.add((byte)opEnd)
 
-    result = (cnsts, newit)
     when defined(OPTIMIZED):
-        result = optimizeBytecode(result)
+        newit = optimizeBytecode(newit)
+
+    result = (cnsts, newit)
 
     when defined(VERBOSE):
         echo $(newBytecode(result))
