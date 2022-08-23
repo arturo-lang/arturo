@@ -60,11 +60,11 @@ proc substitute2to1r*(a: ByteArray, sub: tuple[a: OpCode, b: OpCode], replacemen
     let aLen = a.len
     let one = (Byte)(sub.a)
     let two = (Byte)(sub.b)
-    let rOne = one..one+29
-    let rTwo = two..two+29
+    let rOne = one..(one+29)
+    let rTwo = two..(two+29)
     while i < aLen-2+1:
-        if a[i] in rOne and a[i+1] in rTwo and 29-a[i] == 29-a[i+1]:
-            result.add((Byte)(replacement) + 29-a[i])
+        if a[i] in rOne and a[i+1] in rTwo and (a[i]-one == a[i+1]-two):
+            result.add((Byte)(replacement) + a[i]-one)
             i += 2
         else:
             result.add(a[i])
