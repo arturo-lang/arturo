@@ -383,7 +383,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                     of Bytecode:
                         var evaled = doEval(y)
                         if (popAttr("optimized") != VNULL):
-                            evaled[1] = optimizeBytecode(evaled[1])
+                            evaled = (evaled[0], optimizeBytecode(evaled[1]))
 
                         return newBytecode(evaled)
                        
@@ -400,7 +400,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                     of Bytecode:
                         var evaled = (y.d["const"].a, y.d["instructions"].a.map(proc (x:Value):byte = (byte)(x.i)))
                         if (popAttr("optimized") != VNULL):
-                            evaled[1] = optimizeBytecode(evaled[1])
+                            evaled = (evaled[0], optimizeBytecode(evaled[1]))
 
                         return newBytecode(evaled)
                     else:
