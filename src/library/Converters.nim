@@ -30,7 +30,7 @@ when not defined(NOASCIIDECODE):
     import helpers/strings
 
 import vm/lib
-import vm/[errors, eval, exec, opcodes, parse]
+import vm/[bytecode, errors, eval, exec, opcodes, parse]
 
 #=======================================
 # Helpers
@@ -381,9 +381,11 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                         return newBinary(res)
 
                     of Bytecode:
-                        # TODO(Converters/to) update Block -> Bytecode conversion
-                        #  labels: vm, library, enhancement
-                        return newBytecode(doEval(y))
+                        var evaled = doEval(y)
+                        if (popAttr("optimized") != VNULL):
+                            evaled = (evaled[0], optimizeBytecode(evaled[1]))
+
+                        return newBytecode(evaled)
                        
                     else:
                         discard
@@ -396,7 +398,11 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                         else:
                             throwCannotConvert()
                     of Bytecode:
-                        return(newBytecode((y.d["const"].a, y.d["instructions"].a.map(proc (x:Value):byte = (byte)(x.i)))))
+                        var evaled = (y.d["const"].a, y.d["instructions"].a.map(proc (x:Value):byte = (byte)(x.i)))
+                        if (popAttr("optimized") != VNULL):
+                            evaled = (evaled[0], optimizeBytecode(evaled[1]))
+
+                        return newBytecode(evaled)
                     else:
                         throwCannotConvert()
             
@@ -1106,10 +1112,11 @@ proc defineSymbols*() =
             "value" : {Any}
         },
         attrs       = {
-            "format": ({String},"use given format (for dates or floating-point numbers)"),
-            "unit"  : ({String,Literal},"use given unit (for quantities)"),
-            "hsl"   : ({Logical},"convert HSL block to color"),
-            "hsv"   : ({Logical},"convert HSV block to color")
+            "format"    : ({String},"use given format (for dates or floating-point numbers)"),
+            "unit"      : ({String,Literal},"use given unit (for quantities)"),
+            "optimized" : ({Logical},"convert to optimized bytecode"),
+            "hsl"       : ({Logical},"convert HSL block to color"),
+            "hsv"       : ({Logical},"convert HSV block to color")
         },
         returns     = {Any},
         example     = """

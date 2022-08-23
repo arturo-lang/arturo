@@ -1,0 +1,181 @@
+containsAny?: function [str, options][
+    loop options 'opt [
+        if contains? str opt -> return true
+    ]
+    return false
+]
+
+execute "nim genDepend -d:ssl src/arturo.nim" 
+
+lines: chop drop split.lines strip read "src/arturo.dot" 1
+lines: map filter map lines 'line [
+    ll: replace line [
+        {/"([A-Z][a-z]+)"/}
+        {/"([A-Z][a-z]+)Lib"/}
+
+        {/"(\w+)Helper"/}
+
+        {"comparison"}
+        {"logic"}
+        {"printable"}
+        {"value"}
+
+        {"bytecode"}
+        {"env"}
+        {"errors"}
+        {"eval"}
+        {"exec"}
+        {"globals"}
+        {"lib"}
+        {"opcodes"}
+        {"package"}
+        {"parse"}
+        {"stack"}
+        {"version"}
+        {"vm"}
+
+        {"arturo"}
+    ] [
+        {"Library:$1"}
+        {"Library:$1"}
+
+        {"Helper:$1"}
+
+        {"VM:values/comparison"}
+        {"VM:values/logic"}
+        {"VM:values/printable"}
+        {"VM:values/value"}
+
+        {"VM:bytecode"}
+        {"VM:env"}
+        {"VM:errors"}
+        {"VM:eval"}
+        {"VM:exec"}
+        {"VM:globals"}
+        {"VM:lib"}
+        {"VM:opcodes"}
+        {"VM:package"}
+        {"VM:parse"}
+        {"VM:stack"}
+        {"VM:version"}
+        {"VM:vm"}
+
+        {"Arturo"}
+    ]
+    loop `A`..`Z` 'ch [
+        ll: replace ll ":"++ch ":"++lower ch
+    ]
+    ll
+] 'line [
+    containsAny? line [
+        {"algorithm"}
+        {"ansi_c"}
+        {"assertions"}
+        {"asyncdispatch"}
+        {"asyncfile"}
+        {"asyncfutures"}
+        {"asyncnet"}
+        {"asyncstreams"}
+        {"base64"}
+        {"bitops"}
+        {"complex"}
+        {"countbits_impl"}
+        {"cstrutils"}
+        {"db_common"}
+        {"db_sqlite"}
+        {"digitsutils"}
+        {"dynlib"}
+        {"editdistance"}
+        {"encodings"}
+        {"enumutils"}
+        {"ffi"}
+        {"formatfloat"}
+        {"gmp"}                     ; extras
+        {"hashes"}
+        {"htmlparser"}
+        {"httpcore"}
+        {"httpclient"}
+        {"httpx"}                   ; extras
+        {"ioselectors"}             ; extras
+        {"lenientops"}
+        {"json"}
+        {"lexbase"}
+        {"libclipboard"}            ; extras
+        {"linenoise"}
+        {"macros"}
+        {"markdown"}                ; extras
+        {"math"}
+        {"md4c"}                    ; extras
+        {"md5"}
+        {"menubar"}                 ; extras
+        {"miniz"}                   ; extras
+        {"monotimes"}
+        {"mpfr"}                    ; extras
+        {"nativesockets"}
+        {"net"}
+        {"nre"}
+        {"oids"}
+        {"openssl"}
+        {"options"}
+        {"os"}
+        {"osproc"}
+        {"parsecfg"}
+        {"parsecsv"}
+        {"parsejson"}
+        {"parseopt"}
+        {"parsetoml"}               ; extras
+        {"parseutils"}
+        {"parsexml"}
+        {"pathnorm"}
+        {"pfd"}                     ; extras
+        {"posix"}
+        {"posix_utils"}
+        {"random"}
+        {"rationals"}
+        {"re"}
+        {"segfaults"}
+        {"selectors"}
+        {"sequtils"}
+        {"sets"}
+        {"sha1"}
+        {"since"}
+        {"smtp"}
+        {"sqlite"}
+        {"sqlite3"}
+        {"stats"}
+        {"streams"}
+        {"streamwrapper"}
+        {"strformat"}
+        {"strtabs"}
+        {"strutils"}
+        {"sugar"}
+        {"system"}
+        {"tables"}
+        {"termios"}
+        {"times"}
+        {"typetraits"}
+        {"unicode"}
+        {"unidecode"}
+        {"uri"}
+        {"webview"}                 ; extras
+        {"wepoll"}                  ; extras
+        {"window"}                  ; extras
+        {"wordwrap"}
+        {"xmlparser"}
+        {"xmltree"}
+    ]
+] 'line [
+    replace line {/"([a-z]+)"/} {"Helper:$1"}
+]
+
+inspect lines
+print [size lines "entries"]
+
+delete "src/arturo.dot"
+delete "src/arturo.png"
+
+delete "arturo.deps"
+
+write "arturo.dot" "digraph Arturo {\n" ++ join.with:"\n" lines ++ "\n}"
+
+execute "dot -Tpng arturo.dot -o arturo.png"

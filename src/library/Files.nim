@@ -35,7 +35,7 @@ when not defined(WEB):
     import helpers/jsonobject
     import helpers/quantities
     
-import vm/lib
+import vm/[bytecode, lib, parse]
 when defined(SAFE):
     import vm/[errors]
 
@@ -235,6 +235,7 @@ proc defineSymbols*() =
                         "xml"           : ({Logical},"read XML into node dictionary"),
                         "markdown"      : ({Logical},"read Markdown and convert to HTML"),
                         "toml"          : ({Logical},"read TOML into value"),
+                        "bytecode"      : ({Logical},"read file as Arturo bytecode"),
                         "binary"        : ({Logical},"read as binary")
                     }
                 else:
@@ -243,6 +244,7 @@ proc defineSymbols*() =
                         "json"          : ({Logical},"read Json into value"),
                         "csv"           : ({Logical},"read CSV file into a block of rows"),
                         "withHeaders"   : ({Logical},"read CSV headers"),
+                        "bytecode"      : ({Logical},"read file as Arturo bytecode"),
                         "binary"        : ({Logical},"read as binary")
                     },
             returns     = {String,Block,Binary},
@@ -278,6 +280,10 @@ proc defineSymbols*() =
                         push(valueFromJson(src))
                     elif (popAttr("csv") != VNULL):
                         push(parseCsvInput(src, withHeaders=(popAttr("withHeaders")!=VNULL)))
+                    elif (popAttr("bytecode") != VNULL):
+                        let bcode = readBytecode(x.s)
+                        let parsed = doParse(bcode[0], isFile=false).a[0]
+                        push(newBytecode((parsed.a, bcode[1])))
                     else:
                         when not defined(NOPARSERS):
                             if (popAttr("toml") != VNULL):
@@ -426,20 +432,25 @@ proc defineSymbols*() =
             """:
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("write")
-                if (popAttr("directory") != VNULL):
-                    createDir(x.s)
+                if y.kind==Bytecode:
+                    let dataS = codify(newBlock(y.trans[0]), unwrapped=true, safeStrings=true)
+                    let codeS = y.trans[1]
+                    discard writeBytecode(dataS, codeS, x.s)
                 else:
-                    if (popAttr("binary") != VNULL):
-                        writeToFile(x.s, y.n, append = (popAttr("append")!=VNULL))
+                    if (popAttr("directory") != VNULL):
+                        createDir(x.s)
                     else:
-                        if (popAttr("json") != VNULL):
-                            let rez = jsonFromValue(y, pretty=(popAttr("compact")==VNULL))
-                            if x.kind==String:
-                                writeToFile(x.s, rez, append = (popAttr("append")!=VNULL))
-                            else:
-                                push(newString(rez))
+                        if (popAttr("binary") != VNULL):
+                            writeToFile(x.s, y.n, append = (popAttr("append")!=VNULL))
                         else:
-                            writeToFile(x.s, y.s, append = (popAttr("append")!=VNULL))
+                            if (popAttr("json") != VNULL):
+                                let rez = jsonFromValue(y, pretty=(popAttr("compact")==VNULL))
+                                if x.kind==String:
+                                    writeToFile(x.s, rez, append = (popAttr("append")!=VNULL))
+                                else:
+                                    push(newString(rez))
+                            else:
+                                writeToFile(x.s, y.s, append = (popAttr("append")!=VNULL))
 
         when not defined(NOUNZIP):
             builtin "zip",

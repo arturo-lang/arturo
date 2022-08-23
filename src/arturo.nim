@@ -26,7 +26,7 @@ when not defined(WEB) and not defined(PORTABLE):
     import helpers/terminal
     import vm/[bytecode, env, errors, package, version]
 
-import vm/vm
+import vm/[parse, values/value, vm]
 
 when not defined(WEB) and not defined(PORTABLE):
 
@@ -189,11 +189,16 @@ when isMainModule and not defined(WEB):
                     
             of writeBcode:
                 let filename = code
-                discard writeBytecode(run(code, arguments, isFile=true, doExecute=false), filename & ".bcode")
+                let evaled = newBytecode(run(code, arguments, isFile=true, doExecute=false))
+                let dataS = codify(newBlock(evaled.trans[0]), unwrapped=true, safeStrings=true)
+                let codeS = evaled.trans[1]
+                discard writeBytecode(dataS, codeS, filename & ".bcode")
 
             of readBcode:
                 let filename = code
-                runBytecode(readBytecode(code), filename, arguments)
+                let bcode = readBytecode(code)
+                let parsed = doParse(bcode[0], isFile=false).a[0]
+                runBytecode((parsed.a, bcode[1]), filename, arguments)
 
             of showPInfo:
                 showPackageInfo(code)
