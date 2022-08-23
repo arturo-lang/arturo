@@ -101,6 +101,10 @@ var
     IS_DEV              = false 
     MODE                = ""       
 
+    # TODO(build.nims) remove `--overflowChecks:on`?
+    #  actually, we could forcibly enable only for the exact blocks that we need them - 
+    #  that is integer arithmetic
+    #  labels: vm, performance, benchmark, installer, enhancement
     FLAGS*              = "--skipUserCfg:on --colors:off -d:danger " &
                           "--panics:off --mm:orc --checks:off --overflowChecks:on " &
                           "-d:ssl --cincludes:extras --nimcache:.cache " & 
