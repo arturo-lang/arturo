@@ -67,3 +67,10 @@ proc readBytecode*(origin: string): (string, seq[byte]) =
 
 proc optimizeBytecode*(bc: seq[byte]): seq[byte] =
     result = bc.substitute2to1r((opStore0, opLoad0), opStorl0)
+    # result = bc
+    # for i in 0..29:
+    #     let b = (Byte)(i)
+    #     result = result.substitute(
+    #         @[(Byte)(opStore0)+b, (Byte)(opLoad0)+b], 
+    #         @[(Byte)(opStorl0)+b]
+    #     )
