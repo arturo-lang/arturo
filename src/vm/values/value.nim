@@ -41,6 +41,12 @@ when not defined(WEB):
     import vm/errors
 
 #=======================================
+# Pragmas
+#=======================================
+
+{.push overflowChecks: on.}
+
+#=======================================
 # Types
 #=======================================
  
@@ -3019,3 +3025,5 @@ func hash*(v: Value): Hash {.inline.}=
         of Newline      : result = 0
         of Nothing      : result = 0
         of ANY          : result = 0
+
+{.pop.}
