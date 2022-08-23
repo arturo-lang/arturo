@@ -55,20 +55,27 @@ proc substitute*(a: ByteArray, needle: ByteArray, replacement: ByteArray): ByteA
             i = i + 1
     result.add(a[i..^1])
 
-proc substitute2to1r*(a: ByteArray, sub: tuple[a: OpCode, b: OpCode], replacement: OpCode): ByteArray =
+# TODO(Helpers/bytes) `substitute2to1r` needs some thorough cleanup & testing
+#  preferrably, it should work in-place, that is: with a *var*
+#  labels: vm, bytecode, benchmark, performance, enhancement, cleanup
+proc substitute2to1r*(a: ByteArray, subA: OpCode, subB: OpCode, replacement: OpCode): ByteArray =
     var i = 0
     let aLen = a.len
-    let one = (Byte)(sub.a)
-    let two = (Byte)(sub.b)
-    let rOne = one..(one+29)
-    let rTwo = two..(two+29)
+    # let rOne = one..(one+29)
+    # let rTwo = two..(two+29)
     while i < aLen-2+1:
-        if a[i] in rOne and a[i+1] in rTwo and (a[i]-one == a[i+1]-two):
-            result.add((Byte)(replacement) + a[i]-one)
-            i += 2
+        let diffA = a[i] - (Byte)(subA)
+        if diffA >= 0 and diffA <= 29 and diffA == a[i+1] - (Byte)(subB):
+
+        # if diffA == diffB and diffA>=0 and diffB <= 29:
+        # # if a[i] in rOne and a[i+1] in rTwo and (a[i]-one == a[i+1]-two):
+            result.add((Byte)(replacement) + diffA)
+            i.inc(2)
+            #i += 2
         else:
             result.add(a[i])
-            i = i + 1
+            i.inc(1)
+            #i = i + 1
     result.add(a[i..^1])
 
 proc numberToBinary*(i: int | float): ByteArray =
