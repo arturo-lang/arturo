@@ -407,20 +407,8 @@ proc `//`*(x: Value, y: Value): Value
 func hash*(v: Value): Hash {.inline.}
 
 #=======================================
-# Helpers
+# Constructors
 #=======================================
-
-when defined(WEB):
-    var stdout: string = ""
-
-    proc resetStdout*()=
-        stdout = ""
-
-    proc write*(buffer: var string, str: string) =
-        buffer &= str
-    
-    proc flushFile*(buffer: var string) =
-        echo buffer
 
 template newNull*(): Value =
     VNULL
@@ -759,7 +747,6 @@ proc newStringBlock*(a: seq[cstring]): Value {.inline.} =
     newBlock(a.map(proc (x:cstring):Value = newString(x)))
 
 func newNewline*(l: int): Value {.inline.} =
-    #echo "VALUE: adding newline: " & $(l)
     Value(kind: Newline, line: l)
 
 proc newStringDictionary*(a: Table[string, string]): Value =
@@ -829,6 +816,22 @@ proc copyValue*(v: Value): Value {.inline.} =
 
         else: discard
 
+#=======================================
+# Helpers
+#=======================================
+
+when defined(WEB):
+    var stdout: string = ""
+
+    proc resetStdout*()=
+        stdout = ""
+
+    proc write*(buffer: var string, str: string) =
+        buffer &= str
+    
+    proc flushFile*(buffer: var string) =
+        echo buffer
+
 func addChild*(parent: Value, child: Value) {.inline.} =
     parent.a.add(child)
 
@@ -870,11 +873,7 @@ template cleanBlock*(va: ValueArray, inplace: bool = false): untyped =
         else:
             va
 
-#=======================================
-# Methods
-#=======================================
-
-proc safeMul*[T: SomeInteger](x: var T, y: T) {.inline, noSideEffect.} =
+proc safeMulI*[T: SomeInteger](x: var T, y: T) {.inline, noSideEffect.} =
     ## Binary `*=` operator for integers.
     x = x * y
 
@@ -889,11 +888,16 @@ func safePow*[T: SomeNumber](x: T, y: Natural): T =
         result = 1
         while true:
             if (y and 1) != 0:
-                safeMul(result, x)
+                safeMulI(result, x)
             y = y shr 1
             if y == 0:
                 break
-            safeMul(x, x)
+            safeMulI(x, x)
+
+
+#=======================================
+# Methods
+#=======================================
 
 # TODO(VM/values/value) Verify that all errors are properly thrown
 #  Various core arithmetic operations between Value values may lead to errors. Are we catching - and reporting - them all properly?
@@ -1228,10 +1232,8 @@ proc `*`*(x: Value, y: Value): Value =
             if x.iKind==NormalInteger:
                 if y.iKind==NormalInteger:
                     try:
-                        #echo "MULTIPLYING"
                         return newInteger(x.i*y.i)
                     except OverflowDefect:
-                        #echo "OVERFLOW"
                         when defined(WEB):
                             return newInteger(big(x.i)*big(y.i))
                         elif not defined(NOGMP):
@@ -1308,10 +1310,8 @@ proc `*=`*(x: var Value, y: Value) =
             if x.iKind==NormalInteger:
                 if y.iKind==NormalInteger:
                     try:
-                        #echo "IN-PLACE MULTIPLYING"
-                        safeMul(x.i, y.i)
+                        safeMulI(x.i, y.i)
                     except OverflowDefect:
-                        #echo "OVERFLOW"
                         when defined(WEB):
                             x = newInteger(big(x.i)*big(y.i))
                         elif not defined(NOGMP):
@@ -1848,12 +1848,10 @@ proc `^`*(x: Value, y: Value): Value =
                 if y.iKind==NormalInteger:
                     try:
                         if y.i >= 0:
-                            #echo "WE ARE HERE"
                             return newInteger(safePow(x.i,y.i))
                         else:
                             return newFloating(pow(asFloat(x),asFloat(y)))
                     except OverflowDefect:
-                        #echo "OVERFLOW"
                         when defined(WEB):
                             return newInteger(big(x.i) ** big(y.i))
                         elif not defined(NOGMP):
@@ -3032,7 +3030,6 @@ func hash*(v: Value): Hash {.inline.}=
                 result = result !& hash(v.exportable)
                 result = result !& hash(v.memoize)
                 result = !$ result
-                #echo "result is:" & $(result)
             else:
                 result = cast[Hash](unsafeAddr v)
             # result = hash(v.params) !& hash(v.main)
