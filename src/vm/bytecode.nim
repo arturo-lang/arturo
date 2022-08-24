@@ -19,6 +19,69 @@ import opcodes
 export opcodes
 
 #=======================================
+# Helpers
+#=======================================
+
+# proc substitute2to1*(a: ByteArray, subA: OpCode, subB: OpCode, replacement: OpCode): ByteArray =
+#     var i = 0
+#     var cntr = 0
+#     let aLen = a.len
+#     newSeq(result, aLen)
+#     while i < aLen-2+1:
+#         let diffA = a[i] - (Byte)(subA)
+#         if diffA >= 0 and diffA <= 29 and diffA == a[i+1] - (Byte)(subB):
+#             result[cntr] = (Byte)(replacement) + diffA
+#             cntr.inc()
+#             i.inc(2)
+#         else:
+#             result[cntr] = a[i]
+#             cntr.inc()
+#             i.inc(1)
+#     let rest = a[i..^1]
+#     for j,it in rest:
+#         result[cntr+j] = it
+#     result.setLen(cntr + rest.len)
+
+template currentOp(): untyped =
+    (OpCode)(a[i])
+
+proc optimize(a: ByteArray): ByteArray =
+    var i = 0
+    var cntr = 0
+    let aLen = a.len
+    newSeq(result, aLen)
+    while i < aLen:
+        #echo "processing: i=" & $(i) & " ("& $((OpCode)a[i]) & ")"
+        # let current = (OpCode)(a[i])
+        case currentOp:
+            of opStore0..opStore29: 
+                if a[i+1] in (Byte)(opLoad0)..(Byte)(opLoad29):
+                    result[cntr] = (Byte)(opStorl0) + a[i] - (Byte)(opStore0)
+                    cntr.inc()
+                    i.inc(2)
+                else:
+                    result[cntr] = a[i]
+                    cntr.inc()
+                    i.inc(1)
+            of opPush,opStore,opLoad,opCall,opStorl,opAttr:
+                result[cntr] = a[i]
+                result[cntr+1] = a[i+1]
+                cntr.inc(2)
+                i.inc(2)
+            of opPushX,opStoreX,opLoadX,opCallX,opStorlX,opEol:
+                result[cntr] = a[i]
+                result[cntr+1] = a[i+1]
+                result[cntr+2] = a[i+2]
+                cntr.inc(3)
+                i.inc(3)
+            else:
+                result[cntr] = a[i]
+                cntr.inc()
+                i.inc(1)
+
+    result.setLen(cntr)
+
+#=======================================
 # Methods
 #=======================================
 
@@ -68,5 +131,6 @@ proc readBytecode*(origin: string): (string, seq[byte]) =
 # TODO(VM/bytecode) `optimizeBytecode` should have access to full bytecode
 #  that is: including the data segment
 #  labels: enhancement, cleanup, vm, bytecode
+
 proc optimizeBytecode*(bc: seq[byte]): seq[byte] =
-    result = bc.substitute2to1(opStore0, opLoad0, opStorl0)
+    result = bc.optimize()
