@@ -874,7 +874,6 @@ template cleanBlock*(va: ValueArray, inplace: bool = false): untyped =
             va
 
 proc safeMulI*[T: SomeInteger](x: var T, y: T) {.inline, noSideEffect.} =
-    ## Binary `*=` operator for integers.
     x = x * y
 
 func safePow*[T: SomeNumber](x: T, y: Natural): T =
