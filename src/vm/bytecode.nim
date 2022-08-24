@@ -37,8 +37,13 @@ const
 template Op(sth: untyped): untyped = (OpCode)(sth)
 template By(sth: untyped): untyped = (Byte)(sth)
 
+template skip(steps: int): untyped =
+    i.inc(steps)
+
 template current(): untyped = a[i]
-template next(): untyped    = a[i+1]
+template next(): untyped    = 
+    while Op(a[i+1])==opEol: skip(3)
+    a[i+1]
 
 template consume(num: int = 1): untyped =
     result[p] = a[i]
@@ -57,33 +62,30 @@ template keep(): untyped =
     result[p] = current()
     p.inc()
 
-template skip(steps: int): untyped =
-    i.inc(steps)
-
 proc optimize(a: ByteArray): ByteArray =
     var i = 0
     var p = 0
     let aLen = a.len
     newSeq(result, aLen)
     while i < aLen:
-        #echo fmt"I = {i} -> {Op(current)}"
-        case Op(current):
+        let initial = current
+        #echo fmt"I = {i} -> {Op(initial)}"
+        case Op(initial):
             of opStore0..opStore29: 
                 if Op(next) in opLoadAny:
                     # (opStore*) + (opLoad*) -> (opStorl*)
-                    inject(): By(opStorl0) + current - By(opStore0) 
+                    inject(): By(opStorl0) + initial - By(opStore0) 
                     skip(2)
                 else:
                     consume(1)
             of opPush0..opPush29, opLoad0..opLoad29:
-                if Op(next) == Op(current):
+                if Op(next) == Op(initial):
                     # (opPush/opLoad*) x N -> (opPush/opLoad*) + (opDup) x N
-                    let initial = Op(current)
                     keep()
-                    skip(1)
-                    while Op(current) == initial:
+                    while Op(next) == Op(initial):
                         inject(): By(opDup)
                         skip(1)
+                    skip(1)
                 else:
                     consume(1)
 
