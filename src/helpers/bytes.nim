@@ -12,8 +12,6 @@
 
 import algorithm, sequtils, sugar
 
-import vm/opcodes
-
 #=======================================
 # Types
 #=======================================
@@ -54,44 +52,6 @@ proc substitute*(a: ByteArray, needle: ByteArray, replacement: ByteArray): ByteA
             result.add(a[i])
             i = i + 1
     result.add(a[i..^1])
-
-# TODO(Helpers/bytes) `substitute2to1r` needs some thorough cleanup & testing
-#  preferrably, it should work in-place, that is: with a *var*
-#  labels: vm, bytecode, benchmark, performance, enhancement, cleanup
-
-proc sub2to1*(a: var ByteArray, subA: OpCode, subB: OpCode, replacement: OpCode) =
-    var i = 0
-    var cntr = 0
-    let aLen = a.len
-    while i < aLen-2+1:
-        let diffA = a[i] - (Byte)(subA)
-        if diffA >= 0 and diffA <= 29 and diffA == a[i+1] - (Byte)(subB):
-            a[i] = (Byte)(replacement) + diffA
-            a[i+1] = (Byte)255
-            cntr.inc()
-            i.inc()
-        i.inc()
-    a.keepIf((item) => item != (Byte)255)
-
-proc substitute2to1*(a: ByteArray, subA: OpCode, subB: OpCode, replacement: OpCode): ByteArray =
-    var i = 0
-    var cntr = 0
-    let aLen = a.len
-    newSeq(result, aLen)
-    while i < aLen-2+1:
-        let diffA = a[i] - (Byte)(subA)
-        if diffA >= 0 and diffA <= 29 and diffA == a[i+1] - (Byte)(subB):
-            result[cntr] = (Byte)(replacement) + diffA
-            cntr.inc()
-            i.inc(2)
-        else:
-            result[cntr] = a[i]
-            cntr.inc()
-            i.inc(1)
-    let rest = a[i..^1]
-    for j,it in rest:
-        result[cntr+j] = it
-    result.setLen(cntr + rest.len)
 
 proc numberToBinary*(i: int | float): ByteArray =
     if i==0: return @[(byte)0]
