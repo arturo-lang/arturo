@@ -874,6 +874,27 @@ template cleanBlock*(va: ValueArray, inplace: bool = false): untyped =
 # Methods
 #=======================================
 
+proc safeMul*[T: SomeInteger](x: var T, y: T) {.inline, noSideEffect.} =
+    ## Binary `*=` operator for integers.
+    x = x * y
+
+func safePow*[T: SomeNumber](x: T, y: Natural): T =
+    case y
+    of 0: result = 1
+    of 1: result = x
+    of 2: result = x * x
+    of 3: result = x * x * x
+    else:
+        var (x, y) = (x, y)
+        result = 1
+        while true:
+            if (y and 1) != 0:
+                safeMul(result, x)
+            y = y shr 1
+            if y == 0:
+                break
+            safeMul(x, x)
+
 # TODO(VM/values/value) Verify that all errors are properly thrown
 #  Various core arithmetic operations between Value values may lead to errors. Are we catching - and reporting - them all properly?
 #  labels: vm, values, error handling, unit-test
@@ -1207,8 +1228,10 @@ proc `*`*(x: Value, y: Value): Value =
             if x.iKind==NormalInteger:
                 if y.iKind==NormalInteger:
                     try:
+                        #echo "MULTIPLYING"
                         return newInteger(x.i*y.i)
                     except OverflowDefect:
+                        #echo "OVERFLOW"
                         when defined(WEB):
                             return newInteger(big(x.i)*big(y.i))
                         elif not defined(NOGMP):
@@ -1285,8 +1308,10 @@ proc `*=`*(x: var Value, y: Value) =
             if x.iKind==NormalInteger:
                 if y.iKind==NormalInteger:
                     try:
-                        x.i *= y.i
+                        #echo "IN-PLACE MULTIPLYING"
+                        safeMul(x.i, y.i)
                     except OverflowDefect:
+                        #echo "OVERFLOW"
                         when defined(WEB):
                             x = newInteger(big(x.i)*big(y.i))
                         elif not defined(NOGMP):
@@ -1823,10 +1848,12 @@ proc `^`*(x: Value, y: Value): Value =
                 if y.iKind==NormalInteger:
                     try:
                         if y.i >= 0:
-                            return newInteger(x.i^y.i)
+                            #echo "WE ARE HERE"
+                            return newInteger(safePow(x.i,y.i))
                         else:
                             return newFloating(pow(asFloat(x),asFloat(y)))
                     except OverflowDefect:
+                        #echo "OVERFLOW"
                         when defined(WEB):
                             return newInteger(big(x.i) ** big(y.i))
                         elif not defined(NOGMP):
