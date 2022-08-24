@@ -285,6 +285,63 @@ type
         opLt            = 0xD4
         opLe            = 0xD5
 
+when false:
+    #=======================================
+    # Helpers
+    #=======================================
+
+    iterator getOpcodes*(bs: seq[byte]): (OpCode, int, bool, int) =
+        var pos = 0
+        while pos < bs.len:
+            let op = (OpCode)bs[pos]
+            case op:
+                of opPush, opStore, opLoad, opCall, opStorl, opAttr:
+                    yield (op, pos, true, (int)(bs[pos + 1]))
+                    pos += 2
+                of opPushX, opStoreX, opLoadX, opCallX, opStorlX, opEol:
+                    yield (op, pos, true, (int)(((uint16)(bs[pos + 1]) shl 8) + (byte)bs[pos + 2]))
+                    pos += 3
+                else: 
+                    yield (op, pos, false, 0)
+                    pos += 1
+
+    type
+        OpCodeTuple* = (OpCode, int, bool, int)
+
+    const
+        EmptyOpTuple* = (opNop, 0, false, 0)
+    
+    iterator getOpcodesBy2*(bs: seq[byte]): (OpCodeTuple,OpCodeTuple) =
+        var pos = 0
+        var firstTup, secondTup: OpCodeTuple
+        while pos < bs.len:
+            let op = (OpCode)bs[pos]
+            case op:
+                of opPush, opStore, opLoad, opCall, opStorl, opAttr:
+                    firstTup = (op, pos, true, (int)(bs[pos + 1]))
+                    pos += 2
+                of opPushX, opStoreX, opLoadX, opCallX, opStorlX, opEol:
+                    firstTup = (op, pos, true, (int)(((uint16)(bs[pos + 1]) shl 8) + (byte)bs[pos + 2]))
+                    pos += 3
+                else: 
+                    firstTup = (op, pos, false, 0)
+                    pos += 1
+            if pos < bs.len:
+                let op = (OpCode)bs[pos]
+                case op:
+                    of opPush, opStore, opLoad, opCall, opStorl, opAttr:
+                        secondTup = (op, pos, true, (int)(bs[pos + 1]))
+                        #pos += 2
+                    of opPushX, opStoreX, opLoadX, opCallX, opStorlX, opEol:
+                        secondTup = (op, pos, true, (int)(((uint16)(bs[pos + 1]) shl 8) + (byte)bs[pos + 2]))
+                        #pos += 3
+                    else: 
+                        secondTup = (op, pos, false, 0)
+                        #pos += 1
+                yield (firstTup, secondTup)
+            else:
+                yield (firstTup, EmptyOpTuple)
+
 #=======================================
 # Methods
 #=======================================
