@@ -57,7 +57,7 @@ template keep(): untyped =
     result[p] = current()
     p.inc()
 
-template forward(steps: int): untyped =
+template skip(steps: int): untyped =
     i.inc(steps)
 
 proc optimize(a: ByteArray): ByteArray =
@@ -72,7 +72,7 @@ proc optimize(a: ByteArray): ByteArray =
                 if Op(next) in opLoadAny:
                     # (opStore*) + (opLoad*) -> (opStorl*)
                     inject(): By(opStorl0) + current - By(opStore0) 
-                    forward(2)
+                    skip(2)
                 else:
                     consume(1)
             of opPush0..opPush29, opLoad0..opLoad29:
@@ -80,10 +80,10 @@ proc optimize(a: ByteArray): ByteArray =
                     # (opPush/opLoad*) x N -> (opPush/opLoad*) + (opDup) x N
                     let initial = Op(current)
                     keep()
-                    forward(1)
+                    skip(1)
                     while Op(current) == initial:
                         inject(): By(opDup)
-                        forward(1)
+                        skip(1)
                 else:
                     consume(1)
 
@@ -92,7 +92,7 @@ proc optimize(a: ByteArray): ByteArray =
             of opPushX,opStoreX,opLoadX,opCallX,opStorlX:
                 consume(3)
             of opEol:
-                forward(3)
+                skip(3)
             else:
                 consume(1)
 
