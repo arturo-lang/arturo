@@ -69,4 +69,4 @@ proc readBytecode*(origin: string): (string, seq[byte]) =
 #  that is: including the data segment
 #  labels: enhancement, cleanup, vm, bytecode
 proc optimizeBytecode*(bc: seq[byte]): seq[byte] =
-    result = bc.substitute2to1r(opStore0, opLoad0, opStorl0)
+    result = bc.substitute2to1(opStore0, opLoad0, opStorl0)
