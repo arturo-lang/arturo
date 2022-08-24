@@ -19,67 +19,61 @@ import opcodes
 export opcodes
 
 #=======================================
+# Constants
+#=======================================
+
+const 
+    #opPushAny   = opPush0..opPush29
+    #opStoreAny  = opStore0..opStore29
+    opLoadAny   = opLoad0..opLoad29
+    #opCallAny   = opCall0..opCall29
+
+#=======================================
 # Helpers
 #=======================================
 
-# proc substitute2to1*(a: ByteArray, subA: OpCode, subB: OpCode, replacement: OpCode): ByteArray =
-#     var i = 0
-#     var cntr = 0
-#     let aLen = a.len
-#     newSeq(result, aLen)
-#     while i < aLen-2+1:
-#         let diffA = a[i] - (Byte)(subA)
-#         if diffA >= 0 and diffA <= 29 and diffA == a[i+1] - (Byte)(subB):
-#             result[cntr] = (Byte)(replacement) + diffA
-#             cntr.inc()
-#             i.inc(2)
-#         else:
-#             result[cntr] = a[i]
-#             cntr.inc()
-#             i.inc(1)
-#     let rest = a[i..^1]
-#     for j,it in rest:
-#         result[cntr+j] = it
-#     result.setLen(cntr + rest.len)
+template Op(sth: untyped): untyped = (OpCode)(sth)
+template By(sth: untyped): untyped = (Byte)(sth)
 
-template currentOp(): untyped =
-    (OpCode)(a[i])
+template current(): untyped = a[i]
+template next(): untyped    = a[i+1]
+
+template consume(num: int = 1): untyped =
+    result[p] = a[i]
+    when num > 1:
+        result[p+1] = a[i+1]
+        when num > 2:
+            result[p+2] = a[i+2]
+    p.inc(num)
+    i.inc(num)
+
+template inject(width: int, what: untyped): untyped =
+    result[p] =By(what)
+    p.inc()
+    i.inc(width)
 
 proc optimize(a: ByteArray): ByteArray =
     var i = 0
-    var cntr = 0
+    var p = 0
     let aLen = a.len
     newSeq(result, aLen)
     while i < aLen:
-        #echo "processing: i=" & $(i) & " ("& $((OpCode)a[i]) & ")"
-        # let current = (OpCode)(a[i])
-        case currentOp:
+        case Op(current):
             of opStore0..opStore29: 
-                if a[i+1] in (Byte)(opLoad0)..(Byte)(opLoad29):
-                    result[cntr] = (Byte)(opStorl0) + a[i] - (Byte)(opStore0)
-                    cntr.inc()
-                    i.inc(2)
+                if Op(next) in opLoadAny:
+                    # (opStore*) + (opLoad*) -> (opStorl*)
+                    inject(2): 
+                        By(opStorl0) + current - By(opStore0)
                 else:
-                    result[cntr] = a[i]
-                    cntr.inc()
-                    i.inc(1)
+                    consume(1)
             of opPush,opStore,opLoad,opCall,opStorl,opAttr:
-                result[cntr] = a[i]
-                result[cntr+1] = a[i+1]
-                cntr.inc(2)
-                i.inc(2)
+                consume(2)
             of opPushX,opStoreX,opLoadX,opCallX,opStorlX,opEol:
-                result[cntr] = a[i]
-                result[cntr+1] = a[i+1]
-                result[cntr+2] = a[i+2]
-                cntr.inc(3)
-                i.inc(3)
+                consume(3)
             else:
-                result[cntr] = a[i]
-                cntr.inc()
-                i.inc(1)
+                consume(1)
 
-    result.setLen(cntr)
+    result.setLen(p)
 
 #=======================================
 # Methods
