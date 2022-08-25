@@ -194,7 +194,7 @@ proc defineSymbols*() =
         args        = {
             "collection"    : {Integer,String,Block,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
-            "condition"     : {Block}
+            "condition"     : {Block, Bytecode}
         },
         attrs       = {
             "with"  : ({Literal},"use given index"),
