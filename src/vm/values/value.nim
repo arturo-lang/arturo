@@ -372,6 +372,11 @@ let I7*  = Value(kind: Integer, iKind: NormalInteger, i: 7)
 let I8*  = Value(kind: Integer, iKind: NormalInteger, i: 8)
 let I9*  = Value(kind: Integer, iKind: NormalInteger, i: 9)
 let I10* = Value(kind: Integer, iKind: NormalInteger, i: 10)
+let I11* = Value(kind: Integer, iKind: NormalInteger, i: 11)
+let I12* = Value(kind: Integer, iKind: NormalInteger, i: 12)
+let I13* = Value(kind: Integer, iKind: NormalInteger, i: 13)
+let I14* = Value(kind: Integer, iKind: NormalInteger, i: 14)
+let I15* = Value(kind: Integer, iKind: NormalInteger, i: 15)
 
 let I1M* = Value(kind: Integer, iKind: NormalInteger, i: -1)
 
