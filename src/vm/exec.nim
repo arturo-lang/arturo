@@ -302,6 +302,11 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             of opConstI8        : stack.push(I8)
             of opConstI9        : stack.push(I9)
             of opConstI10       : stack.push(I10)
+            of opConstI11       : stack.push(I11)
+            of opConstI12       : stack.push(I12)
+            of opConstI13       : stack.push(I13)
+            of opConstI14       : stack.push(I14)
+            of opConstI15       : stack.push(I15)
 
             of opConstF1        : stack.push(F1)
 
