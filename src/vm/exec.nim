@@ -289,7 +289,7 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             echo "exec: " & $(op)
 
         case op:
-            # [0x00-0x0F]
+            # [0x00-0x1F]
             # push constants 
             of opConstI0        : stack.push(I0)
             of opConstI1        : stack.push(I1)
@@ -328,37 +328,37 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
 
             of RSRV1..RSRV4     : discard
 
-            # [0x10-0x2F]
+            # [0x20-0x3F]
             # push values
             of opPush0..opPush29    : pushByIndex((int)(op)-(int)(opPush0))
             of opPush               : i += 1; pushByIndex((int)(it[i]))
             of opPushX              : i += 2; pushByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
 
-            # [0x30-0x4F]
+            # [0x40-0x5F]
             # store variables (from <- stack)
             of opStore0..opStore29  : storeByIndex((int)(op)-(int)(opStore0))
             of opStore              : i += 1; storeByIndex((int)(it[i]))   
             of opStoreX             : i += 2; storeByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i])))              
 
-            # [0x50-0x6F]
+            # [0x60-0x7F]
             # load variables (to -> stack)
             of opLoad0..opLoad29    : loadByIndex((int)(op)-(int)(opLoad0))
             of opLoad               : i += 1; loadByIndex((int)(it[i]))
             of opLoadX              : i += 2; loadByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
 
-            # [0x70-0x8F]
+            # [0x80-0x9F]
             # function calls
             of opCall0..opCall29    : callByIndex((int)(op)-(int)(opCall0))                
             of opCall               : i += 1; callByIndex((int)(it[i]))
             of opCallX              : i += 2; callByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
 
-            # [0x90-0xAF]
+            # [0xA0-0xBF]
             # store variables without popping (from <- stack)
             of opStorl0..opStorl29  : storeByIndex((int)(op)-(int)(opStorl0), doPop=false)
             of opStorl              : i += 1; storeByIndex((int)(it[i]), doPop=false)   
             of opStorlX             : i += 2; storeByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i])), doPop=false)              
 
-            # [0xB0-BF] #
+            # [0xC0-0xCF] #
             # generators
             of opAttr               : i += 1; fetchAttributeByIndex((int)(it[i]))            
             of opArray, opDict,
@@ -399,7 +399,7 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             # reserved
             of RSRV5                : discard
 
-            # [0xC0-CF] #
+            # [0xD0-0xDF] #
             # arithmetic & logical operators
             of opIAdd               : stack.push(newInteger(Stack[SP-1].i + Stack[SP-2].i))
             of opISub               : stack.push(newInteger(Stack[SP-1].i - Stack[SP-2].i))
@@ -417,7 +417,7 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             # reserved
             of RSRV6, RSRV7         : discard
 
-            # [0xD0-DF] #
+            # [0xE0-0xEF] #
             # comparison operators
             of opEq                 : stack.push(newLogical(Stack[SP-1]==Stack[SP-2]))
             of opNe                 : stack.push(newLogical(Stack[SP-1]!=Stack[SP-2]))
