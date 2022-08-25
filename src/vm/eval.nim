@@ -360,12 +360,12 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 addTerminalValue(false):
                     when defined(WEB) or not defined(NOGMP):
                         if node.iKind==NormalInteger:
-                            if node.i>=0 and node.i<=10: addToCommand((byte)((byte)(opConstI0) + (byte)(node.i)))
+                            if node.i>=0 and node.i<=15: addToCommand((byte)((byte)(opConstI0) + (byte)(node.i)))
                             else: addConst(consts, node, opPush)
                         else:
                             addConst(consts, node, opPush)
                     else:
-                        if node.i>=0 and node.i<=10: addToCommand((byte)((byte)(opConstI0) + (byte)(node.i)))
+                        if node.i>=0 and node.i<=15: addToCommand((byte)((byte)(opConstI0) + (byte)(node.i)))
                         else: addConst(consts, node, opPush)
 
             of Floating:
