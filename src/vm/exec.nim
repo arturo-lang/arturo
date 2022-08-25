@@ -312,6 +312,8 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
 
             of opConstN         : stack.push(VNULL)
 
+            of opRsrv1..opRsrv11: discard
+
             # [0x10-0x2F]
             # push values
             of opPush0..opPush29    : pushByIndex((int)(op)-(int)(opPush0))
@@ -381,7 +383,7 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
                     discard
 
             # reserved
-            of opRsrv1              : discard
+            of opRsrv12             : discard
 
             # [0xC0-CF] #
             # arithmetic & logical operators
@@ -399,7 +401,7 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
                opShl, opShr         : discard
 
             # reserved
-            of opRsrv2..opRsrv3     : discard
+            of opRsrv13..opRsrv14     : discard
 
             # [0xD0-DF] #
             # comparison operators
