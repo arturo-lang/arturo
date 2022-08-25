@@ -2675,9 +2675,12 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             while j < v.trans[1].len:
                 let op = (OpCode)(v.trans[1][j])
                 instrs.add(newWord(stringify(((OpCode)(op)))))
-                if op in [opPush, opStore, opCall, opLoad, opAttr]:
+                if op in [opPush, opStore, opCall, opLoad, opStorl, opAttr]:
                     j += 1
                     instrs.add(newInteger((int)v.trans[1][j]))
+                elif op in [opPushX, opStoreX, opCallX, opLoadX, opStorlX, opEol]:
+                    j += 2
+                    instrs.add(newInteger((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))))
 
                 j += 1
 
