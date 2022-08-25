@@ -2714,9 +2714,12 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 for i in 0..level: stdout.write "\t"
                 stdout.write instrs[i].s
                 i += 1
-                while i < instrs.len and instrs[i].kind==Integer:
-                    stdout.write " #" & $(instrs[i].i)
-                    i += 1
+                if i < instrs.len and instrs[i].kind==Integer:
+                    stdout.write "\t"
+                    while i < instrs.len and instrs[i].kind==Integer:
+                        if not muted: stdout.write fmt("{resetColor}{fg(grayColor)} #{resetColor}") & $(instrs[i].i)
+                        else: stdout.write " #" & $(instrs[i].i)
+                        i += 1
                 stdout.write "\n"
 
             dumpBlockEnd()
