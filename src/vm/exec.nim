@@ -308,13 +308,13 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             of opConstI14       : stack.push(I14)
             of opConstI15       : stack.push(I15)
 
-            of opConstI1M       : stack.push(I1M)
+            of opConstI1M       : stack.push(I1M)           # unused by evaluator
 
             of opConstF0        : stack.push(F0)
             of opConstF1        : stack.push(F1)
             of opConstF2        : stack.push(F2)
 
-            of opConstF1M       : stack.push(F1M)
+            of opConstF1M       : stack.push(F1M)           # unused by evaluator
 
             of opConstBT        : stack.push(VTRUE)
             of opConstBF        : stack.push(VFALSE)
