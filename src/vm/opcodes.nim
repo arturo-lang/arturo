@@ -40,26 +40,28 @@ type
         opConstI14      = 0x0E      # 14
         opConstI15      = 0x0F      # 15
 
-        opConstF1       = 0x10      # 1.0
+        opConstI1M      = 0x10      # -1 
 
-        opConstBT       = 0x11      # true
-        opConstBF       = 0x12      # false
+        opConstF0       = 0x11      # 0.0
+        opConstF1       = 0x12      # 1.0
+        opConstF2       = 0x13      # 2.0 
 
-        opConstA        = 0x13      # empty array
+        opConstF1M      = 0x14      # -1.0
 
-        opConstN        = 0x14      # null
+        opConstBT       = 0x15      # true
+        opConstBF       = 0x16      # false
+        opConstBM       = 0x17      # maybe
 
-        opRsrv1         = 0x15      # reserved for future use
-        opRsrv2         = 0x16      # reserved for future use
-        opRsrv3         = 0x17      # reserved for future use 
-        opRsrv4         = 0x18      # reserved for future use
-        opRsrv5         = 0x19      # reserved for future use    
-        opRsrv6         = 0x1A      # reserved for future use
-        opRsrv7         = 0x1B      # reserved for future use
-        opRsrv8         = 0x1C      # reserved for future use
-        opRsrv9         = 0x1D      # reserved for future use
-        opRsrv10        = 0x1E      # reserved for future use          
-        opRsrv11        = 0x1F      # reserved for future use
+        opConstS        = 0x18      # empty string
+        opConstA        = 0x19      # empty array
+        opConstD        = 0x1A      # empty dictionary
+
+        opConstN        = 0x1B      # null
+
+        RSRV1           = 0x1C      # reserved
+        RSRV2           = 0x1D      # reserved
+        RSRV3           = 0x1E      # reserved
+        RSRV4           = 0x1F      # reserved
  
         # [0x20-0x3F]
         # push values
@@ -267,7 +269,7 @@ type
         opEolX          = 0xCE
         
         # reserved
-        opRsrv12        = 0xCF
+        RSRV5           = 0xCF
 
         # [0xD0-0xDF] #
         # arithmetic & logical operators
@@ -290,8 +292,8 @@ type
         opShr           = 0xDD
 
         # reserved
-        opRsrv13        = 0xDE
-        opRsrv14        = 0xDF
+        RSRV6           = 0xDE
+        RSRV7           = 0xDF
 
         # [0xE0-0xEF] #
         # comparison operators
