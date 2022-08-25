@@ -246,10 +246,10 @@ type
 
         opNop           = 0xBC
         opEol           = 0xBD
+        opEolX          = 0xBE
         
         # reserved
-        opRsrv1         = 0xBE
-        opRsrv2         = 0xBF
+        opRsrv1         = 0xBF
 
         # [0xC0-CF] #
         # arithmetic & logical operators
@@ -272,8 +272,8 @@ type
         opShr           = 0xCD
 
         # reserved
-        opRsrv3         = 0xCE
-        opRsrv4         = 0xCF
+        opRsrv2         = 0xCE
+        opRsrv3         = 0xCF
 
         # [0xD0-DF] #
         # comparison operators
