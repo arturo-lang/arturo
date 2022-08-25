@@ -2931,7 +2931,7 @@ func sameValue*(x: Value, y: Value): bool {.inline.}=
                 else:
                     return x.fname == y.fname
             of Binary:
-                return x.n == y.trans
+                return x.n == y.n
             of Bytecode:
                 return x.trans == y.trans
             of Database:
