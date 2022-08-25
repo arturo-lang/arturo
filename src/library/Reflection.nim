@@ -169,7 +169,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "benchmark given code",
         args        = {
-            "action": {Block}
+            "action": {Block,Bytecode}
         },
         attrs       = {
             "get"   : ({Logical},"get benchmark time")
@@ -189,14 +189,15 @@ proc defineSymbols*() =
             ; => 0.3237628936767578
         """:
             ##########################################################
+            let preevaled = evalOrGet(x)
             if (popAttr("get")!=VNULL):
                 let time = getBenchmark:
-                    discard execBlock(x)
+                    discard execBlock(VNULL, evaluated=preevaled)
 
                 push newQuantity(newFloating(time), newQuantitySpec(MS))
             else:
                 benchmark "":
-                    discard execBlock(x)
+                    discard execBlock(VNULL, evaluated=preevaled)
 
     builtin "binary?",
         alias       = unaliased, 
