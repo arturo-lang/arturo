@@ -1144,7 +1144,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "set collection's item at index to given value",
         args        = {
-            "collection"    : {String,Block,Dictionary,Object,Binary},
+            "collection"    : {String,Block,Dictionary,Object,Binary,Bytecode},
             "index"         : {Any},
             "value"         : {Any}
         },
@@ -1195,6 +1195,13 @@ proc defineSymbols*() =
                                 x.n.add((byte)0)
 
                             x.n[bi + key.i] = bt
+                of Bytecode:
+                    if key.s=="data":
+                        x.trans[0] = y.a
+                    elif key.s=="code":
+                        x.trans[1] = y.a.map((w) => (byte)(w.i))
+                    else:
+                        discard
                 of Dictionary:
                     x.d[$(key)] = z
                 of Object:
