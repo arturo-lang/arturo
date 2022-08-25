@@ -24,7 +24,7 @@ import helpers/quantities as QuantitiesHelper
 import helpers/terminal as TerminalHelper
 
 import vm/lib
-import vm/[env, errors, exec]
+import vm/[env, errors, eval, exec]
 
 #=======================================
 # Methods
