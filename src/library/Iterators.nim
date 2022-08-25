@@ -128,7 +128,7 @@ proc defineSymbols*() =
         args        = {
             "collection"    : {Integer,String,Block,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
-            "condition"     : {Block}
+            "condition"     : {Block,Bytecode}
         },
         attrs       = {
             "with"  : ({Literal},"use given index"),
@@ -194,7 +194,7 @@ proc defineSymbols*() =
         args        = {
             "collection"    : {Integer,String,Block,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
-            "condition"     : {Block, Bytecode}
+            "condition"     : {Block,Bytecode}
         },
         attrs       = {
             "with"  : ({Literal},"use given index"),
@@ -262,7 +262,7 @@ proc defineSymbols*() =
         args        = {
             "collection"    : {Integer,String,Block,Inline,Dictionary,Object},
             "params"        : {Literal,Block,Null},
-            "condition"     : {Block}
+            "condition"     : {Block,Bytecode}
         },
         attrs       = {
             "with"      : ({Literal},"use given index")
@@ -315,7 +315,7 @@ proc defineSymbols*() =
         args        = {
             "collection"    : {Integer,String,Block,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
-            "condition"     : {Block}
+            "condition"     : {Block,Bytecode}
         },
         attrs       = {
             "with"      : ({Literal},"use given index"),
@@ -413,7 +413,7 @@ proc defineSymbols*() =
         args        = {
             "collection"    : {Integer,String,Block,Inline,Dictionary,Object},
             "params"        : {Literal,Block,Null},
-            "action"        : {Block}
+            "action"        : {Block,Bytecode}
         },
         attrs       = {
             "with"  : ({Literal},"use given index"),
@@ -504,7 +504,7 @@ proc defineSymbols*() =
         args        = {
             "collection"    : {Integer,String,Block,Inline,Dictionary,Object},
             "params"        : {Literal,Block,Null},
-            "action"        : {Block}
+            "action"        : {Block,Bytecode}
         },
         attrs       = {
             "with"      : ({Literal},"use given index"),
@@ -572,7 +572,7 @@ proc defineSymbols*() =
         args        = {
             "collection"    : {Integer,String,Block,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
-            "condition"     : {Block}
+            "condition"     : {Block,Bytecode}
         },
         attrs       = {
             "with"      : ({Literal},"use given index")
@@ -630,7 +630,7 @@ proc defineSymbols*() =
         args        = {
             "collection"    : {Integer,String,Block,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
-            "condition"     : {Block}
+            "condition"     : {Block,Bytecode}
         },
         attrs       = {
             "with"      : ({Literal},"use given index"),
@@ -721,7 +721,7 @@ proc defineSymbols*() =
         args        = {
             "collection"    : {Integer,String,Block,Inline,Dictionary,Object},
             "params"        : {Literal,Block,Null},
-            "condition"     : {Block}
+            "condition"     : {Block,Bytecode}
         },
         attrs       = {
             "with"      : ({Literal},"use given index")
