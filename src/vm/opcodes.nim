@@ -39,7 +39,8 @@ type
 
         opConstBT       = 0x0C      # true
         opConstBF       = 0x0D      # false
-        opConstBM       = 0x0E      # maybe
+
+        opConstA        = 0x0E      # [] empty array
 
         opConstN        = 0x0F      # null
  

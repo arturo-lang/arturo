@@ -349,7 +349,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             of Logical: 
                     if node.b==True: addToCommand((byte)opConstBT)
                     elif node.b==False: addToCommand((byte)opConstBF)
-                    else: addToCommand((byte)opConstBM)
+                    else: 
+                        addTerminalValue(false):
+                            addConst(consts, node, opPush)
 
             of Integer:
                 addTerminalValue(false):
@@ -530,6 +532,13 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                             addTerminalValue(false):
                                 addConst(consts, node, opPush)
 
+            of Block:
+                addTerminalValue(false):
+                    if node.a.len==0:
+                        addToCommand((byte)opConstA)
+                    else:
+                        addConst(consts, node, opPush)
+
             of Inline: 
                 addTerminalValue(false):
                     evalOne(node, consts, currentCommand, inBlock=true, isDictionary=isDictionary)
@@ -551,8 +560,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             else:
             # of Complex, Rational, Version, Type, Char,
             #    String, Literal, SymbolLiteral, Quantity,
-            #    Regex, Color, Dictionary, Object, Function, 
-            #    Block:
+            #    Regex, Color, Dictionary, Object, Function:
 
                 addTerminalValue(false):
                     addConst(consts, node, opPush)

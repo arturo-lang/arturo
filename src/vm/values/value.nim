@@ -384,6 +384,8 @@ let VMAYBE* = Value(kind: Logical, b: Maybe)
 
 let VNULL* = Value(kind: Null)
 
+let VEMPTYARR* = Value(kind: Block, a: @[], data: VNULL)
+
 let VNOTHING* = Value(kind: Nothing)
 
 #=======================================
