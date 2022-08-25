@@ -2680,7 +2680,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                     instrs.add(newInteger((int)v.trans[1][j]))
                 elif op in [opPushX, opStoreX, opCallX, opLoadX, opStorlX, opEol]:
                     j += 2
-                    instrs.add(newInteger((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))))
+                    instrs.add(newInteger((int)((uint16)(v.trans[1][j-1]) shl 8 + (byte)(v.trans[1][j]))))
 
                 j += 1
 
