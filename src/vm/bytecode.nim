@@ -20,6 +20,8 @@ import helpers/bytes as bytesHelper
 import opcodes
 export opcodes
 
+import vm/values/value
+
 #=======================================
 # Constants
 #=======================================
