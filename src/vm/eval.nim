@@ -352,9 +352,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 #  labels: evaluator, bug
                 if node.b==True: addToCommand((byte)opConstBT)
                 elif node.b==False: addToCommand((byte)opConstBF)
-                else: 
-                    addTerminalValue(false):
-                        addConst(consts, node, opPush)
+                else: addToCommand((byte)opConstBM)
 
             of Integer:
                 addTerminalValue(false):
