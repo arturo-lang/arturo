@@ -370,7 +370,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
             of Floating:
                 addTerminalValue(false):
-                    if node.f==1.0: addToCommand((byte)opConstF1)
+                    if node.f==0.0: addToCommand((byte)opConstF0)
+                    elif node.f==1.0: addToCommand((byte)opConstF1)
+                    elif node.f==2.0: addToCommand((byte)opConstF2)
                     else: addConst(consts, node, opPush)
 
             of Word:
