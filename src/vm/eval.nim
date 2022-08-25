@@ -577,3 +577,7 @@ proc doEval*(root: Value, isDictionary=false): Translation =
 
     when defined(VERBOSE):
         echo $(newBytecode(result))
+
+template evalOrGet*(item: Value): untyped =
+    if item.kind==Bytecode: item.trans
+    else: doEval(item)
