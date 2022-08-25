@@ -828,7 +828,7 @@ proc defineSymbols*() =
         description = "execute action while the given condition is is not false or null",
         args        = {
             "condition" : {Block,Bytecode,Null},
-            "action"    : {Block}
+            "action"    : {Block,Bytecode}
         },
         attrs       = {
             "import": ({Logical},"execute at root level")
@@ -859,7 +859,17 @@ proc defineSymbols*() =
             ##########################################################
             var execInParent = (popAttr("import") != VNULL)
 
-            if x.kind==Block or x.kind==Bytecode:
+            if x.kind==Null:
+                let preevaledY = evalOrGet(y)
+                while true:
+                    handleBranching:
+                        if execInParent:
+                            discard execBlock(VNULL, evaluated=preevaledY, execInParent=true)
+                        else:
+                            discard execBlock(VNULL, evaluated=preevaledY)
+                    do:
+                        discard
+            else:
                 let preevaledX = evalOrGet(x)
                 let preevaledY = evalOrGet(y)
 
@@ -874,16 +884,6 @@ proc defineSymbols*() =
                             discard execBlock(VNULL, evaluated=preevaledY)
                         discard execBlock(VNULL, evaluated=preevaledX)
                         popped = pop()
-                    do:
-                        discard
-            else:
-                let preevaledY = doEval(y)
-                while true:
-                    handleBranching:
-                        if execInParent:
-                            discard execBlock(VNULL, evaluated=preevaledY, execInParent=true)
-                        else:
-                            discard execBlock(VNULL, evaluated=preevaledY)
                     do:
                         discard
 
