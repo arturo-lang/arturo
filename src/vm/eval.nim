@@ -347,6 +347,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
         case node.kind:
             of Null:    addToCommand((byte)opConstN)
             of Logical: 
+                # TODO(VM/eval) needs to be inside an `addTerminalValue` block?
+                #  this look like a bug...
+                #  labels: evaluator, bug
                     if node.b==True: addToCommand((byte)opConstBT)
                     elif node.b==False: addToCommand((byte)opConstBF)
                     else: 
