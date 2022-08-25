@@ -549,7 +549,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     else:
                         addConst(consts, node, opPush)
 
-             of Dictionary:
+            of Dictionary:
                 addTerminalValue(false):
                     if node.d.len==0:
                         addToCommand((byte)opConstD)
