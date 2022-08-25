@@ -368,6 +368,12 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
 
             of opEol                :
                 when not defined(NOERRORLINES):
+                    i += 1
+                    CurrentLine = (int)(it[i])
+                else:
+                    discard
+            of opEolX               :   
+                when not defined(NOERRORLINES):
                     i += 2
                     CurrentLine = (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
                 else:
