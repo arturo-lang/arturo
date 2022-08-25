@@ -1,0 +1,21 @@
+valid: select list "examples/rosetta" 'x -> and? contains? x ".art" exists? replace x ".art" ".res"
+
+loop valid 'v [
+    scrpt: to :block read v
+    normal: to :bytecode scrpt
+    withoutEols: to :bytecode #[
+        data: normal\data,
+        code: filter normal\code 'z -> z = from.opcode 'eol
+    ]
+    inspect normal
+    inspect withoutEols
+    optimized: to.optimized :bytecode scrpt
+
+    print color.bold #green v
+    print (withoutEols=optimized)? -> "== SAME" -> "-> OPTIMIZED!"
+    ; if normal<>optimized [
+    ;     ; inspect normal
+    ;     inspect withoutEols
+    ;     inspect optimized
+    ; ]
+]
