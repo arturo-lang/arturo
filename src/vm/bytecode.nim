@@ -48,11 +48,11 @@ template next(): untyped    =
     a[i+1]
 
 template consume(num: int = 1): untyped =
-    result[p] = a[i]
+    result[p] = a[initialI]
     when num > 1:
-        result[p+1] = a[i+1]
+        result[p+1] = a[initialI+1]
         when num > 2:
-            result[p+2] = a[i+2]
+            result[p+2] = a[initialI+2]
     p.inc(num)
     i.inc(num)
 
@@ -71,6 +71,7 @@ proc optimize(a: ByteArray): ByteArray =
     newSeq(result, aLen)
     while i < aLen:
         let initial = current
+        let initialI = i
         #echo fmt"I = {i} -> {Op(initial)}"
         case Op(initial):
             of opStore0..opStore29: 
