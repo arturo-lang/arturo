@@ -308,16 +308,25 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             of opConstI14       : stack.push(I14)
             of opConstI15       : stack.push(I15)
 
+            of opConstI1M       : stack.push(I1M)
+
+            of opConstF0        : stack.push(F0)
             of opConstF1        : stack.push(F1)
+            of opConstF2        : stack.push(F2)
+
+            of opConstF1M       : stack.push(F1M)
 
             of opConstBT        : stack.push(VTRUE)
             of opConstBF        : stack.push(VFALSE)
+            of opConstBM        : stack.push(VMAYBE)
 
+            of opConstS         : stack.push(VEMPTYSTR)
             of opConstA         : stack.push(VEMPTYARR)
+            of opConstD         : stack.push(VEMPTYDICT)
 
             of opConstN         : stack.push(VNULL)
 
-            of opRsrv1..opRsrv11: discard
+            of RSRV1..RSRV4     : discard
 
             # [0x10-0x2F]
             # push values
@@ -388,7 +397,7 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
                     discard
 
             # reserved
-            of opRsrv12             : discard
+            of RSRV5                : discard
 
             # [0xC0-CF] #
             # arithmetic & logical operators
@@ -406,7 +415,7 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
                opShl, opShr         : discard
 
             # reserved
-            of opRsrv13..opRsrv14     : discard
+            of RSRV6, RSRV7         : discard
 
             # [0xD0-DF] #
             # comparison operators
