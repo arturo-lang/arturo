@@ -1,21 +1,35 @@
 valid: select list "examples/rosetta" 'x -> and? contains? x ".art" exists? replace x ".art" ".res"
 
+cleanEols: function [blk][
+    i: new 0
+    result: new []
+    while [i < size blk][
+        (blk\[i] = from.opcode 'eol)? [
+            'i + 2
+        ] [
+            'result ++ blk\[i]
+        ]
+        'i + 1
+    ]
+    return result
+]
+
 loop valid 'v [
     scrpt: to :block read v
     normal: to :bytecode scrpt
     withoutEols: to :bytecode #[
         data: normal\data,
-        code: filter normal\code 'z -> z = from.opcode 'eol
+        code: cleanEols normal\code
     ]
-    inspect normal
-    inspect withoutEols
+    ; inspect normal
+    ; inspect withoutEols
     optimized: to.optimized :bytecode scrpt
 
     print color.bold #green v
-    print (withoutEols=optimized)? -> "== SAME" -> "-> OPTIMIZED!"
-    ; if normal<>optimized [
-    ;     ; inspect normal
-    ;     inspect withoutEols
-    ;     inspect optimized
-    ; ]
+    (withoutEols\code=optimized\code)? [
+        print "== SAME" 
+    ] [
+        redux: (to :string .format:".2f" 100 * 1 - (size optimized\code)//(size normal\code)) ++ "%"
+        print ["-> OPTIMIZED [" redux "] from:" size normal\code "->" size withoutEols\code "->" size optimized\code]
+    ]
 ]
