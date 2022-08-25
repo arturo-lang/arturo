@@ -44,7 +44,9 @@ template skip(steps: int): untyped =
 
 template current(): untyped = a[i]
 template next(): untyped    = 
-    while Op(a[i+1])==opEol: skip(3)
+    while Op(a[i+1]) in [opEol,opEolX]: 
+        if Op(a[i+1])==opEol: skip(2)
+        else: skip(3)
     a[i+1]
 
 template consume(num: int = 1): untyped =
@@ -97,6 +99,8 @@ proc optimize(a: ByteArray): ByteArray =
             of opPushX,opStoreX,opLoadX,opCallX,opStorlX:
                 consume(3)
             of opEol:
+                skip(2)
+            of opEolX:
                 skip(3)
             else:
                 consume(1)
