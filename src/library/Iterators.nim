@@ -149,7 +149,7 @@ proc defineSymbols*() =
             ; => [[1 7] [5 4 3 6] [8 2]]
         """:
             ##########################################################
-            let preevaled = doEval(z)
+            let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
             let showValue = (popAttr("value")!=VNULL)
             let doForever = false
@@ -224,7 +224,7 @@ proc defineSymbols*() =
             ; => [["one" "three" "five"] ["two" "four" "six"]]
         """:
             ##########################################################
-            let preevaled = doEval(z)
+            let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
             let showValue = (popAttr("value")!=VNULL)
             let doForever = false
@@ -286,7 +286,7 @@ proc defineSymbols*() =
             ; true
         """:
             ##########################################################
-            let preevaled = doEval(z)
+            let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
             let doForever = false
 
@@ -353,7 +353,7 @@ proc defineSymbols*() =
             => [1 2 3 4 6 8 10]
         """:
             ##########################################################
-            let preevaled = doEval(z)
+            let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
             var onlyFirst = false
             var onlyLast = false
@@ -465,7 +465,7 @@ proc defineSymbols*() =
             ; => 188
         """:
             ##########################################################
-            let preevaled = doEval(z)
+            let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
             let doRightFold = popAttr("right")!=VNULL
             let doForever = false
@@ -555,7 +555,7 @@ proc defineSymbols*() =
             ; 1 2 3 1 2 3 1 2 3 ...
         """:
             ##########################################################
-            let preevaled = doEval(z)
+            let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
             let doForever = popAttr("forever")!=VNULL
 
@@ -604,7 +604,7 @@ proc defineSymbols*() =
             ; => ["ONE" "two" "THREE" "four"]
         """:
             ##########################################################
-            let preevaled = doEval(z)
+            let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
             let doForever = false
 
@@ -668,7 +668,7 @@ proc defineSymbols*() =
             => [5 7 9]
         """:
             ##########################################################
-            let preevaled = doEval(z)
+            let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
             var onlyFirst = false
             var onlyLast = false
@@ -748,7 +748,7 @@ proc defineSymbols*() =
             ; true
         """:
             ##########################################################
-            let preevaled = doEval(z)
+            let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
             let doForever = false
 
