@@ -382,6 +382,9 @@ let I1M* = Value(kind: Integer, iKind: NormalInteger, i: -1)
 
 let F0*  = Value(kind: Floating, f: 0.0)
 let F1*  = Value(kind: Floating, f: 1.0)
+let F2*  = Value(kind: Floating, f: 2.0)
+
+let F1M* = Value(kind: Floating, f: -1.0)
 
 let VTRUE*  = Value(kind: Logical, b: True)
 let VFALSE* = Value(kind: Logical, b: False)
@@ -389,7 +392,9 @@ let VMAYBE* = Value(kind: Logical, b: Maybe)
 
 let VNULL* = Value(kind: Null)
 
+let VEMPTYSTR* = Value(kind: String, s: "")
 let VEMPTYARR* = Value(kind: Block, a: @[], data: VNULL)
+let VEMPTYDICT* = Value(kind: Dictionary, d: initOrderedTable[string,Value]())
 
 let VNOTHING* = Value(kind: Nothing)
 
