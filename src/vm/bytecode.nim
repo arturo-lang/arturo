@@ -77,7 +77,7 @@ proc optimize(a: ByteArray): ByteArray =
         #echo fmt"I = {i} -> {Op(initial)}"
         case Op(initial):
             of opStore0..opStore29: 
-                if Op(next) in opLoadAny:
+                if Op(next) in opLoadAny and By(opLoad)-a[i+1]==By(opStore)-initial:
                     # (opStore*) + (opLoad*) -> (opStorl*)
                     inject(): By(opStorl0) + initial - By(opStore0) 
                     skip(2)
