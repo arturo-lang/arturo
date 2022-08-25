@@ -49,18 +49,17 @@ type
 
         opConstN        = 0x14      # null
 
-        opRsrv1
-        opRsrv2
-        opRsrv3
-        opRsrv4
-        opRsrv5
-        opRsrv6
-        opRsrv7
-        opRsrv8
-        opRsrv9
-        opRsrv10
-        opRsrv11
-        opRsrv12
+        opRsrv1         = 0x15      # reserved for future use
+        opRsrv2         = 0x16      # reserved for future use
+        opRsrv3         = 0x17      # reserved for future use 
+        opRsrv4         = 0x18      # reserved for future use
+        opRsrv5         = 0x19      # reserved for future use    
+        opRsrv6         = 0x1A      # reserved for future use
+        opRsrv7         = 0x1B      # reserved for future use
+        opRsrv8         = 0x1C      # reserved for future use
+        opRsrv9         = 0x1D      # reserved for future use
+        opRsrv10        = 0x1E      # reserved for future use          
+        opRsrv11        = 0x1F      # reserved for future use
  
         # [0x20-0x3F]
         # push values
@@ -268,7 +267,7 @@ type
         opEolX          = 0xCE
         
         # reserved
-        opRsrv13        = 0xCF
+        opRsrv12        = 0xCF
 
         # [0xD0-0xDF] #
         # arithmetic & logical operators
@@ -291,8 +290,8 @@ type
         opShr           = 0xDD
 
         # reserved
-        opRsrv14        = 0xDE
-        opRsrv15        = 0xDF
+        opRsrv13        = 0xDE
+        opRsrv14        = 0xDF
 
         # [0xE0-0xEF] #
         # comparison operators
