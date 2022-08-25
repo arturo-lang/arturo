@@ -317,7 +317,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "perform action, if last condition was not true",
         args        = {
-            "otherwise" : {Block}
+            "otherwise" : {Block,Bytecode}
         },
         attrs       = NoAttrs,
         returns     = {Nothing},
@@ -333,8 +333,9 @@ proc defineSymbols*() =
             ]
         """:
             ##########################################################
+            let preevaled = evalOrGet(x)
             let y = pop() # pop the value of the previous operation (hopefully an 'if?' or 'when?')
-            if Not(y.b)==True: discard execBlock(x)
+            if Not(y.b)==True: discard execBlock(VNULL, evaluated=preevaled)
             
     builtin "ensure",
         alias       = unaliased, 
@@ -363,7 +364,7 @@ proc defineSymbols*() =
         description = "perform action, if given condition is not false or null",
         args        = {
             "condition" : {Any},
-            "action"    : {Block}
+            "action"    : {Block,Bytecode}
         },
         attrs       = NoAttrs,
         returns     = {Nothing},
@@ -376,7 +377,8 @@ proc defineSymbols*() =
             ##########################################################
             let condition = not (x.kind==Null or (x.kind==Logical and x.b==False))
             if condition: 
-                discard execBlock(y)
+                let preevaled = evalOrGet(y)
+                discard execBlock(VNULL, evaluated=preevaled)
 
     builtin "if?",
         alias       = unaliased, 
@@ -410,7 +412,8 @@ proc defineSymbols*() =
             ##########################################################
             let condition = not (x.kind==Null or (x.kind==Logical and x.b==False))
             if condition: 
-                discard execBlock(y)
+                let preevaled = evalOrGet(y)
+                discard execBlock(VNULL, evaluated=preevaled)
                 # if vmReturn:
                 #     return ReturnResult
             push(newLogical(condition))
@@ -593,7 +596,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "perform action and catch possible errors",
         args        = {
-            "action": {Block}
+            "action": {Block,Bytecode}
         },
         attrs       = {
             "import"    : ({Logical},"execute at root level"),
@@ -612,7 +615,8 @@ proc defineSymbols*() =
             let verbose = (popAttr("verbose")!=VNULL)
             let execInParent = (popAttr("import")!=VNULL)
             try:
-                discard execBlock(x, execInParent=execInParent, inTryBlock=true)
+                let preevaled = evalOrGet(x)
+                discard execBlock(VNULL, evaluated=preevaled, execInParent=execInParent, inTryBlock=true)
             except:
                 let e = getCurrentException()
                 if verbose:
@@ -623,7 +627,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "perform action, catch possible errors and return status",
         args        = {
-            "action": {Block}
+            "action": {Block,Bytecode}
         },
         attrs       = {
             "import"    : ({Logical},"execute at root level"),
@@ -645,7 +649,8 @@ proc defineSymbols*() =
             let verbose = (popAttr("verbose")!=VNULL)
             let execInParent = (popAttr("import")!=VNULL)
             try:
-                discard execBlock(x, execInParent=execInParent, inTryBlock=true)
+                let preevaled = evalOrGet(x)
+                discard execBlock(VNULL, evaluated=preevaled, execInParent=execInParent, inTryBlock=true)
                 push(VTRUE)
             except:
                 let e = getCurrentException()
@@ -659,7 +664,7 @@ proc defineSymbols*() =
         description = "perform action, if given condition is false or null",
         args        = {
             "condition" : {Any},
-            "action"    : {Block}
+            "action"    : {Block,Bytecode}
         },
         attrs       = NoAttrs,
         returns     = {Nothing},
@@ -672,7 +677,8 @@ proc defineSymbols*() =
             ##########################################################
             let condition = x.kind==Null or (x.kind==Logical and x.b==False)
             if condition: 
-                discard execBlock(y)
+                let preevaled = evalOrGet(y)
+                discard execBlock(VNULL, evaluated=preevaled)
 
     builtin "unless?",
         alias       = unaliased, 
@@ -680,7 +686,7 @@ proc defineSymbols*() =
         description = "perform action, if given condition is false or null and return condition result",
         args        = {
             "condition" : {Any},
-            "action"    : {Block}
+            "action"    : {Block,Bytecode}
         },
         attrs       = NoAttrs,
         returns     = {Logical},
@@ -706,7 +712,8 @@ proc defineSymbols*() =
             ##########################################################
             let condition = x.kind==Null or (x.kind==Logical and x.b==False)
             if condition: 
-                discard execBlock(y)
+                let preevaled = evalOrGet(y)
+                discard execBlock(VNULL, evaluated=preevaled)
                 # if vmReturn:
                 #     return ReturnResult
             push(newLogical(condition))
@@ -716,8 +723,8 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "execute action until the given condition is not false or null",
         args        = {
-            "action"    : {Block},
-            "condition" : {Block}
+            "action"    : {Block,Bytecode},
+            "condition" : {Block,Bytecode}
         },
         attrs       = NoAttrs,
         returns     = {Nothing},
@@ -740,8 +747,8 @@ proc defineSymbols*() =
             ; i => 9 
         """:
             ##########################################################
-            let preevaledX = doEval(x)
-            let preevaledY = doEval(y)
+            let preevaledX = evalOrGet(x)
+            let preevaledY = evalOrGet(y)
 
             while true:
                 handleBranching:
@@ -820,7 +827,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "execute action while the given condition is is not false or null",
         args        = {
-            "condition" : {Block,Null},
+            "condition" : {Block,Bytecode,Null},
             "action"    : {Block}
         },
         attrs       = {
@@ -852,9 +859,9 @@ proc defineSymbols*() =
             ##########################################################
             var execInParent = (popAttr("import") != VNULL)
 
-            if x.kind==Block:
-                let preevaledX = doEval(x)
-                let preevaledY = doEval(y)
+            if x.kind==Block or x.kind==Bytecode:
+                let preevaledX = evalOrGet(x)
+                let preevaledY = evalOrGet(y)
 
                 discard execBlock(VNULL, evaluated=preevaledX)
                 var popped = pop()
