@@ -493,7 +493,6 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                Any,
                Path,
                PathLabel,
-               Bytecode,
                Binary: discard
 
 #=======================================
