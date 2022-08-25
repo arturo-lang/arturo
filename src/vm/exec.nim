@@ -307,7 +307,8 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
 
             of opConstBT        : stack.push(VTRUE)
             of opConstBF        : stack.push(VFALSE)
-            of opConstBM        : stack.push(VMAYBE)
+
+            of opConstA         : stack.push(VEMPTYARR)
 
             of opConstN         : stack.push(VNULL)
 
