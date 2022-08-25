@@ -398,7 +398,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                         else:
                             throwCannotConvert()
                     of Bytecode:
-                        var evaled = (y.d["const"].a, y.d["instructions"].a.map(proc (x:Value):byte = (byte)(x.i)))
+                        var evaled = (y.d["data"].a, y.d["code"].a.map(proc (x:Value):byte = (byte)(x.i)))
                         if (popAttr("optimized") != VNULL):
                             evaled = (evaled[0], optimizeBytecode(evaled[1]))
 
@@ -410,6 +410,16 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                 case tp:
                     of Dictionary:
                         return newDictionary(y.o)
+                    else:
+                        throwCannotConvert()
+
+            of Bytecode:
+                case tp:
+                    of Dictionary:
+                        return newDictionary({
+                            "data": newBlock(y.trans[0]),
+                            "code": newBlock(y.trans[1].map((w) => newInteger((int)w)))
+                        }.toOrderedTable)
                     else:
                         throwCannotConvert()
 
@@ -483,7 +493,6 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                Any,
                Path,
                PathLabel,
-               Bytecode,
                Binary: discard
 
 #=======================================

@@ -128,7 +128,7 @@ proc defineSymbols*() =
         args        = {
             "collection"    : {Integer,String,Block,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
-            "condition"     : {Block}
+            "condition"     : {Block,Bytecode}
         },
         attrs       = {
             "with"  : ({Literal},"use given index"),
@@ -149,7 +149,7 @@ proc defineSymbols*() =
             ; => [[1 7] [5 4 3 6] [8 2]]
         """:
             ##########################################################
-            let preevaled = doEval(z)
+            let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
             let showValue = (popAttr("value")!=VNULL)
             let doForever = false
@@ -194,7 +194,7 @@ proc defineSymbols*() =
         args        = {
             "collection"    : {Integer,String,Block,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
-            "condition"     : {Block}
+            "condition"     : {Block,Bytecode}
         },
         attrs       = {
             "with"  : ({Literal},"use given index"),
@@ -224,7 +224,7 @@ proc defineSymbols*() =
             ; => [["one" "three" "five"] ["two" "four" "six"]]
         """:
             ##########################################################
-            let preevaled = doEval(z)
+            let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
             let showValue = (popAttr("value")!=VNULL)
             let doForever = false
@@ -262,7 +262,7 @@ proc defineSymbols*() =
         args        = {
             "collection"    : {Integer,String,Block,Inline,Dictionary,Object},
             "params"        : {Literal,Block,Null},
-            "condition"     : {Block}
+            "condition"     : {Block,Bytecode}
         },
         attrs       = {
             "with"      : ({Literal},"use given index")
@@ -286,7 +286,7 @@ proc defineSymbols*() =
             ; true
         """:
             ##########################################################
-            let preevaled = doEval(z)
+            let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
             let doForever = false
 
@@ -315,7 +315,7 @@ proc defineSymbols*() =
         args        = {
             "collection"    : {Integer,String,Block,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
-            "condition"     : {Block}
+            "condition"     : {Block,Bytecode}
         },
         attrs       = {
             "with"      : ({Literal},"use given index"),
@@ -353,7 +353,7 @@ proc defineSymbols*() =
             => [1 2 3 4 6 8 10]
         """:
             ##########################################################
-            let preevaled = doEval(z)
+            let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
             var onlyFirst = false
             var onlyLast = false
@@ -413,7 +413,7 @@ proc defineSymbols*() =
         args        = {
             "collection"    : {Integer,String,Block,Inline,Dictionary,Object},
             "params"        : {Literal,Block,Null},
-            "action"        : {Block}
+            "action"        : {Block,Bytecode}
         },
         attrs       = {
             "with"  : ({Literal},"use given index"),
@@ -465,7 +465,7 @@ proc defineSymbols*() =
             ; => 188
         """:
             ##########################################################
-            let preevaled = doEval(z)
+            let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
             let doRightFold = popAttr("right")!=VNULL
             let doForever = false
@@ -504,7 +504,7 @@ proc defineSymbols*() =
         args        = {
             "collection"    : {Integer,String,Block,Inline,Dictionary,Object},
             "params"        : {Literal,Block,Null},
-            "action"        : {Block}
+            "action"        : {Block,Bytecode}
         },
         attrs       = {
             "with"      : ({Literal},"use given index"),
@@ -555,7 +555,7 @@ proc defineSymbols*() =
             ; 1 2 3 1 2 3 1 2 3 ...
         """:
             ##########################################################
-            let preevaled = doEval(z)
+            let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
             let doForever = popAttr("forever")!=VNULL
 
@@ -572,7 +572,7 @@ proc defineSymbols*() =
         args        = {
             "collection"    : {Integer,String,Block,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
-            "condition"     : {Block}
+            "condition"     : {Block,Bytecode}
         },
         attrs       = {
             "with"      : ({Literal},"use given index")
@@ -604,7 +604,7 @@ proc defineSymbols*() =
             ; => ["ONE" "two" "THREE" "four"]
         """:
             ##########################################################
-            let preevaled = doEval(z)
+            let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
             let doForever = false
 
@@ -630,7 +630,7 @@ proc defineSymbols*() =
         args        = {
             "collection"    : {Integer,String,Block,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
-            "condition"     : {Block}
+            "condition"     : {Block,Bytecode}
         },
         attrs       = {
             "with"      : ({Literal},"use given index"),
@@ -668,7 +668,7 @@ proc defineSymbols*() =
             => [5 7 9]
         """:
             ##########################################################
-            let preevaled = doEval(z)
+            let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
             var onlyFirst = false
             var onlyLast = false
@@ -721,7 +721,7 @@ proc defineSymbols*() =
         args        = {
             "collection"    : {Integer,String,Block,Inline,Dictionary,Object},
             "params"        : {Literal,Block,Null},
-            "condition"     : {Block}
+            "condition"     : {Block,Bytecode}
         },
         attrs       = {
             "with"      : ({Literal},"use given index")
@@ -748,7 +748,7 @@ proc defineSymbols*() =
             ; true
         """:
             ##########################################################
-            let preevaled = doEval(z)
+            let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
             let doForever = false
 
