@@ -2930,6 +2930,10 @@ func sameValue*(x: Value, y: Value): bool {.inline.}=
                     return sameValue(x.params, y.params) and sameValue(x.main, y.main) and x.exports == y.exports
                 else:
                     return x.fname == y.fname
+            of Binary:
+                return x.n == y.trans
+            of Bytecode:
+                return x.trans == y.trans
             of Database:
                 if x.dbKind != y.dbKind: return false
                 when not defined(NOSQLITE):
