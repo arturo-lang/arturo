@@ -374,7 +374,7 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
                     discard
 
             # reserved
-            of opRsrv1..opRsrv2     : discard
+            of opRsrv1              : discard
 
             # [0xC0-CF] #
             # arithmetic & logical operators
@@ -392,7 +392,7 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
                opShl, opShr         : discard
 
             # reserved
-            of opRsrv3..opRsrv4     : discard
+            of opRsrv2..opRsrv3     : discard
 
             # [0xD0-DF] #
             # comparison operators
