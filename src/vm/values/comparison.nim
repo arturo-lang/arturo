@@ -116,6 +116,7 @@ proc `==`*(x: Value, y: Value): bool {.inline.}=
             of Symbol: return x.m == y.m
             of Regex: return x.rx == y.rx
             of Binary: return x.n == y.n
+            of Bytecode: return x.trans == y.trans
             of Inline,
                Block:
                 let cleanX = cleanBlock(x.a)
