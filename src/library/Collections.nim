@@ -489,7 +489,7 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "get collection's item by given index",
         args        = {
-            "collection"    : {String,Block,Dictionary,Object,Date,Binary},
+            "collection"    : {String,Block,Dictionary,Object,Date,Binary,Bytecode},
             "index"         : {Any}
         },
         attrs       = NoAttrs,
@@ -534,6 +534,13 @@ proc defineSymbols*() =
             case x.kind:
                 of Block: push(GetArrayIndex(cleanBlock(x.a), key.i))
                 of Binary: push(newInteger((int)x.n[key.i]))
+                of Bytecode: 
+                    if key.s == "data":
+                        push(newBlock(x.trans[0]))
+                    elif key.s == "code":
+                        push(newBlock(x.trans[1].map((w) => newInteger((int)w))))
+                    else:
+                        push(VNULL)
                 of Dictionary: 
                     push(GetKey(x.d, $(key)))
                 of Object:
