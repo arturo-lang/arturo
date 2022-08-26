@@ -542,7 +542,6 @@ proc defineSymbols*() =
                     else:
                         push(VNULL)
                 of Dictionary: 
-                    echo "Getting key " & $(key)
                     push(GetKey(x.d, $(key)))
                 of Object:
                     push(GetKey(x.o, $(key)))
