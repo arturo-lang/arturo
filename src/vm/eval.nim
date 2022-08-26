@@ -18,7 +18,7 @@ when defined(VERBOSE):
 when not defined(PORTABLE):
     import strformat
 
-import vm/[bytecode, globals, values/value]
+import vm/[bytecode, globals, values/comparison, values/value]
 
 #=======================================
 # Variables
@@ -137,6 +137,11 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
         addToCommand((byte)indx)
         addToCommand((byte)opAttr)
 
+    template evalFunctionCall(fn: untyped, default: untyped): untyped =
+        if fn == AddF: addToCommand((byte)opIAdd)
+        else:
+            default
+
     template addTerminalValue(inArrowBlock: bool, code: untyped) =
         block:
             ## Check for potential Infix operator ahead
@@ -154,7 +159,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         i += step;
                         
                         when not inArrowBlock:
-                            addConst(consts, Aliases[symalias].name, opCall)
+                            evalFunctionCall(symfunc):
+                                addConst(consts, Aliases[symalias].name, opCall)
+
                             if symfunc.fnKind == BuiltinFunction:
                                 argStack.add(symfunc.arity)
                             else:
@@ -377,7 +384,16 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 if TmpArities.hasKey(node.s):
                     let funcArity = TmpArities[node.s]
                     if funcArity!=0:
-                        addConst(consts, node, opCall)
+                        let symf = Syms.getOrDefault(node.s, VNULL)
+                        if symf != VNULL:
+                            evalFunctionCall(symf):
+                                addConst(consts, node, opCall)
+                        else:
+                            addConst(consts, node, opCall)
+                        # if Syms[node.s]==AddF:
+                        #     addToCommand((byte)opIAdd)
+                        # else:
+                        #     addConst(consts, node, opCall)
                         argStack.add(funcArity)
                     else:
                         addTerminalValue(false):
