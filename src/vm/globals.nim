@@ -56,8 +56,8 @@ func suggestAlternative*(s: string, reference: ValueDict = Syms): seq[string] {.
 #=======================================
 
 template GetKey*(dict: ValueDict, key: string): untyped =
-    let toRet = dict.getOrDefault(key, VNULL)
-    if toRet == VNULL:
+    let toRet = dict.getOrDefault(key, VNOTHING)
+    if toRet == VNOTHING:
         RuntimeError_KeyNotFound(key, suggestAlternative(key, reference=dict))
     toRet
 
@@ -87,8 +87,8 @@ template SymExists*(s: string): untyped =
 
 template GetSym*(s: string, unsafe: bool = false): untyped =
     when not unsafe:
-        let toRet = Syms.getOrDefault(s, VNULL)
-        if toRet == VNULL:
+        let toRet = Syms.getOrDefault(s, VNOTHING)
+        if toRet == VNOTHING:
             RuntimeError_SymbolNotFound(s, suggestAlternative(s))
         toRet
     else:
