@@ -542,6 +542,7 @@ proc defineSymbols*() =
                     else:
                         push(VNULL)
                 of Dictionary: 
+                    echo "Collections: IN 'get'"
                     push(GetKey(x.d, $(key)))
                 of Object:
                     push(GetKey(x.o, $(key)))
