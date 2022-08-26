@@ -390,10 +390,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                                 addConst(consts, node, opCall)
                         else:
                             addConst(consts, node, opCall)
-                        # if Syms[node.s]==AddF:
-                        #     addToCommand((byte)opIAdd)
-                        # else:
-                        #     addConst(consts, node, opCall)
                         argStack.add(funcArity)
                     else:
                         addTerminalValue(false):
