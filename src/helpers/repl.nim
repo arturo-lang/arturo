@@ -73,8 +73,8 @@ when not defined(WEB):
             let tokenParts = splitWhitespace(token)
             if tokenParts.len >= 1:
                 token = tokenParts[^1]
-                let tokenHint = hints.getOrDefault(token, VNULL)
-                if tokenHint != VNULL:
+                let tokenHint = hints.getOrDefault(token, VNOTHING)
+                if tokenHint != VNOTHING:
                     color = 35
                     bold = 0
                     return (cstring)" " & tokenHint.s

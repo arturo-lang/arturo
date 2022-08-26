@@ -44,8 +44,8 @@ proc parseFL*(s: string): float =
 
 proc generateCustomObject*(prot: Prototype, arguments: ValueArray | ValueDict): Value =
     newObject(arguments, prot, proc (self: Value, prot: Prototype) =
-        let initMethod = prot.methods.getOrDefault("init", VNULL)
-        if initMethod != VNULL:
+        let initMethod = prot.methods.getOrDefault("init", VNOTHING)
+        if initMethod != VNOTHING:
             push self
             callFunction(initMethod)
     )
@@ -728,21 +728,21 @@ proc defineSymbols*() =
                 x.ts.inherits = aAs.ts
 
             x.ts.methods = newDictionary(execBlock(z,dictionary=true)).d
-            let initMethod = x.ts.methods.getOrDefault("init", VNULL)
-            if initMethod != VNULL:
+            let initMethod = x.ts.methods.getOrDefault("init", VNOTHING)
+            if initMethod != VNOTHING:
                 x.ts.methods["init"] = newFunction(
                     newBlock(@[newWord("this")]),
                     initMethod
                 )
-            let printMethod = x.ts.methods.getOrDefault("print", VNULL)
-            if printMethod != VNULL:
+            let printMethod = x.ts.methods.getOrDefault("print", VNOTHING)
+            if printMethod != VNOTHING:
                 x.ts.methods["print"] = newFunction(
                     newBlock(@[newWord("this")]),
                     printMethod
                 )
 
-            let compareMethod = x.ts.methods.getOrDefault("compare", VNULL)
-            if compareMethod != VNULL:
+            let compareMethod = x.ts.methods.getOrDefault("compare", VNOTHING)
+            if compareMethod != VNOTHING:
                 if compareMethod.kind==Block:
                     x.ts.methods["compare"] = newFunction(
                         newBlock(@[newWord("this"),newWord("that")]),
@@ -1053,8 +1053,8 @@ proc defineSymbols*() =
             
             if y.data.kind==Dictionary:
 
-                let descriptionData = y.data.d.getOrDefault("description", VNULL)
-                if descriptionData != VNULL:
+                let descriptionData = y.data.d.getOrDefault("description", VNOTHING)
+                if descriptionData != VNOTHING:
                     ret.info = descriptionData.s
 
                 if y.data.d.hasKey("options") and y.data.d["options"].kind==Dictionary:
@@ -1077,8 +1077,8 @@ proc defineSymbols*() =
 
                     ret.attrs = options
 
-                let returnsData = y.data.d.getOrDefault("returns", VNULL)
-                if returnsData != VNULL:
+                let returnsData = y.data.d.getOrDefault("returns", VNOTHING)
+                if returnsData != VNOTHING:
                     if returnsData.kind==Type:
                         ret.returns = {returnsData.t}
                     else:
@@ -1087,8 +1087,8 @@ proc defineSymbols*() =
                             returns.incl(tp.t)
                         ret.returns = returns
 
-                let exampleData = y.data.d.getOrDefault("example", VNULL)
-                if exampleData != VNULL:
+                let exampleData = y.data.d.getOrDefault("example", VNOTHING)
+                if exampleData != VNOTHING:
                     ret.example = exampleData.s
     
             ret.args = argTypes

@@ -185,8 +185,8 @@ proc execBlock*(
                         Syms = newSyms
                     else:
                         for k in exports.a:
-                            let newSymsKey = newSyms.getOrDefault(k.s, VNULL)
-                            if newSymsKey != VNULL:
+                            let newSymsKey = newSyms.getOrDefault(k.s, VNOTHING)
+                            if newSymsKey != VNOTHING:
                             # if newSyms.hasKey(k.s):
                                 Syms[k.s] = newSymsKey#newSyms[k.s]
                 else:
