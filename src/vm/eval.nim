@@ -18,7 +18,7 @@ when defined(VERBOSE):
 when not defined(PORTABLE):
     import strformat
 
-import vm/[bytecode, globals, values/comparison, values/value]
+import vm/[bytecode, globals, values/value]
 
 #=======================================
 # Variables
