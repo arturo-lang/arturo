@@ -20,7 +20,7 @@ import helpers/bytes as bytesHelper
 import opcodes
 export opcodes
 
-import vm/values/value
+import vm/globals, vm/values/[comparison, value]
 
 #=======================================
 # Constants
@@ -66,7 +66,8 @@ template keep(): untyped =
     result[p] = current()
     p.inc()
 
-proc optimize(a: ByteArray): ByteArray =
+proc optimize(trans: Translation): ByteArray =
+    let (d, a) = trans
     var i = 0
     var p = 0
     let aLen = a.len
@@ -93,6 +94,15 @@ proc optimize(a: ByteArray): ByteArray =
                     skip(1)
                 else:
                     consume(1)
+
+            # of opCall0..opCall29:
+            #     let idx = initial - By(opCall0)
+            #     echo fmt"found opCall* -> {idx}"
+            #     if d[idx].kind==Word and Syms[d[idx].s] == AddF:
+            #         inject(): By(opIAdd)
+            #         skip(1)
+            #     else:
+            #         consume(1)
 
             of opPush,opStore,opLoad,opCall,opStorl,opAttr:
                 consume(2)
@@ -158,5 +168,5 @@ proc readBytecode*(origin: string): (string, seq[byte]) =
 #  that is: including the data segment
 #  labels: enhancement, cleanup, vm, bytecode
 
-proc optimizeBytecode*(bc: seq[byte]): seq[byte] =
-    result = bc.optimize()
+proc optimizeBytecode*(t: Translation): seq[byte] =
+    result = optimize(t)
