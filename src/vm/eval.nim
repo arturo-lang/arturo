@@ -18,7 +18,7 @@ when defined(VERBOSE):
 when not defined(PORTABLE):
     import strformat
 
-import vm/[bytecode, globals, values/comparison, values/value]
+import vm/[bytecode, globals, values/value]
 
 #=======================================
 # Variables
@@ -152,15 +152,16 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     let step = 1
 
                 let symalias = n.a[i+1].m
-                if Aliases.hasKey(symalias):
-                    let symfunc = Syms[Aliases[symalias].name.s]
+                let aliased = Aliases.getOrDefault(symalias, NoAliasBinding)
+                if aliased != NoAliasBinding:
+                    let symfunc = Syms[aliased.name.s]
 
-                    if symfunc.kind==Function and Aliases[symalias].precedence==InfixPrecedence:
+                    if symfunc.kind==Function and aliased.precedence==InfixPrecedence:
                         i += step;
                         
                         when not inArrowBlock:
                             evalFunctionCall(symfunc):
-                                addConst(consts, Aliases[symalias].name, opCall)
+                                addConst(consts, aliased.name, opCall)
 
                             if symfunc.fnKind == BuiltinFunction:
                                 argStack.add(symfunc.arity)
@@ -202,9 +203,10 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     i += 1
                     if (i+1<childrenCount and n.a[i+1].kind == Word and Syms[n.a[i+1].s].kind == Function):
                         let funcName = n.a[i+1].s
-                        if TmpArities.hasKey(funcName):
-                            if TmpArities[funcName]>1:
-                                argStack.add(TmpArities[funcName]-1)
+                        let tmpFuncArity = TmpArities.getOrDefault(funcName, -1)
+                        if tmpFuncArity != -1:
+                            if tmpFuncArity>1:
+                                argStack.add(tmpFuncArity-1)
                                 addTrailingConst(consts, n.a[i+1], opCall)
                             else:
                                 addTrailingConst(consts, n.a[i+1], opCall)
@@ -253,8 +255,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     addTerminalValue(true):
                         discard
                 of Word:
-                    if TmpArities.hasKey(subnode.s):
-                        let funcArity = TmpArities[subnode.s]
+                    let funcArity = TmpArities.getOrDefault(subnode.s, -1)
+                    if funcArity != -1:
                         if funcArity!=0:
                             subargStack.add(funcArity)
                         else:
@@ -266,10 +268,11 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                 of Symbol: 
                     let symalias = subnode.m
-                    if Aliases.hasKey(symalias):
-                        let symfunc = Syms[Aliases[symalias].name.s]
+                    let aliased = Aliases.getOrDefault(symalias, NoAliasBinding)
+                    if aliased != NoAliasBinding:
+                        let symfunc = Syms[aliased.name.s]
                         if symfunc.kind==Function:
-                            if Aliases[symalias].precedence==PrefixPrecedence:
+                            if aliased.precedence==PrefixPrecedence:
                                 if symfunc.fnKind==BuiltinFunction and symfunc.arity!=0:
                                     subargStack.add(symfunc.arity)
                                 elif symfunc.fnKind==UserFunction and symfunc.params.a.len!=0:
@@ -319,10 +322,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
         # if it's a word
         if subnode.kind==Word:
             # check if it's a function
-            if TmpArities.hasKey(subnode.s):
-                    # automatically "push" all its required arguments
-                funcArity = TmpArities[subnode.s]
-
+            funcArity = TmpArities.getOrDefault(subnode.s, -1)
+            if funcArity != -1:
+                # automatically "push" all its required arguments
                 for i in 0..(funcArity-1):
                     let arg = newWord("_" & $(i))
                     argblock.add(arg)
@@ -384,8 +386,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 let funcArity = TmpArities.getOrDefault(node.s, -1)
                 if funcArity != -1:
                     if funcArity!=0:
-                        let symf = Syms.getOrDefault(node.s, VNULL)
-                        if symf != VNULL:
+                        let symf = Syms.getOrDefault(node.s, VNOTHING)
+                        if not symf.isNothing():
                             evalFunctionCall(symf):
                                 addConst(consts, node, opCall)
                         else:
@@ -441,15 +443,15 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             of Path:
                 var isPathCall = false
                 var pathCallV = VNULL
-                if Syms.hasKey(node.p[0].s):
-                    let curr = Syms[node.p[0].s]
-                    let next = node.p[1]
 
+                let curr = Syms.getOrDefault(node.p[0].s, VNOTHING)
+                if not curr.isNothing():
+                    let next = node.p[1]
                     if curr.kind==Dictionary and (next.kind==Literal or next.kind==Word):
-                        let item: Value = curr.d[next.s]
-                        if item.kind == Function:
-                            isPathCall = true
-                            pathCallV = item
+                        if (let item = curr.d.getOrDefault(next.s, VNOTHING); item != VNOTHING):
+                            if item.kind == Function:
+                                isPathCall = true
+                                pathCallV = item
 
                 if isPathCall:
                     addConst(consts, pathCallV, opCall)
@@ -465,7 +467,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                         let baseNode = node.p[0]
 
-                        if TmpArities.hasKey(baseNode.s) and TmpArities[baseNode.s]==0:
+                        if TmpArities.getOrDefault(baseNode.s, -1) == 0:
                             addConst(consts, baseNode, opCall)
                         else:
                             addConst(consts, baseNode, opLoad)
@@ -528,21 +530,22 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         i += 1
                     else:
                         let symalias = node.m
-                        if Aliases.hasKey(symalias):
-                            let symfunc = Syms[Aliases[symalias].name.s]
+                        let aliased = Aliases.getOrDefault(symalias, NoAliasBinding)
+                        if aliased != NoAliasBinding:
+                            let symfunc = Syms[aliased.name.s]
                             if symfunc.kind==Function:
                                 if symfunc.fnKind == BuiltinFunction and symfunc.arity!=0:
-                                    addConst(consts, Aliases[symalias].name, opCall)
+                                    addConst(consts, aliased.name, opCall)
                                     argStack.add(symfunc.arity)
                                 elif symfunc.fnKind == UserFunction and symfunc.params.a.len!=0:
-                                    addConst(consts, Aliases[symalias].name, opCall)
+                                    addConst(consts, aliased.name, opCall)
                                     argStack.add(symfunc.params.a.len)
                                 else:
                                     addTerminalValue(false):
-                                        addConst(consts, Aliases[symalias].name, opCall)
+                                        addConst(consts, aliased.name, opCall)
                             else:
                                 addTerminalValue(false):
-                                    addConst(consts, Aliases[symalias].name, opLoad)
+                                    addConst(consts, aliased.name, opLoad)
                         else:
                             addTerminalValue(false):
                                 addConst(consts, node, opPush)

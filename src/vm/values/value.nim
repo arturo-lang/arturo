@@ -398,6 +398,8 @@ let VEMPTYDICT* = Value(kind: Dictionary, d: initOrderedTable[string,Value]())
 
 let VNOTHING* = Value(kind: Nothing)
 
+let NoAliasBinding* = AliasBinding(precedence: PostfixPrecedence, name: VNULL)
+
 #=======================================
 # Variables
 #=======================================
@@ -548,8 +550,11 @@ func newType*(t: ValueKind): Value {.inline.} =
     Value(kind: Type, tpKind: BuiltinType, t: t)
 
 proc newUserType*(n: string, f: ValueArray = @[]): Value {.inline.} =
-    if TypeLookup.hasKey(n):
-        return TypeLookup[n]
+    let lookup = TypeLookup.getOrDefault(n, VNOTHING)
+    if lookup != VNOTHING:
+        return lookup
+    # if TypeLookup.hasKey(n):
+    #     return TypeLookup[n]
     else:
         result = Value(kind: Type, tpKind: UserType, t: Object, ts: Prototype(name: n, fields: f, methods: initOrderedTable[string,Value](), inherits: nil))
         TypeLookup[n] = result
@@ -831,6 +836,16 @@ proc copyValue*(v: Value): Value {.inline.} =
                 #elif v.dbKind == MysqlDatabase: result = newDatabase(v.mysqldb)
 
         else: discard
+
+#=======================================
+# Predicates
+#=======================================
+
+template isNull*(v: Value): bool =
+    v.kind==Null
+
+template isNothing*(v: Value): bool =
+    v.kind==Nothing
 
 #=======================================
 # Helpers

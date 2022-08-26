@@ -241,8 +241,11 @@ proc defineSymbols*() =
             iterateThrough(withIndex, y, items, doForever, false, false):
                 discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
                 let popped = pop()
-                if not sets.hasKey(popped):
-                    sets[popped] = @[]
+                # TODO(Iterators\cluster) Verify this is working right
+                #  labels: unit-test
+                # if not sets.hasKey(popped):
+                #     sets[popped] = @[]
+                discard sets.hasKeyOrPut(popped, @[])
                 sets[popped].add(capturedItems)
 
             if showValue:

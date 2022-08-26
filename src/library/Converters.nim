@@ -44,9 +44,10 @@ proc parseFL*(s: string): float =
 
 proc generateCustomObject*(prot: Prototype, arguments: ValueArray | ValueDict): Value =
     newObject(arguments, prot, proc (self: Value, prot: Prototype) =
-        if prot.methods.hasKey("init"):
+        let initMethod = prot.methods.getOrDefault("init", VNOTHING)
+        if initMethod != VNOTHING:
             push self
-            callFunction(prot.methods["init"])
+            callFunction(initMethod)
     )
 
 template throwCannotConvert(): untyped = 
@@ -727,25 +728,28 @@ proc defineSymbols*() =
                 x.ts.inherits = aAs.ts
 
             x.ts.methods = newDictionary(execBlock(z,dictionary=true)).d
-            if x.ts.methods.hasKey("init"):
+            let initMethod = x.ts.methods.getOrDefault("init", VNOTHING)
+            if initMethod != VNOTHING:
                 x.ts.methods["init"] = newFunction(
                     newBlock(@[newWord("this")]),
-                    x.ts.methods["init"] 
+                    initMethod
                 )
-            if x.ts.methods.hasKey("print"):
+            let printMethod = x.ts.methods.getOrDefault("print", VNOTHING)
+            if printMethod != VNOTHING:
                 x.ts.methods["print"] = newFunction(
                     newBlock(@[newWord("this")]),
-                    x.ts.methods["print"] 
+                    printMethod
                 )
 
-            if x.ts.methods.hasKey("compare"):
-                if x.ts.methods["compare"].kind==Block:
+            let compareMethod = x.ts.methods.getOrDefault("compare", VNOTHING)
+            if compareMethod != VNOTHING:
+                if compareMethod.kind==Block:
                     x.ts.methods["compare"] = newFunction(
                         newBlock(@[newWord("this"),newWord("that")]),
-                        x.ts.methods["compare"] 
+                        compareMethod
                     )
                 else:
-                    let key = x.ts.methods["compare"]
+                    let key = compareMethod
                     x.ts.methods["compare"] = newFunction(
                         newBlock(@[newWord("this"),newWord("that")]),
                         newBlock(@[
@@ -1049,8 +1053,9 @@ proc defineSymbols*() =
             
             if y.data.kind==Dictionary:
 
-                if y.data.d.hasKey("description"):
-                    ret.info = y.data.d["description"].s
+                let descriptionData = y.data.d.getOrDefault("description", VNOTHING)
+                if descriptionData != VNOTHING:
+                    ret.info = descriptionData.s
 
                 if y.data.d.hasKey("options") and y.data.d["options"].kind==Dictionary:
                     var options = initOrderedTable[string,(ValueSpec,string)]()
@@ -1072,17 +1077,19 @@ proc defineSymbols*() =
 
                     ret.attrs = options
 
-                if y.data.d.hasKey("returns"):
-                    if y.data.d["returns"].kind==Type:
-                        ret.returns = {y.data.d["returns"].t}
+                let returnsData = y.data.d.getOrDefault("returns", VNOTHING)
+                if returnsData != VNOTHING:
+                    if returnsData.kind==Type:
+                        ret.returns = {returnsData.t}
                     else:
                         var returns: ValueSpec
-                        for tp in y.data.d["returns"].a:
+                        for tp in returnsData.a:
                             returns.incl(tp.t)
                         ret.returns = returns
 
-                if y.data.d.hasKey("example"):
-                    ret.example = y.data.d["example"].s
+                let exampleData = y.data.d.getOrDefault("example", VNOTHING)
+                if exampleData != VNOTHING:
+                    ret.example = exampleData.s
     
             ret.args = argTypes
             

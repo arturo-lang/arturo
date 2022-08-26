@@ -34,6 +34,8 @@ import vm/values/value
 #  labels: vm, values, enhancement, unit-test
 
 proc `==`*(x: Value, y: Value): bool {.inline.}=
+    if x.kind==Nothing and y.kind==Nothing: return true
+    
     if x.kind in [Integer, Floating, Rational] and y.kind in [Integer, Floating, Rational]:
         if x.kind==Integer:
             if y.kind==Integer: 
@@ -139,10 +141,11 @@ proc `==`*(x: Value, y: Value): bool {.inline.}=
                 return true
 
             of Object:
-                if x.proto.methods.hasKey("compare"):
+                let compareMethod = x.proto.methods.getOrDefault("compare", VNOTHING)
+                if compareMethod != VNOTHING:
                     push y
                     push x
-                    callFunction(x.proto.methods["compare"])
+                    callFunction(compareMethod)
                     return (pop().i == 0)
                 else:
                     if x.o.len != y.o.len: return false
@@ -258,10 +261,11 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
             of Dictionary:
                 return false
             of Object:
-                if x.proto.methods.hasKey("compare"):
+                let compareMethod = x.proto.methods.getOrDefault("compare", VNOTHING)
+                if compareMethod != VNOTHING:
                     push y
                     push x
-                    callFunction(x.proto.methods["compare"])
+                    callFunction(compareMethod)
                     return (pop().i == -1)
                 else:
                     return false
@@ -357,10 +361,11 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
             of Dictionary:
                 return false
             of Object:
-                if x.proto.methods.hasKey("compare"):
+                let compareMethod = x.proto.methods.getOrDefault("compare", VNOTHING)
+                if compareMethod != VNOTHING:
                     push y
                     push x
-                    callFunction(x.proto.methods["compare"])
+                    callFunction(compareMethod)
                     return (pop().i == 1)
                 else:
                     return false

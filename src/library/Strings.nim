@@ -635,9 +635,8 @@ proc defineSymbols*() =
                     while keepGoing:
                         var evaled: Translation
 
-                        if templateStore.hasKey(res):
-                            evaled = templateStore[res]
-                        else:
+                        evaled = templateStore.getOrDefault(res, NoTranslation)
+                        if evaled == NoTranslation:
                             let initial = res
                             # make necessary substitutions
                             res = "««" & res.replace("<||=","<|| to :string ").multiReplace(
