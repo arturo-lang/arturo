@@ -199,7 +199,7 @@ proc `$`*(v: Value): string {.inline.} =
             result = "[" & items.join(" ") & "]"
 
         of Object:
-            let printMethod = x.proto.methods.getOrDefault("print", VNULL)
+            let printMethod = v.proto.methods.getOrDefault("print", VNULL)
             if printMethod != VNULL:
                 push v
                 callFunction(printMethod)
