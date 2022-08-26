@@ -398,6 +398,8 @@ let VEMPTYDICT* = Value(kind: Dictionary, d: initOrderedTable[string,Value]())
 
 let VNOTHING* = Value(kind: Nothing)
 
+let NoAliasBinding* = AliasBinding(precedence: PostfixPrecedence, name: VNULL)
+
 #=======================================
 # Variables
 #=======================================
