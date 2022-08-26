@@ -56,10 +56,8 @@ func suggestAlternative*(s: string, reference: ValueDict = Syms): seq[string] {.
 #=======================================
 
 template GetKey*(dict: ValueDict, key: string): untyped =
-    echo "in getkey"
     let toRet = dict.getOrDefault(key, VNOTHING)
     if toRet == VNOTHING:
-        echo "it's nothing"
         RuntimeError_KeyNotFound(key, suggestAlternative(key, reference=dict))
     toRet
 
