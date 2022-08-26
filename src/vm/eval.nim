@@ -387,7 +387,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 if funcArity != -1:
                     if funcArity!=0:
                         let symf = Syms.getOrDefault(node.s, VNOTHING)
-                        if symf != VNOTHING:
+                        if not symf.isNothing():
                             evalFunctionCall(symf):
                                 addConst(consts, node, opCall)
                         else:
@@ -445,7 +445,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 var pathCallV = VNULL
 
                 let curr = Syms.getOrDefault(node.p[0].s, VNOTHING)
-                if curr != VNOTHING:
+                if not curr.isNothing():
                     let next = node.p[1]
                     if curr.kind==Dictionary and (next.kind==Literal or next.kind==Word):
                         if (let item = curr.d.getOrDefault(next.s, VNOTHING); item != VNOTHING):
