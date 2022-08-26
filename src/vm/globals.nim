@@ -55,7 +55,7 @@ func suggestAlternative*(s: string, reference: ValueDict = Syms): seq[string] {.
 # Methods
 #=======================================
 
-proc GetKey*(dict: ValueDict, key: string): Value =
+proc GetKey*(dict: ValueDict, key: string): Value {.inline.} =
     let toRet = dict.getOrDefault(key, VNOTHING)
     if toRet == VNOTHING:
         RuntimeError_KeyNotFound(key, suggestAlternative(key, reference=dict))
