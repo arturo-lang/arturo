@@ -185,8 +185,10 @@ proc execBlock*(
                         Syms = newSyms
                     else:
                         for k in exports.a:
-                            if newSyms.hasKey(k.s):
-                                Syms[k.s] = newSyms[k.s]
+                            let newSymsKey = newSyms.getOrDefault(k.s, VNULL)
+                            if newSymsKey != VNULL:
+                            # if newSyms.hasKey(k.s):
+                                Syms[k.s] = newSymsKey#newSyms[k.s]
                 else:
                     # for k, v in pairs(newSyms):
                     #     if v.kind==Function and Syms.hasKey(k):
