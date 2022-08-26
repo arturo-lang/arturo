@@ -405,6 +405,10 @@ let VNOTHING* = Value(kind: Nothing)
 var 
     TypeLookup = initOrderedTable[string,Value]()
 
+    # global implementation references
+    AddF* : Value
+    MulF* : Value
+
 #=======================================
 # Forward Declarations
 #=======================================
