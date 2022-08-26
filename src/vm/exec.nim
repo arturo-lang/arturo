@@ -401,9 +401,13 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
 
             # [0xD0-0xDF] #
             # arithmetic & logical operators
-            of opIAdd               : stack.push(newInteger(Stack[SP-1].i + Stack[SP-2].i))
+            of opIAdd               : 
+                AddF.action()
+                # let s0 = stack.pop()
+                # let s1 = stack.pop()
+                # stack.push(newInteger(s0.i + s1.i))
             of opISub               : stack.push(newInteger(Stack[SP-1].i - Stack[SP-2].i))
-            of opIMul               : stack.push(newInteger(Stack[SP-1].i * Stack[SP-2].i))
+            of opIMul               : MulF.action()#stack.push(newInteger(Stack[SP-1].i * Stack[SP-2].i))
             of opIDiv               : stack.push(newInteger(Stack[SP-1].i div Stack[SP-2].i))
         
             of opIFDiv              : discard
