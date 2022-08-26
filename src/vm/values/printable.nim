@@ -199,9 +199,10 @@ proc `$`*(v: Value): string {.inline.} =
             result = "[" & items.join(" ") & "]"
 
         of Object:
-            if v.proto.methods.hasKey("print"):
+            let printMethod = v.proto.methods.getOrDefault("print", VNOTHING)
+            if printMethod != VNOTHING:
                 push v
-                callFunction(v.proto.methods["print"])
+                callFunction(printMethod)
                 result = pop().s
             else:
                 var items: seq[string] = @[]

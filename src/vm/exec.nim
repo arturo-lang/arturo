@@ -136,8 +136,13 @@ proc execBlock*(
                     if stack.peek(i).kind==Function:
                         Arities[arg.s] = stack.peek(i).params.a.len
                     else:
-                        if Arities.hasKey(arg.s):
-                            Arities.del(arg.s)
+                        # TODO(VM/exec) Verify it's working correctly
+                        #  apparently, `del` won't do anything if the key did not exist
+                        #  labels: unit-test
+
+                        Arities.del(arg.s)
+                        # if Arities.hasKey(arg.s):
+                        #     Arities.del(arg.s)
 
             if imports!=VNULL:
                 savedSyms = Syms
@@ -180,8 +185,10 @@ proc execBlock*(
                         Syms = newSyms
                     else:
                         for k in exports.a:
-                            if newSyms.hasKey(k.s):
-                                Syms[k.s] = newSyms[k.s]
+                            let newSymsKey = newSyms.getOrDefault(k.s, VNOTHING)
+                            if newSymsKey != VNOTHING:
+                            # if newSyms.hasKey(k.s):
+                                Syms[k.s] = newSymsKey#newSyms[k.s]
                 else:
                     # for k, v in pairs(newSyms):
                     #     if v.kind==Function and Syms.hasKey(k):
