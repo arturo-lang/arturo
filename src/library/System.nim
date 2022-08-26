@@ -327,8 +327,8 @@ proc defineSymbols*() =
 
                 # check if it's a process that has been
                 # created by us
-                let activePID = ActiveProcesses.getOrDefault(pid, -1)
-                if activePID != -1:
+                let activePID = ActiveProcesses.getOrDefault(pid, nil)
+                if not activePID.isNil():
                     # close it
                     close(activePID)
 
