@@ -73,10 +73,11 @@ when not defined(WEB):
             let tokenParts = splitWhitespace(token)
             if tokenParts.len >= 1:
                 token = tokenParts[^1]
-                if hints.hasKey(token):
+                let tokenHint = hints.getOrDefault(token, VNULL)
+                if tokenHint != VNULL:
                     color = 35
                     bold = 0
-                    return (cstring)" " & hints[token].s
+                    return (cstring)" " & tokenHint.s
             return nil
             
         if not ReplInitialized:
