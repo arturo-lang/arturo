@@ -55,14 +55,12 @@ func suggestAlternative*(s: string, reference: ValueDict = Syms): seq[string] {.
 # Methods
 #=======================================
 
-template GetKey*(dict: ValueDict, key: string): untyped =
-    echo "IN VM/globals: GetKey"
+proc GetKey*(dict: ValueDict, key: string): Value =
     let toRet = dict.getOrDefault(key, VNOTHING)
     if toRet == VNOTHING:
-        echo "GOT nothing!"
         RuntimeError_KeyNotFound(key, suggestAlternative(key, reference=dict))
-    echo "GOT something :)"
-    toRet
+    else:
+       result = toRet
 
 template GetArrayIndex*(arr: ValueArray, indx: int): untyped =
     if indx < 0 or indx > (arr.len)-1:
