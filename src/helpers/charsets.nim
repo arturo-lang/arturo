@@ -125,11 +125,12 @@ proc getCharsetRunes*(locale: string, withExtras = false, doUppercase = false, f
 
     if withExtras:
         var extra: seq[Rune] = @[]
-        if extras.hasKey(locale):
+        let extrasForLocale = extras.getOrDefault(locale, "")
+        if extrasForLocale!="":
             if doUppercase:
-                extra = toSeq(runes(extras[locale])).map((x)=>toUpper(x))
+                extra = toSeq(runes(extrasForLocale)).map((x)=>toUpper(x))
             else:
-                extra = toSeq(runes(extras[locale]))
+                extra = toSeq(runes(extrasForLocale))
 
         result.add(extra)
 
@@ -143,9 +144,10 @@ proc getCharsetForSorting*(locale: string): seq[Rune] =
                  getCharsetRunes(locale, false, false)
 
 proc getExtraCharsetForSorting*(locale: string): seq[Rune] =
-    if extras.hasKey(locale):
-        result = toSeq(runes(extras[locale])).map((x)=>toUpper(x)) & 
-                 toSeq(runes(extras[locale]))
+    let extrasForLocale = extras.getOrDefault(locale, "")
+    if extrasForLocale!="":
+        result = toSeq(runes(extrasForLocale)).map((x)=>toUpper(x)) & 
+                 toSeq(runes(extrasForLocale))
 
 proc getCharsetWithNgraphs*(locale: string): seq[string] =
     let ret = toRunes("0123456789").map((x) => $(x)) &
