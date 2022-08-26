@@ -104,6 +104,11 @@ template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, descriptio
         Arities[n] = static argsLen
         Syms[n] = b
 
+        when n=="add":
+            AddF = b
+        elif n=="mul":
+            MulF = b
+
         when alias != unaliased:
             Aliases[alias] = AliasBinding(
                 precedence: rule,
