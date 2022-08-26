@@ -441,18 +441,26 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 argStack[argStack.len-1] += 1
 
             of Path:
+                echo "Find path:"
+                for i in node.p:
+                    echo "\t" & i.s
                 var isPathCall = false
                 var pathCallV = VNULL
+                echo "ONE"
                 let curr = Syms.getOrDefault(node.p[0].s, VNOTHING)
                 if curr != VNOTHING:
                     let next = node.p[1]
-
+                    echo "TWO"
                     if curr.kind==Dictionary and (next.kind==Literal or next.kind==Word):
+                        echo "THREE"
                         let item: Value = curr.d[next.s]
+                        echo "FOUR"
                         if item.kind == Function:
                             isPathCall = true
                             pathCallV = item
+                        echo "FIVE"
 
+                echo "SIX"
                 if isPathCall:
                     addConst(consts, pathCallV, opCall)
                     argStack.add(pathCallV.params.a.len)
