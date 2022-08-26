@@ -381,8 +381,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     else: addConst(consts, node, opPush)
 
             of Word:
-                if TmpArities.hasKey(node.s):
-                    let funcArity = TmpArities[node.s]
+                let funcArity = TmpArities.getOrDefault(node.s, -1)
+                if funcArity != -1:
                     if funcArity!=0:
                         let symf = Syms.getOrDefault(node.s, VNULL)
                         if symf != VNULL:
