@@ -199,8 +199,8 @@ proc `$`*(v: Value): string {.inline.} =
             result = "[" & items.join(" ") & "]"
 
         of Object:
-            let printMethod = v.proto.methods.getOrDefault("print", VNULL)
-            if printMethod != VNULL:
+            let printMethod = v.proto.methods.getOrDefault("print", VNOTHING)
+            if printMethod != VNOTHING:
                 push v
                 callFunction(printMethod)
                 result = pop().s

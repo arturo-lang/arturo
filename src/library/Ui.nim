@@ -313,8 +313,8 @@ proc defineSymbols*() =
                             if SP > prevSP:
                                 result = pop()
                         elif call==WebviewEvent:
-                            let onEvent = on.getOrDefault(value.s, VNULL)
-                            if onEvent != VNULL:
+                            let onEvent = on.getOrDefault(value.s, VNOTHING)
+                            if onEvent != VNOTHING:
                                 discard execBlock(onEvent)
                         else:
                             discard
