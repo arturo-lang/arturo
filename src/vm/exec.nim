@@ -136,8 +136,13 @@ proc execBlock*(
                     if stack.peek(i).kind==Function:
                         Arities[arg.s] = stack.peek(i).params.a.len
                     else:
-                        if Arities.hasKey(arg.s):
-                            Arities.del(arg.s)
+                        # TODO(VM/exec) Verify it's working correctly
+                        #  apparently, `del` won't do anything if the key did not exist
+                        #  labels: unit-test
+
+                        Arities.del(arg.s)
+                        # if Arities.hasKey(arg.s):
+                        #     Arities.del(arg.s)
 
             if imports!=VNULL:
                 savedSyms = Syms
