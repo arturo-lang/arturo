@@ -138,7 +138,22 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
         addToCommand((byte)opAttr)
 
     template evalFunctionCall(fn: untyped, default: untyped): untyped =
-        if fn == AddF: addToCommand((byte)opIAdd)
+        if fn == AddF: addToCommand((byte)opAdd)
+        elif fn == SubF: addToCommand((byte)opSub)
+        elif fn == MulF: addToCommand((byte)opMul)
+        elif fn == DivF: addToCommand((byte)opDiv)
+        elif fn == FdivF: addToCommand((byte)opFdiv)
+        elif fn == ModF: addToCommand((byte)opMod)
+        elif fn == PowF: addToCommand((byte)opPow)
+        elif fn == NegF: addToCommand((byte)opNeg)
+        elif fn == BNotF: addToCommand((byte)opBNot)
+        elif fn == BAndF: addToCommand((byte)opBAnd)
+        elif fn == BOrF: addToCommand((byte)opBOr)
+        elif fn == ShlF: addToCommand((byte)opShl)
+        elif fn == ShrF: addToCommand((byte)opShr)
+        elif fn == NotF: addToCommand((byte)opNot)
+        elif fn == AndF: addToCommand((byte)opAnd)
+        elif fn == OrF: addToCommand((byte)opOr)
         else:
             default
 
