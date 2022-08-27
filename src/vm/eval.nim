@@ -269,7 +269,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 of Symbol: 
                     let symalias = subnode.m
                     let aliased = Aliases.getOrDefault(symalias, NoAliasBinding)
-                    if aliased != NoAliasBinding:
+                    if likely(aliased != NoAliasBinding):
                         let symfunc = Syms[aliased.name.s]
                         if symfunc.kind==Function:
                             if aliased.precedence==PrefixPrecedence:
@@ -366,7 +366,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             of Integer:
                 addTerminalValue(false):
                     when defined(WEB) or not defined(NOGMP):
-                        if node.iKind==NormalInteger:
+                        if likely(node.iKind==NormalInteger):
                             if node.i>=0 and node.i<=15: addToCommand((byte)((byte)(opConstI0) + (byte)(node.i)))
                             else: addConst(consts, node, opPush)
                         else:
@@ -385,7 +385,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             of Word:
                 let funcArity = TmpArities.getOrDefault(node.s, -1)
                 if funcArity != -1:
-                    if funcArity!=0:
+                    if likely(funcArity!=0):
                         let symf = Syms.getOrDefault(node.s, VNOTHING)
                         if not symf.isNothing():
                             evalFunctionCall(symf):
@@ -531,7 +531,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     else:
                         let symalias = node.m
                         let aliased = Aliases.getOrDefault(symalias, NoAliasBinding)
-                        if aliased != NoAliasBinding:
+                        if likely(aliased != NoAliasBinding):
                             let symfunc = Syms[aliased.name.s]
                             if symfunc.kind==Function:
                                 if symfunc.fnKind == BuiltinFunction and symfunc.arity!=0:
