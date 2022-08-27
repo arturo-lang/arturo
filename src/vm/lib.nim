@@ -130,8 +130,9 @@ template constant*(n: string, alias: SymbolKind, description: string, v: Value):
         )
 
 template require*(name: string, spec: untyped): untyped =
-    if unlikely(SP<(static spec.len) and spec!=NoArgs):
-        RuntimeError_NotEnoughArguments(name, spec.len)
+    when spec!=NoArgs:
+        if unlikely(SP<(static spec.len)):
+            RuntimeError_NotEnoughArguments(name, spec.len)
 
     when (static spec.len)>=1 and spec!=NoArgs:
         when not (ANY in static spec[0][1]):
