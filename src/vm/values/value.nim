@@ -408,8 +408,9 @@ var
     TypeLookup = initOrderedTable[string,Value]()
 
     # global implementation references
-    AddF* : Value
-    MulF* : Value
+    AddF*, SubF*, MulF*, DivF*, FdivF*, ModF*, PowF*    : Value
+    NegF*, BNotF*, BAndF*, BOrF*, ShlF*, ShrF*          : Value
+    NotF*, AndF*, OrF*                                  : Value 
 
 #=======================================
 # Forward Declarations
