@@ -660,7 +660,7 @@ proc convertQuantityValue*(nm: Value, fromU: UnitName, toU: UnitName, fromKind =
         else:
             return nm * newFloating(fmultiplier)
 
-func newRegex*(rx: RegexObj): Value {.inline.} =
+func newRegex*(rx: RegexObj): Value {.inline, enforceNoRaises.} =
     Value(kind: Regex, rx: rx)
 
 func newRegex*(rx: string): Value {.inline.} =
@@ -675,7 +675,7 @@ func newColor*(rgb: RGB): Value {.inline.} =
 func newColor*(l: string): Value {.inline.} =
     newColor(parseColor(l))
 
-func newDate*(dt: DateTime): Value {.inline.} =
+func newDate*(dt: DateTime): Value {.inline, enforceNoRaises.} =
     let edict = {
         "hour"      : newInteger(dt.hour),
         "minute"    : newInteger(dt.minute),
@@ -691,13 +691,13 @@ func newDate*(dt: DateTime): Value {.inline.} =
     }.toOrderedTable
     Value(kind: Date, e: edict, eobj: dt)
 
-func newBinary*(n: ByteArray = @[]): Value {.inline.} =
+func newBinary*(n: ByteArray = @[]): Value {.inline, enforceNoRaises.} =
     Value(kind: Binary, n: n)
 
-func newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
+func newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline, enforceNoRaises.} =
     Value(kind: Dictionary, d: d)
 
-func newObject*(o: ValueDict = initOrderedTable[string,Value](), proto: Prototype): Value {.inline.} =
+func newObject*(o: ValueDict = initOrderedTable[string,Value](), proto: Prototype): Value {.inline, enforceNoRaises.} =
     Value(kind: Object, o: o, proto: proto)
 
 proc newObject*(args: ValueArray, prot: Prototype, initializer: proc (self: Value, prot: Prototype), o: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
@@ -723,10 +723,10 @@ proc newObject*(args: ValueDict, prot: Prototype, initializer: proc (self: Value
     
     initializer(result, prot)
 
-func newFunction*(params: Value, main: Value, imports: Value = VNULL, exports: Value = VNULL, exportable: bool = false, memoize: bool = false): Value {.inline.} =
+func newFunction*(params: Value, main: Value, imports: Value = VNULL, exports: Value = VNULL, exportable: bool = false, memoize: bool = false): Value {.inline, enforceNoRaises.} =
     Value(kind: Function, fnKind: UserFunction, params: params, main: main, imports: imports, exports: exports, exportable: exportable, memoize: memoize)
 
-func newBuiltin*(name: string, al: SymbolKind, pr: PrecedenceKind, desc: string, ar: int, ag: OrderedTable[string,ValueSpec], at: OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: string, act: BuiltinAction): Value {.inline.} =
+func newBuiltin*(name: string, al: SymbolKind, pr: PrecedenceKind, desc: string, ar: int, ag: OrderedTable[string,ValueSpec], at: OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: string, act: BuiltinAction): Value {.inline, enforceNoRaises.} =
     Value(
         kind    : Function, 
         fnKind  : BuiltinFunction, 
@@ -749,25 +749,25 @@ when not defined(NOSQLITE):
 # proc newDatabase*(db: mysql.DbConn): Value {.inline.} =
 #     Value(kind: Database, dbKind: MysqlDatabase, mysqldb: db)
 
-func newBytecode*(t: Translation): Value {.inline.} =
+func newBytecode*(t: Translation): Value {.inline, enforceNoRaises.} =
     Value(kind: Bytecode, trans: t)
 
-func newInline*(a: ValueArray = @[]): Value {.inline.} = #, refs: seq[int] = @[]): Value {.inline.} = 
+func newInline*(a: ValueArray = @[]): Value {.inline, enforceNoRaises.}
     Value(kind: Inline, a: a)#, refs: refs)
 
-func newBlock*(a: ValueArray = @[], data = VNULL): Value {.inline.} = #, refs: seq[int] = @[]): Value {.inline.} =
+func newBlock*(a: ValueArray = @[], data = VNULL): Value {.inline, enforceNoRaises.}
     Value(kind: Block, a: a, data: data)#, refs: refs)
 
-func newIntegerBlock*[T](a: seq[T]): Value {.inline.} =
+func newIntegerBlock*[T](a: seq[T]): Value {.inline, enforceNoRaises.} =
     newBlock(a.map(proc (x:T):Value = newInteger((int)(x))))
 
-proc newStringBlock*(a: seq[string]): Value {.inline.} =
+proc newStringBlock*(a: seq[string]): Value {.inline, enforceNoRaises.} =
     newBlock(a.map(proc (x:string):Value = newString($x)))
 
-proc newStringBlock*(a: seq[cstring]): Value {.inline.} =
+proc newStringBlock*(a: seq[cstring]): Value {.inline, enforceNoRaises.} =
     newBlock(a.map(proc (x:cstring):Value = newString(x)))
 
-func newNewline*(l: int): Value {.inline.} =
+func newNewline*(l: int): Value {.inline, enforceNoRaises.} =
     Value(kind: Newline, line: l)
 
 proc newStringDictionary*(a: Table[string, string]): Value =
@@ -863,27 +863,27 @@ when defined(WEB):
     proc flushFile*(buffer: var string) =
         echo buffer
 
-func addChild*(parent: Value, child: Value) {.inline.} =
+func addChild*(parent: Value, child: Value) {.inline, enforceNoRaises.} =
     parent.a.add(child)
 
-func removeChildren*(parent: Value, rng: Slice[int]) {.inline.} =
+func removeChildren*(parent: Value, rng: Slice[int]) {.inline, enforceNoRaises.} =
     parent.a.delete(rng)
 
-func asFloat*(v: Value): float = 
+func asFloat*(v: Value): float {.enforceNoRaises.} = 
     # get number value forcefully as a float
     if v.kind == Floating:
         result = v.f
     else:
         result = (float)(v.i)
 
-func asInt*(v: Value): int = 
+func asInt*(v: Value): int {.enforceNoRaises.} = 
     # get number value forcefully as an int
     if v.kind == Integer:
         result = v.i
     else:
         result = (int)(v.f)
 
-func getArity*(x: Value): int =
+func getArity*(x: Value): int {.enforceNoRaises.} =
     if x.fnKind==BuiltinFunction:
         return x.arity
     else:
@@ -2308,12 +2308,12 @@ proc factorial*(x: Value): Value =
             when not defined(WEB):
                 RuntimeError_NumberOutOfPermittedRange("factorial",$(x), "")
 
-func `$`*(b: logical): string =
+func `$`*(b: logical): string  {.enforceNoRaises.} =
     if b==True: return "true"
     elif b==False: return "false"
     else: return "maybe"
 
-func `$`(s: SymbolKind): string =
+func `$`(s: SymbolKind): string {.enforceNoRaises.} =
     case s:
         of thickarrowleft           : result = "<="
         of thickarrowright          : result = "=>"
@@ -2408,7 +2408,7 @@ func `$`(s: SymbolKind): string =
 
         of unaliased                : discard
 
-func `$`(v: Value): string {.inline.} =
+func `$`(v: Value): string {.inline,enforceNoRaises.} =
     case v.kind:
         of Null         : return "null"
         of Logical      : return $(v.b)
