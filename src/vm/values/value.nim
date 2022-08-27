@@ -647,7 +647,7 @@ proc convertQuantityValue*(nm: Value, fromU: UnitName, toU: UnitName, fromKind =
     if fromK==NoUnit: fromK = quantityKindForName(fromU)
     if toK==NoUnit: toK = quantityKindForName(toU)
 
-    if fromK!=toK:
+    if unlikely(fromK!=toK):
         when not defined(WEB):
             RuntimeError_CannotConvertQuantity($(nm), stringify(fromU), stringify(fromK), stringify(toU), stringify(toK))
     
@@ -967,12 +967,12 @@ proc `+`*(x: Value, y: Value): Value =
                         return newInteger(x.i+y.bi)
             else:
                 when defined(WEB):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         return newInteger(x.bi+y.bi)
                     else:
                         return newInteger(x.bi+big(y.i))
                 elif not defined(NOGMP):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         return newInteger(x.bi+y.bi)
                     else:
                         return newInteger(x.bi+y.i)
@@ -1044,12 +1044,12 @@ proc `+=`*(x: var Value, y: Value) =
                     
             else:
                 when defined(WEB):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         x.bi += y.bi
                     else:
                         x.bi += big(y.i)
                 elif not defined(NOGMP):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         x.bi += y.bi
                     else:
                         x.bi += y.i
@@ -1123,12 +1123,12 @@ proc `-`*(x: Value, y: Value): Value =
                     
             else:
                 when defined(WEB):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         return newInteger(x.bi-y.bi)
                     else:
                         return newInteger(x.bi-big(y.i))
                 elif not defined(NOGMP):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         return newInteger(x.bi-y.bi)
                     else:
                         return newInteger(x.bi-y.i)
@@ -1199,12 +1199,12 @@ proc `-=`*(x: var Value, y: Value) =
                         x = newInteger(x.i-y.bi)
             else:
                 when defined(WEB):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         x.bi -= y.bi
                     else:
                         x.bi -= big(y.i)
                 elif not defined(NOGMP):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         x.bi -= y.bi
                     else:
                         x.bi -= y.i
@@ -1248,7 +1248,7 @@ proc `*`*(x: Value, y: Value): Value =
         if x.kind == Quantity:
             if y.kind == Quantity:
                 let finalSpec = getFinalUnitAfterOperation("mul", x.unit, y.unit)
-                if finalSpec == ErrorQuantity:
+                if unlikely(finalSpec == ErrorQuantity):
                     when not defined(WEB):
                         RuntimeError_IncompatibleQuantityOperation("mul", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
                 else:
@@ -1277,12 +1277,12 @@ proc `*`*(x: Value, y: Value): Value =
                         return newInteger(x.i*y.bi)
             else:
                 when defined(WEB):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         return newInteger(x.bi*y.bi)
                     else:
                         return newInteger(x.bi*big(y.i))
                 elif not defined(NOGMP):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         return newInteger(x.bi*y.bi)
                     else:
                         return newInteger(x.bi*y.i)
@@ -1326,7 +1326,7 @@ proc `*=`*(x: var Value, y: Value) =
         if x.kind == Quantity:
             if y.kind == Quantity:
                 let finalSpec = getFinalUnitAfterOperation("mul", x.unit, y.unit)
-                if finalSpec == ErrorQuantity:
+                if unlikely(finalSpec == ErrorQuantity):
                     when not defined(WEB):
                         RuntimeError_IncompatibleQuantityOperation("mul", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
                 else:
@@ -1355,12 +1355,12 @@ proc `*=`*(x: var Value, y: Value) =
                         x = newInteger(x.i*y.bi)
             else:
                 when defined(WEB):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         x.bi *= y.bi
                     else:
                         x.bi *= big(y.i)
                 elif not defined(NOGMP):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         x.bi *= y.bi
                     else:
                         x.bi *= y.i
@@ -1411,7 +1411,7 @@ proc `/`*(x: Value, y: Value): Value =
         if x.kind == Quantity:
             if y.kind == Quantity:
                 let finalSpec = getFinalUnitAfterOperation("div", x.unit, y.unit)
-                if finalSpec == ErrorQuantity:
+                if unlikely(finalSpec == ErrorQuantity):
                     when not defined(WEB):
                         RuntimeError_IncompatibleQuantityOperation("div", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
                 elif finalSpec == NumericQuantity:
@@ -1434,12 +1434,12 @@ proc `/`*(x: Value, y: Value): Value =
                         return newInteger(x.i div y.bi)
             else:
                 when defined(WEB):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         return newInteger(x.bi div y.bi)
                     else:
                         return newInteger(x.bi div big(y.i))
                 elif not defined(NOGMP):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         return newInteger(x.bi div y.bi)
                     else:
                         return newInteger(x.bi div y.i)
@@ -1483,7 +1483,7 @@ proc `/=`*(x: var Value, y: Value) =
         if x.kind == Quantity:
             if y.kind == Quantity:
                 let finalSpec = getFinalUnitAfterOperation("div", x.unit, y.unit)
-                if finalSpec == ErrorQuantity:
+                if unlikely(finalSpec == ErrorQuantity):
                     when not defined(WEB):
                         RuntimeError_IncompatibleQuantityOperation("div", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
                 elif finalSpec == NumericQuantity:
@@ -1514,12 +1514,12 @@ proc `/=`*(x: var Value, y: Value) =
                         x = newInteger(x.i div y.bi)
             else:
                 when defined(WEB):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         x = newInteger(x.bi div y.bi)
                     else:
                         x = newInteger(x.bi div big(y.i))
                 elif not defined(NOGMP):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         x = newInteger(x.bi div y.bi)
                     else:
                         x = newInteger(x.bi div y.i)
@@ -1562,7 +1562,7 @@ proc `//`*(x: Value, y: Value): Value =
         if x.kind == Quantity:
             if y.kind == Quantity:
                 let finalSpec = getFinalUnitAfterOperation("fdiv", x.unit, y.unit)
-                if finalSpec == ErrorQuantity:
+                if unlikely(finalSpec == ErrorQuantity):
                     when not defined(WEB):
                         RuntimeError_IncompatibleQuantityOperation("fdiv", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
                 elif finalSpec == NumericQuantity:
@@ -1605,7 +1605,7 @@ proc `//=`*(x: var Value, y: Value) =
         if x.kind == Quantity:
             if y.kind == Quantity:
                 let finalSpec = getFinalUnitAfterOperation("fdiv", x.unit, y.unit)
-                if finalSpec == ErrorQuantity:
+                if unlikely(finalSpec == ErrorQuantity):
                     when not defined(WEB):
                         RuntimeError_IncompatibleQuantityOperation("fdiv", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
                 elif finalSpec == NumericQuantity:
@@ -1650,7 +1650,7 @@ proc `%`*(x: Value, y: Value): Value =
             else:
                 return newQuantity(x.nm % convertQuantityValue(y.nm, y.unit.name, x.unit.name), x.unit)
         else:
-            if x.unit.kind != y.unit.kind:
+            if unlikely(x.unit.kind != y.unit.kind):
                 when not defined(WEB):
                     RuntimeError_IncompatibleQuantityOperation("mod", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
             else:
@@ -1667,12 +1667,12 @@ proc `%`*(x: Value, y: Value): Value =
                         return newInteger(x.i mod y.bi)
             else:
                 when defined(WEB):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         return newInteger(x.bi mod y.bi)
                     else:
                         return newInteger(x.bi mod big(y.i))
                 elif not defined(NOGMP):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         return newInteger(x.bi mod y.bi)
                     else:
                         return newInteger(x.bi mod y.i)
@@ -1710,7 +1710,7 @@ proc `%=`*(x: var Value, y: Value) =
             else:
                 x.nm %= convertQuantityValue(y.nm, y.unit.name, x.unit.name)
         else:
-            if x.unit.kind != y.unit.kind:
+            if unlikely(x.unit.kind != y.unit.kind):
                 when not defined(WEB):
                     RuntimeError_IncompatibleQuantityOperation("mod", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
             else:
@@ -1772,7 +1772,7 @@ proc `/%`*(x: Value, y: Value): Value =
                 when defined(WEB):
                     return newBlock(@[x/y, x%y])
                 elif not defined(NOGMP):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         let dm = divmod(x.bi, y.bi)
                         return newBlock(@[newInteger(dm.q), newInteger(dm.r)])
                     else:
@@ -1820,7 +1820,7 @@ proc `/%=`*(x: var Value, y: Value) =
                 when defined(WEB):
                     x = newBlock(@[x/y, x%y])
                 elif not defined(NOGMP):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         let dm = divmod(x.bi, y.bi)
                         x = newBlock(@[newInteger(dm.q), newInteger(dm.r)])
                     else:
@@ -1900,7 +1900,7 @@ proc `^`*(x: Value, y: Value): Value =
                     else: 
                         return newInteger(x.bi ** y.bi)
                 elif not defined(NOGMP):
-                    if y.iKind==NormalInteger:
+                    if likely(y.iKind==NormalInteger):
                         return newInteger(pow(x.bi,(culong)(y.i)))
                     else:
                         RuntimeError_NumberOutOfPermittedRange("pow",$(x), $(y))
@@ -1998,12 +1998,12 @@ proc `&&`*(x: Value, y: Value): Value =
                     return newInteger(x.i and y.bi)
         else:
             when defined(WEB):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     return newInteger(x.bi and y.bi)
                 else:
                     return newInteger(x.bi and big(y.i))
             elif not defined(NOGMP):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     return newInteger(x.bi and y.bi)
                 else:
                     return newInteger(x.bi and y.i)
@@ -2026,12 +2026,12 @@ proc `&&=`*(x: var Value, y: Value) =
                     x = newInteger(x.i and y.bi)
         else:
             when defined(WEB):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     x = newInteger(x.bi and y.bi)
                 else:
                     x = newInteger(x.bi and big(y.i))
             elif not defined(NOGMP):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     x = newInteger(x.bi and y.bi)
                 else:
                     x = newInteger(x.bi and y.i)
@@ -2055,12 +2055,12 @@ proc `||`*(x: Value, y: Value): Value =
                 
         else:
             when defined(WEB):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     return newInteger(x.bi or y.bi)
                 else:
                     return newInteger(x.bi or big(y.i))
             elif not defined(NOGMP):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     return newInteger(x.bi or y.bi)
                 else:
                     return newInteger(x.bi or y.i)
@@ -2083,12 +2083,12 @@ proc `||=`*(x: var Value, y: Value) =
                     x = newInteger(x.i or y.bi)
         else:
             when defined(WEB):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     x = newInteger(x.bi or y.bi)
                 else:
                     x = newInteger(x.bi or big(y.i))
             elif not defined(NOGMP):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     x = newInteger(x.bi or y.bi)
                 else:
                     x = newInteger(x.bi or y.i)
@@ -2111,12 +2111,12 @@ proc `^^`*(x: Value, y: Value): Value =
                     return newInteger(x.i xor y.bi)
         else:
             when defined(WEB):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     return newInteger(x.bi xor y.bi)
                 else:
                     return newInteger(x.bi xor big(y.i))
             elif not defined(NOGMP):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     return newInteger(x.bi xor y.bi)
                 else:
                     return newInteger(x.bi xor y.i)
@@ -2139,12 +2139,12 @@ proc `^^=`*(x: var Value, y: Value) =
                     x = newInteger(x.i xor y.bi)
         else:
             when defined(WEB):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     x = newInteger(x.bi xor y.bi)
                 else:
                     x = newInteger(x.bi xor big(y.i))
             elif not defined(NOGMP):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     x = newInteger(x.bi xor y.bi)
                 else:
                     x = newInteger(x.bi xor y.i)
@@ -2163,12 +2163,12 @@ proc `>>`*(x: Value, y: Value): Value =
                     RuntimeError_NumberOutOfPermittedRange("shr",$(x), $(y))
         else:
             when defined(WEB):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     return newInteger(x.bi shr y.bi)
                 else:
                     return newInteger(x.bi shr big(y.i))
             elif not defined(NOGMP):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     RuntimeError_NumberOutOfPermittedRange("shr",$(x), $(y))
                 else:
                     return newInteger(x.bi shr (culong)(y.i))
@@ -2187,12 +2187,12 @@ proc `>>=`*(x: var Value, y: Value) =
                     RuntimeError_NumberOutOfPermittedRange("shr",$(x), $(y))
         else:
             when defined(WEB):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     x = newInteger(x.bi shr y.bi)
                 else:
                     x = newInteger(x.bi shr big(y.i))
             elif not defined(NOGMP):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     RuntimeError_NumberOutOfPermittedRange("shr",$(x), $(y))
                 else:
                     x = newInteger(x.bi shr (culong)(y.i))
@@ -2211,12 +2211,12 @@ proc `<<`*(x: Value, y: Value): Value =
                     RuntimeError_NumberOutOfPermittedRange("shl",$(x), $(y))
         else:
             when defined(WEB):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     return newInteger(x.bi shl y.bi)
                 else:
                     return newInteger(x.bi shl big(y.i))
             elif not defined(NOGMP):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     RuntimeError_NumberOutOfPermittedRange("shl",$(x), $(y))
                 else:
                     return newInteger(x.bi shl (culong)(y.i))
@@ -2235,12 +2235,12 @@ proc `<<=`*(x: var Value, y: Value) =
                     RuntimeError_NumberOutOfPermittedRange("shl",$(x), $(y))
         else:
             when defined(WEB):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     x = newInteger(x.bi shl y.bi)
                 else:
                     x = newInteger(x.bi shl big(y.i))
             elif not defined(NOGMP):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     RuntimeError_NumberOutOfPermittedRange("shl",$(x), $(y))
                 else:
                     x = newInteger(x.bi shl (culong)(y.i))
@@ -2900,7 +2900,7 @@ func sameValue*(x: Value, y: Value): bool {.inline.}=
             if y.kind==Integer: 
                 if y.iKind==NormalInteger:
                     return x.f==(float)(y.i)
-                elif y.iKind==BigInteger:
+                elif unlikely(y.iKind==BigInteger):
                     when defined(WEB):
                         return big((int)(x.f))==y.bi
                     elif not defined(NOGMP):
