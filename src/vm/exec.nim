@@ -49,7 +49,7 @@ template storeByIndex(idx: int, doPop = true):untyped =
     else:
         Syms[symIndx] = stack.peek(0)
 
-    if Syms[symIndx].kind==Function:
+    if unlikely(Syms[symIndx].kind==Function):
         let fun = Syms[symIndx]
         if fun.fnKind==BuiltinFunction:
             Arities[symIndx] = fun.arity
@@ -66,7 +66,7 @@ template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
         var memoized: Value = VNULL
         if f.memoize: memoized = f
         let fArity = f.params.a.len
-        if SP<fArity:
+        if unlikely(SP<fArity):
             RuntimeError_NotEnoughArguments(fnName, fArity)
         discard execBlock(f.main, args=f.params.a, isFuncBlock=true, imports=f.imports, exports=f.exports, exportable=f.exportable, memoized=memoized)
     else:
@@ -122,7 +122,7 @@ proc execBlock*(
     Arities = savedArities
     try:
         if isFuncBlock:
-            if memoized != VNULL:
+            if unlikely(memoized != VNULL):
                 passedParams.a.add(memoized)
                 for i,arg in args:
                     passedParams.a.add(stack.peek(i))

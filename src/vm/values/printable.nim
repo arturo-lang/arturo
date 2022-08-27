@@ -137,7 +137,7 @@ proc `$`*(v: Value): string {.inline.} =
         of Null         : return "null"
         of Logical      : return $(v.b)
         of Integer      : 
-            if v.iKind==NormalInteger: return $(v.i)
+            if likely(v.iKind==NormalInteger): return $(v.i)
             else:
                 when defined(WEB) or not defined(NOGMP): 
                     return $(v.bi)
