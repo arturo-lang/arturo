@@ -272,28 +272,27 @@ type
         RSRV5           = 0xCF
 
         # [0xD0-0xDF] #
-        # arithmetic & logical operators
-        opIAdd          = 0xD0
-        opISub          = 0xD1
-        opIMul          = 0xD2
-        opIDiv          = 0xD3
-        opIFDiv         = 0xD4
-        opIMod          = 0xD5
-        opIPow          = 0xD6
+        # arithmetic, binary & logical operators
+        opAdd           = 0xD0
+        opSub           = 0xD1
+        opMul           = 0xD2
+        opDiv           = 0xD3
+        opFdiv          = 0xD4
+        opMod           = 0xD5
+        opPow           = 0xD6
 
-        opINeg          = 0xD7
+        opNeg           = 0xD7
 
         opBNot          = 0xD8
         opBAnd          = 0xD9
-        opOr            = 0xDA
-        opXor           = 0xDB
+        opBOr           = 0xDA
 
-        opShl           = 0xDC
-        opShr           = 0xDD
+        opShl           = 0xDB
+        opShr           = 0xDC
 
-        # reserved
-        RSRV6           = 0xDE
-        RSRV7           = 0xDF
+        opNot           = 0xDD
+        opAnd           = 0xDE
+        opOr            = 0xDF
 
         # [0xE0-0xEF] #
         # comparison operators
@@ -375,14 +374,9 @@ proc parseOpCode*(x: string): OpCode =
              .replace("jumpifnot","jumpIfNot")
              .replace("jumpif","jumpIf")
              .multiReplace([
-                ("Iadd","IAdd"),
-                ("Isub","ISub"),
-                ("Imul","IMul"),
-                ("Idiv","IDiv"),
-                ("Ifdiv","IFDiv"),  
-                ("Imod","IMod"),
-                ("Ipow","IPow"),
-                ("Ineg","INeg")
+                ("Bnot","BNot"),
+                ("Band","BAnd"),
+                ("Bor","BOr")
             ])
     str = "op" & str
 
