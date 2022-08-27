@@ -408,25 +408,26 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
 
             # [0xD0-0xDF] #
             # arithmetic & logical operators
-            of opIAdd               : 
-                AddF.action()
-                # let s0 = stack.pop()
-                # let s1 = stack.pop()
-                # stack.push(newInteger(s0.i + s1.i))
-            of opISub               : stack.push(newInteger(Stack[SP-1].i - Stack[SP-2].i))
-            of opIMul               : MulF.action()#stack.push(newInteger(Stack[SP-1].i * Stack[SP-2].i))
-            of opIDiv               : stack.push(newInteger(Stack[SP-1].i div Stack[SP-2].i))
-        
-            of opIFDiv              : discard
-            of opIMod               : stack.push(newInteger(Stack[SP-1].i mod Stack[SP-2].i))
-            of opIPow               : stack.push(newInteger((Stack[SP-1].i)^(Stack[SP-2].i)))
+            of opAdd                : AddF.action()
+            of opSub                : SubF.action()
+            of opMul                : MulF.action()
+            of opDiv                : DivF.action()
+            of opFdiv               : FdivF.action()
+            of opMod                : ModF.action()
+            of opPow                : PowF.action()
 
-            of opINeg, opBNot, 
-               opBAnd, opOr, opXor, 
-               opShl, opShr         : discard
+            of opNeg                : NegF.action()
 
-            # reserved
-            of RSRV6, RSRV7         : discard
+            of opBNot               : BNotF.action()
+            of opBAnd               : BAndF.action() 
+            of opBOr                : BOrF.action()
+
+            of opShl                : ShlF.action()
+            of opShr                : ShrF.action()
+
+            of opNot                : NotF.action()
+            of opAnd                : AndF.action()
+            of opOr                 : OrF.action()
 
             # [0xE0-0xEF] #
             # comparison operators
