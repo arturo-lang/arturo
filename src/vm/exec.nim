@@ -66,7 +66,7 @@ template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
         var memoized: Value = VNULL
         if f.memoize: memoized = f
         let fArity = f.params.a.len
-        if SP<fArity:
+        if unlikely(SP<fArity):
             RuntimeError_NotEnoughArguments(fnName, fArity)
         discard execBlock(f.main, args=f.params.a, isFuncBlock=true, imports=f.imports, exports=f.exports, exportable=f.exportable, memoized=memoized)
     else:
