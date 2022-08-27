@@ -434,21 +434,21 @@ template newNull*(): Value =
 template newNothing*(): Value =
     VNOTHING
 
-proc newLogical*(b: logical): Value {.inline.} =
+proc newLogical*(b: logical): Value {.inline, enforceNoRaises.} =
     if b==True: VTRUE
     elif b==False: VFALSE
     else: VMAYBE
 
-proc newLogical*(b: bool): Value {.inline.} =
+proc newLogical*(b: bool): Value {.inline, enforceNoRaises.} =
     if b: VTRUE
     else: VFALSE
 
-proc newLogical*(s: string): Value {.inline.} =
+proc newLogical*(s: string): Value {.inline, enforceNoRaises.} =
     if s=="true": newLogical(True)
     elif s=="false": newLogical(False)
     else: newLogical(Maybe)
 
-proc newLogical*(i: int): Value {.inline.} =
+proc newLogical*(i: int): Value {.inline, enforceNoRaises.} =
     if i==1: newLogical(True)
     elif i==0: newLogical(False)
     else: newLogical(Maybe)
@@ -461,10 +461,10 @@ when not defined(NOGMP):
     proc newInteger*(bi: Int): Value {.inline.} =
         result = Value(kind: Integer, iKind: BigInteger, bi: bi)
 
-func newInteger*(i: int): Value {.inline.} =
+func newInteger*(i: int): Value {.inline, enforceNoRaises.} =
     result = Value(kind: Integer, iKind: NormalInteger, i: i)
 
-func newInteger*(i: int64): Value {.inline.} =
+func newInteger*(i: int64): Value {.inline, enforceNoRaises.} =
     newInteger((int)(i))
 
 proc newInteger*(i: string, lineno: int = 1): Value {.inline.} =
@@ -484,10 +484,10 @@ func newBigInteger*(i: int): Value {.inline.} =
     elif not defined(NOGMP):
         result = Value(kind: Integer, iKind: BigInteger, bi: newInt(i))
 
-func newFloating*(f: float): Value {.inline.} =
+func newFloating*(f: float): Value {.inline, enforceNoRaises.} =
     Value(kind: Floating, f: f)
 
-func newFloating*(f: int): Value {.inline.} =
+func newFloating*(f: int): Value {.inline, enforceNoRaises.} =
     Value(kind: Floating, f: (float)(f))
 
 proc newFloating*(f: string): Value {.inline.} =
@@ -511,7 +511,7 @@ func newComplex*(fre: Value, fim: Value): Value {.inline.} =
 
     newComplex(r,i)
 
-func newRational*(rat: Rational[int]): Value {.inline.} =
+func newRational*(rat: Rational[int]): Value {.inline, enforceNoRaises.} =
     Value(kind: Rational, rat: rat)
 
 func newRational*(num: int, den: int): Value {.inline.} =
@@ -523,7 +523,7 @@ func newRational*(n: int): Value {.inline.} =
 func newRational*(n: float): Value {.inline.} =
     Value(kind: Rational, rat: toRational(n))
 
-func newRational*(num: Value, den: Value): Value {.inline.} =
+func newRational*(num: Value, den: Value): Value {.inline, enforceNoRaises.} =
     newRational(num.i, den.i)
 
 func newVersion*(v: string): Value {.inline.} =
@@ -546,7 +546,7 @@ func newVersion*(v: string): Value {.inline.} =
                          patch: parseInt(parts[2]), 
                          extra: extraPart)
 
-func newType*(t: ValueKind): Value {.inline.} =
+func newType*(t: ValueKind): Value {.inline, enforceNoRaises.} =
     Value(kind: Type, tpKind: BuiltinType, t: t)
 
 proc newUserType*(n: string, f: ValueArray = @[]): Value {.inline.} =
@@ -565,7 +565,7 @@ proc newType*(t: string): Value {.inline.} =
     except ValueError:
         newUserType(t)
 
-func newChar*(c: Rune): Value {.inline.} =
+func newChar*(c: Rune): Value {.inline, enforceNoRaises.} =
     Value(kind: Char, c: c)
 
 func newChar*(c: char): Value {.inline.} =
@@ -574,47 +574,47 @@ func newChar*(c: char): Value {.inline.} =
 func newChar*(c: string): Value {.inline.} =
     Value(kind: Char, c: c.runeAt(0))
 
-func newString*(s: string, dedented: bool = false): Value {.inline.} =
+func newString*(s: string, dedented: bool = false): Value {.inline, enforceNoRaises.} =
     if not dedented: Value(kind: String, s: s)
     else: Value(kind: String, s: unicode.strip(dedent(s)))
 
-func newString*(s: cstring, dedented: bool = false): Value {.inline.} =
+func newString*(s: cstring, dedented: bool = false): Value {.inline, enforceNoRaises.} =
     newString($(s), dedented)
 
-func newWord*(w: string): Value {.inline.} =
+func newWord*(w: string): Value {.inline, enforceNoRaises.} =
     Value(kind: Word, s: w)
 
-func newLiteral*(l: string): Value {.inline.} =
+func newLiteral*(l: string): Value {.inline, enforceNoRaises.} =
     Value(kind: Literal, s: l)
 
-func newLabel*(l: string): Value {.inline.} =
+func newLabel*(l: string): Value {.inline, enforceNoRaises.} =
     Value(kind: Label, s: l)
 
-func newAttribute*(a: string): Value {.inline.} =
+func newAttribute*(a: string): Value {.inline, enforceNoRaises.} =
     Value(kind: Attribute, r: a)
 
-func newAttributeLabel*(a: string): Value {.inline.} =
+func newAttributeLabel*(a: string): Value {.inline, enforceNoRaises.} =
     Value(kind: AttributeLabel, r: a)
 
-func newPath*(p: ValueArray): Value {.inline.} =
+func newPath*(p: ValueArray): Value {.inline, enforceNoRaises.} =
     Value(kind: Path, p: p)
 
-func newPathLabel*(p: ValueArray): Value {.inline.} =
+func newPathLabel*(p: ValueArray): Value {.inline, enforceNoRaises.} =
     Value(kind: PathLabel, p: p)
 
-func newSymbol*(m: SymbolKind): Value {.inline.} =
+func newSymbol*(m: SymbolKind): Value {.inline, enforceNoRaises.} =
     Value(kind: Symbol, m: m)
 
 func newSymbol*(m: string): Value {.inline.} =
     newSymbol(parseEnum[SymbolKind](m))
 
-func newSymbolLiteral*(m: SymbolKind): Value {.inline.} =
+func newSymbolLiteral*(m: SymbolKind): Value {.inline, enforceNoRaises.} =
     Value(kind: SymbolLiteral, m: m)
 
 func newSymbolLiteral*(m: string): Value {.inline.} =
     newSymbolLiteral(parseEnum[SymbolKind](m))
 
-func newQuantity*(nm: Value, unit: QuantitySpec): Value {.inline.} =
+func newQuantity*(nm: Value, unit: QuantitySpec): Value {.inline, enforceNoRaises.} =
     Value(kind: Quantity, nm: nm, unit: unit)
 
 proc newQuantity*(nm: Value, name: UnitName): Value {.inline.} =
@@ -666,7 +666,7 @@ func newRegex*(rx: RegexObj): Value {.inline.} =
 func newRegex*(rx: string): Value {.inline.} =
     newRegex(newRegexObj(rx))
 
-func newColor*(l: VColor): Value {.inline.} =
+func newColor*(l: VColor): Value {.inline, enforceNoRaises.} =
     Value(kind: Color, l: l)
 
 func newColor*(rgb: RGB): Value {.inline.} =
