@@ -20,22 +20,22 @@ import vm/values/value
 #  Since we already have helper methods for AND, OR, NOT, XOR - why not add the remaining ones, instead of having hack-ish code in our Arithmetic module?
 #  labels: vm, values, enhancement
 
-func And*(x,y: logical): logical =
+func And*(x,y: logical): logical {.enforceNoRaises.} =
     if x==False: return False
     if y==False: return False
     if x==True and y==True: return True
     else: return Maybe
 
-func Not*(x: logical): logical =
+func Not*(x: logical): logical {.enforceNoRaises.} =
     if x==True: return False
     elif x==False: return True
     else: return Maybe
     
-func Or*(x,y: logical): logical =
+func Or*(x,y: logical): logical {.enforceNoRaises.} =
     if x==True: return True
     if y==True: return True
     if x==False and y==False: return False
     else: return Maybe
 
-func Xor*(x,y: logical): logical =
+func Xor*(x,y: logical): logical {.enforceNoRaises.} =
     return And(Or(x,y),Not(And(x,y)))
