@@ -494,11 +494,13 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         addConst(consts, newBlock(sb), opPush) 
 
             of Attribute:
-                addAttr(consts, node)
+                addConst(consts, node, opAttr)
+                #addAttr(consts, node)
                 addToCommand((byte)opConstBT)
 
             of AttributeLabel:
-                addAttr(consts, node)
+                addConst(consts, node, opAttr)
+                #addAttr(consts, node)
                 argStack[argStack.len-1] += 1
 
             of Path:
