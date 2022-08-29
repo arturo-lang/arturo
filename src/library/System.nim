@@ -327,9 +327,10 @@ proc defineSymbols*() =
 
                 # check if it's a process that has been
                 # created by us
-                if ActiveProcesses.hasKey(pid):
+                let activePID = ActiveProcesses.getOrDefault(pid, nil)
+                if not activePID.isNil():
                     # close it
-                    close(ActiveProcesses[pid])
+                    close(activePID)
 
                     # and remove it from the table
                     ActiveProcesses.del(pid)

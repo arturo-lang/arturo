@@ -34,10 +34,12 @@ import vm/values/value
 #  labels: vm, values, enhancement, unit-test
 
 proc `==`*(x: Value, y: Value): bool {.inline.}=
+    if x.kind==Nothing and y.kind==Nothing: return true
+    
     if x.kind in [Integer, Floating, Rational] and y.kind in [Integer, Floating, Rational]:
         if x.kind==Integer:
             if y.kind==Integer: 
-                if x.iKind==NormalInteger and y.iKind==NormalInteger:
+                if likely(x.iKind==NormalInteger and y.iKind==NormalInteger):
                     return x.i==y.i
                 elif x.iKind==NormalInteger and y.iKind==BigInteger:
                     when defined(WEB):
@@ -53,7 +55,7 @@ proc `==`*(x: Value, y: Value): bool {.inline.}=
                     when defined(WEB) or not defined(NOGMP):
                         return x.bi==y.bi
             elif y.kind==Rational:
-                if x.iKind==NormalInteger:
+                if likely(x.iKind==NormalInteger):
                     return toRational(x.i)==y.rat
                 else:
                     return false
@@ -67,7 +69,7 @@ proc `==`*(x: Value, y: Value): bool {.inline.}=
                         return (x.bi)==(int)(y.f)
         elif x.kind==Rational:
             if y.kind==Integer:
-                if y.iKind==NormalInteger:
+                if likely(y.iKind==NormalInteger):
                     return x.rat == toRational(y.i)
                 else:
                     return false
@@ -79,7 +81,7 @@ proc `==`*(x: Value, y: Value): bool {.inline.}=
             if y.kind==Integer: 
                 if y.iKind==NormalInteger:
                     return x.f==(float)(y.i)
-                elif y.iKind==BigInteger:
+                else:
                     when defined(WEB):
                         return big((int)(x.f))==y.bi
                     elif not defined(NOGMP):
@@ -139,10 +141,11 @@ proc `==`*(x: Value, y: Value): bool {.inline.}=
                 return true
 
             of Object:
-                if x.proto.methods.hasKey("compare"):
+                let compareMethod = x.proto.methods.getOrDefault("compare", VNOTHING)
+                if compareMethod != VNOTHING:
                     push y
                     push x
-                    callFunction(x.proto.methods["compare"])
+                    callFunction(compareMethod)
                     return (pop().i == 0)
                 else:
                     if x.o.len != y.o.len: return false
@@ -173,7 +176,7 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
     if x.kind in [Integer, Floating, Rational] and y.kind in [Integer, Floating, Rational]:
         if x.kind==Integer:
             if y.kind==Integer: 
-                if x.iKind==NormalInteger and y.iKind==NormalInteger:
+                if likely(x.iKind==NormalInteger and y.iKind==NormalInteger):
                     return x.i<y.i
                 elif x.iKind==NormalInteger and y.iKind==BigInteger:
                     when defined(WEB):
@@ -200,7 +203,7 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
                         return (x.bi)<(int)(y.f)
         elif x.kind==Rational:
             if y.kind==Integer:
-                if y.iKind==NormalInteger:
+                if likely(y.iKind==NormalInteger):
                     return cmp(x.rat,toRational(y.i))<0
                 else:
                     return false
@@ -212,7 +215,7 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
             if y.kind==Integer: 
                 if y.iKind==NormalInteger:
                     return x.f<y.i
-                elif y.iKind==BigInteger:
+                else:
                     when defined(WEB):
                         return big((int)(x.f))<y.bi
                     elif not defined(NOGMP):
@@ -258,10 +261,11 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
             of Dictionary:
                 return false
             of Object:
-                if x.proto.methods.hasKey("compare"):
+                let compareMethod = x.proto.methods.getOrDefault("compare", VNOTHING)
+                if compareMethod != VNOTHING:
                     push y
                     push x
-                    callFunction(x.proto.methods["compare"])
+                    callFunction(compareMethod)
                     return (pop().i == -1)
                 else:
                     return false
@@ -272,7 +276,7 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
     if x.kind in [Integer, Floating, Rational] and y.kind in [Integer, Floating, Rational]:
         if x.kind==Integer:
             if y.kind==Integer: 
-                if x.iKind==NormalInteger and y.iKind==NormalInteger:
+                if likely(x.iKind==NormalInteger and y.iKind==NormalInteger):
                     return x.i>y.i
                 elif x.iKind==NormalInteger and y.iKind==BigInteger:
                     when defined(WEB):
@@ -299,7 +303,7 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
                         return (x.bi)>(int)(y.f)
         elif x.kind==Rational:
             if y.kind==Integer:
-                if y.iKind==NormalInteger:
+                if likely(y.iKind==NormalInteger):
                     return cmp(x.rat,toRational(y.i))>0
                 else:
                     return false
@@ -309,9 +313,9 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
                 return cmp(x.rat,toRational(y.f))>0
         else:
             if y.kind==Integer: 
-                if y.iKind==NormalInteger:
+                if likely(y.iKind==NormalInteger):
                     return x.f>(float)(y.i)
-                elif y.iKind==BigInteger:
+                else:
                     when defined(WEB):
                         return big((int)(x.f))>y.bi
                     elif not defined(NOGMP):
@@ -357,10 +361,11 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
             of Dictionary:
                 return false
             of Object:
-                if x.proto.methods.hasKey("compare"):
+                let compareMethod = x.proto.methods.getOrDefault("compare", VNOTHING)
+                if compareMethod != VNOTHING:
                     push y
                     push x
-                    callFunction(x.proto.methods["compare"])
+                    callFunction(compareMethod)
                     return (pop().i == 1)
                 else:
                     return false

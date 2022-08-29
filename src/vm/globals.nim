@@ -56,22 +56,23 @@ func suggestAlternative*(s: string, reference: ValueDict = Syms): seq[string] {.
 #=======================================
 
 template GetKey*(dict: ValueDict, key: string): untyped =
-    if not dict.hasKey(key):
+    let toRet = dict.getOrDefault(key, VNOTHING)
+    if unlikely(toRet.isNothing()):
         RuntimeError_KeyNotFound(key, suggestAlternative(key, reference=dict))
-    dict[key]
+    toRet
 
 template GetArrayIndex*(arr: ValueArray, indx: int): untyped =
-    if indx < 0 or indx > (arr.len)-1:
+    if unlikely(indx < 0 or indx > (arr.len)-1):
         RuntimeError_OutOfBounds(indx, arr.len-1)
     arr[indx]
 
 template SetArrayIndex*(arr: ValueArray, indx: int, v: Value): untyped =
-    if indx < 0 or indx > (arr.len)-1:
+    if unlikely(indx < 0 or indx > (arr.len)-1):
         RuntimeError_OutOfBounds(indx, arr.len-1)
     arr[indx] = v
 
 template InPlace*(): untyped =
-    if not Syms.hasKey(x.s):
+    if unlikely(not Syms.hasKey(x.s)):
         RuntimeError_SymbolNotFound(x.s, suggestAlternative(x.s))
     Syms[x.s]
 
@@ -86,9 +87,12 @@ template SymExists*(s: string): untyped =
 
 template GetSym*(s: string, unsafe: bool = false): untyped =
     when not unsafe:
-        if not Syms.hasKey(s):
+        let toRet = Syms.getOrDefault(s, VNOTHING)
+        if unlikely(toRet.isNothing()):
             RuntimeError_SymbolNotFound(s, suggestAlternative(s))
-    Syms[s]
+        toRet
+    else:
+        Syms[s]
 
 template SetSym*(s: string, v: Value): untyped =
     Syms[s] = v

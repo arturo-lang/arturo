@@ -21,7 +21,7 @@ import helpers/regex
 type 
     OpCode* = enum
 
-        # [0x00-0x0F]
+        # [0x00-0x1F]
         # push constants 
         opConstI0       = 0x00      # 0
         opConstI1       = 0x01      # 1
@@ -34,52 +34,58 @@ type
         opConstI8       = 0x08      # 8 
         opConstI9       = 0x09      # 9
         opConstI10      = 0x0A      # 10
+        opConstI11      = 0x0B      # 11
+        opConstI12      = 0x0C      # 12
+        opConstI13      = 0x0D      # 13    
+        opConstI14      = 0x0E      # 14
+        opConstI15      = 0x0F      # 15
 
-        opConstF1       = 0x0B      # 1.0
+        opConstI1M      = 0x10      # -1 
 
-        opConstBT       = 0x0C      # true
-        opConstBF       = 0x0D      # false
-        opConstBM       = 0x0E      # maybe
+        opConstF0       = 0x11      # 0.0
+        opConstF1       = 0x12      # 1.0
+        opConstF2       = 0x13      # 2.0 
 
-        opConstN        = 0x0F      # null
+        opConstF1M      = 0x14      # -1.0
+
+        opConstBT       = 0x15      # true
+        opConstBF       = 0x16      # false
+        opConstBM       = 0x17      # maybe
+
+        opConstS        = 0x18      # empty string
+        opConstA        = 0x19      # empty array
+        opConstD        = 0x1A      # empty dictionary
+
+        opConstN        = 0x1B      # null
+
+        # lines & error reporting
+        opEol           = 0x1C
+        opEolX          = 0x1D
+
+        RSRV1           = 0x1E      # reserved
+        RSRV2           = 0x1F      # reserved
  
-        # [0x10-0x2F]
+        # [0x20-0x2F]
         # push values
-        opPush0         = 0x10   
-        opPush1         = 0x11
-        opPush2         = 0x12
-        opPush3         = 0x13
-        opPush4         = 0x14
-        opPush5         = 0x15
-        opPush6         = 0x16
-        opPush7         = 0x17
-        opPush8         = 0x18
-        opPush9         = 0x19
-        opPush10        = 0x1A
-        opPush11        = 0x1B
-        opPush12        = 0x1C
-        opPush13        = 0x1D
-        opPush14        = 0x1E
-        opPush15        = 0x1F
-        opPush16        = 0x20
-        opPush17        = 0x21
-        opPush18        = 0x22
-        opPush19        = 0x23
-        opPush20        = 0x24
-        opPush21        = 0x25
-        opPush22        = 0x26
-        opPush23        = 0x27
-        opPush24        = 0x28
-        opPush25        = 0x29
-        opPush26        = 0x2A
-        opPush27        = 0x2B
-        opPush28        = 0x2C
-        opPush29        = 0x2D
+        opPush0         = 0x20   
+        opPush1         = 0x21
+        opPush2         = 0x22
+        opPush3         = 0x23
+        opPush4         = 0x24
+        opPush5         = 0x25
+        opPush6         = 0x26
+        opPush7         = 0x27
+        opPush8         = 0x28
+        opPush9         = 0x29
+        opPush10        = 0x2A
+        opPush11        = 0x2B
+        opPush12        = 0x2C
+        opPush13        = 0x2D
 
         opPush          = 0x2E
         opPushX         = 0x2F
 
-        # [0x30-0x4F]
+        # [0x30-3F]
         # store variables (from <- stack)
         opStore0        = 0x30   
         opStore1        = 0x31
@@ -95,195 +101,195 @@ type
         opStore11       = 0x3B
         opStore12       = 0x3C
         opStore13       = 0x3D
-        opStore14       = 0x3E
-        opStore15       = 0x3F
-        opStore16       = 0x40
-        opStore17       = 0x41
-        opStore18       = 0x42
-        opStore19       = 0x43
-        opStore20       = 0x44
-        opStore21       = 0x45
-        opStore22       = 0x46
-        opStore23       = 0x47
-        opStore24       = 0x48
-        opStore25       = 0x49
-        opStore26       = 0x4A
-        opStore27       = 0x4B
-        opStore28       = 0x4C
-        opStore29       = 0x4D
 
-        opStore         = 0x4E
-        opStoreX        = 0x4F
+        opStore         = 0x3E
+        opStoreX        = 0x3F
 
-        # [0x50-0x6F]
+        # [0x40-0x4F]
         # load variables (to -> stack)
-        opLoad0         = 0x50   
-        opLoad1         = 0x51
-        opLoad2         = 0x52
-        opLoad3         = 0x53
-        opLoad4         = 0x54
-        opLoad5         = 0x55
-        opLoad6         = 0x56
-        opLoad7         = 0x57
-        opLoad8         = 0x58
-        opLoad9         = 0x59
-        opLoad10        = 0x5A
-        opLoad11        = 0x5B
-        opLoad12        = 0x5C
-        opLoad13        = 0x5D
-        opLoad14        = 0x5E
-        opLoad15        = 0x5F
-        opLoad16        = 0x60
-        opLoad17        = 0x61
-        opLoad18        = 0x62
-        opLoad19        = 0x63
-        opLoad20        = 0x64
-        opLoad21        = 0x65
-        opLoad22        = 0x66
-        opLoad23        = 0x67
-        opLoad24        = 0x68
-        opLoad25        = 0x69
-        opLoad26        = 0x6A
-        opLoad27        = 0x6B
-        opLoad28        = 0x6C
-        opLoad29        = 0x6D
+        opLoad0         = 0x40   
+        opLoad1         = 0x41
+        opLoad2         = 0x42
+        opLoad3         = 0x43
+        opLoad4         = 0x44
+        opLoad5         = 0x45
+        opLoad6         = 0x46
+        opLoad7         = 0x47
+        opLoad8         = 0x48
+        opLoad9         = 0x49
+        opLoad10        = 0x4A
+        opLoad11        = 0x4B
+        opLoad12        = 0x4C
+        opLoad13        = 0x4D
         
-        opLoad          = 0x6E
-        opLoadX         = 0x6F
+        opLoad          = 0x4E
+        opLoadX         = 0x4F
 
-        # [0x70-0x8F]
+        # [0x50-0x5F]
+        # store-load variables (from <- stack, without popping)
+        opStorl0        = 0x50   
+        opStorl1        = 0x51
+        opStorl2        = 0x52
+        opStorl3        = 0x53
+        opStorl4        = 0x54
+        opStorl5        = 0x55
+        opStorl6        = 0x56
+        opStorl7        = 0x57
+        opStorl8        = 0x58
+        opStorl9        = 0x59
+        opStorl10       = 0x5A
+        opStorl11       = 0x5B
+        opStorl12       = 0x5C
+        opStorl13       = 0x5D
+
+        opStorl         = 0x5E
+        opStorlX        = 0x5F
+
+        # [0x60-0x6F]
         # function calls
-        opCall0         = 0x70   
-        opCall1         = 0x71
-        opCall2         = 0x72
-        opCall3         = 0x73
-        opCall4         = 0x74
-        opCall5         = 0x75
-        opCall6         = 0x76
-        opCall7         = 0x77
-        opCall8         = 0x78
-        opCall9         = 0x79
-        opCall10        = 0x7A
-        opCall11        = 0x7B
-        opCall12        = 0x7C
-        opCall13        = 0x7D
-        opCall14        = 0x7E
-        opCall15        = 0x7F
-        opCall16        = 0x80
-        opCall17        = 0x81
-        opCall18        = 0x82
-        opCall19        = 0x83
-        opCall20        = 0x84
-        opCall21        = 0x85
-        opCall22        = 0x86
-        opCall23        = 0x87
-        opCall24        = 0x88
-        opCall25        = 0x89
-        opCall26        = 0x8A
-        opCall27        = 0x8B
-        opCall28        = 0x8C
-        opCall29        = 0x8D
+        opCall0         = 0x60   
+        opCall1         = 0x61
+        opCall2         = 0x62
+        opCall3         = 0x63
+        opCall4         = 0x64
+        opCall5         = 0x65
+        opCall6         = 0x66
+        opCall7         = 0x67
+        opCall8         = 0x68
+        opCall9         = 0x69
+        opCall10        = 0x6A
+        opCall11        = 0x6B
+        opCall12        = 0x6C
+        opCall13        = 0x6D
         
-        opCall          = 0x8E
-        opCallX         = 0x8F
+        opCall          = 0x6E
+        opCallX         = 0x6F
 
-        # [0x90-0xAF]
-        # store variables (from <- stack)
-        opStorl0        = 0x90   
-        opStorl1        = 0x91
-        opStorl2        = 0x92
-        opStorl3        = 0x93
-        opStorl4        = 0x94
-        opStorl5        = 0x95
-        opStorl6        = 0x96
-        opStorl7        = 0x97
-        opStorl8        = 0x98
-        opStorl9        = 0x99
-        opStorl10       = 0x9A
-        opStorl11       = 0x9B
-        opStorl12       = 0x9C
-        opStorl13       = 0x9D
-        opStorl14       = 0x9E
-        opStorl15       = 0x9F
-        opStorl16       = 0xA0
-        opStorl17       = 0xA1
-        opStorl18       = 0xA2
-        opStorl19       = 0xA3
-        opStorl20       = 0xA4
-        opStorl21       = 0xA5
-        opStorl22       = 0xA6
-        opStorl23       = 0xA7
-        opStorl24       = 0xA8
-        opStorl25       = 0xA9
-        opStorl26       = 0xAA
-        opStorl27       = 0xAB
-        opStorl28       = 0xAC
-        opStorl29       = 0xAD
+        # [0x70-0x7F]
+        # attributes
+        opAttr0         = 0x70   
+        opAttr1         = 0x71
+        opAttr2         = 0x72
+        opAttr3         = 0x73
+        opAttr4         = 0x74
+        opAttr5         = 0x75
+        opAttr6         = 0x76
+        opAttr7         = 0x77
+        opAttr8         = 0x78
+        opAttr9         = 0x79
+        opAttr10        = 0x7A
+        opAttr11        = 0x7B
+        opAttr12        = 0x7C
+        opAttr13        = 0x7D
 
-        opStorl         = 0xAE
-        opStorlX        = 0xAF
+        opAttr          = 0x7E
+        opAttrX         = 0x7F
 
-        #-----------------------
+        #---------------------------------
+        # OP FUNCTIONS
+        #---------------------------------
 
-        # [0xB0-BF] #
+        # [0x80-0x8F]
+        # arithmetic operators
+        opAdd           = 0x80
+        opSub           = 0x81
+        opMul           = 0x82
+        opDiv           = 0x83
+        opFdiv          = 0x84
+        opMod           = 0x85
+        opPow           = 0x86
+
+        opNeg           = 0x87
+
+        # binary operators
+        opBNot          = 0x88
+        opBAnd          = 0x89
+        opBOr           = 0x8A
+
+        opShl           = 0x8B
+        opShr           = 0x8C
+
+        # logical operators
+        opNot           = 0x8D
+        opAnd           = 0x8E
+        opOr            = 0x8F
+
+        # [0x90-0x9F]
+        # comparison operators
+        opEq            = 0x90
+        opNe            = 0x91
+        opGt            = 0x92
+        opGe            = 0x93
+        opLt            = 0x94
+        opLe            = 0x95
+
+        # branching
+        opIf            = 0x96
+        opIfE           = 0x97
+        opElse          = 0x98
+        opWhile         = 0x99
+        opReturn        = 0x9A
+
+        # getters/setters
+        opGet           = 0x9B
+        opSet           = 0x9C
+
+        # converters
+        opTo            = 0x9D
+        opToS           = 0x9E  
+        opToI           = 0x9F
+
+        # [0xA0-0xAF]
+        # i/o operations
+        opPrint         = 0xA0
+
         # generators
-        opAttr          = 0xB0
-        opArray         = 0xB1
-        opDict          = 0xB2
-        opFunc          = 0xB3
+        opArray         = 0xA1
+        opDict          = 0xA2
+        opFunc          = 0xA3
+
+        # ranges & iterators
+        opRange         = 0xA4
+        opLoop          = 0xA5
+        opMap           = 0xA6
+        opSelect        = 0xA7
+
+        # collections
+        opSize          = 0xA8
+        opReplace       = 0xA9
+        opSplit         = 0xAA
+        opJoin          = 0xAB
+        opReverse       = 0xAC
+
+        # increment/decrement
+        opInc           = 0xAD
+        opDec           = 0xAE
+
+        RSRV3           = 0xAF      # reserved
+
+        #---------------------------------
+        # LOW-LEVEL OPERATIONS
+        #---------------------------------
+
+        # [0xB0-0xBF]
+        # no operation
+        opNop           = 0xB0
 
         # stack operations
-        opPop           = 0xB4
-        opDup           = 0xB5
-        opSwap          = 0xB6
+        opPop           = 0xB1
+        opDup           = 0xB2
+        opOver          = 0xB3
+        opSwap          = 0xB4
 
         # flow control
-        opJump          = 0xB7
-        opJumpIf        = 0xB8
-        opJumpIfNot     = 0xB9
-        opRet           = 0xBA
-        opEnd           = 0xBB
-
-        opNop           = 0xBC
-        opEol           = 0xBD
-        
-        # reserved
-        opRsrv1         = 0xBE
-        opRsrv2         = 0xBF
-
-        # [0xC0-CF] #
-        # arithmetic & logical operators
-        opIAdd          = 0xC0
-        opISub          = 0xC1
-        opIMul          = 0xC2
-        opIDiv          = 0xC3
-        opIFDiv         = 0xC4
-        opIMod          = 0xC5
-        opIPow          = 0xC6
-
-        opINeg          = 0xC7
-
-        opBNot          = 0xC8
-        opBAnd          = 0xC9
-        opOr            = 0xCA
-        opXor           = 0xCB
-
-        opShl           = 0xCC
-        opShr           = 0xCD
-
-        # reserved
-        opRsrv3         = 0xCE
-        opRsrv4         = 0xCF
-
-        # [0xD0-DF] #
-        # comparison operators
-
-        opEq            = 0xD0
-        opNe            = 0xD1
-        opGt            = 0xD2
-        opGe            = 0xD3
-        opLt            = 0xD4
-        opLe            = 0xD5
+        opJmp           = 0xB5
+        opJmpX          = 0xB6
+        opJmpIf         = 0xB7
+        opJmpIfX        = 0xB8
+        opJmpIfN        = 0xB9
+        opJmpIfNX       = 0xBA
+        opRet           = 0xBB
+        opEnd           = 0xBC
 
 when false:
     #=======================================
@@ -355,14 +361,15 @@ proc parseOpCode*(x: string): OpCode =
              .replace("jumpifnot","jumpIfNot")
              .replace("jumpif","jumpIf")
              .multiReplace([
-                ("Iadd","IAdd"),
-                ("Isub","ISub"),
-                ("Imul","IMul"),
-                ("Idiv","IDiv"),
-                ("Ifdiv","IFDiv"),  
-                ("Imod","IMod"),
-                ("Ipow","IPow"),
-                ("Ineg","INeg")
+                ("Bnot","BNot"),
+                ("Band","BAnd"),
+                ("Bor","BOr"),
+                ("Ife", "IfE"),
+                ("Tos", "ToS"),
+                ("Toi", "ToI"),
+                ("JmpifX", "JmpIfX"),
+                ("Jmpifn", "JmpIfN"),
+                ("Jmpifnx", "JmpIfNX")
             ])
     str = "op" & str
 

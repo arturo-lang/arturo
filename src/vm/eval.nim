@@ -45,9 +45,13 @@ func indexOfValue*(a: seq[Value], item: Value): int {.inline.}=
 
 when not defined(NOERRORLINES):
     template addEol(line: untyped):untyped =
-        it.add((byte)opEol)
-        it.add((byte)line shr 8)
-        it.add((byte)line)
+        if line > 255:
+            it.add((byte)opEolX)
+            it.add((byte)line shr 8)
+            it.add((byte)line)
+        else:
+            it.add((byte)opEol)
+            it.add((byte)line)
 
 proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool = false, isDictionary: bool = false) =
     var argStack: seq[int] = @[]
@@ -89,8 +93,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             consts.add(v)
             indx = consts.len-1
 
-        if indx <= 29:
-            addToCommand((byte)(((byte)(op)-0x1E) + (byte)(indx)))
+        if indx <= 13:
+            addToCommand((byte)(((byte)(op)-0x0E) + (byte)(indx)))
         else:
             if indx>255:
                 addToCommand((byte)indx)
@@ -113,8 +117,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             consts.add(v)
             indx = consts.len-1
 
-        if indx <= 29:
-            addToCommandHead((byte)(((byte)(op)-0x1E) + (byte)(indx)), atPos)
+        if indx <= 13:
+            addToCommandHead((byte)(((byte)(op)-0x0E) + (byte)(indx)), atPos)
         else:
             if indx>255:
                 addToCommandHead((byte)indx, atPos)
@@ -124,18 +128,87 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 addToCommandHead((byte)indx, atPos)
                 addToCommandHead((byte)op, atPos)
 
-    proc addAttr(consts: var seq[Value], v: Value) =
-        var indx = consts.find(v)
-        if indx == -1:
-            consts.add(v)
-            indx = consts.len-1
+    template evalFunctionCall(fun: untyped, toHead: bool, checkAhead: bool, default: untyped): untyped =
+        var bt: OpCode = opNop
+        var doElse = true
 
-        addToCommand((byte)indx)
-        addToCommand((byte)opAttr)
+        let fn = fun
+
+        if fn == ArrayF: bt = opArray
+        elif fn == DictF: bt = opDict
+        elif fn == FuncF: bt = opFunc 
+        elif fn == AddF: bt = opAdd
+        elif fn == SubF: bt = opSub
+        elif fn == MulF: bt = opMul
+        elif fn == DivF: bt = opDiv
+        elif fn == FdivF: bt = opFdiv
+        elif fn == ModF: bt = opMod
+        elif fn == PowF: bt = opPow
+        elif fn == NegF: bt = opNeg
+        elif fn == BNotF: bt = opBNot
+        elif fn == BAndF: bt = opBAnd
+        elif fn == BOrF: bt = opBOr
+        elif fn == ShlF: bt = opShl
+        elif fn == ShrF: bt = opShr
+        elif fn == NotF: bt = opNot
+        elif fn == AndF: bt = opAnd
+        elif fn == OrF: bt = opOr
+        elif fn == EqF: bt = opEq
+        elif fn == NeF: bt = opNe
+        elif fn == GtF: bt = opGt
+        elif fn == GeF: bt = opGe
+        elif fn == LtF: bt = opLt
+        elif fn == LeF: bt = opLe
+        elif fn == IfF: bt = opIf
+        elif fn == IfEF: bt = opIfE
+        elif fn == ElseF: bt = opElse
+        elif fn == WhileF: bt = opWhile
+        elif fn == ReturnF: bt = opReturn
+        elif fn == GetF: bt = opGet
+        elif fn == SetF: bt = opSet
+        elif fn == ToF: 
+            bt = opTo
+            when checkAhead:
+                let nextNode = n.a[i+1]
+                if nextNode.kind==Type:
+                    if nextNode.t==String:
+                        addToCommand((byte)opToS)
+                        bt = opNop
+                        doElse = false
+                        funcArity -= 1
+                        i += 1
+                    elif nextNode.t==Integer:
+                        addToCommand((byte)opToI)
+                        bt = opNop
+                        doElse = false
+                        funcArity -= 1
+                        i += 1
+        elif fn == PrintF: bt = opPrint
+        elif fn == RangeF: bt = opRange
+        elif fn == LoopF: bt = opLoop
+        elif fn == MapF: bt = opMap
+        elif fn == SelectF: bt = opSelect
+        elif fn == SizeF: bt = opSize
+        elif fn == ReplaceF: bt = opReplace
+        elif fn == SplitF: bt = opSplit
+        elif fn == JoinF: bt = opJoin 
+        elif fn == ReverseF: bt = opReverse
+        elif fn == IncF: bt = opInc
+        elif fn == DecF: bt = opDec
+
+        if bt != opNop:
+            when toHead:
+                addToCommandHead((byte)bt)
+            else:
+                addToCommand((byte)bt)
+        else:
+            if doElse:
+                default
 
     template addTerminalValue(inArrowBlock: bool, code: untyped) =
         block:
             ## Check for potential Infix operator ahead
+            
             if (i+1<childrenCount and n.a[i+1].kind == Symbol):
                 when not inArrowBlock:
                     let step = 1
@@ -143,14 +216,17 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     let step = 1
 
                 let symalias = n.a[i+1].m
-                if Aliases.hasKey(symalias):
-                    let symfunc = Syms[Aliases[symalias].name.s]
+                let aliased = Aliases.getOrDefault(symalias, NoAliasBinding)
+                if aliased != NoAliasBinding:
+                    let symfunc = Syms[aliased.name.s]
 
-                    if symfunc.kind==Function and Aliases[symalias].precedence==InfixPrecedence:
+                    if symfunc.kind==Function and aliased.precedence==InfixPrecedence:
                         i += step;
                         
                         when not inArrowBlock:
-                            addConst(consts, Aliases[symalias].name, opCall)
+                            evalFunctionCall(symfunc, toHead=false, checkAhead=false):
+                                addConst(consts, aliased.name, opCall)
+
                             if symfunc.fnKind == BuiltinFunction:
                                 argStack.add(symfunc.arity)
                             else:
@@ -191,10 +267,14 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     i += 1
                     if (i+1<childrenCount and n.a[i+1].kind == Word and Syms[n.a[i+1].s].kind == Function):
                         let funcName = n.a[i+1].s
-                        if TmpArities.hasKey(funcName):
-                            if TmpArities[funcName]>1:
-                                argStack.add(TmpArities[funcName]-1)
-                                addTrailingConst(consts, n.a[i+1], opCall)
+                        let tmpFuncArity = TmpArities.getOrDefault(funcName, -1)
+                        if tmpFuncArity != -1:
+                            if tmpFuncArity>1:
+                                argStack.add(tmpFuncArity-1)
+                                # TODO(VM/eval) to be fixed
+                                #  labels: bug, evaluator, vm
+                                evalFunctionCall(n.a[i+1], toHead=true, checkAhead=false):
+                                    addTrailingConst(consts, n.a[i+1], opCall)
                             else:
                                 addTrailingConst(consts, n.a[i+1], opCall)
                                 if argStack.len==0:
@@ -242,8 +322,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     addTerminalValue(true):
                         discard
                 of Word:
-                    if TmpArities.hasKey(subnode.s):
-                        let funcArity = TmpArities[subnode.s]
+                    let funcArity = TmpArities.getOrDefault(subnode.s, -1)
+                    if funcArity != -1:
                         if funcArity!=0:
                             subargStack.add(funcArity)
                         else:
@@ -255,10 +335,11 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                 of Symbol: 
                     let symalias = subnode.m
-                    if Aliases.hasKey(symalias):
-                        let symfunc = Syms[Aliases[symalias].name.s]
+                    let aliased = Aliases.getOrDefault(symalias, NoAliasBinding)
+                    if likely(aliased != NoAliasBinding):
+                        let symfunc = Syms[aliased.name.s]
                         if symfunc.kind==Function:
-                            if Aliases[symalias].precedence==PrefixPrecedence:
+                            if aliased.precedence==PrefixPrecedence:
                                 if symfunc.fnKind==BuiltinFunction and symfunc.arity!=0:
                                     subargStack.add(symfunc.arity)
                                 elif symfunc.fnKind==UserFunction and symfunc.params.a.len!=0:
@@ -308,10 +389,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
         # if it's a word
         if subnode.kind==Word:
             # check if it's a function
-            if TmpArities.hasKey(subnode.s):
-                    # automatically "push" all its required arguments
-                funcArity = TmpArities[subnode.s]
-
+            funcArity = TmpArities.getOrDefault(subnode.s, -1)
+            if funcArity != -1:
+                # automatically "push" all its required arguments
                 for i in 0..(funcArity-1):
                     let arg = newWord("_" & $(i))
                     argblock.add(arg)
@@ -343,32 +423,43 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
         case node.kind:
             of Null:    addToCommand((byte)opConstN)
             of Logical: 
-                    if node.b==True: addToCommand((byte)opConstBT)
-                    elif node.b==False: addToCommand((byte)opConstBF)
-                    else: addToCommand((byte)opConstBM)
+                # TODO(VM/eval) needs to be inside an `addTerminalValue` block?
+                #  this look like a bug...
+                #  labels: evaluator, bug
+                if node.b==True: addToCommand((byte)opConstBT)
+                elif node.b==False: addToCommand((byte)opConstBF)
+                else: addToCommand((byte)opConstBM)
 
             of Integer:
                 addTerminalValue(false):
                     when defined(WEB) or not defined(NOGMP):
-                        if node.iKind==NormalInteger:
-                            if node.i>=0 and node.i<=10: addToCommand((byte)((byte)(opConstI0) + (byte)(node.i)))
+                        if likely(node.iKind==NormalInteger):
+                            if node.i>=0 and node.i<=15: addToCommand((byte)((byte)(opConstI0) + (byte)(node.i)))
                             else: addConst(consts, node, opPush)
                         else:
                             addConst(consts, node, opPush)
                     else:
-                        if node.i>=0 and node.i<=10: addToCommand((byte)((byte)(opConstI0) + (byte)(node.i)))
+                        if node.i>=0 and node.i<=15: addToCommand((byte)((byte)(opConstI0) + (byte)(node.i)))
                         else: addConst(consts, node, opPush)
 
             of Floating:
                 addTerminalValue(false):
-                    if node.f==1.0: addToCommand((byte)opConstF1)
+                    if node.f==0.0: addToCommand((byte)opConstF0)
+                    elif node.f==1.0: addToCommand((byte)opConstF1)
+                    elif node.f==2.0: addToCommand((byte)opConstF2)
                     else: addConst(consts, node, opPush)
 
             of Word:
-                if TmpArities.hasKey(node.s):
-                    let funcArity = TmpArities[node.s]
-                    if funcArity!=0:
-                        addConst(consts, node, opCall)
+                var funcArity = TmpArities.getOrDefault(node.s, -1)
+                if funcArity != -1:
+                    if likely(funcArity!=0):
+                        let symf = Syms.getOrDefault(node.s, VNOTHING)
+                        if not symf.isNothing():
+                            evalFunctionCall(symf, toHead=false, checkAhead=true):
+                                addConst(consts, node, opCall)
+                                # funcArity -> funcArity-1 for ToS/ToI!
+                        else:
+                            addConst(consts, node, opCall)
                         argStack.add(funcArity)
                     else:
                         addTerminalValue(false):
@@ -382,16 +473,18 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 var hasThickArrow = false
                 var ab: seq[Value]
                 var sb: seq[Value]
-                if (n.a[i+1].kind == Word and n.a[i+1].s == "function") or
-                   (n.a[i+1].kind == Symbol and n.a[i+1].m == dollar):
-                    if n.a[i+2].kind == Symbol and n.a[i+2].m == thickarrowright:
+                let nextNode = n.a[i+1]
+                if (nextNode.kind == Word and nextNode.s == "function") or
+                   (nextNode.kind == Symbol and nextNode.m == dollar):
+                    let afterNextNode = n.a[i+2]
+                    if afterNextNode.kind == Symbol and afterNextNode.m == thickarrowright:
                         i += 2
                         processThickArrowRight(ab,sb)
                         TmpArities[funcIndx] = funcArity
                         hasThickArrow = true
                         i += 1
                     else:
-                        TmpArities[funcIndx] = n.a[i+2].a.countIt(it.kind != Type) #n.a[i+2].a.len
+                        TmpArities[funcIndx] = afterNextNode.a.countIt(it.kind != Type) #n.a[i+2].a.len
                 else:
                     if not isDictionary:
                         TmpArities.del(funcIndx)
@@ -410,41 +503,43 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         addConst(consts, newBlock(sb), opPush) 
 
             of Attribute:
-                addAttr(consts, node)
+                addConst(consts, node, opAttr)
                 addToCommand((byte)opConstBT)
 
             of AttributeLabel:
-                addAttr(consts, node)
+                addConst(consts, node, opAttr)
                 argStack[argStack.len-1] += 1
 
             of Path:
                 var isPathCall = false
                 var pathCallV = VNULL
-                if Syms.hasKey(node.p[0].s):
-                    let curr = Syms[node.p[0].s]
-                    let next = node.p[1]
 
+                let curr = Syms.getOrDefault(node.p[0].s, VNOTHING)
+                if not curr.isNothing():
+                    let next = node.p[1]
                     if curr.kind==Dictionary and (next.kind==Literal or next.kind==Word):
-                        let item: Value = curr.d[next.s]
-                        if item.kind == Function:
-                            isPathCall = true
-                            pathCallV = item
+                        if (let item = curr.d.getOrDefault(next.s, VNOTHING); item != VNOTHING):
+                            if item.kind == Function:
+                                isPathCall = true
+                                pathCallV = item
 
                 if isPathCall:
                     addConst(consts, pathCallV, opCall)
                     argStack.add(pathCallV.params.a.len)
                 else:
                     addTerminalValue(false):
-                        addConst(consts, newWord("get"), opCall)
+                        addToCommand((byte)opGet)
+                        #addConst(consts, newWord("get"), opCall)
                         
                         var i=1
                         while i<node.p.len-1:
-                            addConst(consts, newWord("get"), opCall)
+                            addToCommand((byte)opGet)
+                            #addConst(consts, newWord("get"), opCall)
                             i += 1
 
                         let baseNode = node.p[0]
 
-                        if TmpArities.hasKey(baseNode.s) and TmpArities[baseNode.s]==0:
+                        if TmpArities.getOrDefault(baseNode.s, -1) == 0:
                             addConst(consts, baseNode, opCall)
                         else:
                             addConst(consts, baseNode, opLoad)
@@ -455,11 +550,13 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                             i += 1
 
             of PathLabel:
-                addConst(consts, newWord("set"), opCall)
+                addToCommand((byte)opSet)
+                #addConst(consts, newWord("set"), opCall)
                     
                 var i=1
                 while i<node.p.len-1:
-                    addConst(consts, newWord("get"), opCall)
+                    addToCommand((byte)opGet)
+                    #addConst(consts, newWord("get"), opCall)
                     i += 1
                 
                 addConst(consts, node.p[0], opLoad)
@@ -507,24 +604,47 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         i += 1
                     else:
                         let symalias = node.m
-                        if Aliases.hasKey(symalias):
-                            let symfunc = Syms[Aliases[symalias].name.s]
+                        let aliased = Aliases.getOrDefault(symalias, NoAliasBinding)
+                        if likely(aliased != NoAliasBinding):
+                            let symfunc = Syms[aliased.name.s]
                             if symfunc.kind==Function:
                                 if symfunc.fnKind == BuiltinFunction and symfunc.arity!=0:
-                                    addConst(consts, Aliases[symalias].name, opCall)
+                                    evalFunctionCall(symfunc, toHead=false, checkAhead=false):
+                                        addConst(consts, aliased.name, opCall)
                                     argStack.add(symfunc.arity)
                                 elif symfunc.fnKind == UserFunction and symfunc.params.a.len!=0:
-                                    addConst(consts, Aliases[symalias].name, opCall)
+                                    addConst(consts, aliased.name, opCall)
                                     argStack.add(symfunc.params.a.len)
                                 else:
                                     addTerminalValue(false):
-                                        addConst(consts, Aliases[symalias].name, opCall)
+                                        addConst(consts, aliased.name, opCall)
                             else:
                                 addTerminalValue(false):
-                                    addConst(consts, Aliases[symalias].name, opLoad)
+                                    addConst(consts, aliased.name, opLoad)
                         else:
                             addTerminalValue(false):
                                 addConst(consts, node, opPush)
+
+            of String:
+                addTerminalValue(false):
+                    if node.s.len==0:
+                        addToCommand((byte)opConstS)
+                    else:
+                        addConst(consts, node, opPush)
+
+            of Block:
+                addTerminalValue(false):
+                    if node.a.len==0:
+                        addToCommand((byte)opConstA)
+                    else:
+                        addConst(consts, node, opPush)
+
+            of Dictionary:
+                addTerminalValue(false):
+                    if node.d.len==0:
+                        addToCommand((byte)opConstD)
+                    else:
+                        addConst(consts, node, opPush)
 
             of Inline: 
                 addTerminalValue(false):
@@ -546,9 +666,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
             else:
             # of Complex, Rational, Version, Type, Char,
-            #    String, Literal, SymbolLiteral, Quantity,
-            #    Regex, Color, Dictionary, Object, Function, 
-            #    Block:
+            #    Literal, SymbolLiteral, Quantity,
+            #    Regex, Color, Object, Function:
 
                 addTerminalValue(false):
                     addConst(consts, node, opPush)
