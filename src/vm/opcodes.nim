@@ -58,9 +58,13 @@ type
 
         opConstN        = 0x1B      # null
 
-        RSRV1           = 0x1C      # reserved
-        RSRV2           = 0x1D      # reserved
-        RSRV3           = 0x1E      # reserved
+        # attributes
+        opAttr          = 0x1C
+
+        # lines & error reporting
+        opEol           = 0x1D
+        opEolX          = 0x1E
+
         RSRV4           = 0x1F      # reserved
  
         # [0x20-0x2F]
@@ -245,30 +249,21 @@ type
         # no operation
         opNop           = 0xA0
 
-        # attributes
-        opAttr          = 0xA1
-
         # stack operations
-        opPop           = 0xA2
-        opDup           = 0xA3
+        opPop           = 0xA1
+        opDup           = 0xA2
+        opOver          = 0xA3
         opSwap          = 0xA4
 
-        # lines
-        opEol           = 0xA5
-        opEolX          = 0xA6
-
         # flow control
-        opJmp           = 0xA7
-        opJmpX          = 0xA8
-        opJmpIf         = 0xA9
-        opJmpIfX        = 0xAA
-        opJmpIfN        = 0xAB
-        opJmpIfNX       = 0xAC
-        opRet           = 0xAD
-        opEnd           = 0xAE
-
-        RSRV17          = 0xAF      # reserved
-
+        opJmp           = 0xA5
+        opJmpX          = 0xA6
+        opJmpIf         = 0xA7
+        opJmpIfX        = 0xA8
+        opJmpIfN        = 0xA9
+        opJmpIfNX       = 0xAA
+        opRet           = 0xAB
+        opEnd           = 0xAC
 
         # #-----------------------
 
