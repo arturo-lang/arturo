@@ -296,13 +296,28 @@ type
 
         # [0xE0-0xEF] #
         # comparison operators
-
         opEq            = 0xE0
         opNe            = 0xE1
         opGt            = 0xE2
         opGe            = 0xE3
         opLt            = 0xE4
         opLe            = 0xE5
+
+        # branching
+        opIf            = 0xE6
+        opIfE           = 0xE7
+        opElse          = 0xE8
+        opWhile         = 0xE9
+        opReturn        = 0xEA
+
+        # getters/setters
+        opGet           = 0xEB
+        opSet           = 0xEC
+
+        # converters
+        opToS           = 0xED
+        opToI           = 0xEE  
+        opToF           = 0xEF
 
 when false:
     #=======================================
@@ -376,7 +391,11 @@ proc parseOpCode*(x: string): OpCode =
              .multiReplace([
                 ("Bnot","BNot"),
                 ("Band","BAnd"),
-                ("Bor","BOr")
+                ("Bor","BOr"),
+                ("Ife", "IfE"),
+                ("Tos", "ToS"),
+                ("Toi", "ToI"),
+                ("Tof", "ToF")
             ])
     str = "op" & str
 
