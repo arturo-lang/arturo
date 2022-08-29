@@ -433,8 +433,12 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
 
             # converters
             of opTo                 : ToF.action()
-            of opToS                : discard
-            of opToI                : discard
+            of opToS                : 
+                stack.push(VSTRINGT)
+                ToF.action()
+            of opToI                : 
+                stack.push(VINTEGERT)
+                ToF.action()
 
             # [0x90-0x9F]
             # i/o operations
