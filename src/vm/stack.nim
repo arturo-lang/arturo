@@ -62,6 +62,9 @@ template sTopsFrom*(start: int): ValueArray =
 template emptyStack*() =
     SP = 0
 
+# TODO(VM/stack) should our main stack use `newSeqOfCap`?
+#  ...and `.add`/`.pop`? This should be benchmarked.
+#  labels: performance, benchmark, vm, values, open-discussion
 template createMainStack*() =
     newSeq(Stack, StackSize)
     emptyStack()
