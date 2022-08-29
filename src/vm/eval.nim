@@ -137,8 +137,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
         addToCommand((byte)indx)
         addToCommand((byte)opAttr)
 
-    template evalFunctionCall(fn: untyped, toHead: bool, default: untyped): untyped =
+    template evalFunctionCall(fn: untyped, toHead: bool, checkAhead: bool, default: untyped): untyped =
         var bt: OpCode = opNop
+        var doElse = true
 
         if fn == ArrayF: bt = opArray
         elif fn == DictF: bt = opDict
@@ -172,7 +173,23 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
         elif fn == ReturnF: bt = opReturn
         elif fn == GetF: bt = opGet
         elif fn == SetF: bt = opSet
-        elif fn == ToF: bt = opTo
+        elif fn == ToF: 
+            bt = opTo
+            when checkAhead:
+                let nextNode = n.a[i+1]
+                if nextNode.kind==Type:
+                    if nextNode.t==String:
+                        addToCommand((byte)opToS)
+                        bt = opNop
+                        doElse = false
+                        funcArity -= 1
+                        i += 1
+                    elif nextNode.t==Integer:
+                        addToCommand((byte)opToI)
+                        bt = opNop
+                        doElse = false
+                        funcArity -= 1
+                        i += 1
         elif fn == PrintF: bt = opPrint
 
         if bt != opNop:
@@ -181,7 +198,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             else:
                 addToCommand((byte)bt)
         else:
-            default
+            if doElse:
+                default
 
     template addTerminalValue(inArrowBlock: bool, code: untyped) =
         block:
@@ -201,7 +219,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         i += step;
                         
                         when not inArrowBlock:
-                            evalFunctionCall(symfunc, toHead=false):
+                            evalFunctionCall(symfunc, toHead=false, checkAhead=false):
                                 addConst(consts, aliased.name, opCall)
 
                             if symfunc.fnKind == BuiltinFunction:
@@ -248,7 +266,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         if tmpFuncArity != -1:
                             if tmpFuncArity>1:
                                 argStack.add(tmpFuncArity-1)
-                                evalFunctionCall(n.a[i+1], toHead=true):
+                                evalFunctionCall(n.a[i+1], toHead=true, checkAhead=false):
                                     addTrailingConst(consts, n.a[i+1], opCall)
                             else:
                                 addTrailingConst(consts, n.a[i+1], opCall)
@@ -425,13 +443,14 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     else: addConst(consts, node, opPush)
 
             of Word:
-                let funcArity = TmpArities.getOrDefault(node.s, -1)
+                var funcArity = TmpArities.getOrDefault(node.s, -1)
                 if funcArity != -1:
                     if likely(funcArity!=0):
                         let symf = Syms.getOrDefault(node.s, VNOTHING)
                         if not symf.isNothing():
-                            evalFunctionCall(symf, toHead=false):
+                            evalFunctionCall(symf, toHead=false, checkAhead=true):
                                 addConst(consts, node, opCall)
+                                # funcArity -> funcArity-1 for ToS/ToI!
                         else:
                             addConst(consts, node, opCall)
                         argStack.add(funcArity)
@@ -581,7 +600,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                             let symfunc = Syms[aliased.name.s]
                             if symfunc.kind==Function:
                                 if symfunc.fnKind == BuiltinFunction and symfunc.arity!=0:
-                                    evalFunctionCall(symfunc, toHead=false):
+                                    evalFunctionCall(symfunc, toHead=false, checkAhead=false):
                                         addConst(consts, aliased.name, opCall)
                                     argStack.add(symfunc.arity)
                                 elif symfunc.fnKind == UserFunction and symfunc.params.a.len!=0:
