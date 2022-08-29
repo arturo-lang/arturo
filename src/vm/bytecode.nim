@@ -27,10 +27,10 @@ import vm/values/value
 #=======================================
 
 const 
-    #opPushAny   = opPush0..opPush29
-    #opStoreAny  = opStore0..opStore29
-    opLoadAny   = opLoad0..opLoad29
-    #opCallAny   = opCall0..opCall29
+    #opPushAny   = opPush0..opPush13
+    #opStoreAny  = opStore0..opStore13
+    opLoadAny   = opLoad0..opLoad13
+    #opCallAny   = opCall0..opCall13
 
 #=======================================
 # Helpers
@@ -77,14 +77,14 @@ proc optimize(trans: Translation): ByteArray =
         let initialI = i
         #echo fmt"I = {i} -> {Op(initial)}"
         case Op(initial):
-            of opStore0..opStore29: 
+            of opStore0..opStore13: 
                 if Op(next) in opLoadAny and By(opLoad)-a[i+1]==By(opStore)-initial:
                     # (opStore*) + (opLoad*) -> (opStorl*)
                     inject(): By(opStorl0) + initial - By(opStore0) 
                     skip(2)
                 else:
                     consume(1)
-            of opPush0..opPush29, opLoad0..opLoad29:
+            of opPush0..opPush13, opLoad0..opLoad13:
                 if Op(next) == Op(initial):
                     # (opPush/opLoad*) x N -> (opPush/opLoad*) + (opDup) x N
                     keep()
