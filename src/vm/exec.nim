@@ -284,9 +284,6 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
 
     while true:
         {.computedGoTo.}
-        # TODO(VM/exec) should we use computed goto?
-        #  In my benchmarks, for this particular use case - which *is* the main use case - a `{.computedGoTo.}` gives roughly a 10% boost.
-        #  labels: vm, execution, enhancement, performance, open discussion
 
         # if vmBreak:
         #     break
@@ -387,7 +384,6 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             of opStore11            : storeByIndex(11)
             of opStore12            : storeByIndex(12)
             of opStore13            : storeByIndex(13)
-            #of opStore0..opStore13  : storeByIndex((int)(op)-(int)(opStore0))
             of opStore              : i += 1; storeByIndex((int)(it[i]))   
             of opStoreX             : i += 2; storeByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i])))              
 
@@ -407,7 +403,6 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             of opLoad11             : loadByIndex(11)
             of opLoad12             : loadByIndex(12)
             of opLoad13             : loadByIndex(13)
-            #of opLoad0..opLoad13    : loadByIndex((int)(op)-(int)(opLoad0))
             of opLoad               : i += 1; loadByIndex((int)(it[i]))
             of opLoadX              : i += 2; loadByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
 
@@ -427,7 +422,6 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             of opStorl11            : storeByIndex(11, doPop=false)
             of opStorl12            : storeByIndex(12, doPop=false)
             of opStorl13            : storeByIndex(13, doPop=false)
-            #of opStorl0..opStorl13  : storeByIndex((int)(op)-(int)(opStorl0), doPop=false)
             of opStorl              : i += 1; storeByIndex((int)(it[i]), doPop=false)   
             of opStorlX             : i += 2; storeByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i])), doPop=false)              
 
@@ -446,8 +440,7 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             of opCall10             : callByIndex(10)
             of opCall11             : callByIndex(11)
             of opCall12             : callByIndex(12)
-            of opCall13             : callByIndex(13)
-            #of opCall0..opCall13    : callByIndex((int)(op)-(int)(opCall0))                
+            of opCall13             : callByIndex(13)          
             of opCall               : i += 1; callByIndex((int)(it[i]))
             of opCallX              : i += 2; callByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
 
