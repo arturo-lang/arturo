@@ -104,7 +104,10 @@ template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, descriptio
         Arities[n] = static argsLen
         Syms[n] = b
 
-        when n=="add"               : AddF = b
+        when n=="array"             : ArrayF = b
+        elif n=="dictionary"        : DictF = b
+        elif n=="function"          : FuncF = b               
+        elif n=="add"               : AddF = b
         elif n=="sub"               : SubF = b
         elif n=="mul"               : MulF = b
         elif n=="div"               : DivF = b

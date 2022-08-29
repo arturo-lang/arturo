@@ -368,8 +368,9 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             # [0xC0-0xCF]
             # generators
             of opAttr               : i += 1; fetchAttributeByIndex((int)(it[i]))            
-            of opArray, opDict,
-               opFunc               : discard
+            of opArray              : ArrayF.action()
+            of opDict               : DictF.action()
+            of opFunc               : FuncF.action()
 
             # stack operations
             of opPop                : discard stack.pop()
