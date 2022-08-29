@@ -104,22 +104,28 @@ template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, descriptio
         Arities[n] = static argsLen
         Syms[n] = b
 
-        when n=="add"   : AddF = b
-        elif n=="sub"   : SubF = b
-        elif n=="mul"   : MulF = b
-        elif n=="div"   : DivF = b
-        elif n=="fdiv"  : FdivF = b
-        elif n=="mod"   : ModF = b
-        elif n=="pow"   : PowF = b
-        elif n=="neg"   : NegF = b
-        elif n=="not"   : BNotF = b
-        elif n=="and"   : BAndF = b
-        elif n=="or"    : BOrF = b
-        elif n=="shl"   : ShlF = b
-        elif n=="shr"   : ShrF = b
-        elif n=="not?"  : NotF = b
-        elif n=="and?"  : AndF = b
-        elif n=="or?"   : OrF = b
+        when n=="add"               : AddF = b
+        elif n=="sub"               : SubF = b
+        elif n=="mul"               : MulF = b
+        elif n=="div"               : DivF = b
+        elif n=="fdiv"              : FdivF = b
+        elif n=="mod"               : ModF = b
+        elif n=="pow"               : PowF = b
+        elif n=="neg"               : NegF = b
+        elif n=="not"               : BNotF = b
+        elif n=="and"               : BAndF = b
+        elif n=="or"                : BOrF = b
+        elif n=="shl"               : ShlF = b
+        elif n=="shr"               : ShrF = b
+        elif n=="not?"              : NotF = b
+        elif n=="and?"              : AndF = b
+        elif n=="or?"               : OrF = b
+        elif n=="equal?"            : EqF = b
+        elif n=="notEqual?"         : NeF = b
+        elif n=="greater?"          : GtF = b
+        elif n=="greaterOrEqual?"   : GeF = b
+        elif n=="less?"             : LtF = b
+        elif n=="lessOrEqual?"      : LeF = b
 
         when alias != unaliased:
             Aliases[alias] = AliasBinding(
