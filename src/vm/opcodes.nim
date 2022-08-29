@@ -267,34 +267,6 @@ type
         opRet           = 0xAB
         opEnd           = 0xAC
 
-        # #-----------------------
-
-        # # [0xC0-0xCF]
-        # # generators
-        # opAttr          = 0xC0
-        # opArray         = 0xC1
-        # opDict          = 0xC2
-        # opFunc          = 0xC3
-
-        # # stack operations
-        # opPop           = 0xC4
-        # opDup           = 0xC5
-        # opSwap          = 0xC6
-
-        # # flow control
-        # opJump          = 0xC7
-        # opJumpIf        = 0xC8
-        # opJumpIfNot     = 0xC9
-        # opRet           = 0xCA
-        # opEnd           = 0xCB
-
-        # opNop           = 0xCC
-        # opEol           = 0xCD
-        # opEolX          = 0xCE
-        
-        # # reserved
-        # RSRV5           = 0xCF
-
 when false:
     #=======================================
     # Helpers
