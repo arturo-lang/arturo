@@ -154,6 +154,12 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
         elif fn == NotF: addToCommand((byte)opNot)
         elif fn == AndF: addToCommand((byte)opAnd)
         elif fn == OrF: addToCommand((byte)opOr)
+        elif fn == EqF: addToCommand((byte)opEq)
+        elif fn == NeF: addToCommand((byte)opNe)
+        elif fn == GtF: addToCommand((byte)opGt)
+        elif fn == GeF: addToCommand((byte)opGe)
+        elif fn == LtF: addToCommand((byte)opLt)
+        elif fn == LeF: addToCommand((byte)opLe)
         else:
             default
 
