@@ -414,6 +414,7 @@ var
     EqF*, NeF*, GtF*, GeF*, LtF*, LeF*                  : Value
     IfF*, IfEF*, ElseF*, WhileF*, ReturnF*              : Value
     GetF*, SetF*, ToF*                                  : Value
+    PrintF*                                             : Value
 
 #=======================================
 # Forward Declarations
