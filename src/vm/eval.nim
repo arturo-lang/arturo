@@ -128,15 +128,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 addToCommandHead((byte)indx, atPos)
                 addToCommandHead((byte)op, atPos)
 
-    proc addAttr(consts: var seq[Value], v: Value) =
-        var indx = consts.find(v)
-        if indx == -1:
-            consts.add(v)
-            indx = consts.len-1
-
-        addToCommand((byte)indx)
-        addToCommand((byte)opAttr)
-
     template evalFunctionCall(fn: untyped, toHead: bool, checkAhead: bool, default: untyped): untyped =
         var bt: OpCode = opNop
         var doElse = true
@@ -495,12 +486,10 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
             of Attribute:
                 addConst(consts, node, opAttr)
-                #addAttr(consts, node)
                 addToCommand((byte)opConstBT)
 
             of AttributeLabel:
                 addConst(consts, node, opAttr)
-                #addAttr(consts, node)
                 argStack[argStack.len-1] += 1
 
             of Path:
