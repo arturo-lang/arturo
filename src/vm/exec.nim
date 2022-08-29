@@ -531,18 +531,24 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             of opDict               : DictF.action()
             of opFunc               : FuncF.action()
 
+            # ranges & iterators
+            of opRange              : RangeF.action()
+            of opLoop               : LoopF.action()
+            of opMap                : MapF.action()
+            of opSelect             : SelectF.action()
+
+            # collections
+            of opSize               : SizeF.action()
+            of opReplace            : ReplaceF.action()
+            of opSplit              : SplitF.action()
+            of opJoin               : JoinF.action()
+            of opReverse            : ReverseF.action()
+
+            # increment/decrement
+            of opInc                : IncF.action()
+            of opDec                : DecF.action()
+
             of RSRV3                : discard
-            of RSRV4                : discard
-            of RSRV5                : discard
-            of RSRV6                : discard
-            of RSRV7                : discard
-            of RSRV8                : discard
-            of RSRV9                : discard
-            of RSRV10               : discard
-            of RSRV11               : discard
-            of RSRV12               : discard
-            of RSRV13               : discard
-            of RSRV14               : discard
 
             #of RSRV3..RSRV14        : discard
 
