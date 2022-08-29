@@ -371,7 +371,7 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             of opLoadX              : i += 2; loadByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
 
             # [0x50-0x5F]
-            # store variables without popping (from <- stack)
+            # store-load variables (from <- stack, without popping)
             of opStorl0..opStorl13  : storeByIndex((int)(op)-(int)(opStorl0), doPop=false)
             of opStorl              : i += 1; storeByIndex((int)(it[i]), doPop=false)   
             of opStorlX             : i += 2; storeByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i])), doPop=false)              
