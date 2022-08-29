@@ -257,7 +257,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         if tmpFuncArity != -1:
                             if tmpFuncArity>1:
                                 argStack.add(tmpFuncArity-1)
-                                evalFunctionCall(n.a[i+1], toHead=true, checkAhead=false):
+                                evalFunctionCall(Syms[n.a[i+1].s], toHead=true, checkAhead=false):
                                     addTrailingConst(consts, n.a[i+1], opCall)
                             else:
                                 addTrailingConst(consts, n.a[i+1], opCall)
