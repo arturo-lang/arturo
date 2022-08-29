@@ -160,6 +160,14 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
         elif fn == GeF: addToCommand((byte)opGe)
         elif fn == LtF: addToCommand((byte)opLt)
         elif fn == LeF: addToCommand((byte)opLe)
+        elif fn == IfF: addToCommand((byte)opIf)
+        elif fn == IfEF: addToCommand((byte)opIfE)
+        elif fn == ElseF: addToCommand((byte)opElse)
+        elif fn == WhileF: addToCommand((byte)opWhile)
+        elif fn == ReturnF: addToCommand((byte)opReturn)
+        elif fn == GetF: addToCommand((byte)opGet)
+        elif fn == SetF: addToCommand((byte)opSet)
+        elif fn == ToF: addToCommand((byte)opTo)
         else:
             default
 
