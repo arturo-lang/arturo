@@ -372,11 +372,19 @@ let I7*  = Value(kind: Integer, iKind: NormalInteger, i: 7)
 let I8*  = Value(kind: Integer, iKind: NormalInteger, i: 8)
 let I9*  = Value(kind: Integer, iKind: NormalInteger, i: 9)
 let I10* = Value(kind: Integer, iKind: NormalInteger, i: 10)
+let I11* = Value(kind: Integer, iKind: NormalInteger, i: 11)
+let I12* = Value(kind: Integer, iKind: NormalInteger, i: 12)
+let I13* = Value(kind: Integer, iKind: NormalInteger, i: 13)
+let I14* = Value(kind: Integer, iKind: NormalInteger, i: 14)
+let I15* = Value(kind: Integer, iKind: NormalInteger, i: 15)
 
 let I1M* = Value(kind: Integer, iKind: NormalInteger, i: -1)
 
 let F0*  = Value(kind: Floating, f: 0.0)
 let F1*  = Value(kind: Floating, f: 1.0)
+let F2*  = Value(kind: Floating, f: 2.0)
+
+let F1M* = Value(kind: Floating, f: -1.0)
 
 let VTRUE*  = Value(kind: Logical, b: True)
 let VFALSE* = Value(kind: Logical, b: False)
@@ -384,7 +392,16 @@ let VMAYBE* = Value(kind: Logical, b: Maybe)
 
 let VNULL* = Value(kind: Null)
 
+let VEMPTYSTR* = Value(kind: String, s: "")
+let VEMPTYARR* = Value(kind: Block, a: @[], data: VNULL)
+let VEMPTYDICT* = Value(kind: Dictionary, d: initOrderedTable[string,Value]())
+
+let VSTRINGT* = Value(kind: Type, tpKind: BuiltinType, t: String)
+let VINTEGERT* = Value(kind: Type, tpKind: BuiltinType, t: Integer)
+
 let VNOTHING* = Value(kind: Nothing)
+
+let NoAliasBinding* = AliasBinding(precedence: PostfixPrecedence, name: VNULL)
 
 #=======================================
 # Variables
@@ -392,6 +409,19 @@ let VNOTHING* = Value(kind: Nothing)
 
 var 
     TypeLookup = initOrderedTable[string,Value]()
+
+    # global implementation references
+    AddF*, SubF*, MulF*, DivF*, FdivF*, ModF*, PowF*    : Value
+    NegF*, BNotF*, BAndF*, BOrF*, ShlF*, ShrF*          : Value
+    NotF*, AndF*, OrF*                                  : Value 
+    EqF*, NeF*, GtF*, GeF*, LtF*, LeF*                  : Value
+    IfF*, IfEF*, ElseF*, WhileF*, ReturnF*              : Value
+    GetF*, SetF*, ToF*                                  : Value
+    PrintF*                                             : Value
+    ArrayF*, DictF*, FuncF*                             : Value
+    RangeF*, LoopF*, MapF*, SelectF*                    : Value
+    SizeF*, ReplaceF*, SplitF*, JoinF*, ReverseF*       : Value 
+    IncF*, DecF*                                        : Value
 
 #=======================================
 # Forward Declarations
@@ -416,21 +446,21 @@ template newNull*(): Value =
 template newNothing*(): Value =
     VNOTHING
 
-proc newLogical*(b: logical): Value {.inline.} =
+proc newLogical*(b: logical): Value {.inline, enforceNoRaises.} =
     if b==True: VTRUE
     elif b==False: VFALSE
     else: VMAYBE
 
-proc newLogical*(b: bool): Value {.inline.} =
+proc newLogical*(b: bool): Value {.inline, enforceNoRaises.} =
     if b: VTRUE
     else: VFALSE
 
-proc newLogical*(s: string): Value {.inline.} =
+proc newLogical*(s: string): Value {.inline, enforceNoRaises.} =
     if s=="true": newLogical(True)
     elif s=="false": newLogical(False)
     else: newLogical(Maybe)
 
-proc newLogical*(i: int): Value {.inline.} =
+proc newLogical*(i: int): Value {.inline, enforceNoRaises.} =
     if i==1: newLogical(True)
     elif i==0: newLogical(False)
     else: newLogical(Maybe)
@@ -443,10 +473,10 @@ when not defined(NOGMP):
     proc newInteger*(bi: Int): Value {.inline.} =
         result = Value(kind: Integer, iKind: BigInteger, bi: bi)
 
-func newInteger*(i: int): Value {.inline.} =
+func newInteger*(i: int): Value {.inline, enforceNoRaises.} =
     result = Value(kind: Integer, iKind: NormalInteger, i: i)
 
-func newInteger*(i: int64): Value {.inline.} =
+func newInteger*(i: int64): Value {.inline, enforceNoRaises.} =
     newInteger((int)(i))
 
 proc newInteger*(i: string, lineno: int = 1): Value {.inline.} =
@@ -466,10 +496,10 @@ func newBigInteger*(i: int): Value {.inline.} =
     elif not defined(NOGMP):
         result = Value(kind: Integer, iKind: BigInteger, bi: newInt(i))
 
-func newFloating*(f: float): Value {.inline.} =
+func newFloating*(f: float): Value {.inline, enforceNoRaises.} =
     Value(kind: Floating, f: f)
 
-func newFloating*(f: int): Value {.inline.} =
+func newFloating*(f: int): Value {.inline, enforceNoRaises.} =
     Value(kind: Floating, f: (float)(f))
 
 proc newFloating*(f: string): Value {.inline.} =
@@ -493,7 +523,7 @@ func newComplex*(fre: Value, fim: Value): Value {.inline.} =
 
     newComplex(r,i)
 
-func newRational*(rat: Rational[int]): Value {.inline.} =
+func newRational*(rat: Rational[int]): Value {.inline, enforceNoRaises.} =
     Value(kind: Rational, rat: rat)
 
 func newRational*(num: int, den: int): Value {.inline.} =
@@ -505,7 +535,7 @@ func newRational*(n: int): Value {.inline.} =
 func newRational*(n: float): Value {.inline.} =
     Value(kind: Rational, rat: toRational(n))
 
-func newRational*(num: Value, den: Value): Value {.inline.} =
+func newRational*(num: Value, den: Value): Value {.inline, enforceNoRaises.} =
     newRational(num.i, den.i)
 
 func newVersion*(v: string): Value {.inline.} =
@@ -528,12 +558,15 @@ func newVersion*(v: string): Value {.inline.} =
                          patch: parseInt(parts[2]), 
                          extra: extraPart)
 
-func newType*(t: ValueKind): Value {.inline.} =
+func newType*(t: ValueKind): Value {.inline, enforceNoRaises.} =
     Value(kind: Type, tpKind: BuiltinType, t: t)
 
 proc newUserType*(n: string, f: ValueArray = @[]): Value {.inline.} =
-    if TypeLookup.hasKey(n):
-        return TypeLookup[n]
+    let lookup = TypeLookup.getOrDefault(n, VNOTHING)
+    if lookup != VNOTHING:
+        return lookup
+    # if TypeLookup.hasKey(n):
+    #     return TypeLookup[n]
     else:
         result = Value(kind: Type, tpKind: UserType, t: Object, ts: Prototype(name: n, fields: f, methods: initOrderedTable[string,Value](), inherits: nil))
         TypeLookup[n] = result
@@ -544,7 +577,7 @@ proc newType*(t: string): Value {.inline.} =
     except ValueError:
         newUserType(t)
 
-func newChar*(c: Rune): Value {.inline.} =
+func newChar*(c: Rune): Value {.inline, enforceNoRaises.} =
     Value(kind: Char, c: c)
 
 func newChar*(c: char): Value {.inline.} =
@@ -553,47 +586,47 @@ func newChar*(c: char): Value {.inline.} =
 func newChar*(c: string): Value {.inline.} =
     Value(kind: Char, c: c.runeAt(0))
 
-func newString*(s: string, dedented: bool = false): Value {.inline.} =
+func newString*(s: string, dedented: bool = false): Value {.inline, enforceNoRaises.} =
     if not dedented: Value(kind: String, s: s)
     else: Value(kind: String, s: unicode.strip(dedent(s)))
 
-func newString*(s: cstring, dedented: bool = false): Value {.inline.} =
+func newString*(s: cstring, dedented: bool = false): Value {.inline, enforceNoRaises.} =
     newString($(s), dedented)
 
-func newWord*(w: string): Value {.inline.} =
+func newWord*(w: string): Value {.inline, enforceNoRaises.} =
     Value(kind: Word, s: w)
 
-func newLiteral*(l: string): Value {.inline.} =
+func newLiteral*(l: string): Value {.inline, enforceNoRaises.} =
     Value(kind: Literal, s: l)
 
-func newLabel*(l: string): Value {.inline.} =
+func newLabel*(l: string): Value {.inline, enforceNoRaises.} =
     Value(kind: Label, s: l)
 
-func newAttribute*(a: string): Value {.inline.} =
+func newAttribute*(a: string): Value {.inline, enforceNoRaises.} =
     Value(kind: Attribute, r: a)
 
-func newAttributeLabel*(a: string): Value {.inline.} =
+func newAttributeLabel*(a: string): Value {.inline, enforceNoRaises.} =
     Value(kind: AttributeLabel, r: a)
 
-func newPath*(p: ValueArray): Value {.inline.} =
+func newPath*(p: ValueArray): Value {.inline, enforceNoRaises.} =
     Value(kind: Path, p: p)
 
-func newPathLabel*(p: ValueArray): Value {.inline.} =
+func newPathLabel*(p: ValueArray): Value {.inline, enforceNoRaises.} =
     Value(kind: PathLabel, p: p)
 
-func newSymbol*(m: SymbolKind): Value {.inline.} =
+func newSymbol*(m: SymbolKind): Value {.inline, enforceNoRaises.} =
     Value(kind: Symbol, m: m)
 
 func newSymbol*(m: string): Value {.inline.} =
     newSymbol(parseEnum[SymbolKind](m))
 
-func newSymbolLiteral*(m: SymbolKind): Value {.inline.} =
+func newSymbolLiteral*(m: SymbolKind): Value {.inline, enforceNoRaises.} =
     Value(kind: SymbolLiteral, m: m)
 
 func newSymbolLiteral*(m: string): Value {.inline.} =
     newSymbolLiteral(parseEnum[SymbolKind](m))
 
-func newQuantity*(nm: Value, unit: QuantitySpec): Value {.inline.} =
+func newQuantity*(nm: Value, unit: QuantitySpec): Value {.inline, enforceNoRaises.} =
     Value(kind: Quantity, nm: nm, unit: unit)
 
 proc newQuantity*(nm: Value, name: UnitName): Value {.inline.} =
@@ -626,7 +659,7 @@ proc convertQuantityValue*(nm: Value, fromU: UnitName, toU: UnitName, fromKind =
     if fromK==NoUnit: fromK = quantityKindForName(fromU)
     if toK==NoUnit: toK = quantityKindForName(toU)
 
-    if fromK!=toK:
+    if unlikely(fromK!=toK):
         when not defined(WEB):
             RuntimeError_CannotConvertQuantity($(nm), stringify(fromU), stringify(fromK), stringify(toU), stringify(toK))
     
@@ -639,13 +672,13 @@ proc convertQuantityValue*(nm: Value, fromU: UnitName, toU: UnitName, fromKind =
         else:
             return nm * newFloating(fmultiplier)
 
-func newRegex*(rx: RegexObj): Value {.inline.} =
+func newRegex*(rx: RegexObj): Value {.inline, enforceNoRaises.} =
     Value(kind: Regex, rx: rx)
 
 func newRegex*(rx: string): Value {.inline.} =
     newRegex(newRegexObj(rx))
 
-func newColor*(l: VColor): Value {.inline.} =
+func newColor*(l: VColor): Value {.inline, enforceNoRaises.} =
     Value(kind: Color, l: l)
 
 func newColor*(rgb: RGB): Value {.inline.} =
@@ -654,7 +687,7 @@ func newColor*(rgb: RGB): Value {.inline.} =
 func newColor*(l: string): Value {.inline.} =
     newColor(parseColor(l))
 
-func newDate*(dt: DateTime): Value {.inline.} =
+func newDate*(dt: DateTime): Value {.inline, enforceNoRaises.} =
     let edict = {
         "hour"      : newInteger(dt.hour),
         "minute"    : newInteger(dt.minute),
@@ -670,13 +703,13 @@ func newDate*(dt: DateTime): Value {.inline.} =
     }.toOrderedTable
     Value(kind: Date, e: edict, eobj: dt)
 
-func newBinary*(n: ByteArray = @[]): Value {.inline.} =
+func newBinary*(n: ByteArray = @[]): Value {.inline, enforceNoRaises.} =
     Value(kind: Binary, n: n)
 
-func newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
+func newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline, enforceNoRaises.} =
     Value(kind: Dictionary, d: d)
 
-func newObject*(o: ValueDict = initOrderedTable[string,Value](), proto: Prototype): Value {.inline.} =
+func newObject*(o: ValueDict = initOrderedTable[string,Value](), proto: Prototype): Value {.inline, enforceNoRaises.} =
     Value(kind: Object, o: o, proto: proto)
 
 proc newObject*(args: ValueArray, prot: Prototype, initializer: proc (self: Value, prot: Prototype), o: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
@@ -702,10 +735,10 @@ proc newObject*(args: ValueDict, prot: Prototype, initializer: proc (self: Value
     
     initializer(result, prot)
 
-func newFunction*(params: Value, main: Value, imports: Value = VNULL, exports: Value = VNULL, exportable: bool = false, memoize: bool = false): Value {.inline.} =
+func newFunction*(params: Value, main: Value, imports: Value = VNULL, exports: Value = VNULL, exportable: bool = false, memoize: bool = false): Value {.inline, enforceNoRaises.} =
     Value(kind: Function, fnKind: UserFunction, params: params, main: main, imports: imports, exports: exports, exportable: exportable, memoize: memoize)
 
-func newBuiltin*(name: string, al: SymbolKind, pr: PrecedenceKind, desc: string, ar: int, ag: OrderedTable[string,ValueSpec], at: OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: string, act: BuiltinAction): Value {.inline.} =
+func newBuiltin*(name: string, al: SymbolKind, pr: PrecedenceKind, desc: string, ar: int, ag: OrderedTable[string,ValueSpec], at: OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: string, act: BuiltinAction): Value {.inline, enforceNoRaises.} =
     Value(
         kind    : Function, 
         fnKind  : BuiltinFunction, 
@@ -728,25 +761,25 @@ when not defined(NOSQLITE):
 # proc newDatabase*(db: mysql.DbConn): Value {.inline.} =
 #     Value(kind: Database, dbKind: MysqlDatabase, mysqldb: db)
 
-func newBytecode*(t: Translation): Value {.inline.} =
+func newBytecode*(t: Translation): Value {.inline, enforceNoRaises.} =
     Value(kind: Bytecode, trans: t)
 
-func newInline*(a: ValueArray = @[]): Value {.inline.} = #, refs: seq[int] = @[]): Value {.inline.} = 
-    Value(kind: Inline, a: a)#, refs: refs)
+func newInline*(a: ValueArray = @[]): Value {.inline, enforceNoRaises.} =
+    Value(kind: Inline, a: a)
 
-func newBlock*(a: ValueArray = @[], data = VNULL): Value {.inline.} = #, refs: seq[int] = @[]): Value {.inline.} =
-    Value(kind: Block, a: a, data: data)#, refs: refs)
+func newBlock*(a: ValueArray = @[], data = VNULL): Value {.inline, enforceNoRaises.} =
+    Value(kind: Block, a: a, data: data)
 
-func newIntegerBlock*[T](a: seq[T]): Value {.inline.} =
+func newIntegerBlock*[T](a: seq[T]): Value {.inline, enforceNoRaises.} =
     newBlock(a.map(proc (x:T):Value = newInteger((int)(x))))
 
-proc newStringBlock*(a: seq[string]): Value {.inline.} =
+proc newStringBlock*(a: seq[string]): Value {.inline, enforceNoRaises.} =
     newBlock(a.map(proc (x:string):Value = newString($x)))
 
-proc newStringBlock*(a: seq[cstring]): Value {.inline.} =
+proc newStringBlock*(a: seq[cstring]): Value {.inline, enforceNoRaises.} =
     newBlock(a.map(proc (x:cstring):Value = newString(x)))
 
-func newNewline*(l: int): Value {.inline.} =
+func newNewline*(l: int): Value {.inline, enforceNoRaises.} =
     Value(kind: Newline, line: l)
 
 proc newStringDictionary*(a: Table[string, string]): Value =
@@ -772,7 +805,8 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Null:        result = VNULL
         of Logical:     result = newLogical(v.b)
         of Integer:     
-            if v.iKind == NormalInteger: result = newInteger(v.i)
+            if likely(v.iKind == NormalInteger): 
+                result = newInteger(v.i)
             else:
                 when defined(WEB) or not defined(NOGMP): 
                     result = newInteger(v.bi)
@@ -780,7 +814,7 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Complex:     result = newComplex(v.z)
         of Rational:    result = newRational(v.rat)
         of Type:        
-            if v.tpKind==BuiltinType:
+            if likely(v.tpKind==BuiltinType):
                 result = newType(v.t)
             else:
                 result = newUserType(v.ts.name, v.ts.fields)
@@ -817,6 +851,16 @@ proc copyValue*(v: Value): Value {.inline.} =
         else: discard
 
 #=======================================
+# Predicates
+#=======================================
+
+template isNull*(v: Value): bool =
+    v.kind==Null
+
+template isNothing*(v: Value): bool =
+    v.kind==Nothing
+
+#=======================================
 # Helpers
 #=======================================
 
@@ -832,27 +876,27 @@ when defined(WEB):
     proc flushFile*(buffer: var string) =
         echo buffer
 
-func addChild*(parent: Value, child: Value) {.inline.} =
+func addChild*(parent: Value, child: Value) {.inline, enforceNoRaises.} =
     parent.a.add(child)
 
-func removeChildren*(parent: Value, rng: Slice[int]) {.inline.} =
+func removeChildren*(parent: Value, rng: Slice[int]) {.inline, enforceNoRaises.} =
     parent.a.delete(rng)
 
-func asFloat*(v: Value): float = 
+func asFloat*(v: Value): float {.enforceNoRaises.} = 
     # get number value forcefully as a float
     if v.kind == Floating:
         result = v.f
     else:
         result = (float)(v.i)
 
-func asInt*(v: Value): int = 
+func asInt*(v: Value): int {.enforceNoRaises.} = 
     # get number value forcefully as an int
     if v.kind == Integer:
         result = v.i
     else:
         result = (int)(v.f)
 
-func getArity*(x: Value): int =
+func getArity*(x: Value): int {.enforceNoRaises.} =
     if x.fnKind==BuiltinFunction:
         return x.arity
     else:
@@ -918,8 +962,8 @@ proc `+`*(x: Value, y: Value): Value =
             return VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
-            if x.iKind==NormalInteger:
-                if y.iKind==NormalInteger:
+            if likely(x.iKind==NormalInteger):
+                if likely(y.iKind==NormalInteger):
                     try:
                         return newInteger(x.i+y.i)
                     except OverflowDefect:
@@ -936,12 +980,12 @@ proc `+`*(x: Value, y: Value): Value =
                         return newInteger(x.i+y.bi)
             else:
                 when defined(WEB):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         return newInteger(x.bi+y.bi)
                     else:
                         return newInteger(x.bi+big(y.i))
                 elif not defined(NOGMP):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         return newInteger(x.bi+y.bi)
                     else:
                         return newInteger(x.bi+y.i)
@@ -951,28 +995,28 @@ proc `+`*(x: Value, y: Value): Value =
                 elif y.kind==Complex: return newComplex(x.f+y.z)
                 elif y.kind==Rational: return newRational(toRational(x.f) + y.rat)
                 else: 
-                    if y.iKind==NormalInteger:
+                    if likely(y.iKind==NormalInteger):
                         return newFloating(x.f+y.i)
                     else:
                         when not defined(NOGMP):
                             return newFloating(x.f+y.bi)
             elif x.kind==Complex:
                 if y.kind==Integer:
-                    if y.iKind==NormalInteger: return newComplex(x.z+(float)(y.i))
+                    if likely(y.iKind==NormalInteger): return newComplex(x.z+(float)(y.i))
                     else: return VNULL
                 elif y.kind==Floating: return newComplex(x.z+y.f)
                 elif y.kind==Rational: return VNULL
                 else: return newComplex(x.z+y.z)
             elif x.kind==Rational:
                 if y.kind==Integer:
-                    if y.iKind==NormalInteger: return newRational(x.rat+y.i)
+                    if likely(y.iKind==NormalInteger): return newRational(x.rat+y.i)
                     else: return VNULL
                 elif y.kind==Floating: return newRational(x.rat+toRational(y.f))
                 elif y.kind==Complex: return VNULL
                 else: return newRational(x.rat+y.rat)
             else:
                 if y.kind==Floating: 
-                    if x.iKind==NormalInteger:
+                    if likely(x.iKind==NormalInteger):
                         return newFloating(x.i+y.f)
                     else:
                         when not defined(NOGMP):
@@ -994,8 +1038,8 @@ proc `+=`*(x: var Value, y: Value) =
             x = VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
-            if x.iKind==NormalInteger:
-                if y.iKind==NormalInteger:
+            if likely(x.iKind==NormalInteger):
+                if likely(y.iKind==NormalInteger):
                     try:
                         x.i += y.i
                     except OverflowDefect:
@@ -1013,12 +1057,12 @@ proc `+=`*(x: var Value, y: Value) =
                     
             else:
                 when defined(WEB):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         x.bi += y.bi
                     else:
                         x.bi += big(y.i)
                 elif not defined(NOGMP):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         x.bi += y.bi
                     else:
                         x.bi += y.i
@@ -1035,21 +1079,21 @@ proc `+=`*(x: var Value, y: Value) =
                             x = newFloating(x.f + y.bi)
             elif x.kind==Complex:
                 if y.kind==Integer:
-                    if y.iKind==NormalInteger: x = newComplex(x.z + (float)(y.i))
+                    if likely(y.iKind==NormalInteger): x = newComplex(x.z + (float)(y.i))
                     else: discard
                 elif y.kind==Floating: x = newComplex(x.z + y.f)
                 elif y.kind==Rational: discard
                 else: x.z += y.z
             elif x.kind==Rational:
                 if y.kind==Integer:
-                    if y.iKind==NormalInteger: x.rat += y.i
+                    if likely(y.iKind==NormalInteger): x.rat += y.i
                     else: discard
                 elif y.kind==Floating: x.rat += toRational(y.f)
                 elif y.kind==Complex: discard
                 else: x.rat += y.rat
             else:
                 if y.kind==Floating: 
-                    if x.iKind==NormalInteger:
+                    if likely(x.iKind==NormalInteger):
                         x = newFloating(x.i+y.f)
                     else:
                         when not defined(NOGMP):
@@ -1073,8 +1117,8 @@ proc `-`*(x: Value, y: Value): Value =
             return VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
-            if x.iKind==NormalInteger:
-                if y.iKind==NormalInteger:
+            if likely(x.iKind==NormalInteger):
+                if likely(y.iKind==NormalInteger):
                     try:
                         return newInteger(x.i-y.i)
                     except OverflowDefect:
@@ -1092,12 +1136,12 @@ proc `-`*(x: Value, y: Value): Value =
                     
             else:
                 when defined(WEB):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         return newInteger(x.bi-y.bi)
                     else:
                         return newInteger(x.bi-big(y.i))
                 elif not defined(NOGMP):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         return newInteger(x.bi-y.bi)
                     else:
                         return newInteger(x.bi-y.i)
@@ -1107,28 +1151,28 @@ proc `-`*(x: Value, y: Value): Value =
                 elif y.kind==Complex: return newComplex(x.f-y.z)
                 elif y.kind==Rational: return newRational(toRational(x.f)-y.rat)
                 else: 
-                    if y.iKind==NormalInteger:
+                    if likely(y.iKind==NormalInteger):
                         return newFloating(x.f-y.i)
                     else:
                         when not defined(NOGMP):
                             return newFloating(x.f-y.bi)
             elif x.kind==Complex:
                 if y.kind==Integer:
-                    if y.iKind==NormalInteger: return newComplex(x.z-(float)(y.i))
+                    if likely(y.iKind==NormalInteger): return newComplex(x.z-(float)(y.i))
                     else: return VNULL
                 elif y.kind==Floating: return newComplex(x.z-y.f)
                 elif y.kind==Rational: return VNULL
                 else: return newComplex(x.z-y.z)
             elif x.kind==Rational:
                 if y.kind==Integer:
-                    if y.iKind==NormalInteger: return newRational(x.rat-y.i)
+                    if likely(y.iKind==NormalInteger): return newRational(x.rat-y.i)
                     else: return VNULL
                 elif y.kind==Floating: return newRational(x.rat-toRational(y.f))
                 elif y.kind==Complex: return VNULL
                 else: return newRational(x.rat-y.rat)
             else:
                 if y.kind==Floating: 
-                    if x.iKind==NormalInteger:
+                    if likely(x.iKind==NormalInteger):
                         return newFloating(x.i-y.f)
                     else:
                         when not defined(NOGMP):
@@ -1150,8 +1194,8 @@ proc `-=`*(x: var Value, y: Value) =
             x = VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
-            if x.iKind==NormalInteger:
-                if y.iKind==NormalInteger:
+            if likely(x.iKind==NormalInteger):
+                if likely(y.iKind==NormalInteger):
                     try:
                         x.i -= y.i
                     except OverflowDefect:
@@ -1168,12 +1212,12 @@ proc `-=`*(x: var Value, y: Value) =
                         x = newInteger(x.i-y.bi)
             else:
                 when defined(WEB):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         x.bi -= y.bi
                     else:
                         x.bi -= big(y.i)
                 elif not defined(NOGMP):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         x.bi -= y.bi
                     else:
                         x.bi -= y.i
@@ -1190,21 +1234,21 @@ proc `-=`*(x: var Value, y: Value) =
                             x = newFloating(x.f - y.bi)
             elif x.kind==Complex:
                 if y.kind==Integer:
-                    if y.iKind==NormalInteger: x = newComplex(x.z - (float)(y.i))
+                    if likely(y.iKind==NormalInteger): x = newComplex(x.z - (float)(y.i))
                     else: discard
                 elif y.kind==Floating: x = newComplex(x.z - y.f)
                 elif y.kind==Rational: discard
                 else: x.z -= y.z
             elif x.kind==Rational:
                 if y.kind==Integer:
-                    if y.iKind==NormalInteger: x.rat -= y.i
+                    if likely(y.iKind==NormalInteger): x.rat -= y.i
                     else: discard
                 elif y.kind==Floating: x.rat -= toRational(y.f)
                 elif y.kind==Complex: discard
                 else: x.rat -= y.rat
             else:
                 if y.kind==Floating: 
-                    if x.iKind==NormalInteger:
+                    if likely(x.iKind==NormalInteger):
                         x = newFloating(x.i-y.f)
                     else:
                         when not defined(NOGMP):
@@ -1217,7 +1261,7 @@ proc `*`*(x: Value, y: Value): Value =
         if x.kind == Quantity:
             if y.kind == Quantity:
                 let finalSpec = getFinalUnitAfterOperation("mul", x.unit, y.unit)
-                if finalSpec == ErrorQuantity:
+                if unlikely(finalSpec == ErrorQuantity):
                     when not defined(WEB):
                         RuntimeError_IncompatibleQuantityOperation("mul", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
                 else:
@@ -1228,8 +1272,8 @@ proc `*`*(x: Value, y: Value): Value =
             return VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
-            if x.iKind==NormalInteger:
-                if y.iKind==NormalInteger:
+            if likely(x.iKind==NormalInteger):
+                if likely(y.iKind==NormalInteger):
                     try:
                         return newInteger(x.i*y.i)
                     except OverflowDefect:
@@ -1246,12 +1290,12 @@ proc `*`*(x: Value, y: Value): Value =
                         return newInteger(x.i*y.bi)
             else:
                 when defined(WEB):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         return newInteger(x.bi*y.bi)
                     else:
                         return newInteger(x.bi*big(y.i))
                 elif not defined(NOGMP):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         return newInteger(x.bi*y.bi)
                     else:
                         return newInteger(x.bi*y.i)
@@ -1261,28 +1305,28 @@ proc `*`*(x: Value, y: Value): Value =
                 elif y.kind==Complex: return newComplex(x.f*y.z)
                 elif y.kind==Rational: return newRational(toRational(x.f)*y.rat)
                 else:
-                    if y.iKind==NormalInteger:
+                    if likely(y.iKind==NormalInteger):
                         return newFloating(x.f*y.i)
                     else:
                         when not defined(NOGMP):
                             return newFloating(x.f * y.bi)
             elif x.kind==Complex:
                 if y.kind==Integer:
-                    if y.iKind==NormalInteger: return newComplex(x.z*(float)(y.i))
+                    if likely(y.iKind==NormalInteger): return newComplex(x.z*(float)(y.i))
                     else: return VNULL
                 elif y.kind==Floating: return newComplex(x.z*y.f)
                 elif y.kind==Rational: return VNULL
                 else: return newComplex(x.z*y.z)
             elif x.kind==Rational:
                 if y.kind==Integer:
-                    if y.iKind==NormalInteger: return newRational(x.rat*y.i)
+                    if likely(y.iKind==NormalInteger): return newRational(x.rat*y.i)
                     else: return VNULL
                 elif y.kind==Floating: return newRational(x.rat*toRational(y.f))
                 elif y.kind==Complex: return VNULL
                 else: return newRational(x.rat*y.rat)
             else:
                 if y.kind==Floating: 
-                    if x.iKind==NormalInteger:
+                    if likely(x.iKind==NormalInteger):
                         return newFloating(x.i*y.f)
                     else:
                         when not defined(NOGMP):
@@ -1295,7 +1339,7 @@ proc `*=`*(x: var Value, y: Value) =
         if x.kind == Quantity:
             if y.kind == Quantity:
                 let finalSpec = getFinalUnitAfterOperation("mul", x.unit, y.unit)
-                if finalSpec == ErrorQuantity:
+                if unlikely(finalSpec == ErrorQuantity):
                     when not defined(WEB):
                         RuntimeError_IncompatibleQuantityOperation("mul", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
                 else:
@@ -1306,8 +1350,8 @@ proc `*=`*(x: var Value, y: Value) =
             x = VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
-            if x.iKind==NormalInteger:
-                if y.iKind==NormalInteger:
+            if likely(x.iKind==NormalInteger):
+                if likely(y.iKind==NormalInteger):
                     try:
                         safeMulI(x.i, y.i)
                     except OverflowDefect:
@@ -1324,12 +1368,12 @@ proc `*=`*(x: var Value, y: Value) =
                         x = newInteger(x.i*y.bi)
             else:
                 when defined(WEB):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         x.bi *= y.bi
                     else:
                         x.bi *= big(y.i)
                 elif not defined(NOGMP):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         x.bi *= y.bi
                     else:
                         x.bi *= y.i
@@ -1346,20 +1390,20 @@ proc `*=`*(x: var Value, y: Value) =
                             x = newFloating(x.f * y.bi)
             elif x.kind==Complex:
                 if y.kind==Integer:
-                    if y.iKind==NormalInteger: x = newComplex(x.z * (float)(y.i))
+                    if likely(y.iKind==NormalInteger): x = newComplex(x.z * (float)(y.i))
                     else: discard
                 elif y.kind==Floating: x = newComplex(x.z * y.f)
                 else: x.z *= y.z
             elif x.kind==Rational:
                 if y.kind==Integer:
-                    if y.iKind==NormalInteger: x.rat *= y.i
+                    if likely(y.iKind==NormalInteger): x.rat *= y.i
                     else: discard
                 elif y.kind==Floating: x.rat *= toRational(y.f)
                 elif y.kind==Complex: discard
                 else: x.rat *= y.rat
             else:
                 if y.kind==Floating: 
-                    if x.iKind==NormalInteger:
+                    if likely(x.iKind==NormalInteger):
                         x = newFloating(x.i*y.f)
                     else:
                         when not defined(NOGMP):
@@ -1380,7 +1424,7 @@ proc `/`*(x: Value, y: Value): Value =
         if x.kind == Quantity:
             if y.kind == Quantity:
                 let finalSpec = getFinalUnitAfterOperation("div", x.unit, y.unit)
-                if finalSpec == ErrorQuantity:
+                if unlikely(finalSpec == ErrorQuantity):
                     when not defined(WEB):
                         RuntimeError_IncompatibleQuantityOperation("div", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
                 elif finalSpec == NumericQuantity:
@@ -1393,8 +1437,8 @@ proc `/`*(x: Value, y: Value): Value =
             return VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
-            if x.iKind==NormalInteger:
-                if y.iKind==NormalInteger:
+            if likely(x.iKind==NormalInteger):
+                if likely(y.iKind==NormalInteger):
                     return newInteger(x.i div y.i)
                 else:
                     when defined(WEB):
@@ -1403,12 +1447,12 @@ proc `/`*(x: Value, y: Value): Value =
                         return newInteger(x.i div y.bi)
             else:
                 when defined(WEB):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         return newInteger(x.bi div y.bi)
                     else:
                         return newInteger(x.bi div big(y.i))
                 elif not defined(NOGMP):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         return newInteger(x.bi div y.bi)
                     else:
                         return newInteger(x.bi div y.i)
@@ -1418,28 +1462,28 @@ proc `/`*(x: Value, y: Value): Value =
                 elif y.kind==Complex: return newComplex(x.f/y.z)
                 elif y.kind==Rational: return newInteger(toRational(x.f) div y.rat)
                 else: 
-                    if y.iKind==NormalInteger:
+                    if likely(y.iKind==NormalInteger):
                         return newFloating(x.f/y.i)
                     else:
                         when not defined(NOGMP):
                             return newFloating(x.f / y.bi)
             elif x.kind==Complex:
                 if y.kind==Integer:
-                    if y.iKind==NormalInteger: return newComplex(x.z/(float)(y.i))
+                    if likely(y.iKind==NormalInteger): return newComplex(x.z/(float)(y.i))
                     else: return VNULL
                 elif y.kind==Floating: return newComplex(x.z/y.f)
                 elif y.kind==Rational: return VNULL
                 else: return newComplex(x.z/y.z)
             elif x.kind==Rational:
                 if y.kind==Integer:
-                    if y.iKind==NormalInteger: return newInteger(x.rat div toRational(y.i))
+                    if likely(y.iKind==NormalInteger): return newInteger(x.rat div toRational(y.i))
                     else: return VNULL
                 elif y.kind==Floating: return newInteger(x.rat div toRational(y.f))
                 elif y.kind==Complex: return VNULL
                 else: return newInteger(x.rat div y.rat)
             else:
                 if y.kind==Floating: 
-                    if x.iKind==NormalInteger:
+                    if likely(x.iKind==NormalInteger):
                         return newFloating(x.i/y.f)
                     else:
                         when not defined(NOGMP):
@@ -1452,7 +1496,7 @@ proc `/=`*(x: var Value, y: Value) =
         if x.kind == Quantity:
             if y.kind == Quantity:
                 let finalSpec = getFinalUnitAfterOperation("div", x.unit, y.unit)
-                if finalSpec == ErrorQuantity:
+                if unlikely(finalSpec == ErrorQuantity):
                     when not defined(WEB):
                         RuntimeError_IncompatibleQuantityOperation("div", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
                 elif finalSpec == NumericQuantity:
@@ -1465,8 +1509,8 @@ proc `/=`*(x: var Value, y: Value) =
             x = VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
-            if x.iKind==NormalInteger:
-                if y.iKind==NormalInteger:
+            if likely(x.iKind==NormalInteger):
+                if likely(y.iKind==NormalInteger):
                     try:
                         x = newInteger(x.i div y.i)
                     except OverflowDefect:
@@ -1483,12 +1527,12 @@ proc `/=`*(x: var Value, y: Value) =
                         x = newInteger(x.i div y.bi)
             else:
                 when defined(WEB):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         x = newInteger(x.bi div y.bi)
                     else:
                         x = newInteger(x.bi div big(y.i))
                 elif not defined(NOGMP):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         x = newInteger(x.bi div y.bi)
                     else:
                         x = newInteger(x.bi div y.i)
@@ -1505,20 +1549,20 @@ proc `/=`*(x: var Value, y: Value) =
                             x = newFloating(x.f / y.bi)
             elif x.kind==Complex:
                 if y.kind==Integer:
-                    if y.iKind==NormalInteger: x = newComplex(x.z / (float)(y.i))
+                    if likely(y.iKind==NormalInteger): x = newComplex(x.z / (float)(y.i))
                     else: discard
                 elif y.kind==Floating: x = newComplex(x.z / y.f)
                 else: x.z /= y.z
             elif x.kind==Rational:
                 if y.kind==Integer:
-                    if y.iKind==NormalInteger: x = newInteger(x.rat div toRational(y.i))
+                    if likely(y.iKind==NormalInteger): x = newInteger(x.rat div toRational(y.i))
                     else: discard
                 elif y.kind==Floating: x = newInteger(x.rat div toRational(y.f))
                 elif y.kind==Complex: discard
                 else: x = newInteger(x.rat div y.rat)
             else:
                 if y.kind==Floating: 
-                    if x.iKind==NormalInteger:
+                    if likely(x.iKind==NormalInteger):
                         x = newFloating(x.i/y.f)
                     else:
                         when not defined(NOGMP):
@@ -1531,7 +1575,7 @@ proc `//`*(x: Value, y: Value): Value =
         if x.kind == Quantity:
             if y.kind == Quantity:
                 let finalSpec = getFinalUnitAfterOperation("fdiv", x.unit, y.unit)
-                if finalSpec == ErrorQuantity:
+                if unlikely(finalSpec == ErrorQuantity):
                     when not defined(WEB):
                         RuntimeError_IncompatibleQuantityOperation("fdiv", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
                 elif finalSpec == NumericQuantity:
@@ -1550,7 +1594,7 @@ proc `//`*(x: Value, y: Value): Value =
                 if y.kind==Floating: return newFloating(x.f / y.f)
                 elif y.kind==Rational: return newRational(toRational(x.f)/y.rat)
                 else: 
-                    if y.iKind==NormalInteger:
+                    if likely(y.iKind==NormalInteger):
                         return newFloating(x.f/(float)(y.i))
                     else:
                         when not defined(NOGMP):
@@ -1561,7 +1605,7 @@ proc `//`*(x: Value, y: Value): Value =
                 else: return newRational(x.rat / y.i)
             else:
                 if y.kind==Floating:
-                    if x.iKind==NormalInteger:
+                    if likely(x.iKind==NormalInteger):
                         return newFloating((float)(x.i)/y.f)
                     else:
                         when not defined(NOGMP):
@@ -1574,7 +1618,7 @@ proc `//=`*(x: var Value, y: Value) =
         if x.kind == Quantity:
             if y.kind == Quantity:
                 let finalSpec = getFinalUnitAfterOperation("fdiv", x.unit, y.unit)
-                if finalSpec == ErrorQuantity:
+                if unlikely(finalSpec == ErrorQuantity):
                     when not defined(WEB):
                         RuntimeError_IncompatibleQuantityOperation("fdiv", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
                 elif finalSpec == NumericQuantity:
@@ -1604,7 +1648,7 @@ proc `//=`*(x: var Value, y: Value) =
                 else: x.rat /= y.i
             else:
                 if y.kind==Floating:
-                    if x.iKind==NormalInteger:
+                    if likely(x.iKind==NormalInteger):
                         x = newFloating((float)(x.i)/y.f)
                     else:
                         when not defined(NOGMP):
@@ -1619,15 +1663,15 @@ proc `%`*(x: Value, y: Value): Value =
             else:
                 return newQuantity(x.nm % convertQuantityValue(y.nm, y.unit.name, x.unit.name), x.unit)
         else:
-            if x.unit.kind != y.unit.kind:
+            if unlikely(x.unit.kind != y.unit.kind):
                 when not defined(WEB):
                     RuntimeError_IncompatibleQuantityOperation("mod", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
             else:
                 return VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
-            if x.iKind==NormalInteger:
-                if y.iKind==NormalInteger:
+            if likely(x.iKind==NormalInteger):
+                if likely(y.iKind==NormalInteger):
                     return newInteger(x.i mod y.i)
                 else:
                     when defined(WEB):
@@ -1636,12 +1680,12 @@ proc `%`*(x: Value, y: Value): Value =
                         return newInteger(x.i mod y.bi)
             else:
                 when defined(WEB):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         return newInteger(x.bi mod y.bi)
                     else:
                         return newInteger(x.bi mod big(y.i))
                 elif not defined(NOGMP):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         return newInteger(x.bi mod y.bi)
                     else:
                         return newInteger(x.bi mod y.i)
@@ -1650,7 +1694,7 @@ proc `%`*(x: Value, y: Value): Value =
                 if y.kind==Floating: return newFloating(x.f mod y.f)
                 elif y.kind==Rational: return newRational(toRational(x.f) mod y.rat)
                 else: 
-                    if y.iKind==NormalInteger:
+                    if likely(y.iKind==NormalInteger):
                         return newFloating(x.f mod (float)(y.i))
                     else:
                         discard
@@ -1664,7 +1708,7 @@ proc `%`*(x: Value, y: Value): Value =
                 if y.kind==Rational:
                     return newRational(toRational(x.i) mod y.rat)
                 else:
-                    if x.iKind==NormalInteger:
+                    if likely(x.iKind==NormalInteger):
                         return newFloating((float)(x.i) mod y.f)
                     else:
                         discard
@@ -1679,15 +1723,15 @@ proc `%=`*(x: var Value, y: Value) =
             else:
                 x.nm %= convertQuantityValue(y.nm, y.unit.name, x.unit.name)
         else:
-            if x.unit.kind != y.unit.kind:
+            if unlikely(x.unit.kind != y.unit.kind):
                 when not defined(WEB):
                     RuntimeError_IncompatibleQuantityOperation("mod", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
             else:
                 x = VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
-            if x.iKind==NormalInteger:
-                if y.iKind==NormalInteger: 
+            if likely(x.iKind==NormalInteger):
+                if likely(y.iKind==NormalInteger): 
                     x.i = x.i mod y.i
                 else: 
                     when defined(WEB):
@@ -1696,12 +1740,12 @@ proc `%=`*(x: var Value, y: Value) =
                         x = newInteger(x.i mod y.bi)
             else:
                 when defined(WEB):
-                    if y.iKind==NormalInteger: 
+                    if likely(y.iKind==NormalInteger): 
                         x = newInteger(x.bi mod big(y.i))
                     else: 
                         x = newInteger(x.bi mod y.bi)
                 elif not defined(NOGMP):
-                    if y.iKind==NormalInteger: 
+                    if likely(y.iKind==NormalInteger): 
                         x = newInteger(x.bi mod y.i)
                     else: 
                         x = newInteger(x.bi mod y.bi)
@@ -1710,7 +1754,7 @@ proc `%=`*(x: var Value, y: Value) =
                 if y.kind==Floating: x = newFloating(x.f mod y.f)
                 elif y.kind==Rational: x = newRational(toRational(x.f) mod y.rat)
                 else: 
-                    if y.iKind==NormalInteger:
+                    if likely(y.iKind==NormalInteger):
                         x = newFloating(x.f mod (float)(y.i))
             elif x.kind==Rational:
                 if y.kind==Floating: x = newRational(x.rat mod toRational(y.f))
@@ -1720,7 +1764,7 @@ proc `%=`*(x: var Value, y: Value) =
                 if y.kind==Rational:
                     x = newRational(toRational(x.i) mod y.rat)
                 else:
-                    if x.iKind==NormalInteger:
+                    if likely(x.iKind==NormalInteger):
                         x = newFloating((float)(x.i) mod y.f)
 
 proc `/%`*(x: Value, y: Value): Value =
@@ -1728,8 +1772,8 @@ proc `/%`*(x: Value, y: Value): Value =
         return newBlock(@[x/y, x%y])
     else:
         if x.kind==Integer and y.kind==Integer:
-            if x.iKind==NormalInteger:
-                if y.iKind==NormalInteger:
+            if likely(x.iKind==NormalInteger):
+                if likely(y.iKind==NormalInteger):
                     return newBlock(@[x/y, x%y])
                 else:
                     when defined(WEB):
@@ -1741,7 +1785,7 @@ proc `/%`*(x: Value, y: Value): Value =
                 when defined(WEB):
                     return newBlock(@[x/y, x%y])
                 elif not defined(NOGMP):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         let dm = divmod(x.bi, y.bi)
                         return newBlock(@[newInteger(dm.q), newInteger(dm.r)])
                     else:
@@ -1752,7 +1796,7 @@ proc `/%`*(x: Value, y: Value): Value =
                 if y.kind==Floating: return newBlock(@[x/y, x%y])
                 elif y.kind==Rational: return newBlock(@[x/y, x%y])
                 else: 
-                    if y.iKind==NormalInteger:
+                    if likely(y.iKind==NormalInteger):
                         return newBlock(@[x/y, x%y])
                     else:
                         discard
@@ -1766,7 +1810,7 @@ proc `/%`*(x: Value, y: Value): Value =
                 if y.kind==Rational:
                     return newBlock(@[x/y, x%y])
                 else:
-                    if x.iKind==NormalInteger:
+                    if likely(x.iKind==NormalInteger):
                         return newBlock(@[x/y, x%y])
                     else:
                         discard
@@ -1776,8 +1820,8 @@ proc `/%=`*(x: var Value, y: Value) =
         x = newBlock(@[x/y, x%y])
     else:
         if x.kind==Integer and y.kind==Integer:
-            if x.iKind==NormalInteger:
-                if y.iKind==NormalInteger:
+            if likely(x.iKind==NormalInteger):
+                if likely(y.iKind==NormalInteger):
                     x = newBlock(@[x/y, x%y])
                 else:
                     when defined(WEB):
@@ -1789,7 +1833,7 @@ proc `/%=`*(x: var Value, y: Value) =
                 when defined(WEB):
                     x = newBlock(@[x/y, x%y])
                 elif not defined(NOGMP):
-                    if y.iKind==BigInteger:
+                    if unlikely(y.iKind==BigInteger):
                         let dm = divmod(x.bi, y.bi)
                         x = newBlock(@[newInteger(dm.q), newInteger(dm.r)])
                     else:
@@ -1800,7 +1844,7 @@ proc `/%=`*(x: var Value, y: Value) =
                 if y.kind==Floating: x = newBlock(@[x/y, x%y])
                 elif y.kind==Rational: x = newBlock(@[x/y, x%y])
                 else: 
-                    if y.iKind==NormalInteger:
+                    if likely(y.iKind==NormalInteger):
                         x = newBlock(@[x/y, x%y])
                     else:
                         discard
@@ -1814,7 +1858,7 @@ proc `/%=`*(x: var Value, y: Value) =
                 if y.kind==Rational:
                     x = newBlock(@[x/y, x%y])
                 else:
-                    if x.iKind==NormalInteger:
+                    if likely(x.iKind==NormalInteger):
                         x = newBlock(@[x/y, x%y])
                     else:
                         discard
@@ -1843,8 +1887,8 @@ proc `^`*(x: Value, y: Value): Value =
             return VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
-            if x.iKind==NormalInteger:
-                if y.iKind==NormalInteger:
+            if likely(x.iKind==NormalInteger):
+                if likely(y.iKind==NormalInteger):
                     try:
                         if y.i >= 0:
                             return newInteger(safePow(x.i,y.i))
@@ -1864,12 +1908,12 @@ proc `^`*(x: Value, y: Value): Value =
                         RuntimeError_NumberOutOfPermittedRange("pow",$(x), $(y))
             else:
                 when defined(WEB):
-                    if y.iKind==NormalInteger: 
+                    if likely(y.iKind==NormalInteger): 
                         return newInteger(x.bi ** big(y.i))
                     else: 
                         return newInteger(x.bi ** y.bi)
                 elif not defined(NOGMP):
-                    if y.iKind==NormalInteger:
+                    if likely(y.iKind==NormalInteger):
                         return newInteger(pow(x.bi,(culong)(y.i)))
                     else:
                         RuntimeError_NumberOutOfPermittedRange("pow",$(x), $(y))
@@ -1878,20 +1922,20 @@ proc `^`*(x: Value, y: Value): Value =
                 if y.kind==Floating: return newFloating(pow(x.f,y.f))
                 elif y.kind==Complex: return VNULL
                 else: 
-                    if y.iKind==NormalInteger:
+                    if likely(y.iKind==NormalInteger):
                         return newFloating(pow(x.f,(float)(y.i)))
                     else:
                         when not defined(NOGMP):
                             return newFloating(pow(x.f,y.bi))
             elif x.kind==Complex:
                 if y.kind==Integer:
-                    if y.iKind==NormalInteger: return newComplex(pow(x.z,(float)(y.i)))
+                    if likely(y.iKind==NormalInteger): return newComplex(pow(x.z,(float)(y.i)))
                     else: return VNULL
                 elif y.kind==Floating: return newComplex(pow(x.z,y.f))
                 else: return newComplex(pow(x.z,y.z))
             else:
                 if y.kind==Floating: 
-                    if x.iKind==NormalInteger:
+                    if likely(x.iKind==NormalInteger):
                         return newFloating(pow((float)(x.i),y.f))
                     else:
                         when not defined(NOGMP):
@@ -1929,20 +1973,20 @@ proc `^=`*(x: var Value, y: Value) =
                 if y.kind==Floating: x = newFloating(pow(x.f,y.f))
                 elif y.kind==Complex: discard
                 else: 
-                    if x.iKind==NormalInteger:
+                    if likely(x.iKind==NormalInteger):
                         x = newFloating(pow(x.f,(float)(y.i)))
                     else:
                         when not defined(NOGMP):
                             x = newFloating(pow(x.f,y.bi))
             elif x.kind==Complex:
                 if y.kind==Integer:
-                    if y.iKind==NormalInteger: x = newComplex(pow(x.z,(float)(y.i)))
+                    if likely(y.iKind==NormalInteger): x = newComplex(pow(x.z,(float)(y.i)))
                     else: discard
                 elif y.kind==Floating: x = newComplex(pow(x.z,y.f))
                 else: x = newComplex(pow(x.z,y.z))
             else:
                 if y.kind==Floating:
-                    if x.iKind==NormalInteger:
+                    if likely(x.iKind==NormalInteger):
                         x = newFloating(pow((float)(x.i),y.f))
                     else:
                         when not defined(NOGMP):
@@ -1957,8 +2001,8 @@ proc `&&`*(x: Value, y: Value): Value =
     elif not (x.kind==Integer) or not (y.kind==Integer):
         return VNULL
     else:
-        if x.iKind==NormalInteger:
-            if y.iKind==NormalInteger:
+        if likely(x.iKind==NormalInteger):
+            if likely(y.iKind==NormalInteger):
                 return newInteger(x.i and y.i)
             else:
                 when defined(WEB):
@@ -1967,12 +2011,12 @@ proc `&&`*(x: Value, y: Value): Value =
                     return newInteger(x.i and y.bi)
         else:
             when defined(WEB):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     return newInteger(x.bi and y.bi)
                 else:
                     return newInteger(x.bi and big(y.i))
             elif not defined(NOGMP):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     return newInteger(x.bi and y.bi)
                 else:
                     return newInteger(x.bi and y.i)
@@ -1985,8 +2029,8 @@ proc `&&=`*(x: var Value, y: Value) =
     elif not (x.kind==Integer) or not (y.kind==Integer):
         x = VNULL
     else:
-        if x.iKind==NormalInteger:
-            if y.iKind==NormalInteger:
+        if likely(x.iKind==NormalInteger):
+            if likely(y.iKind==NormalInteger):
                 x = newInteger(x.i and y.i)
             else:
                 when defined(WEB):
@@ -1995,12 +2039,12 @@ proc `&&=`*(x: var Value, y: Value) =
                     x = newInteger(x.i and y.bi)
         else:
             when defined(WEB):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     x = newInteger(x.bi and y.bi)
                 else:
                     x = newInteger(x.bi and big(y.i))
             elif not defined(NOGMP):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     x = newInteger(x.bi and y.bi)
                 else:
                     x = newInteger(x.bi and y.i)
@@ -2013,8 +2057,8 @@ proc `||`*(x: Value, y: Value): Value =
     elif not (x.kind==Integer) or not (y.kind==Integer):
         return VNULL
     else:
-        if x.iKind==NormalInteger:
-            if y.iKind==NormalInteger:
+        if likely(x.iKind==NormalInteger):
+            if likely(y.iKind==NormalInteger):
                 return newInteger(x.i or y.i)
             else:
                 when defined(WEB):
@@ -2024,12 +2068,12 @@ proc `||`*(x: Value, y: Value): Value =
                 
         else:
             when defined(WEB):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     return newInteger(x.bi or y.bi)
                 else:
                     return newInteger(x.bi or big(y.i))
             elif not defined(NOGMP):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     return newInteger(x.bi or y.bi)
                 else:
                     return newInteger(x.bi or y.i)
@@ -2042,8 +2086,8 @@ proc `||=`*(x: var Value, y: Value) =
     elif not (x.kind==Integer) or not (y.kind==Integer):
         x = VNULL
     else:
-        if x.iKind==NormalInteger:
-            if y.iKind==NormalInteger:
+        if likely(x.iKind==NormalInteger):
+            if likely(y.iKind==NormalInteger):
                 x = newInteger(x.i or y.i)
             else:
                 when defined(WEB):
@@ -2052,12 +2096,12 @@ proc `||=`*(x: var Value, y: Value) =
                     x = newInteger(x.i or y.bi)
         else:
             when defined(WEB):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     x = newInteger(x.bi or y.bi)
                 else:
                     x = newInteger(x.bi or big(y.i))
             elif not defined(NOGMP):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     x = newInteger(x.bi or y.bi)
                 else:
                     x = newInteger(x.bi or y.i)
@@ -2070,8 +2114,8 @@ proc `^^`*(x: Value, y: Value): Value =
     elif not (x.kind==Integer) or not (y.kind==Integer):
         return VNULL
     else:
-        if x.iKind==NormalInteger:
-            if y.iKind==NormalInteger:
+        if likely(x.iKind==NormalInteger):
+            if likely(y.iKind==NormalInteger):
                 return newInteger(x.i xor y.i)
             else:
                 when defined(WEB):
@@ -2080,12 +2124,12 @@ proc `^^`*(x: Value, y: Value): Value =
                     return newInteger(x.i xor y.bi)
         else:
             when defined(WEB):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     return newInteger(x.bi xor y.bi)
                 else:
                     return newInteger(x.bi xor big(y.i))
             elif not defined(NOGMP):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     return newInteger(x.bi xor y.bi)
                 else:
                     return newInteger(x.bi xor y.i)
@@ -2098,8 +2142,8 @@ proc `^^=`*(x: var Value, y: Value) =
     elif not (x.kind==Integer) or not (y.kind==Integer):
         x = VNULL
     else:
-        if x.iKind==NormalInteger:
-            if y.iKind==NormalInteger:
+        if likely(x.iKind==NormalInteger):
+            if likely(y.iKind==NormalInteger):
                 x = newInteger(x.i xor y.i)
             else:
                 when defined(WEB):
@@ -2108,12 +2152,12 @@ proc `^^=`*(x: var Value, y: Value) =
                     x = newInteger(x.i xor y.bi)
         else:
             when defined(WEB):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     x = newInteger(x.bi xor y.bi)
                 else:
                     x = newInteger(x.bi xor big(y.i))
             elif not defined(NOGMP):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     x = newInteger(x.bi xor y.bi)
                 else:
                     x = newInteger(x.bi xor y.i)
@@ -2122,8 +2166,8 @@ proc `>>`*(x: Value, y: Value): Value =
     if not (x.kind==Integer) or not (y.kind==Integer):
         return VNULL
     else:
-        if x.iKind==NormalInteger:
-            if y.iKind==NormalInteger:
+        if likely(x.iKind==NormalInteger):
+            if likely(y.iKind==NormalInteger):
                 return newInteger(x.i shr y.i)
             else:
                 when defined(WEB):
@@ -2132,12 +2176,12 @@ proc `>>`*(x: Value, y: Value): Value =
                     RuntimeError_NumberOutOfPermittedRange("shr",$(x), $(y))
         else:
             when defined(WEB):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     return newInteger(x.bi shr y.bi)
                 else:
                     return newInteger(x.bi shr big(y.i))
             elif not defined(NOGMP):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     RuntimeError_NumberOutOfPermittedRange("shr",$(x), $(y))
                 else:
                     return newInteger(x.bi shr (culong)(y.i))
@@ -2146,8 +2190,8 @@ proc `>>=`*(x: var Value, y: Value) =
     if not (x.kind==Integer) or not (y.kind==Integer):
         x = VNULL
     else:
-        if x.iKind==NormalInteger:
-            if y.iKind==NormalInteger:
+        if likely(x.iKind==NormalInteger):
+            if likely(y.iKind==NormalInteger):
                 x = newInteger(x.i shr y.i)
             else:
                 when defined(WEB):
@@ -2156,12 +2200,12 @@ proc `>>=`*(x: var Value, y: Value) =
                     RuntimeError_NumberOutOfPermittedRange("shr",$(x), $(y))
         else:
             when defined(WEB):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     x = newInteger(x.bi shr y.bi)
                 else:
                     x = newInteger(x.bi shr big(y.i))
             elif not defined(NOGMP):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     RuntimeError_NumberOutOfPermittedRange("shr",$(x), $(y))
                 else:
                     x = newInteger(x.bi shr (culong)(y.i))
@@ -2170,8 +2214,8 @@ proc `<<`*(x: Value, y: Value): Value =
     if not (x.kind==Integer) or not (y.kind==Integer):
         return VNULL
     else:
-        if x.iKind==NormalInteger:
-            if y.iKind==NormalInteger:
+        if likely(x.iKind==NormalInteger):
+            if likely(y.iKind==NormalInteger):
                 return newInteger(x.i shl y.i)
             else:
                 when defined(WEB):
@@ -2180,12 +2224,12 @@ proc `<<`*(x: Value, y: Value): Value =
                     RuntimeError_NumberOutOfPermittedRange("shl",$(x), $(y))
         else:
             when defined(WEB):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     return newInteger(x.bi shl y.bi)
                 else:
                     return newInteger(x.bi shl big(y.i))
             elif not defined(NOGMP):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     RuntimeError_NumberOutOfPermittedRange("shl",$(x), $(y))
                 else:
                     return newInteger(x.bi shl (culong)(y.i))
@@ -2194,8 +2238,8 @@ proc `<<=`*(x: var Value, y: Value) =
     if not (x.kind==Integer) or not (y.kind==Integer):
         x = VNULL
     else:
-        if x.iKind==NormalInteger:
-            if y.iKind==NormalInteger:
+        if likely(x.iKind==NormalInteger):
+            if likely(y.iKind==NormalInteger):
                 x = newInteger(x.i shl y.i)
             else:
                 when defined(WEB):
@@ -2204,12 +2248,12 @@ proc `<<=`*(x: var Value, y: Value) =
                     RuntimeError_NumberOutOfPermittedRange("shl",$(x), $(y))
         else:
             when defined(WEB):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     x = newInteger(x.bi shl y.bi)
                 else:
                     x = newInteger(x.bi shl big(y.i))
             elif not defined(NOGMP):
-                if y.iKind==BigInteger:
+                if unlikely(y.iKind==BigInteger):
                     RuntimeError_NumberOutOfPermittedRange("shl",$(x), $(y))
                 else:
                     x = newInteger(x.bi shl (culong)(y.i))
@@ -2220,7 +2264,7 @@ proc `!!`*(x: Value): Value =
     elif not (x.kind==Integer):
         return VNULL
     else:
-        if x.iKind==NormalInteger:
+        if likely(x.iKind==NormalInteger):
             return newInteger(not x.i)
         else:
             when not defined(NOGMP):
@@ -2232,7 +2276,7 @@ proc `!!=`*(x: var Value) =
     elif not (x.kind==Integer):
         x = VNULL
     else:
-        if x.iKind==NormalInteger:
+        if likely(x.iKind==NormalInteger):
             x = newInteger(not x.i)
         else:
             when not defined(NOGMP):
@@ -2250,7 +2294,7 @@ proc factorial*(x: Value): Value =
     if not (x.kind == Integer):
         return VNULL
     else:
-        if x.iKind==NormalInteger:
+        if likely(x.iKind==NormalInteger):
             if x.i < 21:
                 when defined(WEB):
                     if x.i < 13:
@@ -2277,12 +2321,12 @@ proc factorial*(x: Value): Value =
             when not defined(WEB):
                 RuntimeError_NumberOutOfPermittedRange("factorial",$(x), "")
 
-func `$`*(b: logical): string =
+func `$`*(b: logical): string  {.enforceNoRaises.} =
     if b==True: return "true"
     elif b==False: return "false"
     else: return "maybe"
 
-func `$`(s: SymbolKind): string =
+func `$`(s: SymbolKind): string {.enforceNoRaises.} =
     case s:
         of thickarrowleft           : result = "<="
         of thickarrowright          : result = "=>"
@@ -2377,12 +2421,12 @@ func `$`(s: SymbolKind): string =
 
         of unaliased                : discard
 
-func `$`(v: Value): string {.inline.} =
+func `$`(v: Value): string {.inline,enforceNoRaises.} =
     case v.kind:
         of Null         : return "null"
         of Logical      : return $(v.b)
         of Integer      : 
-            if v.iKind==NormalInteger: return $(v.i)
+            if likely(v.iKind==NormalInteger): return $(v.i)
             else:
                 when defined(WEB) or not defined(NOGMP): 
                     return $(v.bi)
@@ -2519,7 +2563,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
         of Null         : dumpPrimitive("null",v)
         of Logical      : dumpPrimitive($(v.b), v)
         of Integer      : 
-            if v.iKind==NormalInteger: dumpPrimitive($(v.i), v)
+            if likely(v.iKind==NormalInteger): dumpPrimitive($(v.i), v)
             else: 
                 when defined(WEB) or not defined(NOGMP):
                     dumpPrimitive($(v.bi), v)
@@ -2675,10 +2719,10 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             while j < v.trans[1].len:
                 let op = (OpCode)(v.trans[1][j])
                 instrs.add(newWord(stringify(((OpCode)(op)))))
-                if op in [opPush, opStore, opCall, opLoad, opStorl, opAttr]:
+                if op in [opPush, opStore, opCall, opLoad, opStorl, opAttr, opEol]:
                     j += 1
                     instrs.add(newInteger((int)v.trans[1][j]))
-                elif op in [opPushX, opStoreX, opCallX, opLoadX, opStorlX, opEol]:
+                elif op in [opPushX, opStoreX, opCallX, opLoadX, opStorlX, opEolX]:
                     j += 2
                     instrs.add(newInteger((int)((uint16)(v.trans[1][j-1]) shl 8 + (byte)(v.trans[1][j]))))
 
@@ -2702,9 +2746,12 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 for i in 0..level: stdout.write "\t"
                 stdout.write instrs[i].s
                 i += 1
-                while i < instrs.len and instrs[i].kind==Integer:
-                    stdout.write " #" & $(instrs[i].i)
-                    i += 1
+                if i < instrs.len and instrs[i].kind==Integer:
+                    stdout.write "\t\t"
+                    while i < instrs.len and instrs[i].kind==Integer:
+                        if not muted: stdout.write fmt("{resetColor}{fg(grayColor)} #{instrs[i].i}{resetColor}")
+                        else: stdout.write " #" & $(instrs[i].i)
+                        i += 1
                 stdout.write "\n"
 
             dumpBlockEnd()
@@ -2733,7 +2780,7 @@ func codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         of Null         : result &= "null"
         of Logical      : result &= $(v.b)
         of Integer      :
-            if v.iKind==NormalInteger: result &= $(v.i)
+            if likely(v.iKind==NormalInteger): result &= $(v.i)
             else: 
                 when defined(WEB) or not defined(NOGMP):
                     result &= $(v.bi)
@@ -2839,7 +2886,7 @@ func sameValue*(x: Value, y: Value): bool {.inline.}=
     if x.kind in [Integer, Floating] and y.kind in [Integer, Floating]:
         if x.kind==Integer:
             if y.kind==Integer: 
-                if x.iKind==NormalInteger and y.iKind==NormalInteger:
+                if likely(x.iKind==NormalInteger and y.iKind==NormalInteger):
                     return x.i==y.i
                 elif x.iKind==NormalInteger and y.iKind==BigInteger:
                     when defined(WEB):
@@ -2855,7 +2902,7 @@ func sameValue*(x: Value, y: Value): bool {.inline.}=
                     when defined(WEB) or not defined(NOGMP):
                         return x.bi==y.bi
             else: 
-                if x.iKind==NormalInteger:
+                if likely(x.iKind==NormalInteger):
                     return (float)(x.i)==y.f
                 else:
                     when defined(WEB):
@@ -2864,9 +2911,9 @@ func sameValue*(x: Value, y: Value): bool {.inline.}=
                         return (x.bi)==(int)(y.f)
         else:
             if y.kind==Integer: 
-                if y.iKind==NormalInteger:
+                if likely(y.iKind==NormalInteger):
                     return x.f==(float)(y.i)
-                elif y.iKind==BigInteger:
+                else:
                     when defined(WEB):
                         return big((int)(x.f))==y.bi
                     elif not defined(NOGMP):
@@ -2954,7 +3001,7 @@ func hash*(v: Value): Hash {.inline.}=
         of Null         : result = 0
         of Logical      : result = cast[Hash](v.b)
         of Integer      : 
-            if v.iKind==NormalInteger: result = cast[Hash](v.i)
+            if likely(v.iKind==NormalInteger): result = cast[Hash](v.i)
             else: 
                 when defined(WEB) or not defined(NOGMP):
                     result = cast[Hash](v.bi)

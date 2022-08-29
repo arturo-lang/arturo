@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import sequtils, sets, strutils, tables
+import algorithm, sequtils, sets, strutils, tables
 export strutils, tables
 
 import vm/[globals, errors, stack, values/comparison, values/logic, values/printable, values/value]
@@ -29,7 +29,7 @@ const
 #=======================================
 
 proc getWrongArgumentTypeErrorMsg*(functionName: string, argumentPos: int, expectedValues: seq[ValueKind]): string =
-    let actualStr = toSeq(0..argumentPos).map(proc(x:int):string = ":" & ($(Stack[SP-1-x].kind)).toLowerAscii()).join(" ")
+    let actualStr = toSeq(0..argumentPos).reversed.map(proc(x:int):string = ":" & ($(Stack[SP+x].kind)).toLowerAscii()).join(" ")
     let acceptedStr = expectedValues.map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
 
     var ordinalPos: string = ""
@@ -104,6 +104,52 @@ template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, descriptio
         Arities[n] = static argsLen
         Syms[n] = b
 
+        when n=="array"             : ArrayF = b
+        elif n=="dictionary"        : DictF = b
+        elif n=="function"          : FuncF = b               
+        elif n=="add"               : AddF = b
+        elif n=="sub"               : SubF = b
+        elif n=="mul"               : MulF = b
+        elif n=="div"               : DivF = b
+        elif n=="fdiv"              : FdivF = b
+        elif n=="mod"               : ModF = b
+        elif n=="pow"               : PowF = b
+        elif n=="neg"               : NegF = b
+        elif n=="not"               : BNotF = b
+        elif n=="and"               : BAndF = b
+        elif n=="or"                : BOrF = b
+        elif n=="shl"               : ShlF = b
+        elif n=="shr"               : ShrF = b
+        elif n=="not?"              : NotF = b
+        elif n=="and?"              : AndF = b
+        elif n=="or?"               : OrF = b
+        elif n=="equal?"            : EqF = b
+        elif n=="notEqual?"         : NeF = b
+        elif n=="greater?"          : GtF = b
+        elif n=="greaterOrEqual?"   : GeF = b
+        elif n=="less?"             : LtF = b
+        elif n=="lessOrEqual?"      : LeF = b
+        elif n=="if"                : IfF = b
+        elif n=="if?"               : IfEF = b
+        elif n=="else"              : ElseF = b
+        elif n=="while"             : WhileF = b
+        elif n=="return"            : ReturnF = b
+        elif n=="get"               : GetF = b 
+        elif n=="set"               : SetF = b
+        elif n=="to"                : ToF = b
+        elif n=="print"             : PrintF = b
+        elif n=="range"             : RangeF = b
+        elif n=="loop"              : LoopF = b
+        elif n=="map"               : MapF = b 
+        elif n=="select"            : SelectF = b
+        elif n=="size"              : SizeF = b
+        elif n=="replace"           : ReplaceF = b
+        elif n=="split"             : SplitF = b
+        elif n=="join"              : JoinF = b
+        elif n=="reverse"           : ReverseF = b
+        elif n=="inc"               : IncF = b
+        elif n=="dec"               : DecF = b
+
         when alias != unaliased:
             Aliases[alias] = AliasBinding(
                 precedence: rule,
@@ -125,27 +171,24 @@ template constant*(n: string, alias: SymbolKind, description: string, v: Value):
         )
 
 template require*(name: string, spec: untyped): untyped =
-    if SP<(static spec.len) and spec!=NoArgs:
-        RuntimeError_NotEnoughArguments(name, spec.len)
+    when spec!=NoArgs:
+        if unlikely(SP<(static spec.len)):
+            RuntimeError_NotEnoughArguments(name, spec.len)
 
     when (static spec.len)>=1 and spec!=NoArgs:
+        var x {.inject.} = stack.pop()
         when not (ANY in static spec[0][1]):
-            if not (Stack[SP-1].kind in (static spec[0][1])):
+            if unlikely(not (x.kind in (static spec[0][1]))):
                 RuntimeError_WrongArgumentType(name, 0, spec)
                 
         when (static spec.len)>=2:
+            var y {.inject.} = stack.pop()
             when not (ANY in static spec[1][1]):
-                if not (Stack[SP-2].kind in (static spec[1][1])):
+                if unlikely(not (y.kind in (static spec[1][1]))):
                     RuntimeError_WrongArgumentType(name, 1, spec)
                     
             when (static spec.len)>=3:
-                when not (ANY in static spec[2][1]):
-                    if not (Stack[SP-3].kind in (static spec[2][1])):
-                        RuntimeError_WrongArgumentType(name, 2, spec)
-                        
-    when (static spec.len)>=1 and spec!=NoArgs:
-        var x {.inject.} = stack.pop()
-        when (static spec.len)>=2:
-            var y {.inject.} = stack.pop()
-            when (static spec.len)>=3:
                 var z {.inject.} = stack.pop()
+                when not (ANY in static spec[2][1]):
+                    if unlikely(not (z.kind in (static spec[2][1]))):
+                        RuntimeError_WrongArgumentType(name, 2, spec)

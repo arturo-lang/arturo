@@ -27,10 +27,10 @@ import vm/values/value
 #=======================================
 
 const 
-    #opPushAny   = opPush0..opPush29
-    #opStoreAny  = opStore0..opStore29
-    opLoadAny   = opLoad0..opLoad29
-    #opCallAny   = opCall0..opCall29
+    #opPushAny   = opPush0..opPush13
+    #opStoreAny  = opStore0..opStore13
+    opLoadAny   = opLoad0..opLoad13
+    #opCallAny   = opCall0..opCall13
 
 #=======================================
 # Helpers
@@ -44,7 +44,9 @@ template skip(steps: int): untyped =
 
 template current(): untyped = a[i]
 template next(): untyped    = 
-    while Op(a[i+1])==opEol: skip(3)
+    while Op(a[i+1]) in [opEol,opEolX]: 
+        if Op(a[i+1])==opEol: skip(2)
+        else: skip(3)
     a[i+1]
 
 template consume(num: int = 1): untyped =
@@ -64,7 +66,8 @@ template keep(): untyped =
     result[p] = current()
     p.inc()
 
-proc optimize(a: ByteArray): ByteArray =
+proc optimize(trans: Translation): ByteArray =
+    let (d, a) = trans
     var i = 0
     var p = 0
     let aLen = a.len
@@ -74,14 +77,14 @@ proc optimize(a: ByteArray): ByteArray =
         let initialI = i
         #echo fmt"I = {i} -> {Op(initial)}"
         case Op(initial):
-            of opStore0..opStore29: 
-                if Op(next) in opLoadAny:
+            of opStore0..opStore13: 
+                if Op(next) in opLoadAny and By(opLoad)-a[i+1]==By(opStore)-initial:
                     # (opStore*) + (opLoad*) -> (opStorl*)
                     inject(): By(opStorl0) + initial - By(opStore0) 
                     skip(2)
                 else:
                     consume(1)
-            of opPush0..opPush29, opLoad0..opLoad29:
+            of opPush0..opPush13, opLoad0..opLoad13:
                 if Op(next) == Op(initial):
                     # (opPush/opLoad*) x N -> (opPush/opLoad*) + (opDup) x N
                     keep()
@@ -92,11 +95,22 @@ proc optimize(a: ByteArray): ByteArray =
                 else:
                     consume(1)
 
+            # of opCall0..opCall29:
+            #     let idx = initial - By(opCall0)
+            #     echo fmt"found opCall* -> {idx}"
+            #     if d[idx].kind==Word and Syms[d[idx].s] == AddF:
+            #         inject(): By(opIAdd)
+            #         skip(1)
+            #     else:
+            #         consume(1)
+
             of opPush,opStore,opLoad,opCall,opStorl,opAttr:
                 consume(2)
             of opPushX,opStoreX,opLoadX,opCallX,opStorlX:
                 consume(3)
             of opEol:
+                skip(2)
+            of opEolX:
                 skip(3)
             else:
                 consume(1)
@@ -154,5 +168,5 @@ proc readBytecode*(origin: string): (string, seq[byte]) =
 #  that is: including the data segment
 #  labels: enhancement, cleanup, vm, bytecode
 
-proc optimizeBytecode*(bc: seq[byte]): seq[byte] =
-    result = bc.optimize()
+proc optimizeBytecode*(t: Translation): seq[byte] =
+    result = optimize(t)

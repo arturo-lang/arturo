@@ -829,7 +829,7 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
 
         case p.buf[p.bufpos]
             of EOF:
-                if level!=0: SyntaxError_MissingClosingBracket(initialLine, getContext(p, initial-1))
+                if unlikely(level!=0): SyntaxError_MissingClosingBracket(initialLine, getContext(p, initial-1))
                 break
             of Quote:
                 parseString(p)
@@ -902,7 +902,7 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                 parseLiteral(p)
                 if p.value == Empty: 
                     # if it's empty, then try parsing it as :symbolLiteral
-                    if p.buf[p.bufpos] in Symbols:
+                    if likely(p.buf[p.bufpos] in Symbols):
                         parseAndAddSymbol(p,topBlock)
                         ReplaceLastToken(newSymbolLiteral(LastToken.m))
                     else:
@@ -1102,7 +1102,7 @@ proc doParse*(input: string, isFile: bool = true): Value =
     if isFile:
         var filePath = input
         when not defined(WEB):
-            if not fileExists(filePath):
+            if unlikely(not fileExists(filePath)):
                 CompilerError_ScriptNotExists(input)
 
         var stream = newFileStream(filePath)

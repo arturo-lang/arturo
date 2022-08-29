@@ -15,7 +15,7 @@ print 2
 print add 2 3
 
 ; Something even more complicated
-["one" "two"] | map 'x -> upper x
+["one" "two"] | map 'x [upper x]
               | print
 
 ; ...should be equivalent to:

@@ -56,12 +56,27 @@ template peek*(pos: int): Value =
 template sTop*(): Value =
     Stack[SP-1]
 
+template squeeze*(pos: int, v: Value) =
+    when pos==1:
+        let tmp = Stack[SP-1]
+        Stack[SP-1] = v
+        Stack[SP] = tmp
+    elif pos==2:
+        let tmp = Stack[SP-2]
+        Stack[SP-2] = v
+        Stack[SP] = Stack[SP-1]
+        Stack[SP-1] = tmp
+    SP += 1
+
 template sTopsFrom*(start: int): ValueArray =
     Stack[start..SP-1]
 
 template emptyStack*() =
     SP = 0
 
+# TODO(VM/stack) should our main stack use `newSeqOfCap`?
+#  ...and `.add`/`.pop`? This should be benchmarked.
+#  labels: performance, benchmark, vm, values, open-discussion
 template createMainStack*() =
     newSeq(Stack, StackSize)
     emptyStack()
