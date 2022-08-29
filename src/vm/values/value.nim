@@ -396,6 +396,9 @@ let VEMPTYSTR* = Value(kind: String, s: "")
 let VEMPTYARR* = Value(kind: Block, a: @[], data: VNULL)
 let VEMPTYDICT* = Value(kind: Dictionary, d: initOrderedTable[string,Value]())
 
+let VSTRINGT* = Value(kind: Type, tpKind: BuiltinType, t: String)
+let VINTEGERT* = Value(kind: Type, tpKind: BuiltinType, t: Integer)
+
 let VNOTHING* = Value(kind: Nothing)
 
 let NoAliasBinding* = AliasBinding(precedence: PostfixPrecedence, name: VNULL)
