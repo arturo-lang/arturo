@@ -509,7 +509,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                             i += 1
 
             of PathLabel:
-                addToCommand((byte)oSet)
+                addToCommand((byte)opSet)
                 #addConst(consts, newWord("set"), opCall)
                     
                 var i=1
