@@ -487,11 +487,13 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     argStack.add(pathCallV.params.a.len)
                 else:
                     addTerminalValue(false):
-                        addConst(consts, newWord("get"), opCall)
+                        addToCommand((byte)opGet)
+                        #addConst(consts, newWord("get"), opCall)
                         
                         var i=1
                         while i<node.p.len-1:
-                            addConst(consts, newWord("get"), opCall)
+                            addToCommand((byte)opGet)
+                            #addConst(consts, newWord("get"), opCall)
                             i += 1
 
                         let baseNode = node.p[0]
@@ -507,11 +509,13 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                             i += 1
 
             of PathLabel:
-                addConst(consts, newWord("set"), opCall)
+                addToCommand((byte)oSet)
+                #addConst(consts, newWord("set"), opCall)
                     
                 var i=1
                 while i<node.p.len-1:
-                    addConst(consts, newWord("get"), opCall)
+                    addToCommand((byte)opGet)
+                    #addConst(consts, newWord("get"), opCall)
                     i += 1
                 
                 addConst(consts, node.p[0], opLoad)
