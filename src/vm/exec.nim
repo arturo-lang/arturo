@@ -365,7 +365,7 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             of opStorl              : i += 1; storeByIndex((int)(it[i]), doPop=false)   
             of opStorlX             : i += 2; storeByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i])), doPop=false)              
 
-            # [0xC0-0xCF] #
+            # [0xC0-0xCF]
             # generators
             of opAttr               : i += 1; fetchAttributeByIndex((int)(it[i]))            
             of opArray, opDict,
@@ -406,7 +406,7 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             # reserved
             of RSRV5                : discard
 
-            # [0xD0-0xDF] #
+            # [0xD0-0xDF]
             # arithmetic & logical operators
             of opAdd                : AddF.action()
             of opSub                : SubF.action()
@@ -429,7 +429,7 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             of opAnd                : AndF.action()
             of opOr                 : OrF.action()
 
-            # [0xE0-0xEF] #
+            # [0xE0-0xEF]
             # comparison operators
             of opEq                 : EqF.action()
             of opNe                 : NeF.action()
@@ -453,6 +453,10 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             of opTo                 : ToF.action()
             of opToS                : discard
             of opToI                : discard
+
+            # [0xF0-0xFF]
+            # more op-functions
+            of opPrint              : PrintF.action()
 
         i += 1
 

@@ -245,7 +245,7 @@ type
 
         #-----------------------
 
-        # [0xC0-0xCF] #
+        # [0xC0-0xCF]
         # generators
         opAttr          = 0xC0
         opArray         = 0xC1
@@ -271,7 +271,7 @@ type
         # reserved
         RSRV5           = 0xCF
 
-        # [0xD0-0xDF] #
+        # [0xD0-0xDF]
         # arithmetic, binary & logical operators
         opAdd           = 0xD0
         opSub           = 0xD1
@@ -294,7 +294,7 @@ type
         opAnd           = 0xDE
         opOr            = 0xDF
 
-        # [0xE0-0xEF] #
+        # [0xE0-0xEF]
         # comparison operators
         opEq            = 0xE0
         opNe            = 0xE1
@@ -318,6 +318,10 @@ type
         opTo            = 0xED
         opToS           = 0xEE  
         opToI           = 0xEF
+
+        # [0xF0-0xFF]
+        # more op-functions
+        opPrint         = 0xF0
 
 when false:
     #=======================================

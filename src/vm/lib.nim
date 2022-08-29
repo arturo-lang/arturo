@@ -134,6 +134,7 @@ template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, descriptio
         elif n=="get"               : GetF = b 
         elif n=="set"               : SetF = b
         elif n=="to"                : ToF = b
+        elif n=="print"             : PrintF = b
 
         when alias != unaliased:
             Aliases[alias] = AliasBinding(

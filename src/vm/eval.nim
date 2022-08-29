@@ -168,6 +168,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
         elif fn == GetF: addToCommand((byte)opGet)
         elif fn == SetF: addToCommand((byte)opSet)
         elif fn == ToF: addToCommand((byte)opTo)
+        elif fn == PrintF: addToCommand((byte)opPrint)
         else:
             default
 
