@@ -251,18 +251,22 @@ proc defineSymbols*() =
 
             var execInParent = (popAttr("import") != VNULL)
 
+            var evaled: Translation
+            if x.kind==Block:
+                evaled = doEval(x)
+
             while currentTime < times:
                 if x.kind==Block:
                     # discard executeBlock(x)
                     if execInParent:
-                        discard execBlock(x, execInParent=true)
+                        discard execBlock(VNULL, evaluated=evaled, execInParent=true)
                     else:
-                        discard execBlock(x)
+                        discard execBlock(VNULL, evaluated=evaled)
                 elif x.kind==Bytecode:
                     if execInParent:
-                        discard execBlock(x, evaluated=x.trans, execInParent=true)
+                        discard execBlock(VNULL, evaluated=x.trans, execInParent=true)
                     else:
-                        discard execBlock(x, evaluated=x.trans)
+                        discard execBlock(VNULL, evaluated=x.trans)
                     
                 else: # string
                     let (src, tp) = getSource(x.s)
