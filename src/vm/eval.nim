@@ -572,7 +572,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                             let symfunc = Syms[aliased.name.s]
                             if symfunc.kind==Function:
                                 if symfunc.fnKind == BuiltinFunction and symfunc.arity!=0:
-                                    addConst(consts, aliased.name, opCall)
+                                    evalFunctionCall(symfunc):
+                                        addConst(consts, aliased.name, opCall)
                                     argStack.add(symfunc.arity)
                                 elif symfunc.fnKind == UserFunction and symfunc.params.a.len!=0:
                                     addConst(consts, aliased.name, opCall)
