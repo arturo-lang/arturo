@@ -58,14 +58,12 @@ type
 
         opConstN        = 0x1B      # null
 
-        # attributes
-        opAttr          = 0x1C
-
         # lines & error reporting
-        opEol           = 0x1D
-        opEolX          = 0x1E
+        opEol           = 0x1C
+        opEolX          = 0x1D
 
-        RSRV1           = 0x1F      # reserved
+        RSRV1           = 0x1E      # reserved
+        RSRV2           = 0x1F      # reserved
  
         # [0x20-0x2F]
         # push values
@@ -167,105 +165,125 @@ type
         opCall          = 0x6E
         opCallX         = 0x6F
 
+        # [0x70-0x7F]
+        # attributes
+        opAttr0         = 0x70   
+        opAttr1         = 0x71
+        opAttr2         = 0x72
+        opAttr3         = 0x73
+        opAttr4         = 0x74
+        opAttr5         = 0x75
+        opAttr6         = 0x76
+        opAttr7         = 0x77
+        opAttr8         = 0x78
+        opAttr9         = 0x79
+        opAttr10        = 0x7A
+        opAttr11        = 0x7B
+        opAttr12        = 0x7C
+        opAttr13        = 0x7D
+
+        opAttr          = 0x7E
+        opAttrX         = 0x7F
+
         #---------------------------------
         # OP FUNCTIONS
         #---------------------------------
 
-        # [0x70-0x7F]
+        # [0x80-0x8F]
         # arithmetic operators
-        opAdd           = 0x70
-        opSub           = 0x71
-        opMul           = 0x72
-        opDiv           = 0x73
-        opFdiv          = 0x74
-        opMod           = 0x75
-        opPow           = 0x76
+        opAdd           = 0x80
+        opSub           = 0x81
+        opMul           = 0x82
+        opDiv           = 0x83
+        opFdiv          = 0x84
+        opMod           = 0x85
+        opPow           = 0x86
 
-        opNeg           = 0x77
+        opNeg           = 0x87
 
         # binary operators
-        opBNot          = 0x78
-        opBAnd          = 0x79
-        opBOr           = 0x7A
+        opBNot          = 0x88
+        opBAnd          = 0x89
+        opBOr           = 0x8A
 
-        opShl           = 0x7B
-        opShr           = 0x7C
+        opShl           = 0x8B
+        opShr           = 0x8C
 
         # logical operators
-        opNot           = 0x7D
-        opAnd           = 0x7E
-        opOr            = 0x7F
-
-        # [0x80-0x8F]
-        # comparison operators
-        opEq            = 0x80
-        opNe            = 0x81
-        opGt            = 0x82
-        opGe            = 0x83
-        opLt            = 0x84
-        opLe            = 0x85
-
-        # branching
-        opIf            = 0x86
-        opIfE           = 0x87
-        opElse          = 0x88
-        opWhile         = 0x89
-        opReturn        = 0x8A
-
-        # getters/setters
-        opGet           = 0x8B
-        opSet           = 0x8C
-
-        # converters
-        opTo            = 0x8D
-        opToS           = 0x8E  
-        opToI           = 0x8F
+        opNot           = 0x8D
+        opAnd           = 0x8E
+        opOr            = 0x8F
 
         # [0x90-0x9F]
+        # comparison operators
+        opEq            = 0x90
+        opNe            = 0x91
+        opGt            = 0x92
+        opGe            = 0x93
+        opLt            = 0x94
+        opLe            = 0x95
+
+        # branching
+        opIf            = 0x96
+        opIfE           = 0x97
+        opElse          = 0x98
+        opWhile         = 0x99
+        opReturn        = 0x9A
+
+        # getters/setters
+        opGet           = 0x9B
+        opSet           = 0x9C
+
+        # converters
+        opTo            = 0x9D
+        opToS           = 0x9E  
+        opToI           = 0x9F
+
+        # [0xA0-0xAF]
         # i/o operations
-        opPrint         = 0x90
+        opPrint         = 0xA0
 
         # generators
-        opArray         = 0x91
-        opDict          = 0x92
-        opFunc          = 0x93
+        opArray         = 0xA1
+        opDict          = 0xA2
+        opFunc          = 0xA3
 
-        RSRV2           = 0x94      # reserved
-        RSRV3           = 0x95      # reserved
-        RSRV4           = 0x96      # reserved
-        RSRV5           = 0x97      # reserved
-        RSRV6           = 0x98      # reserved
-        RSRV7           = 0x99      # reserved
-        RSRV8           = 0x9A      # reserved
-        RSRV9           = 0x9B      # reserved
-        RSRV10          = 0x9C      # reserved
-        RSRV11          = 0x9D      # reserved
-        RSRV12          = 0x9E      # reserved
-        RSRV13          = 0x9F      # reserved
+        RSRV3           = 0xA4      # reserved
+        RSRV4           = 0xA5      # reserved
+        RSRV5           = 0xA6      # reserved
+        RSRV6           = 0xA7      # reserved
+        RSRV7           = 0xA8      # reserved
+        RSRV8           = 0xA9      # reserved
+        RSRV9           = 0xAA      # reserved
+        RSRV10          = 0xAB      # reserved
+        RSRV11          = 0xAC      # reserved
+        RSRV12          = 0xAD      # reserved
+        RSRV13          = 0xAE      # reserved
+        RSRV14          = 0xAF      # reserved
 
         #---------------------------------
         # LOW-LEVEL OPERATIONS
         #---------------------------------
 
-        # [0xA0-0xAF]
+        # [0xB0-0xBF]
         # no operation
-        opNop           = 0xA0
+        opNop           = 0xB0
 
         # stack operations
-        opPop           = 0xA1
-        opDup           = 0xA2
-        opOver          = 0xA3
-        opSwap          = 0xA4
+        opPop           = 0xB1
+        opDup           = 0xB2
+        opOver          = 0xB3
+        opSwap          = 0xB4
 
         # flow control
-        opJmp           = 0xA5
-        opJmpX          = 0xA6
-        opJmpIf         = 0xA7
-        opJmpIfX        = 0xA8
-        opJmpIfN        = 0xA9
-        opJmpIfNX       = 0xAA
-        opRet           = 0xAB
-        opEnd           = 0xAC
+        opJmp           = 0xB5
+        opJmpX          = 0xB6
+        opJmpIf         = 0xB7
+        opJmpIfX        = 0xB8
+        opJmpIfN        = 0xB9
+        opJmpIfNX       = 0xBA
+        opRet           = 0xBB
+        opEnd           = 0xBC
 
 when false:
     #=======================================
