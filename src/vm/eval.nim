@@ -137,41 +137,49 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
         addToCommand((byte)indx)
         addToCommand((byte)opAttr)
 
-    template evalFunctionCall(fn: untyped, default: untyped): untyped =
-        if fn == ArrayF: addToCommand((byte)opArray)
-        elif fn == DictF: addToCommand((byte)opDict)
-        elif fn == FuncF: addToCommand((byte)opFunc) 
-        elif fn == AddF: addToCommand((byte)opAdd)
-        elif fn == SubF: addToCommand((byte)opSub)
-        elif fn == MulF: addToCommand((byte)opMul)
-        elif fn == DivF: addToCommand((byte)opDiv)
-        elif fn == FdivF: addToCommand((byte)opFdiv)
-        elif fn == ModF: addToCommand((byte)opMod)
-        elif fn == PowF: addToCommand((byte)opPow)
-        elif fn == NegF: addToCommand((byte)opNeg)
-        elif fn == BNotF: addToCommand((byte)opBNot)
-        elif fn == BAndF: addToCommand((byte)opBAnd)
-        elif fn == BOrF: addToCommand((byte)opBOr)
-        elif fn == ShlF: addToCommand((byte)opShl)
-        elif fn == ShrF: addToCommand((byte)opShr)
-        elif fn == NotF: addToCommand((byte)opNot)
-        elif fn == AndF: addToCommand((byte)opAnd)
-        elif fn == OrF: addToCommand((byte)opOr)
-        elif fn == EqF: addToCommand((byte)opEq)
-        elif fn == NeF: addToCommand((byte)opNe)
-        elif fn == GtF: addToCommand((byte)opGt)
-        elif fn == GeF: addToCommand((byte)opGe)
-        elif fn == LtF: addToCommand((byte)opLt)
-        elif fn == LeF: addToCommand((byte)opLe)
-        elif fn == IfF: addToCommand((byte)opIf)
-        elif fn == IfEF: addToCommand((byte)opIfE)
-        elif fn == ElseF: addToCommand((byte)opElse)
-        elif fn == WhileF: addToCommand((byte)opWhile)
-        elif fn == ReturnF: addToCommand((byte)opReturn)
-        elif fn == GetF: addToCommand((byte)opGet)
-        elif fn == SetF: addToCommand((byte)opSet)
-        elif fn == ToF: addToCommand((byte)opTo)
-        elif fn == PrintF: addToCommand((byte)opPrint)
+    template evalFunctionCall(fn: untyped, toHead: bool, default: untyped): untyped =
+        var bt: OpCode = opNop
+
+        if fn == ArrayF: bt = opArray
+        elif fn == DictF: bt = opDict
+        elif fn == FuncF: bt = opFunc 
+        elif fn == AddF: bt = opAdd
+        elif fn == SubF: bt = opSub
+        elif fn == MulF: bt = opMul
+        elif fn == DivF: bt = opDiv
+        elif fn == FdivF: bt = opFdiv
+        elif fn == ModF: bt = opMod
+        elif fn == PowF: bt = opPow
+        elif fn == NegF: bt = opNeg
+        elif fn == BNotF: bt = opBNot
+        elif fn == BAndF: bt = opBAnd
+        elif fn == BOrF: bt = opBOr
+        elif fn == ShlF: bt = opShl
+        elif fn == ShrF: bt = opShr
+        elif fn == NotF: bt = opNot
+        elif fn == AndF: bt = opAnd
+        elif fn == OrF: bt = opOr
+        elif fn == EqF: bt = opEq
+        elif fn == NeF: bt = opNe
+        elif fn == GtF: bt = opGt
+        elif fn == GeF: bt = opGe
+        elif fn == LtF: bt = opLt
+        elif fn == LeF: bt = opLe
+        elif fn == IfF: bt = opIf
+        elif fn == IfEF: bt = opIfE
+        elif fn == ElseF: bt = opElse
+        elif fn == WhileF: bt = opWhile
+        elif fn == ReturnF: bt = opReturn
+        elif fn == GetF: bt = opGet
+        elif fn == SetF: bt = opSet
+        elif fn == ToF: bt = opTo
+        elif fn == PrintF: bt = opPrint
+
+        if bt != opNop:
+            when toHead:
+                addToCommandHead((byte)bt)
+            else:
+                addToCommand((byte)bt)
         else:
             default
 
@@ -193,7 +201,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         i += step;
                         
                         when not inArrowBlock:
-                            evalFunctionCall(symfunc):
+                            evalFunctionCall(symfunc, toHead=false):
                                 addConst(consts, aliased.name, opCall)
 
                             if symfunc.fnKind == BuiltinFunction:
@@ -240,7 +248,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         if tmpFuncArity != -1:
                             if tmpFuncArity>1:
                                 argStack.add(tmpFuncArity-1)
-                                addTrailingConst(consts, n.a[i+1], opCall)
+                                evalFunctionCall(n.a[i+1], toHead=true):
+                                    addTrailingConst(consts, n.a[i+1], opCall)
                             else:
                                 addTrailingConst(consts, n.a[i+1], opCall)
                                 if argStack.len==0:
@@ -421,7 +430,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     if likely(funcArity!=0):
                         let symf = Syms.getOrDefault(node.s, VNOTHING)
                         if not symf.isNothing():
-                            evalFunctionCall(symf):
+                            evalFunctionCall(symf, toHead=false):
                                 addConst(consts, node, opCall)
                         else:
                             addConst(consts, node, opCall)
@@ -572,7 +581,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                             let symfunc = Syms[aliased.name.s]
                             if symfunc.kind==Function:
                                 if symfunc.fnKind == BuiltinFunction and symfunc.arity!=0:
-                                    evalFunctionCall(symfunc):
+                                    evalFunctionCall(symfunc, toHead=false):
                                         addConst(consts, aliased.name, opCall)
                                     argStack.add(symfunc.arity)
                                 elif symfunc.fnKind == UserFunction and symfunc.params.a.len!=0:
