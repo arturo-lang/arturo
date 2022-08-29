@@ -333,9 +333,6 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
 
             of opConstN             : stack.push(VNULL)
 
-            # attributes
-            of opAttr               : i += 1; fetchAttributeByIndex((int)(it[i]))
-
             # lines & error reporting
             of opEol                : 
                 when not defined(NOERRORLINES):
@@ -351,6 +348,7 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
                     discard
 
             of RSRV1                : discard
+            of RSRV2                : discard
 
             # [0x20-0x2F]
             # push values
@@ -382,11 +380,17 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             of opCall               : i += 1; callByIndex((int)(it[i]))
             of opCallX              : i += 2; callByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
 
+            # [0x70-0x7F]
+            # attributes
+            of opAttr0..opAttr13    : fetchAttributeByIndex((int)(op)-(int)(opAttr0))
+            of opAttr               : i += 1; fetchAttributeByIndex((int)(it[i]))
+            of opAttrX              : i += 2; fetchAttributeByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
+
             #---------------------------------
             # OP FUNCTIONS
             #---------------------------------
 
-            # [0x70-0x7F]
+            # [0x80-0x8F]
             # arithmetic operators
             of opAdd                : AddF.action()
             of opSub                : SubF.action()
@@ -411,7 +415,7 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             of opAnd                : AndF.action()
             of opOr                 : OrF.action()
 
-            # [0x80-0x8F]
+            # [0x90-0x9F]
             # comparison operators
             of opEq                 : EqF.action()
             of opNe                 : NeF.action()
@@ -440,7 +444,7 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
                 stack.push(VINTEGERT)
                 ToF.action()
 
-            # [0x90-0x9F]
+            # [0xA0-0xAF]
             # i/o operations
             of opPrint              : PrintF.action()
 
@@ -449,13 +453,13 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             of opDict               : DictF.action()
             of opFunc               : FuncF.action()
 
-            of RSRV2..RSRV13        : discard
+            of RSRV3..RSRV14        : discard
 
             #---------------------------------
             # LOW-LEVEL OPERATIONS
             #---------------------------------
 
-            # [0xA0-0xAF]
+            # [0xB0-0xBF]
             # no operation
             of opNop                : discard
 
