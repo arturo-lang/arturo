@@ -195,6 +195,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
     template addTerminalValue(inArrowBlock: bool, code: untyped) =
         block:
             ## Check for potential Infix operator ahead
+            
             if (i+1<childrenCount and n.a[i+1].kind == Symbol):
                 when not inArrowBlock:
                     let step = 1
@@ -257,7 +258,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         if tmpFuncArity != -1:
                             if tmpFuncArity>1:
                                 argStack.add(tmpFuncArity-1)
-                                evalFunctionCall(Syms[n.a[i+1].s], toHead=true, checkAhead=false):
+                                # TODO(VM/eval) to be fixed
+                                #  labels: bug, evaluator, vm
+                                evalFunctionCall(n.a[i+1], toHead=true, checkAhead=false):
                                     addTrailingConst(consts, n.a[i+1], opCall)
                             else:
                                 addTrailingConst(consts, n.a[i+1], opCall)
@@ -457,16 +460,18 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 var hasThickArrow = false
                 var ab: seq[Value]
                 var sb: seq[Value]
-                if (n.a[i+1].kind == Word and n.a[i+1].s == "function") or
-                   (n.a[i+1].kind == Symbol and n.a[i+1].m == dollar):
-                    if n.a[i+2].kind == Symbol and n.a[i+2].m == thickarrowright:
+                let nextNode = n.a[i+1]
+                if (nextNode.kind == Word and nextNode.s == "function") or
+                   (nextNode.kind == Symbol and nextNode.m == dollar):
+                    let afterNextNode = n.a[i+2]
+                    if afterNextNode.kind == Symbol and afterNextNode.m == thickarrowright:
                         i += 2
                         processThickArrowRight(ab,sb)
                         TmpArities[funcIndx] = funcArity
                         hasThickArrow = true
                         i += 1
                     else:
-                        TmpArities[funcIndx] = n.a[i+2].a.countIt(it.kind != Type) #n.a[i+2].a.len
+                        TmpArities[funcIndx] = afterNextNode.a.countIt(it.kind != Type) #n.a[i+2].a.len
                 else:
                     if not isDictionary:
                         TmpArities.del(funcIndx)
