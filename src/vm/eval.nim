@@ -128,9 +128,11 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 addToCommandHead((byte)indx, atPos)
                 addToCommandHead((byte)op, atPos)
 
-    template evalFunctionCall(fn: untyped, toHead: bool, checkAhead: bool, default: untyped): untyped =
+    template evalFunctionCall(fun: untyped, toHead: bool, checkAhead: bool, default: untyped): untyped =
         var bt: OpCode = opNop
         var doElse = true
+
+        let fn = fun
 
         if fn == ArrayF: bt = opArray
         elif fn == DictF: bt = opDict
@@ -182,6 +184,17 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         funcArity -= 1
                         i += 1
         elif fn == PrintF: bt = opPrint
+        elif fn == RangeF: bt = opRange
+        elif fn == LoopF: bt = opLoop
+        elif fn == MapF: bt = opMap
+        elif fn == SelectF: bt = opSelect
+        elif fn == SizeF: bt = opSize
+        elif fn == ReplaceF: bt = opReplace
+        elif fn == SplitF: bt = opSplit
+        elif fn == JoinF: bt = opJoin 
+        elif fn == ReverseF: bt = opReverse
+        elif fn == IncF: bt = opInc
+        elif fn == DecF: bt = opDec
 
         if bt != opNop:
             when toHead:

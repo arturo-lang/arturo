@@ -248,18 +248,24 @@ type
         opDict          = 0xA2
         opFunc          = 0xA3
 
-        RSRV3           = 0xA4      # reserved
-        RSRV4           = 0xA5      # reserved
-        RSRV5           = 0xA6      # reserved
-        RSRV6           = 0xA7      # reserved
-        RSRV7           = 0xA8      # reserved
-        RSRV8           = 0xA9      # reserved
-        RSRV9           = 0xAA      # reserved
-        RSRV10          = 0xAB      # reserved
-        RSRV11          = 0xAC      # reserved
-        RSRV12          = 0xAD      # reserved
-        RSRV13          = 0xAE      # reserved
-        RSRV14          = 0xAF      # reserved
+        # ranges & iterators
+        opRange         = 0xA4
+        opLoop          = 0xA5
+        opMap           = 0xA6
+        opSelect        = 0xA7
+
+        # collections
+        opSize          = 0xA8
+        opReplace       = 0xA9
+        opSplit         = 0xAA
+        opJoin          = 0xAB
+        opReverse       = 0xAC
+
+        # increment/decrement
+        opInc           = 0xAD
+        opDec           = 0xAE
+
+        RSRV3           = 0xAF      # reserved
 
         #---------------------------------
         # LOW-LEVEL OPERATIONS

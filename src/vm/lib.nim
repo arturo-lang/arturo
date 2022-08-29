@@ -138,6 +138,17 @@ template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, descriptio
         elif n=="set"               : SetF = b
         elif n=="to"                : ToF = b
         elif n=="print"             : PrintF = b
+        elif n=="range"             : RangeF = b
+        elif n=="loop"              : LoopF = b
+        elif n=="map"               : MapF = b 
+        elif n=="select"            : SelectF = b
+        elif n=="size"              : SizeF = b
+        elif n=="replace"           : ReplaceF = b
+        elif n=="split"             : SplitF = b
+        elif n=="join"              : JoinF = b
+        elif n=="reverse"           : ReverseF = b
+        elif n=="inc"               : IncF = b
+        elif n=="dec"               : DecF = b
 
         when alias != unaliased:
             Aliases[alias] = AliasBinding(
