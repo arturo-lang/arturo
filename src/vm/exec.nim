@@ -298,100 +298,46 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
         case op:
             # [0x00-0x1F]
             # push constants 
-            of opConstI0        : stack.push(I0)
-            of opConstI1        : stack.push(I1)
-            of opConstI2        : stack.push(I2)
-            of opConstI3        : stack.push(I3)
-            of opConstI4        : stack.push(I4)
-            of opConstI5        : stack.push(I5)
-            of opConstI6        : stack.push(I6)
-            of opConstI7        : stack.push(I7)
-            of opConstI8        : stack.push(I8)
-            of opConstI9        : stack.push(I9)
-            of opConstI10       : stack.push(I10)
-            of opConstI11       : stack.push(I11)
-            of opConstI12       : stack.push(I12)
-            of opConstI13       : stack.push(I13)
-            of opConstI14       : stack.push(I14)
-            of opConstI15       : stack.push(I15)
+            of opConstI0            : stack.push(I0)
+            of opConstI1            : stack.push(I1)
+            of opConstI2            : stack.push(I2)
+            of opConstI3            : stack.push(I3)
+            of opConstI4            : stack.push(I4)
+            of opConstI5            : stack.push(I5)
+            of opConstI6            : stack.push(I6)
+            of opConstI7            : stack.push(I7)
+            of opConstI8            : stack.push(I8)
+            of opConstI9            : stack.push(I9)
+            of opConstI10           : stack.push(I10)
+            of opConstI11           : stack.push(I11)
+            of opConstI12           : stack.push(I12)
+            of opConstI13           : stack.push(I13)
+            of opConstI14           : stack.push(I14)
+            of opConstI15           : stack.push(I15)
 
-            of opConstI1M       : stack.push(I1M)           # unused by evaluator
+            of opConstI1M           : stack.push(I1M)           # unused by evaluator
 
-            of opConstF0        : stack.push(F0)
-            of opConstF1        : stack.push(F1)
-            of opConstF2        : stack.push(F2)
+            of opConstF0            : stack.push(F0)
+            of opConstF1            : stack.push(F1)
+            of opConstF2            : stack.push(F2)
 
-            of opConstF1M       : stack.push(F1M)           # unused by evaluator
+            of opConstF1M           : stack.push(F1M)           # unused by evaluator
 
-            of opConstBT        : stack.push(VTRUE)
-            of opConstBF        : stack.push(VFALSE)
-            of opConstBM        : stack.push(VMAYBE)
+            of opConstBT            : stack.push(VTRUE)
+            of opConstBF            : stack.push(VFALSE)
+            of opConstBM            : stack.push(VMAYBE)
 
-            of opConstS         : stack.push(VEMPTYSTR)
-            of opConstA         : stack.push(VEMPTYARR)
-            of opConstD         : stack.push(VEMPTYDICT)
+            of opConstS             : stack.push(VEMPTYSTR)
+            of opConstA             : stack.push(VEMPTYARR)
+            of opConstD             : stack.push(VEMPTYDICT)
 
-            of opConstN         : stack.push(VNULL)
+            of opConstN             : stack.push(VNULL)
 
-            of RSRV1..RSRV4     : discard
+            # attributes
+            of opAttr               : i += 1; fetchAttributeByIndex((int)(it[i]))
 
-            # [0x20-0x3F]
-            # push values
-            of opPush0..opPush29    : pushByIndex((int)(op)-(int)(opPush0))
-            of opPush               : i += 1; pushByIndex((int)(it[i]))
-            of opPushX              : i += 2; pushByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
-
-            # [0x40-0x5F]
-            # store variables (from <- stack)
-            of opStore0..opStore29  : storeByIndex((int)(op)-(int)(opStore0))
-            of opStore              : i += 1; storeByIndex((int)(it[i]))   
-            of opStoreX             : i += 2; storeByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i])))              
-
-            # [0x60-0x7F]
-            # load variables (to -> stack)
-            of opLoad0..opLoad29    : loadByIndex((int)(op)-(int)(opLoad0))
-            of opLoad               : i += 1; loadByIndex((int)(it[i]))
-            of opLoadX              : i += 2; loadByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
-
-            # [0x80-0x9F]
-            # function calls
-            of opCall0..opCall29    : callByIndex((int)(op)-(int)(opCall0))                
-            of opCall               : i += 1; callByIndex((int)(it[i]))
-            of opCallX              : i += 2; callByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
-
-            # [0xA0-0xBF]
-            # store variables without popping (from <- stack)
-            of opStorl0..opStorl29  : storeByIndex((int)(op)-(int)(opStorl0), doPop=false)
-            of opStorl              : i += 1; storeByIndex((int)(it[i]), doPop=false)   
-            of opStorlX             : i += 2; storeByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i])), doPop=false)              
-
-            # [0xC0-0xCF]
-            # generators
-            of opAttr               : i += 1; fetchAttributeByIndex((int)(it[i]))            
-            of opArray              : ArrayF.action()
-            of opDict               : DictF.action()
-            of opFunc               : FuncF.action()
-
-            # stack operations
-            of opPop                : discard stack.pop()
-            of opDup                : stack.push(sTop())
-            of opSwap               : swap(Stack[SP-1], Stack[SP-2])
-
-            # flow control
-            of opJump               : 
-                i = (int)(it[i+1])-1
-            of opJumpIf             : 
-                if stack.pop().b==True: 
-                    i = (int)(it[i+1])-1
-            of opJumpIfNot          : 
-                if Not(stack.pop().b)==True: 
-                    i = (int)(it[i+1])-1
-            of opRet                : discard    
-            of opEnd                : break 
-
-            of opNop                : discard
-
-            of opEol                :
+            # lines & error reporting
+            of opEol                : 
                 when not defined(NOERRORLINES):
                     i += 1
                     CurrentLine = (int)(it[i])
@@ -404,11 +350,44 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
                 else:
                     discard
 
-            # reserved
-            of RSRV5                : discard
+            of RSRV1                : discard
 
-            # [0xD0-0xDF]
-            # arithmetic & logical operators
+            # [0x20-0x2F]
+            # push values
+            of opPush0..opPush13    : pushByIndex((int)(op)-(int)(opPush0))
+            of opPush               : i += 1; pushByIndex((int)(it[i]))
+            of opPushX              : i += 2; pushByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
+
+            # [0x30-0x3F]
+            # store variables (from <- stack)
+            of opStore0..opStore13  : storeByIndex((int)(op)-(int)(opStore0))
+            of opStore              : i += 1; storeByIndex((int)(it[i]))   
+            of opStoreX             : i += 2; storeByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i])))              
+
+            # [0x40-0x4F]
+            # load variables (to -> stack)
+            of opLoad0..opLoad13    : loadByIndex((int)(op)-(int)(opLoad0))
+            of opLoad               : i += 1; loadByIndex((int)(it[i]))
+            of opLoadX              : i += 2; loadByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
+
+            # [0x50-0x5F]
+            # store variables without popping (from <- stack)
+            of opStorl0..opStorl13  : storeByIndex((int)(op)-(int)(opStorl0), doPop=false)
+            of opStorl              : i += 1; storeByIndex((int)(it[i]), doPop=false)   
+            of opStorlX             : i += 2; storeByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i])), doPop=false)              
+
+            # [0x60-0x6F]
+            # function calls
+            of opCall0..opCall13    : callByIndex((int)(op)-(int)(opCall0))                
+            of opCall               : i += 1; callByIndex((int)(it[i]))
+            of opCallX              : i += 2; callByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
+
+            #---------------------------------
+            # OP FUNCTIONS
+            #---------------------------------
+
+            # [0x70-0x7F]
+            # arithmetic operators
             of opAdd                : AddF.action()
             of opSub                : SubF.action()
             of opMul                : MulF.action()
@@ -419,6 +398,7 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
 
             of opNeg                : NegF.action()
 
+            # binary operators
             of opBNot               : BNotF.action()
             of opBAnd               : BAndF.action() 
             of opBOr                : BOrF.action()
@@ -426,11 +406,12 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             of opShl                : ShlF.action()
             of opShr                : ShrF.action()
 
+            # logical operators
             of opNot                : NotF.action()
             of opAnd                : AndF.action()
             of opOr                 : OrF.action()
 
-            # [0xE0-0xEF]
+            # [0x80-0x8F]
             # comparison operators
             of opEq                 : EqF.action()
             of opNe                 : NeF.action()
@@ -455,9 +436,48 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             of opToS                : discard
             of opToI                : discard
 
-            # [0xF0-0xFF]
-            # more op-functions
+            # [0x90-0x9F]
+            # i/o operations
             of opPrint              : PrintF.action()
+
+            # generators          
+            of opArray              : ArrayF.action()
+            of opDict               : DictF.action()
+            of opFunc               : FuncF.action()
+
+            of RSRV2..RSRV13        : discard
+
+            #---------------------------------
+            # LOW-LEVEL OPERATIONS
+            #---------------------------------
+
+            # [0xA0-0xAF]
+            # no operation
+            of opNop                : discard
+
+            # stack operations
+            of opPop                : discard stack.pop()
+            of opDup                : stack.push(sTop())
+            of opOver               : stack.push(stack.peek(1))
+            of opSwap               : swap(Stack[SP-1], Stack[SP-2])
+
+            # flow control
+            of opJmp                : i = (int)(it[i+1])
+            of opJmpX               : i = (int)((uint16)(it[i+1]) shl 8 + (byte)(it[i+2]))
+            of opJmpIf              : 
+                if stack.pop().b==True:
+                    i = (int)(it[i+1])
+            of opJmpIfX             : 
+                if stack.pop().b==True:
+                    i = (int)((uint16)(it[i+1]) shl 8 + (byte)(it[i+2]))
+            of opJmpIfN             : 
+                if Not(stack.pop().b)==True:
+                    i = (int)(it[i+1])
+            of opJmpIfNX            : 
+                if Not(stack.pop().b)==True:
+                    i = (int)((uint16)(it[i+1]) shl 8 + (byte)(it[i+2]))
+            of opRet                : discard
+            of opEnd                : break
 
         i += 1
 
