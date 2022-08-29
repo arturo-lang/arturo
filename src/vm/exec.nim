@@ -283,6 +283,7 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             Syms[symIndx] = stack.pop()
 
     while true:
+        {.computedGoTo.}
         # TODO(VM/exec) should we use computed goto?
         #  In my benchmarks, for this particular use case - which *is* the main use case - a `{.computedGoTo.}` gives roughly a 10% boost.
         #  labels: vm, execution, enhancement, performance, open discussion
@@ -352,37 +353,121 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
 
             # [0x20-0x2F]
             # push values
-            of opPush0..opPush13    : pushByIndex((int)(op)-(int)(opPush0))
+            of opPush0              : pushByIndex(0)
+            of opPush1              : pushByIndex(1)
+            of opPush2              : pushByIndex(2)
+            of opPush3              : pushByIndex(3)
+            of opPush4              : pushByIndex(4)
+            of opPush5              : pushByIndex(5)
+            of opPush6              : pushByIndex(6)
+            of opPush7              : pushByIndex(7)
+            of opPush8              : pushByIndex(8)
+            of opPush9              : pushByIndex(9)
+            of opPush10             : pushByIndex(10)
+            of opPush11             : pushByIndex(11)
+            of opPush12             : pushByIndex(12)
+            of opPush13             : pushByIndex(13)
+            #of opPush0..opPush13    : pushByIndex((int)(op)-(int)(opPush0))
             of opPush               : i += 1; pushByIndex((int)(it[i]))
             of opPushX              : i += 2; pushByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
 
             # [0x30-0x3F]
             # store variables (from <- stack)
-            of opStore0..opStore13  : storeByIndex((int)(op)-(int)(opStore0))
+            of opStore0             : storeByIndex(0)
+            of opStore1             : storeByIndex(1)
+            of opStore2             : storeByIndex(2)
+            of opStore3             : storeByIndex(3)
+            of opStore4             : storeByIndex(4)
+            of opStore5             : storeByIndex(5)
+            of opStore6             : storeByIndex(6)
+            of opStore7             : storeByIndex(7)
+            of opStore8             : storeByIndex(8)
+            of opStore9             : storeByIndex(9)
+            of opStore10            : storeByIndex(10)
+            of opStore11            : storeByIndex(11)
+            of opStore12            : storeByIndex(12)
+            of opStore13            : storeByIndex(13)
+            #of opStore0..opStore13  : storeByIndex((int)(op)-(int)(opStore0))
             of opStore              : i += 1; storeByIndex((int)(it[i]))   
             of opStoreX             : i += 2; storeByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i])))              
 
             # [0x40-0x4F]
             # load variables (to -> stack)
-            of opLoad0..opLoad13    : loadByIndex((int)(op)-(int)(opLoad0))
+            of opLoad0              : loadByIndex(0)
+            of opLoad1              : loadByIndex(1)
+            of opLoad2              : loadByIndex(2)
+            of opLoad3              : loadByIndex(3)
+            of opLoad4              : loadByIndex(4)
+            of opLoad5              : loadByIndex(5)
+            of opLoad6              : loadByIndex(6)
+            of opLoad7              : loadByIndex(7)
+            of opLoad8              : loadByIndex(8)
+            of opLoad9              : loadByIndex(9)
+            of opLoad10             : loadByIndex(10)
+            of opLoad11             : loadByIndex(11)
+            of opLoad12             : loadByIndex(12)
+            of opLoad13             : loadByIndex(13)
+            #of opLoad0..opLoad13    : loadByIndex((int)(op)-(int)(opLoad0))
             of opLoad               : i += 1; loadByIndex((int)(it[i]))
             of opLoadX              : i += 2; loadByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
 
             # [0x50-0x5F]
             # store-load variables (from <- stack, without popping)
-            of opStorl0..opStorl13  : storeByIndex((int)(op)-(int)(opStorl0), doPop=false)
+            of opStorl0             : storeByIndex(0, doPop=false)
+            of opStorl1             : storeByIndex(1, doPop=false)
+            of opStorl2             : storeByIndex(2, doPop=false)
+            of opStorl3             : storeByIndex(3, doPop=false)
+            of opStorl4             : storeByIndex(4, doPop=false)
+            of opStorl5             : storeByIndex(5, doPop=false)
+            of opStorl6             : storeByIndex(6, doPop=false)
+            of opStorl7             : storeByIndex(7, doPop=false)
+            of opStorl8             : storeByIndex(8, doPop=false)
+            of opStorl9             : storeByIndex(9, doPop=false)
+            of opStorl10            : storeByIndex(10, doPop=false)
+            of opStorl11            : storeByIndex(11, doPop=false)
+            of opStorl12            : storeByIndex(12, doPop=false)
+            of opStorl13            : storeByIndex(13, doPop=false)
+            #of opStorl0..opStorl13  : storeByIndex((int)(op)-(int)(opStorl0), doPop=false)
             of opStorl              : i += 1; storeByIndex((int)(it[i]), doPop=false)   
             of opStorlX             : i += 2; storeByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i])), doPop=false)              
 
             # [0x60-0x6F]
             # function calls
-            of opCall0..opCall13    : callByIndex((int)(op)-(int)(opCall0))                
+            of opCall0              : callByIndex(0)  
+            of opCall1              : callByIndex(1)
+            of opCall2              : callByIndex(2)
+            of opCall3              : callByIndex(3)
+            of opCall4              : callByIndex(4)
+            of opCall5              : callByIndex(5)
+            of opCall6              : callByIndex(6)
+            of opCall7              : callByIndex(7)
+            of opCall8              : callByIndex(8)
+            of opCall9              : callByIndex(9)
+            of opCall10             : callByIndex(10)
+            of opCall11             : callByIndex(11)
+            of opCall12             : callByIndex(12)
+            of opCall13             : callByIndex(13)
+            #of opCall0..opCall13    : callByIndex((int)(op)-(int)(opCall0))                
             of opCall               : i += 1; callByIndex((int)(it[i]))
             of opCallX              : i += 2; callByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
 
             # [0x70-0x7F]
             # attributes
-            of opAttr0..opAttr13    : fetchAttributeByIndex((int)(op)-(int)(opAttr0))
+            of opAttr0              : fetchAttributeByIndex(0)
+            of opAttr1              : fetchAttributeByIndex(1)
+            of opAttr2              : fetchAttributeByIndex(2)
+            of opAttr3              : fetchAttributeByIndex(3)
+            of opAttr4              : fetchAttributeByIndex(4)
+            of opAttr5              : fetchAttributeByIndex(5)
+            of opAttr6              : fetchAttributeByIndex(6)
+            of opAttr7              : fetchAttributeByIndex(7)
+            of opAttr8              : fetchAttributeByIndex(8)
+            of opAttr9              : fetchAttributeByIndex(9)
+            of opAttr10             : fetchAttributeByIndex(10)
+            of opAttr11             : fetchAttributeByIndex(11)
+            of opAttr12             : fetchAttributeByIndex(12)
+            of opAttr13             : fetchAttributeByIndex(13)
+            #of opAttr0..opAttr13    : fetchAttributeByIndex((int)(op)-(int)(opAttr0))
             of opAttr               : i += 1; fetchAttributeByIndex((int)(it[i]))
             of opAttrX              : i += 2; fetchAttributeByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
 
@@ -453,7 +538,20 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             of opDict               : DictF.action()
             of opFunc               : FuncF.action()
 
-            of RSRV3..RSRV14        : discard
+            of RSRV3                : discard
+            of RSRV4                : discard
+            of RSRV5                : discard
+            of RSRV6                : discard
+            of RSRV7                : discard
+            of RSRV8                : discard
+            of RSRV9                : discard
+            of RSRV10               : discard
+            of RSRV11               : discard
+            of RSRV12               : discard
+            of RSRV13               : discard
+            of RSRV14               : discard
+
+            #of RSRV3..RSRV14        : discard
 
             #---------------------------------
             # LOW-LEVEL OPERATIONS
