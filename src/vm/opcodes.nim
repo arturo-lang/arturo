@@ -315,9 +315,9 @@ type
         opSet           = 0xEC
 
         # converters
-        opToS           = 0xED
-        opToI           = 0xEE  
-        opToF           = 0xEF
+        opTo            = 0xED
+        opToS           = 0xEE  
+        opToI           = 0xEF
 
 when false:
     #=======================================
@@ -394,8 +394,7 @@ proc parseOpCode*(x: string): OpCode =
                 ("Bor","BOr"),
                 ("Ife", "IfE"),
                 ("Tos", "ToS"),
-                ("Toi", "ToI"),
-                ("Tof", "ToF")
+                ("Toi", "ToI")
             ])
     str = "op" & str
 

@@ -431,12 +431,28 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
 
             # [0xE0-0xEF] #
             # comparison operators
-            of opEq                 : EqF.action()#stack.push(newLogical(Stack[SP-1]==Stack[SP-2]))
-            of opNe                 : NeF.action()#stack.push(newLogical(Stack[SP-1]!=Stack[SP-2]))
-            of opGt                 : GtF.action()#stack.push(newLogical(Stack[SP-1]>Stack[SP-2]))
-            of opGe                 : GeF.action()#stack.push(newLogical(Stack[SP-1]>=Stack[SP-2]))
-            of opLt                 : LtF.action()#stack.push(newLogical(Stack[SP-1]<Stack[SP-2]))
-            of opLe                 : LeF.action()#stack.push(newLogical(Stack[SP-1]<=Stack[SP-2]))
+            of opEq                 : EqF.action()
+            of opNe                 : NeF.action()
+            of opGt                 : GtF.action()
+            of opGe                 : GeF.action()
+            of opLt                 : LtF.action()
+            of opLe                 : LeF.action()
+
+            # branching
+            of opIf                 : IfF.action()
+            of opIfE                : IfEF.action()
+            of opElse               : ElseF.action()
+            of opWhile              : WhileF.action()
+            of opReturn             : ReturnF.action()
+
+            # getters/setters
+            of opGet                : GetF.action()
+            of opSet                : SetF.action()
+
+            # converters
+            of opTo                 : ToF.action()
+            of opToS                : discard
+            of opToI                : discard
 
         i += 1
 
