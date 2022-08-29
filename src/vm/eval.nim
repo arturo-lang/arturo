@@ -93,7 +93,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             consts.add(v)
             indx = consts.len-1
 
-        if indx <= 29:
+        if indx <= 13:
             addToCommand((byte)(((byte)(op)-0x1E) + (byte)(indx)))
         else:
             if indx>255:
@@ -117,7 +117,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             consts.add(v)
             indx = consts.len-1
 
-        if indx <= 29:
+        if indx <= 13:
             addToCommandHead((byte)(((byte)(op)-0x1E) + (byte)(indx)), atPos)
         else:
             if indx>255:
