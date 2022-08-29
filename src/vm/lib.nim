@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import sequtils, sets, strutils, tables
+import algorithm, sequtils, sets, strutils, tables
 export strutils, tables
 
 import vm/[globals, errors, stack, values/comparison, values/logic, values/printable, values/value]
@@ -29,7 +29,7 @@ const
 #=======================================
 
 proc getWrongArgumentTypeErrorMsg*(functionName: string, argumentPos: int, expectedValues: seq[ValueKind]): string =
-    let actualStr = toSeq(0..argumentPos).map(proc(x:int):string = ":" & ($(Stack[SP-1-x].kind)).toLowerAscii()).join(" ")
+    let actualStr = toSeq(0..argumentPos).reversed.map(proc(x:int):string = ":" & ($(Stack[SP+x].kind)).toLowerAscii()).join(" ")
     let acceptedStr = expectedValues.map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
 
     var ordinalPos: string = ""
@@ -147,23 +147,19 @@ template require*(name: string, spec: untyped): untyped =
             RuntimeError_NotEnoughArguments(name, spec.len)
 
     when (static spec.len)>=1 and spec!=NoArgs:
+        var x {.inject.} = stack.pop()
         when not (ANY in static spec[0][1]):
-            if unlikely(not (Stack[SP-1].kind in (static spec[0][1]))):
+            if unlikely(not (x.kind in (static spec[0][1]))):
                 RuntimeError_WrongArgumentType(name, 0, spec)
                 
         when (static spec.len)>=2:
+            var y {.inject.} = stack.pop()
             when not (ANY in static spec[1][1]):
-                if unlikely(not (Stack[SP-2].kind in (static spec[1][1]))):
+                if unlikely(not (y.kind in (static spec[1][1]))):
                     RuntimeError_WrongArgumentType(name, 1, spec)
                     
             when (static spec.len)>=3:
-                when not (ANY in static spec[2][1]):
-                    if unlikely(not (Stack[SP-3].kind in (static spec[2][1]))):
-                        RuntimeError_WrongArgumentType(name, 2, spec)
-                        
-    when (static spec.len)>=1 and spec!=NoArgs:
-        var x {.inject.} = stack.pop()
-        when (static spec.len)>=2:
-            var y {.inject.} = stack.pop()
-            when (static spec.len)>=3:
                 var z {.inject.} = stack.pop()
+                when not (ANY in static spec[2][1]):
+                    if unlikely(not (z.kind in (static spec[2][1]))):
+                        RuntimeError_WrongArgumentType(name, 2, spec)
