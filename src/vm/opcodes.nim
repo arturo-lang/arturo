@@ -65,7 +65,7 @@ type
         opEol           = 0x1D
         opEolX          = 0x1E
 
-        RSRV4           = 0x1F      # reserved
+        RSRV1           = 0x1F      # reserved
  
         # [0x20-0x2F]
         # push values
@@ -172,7 +172,7 @@ type
         #---------------------------------
 
         # [0x70-0x7F]
-        # arithmetic, binary & logical operators
+        # arithmetic operators
         opAdd           = 0x70
         opSub           = 0x71
         opMul           = 0x72
@@ -183,6 +183,7 @@ type
 
         opNeg           = 0x77
 
+        # binary operators
         opBNot          = 0x78
         opBAnd          = 0x79
         opBOr           = 0x7A
@@ -190,6 +191,7 @@ type
         opShl           = 0x7B
         opShr           = 0x7C
 
+        # logical operators
         opNot           = 0x7D
         opAnd           = 0x7E
         opOr            = 0x7F
@@ -228,18 +230,18 @@ type
         opDict          = 0x92
         opFunc          = 0x93
 
-        RSRV5           = 0x94      # reserved
-        RSRV6           = 0x95      # reserved
-        RSRV7           = 0x96      # reserved
-        RSRV8           = 0x97      # reserved
-        RSRV9           = 0x98      # reserved
-        RSRV10          = 0x99      # reserved
-        RSRV11          = 0x9A      # reserved
-        RSRV12          = 0x9B      # reserved
-        RSRV13          = 0x9C      # reserved
-        RSRV14          = 0x9D      # reserved
-        RSRV15          = 0x9E      # reserved
-        RSRV16          = 0x9F      # reserved
+        RSRV2           = 0x94      # reserved
+        RSRV3           = 0x95      # reserved
+        RSRV4           = 0x96      # reserved
+        RSRV5           = 0x97      # reserved
+        RSRV6           = 0x98      # reserved
+        RSRV7           = 0x99      # reserved
+        RSRV8           = 0x9A      # reserved
+        RSRV9           = 0x9B      # reserved
+        RSRV10          = 0x9C      # reserved
+        RSRV11          = 0x9D      # reserved
+        RSRV12          = 0x9E      # reserved
+        RSRV13          = 0x9F      # reserved
 
         #---------------------------------
         # LOW-LEVEL OPERATIONS
