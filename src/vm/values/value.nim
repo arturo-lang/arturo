@@ -411,6 +411,7 @@ var
     AddF*, SubF*, MulF*, DivF*, FdivF*, ModF*, PowF*    : Value
     NegF*, BNotF*, BAndF*, BOrF*, ShlF*, ShrF*          : Value
     NotF*, AndF*, OrF*                                  : Value 
+    EqF*, NeF*, GtF*, GeF*, LtF*, LeF*                  : Value
 
 #=======================================
 # Forward Declarations
