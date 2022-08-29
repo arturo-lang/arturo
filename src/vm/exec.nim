@@ -431,12 +431,12 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
 
             # [0xE0-0xEF] #
             # comparison operators
-            of opEq                 : stack.push(newLogical(Stack[SP-1]==Stack[SP-2]))
-            of opNe                 : stack.push(newLogical(Stack[SP-1]!=Stack[SP-2]))
-            of opGt                 : stack.push(newLogical(Stack[SP-1]>Stack[SP-2]))
-            of opGe                 : stack.push(newLogical(Stack[SP-1]>=Stack[SP-2]))
-            of opLt                 : stack.push(newLogical(Stack[SP-1]<Stack[SP-2]))
-            of opLe                 : stack.push(newLogical(Stack[SP-1]<=Stack[SP-2]))
+            of opEq                 : EqF.action()#stack.push(newLogical(Stack[SP-1]==Stack[SP-2]))
+            of opNe                 : NeF.action()#stack.push(newLogical(Stack[SP-1]!=Stack[SP-2]))
+            of opGt                 : GtF.action()#stack.push(newLogical(Stack[SP-1]>Stack[SP-2]))
+            of opGe                 : GeF.action()#stack.push(newLogical(Stack[SP-1]>=Stack[SP-2]))
+            of opLt                 : LtF.action()#stack.push(newLogical(Stack[SP-1]<Stack[SP-2]))
+            of opLe                 : LeF.action()#stack.push(newLogical(Stack[SP-1]<=Stack[SP-2]))
 
         i += 1
 
