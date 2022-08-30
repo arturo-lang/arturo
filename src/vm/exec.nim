@@ -595,7 +595,7 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
                 cn.dump(0,false)
                 
             showDebugHeader("Stack")
-
+                
             i = 0
             while i < SP:
                 stdout.write fmt("{i}: ")
