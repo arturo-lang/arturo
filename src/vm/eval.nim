@@ -195,7 +195,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
         elif fn == ReverseF: bt = opReverse
         elif fn == IncF: bt = opInc
         elif fn == DecF: bt = opDec
-
+        
         if bt != opNop:
             when toHead:
                 addToCommandHead((byte)bt)
