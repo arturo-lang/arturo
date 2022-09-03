@@ -15,6 +15,9 @@ when not defined(WEB):
 
 import os
 
+# TODO(VM/bytecode) replace zippy with already existing functions?
+#  we could somehow use some of the existing miniz functions, to avoid the extra dependency
+#  labels: vm, bytecode, enhancement, performance
 import extras/zippy
 
 # when not defined(NOUNZIP):
