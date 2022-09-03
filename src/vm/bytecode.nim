@@ -15,6 +15,9 @@ when not defined(WEB):
 
 import strformat
 
+when not defined(NOUNZIP):
+    import extras/miniz
+
 import helpers/bytes as bytesHelper
 
 import opcodes
@@ -125,7 +128,7 @@ proc optimize(trans: Translation): ByteArray =
 #  Right now, we're using Nim's "marshalling". This looks a bit unnecessary.
 #  labels: enhancement, cleanup, vm
 
-proc writeBytecode*(dataSeg: string, codeSeg: seq[byte], target: string): bool =
+proc writeBytecode*(dataSeg: string, codeSeg: seq[byte], target: string, compressed = false): bool =
     when not defined(WEB):
         var f = newFileStream(target, fmWrite)
         if not f.isNil:
@@ -136,6 +139,10 @@ proc writeBytecode*(dataSeg: string, codeSeg: seq[byte], target: string): bool =
                 f.write(b)
             f.flush
 
+            when not defined(NOUNZIP):
+                if compressed:
+                    miniz.zip(@[target], target)
+                    
             return true
         else:
             return false
