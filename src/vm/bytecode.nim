@@ -13,12 +13,12 @@
 when not defined(WEB):
     import streams
 
-import os
+    # TODO(VM/bytecode) replace zippy with already existing functions?
+    #  we could somehow use some of the existing miniz functions, to avoid the extra dependency
+    #  labels: vm, bytecode, enhancement, performance
+    import extras/zippy
 
-# TODO(VM/bytecode) replace zippy with already existing functions?
-#  we could somehow use some of the existing miniz functions, to avoid the extra dependency
-#  labels: vm, bytecode, enhancement, performance
-import extras/zippy
+import os
 
 # when not defined(NOUNZIP):
 #     import extras/miniz
