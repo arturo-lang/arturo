@@ -13,7 +13,7 @@
 # Libraries
 #=======================================
 
-import hashes, math, tables
+import hashes, tables
 
 when defined(VERBOSE):
     import strformat
