@@ -68,8 +68,6 @@ Options:
     -c, --compile              Compile script and write bytecode
     -x, --execute              Execute script from bytecode
 
-    -z, --compressed           Use compressed bytecode
-
     -e, --evaluate             Evaluate given code
     -r, --repl                 Show repl / interactive console
 
@@ -112,7 +110,6 @@ Options:
 when isMainModule and not defined(WEB):
 
     var code: string = ""
-    var compressed: bool = false
     var arguments: seq[string] = @[]
 
     when not defined(PORTABLE):
@@ -146,8 +143,6 @@ when isMainModule and not defined(WEB):
                         of "c","compile":
                             action = writeBcode
                             code = token.val
-                        of "z","compressed":
-                            compressed = true
                         of "package-info":
                             action = showPInfo
                             code = token.val
@@ -193,16 +188,13 @@ when isMainModule and not defined(WEB):
                     discard run(code, arguments, action==execFile)
                     
             of writeBcode:
-                var target: string
-                if compressed:
-                    target = code & ".zcode"
-                else:
-                    target = code & ".bcode"
+                var target = code & ".bcode"
+
                 let evaled = newBytecode(run(code, arguments, isFile=true, doExecute=false))
                 let dataS = codify(newBlock(evaled.trans[0]), unwrapped=true, safeStrings=true)
                 let codeS = evaled.trans[1]
 
-                discard writeBytecode(dataS, codeS, target, compressed=compressed)
+                discard writeBytecode(dataS, codeS, target, compressed=true)
 
             of readBcode:
                 let filename = code
