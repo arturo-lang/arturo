@@ -13,8 +13,12 @@
 when not defined(WEB):
     import streams
 
-when not defined(NOUNZIP):
-    import extras/miniz
+import os
+
+import extras/zippy
+
+# when not defined(NOUNZIP):
+#     import extras/miniz
 
 import helpers/bytes as bytesHelper
 
@@ -32,6 +36,9 @@ const
     #opStoreAny  = opStore0..opStore13
     opLoadAny   = opLoad0..opLoad13
     #opCallAny   = opCall0..opCall13
+
+    BcodeMagic              = (uint32)0x86BC0DE0
+    BcodeMagicCompressed    = (uint32)0x86BC0DE1
 
 #=======================================
 # Helpers
@@ -122,24 +129,32 @@ proc optimize(trans: Translation): ByteArray =
 # Methods
 #=======================================
 
-# TODO(Bytecode) Re-visit bytecode reading & writing
-#  Right now, we're using Nim's "marshalling". This looks a bit unnecessary.
-#  labels: enhancement, cleanup, vm
-
 proc writeBytecode*(dataSeg: string, codeSeg: seq[byte], target: string, compressed = false): bool =
     when not defined(WEB):
         var f = newFileStream(target, fmWrite)
         if not f.isNil:
-            f.write(len(dataSeg))
-            f.write(dataSeg)
-            f.write(len(codeSeg))
-            for b in codeSeg:
-                f.write(b)
-            f.flush
+            var finalDataSeg = dataSeg
+            var finalCodeSeg = codeSeg
 
-            when not defined(NOUNZIP):
-                if compressed:
-                    miniz.zip(@[target], target)
+            if compressed: f.write(BcodeMagicCompressed)
+            else: f.write(BcodeMagic)
+
+            if compressed:
+                finalDataSeg = zippy.compress(dataSeg)
+                finalCodeSeg = zippy.compress(codeSeg)
+
+            # write Data Segment
+            f.write(len(finalDataSeg))      # first its length
+            f.write(finalDataSeg)           # then the segment itself
+
+            # write Code Segment
+            f.write(len(finalCodeSeg))      # first its length
+            # TODO(VM/bytecode) Do we have to write bytes one by one?
+            #  labels: vm, bytecode, enhancement
+            for b in finalCodeSeg:          # then the segment itself
+                f.write(b)
+
+            f.close()
                     
             return true
         else:
@@ -151,6 +166,11 @@ proc readBytecode*(origin: string): (string, seq[byte]) =
     when not defined(WEB):
         var f = newFileStream(origin, fmRead)
         if not f.isNil:
+            var magic = f.readUint32()
+            var compressed = false
+            if magic == BcodeMagicCompressed:
+                compressed = true
+
             var sz: int
             f.read(sz)                      # read data segment size
 
@@ -164,6 +184,10 @@ proc readBytecode*(origin: string): (string, seq[byte]) =
             while not f.atEnd():
                 codeSegment[indx] = f.readUint8()   # read bytes one-by-one
                 indx += 1
+
+            if compressed:
+                dataSegment = zippy.uncompress(dataSegment, dataFormat=dfGzip)
+                codeSegment = zippy.uncompress(codeSegment, dataFormat=dfGzip)
 
             return (dataSegment, codeSegment)       # return the result
     else:
