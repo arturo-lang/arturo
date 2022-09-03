@@ -1,5 +1,5 @@
-import zippy/adler32, zippy/common, zippy/crc, zippy/deflate, zippy/gzip,
-    zippy/inflate, zippy/internal
+import zippy/common, zippy/crc, zippy/deflate, zippy/gzip
+    #zippy/adler32, zippy/inflate, zippy/internal
 
 export common
 
