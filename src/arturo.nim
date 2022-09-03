@@ -193,11 +193,16 @@ when isMainModule and not defined(WEB):
                     discard run(code, arguments, action==execFile)
                     
             of writeBcode:
-                let filename = code
+                var target: string
+                if compressed:
+                    target = code & ".zcode"
+                else:
+                    target = code * ".bcode"
                 let evaled = newBytecode(run(code, arguments, isFile=true, doExecute=false))
                 let dataS = codify(newBlock(evaled.trans[0]), unwrapped=true, safeStrings=true)
                 let codeS = evaled.trans[1]
-                discard writeBytecode(dataS, codeS, filename & ".bcode", compressed=compressed)
+
+                discard writeBytecode(dataS, codeS, target, compressed=compressed)
 
             of readBcode:
                 let filename = code
