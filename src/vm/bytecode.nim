@@ -13,8 +13,6 @@
 when not defined(WEB):
     import streams
 
-import strformat
-
 when not defined(NOUNZIP):
     import extras/miniz
 
