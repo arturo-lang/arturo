@@ -12,7 +12,7 @@
 
 when not defined(WEB):
     import streams
-    
+
     import extras/miniz
 
 import os
@@ -140,8 +140,8 @@ proc writeBytecode*(dataSeg: string, codeSeg: seq[byte], target: string, compres
             else: f.write(BcodeMagic)
 
             if compressed:
-                finalDataSeg = zippy.compress(dataSeg)
-                finalCodeSeg = zippy.compress(codeSeg)
+                finalDataSeg = compressString(dataSeg)
+                finalCodeSeg = compressBytes(codeSeg)
 
             # write Data Segment
             f.write(len(finalDataSeg))      # first its length
@@ -186,8 +186,8 @@ proc readBytecode*(origin: string): (string, seq[byte]) =
                 indx += 1
 
             if compressed:
-                dataSegment = zippy.uncompress(dataSegment, dataFormat=dfGzip)
-                codeSegment = zippy.uncompress(codeSegment, dataFormat=dfGzip)
+                dataSegment = uncompressString(dataSegment)
+                codeSegment = uncompressBytes(codeSegment)
 
             return (dataSegment, codeSegment)       # return the result
     else:
