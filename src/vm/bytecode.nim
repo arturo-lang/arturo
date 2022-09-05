@@ -16,7 +16,7 @@ when not defined(WEB):
     # TODO(VM/bytecode) replace zippy with already existing functions?
     #  we could somehow use some of the existing miniz functions, to avoid the extra dependency
     #  labels: vm, bytecode, enhancement, performance
-    import extras/zippy
+    import extras/miniz
 
 import os
 
