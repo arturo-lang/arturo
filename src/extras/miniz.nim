@@ -828,6 +828,28 @@ when not(defined(MINIZ_NO_ZLIB_APIS)):
 
 ### Public Library
 
+proc compressString*(src: string, level: int = 6): string =
+  var maxLenOut = mz_compressBound(mz_ulong src.len)
+  result = newString(maxLenOut)
+  var compressedSize: uint64 = maxLenOut
+  var status = mz_compress2(cast[ptr uint8](result.cstring), cast[ptr mz_ulong](addr compressedSize), cast[ptr uint8](cstring src), mz_ulong src.len, cint(level))
+  assert status == 0
+  result.setLen(compressedSize)
+
+proc compressBytes*(src: seq[byte], level: int = 6): seq[byte] =
+  return cast[seq[uint8]](compressString(cast[string](src), level))
+
+proc uncompressString*(zsrc: string): string =
+  var maxLenOut = zsrc.len * 1000
+  result = newString(maxLenOut)
+  var uncompressedSize = uint64 maxLenOut
+  var status = mz_uncompress(cast[ptr uint8](result.cstring), cast[ptr mz_ulong](addr uncompressedSize), cast[ptr uint8](cstring zsrc), mz_ulong zsrc.len)
+  assert status == 0
+  result.setLen(uncompressedSize)
+
+proc uncompressBytes*(zsrc: seq[byte]): seq[byte] =
+  return cast[seq[uint8]](uncompressString(cast[string](zsrc)))
+
 proc zip*(files: seq[string], filepath: string) =
   var pZip: ptr mz_zip_archive = cast[ptr mz_zip_archive](alloc0(sizeof(mz_zip_archive)))
   discard pZip.mz_zip_writer_init_file(filepath.cstring, 0)
