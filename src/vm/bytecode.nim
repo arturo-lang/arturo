@@ -150,12 +150,7 @@ proc writeBytecode*(dataSeg: string, codeSeg: seq[byte], target: string, compres
             
             # write Code Segment
             f.write(len(finalCodeSeg))      # first its length
-            # TODO(VM/bytecode) Do we have to write bytes one by one?
-            #  labels: vm, bytecode, enhancement
-
             f.writeData(addr(finalCodeSeg[0]), finalCodeSeg.len) # write Code Segment
-            # for b in finalCodeSeg:          # then the segment itself
-            #     f.write(b)
 
             f.close()
                     
@@ -183,13 +178,7 @@ proc readBytecode*(origin: string): (string, seq[byte]) =
             f.read(sz)                      # read code segment size
 
             var codeSegment = newSeq[byte](sz)
-
             discard f.readData(addr(codeSegment[0]), sz) # read the code segment contents
-
-            # var indx = 0
-            # while not f.atEnd():
-            #     codeSegment[indx] = f.readUint8()   # read bytes one-by-one
-            #     indx += 1
 
             if compressed:
                 dataSegment = uncompressString(dataSegment)
