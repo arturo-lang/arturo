@@ -21,7 +21,7 @@ when not defined(WEB):
     import os, sequtils, sugar
 
     import extras/miniz
-
+ 
     when not defined(NOPARSERS):
         import helpers/html
         import helpers/markdown
