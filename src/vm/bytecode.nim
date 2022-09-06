@@ -17,9 +17,6 @@ when not defined(WEB):
 
 import os
 
-# when not defined(NOUNZIP):
-#     import extras/miniz
-
 import helpers/bytes as bytesHelper
 
 import opcodes
@@ -147,7 +144,6 @@ proc writeBytecode*(dataSeg: string, codeSeg: seq[byte], target: string, compres
             f.write(len(finalDataSeg))      # first its length
             f.write(finalDataSeg)           # then the segment itself
 
-            
             # write Code Segment
             f.write(len(finalCodeSeg))      # first its length
             f.writeData(addr(finalCodeSeg[0]), finalCodeSeg.len) # write Code Segment
@@ -187,10 +183,6 @@ proc readBytecode*(origin: string): (string, seq[byte]) =
             return (dataSegment, codeSegment)       # return the result
     else:
         discard
-
-# TODO(VM/bytecode) `optimizeBytecode` should have access to full bytecode
-#  that is: including the data segment
-#  labels: enhancement, cleanup, vm, bytecode
 
 proc optimizeBytecode*(t: Translation): seq[byte] =
     result = optimize(t)
