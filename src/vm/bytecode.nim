@@ -141,12 +141,12 @@ proc writeBytecode*(dataSeg: string, codeSeg: seq[byte], target: string, compres
                 finalCodeSeg = compressBytes(codeSeg)
 
             # write Data Segment
-            f.write(len(finalDataSeg))      # first its length
-            f.write(finalDataSeg)           # then the segment itself
+            f.write(len(finalDataSeg))                              # first its length
+            f.write(finalDataSeg)                                   # then the segment itself
 
             # write Code Segment
-            f.write(len(finalCodeSeg))      # first its length
-            f.writeData(addr(finalCodeSeg[0]), finalCodeSeg.len) # write Code Segment
+            f.write(len(finalCodeSeg))                              # first its length
+            f.writeData(addr(finalCodeSeg[0]), finalCodeSeg.len)    # write code segment
 
             f.close()
                     
@@ -166,21 +166,21 @@ proc readBytecode*(origin: string): (string, seq[byte]) =
                 compressed = true
 
             var sz: int
-            f.read(sz)                      # read data segment size
+            f.read(sz)                                      # read data segment size
 
             var dataSegment: string
-            f.readStr(sz, dataSegment)      # read the data segment contents
+            f.readStr(sz, dataSegment)                      # read the data segment contents
 
-            f.read(sz)                      # read code segment size
+            f.read(sz)                                      # read code segment size
 
             var codeSegment = newSeq[byte](sz)
-            discard f.readData(addr(codeSegment[0]), sz) # read the code segment contents
+            discard f.readData(addr(codeSegment[0]), sz)    # read the code segment contents
 
             if compressed:
                 dataSegment = uncompressString(dataSegment)
                 codeSegment = uncompressBytes(codeSegment)
 
-            return (dataSegment, codeSegment)       # return the result
+            return (dataSegment, codeSegment)               # return the result
     else:
         discard
 
