@@ -18,12 +18,11 @@
 
 when not defined(WEB):
 
-    import os, sequtils
+    import os, sequtils, sugar
 
+    import extras/miniz
+ 
     when not defined(NOPARSERS):
-        import sugar
-        import extras/miniz
-
         import helpers/html
         import helpers/markdown
         import helpers/toml
@@ -368,22 +367,21 @@ proc defineSymbols*() =
                 except OSError:
                     discard
                         
-        when not defined(NOUNZIP):
-            builtin "unzip",
-                alias       = unaliased, 
-                rule        = PrefixPrecedence,
-                description = "unzip given archive to destination",
-                args        = {
-                    "destination"   : {String},
-                    "original"      : {String}
-                },
-                attrs       = NoAttrs,
-                returns     = {Nothing},
-                example     = """
-                unzip "folder" "archive.zip"
-                """:
-                    ##########################################################
-                    miniz.unzip(y.s, x.s)
+        builtin "unzip",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "unzip given archive to destination",
+            args        = {
+                "destination"   : {String},
+                "original"      : {String}
+            },
+            attrs       = NoAttrs,
+            returns     = {Nothing},
+            example     = """
+            unzip "folder" "archive.zip"
+            """:
+                ##########################################################
+                miniz.unzip(y.s, x.s)
 
         builtin "volume",
             alias       = unaliased, 
@@ -452,23 +450,22 @@ proc defineSymbols*() =
                             else:
                                 writeToFile(x.s, y.s, append = (popAttr("append")!=VNULL))
 
-        when not defined(NOUNZIP):
-            builtin "zip",
-                alias       = unaliased, 
-                rule        = PrefixPrecedence,
-                description = "zip given files to file at destination",
-                args        = {
-                    "destination"   : {String},
-                    "files"         : {Block}
-                },
-                attrs       = NoAttrs,
-                returns     = {Nothing},
-                example     = """
-                zip "dest.zip" ["file1.txt" "img.png"]
-                """:
-                    ##########################################################
-                    let files: seq[string] = cleanBlock(y.a).map((z)=>z.s)
-                    miniz.zip(files, x.s)
+        builtin "zip",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "zip given files to file at destination",
+            args        = {
+                "destination"   : {String},
+                "files"         : {Block}
+            },
+            attrs       = NoAttrs,
+            returns     = {Nothing},
+            example     = """
+            zip "dest.zip" ["file1.txt" "img.png"]
+            """:
+                ##########################################################
+                let files: seq[string] = cleanBlock(y.a).map((z)=>z.s)
+                miniz.zip(files, x.s)
 
 #=======================================
 # Add Library
