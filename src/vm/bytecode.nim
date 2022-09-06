@@ -13,15 +13,9 @@
 when not defined(WEB):
     import streams
 
-    # TODO(VM/bytecode) replace zippy with already existing functions?
-    #  we could somehow use some of the existing miniz functions, to avoid the extra dependency
-    #  labels: vm, bytecode, enhancement, performance
-    import extras/zippy
+    import extras/miniz
 
 import os
-
-# when not defined(NOUNZIP):
-#     import extras/miniz
 
 import helpers/bytes as bytesHelper
 
@@ -143,19 +137,16 @@ proc writeBytecode*(dataSeg: string, codeSeg: seq[byte], target: string, compres
             else: f.write(BcodeMagic)
 
             if compressed:
-                finalDataSeg = zippy.compress(dataSeg)
-                finalCodeSeg = zippy.compress(codeSeg)
+                finalDataSeg = compressString(dataSeg)
+                finalCodeSeg = compressBytes(codeSeg)
 
             # write Data Segment
-            f.write(len(finalDataSeg))      # first its length
-            f.write(finalDataSeg)           # then the segment itself
+            f.write(len(finalDataSeg))                              # first its length
+            f.write(finalDataSeg)                                   # then the segment itself
 
             # write Code Segment
-            f.write(len(finalCodeSeg))      # first its length
-            # TODO(VM/bytecode) Do we have to write bytes one by one?
-            #  labels: vm, bytecode, enhancement
-            for b in finalCodeSeg:          # then the segment itself
-                f.write(b)
+            f.write(len(finalCodeSeg))                              # first its length
+            f.writeData(addr(finalCodeSeg[0]), finalCodeSeg.len)    # write code segment
 
             f.close()
                     
@@ -175,30 +166,23 @@ proc readBytecode*(origin: string): (string, seq[byte]) =
                 compressed = true
 
             var sz: int
-            f.read(sz)                      # read data segment size
+            f.read(sz)                                      # read data segment size
 
             var dataSegment: string
-            f.readStr(sz, dataSegment)      # read the data segment contents
+            f.readStr(sz, dataSegment)                      # read the data segment contents
 
-            f.read(sz)                      # read code segment size
+            f.read(sz)                                      # read code segment size
 
             var codeSegment = newSeq[byte](sz)
-            var indx = 0
-            while not f.atEnd():
-                codeSegment[indx] = f.readUint8()   # read bytes one-by-one
-                indx += 1
+            discard f.readData(addr(codeSegment[0]), sz)    # read the code segment contents
 
             if compressed:
-                dataSegment = zippy.uncompress(dataSegment, dataFormat=dfGzip)
-                codeSegment = zippy.uncompress(codeSegment, dataFormat=dfGzip)
+                dataSegment = uncompressString(dataSegment)
+                codeSegment = uncompressBytes(codeSegment)
 
-            return (dataSegment, codeSegment)       # return the result
+            return (dataSegment, codeSegment)               # return the result
     else:
         discard
-
-# TODO(VM/bytecode) `optimizeBytecode` should have access to full bytecode
-#  that is: including the data segment
-#  labels: enhancement, cleanup, vm, bytecode
 
 proc optimizeBytecode*(t: Translation): seq[byte] =
     result = optimize(t)

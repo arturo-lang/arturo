@@ -71,7 +71,6 @@ let
         "nogmp"             : "-d:NOGMP",
         "noparsers"         : "-d:NOPARSERS",
         "nosqlite"          : "-d:NOSQLITE",
-        "nounzip"           : "-d:NOUNZIP",
         "nowebview"         : "-d:NOWEBVIEW",
         "optimized"         : "-d:OPTIMIZED",
         "profile"           : "-d:PROFILE --profiler:on --stackTrace:on",
@@ -248,7 +247,6 @@ proc miniBuild*() =
         "nogmp", 
         "noparsers", 
         "nosqlite", 
-        "nounzip", 
         "nowebview"
     ]:
         FLAGS = "{FLAGS} {OPTIONS[k]}".fmt
