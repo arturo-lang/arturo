@@ -18,13 +18,11 @@
 
 when not defined(WEB):
 
-    import os, sequtils
+    import os, sequtils, sugar
 
     import extras/miniz
 
     when not defined(NOPARSERS):
-        import sugar
-
         import helpers/html
         import helpers/markdown
         import helpers/toml
