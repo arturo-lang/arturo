@@ -222,6 +222,10 @@ proc RuntimeError_SymbolNotFound*(sym: string, alter: seq[string]) =
           "symbol not found: " & sym & ";" & 
           "perhaps you meant... " & alter.map((x) => "_" & x & "_ ?").join(sep)
 
+proc RuntimeError_FileNotFound*(path: string) =
+    panic RuntimeError,
+          "file not found: " & path
+
 proc RuntimeError_AliasNotFound*(sym: string) =
     panic RuntimeError,
           "alias not found: " & sym
