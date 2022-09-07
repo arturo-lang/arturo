@@ -34,9 +34,7 @@ when not defined(WEB):
     import helpers/jsonobject
     import helpers/quantities
     
-import vm/[bytecode, lib, parse]
-when defined(SAFE):
-    import vm/[errors]
+import vm/[bytecode, errors, lib, parse]
 
 #=======================================
 # Methods
@@ -235,7 +233,8 @@ proc defineSymbols*() =
                         "markdown"      : ({Logical},"read Markdown and convert to HTML"),
                         "toml"          : ({Logical},"read TOML into value"),
                         "bytecode"      : ({Logical},"read file as Arturo bytecode"),
-                        "binary"        : ({Logical},"read as binary")
+                        "binary"        : ({Logical},"read as binary"),
+                        "file"          : ({Logical},"read as file (throws an error if not valid)")
                     }
                 else:
                     {
@@ -244,7 +243,8 @@ proc defineSymbols*() =
                         "csv"           : ({Logical},"read CSV file into a block of rows"),
                         "withHeaders"   : ({Logical},"read CSV headers"),
                         "bytecode"      : ({Logical},"read file as Arturo bytecode"),
-                        "binary"        : ({Logical},"read as binary")
+                        "binary"        : ({Logical},"read as binary"),
+                        "file"          : ({Logical},"read as file (throws an error if not valid)")
                     },
             returns     = {String,Block,Binary},
             example     = """
@@ -271,7 +271,10 @@ proc defineSymbols*() =
 
                     push(newBinary(b))
                 else:
-                    let (src, _{.inject.}) = getSource(x.s)
+                    let (src, tp) = getSource(x.s)
+
+                    if (popAttr("file") != VNULL and tp != FileData):
+                        RuntimeError_FileNotFound(src)
 
                     if (popAttr("lines") != VNULL):
                         push(newStringBlock(src.splitLines()))
