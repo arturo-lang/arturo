@@ -18,7 +18,7 @@
 
 when not defined(WEB):
 
-    import os, sequtils, sugar
+    import os, sequtils, sugar, times
 
     import extras/miniz
  
@@ -369,6 +369,26 @@ proc defineSymbols*() =
                         createSymlink(move source, move target)
                 except OSError:
                     discard
+        
+        builtin "timestamp",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "get file timestamps",
+            args        = {
+                "file"  : {String}
+            },
+            attrs       = NoAttrs,
+            returns     = {Nothing},
+            # TODO(Files\timestamp) add documentation example
+            #  labels: library, documentation, easy
+            example     = """
+            """:
+                ##########################################################
+                push newDictionary({
+                    "created": newDate(local(getCreationTime(x.s))),
+                    "accessed": newDate(local(getLastAccessTime(x.s))),
+                    "modified": newDate(local(getLastModificationTime(x.s)))
+                }.toOrderedTable)
                         
         builtin "unzip",
             alias       = unaliased, 
