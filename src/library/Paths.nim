@@ -41,7 +41,7 @@ proc defineSymbols*() =
     when not defined(WEB):
 
         builtin "absolute?",
-            alias       = unaliased,, 
+            alias       = unaliased,
             rule        = PrefixPrecedence,
             description = "check if given path is an absolute path",
             args        = {
