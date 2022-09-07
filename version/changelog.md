@@ -18,7 +18,7 @@ v0.9.81
 - Arithmetic: added new `divmod` method
 - Collections: added new `combine`, `decouple` & `rotate` methods
 - Converters: added new `in` method
-- Files: added new `timestamp` method
+- Files: added new `hidden?` predicate & `timestamp` method
 - Iterators: added new `chunk` & `cluster` methods
 - Numbers: added new `factorial` & `lcm` methods
 - Paths: added new `absolute?` method
