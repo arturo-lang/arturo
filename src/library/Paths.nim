@@ -40,6 +40,22 @@ proc defineSymbols*() =
 
     when not defined(WEB):
 
+        builtin "absolute?",
+            alias       = unaliased,, 
+            rule        = PrefixPrecedence,
+            description = "check if given path is an absolute path",
+            args        = {
+                "path"  : {String}
+            },
+            attrs       = NoAttrs,
+            returns     = {Logical},
+            # TODO(Paths\absolute?): add documentation example
+            #  labels: library, documentation, easy
+            example     = """
+            """:
+                ##########################################################
+                push(newLogical(isAbsolutePathx.s)))
+
         # TODO(Paths\extract) implement for Web/JS builds
         #  labels: library,enhancement,web
         builtin "extract",
