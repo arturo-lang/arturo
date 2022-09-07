@@ -54,7 +54,7 @@ proc defineSymbols*() =
             example     = """
             """:
                 ##########################################################
-                push(newLogical(isAbsolutePathx.s)))
+                push(newLogical(isAbsolute(x.s)))
 
         # TODO(Paths\extract) implement for Web/JS builds
         #  labels: library,enhancement,web
