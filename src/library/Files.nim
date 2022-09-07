@@ -127,10 +127,30 @@ proc defineSymbols*() =
             ]
             """:
                 ##########################################################
+                when defined(SAFE): RuntimeError_OperationNotPermitted("exists?")
+
                 if (popAttr("directory") != VNULL): 
                     push(newLogical(dirExists(x.s)))
                 else: 
                     push(newLogical(fileExists(x.s)))
+
+        builtin "hidden?",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "check if file/folder at given path is hidden",
+            args        = {
+                "file"      : {String}
+            },
+            attrs       = NoAttrs,
+            returns     = {Quantity},
+            # TODO(Files\hidden?) add documentation example
+            #  labels: library, documentation, easy
+            example     = """
+            """:
+                ##########################################################
+                when defined(SAFE): RuntimeError_OperationNotPermitted("hidden?")
+
+                push newLogical(isHidden(x.s))
 
         # TODO(Files) add `move` built-in function
         #  labels: library, enhancement
@@ -171,6 +191,7 @@ proc defineSymbols*() =
             """:
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("permissions")
+
                 try:
                     if (popAttr("set") != VNULL):
                         var source = x.s
@@ -322,6 +343,7 @@ proc defineSymbols*() =
             """:
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("rename")
+
                 var source = x.s
                 var target = y.s
                 if (popAttr("directory") != VNULL): 
@@ -360,6 +382,7 @@ proc defineSymbols*() =
             """:
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("symlink")
+
                 var source = x.s
                 var target = y.s
                 try:
@@ -404,6 +427,8 @@ proc defineSymbols*() =
             unzip "folder" "archive.zip"
             """:
                 ##########################################################
+                when defined(SAFE): RuntimeError_OperationNotPermitted("unzip")
+
                 miniz.unzip(y.s, x.s)
 
         builtin "volume",
@@ -453,6 +478,7 @@ proc defineSymbols*() =
             """:
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("write")
+
                 if y.kind==Bytecode:
                     let dataS = codify(newBlock(y.trans[0]), unwrapped=true, safeStrings=true)
                     let codeS = y.trans[1]
@@ -487,6 +513,8 @@ proc defineSymbols*() =
             zip "dest.zip" ["file1.txt" "img.png"]
             """:
                 ##########################################################
+                when defined(SAFE): RuntimeError_OperationNotPermitted("zip")
+
                 let files: seq[string] = cleanBlock(y.a).map((z)=>z.s)
                 miniz.zip(files, x.s)
 
