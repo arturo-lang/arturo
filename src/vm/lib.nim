@@ -95,7 +95,7 @@ template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, descriptio
         when not defined(WEB):
             let b = newBuiltin(n, alias, rule, "[" & static (instantiationInfo().filename).replace(".nim") & ":" & $(static (instantiationInfo().line)) & "] " & description, static argsLen, args.toOrderedTable, attrs.toOrderedTable, returns, cleanExample, proc () =
                 require(n, args)
-                registerFunction(n):
+                hookFunctionProfiler(n):
                     act
             )
         else:
