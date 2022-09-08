@@ -292,6 +292,21 @@ proc defineSymbols*() =
         description = "embedded information about the current script":
             getScriptInfo()
 
+    when not defined(WEB):
+        builtin "superuser?",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "check if current user has administrator/root privileges",
+            args        = NoArgs,
+            attrs       = NoAttrs,
+            returns     = {Logical},
+            # TODO(System\superuser?) add documentation example
+            #  labels: library, documentation, easy
+            example     = """
+            """:
+                ##########################################################
+                push newLogical(isAdmin())
+
     constant "sys",
         alias       = unaliased,
         description = "information about the current system":

@@ -18,7 +18,7 @@
 
 when not defined(WEB):
 
-    import os, sequtils, sugar
+    import os, sequtils, sugar, times
 
     import extras/miniz
  
@@ -34,9 +34,7 @@ when not defined(WEB):
     import helpers/jsonobject
     import helpers/quantities
     
-import vm/[bytecode, lib, parse]
-when defined(SAFE):
-    import vm/[errors]
+import vm/[bytecode, errors, lib, parse]
 
 #=======================================
 # Methods
@@ -129,10 +127,30 @@ proc defineSymbols*() =
             ]
             """:
                 ##########################################################
+                when defined(SAFE): RuntimeError_OperationNotPermitted("exists?")
+
                 if (popAttr("directory") != VNULL): 
                     push(newLogical(dirExists(x.s)))
                 else: 
                     push(newLogical(fileExists(x.s)))
+
+        builtin "hidden?",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "check if file/folder at given path is hidden",
+            args        = {
+                "file"      : {String}
+            },
+            attrs       = NoAttrs,
+            returns     = {Quantity},
+            # TODO(Files\hidden?) add documentation example
+            #  labels: library, documentation, easy
+            example     = """
+            """:
+                ##########################################################
+                when defined(SAFE): RuntimeError_OperationNotPermitted("hidden?")
+
+                push newLogical(isHidden(x.s))
 
         # TODO(Files) add `move` built-in function
         #  labels: library, enhancement
@@ -173,6 +191,7 @@ proc defineSymbols*() =
             """:
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("permissions")
+
                 try:
                     if (popAttr("set") != VNULL):
                         var source = x.s
@@ -235,7 +254,8 @@ proc defineSymbols*() =
                         "markdown"      : ({Logical},"read Markdown and convert to HTML"),
                         "toml"          : ({Logical},"read TOML into value"),
                         "bytecode"      : ({Logical},"read file as Arturo bytecode"),
-                        "binary"        : ({Logical},"read as binary")
+                        "binary"        : ({Logical},"read as binary"),
+                        "file"          : ({Logical},"read as file (throws an error if not valid)")
                     }
                 else:
                     {
@@ -244,7 +264,8 @@ proc defineSymbols*() =
                         "csv"           : ({Logical},"read CSV file into a block of rows"),
                         "withHeaders"   : ({Logical},"read CSV headers"),
                         "bytecode"      : ({Logical},"read file as Arturo bytecode"),
-                        "binary"        : ({Logical},"read as binary")
+                        "binary"        : ({Logical},"read as binary"),
+                        "file"          : ({Logical},"read as file (throws an error if not valid)")
                     },
             returns     = {String,Block,Binary},
             example     = """
@@ -271,7 +292,10 @@ proc defineSymbols*() =
 
                     push(newBinary(b))
                 else:
-                    let (src, _{.inject.}) = getSource(x.s)
+                    let (src, tp) = getSource(x.s)
+
+                    if (popAttr("file") != VNULL and tp != FileData):
+                        RuntimeError_FileNotFound(src)
 
                     if (popAttr("lines") != VNULL):
                         push(newStringBlock(src.splitLines()))
@@ -319,6 +343,7 @@ proc defineSymbols*() =
             """:
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("rename")
+
                 var source = x.s
                 var target = y.s
                 if (popAttr("directory") != VNULL): 
@@ -357,6 +382,7 @@ proc defineSymbols*() =
             """:
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("symlink")
+
                 var source = x.s
                 var target = y.s
                 try:
@@ -366,6 +392,26 @@ proc defineSymbols*() =
                         createSymlink(move source, move target)
                 except OSError:
                     discard
+        
+        builtin "timestamp",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "get file timestamps",
+            args        = {
+                "file"  : {String}
+            },
+            attrs       = NoAttrs,
+            returns     = {Nothing},
+            # TODO(Files\timestamp) add documentation example
+            #  labels: library, documentation, easy
+            example     = """
+            """:
+                ##########################################################
+                push newDictionary({
+                    "created": newDate(local(getCreationTime(x.s))),
+                    "accessed": newDate(local(getLastAccessTime(x.s))),
+                    "modified": newDate(local(getLastModificationTime(x.s)))
+                }.toOrderedTable)
                         
         builtin "unzip",
             alias       = unaliased, 
@@ -381,6 +427,8 @@ proc defineSymbols*() =
             unzip "folder" "archive.zip"
             """:
                 ##########################################################
+                when defined(SAFE): RuntimeError_OperationNotPermitted("unzip")
+
                 miniz.unzip(y.s, x.s)
 
         builtin "volume",
@@ -430,6 +478,7 @@ proc defineSymbols*() =
             """:
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("write")
+
                 if y.kind==Bytecode:
                     let dataS = codify(newBlock(y.trans[0]), unwrapped=true, safeStrings=true)
                     let codeS = y.trans[1]
@@ -464,6 +513,8 @@ proc defineSymbols*() =
             zip "dest.zip" ["file1.txt" "img.png"]
             """:
                 ##########################################################
+                when defined(SAFE): RuntimeError_OperationNotPermitted("zip")
+
                 let files: seq[string] = cleanBlock(y.a).map((z)=>z.s)
                 miniz.zip(files, x.s)
 
