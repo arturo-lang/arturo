@@ -319,9 +319,6 @@ proc defineSymbols*() =
             description = "common path constants":
                 newDictionary(getPathInfo())
 
-        # TODO(Paths\relative) Test and possible re-implement built-in function
-        #  Right now, Arturo's path handling is a complete mess IMHO. And `relative` is one of the main culprits - along with our handling of the "PathStack" in VM/Env.
-        #  labels: vm, library, enhancement, bug, critical
         builtin "relative",
             alias       = dotslash, 
             rule        = PrefixPrecedence,
