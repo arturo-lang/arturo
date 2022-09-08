@@ -265,19 +265,7 @@ template handleBranching*(tryDoing, finalize: untyped): untyped =
 # Methods
 #=======================================
 
-# proc printSyms*(vv:ValueDict, message: string)=
-#     echo "============================"
-#     echo message
-#     echo "============================"
-#     for k,v in pairs(vv):
-#         if k!="path" and k!="arg" and k!="sys" and k!="null" and k!="true" and k!="false" and k!="pi" and not (v.kind==Function and v.fnKind==BuiltinFunction):
-#             echo k & " => " & $(v)
-#     echo "----------------------------"
-
 proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): ValueDict = 
-    when defined(VERBOSE):
-        if depth==0:
-            showDebugHeader("VM")
 
     let cnst = input[0]
     let it = input[1]
@@ -600,30 +588,6 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
                 of opEnd                : break
 
         i += 1
-
-    when defined(VERBOSE):
-        if depth==0:
-            showDebugHeader("Constants")
-
-            for j, cn in cnst:
-                stdout.write fmt("{j}: ")
-                cn.dump(0,false)
-                
-            showDebugHeader("Stack")
-                
-            i = 0
-            while i < SP:
-                stdout.write fmt("{i}: ")
-                var item = Stack[i]
-
-                item.dump(0, false)
-
-                i += 1
-
-            # showDebugHeader("Symbols")
-            # for k,v in Syms:
-            #     stdout.write fmt("{k} => ")
-            #     v.dump(0, false)
 
     let newSyms = Syms
     Syms = oldSyms
