@@ -19,7 +19,17 @@ when defined(VERBOSE):
     import strformat
     import helpers/debug
 
-import vm/[bytecode, errors, eval, globals, parse, stack, values/logic, values/value]
+import vm/[
+    bytecode, 
+    errors, 
+    eval, 
+    globals, 
+    parse, 
+    profiler, 
+    stack, 
+    values/logic, 
+    values/value
+]
 
 #=======================================
 # Variables
@@ -290,299 +300,301 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
 
         op = (OpCode)(it[i])
 
-        when defined(VERBOSE):
-            echo "exec: " & $(op)
+        hookOpProfiler($(op)):
 
-        case op:
-            # [0x00-0x1F]
-            # push constants 
-            of opConstI0            : stack.push(I0)
-            of opConstI1            : stack.push(I1)
-            of opConstI2            : stack.push(I2)
-            of opConstI3            : stack.push(I3)
-            of opConstI4            : stack.push(I4)
-            of opConstI5            : stack.push(I5)
-            of opConstI6            : stack.push(I6)
-            of opConstI7            : stack.push(I7)
-            of opConstI8            : stack.push(I8)
-            of opConstI9            : stack.push(I9)
-            of opConstI10           : stack.push(I10)
-            of opConstI11           : stack.push(I11)
-            of opConstI12           : stack.push(I12)
-            of opConstI13           : stack.push(I13)
-            of opConstI14           : stack.push(I14)
-            of opConstI15           : stack.push(I15)
+            when defined(VERBOSE):
+                echo "exec: " & $(op)
 
-            of opConstI1M           : stack.push(I1M)           # unused by evaluator
+            case op:
+                # [0x00-0x1F]
+                # push constants 
+                of opConstI0            : stack.push(I0)
+                of opConstI1            : stack.push(I1)
+                of opConstI2            : stack.push(I2)
+                of opConstI3            : stack.push(I3)
+                of opConstI4            : stack.push(I4)
+                of opConstI5            : stack.push(I5)
+                of opConstI6            : stack.push(I6)
+                of opConstI7            : stack.push(I7)
+                of opConstI8            : stack.push(I8)
+                of opConstI9            : stack.push(I9)
+                of opConstI10           : stack.push(I10)
+                of opConstI11           : stack.push(I11)
+                of opConstI12           : stack.push(I12)
+                of opConstI13           : stack.push(I13)
+                of opConstI14           : stack.push(I14)
+                of opConstI15           : stack.push(I15)
 
-            of opConstF0            : stack.push(F0)
-            of opConstF1            : stack.push(F1)
-            of opConstF2            : stack.push(F2)
+                of opConstI1M           : stack.push(I1M)           # unused by evaluator
 
-            of opConstF1M           : stack.push(F1M)           # unused by evaluator
+                of opConstF0            : stack.push(F0)
+                of opConstF1            : stack.push(F1)
+                of opConstF2            : stack.push(F2)
 
-            of opConstBT            : stack.push(VTRUE)
-            of opConstBF            : stack.push(VFALSE)
-            of opConstBM            : stack.push(VMAYBE)
+                of opConstF1M           : stack.push(F1M)           # unused by evaluator
 
-            of opConstS             : stack.push(VEMPTYSTR)
-            of opConstA             : stack.push(VEMPTYARR)
-            of opConstD             : stack.push(VEMPTYDICT)
+                of opConstBT            : stack.push(VTRUE)
+                of opConstBF            : stack.push(VFALSE)
+                of opConstBM            : stack.push(VMAYBE)
 
-            of opConstN             : stack.push(VNULL)
+                of opConstS             : stack.push(VEMPTYSTR)
+                of opConstA             : stack.push(VEMPTYARR)
+                of opConstD             : stack.push(VEMPTYDICT)
 
-            # lines & error reporting
-            of opEol                : 
-                when not defined(NOERRORLINES):
-                    i += 1
-                    CurrentLine = (int)(it[i])
-                else:
-                    discard
-            of opEolX               :   
-                when not defined(NOERRORLINES):
-                    i += 2
-                    CurrentLine = (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
-                else:
-                    discard
+                of opConstN             : stack.push(VNULL)
 
-            of RSRV1                : discard
-            of RSRV2                : discard
+                # lines & error reporting
+                of opEol                : 
+                    when not defined(NOERRORLINES):
+                        i += 1
+                        CurrentLine = (int)(it[i])
+                    else:
+                        discard
+                of opEolX               :   
+                    when not defined(NOERRORLINES):
+                        i += 2
+                        CurrentLine = (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
+                    else:
+                        discard
 
-            # [0x20-0x2F]
-            # push values
-            of opPush0              : pushByIndex(0)
-            of opPush1              : pushByIndex(1)
-            of opPush2              : pushByIndex(2)
-            of opPush3              : pushByIndex(3)
-            of opPush4              : pushByIndex(4)
-            of opPush5              : pushByIndex(5)
-            of opPush6              : pushByIndex(6)
-            of opPush7              : pushByIndex(7)
-            of opPush8              : pushByIndex(8)
-            of opPush9              : pushByIndex(9)
-            of opPush10             : pushByIndex(10)
-            of opPush11             : pushByIndex(11)
-            of opPush12             : pushByIndex(12)
-            of opPush13             : pushByIndex(13)
-            #of opPush0..opPush13    : pushByIndex((int)(op)-(int)(opPush0))
-            of opPush               : i += 1; pushByIndex((int)(it[i]))
-            of opPushX              : i += 2; pushByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
+                of RSRV1                : discard
+                of RSRV2                : discard
 
-            # [0x30-0x3F]
-            # store variables (from <- stack)
-            of opStore0             : storeByIndex(0)
-            of opStore1             : storeByIndex(1)
-            of opStore2             : storeByIndex(2)
-            of opStore3             : storeByIndex(3)
-            of opStore4             : storeByIndex(4)
-            of opStore5             : storeByIndex(5)
-            of opStore6             : storeByIndex(6)
-            of opStore7             : storeByIndex(7)
-            of opStore8             : storeByIndex(8)
-            of opStore9             : storeByIndex(9)
-            of opStore10            : storeByIndex(10)
-            of opStore11            : storeByIndex(11)
-            of opStore12            : storeByIndex(12)
-            of opStore13            : storeByIndex(13)
-            of opStore              : i += 1; storeByIndex((int)(it[i]))   
-            of opStoreX             : i += 2; storeByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i])))              
+                # [0x20-0x2F]
+                # push values
+                of opPush0              : pushByIndex(0)
+                of opPush1              : pushByIndex(1)
+                of opPush2              : pushByIndex(2)
+                of opPush3              : pushByIndex(3)
+                of opPush4              : pushByIndex(4)
+                of opPush5              : pushByIndex(5)
+                of opPush6              : pushByIndex(6)
+                of opPush7              : pushByIndex(7)
+                of opPush8              : pushByIndex(8)
+                of opPush9              : pushByIndex(9)
+                of opPush10             : pushByIndex(10)
+                of opPush11             : pushByIndex(11)
+                of opPush12             : pushByIndex(12)
+                of opPush13             : pushByIndex(13)
+                #of opPush0..opPush13    : pushByIndex((int)(op)-(int)(opPush0))
+                of opPush               : i += 1; pushByIndex((int)(it[i]))
+                of opPushX              : i += 2; pushByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
 
-            # [0x40-0x4F]
-            # load variables (to -> stack)
-            of opLoad0              : loadByIndex(0)
-            of opLoad1              : loadByIndex(1)
-            of opLoad2              : loadByIndex(2)
-            of opLoad3              : loadByIndex(3)
-            of opLoad4              : loadByIndex(4)
-            of opLoad5              : loadByIndex(5)
-            of opLoad6              : loadByIndex(6)
-            of opLoad7              : loadByIndex(7)
-            of opLoad8              : loadByIndex(8)
-            of opLoad9              : loadByIndex(9)
-            of opLoad10             : loadByIndex(10)
-            of opLoad11             : loadByIndex(11)
-            of opLoad12             : loadByIndex(12)
-            of opLoad13             : loadByIndex(13)
-            of opLoad               : i += 1; loadByIndex((int)(it[i]))
-            of opLoadX              : i += 2; loadByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
+                # [0x30-0x3F]
+                # store variables (from <- stack)
+                of opStore0             : storeByIndex(0)
+                of opStore1             : storeByIndex(1)
+                of opStore2             : storeByIndex(2)
+                of opStore3             : storeByIndex(3)
+                of opStore4             : storeByIndex(4)
+                of opStore5             : storeByIndex(5)
+                of opStore6             : storeByIndex(6)
+                of opStore7             : storeByIndex(7)
+                of opStore8             : storeByIndex(8)
+                of opStore9             : storeByIndex(9)
+                of opStore10            : storeByIndex(10)
+                of opStore11            : storeByIndex(11)
+                of opStore12            : storeByIndex(12)
+                of opStore13            : storeByIndex(13)
+                of opStore              : i += 1; storeByIndex((int)(it[i]))   
+                of opStoreX             : i += 2; storeByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i])))              
 
-            # [0x50-0x5F]
-            # store-load variables (from <- stack, without popping)
-            of opStorl0             : storeByIndex(0, doPop=false)
-            of opStorl1             : storeByIndex(1, doPop=false)
-            of opStorl2             : storeByIndex(2, doPop=false)
-            of opStorl3             : storeByIndex(3, doPop=false)
-            of opStorl4             : storeByIndex(4, doPop=false)
-            of opStorl5             : storeByIndex(5, doPop=false)
-            of opStorl6             : storeByIndex(6, doPop=false)
-            of opStorl7             : storeByIndex(7, doPop=false)
-            of opStorl8             : storeByIndex(8, doPop=false)
-            of opStorl9             : storeByIndex(9, doPop=false)
-            of opStorl10            : storeByIndex(10, doPop=false)
-            of opStorl11            : storeByIndex(11, doPop=false)
-            of opStorl12            : storeByIndex(12, doPop=false)
-            of opStorl13            : storeByIndex(13, doPop=false)
-            of opStorl              : i += 1; storeByIndex((int)(it[i]), doPop=false)   
-            of opStorlX             : i += 2; storeByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i])), doPop=false)              
+                # [0x40-0x4F]
+                # load variables (to -> stack)
+                of opLoad0              : loadByIndex(0)
+                of opLoad1              : loadByIndex(1)
+                of opLoad2              : loadByIndex(2)
+                of opLoad3              : loadByIndex(3)
+                of opLoad4              : loadByIndex(4)
+                of opLoad5              : loadByIndex(5)
+                of opLoad6              : loadByIndex(6)
+                of opLoad7              : loadByIndex(7)
+                of opLoad8              : loadByIndex(8)
+                of opLoad9              : loadByIndex(9)
+                of opLoad10             : loadByIndex(10)
+                of opLoad11             : loadByIndex(11)
+                of opLoad12             : loadByIndex(12)
+                of opLoad13             : loadByIndex(13)
+                of opLoad               : i += 1; loadByIndex((int)(it[i]))
+                of opLoadX              : i += 2; loadByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
 
-            # [0x60-0x6F]
-            # function calls
-            of opCall0              : callByIndex(0)  
-            of opCall1              : callByIndex(1)
-            of opCall2              : callByIndex(2)
-            of opCall3              : callByIndex(3)
-            of opCall4              : callByIndex(4)
-            of opCall5              : callByIndex(5)
-            of opCall6              : callByIndex(6)
-            of opCall7              : callByIndex(7)
-            of opCall8              : callByIndex(8)
-            of opCall9              : callByIndex(9)
-            of opCall10             : callByIndex(10)
-            of opCall11             : callByIndex(11)
-            of opCall12             : callByIndex(12)
-            of opCall13             : callByIndex(13)          
-            of opCall               : i += 1; callByIndex((int)(it[i]))
-            of opCallX              : i += 2; callByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
+                # [0x50-0x5F]
+                # store-load variables (from <- stack, without popping)
+                of opStorl0             : storeByIndex(0, doPop=false)
+                of opStorl1             : storeByIndex(1, doPop=false)
+                of opStorl2             : storeByIndex(2, doPop=false)
+                of opStorl3             : storeByIndex(3, doPop=false)
+                of opStorl4             : storeByIndex(4, doPop=false)
+                of opStorl5             : storeByIndex(5, doPop=false)
+                of opStorl6             : storeByIndex(6, doPop=false)
+                of opStorl7             : storeByIndex(7, doPop=false)
+                of opStorl8             : storeByIndex(8, doPop=false)
+                of opStorl9             : storeByIndex(9, doPop=false)
+                of opStorl10            : storeByIndex(10, doPop=false)
+                of opStorl11            : storeByIndex(11, doPop=false)
+                of opStorl12            : storeByIndex(12, doPop=false)
+                of opStorl13            : storeByIndex(13, doPop=false)
+                of opStorl              : i += 1; storeByIndex((int)(it[i]), doPop=false)   
+                of opStorlX             : i += 2; storeByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i])), doPop=false)              
 
-            # [0x70-0x7F]
-            # attributes
-            of opAttr0              : fetchAttributeByIndex(0)
-            of opAttr1              : fetchAttributeByIndex(1)
-            of opAttr2              : fetchAttributeByIndex(2)
-            of opAttr3              : fetchAttributeByIndex(3)
-            of opAttr4              : fetchAttributeByIndex(4)
-            of opAttr5              : fetchAttributeByIndex(5)
-            of opAttr6              : fetchAttributeByIndex(6)
-            of opAttr7              : fetchAttributeByIndex(7)
-            of opAttr8              : fetchAttributeByIndex(8)
-            of opAttr9              : fetchAttributeByIndex(9)
-            of opAttr10             : fetchAttributeByIndex(10)
-            of opAttr11             : fetchAttributeByIndex(11)
-            of opAttr12             : fetchAttributeByIndex(12)
-            of opAttr13             : fetchAttributeByIndex(13)
-            #of opAttr0..opAttr13    : fetchAttributeByIndex((int)(op)-(int)(opAttr0))
-            of opAttr               : i += 1; fetchAttributeByIndex((int)(it[i]))
-            of opAttrX              : i += 2; fetchAttributeByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
+                # [0x60-0x6F]
+                # function calls
+                of opCall0              : callByIndex(0)  
+                of opCall1              : callByIndex(1)
+                of opCall2              : callByIndex(2)
+                of opCall3              : callByIndex(3)
+                of opCall4              : callByIndex(4)
+                of opCall5              : callByIndex(5)
+                of opCall6              : callByIndex(6)
+                of opCall7              : callByIndex(7)
+                of opCall8              : callByIndex(8)
+                of opCall9              : callByIndex(9)
+                of opCall10             : callByIndex(10)
+                of opCall11             : callByIndex(11)
+                of opCall12             : callByIndex(12)
+                of opCall13             : callByIndex(13)          
+                of opCall               : i += 1; callByIndex((int)(it[i]))
+                of opCallX              : i += 2; callByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
 
-            #---------------------------------
-            # OP FUNCTIONS
-            #---------------------------------
+                # [0x70-0x7F]
+                # attributes
+                of opAttr0              : fetchAttributeByIndex(0)
+                of opAttr1              : fetchAttributeByIndex(1)
+                of opAttr2              : fetchAttributeByIndex(2)
+                of opAttr3              : fetchAttributeByIndex(3)
+                of opAttr4              : fetchAttributeByIndex(4)
+                of opAttr5              : fetchAttributeByIndex(5)
+                of opAttr6              : fetchAttributeByIndex(6)
+                of opAttr7              : fetchAttributeByIndex(7)
+                of opAttr8              : fetchAttributeByIndex(8)
+                of opAttr9              : fetchAttributeByIndex(9)
+                of opAttr10             : fetchAttributeByIndex(10)
+                of opAttr11             : fetchAttributeByIndex(11)
+                of opAttr12             : fetchAttributeByIndex(12)
+                of opAttr13             : fetchAttributeByIndex(13)
+                #of opAttr0..opAttr13    : fetchAttributeByIndex((int)(op)-(int)(opAttr0))
+                of opAttr               : i += 1; fetchAttributeByIndex((int)(it[i]))
+                of opAttrX              : i += 2; fetchAttributeByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
 
-            # [0x80-0x8F]
-            # arithmetic operators
-            of opAdd                : AddF.action()
-            of opSub                : SubF.action()
-            of opMul                : MulF.action()
-            of opDiv                : DivF.action()
-            of opFdiv               : FdivF.action()
-            of opMod                : ModF.action()
-            of opPow                : PowF.action()
+                #---------------------------------
+                # OP FUNCTIONS
+                #---------------------------------
 
-            of opNeg                : NegF.action()
+                # [0x80-0x8F]
+                # arithmetic operators
+                of opAdd                : AddF.action()
+                of opSub                : SubF.action()
+                of opMul                : MulF.action()
+                of opDiv                : DivF.action()
+                of opFdiv               : FdivF.action()
+                of opMod                : ModF.action()
+                of opPow                : PowF.action()
 
-            # binary operators
-            of opBNot               : BNotF.action()
-            of opBAnd               : BAndF.action() 
-            of opBOr                : BOrF.action()
+                of opNeg                : NegF.action()
 
-            of opShl                : ShlF.action()
-            of opShr                : ShrF.action()
+                # binary operators
+                of opBNot               : BNotF.action()
+                of opBAnd               : BAndF.action() 
+                of opBOr                : BOrF.action()
 
-            # logical operators
-            of opNot                : NotF.action()
-            of opAnd                : AndF.action()
-            of opOr                 : OrF.action()
+                of opShl                : ShlF.action()
+                of opShr                : ShrF.action()
 
-            # [0x90-0x9F]
-            # comparison operators
-            of opEq                 : EqF.action()
-            of opNe                 : NeF.action()
-            of opGt                 : GtF.action()
-            of opGe                 : GeF.action()
-            of opLt                 : LtF.action()
-            of opLe                 : LeF.action()
+                # logical operators
+                of opNot                : NotF.action()
+                of opAnd                : AndF.action()
+                of opOr                 : OrF.action()
 
-            # branching
-            of opIf                 : IfF.action()
-            of opIfE                : IfEF.action()
-            of opElse               : ElseF.action()
-            of opWhile              : WhileF.action()
-            of opReturn             : ReturnF.action()
+                # [0x90-0x9F]
+                # comparison operators
+                of opEq                 : EqF.action()
+                of opNe                 : NeF.action()
+                of opGt                 : GtF.action()
+                of opGe                 : GeF.action()
+                of opLt                 : LtF.action()
+                of opLe                 : LeF.action()
 
-            # getters/setters
-            of opGet                : GetF.action()
-            of opSet                : SetF.action()
+                # branching
+                of opIf                 : IfF.action()
+                of opIfE                : IfEF.action()
+                of opElse               : ElseF.action()
+                of opWhile              : WhileF.action()
+                of opReturn             : ReturnF.action()
 
-            # converters
-            of opTo                 : ToF.action()
-            of opToS                : 
-                stack.push(VSTRINGT)
-                ToF.action()
-            of opToI                : 
-                stack.push(VINTEGERT)
-                ToF.action()
+                # getters/setters
+                of opGet                : GetF.action()
+                of opSet                : SetF.action()
 
-            # [0xA0-0xAF]
-            # i/o operations
-            of opPrint              : PrintF.action()
+                # converters
+                of opTo                 : ToF.action()
+                of opToS                : 
+                    stack.push(VSTRINGT)
+                    ToF.action()
+                of opToI                : 
+                    stack.push(VINTEGERT)
+                    ToF.action()
 
-            # generators          
-            of opArray              : ArrayF.action()
-            of opDict               : DictF.action()
-            of opFunc               : FuncF.action()
+                # [0xA0-0xAF]
+                # i/o operations
+                of opPrint              : PrintF.action()
 
-            # ranges & iterators
-            of opRange              : RangeF.action()
-            of opLoop               : LoopF.action()
-            of opMap                : MapF.action()
-            of opSelect             : SelectF.action()
+                # generators          
+                of opArray              : ArrayF.action()
+                of opDict               : DictF.action()
+                of opFunc               : FuncF.action()
 
-            # collections
-            of opSize               : SizeF.action()
-            of opReplace            : ReplaceF.action()
-            of opSplit              : SplitF.action()
-            of opJoin               : JoinF.action()
-            of opReverse            : ReverseF.action()
+                # ranges & iterators
+                of opRange              : RangeF.action()
+                of opLoop               : LoopF.action()
+                of opMap                : MapF.action()
+                of opSelect             : SelectF.action()
 
-            # increment/decrement
-            of opInc                : IncF.action()
-            of opDec                : DecF.action()
+                # collections
+                of opSize               : SizeF.action()
+                of opReplace            : ReplaceF.action()
+                of opSplit              : SplitF.action()
+                of opJoin               : JoinF.action()
+                of opReverse            : ReverseF.action()
 
-            of RSRV3                : discard
+                # increment/decrement
+                of opInc                : IncF.action()
+                of opDec                : DecF.action()
 
-            #of RSRV3..RSRV14        : discard
+                of RSRV3                : discard
 
-            #---------------------------------
-            # LOW-LEVEL OPERATIONS
-            #---------------------------------
+                #of RSRV3..RSRV14        : discard
 
-            # [0xB0-0xBF]
-            # no operation
-            of opNop                : discard
+                #---------------------------------
+                # LOW-LEVEL OPERATIONS
+                #---------------------------------
 
-            # stack operations
-            of opPop                : discard stack.pop()
-            of opDup                : stack.push(sTop())
-            of opOver               : stack.push(stack.peek(1))
-            of opSwap               : swap(Stack[SP-1], Stack[SP-2])
+                # [0xB0-0xBF]
+                # no operation
+                of opNop                : discard
 
-            # flow control
-            of opJmp                : i = (int)(it[i+1])
-            of opJmpX               : i = (int)((uint16)(it[i+1]) shl 8 + (byte)(it[i+2]))
-            of opJmpIf              : 
-                if stack.pop().b==True:
-                    i = (int)(it[i+1])
-            of opJmpIfX             : 
-                if stack.pop().b==True:
-                    i = (int)((uint16)(it[i+1]) shl 8 + (byte)(it[i+2]))
-            of opJmpIfN             : 
-                if Not(stack.pop().b)==True:
-                    i = (int)(it[i+1])
-            of opJmpIfNX            : 
-                if Not(stack.pop().b)==True:
-                    i = (int)((uint16)(it[i+1]) shl 8 + (byte)(it[i+2]))
-            of opRet                : discard
-            of opEnd                : break
+                # stack operations
+                of opPop                : discard stack.pop()
+                of opDup                : stack.push(sTop())
+                of opOver               : stack.push(stack.peek(1))
+                of opSwap               : swap(Stack[SP-1], Stack[SP-2])
+
+                # flow control
+                of opJmp                : i = (int)(it[i+1])
+                of opJmpX               : i = (int)((uint16)(it[i+1]) shl 8 + (byte)(it[i+2]))
+                of opJmpIf              : 
+                    if stack.pop().b==True:
+                        i = (int)(it[i+1])
+                of opJmpIfX             : 
+                    if stack.pop().b==True:
+                        i = (int)((uint16)(it[i+1]) shl 8 + (byte)(it[i+2]))
+                of opJmpIfN             : 
+                    if Not(stack.pop().b)==True:
+                        i = (int)(it[i+1])
+                of opJmpIfNX            : 
+                    if Not(stack.pop().b)==True:
+                        i = (int)((uint16)(it[i+1]) shl 8 + (byte)(it[i+2]))
+                of opRet                : discard
+                of opEnd                : break
 
         i += 1
 
