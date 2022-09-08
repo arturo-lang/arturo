@@ -29,6 +29,14 @@ when defined(PROFILER):
         ProfilerDataTable* = OrderedTable[string, ProfilerDataRow]
 
     #=======================================
+    # Constants
+    #=======================================
+
+    const
+        ProfilerLine*       = "============================================================================="
+        ProfilerLineLen*    = len(ProfilerLine)
+
+    #=======================================
     # Variables
     #=======================================
 
@@ -41,10 +49,9 @@ when defined(PROFILER):
 
 when defined(PROFILER):
     proc printProfilerHeader*(what: string) =
-        echo fg(cyanColor) &
-             "========================================================="
+        echo fg(cyanColor) & ProfilerLine
         echo " " & what.toUpperAscii
-        echo "=========================================================" & resetColor()
+        echo ProfilerLine & resetColor()
 
 #=======================================
 # Templates
@@ -62,7 +69,7 @@ template addMetricIfNotExists*(name: string, metric: untyped): untyped =
 
 template printProfilerHeader*() =
     echo ""
-    echo fg(magentaColor) & center("→ PROFILER ←", 57) & resetColor()
+    echo fg(magentaColor) & center("→ PROFILER ←", ProfilerLineLen) & resetColor()
     echo ""
 
 template printProfilerDataTable*(what: string) =
@@ -74,14 +81,15 @@ template printProfilerDataTable*(what: string) =
 
     PR[what].sort((a, b) => cmp(a[1].time / a[1].runs, b[1].time / b[1].runs), SortOrder.Descending)
 
-    echo " " & alignLeft("ID", maxTitle+10) & "| " & alignLeft("Time/Run (μs)",15) & " | Runs"
-    echo "=========================================================".replace("=","-")
+    echo " " & alignLeft("ID", maxTitle+10) & "| " & alignLeft("Time/Run (μs)",15) & " | " & alignLeft("Runs",15) & "| " & "Total Time (ms)"
+    echo ProfilerLine.replace("=","-")
 
     for (title, row) in pairs(PR[what]):
         var timePerRun{.inject.} = (row.time / row.runs / 1_000)
         echo " " & alignLeft(title, maxTitle+10) & "| " & 
                  fg(grayColor) & alignLeft(fmt"{timePerRun:.2f}",15) & resetColor() & "| " & 
-                 fg(grayColor) & $row.runs & resetColor()
+                 fg(grayColor) & alignLeft($row.runs,15) & "| " & 
+                 fg(grayColor) & fmt"{row.time/1_000_000:.2f}" & resetColor()
 
     echo ""
 
