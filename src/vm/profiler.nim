@@ -10,13 +10,29 @@
 # Libraries
 #=======================================
 
+import tables
+
 #=======================================
 # Types
 #=======================================
 
+type
+    ProfilerDataRow* = ref object
+        time*: int
+        runs*: int
+
+    ProfilerDataTable* = OrderedTable[string, ProfilerDataRow]
+
+    ProfilerData* = ref object
+        ops*: ProfilerDataRow
+        procs*: ProfilerDataRow
+
 #=======================================
-# Constants
+# Variables
 #=======================================
+
+var
+    PR*: ProfilerData
 
 #=======================================
 # Forward declarations
