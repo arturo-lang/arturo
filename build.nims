@@ -253,6 +253,8 @@ proc miniBuild*() =
 
     # plus, shrinking + the MINI flag
     FLAGS = FLAGS.replace("--opt:speed ","") & " --opt:size -d:MINI"
+    if hostOS=="freebsd":
+        FLAGS = FLAGS & " --verbosity:3 "
 
 proc compressBinary() =
     if COMPRESS:
