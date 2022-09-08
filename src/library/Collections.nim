@@ -792,7 +792,7 @@ proc defineSymbols*() =
             print last.n:2 ["one" "two" "three"] ; two three
         """:
             ##########################################################
-            if (let aN = getAttr("n"); aN != VNULL):
+            if (let aN = popAttr("n"); aN != VNULL):
                 if x.kind==String: 
                     if x.s.len==0: push(newString(""))
                     else: push(newString(x.s[x.s.len-aN.i..^1]))
