@@ -86,10 +86,11 @@ template printProfilerDataTable*(what: string) =
 
     for (title, row) in pairs(PR[what]):
         var timePerRun{.inject.} = (row.time / row.runs / 1_000)
+        var totalTime{.inject.} = row.time / 1_000_000
         echo " " & alignLeft(title, maxTitle+10) & "| " & 
                  fg(grayColor) & alignLeft(fmt"{timePerRun:.2f}",15) & resetColor() & "| " & 
                  fg(grayColor) & alignLeft($row.runs,15) & "| " & 
-                 fg(grayColor) & fmt"{row.time/1_000_000:.2f}" & resetColor()
+                 fg(grayColor) & fmt"{totalTime:.2f}" & resetColor()
 
     echo ""
 
