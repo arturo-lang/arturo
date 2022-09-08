@@ -15,6 +15,7 @@ when not defined(WEB):
 
 import tables
 
+import vm/profiler
 import vm/values/value
 
 #=======================================
@@ -97,7 +98,8 @@ proc getAttr*(attr: string): Value =
 
 proc popAttr*(attr: string): Value =
     result = VNULL
-    discard Attrs.pop(attr, result)
+    hookProcProfiler("stack/popAttr"):
+        discard Attrs.pop(attr, result)
 
 proc getAttrsDict*(): Value =
     result = newDictionary(Attrs)
