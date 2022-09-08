@@ -60,14 +60,6 @@ template addMetricIfNotExists*(name: string, metric: untyped): untyped =
         PR[metric][name] = ProfilerDataRow(time:0, runs:0)
     PR[metric][name]
 
-template registerFunction*(name: string, actionContent: untyped): untyped =
-    when defined(PROFILER):
-        var newRow = addMetricIfNotExists(name, "functions")
-        newRow.runs += 1
-        newRow.time += getMetric(actionContent)
-    else:
-        actionContent
-
 template printProfilerDataTable*(what: string) =
     printProfilerHeader(what)
     var maxTitle = 0
@@ -81,6 +73,15 @@ template printProfilerDataTable*(what: string) =
     for (title, row) in pairs(PR[what]):
         var timePerRun{.inject.} = (row.time / row.runs / 1_000)
         echo alignLeft(title, maxTitle+10) & "| " & alignLeft(fmt"{timePerRun:.2f}μs",15) & "|" & $row.runs
+
+template hookFunctionProfiler*(name: string, actionContent: untyped): untyped =
+    when defined(PROFILER):
+        var newRow = addMetricIfNotExists(name, "functions")
+        newRow.runs += 1
+        newRow.time += getMetric(actionContent)
+    else:
+        actionContent
+
 
 #=======================================
 # Methods
