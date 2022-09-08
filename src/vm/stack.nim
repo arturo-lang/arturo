@@ -96,6 +96,9 @@ proc getAttr*(attr: string): Value =
     Attrs.getOrDefault(attr, VNULL)
 
 proc popAttr*(attr: string): Value =
+    # TODO(VM/stack) Better use `pop` instead
+    #  it practically replaces both commands, and since it is used more than often, it should give us some performance boost
+    #  labels: vm, values, performance, benchmark
     result = Attrs.getOrDefault(attr, VNULL)
     Attrs.del(attr)
 
