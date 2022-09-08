@@ -18,10 +18,13 @@ v0.9.81
 - Arithmetic: added new `divmod` method
 - Collections: added new `combine`, `decouple` & `rotate` methods
 - Converters: added new `in` method
+- Files: added new `hidden?` predicate & `timestamp` method
 - Iterators: added new `chunk` & `cluster` methods
 - Numbers: added new `factorial` & `lcm` methods
+- Paths: added new `absolute?` method
 - Reflection: added new `bytecode?`, `color?`, `complex?`, `object?`, `quantity?`, `rational?` & `version?` predicates
 - Strings: added new `alphabet` method
+- System: added new `superuser?` predicate
 
 **Enhancements, Changes & Fixes**
 
@@ -56,6 +59,8 @@ v0.9.81
 - Fixed handling of arithmetic operations between `:floating` values and *big* `:integer` values
 - Fixed handling of Unicode, locale-dependent sorting (including non-ASCII languages & sorting using digraphs/trigraphs, e.g. Hungarian)
 - Functions in dictionaries are now directly callable (e.g. `dict\f 10`)
+- Better support for Bytecode handling (+ built-in compression)
+- Various performance-related enhancements
 
 v0.9.7.2
 ========

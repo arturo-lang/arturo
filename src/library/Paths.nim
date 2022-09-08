@@ -40,6 +40,22 @@ proc defineSymbols*() =
 
     when not defined(WEB):
 
+        builtin "absolute?",
+            alias       = unaliased,
+            rule        = PrefixPrecedence,
+            description = "check if given path is an absolute path",
+            args        = {
+                "path"  : {String}
+            },
+            attrs       = NoAttrs,
+            returns     = {Logical},
+            # TODO(Paths\absolute?): add documentation example
+            #  labels: library, documentation, easy
+            example     = """
+            """:
+                ##########################################################
+                push(newLogical(isAbsolute(x.s)))
+
         # TODO(Paths\extract) implement for Web/JS builds
         #  labels: library,enhancement,web
         builtin "extract",
@@ -303,9 +319,6 @@ proc defineSymbols*() =
             description = "common path constants":
                 newDictionary(getPathInfo())
 
-        # TODO(Paths\relative) Test and possible re-implement built-in function
-        #  Right now, Arturo's path handling is a complete mess IMHO. And `relative` is one of the main culprits - along with our handling of the "PathStack" in VM/Env.
-        #  labels: vm, library, enhancement, bug, critical
         builtin "relative",
             alias       = dotslash, 
             rule        = PrefixPrecedence,
