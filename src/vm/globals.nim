@@ -12,7 +12,7 @@
 
 import std/editdistance, sequtils, tables
 
-import vm/[errors, values/value]
+import vm/[errors, profiler, values/value]
 
 #=======================================
 # Globals
@@ -72,9 +72,16 @@ template SetArrayIndex*(arr: ValueArray, indx: int, v: Value): untyped =
     arr[indx] = v
 
 template InPlace*(): untyped =
-    if unlikely(not Syms.hasKey(x.s)):
-        RuntimeError_SymbolNotFound(x.s, suggestAlternative(x.s))
-    Syms[x.s]
+    when defined(PROFILER):
+        hookProcProfiler("globals/InPlace"):
+            if unlikely(not Syms.hasKey(x.s)):
+                RuntimeError_SymbolNotFound(x.s, suggestAlternative(x.s))
+            discard Syms[x.s]
+        Syms[x.s]
+    else:
+        if unlikely(not Syms.hasKey(x.s)):
+            RuntimeError_SymbolNotFound(x.s, suggestAlternative(x.s))
+        Syms[x.s]
 
 template InPlaced*(): untyped =
     Syms[x.s]

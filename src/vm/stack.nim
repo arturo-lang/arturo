@@ -41,11 +41,17 @@ var
 ## Main stack
 
 template push*(v: Value) = 
-    Stack[SP] = v
-    SP += 1
+    hookProcProfiler("stack/push"):
+        Stack[SP] = v
+        SP += 1
 
 template pop*(): Value = 
-    SP -= 1
+    when defined(PROFILER):
+        hookProcProfiler("stack/pop"):
+            SP -= 1
+            discard Stack[SP]
+    else:
+        SP -= 1
     Stack[SP]
 
 template popN*(n: int) =
