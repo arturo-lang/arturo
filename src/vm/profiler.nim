@@ -60,6 +60,11 @@ template addMetricIfNotExists*(name: string, metric: untyped): untyped =
         PR[metric][name] = ProfilerDataRow(time:0, runs:0)
     PR[metric][name]
 
+template printProfilerHeader*() =
+    echo ""
+    echo fg(magentaColor) & center("→ PROFILER ←", 57) & resetColor()
+    echo ""
+
 template printProfilerDataTable*(what: string) =
     printProfilerHeader(what)
     var maxTitle = 0
@@ -67,12 +72,18 @@ template printProfilerDataTable*(what: string) =
         if len(title) > maxTitle:
             maxTitle = len(title)
 
-
     PR[what].sort((a, b) => cmp(a[1].time / a[1].runs, b[1].time / b[1].runs), SortOrder.Descending)
+
+    echo " " & alignLeft("ID", maxTitle+10) & "| " & alignLeft("Time/Run (μs)",15) & " | Runs"
+    echo "=========================================================".replace("=","-")
 
     for (title, row) in pairs(PR[what]):
         var timePerRun{.inject.} = (row.time / row.runs / 1_000)
-        echo alignLeft(title, maxTitle+10) & "| " & alignLeft(fmt"{timePerRun:.2f}μs",15) & "|" & $row.runs
+        echo " " & alignLeft(title, maxTitle+10) & "| " & 
+                 fg(grayColor) & alignLeft(fmt"{timePerRun:.2f}",15) & resetColor() & "| " & 
+                 fg(grayColor) & $row.runs & resetColor()
+
+    echo ""
 
 template hookFunctionProfiler*(name: string, actionContent: untyped): untyped =
     when defined(PROFILER):
@@ -82,6 +93,13 @@ template hookFunctionProfiler*(name: string, actionContent: untyped): untyped =
     else:
         actionContent
 
+template hookOpProfiler*(name: string, actionContent: untyped): untyped =
+    when defined(PROFILER):
+        var newRow = addMetricIfNotExists(name, "ops")
+        newRow.runs += 1
+        newRow.time += getMetric(actionContent)
+    else:
+        actionContent
 
 #=======================================
 # Methods
@@ -99,6 +117,8 @@ proc initProfiler*() =
 
 proc showProfilerData*() =
     when defined(PROFILER):
+        printProfilerHeader()
         printProfilerDataTable("functions")
+        printProfilerDataTable("ops")
     else:
         discard
