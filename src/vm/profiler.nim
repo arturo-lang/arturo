@@ -110,6 +110,14 @@ template hookOpProfiler*(name: string, actionContent: untyped): untyped =
     else:
         actionContent
 
+template hookProcProfiler*(name: string, actionContent: untyped): untyped =
+    when defined(PROFILER):
+        var newRow = addMetricIfNotExists(name, "procs")
+        newRow.runs += 1
+        newRow.time += getMetric(actionContent)
+    else:
+        actionContent
+
 #=======================================
 # Methods
 #=======================================
@@ -117,9 +125,9 @@ template hookOpProfiler*(name: string, actionContent: untyped): untyped =
 proc initProfiler*() =
     when defined(PROFILER):
         PR = {
+            "functions": initOrderedTable[string, ProfilerDataRow](),
             "ops": initOrderedTable[string, ProfilerDataRow](),
-            "procs": initOrderedTable[string, ProfilerDataRow](),
-            "functions": initOrderedTable[string, ProfilerDataRow]()
+            "procs": initOrderedTable[string, ProfilerDataRow]()
         }.toOrderedTable
     else:
         discard
@@ -129,5 +137,6 @@ proc showProfilerData*() =
         printProfilerHeader()
         printProfilerDataTable("functions")
         printProfilerDataTable("ops")
+        printProfilerDataTable("procs")
     else:
         discard
