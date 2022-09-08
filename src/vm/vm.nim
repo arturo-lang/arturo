@@ -25,6 +25,7 @@ import vm/[
     exec, 
     globals, 
     parse, 
+    profiler,
     stack, 
     values/value, 
     version
@@ -128,6 +129,8 @@ template initialize*(args: seq[string], filename: string, isFile:bool, scriptDat
         if isFile: env.addPath(filename)
         else: env.addPath(getCurrentDir())
 
+    initProfiler()
+
     Syms = initOrderedTable[string,Value]()
 
     if portableData != "":
@@ -189,6 +192,8 @@ when not defined(WEB):
 
             if doExecute:
                 discard doExec(evaled)
+
+            showProfilerData()
 
             return evaled
 
