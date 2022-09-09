@@ -18,7 +18,7 @@ when defined(VERBOSE):
 when not defined(PORTABLE):
     import strformat
 
-import vm/[bytecode, globals, values/value]
+import vm/[bytecode, globals, profiler, values/value]
 
 #=======================================
 # Variables
@@ -681,21 +681,19 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             for b in currentCommand.reversed: it.add(b)
 
 proc doEval*(root: Value, isDictionary=false): Translation = 
-    var cnsts: ValueArray = @[]
-    var newit: ByteArray = @[]
+    hookProcProfiler("eval/doEval"):
+        var cnsts: ValueArray = @[]
+        var newit: ByteArray = @[]
 
-    TmpArities = Arities
+        TmpArities = Arities
 
-    evalOne(root, cnsts, newit, isDictionary=isDictionary)
-    newit.add((byte)opEnd)
+        evalOne(root, cnsts, newit, isDictionary=isDictionary)
+        newit.add((byte)opEnd)
 
-    when defined(OPTIMIZED):
-        newit = optimizeBytecode(newit)
+        when defined(OPTIMIZED):
+            newit = optimizeBytecode(newit)
 
     result = (cnsts, newit)
-
-    when defined(VERBOSE):
-        echo $(newBytecode(result))
 
 template evalOrGet*(item: Value): untyped =
     if item.kind==Bytecode: item.trans

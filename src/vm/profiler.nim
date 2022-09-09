@@ -33,7 +33,7 @@ when defined(PROFILER):
     #=======================================
 
     const
-        ProfilerLine*       = "================================================================================="
+        ProfilerLine*       = "======================================================================================================="
         ProfilerLineLen*    = len(ProfilerLine)
 
     #=======================================
@@ -74,23 +74,33 @@ template printProfilerHeader*() =
 
 template printProfilerDataTable*(what: string) =
     printProfilerHeader(what)
+    var totalImpact = 0
+
     var maxTitle = 0
-    for (title, _) in pairs(PR[what]):
+    for (title, row) in pairs(PR[what]):
         if len(title) > maxTitle:
             maxTitle = len(title)
+        totalImpact += row.time
 
-    PR[what].sort((a, b) => cmp(a[1].time / a[1].runs, b[1].time / b[1].runs), SortOrder.Descending)
+    PR[what].sort((a, b) => cmp(a[1].time, b[1].time), SortOrder.Descending)
 
-    echo " " & alignLeft("ID", maxTitle+10) & "| " & alignLeft("Time/Run (μs)",15) & " | " & alignLeft("Runs",15) & "| " & "Total Time (ms)"
+    echo " " & alignLeft("ID", maxTitle+10) & "| " & 
+               alignLeft("Time/Run (μs)",15) & " | " & 
+               alignLeft("Runs",15) & "| " & 
+               alignLeft("Total Time (ms)",20) & "| " &
+               "Impact (%)"
     echo ProfilerLine.replace("=","-")
 
     for (title, row) in pairs(PR[what]):
         var timePerRun{.inject.} = (row.time / row.runs / 1_000)
+        var relImpact{.inject.} = (row.time / totalImpact) * 100
         var totalTime{.inject.} = row.time / 1_000_000
         echo " " & alignLeft(title, maxTitle+10) & "| " & 
                  fg(grayColor) & alignLeft(fmt"{timePerRun:.2f}",15) & resetColor() & "| " & 
-                 fg(grayColor) & alignLeft($row.runs,15) & "| " & 
-                 fg(grayColor) & fmt"{totalTime:.2f}" & resetColor()
+                 fg(grayColor) & alignLeft($row.runs,15) & resetColor() & "| " & 
+                 fg(grayColor) & alignLeft(fmt"{totalTime:.2f}",20) & resetColor() & "| " &
+                 fg(grayColor) & fmt"{relImpact:.2f}" & resetColor() &
+                 resetColor()
 
     echo ""
 

@@ -19,7 +19,7 @@ import strutils, tables, unicode
 
 import helpers/quantities as QuantitiesHelper
 
-import vm/[errors, values/value]
+import vm/[errors, profiler, values/value]
 
 #=======================================
 # Types
@@ -1096,36 +1096,37 @@ when defined(PYTHONIC):
         lines.join("\n")
 
 proc doParse*(input: string, isFile: bool = true): Value =
-    var p: Parser
+    hookProcProfiler("parse/doParse"):
+        var p: Parser
 
-    # open stream
-    if isFile:
-        var filePath = input
-        when not defined(WEB):
-            if unlikely(not fileExists(filePath)):
-                CompilerError_ScriptNotExists(input)
+        # open stream
+        if isFile:
+            var filePath = input
+            when not defined(WEB):
+                if unlikely(not fileExists(filePath)):
+                    CompilerError_ScriptNotExists(input)
 
-        var stream = newFileStream(filePath)
-        lexbase.open(p, stream)
-    else:
-        when defined(PYTHONIC):
-            var stream = newStringStream(doProcessPythonic(input))
+            var stream = newFileStream(filePath)
+            lexbase.open(p, stream)
         else:
-            var stream = newStringStream(input)
+            when defined(PYTHONIC):
+                var stream = newStringStream(doProcessPythonic(input))
+            else:
+                var stream = newStringStream(input)
 
-        lexbase.open(p, stream)
+            lexbase.open(p, stream)
 
-    # initialize
-    p.value = ""
-    p.values = @[]
+        # initialize
+        p.value = ""
+        p.values = @[]
 
-    # do parse    
-    let rootBlock = parseBlock(p, 0)
+        # do parse    
+        let rootBlock = parseBlock(p, 0)
 
-    # if everything went fine, return result
-    when defined(VERBOSE):
-        rootBlock.dump(0,false)
+        # if everything went fine, return result
+        when defined(VERBOSE):
+            rootBlock.dump(0,false)
 
-    lexbase.close(p)
+        lexbase.close(p)
             
     return rootBlock
