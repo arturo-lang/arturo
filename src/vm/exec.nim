@@ -75,12 +75,13 @@ template loadByIndex(idx: int):untyped =
 
 template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
     if f.fnKind==UserFunction:
-        var memoized: Value = VNULL
-        if f.memoize: memoized = f
-        let fArity = f.params.a.len
-        if unlikely(SP<fArity):
-            RuntimeError_NotEnoughArguments(fnName, fArity)
-        discard execBlock(f.main, args=f.params.a, isFuncBlock=true, imports=f.imports, exports=f.exports, exportable=f.exportable, memoized=memoized)
+        hookProcProfiler("exec/callFunction:user"):
+            var memoized: Value = VNULL
+            if f.memoize: memoized = f
+            let fArity = f.params.a.len
+            if unlikely(SP<fArity):
+                RuntimeError_NotEnoughArguments(fnName, fArity)
+            discard execBlock(f.main, args=f.params.a, isFuncBlock=true, imports=f.imports, exports=f.exports, exportable=f.exportable, memoized=memoized)
     else:
         f.action()
 
@@ -126,6 +127,7 @@ proc execBlock*(
     inTryBlock      : bool = false,
     memoized        : Value = VNULL
 ): ValueDict =
+
     var newSyms: ValueDict
     let savedArities = Arities
     var savedSyms: OrderedTable[string,Value]

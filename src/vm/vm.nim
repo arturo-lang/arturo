@@ -129,8 +129,6 @@ template initialize*(args: seq[string], filename: string, isFile:bool, scriptDat
         if isFile: env.addPath(filename)
         else: env.addPath(getCurrentDir())
 
-    initProfiler()
-
     Syms = initOrderedTable[string,Value]()
 
     if portableData != "":
@@ -176,6 +174,8 @@ when not defined(WEB):
                 else:
                     CurrentFile = lastPathPart(code)
                     CurrentPath = code
+
+            initProfiler()
             
             let mainCode = doParse(code, isFile)
 
