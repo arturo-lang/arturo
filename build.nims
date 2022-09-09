@@ -75,7 +75,7 @@ let
         "optimized"         : "-d:OPTIMIZED",
         "profile"           : "-d:PROFILE --profiler:on --stackTrace:on",
         "profilenative"     : "--debugger:native",
-        "profiler"          : "-d:PROFILER",    
+        "profiler"          : "-d:PROFILER --profiler:on --stackTrace:on",    
         # TODO(build.nims) Thoroughly test `-flto` for release builds
         #  in various tests, it seems to be performing roughly 10-15% better
         #  labels: performance, benchmark, installer
