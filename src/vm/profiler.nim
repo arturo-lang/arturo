@@ -283,7 +283,7 @@ proc initProfiler*() =
             system.profilingRequestedHook = requestedHook
             system.profilerHook = hook
     else:
-        discard
+        discard 
 
 proc showProfilerData*() =
     when defined(PROFILER):
