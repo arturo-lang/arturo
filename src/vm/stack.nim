@@ -13,7 +13,7 @@
 when not defined(WEB):
     import strformat
 
-import sets, tables
+import tables
 
 import vm/profiler
 import vm/values/value
@@ -108,7 +108,7 @@ proc popAttr*(attr: string): Value =
         discard Attrs.pop(attr, result)
 
 template hadAttr*(attr: string): bool = 
-    popAttr(attr) != VNULL
+    (popAttr(attr) != VNULL)
 
 proc getAttrsDict*(): Value =
     result = newDictionary(Attrs)
