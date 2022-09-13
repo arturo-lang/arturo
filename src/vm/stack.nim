@@ -13,7 +13,7 @@
 when not defined(WEB):
     import strformat
 
-import tables
+import sets, tables
 
 import vm/profiler
 import vm/values/value
@@ -106,6 +106,9 @@ proc popAttr*(attr: string): Value =
     result = VNULL
     hookProcProfiler("stack/popAttr"):
         discard Attrs.pop(attr, result)
+
+template hadAttr*(attr: string): bool = 
+    popAttr(attr) != VNULL
 
 proc getAttrsDict*(): Value =
     result = newDictionary(Attrs)
