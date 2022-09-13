@@ -56,7 +56,7 @@ template storeByIndex(idx: int, doPop = true):untyped =
     hookProcProfiler("exec/storeByIndex"):
         let symIndx = cnst[idx].s
         when doPop:
-            Syms[symIndx] = move stack.pop()
+            Syms[symIndx] = stack.pop()
         else:
             Syms[symIndx] = stack.peek(0)
 
