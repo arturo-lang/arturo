@@ -151,7 +151,7 @@ proc defineSymbols*() =
             ##########################################################
             let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
-            let showValue = (popAttr("value")!=VNULL)
+            let showValue = (hadAttr("value"))
             let doForever = false
 
             var items: ValueArray
@@ -226,7 +226,7 @@ proc defineSymbols*() =
             ##########################################################
             let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
-            let showValue = (popAttr("value")!=VNULL)
+            let showValue = (hadAttr("value"))
             let doForever = false
 
             var items: ValueArray
@@ -470,7 +470,7 @@ proc defineSymbols*() =
             ##########################################################
             let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
-            let doRightFold = popAttr("right")!=VNULL
+            let doRightFold = hadAttr("right")
             let doForever = false
 
             var items: ValueArray
@@ -560,7 +560,7 @@ proc defineSymbols*() =
             ##########################################################
             let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
-            let doForever = popAttr("forever")!=VNULL
+            let doForever = hadAttr("forever")
 
             var items: ValueArray
             items = iterableItemsFromParam(x)

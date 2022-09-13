@@ -122,8 +122,8 @@ proc defineSymbols*() =
                 var args: seq[string] = @[]
                 if (let aArgs = popAttr("args"); aArgs != VNULL):
                     args = aArgs.a.map((x) => x.s)
-                let code = (popAttr("code") != VNULL)
-                let directly = (popAttr("directly") != VNULL)
+                let code = (hadAttr("code"))
+                let directly = (hadAttr("directly"))
 
                 # TODO(System\execute) Fix handling of `.async`
                 #  It currently "works" but in a very - very - questionable way.
@@ -131,7 +131,7 @@ proc defineSymbols*() =
                 #  Also: having a globally-available array of "processes" makes things looking even worse.
                 #  labels: library, enhancement, windows, linux, macos
 
-                if (popAttr("async") != VNULL):
+                if (hadAttr("async")):
                     let newProcess = startProcess(command = cmd, args = args)
                     let pid = processID(newProcess)
                     
@@ -210,7 +210,7 @@ proc defineSymbols*() =
             if (let aCode = popAttr("code"); aCode != VNULL):
                 code = aCode.i
 
-            if (popAttr("unstyled")!=VNULL):
+            if (hadAttr("unstyled")):
                 echo $(x)
                 quit(code)
             else:

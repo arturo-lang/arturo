@@ -128,35 +128,35 @@ proc defineSymbols*() =
             """:
                 ##########################################################
                 if x.kind==Color:
-                    if (popAttr("red") != VNULL):
+                    if (hadAttr("red")):
                         push newInteger(RGBfromColor(x.l).r)
-                    elif (popAttr("green") != VNULL):
+                    elif (hadAttr("green")):
                         push newInteger(RGBfromColor(x.l).g)
-                    elif (popAttr("blue") != VNULL):
+                    elif (hadAttr("blue")):
                         push newInteger(RGBfromColor(x.l).b)
-                    elif (popAttr("alpha") != VNULL):
+                    elif (hadAttr("alpha")):
                         push newInteger(RGBfromColor(x.l).a)
-                    elif (popAttr("hsl") != VNULL):
+                    elif (hadAttr("hsl")):
                         let hsl = RGBtoHSL(x.l)
                         push newDictionary({
                             "hue"       : newInteger(hsl.h),
                             "saturation": newFloating(hsl.s),
                             "luminosity": newFloating(hsl.l)
                         }.toOrderedTable)
-                    elif (popAttr("hsv") != VNULL):
+                    elif (hadAttr("hsv")):
                         let hsv = RGBtoHSV(x.l)
                         push newDictionary({
                             "hue"       : newInteger(hsv.h),
                             "saturation": newFloating(hsv.s),
                             "value"     : newFloating(hsv.v)
                         }.toOrderedTable)
-                    elif (popAttr("hue") != VNULL):
+                    elif (hadAttr("hue")):
                         let hsl = RGBtoHSL(x.l)
                         push newInteger(hsl.h)
-                    elif (popAttr("saturation") != VNULL):
+                    elif (hadAttr("saturation")):
                         let hsl = RGBtoHSL(x.l)
                         push newFloating(hsl.s)
-                    elif (popAttr("luminosity") != VNULL):
+                    elif (hadAttr("luminosity")):
                         let hsl = RGBtoHSL(x.l)
                         push newFloating(hsl.l)
                     else:
@@ -171,34 +171,34 @@ proc defineSymbols*() =
                     if isUrl(x.s):
                         let details = parseUrlComponents(x.s)
 
-                        if (popAttr("scheme") != VNULL):
+                        if (hadAttr("scheme")):
                             push(details["scheme"])
-                        elif (popAttr("host") != VNULL):
+                        elif (hadAttr("host")):
                             push(details["host"])
-                        elif (popAttr("port") != VNULL):
+                        elif (hadAttr("port")):
                             push(details["port"])
-                        elif (popAttr("user") != VNULL):
+                        elif (hadAttr("user")):
                             push(details["user"])
-                        elif (popAttr("password") != VNULL):
+                        elif (hadAttr("password")):
                             push(details["password"])
-                        elif (popAttr("path") != VNULL):
+                        elif (hadAttr("path")):
                             push(details["path"])
-                        elif (popAttr("query") != VNULL):
+                        elif (hadAttr("query")):
                             push(details["query"])
-                        elif (popAttr("anchor") != VNULL):
+                        elif (hadAttr("anchor")):
                             push(details["anchor"])
                         else:
                             push(newDictionary(details))
                     else:
                         let details = parsePathComponents(x.s)
 
-                        if (popAttr("directory") != VNULL):
+                        if (hadAttr("directory")):
                             push(details["directory"])
-                        elif (popAttr("basename") != VNULL):
+                        elif (hadAttr("basename")):
                             push(details["basename"])
-                        elif (popAttr("filename") != VNULL):
+                        elif (hadAttr("filename")):
                             push(details["filename"])
-                        elif (popAttr("extension") != VNULL):
+                        elif (hadAttr("extension")):
                             push(details["extension"])
                         else:
                             push(newDictionary(details))
@@ -226,8 +226,8 @@ proc defineSymbols*() =
             """:
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("list")
-                let recursive = (popAttr("recursive") != VNULL)
-                let relative = (popAttr("relative") != VNULL)
+                let recursive = (hadAttr("recursive"))
+                let relative = (hadAttr("relative"))
                 let path = x.s
 
                 var contents: seq[string]
@@ -290,14 +290,14 @@ proc defineSymbols*() =
             ; => ./myscript          
             """:
                 ##########################################################
-                if (popAttr("executable") != VNULL):
+                if (hadAttr("executable")):
                     if x.kind==Literal:
-                        if (popAttr("tilde") != VNULL):
+                        if (hadAttr("tilde")):
                             InPlace.s = InPlaced.s.expandTilde()
                         InPlace.s.normalizeExe()
                     else:
                         var ret: string
-                        if (popAttr("tilde") != VNULL):
+                        if (hadAttr("tilde")):
                             ret = x.s.expandTilde()
                         else:
                             ret = x.s
@@ -305,11 +305,11 @@ proc defineSymbols*() =
                         push(newString(ret))
                 else:
                     if x.kind==Literal:
-                        if (popAttr("tilde") != VNULL):
+                        if (hadAttr("tilde")):
                             InPlace.s = InPlaced.s.expandTilde()
                         InPlace.s.normalizePath()
                     else:
-                        if (popAttr("tilde") != VNULL):
+                        if (hadAttr("tilde")):
                             push(newString(normalizedPath(x.s.expandTilde())))
                         else:
                             push(newString(normalizedPath(x.s)))

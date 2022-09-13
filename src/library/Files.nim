@@ -73,7 +73,7 @@ proc defineSymbols*() =
                 when defined(SAFE): RuntimeError_OperationNotPermitted("copy")
 
                 var target = y.s
-                if (popAttr("directory") != VNULL): 
+                if (hadAttr("directory")): 
                     try:
                         copyDirWithPermissions(x.s, move target)
                     except OSError:
@@ -102,7 +102,7 @@ proc defineSymbols*() =
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("delete")
                 
-                if (popAttr("directory") != VNULL): 
+                if (hadAttr("directory")): 
                     try:
                         removeDir(x.s)
                     except OSError:
@@ -129,7 +129,7 @@ proc defineSymbols*() =
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("exists?")
 
-                if (popAttr("directory") != VNULL): 
+                if (hadAttr("directory")): 
                     push(newLogical(dirExists(x.s)))
                 else: 
                     push(newLogical(fileExists(x.s)))
@@ -193,7 +193,7 @@ proc defineSymbols*() =
                 when defined(SAFE): RuntimeError_OperationNotPermitted("permissions")
 
                 try:
-                    if (popAttr("set") != VNULL):
+                    if (hadAttr("set")):
                         var source = x.s
                         var perms: set[FilePermission]
 
@@ -282,7 +282,7 @@ proc defineSymbols*() =
             html: read.markdown "## Hello"     ; "<h2>Hello</h2>"
             """:
                 ##########################################################
-                if (popAttr("binary") != VNULL):
+                if (hadAttr("binary")):
                     var f: File
                     discard f.open(x.s)
                     var b: seq[byte] = newSeq[byte](f.getFileSize())
@@ -294,28 +294,28 @@ proc defineSymbols*() =
                 else:
                     let (src, tp) = getSource(x.s)
 
-                    if (popAttr("file") != VNULL and tp != FileData):
+                    if (hadAttr("file") and tp != FileData):
                         RuntimeError_FileNotFound(src)
 
-                    if (popAttr("lines") != VNULL):
+                    if (hadAttr("lines")):
                         push(newStringBlock(src.splitLines()))
-                    elif (popAttr("json") != VNULL):
+                    elif (hadAttr("json")):
                         push(valueFromJson(src))
-                    elif (popAttr("csv") != VNULL):
-                        push(parseCsvInput(src, withHeaders=(popAttr("withHeaders")!=VNULL)))
-                    elif (popAttr("bytecode") != VNULL):
+                    elif (hadAttr("csv")):
+                        push(parseCsvInput(src, withHeaders=(hadAttr("withHeaders"))))
+                    elif (hadAttr("bytecode")):
                         let bcode = readBytecode(x.s)
                         let parsed = doParse(bcode[0], isFile=false).a[0]
                         push(newBytecode((parsed.a, bcode[1])))
                     else:
                         when not defined(NOPARSERS):
-                            if (popAttr("toml") != VNULL):
+                            if (hadAttr("toml")):
                                 push(parseTomlString(src))
-                            elif (popAttr("markdown") != VNULL):
+                            elif (hadAttr("markdown")):
                                 push(parseMarkdownInput(src))
-                            elif (popAttr("html") != VNULL):
+                            elif (hadAttr("html")):
                                 push(parseHtmlInput(src))
-                            elif (popAttr("xml") != VNULL):
+                            elif (hadAttr("xml")):
                                 push(parseXMLInput(src))
                             else:
                                 push(newString(src))
@@ -346,7 +346,7 @@ proc defineSymbols*() =
 
                 var source = x.s
                 var target = y.s
-                if (popAttr("directory") != VNULL): 
+                if (hadAttr("directory")): 
                     try:
                         moveDir(move source, move target)
                     except OSError:
@@ -386,7 +386,7 @@ proc defineSymbols*() =
                 var source = x.s
                 var target = y.s
                 try:
-                    if (popAttr("hard") != VNULL):
+                    if (hadAttr("hard")):
                         createHardlink(move source, move target)
                     else:
                         createSymlink(move source, move target)
@@ -484,20 +484,20 @@ proc defineSymbols*() =
                     let codeS = y.trans[1]
                     discard writeBytecode(dataS, codeS, x.s)
                 else:
-                    if (popAttr("directory") != VNULL):
+                    if (hadAttr("directory")):
                         createDir(x.s)
                     else:
-                        if (popAttr("binary") != VNULL):
-                            writeToFile(x.s, y.n, append = (popAttr("append")!=VNULL))
+                        if (hadAttr("binary")):
+                            writeToFile(x.s, y.n, append = (hadAttr("append")))
                         else:
-                            if (popAttr("json") != VNULL):
+                            if (hadAttr("json")):
                                 let rez = jsonFromValue(y, pretty=(popAttr("compact")==VNULL))
                                 if x.kind==String:
-                                    writeToFile(x.s, rez, append = (popAttr("append")!=VNULL))
+                                    writeToFile(x.s, rez, append = (hadAttr("append")))
                                 else:
                                     push(newString(rez))
                             else:
-                                writeToFile(x.s, y.s, append = (popAttr("append")!=VNULL))
+                                writeToFile(x.s, y.s, append = (hadAttr("append")))
 
         builtin "zip",
             alias       = unaliased, 

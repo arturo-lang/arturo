@@ -155,12 +155,12 @@ proc defineSymbols*() =
             if x.kind==Literal : 
                 let valBefore = InPlace
                 InPlaced <<= y
-                if InPlaced < valBefore and (popAttr("safe")!=VNULL):
+                if InPlaced < valBefore and (hadAttr("safe")):
                     SetInPlace(newBigInteger(valBefore.i) << y)
                     
             else               : 
                 var res = x << y
-                if res < x and (popAttr("safe")!=VNULL):
+                if res < x and (hadAttr("safe")):
                     res = newBigInteger(x.i) << y
                 push(res)
 

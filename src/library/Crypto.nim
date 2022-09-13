@@ -81,7 +81,7 @@ proc defineSymbols*() =
             ; http://foo bar/
         """:
             ##########################################################
-            if (popAttr("url")!=VNULL):
+            if (hadAttr("url")):
                 if x.kind==Literal:
                     InPlace.s = InPlaced.s.decodeUrl()
                 else:
@@ -118,9 +118,9 @@ proc defineSymbols*() =
             ; http%3A%2F%2Ffoo+bar%2F
         """:
             ##########################################################
-            if (popAttr("url")!=VNULL):
-                let spaces = (popAttr("spaces") != VNULL)
-                let slashes = (popAttr("slashes") != VNULL)
+            if (hadAttr("url")):
+                let spaces = (hadAttr("spaces"))
+                let slashes = (hadAttr("slashes"))
                 if x.kind==Literal:
                     InPlace.s = InPlaced.s.urlencode(encodeSpaces=spaces, encodeSlashes=slashes)
                 else:
@@ -183,7 +183,7 @@ proc defineSymbols*() =
             ; 7b502c3a1f48c8609ae212cdfb639dee39673f5e
             """:
                 ##########################################################
-                if (popAttr("sha") != VNULL):
+                if (hadAttr("sha")):
                     if x.kind==Literal:
                         SetInPlace(newString(($(secureHash(InPlace.s))).toLowerAscii()))
                     else:
@@ -215,7 +215,7 @@ proc defineSymbols*() =
             print (hash a)=(hash b) ; true
         """:
             ##########################################################
-            if (popAttr("string") != VNULL):
+            if (hadAttr("string")):
                 push(newString($(hash(x))))
             else:
                 push(newInteger(hash(x)))

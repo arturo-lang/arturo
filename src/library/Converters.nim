@@ -355,12 +355,12 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                         if blk.len < 3 or blk.len > 4:
                             echo "wrong number of attributes"
                         else:
-                            if (popAttr("hsl") != VNULL):
+                            if (hadAttr("hsl")):
                                 if blk.len==3:
                                     return newColor(HSLtoRGB((blk[0].i, blk[1].f, blk[2].f, 1.0)))
                                 elif blk.len==4:
                                     return newColor(HSLtoRGB((blk[0].i, blk[1].f, blk[2].f, blk[3].f)))
-                            elif (popAttr("hsv") != VNULL):
+                            elif (hadAttr("hsv")):
                                 if blk.len==3:
                                     return newColor(HSVtoRGB((blk[0].i, blk[1].f, blk[2].f, 1.0)))
                                 elif blk.len==4:
@@ -383,7 +383,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
 
                     of Bytecode:
                         var evaled = doEval(y)
-                        if (popAttr("optimized") != VNULL):
+                        if (hadAttr("optimized")):
                             evaled = (evaled[0], optimizeBytecode(evaled))
 
                         return newBytecode(evaled)
@@ -400,7 +400,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                             throwCannotConvert()
                     of Bytecode:
                         var evaled = (y.d["data"].a, y.d["code"].a.map(proc (x:Value):byte = (byte)(x.i)))
-                        if (popAttr("optimized") != VNULL):
+                        if (hadAttr("optimized")):
                             evaled = (evaled[0], optimizeBytecode(evaled))
 
                         return newBytecode(evaled)
@@ -626,29 +626,29 @@ proc defineSymbols*() =
             ; this iss not a test
         """:
             ##########################################################
-            if (popAttr("binary") != VNULL):
+            if (hadAttr("binary")):
                 push(newString(fmt"{x.i:b}"))
-            elif (popAttr("hex") != VNULL):
+            elif (hadAttr("hex")):
                 push(newString(fmt"{x.i:x}"))
-            elif (popAttr("octal") != VNULL):
+            elif (hadAttr("octal")):
                 push(newString(fmt"{x.i:o}"))
-            elif (popAttr("agnostic") != VNULL):
+            elif (hadAttr("agnostic")):
                 let res = cleanBlock(x.a).map(proc(v:Value):Value =
                     if v.kind == Word and not SymExists(v.s): newLiteral(v.s)
                     else: v
                 )
                 push(newBlock(res))
-            elif (popAttr("data") != VNULL):
+            elif (hadAttr("data")):
                 if x.kind==Block:
                     push(parseDataBlock(x))
                 elif x.kind==String:
                     let (src, _) = getSource(x.s)
                     push(parseDataBlock(doParse(src, isFile=false)))
-            elif (popAttr("code") != VNULL):
-                push(newString(codify(x,pretty = (popAttr("pretty") != VNULL), unwrapped = (popAttr("unwrapped") != VNULL), safeStrings = (popAttr("safe") != VNULL))))
+            elif (hadAttr("code")):
+                push(newString(codify(x,pretty = (hadAttr("pretty")), unwrapped = (hadAttr("unwrapped")), safeStrings = (hadAttr("safe")))))
             else:
                 when not defined(NOASCIIDECODE):
-                    if (popAttr("ascii") != VNULL):
+                    if (hadAttr("ascii")):
                         push(newString(convertToAscii(x.s)))
                     else:
                         push(x)
@@ -817,7 +817,7 @@ proc defineSymbols*() =
 
             if x.kind==Block:
                 #dict = execDictionary(x)
-                if (popAttr("raw") != VNULL):
+                if (hadAttr("raw")):
                     dict = initOrderedTable[string,Value]()
                     var idx = 0
                     let blk = cleanBlock(x.a)
@@ -838,7 +838,7 @@ proc defineSymbols*() =
                 for x in aWith.a:
                     dict[x.s] = GetSym(x.s)
 
-            if (popAttr("lower") != VNULL):
+            if (hadAttr("lower")):
                 var oldDict = dict
                 dict = initOrderedTable[string,Value]()
                 for k,v in pairs(oldDict):
@@ -872,22 +872,22 @@ proc defineSymbols*() =
             print from.hex "0xDEADBEEF"     ; 3735928559
         """:
             ##########################################################
-            if (popAttr("binary") != VNULL):
+            if (hadAttr("binary")):
                 try:
                     push(newInteger(parseBinInt(x.s)))
                 except ValueError:
                     push(VNULL)
-            elif (popAttr("hex") != VNULL):
+            elif (hadAttr("hex")):
                 try:
                     push(newInteger(parseHexInt(x.s)))
                 except ValueError:
                     push(VNULL)
-            elif (popAttr("octal") != VNULL):
+            elif (hadAttr("octal")):
                 try:
                     push(newInteger(parseOctInt(x.s)))
                 except ValueError:
                     push(VNULL)
-            elif (popAttr("opcode") != VNULL):
+            elif (hadAttr("opcode")):
                 push(newInteger((int)parseOpcode(x.s)))
             else:
                 push(x)
@@ -994,13 +994,13 @@ proc defineSymbols*() =
                     ret[item.s] = GetSym(item.s)
                 imports = newDictionary(ret)
 
-            var exportable = (popAttr("exportable")!=VNULL)
+            var exportable = (hadAttr("exportable"))
 
             var exports = VNULL
             if (let aExport = popAttr("export"); aExport != VNULL):
                 exports = aExport
 
-            var memoize = (popAttr("memoize")!=VNULL)
+            var memoize = (hadAttr("memoize"))
             
             cleanBlock(x.a, inplace=true)
 
