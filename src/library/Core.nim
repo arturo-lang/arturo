@@ -66,7 +66,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             var prec = PrefixPrecedence
-            if (popAttr("infix") != VNULL):
+            if (hadAttr("infix")):
                 prec = InfixPrecedence
 
             var sym: SymbolKind
@@ -249,7 +249,7 @@ proc defineSymbols*() =
             if (let aTimes = popAttr("times"); aTimes != VNULL):
                 times = aTimes.i
 
-            var execInParent = (popAttr("import") != VNULL)
+            var execInParent = (hadAttr("import"))
 
             var evaled: Translation
             if x.kind==Block:
@@ -523,7 +523,7 @@ proc defineSymbols*() =
             pop.discard 1   ; popped 3 from the stack
         """:
             ##########################################################
-            let doDiscard = (popAttr("discard") != VNULL)
+            let doDiscard = (hadAttr("discard"))
 
             if x.i==1:
                 if doDiscard: discard pop()
@@ -616,8 +616,8 @@ proc defineSymbols*() =
             ; we catch the exception but do nothing with it
         """:
             ##########################################################
-            let verbose = (popAttr("verbose")!=VNULL)
-            let execInParent = (popAttr("import")!=VNULL)
+            let verbose = (hadAttr("verbose"))
+            let execInParent = (hadAttr("import"))
             try:
                 let preevaled = evalOrGet(x)
                 discard execBlock(VNULL, evaluated=preevaled, execInParent=execInParent, inTryBlock=true)
@@ -650,8 +650,8 @@ proc defineSymbols*() =
             ; something went terribly wrong...
         """:
             ##########################################################
-            let verbose = (popAttr("verbose")!=VNULL)
-            let execInParent = (popAttr("import")!=VNULL)
+            let verbose = (hadAttr("verbose"))
+            let execInParent = (hadAttr("import"))
             try:
                 let preevaled = evalOrGet(x)
                 discard execBlock(VNULL, evaluated=preevaled, execInParent=execInParent, inTryBlock=true)
@@ -861,7 +861,7 @@ proc defineSymbols*() =
             ]
         """:
             ##########################################################
-            var execInParent = (popAttr("import") != VNULL)
+            var execInParent = (hadAttr("import"))
 
             if x.kind==Null:
                 let preevaledY = evalOrGet(y)

@@ -77,7 +77,7 @@ proc defineSymbols*() =
             deviation.sample arr2       ; => 45.65847597731914
         """:
             ##########################################################
-            if (popAttr("sample") != VNULL):
+            if (hadAttr("sample")):
                 push newFloating(standardDeviationS(cleanBlock(x.a).map((z)=>asFloat(z))))
             else:
                 push newFloating(standardDeviation(cleanBlock(x.a).map((z)=>asFloat(z))))
@@ -104,7 +104,7 @@ proc defineSymbols*() =
             kurtosis.sample arr2        ; => 0.5886192422439724
         """:
             ##########################################################
-            if (popAttr("sample") != VNULL):
+            if (hadAttr("sample")):
                 push newFloating(kurtosisS(cleanBlock(x.a).map((z)=>asFloat(z))))
             else:
                 push newFloating(kurtosis(cleanBlock(x.a).map((z)=>asFloat(z))))
@@ -160,7 +160,7 @@ proc defineSymbols*() =
             skewness.sample arr2        ; => 1.40680083744453
         """:
             ##########################################################
-            if (popAttr("sample") != VNULL):
+            if (hadAttr("sample")):
                 push newFloating(skewnessS(cleanBlock(x.a).map((z)=>asFloat(z))))
             else:
                 push newFloating(skewness(cleanBlock(x.a).map((z)=>asFloat(z))))
@@ -187,7 +187,7 @@ proc defineSymbols*() =
             variance.sample arr2        ; => 2084.696428571428
         """:
             ##########################################################
-            if (popAttr("sample") != VNULL):
+            if (hadAttr("sample")):
                 push newFloating(varianceS(cleanBlock(x.a).map((z)=>asFloat(z))))
             else:
                 push newFloating(variance(cleanBlock(x.a).map((z)=>asFloat(z))))

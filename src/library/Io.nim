@@ -111,9 +111,9 @@ proc defineSymbols*() =
 
             var finalColor = ""
 
-            if (popAttr("bold") != VNULL):
+            if (hadAttr("bold")):
                 finalColor = bold(color)
-            elif (popAttr("underline") != VNULL):
+            elif (hadAttr("underline")):
                 finalColor = underline(color)
             else:
                 finalColor = fg(color)
@@ -211,7 +211,7 @@ proc defineSymbols*() =
             ; based on give reference
             """:
                 ##########################################################
-                if (popAttr("repl")!=VNULL):
+                if (hadAttr("repl")):
                     # when defined(windows):
                     #     stdout.write(x.s)
                     #     stdout.flushFile()
@@ -255,7 +255,7 @@ proc defineSymbols*() =
                 when defined(WEB):
                     stdout = ""
 
-                let inLines = (popAttr("lines")!=VNULL)
+                let inLines = (hadAttr("lines"))
 
                 let xblock = doEval(x)
                 let stop = SP

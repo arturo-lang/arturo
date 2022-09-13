@@ -183,7 +183,7 @@ proc defineSymbols*() =
             ; => 6
         """:
             ##########################################################
-            let doRepeat = popAttr("repeated")!=VNULL
+            let doRepeat = hadAttr("repeated")
 
             let blk = cleanBlock(x.a)
 
@@ -192,7 +192,7 @@ proc defineSymbols*() =
                 if aBy.i > 0 and aBy.i < sz:
                     sz = aBy.i
 
-            if popAttr("count")!=VNULL:
+            if hadAttr("count"):
                 push(countCombinations(blk, sz, doRepeat))
             else:
                 push(newBlock(getCombinations(blk, sz, doRepeat).map((z)=>newBlock(z))))
@@ -480,9 +480,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                InPlace = InPlaced.flattened(once = popAttr("once")!=VNULL)
+                InPlace = InPlaced.flattened(once = hadAttr("once"))
             else:
-                push(x.flattened(once = popAttr("once")!=VNULL))
+                push(x.flattened(once = hadAttr("once")))
 
     builtin "get",
         alias       = unaliased, 
@@ -828,7 +828,7 @@ proc defineSymbols*() =
             if blk.len==0: push(VNULL)
             else:
                 var maxElement = blk[0]
-                if (popAttr("index")!=VNULL):
+                if (hadAttr("index")):
                     var maxIndex = 0
                     var i = 1
                     while i < blk.len:
@@ -867,7 +867,7 @@ proc defineSymbols*() =
             else:
                 var minElement = blk[0]
                 var minIndex = 0
-                if (popAttr("index")!=VNULL):
+                if (hadAttr("index")):
                     var i = 1
                     while i < blk.len:
                         if (blk[i]<minElement):
@@ -918,7 +918,7 @@ proc defineSymbols*() =
             ; => 9
         """:
             ##########################################################
-            let doRepeat = popAttr("repeated")!=VNULL
+            let doRepeat = hadAttr("repeated")
 
             let blk = cleanBlock(x.a)
 
@@ -927,7 +927,7 @@ proc defineSymbols*() =
                 if aBy.i > 0 and aBy.i < sz:
                     sz = aBy.i
 
-            if popAttr("count")!=VNULL:
+            if hadAttr("count"):
                 push(countPermutations(blk, sz, doRepeat))
             else:
                 push(newBlock(getPermutations(blk, sz, doRepeat).map((z)=>newBlock(z))))
@@ -964,51 +964,51 @@ proc defineSymbols*() =
             ##########################################################
             if x.kind==Literal:
                 if InPlace.kind==String:
-                    if (popAttr("once") != VNULL):
+                    if (hadAttr("once")):
                         SetInPlace(newString(InPlaced.s.removeFirst(y.s)))
-                    elif (popAttr("prefix") != VNULL):
+                    elif (hadAttr("prefix")):
                         InPlace.s.removePrefix(y.s)
-                    elif (popAttr("suffix") != VNULL):
+                    elif (hadAttr("suffix")):
                         InPlace.s.removeSuffix(y.s)
                     else:
                         SetInPlace(newString(InPlaced.s.removeAll(y)))
                 elif InPlaced.kind==Block: 
-                    if (popAttr("once") != VNULL):
+                    if (hadAttr("once")):
                         SetInPlace(newBlock(InPlaced.a.removeFirst(y)))
-                    elif (popAttr("index") != VNULL):
+                    elif (hadAttr("index")):
                         SetInPlace(newBlock(InPlaced.a.removeByIndex(y.i)))
                     else:
                         SetInPlace(newBlock(InPlaced.a.removeAll(y)))
                 elif InPlaced.kind==Dictionary:
-                    let key = (popAttr("key") != VNULL)
-                    if (popAttr("once") != VNULL):
+                    let key = (hadAttr("key"))
+                    if (hadAttr("once")):
                         SetInPlace(newDictionary(InPlaced.d.removeFirst(y, key)))
                     else:
                         SetInPlace(newDictionary(InPlaced.d.removeAll(y, key)))
             else:
                 if x.kind==String:
-                    if (popAttr("once") != VNULL):
+                    if (hadAttr("once")):
                         push(newString(x.s.removeFirst(y.s)))
-                    elif (popAttr("prefix") != VNULL):
+                    elif (hadAttr("prefix")):
                         var ret = x.s
                         ret.removePrefix(y.s)
                         push(newString(ret))
-                    elif (popAttr("suffix") != VNULL):
+                    elif (hadAttr("suffix")):
                         var ret = x.s
                         ret.removeSuffix(y.s)
                         push(newString(ret))
                     else:
                         push(newString(x.s.removeAll(y)))
                 elif x.kind==Block: 
-                    if (popAttr("once") != VNULL):
+                    if (hadAttr("once")):
                         push(newBlock(cleanBlock(x.a).removeFirst(y)))
-                    elif (popAttr("index") != VNULL):
+                    elif (hadAttr("index")):
                         push(newBlock(cleanBlock(x.a).removeByIndex(y.i)))
                     else:
                         push(newBlock(cleanBlock(x.a).removeAll(y)))
                 elif x.kind==Dictionary:
-                    let key = (popAttr("key") != VNULL)
-                    if (popAttr("once") != VNULL):
+                    let key = (hadAttr("key"))
+                    if (hadAttr("once")):
                         push(newDictionary(x.d.removeFirst(y, key)))
                     else:
                         push(newDictionary(x.d.removeAll(y, key)))
@@ -1330,7 +1330,7 @@ proc defineSymbols*() =
             ##########################################################
             var sortOrdering = SortOrder.Ascending
 
-            if (popAttr("descending")!=VNULL):
+            if (hadAttr("descending")):
                 sortOrdering = SortOrder.Descending
 
             if x.kind==Block: 
@@ -1354,12 +1354,12 @@ proc defineSymbols*() =
                         else:
                             push(newDictionary())
                     else:
-                        var sortAscii = (popAttr("ascii") != VNULL)
+                        var sortAscii = (hadAttr("ascii"))
 
                         if (let aAs = popAttr("as"); aAs != VNULL):
-                            push(newBlock(blk.unisorted(aAs.s, sensitive = popAttr("sensitive")!=VNULL, order = sortOrdering, ascii = sortAscii)))
+                            push(newBlock(blk.unisorted(aAs.s, sensitive = hadAttr("sensitive"), order = sortOrdering, ascii = sortAscii)))
                         else:
-                            if (popAttr("sensitive")!=VNULL):
+                            if (hadAttr("sensitive")):
                                 push(newBlock(blk.unisorted("en", sensitive=true, order = sortOrdering, ascii = sortAscii)))
                             else:
                                 if blk[0].kind==String:
@@ -1369,7 +1369,7 @@ proc defineSymbols*() =
 
             elif x.kind==Dictionary:
                 var sorted = x.d
-                if (popAttr("values") != VNULL):
+                if (hadAttr("values")):
                     sorted.sort(proc (x, y: (string, Value)): int = cmp(x[1], y[1]), order=sortOrdering)
                 else:
                     sorted.sort(system.cmp, order=sortOrdering)
@@ -1385,9 +1385,9 @@ proc defineSymbols*() =
                                     cmp(v1.d[aBy.s], v2.d[aBy.s]), order=sortOrdering)
                         else:
                             if (let aAs = popAttr("as"); aAs != VNULL):
-                                InPlaced.a.unisort(aAs.s, sensitive = popAttr("sensitive")!=VNULL, order = sortOrdering)
+                                InPlaced.a.unisort(aAs.s, sensitive = hadAttr("sensitive"), order = sortOrdering)
                             else:
-                                if (popAttr("sensitive")!=VNULL):
+                                if (hadAttr("sensitive")):
                                     InPlaced.a.unisort("en", sensitive=true, order = sortOrdering)
                                 else:
                                     if InPlace.a[0].kind==String:
@@ -1395,7 +1395,7 @@ proc defineSymbols*() =
                                     else:
                                         InPlaced.a.sort(order = sortOrdering)
                 else:
-                    if (popAttr("values") != VNULL):
+                    if (hadAttr("values")):
                         InPlaced.d.sort(proc (x, y: (string,Value)): int = cmp(x[1], y[1]), order=sortOrdering)
                     else:
                         InPlaced.d.sort(system.cmp, order=sortOrdering)
@@ -1423,7 +1423,7 @@ proc defineSymbols*() =
             ##########################################################
             var ascending = true
 
-            if (popAttr("descending")!=VNULL):
+            if (hadAttr("descending")):
                 ascending = false
 
             push newLogical(isSorted(x.a, ascending = ascending))
@@ -1468,11 +1468,11 @@ proc defineSymbols*() =
             #  labels: library, bug, unit-test, critical
             if x.kind==Literal:
                 if InPlace.kind==String:
-                    if (popAttr("words") != VNULL):
+                    if (hadAttr("words")):
                         SetInPlace(newStringBlock(strutils.splitWhitespace(InPlaced.s)))
-                    elif (popAttr("lines") != VNULL):
+                    elif (hadAttr("lines")):
                         SetInPlace(newStringBlock(InPlaced.s.splitLines()))
-                    elif (popAttr("path") != VNULL):
+                    elif (hadAttr("path")):
                         SetInPlace(newStringBlock(InPlaced.s.split(DirSep)))
                     elif (let aBy = popAttr("by"); aBy != VNULL):
                         if aBy.kind==String:
@@ -1511,11 +1511,11 @@ proc defineSymbols*() =
                     else: discard
 
             elif x.kind==String:
-                if (popAttr("words") != VNULL):
+                if (hadAttr("words")):
                     push(newStringBlock(strutils.splitWhitespace(x.s)))
-                elif (popAttr("lines") != VNULL):
+                elif (hadAttr("lines")):
                     push(newStringBlock(x.s.splitLines()))
-                elif (popAttr("path") != VNULL):
+                elif (hadAttr("path")):
                     push(newStringBlock(x.s.split(DirSep)))
                 elif (let aBy = popAttr("by"); aBy != VNULL):
                     if aBy.kind==String:
@@ -1683,7 +1683,7 @@ proc defineSymbols*() =
             print arr                     ; 1 2 4 3
         """:
             ##########################################################
-            if (popAttr("id") != VNULL):
+            if (hadAttr("id")):
                 # TODO(System\unique) make `.id` work for Web/JS builds
                 #  labels: library,enhancement,web
                 when not defined(WEB):
