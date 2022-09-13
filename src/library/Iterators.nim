@@ -361,12 +361,12 @@ proc defineSymbols*() =
             var onlyFirst = false
             var onlyLast = false
             var elemLimit = -1
-            if (let aFirst = popAttr("first"); aFirst != VNULL):
+            if checkAttr("first"):
                 onlyFirst = true
                 if aFirst.kind == Logical and aFirst.b == True: elemLimit = 1
                 else: elemLimit = aFirst.i
 
-            if (let aLast = popAttr("last"); aLast != VNULL):
+            if checkAttr("last"):
                 onlyLast = true
                 if aLast.kind == Logical and aLast.b == True: elemLimit = 1
                 else: elemLimit = aLast.i
@@ -488,7 +488,7 @@ proc defineSymbols*() =
                 elif items[0].kind == Floating: seed = newFloating(0.0)
                 elif items[0].kind == Block:    seed = newBlock()
 
-            if (let aSeed = popAttr("seed"); aSeed != VNULL):
+            if checkAttr("seed"):
                 seed = aSeed
 
             var res: Value = seed
@@ -676,12 +676,12 @@ proc defineSymbols*() =
             var onlyFirst = false
             var onlyLast = false
             var elemLimit = -1
-            if (let aFirst = popAttr("first"); aFirst != VNULL):
+            if checkAttr("first"):
                 onlyFirst = true
                 if aFirst.kind == Logical and aFirst.b == True: elemLimit = 1
                 else: elemLimit = aFirst.i
 
-            if (let aLast = popAttr("last"); aLast != VNULL):
+            if checkAttr("last"):
                 onlyLast = true
                 if aLast.kind == Logical and aLast.b == True: elemLimit = 1
                 else: elemLimit = aLast.i

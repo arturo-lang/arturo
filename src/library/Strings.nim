@@ -245,10 +245,10 @@ proc defineSymbols*() =
             var count = 4
             var padding = " "
 
-            if (let aN = popAttr("n"); aN != VNULL):
+            if checkAttr("n"):
                 count = aN.i
 
-            if (let aWith = popAttr("with"); aWith != VNULL):
+            if checkAttr("with"):
                 padding = aWith.s
 
             if x.kind==Literal:
@@ -314,7 +314,7 @@ proc defineSymbols*() =
                     push(newString(joinPath(cleanBlock(x.a).map(proc (v:Value):string = $(v)))))
             else:
                 var sep = ""
-                if (let aWith = popAttr("with"); aWith != VNULL):
+                if checkAttr("with"):
                     sep = aWith.s
 
                 if x.kind==Literal:
@@ -345,7 +345,7 @@ proc defineSymbols*() =
         """:
             if ( hadAttr("align")):
                 var filler:Rune = "-".runeAt(0)
-                if (let aWith = popAttr("with"); aWith != VNULL):
+                if checkAttr("with"):
                     filler = aWith.c
                 let aligned = levenshteinAlign(x.s,y.s,filler)
                 push(newStringBlock(@[aligned[0], aligned[1]]))
@@ -503,10 +503,10 @@ proc defineSymbols*() =
 
             var padding = " "
 
-            if (let aN = popAttr("n"); aN != VNULL):
+            if checkAttr("n"):
                 count = aN.i
 
-            if (let aWith = popAttr("with"); aWith != VNULL):
+            if checkAttr("with"):
                 padding = aWith.s
 
             if x.kind==Literal:
@@ -541,7 +541,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             var padding = ' '.Rune
-            if (let aWith = popAttr("with"); aWith != VNULL):
+            if checkAttr("with"):
                 padding = aWith.c
 
             if (hadAttr("right")):
@@ -844,7 +844,7 @@ proc defineSymbols*() =
         """: 
             ##########################################################
             var with = "..."
-            if (let aWith = popAttr("with"); aWith != VNULL):
+            if checkAttr("with"):
                 with = aWith.s
 
             if (hadAttr("preserve")):
@@ -942,7 +942,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             var cutoff = 80
-            if (let aAt = popAttr("at"); aAt != VNULL):
+            if checkAttr("at"):
                 cutoff = aAt.i
             
             if x.kind==Literal:

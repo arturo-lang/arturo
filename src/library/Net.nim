@@ -71,7 +71,7 @@ proc defineSymbols*() =
 
                 var target: string
 
-                if (let aAs = popAttr("as"); aAs!=VNULL):
+                if checkAttr("as"):
                     target = aAs.s
                 else:
                     target = extractFilename(path)
@@ -187,22 +187,22 @@ proc defineSymbols*() =
                 if (hadAttr("delete")): meth = HttpDelete
 
                 var headers: HttpHeaders = newHttpHeaders()
-                if (let aHeaders = popAttr("headers"); aHeaders != VNULL):
+                if checkAttr("headers"):
                     var headersArr: seq[(string,string)] = @[]
                     for k,v in pairs(aHeaders.d):
                         headersArr.add((k, $(v)))
                     headers = newHttpHeaders(headersArr)
 
                 var agent = "Arturo HTTP Client / " & $(getSystemInfo()["version"])
-                if (let aAgent = popAttr("agent"); aAgent != VNULL):
+                if checkAttr("agent"):
                     agent = aAgent.s
 
                 var timeout: int = -1
-                if (let aTimeout = popAttr("timeout"); aTimeout != VNULL):
+                if checkAttr("timeout"):
                     timeout = aTimeout.i
 
                 var proxy: Proxy = nil
-                if (let aProxy = popAttr("proxy"); aProxy != VNULL):
+                if checkAttr("proxy"):
                     proxy = newProxy(aProxy.s)
 
                 var body: string = ""
@@ -318,10 +318,10 @@ proc defineSymbols*() =
                 let routes = x
                 var port = 18966
                 var verbose = (hadAttr("verbose"))
-                if (let aPort = popAttr("port"); aPort != VNULL):
+                if checkAttr("port"):
                     port = aPort.i
             
-                if (let aChrome = popAttr("chrome"); aChrome != VNULL):
+                if checkAttr("chrome"):
                     openChromeWindow(port)
 
                 # necessary so that "serveInternal" is available

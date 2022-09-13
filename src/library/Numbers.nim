@@ -535,7 +535,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             var base = 10
-            if (let aBase = popAttr("base"); aBase != VNULL):
+            if checkAttr("base"):
                 base = aBase.i
 
             if x.iKind == NormalInteger:
@@ -1027,7 +1027,7 @@ proc defineSymbols*() =
             else: limY = ord(y.c)
 
             var step = 1
-            if (let aStep = popAttr("step"); aStep != VNULL):
+            if checkAttr("step"):
                 step = aStep.i
                 if step < 0:
                     step = -step
@@ -1100,7 +1100,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             var places = 0
-            if (let aTo = popAttr("to"); aTo != VNULL):
+            if checkAttr("to"):
                 places = aTo.i
                 
             push(newFloating(round(asFloat(x), places)))

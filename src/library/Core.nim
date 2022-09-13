@@ -130,12 +130,12 @@ proc defineSymbols*() =
             call $[x][x+2] [5]            ; 7
         """:
             ##########################################################
-            if (let aExternal = popAttr("external"); aExternal != VNULL):
+            if checkAttr("external"):
                 when not defined(WEB):
                     let externalLibrary = aExternal.s
 
                     var expected = Nothing
-                    if (let aExpect = popAttr("expect"); aExpect != VNULL):
+                    if checkAttr("expect"):
                         expected = aExpect.t
 
                     push(execForeignMethod(externalLibrary, x.s, y.a, expected))
@@ -246,7 +246,7 @@ proc defineSymbols*() =
             var times = 1
             var currentTime = 0
 
-            if (let aTimes = popAttr("times"); aTimes != VNULL):
+            if checkAttr("times"):
                 times = aTimes.i
 
             var execInParent = (hadAttr("import"))
