@@ -54,7 +54,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             var balance = 0.5
-            if (let aBalance = popAttr("balance"); aBalance != VNULL):
+            if checkAttr("balance"):
                 balance = aBalance.f
 
             if x.kind == Literal:
@@ -198,17 +198,17 @@ proc defineSymbols*() =
                 push newBlock(splitPalette(x.l).map((c) => newColor(c)))
             elif (hadAttr("analogous")):
                 var size = 6
-                if (let aSize = popAttr("size"); aSize != VNULL):
+                if checkAttr("size"):
                     size = aSize.i
                 push newBlock(analogousPalette(x.l, size).map((c) => newColor(c)))
             elif (hadAttr("monochrome")):
                 var size = 6
-                if (let aSize = popAttr("size"); aSize != VNULL):
+                if checkAttr("size"):
                     size = aSize.i
                 push newBlock(monochromePalette(x.l, size).map((c) => newColor(c)))
             elif (hadAttr("random")):
                 var size = 6
-                if (let aSize = popAttr("size"); aSize != VNULL):
+                if checkAttr("size"):
                     size = aSize.i
                 push newBlock(randomPalette(x.l, size).map((c) => newColor(c)))
             else:

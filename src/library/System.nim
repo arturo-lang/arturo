@@ -120,7 +120,7 @@ proc defineSymbols*() =
                 # get arguments & options
                 var cmd = x.s
                 var args: seq[string] = @[]
-                if (let aArgs = popAttr("args"); aArgs != VNULL):
+                if checkAttr("args"):
                     args = aArgs.a.map((x) => x.s)
                 let code = (hadAttr("code"))
                 let directly = (hadAttr("directly"))
@@ -179,7 +179,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             var errCode = QuitSuccess
-            if (let aWith = popAttr("with"); aWith != VNULL):
+            if checkAttr("with"):
                 errCode = aWith.i
 
             quit(errCode)
@@ -207,7 +207,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             var code = 0
-            if (let aCode = popAttr("code"); aCode != VNULL):
+            if checkAttr("code"):
                 code = aCode.i
 
             if (hadAttr("unstyled")):
@@ -337,7 +337,7 @@ proc defineSymbols*() =
                 ##########################################################
                 var errCode = QuitSuccess
                 let pid = x.i
-                if (let aCode = popAttr("code"); aCode != VNULL):
+                if checkAttr("code"):
                     errCode = aCode.i
 
                 # check if it's a process that has been

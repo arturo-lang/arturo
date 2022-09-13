@@ -96,7 +96,7 @@ proc defineSymbols*() =
             """:
                 ##########################################################
                 var with: seq[string] = @[]
-                if (let aWith = popAttr("with"); aWith != VNULL):
+                if checkAttr("with"):
                     with = aWith.a.map((x) => $(x))
 
                 if x.dbKind == SqliteDatabase:

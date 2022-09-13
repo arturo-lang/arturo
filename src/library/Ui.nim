@@ -117,7 +117,7 @@ proc defineSymbols*() =
                 ##########################################################
                 var path = ""
                 let selectFolder = popAttr("folder")==VNULL
-                if (let aPath = popAttr("path"); aPath != VNULL): 
+                if checkAttr("path"): 
                     path = aPath.s
 
                 push newString(showSelectionDialog(x.s, path, selectFolder))
@@ -265,11 +265,11 @@ proc defineSymbols*() =
                 var inject = ""
                 var on: ValueDict
 
-                if (let aTitle = popAttr("title"); aTitle != VNULL): title = aTitle.s
-                if (let aWidth = popAttr("width"); aWidth != VNULL): width = aWidth.i
-                if (let aHeight = popAttr("height"); aHeight != VNULL): height = aHeight.i
-                if (let aOn = popAttr("on"); aOn != VNULL): on = aOn.d
-                if (let aInject = popAttr("inject"); aInject != VNULL): inject = aInject.s
+                if checkAttr("title"): title = aTitle.s
+                if checkAttr("width"): width = aWidth.i
+                if checkAttr("height"): height = aHeight.i
+                if checkAttr("on"): on = aOn.d
+                if checkAttr("inject"): inject = aInject.s
 
                 var targetUrl = x.s
 

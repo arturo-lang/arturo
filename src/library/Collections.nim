@@ -188,7 +188,7 @@ proc defineSymbols*() =
             let blk = cleanBlock(x.a)
 
             var sz = blk.len
-            if (let aBy = popAttr("by"); aBy != VNULL):
+            if checkAttr("by"):
                 if aBy.i > 0 and aBy.i < sz:
                     sz = aBy.i
 
@@ -238,7 +238,7 @@ proc defineSymbols*() =
             ; true
         """:
             ##########################################################
-            if (let aAt = popAttr("at"); aAt != VNULL):
+            if checkAttr("at"):
                 let at = aAt.i
                 case x.kind:
                     of String:
@@ -434,7 +434,7 @@ proc defineSymbols*() =
             print first.n:2 ["one" "two" "three"] ; one two
         """:
             ##########################################################
-            if (let aN = popAttr("n"); aN != VNULL):
+            if checkAttr("n"):
                 if x.kind==String: 
                     if x.s.len==0: push(newString(""))
                     else: push(newString(x.s[0..aN.i-1]))
@@ -591,7 +591,7 @@ proc defineSymbols*() =
             ; true
         """:
             ##########################################################
-            if (let aAt = popAttr("at"); aAt != VNULL):
+            if checkAttr("at"):
                 let at = aAt.i
                 case y.kind:
                     of String:
@@ -792,7 +792,7 @@ proc defineSymbols*() =
             print last.n:2 ["one" "two" "three"] ; two three
         """:
             ##########################################################
-            if (let aN = popAttr("n"); aN != VNULL):
+            if checkAttr("n"):
                 if x.kind==String: 
                     if x.s.len==0: push(newString(""))
                     else: push(newString(x.s[x.s.len-aN.i..^1]))
@@ -923,7 +923,7 @@ proc defineSymbols*() =
             let blk = cleanBlock(x.a)
 
             var sz = blk.len
-            if (let aBy = popAttr("by"); aBy != VNULL):
+            if checkAttr("by"):
                 if aBy.i > 0 and aBy.i < sz:
                     sz = aBy.i
 
@@ -1337,7 +1337,7 @@ proc defineSymbols*() =
                 let blk = cleanBlock(x.a)
                 if blk.len==0: push(newBlock())
                 else:
-                    if (let aBy = popAttr("by"); aBy != VNULL):
+                    if checkAttr("by"):
                         if blk.len > 0:
                             var sorted: ValueArray 
 
@@ -1356,7 +1356,7 @@ proc defineSymbols*() =
                     else:
                         var sortAscii = (hadAttr("ascii"))
 
-                        if (let aAs = popAttr("as"); aAs != VNULL):
+                        if checkAttr("as"):
                             push(newBlock(blk.unisorted(aAs.s, sensitive = hadAttr("sensitive"), order = sortOrdering, ascii = sortAscii)))
                         else:
                             if (hadAttr("sensitive")):
@@ -1379,12 +1379,12 @@ proc defineSymbols*() =
             else: 
                 if InPlace.kind==Block:
                     if InPlace.a.len > 0:
-                        if (let aBy = popAttr("by"); aBy != VNULL):
+                        if checkAttr("by"):
                             InPlaced.a.sort(
                                 proc (v1, v2: Value): int = 
                                     cmp(v1.d[aBy.s], v2.d[aBy.s]), order=sortOrdering)
                         else:
-                            if (let aAs = popAttr("as"); aAs != VNULL):
+                            if checkAttr("as"):
                                 InPlaced.a.unisort(aAs.s, sensitive = hadAttr("sensitive"), order = sortOrdering)
                             else:
                                 if (hadAttr("sensitive")):
@@ -1474,16 +1474,16 @@ proc defineSymbols*() =
                         SetInPlace(newStringBlock(InPlaced.s.splitLines()))
                     elif (hadAttr("path")):
                         SetInPlace(newStringBlock(InPlaced.s.split(DirSep)))
-                    elif (let aBy = popAttr("by"); aBy != VNULL):
+                    elif checkAttr("by"):
                         if aBy.kind==String:
                             SetInPlace(newStringBlock(InPlaced.s.split(aBy.s)))
                         elif aBy.kind==Regex:
                             SetInPlace(newStringBlock(InPlaced.s.split(aBy.rx)))
                         else:
                             SetInPlace(newStringBlock(toSeq(InPlaced.s.tokenize(aBy.a.map((k)=>k.s)))))
-                    elif (let aAt = popAttr("at"); aAt != VNULL):
+                    elif checkAttr("at"):
                         SetInPlace(newStringBlock(@[InPlaced.s[0..aAt.i-1], InPlaced.s[aAt.i..^1]]))
-                    elif (let aEvery = popAttr("every"); aEvery != VNULL):
+                    elif checkAttr("every"):
                         var ret: seq[string] = @[]
                         var length = InPlaced.s.len
                         var i = 0
@@ -1496,9 +1496,9 @@ proc defineSymbols*() =
                     else:
                         SetInPlace(newStringBlock(toSeq(runes(x.s)).map((x) => $(x))))
                 else:
-                    if (let aAt = popAttr("at"); aAt != VNULL):
+                    if checkAttr("at"):
                         SetInPlace(newBlock(@[newBlock(InPlaced.a[0..aAt.i]), newBlock(InPlaced.a[aAt.i..^1])]))
-                    elif (let aEvery = popAttr("every"); aEvery != VNULL):
+                    elif checkAttr("every"):
                         var ret: ValueArray = @[]
                         var length = InPlaced.a.len
                         var i = 0
@@ -1517,16 +1517,16 @@ proc defineSymbols*() =
                     push(newStringBlock(x.s.splitLines()))
                 elif (hadAttr("path")):
                     push(newStringBlock(x.s.split(DirSep)))
-                elif (let aBy = popAttr("by"); aBy != VNULL):
+                elif checkAttr("by"):
                     if aBy.kind==String:
                         push(newStringBlock(x.s.split(aBy.s)))
                     elif aBy.kind==Regex:
                         push(newStringBlock(x.s.split(aBy.rx)))
                     else:
                         push(newStringBlock(toSeq(x.s.tokenize(aBy.a.map((k)=>k.s)))))
-                elif (let aAt = popAttr("at"); aAt != VNULL):
+                elif checkAttr("at"):
                     push(newStringBlock(@[x.s[0..aAt.i-1], x.s[aAt.i..^1]]))
-                elif (let aEvery = popAttr("every"); aEvery != VNULL):
+                elif checkAttr("every"):
                     var ret: seq[string] = @[]
                     var length = x.s.len
                     var i = 0
@@ -1540,9 +1540,9 @@ proc defineSymbols*() =
                     push(newStringBlock(toSeq(runes(x.s)).map((x) => $(x))))
             else:
                 let blk = cleanBlock(x.a)
-                if (let aAt = popAttr("at"); aAt != VNULL):
+                if checkAttr("at"):
                     push(newBlock(@[newBlock(blk[0..aAt.i-1]), newBlock(blk[aAt.i..^1])]))
-                elif (let aEvery = popAttr("every"); aEvery != VNULL):
+                elif checkAttr("every"):
                     var ret: ValueArray = @[]
                     var length = blk.len
                     var i = 0

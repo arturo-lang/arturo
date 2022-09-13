@@ -126,11 +126,11 @@ proc defineSymbols*() =
                 else:
                     push(newString(x.s.urlencode(encodeSpaces=spaces, encodeSlashes=slashes)))
 
-            elif (let aFrom = popAttr("from"); aFrom != VNULL):
+            elif checkAttr("from"):
                 when not defined(freebsd) and not defined(WEB):
                     var src = aFrom.s
                     var dest = "UTF-8"
-                    if (let aTo = popAttr("to"); aTo != VNULL):
+                    if checkAttr("to"):
                         dest = aTo.s
 
                     if x.kind==Literal:
@@ -141,7 +141,7 @@ proc defineSymbols*() =
                     if x.kind==String:
                         push(newString(x.s))
 
-            elif (let aTo = popAttr("to"); aTo != VNULL):
+            elif checkAttr("to"):
                 when not defined(freebsd) and not defined(WEB):
                     var src = "CP1252"
                     var dest = aTo.s

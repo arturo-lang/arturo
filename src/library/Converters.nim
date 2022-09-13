@@ -108,7 +108,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                             when not defined(NOGMP): 
                                 return newString($(y.bi))
                     of Quantity:
-                        if (let aUnit = popAttr("unit"); aUnit != VNULL):
+                        if checkAttr("unit"):
                             return newQuantity(y, parseQuantitySpec(aUnit.s))
                         else:
                             throwConversionFailed()
@@ -141,7 +141,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                         else:
                             return newString($(y.f))
                     of Quantity:
-                        if (let aUnit = popAttr("unit"); aUnit != VNULL):
+                        if checkAttr("unit"):
                             return newQuantity(y, parseQuantitySpec(aUnit.s))
                         else:
                             throwConversionFailed()
@@ -449,7 +449,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                     of String:
                         return newString($(y))
                     of Quantity:
-                        if (let aUnit = popAttr("unit"); aUnit != VNULL):
+                        if checkAttr("unit"):
                             let target = parseQuantitySpec(aUnit.s).name
                             return newQuantity(convertQuantityValue(y.nm, y.unit.name, target), target)
                         else:
@@ -552,7 +552,7 @@ proc defineSymbols*() =
             ; => [[0 0 0 0] [0 0 0 0] [0 0 0 0]]
         """:
             ##########################################################
-            if (let aOf = popAttr("of"); aOf != VNULL):
+            if checkAttr("of"):
                 if aOf.kind == Integer:
                     let size = aOf.i
                     let blk:ValueArray = safeRepeat(x, size)
@@ -724,7 +724,7 @@ proc defineSymbols*() =
             ##########################################################
             x.ts.fields = cleanBlock(y.a)
 
-            if (let aAs = popAttr("as"); aAs != VNULL):
+            if checkAttr("as"):
                 x.ts.inherits = aAs.ts
 
             x.ts.methods = newDictionary(execBlock(z,dictionary=true)).d
@@ -834,7 +834,7 @@ proc defineSymbols*() =
                 else:
                     echo "file does not exist"
 
-            if (let aWith = popAttr("with"); aWith != VNULL):
+            if checkAttr("with"):
                 for x in aWith.a:
                     dict[x.s] = GetSym(x.s)
 
@@ -988,7 +988,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             var imports = VNULL
-            if (let aImport = popAttr("import"); aImport != VNULL):
+            if checkAttr("import"):
                 var ret = initOrderedTable[string,Value]()
                 for item in aImport.a:
                     ret[item.s] = GetSym(item.s)
@@ -997,7 +997,7 @@ proc defineSymbols*() =
             var exportable = (hadAttr("exportable"))
 
             var exports = VNULL
-            if (let aExport = popAttr("export"); aExport != VNULL):
+            if checkAttr("export"):
                 exports = aExport
 
             var memoize = (hadAttr("memoize"))

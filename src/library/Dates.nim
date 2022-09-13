@@ -64,15 +64,15 @@ proc defineSymbols*() =
                 minutes, hours, days, weeks,
                 months, years = 0
 
-            if (let aNanoseconds = popAttr("nanoseconds"); aNanoseconds != VNULL):      nanoseconds = aNanoseconds.i
-            if (let aMilliseconds = popAttr("milliseconds"); aMilliseconds != VNULL):   milliseconds = aMilliseconds.i
-            if (let aSeconds = popAttr("seconds"); aSeconds != VNULL):                  seconds = aSeconds.i
-            if (let aMinutes = popAttr("minutes"); aMinutes != VNULL):                  minutes = aMinutes.i
-            if (let aHours = popAttr("hours"); aHours != VNULL):                        hours = aHours.i
-            if (let aDays = popAttr("days"); aDays != VNULL):                           days = aDays.i
-            if (let aWeeks = popAttr("weeks"); aWeeks != VNULL):                        weeks = aWeeks.i
-            if (let aMonths = popAttr("months"); aMonths != VNULL):                     months = aMonths.i
-            if (let aYears = popAttr("years"); aYears != VNULL):                        years = aYears.i
+            if checkAttr("nanoseconds"):      nanoseconds = aNanoseconds.i
+            if checkAttr("milliseconds"):   milliseconds = aMilliseconds.i
+            if checkAttr("seconds"):                  seconds = aSeconds.i
+            if checkAttr("minutes"):                  minutes = aMinutes.i
+            if checkAttr("hours"):                        hours = aHours.i
+            if checkAttr("days"):                           days = aDays.i
+            if checkAttr("weeks"):                        weeks = aWeeks.i
+            if checkAttr("months"):                     months = aMonths.i
+            if checkAttr("years"):                        years = aYears.i
 
             let ti = initTimeInterval(
                 nanoseconds=nanoseconds, 
@@ -125,15 +125,15 @@ proc defineSymbols*() =
                 minutes, hours, days, weeks,
                 months, years = 0
 
-            if (let aNanoseconds = popAttr("nanoseconds"); aNanoseconds != VNULL):      nanoseconds = aNanoseconds.i
-            if (let aMilliseconds = popAttr("milliseconds"); aMilliseconds != VNULL):   milliseconds = aMilliseconds.i
-            if (let aSeconds = popAttr("seconds"); aSeconds != VNULL):                  seconds = aSeconds.i
-            if (let aMinutes = popAttr("minutes"); aMinutes != VNULL):                  minutes = aMinutes.i
-            if (let aHours = popAttr("hours"); aHours != VNULL):                        hours = aHours.i
-            if (let aDays = popAttr("days"); aDays != VNULL):                           days = aDays.i
-            if (let aWeeks = popAttr("weeks"); aWeeks != VNULL):                        weeks = aWeeks.i
-            if (let aMonths = popAttr("months"); aMonths != VNULL):                     months = aMonths.i
-            if (let aYears = popAttr("years"); aYears != VNULL):                        years = aYears.i
+            if checkAttr("nanoseconds"):      nanoseconds = aNanoseconds.i
+            if checkAttr("milliseconds"):   milliseconds = aMilliseconds.i
+            if checkAttr("seconds"):                  seconds = aSeconds.i
+            if checkAttr("minutes"):                  minutes = aMinutes.i
+            if checkAttr("hours"):                        hours = aHours.i
+            if checkAttr("days"):                           days = aDays.i
+            if checkAttr("weeks"):                        weeks = aWeeks.i
+            if checkAttr("months"):                     months = aMonths.i
+            if checkAttr("years"):                        years = aYears.i
 
             let ti = initTimeInterval(
                 nanoseconds=nanoseconds, 

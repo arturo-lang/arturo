@@ -221,13 +221,13 @@ proc defineSymbols*() =
                     var completionsArray: ValueArray = @[]
                     var hintsTable: ValueDict = initOrderedTable[string,Value]()
 
-                    if (let aHistory = popAttr("history"); aHistory != VNULL):
+                    if checkAttr("history"):
                         historyPath = aHistory.s
 
-                    if (let aComplete = popAttr("complete"); aComplete != VNULL):
+                    if checkAttr("complete"):
                         completionsArray = aComplete.a
 
-                    if (let aHint = popAttr("hint"); aHint != VNULL):
+                    if checkAttr("hint"):
                         hintsTable = aHint.d
 
                     push(newString(replInput(x.s, historyPath, completionsArray, hintsTable)))
