@@ -99,10 +99,10 @@ template emptyAttrs*() =
 template createAttrsStack*() =
     emptyAttrs()
 
-proc getAttr*(attr: string): Value =
+proc getAttr*(attr: string): Value {.inline,enforceNoRaises.} =
     Attrs.getOrDefault(attr, VNULL)
 
-proc popAttr*(attr: string): Value {.enforceNoRaises.} =
+proc popAttr*(attr: string): Value {.inline,enforceNoRaises.} =
     result = VNULL
     hookProcProfiler("stack/popAttr"):
         discard Attrs.pop(attr, result)
