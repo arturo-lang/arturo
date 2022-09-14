@@ -1,3 +1,7 @@
+# Thanks to Yardanico:
+# https://github.com/Yardanico/mimalloc_nim
+# MIT License
+
 when not defined(vcc):
   # Generic GCC-like arguments
   {.passC: "-DNDEBUG -fvisibility=hidden".}
