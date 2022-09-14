@@ -180,19 +180,19 @@ template require*(name: string, spec: untyped): untyped =
             RuntimeError_NotEnoughArguments(name, spec.len)
 
     when (static spec.len)>=1 and spec!=NoArgs:
-        var x {.inject.} = stack.pop()
+        let x {.inject.} = move stack.pop()
         when not (ANY in static spec[0][1]):
             if unlikely(not (x.kind in (static spec[0][1]))):
                 RuntimeError_WrongArgumentType(name, 0, spec)
                 
         when (static spec.len)>=2:
-            var y {.inject.} = stack.pop()
+            let y {.inject.} = move stack.pop()
             when not (ANY in static spec[1][1]):
                 if unlikely(not (y.kind in (static spec[1][1]))):
                     RuntimeError_WrongArgumentType(name, 1, spec)
                     
             when (static spec.len)>=3:
-                var z {.inject.} = stack.pop()
+                let z {.inject.} = move stack.pop()
                 when not (ANY in static spec[2][1]):
                     if unlikely(not (z.kind in (static spec[2][1]))):
                         RuntimeError_WrongArgumentType(name, 2, spec)
