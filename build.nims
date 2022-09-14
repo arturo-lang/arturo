@@ -308,6 +308,8 @@ proc compile*(footer=false): int =
     #     echo FLAGS
     when defined(windows):
         FLAGS = """{FLAGS}  --passL:"-static-libstdc++ -static-libgcc -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic" --gcc.linkerexe="g++"""".fmt
+    else:
+        FLAGS = """{FLAGS} --passL:"-lpthread -lm"""".fmt
     # let's go for it
     if IS_DEV or PRINT_LOG:
         # if we're in dev mode we don't really care about the success/failure of the process -
