@@ -15,6 +15,24 @@ if hostOS=="windows":
                                                   .replace("/lib","/bin")
         )
     )
+
+let
+    mimallocPath = projectDir() / "extras" / "mimalloc" 
+    # Quote the paths so we support paths with spaces
+    # TODO: Is there a better way of doing this?
+    mimallocStatic = "mimallocStatic=\"" & (mimallocPath / "src" / "static.c") & '"'
+    mimallocIncludePath = "mimallocIncludePath=\"" & (mimallocPath / "include") & '"'
+
+# So we can compile mimalloc from the patched files
+switch("define", mimallocStatic)
+switch("define", mimallocIncludePath)
+
+case get("cc"):
+    of "gcc", "clang", "icc", "icl":
+        switch("passC", "-ftls-model=initial-exec -fno-builtin-malloc")
+    else:
+        discard
  
+patchFile("stdlib", "malloc", "src" / "extras" / "mimalloc")
 # when defined(windows): 
 #     switch("dynlibOverride", "crypto-")
