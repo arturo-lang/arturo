@@ -103,8 +103,8 @@ var
     MODE                = ""       
 
     FLAGS*              = "--skipUserCfg:on --colors:off -d:danger " &
-                          "--panics:off --mm:orc --checks:off " &
-                          "-d:ssl --cincludes:extras -d:useMalloc --nimcache:.cache " & 
+                          "--panics:off --mm:orc -d:useMalloc --checks:off " &
+                          "-d:ssl --cincludes:extras --nimcache:.cache " & 
                           "--path:src "
     CONFIG              ="@full"
 
