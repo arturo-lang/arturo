@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import algorithm, sequtils, sets, strutils, tables
+import sequtils, sets, strutils, tables
 export strutils, tables
 
 import vm/[globals, errors, stack, values/comparison, values/logic, values/printable, values/value]
@@ -27,30 +27,10 @@ const
     NoAttrs*     = static {"" : ({Nothing},"")}
 
 #=======================================
-# Helpers
-#=======================================
-
-proc getWrongArgumentTypeErrorMsg*(functionName: string, argumentPos: int, expectedValues: seq[ValueKind]): string =
-    let actualStr = toSeq(0..argumentPos).reversed.map(proc(x:int):string = ":" & ($(Stack[SP+x].kind)).toLowerAscii()).join(" ")
-    let acceptedStr = expectedValues.map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
-
-    var ordinalPos: string = ""
-    if argumentPos==0:
-        ordinalPos = "first"
-    elif argumentPos==1:
-        ordinalPos = "second"
-    elif argumentPos==2:
-        ordinalPos = "third"
-
-    return "cannot perform _" & functionName & "_ -> " & actualStr & ";" &
-           "incorrect argument type for " & ordinalPos & " parameter;" &
-           "accepts " & acceptedStr
-
-#=======================================
 # Templates
 #=======================================
 when defined(PORTABLE):
-    import json, os, sugar
+    import algorithm, json, os, sugar
 
     let js {.compileTime.} = parseJson(static readFile(getEnv("PORTABLE_DATA")))
     let funcs {.compileTime.} = toSeq(js["uses"]["functions"]).map((x) => x.getStr())
@@ -174,6 +154,14 @@ template constant*(n: string, alias: SymbolKind, description: string, v: Value):
             name: newWord(n)
         )
 
+proc showWrongArgumentTypeError*(name: string, pos: int, params: openArray[Value], expected: openArray[(string, set[ValueKind])]) =
+    var expectedValues = toSeq((expected[pos][1]).items)
+    let acceptedStr = expectedValues.map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
+    let actualStr = params.map(proc(x:Value):string = ":" & ($(x.kind)).toLowerAscii()).join(" ")
+    var ordinalPos: string = ["first","second","third"][pos]
+
+    RuntimeError_WrongArgumentType(name, actualStr, ordinalPos, acceptedStr)
+
 template require*(name: string, spec: untyped): untyped =
     when spec!=NoArgs:
         if unlikely(SP<(static spec.len)):
@@ -183,16 +171,16 @@ template require*(name: string, spec: untyped): untyped =
         let x {.inject.} = move stack.pop()
         when not (ANY in static spec[0][1]):
             if unlikely(not (x.kind in (static spec[0][1]))):
-                RuntimeError_WrongArgumentType(name, 0, spec)
+                showWrongArgumentTypeError(name, 0, [x], spec)
                 
         when (static spec.len)>=2:
             let y {.inject.} = move stack.pop()
             when not (ANY in static spec[1][1]):
                 if unlikely(not (y.kind in (static spec[1][1]))):
-                    RuntimeError_WrongArgumentType(name, 1, spec)
+                    showWrongArgumentTypeError(name, 1, [x,y], spec)
                     
             when (static spec.len)>=3:
                 let z {.inject.} = move stack.pop()
                 when not (ANY in static spec[2][1]):
                     if unlikely(not (z.kind in (static spec[2][1]))):
-                        RuntimeError_WrongArgumentType(name, 2, spec)
+                        showWrongArgumentTypeError(name, 2, [x,y,z], spec)
