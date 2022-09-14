@@ -491,7 +491,7 @@ proc defineSymbols*() =
                             writeToFile(x.s, y.n, append = (hadAttr("append")))
                         else:
                             if (hadAttr("json")):
-                                let rez = jsonFromValue(y, pretty=(popAttr("compact")==VNULL))
+                                let rez = jsonFromValue(y, pretty=(not hadAttr("compact")))
                                 if x.kind==String:
                                     writeToFile(x.s, rez, append = (hadAttr("append")))
                                 else:
