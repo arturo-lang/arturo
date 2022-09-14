@@ -13,7 +13,7 @@
 when not defined(WEB):
     import strformat
 
-import tables
+import macros, strutils, tables
 
 import vm/profiler
 import vm/values/value
@@ -99,13 +99,21 @@ template emptyAttrs*() =
 template createAttrsStack*() =
     emptyAttrs()
 
-proc getAttr*(attr: string): Value =
+proc getAttr*(attr: string): Value {.inline,enforceNoRaises.} =
     Attrs.getOrDefault(attr, VNULL)
 
-proc popAttr*(attr: string): Value =
+proc popAttr*(attr: string): Value {.inline,enforceNoRaises.} =
     result = VNULL
     hookProcProfiler("stack/popAttr"):
         discard Attrs.pop(attr, result)
+
+macro checkAttr*(name: untyped): untyped =
+    let attrName =  ident('a' & ($name).capitalizeAscii())
+    result = quote do:
+        (let `attrName` = popAttr(`name`); `attrName` != VNULL)
+
+template hadAttr*(attr: string): bool = 
+    (popAttr(attr) != VNULL)
 
 proc getAttrsDict*(): Value =
     result = newDictionary(Attrs)

@@ -96,7 +96,7 @@ proc defineSymbols*() =
             """:
                 ##########################################################
                 var with: seq[string] = @[]
-                if (let aWith = popAttr("with"); aWith != VNULL):
+                if checkAttr("with"):
                     with = aWith.a.map((x) => $(x))
 
                 if x.dbKind == SqliteDatabase:
@@ -107,7 +107,7 @@ proc defineSymbols*() =
                         if (let got = execManySqliteDb(x.sqlitedb, cleanBlock(y.a).map(proc (v:Value):string = v.s), with); got[0]==ValidQueryResult):
                             push(newBlock(got[1]))
                     
-                    if (popAttr("id") != VNULL):
+                    if (hadAttr("id")):
                         push(newInteger(getLastIdSqliteDb(x.sqlitedb)))
 
                 # elif x.dbKind == MysqlDatabase:
@@ -131,7 +131,7 @@ proc defineSymbols*() =
                 ##########################################################
                 var dbKind = SqliteDatabase
 
-                if (popAttr("mysql") != VNULL):
+                if (hadAttr("mysql")):
                     dbKind = MysqlDatabase
 
                 let dbName = x.s

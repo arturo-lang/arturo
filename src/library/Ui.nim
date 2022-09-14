@@ -67,11 +67,11 @@ proc defineSymbols*() =
                 ##########################################################
                 var alertIcon = NoIcon
 
-                if (popAttr("info") != VNULL):
+                if (hadAttr("info")):
                     alertIcon = InfoIcon
-                elif (popAttr("warning") != VNULL):
+                elif (hadAttr("warning")):
                     alertIcon = WarningIcon
-                elif (popAttr("error") != VNULL):
+                elif (hadAttr("error")):
                     alertIcon = ErrorIcon
 
                 showAlertDialog(x.s, y.s, alertIcon)
@@ -117,7 +117,7 @@ proc defineSymbols*() =
                 ##########################################################
                 var path = ""
                 let selectFolder = popAttr("folder")==VNULL
-                if (let aPath = popAttr("path"); aPath != VNULL): 
+                if checkAttr("path"): 
                     path = aPath.s
 
                 push newString(showSelectionDialog(x.s, path, selectFolder))
@@ -164,32 +164,32 @@ proc defineSymbols*() =
                 var popupIcon = NoIcon
                 var popupType = OKDialog
 
-                if (popAttr("info") != VNULL):
+                if (hadAttr("info")):
                     popupIcon = InfoIcon
-                elif (popAttr("warning") != VNULL):
+                elif (hadAttr("warning")):
                     popupIcon = WarningIcon
-                elif (popAttr("error") != VNULL):
+                elif (hadAttr("error")):
                     popupIcon = ErrorIcon
-                elif (popAttr("question") != VNULL):
+                elif (hadAttr("question")):
                     popupIcon = QuestionIcon
 
-                if (popAttr("ok") != VNULL):
+                if (hadAttr("ok")):
                     popupType = OKDialog
-                elif (popAttr("okCancel") != VNULL):
+                elif (hadAttr("okCancel")):
                     popupType = OKCancelDialog
-                elif (popAttr("yesNo") != VNULL):
+                elif (hadAttr("yesNo")):
                     popupType = YesNoDialog
-                elif (popAttr("yesNoCancel") != VNULL):
+                elif (hadAttr("yesNoCancel")):
                     popupType = YesNoCancelDialog
-                elif (popAttr("retryCancel") != VNULL):
+                elif (hadAttr("retryCancel")):
                     popupType = RetryCancelDialog
-                elif (popAttr("retryAbortIgnore") != VNULL):
+                elif (hadAttr("retryAbortIgnore")):
                     popupType = RetryAbortIgnoreDialog
 
                 let res = showPopupDialog(x.s, y.s, popupType, popupIcon)
 
 
-                if (popAttr("literal") != VNULL):
+                if (hadAttr("literal")):
                     push newLiteral(getLiteralDialogResult(popupType, res))
                 else:
                     push newLogical(getBooleanDialogResult(popupType, res))
@@ -256,20 +256,20 @@ proc defineSymbols*() =
                 var title = "Arturo"
                 var width = 640
                 var height = 480
-                var fixed = (popAttr("fixed")!=VNULL)
-                var maximized = (popAttr("maximized")!=VNULL)
-                var fullscreen = (popAttr("fullscreen")!=VNULL)
-                var borderless = (popAttr("borderless")!=VNULL)
-                var topmost = (popAttr("topmost")!=VNULL)
-                var withDebug = (popAttr("debug")!=VNULL)
+                var fixed = (hadAttr("fixed"))
+                var maximized = (hadAttr("maximized"))
+                var fullscreen = (hadAttr("fullscreen"))
+                var borderless = (hadAttr("borderless"))
+                var topmost = (hadAttr("topmost"))
+                var withDebug = (hadAttr("debug"))
                 var inject = ""
                 var on: ValueDict
 
-                if (let aTitle = popAttr("title"); aTitle != VNULL): title = aTitle.s
-                if (let aWidth = popAttr("width"); aWidth != VNULL): width = aWidth.i
-                if (let aHeight = popAttr("height"); aHeight != VNULL): height = aHeight.i
-                if (let aOn = popAttr("on"); aOn != VNULL): on = aOn.d
-                if (let aInject = popAttr("inject"); aInject != VNULL): inject = aInject.s
+                if checkAttr("title"): title = aTitle.s
+                if checkAttr("width"): width = aWidth.i
+                if checkAttr("height"): height = aHeight.i
+                if checkAttr("on"): on = aOn.d
+                if checkAttr("inject"): inject = aInject.s
 
                 var targetUrl = x.s
 

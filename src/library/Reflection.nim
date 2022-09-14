@@ -190,7 +190,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             let preevaled = evalOrGet(x)
-            if (popAttr("get")!=VNULL):
+            if (hadAttr("get")):
                 let time = getBenchmark:
                     discard execBlock(VNULL, evaluated=preevaled)
 
@@ -397,7 +397,7 @@ proc defineSymbols*() =
             ; [name:print address:0x1028B3410 type::function module:Io args:[value:[:any]] attrs:[] returns:[:nothing] description:print given value to screen with newline example:print "Hello world!"          ; Hello world!]
             """:
                 ##########################################################
-                let showExamples = (popAttr("examples")!=VNULL)
+                let showExamples = (hadAttr("examples"))
                 var searchable = ""
                 var value = VNULL
 
@@ -415,7 +415,7 @@ proc defineSymbols*() =
                     searchable = x.s
                     value = InPlace
                 
-                if (popAttr("get") != VNULL):
+                if (hadAttr("get")):
                     push(newDictionary(getInfo(searchable, value, Aliases)))
                 else:
                     printInfo(searchable, value, Aliases, withExamples = showExamples)
@@ -456,7 +456,7 @@ proc defineSymbols*() =
             ##########################################################
             when defined(WEB):
                 resetStdout()
-            let mutedOutput = (popAttr("muted")!=VNULL) or NoColors
+            let mutedOutput = (hadAttr("muted")) or NoColors
             x.dump(0, false, muted=mutedOutput)
 
     builtin "integer?",
@@ -478,7 +478,7 @@ proc defineSymbols*() =
             integer?.big 12345678901234567890   ; => true
         """:
             ##########################################################
-            if (popAttr("big")!=VNULL):
+            if (hadAttr("big")):
                 push(newLogical(x.kind==Integer and x.iKind==BigInteger))
             else:
                 push(newLogical(x.kind==Integer))
@@ -575,7 +575,7 @@ proc defineSymbols*() =
             function?.builtin var'print     ; => true
         """:
             ##########################################################
-            if (popAttr("builtin")!=VNULL):
+            if (hadAttr("builtin")):
                 push(newLogical(x.kind==Function and x.fnKind==BuiltinFunction))
             else:
                 push(newLogical(x.kind==Function))

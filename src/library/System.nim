@@ -120,10 +120,10 @@ proc defineSymbols*() =
                 # get arguments & options
                 var cmd = x.s
                 var args: seq[string] = @[]
-                if (let aArgs = popAttr("args"); aArgs != VNULL):
+                if checkAttr("args"):
                     args = aArgs.a.map((x) => x.s)
-                let code = (popAttr("code") != VNULL)
-                let directly = (popAttr("directly") != VNULL)
+                let code = (hadAttr("code"))
+                let directly = (hadAttr("directly"))
 
                 # TODO(System\execute) Fix handling of `.async`
                 #  It currently "works" but in a very - very - questionable way.
@@ -131,7 +131,7 @@ proc defineSymbols*() =
                 #  Also: having a globally-available array of "processes" makes things looking even worse.
                 #  labels: library, enhancement, windows, linux, macos
 
-                if (popAttr("async") != VNULL):
+                if (hadAttr("async")):
                     let newProcess = startProcess(command = cmd, args = args)
                     let pid = processID(newProcess)
                     
@@ -179,7 +179,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             var errCode = QuitSuccess
-            if (let aWith = popAttr("with"); aWith != VNULL):
+            if checkAttr("with"):
                 errCode = aWith.i
 
             quit(errCode)
@@ -207,10 +207,10 @@ proc defineSymbols*() =
         """:
             ##########################################################
             var code = 0
-            if (let aCode = popAttr("code"); aCode != VNULL):
+            if checkAttr("code"):
                 code = aCode.i
 
-            if (popAttr("unstyled")!=VNULL):
+            if (hadAttr("unstyled")):
                 echo $(x)
                 quit(code)
             else:
@@ -278,7 +278,7 @@ proc defineSymbols*() =
                     "occupied": newQuantity(newInteger(getOccupiedMem()), B),
                     "free": newQuantity(newInteger(getFreeMem()), B),
                     "total": newQuantity(newInteger(getTotalMem()), B),
-                    "max": newQuantity(newInteger(getMaxMem()), B)
+                    #"max": newQuantity(newInteger(getMaxMem()), B)
                 }.toOrderedTable)
 
                 push newDictionary(ret)
@@ -337,7 +337,7 @@ proc defineSymbols*() =
                 ##########################################################
                 var errCode = QuitSuccess
                 let pid = x.i
-                if (let aCode = popAttr("code"); aCode != VNULL):
+                if checkAttr("code"):
                     errCode = aCode.i
 
                 # check if it's a process that has been

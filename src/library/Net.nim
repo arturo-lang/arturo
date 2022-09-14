@@ -71,7 +71,7 @@ proc defineSymbols*() =
 
                 var target: string
 
-                if (let aAs = popAttr("as"); aAs!=VNULL):
+                if checkAttr("as"):
                     target = aAs.s
                 else:
                     target = extractFilename(path)
@@ -180,35 +180,35 @@ proc defineSymbols*() =
                 var url = x.s
                 var meth: HttpMethod = HttpGet 
 
-                if (popAttr("get")!=VNULL): discard
-                if (popAttr("post")!=VNULL): meth = HttpPost
-                if (popAttr("patch")!=VNULL): meth = HttpPatch
-                if (popAttr("put")!=VNULL): meth = HttpPut
-                if (popAttr("delete")!=VNULL): meth = HttpDelete
+                if (hadAttr("get")): discard
+                if (hadAttr("post")): meth = HttpPost
+                if (hadAttr("patch")): meth = HttpPatch
+                if (hadAttr("put")): meth = HttpPut
+                if (hadAttr("delete")): meth = HttpDelete
 
                 var headers: HttpHeaders = newHttpHeaders()
-                if (let aHeaders = popAttr("headers"); aHeaders != VNULL):
+                if checkAttr("headers"):
                     var headersArr: seq[(string,string)] = @[]
                     for k,v in pairs(aHeaders.d):
                         headersArr.add((k, $(v)))
                     headers = newHttpHeaders(headersArr)
 
                 var agent = "Arturo HTTP Client / " & $(getSystemInfo()["version"])
-                if (let aAgent = popAttr("agent"); aAgent != VNULL):
+                if checkAttr("agent"):
                     agent = aAgent.s
 
                 var timeout: int = -1
-                if (let aTimeout = popAttr("timeout"); aTimeout != VNULL):
+                if checkAttr("timeout"):
                     timeout = aTimeout.i
 
                 var proxy: Proxy = nil
-                if (let aProxy = popAttr("proxy"); aProxy != VNULL):
+                if checkAttr("proxy"):
                     proxy = newProxy(aProxy.s)
 
                 var body: string = ""
                 var multipart: MultipartData = nil
                 if meth != HttpGet:
-                    if (popAttr("json") != VNULL):
+                    if (hadAttr("json")):
                         headers.add("Content-Type", "application/json")
                         body = jsonFromValue(y, pretty=false)
                     else:
@@ -239,7 +239,7 @@ proc defineSymbols*() =
                 ret["body"] = newString(response.body)
                 ret["headers"] = newDictionary()
 
-                if (popAttr("raw")!=VNULL):
+                if (hadAttr("raw")):
                     ret["status"] = newString(response.status)
 
                     for k,v in response.headers.table:
@@ -317,11 +317,11 @@ proc defineSymbols*() =
                 # get parameters
                 let routes = x
                 var port = 18966
-                var verbose = (popAttr("verbose") != VNULL)
-                if (let aPort = popAttr("port"); aPort != VNULL):
+                var verbose = (hadAttr("verbose"))
+                if checkAttr("port"):
                     port = aPort.i
             
-                if (let aChrome = popAttr("chrome"); aChrome != VNULL):
+                if checkAttr("chrome"):
                     openChromeWindow(port)
 
                 # necessary so that "serveInternal" is available

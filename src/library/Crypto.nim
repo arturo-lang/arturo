@@ -81,7 +81,7 @@ proc defineSymbols*() =
             ; http://foo bar/
         """:
             ##########################################################
-            if (popAttr("url")!=VNULL):
+            if (hadAttr("url")):
                 if x.kind==Literal:
                     InPlace.s = InPlaced.s.decodeUrl()
                 else:
@@ -118,19 +118,19 @@ proc defineSymbols*() =
             ; http%3A%2F%2Ffoo+bar%2F
         """:
             ##########################################################
-            if (popAttr("url")!=VNULL):
-                let spaces = (popAttr("spaces") != VNULL)
-                let slashes = (popAttr("slashes") != VNULL)
+            if (hadAttr("url")):
+                let spaces = (hadAttr("spaces"))
+                let slashes = (hadAttr("slashes"))
                 if x.kind==Literal:
                     InPlace.s = InPlaced.s.urlencode(encodeSpaces=spaces, encodeSlashes=slashes)
                 else:
                     push(newString(x.s.urlencode(encodeSpaces=spaces, encodeSlashes=slashes)))
 
-            elif (let aFrom = popAttr("from"); aFrom != VNULL):
+            elif checkAttr("from"):
                 when not defined(freebsd) and not defined(WEB):
                     var src = aFrom.s
                     var dest = "UTF-8"
-                    if (let aTo = popAttr("to"); aTo != VNULL):
+                    if checkAttr("to"):
                         dest = aTo.s
 
                     if x.kind==Literal:
@@ -141,7 +141,7 @@ proc defineSymbols*() =
                     if x.kind==String:
                         push(newString(x.s))
 
-            elif (let aTo = popAttr("to"); aTo != VNULL):
+            elif checkAttr("to"):
                 when not defined(freebsd) and not defined(WEB):
                     var src = "CP1252"
                     var dest = aTo.s
@@ -183,7 +183,7 @@ proc defineSymbols*() =
             ; 7b502c3a1f48c8609ae212cdfb639dee39673f5e
             """:
                 ##########################################################
-                if (popAttr("sha") != VNULL):
+                if (hadAttr("sha")):
                     if x.kind==Literal:
                         SetInPlace(newString(($(secureHash(InPlace.s))).toLowerAscii()))
                     else:
@@ -215,7 +215,7 @@ proc defineSymbols*() =
             print (hash a)=(hash b) ; true
         """:
             ##########################################################
-            if (popAttr("string") != VNULL):
+            if (hadAttr("string")):
                 push(newString($(hash(x))))
             else:
                 push(newInteger(hash(x)))
