@@ -151,7 +151,7 @@ proc defineSymbols*() =
             ##########################################################
             let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
-            let showValue = (hadAttr("value"))
+            let showValue = hadAttr("value")
             let doForever = false
 
             var items: ValueArray
@@ -226,7 +226,7 @@ proc defineSymbols*() =
             ##########################################################
             let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
-            let showValue = (hadAttr("value"))
+            let showValue = hadAttr("value")
             let doForever = false
 
             var items: ValueArray

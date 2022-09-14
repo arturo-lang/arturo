@@ -1107,7 +1107,7 @@ proc defineSymbols*() =
             rotate 1..6 4                   ; => [3 4 5 6 1 2]
         """:
             ##########################################################
-            let distance = if (popAttr("left")==VNULL): -y.i else: y.i
+            let distance = if (not hadAttr("left")): -y.i else: y.i
 
             if x.kind==Literal:
                 if InPlace.kind==String:

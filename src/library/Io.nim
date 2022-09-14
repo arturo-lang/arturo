@@ -120,7 +120,7 @@ proc defineSymbols*() =
 
             var res = finalColor & y.s
 
-            if (popAttr("keep") == VNULL):
+            if not hadAttr("keep"):
                 res &= resetColor
 
             push(newString(res))
