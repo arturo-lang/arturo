@@ -278,7 +278,7 @@ proc defineSymbols*() =
                     "occupied": newQuantity(newInteger(getOccupiedMem()), B),
                     "free": newQuantity(newInteger(getFreeMem()), B),
                     "total": newQuantity(newInteger(getTotalMem()), B),
-                    "max": newQuantity(newInteger(getMaxMem()), B)
+                    #"max": newQuantity(newInteger(getMaxMem()), B)
                 }.toOrderedTable)
 
                 push newDictionary(ret)
