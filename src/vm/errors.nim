@@ -241,11 +241,11 @@ proc RuntimeError_NotEnoughArguments*(functionName:string, functionArity: int) =
           "cannot perform _" & (functionName) & "_;" & 
           "not enough parameters: " & $(functionArity) & " required"
 
-template RuntimeError_WrongArgumentType*(functionName:string, argumentPos: int, expected: untyped): untyped =
-    let expectedValues = toSeq((expected[argumentPos][1]).items)
-
+proc RuntimeError_WrongArgumentType*(functionName: string, actual: string, paramPos: string, accepted: string) =
     panic RuntimeError, 
-          getWrongArgumentTypeErrorMsg(functionName, argumentPos, expectedValues)
+          "cannot perform _" & (functionName) & "_ -> " & actual & ";" &
+          "incorrect argument type for " & paramPos & " parameter;" &
+          "accepts " & accepted
 
 proc RuntimeError_CannotConvert*(arg,fromType,toType: string) =
     panic RuntimeError,
