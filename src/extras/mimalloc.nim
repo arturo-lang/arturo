@@ -13,19 +13,9 @@ else:
 when defined(mimallocDynamic):
   {.passL: "-lmimalloc".}
 else:
-  const
-    mimallocStatic {.strdefine.} = "empty"
-    mimallocIncludePath {.strdefine.} = "empty"
-    # Can't import std/strutils in this file so we unquote the manual way
-    mimallocStaticNoQuote = block:
-      var c: string
-      for i in 1..<mimallocStatic.len - 1:
-        c.add mimallocStatic[i]
-      c
-
-  {.passC: "-I" & mimallocIncludePath.}
-  {.passL: "-I" & mimallocIncludePath.}
-  {.compile: mimallocStaticNoQuote.}
+  {.passC: "-I" & "mimalloc/include".}
+  {.passL: "-I" & "mimalloc/include".}
+  {.compile: "mimalloc/src/static.h".}
 
 {.push stackTrace: off.}
 
