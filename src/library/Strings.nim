@@ -91,9 +91,9 @@ proc defineSymbols*() =
             ; => [a b c d e f g h i j k l m n ñ o p q r s t u v w x y z á é í ó ú ü A B C D E F G H I J K L M N Ñ O P Q R S T U V W X Y Z Á É Í Ó Ú Ü]
         """:
             ##########################################################
-            let lower = popAttr("lower")!=VNULL
-            let upper = popAttr("upper")!=VNULL
-            let all = popAttr("all")!=VNULL
+            let lower = hadAttr("lower")
+            let upper = hadAttr("upper")
+            let all = hadAttr("all")
 
             var got: ValueArray = @[]
 
@@ -192,26 +192,26 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                if (popAttr("json") != VNULL):
+                if (hadAttr("json")):
                     SetInPlace(newString(escapeJsonUnquoted(InPlace.s)))
-                elif (popAttr("regex") != VNULL):
+                elif (hadAttr("regex")):
                     SetInPlace(newString(escapeForRegex(InPlace.s)))
-                elif (popAttr("shell") != VNULL):
+                elif (hadAttr("shell")):
                     when not defined(WEB):
                         SetInPlace(newString(quoteShell(InPlace.s)))
-                elif (popAttr("xml") != VNULL):
+                elif (hadAttr("xml")):
                     SetInPlace(newString(xmltree.escape(InPlace.s)))
                 else:
                     SetInPlace(newString(strutils.escape(InPlace.s)))
             else:
-                if (popAttr("json") != VNULL):
+                if (hadAttr("json")):
                     push(newString(escapeJsonUnquoted(x.s)))
-                elif (popAttr("regex") != VNULL):
+                elif (hadAttr("regex")):
                     push(newString(escapeForRegex(x.s)))
-                elif (popAttr("shell") != VNULL):
+                elif (hadAttr("shell")):
                     when not defined(WEB):
                         push(newString(quoteShell(x.s)))
-                elif (popAttr("xml") != VNULL):
+                elif (hadAttr("xml")):
                     push(newString(xmltree.escape(x.s)))
                 else:
                     push(newString(strutils.escape(x.s)))
@@ -245,10 +245,10 @@ proc defineSymbols*() =
             var count = 4
             var padding = " "
 
-            if (let aN = popAttr("n"); aN != VNULL):
+            if checkAttr("n"):
                 count = aN.i
 
-            if (let aWith = popAttr("with"); aWith != VNULL):
+            if checkAttr("with"):
                 padding = aWith.s
 
             if x.kind==Literal:
@@ -307,14 +307,14 @@ proc defineSymbols*() =
             ; 1 + 2 = 3
         """:
             ##########################################################
-            if (popAttr("path") != VNULL):
+            if (hadAttr("path")):
                 if x.kind==Literal:
                     SetInPlace(newString(joinPath(InPlace.a.map(proc (v:Value):string = $(v)))))
                 else:
                     push(newString(joinPath(cleanBlock(x.a).map(proc (v:Value):string = $(v)))))
             else:
                 var sep = ""
-                if (let aWith = popAttr("with"); aWith != VNULL):
+                if checkAttr("with"):
                     sep = aWith.s
 
                 if x.kind==Literal:
@@ -343,9 +343,9 @@ proc defineSymbols*() =
             ; AC-TGCACTGAC
             ; GCATG-ACT-AT
         """:
-            if ( popAttr("align") != VNULL):
+            if ( hadAttr("align")):
                 var filler:Rune = "-".runeAt(0)
-                if (let aWith = popAttr("with"); aWith != VNULL):
+                if checkAttr("with"):
                     filler = aWith.c
                 let aligned = levenshteinAlign(x.s,y.s,filler)
                 push(newStringBlock(@[aligned[0], aligned[1]]))
@@ -432,7 +432,7 @@ proc defineSymbols*() =
             if y.kind==Regex: rgx = y.rx
             else: rgx = newRegex(y.s).rx
 
-            if (popAttr("capture")!=VNULL):
+            if (hadAttr("capture")):
                 push(newStringDictionary(x.s.matchAllGroups(rgx)))
             else:
                 push(newStringBlock(x.s.matchAll(rgx)))
@@ -503,10 +503,10 @@ proc defineSymbols*() =
 
             var padding = " "
 
-            if (let aN = popAttr("n"); aN != VNULL):
+            if checkAttr("n"):
                 count = aN.i
 
-            if (let aWith = popAttr("with"); aWith != VNULL):
+            if checkAttr("with"):
                 padding = aWith.s
 
             if x.kind==Literal:
@@ -541,13 +541,13 @@ proc defineSymbols*() =
         """:
             ##########################################################
             var padding = ' '.Rune
-            if (let aWith = popAttr("with"); aWith != VNULL):
+            if checkAttr("with"):
                 padding = aWith.c
 
-            if (popAttr("right") != VNULL):
+            if (hadAttr("right")):
                 if x.kind==String: push(newString(unicode.alignLeft(x.s, y.i, padding=padding)))
                 else: InPlace.s = unicode.alignLeft(InPlaced.s, y.i, padding=padding)
-            elif (popAttr("center") != VNULL):
+            elif (hadAttr("center")):
                 if x.kind==String: push(newString(centerUnicode(x.s, y.i, padding=padding)))
                 else: InPlace.s = centerUnicode(InPlaced.s, y.i, padding=padding)
             else:
@@ -616,8 +616,8 @@ proc defineSymbols*() =
             print ~"|greeting|, your number is |x|"       ; hello, your number is 2
             """:
                 ##########################################################
-                let recursive = not (popAttr("once") != VNULL)
-                let templated = (popAttr("template") != VNULL)
+                let recursive = not (hadAttr("once"))
+                let templated = (hadAttr("template"))
                 var res = ""
                 if x.kind == Literal:
                     res = InPlace.s
@@ -763,8 +763,8 @@ proc defineSymbols*() =
             ; strip trailing: >      Hello World <
         """:
             ##########################################################
-            var leading = (popAttr("start")!=VNULL)
-            var trailing = (popAttr("end")!=VNULL)
+            var leading = (hadAttr("start"))
+            var trailing = (hadAttr("end"))
 
             if not leading and not trailing:
                 leading = true
@@ -844,10 +844,10 @@ proc defineSymbols*() =
         """: 
             ##########################################################
             var with = "..."
-            if (let aWith = popAttr("with"); aWith != VNULL):
+            if checkAttr("with"):
                 with = aWith.s
 
-            if (popAttr("preserve")!=VNULL):
+            if (hadAttr("preserve")):
                 if x.kind==String: push(newString(truncatePreserving(x.s, y.i, with)))
                 else: InPlace.s = truncatePreserving(InPlaced.s, y.i, with)
             else:
@@ -942,7 +942,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             var cutoff = 80
-            if (let aAt = popAttr("at"); aAt != VNULL):
+            if checkAttr("at"):
                 cutoff = aAt.i
             
             if x.kind==Literal:

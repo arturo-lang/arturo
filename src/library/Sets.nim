@@ -60,7 +60,7 @@ proc defineSymbols*() =
             ; 1 2 5 6
         """:
             ##########################################################
-            if (popAttr("symmetric")!=VNULL):
+            if (hadAttr("symmetric")):
                 if x.kind==Literal:
                     SetInPlace(newBlock(toSeq(symmetricDifference(toHashSet(cleanBlock(InPlace.a)), toHashSet(cleanBlock(y.a))))))
                 else:
@@ -144,7 +144,7 @@ proc defineSymbols*() =
             ; => false
         """:
             ##########################################################
-            if (popAttr("proper")!=VNULL):
+            if (hadAttr("proper")):
                 if x == y: 
                     push(newLogical(false))
                 else:
@@ -200,7 +200,7 @@ proc defineSymbols*() =
             ; => false
         """:
             ##########################################################
-            if (popAttr("proper")!=VNULL):
+            if (hadAttr("proper")):
                 if x == y: 
                     push(newLogical(false))
                 else:

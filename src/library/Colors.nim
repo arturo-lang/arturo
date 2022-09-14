@@ -54,7 +54,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             var balance = 0.5
-            if (let aBalance = popAttr("balance"); aBalance != VNULL):
+            if checkAttr("balance"):
                 balance = aBalance.f
 
             if x.kind == Literal:
@@ -190,25 +190,25 @@ proc defineSymbols*() =
             ; => [#FF0000 #00FF00 #0000FF #00FE00 #F30000 #00FD00 #0000ED #EC0000 #00F800 #0000D8]
         """:
             ##########################################################
-            if (popAttr("triad") != VNULL):
+            if (hadAttr("triad")):
                 push newBlock(triadPalette(x.l).map((c) => newColor(c)))
-            elif (popAttr("tetrad") != VNULL):
+            elif (hadAttr("tetrad")):
                 push newBlock(tetradPalette(x.l).map((c) => newColor(c)))
-            elif (popAttr("split") != VNULL):
+            elif (hadAttr("split")):
                 push newBlock(splitPalette(x.l).map((c) => newColor(c)))
-            elif (popAttr("analogous") != VNULL):
+            elif (hadAttr("analogous")):
                 var size = 6
-                if (let aSize = popAttr("size"); aSize != VNULL):
+                if checkAttr("size"):
                     size = aSize.i
                 push newBlock(analogousPalette(x.l, size).map((c) => newColor(c)))
-            elif (popAttr("monochrome") != VNULL):
+            elif (hadAttr("monochrome")):
                 var size = 6
-                if (let aSize = popAttr("size"); aSize != VNULL):
+                if checkAttr("size"):
                     size = aSize.i
                 push newBlock(monochromePalette(x.l, size).map((c) => newColor(c)))
-            elif (popAttr("random") != VNULL):
+            elif (hadAttr("random")):
                 var size = 6
-                if (let aSize = popAttr("size"); aSize != VNULL):
+                if checkAttr("size"):
                     size = aSize.i
                 push newBlock(randomPalette(x.l, size).map((c) => newColor(c)))
             else:

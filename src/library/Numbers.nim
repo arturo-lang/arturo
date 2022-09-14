@@ -535,7 +535,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             var base = 10
-            if (let aBase = popAttr("base"); aBase != VNULL):
+            if checkAttr("base"):
                 base = aBase.i
 
             if x.iKind == NormalInteger:
@@ -627,7 +627,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             var prime = false
-            if (popAttr("prime") != VNULL): prime = true
+            if (hadAttr("prime")): prime = true
 
             if x.iKind==NormalInteger:
                 if prime:
@@ -962,7 +962,7 @@ proc defineSymbols*() =
             print product 1..10       ; 3628800
         """:
             ##########################################################
-            if (popAttr("cartesian")!=VNULL):
+            if (hadAttr("cartesian")):
                 let blk = cleanBlock(x.a).map((z)=>z.a)
                 push(newBlock(cartesianProduct(blk).map((z) => newBlock(z))))
             else:
@@ -1027,7 +1027,7 @@ proc defineSymbols*() =
             else: limY = ord(y.c)
 
             var step = 1
-            if (let aStep = popAttr("step"); aStep != VNULL):
+            if checkAttr("step"):
                 step = aStep.i
                 if step < 0:
                     step = -step
@@ -1100,7 +1100,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             var places = 0
-            if (let aTo = popAttr("to"); aTo != VNULL):
+            if checkAttr("to"):
                 places = aTo.i
                 
             push(newFloating(round(asFloat(x), places)))
@@ -1205,7 +1205,7 @@ proc defineSymbols*() =
             ; => 1.794226987182141+0.2786715413222365i
         """:
             ##########################################################
-            if (popAttr("integer") != VNULL):
+            if (hadAttr("integer")):
                 when defined(WEB) or not defined(NOGMP):
                     if x.iKind == NormalInteger:
                         push(newInteger(isqrt(x.i)))

@@ -111,16 +111,16 @@ proc defineSymbols*() =
 
             var finalColor = ""
 
-            if (popAttr("bold") != VNULL):
+            if (hadAttr("bold")):
                 finalColor = bold(color)
-            elif (popAttr("underline") != VNULL):
+            elif (hadAttr("underline")):
                 finalColor = underline(color)
             else:
                 finalColor = fg(color)
 
             var res = finalColor & y.s
 
-            if (popAttr("keep") == VNULL):
+            if not hadAttr("keep"):
                 res &= resetColor
 
             push(newString(res))
@@ -211,7 +211,7 @@ proc defineSymbols*() =
             ; based on give reference
             """:
                 ##########################################################
-                if (popAttr("repl")!=VNULL):
+                if (hadAttr("repl")):
                     # when defined(windows):
                     #     stdout.write(x.s)
                     #     stdout.flushFile()
@@ -221,13 +221,13 @@ proc defineSymbols*() =
                     var completionsArray: ValueArray = @[]
                     var hintsTable: ValueDict = initOrderedTable[string,Value]()
 
-                    if (let aHistory = popAttr("history"); aHistory != VNULL):
+                    if checkAttr("history"):
                         historyPath = aHistory.s
 
-                    if (let aComplete = popAttr("complete"); aComplete != VNULL):
+                    if checkAttr("complete"):
                         completionsArray = aComplete.a
 
-                    if (let aHint = popAttr("hint"); aHint != VNULL):
+                    if checkAttr("hint"):
                         hintsTable = aHint.d
 
                     push(newString(replInput(x.s, historyPath, completionsArray, hintsTable)))
@@ -255,7 +255,7 @@ proc defineSymbols*() =
                 when defined(WEB):
                     stdout = ""
 
-                let inLines = (popAttr("lines")!=VNULL)
+                let inLines = (hadAttr("lines"))
 
                 let xblock = doEval(x)
                 let stop = SP

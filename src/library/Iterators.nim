@@ -151,7 +151,7 @@ proc defineSymbols*() =
             ##########################################################
             let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
-            let showValue = (popAttr("value")!=VNULL)
+            let showValue = hadAttr("value")
             let doForever = false
 
             var items: ValueArray
@@ -226,7 +226,7 @@ proc defineSymbols*() =
             ##########################################################
             let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
-            let showValue = (popAttr("value")!=VNULL)
+            let showValue = hadAttr("value")
             let doForever = false
 
             var items: ValueArray
@@ -361,12 +361,12 @@ proc defineSymbols*() =
             var onlyFirst = false
             var onlyLast = false
             var elemLimit = -1
-            if (let aFirst = popAttr("first"); aFirst != VNULL):
+            if checkAttr("first"):
                 onlyFirst = true
                 if aFirst.kind == Logical and aFirst.b == True: elemLimit = 1
                 else: elemLimit = aFirst.i
 
-            if (let aLast = popAttr("last"); aLast != VNULL):
+            if checkAttr("last"):
                 onlyLast = true
                 if aLast.kind == Logical and aLast.b == True: elemLimit = 1
                 else: elemLimit = aLast.i
@@ -470,7 +470,7 @@ proc defineSymbols*() =
             ##########################################################
             let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
-            let doRightFold = popAttr("right")!=VNULL
+            let doRightFold = hadAttr("right")
             let doForever = false
 
             var items: ValueArray
@@ -488,7 +488,7 @@ proc defineSymbols*() =
                 elif items[0].kind == Floating: seed = newFloating(0.0)
                 elif items[0].kind == Block:    seed = newBlock()
 
-            if (let aSeed = popAttr("seed"); aSeed != VNULL):
+            if checkAttr("seed"):
                 seed = aSeed
 
             var res: Value = seed
@@ -560,7 +560,7 @@ proc defineSymbols*() =
             ##########################################################
             let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
-            let doForever = popAttr("forever")!=VNULL
+            let doForever = hadAttr("forever")
 
             var items: ValueArray
             items = iterableItemsFromParam(x)
@@ -676,12 +676,12 @@ proc defineSymbols*() =
             var onlyFirst = false
             var onlyLast = false
             var elemLimit = -1
-            if (let aFirst = popAttr("first"); aFirst != VNULL):
+            if checkAttr("first"):
                 onlyFirst = true
                 if aFirst.kind == Logical and aFirst.b == True: elemLimit = 1
                 else: elemLimit = aFirst.i
 
-            if (let aLast = popAttr("last"); aLast != VNULL):
+            if checkAttr("last"):
                 onlyLast = true
                 if aLast.kind == Logical and aLast.b == True: elemLimit = 1
                 else: elemLimit = aLast.i
