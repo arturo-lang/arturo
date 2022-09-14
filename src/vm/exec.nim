@@ -56,7 +56,7 @@ template storeByIndex(idx: int, doPop = true):untyped =
     hookProcProfiler("exec/storeByIndex"):
         let symIndx = cnst[idx].s
         when doPop:
-            Syms[symIndx] = stack.pop()
+            Syms[symIndx] = move stack.pop()
         else:
             Syms[symIndx] = stack.peek(0)
 
@@ -99,7 +99,7 @@ template callByIndex(idx: int):untyped =
 
 template fetchAttributeByIndex(idx: int):untyped =
     let attr = cnst[idx]
-    let val = stack.pop()
+    let val = move stack.pop()
 
     stack.pushAttr(attr.r, val)
 
@@ -283,7 +283,7 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             let symIndx = arg.s
 
             # pop argument and set it
-            Syms[symIndx] = stack.pop()
+            Syms[symIndx] = move stack.pop()
 
     while true:
         {.computedGoTo.}
