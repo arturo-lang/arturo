@@ -905,17 +905,34 @@ func getArity*(x: Value): int {.enforceNoRaises.} =
 # TODO(VM/values/value) `cleanBlock` is too slow
 #  when built without NOERRORLINES - which is our normal setup - this specific piece of code could be slowing down the whole language by up to 20%
 #  labels: vm, values, performance, enhancement, benchmark, critical
-template cleanBlock*(va: ValueArray, inplace: bool = false): untyped =
+
+func cleanBlock*(va: var ValueArray) {.inline,enforceNoRaises.} =
     when not defined(NOERRORLINES):
-        when inplace:
-            va.keepIf((vv) => vv.kind != Newline)
-        else:
-            @(va.filter((vv) => vv.kind != Newline))
+        va.keepIf((vv) => vv.kind != Newline)
     else:
-        when inplace:
-            discard
-        else:
-            va
+        discard
+
+func cleanedBlock*(va: ValueArray): ValueArray {.inline,enforceNoRaises.} =
+    when not defined(NOERRORLINES):
+        result = collect(newSeqOfCap(va.len)):
+            for vv in va:
+                if vv.kind != Newline:
+                    vv
+        #result = va.filter((vv) => vv.kind != Newline)
+    else:
+        result = va
+
+# template cleanBlock*(va: ValueArray, inplace: bool = false): untyped =
+#     when not defined(NOERRORLINES):
+#         when inplace:
+#             va.keepIf((vv) => vv.kind != Newline)
+#         else:
+#             @(va.filter((vv) => vv.kind != Newline))
+#     else:
+#         when inplace:
+#             discard
+#         else:
+#             va
 
 proc safeMulI*[T: SomeInteger](x: var T, y: T) {.inline, noSideEffect.} =
     x = x * y
@@ -2475,7 +2492,7 @@ func `$`(v: Value): string {.inline,enforceNoRaises.} =
             #     result &= $(child) & " "
             # result &= "]"
 
-            result = "[" & cleanBlock(v.a).map((child) => $(child)).join(" ") & "]"
+            result = "[" & cleanedBlock(v.a).map((child) => $(child)).join(" ") & "]"
 
         of Dictionary   :
             var items: seq[string] = @[]
@@ -2650,7 +2667,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
         of Inline,
             Block        :
             dumpBlockStart(v)
-            let blk = cleanBlock(v.a)
+            let blk = cleanedBlock(v.a)
             for i,child in blk:
                 dump(child, level+1, i==(blk.len-1), muted=muted)
 
@@ -2823,7 +2840,7 @@ func codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 result &= "\n"
             
             var parts: seq[string] = @[]
-            let blk = cleanBlock(v.a)
+            let blk = cleanedBlock(v.a)
             for i,child in blk:
                 parts.add(codify(child,pretty,unwrapped,level+1, i==(blk.len-1), safeStrings=safeStrings))
 
@@ -2949,8 +2966,8 @@ func sameValue*(x: Value, y: Value): bool {.inline.}=
             of Color: return x.l == y.l
             of Inline,
                Block:
-                let cleanX = cleanBlock(x.a)
-                let cleanY = cleanBlock(y.a)
+                let cleanX = cleanedBlock(x.a)
+                let cleanY = cleanedBlock(y.a)
                 if cleanX.len != cleanY.len: return false
 
                 for i,child in cleanX:
