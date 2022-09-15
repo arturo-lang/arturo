@@ -173,7 +173,7 @@ proc defineSymbols*() =
                             res.add(newBlock(@[state, newBlock(currentSet)]))
                         else:
                             res.add(newBlock(currentSet))
-                        currentSet.setLen(0)# = @[]
+                        currentSet.setLen(0)
                     state = popped
                 
                 currentSet.add(capturedItems)
@@ -235,7 +235,7 @@ proc defineSymbols*() =
             if withLiteral: items = iterableItemsFromLiteralParam(x)
             else: items = iterableItemsFromParam(x)
 
-            var res: ValueArray = @[]
+            var res: ValueArray = newSeqOfCap[Value](items.len)
             var sets: OrderedTable[Value,ValueArray] = initOrderedTable[Value,ValueArray]()
 
             iterateThrough(withIndex, y, items, doForever, false, false):
