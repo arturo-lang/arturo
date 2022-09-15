@@ -189,7 +189,7 @@ proc `$`*(v: Value): string {.inline.} =
             #     result &= $(child) & " "
             # result &= "]"
 
-            result = "[" & cleanBlock(v.a).map((child) => $(child)).join(" ") & "]"
+            result = "[" & cleanedBlock(v.a).map((child) => $(child)).join(" ") & "]"
 
         of Dictionary   :
             var items: seq[string] = @[]

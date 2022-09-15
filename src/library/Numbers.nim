@@ -695,7 +695,7 @@ proc defineSymbols*() =
             print gcd [48 60 120]         ; 12
         """:
             ##########################################################
-            let blk = cleanBlock(x.a)
+            let blk = cleanedBlock(x.a)
             var current = blk[0]
 
             var i = 1
@@ -756,7 +756,7 @@ proc defineSymbols*() =
             print lcm [48 60 120]         ; 240
         """:
             ##########################################################
-            let blk = cleanBlock(x.a)
+            let blk = cleanedBlock(x.a)
             var current = blk[0]
 
             var i = 1
@@ -963,12 +963,12 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (hadAttr("cartesian")):
-                let blk = cleanBlock(x.a).map((z)=>z.a)
+                let blk = cleanedBlock(x.a).map((z)=>z.a)
                 push(newBlock(cartesianProduct(blk).map((z) => newBlock(z))))
             else:
                 var i = 0
                 var product = I1.copyValue
-                let blk = cleanBlock(x.a)
+                let blk = cleanedBlock(x.a)
                 if blk.len==0: push(I0.copyValue)
                 else:
                     while i<blk.len:
@@ -1234,7 +1234,7 @@ proc defineSymbols*() =
             ##########################################################
             var i = 0
             var sum = I0.copyValue
-            let blk = cleanBlock(x.a)
+            let blk = cleanedBlock(x.a)
             while i<blk.len:
                 sum += blk[i]
                 i += 1

@@ -303,20 +303,20 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
             of Inline:
                 case tp:
                     of Block:
-                        return newBlock(cleanBlock(y.a))
+                        return newBlock(cleanedBlock(y.a))
                     else:
                         throwCannotConvert()
 
             of Block:
                 case tp:
                     of Complex:
-                        let blk = cleanBlock(y.a)
+                        let blk = cleanedBlock(y.a)
                         return newComplex(blk[0], blk[1])
                     of Rational:
-                        let blk = cleanBlock(y.a)
+                        let blk = cleanedBlock(y.a)
                         return newRational(blk[0], blk[1])
                     of Inline:
-                        let blk = cleanBlock(y.a)
+                        let blk = cleanedBlock(y.a)
                         return newInline(blk)
                     of Dictionary:
                         let stop = SP
@@ -347,11 +347,11 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                             throwCannotConvert()
 
                     of Quantity:
-                        let blk = cleanBlock(y.a)
+                        let blk = cleanedBlock(y.a)
                         return newQuantity(blk[0], parseQuantitySpec(blk[1].s))
 
                     of Color:
-                        let blk = cleanBlock(y.a)
+                        let blk = cleanedBlock(y.a)
                         if blk.len < 3 or blk.len > 4:
                             echo "wrong number of attributes"
                         else:
@@ -373,7 +373,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
 
                     of Binary:
                         var res: ByteArray = @[]
-                        for item in cleanBlock(y.a):
+                        for item in cleanedBlock(y.a):
                             if item.kind==Integer:
                                 res &= numberToBinary(item.i)
                             else:
@@ -633,7 +633,7 @@ proc defineSymbols*() =
             elif (hadAttr("octal")):
                 push(newString(fmt"{x.i:o}"))
             elif (hadAttr("agnostic")):
-                let res = cleanBlock(x.a).map(proc(v:Value):Value =
+                let res = cleanedBlock(x.a).map(proc(v:Value):Value =
                     if v.kind == Word and not SymExists(v.s): newLiteral(v.s)
                     else: v
                 )
@@ -722,7 +722,7 @@ proc defineSymbols*() =
             ; NAME: Jane, SURNAME: Doe, AGE: 33
         """:
             ##########################################################
-            x.ts.fields = cleanBlock(y.a)
+            x.ts.fields = cleanedBlock(y.a)
 
             if checkAttr("as"):
                 x.ts.inherits = aAs.ts
@@ -820,7 +820,7 @@ proc defineSymbols*() =
                 if (hadAttr("raw")):
                     dict = initOrderedTable[string,Value]()
                     var idx = 0
-                    let blk = cleanBlock(x.a)
+                    let blk = cleanedBlock(x.a)
                     while idx < blk.len:
                         dict[blk[idx].s] = blk[idx+1]
                         idx += 2
@@ -1002,7 +1002,7 @@ proc defineSymbols*() =
 
             var memoize = (hadAttr("memoize"))
             
-            cleanBlock(x.a, inplace=true)
+            cleanBlock(x.a)
 
             var ret: Value
             var argTypes = initOrderedTable[string,ValueSpec]()
@@ -1198,14 +1198,14 @@ proc defineSymbols*() =
                 push convertedValueToType(x, y, tp, popAttr("format"))
             else:
                 var ret: ValueArray = @[]
-                let blk = cleanBlock(x.a)
+                let blk = cleanedBlock(x.a)
                 let tp = blk[0].t
                     
                 if y.kind==String:
                     ret = toSeq(runes(y.s)).map((c) => newChar(c))
                 else:
                     let aFormat = popAttr("format")
-                    for item in cleanBlock(y.a):
+                    for item in cleanedBlock(y.a):
                         ret.add(convertedValueToType(blk[0], item, tp, aFormat))
 
                 push newBlock(ret)
@@ -1234,12 +1234,12 @@ proc defineSymbols*() =
             ; the multiple of 10 is 20 
         """:
             ##########################################################
-            var blk: ValueArray = cleanBlock(y.a)
+            var blk: ValueArray = cleanedBlock(y.a)
             if x.kind == Literal:
                 blk.insert(GetSym(x.s))
                 blk.insert(newLabel(x.s))
             else:
-                for item in cleanBlock(x.a):
+                for item in cleanedBlock(x.a):
                     blk.insert(GetSym(item.s))
                     blk.insert(newLabel(item.s))
 

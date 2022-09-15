@@ -37,7 +37,7 @@ template iterableItemsFromLiteralParam(prm: untyped): ValueArray =
     elif InPlaced.kind==Integer:
         (toSeq(1..InPlaced.i)).map((w) => newInteger(w))
     else: # block or inline
-        cleanBlock(InPlaced.a)
+        cleanedBlock(InPlaced.a)
 
 template iterableItemsFromParam(prm: untyped): ValueArray =
     if prm.kind==Dictionary: 
@@ -49,7 +49,7 @@ template iterableItemsFromParam(prm: untyped): ValueArray =
     elif prm.kind==Integer:
         (toSeq(1..prm.i)).map((w) => newInteger(w))
     else: # block or inline
-        cleanBlock(prm.a)
+        cleanedBlock(prm.a)
 
 template iterateThrough(
     idx: Value, 
@@ -65,7 +65,7 @@ template iterateThrough(
     if collectionLen > 0:
         var args: ValueArray
         if params.kind==Literal: args = @[params]
-        elif params.kind==Block: args = cleanBlock(params.a)
+        elif params.kind==Block: args = cleanedBlock(params.a)
 
         var argsLen = args.len
         let hasArgs = argsLen > 0
