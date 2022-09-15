@@ -694,7 +694,7 @@ proc defineSymbols*() =
             if withLiteral: items = iterableItemsFromLiteralParam(x)
             else: items = iterableItemsFromParam(x)
 
-            var res: ValueArray = @[]
+            var res: ValueArray = newSeqOfCap[Value](items.len)
 
             iterateThrough(withIndex, y, items, doForever, false, false):
                 discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
