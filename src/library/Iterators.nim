@@ -162,7 +162,7 @@ proc defineSymbols*() =
 
             var res: ValueArray = newSeqOfCap[Value](items.len)
             var state = VNULL
-            var currentSet: ValueArray = @[]
+            var currentSet: ValueArray = newSeqOfCap[Value](items.len)
 
             iterateThrough(withIndex, y, items, doForever, false, false):
                 discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
@@ -173,7 +173,7 @@ proc defineSymbols*() =
                             res.add(newBlock(@[state, newBlock(currentSet)]))
                         else:
                             res.add(newBlock(currentSet))
-                        currentSet = @[]
+                        currentSet.setLen(0)# = @[]
                     state = popped
                 
                 currentSet.add(capturedItems)
