@@ -515,7 +515,7 @@ proc defineSymbols*() =
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("zip")
 
-                let files: seq[string] = cleanBlock(y.a).map((z)=>z.s)
+                let files: seq[string] = cleanedBlock(y.a).map((z)=>z.s)
                 miniz.zip(files, x.s)
 
 #=======================================

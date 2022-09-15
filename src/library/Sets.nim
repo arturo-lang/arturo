@@ -62,14 +62,14 @@ proc defineSymbols*() =
             ##########################################################
             if (hadAttr("symmetric")):
                 if x.kind==Literal:
-                    SetInPlace(newBlock(toSeq(symmetricDifference(toHashSet(cleanBlock(InPlace.a)), toHashSet(cleanBlock(y.a))))))
+                    SetInPlace(newBlock(toSeq(symmetricDifference(toHashSet(cleanedBlock(InPlace.a)), toHashSet(cleanedBlock(y.a))))))
                 else:
-                    push(newBlock(toSeq(symmetricDifference(toHashSet(cleanBlock(x.a)), toHashSet(cleanBlock(y.a))))))
+                    push(newBlock(toSeq(symmetricDifference(toHashSet(cleanedBlock(x.a)), toHashSet(cleanedBlock(y.a))))))
             else:
                 if x.kind==Literal:
-                    SetInPlace(newBlock(toSeq(difference(toHashSet(cleanBlock(InPlace.a)), toHashSet(cleanBlock(y.a))))))
+                    SetInPlace(newBlock(toSeq(difference(toHashSet(cleanedBlock(InPlace.a)), toHashSet(cleanedBlock(y.a))))))
                 else:
-                    push(newBlock(toSeq(difference(toHashSet(cleanBlock(x.a)), toHashSet(cleanBlock(y.a))))))
+                    push(newBlock(toSeq(difference(toHashSet(cleanedBlock(x.a)), toHashSet(cleanedBlock(y.a))))))
 
     builtin "intersection",
         alias       = unaliased, 
@@ -92,9 +92,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                SetInPlace(newBlock(toSeq(intersection(toHashSet(cleanBlock(InPlace.a)), toHashSet(cleanBlock(y.a))))))
+                SetInPlace(newBlock(toSeq(intersection(toHashSet(cleanedBlock(InPlace.a)), toHashSet(cleanedBlock(y.a))))))
             else:
-                push(newBlock(toSeq(intersection(toHashSet(cleanBlock(x.a)), toHashSet(cleanBlock(y.a))))))
+                push(newBlock(toSeq(intersection(toHashSet(cleanedBlock(x.a)), toHashSet(cleanedBlock(y.a))))))
 
     builtin "powerset",
         alias       = unaliased, 
@@ -111,9 +111,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                SetInPlace(newBlock(toSeq(powerset(toHashSet(cleanBlock(InPlace.a)))).map((hs) => newBlock(toSeq(hs)))))
+                SetInPlace(newBlock(toSeq(powerset(toHashSet(cleanedBlock(InPlace.a)))).map((hs) => newBlock(toSeq(hs)))))
             else:
-                push(newBlock(toSeq(powerset(toHashSet(cleanBlock(x.a))).map((hs) => newBlock(toSeq(hs))))))
+                push(newBlock(toSeq(powerset(toHashSet(cleanedBlock(x.a))).map((hs) => newBlock(toSeq(hs))))))
 
     builtin "subset?",
         alias       = unaliased, 
@@ -149,8 +149,8 @@ proc defineSymbols*() =
                     push(newLogical(false))
                 else:
                     var contains = true
-                    let xblk = cleanBlock(x.a)
-                    let yblk = cleanBlock(y.a)
+                    let xblk = cleanedBlock(x.a)
+                    let yblk = cleanedBlock(y.a)
                     for item in xblk:
                         if item notin yblk:
                             contains = false
@@ -162,8 +162,8 @@ proc defineSymbols*() =
                     push(newLogical(true))
                 else:
                     var contains = true
-                    let xblk = cleanBlock(x.a)
-                    let yblk = cleanBlock(y.a)
+                    let xblk = cleanedBlock(x.a)
+                    let yblk = cleanedBlock(y.a)
                     for item in xblk:
                         if item notin yblk:
                             contains = false
@@ -205,8 +205,8 @@ proc defineSymbols*() =
                     push(newLogical(false))
                 else:
                     var contains = true
-                    let xblk = cleanBlock(x.a)
-                    let yblk = cleanBlock(y.a)
+                    let xblk = cleanedBlock(x.a)
+                    let yblk = cleanedBlock(y.a)
                     for item in yblk:
                         if item notin xblk:
                             contains = false
@@ -218,8 +218,8 @@ proc defineSymbols*() =
                     push(newLogical(true))
                 else:
                     var contains = true
-                    let xblk = cleanBlock(x.a)
-                    let yblk = cleanBlock(y.a)
+                    let xblk = cleanedBlock(x.a)
+                    let yblk = cleanedBlock(y.a)
                     for item in yblk:
                         if item notin xblk:
                             contains = false
@@ -248,9 +248,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                SetInPlace(newBlock(toSeq(union(toHashSet(cleanBlock(InPlace.a)), toHashSet(cleanBlock(y.a))))))
+                SetInPlace(newBlock(toSeq(union(toHashSet(cleanedBlock(InPlace.a)), toHashSet(cleanedBlock(y.a))))))
             else:
-                push(newBlock(toSeq(union(toHashSet(cleanBlock(x.a)), toHashSet(cleanBlock(y.a))))))
+                push(newBlock(toSeq(union(toHashSet(cleanedBlock(x.a)), toHashSet(cleanedBlock(y.a))))))
 
 #=======================================
 # Add Library

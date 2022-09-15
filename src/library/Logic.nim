@@ -46,7 +46,7 @@ proc defineSymbols*() =
             ; false
         """:
             ##########################################################
-            let blk = cleanBlock(x.a)
+            let blk = cleanedBlock(x.a)
             # check if empty
             if blk.len==0: 
                 push(newLogical(false))
@@ -135,7 +135,7 @@ proc defineSymbols*() =
             ; false
         """:
             ##########################################################
-            let blk = cleanBlock(x.a)
+            let blk = cleanedBlock(x.a)
             # check if empty
             if blk.len==0: 
                 push(newLogical(false))

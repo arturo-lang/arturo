@@ -509,13 +509,13 @@ proc defineSymbols*() =
                     else:
                         push(newLogical(x.t == y.kind))
                 else:
-                    let tp = cleanBlock(x.a)[0].t
+                    let tp = cleanedBlock(x.a)[0].t
                     var res = true
                     if tp != Any:
                         if y.kind != Block: 
                             res = false
                         else:
-                            let blk = cleanBlock(y.a)
+                            let blk = cleanedBlock(y.a)
                             if blk.len==0: 
                                 res = false
                             else:
