@@ -379,7 +379,7 @@ proc defineSymbols*() =
             if withLiteral: items = iterableItemsFromLiteralParam(x)
             else: items = iterableItemsFromParam(x)
 
-            var res: ValueArray = @[]
+            var res: ValueArray = newSeqOfCap[Value](items.len)
             var stoppedAt = -1
 
             if onlyLast:
