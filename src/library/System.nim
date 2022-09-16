@@ -266,7 +266,6 @@ proc defineSymbols*() =
                 ;           occupied  :		1783104 :integer
                 ;           free      :		360448 :integer
                 ;           total     :		2379776 :integer
-                ;           max       :		2379776 :integer
                 ;       ]
                 ; ]
             """:
