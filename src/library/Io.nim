@@ -19,7 +19,7 @@
 when not defined(WEB):
     import terminal
 
-import algorithm, tables
+import algorithm, sugar, tables
 
 when not defined(WEB):
     import helpers/repl
@@ -261,9 +261,9 @@ proc defineSymbols*() =
                 let stop = SP
                 discard doExec(xblock)
 
-                var res: ValueArray = @[]
-                while SP>stop:
-                    res.add(pop())
+                var res: ValueArray = collect(newSeq):
+                    while SP>stop:
+                        pop()
 
                 for r in res.reversed:
                     stdout.write($(r))
@@ -300,9 +300,9 @@ proc defineSymbols*() =
                 let stop = SP
                 discard doExec(xblock)#, depth+1)
 
-                var res: ValueArray = @[]
-                while SP>stop:
-                    res.add(pop())
+                var res: ValueArray = collect(newSeq):
+                    while SP>stop:
+                        pop()
 
                 for r in res.reversed:
                     stdout.write($(r))

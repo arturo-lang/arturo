@@ -532,7 +532,7 @@ proc defineSymbols*() =
                 key = newString($(y))
 
             case x.kind:
-                of Block: push(GetArrayIndex(cleanedBlock(x.a), key.i))
+                of Block: push(GetArrayIndex(cleanedBlockP(x.a), key.i))
                 of Binary: push(newInteger((int)x.n[key.i]))
                 of Bytecode: 
                     if key.s == "data":
@@ -1590,7 +1590,7 @@ proc defineSymbols*() =
                     SetInPlace(newString(ret))
                 elif InPlaced.kind==Block:
                     var i = 0
-                    var ret: ValueArray = @[]
+                    var ret: ValueArray = newSeqOfCap[Value](InPlaced.a.len)
                     while i<InPlaced.a.len:
                         ret.add(InPlaced.a[i])
                         while (i+1<InPlaced.a.len and InPlaced.a[i+1]==InPlaced.a[i]):
@@ -1609,7 +1609,7 @@ proc defineSymbols*() =
                     push(newString(ret))
                 elif x.kind==Block:
                     var i = 0
-                    var ret: ValueArray = @[]
+                    var ret: ValueArray = newSeqOfCap[Value](x.a.len)
                     let blk = cleanedBlock(x.a)
                     while i<blk.len:
                         ret.add(blk[i])

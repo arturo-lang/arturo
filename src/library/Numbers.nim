@@ -1015,15 +1015,18 @@ proc defineSymbols*() =
             print `a`..`f`        ; a b c d e f
         """:
             ##########################################################
-            var res: seq[int] = @[]
-
             var limX: int
             var limY: int
 
-            if x.kind==Integer: limX = x.i
-            else: limX = ord(x.c)
+            var charRange = false
 
-            if y.kind==Integer: limY = y.i
+            if likely(x.kind==Integer): limX = x.i
+            else: 
+                if y.kind==Char:
+                    charRange = true
+                limX = ord(x.c)
+
+            if likely(y.kind==Integer): limY = y.i
             else: limY = ord(y.c)
 
             var step = 1
@@ -1032,24 +1035,34 @@ proc defineSymbols*() =
                 if step < 0:
                     step = -step
 
+            var res: seq[Value] = newSeqOfCap[Value](abs(limX-limY) + 1)
+
             if step==0:
                 push newBlock()
             else:
                 if limX < limY:
                     var j = limX
                     while j <= limY:
-                        res.add(j)
+                        res.add(if unlikely(charRange): newChar(chr(j)) else: newInteger(j))
+                        # if unlikely(charRange):
+                        #     res.add()
+                        # else:
+                        #     res.add(newInteger(x))
+                        #res.add(j)
                         j += step
                 else:
                     var j = limX
                     while j >= limY:
-                        res.add(j)
+                        res.add(if unlikely(charRange): newChar(chr(j)) else: newInteger(j))
+                        #res.add(j)
                         j -= step
 
-                if x.kind==Char and y.kind==Char:
-                    push newBlock(res.map((x) => newChar(chr(x))))
-                else:
-                    push newBlock(res.map((x) => newInteger(x)))
+                push newBlock(res)
+
+                # if x.kind==Char and y.kind==Char:
+                #     push newBlock(res.map((x) => newChar(chr(x))))
+                # else:
+                #     push newBlock(res.map((x) => newInteger(x)))
 
     builtin "reciprocal",
         alias       = unaliased, 
