@@ -902,37 +902,29 @@ func getArity*(x: Value): int {.enforceNoRaises.} =
     else:
         return x.params.a.len
 
-# TODO(VM/values/value) `cleanBlock` is too slow
-#  when built without NOERRORLINES - which is our normal setup - this specific piece of code could be slowing down the whole language by up to 20%
-#  labels: vm, values, performance, enhancement, benchmark, critical
-
-func cleanBlock*(va: var ValueArray) {.inline,enforceNoRaises.} =
+template cleanBlock*(va: var ValueArray): untyped =
     when not defined(NOERRORLINES):
         va.keepIf((vv) => vv.kind != Newline)
     else:
         discard
 
-func cleanedBlock*(va: ValueArray): ValueArray {.inline,enforceNoRaises.} =
+template cleanedBlock*(va: ValueArray): ValueArray =
     when not defined(NOERRORLINES):
-        result = collect(newSeqOfCap(va.len)):
+        collect(newSeqOfCap(va.len)):
             for vv in va:
                 if vv.kind != Newline:
                     vv
-        #result = va.filter((vv) => vv.kind != Newline)
     else:
-        result = va
+        va
 
-# template cleanBlock*(va: ValueArray, inplace: bool = false): untyped =
-#     when not defined(NOERRORLINES):
-#         when inplace:
-#             va.keepIf((vv) => vv.kind != Newline)
-#         else:
-#             @(va.filter((vv) => vv.kind != Newline))
-#     else:
-#         when inplace:
-#             discard
-#         else:
-#             va
+proc cleanedBlockP*(va: ValueArray): ValueArray {.inline,enforceNoRaises.} =
+    when not defined(NOERRORLINES):
+        collect(newSeqOfCap(va.len)):
+            for vv in va:
+                if vv.kind != Newline:
+                    vv
+    else:
+        va
 
 proc safeMulI*[T: SomeInteger](x: var T, y: T) {.inline, noSideEffect.} =
     x = x * y
