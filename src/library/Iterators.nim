@@ -49,7 +49,7 @@ template iterableItemsFromParam(prm: untyped): ValueArray =
     elif prm.kind==Integer:
         (toSeq(1..prm.i)).map((w) => newInteger(w))
     else: # block or inline
-        cleanedBlock(prm.a)
+        cleanedBlockValues(prm)
 
 template iterateThrough(
     idx: Value, 
