@@ -532,7 +532,7 @@ proc defineSymbols*() =
                 key = newString($(y))
 
             case x.kind:
-                of Block: push(GetArrayIndex(cleanedBlockP(x.a), key.i))
+                of Block: push(GetArrayIndex(cleanedBlock(x.a), key.i))
                 of Binary: push(newInteger((int)x.n[key.i]))
                 of Bytecode: 
                     if key.s == "data":

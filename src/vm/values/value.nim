@@ -304,8 +304,9 @@ type
             of Binary:      n*  : ByteArray
             of Inline,
                Block:       
-                   a*   : ValueArray
-                   data* : Value
+                   a*       : ValueArray
+                   data*    : Value
+                   clean*   : bool
                    #refs*: IntArray
             of Dictionary:  d*  : ValueDict
             of Object:
@@ -764,20 +765,20 @@ when not defined(NOSQLITE):
 func newBytecode*(t: Translation): Value {.inline, enforceNoRaises.} =
     Value(kind: Bytecode, trans: t)
 
-func newInline*(a: ValueArray = @[]): Value {.inline, enforceNoRaises.} =
-    Value(kind: Inline, a: a)
+func newInline*(a: ValueArray = @[], clean = false): Value {.inline, enforceNoRaises.} =
+    Value(kind: Inline, a: a, clean: clean)
 
-func newBlock*(a: ValueArray = @[], data = VNULL): Value {.inline, enforceNoRaises.} =
-    Value(kind: Block, a: a, data: data)
+func newBlock*(a: ValueArray = @[], data = VNULL, clean = false): Value {.inline, enforceNoRaises.} =
+    Value(kind: Block, a: a, data: data, clean: clean)
 
-func newIntegerBlock*[T](a: seq[T]): Value {.inline, enforceNoRaises.} =
-    newBlock(a.map(proc (x:T):Value = newInteger((int)(x))))
+func newIntegerBlock*[T](a: seq[T], clean = false): Value {.inline, enforceNoRaises.} =
+    newBlock(a.map(proc (x:T):Value = newInteger((int)(x))), clean=clean)
 
-proc newStringBlock*(a: seq[string]): Value {.inline, enforceNoRaises.} =
-    newBlock(a.map(proc (x:string):Value = newString($x)))
+proc newStringBlock*(a: seq[string], clean = false): Value {.inline, enforceNoRaises.} =
+    newBlock(a.map(proc (x:string):Value = newString($x)), clean=clean)
 
-proc newStringBlock*(a: seq[cstring]): Value {.inline, enforceNoRaises.} =
-    newBlock(a.map(proc (x:cstring):Value = newString(x)))
+proc newStringBlock*(a: seq[cstring], clean = false): Value {.inline, enforceNoRaises.} =
+    newBlock(a.map(proc (x:cstring):Value = newString(x)), clean=clean)
 
 func newNewline*(l: int): Value {.inline, enforceNoRaises.} =
     Value(kind: Newline, line: l)
@@ -836,7 +837,7 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Binary:      result = newBinary(v.n)
 
         of Inline:      result = newInline(v.a)
-        of Block:       result = newBlock(v.a.map((vv)=>copyValue(vv)), copyValue(v.data))
+        of Block:       result = newBlock(v.a.map((vv)=>copyValue(vv)), copyValue(v.data), v.clean)
 
         of Dictionary:  result = newDictionary(v.d)
         of Object:      result = newObject(v.o, v.proto)
@@ -902,22 +903,13 @@ func getArity*(x: Value): int {.enforceNoRaises.} =
     else:
         return x.params.a.len
 
-template cleanBlock*(va: var ValueArray): untyped =
+proc cleanBlock*(va: var ValueArray) {.inline,enforceNoRaises.} =
     when not defined(NOERRORLINES):
         va.keepIf((vv) => vv.kind != Newline)
     else:
         discard
 
-template cleanedBlock*(va: ValueArray): ValueArray =
-    when not defined(NOERRORLINES):
-        collect(newSeqOfCap(va.len)):
-            for vv in va:
-                if vv.kind != Newline:
-                    vv
-    else:
-        va
-
-proc cleanedBlockP*(va: ValueArray): ValueArray {.inline,enforceNoRaises.} =
+proc cleanedBlock*(va: ValueArray): ValueArray {.inline,enforceNoRaises.} =
     when not defined(NOERRORLINES):
         collect(newSeqOfCap(va.len)):
             for vv in va:
