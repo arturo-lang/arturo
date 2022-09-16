@@ -1038,7 +1038,7 @@ proc defineSymbols*() =
             var res: seq[Value] = newSeqOfCap[Value](abs(limX-limY) + 1)
 
             if step==0:
-                push newBlock(clean="true")
+                push newBlock(clean=true)
             else:
                 if limX < limY:
                     var j = limX
