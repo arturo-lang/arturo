@@ -918,6 +918,18 @@ proc cleanedBlock*(va: ValueArray): ValueArray {.inline,enforceNoRaises.} =
     else:
         va
 
+proc cleanedBlockValues*(b: Value): ValueArray {.inline,enforceNoRaises.} =
+    when not defined(NOERRORLINES):
+        if b.clean:
+            b.a
+        else:
+            collect(newSeqOfCap(b.a.len)):
+                for vv in b.a:
+                    if vv.kind != Newline:
+                        vv
+    else:
+        va
+
 proc safeMulI*[T: SomeInteger](x: var T, y: T) {.inline, noSideEffect.} =
     x = x * y
 
