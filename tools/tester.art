@@ -68,7 +68,7 @@ runSet: function [title,location].export:[supersuccess,supertotal,superskipped][
 
         prints pad.right ((color #magenta "\n- Running: ") ++ truncate.preserve extract.filename script 40) 70 
         if? canExecute? script [
-            result: split.lines strip execute ~{arturo --no-color "|script|"}
+            result: split.lines strip execute ~{|sys\binary| --no-color "|script|"}
 
             if? result=expected [
 
