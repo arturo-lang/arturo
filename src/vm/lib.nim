@@ -78,12 +78,12 @@ template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, descriptio
                 hookProcProfiler("lib/require"):
                     require(n, args)
 
-                {.emit: "#pragma region " & static (instantiationInfo().filename).replace(".nim") & "_" & n .}
+                {.emit: "////implementation: " & static (instantiationInfo().filename).replace(".nim") & "/" & n .}
 
                 hookFunctionProfiler(n):
                     act
 
-                {.emit: "#pragma endregion " & static (instantiationInfo().filename).replace(".nim") & "_" & n .}
+                {.emit: "////end: " & static (instantiationInfo().filename).replace(".nim") & "/" & n .}
             )
         else:
             let b = newBuiltin(n, alias, rule, "", static argsLen, initOrderedTable[string,ValueSpec](), initOrderedTable[string,(ValueSpec,string)](), returns, cleanExample, proc () =
