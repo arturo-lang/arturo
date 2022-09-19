@@ -55,6 +55,7 @@ else:
 #         args
 
 template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, description: string, args: untyped, attrs: untyped, returns: ValueSpec, example: string, act: untyped):untyped =
+    
     when not defined(PORTABLE) or not compact or funcs.contains(n):
         
         when defined(DEV):
@@ -76,8 +77,13 @@ template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, descriptio
             let b = newBuiltin(n, alias, rule, "[" & static (instantiationInfo().filename).replace(".nim") & ":" & $(static (instantiationInfo().line)) & "] " & description, static argsLen, args.toOrderedTable, attrs.toOrderedTable, returns, cleanExample, proc () =
                 hookProcProfiler("lib/require"):
                     require(n, args)
+
+                {.emit: "#pragma region " & static (instantiationInfo().filename).replace(".nim") & "_" & n .}
+
                 hookFunctionProfiler(n):
                     act
+
+                {.emit: "#pragma endregion " & static (instantiationInfo().filename).replace(".nim") & "_" & n .}
             )
         else:
             let b = newBuiltin(n, alias, rule, "", static argsLen, initOrderedTable[string,ValueSpec](), initOrderedTable[string,(ValueSpec,string)](), returns, cleanExample, proc () =
