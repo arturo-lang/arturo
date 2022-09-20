@@ -401,7 +401,7 @@ let VINTEGERT* = Value(kind: Type, tpKind: BuiltinType, t: Integer)
 
 let VNOTHING* = Value(kind: Nothing)
 
-let NoAliasBinding* = AliasBinding(precedence: PostfixPrecedence, name: VNULL)
+let NoAliasBinding* = AliasBinding(precedence: PostfixPrecedence, name: nil)
 
 #=======================================
 # Variables
@@ -562,11 +562,8 @@ func newType*(t: ValueKind): Value {.inline, enforceNoRaises.} =
     Value(kind: Type, tpKind: BuiltinType, t: t)
 
 proc newUserType*(n: string, f: ValueArray = @[]): Value {.inline.} =
-    let lookup = TypeLookup.getOrDefault(n, VNOTHING)
-    if lookup != VNOTHING:
+    if (let lookup = TypeLookup.getOrDefault(n, nil); not lookup.isNil):
         return lookup
-    # if TypeLookup.hasKey(n):
-    #     return TypeLookup[n]
     else:
         result = Value(kind: Type, tpKind: UserType, t: Object, ts: Prototype(name: n, fields: f, methods: initOrderedTable[string,Value](), inherits: nil))
         TypeLookup[n] = result
@@ -735,7 +732,7 @@ proc newObject*(args: ValueDict, prot: Prototype, initializer: proc (self: Value
     
     initializer(result, prot)
 
-func newFunction*(params: Value, main: Value, imports: Value = VNULL, exports: Value = VNULL, exportable: bool = false, memoize: bool = false): Value {.inline, enforceNoRaises.} =
+func newFunction*(params: Value, main: Value, imports: Value = nil, exports: Value = nil, exportable: bool = false, memoize: bool = false): Value {.inline, enforceNoRaises.} =
     Value(kind: Function, fnKind: UserFunction, params: params, main: main, imports: imports, exports: exports, exportable: exportable, memoize: memoize)
 
 func newBuiltin*(name: string, al: SymbolKind, pr: PrecedenceKind, desc: string, ar: int, ag: OrderedTable[string,ValueSpec], at: OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: string, act: BuiltinAction): Value {.inline, enforceNoRaises.} =

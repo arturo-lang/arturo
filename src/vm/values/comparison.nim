@@ -141,8 +141,7 @@ proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
                 return true
 
             of Object:
-                let compareMethod = x.proto.methods.getOrDefault("compare", VNOTHING)
-                if compareMethod != VNOTHING:
+                if (let compareMethod = x.proto.methods.getOrDefault("compare", nil); not compareMethod.isNil):
                     push y
                     push x
                     callFunction(compareMethod)
@@ -261,8 +260,7 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
             of Dictionary:
                 return false
             of Object:
-                let compareMethod = x.proto.methods.getOrDefault("compare", VNOTHING)
-                if compareMethod != VNOTHING:
+                if (let compareMethod = x.proto.methods.getOrDefault("compare", nil); not compareMethod.isNil):
                     push y
                     push x
                     callFunction(compareMethod)
@@ -361,8 +359,7 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
             of Dictionary:
                 return false
             of Object:
-                let compareMethod = x.proto.methods.getOrDefault("compare", VNOTHING)
-                if compareMethod != VNOTHING:
+                if (let compareMethod = x.proto.methods.getOrDefault("compare", nil); not compareMethod.isNil):
                     push y
                     push x
                     callFunction(compareMethod)
