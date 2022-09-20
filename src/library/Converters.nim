@@ -59,7 +59,7 @@ template throwConversionFailed(): untyped =
 # TODO(Converters) Make sure `convertedValueToType` works fine + add tests
 #  labels: library, cleanup, unit-test
 
-proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
+proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Value =
     if y.kind == tp and y.kind!=Quantity:
         return y
     else:
@@ -95,7 +95,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                     of Char: return newChar(toUTF8(Rune(y.i)))
                     of String: 
                         if y.iKind==NormalInteger: 
-                            if (aFormat != VNULL):
+                            if (not aFormat.isNil):
                                 try:
                                     var ret = ""
                                     formatValue(ret, y.i, aFormat.s)
@@ -131,7 +131,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                         # TODO(Converters\to) add `.format` support for Quantity to String conversions
                         #  It should be working pretty much like Floating to String conversions work
                         #  labels: library, enhancement
-                        if (aFormat != VNULL):
+                        if (not aFormat.isNil):
                             try:
                                 var ret = ""
                                 formatValue(ret, y.f, aFormat.s)
@@ -152,7 +152,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
             of Complex:
                 case tp:
                     of String: 
-                        if (aFormat != VNULL):
+                        if (not aFormat.isNil):
                             try:
                                 var ret = ""
                                 formatValue(ret, y.z.re, aFormat.s)
@@ -264,7 +264,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                             throwConversionFailed()
                     of Date:
                         var dateFormat = "yyyy-MM-dd'T'HH:mm:sszzz"
-                        if (aFormat != VNULL):
+                        if (not aFormat.isNil):
                             dateFormat = aFormat.s
                         
                         let timeFormat = initTimeFormat(dateFormat)
@@ -470,7 +470,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                         return newInteger(toUnix(toTime(y.eobj)))
                     of String:
                         var dateFormat = "yyyy-MM-dd'T'HH:mm:sszzz"
-                        if (aFormat != VNULL):
+                        if (not aFormat.isNil):
                             dateFormat = aFormat.s
                         
                         try:
