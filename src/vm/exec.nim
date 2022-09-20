@@ -76,7 +76,7 @@ template loadByIndex(idx: int):untyped =
 template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
     if f.fnKind==UserFunction:
         hookProcProfiler("exec/callFunction:user"):
-            var memoized: Value = VNULL
+            var memoized: Value = nil
             if f.memoize: memoized = f
             let fArity = f.params.a.len
             if unlikely(SP<fArity):
@@ -109,7 +109,7 @@ template execIsolated*(evaled:Translation): untyped =
     doExec(evaled, 1, NoValues)
 
 template getMemoized*(v: Value): Value =
-    Memoizer.getOrDefault(hash(v), VNULL)
+    Memoizer.getOrDefault(hash(v), nil)
 
 template setMemoized*(v: Value, res: Value) =
     Memoizer[hash(v)] = res
@@ -125,7 +125,7 @@ proc execBlock*(
     exports         : Value = nil,
     exportable      : bool = false,
     inTryBlock      : bool = false,
-    memoized        : Value = VNULL
+    memoized        : Value = nil
 ): ValueDict =
 
     var newSyms: ValueDict
@@ -137,12 +137,12 @@ proc execBlock*(
     Arities = savedArities
     try:
         if isFuncBlock:
-            if unlikely(memoized != VNULL):
+            if unlikely(not memoized.isNil):
                 passedParams.a.add(memoized)
                 for i,arg in args:
                     passedParams.a.add(stack.peek(i))
 
-                if (let memd = getMemoized(passedParams); memd != VNULL):            
+                if (let memd = getMemoized(passedParams); not memd.isNil):
                     popN args.len
                     push memd
                     return Syms
@@ -159,7 +159,7 @@ proc execBlock*(
                         # if Arities.hasKey(arg.s):
                         #     Arities.del(arg.s)
 
-            if imports!=VNULL:
+            if not imports.isNil:
                 savedSyms = Syms
                 for k,v in pairs(imports.d):
                     Syms[k] = v
@@ -188,10 +188,10 @@ proc execBlock*(
             return res
         else:
             if isFuncBlock:
-                if memoized!=VNULL:
+                if not memoized.isNil:
                     setMemoized(passedParams, stack.peek(0))
 
-                if imports!=VNULL:
+                if not imports.isNil:
                     Syms = savedSyms
 
                 Arities = savedArities
@@ -200,8 +200,8 @@ proc execBlock*(
                         Syms = newSyms
                     else:
                         for k in exports.a:
-                            let newSymsKey = newSyms.getOrDefault(k.s, VNOTHING)
-                            if newSymsKey != VNOTHING:
+                            let newSymsKey = newSyms.getOrDefault(k.s, nil)
+                            if not newSymsKey.isNil:
                             # if newSyms.hasKey(k.s):
                                 Syms[k.s] = newSymsKey#newSyms[k.s]
                 else:
