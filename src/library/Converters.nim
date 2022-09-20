@@ -994,11 +994,14 @@ proc defineSymbols*() =
                     ret[item.s] = GetSym(item.s)
                 imports = newDictionary(ret)
 
+            var exports: Value = nil
             var exportable = (hadAttr("exportable"))
 
-            var exports: Value = nil
-            if checkAttr("export"):
-                exports = aExport
+            if exportable:
+                exports = VNULL
+            else:
+                if checkAttr("export"):
+                    exports = aExport
 
             var memoize = (hadAttr("memoize"))
             
