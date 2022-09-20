@@ -562,11 +562,8 @@ func newType*(t: ValueKind): Value {.inline, enforceNoRaises.} =
     Value(kind: Type, tpKind: BuiltinType, t: t)
 
 proc newUserType*(n: string, f: ValueArray = @[]): Value {.inline.} =
-    let lookup = TypeLookup.getOrDefault(n, VNOTHING)
-    if lookup != VNOTHING:
+    if (let lookup = TypeLookup.getOrDefault(n, nil); not lookup.isNil):
         return lookup
-    # if TypeLookup.hasKey(n):
-    #     return TypeLookup[n]
     else:
         result = Value(kind: Type, tpKind: UserType, t: Object, ts: Prototype(name: n, fields: f, methods: initOrderedTable[string,Value](), inherits: nil))
         TypeLookup[n] = result
