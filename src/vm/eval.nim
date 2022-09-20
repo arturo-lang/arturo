@@ -511,8 +511,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 argStack[argStack.len-1] += 1
 
             of Path:
-                var isPathCall = false
-                var pathCallV = VNULL
+                var pathCallV: Value = nil
 
                 let curr = Syms.getOrDefault(node.p[0].s, VNOTHING)
                 if not curr.isNothing():
@@ -520,10 +519,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     if curr.kind==Dictionary and (next.kind==Literal or next.kind==Word):
                         if (let item = curr.d.getOrDefault(next.s, VNOTHING); item != VNOTHING):
                             if item.kind == Function:
-                                isPathCall = true
                                 pathCallV = item
 
-                if isPathCall:
+                if not pathCallV.isNil:
                     addConst(consts, pathCallV, opCall)
                     argStack.add(pathCallV.params.a.len)
                 else:
