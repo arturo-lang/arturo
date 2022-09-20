@@ -987,7 +987,7 @@ proc defineSymbols*() =
             ]
         """:
             ##########################################################
-            var imports = VNULL
+            var imports: Value = nil
             if checkAttr("import"):
                 var ret = initOrderedTable[string,Value]()
                 for item in aImport.a:
@@ -996,7 +996,7 @@ proc defineSymbols*() =
 
             var exportable = (hadAttr("exportable"))
 
-            var exports = VNULL
+            var exports: Value = nil
             if checkAttr("export"):
                 exports = aExport
 
