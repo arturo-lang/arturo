@@ -453,8 +453,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 var funcArity = TmpArities.getOrDefault(node.s, -1)
                 if funcArity != -1:
                     if likely(funcArity!=0):
-                        let symf = Syms.getOrDefault(node.s, VNOTHING)
-                        if not symf.isNothing():
+                        if (let symf = Syms.getOrDefault(node.s, nil); not symf.isNil):
                             evalFunctionCall(symf, toHead=false, checkAhead=true):
                                 addConst(consts, node, opCall)
                                 # funcArity -> funcArity-1 for ToS/ToI!
@@ -513,11 +512,10 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             of Path:
                 var pathCallV: Value = nil
 
-                let curr = Syms.getOrDefault(node.p[0].s, VNOTHING)
-                if not curr.isNothing():
+                if (let curr = Syms.getOrDefault(node.p[0].s, nil); not curr.isNil):
                     let next = node.p[1]
                     if curr.kind==Dictionary and (next.kind==Literal or next.kind==Word):
-                        if (let item = curr.d.getOrDefault(next.s, VNOTHING); item != VNOTHING):
+                        if (let item = curr.d.getOrDefault(next.s, nil); not item.isNil):
                             if item.kind == Function:
                                 pathCallV = item
 
