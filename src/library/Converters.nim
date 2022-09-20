@@ -44,8 +44,7 @@ proc parseFL*(s: string): float =
 
 proc generateCustomObject*(prot: Prototype, arguments: ValueArray | ValueDict): Value =
     newObject(arguments, prot, proc (self: Value, prot: Prototype) =
-        let initMethod = prot.methods.getOrDefault("init", VNOTHING)
-        if initMethod != VNOTHING:
+        if (let initMethod = prot.methods.getOrDefault("init", nil); not initMethod.isNil):
             push self
             callFunction(initMethod)
     )
@@ -728,21 +727,18 @@ proc defineSymbols*() =
                 x.ts.inherits = aAs.ts
 
             x.ts.methods = newDictionary(execBlock(z,dictionary=true)).d
-            let initMethod = x.ts.methods.getOrDefault("init", VNOTHING)
-            if initMethod != VNOTHING:
+            if (let initMethod = x.ts.methods.getOrDefault("init", nil); not initMethod.isNil):
                 x.ts.methods["init"] = newFunction(
                     newBlock(@[newWord("this")]),
                     initMethod
                 )
-            let printMethod = x.ts.methods.getOrDefault("print", VNOTHING)
-            if printMethod != VNOTHING:
+            if (let printMethod = x.ts.methods.getOrDefault("print", nil); not printMethod.isNil):
                 x.ts.methods["print"] = newFunction(
                     newBlock(@[newWord("this")]),
                     printMethod
                 )
 
-            let compareMethod = x.ts.methods.getOrDefault("compare", VNOTHING)
-            if compareMethod != VNOTHING:
+            if (let compareMethod = x.ts.methods.getOrDefault("compare", nil); not compareMethod.isNil):
                 if compareMethod.kind==Block:
                     x.ts.methods["compare"] = newFunction(
                         newBlock(@[newWord("this"),newWord("that")]),
@@ -1057,8 +1053,7 @@ proc defineSymbols*() =
             
             if y.data.kind==Dictionary:
 
-                let descriptionData = y.data.d.getOrDefault("description", VNOTHING)
-                if descriptionData != VNOTHING:
+                if (let descriptionData = y.data.d.getOrDefault("description", nil); not descriptionData.isNil):
                     ret.info = descriptionData.s
 
                 if y.data.d.hasKey("options") and y.data.d["options"].kind==Dictionary:
@@ -1081,8 +1076,7 @@ proc defineSymbols*() =
 
                     ret.attrs = options
 
-                let returnsData = y.data.d.getOrDefault("returns", VNOTHING)
-                if returnsData != VNOTHING:
+                if (let returnsData = y.data.d.getOrDefault("returns", nil); not returnsData.isNil):
                     if returnsData.kind==Type:
                         ret.returns = {returnsData.t}
                     else:
@@ -1091,8 +1085,7 @@ proc defineSymbols*() =
                             returns.incl(tp.t)
                         ret.returns = returns
 
-                let exampleData = y.data.d.getOrDefault("example", VNOTHING)
-                if exampleData != VNOTHING:
+                if (let exampleData = y.data.d.getOrDefault("example", nil); not exampleData.isNil):
                     ret.example = exampleData.s
     
             ret.args = argTypes
