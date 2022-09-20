@@ -867,18 +867,18 @@ func nextPrime*(x: Int): Int =
 # Destructors
 #=======================================
 
-func clear*(z: Int) =
+func clear*(z: Int) {.inline.} =
     GCunref(z)
     finalizeInt(z)
 
-func clear*(z: Float) =
+func clear*(z: Float) {.inline.} =
     GCunref(z)
     finalizeFloat(z)
 
-func clear*(z: Rat) =
+func clear*(z: Rat) {.inline.} =
     GCunref(z)
     finalizeRat(z)
-
+    
 # func clone*(z: Int): Int =
 #     ## Returns a clone of `z`.
 #     new(result, finalizeInt)
