@@ -403,7 +403,7 @@ proc defineSymbols*() =
                 ##########################################################
                 let showExamples = (hadAttr("examples"))
                 var searchable = ""
-                var value = VNULL
+                var value: Value = nil
 
                 if x.kind == SymbolLiteral:
                     searchable = $(x.m)
@@ -413,7 +413,7 @@ proc defineSymbols*() =
                             value = GetSym(searchable)
                             break
 
-                    if value == VNULL:
+                    if value.isNil:
                         RuntimeError_AliasNotFound($(x.m))
                 else:
                     searchable = x.s
