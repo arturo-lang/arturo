@@ -116,11 +116,11 @@ proc defineSymbols*() =
             """:
                 ##########################################################
                 var path = ""
-                let selectFolder = popAttr("folder")==VNULL
+                let selectFiles = not hadAttr("folder")
                 if checkAttr("path"): 
                     path = aPath.s
 
-                push newString(showSelectionDialog(x.s, path, selectFolder))
+                push newString(showSelectionDialog(x.s, path, selectFiles))
 
         builtin "popup",
             alias       = unaliased, 
