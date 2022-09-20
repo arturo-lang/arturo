@@ -161,7 +161,7 @@ proc defineSymbols*() =
             else: items = iterableItemsFromParam(x)
 
             var res: ValueArray = @[]
-            var state: Value = nil
+            var state: Value = VNULL # important
             var currentSet: ValueArray = @[]
 
             iterateThrough(withIndex, y, items, doForever, false, false):
