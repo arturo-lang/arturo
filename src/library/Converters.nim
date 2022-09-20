@@ -1000,7 +1000,6 @@ proc defineSymbols*() =
             if exportable:
                 exports = VNULL # important, in case the function is all-exportable
                                 # since we check for exports.isNil *first*
-                                
             else:
                 if checkAttr("export"):
                     exports = aExport
