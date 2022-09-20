@@ -78,7 +78,11 @@ proc defineSymbols*() =
             ; 60
         """:
             ##########################################################
-            push(popAttr(x.s))
+            let val = popAttr(x.s)
+            if val.isNil:
+                push(VNULL)
+            else:
+                push(val)
 
     builtin "attr?",
         alias       = unaliased, 
