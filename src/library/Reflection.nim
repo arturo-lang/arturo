@@ -196,12 +196,12 @@ proc defineSymbols*() =
             let preevaled = evalOrGet(x)
             if (hadAttr("get")):
                 let time = getBenchmark:
-                    discard execBlock(VNULL, evaluated=preevaled)
+                    discard execBlock(nil, evaluated=preevaled)
 
                 push newQuantity(newFloating(time), newQuantitySpec(MS))
             else:
                 benchmark "":
-                    discard execBlock(VNULL, evaluated=preevaled)
+                    discard execBlock(nil, evaluated=preevaled)
 
     builtin "binary?",
         alias       = unaliased, 
