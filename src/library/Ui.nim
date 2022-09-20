@@ -116,11 +116,11 @@ proc defineSymbols*() =
             """:
                 ##########################################################
                 var path = ""
-                let selectFolder = popAttr("folder")==VNULL
+                let selectFiles = not hadAttr("folder")
                 if checkAttr("path"): 
                     path = aPath.s
 
-                push newString(showSelectionDialog(x.s, path, selectFolder))
+                push newString(showSelectionDialog(x.s, path, selectFiles))
 
         builtin "popup",
             alias       = unaliased, 
@@ -313,8 +313,7 @@ proc defineSymbols*() =
                             if SP > prevSP:
                                 result = pop()
                         elif call==WebviewEvent:
-                            let onEvent = on.getOrDefault(value.s, VNOTHING)
-                            if onEvent != VNOTHING:
+                            if (let onEvent = on.getOrDefault(value.s, nil); not onEvent.isNil):
                                 discard execBlock(onEvent)
                         else:
                             discard

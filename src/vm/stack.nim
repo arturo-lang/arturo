@@ -103,17 +103,17 @@ proc getAttr*(attr: string): Value {.inline,enforceNoRaises.} =
     Attrs.getOrDefault(attr, VNULL)
 
 proc popAttr*(attr: string): Value {.inline,enforceNoRaises.} =
-    result = VNULL
+    result = nil
     hookProcProfiler("stack/popAttr"):
         discard Attrs.pop(attr, result)
 
 macro checkAttr*(name: untyped): untyped =
     let attrName =  ident('a' & ($name).capitalizeAscii())
     result = quote do:
-        (let `attrName` = popAttr(`name`); `attrName` != VNULL)
+        (let `attrName` = popAttr(`name`); not `attrName`.isNil)
 
 template hadAttr*(attr: string): bool = 
-    (popAttr(attr) != VNULL)
+    (not popAttr(attr).isNil)
 
 proc getAttrsDict*(): Value =
     result = newDictionary(Attrs)

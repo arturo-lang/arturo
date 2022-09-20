@@ -44,8 +44,7 @@ proc parseFL*(s: string): float =
 
 proc generateCustomObject*(prot: Prototype, arguments: ValueArray | ValueDict): Value =
     newObject(arguments, prot, proc (self: Value, prot: Prototype) =
-        let initMethod = prot.methods.getOrDefault("init", VNOTHING)
-        if initMethod != VNOTHING:
+        if (let initMethod = prot.methods.getOrDefault("init", nil); not initMethod.isNil):
             push self
             callFunction(initMethod)
     )
@@ -59,7 +58,7 @@ template throwConversionFailed(): untyped =
 # TODO(Converters) Make sure `convertedValueToType` works fine + add tests
 #  labels: library, cleanup, unit-test
 
-proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
+proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Value =
     if y.kind == tp and y.kind!=Quantity:
         return y
     else:
@@ -95,7 +94,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                     of Char: return newChar(toUTF8(Rune(y.i)))
                     of String: 
                         if y.iKind==NormalInteger: 
-                            if (aFormat != VNULL):
+                            if (not aFormat.isNil):
                                 try:
                                     var ret = ""
                                     formatValue(ret, y.i, aFormat.s)
@@ -131,7 +130,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                         # TODO(Converters\to) add `.format` support for Quantity to String conversions
                         #  It should be working pretty much like Floating to String conversions work
                         #  labels: library, enhancement
-                        if (aFormat != VNULL):
+                        if (not aFormat.isNil):
                             try:
                                 var ret = ""
                                 formatValue(ret, y.f, aFormat.s)
@@ -152,7 +151,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
             of Complex:
                 case tp:
                     of String: 
-                        if (aFormat != VNULL):
+                        if (not aFormat.isNil):
                             try:
                                 var ret = ""
                                 formatValue(ret, y.z.re, aFormat.s)
@@ -264,7 +263,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                             throwConversionFailed()
                     of Date:
                         var dateFormat = "yyyy-MM-dd'T'HH:mm:sszzz"
-                        if (aFormat != VNULL):
+                        if (not aFormat.isNil):
                             dateFormat = aFormat.s
                         
                         let timeFormat = initTimeFormat(dateFormat)
@@ -470,7 +469,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL): Value =
                         return newInteger(toUnix(toTime(y.eobj)))
                     of String:
                         var dateFormat = "yyyy-MM-dd'T'HH:mm:sszzz"
-                        if (aFormat != VNULL):
+                        if (not aFormat.isNil):
                             dateFormat = aFormat.s
                         
                         try:
@@ -728,21 +727,18 @@ proc defineSymbols*() =
                 x.ts.inherits = aAs.ts
 
             x.ts.methods = newDictionary(execBlock(z,dictionary=true)).d
-            let initMethod = x.ts.methods.getOrDefault("init", VNOTHING)
-            if initMethod != VNOTHING:
+            if (let initMethod = x.ts.methods.getOrDefault("init", nil); not initMethod.isNil):
                 x.ts.methods["init"] = newFunction(
                     newBlock(@[newWord("this")]),
                     initMethod
                 )
-            let printMethod = x.ts.methods.getOrDefault("print", VNOTHING)
-            if printMethod != VNOTHING:
+            if (let printMethod = x.ts.methods.getOrDefault("print", nil); not printMethod.isNil):
                 x.ts.methods["print"] = newFunction(
                     newBlock(@[newWord("this")]),
                     printMethod
                 )
 
-            let compareMethod = x.ts.methods.getOrDefault("compare", VNOTHING)
-            if compareMethod != VNOTHING:
+            if (let compareMethod = x.ts.methods.getOrDefault("compare", nil); not compareMethod.isNil):
                 if compareMethod.kind==Block:
                     x.ts.methods["compare"] = newFunction(
                         newBlock(@[newWord("this"),newWord("that")]),
@@ -987,18 +983,22 @@ proc defineSymbols*() =
             ]
         """:
             ##########################################################
-            var imports = VNULL
+            var imports: Value = nil
             if checkAttr("import"):
                 var ret = initOrderedTable[string,Value]()
                 for item in aImport.a:
                     ret[item.s] = GetSym(item.s)
                 imports = newDictionary(ret)
 
+            var exports: Value = nil
             var exportable = (hadAttr("exportable"))
 
-            var exports = VNULL
-            if checkAttr("export"):
-                exports = aExport
+            if exportable:
+                exports = VNULL # important, in case the function is all-exportable
+                                # since we check for exports.isNil *first*
+            else:
+                if checkAttr("export"):
+                    exports = aExport
 
             var memoize = (hadAttr("memoize"))
             
@@ -1053,8 +1053,7 @@ proc defineSymbols*() =
             
             if y.data.kind==Dictionary:
 
-                let descriptionData = y.data.d.getOrDefault("description", VNOTHING)
-                if descriptionData != VNOTHING:
+                if (let descriptionData = y.data.d.getOrDefault("description", nil); not descriptionData.isNil):
                     ret.info = descriptionData.s
 
                 if y.data.d.hasKey("options") and y.data.d["options"].kind==Dictionary:
@@ -1077,8 +1076,7 @@ proc defineSymbols*() =
 
                     ret.attrs = options
 
-                let returnsData = y.data.d.getOrDefault("returns", VNOTHING)
-                if returnsData != VNOTHING:
+                if (let returnsData = y.data.d.getOrDefault("returns", nil); not returnsData.isNil):
                     if returnsData.kind==Type:
                         ret.returns = {returnsData.t}
                     else:
@@ -1087,8 +1085,7 @@ proc defineSymbols*() =
                             returns.incl(tp.t)
                         ret.returns = returns
 
-                let exampleData = y.data.d.getOrDefault("example", VNOTHING)
-                if exampleData != VNOTHING:
+                if (let exampleData = y.data.d.getOrDefault("example", nil); not exampleData.isNil):
                     ret.example = exampleData.s
     
             ret.args = argTypes

@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import macros, os, random
+import hashes, macros, os, random
 import strutils, tables
 
 when defined(WEB):
@@ -130,6 +130,8 @@ template initialize*(args: seq[string], filename: string, isFile:bool, scriptDat
         else: env.addPath(getCurrentDir())
 
     Syms = initOrderedTable[string,Value]()
+
+    Memoizer = initOrderedTable[(string,Hash),Value]()
 
     if portableData != "":
         Syms["_portable"] = valueFromJson(portableData)
