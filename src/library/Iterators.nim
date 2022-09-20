@@ -78,7 +78,7 @@ template iterateThrough(
         var allArgs{.inject.}: ValueArray = args
 
         var withIndex = false
-        if idx != VNULL:
+        if not idx.isNil:
             withIndex = true
             allArgs = concat(@[idx], allArgs)
 
