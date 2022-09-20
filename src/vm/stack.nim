@@ -113,7 +113,7 @@ macro checkAttr*(name: untyped): untyped =
         (let `attrName` = popAttr(`name`); not `attrName`.isNil)
 
 template hadAttr*(attr: string): bool = 
-    (popAttr(attr) != VNULL)
+    (not popAttr(attr).isNil)
 
 proc getAttrsDict*(): Value =
     result = newDictionary(Attrs)
