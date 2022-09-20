@@ -401,7 +401,7 @@ let VINTEGERT* = Value(kind: Type, tpKind: BuiltinType, t: Integer)
 
 let VNOTHING* = Value(kind: Nothing)
 
-let NoAliasBinding* = AliasBinding(precedence: PostfixPrecedence, name: VNULL)
+let NoAliasBinding* = AliasBinding(precedence: PostfixPrecedence, name: nil)
 
 #=======================================
 # Variables
