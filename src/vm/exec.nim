@@ -32,11 +32,18 @@ import vm/[
 ]
 
 #=======================================
+# Types
+#=======================================
+
+type
+    MemoizerKey = (string, Hash)
+
+#=======================================
 # Variables
 #=======================================
 
 var
-    Memoizer*  = initOrderedTable[Hash,Value]()
+    Memoizer*: OrderedTable[MemoizerKey,Value]
     CurrentDump*: Translation = NoTranslation
 
 #=======================================
@@ -77,7 +84,8 @@ template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
     if f.fnKind==UserFunction:
         hookProcProfiler("exec/callFunction:user"):
             var memoized: Value = nil
-            if f.memoize: memoized = f
+            if f.memoize: 
+                memoized = newString(fnName)
             let fArity = f.params.a.len
             if unlikely(SP<fArity):
                 RuntimeError_NotEnoughArguments(fnName, fArity)
@@ -108,11 +116,11 @@ template fetchAttributeByIndex(idx: int):untyped =
 template execIsolated*(evaled:Translation): untyped =
     doExec(evaled, 1, NoValues)
 
-template getMemoized*(v: Value): Value =
-    Memoizer.getOrDefault(hash(v), nil)
+template getMemoized*(fn: string, v: Value): Value =
+    Memoizer.getOrDefault((fn, value.hash(v)), nil)
 
-template setMemoized*(v: Value, res: Value) =
-    Memoizer[hash(v)] = res
+template setMemoized*(fn: string, v: Value, res: Value) =
+    Memoizer[(fn, value.hash(v))] = res
 
 proc execBlock*(
     blk             : Value, 
@@ -132,17 +140,18 @@ proc execBlock*(
     let savedArities = Arities
     var savedSyms: OrderedTable[string,Value]
     
-    var passedParams: Value = newBlock(@[])
+    var passedParams: Value
 
     Arities = savedArities
     try:
         if isFuncBlock:
             if unlikely(not memoized.isNil):
-                passedParams.a.add(memoized)
+                passedParams = newBlock()
+                #passedParams.a.add(memoized)
                 for i,arg in args:
                     passedParams.a.add(stack.peek(i))
 
-                if (let memd = getMemoized(passedParams); not memd.isNil):
+                if (let memd = getMemoized(memoized.s, passedParams); not memd.isNil):
                     popN args.len
                     push memd
                     return Syms
@@ -189,7 +198,7 @@ proc execBlock*(
         else:
             if isFuncBlock:
                 if not memoized.isNil:
-                    setMemoized(passedParams, stack.peek(0))
+                    setMemoized(memoized.s, passedParams, stack.peek(0))
 
                 if not imports.isNil:
                     Syms = savedSyms
