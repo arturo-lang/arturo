@@ -44,7 +44,7 @@ type
 
 var
     Memoizer*: OrderedTable[MemoizerKey,Value]
-    CurrentDump*: Translation = NoTranslation
+    CurrentDump*: Translation = nil
 
 #=======================================
 # Forward Declarations
@@ -126,7 +126,7 @@ proc execBlock*(
     blk             : Value, 
     dictionary      : bool = false, 
     args            : Value = nil, 
-    evaluated       : sink Translation = NoTranslation, 
+    evaluated       : sink Translation = nil, 
     execInParent    : bool = false, 
     isFuncBlock     : bool = false, 
     imports         : Value = nil,
@@ -176,7 +176,7 @@ proc execBlock*(
                     Syms[k] = v
 
         let evaled = 
-            if evaluated==NoTranslation : 
+            if evaluated.isNil : 
                 if dictionary       : doEval(blk, isDictionary=true)
                 else                : doEval(blk)
             else                        : evaluated
@@ -283,8 +283,8 @@ template handleBranching*(tryDoing, finalize: untyped): untyped =
 
 proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): ValueDict = 
 
-    let cnst = input[0]
-    let it = input[1]
+    let cnst = input.constants
+    let it = input.instructions
 
     var i = 0
     var op {.register.}: OpCode
