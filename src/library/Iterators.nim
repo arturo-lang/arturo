@@ -75,12 +75,12 @@ template iterateThrough(
             if hasArgs and argsLen>1:
                 argsLen -= 1
 
-        var allArgs{.inject.}: ValueArray = args
+        var allArgs{.inject.}: Value = newBlock(args)
 
         var withIndex = false
         if not idx.isNil:
             withIndex = true
-            allArgs = concat(@[idx], allArgs)
+            allArgs.a = concat(@[idx], allArgs.a)
 
         var capturedItems{.inject}: ValueArray
 
