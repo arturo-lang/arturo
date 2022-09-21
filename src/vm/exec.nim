@@ -44,7 +44,7 @@ type
 
 var
     Memoizer*: OrderedTable[MemoizerKey,Value]
-    CurrentDump*: Translation = NoTranslation
+    CurrentDump*: Translation = nil
 
 #=======================================
 # Forward Declarations
@@ -126,7 +126,7 @@ proc execBlock*(
     blk             : Value, 
     dictionary      : bool = false, 
     args            : Value = nil, 
-    evaluated       : sink Translation = NoTranslation, 
+    evaluated       : sink Translation = nil, 
     execInParent    : bool = false, 
     isFuncBlock     : bool = false, 
     imports         : Value = nil,
@@ -176,7 +176,7 @@ proc execBlock*(
                     Syms[k] = v
 
         let evaled = 
-            if evaluated==NoTranslation : 
+            if evaluated.isNil : 
                 if dictionary       : doEval(blk, isDictionary=true)
                 else                : doEval(blk)
             else                        : evaluated
