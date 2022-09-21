@@ -138,8 +138,10 @@ proc execBlock*(
 ): ValueDict =
 
     var newSyms: ValueDict
-    let savedArities = Arities
-    
+
+    when isFuncBlock or ((not isFuncBlock) and (not execInParent)):
+        let savedArities = Arities
+
     when isFuncBlock:
         var savedSyms: OrderedTable[string,Value]
         var passedParams: Value
@@ -188,6 +190,9 @@ proc execBlock*(
         else:
             newSyms = doExec(evaled)
 
+    # TODO(VM/exec) don't catch any error at all when isFuncBlock
+    #  we have to eliminate this: Hint: 'e' is declared but not used [XDeclaredButNotUsed]
+    #  labels: vm, execution, enhancement
     except ReturnTriggered as e:
         when not isFuncBlock:
             raise e
