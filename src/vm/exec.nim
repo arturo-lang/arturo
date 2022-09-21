@@ -124,7 +124,6 @@ template setMemoized*(fn: string, v: Value, res: Value) =
 
 proc execBlock*(
     blk             : Value, 
-    dictionary      : static bool = false, 
     args            : Value = nil, 
     hasArgs         : static bool = false,
     evaluated       : Translation = nil, 
@@ -177,12 +176,10 @@ proc execBlock*(
                     Syms[k] = v
 
         let evaled = 
-            when not hasEval:
-                when dictionary: 
-                    doEval(blk, isDictionary=true)
-                else: 
-                    doEval(blk)
-            else                        : evaluated
+            when not hasEval:   
+                doEval(blk)
+            else: 
+                evaluated
 
         when hasArgs:
             newSyms = doExec(evaled, args)
@@ -196,37 +193,39 @@ proc execBlock*(
             discard
         
     finally:
-        when dictionary:
-            var res: ValueDict = initOrderedTable[string,Value]()
-            for k, v in pairs(newSyms):
-                if not Syms.hasKey(k) or (newSyms[k]!=Syms[k]):
-                    res[k] = v
+        when isFuncBlock:
+            if not memoized.isNil:
+                setMemoized(memoized.s, passedParams, stack.peek(0))
 
-            return res
-        else:
-            when isFuncBlock:
-                if not memoized.isNil:
-                    setMemoized(memoized.s, passedParams, stack.peek(0))
+            if not imports.isNil:
+                Syms = savedSyms
 
-                if not imports.isNil:
-                    Syms = savedSyms
-
-                Arities = savedArities
-                if not exports.isNil():
-                    if exportable:
-                        Syms = newSyms
-                    else:
-                        for k in exports.a:
-                            let newSymsKey = newSyms.getOrDefault(k.s, nil)
-                            if not newSymsKey.isNil:
-                                Syms[k.s] = newSymsKey
+            Arities = savedArities
+            if not exports.isNil():
+                if exportable:
+                    Syms = newSyms
                 else:
-                    when hasArgs:
-                        for arg in args.a:
-                            Arities.del(arg.s)
-
+                    for k in exports.a:
+                        let newSymsKey = newSyms.getOrDefault(k.s, nil)
+                        if not newSymsKey.isNil:
+                            Syms[k.s] = newSymsKey
             else:
-                when not inTryBlock:
+                when hasArgs:
+                    for arg in args.a:
+                        Arities.del(arg.s)
+
+        else:
+            when not inTryBlock:
+                when execInParent:
+                    Syms=newSyms
+                else:
+                    Arities = savedArities
+                    for k, v in pairs(newSyms):
+                        if not (v.kind==Function and v.fnKind==BuiltinFunction):
+                            if Syms.hasKey(k):
+                                Syms[k] = newSyms[k]
+            else:
+                if getCurrentException().isNil():
                     when execInParent:
                         Syms=newSyms
                     else:
@@ -235,16 +234,6 @@ proc execBlock*(
                             if not (v.kind==Function and v.fnKind==BuiltinFunction):
                                 if Syms.hasKey(k):
                                     Syms[k] = newSyms[k]
-                else:
-                    if getCurrentException().isNil():
-                        when execInParent:
-                            Syms=newSyms
-                        else:
-                            Arities = savedArities
-                            for k, v in pairs(newSyms):
-                                if not (v.kind==Function and v.fnKind==BuiltinFunction):
-                                    if Syms.hasKey(k):
-                                        Syms[k] = newSyms[k]
 
     return Syms
 
