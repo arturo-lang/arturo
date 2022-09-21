@@ -339,7 +339,7 @@ proc defineSymbols*() =
             ##########################################################
             let preevaled = evalOrGet(x)
             let y = pop() # pop the value of the previous operation (hopefully an 'if?' or 'when?')
-            if Not(y.b)==True: discard execBlock(nil, evaluated=preevaled)
+            if Not(y.b)==True: discard execBlock(nil, evaluated=preevaled, hasEval=true)
             
     builtin "ensure",
         alias       = unaliased, 
