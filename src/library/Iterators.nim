@@ -165,7 +165,7 @@ proc defineSymbols*() =
             var currentSet: ValueArray = @[]
 
             iterateThrough(withIndex, y, items, doForever, false, false):
-                discard execBlock(nil, evaluated=preevaled, args=allArgs)
+                discard execBlock(nil, evaluated=preevaled, args=allArgs, hasArgs=true)
                 let popped = pop()
                 if popped != state:
                     if len(currentSet)>0:
@@ -239,7 +239,7 @@ proc defineSymbols*() =
             var sets: OrderedTable[Value,ValueArray] = initOrderedTable[Value,ValueArray]()
 
             iterateThrough(withIndex, y, items, doForever, false, false):
-                discard execBlock(nil, evaluated=preevaled, args=allArgs)
+                discard execBlock(nil, evaluated=preevaled, args=allArgs, hasArgs=true)
                 let popped = pop()
                 # TODO(Iterators\cluster) Verify this is working right
                 #  labels: unit-test
@@ -299,7 +299,7 @@ proc defineSymbols*() =
             var all = true
 
             iterateThrough(withIndex, y, items, doForever, false, false):
-                discard execBlock(nil, evaluated=preevaled, args=allArgs)
+                discard execBlock(nil, evaluated=preevaled, args=allArgs, hasArgs=true)
 
                 let popped = pop()
                 if popped.kind==Logical and Not(popped.b)==True:
@@ -388,7 +388,7 @@ proc defineSymbols*() =
             var filteredItems = 0
 
             iterateThrough(withIndex, y, items, doForever, false, false):
-                discard execBlock(nil, evaluated=preevaled, args=allArgs)
+                discard execBlock(nil, evaluated=preevaled, args=allArgs, hasArgs=true)
                 let popped = pop()
                 if popped.kind==Logical and Not(popped.b)==True:
                     res.add(capturedItems)
@@ -494,7 +494,7 @@ proc defineSymbols*() =
             var res: Value = seed
 
             iterateThrough(withIndex, y, items, doForever, true, doRightFold):
-                discard execBlock(nil, evaluated=preevaled, args=allArgs)
+                discard execBlock(nil, evaluated=preevaled, args=allArgs, hasArgs=true)
                 res = pop()
 
             if withLiteral: InPlaced = res
@@ -566,7 +566,7 @@ proc defineSymbols*() =
             items = iterableItemsFromParam(x)
 
             iterateThrough(withIndex, y, items, doForever, false, false):
-                discard execBlock(nil, evaluated=preevaled, args=allArgs)
+                discard execBlock(nil, evaluated=preevaled, args=allArgs, hasArgs=true)
 
     builtin "map",
         alias       = unaliased, 
@@ -620,7 +620,7 @@ proc defineSymbols*() =
             var res: ValueArray = @[]
 
             iterateThrough(withIndex, y, items, doForever, false, false):
-                discard execBlock(nil, evaluated=preevaled, args=allArgs)
+                discard execBlock(nil, evaluated=preevaled, args=allArgs, hasArgs=true)
                 res.add(pop())
 
             if withLiteral: InPlaced = newBlock(res)
@@ -697,7 +697,7 @@ proc defineSymbols*() =
             var res: ValueArray = @[]
 
             iterateThrough(withIndex, y, items, doForever, false, false):
-                discard execBlock(nil, evaluated=preevaled, args=allArgs)
+                discard execBlock(nil, evaluated=preevaled, args=allArgs, hasArgs=true)
                 let popped = pop()
                 if popped.kind==Logical and popped.b==True:
                     res.add(capturedItems)
@@ -761,7 +761,7 @@ proc defineSymbols*() =
             var one = false
 
             iterateThrough(withIndex, y, items, doForever, false, false):
-                discard execBlock(nil, evaluated=preevaled, args=allArgs)
+                discard execBlock(nil, evaluated=preevaled, args=allArgs, hasArgs=true)
                 let popped = pop()
                 if popped.kind==Logical and popped.b==True:
                     push(newLogical(true))

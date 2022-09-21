@@ -151,7 +151,7 @@ proc defineSymbols*() =
                     push(v)
 
                 if fun.fnKind==UserFunction:
-                    discard execBlock(fun.main, args=fun.params, isFuncBlock=true, imports=fun.imports, exports=fun.exports)
+                    discard execBlock(fun.main, args=fun.params, hasArgs=true, isFuncBlock=true, imports=fun.imports, exports=fun.exports)
                 else:
                     fun.action()
         
@@ -661,7 +661,7 @@ proc defineSymbols*() =
                     discard execBlock(nil, evaluated=preevaled, execInParent=true, inTryBlock=true)
                 else:
                     discard execBlock(nil, evaluated=preevaled, inTryBlock=true)
-                
+
                 push(VTRUE)
             except:
                 let e = getCurrentException()
