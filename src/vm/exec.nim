@@ -50,7 +50,7 @@ var
 # Forward Declarations
 #=======================================
 
-proc doExec*(input:Translation, depth: int = 0, args: Value = nil): ValueDict
+proc doExec*(input:Translation, args: Value = nil): ValueDict
 
 #=======================================
 # Helpers
@@ -114,7 +114,7 @@ template fetchAttributeByIndex(idx: int):untyped =
 ####
 
 template execIsolated*(evaled:Translation): untyped =
-    doExec(evaled, 1, nil)
+    doExec(evaled)
 
 template getMemoized*(fn: string, v: Value): Value =
     Memoizer.getOrDefault((fn, value.hash(v)), nil)
@@ -187,9 +187,9 @@ proc execBlock*(
             else                        : evaluated
 
         when hasArgs:
-            newSyms = doExec(evaled, 1, args)
+            newSyms = doExec(evaled, args)
         else:
-            newSyms = doExec(evaled, 1)
+            newSyms = doExec(evaled)
 
     except ReturnTriggered as e:
         when not isFuncBlock:
@@ -257,6 +257,25 @@ proc execBlock*(
 
     return Syms
 
+proc execDictionaryBlock*(blk: Value): ValueDict =
+    var newSyms: ValueDict
+
+    try:
+        newSyms = doExec(doEval(blk, isDictionary=true))
+
+    except ReturnTriggered as e:
+        discard
+        
+    finally:
+        var res: ValueDict = initOrderedTable[string,Value]()
+        for k, v in pairs(newSyms):
+            if not Syms.hasKey(k) or (newSyms[k]!=Syms[k]):
+                res[k] = v
+
+        return res
+
+    return Syms
+
 template execInternal*(path: string): untyped =
     discard execBlock(
         doParse(
@@ -296,7 +315,7 @@ template handleBranching*(tryDoing, finalize: untyped): untyped =
 # Methods
 #=======================================
 
-proc doExec*(input:Translation, depth: int = 0, args: Value = nil): ValueDict = 
+proc doExec*(input:Translation, args: Value = nil): ValueDict = 
 
     let cnst = input.constants
     let it = input.instructions
