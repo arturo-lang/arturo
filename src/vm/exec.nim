@@ -126,7 +126,7 @@ proc execBlock*(
     blk             : Value, 
     dictionary      : bool = false, 
     args            : Value = nil, 
-    evaluated       : sink Translation = nil, 
+    evaluated       : Translation = nil, 
     execInParent    : bool = false, 
     isFuncBlock     : bool = false, 
     imports         : Value = nil,
