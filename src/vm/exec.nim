@@ -128,6 +128,7 @@ proc execBlock*(
     args            : Value = nil, 
     hasArgs         : static bool = false,
     evaluated       : Translation = nil, 
+    hasEval         : static bool = false,
     execInParent    : static bool = false, 
     isFuncBlock     : static bool = false, 
     imports         : Value = nil,
@@ -177,7 +178,8 @@ proc execBlock*(
                     Syms[k] = v
 
         let evaled = 
-            if evaluated.isNil : 
+            when not hasEval:
+                #if evaluated.isNil : 
                 when dictionary: 
                     doEval(blk, isDictionary=true)
                 else: 
