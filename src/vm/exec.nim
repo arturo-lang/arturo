@@ -143,13 +143,12 @@ proc execBlock*(
     var savedSyms: OrderedTable[string,Value]
     var passedParams: Value
 
-    #Arities = savedArities
     try:
         when isFuncBlock:
             if unlikely(not memoized.isNil):
                 passedParams = newBlock()
-                #passedParams.a.add(memoized)
-                when hasArgs: #if not args.isNil:
+    
+                when hasArgs:
                     for i,arg in args.a:
                         passedParams.a.add(stack.peek(i))
 
@@ -179,7 +178,6 @@ proc execBlock*(
 
         let evaled = 
             when not hasEval:
-                #if evaluated.isNil : 
                 when dictionary: 
                     doEval(blk, isDictionary=true)
                 else: 
@@ -221,28 +219,21 @@ proc execBlock*(
                         for k in exports.a:
                             let newSymsKey = newSyms.getOrDefault(k.s, nil)
                             if not newSymsKey.isNil:
-                            # if newSyms.hasKey(k.s):
-                                Syms[k.s] = newSymsKey#newSyms[k.s]
+                                Syms[k.s] = newSymsKey
                 else:
-                    # for k, v in pairs(newSyms):
-                    #     if v.kind==Function and Syms.hasKey(k):
-                    #         if Syms[k].kind==Function:
-                    #             Arities[k]=getArity(Syms[k])
-                    #         else:
-                    #             Arities.del(k)
-                    when hasArgs:#if not args.isNil:
+                    when hasArgs:
                         for arg in args.a:
                             Arities.del(arg.s)
 
             else:
-                when not inTryBlock:# or (inTryBlock and getCurrentException().isNil()):
+                when not inTryBlock:
                     when execInParent:
                         Syms=newSyms
                     else:
                         Arities = savedArities
                         for k, v in pairs(newSyms):
                             if not (v.kind==Function and v.fnKind==BuiltinFunction):
-                                if Syms.hasKey(k):# and Syms[k]!=newSyms[k]:
+                                if Syms.hasKey(k):
                                     Syms[k] = newSyms[k]
                 else:
                     if getCurrentException().isNil():
@@ -252,7 +243,7 @@ proc execBlock*(
                             Arities = savedArities
                             for k, v in pairs(newSyms):
                                 if not (v.kind==Function and v.fnKind==BuiltinFunction):
-                                    if Syms.hasKey(k):# and Syms[k]!=newSyms[k]:
+                                    if Syms.hasKey(k):
                                         Syms[k] = newSyms[k]
 
     return Syms
