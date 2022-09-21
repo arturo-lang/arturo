@@ -242,9 +242,6 @@ proc execDictionaryBlock*(blk: Value): ValueDict =
 
     try:
         newSyms = doExec(doEval(blk, isDictionary=true))
-
-    except ReturnTriggered as e:
-        discard
         
     finally:
         var res: ValueDict = initOrderedTable[string,Value]()
