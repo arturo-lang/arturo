@@ -21,7 +21,7 @@ when not defined(WEB):
     import nre except Regex, toSeq
 
 import std/editdistance, json, os
-import sequtils, strutils, sugar
+import sequtils, strutils
 import unicode, std/wordwrap, xmltree
 
 import helpers/charsets
@@ -635,8 +635,8 @@ proc defineSymbols*() =
                     while keepGoing:
                         var evaled: Translation
 
-                        evaled = templateStore.getOrDefault(res, NoTranslation)
-                        if evaled == NoTranslation:
+                        evaled = templateStore.getOrDefault(res, nil)
+                        if evaled.isNil:
                             let initial = res
                             # make necessary substitutions
                             res = "««" & res.replace("<||=","<|| to :string ").multiReplace(

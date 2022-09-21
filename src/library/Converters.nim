@@ -383,7 +383,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                     of Bytecode:
                         var evaled = doEval(y)
                         if (hadAttr("optimized")):
-                            evaled = (evaled[0], optimizeBytecode(evaled))
+                            evaled = Translation(constants: evaled.constants, instructions: optimizeBytecode(evaled))
 
                         return newBytecode(evaled)
                        
@@ -398,9 +398,9 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                         else:
                             throwCannotConvert()
                     of Bytecode:
-                        var evaled = (y.d["data"].a, y.d["code"].a.map(proc (x:Value):byte = (byte)(x.i)))
+                        var evaled = Translation(constants: y.d["data"].a, instructions: y.d["code"].a.map(proc (x:Value):byte = (byte)(x.i)))
                         if (hadAttr("optimized")):
-                            evaled = (evaled[0], optimizeBytecode(evaled))
+                            evaled.instructions = optimizeBytecode(evaled)
 
                         return newBytecode(evaled)
                     else:
@@ -417,8 +417,8 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                 case tp:
                     of Dictionary:
                         return newDictionary({
-                            "data": newBlock(y.trans[0]),
-                            "code": newBlock(y.trans[1].map((w) => newInteger((int)w)))
+                            "data": newBlock(y.trans.constants),
+                            "code": newBlock(y.trans.instructions.map((w) => newInteger((int)w)))
                         }.toOrderedTable)
                     else:
                         throwCannotConvert()
@@ -726,7 +726,7 @@ proc defineSymbols*() =
             if checkAttr("as"):
                 x.ts.inherits = aAs.ts
 
-            x.ts.methods = newDictionary(execBlock(z,dictionary=true)).d
+            x.ts.methods = newDictionary(execDictionaryBlock(z)).d
             if (let initMethod = x.ts.methods.getOrDefault("init", nil); not initMethod.isNil):
                 x.ts.methods["init"] = newFunction(
                     newBlock(@[newWord("this")]),
@@ -821,12 +821,12 @@ proc defineSymbols*() =
                         dict[blk[idx].s] = blk[idx+1]
                         idx += 2
                 else:
-                    dict = execBlock(x,dictionary=true)
+                    dict = execDictionaryBlock(x)
             elif x.kind==String:
                 let (src, tp) = getSource(x.s)
 
                 if tp!=TextData:
-                    dict = execBlock(doParse(src, isFile=false), dictionary=true)#, isIsolated=true)
+                    dict = execDictionaryBlock(doParse(src, isFile=false))#, isIsolated=true)
                 else:
                     echo "file does not exist"
 

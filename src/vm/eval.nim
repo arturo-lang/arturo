@@ -689,7 +689,7 @@ proc doEval*(root: Value, isDictionary=false): Translation =
         when defined(OPTIMIZED):
             newit = optimizeBytecode(newit)
 
-    result = (cnsts, newit)
+    result = Translation(constants: cnsts, instructions: newit)
 
 template evalOrGet*(item: Value): untyped =
     if item.kind==Bytecode: item.trans

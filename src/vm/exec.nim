@@ -44,13 +44,13 @@ type
 
 var
     Memoizer*: OrderedTable[MemoizerKey,Value]
-    CurrentDump*: Translation = NoTranslation
+    CurrentDump*: Translation = nil
 
 #=======================================
 # Forward Declarations
 #=======================================
 
-proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): ValueDict
+proc doExec*(input:Translation, args: Value = nil): ValueDict
 
 #=======================================
 # Helpers
@@ -83,13 +83,15 @@ template loadByIndex(idx: int):untyped =
 template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
     if f.fnKind==UserFunction:
         hookProcProfiler("exec/callFunction:user"):
-            var memoized: Value = nil
-            if f.memoize: 
-                memoized = newString(fnName)
             let fArity = f.params.a.len
+            
             if unlikely(SP<fArity):
                 RuntimeError_NotEnoughArguments(fnName, fArity)
-            discard execBlock(f.main, args=f.params.a, isFuncBlock=true, imports=f.imports, exports=f.exports, exportable=f.exportable, memoized=memoized)
+
+            if unlikely(f.memoize): 
+                discard execBlock(f.main, args=f.params, hasArgs=true, isFuncBlock=true, imports=f.imports, exports=f.exports, exportable=f.exportable, memoized=newString(fnName), isMemoized=true)
+            else:
+                discard execBlock(f.main, args=f.params, hasArgs=true, isFuncBlock=true, imports=f.imports, exports=f.exports, exportable=f.exportable)
     else:
         f.action()
 
@@ -114,7 +116,7 @@ template fetchAttributeByIndex(idx: int):untyped =
 ####
 
 template execIsolated*(evaled:Translation): untyped =
-    doExec(evaled, 1, NoValues)
+    doExec(evaled)
 
 template getMemoized*(fn: string, v: Value): Value =
     Memoizer.getOrDefault((fn, value.hash(v)), nil)
@@ -124,49 +126,59 @@ template setMemoized*(fn: string, v: Value, res: Value) =
 
 proc execBlock*(
     blk             : Value, 
-    dictionary      : bool = false, 
-    args            : ValueArray = NoValues, 
-    evaluated       : Translation = NoTranslation, 
-    execInParent    : bool = false, 
-    isFuncBlock     : bool = false, 
+    args            : Value = nil, 
+    hasArgs         : static bool = false,
+    evaluated       : Translation = nil, 
+    hasEval         : static bool = false,
+    execInParent    : static bool = false, 
+    isFuncBlock     : static bool = false, 
     imports         : Value = nil,
     exports         : Value = nil,
     exportable      : bool = false,
-    inTryBlock      : bool = false,
-    memoized        : Value = nil
+    inTryBlock      : static bool = false,
+    memoized        : Value = nil,
+    isMemoized      : static bool = false
 ): ValueDict =
 
     var newSyms: ValueDict
-    let savedArities = Arities
-    var savedSyms: OrderedTable[string,Value]
-    
-    var passedParams: Value
 
-    Arities = savedArities
+    when isFuncBlock or ((not isFuncBlock) and (not execInParent)):
+        let savedArities = Arities
+
+    when isFuncBlock:
+        var savedSyms: OrderedTable[string,Value]
+
+    when isMemoized:
+        var passedParams: Value
+
     try:
-        if isFuncBlock:
-            if unlikely(not memoized.isNil):
+        when isFuncBlock:
+            when isMemoized:
                 passedParams = newBlock()
-                #passedParams.a.add(memoized)
-                for i,arg in args:
-                    passedParams.a.add(stack.peek(i))
+    
+                when hasArgs:
+                    for i,arg in args.a:
+                        passedParams.a.add(stack.peek(i))
+                    #passedParams.a.add(stack.peekRange(0, args.a.len-1))
 
                 if (let memd = getMemoized(memoized.s, passedParams); not memd.isNil):
-                    popN args.len
+                    when hasArgs:
+                        popN args.a.len
                     push memd
                     return Syms
             else:
-                for i,arg in args:          
-                    if stack.peek(i).kind==Function:
-                        Arities[arg.s] = stack.peek(i).params.a.len
-                    else:
-                        # TODO(VM/exec) Verify it's working correctly
-                        #  apparently, `del` won't do anything if the key did not exist
-                        #  labels: unit-test
+                when hasArgs:
+                    for i,arg in args.a:          
+                        if stack.peek(i).kind==Function:
+                            Arities[arg.s] = stack.peek(i).params.a.len
+                        else:
+                            # TODO(VM/exec) Verify it's working correctly
+                            #  apparently, `del` won't do anything if the key did not exist
+                            #  labels: unit-test
 
-                        Arities.del(arg.s)
-                        # if Arities.hasKey(arg.s):
-                        #     Arities.del(arg.s)
+                            Arities.del(arg.s)
+                            # if Arities.hasKey(arg.s):
+                            #     Arities.del(arg.s)
 
             if not imports.isNil:
                 savedSyms = Syms
@@ -174,66 +186,83 @@ proc execBlock*(
                     Syms[k] = v
 
         let evaled = 
-            if evaluated==NoTranslation : 
-                if dictionary       : doEval(blk, isDictionary=true)
-                else                : doEval(blk)
-            else                        : evaluated
+            when not hasEval:   
+                doEval(blk)
+            else: 
+                evaluated
 
-        newSyms = doExec(evaled, 1, args)
+        when hasArgs:
+            newSyms = doExec(evaled, args)
+        else:
+            newSyms = doExec(evaled)
 
+    # TODO(VM/exec) don't catch any error at all when isFuncBlock
+    #  we have to eliminate this: Hint: 'e' is declared but not used [XDeclaredButNotUsed]
+    #  labels: vm, execution, enhancement
     except ReturnTriggered as e:
-        if not isFuncBlock:
+        when not isFuncBlock:
             raise e
         else:
             discard
         
     finally:
-        if dictionary:
-            var res: ValueDict = initOrderedTable[string,Value]()
-            for k, v in pairs(newSyms):
-                if not Syms.hasKey(k) or (newSyms[k]!=Syms[k]):
-                    res[k] = v
+        when isFuncBlock:
+            when isMemoized:
+                setMemoized(memoized.s, passedParams, stack.peek(0))
 
-            return res
-        else:
-            if isFuncBlock:
-                if not memoized.isNil:
-                    setMemoized(memoized.s, passedParams, stack.peek(0))
+            if not imports.isNil:
+                Syms = savedSyms
 
-                if not imports.isNil:
-                    Syms = savedSyms
-
-                Arities = savedArities
-                if not exports.isNil():
-                    if exportable:
-                        Syms = newSyms
-                    else:
-                        for k in exports.a:
-                            let newSymsKey = newSyms.getOrDefault(k.s, nil)
-                            if not newSymsKey.isNil:
-                            # if newSyms.hasKey(k.s):
-                                Syms[k.s] = newSymsKey#newSyms[k.s]
+            Arities = savedArities
+            if not exports.isNil():
+                if exportable:
+                    Syms = newSyms
                 else:
-                    # for k, v in pairs(newSyms):
-                    #     if v.kind==Function and Syms.hasKey(k):
-                    #         if Syms[k].kind==Function:
-                    #             Arities[k]=getArity(Syms[k])
-                    #         else:
-                    #             Arities.del(k)
-
-                    for arg in args:
+                    for k in exports.a:
+                        let newSymsKey = newSyms.getOrDefault(k.s, nil)
+                        if not newSymsKey.isNil:
+                            Syms[k.s] = newSymsKey
+            else:
+                when hasArgs:
+                    for arg in args.a:
                         Arities.del(arg.s)
 
+        else:
+            when not inTryBlock:
+                when execInParent:
+                    Syms=newSyms
+                else:
+                    Arities = savedArities
+                    for k, v in pairs(newSyms):
+                        if not (v.kind==Function and v.fnKind==BuiltinFunction):
+                            if Syms.hasKey(k):
+                                Syms[k] = newSyms[k]
             else:
-                if not inTryBlock or (inTryBlock and getCurrentException().isNil()):
-                    if execInParent:
+                if getCurrentException().isNil():
+                    when execInParent:
                         Syms=newSyms
                     else:
                         Arities = savedArities
                         for k, v in pairs(newSyms):
                             if not (v.kind==Function and v.fnKind==BuiltinFunction):
-                                if Syms.hasKey(k):# and Syms[k]!=newSyms[k]:
+                                if Syms.hasKey(k):
                                     Syms[k] = newSyms[k]
+
+    return Syms
+
+proc execDictionaryBlock*(blk: Value): ValueDict =
+    var newSyms: ValueDict
+
+    try:
+        newSyms = doExec(doEval(blk, isDictionary=true))
+        
+    finally:
+        var res: ValueDict = initOrderedTable[string,Value]()
+        for k, v in pairs(newSyms):
+            if not Syms.hasKey(k) or (newSyms[k]!=Syms[k]):
+                res[k] = v
+
+        return res
 
     return Syms
 
@@ -276,10 +305,10 @@ template handleBranching*(tryDoing, finalize: untyped): untyped =
 # Methods
 #=======================================
 
-proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): ValueDict = 
+proc doExec*(input:Translation, args: Value = nil): ValueDict = 
 
-    let cnst = input[0]
-    let it = input[1]
+    let cnst = input.constants
+    let it = input.instructions
 
     var i = 0
     var op {.register.}: OpCode
@@ -287,12 +316,10 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
 
     oldSyms = Syms
 
-    if args!=NoValues:
-        for arg in args:
-            let symIndx = arg.s
-
+    if not args.isNil:
+        for arg in args.a:
             # pop argument and set it
-            Syms[symIndx] = move stack.pop()
+            Syms[arg.s] = move stack.pop()
 
     while true:
         {.computedGoTo.}

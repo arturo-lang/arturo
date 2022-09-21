@@ -19,7 +19,7 @@
 # Libraries
 #=======================================
 
-import algorithm, sequtils
+import algorithm
 
 import helpers/datasource
 when not defined(WEB):
@@ -151,7 +151,7 @@ proc defineSymbols*() =
                     push(v)
 
                 if fun.fnKind==UserFunction:
-                    discard execBlock(fun.main, args=fun.params.a, isFuncBlock=true, imports=fun.imports, exports=fun.exports)
+                    discard execBlock(fun.main, args=fun.params, hasArgs=true, isFuncBlock=true, imports=fun.imports, exports=fun.exports)
                 else:
                     fun.action()
         
@@ -259,14 +259,14 @@ proc defineSymbols*() =
                 if x.kind==Block:
                     # discard executeBlock(x)
                     if execInParent:
-                        discard execBlock(nil, evaluated=evaled, execInParent=true)
+                        discard execBlock(nil, evaluated=evaled, hasEval=true, execInParent=true)
                     else:
-                        discard execBlock(nil, evaluated=evaled)
+                        discard execBlock(nil, evaluated=evaled, hasEval=true)
                 elif x.kind==Bytecode:
                     if execInParent:
-                        discard execBlock(nil, evaluated=x.trans, execInParent=true)
+                        discard execBlock(nil, evaluated=x.trans, hasEval=true, execInParent=true)
                     else:
-                        discard execBlock(nil, evaluated=x.trans)
+                        discard execBlock(nil, evaluated=x.trans, hasEval=true)
                     
                 else: # string
                     let (src, tp) = getSource(x.s)
@@ -339,7 +339,7 @@ proc defineSymbols*() =
             ##########################################################
             let preevaled = evalOrGet(x)
             let y = pop() # pop the value of the previous operation (hopefully an 'if?' or 'when?')
-            if Not(y.b)==True: discard execBlock(nil, evaluated=preevaled)
+            if Not(y.b)==True: discard execBlock(nil, evaluated=preevaled, hasEval=true)
             
     builtin "ensure",
         alias       = unaliased, 
@@ -382,7 +382,7 @@ proc defineSymbols*() =
             let condition = not (x.kind==Null or (x.kind==Logical and x.b==False))
             if condition: 
                 let preevaled = evalOrGet(y)
-                discard execBlock(nil, evaluated=preevaled)
+                discard execBlock(nil, evaluated=preevaled, hasEval=true)
 
     builtin "if?",
         alias       = unaliased, 
@@ -417,7 +417,7 @@ proc defineSymbols*() =
             let condition = not (x.kind==Null or (x.kind==Logical and x.b==False))
             if condition: 
                 let preevaled = evalOrGet(y)
-                discard execBlock(nil, evaluated=preevaled)
+                discard execBlock(nil, evaluated=preevaled, hasEval=true)
                 # if vmReturn:
                 #     return ReturnResult
             push(newLogical(condition))
@@ -620,7 +620,10 @@ proc defineSymbols*() =
             let execInParent = (hadAttr("import"))
             try:
                 let preevaled = evalOrGet(x)
-                discard execBlock(nil, evaluated=preevaled, execInParent=execInParent, inTryBlock=true)
+                if execInParent:
+                    discard execBlock(nil, evaluated=preevaled, hasEval=true, execInParent=true, inTryBlock=true)
+                else:
+                    discard execBlock(nil, evaluated=preevaled, hasEval=true, inTryBlock=true)
             except:
                 let e = getCurrentException()
                 if verbose:
@@ -654,7 +657,11 @@ proc defineSymbols*() =
             let execInParent = (hadAttr("import"))
             try:
                 let preevaled = evalOrGet(x)
-                discard execBlock(nil, evaluated=preevaled, execInParent=execInParent, inTryBlock=true)
+                if execInParent:
+                    discard execBlock(nil, evaluated=preevaled, hasEval=true, execInParent=true, inTryBlock=true)
+                else:
+                    discard execBlock(nil, evaluated=preevaled, hasEval=true, inTryBlock=true)
+
                 push(VTRUE)
             except:
                 let e = getCurrentException()
@@ -682,7 +689,7 @@ proc defineSymbols*() =
             let condition = x.kind==Null or (x.kind==Logical and x.b==False)
             if condition: 
                 let preevaled = evalOrGet(y)
-                discard execBlock(nil, evaluated=preevaled)
+                discard execBlock(nil, evaluated=preevaled, hasEval=true)
 
     builtin "unless?",
         alias       = unaliased, 
@@ -717,7 +724,7 @@ proc defineSymbols*() =
             let condition = x.kind==Null or (x.kind==Logical and x.b==False)
             if condition: 
                 let preevaled = evalOrGet(y)
-                discard execBlock(nil, evaluated=preevaled)
+                discard execBlock(nil, evaluated=preevaled, hasEval=true)
                 # if vmReturn:
                 #     return ReturnResult
             push(newLogical(condition))
@@ -756,8 +763,8 @@ proc defineSymbols*() =
 
             while true:
                 handleBranching:
-                    discard execBlock(nil, evaluated=preevaledX)
-                    discard execBlock(nil, evaluated=preevaledY)
+                    discard execBlock(nil, evaluated=preevaledX, hasEval=true)
+                    discard execBlock(nil, evaluated=preevaledY, hasEval=true)
                     let popped = pop()
                     let condition = not (popped.kind==Null or (popped.kind==Logical and popped.b==False))
                     if condition:
@@ -868,25 +875,25 @@ proc defineSymbols*() =
                 while true:
                     handleBranching:
                         if execInParent:
-                            discard execBlock(nil, evaluated=preevaledY, execInParent=true)
+                            discard execBlock(nil, evaluated=preevaledY, hasEval=true, execInParent=true)
                         else:
-                            discard execBlock(nil, evaluated=preevaledY)
+                            discard execBlock(nil, evaluated=preevaledY, hasEval=true)
                     do:
                         discard
             else:
                 let preevaledX = evalOrGet(x)
                 let preevaledY = evalOrGet(y)
 
-                discard execBlock(nil, evaluated=preevaledX)
+                discard execBlock(nil, evaluated=preevaledX, hasEval=true)
                 var popped = pop()
 
                 while not (popped.kind==Null or (popped.kind==Logical and popped.b==False)):
                     handleBranching:
                         if execInParent:
-                            discard execBlock(nil, evaluated=preevaledY, execInParent=true)
+                            discard execBlock(nil, evaluated=preevaledY, hasEval=true, execInParent=true)
                         else:
-                            discard execBlock(nil, evaluated=preevaledY)
-                        discard execBlock(nil, evaluated=preevaledX)
+                            discard execBlock(nil, evaluated=preevaledY, hasEval=true)
+                        discard execBlock(nil, evaluated=preevaledX, hasEval=true)
                         popped = pop()
                     do:
                         discard
