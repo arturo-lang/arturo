@@ -177,7 +177,7 @@ proc execBlock*(
             if evaluated==NoTranslation : 
                 if dictionary       : doEval(blk, isDictionary=true)
                 else                : doEval(blk)
-            else                        : evaluated
+            else                        : move evaluated
 
         newSyms = doExec(evaled, 1, args)
 
