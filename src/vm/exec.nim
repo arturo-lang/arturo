@@ -50,7 +50,7 @@ var
 # Forward Declarations
 #=======================================
 
-proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): ValueDict
+proc doExec*(input:Translation, depth: int = 0, args: Value = nil): ValueDict
 
 #=======================================
 # Helpers
@@ -114,7 +114,7 @@ template fetchAttributeByIndex(idx: int):untyped =
 ####
 
 template execIsolated*(evaled:Translation): untyped =
-    doExec(evaled, 1, NoValues)
+    doExec(evaled, 1, nil)
 
 template getMemoized*(fn: string, v: Value): Value =
     Memoizer.getOrDefault((fn, value.hash(v)), nil)
@@ -187,7 +187,7 @@ proc execBlock*(
             else                        : evaluated
 
         when hasArgs:
-            newSyms = doExec(evaled, 1, args.a)
+            newSyms = doExec(evaled, 1, args)
         else:
             newSyms = doExec(evaled, 1)
 
@@ -296,7 +296,7 @@ template handleBranching*(tryDoing, finalize: untyped): untyped =
 # Methods
 #=======================================
 
-proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): ValueDict = 
+proc doExec*(input:Translation, depth: int = 0, args: Value = nil): ValueDict = 
 
     let cnst = input.constants
     let it = input.instructions
@@ -307,12 +307,10 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
 
     oldSyms = Syms
 
-    if args!=NoValues:
-        for arg in args:
-            let symIndx = arg.s
-
+    if not args.isNil:
+        for arg in args.a:
             # pop argument and set it
-            Syms[symIndx] = move stack.pop()
+            Syms[arg.s] = move stack.pop()
 
     while true:
         {.computedGoTo.}
