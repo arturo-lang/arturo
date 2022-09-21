@@ -83,13 +83,15 @@ template loadByIndex(idx: int):untyped =
 template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
     if f.fnKind==UserFunction:
         hookProcProfiler("exec/callFunction:user"):
-            var memoized: Value = nil
-            if f.memoize: 
-                memoized = newString(fnName)
             let fArity = f.params.a.len
+            
             if unlikely(SP<fArity):
                 RuntimeError_NotEnoughArguments(fnName, fArity)
-            discard execBlock(f.main, args=f.params, hasArgs=true, isFuncBlock=true, imports=f.imports, exports=f.exports, exportable=f.exportable, memoized=memoized)
+
+            if unlikely(f.memoize): 
+                discard execBlock(f.main, args=f.params, hasArgs=true, isFuncBlock=true, imports=f.imports, exports=f.exports, exportable=f.exportable, memoized=newString(fnName), isMemoized=true)
+            else:
+                discard execBlock(f.main, args=f.params, hasArgs=true, isFuncBlock=true, imports=f.imports, exports=f.exports, exportable=f.exportable)
     else:
         f.action()
 
@@ -134,7 +136,8 @@ proc execBlock*(
     exports         : Value = nil,
     exportable      : bool = false,
     inTryBlock      : static bool = false,
-    memoized        : Value = nil
+    memoized        : Value = nil,
+    isMemoized      : static bool = false
 ): ValueDict =
 
     var newSyms: ValueDict
@@ -148,8 +151,8 @@ proc execBlock*(
 
     try:
         when isFuncBlock:
-            if unlikely(not memoized.isNil):
-                passedParams = newBlock()
+            when isMemoized:
+                var passedParams = newBlock()
     
                 when hasArgs:
                     for i,arg in args.a:
@@ -201,7 +204,7 @@ proc execBlock*(
         
     finally:
         when isFuncBlock:
-            if not memoized.isNil:
+            when isMemoized:
                 setMemoized(memoized.s, passedParams, stack.peek(0))
 
             if not imports.isNil:
