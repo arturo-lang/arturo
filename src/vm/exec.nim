@@ -89,7 +89,7 @@ template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
             let fArity = f.params.a.len
             if unlikely(SP<fArity):
                 RuntimeError_NotEnoughArguments(fnName, fArity)
-            discard execBlock(f.main, args=f.params.a, isFuncBlock=true, imports=f.imports, exports=f.exports, exportable=f.exportable, memoized=memoized)
+            discard execBlock(f.main, args=f.params, isFuncBlock=true, imports=f.imports, exports=f.exports, exportable=f.exportable, memoized=memoized)
     else:
         f.action()
 
@@ -125,8 +125,8 @@ template setMemoized*(fn: string, v: Value, res: Value) =
 proc execBlock*(
     blk             : Value, 
     dictionary      : bool = false, 
-    args            : ValueArray = NoValues, 
-    evaluated       : Translation = NoTranslation, 
+    args            : Value = nil, 
+    evaluated       : sink Translation = NoTranslation, 
     execInParent    : bool = false, 
     isFuncBlock     : bool = false, 
     imports         : Value = nil,
@@ -139,7 +139,6 @@ proc execBlock*(
     var newSyms: ValueDict
     let savedArities = Arities
     var savedSyms: OrderedTable[string,Value]
-    
     var passedParams: Value
 
     #Arities = savedArities
@@ -148,25 +147,28 @@ proc execBlock*(
             if unlikely(not memoized.isNil):
                 passedParams = newBlock()
                 #passedParams.a.add(memoized)
-                for i,arg in args:
-                    passedParams.a.add(stack.peek(i))
+                if not args.isNil:
+                    for i,arg in args.a:
+                        passedParams.a.add(stack.peek(i))
 
                 if (let memd = getMemoized(memoized.s, passedParams); not memd.isNil):
-                    popN args.len
+                    if not args.isNil:
+                        popN args.a.len
                     push memd
                     return Syms
             else:
-                for i,arg in args:          
-                    if stack.peek(i).kind==Function:
-                        Arities[arg.s] = stack.peek(i).params.a.len
-                    else:
-                        # TODO(VM/exec) Verify it's working correctly
-                        #  apparently, `del` won't do anything if the key did not exist
-                        #  labels: unit-test
+                if not args.isNil:
+                    for i,arg in args.a:          
+                        if stack.peek(i).kind==Function:
+                            Arities[arg.s] = stack.peek(i).params.a.len
+                        else:
+                            # TODO(VM/exec) Verify it's working correctly
+                            #  apparently, `del` won't do anything if the key did not exist
+                            #  labels: unit-test
 
-                        Arities.del(arg.s)
-                        # if Arities.hasKey(arg.s):
-                        #     Arities.del(arg.s)
+                            Arities.del(arg.s)
+                            # if Arities.hasKey(arg.s):
+                            #     Arities.del(arg.s)
 
             if not imports.isNil:
                 savedSyms = Syms
@@ -177,9 +179,12 @@ proc execBlock*(
             if evaluated==NoTranslation : 
                 if dictionary       : doEval(blk, isDictionary=true)
                 else                : doEval(blk)
-            else                        : move evaluated
+            else                        : evaluated
 
-        newSyms = doExec(evaled, 1, args)
+        if not args.isNil:
+            newSyms = doExec(evaled, 1, args.a)
+        else:
+            newSyms = doExec(evaled, 1)
 
     except ReturnTriggered as e:
         if not isFuncBlock:
@@ -220,9 +225,9 @@ proc execBlock*(
                     #             Arities[k]=getArity(Syms[k])
                     #         else:
                     #             Arities.del(k)
-
-                    for arg in args:
-                        Arities.del(arg.s)
+                    if not args.isNil:
+                        for arg in args.a:
+                            Arities.del(arg.s)
 
             else:
                 if not inTryBlock or (inTryBlock and getCurrentException().isNil()):
