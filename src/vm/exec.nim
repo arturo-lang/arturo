@@ -283,8 +283,8 @@ template handleBranching*(tryDoing, finalize: untyped): untyped =
 
 proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): ValueDict = 
 
-    let cnst = input[0]
-    let it = input[1]
+    let cnst = input.constants
+    let it = input.instructions
 
     var i = 0
     var op {.register.}: OpCode
