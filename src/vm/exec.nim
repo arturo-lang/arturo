@@ -89,7 +89,7 @@ template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
             let fArity = f.params.a.len
             if unlikely(SP<fArity):
                 RuntimeError_NotEnoughArguments(fnName, fArity)
-            discard execBlock(f.main, args=f.params, isFuncBlock=true, imports=f.imports, exports=f.exports, exportable=f.exportable, memoized=memoized)
+            discard execBlock(f.main, args=f.params, hasArgs=true, isFuncBlock=true, imports=f.imports, exports=f.exports, exportable=f.exportable, memoized=memoized)
     else:
         f.action()
 
@@ -126,6 +126,7 @@ proc execBlock*(
     blk             : Value, 
     dictionary      : static bool = false, 
     args            : Value = nil, 
+    hasArgs         : static bool = false,
     evaluated       : Translation = nil, 
     execInParent    : static bool = false, 
     isFuncBlock     : static bool = false, 
@@ -147,17 +148,17 @@ proc execBlock*(
             if unlikely(not memoized.isNil):
                 passedParams = newBlock()
                 #passedParams.a.add(memoized)
-                if not args.isNil:
+                when hasArgs: #if not args.isNil:
                     for i,arg in args.a:
                         passedParams.a.add(stack.peek(i))
 
                 if (let memd = getMemoized(memoized.s, passedParams); not memd.isNil):
-                    if not args.isNil:
+                    when hasArgs:
                         popN args.a.len
                     push memd
                     return Syms
             else:
-                if not args.isNil:
+                when hasArgs:
                     for i,arg in args.a:          
                         if stack.peek(i).kind==Function:
                             Arities[arg.s] = stack.peek(i).params.a.len
@@ -183,7 +184,7 @@ proc execBlock*(
                     doEval(blk)
             else                        : evaluated
 
-        if not args.isNil:
+        when hasArgs:
             newSyms = doExec(evaled, 1, args.a)
         else:
             newSyms = doExec(evaled, 1)
@@ -195,7 +196,7 @@ proc execBlock*(
             discard
         
     finally:
-        if dictionary:
+        when dictionary:
             var res: ValueDict = initOrderedTable[string,Value]()
             for k, v in pairs(newSyms):
                 if not Syms.hasKey(k) or (newSyms[k]!=Syms[k]):
@@ -227,7 +228,7 @@ proc execBlock*(
                     #             Arities[k]=getArity(Syms[k])
                     #         else:
                     #             Arities.del(k)
-                    if not args.isNil:
+                    when hasArgs:#if not args.isNil:
                         for arg in args.a:
                             Arities.del(arg.s)
 
