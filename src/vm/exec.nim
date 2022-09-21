@@ -142,7 +142,7 @@ proc execBlock*(
     
     var passedParams: Value
 
-    Arities = savedArities
+    #Arities = savedArities
     try:
         if isFuncBlock:
             if unlikely(not memoized.isNil):
