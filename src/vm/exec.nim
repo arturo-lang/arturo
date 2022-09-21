@@ -124,7 +124,7 @@ template setMemoized*(fn: string, v: Value, res: Value) =
 
 proc execBlock*(
     blk             : Value, 
-    dictionary      : bool = false, 
+    dictionary      : static bool = false, 
     args            : Value = nil, 
     evaluated       : Translation = nil, 
     execInParent    : static bool = false, 
@@ -177,8 +177,10 @@ proc execBlock*(
 
         let evaled = 
             if evaluated.isNil : 
-                if dictionary       : doEval(blk, isDictionary=true)
-                else                : doEval(blk)
+                when dictionary: 
+                    doEval(blk, isDictionary=true)
+                else: 
+                    doEval(blk)
             else                        : evaluated
 
         if not args.isNil:
