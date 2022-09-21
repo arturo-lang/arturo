@@ -139,8 +139,10 @@ proc execBlock*(
 
     var newSyms: ValueDict
     let savedArities = Arities
-    var savedSyms: OrderedTable[string,Value]
-    var passedParams: Value
+    
+    when isFuncBlock:
+        var savedSyms: OrderedTable[string,Value]
+        var passedParams: Value
 
     try:
         when isFuncBlock:
