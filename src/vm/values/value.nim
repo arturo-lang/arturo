@@ -54,7 +54,9 @@ type
     ValueArray* = seq[Value]
     ValueDict*  = OrderedTable[string,Value]
 
-    Translation* = (ValueArray, ByteArray) # (constants, instructions)
+    Translation* = ref object
+        constants*: ValueArray
+        instructions*: ByteArray #) # (constants, instructions)
 
     IntArray*   = seq[int]
 
@@ -355,7 +357,6 @@ type
 
 const
     NoValues*       = @[]
-    NoTranslation*  = (@[],@[])
 
 #=======================================
 # Fixed Values
@@ -2730,21 +2731,21 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
 
             var instrs: ValueArray = @[]
             var j = 0
-            while j < v.trans[1].len:
-                let op = (OpCode)(v.trans[1][j])
+            while j < v.trans.instructions.len:
+                let op = (OpCode)(v.trans.instructions[j])
                 instrs.add(newWord(stringify(((OpCode)(op)))))
                 if op in [opPush, opStore, opCall, opLoad, opStorl, opAttr, opEol]:
                     j += 1
-                    instrs.add(newInteger((int)v.trans[1][j]))
+                    instrs.add(newInteger((int)v.trans.instructions[j]))
                 elif op in [opPushX, opStoreX, opCallX, opLoadX, opStorlX, opEolX]:
                     j += 2
-                    instrs.add(newInteger((int)((uint16)(v.trans[1][j-1]) shl 8 + (byte)(v.trans[1][j]))))
+                    instrs.add(newInteger((int)((uint16)(v.trans.instructions[j-1]) shl 8 + (byte)(v.trans.instructions[j]))))
 
                 j += 1
 
             dumpHeader("DATA")
 
-            for i,child in v.trans[0]:
+            for i,child in v.trans.constants:
                 var prep: string
                 if not muted:   prep=fmt("{resetColor}{bold(whiteColor)}{i}: {resetColor}")
                 else:           prep=fmt("{i}: ")

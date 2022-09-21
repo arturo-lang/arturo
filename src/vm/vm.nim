@@ -179,7 +179,7 @@ when not defined(WEB):
 
             initProfiler()
             
-            let mainCode = doParse(code, isFile)
+            let mainCode = doParse(code, isFile=isFile)
 
             if not initialized:
                 initialize(

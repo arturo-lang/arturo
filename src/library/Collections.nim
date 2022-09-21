@@ -536,9 +536,9 @@ proc defineSymbols*() =
                 of Binary: push(newInteger((int)x.n[key.i]))
                 of Bytecode: 
                     if key.s == "data":
-                        push(newBlock(x.trans[0]))
+                        push(newBlock(x.trans.constants))
                     elif key.s == "code":
-                        push(newBlock(x.trans[1].map((w) => newInteger((int)w))))
+                        push(newBlock(x.trans.instructions.map((w) => newInteger((int)w))))
                     else:
                         push(VNULL)
                 of Dictionary: 
@@ -1197,9 +1197,9 @@ proc defineSymbols*() =
                             x.n[bi + key.i] = bt
                 of Bytecode:
                     if key.s=="data":
-                        x.trans[0] = y.a
+                        x.trans.constants = y.a
                     elif key.s=="code":
-                        x.trans[1] = y.a.map((w) => (byte)(w.i))
+                        x.trans.instructions = y.a.map((w) => (byte)(w.i))
                     else:
                         discard
                 of Dictionary:
