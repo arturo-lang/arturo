@@ -18,7 +18,7 @@
 
 when not defined(WEB):
     import algorithm, asyncdispatch, httpclient
-    import httpcore, os, sequtils, smtp, strformat
+    import httpcore, os, smtp, strformat
     import strutils, times, uri
 
     import helpers/jsonobject

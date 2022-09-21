@@ -19,7 +19,7 @@
 # Libraries
 #=======================================
 
-import algorithm, sequtils
+import algorithm
 
 import helpers/datasource
 when not defined(WEB):
