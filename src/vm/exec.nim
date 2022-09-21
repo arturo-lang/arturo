@@ -128,7 +128,7 @@ proc execBlock*(
     args            : Value = nil, 
     evaluated       : Translation = nil, 
     execInParent    : static bool = false, 
-    isFuncBlock     : bool = false, 
+    isFuncBlock     : static bool = false, 
     imports         : Value = nil,
     exports         : Value = nil,
     exportable      : bool = false,
@@ -143,7 +143,7 @@ proc execBlock*(
 
     #Arities = savedArities
     try:
-        if isFuncBlock:
+        when isFuncBlock:
             if unlikely(not memoized.isNil):
                 passedParams = newBlock()
                 #passedParams.a.add(memoized)
@@ -187,7 +187,7 @@ proc execBlock*(
             newSyms = doExec(evaled, 1)
 
     except ReturnTriggered as e:
-        if not isFuncBlock:
+        when not isFuncBlock:
             raise e
         else:
             discard
@@ -201,7 +201,7 @@ proc execBlock*(
 
             return res
         else:
-            if isFuncBlock:
+            when isFuncBlock:
                 if not memoized.isNil:
                     setMemoized(memoized.s, passedParams, stack.peek(0))
 
