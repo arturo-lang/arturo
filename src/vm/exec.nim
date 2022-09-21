@@ -127,7 +127,7 @@ proc execBlock*(
     dictionary      : bool = false, 
     args            : Value = nil, 
     evaluated       : Translation = nil, 
-    execInParent    : bool = false, 
+    execInParent    : static bool = false, 
     isFuncBlock     : bool = false, 
     imports         : Value = nil,
     exports         : Value = nil,
@@ -231,7 +231,7 @@ proc execBlock*(
 
             else:
                 if not inTryBlock or (inTryBlock and getCurrentException().isNil()):
-                    if execInParent:
+                    when execInParent:
                         Syms=newSyms
                     else:
                         Arities = savedArities
