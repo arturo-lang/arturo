@@ -357,7 +357,6 @@ type
 
 const
     NoValues*       = @[]
-    NoTranslation*  = nil#(@[],@[])
 
 #=======================================
 # Fixed Values
