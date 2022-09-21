@@ -147,14 +147,17 @@ proc execBlock*(
 
     when isFuncBlock:
         var savedSyms: OrderedTable[string,Value]
+
+    when isMemoized:
         var passedParams: Value
 
     try:
         when isFuncBlock:
             when isMemoized:
-                var passedParams = newBlock()
+                passedParams = newBlock()
     
                 when hasArgs:
+                    #passedParams.a.add(stack.peekRange(0, args.a.len-1))
                     for i,arg in args.a:
                         passedParams.a.add(stack.peek(i))
 

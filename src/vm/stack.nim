@@ -60,6 +60,12 @@ template popN*(n: int) =
 template peek*(pos: int): Value =
     Stack[SP-1-pos]
 
+# TODO(VM/stack) `peekRange` not working
+#  and unused... but it could be fixed, if we can defined reverse ranges
+#  labels: vm, enhancement
+template peekRange*(posFrom: int, posTo: int): ValueArray =
+    Stack[SP-1-posFrom .. SP-1-posTo]
+
 template sTop*(): Value =
     Stack[SP-1]
 
