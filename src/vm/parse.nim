@@ -77,7 +77,7 @@ const
 # Forward declarations
 #=======================================
 
-proc doParse*(input: string, isFile: bool = true): Value
+proc doParse*(input: string, isFile: static bool = true): Value
 proc parseDataBlock*(blk: Value): Value 
 
 #=======================================
@@ -1095,12 +1095,12 @@ when defined(PYTHONIC):
         
         lines.join("\n")
 
-proc doParse*(input: string, isFile: bool = true): Value =
+proc doParse*(input: string, isFile: static bool = true): Value =
     hookProcProfiler("parse/doParse"):
         var p: Parser
 
         # open stream
-        if isFile:
+        when isFile:
             var filePath = input
             when not defined(WEB):
                 if unlikely(not fileExists(filePath)):
