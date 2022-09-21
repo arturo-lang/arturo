@@ -191,8 +191,8 @@ when isMainModule and not defined(WEB):
                 var target = code & ".bcode"
 
                 let evaled = newBytecode(run(code, arguments, isFile=true, doExecute=false))
-                let dataS = codify(newBlock(evaled.trans[0]), unwrapped=true, safeStrings=true)
-                let codeS = evaled.trans[1]
+                let dataS = codify(newBlock(evaled.trans.constants), unwrapped=true, safeStrings=true)
+                let codeS = evaled.trans.instructions
 
                 discard writeBytecode(dataS, codeS, target, compressed=true)
 
@@ -200,7 +200,7 @@ when isMainModule and not defined(WEB):
                 let filename = code
                 let bcode = readBytecode(code)
                 let parsed = doParse(bcode[0], isFile=false).a[0]
-                runBytecode((parsed.a, bcode[1]), filename, arguments)
+                runBytecode(Translation(constants: parsed.a, instructions: bcode[1]), filename, arguments)
 
             of showPInfo:
                 showPackageInfo(code)
