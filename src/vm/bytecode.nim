@@ -72,7 +72,7 @@ template keep(): untyped =
     p.inc()
 
 proc optimize(trans: Translation): ByteArray =
-    let (_, a) = trans
+    let a = trans.instructions
     var i = 0
     var p = 0
     let aLen = a.len
