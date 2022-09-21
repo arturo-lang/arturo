@@ -306,7 +306,7 @@ proc defineSymbols*() =
                     elif (hadAttr("bytecode")):
                         let bcode = readBytecode(x.s)
                         let parsed = doParse(bcode[0], isFile=false).a[0]
-                        push(newBytecode((parsed.a, bcode[1])))
+                        push(newBytecode(Translation(constants: parsed.a, instructions: bcode[1])))
                     else:
                         when not defined(NOPARSERS):
                             if (hadAttr("toml")):
@@ -480,8 +480,8 @@ proc defineSymbols*() =
                 when defined(SAFE): RuntimeError_OperationNotPermitted("write")
 
                 if y.kind==Bytecode:
-                    let dataS = codify(newBlock(y.trans[0]), unwrapped=true, safeStrings=true)
-                    let codeS = y.trans[1]
+                    let dataS = codify(newBlock(y.trans.constants), unwrapped=true, safeStrings=true)
+                    let codeS = y.trans.instructions
                     discard writeBytecode(dataS, codeS, x.s)
                 else:
                     if (hadAttr("directory")):
