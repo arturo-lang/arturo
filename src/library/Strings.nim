@@ -21,7 +21,7 @@ when not defined(WEB):
     import nre except Regex, toSeq
 
 import std/editdistance, json, os
-import sequtils, strutils, sugar
+import sequtils, strutils
 import unicode, std/wordwrap, xmltree
 
 import helpers/charsets
