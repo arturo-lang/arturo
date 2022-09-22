@@ -319,7 +319,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                         return newInline(blk)
                     of Dictionary:
                         let stop = SP
-                        discard execBlock(y)
+                        execBlock(y)
 
                         let arr: ValueArray = sTopsFrom(stop)
                         var dict: ValueDict = initOrderedTable[string,Value]()
@@ -336,7 +336,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                     of Object:
                         if x.tpKind==UserType:
                             let stop = SP
-                            discard execBlock(y)
+                            execBlock(y)
 
                             let arr: ValueArray = sTopsFrom(stop)
                             SP = stop
@@ -569,12 +569,12 @@ proc defineSymbols*() =
                 let stop = SP
 
                 if x.kind==Block:
-                    discard execBlock(x)
+                    execBlock(x)
                 elif x.kind==String:
                     let (_{.inject.}, tp) = getSource(x.s)
 
                     if tp!=TextData:
-                        discard execBlock(doParse(x.s, isFile=false))#, isIsolated=true)
+                        execBlock(doParse(x.s, isFile=false))#, isIsolated=true)
                     else:
                         echo "file does not exist"
 

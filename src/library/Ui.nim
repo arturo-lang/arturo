@@ -299,7 +299,7 @@ proc defineSymbols*() =
                                     push(v)
 
                                 if fun.fnKind==UserFunction:
-                                    discard execBlock(fun.main, args=fun.params, hasArgs=true, isFuncBlock=true, imports=fun.imports, exports=fun.exports)
+                                    execBlock(fun.main, args=fun.params, hasArgs=true, isFuncBlock=true, imports=fun.imports, exports=fun.exports)
                                 else:
                                     fun.action()
 
@@ -309,12 +309,12 @@ proc defineSymbols*() =
                             let parsed = doParse(value.s, isFile=false)
                             let prevSP = SP
                             if not isNil(parsed):
-                                discard execBlock(parsed)
+                                execBlock(parsed)
                             if SP > prevSP:
                                 result = pop()
                         elif call==WebviewEvent:
                             if (let onEvent = on.getOrDefault(value.s, nil); not onEvent.isNil):
-                                discard execBlock(onEvent)
+                                execBlock(onEvent)
                         else:
                             discard
                 )

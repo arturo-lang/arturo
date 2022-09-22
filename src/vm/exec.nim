@@ -89,9 +89,9 @@ template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
                 RuntimeError_NotEnoughArguments(fnName, fArity)
 
             if unlikely(f.memoize): 
-                discard execBlock(f.main, args=f.params, hasArgs=true, isFuncBlock=true, imports=f.imports, exports=f.exports, exportable=f.exportable, memoized=newString(fnName), isMemoized=true)
+                execBlock(f.main, args=f.params, hasArgs=true, isFuncBlock=true, imports=f.imports, exports=f.exports, exportable=f.exportable, memoized=newString(fnName), isMemoized=true)
             else:
-                discard execBlock(f.main, args=f.params, hasArgs=true, isFuncBlock=true, imports=f.imports, exports=f.exports, exportable=f.exportable)
+                execBlock(f.main, args=f.params, hasArgs=true, isFuncBlock=true, imports=f.imports, exports=f.exports, exportable=f.exportable)
     else:
         f.action()
 
@@ -138,8 +138,7 @@ proc execBlock*(
     inTryBlock      : static bool = false,
     memoized        : Value = nil,
     isMemoized      : static bool = false
-): ValueDict =
-
+) =
     var newSyms: ValueDict
 
     when isFuncBlock or ((not isFuncBlock) and (not execInParent)):
@@ -165,7 +164,7 @@ proc execBlock*(
                     when hasArgs:
                         popN args.a.len
                     push memd
-                    return Syms
+                    return
             else:
                 when hasArgs:
                     for i,arg in args.a:          
@@ -221,7 +220,7 @@ proc execBlock*(
         else:
             when not inTryBlock:
                 when execInParent:
-                    Syms=newSyms
+                    Syms = newSyms
                 else:
                     Arities = savedArities
                     for k, v in pairs(newSyms):
@@ -231,15 +230,13 @@ proc execBlock*(
             else:
                 if getCurrentException().isNil():
                     when execInParent:
-                        Syms=newSyms
+                        Syms = newSyms
                     else:
                         Arities = savedArities
                         for k, v in pairs(newSyms):
                             if not (v.kind==Function and v.fnKind==BuiltinFunction):
                                 if Syms.hasKey(k):
                                     Syms[k] = newSyms[k]
-
-    return Syms
 
 proc execDictionaryBlock*(blk: Value): ValueDict =
     var newSyms: ValueDict
@@ -258,7 +255,7 @@ proc execDictionaryBlock*(blk: Value): ValueDict =
     return Syms
 
 template execInternal*(path: string): untyped =
-    discard execBlock(
+    execBlock(
         doParse(
             static readFile(
                 normalizedPath(
