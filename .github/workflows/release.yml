@@ -7,13 +7,13 @@ on:
 
 env:
   app-name: arturo
- 
+
 defaults:
   run:
     shell: bash -l {0}
 
 jobs:
-  
+
   unix:
     name: "Package *nix"
     runs-on: ${{ matrix.os }}
@@ -82,7 +82,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        os: 
+        os:
           - linux
         arch:
           - arm
@@ -238,7 +238,7 @@ jobs:
           7z x dist/nim.zip -onim
 
           cp src/extras/webview/deps/dlls/x64/*.dll bin
-          
+
           export PATH="${{ github.workspace }}/nim/nim-1.6.4/bin":$PATH
 
           nim --version
@@ -256,7 +256,7 @@ jobs:
           curl -L https://nim-lang.org/download/nim-1.6.4_x64.zip -o dist/nim.zip
           7z x dist/dlls.zip -obin
           7z x dist/nim.zip -onim
-          
+
           export PATH="${{ github.workspace }}/nim/nim-1.6.4/bin":$PATH
 
           ./build.nims install ${{ matrix.version }} log release
@@ -265,14 +265,14 @@ jobs:
         if: matrix.version == 'full'
         run: |
           mkdir arturo-${{matrix.version}}-${{matrix.os}}
-          
+
           curl -L https://arturo-lang.s3.amazonaws.com/libcrypto-1_1-x64.dll -o libcrypto-1_1-x64.dll
           curl -L https://arturo-lang.s3.amazonaws.com/libssl-1_1-x64.dll -o libssl-1_1-x64.dll
           curl -L https://arturo-lang.s3.amazonaws.com/pcre64.dll -o pcre64.dll
           curl -L https://arturo-lang.s3.amazonaws.com/sqlite3_64.dll -o sqlite3_64.dll
           curl -L https://arturo-lang.s3.amazonaws.com/libgmp-10.dll -o libgmp-10.dll
           curl -L https://arturo-lang.s3.amazonaws.com/libmpfr-4.dll -o limpfr-4.dll
-          
+
           cp *.dll arturo-${{matrix.version}}-${{matrix.os}}
           cp src/extras/webview/deps/dlls/x64/webview.dll arturo-${{matrix.version}}-${{matrix.os}}
           cp src/extras/webview/deps/dlls/x64/WebView2Loader.dll arturo-${{matrix.version}}-${{matrix.os}}
@@ -286,7 +286,7 @@ jobs:
         if: matrix.version == 'mini'
         run: |
           mkdir arturo-${{matrix.version}}-${{matrix.os}}
-          
+
           curl -L https://arturo-lang.s3.amazonaws.com/libcrypto-1_1-x64.dll -o libcrypto-1_1-x64.dll
           curl -L https://arturo-lang.s3.amazonaws.com/libssl-1_1-x64.dll -o libssl-1_1-x64.dll
           curl -L https://arturo-lang.s3.amazonaws.com/pcre64.dll -o pcre64.dll
@@ -301,13 +301,20 @@ jobs:
       - name: Package artifact
         run: |
           7z a ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{runner.os}}-${{matrix.version}}.zip arturo-${{matrix.version}}-${{matrix.os}}/*
+          tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-WindowsMsys2-${{matrix.version}}.tar.gz arturo-${{matrix.version}}-${{matrix.os}}/*
 
       - name: Upload Artifact
         uses: 'actions/upload-artifact@v1'
         with:
           name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{runner.os}}-${{matrix.version}}.zip
           path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{runner.os}}-${{matrix.version}}.zip
-  
+
+      - name: Upload Msys Artifact
+        uses: 'actions/upload-artifact@v1'
+        with:
+          name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-WindowsMsys2-${{matrix.version}}.tar.gz
+          path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-WindowsMsys2-${{matrix.version}}.tar.gz
+
   web:
     name: "Package Web"
     runs-on: ${{ matrix.os }}
@@ -370,7 +377,7 @@ jobs:
     name: "Upload"
     runs-on: ubuntu-latest
     if: ${{ always() }}
-    needs: 
+    needs:
       - unix
       - raspberry
       - freebsd
@@ -397,7 +404,7 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           path: ./assets
-      
+
       - name: Display structure of downloaded files
         run: ls -R
 
