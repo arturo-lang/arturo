@@ -196,9 +196,6 @@ proc execBlock*(
         else:
             newSyms = doExec(evaled)
 
-    # TODO(VM/exec) don't catch any error at all when isFuncBlock
-    #  we have to eliminate this: Hint: 'e' is declared but not used [XDeclaredButNotUsed]
-    #  labels: vm, execution, enhancement
     except ReturnTriggered:
         when not isFuncBlock:
             raise
