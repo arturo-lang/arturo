@@ -199,9 +199,9 @@ proc execBlock*(
     # TODO(VM/exec) don't catch any error at all when isFuncBlock
     #  we have to eliminate this: Hint: 'e' is declared but not used [XDeclaredButNotUsed]
     #  labels: vm, execution, enhancement
-    except ReturnTriggered as e:
+    except ReturnTriggered:
         when not isFuncBlock:
-            raise e
+            raise
         else:
             discard
         
