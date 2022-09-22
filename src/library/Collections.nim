@@ -526,7 +526,7 @@ proc defineSymbols*() =
             if y.kind==String or y.kind==Integer: 
                 key = y
             elif y.kind==Block:
-                discard execBlock(y)
+                execBlock(y)
                 key = pop()
             else:
                 key = newString($(y))
@@ -1176,7 +1176,7 @@ proc defineSymbols*() =
             if y.kind==String or y.kind==Integer: 
                 key = y
             elif y.kind==Block:
-                discard execBlock(y)
+                execBlock(y)
                 key = pop()
             else:
                 key = newString($(y))
