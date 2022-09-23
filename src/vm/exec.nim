@@ -50,11 +50,14 @@ var
 # Forward Declarations
 #=======================================
 
-proc doExec*(input:Translation, args: Value = nil): ValueDict
+proc doExec*(cnst: ValueArray, it: ByteArray, args: Value = nil): ValueDict
 
 #=======================================
 # Helpers
 #=======================================
+
+template doExec*(input: Translation, args: Value = nil): ValueDict =
+    doExec(input.constants, input.instructions, args)
 
 template pushByIndex(idx: int):untyped =
     stack.push(cnst[idx])
@@ -293,11 +296,7 @@ template handleBranching*(tryDoing, finalize: untyped): untyped =
 # Methods
 #=======================================
 
-proc doExec*(input:Translation, args: Value = nil): ValueDict = 
-
-    let cnst = input.constants
-    let it = input.instructions
-
+proc doExec*(cnst: ValueArray, it: ByteArray, args: Value = nil): ValueDict = 
     var i = 0
     var op {.register.}: OpCode
     var oldSyms: ValueDict
