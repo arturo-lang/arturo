@@ -615,5 +615,7 @@ proc doExec*(input:Translation, args: Value = nil): ValueDict =
 
         i += 1
 
-    result = Syms
+    let newSyms = Syms
     Syms = oldSyms
+
+    return newSyms
