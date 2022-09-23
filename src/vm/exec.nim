@@ -65,23 +65,23 @@ template pushByIndex(idx: int):untyped =
 template storeByIndex(idx: int, doPop = true):untyped =
     hookProcProfiler("exec/storeByIndex"):
         let symIndx = cnst[idx].s
-        when doPop:
-            Syms[symIndx] = move stack.pop()
-        else:
-            Syms[symIndx] = stack.peek(0)
+        Syms[symIndx] =
+            when doPop:
+                move stack.pop()
+            else:
+                stack.peek(0)
 
         if unlikely(Syms[symIndx].kind==Function):
             let fun = Syms[symIndx]
-            if fun.fnKind==BuiltinFunction:
-                Arities[symIndx] = fun.arity
-            else:
-                Arities[symIndx] = fun.params.a.len
+            Arities[symIndx] = 
+                if fun.fnKind==BuiltinFunction:
+                    fun.arity
+                else:
+                    fun.params.a.len
 
 template loadByIndex(idx: int):untyped =
     hookProcProfiler("exec/loadByIndex"):
-        #let symIndx = cnst[idx].s
-        let item = GetSym(cnst[idx].s)
-        stack.push(item)
+        stack.push(GetSym(cnst[idx].s))
 
 template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
     if f.fnKind==UserFunction:
@@ -107,14 +107,10 @@ template callByIndex(idx: int):untyped =
         if cnst[idx].kind==Function:
             callFunction(cnst[idx])
         else:
-            let symIndx = cnst[idx].s
-            callByName(symIndx)
+            callByName(cnst[idx].s)
 
 template fetchAttributeByIndex(idx: int):untyped =
-    let attr = cnst[idx]
-    let val = move stack.pop()
-
-    stack.pushAttr(attr.r, val)
+    stack.pushAttr(cnst[idx].r, move stack.pop())
 
 ####
 
