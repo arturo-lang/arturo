@@ -79,8 +79,8 @@ template storeByIndex(idx: int, doPop = true):untyped =
 
 template loadByIndex(idx: int):untyped =
     hookProcProfiler("exec/loadByIndex"):
-        let symIndx = cnst[idx].s
-        let item = GetSym(symIndx)
+        #let symIndx = cnst[idx].s
+        let item = GetSym(cnst[idx].s)
         stack.push(item)
 
 template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
