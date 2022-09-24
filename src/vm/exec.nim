@@ -155,8 +155,11 @@ proc execBlock*(
                 passedParams = newBlock()
     
                 when hasArgs:
-                    for i,arg in args.a:
+                    var i=0
+                    let argsLen = len(args.a)
+                    while i < argsLen:
                         passedParams.a.add(stack.peek(i))
+                        inc i
                     #passedParams.a.add(stack.peekRange(0, args.a.len-1))
 
                 if (let memd = getMemoized(memoized.s, passedParams); not memd.isNil):
