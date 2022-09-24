@@ -13,7 +13,7 @@
 # Libraries
 #=======================================
 
-import hashes, tables
+import hashes, sugar, tables
 
 when defined(VERBOSE):
     import strformat
@@ -50,11 +50,14 @@ var
 # Forward Declarations
 #=======================================
 
-proc doExec*(input:Translation, args: Value = nil): ValueDict
+proc doExec*(cnst: ValueArray, it: ByteArray, args: Value = nil): ValueDict
 
 #=======================================
 # Helpers
 #=======================================
+
+template doExec*(input: Translation, args: Value = nil): ValueDict =
+    doExec(input.constants, input.instructions, args)
 
 template pushByIndex(idx: int):untyped =
     stack.push(cnst[idx])
@@ -62,23 +65,23 @@ template pushByIndex(idx: int):untyped =
 template storeByIndex(idx: int, doPop = true):untyped =
     hookProcProfiler("exec/storeByIndex"):
         let symIndx = cnst[idx].s
-        when doPop:
-            Syms[symIndx] = move stack.pop()
-        else:
-            Syms[symIndx] = stack.peek(0)
+        Syms[symIndx] =
+            when doPop:
+                move stack.pop()
+            else:
+                stack.peek(0)
 
         if unlikely(Syms[symIndx].kind==Function):
             let fun = Syms[symIndx]
-            if fun.fnKind==BuiltinFunction:
-                Arities[symIndx] = fun.arity
-            else:
-                Arities[symIndx] = fun.params.a.len
+            Arities[symIndx] = 
+                if fun.fnKind==BuiltinFunction:
+                    fun.arity
+                else:
+                    fun.params.a.len
 
 template loadByIndex(idx: int):untyped =
     hookProcProfiler("exec/loadByIndex"):
-        let symIndx = cnst[idx].s
-        let item = GetSym(symIndx)
-        stack.push(item)
+        stack.push(GetSym(cnst[idx].s))
 
 template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
     if f.fnKind==UserFunction:
@@ -104,14 +107,10 @@ template callByIndex(idx: int):untyped =
         if cnst[idx].kind==Function:
             callFunction(cnst[idx])
         else:
-            let symIndx = cnst[idx].s
-            callByName(symIndx)
+            callByName(cnst[idx].s)
 
 template fetchAttributeByIndex(idx: int):untyped =
-    let attr = cnst[idx]
-    let val = move stack.pop()
-
-    stack.pushAttr(attr.r, val)
+    stack.pushAttr(cnst[idx].r, move stack.pop())
 
 ####
 
@@ -156,8 +155,11 @@ proc execBlock*(
                 passedParams = newBlock()
     
                 when hasArgs:
-                    for i,arg in args.a:
+                    var i=0
+                    let argsLen = len(args.a)
+                    while i < argsLen:
                         passedParams.a.add(stack.peek(i))
+                        inc i
                     #passedParams.a.add(stack.peekRange(0, args.a.len-1))
 
                 if (let memd = getMemoized(memoized.s, passedParams); not memd.isNil):
@@ -209,8 +211,7 @@ proc execBlock*(
                     Syms = newSyms
                 else:
                     for k in exports.a:
-                        let newSymsKey = newSyms.getOrDefault(k.s, nil)
-                        if not newSymsKey.isNil:
+                        if (let newSymsKey = newSyms.getOrDefault(k.s, nil); not newSymsKey.isNil):
                             Syms[k.s] = newSymsKey
             else:
                 when hasArgs:
@@ -223,20 +224,20 @@ proc execBlock*(
                     Syms = newSyms
                 else:
                     Arities = savedArities
-                    for k, v in pairs(newSyms):
+                    for k, v in mpairs(Syms):
                         if not (v.kind==Function and v.fnKind==BuiltinFunction):
-                            if Syms.hasKey(k):
-                                Syms[k] = newSyms[k]
+                            if (let newsymV = newSyms.getOrDefault(k, nil); not newsymV.isNil):
+                                v = newsymV
             else:
                 if getCurrentException().isNil():
                     when execInParent:
                         Syms = newSyms
                     else:
                         Arities = savedArities
-                        for k, v in pairs(newSyms):
+                        for k, v in mpairs(Syms):
                             if not (v.kind==Function and v.fnKind==BuiltinFunction):
-                                if Syms.hasKey(k):
-                                    Syms[k] = newSyms[k]
+                                if (let newsymV = newSyms.getOrDefault(k, nil); not newsymV.isNil):
+                                    v = newsymV
 
 proc execDictionaryBlock*(blk: Value): ValueDict =
     var newSyms: ValueDict
@@ -245,14 +246,10 @@ proc execDictionaryBlock*(blk: Value): ValueDict =
         newSyms = doExec(doEval(blk, isDictionary=true))
         
     finally:
-        var res: ValueDict = initOrderedTable[string,Value]()
-        for k, v in pairs(newSyms):
-            if not Syms.hasKey(k) or (newSyms[k]!=Syms[k]):
-                res[k] = v
-
-        return res
-
-    return Syms
+        return collect(initOrderedTable()):
+            for k, v in pairs(newSyms):
+                if (let symV = Syms.getOrDefault(k, nil); symV.isNil or symV != v):
+                    {k: v}
 
 template execInternal*(path: string): untyped =
     execBlock(
@@ -293,11 +290,7 @@ template handleBranching*(tryDoing, finalize: untyped): untyped =
 # Methods
 #=======================================
 
-proc doExec*(input:Translation, args: Value = nil): ValueDict = 
-
-    let cnst = input.constants
-    let it = input.instructions
-
+proc doExec*(cnst: ValueArray, it: ByteArray, args: Value = nil): ValueDict = 
     var i = 0
     var op {.register.}: OpCode
     var oldSyms: ValueDict
