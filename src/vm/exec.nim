@@ -248,8 +248,6 @@ proc execDictionaryBlock*(blk: Value): ValueDict =
                 if (let symV = Syms.getOrDefault(k, nil); symV.isNil or symV != v):
                     {k: v}
 
-    return Syms
-
 template execInternal*(path: string): untyped =
     execBlock(
         doParse(
