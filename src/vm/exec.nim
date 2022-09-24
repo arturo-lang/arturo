@@ -247,8 +247,6 @@ proc execDictionaryBlock*(blk: Value): ValueDict =
         for k, v in pairs(newSyms):
             if (let symV = Syms.getOrDefault(k, nil); symV.isNil or symV != v):
                 res[k] = v
-            # if not Syms.hasKey(k) or (newSyms[k]!=Syms[k]):
-            #     res[k] = v
 
         return res
 
