@@ -222,20 +222,20 @@ proc execBlock*(
                     Syms = newSyms
                 else:
                     Arities = savedArities
-                    for k, v in pairs(newSyms):
+                    for k, v in mpairs(Syms):
                         if not (v.kind==Function and v.fnKind==BuiltinFunction):
-                            if Syms.hasKey(k):
-                                Syms[k] = newSyms[k]
+                            if (let newsymV = newSyms.getOrDefault(k, nil); not newsymV.isNil):
+                                v = newsymV
             else:
                 if getCurrentException().isNil():
                     when execInParent:
                         Syms = newSyms
                     else:
                         Arities = savedArities
-                        for k, v in pairs(newSyms):
+                        for k, v in mpairs(Syms):
                             if not (v.kind==Function and v.fnKind==BuiltinFunction):
-                                if Syms.hasKey(k):
-                                    Syms[k] = newSyms[k]
+                                if (let newsymV = newSyms.getOrDefault(k, nil); not newsymV.isNil):
+                                    v = newsymV
 
 proc execDictionaryBlock*(blk: Value): ValueDict =
     var newSyms: ValueDict
