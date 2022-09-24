@@ -208,8 +208,7 @@ proc execBlock*(
                     Syms = newSyms
                 else:
                     for k in exports.a:
-                        let newSymsKey = newSyms.getOrDefault(k.s, nil)
-                        if not newSymsKey.isNil:
+                        if (let newSymsKey = newSyms.getOrDefault(k.s, nil); not newSymsKey.isNil):
                             Syms[k.s] = newSymsKey
             else:
                 when hasArgs:
