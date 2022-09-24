@@ -247,13 +247,6 @@ proc execDictionaryBlock*(blk: Value): ValueDict =
             for k, v in pairs(newSyms):
                 if (let symV = Syms.getOrDefault(k, nil); symV.isNil or symV != v):
                     {k: v}
-                    #res[k] = v
-        # var res: ValueDict = initOrderedTable[string,Value]()
-        # for k, v in pairs(newSyms):
-        #     if (let symV = Syms.getOrDefault(k, nil); symV.isNil or symV != v):
-        #         res[k] = v
-
-        # return res
 
     return Syms
 
