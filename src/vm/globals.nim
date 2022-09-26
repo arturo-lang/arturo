@@ -92,12 +92,10 @@ template SetInPlace*(v: Value): untyped =
 template SymExists*(s: string): untyped =
     Syms.hasKey(s)
 
-template GetSym*(s: string, unsafe: bool = false): untyped =
+proc GetSym*(s: string, unsafe: static bool = false): Value {.inline.} =
     when not unsafe:
-        let toRet = Syms.getOrDefault(s, nil)
-        if unlikely(toRet.isNil):
+        if (result = Syms.getOrDefault(s, nil); unlikely(result.isNil)):
             RuntimeError_SymbolNotFound(s, suggestAlternative(s))
-        toRet
     else:
         Syms[s]
 
