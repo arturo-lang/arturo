@@ -611,7 +611,7 @@ proc doExec*(cnst: ValueArray, it: ByteArray, args: Value = nil): ValueDict =
 
         i += 1
 
-    let newSyms = Syms
-    Syms = oldSyms
+    result = Syms
 
-    return newSyms
+    Syms = oldSyms
+    
