@@ -56,9 +56,8 @@ proc doExec*(cnst: ValueArray, it: ByteArray, args: Value = nil): ValueDict
 # Helpers
 #=======================================
 
-proc setFunctionArity*(symIndx: string) {.inline,enforceNoRaises.} =
-    let fun = Syms[symIndx]
-    Arities[symIndx] = 
+proc setFunctionArity*(funName: string, fun: Value) {.inline,enforceNoRaises.} =
+    Arities[funName] = 
         if fun.fnKind==BuiltinFunction:
             fun.arity
         else:
@@ -73,16 +72,13 @@ template pushByIndex(idx: int):untyped =
 template storeByIndex(idx: int, doPop = true):untyped =
     hookProcProfiler("exec/storeByIndex"):
         if unlikely(stack.peek(0).kind==Function):
-            setFunctionArity(cnst[idx].s)
+            setFunctionArity(cnst[idx].s, stack.peek(0))
 
         Syms[cnst[idx].s] =
             when doPop:
                 move stack.pop()
             else:
                 stack.peek(0)
-
-        # if unlikely(Syms[symIndx].kind==Function):
-        #     setFunctionArity(symIndx)
 
 template loadByIndex(idx: int):untyped =
     hookProcProfiler("exec/loadByIndex"):
