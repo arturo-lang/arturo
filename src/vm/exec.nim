@@ -72,12 +72,10 @@ template pushByIndex(idx: int):untyped =
 
 template storeByIndex(idx: int, doPop = true):untyped =
     hookProcProfiler("exec/storeByIndex"):
-        let symIndx = cnst[idx].s
-        
         if unlikely(stack.peek(0).kind==Function):
-            setFunctionArity(symIndx)
+            setFunctionArity(cnst[idx].s)
 
-        Syms[symIndx] =
+        Syms[cnst[idx].s] =
             when doPop:
                 move stack.pop()
             else:
