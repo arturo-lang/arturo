@@ -69,10 +69,14 @@ template doExec*(input: Translation, args: Value = nil): ValueDict =
 template pushByIndex(idx: int):untyped =
     stack.push(cnst[idx])
 
-template storeByIndex(idx: int, doPop = true):untyped =
+proc storeByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inline,enforceNoRaises.}=
     hookProcProfiler("exec/storeByIndex"):
         if unlikely(stack.peek(0).kind==Function):
-            setFunctionArity(cnst[idx].s, stack.peek(0))
+            Arities[cnst[idx].s] = 
+                if stack.peek(0).fnKind==BuiltinFunction:
+                    stack.peek(0).arity
+                else:
+                    stack.peek(0).params.a.len
 
         Syms[cnst[idx].s] =
             when doPop:
@@ -393,22 +397,22 @@ proc doExec*(cnst: ValueArray, it: ByteArray, args: Value = nil): ValueDict =
 
                 # [0x30-0x3F]
                 # store variables (from <- stack)
-                of opStore0             : storeByIndex(0)
-                of opStore1             : storeByIndex(1)
-                of opStore2             : storeByIndex(2)
-                of opStore3             : storeByIndex(3)
-                of opStore4             : storeByIndex(4)
-                of opStore5             : storeByIndex(5)
-                of opStore6             : storeByIndex(6)
-                of opStore7             : storeByIndex(7)
-                of opStore8             : storeByIndex(8)
-                of opStore9             : storeByIndex(9)
-                of opStore10            : storeByIndex(10)
-                of opStore11            : storeByIndex(11)
-                of opStore12            : storeByIndex(12)
-                of opStore13            : storeByIndex(13)
-                of opStore              : i += 1; storeByIndex((int)(it[i]))   
-                of opStoreX             : i += 2; storeByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i])))              
+                of opStore0             : storeByIndex(cnst, 0)
+                of opStore1             : storeByIndex(cnst, 1)
+                of opStore2             : storeByIndex(cnst, 2)
+                of opStore3             : storeByIndex(cnst, 3)
+                of opStore4             : storeByIndex(cnst, 4)
+                of opStore5             : storeByIndex(cnst, 5)
+                of opStore6             : storeByIndex(cnst, 6)
+                of opStore7             : storeByIndex(cnst, 7)
+                of opStore8             : storeByIndex(cnst, 8)
+                of opStore9             : storeByIndex(cnst, 9)
+                of opStore10            : storeByIndex(cnst, 10)
+                of opStore11            : storeByIndex(cnst, 11)
+                of opStore12            : storeByIndex(cnst, 12)
+                of opStore13            : storeByIndex(cnst, 13)
+                of opStore              : i += 1; storeByIndex(cnst, (int)(it[i]))   
+                of opStoreX             : i += 2; storeByIndex(cnst, (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i])))              
 
                 # [0x40-0x4F]
                 # load variables (to -> stack)
@@ -431,22 +435,22 @@ proc doExec*(cnst: ValueArray, it: ByteArray, args: Value = nil): ValueDict =
 
                 # [0x50-0x5F]
                 # store-load variables (from <- stack, without popping)
-                of opStorl0             : storeByIndex(0, doPop=false)
-                of opStorl1             : storeByIndex(1, doPop=false)
-                of opStorl2             : storeByIndex(2, doPop=false)
-                of opStorl3             : storeByIndex(3, doPop=false)
-                of opStorl4             : storeByIndex(4, doPop=false)
-                of opStorl5             : storeByIndex(5, doPop=false)
-                of opStorl6             : storeByIndex(6, doPop=false)
-                of opStorl7             : storeByIndex(7, doPop=false)
-                of opStorl8             : storeByIndex(8, doPop=false)
-                of opStorl9             : storeByIndex(9, doPop=false)
-                of opStorl10            : storeByIndex(10, doPop=false)
-                of opStorl11            : storeByIndex(11, doPop=false)
-                of opStorl12            : storeByIndex(12, doPop=false)
-                of opStorl13            : storeByIndex(13, doPop=false)
-                of opStorl              : i += 1; storeByIndex((int)(it[i]), doPop=false)   
-                of opStorlX             : i += 2; storeByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i])), doPop=false)              
+                of opStorl0             : storeByIndex(cnst, 0, doPop=false)
+                of opStorl1             : storeByIndex(cnst, 1, doPop=false)
+                of opStorl2             : storeByIndex(cnst, 2, doPop=false)
+                of opStorl3             : storeByIndex(cnst, 3, doPop=false)
+                of opStorl4             : storeByIndex(cnst, 4, doPop=false)
+                of opStorl5             : storeByIndex(cnst, 5, doPop=false)
+                of opStorl6             : storeByIndex(cnst, 6, doPop=false)
+                of opStorl7             : storeByIndex(cnst, 7, doPop=false)
+                of opStorl8             : storeByIndex(cnst, 8, doPop=false)
+                of opStorl9             : storeByIndex(cnst, 9, doPop=false)
+                of opStorl10            : storeByIndex(cnst, 10, doPop=false)
+                of opStorl11            : storeByIndex(cnst, 11, doPop=false)
+                of opStorl12            : storeByIndex(cnst, 12, doPop=false)
+                of opStorl13            : storeByIndex(cnst, 13, doPop=false)
+                of opStorl              : i += 1; storeByIndex(cnst, (int)(it[i]), doPop=false)   
+                of opStorlX             : i += 2; storeByIndex(cnst, (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i])), doPop=false)              
 
                 # [0x60-0x6F]
                 # function calls
