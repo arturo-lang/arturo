@@ -80,7 +80,7 @@ template iterateThrough(
         var withIndex = false
         if not idx.isNil:
             withIndex = true
-            allArgs.a = concat(@[idx], allArgs.a)
+            allArgs.a.insert(idx, 0)# = concat(@[idx], allArgs.a)
 
         var capturedItems{.inject}: ValueArray
 
