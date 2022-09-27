@@ -80,7 +80,7 @@ template iterateThrough(
         var withIndex = false
         if not idx.isNil:
             withIndex = true
-            allArgs.a.insert(idx, 0)
+            allArgs.a.insert(idx,0)
 
         var capturedItems{.inject}: ValueArray
 
@@ -95,10 +95,8 @@ template iterateThrough(
                         when rolling:
                             if rollingRight: push(res)
 
-                        var j = indx+argsLen-1
-                        while j>=indx:
-                            push(collection[j])
-                            j -= 1
+                        for item in capturedItems.reversed:
+                            push(item)
 
                         when rolling:
                             if not rollingRight: push(res)
