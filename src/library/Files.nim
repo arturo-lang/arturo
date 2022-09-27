@@ -143,9 +143,9 @@ proc defineSymbols*() =
             },
             attrs       = NoAttrs,
             returns     = {Quantity},
-            # TODO(Files\hidden?) add documentation example
-            #  labels: library, documentation, easy
             example     = """
+            hidden? "README.md"     ; => false
+            hidden? ".git"          ; => true
             """:
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("hidden?")
