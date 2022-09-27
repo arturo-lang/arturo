@@ -402,9 +402,12 @@ proc defineSymbols*() =
             },
             attrs       = NoAttrs,
             returns     = {Nothing},
-            # TODO(Files\timestamp) add documentation example
-            #  labels: library, documentation, easy
             example     = """
+            timestamp "README.md"
+            ; =>  [created:2022-09-21T12:35:04+02:00 accessed:2022-09-21T12:35:04+02:00 modified:2022-09-21T12:35:04+02:00]
+
+            timestamp "some-file-that-does-not-exist.txt"
+            ; => null
             """:
                 ##########################################################
                 push newDictionary({
