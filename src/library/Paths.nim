@@ -49,9 +49,9 @@ proc defineSymbols*() =
             },
             attrs       = NoAttrs,
             returns     = {Logical},
-            # TODO(Paths\absolute?): add documentation example
-            #  labels: library, documentation, easy
             example     = """
+            absolute? "/usr/bin"        ; => true
+            absolute? "usr/bin"         ; => false
             """:
                 ##########################################################
                 push(newLogical(isAbsolute(x.s)))
