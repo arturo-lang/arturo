@@ -401,7 +401,7 @@ proc defineSymbols*() =
                 "file"  : {String}
             },
             attrs       = NoAttrs,
-            returns     = {Nothing},
+            returns     = {Dictionary,Null},
             example     = """
             timestamp "README.md"
             ; =>  [created:2022-09-21T12:35:04+02:00 accessed:2022-09-21T12:35:04+02:00 modified:2022-09-21T12:35:04+02:00]
@@ -410,11 +410,14 @@ proc defineSymbols*() =
             ; => null
             """:
                 ##########################################################
-                push newDictionary({
-                    "created": newDate(local(getCreationTime(x.s))),
-                    "accessed": newDate(local(getLastAccessTime(x.s))),
-                    "modified": newDate(local(getLastModificationTime(x.s)))
-                }.toOrderedTable)
+                try:
+                    push newDictionary({
+                        "created": newDate(local(getCreationTime(x.s))),
+                        "accessed": newDate(local(getLastAccessTime(x.s))),
+                        "modified": newDate(local(getLastModificationTime(x.s)))
+                    }.toOrderedTable)
+                except:
+                    push VNULL
                         
         builtin "unzip",
             alias       = unaliased, 
