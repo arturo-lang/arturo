@@ -300,9 +300,12 @@ proc defineSymbols*() =
             args        = NoArgs,
             attrs       = NoAttrs,
             returns     = {Logical},
-            # TODO(System\superuser?) add documentation example
-            #  labels: library, documentation, easy
             example     = """
+            ; when running as root
+            superuser?          ; => true
+
+            ; when running as regular user
+            superuser?          ; => false
             """:
                 ##########################################################
                 push newLogical(isAdmin())
