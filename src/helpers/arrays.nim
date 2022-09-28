@@ -155,12 +155,16 @@ proc deduplicated*[T](s: openArray[T], isSorted: bool = false): seq[T] =
         if not result.contains(itm): result.add(itm)
 
 proc cleanAppend*(s: ValueArray, item: Value): ValueArray {.inline,enforceNoRaises.} =
-    result = newSeqOfCap[Value](len(s) + 1)
+    result = newSeq[Value](len(s) + 1)
+    var cnt = 0
     for i in s:
         when not defined(NOERRORLINES):
             if i.kind != Newline:
-                result.add(i)
+                result[cnt] = i
+                cnt += 1
         else:
-            result.add(i)
-            
-    result.add(item)
+            result[cnt] = i
+            cnt += 1
+
+    result[cnt] = item
+    setLen(result, cnt + 1)
