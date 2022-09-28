@@ -115,7 +115,7 @@ proc defineSymbols*() =
                     if y.kind==Block:
                         push newBlock(cleanedBlock(x.a) & cleanedBlock(y.a))
                     else:
-                        push newBlock(cleanedBlock(x.a) & y)
+                        push newBlock(cleanAppend(x.a, y))
  
     builtin "chop",
         alias       = unaliased, 
