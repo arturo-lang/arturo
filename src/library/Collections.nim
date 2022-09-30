@@ -113,9 +113,9 @@ proc defineSymbols*() =
                         push(newBinary(x.n & numberToBinary(y.i)))
                 else:
                     if y.kind==Block:
-                        push newBlock(cleanedBlock(x.a) & cleanedBlock(y.a))
+                        push newBlock(cleanAppend(x.a, y.a))
                     else:
-                        push newBlock(cleanedBlock(x.a) & y)
+                        push newBlock(cleanAppend(x.a, y))
  
     builtin "chop",
         alias       = unaliased, 

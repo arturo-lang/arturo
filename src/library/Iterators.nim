@@ -80,7 +80,7 @@ template iterateThrough(
         var withIndex = false
         if not idx.isNil:
             withIndex = true
-            allArgs.a = concat(@[idx], allArgs.a)
+            allArgs.a.insert(idx,0)
 
         var capturedItems{.inject}: ValueArray
 
@@ -166,7 +166,7 @@ proc defineSymbols*() =
 
             iterateThrough(withIndex, y, items, doForever, false, false):
                 execBlock(nil, evaluated=preevaled, hasEval=true, args=allArgs, hasArgs=true)
-                let popped = pop()
+                let popped = move stack.pop()
                 if popped != state:
                     if len(currentSet)>0:
                         if showValue:
@@ -240,7 +240,7 @@ proc defineSymbols*() =
 
             iterateThrough(withIndex, y, items, doForever, false, false):
                 execBlock(nil, evaluated=preevaled, hasEval=true, args=allArgs, hasArgs=true)
-                let popped = pop()
+                let popped = move stack.pop()
                 # TODO(Iterators\cluster) Verify this is working right
                 #  labels: unit-test
                 # if not sets.hasKey(popped):
@@ -301,7 +301,7 @@ proc defineSymbols*() =
             iterateThrough(withIndex, y, items, doForever, false, false):
                 execBlock(nil, evaluated=preevaled, hasEval=true, args=allArgs, hasArgs=true)
 
-                let popped = pop()
+                let popped = move stack.pop()
                 if popped.kind==Logical and Not(popped.b)==True:
                     push(newLogical(false))
                     all = false
@@ -389,7 +389,7 @@ proc defineSymbols*() =
 
             iterateThrough(withIndex, y, items, doForever, false, false):
                 execBlock(nil, evaluated=preevaled, hasEval=true, args=allArgs, hasArgs=true)
-                let popped = pop()
+                let popped = move stack.pop()
                 if popped.kind==Logical and Not(popped.b)==True:
                     res.add(capturedItems)
                 else:
@@ -495,7 +495,7 @@ proc defineSymbols*() =
 
             iterateThrough(withIndex, y, items, doForever, true, doRightFold):
                 execBlock(nil, evaluated=preevaled, hasEval=true, args=allArgs, hasArgs=true)
-                res = pop()
+                res = move stack.pop()
 
             if withLiteral: InPlaced = res
             else: push(res)
@@ -621,7 +621,7 @@ proc defineSymbols*() =
 
             iterateThrough(withIndex, y, items, doForever, false, false):
                 execBlock(nil, evaluated=preevaled, hasEval=true, args=allArgs, hasArgs=true)
-                res.add(pop())
+                res.add(move stack.pop())
 
             if withLiteral: InPlaced = newBlock(res)
             else: push(newBlock(res))
@@ -698,7 +698,7 @@ proc defineSymbols*() =
 
             iterateThrough(withIndex, y, items, doForever, false, false):
                 execBlock(nil, evaluated=preevaled, hasEval=true, args=allArgs, hasArgs=true)
-                let popped = pop()
+                let popped = move stack.pop()
                 if popped.kind==Logical and popped.b==True:
                     res.add(capturedItems)
 
@@ -762,7 +762,7 @@ proc defineSymbols*() =
 
             iterateThrough(withIndex, y, items, doForever, false, false):
                 execBlock(nil, evaluated=preevaled, hasEval=true, args=allArgs, hasArgs=true)
-                let popped = pop()
+                let popped = move stack.pop()
                 if popped.kind==Logical and popped.b==True:
                     push(newLogical(true))
                     one = true
