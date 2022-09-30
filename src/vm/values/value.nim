@@ -910,27 +910,18 @@ func cleanBlock*(va: var ValueArray) {.inline,enforceNoRaises.} =
     else:
         discard
 
-func cleanedBlock*(va: ValueArray): ValueArray {.inline,enforceNoRaises.} =
-    when not defined(NOERRORLINES):
-        result = collect(newSeqOfCap(va.len)):
-            for vv in va:
-                if vv.kind != Newline:
-                    vv
+func cleanedBlockImpl*(va: ValueArray): ValueArray {.inline,enforceNoRaises.} =
+    result = collect(newSeqOfCap(va.len)):
+        for vv in va:
+            if vv.kind != Newline:
+                vv
         #result = va.filter((vv) => vv.kind != Newline)
-    else:
-        result = va
 
-# template cleanBlock*(va: ValueArray, inplace: bool = false): untyped =
-#     when not defined(NOERRORLINES):
-#         when inplace:
-#             va.keepIf((vv) => vv.kind != Newline)
-#         else:
-#             @(va.filter((vv) => vv.kind != Newline))
-#     else:
-#         when inplace:
-#             discard
-#         else:
-#             va
+template cleanedBlock*(va: ValueArray, inplace=false): untyped =
+    when not defined(NOERRORLINES):
+        cleanedBlockImpl(va)
+    else:
+        va
 
 proc safeMulI*[T: SomeInteger](x: var T, y: T) {.inline, noSideEffect.} =
     x = x * y

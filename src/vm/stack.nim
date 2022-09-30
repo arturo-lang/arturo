@@ -45,6 +45,18 @@ template push*(v: Value) =
         Stack[SP] = v
         SP += 1
 
+template push*(v: ValueArray, a: int, b: int, reversed=false, doMove=false) =
+    when reversed:
+        var j = b - 1
+        while j >= a:
+            push(when doMove: move v[j] else: v[j])
+            j -= 1
+    else:
+        var j = a
+        while j < b:
+            push(when doMove: move v[j] else: v[j])
+            j += 1
+
 template pop*(): Value = 
     when defined(PROFILER):
         hookProcProfiler("stack/pop"):
