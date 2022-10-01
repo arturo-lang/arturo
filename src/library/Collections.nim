@@ -34,6 +34,41 @@ import vm/exec
 import vm/lib
 
 #=======================================
+# Helpers
+#=======================================
+
+proc getValueFor*(x: Value, y: Value) {.inline,enforceNoRaises.} =
+    case x.kind:
+        of Block: 
+            push(GetArrayIndex(cleanedBlock(x.a), y.i))
+        of Binary: 
+            push(newInteger((int)x.n[y.i]))
+        of Bytecode: 
+            if y.s == "data":
+                push(newBlock(x.trans.constants))
+            elif y.s == "code":
+                push(newBlock(x.trans.instructions.map((w) => newInteger((int)w))))
+            else:
+                push(VNULL)
+        of Dictionary: 
+            case y.kind:
+                of String,Word,Literal,Label:
+                    push(GetKey(x.d, y.s))
+                else:
+                    push(GetKey(x.d, $(y)))
+        of Object:
+            case y.kind:
+                of String,Word,Literal,Label:
+                    push(GetKey(x.o, y.s))
+                else:       
+                    push(GetKey(x.o, $(y)))
+        of String: 
+            push(newChar(x.s.runeAtPos(y.i)))
+        of Date: 
+            push(GetKey(x.e, y.s))
+        else: discard
+
+#=======================================
 # Methods
 #=======================================
 
@@ -522,33 +557,11 @@ proc defineSymbols*() =
             print str\[z+1]               ; e
         """:
             ##########################################################
-            var key: Value
-            if y.kind==String or y.kind==Integer: 
-                key = y
-            elif y.kind==Block:
+            if y.kind==Block:
                 execBlock(y)
-                key = pop()
+                getValueFor(x, stack.pop())
             else:
-                key = newString($(y))
-
-            case x.kind:
-                of Block: push(GetArrayIndex(cleanedBlock(x.a), key.i))
-                of Binary: push(newInteger((int)x.n[key.i]))
-                of Bytecode: 
-                    if key.s == "data":
-                        push(newBlock(x.trans.constants))
-                    elif key.s == "code":
-                        push(newBlock(x.trans.instructions.map((w) => newInteger((int)w))))
-                    else:
-                        push(VNULL)
-                of Dictionary: 
-                    push(GetKey(x.d, $(key)))
-                of Object:
-                    push(GetKey(x.o, $(key)))
-                of String: push(newChar(x.s.runeAtPos(key.i)))
-                of Date: 
-                    push(GetKey(x.e, key.s))
-                else: discard
+                getValueFor(x, y)
 
     builtin "in?",
         alias       = unaliased, 
