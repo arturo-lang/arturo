@@ -1281,7 +1281,8 @@ proc defineSymbols*() =
             elif x.kind==Object:
                 push(newInteger(x.o.len))
             else:
-                push(newInteger(cleanedBlock(x.a).len))
+                ensureCleaned(x)
+                push(newInteger(cleanX.len))
             
     builtin "slice",
         alias       = unaliased, 
