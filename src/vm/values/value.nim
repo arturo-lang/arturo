@@ -15,7 +15,7 @@
 #=======================================
 
 import complex, hashes, lenientops
-import math, rationals, sequtils, strformat
+import macros, math, rationals, sequtils, strformat
 import strutils, sugar, tables, times, unicode
 
 when not defined(NOSQLITE):
@@ -923,14 +923,22 @@ template cleanedBlock*(va: ValueArray, inplace=false): untyped =
     else:
         va
 
-template cleanedBlockValues*(v: Value): untyped =
+macro ensureCleaned*(name: untyped): untyped =
+    let cleanName =  ident("clean" & ($name).capitalizeAscii())
+    let cleanedBlock = ident("cleanedBlockTmp" & ($name).capitalizeAscii())
     when not defined(NOERRORLINES):
-        if v.dirty:
-            cleanedBlockImpl(v.a)
-        else:
-            v.a
+        result = quote do:
+            var `cleanedBlock`: ValueArray
+            let `cleanName` {.cursor.} = (
+                if `name`.dirty: 
+                    `cleanedBlock` = cleanedBlockImpl(`name`.a) 
+                    `cleanedBlock`
+                else: 
+                    `name`.a
+            )
     else:
-        v.a
+        result = quote do:
+            let `cleanName` {.cursor.} = `name`.a
 
 proc safeMulI*[T: SomeInteger](x: var T, y: T) {.inline, noSideEffect.} =
     x = x * y
