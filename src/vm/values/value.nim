@@ -308,7 +308,7 @@ type
                Block:       
                    a*       : ValueArray
                    data*    : Value
-                   cleaned* : bool
+                   dirty*   : bool
             of Dictionary:  d*  : ValueDict
             of Object:
                 o*: ValueDict   # fields
@@ -394,7 +394,7 @@ let VMAYBE* = Value(kind: Logical, b: Maybe)
 let VNULL* = Value(kind: Null)
 
 let VEMPTYSTR* = Value(kind: String, s: "")
-let VEMPTYARR* = Value(kind: Block, a: @[], data: VNULL, cleaned: true)
+let VEMPTYARR* = Value(kind: Block, a: @[], data: VNULL)
 let VEMPTYDICT* = Value(kind: Dictionary, d: initOrderedTable[string,Value]())
 
 let VSTRINGT* = Value(kind: Type, tpKind: BuiltinType, t: String)
@@ -762,20 +762,20 @@ when not defined(NOSQLITE):
 func newBytecode*(t: Translation): Value {.inline, enforceNoRaises.} =
     Value(kind: Bytecode, trans: t)
 
-func newInline*(a: ValueArray = @[], cleaned = false): Value {.inline, enforceNoRaises.} =
-    Value(kind: Inline, a: a, cleaned: cleaned)
+func newInline*(a: ValueArray = @[], dirty = false): Value {.inline, enforceNoRaises.} =
+    Value(kind: Inline, a: a, dirty: dirty)
 
-func newBlock*(a: ValueArray = @[], data = VNULL, cleaned = false): Value {.inline, enforceNoRaises.} =
-    Value(kind: Block, a: a, data: data, cleaned: cleaned)
+func newBlock*(a: ValueArray = @[], data = VNULL, dirty = false): Value {.inline, enforceNoRaises.} =
+    Value(kind: Block, a: a, data: data, dirty: dirty)
 
 func newIntegerBlock*[T](a: seq[T]): Value {.inline, enforceNoRaises.} =
-    newBlock(a.map(proc (x:T):Value = newInteger((int)(x))), cleaned=true)
+    newBlock(a.map(proc (x:T):Value = newInteger((int)(x))))
 
 proc newStringBlock*(a: seq[string]): Value {.inline, enforceNoRaises.} =
-    newBlock(a.map(proc (x:string):Value = newString($x)), cleaned=true)
+    newBlock(a.map(proc (x:string):Value = newString($x)))
 
 proc newStringBlock*(a: seq[cstring]): Value {.inline, enforceNoRaises.} =
-    newBlock(a.map(proc (x:cstring):Value = newString(x)), cleaned=true)
+    newBlock(a.map(proc (x:cstring):Value = newString(x)))
 
 func newNewline*(l: int): Value {.inline, enforceNoRaises.} =
     Value(kind: Newline, line: l)
@@ -925,7 +925,7 @@ template cleanedBlock*(va: ValueArray, inplace=false): untyped =
 
 template cleanedBlockValues*(v: Value): untyped =
     when not defined(NOERRORLINES):
-        if not v.cleaned:
+        if v.dirty:
             cleanedBlockImpl(v.a)
         else:
             v.a
