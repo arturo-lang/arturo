@@ -306,9 +306,9 @@ type
             of Binary:      n*  : ByteArray
             of Inline,
                Block:       
-                   a*   : ValueArray
-                   data* : Value
-                   #refs*: IntArray
+                   a*       : ValueArray
+                   data*    : Value
+                   cleaned* : bool
             of Dictionary:  d*  : ValueDict
             of Object:
                 o*: ValueDict   # fields
@@ -394,7 +394,7 @@ let VMAYBE* = Value(kind: Logical, b: Maybe)
 let VNULL* = Value(kind: Null)
 
 let VEMPTYSTR* = Value(kind: String, s: "")
-let VEMPTYARR* = Value(kind: Block, a: @[], data: VNULL)
+let VEMPTYARR* = Value(kind: Block, a: @[], data: VNULL, cleaned: true)
 let VEMPTYDICT* = Value(kind: Dictionary, d: initOrderedTable[string,Value]())
 
 let VSTRINGT* = Value(kind: Type, tpKind: BuiltinType, t: String)
@@ -762,11 +762,11 @@ when not defined(NOSQLITE):
 func newBytecode*(t: Translation): Value {.inline, enforceNoRaises.} =
     Value(kind: Bytecode, trans: t)
 
-func newInline*(a: ValueArray = @[]): Value {.inline, enforceNoRaises.} =
-    Value(kind: Inline, a: a)
+func newInline*(a: ValueArray = @[], cleaned = false): Value {.inline, enforceNoRaises.} =
+    Value(kind: Inline, a: a, cleaned: cleaned)
 
-func newBlock*(a: ValueArray = @[], data = VNULL): Value {.inline, enforceNoRaises.} =
-    Value(kind: Block, a: a, data: data)
+func newBlock*(a: ValueArray = @[], data = VNULL, cleaned = false): Value {.inline, enforceNoRaises.} =
+    Value(kind: Block, a: a, data: data, cleaned: cleaned)
 
 func newIntegerBlock*[T](a: seq[T]): Value {.inline, enforceNoRaises.} =
     newBlock(a.map(proc (x:T):Value = newInteger((int)(x))))
