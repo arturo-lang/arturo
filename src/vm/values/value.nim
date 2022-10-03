@@ -769,13 +769,13 @@ func newBlock*(a: ValueArray = @[], data = VNULL, cleaned = false): Value {.inli
     Value(kind: Block, a: a, data: data, cleaned: cleaned)
 
 func newIntegerBlock*[T](a: seq[T]): Value {.inline, enforceNoRaises.} =
-    newBlock(a.map(proc (x:T):Value = newInteger((int)(x))))
+    newBlock(a.map(proc (x:T):Value = newInteger((int)(x))), cleaned=true)
 
 proc newStringBlock*(a: seq[string]): Value {.inline, enforceNoRaises.} =
-    newBlock(a.map(proc (x:string):Value = newString($x)))
+    newBlock(a.map(proc (x:string):Value = newString($x)), cleaned=true)
 
 proc newStringBlock*(a: seq[cstring]): Value {.inline, enforceNoRaises.} =
-    newBlock(a.map(proc (x:cstring):Value = newString(x)))
+    newBlock(a.map(proc (x:cstring):Value = newString(x)), cleaned=true)
 
 func newNewline*(l: int): Value {.inline, enforceNoRaises.} =
     Value(kind: Newline, line: l)
