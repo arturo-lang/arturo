@@ -1047,9 +1047,9 @@ proc defineSymbols*() =
                         j -= step
 
                 if x.kind==Char and y.kind==Char:
-                    push newBlock(res.map((x) => newChar(chr(x))), cleaned=true)
+                    push newBlock(res.map((x) => newChar(chr(x))))
                 else:
-                    push newBlock(res.map((x) => newInteger(x)), cleaned=true)
+                    push newBlock(res.map((x) => newInteger(x)))
 
     builtin "reciprocal",
         alias       = unaliased, 
