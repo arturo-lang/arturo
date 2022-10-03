@@ -923,6 +923,15 @@ template cleanedBlock*(va: ValueArray, inplace=false): untyped =
     else:
         va
 
+template cleanedBlockValues*(v: Value): untyped =
+    when not defined(NOERRORLINES):
+        if v.cleaned:
+            cleanedBlockImpl(v.a)
+        else:
+            v.a
+    else:
+        v.a
+
 proc safeMulI*[T: SomeInteger](x: var T, y: T) {.inline, noSideEffect.} =
     x = x * y
 
