@@ -925,7 +925,7 @@ template cleanedBlock*(va: ValueArray, inplace=false): untyped =
 
 template cleanedBlockValues*(v: Value): untyped =
     when not defined(NOERRORLINES):
-        if v.cleaned:
+        if not v.cleaned:
             cleanedBlockImpl(v.a)
         else:
             v.a
