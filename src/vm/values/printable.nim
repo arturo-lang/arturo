@@ -30,7 +30,7 @@ import vm/stack
 import vm/values/value
 import vm/values/clean
 
-import vm/values/pure/[vcolor, vregex]
+import vm/values/pure/[vcolor, vrational, vregex]
 
 #=======================================
 # Methods
