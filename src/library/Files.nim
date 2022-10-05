@@ -32,8 +32,6 @@ when not defined(WEB):
     import helpers/datasource
     import helpers/io
     import helpers/jsonobject
-
-    import vm/values/pure/[vquantity]
     
 import vm/[bytecode, errors, lib, parse]
 

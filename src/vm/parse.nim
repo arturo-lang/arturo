@@ -18,7 +18,7 @@ import lexbase, os, streams
 import strutils, tables, unicode
 
 import vm/[errors, profiler, values/value]
-import vm/values/pure/[vquantity]
+import vm/values/custom/[vquantity]
 
 #=======================================
 # Types
