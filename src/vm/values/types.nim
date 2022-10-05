@@ -10,8 +10,7 @@
 # Libraries
 #=======================================
 
-import complex, rationals, tables
-import times, unicode
+import tables, times, unicode
 
 when not defined(NOSQLITE):
     import db_sqlite as sqlite
@@ -23,9 +22,8 @@ when not defined(NOGMP):
     import helpers/bignums
 
 import helpers/bytes
-import helpers/colors
-import helpers/quantities
-import helpers/regex
+
+import vm/values/pure/[vcolor, vcomplex, vquantity, vrational, vregex]
 
 #=======================================
 # Types
@@ -252,8 +250,8 @@ type
                         else:
                             discard
             of Floating: f*: float
-            of Complex:     z*  : Complex64
-            of Rational:    rat*  : Rational[int]
+            of Complex:     z*  : VComplex
+            of Rational:    rat*  : VRational
             of Version: 
                 major*   : int
                 minor*   : int
@@ -276,10 +274,10 @@ type
             of Symbol,
                SymbolLiteral:      
                    m*  : SymbolKind
-            of Regex:       rx* : RegexObj
+            of Regex:       rx* : VRegex
             of Quantity:
                 nm*: Value
-                unit*: QuantitySpec
+                unit*: VQuantity
             of Color:       l*  : VColor
             of Date:        
                 e*     : ValueDict         

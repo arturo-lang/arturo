@@ -3,7 +3,7 @@
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
-# @file: library/Binary.nim
+# @file: library/Bitwise.nim
 ######################################################
 
 #=======================================
@@ -25,7 +25,7 @@ import vm/lib
 proc defineSymbols*() =
 
     when defined(VERBOSE):
-        echo "- Importing: Binary"
+        echo "- Importing: Bitwise"
 
     # TODO(Binary) more potential built-in function candidates?
     #  I'm thinking that we could probably add functions that allows to either clear or "set" a specific bit.
@@ -38,11 +38,11 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "calculate the binary AND for the given values",
         args        = {
-            "valueA": {Integer,ValueKind.Binary,Literal},
-            "valueB": {Integer,ValueKind.Binary}
+            "valueA": {Integer,Binary,Literal},
+            "valueB": {Integer,Binary}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,ValueKind.Binary,Nothing},
+        returns     = {Integer,Binary,Nothing},
         example     = """
             print and 2 3      ; 2
             ..........
@@ -59,11 +59,11 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "calculate the binary NAND for the given values",
         args        = {
-            "valueA": {Integer,ValueKind.Binary,Literal},
-            "valueB": {Integer,ValueKind.Binary}
+            "valueA": {Integer,Binary,Literal},
+            "valueB": {Integer,Binary}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,ValueKind.Binary,Nothing},
+        returns     = {Integer,Binary,Nothing},
         example     = """
             print nand 2 3     ; -3
             ..........
@@ -79,11 +79,11 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "calculate the binary NOR for the given values",
         args        = {
-            "valueA": {Integer,ValueKind.Binary,Literal},
-            "valueB": {Integer,ValueKind.Binary}
+            "valueA": {Integer,Binary,Literal},
+            "valueB": {Integer,Binary}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,ValueKind.Binary,Nothing},
+        returns     = {Integer,Binary,Nothing},
         example     = """
             print nor 2 3      ; -4
             ..........
@@ -99,10 +99,10 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "calculate the binary complement the given value",
         args        = {
-            "value" : {Integer,ValueKind.Binary,Literal}
+            "value" : {Integer,Binary,Literal}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,ValueKind.Binary,Nothing},
+        returns     = {Integer,Binary,Nothing},
         example     = """
             print not 123      ; -124
             ..........
@@ -118,11 +118,11 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "calculate the binary OR for the given values",
         args        = {
-            "valueA": {Integer,ValueKind.Binary,Literal},
-            "valueB": {Integer,ValueKind.Binary}
+            "valueA": {Integer,Binary,Literal},
+            "valueB": {Integer,Binary}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,ValueKind.Binary,Nothing},
+        returns     = {Integer,Binary,Nothing},
         example     = """
             print or 2 3       ; 3
             ..........
@@ -189,11 +189,11 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "calculate the binary XNOR for the given values",
         args        = {
-            "valueA": {Integer,ValueKind.Binary,Literal},
-            "valueB": {Integer,ValueKind.Binary}
+            "valueA": {Integer,Binary,Literal},
+            "valueB": {Integer,Binary}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,ValueKind.Binary,Nothing},
+        returns     = {Integer,Binary,Nothing},
         example     = """
             print xnor 2 3     ; -2
             ..........
@@ -209,11 +209,11 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "calculate the binary XOR for the given values",
         args        = {
-            "valueA": {Integer,ValueKind.Binary,Literal},
-            "valueB": {Integer,ValueKind.Binary}
+            "valueA": {Integer,Binary,Literal},
+            "valueB": {Integer,Binary}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,ValueKind.Binary,Nothing},
+        returns     = {Integer,Binary,Nothing},
         example     = """
             print xor 2 3      ; 1
             ..........

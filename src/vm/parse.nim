@@ -17,9 +17,8 @@
 import lexbase, os, streams
 import strutils, tables, unicode
 
-import helpers/quantities as QuantitiesHelper
-
 import vm/[errors, profiler, values/value]
+import vm/values/pure/[vquantity]
 
 #=======================================
 # Types
