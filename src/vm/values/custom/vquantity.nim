@@ -3,7 +3,7 @@
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
-# @file: vm/values/pure/vquantity.nim
+# @file: vm/values/custom/vquantity.nim
 ######################################################
 
 #=======================================
@@ -19,7 +19,7 @@ when not defined(WEB):
 # Types
 #=======================================
 
-# TODO(VM/values/pure/vquantity) More units to add?
+# TODO(vm/values/custom/vquantity) More units to add?
 #  labels: helpers, enhancement, open discussion
 
 type
@@ -344,7 +344,7 @@ proc getQuantityMultiplier*(src: VQuantity, tgt: VQuantity): float =
         return ConversionRatio[src.name] / ConversionRatio[tgt.name]
 
 proc getQuantityMultiplier*(src: UnitName, tgt: UnitName, isCurrency=false): float =
-    # TODO(VM/values/pure/vquantity) Clean up `getQuantityMultiplier`
+    # TODO(vm/values/custom/vquantity) Clean up `getQuantityMultiplier`
     #  Do we need this?
     #  labels: helpers, values, cleanup
 

@@ -137,15 +137,15 @@ type
 
         unaliased               # used only for builtins
 
-    # TODO(VM/values/value) add new `:matrix` type?
+    # TODO(VM/values/types add new `:matrix` type?
     #  this would normally go with a separate Linear Algebra-related stdlib module
     #  labels: vm, values, enhancement, open discussion
 
-    # TODO(VM/values/value) add new `:typeset` type?
+    # TODO(VM/values/types) add new `:typeset` type?
     #  or... could this be encapsulated in our existing `:type` values?
     #  labels: vm, values, enhancement, open discussion
 
-    # TODO(VM/values/value) add new lazy-sequence/range type?
+    # TODO(VM/values/types) add new lazy-sequence/range type?
     #  Right now, declaring a block or a range - e.g. `1..10` - actually pushes all required elements into a new block.
     #  If their number is quite high, then there are some obvious performance-related drawbacks.
     #  It would be great if we could define some special sequences, only by their limits - including infinity - and have our regular functions, especially iterators, operate on them!
@@ -238,7 +238,7 @@ type
             of Logical:     b*  : logical
             of Integer:  
                 case iKind*: IntegerKind:
-                    # TODO(VM/values/value) Wrap Normal and BigInteger in one type
+                    # TODO(VM/values/types) Wrap Normal and BigInteger in one type
                     #  Perhaps, we could do that via class inheritance, with the two types inheriting a new `Integer` type, provided that it's properly benchmarked first.
                     #  labels: vm, values, enhancement, benchmark, open discussion 
                     of NormalInteger:   i*  : int
@@ -299,7 +299,7 @@ type
                 example*: string
                 case fnKind*: FunctionKind:
                     of UserFunction:
-                        # TODO(VM/values/value) merge Function `params` and `args` into one field?
+                        # TODO(VM/values/types) merge Function `params` and `args` into one field?
                         #  labels: vm, values, enhancement
                         params*     : Value
                         main*       : Value
@@ -311,7 +311,7 @@ type
                         fname*      : string
                         alias*      : SymbolKind
                         prec*       : PrecedenceKind
-                        # TODO(VM/values/value) `arity` should be common to both User and BuiltIn functions
+                        # TODO(VM/values/types) `arity` should be common to both User and BuiltIn functions
                         #  Usually, when we want to get a User function's arity, we access its `params.a.len` - this doesn't make any sense. Plus, it's slower.
                         #  labels: vm, values, enhancement
                         arity*      : int
