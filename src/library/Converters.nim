@@ -23,12 +23,11 @@ when not defined(NOGMP):
     import helpers/bignums
 import helpers/bytes
 import helpers/datasource
-import helpers/quantities
 when not defined(NOASCIIDECODE):
     import helpers/strings
 
 import vm/lib
-import vm/values/pure/[vcolor, vrational]
+import vm/values/pure/[vcolor, vquantity, vrational]
 import vm/[bytecode, errors, eval, exec, opcodes, parse]
 
 

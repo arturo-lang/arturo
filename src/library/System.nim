@@ -24,7 +24,7 @@ when not defined(WEB):
     else:
         import std/posix_utils
 
-    import helpers/quantities as QuantitiesHelper
+    import vm/values/pure/[vquantity]
     
 import sequtils
 

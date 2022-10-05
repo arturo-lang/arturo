@@ -22,9 +22,8 @@ when not defined(NOGMP):
     import helpers/bignums
 
 import helpers/bytes
-import helpers/quantities
 
-import vm/values/pure/[vcolor, vcomplex, vrational, vregex]
+import vm/values/pure/[vcolor, vcomplex, vquantity, vrational, vregex]
 
 #=======================================
 # Types
@@ -278,7 +277,7 @@ type
             of Regex:       rx* : VRegex
             of Quantity:
                 nm*: Value
-                unit*: QuantitySpec
+                unit*: VQuantity
             of Color:       l*  : VColor
             of Date:        
                 e*     : ValueDict         

@@ -20,11 +20,12 @@ import helpers/benchmark
 when not defined(WEB):
     import helpers/helper
 
-import helpers/quantities as QuantitiesHelper
 import helpers/terminal as TerminalHelper
 
 import vm/lib
 import vm/[env, errors, eval, exec]
+
+import vm/values/pure/[vquantity]
 
 #=======================================
 # Methods

@@ -25,11 +25,10 @@ when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
 import helpers/maths
-import helpers/quantities
 
 import vm/lib
 
-import vm/values/pure/[vcomplex, vrational]
+import vm/values/pure/[vcomplex, vquantity, vrational]
 
 #=======================================
 # Helpers
