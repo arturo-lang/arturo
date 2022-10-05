@@ -32,8 +32,6 @@ import vm/lib
 when not defined(WEB):
     import vm/[eval, exec, parse]
 
-import vm/values/pure/[vregex]
-
 #=======================================
 # Variables
 #=======================================

@@ -29,7 +29,6 @@ import helpers/terminal as terminalHelper
 import vm/lib
 import vm/[eval, exec]
 import vm/values/printable
-import vm/values/pure/[vcolor]
 
 when defined(WEB):
     var stdout: string = ""
