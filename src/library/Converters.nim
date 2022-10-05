@@ -16,7 +16,6 @@
 # Libraries
 #=======================================
 
-import rationals except Rational
 import algorithm, parseutils, sequtils, strformat, sugar, times, unicode
 
 import helpers/arrays
@@ -30,7 +29,9 @@ when not defined(NOASCIIDECODE):
     import helpers/strings
 
 import vm/lib
+import vm/values/pure/[vrational]
 import vm/[bytecode, errors, eval, exec, opcodes, parse]
+
 
 #=======================================
 # Helpers

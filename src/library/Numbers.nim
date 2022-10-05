@@ -16,8 +16,6 @@
 # Libraries
 #=======================================
 
-import complex except Complex
-import rationals except Rational
 import math, random, sequtils, sugar
 
 when defined(WEB):
@@ -30,6 +28,8 @@ import helpers/maths
 import helpers/quantities
 
 import vm/lib
+
+import vm/values/pure/[vcomplex, vrational]
 
 #=======================================
 # Helpers
