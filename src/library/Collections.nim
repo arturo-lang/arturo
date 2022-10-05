@@ -32,8 +32,6 @@ import helpers/unisort
 import vm/exec
 import vm/lib
 
-import vm/values/pure/[vregex]
-
 #=======================================
 # Helpers
 #=======================================

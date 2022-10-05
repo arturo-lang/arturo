@@ -27,7 +27,6 @@ when not defined(NOASCIIDECODE):
     import helpers/strings
 
 import vm/lib
-import vm/values/pure/[vcolor, vquantity, vrational]
 import vm/[bytecode, errors, eval, exec, opcodes, parse]
 
 

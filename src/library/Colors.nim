@@ -19,7 +19,6 @@
 import sequtils, sugar
 
 import vm/lib
-import vm/values/pure/[vcolor]
 
 #=======================================
 # Methods
