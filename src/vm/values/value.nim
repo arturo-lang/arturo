@@ -30,7 +30,6 @@ when not defined(NOGMP):
 
 import helpers/bytes as BytesHelper
 export Byte, ByteArray
-import helpers/quantities as QuantitiesHelper
 import helpers/terminal as TerminalHelper
 
 import vm/opcodes
@@ -38,7 +37,7 @@ import vm/opcodes
 when not defined(WEB):
     import vm/errors
 
-import vm/values/pure/[vcolor, vcomplex, vrational, vregex]
+import vm/values/pure/[vcolor, vcomplex, vquantity, vrational, vregex]
 
 import vm/values/clean
 import vm/values/types
@@ -323,7 +322,7 @@ func newSymbolLiteral*(m: SymbolKind): Value {.inline, enforceNoRaises.} =
 func newSymbolLiteral*(m: string): Value {.inline.} =
     newSymbolLiteral(parseEnum[SymbolKind](m))
 
-func newQuantity*(nm: Value, unit: QuantitySpec): Value {.inline, enforceNoRaises.} =
+func newQuantity*(nm: Value, unit: VQuantity): Value {.inline, enforceNoRaises.} =
     Value(kind: Quantity, nm: nm, unit: unit)
 
 proc newQuantity*(nm: Value, name: UnitName): Value {.inline.} =

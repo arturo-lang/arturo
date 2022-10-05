@@ -23,14 +23,12 @@ when defined(WEB):
 when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
-import helpers/quantities as QuantitiesHelper
-
 import vm/exec
 import vm/stack
 import vm/values/value
 import vm/values/clean
 
-import vm/values/pure/[vcolor, vrational, vregex]
+import vm/values/pure/[vcolor, vquantity, vrational, vregex]
 
 #=======================================
 # Methods
