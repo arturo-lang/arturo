@@ -31,7 +31,6 @@ when not defined(NOGMP):
 import helpers/bytes as BytesHelper
 export Byte, ByteArray
 import helpers/quantities as QuantitiesHelper
-import helpers/regex as RegexHelper
 import helpers/terminal as TerminalHelper
 
 import vm/opcodes
@@ -39,7 +38,7 @@ import vm/opcodes
 when not defined(WEB):
     import vm/errors
 
-import vm/values/pure/[vcolor, vcomplex, vrational]
+import vm/values/pure/[vcolor, vcomplex, vrational, vregex]
 
 import vm/values/clean
 import vm/values/types
@@ -370,7 +369,7 @@ proc convertQuantityValue*(nm: Value, fromU: UnitName, toU: UnitName, fromKind =
         else:
             return nm * newFloating(fmultiplier)
 
-func newRegex*(rx: RegexObj): Value {.inline, enforceNoRaises.} =
+func newRegex*(rx: VRegex): Value {.inline, enforceNoRaises.} =
     Value(kind: Regex, rx: rx)
 
 func newRegex*(rx: string): Value {.inline.} =

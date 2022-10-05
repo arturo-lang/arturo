@@ -25,13 +25,14 @@ import sequtils, strutils
 import unicode, std/wordwrap, xmltree
 
 import helpers/charsets
-import helpers/regex
 import helpers/strings
 
 import vm/lib
 
 when not defined(WEB):
     import vm/[eval, exec, parse]
+
+import vm/values/pure/[vregex]
 
 #=======================================
 # Variables
@@ -427,7 +428,7 @@ proc defineSymbols*() =
             match "this is a string" "[0-9]+"       ; => []
         """:
             ##########################################################
-            var rgx : RegexObj
+            var rgx : VRegex
             
             if y.kind==Regex: rgx = y.rx
             else: rgx = newRegex(y.s).rx

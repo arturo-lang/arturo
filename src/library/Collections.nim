@@ -26,12 +26,13 @@ import strutils, sugar, unicode
 import helpers/arrays
 import helpers/bytes
 import helpers/combinatorics
-import helpers/regex
 import helpers/strings
 import helpers/unisort
 
 import vm/exec
 import vm/lib
+
+import vm/values/pure/[vregex]
 
 #=======================================
 # Helpers
