@@ -30,7 +30,6 @@ when not defined(NOGMP):
 
 import helpers/bytes as BytesHelper
 export Byte, ByteArray
-import helpers/colors as ColorsHelper
 import helpers/quantities as QuantitiesHelper
 import helpers/regex as RegexHelper
 import helpers/terminal as TerminalHelper
@@ -40,7 +39,7 @@ import vm/opcodes
 when not defined(WEB):
     import vm/errors
 
-import vm/values/pure/[vcomplex, vrational]
+import vm/values/pure/[vcolor, vcomplex, vrational]
 
 import vm/values/clean
 import vm/values/types

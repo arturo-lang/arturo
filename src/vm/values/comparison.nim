@@ -18,13 +18,12 @@ when defined(WEB):
 when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
-import helpers/colors as ColorsHelper
 import helpers/quantities as QuantitiesHelper
  
 import vm/exec
 import vm/stack
 
-import vm/values/pure/[vcomplex,vrational]
+import vm/values/pure/[vcolor, vcomplex, vrational]
 import vm/values/value
 import vm/values/clean
 
