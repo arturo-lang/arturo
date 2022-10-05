@@ -915,7 +915,6 @@ func cleanedBlockImpl*(va: ValueArray): ValueArray {.inline,enforceNoRaises.} =
         for vv in va:
             if vv.kind != Newline:
                 vv
-        #result = va.filter((vv) => vv.kind != Newline)
 
 template cleanedBlock*(va: ValueArray, inplace=false): untyped =
     when not defined(NOERRORLINES):
