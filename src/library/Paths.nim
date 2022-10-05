@@ -19,9 +19,10 @@
 when not defined(WEB):
     import os, sequtils, sugar
 
-    import helpers/colors as colorsHelper
     import helpers/path
     import helpers/url
+
+    import vm/values/pure/[vcolor]
 
 import vm/lib
 when not defined(WEB):

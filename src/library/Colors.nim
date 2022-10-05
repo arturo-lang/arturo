@@ -18,9 +18,8 @@
 
 import sequtils, sugar
 
-import helpers/colors as colorsHelper
-
 import vm/lib
+import vm/values/pure/[vcolor]
 
 #=======================================
 # Methods

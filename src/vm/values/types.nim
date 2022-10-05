@@ -22,11 +22,10 @@ when not defined(NOGMP):
     import helpers/bignums
 
 import helpers/bytes
-import helpers/colors
 import helpers/quantities
 import helpers/regex
 
-import vm/values/pure/[vcomplex, vrational]
+import vm/values/pure/[vcolor, vcomplex, vrational]
 
 #=======================================
 # Types
