@@ -1,161 +1,125 @@
+######################################################
+# Arturo
+# Programming Language + Bytecode VM compiler
+# (c) 2019-2022 Yanis Zafirópulos
 #
-#
-#            Nim's Runtime Library
-#        (c) Copyright 2010 Andreas Rumpf
-#
-#    See the file "copying.txt", included in this
-#    distribution, for details about the copyright.
-#
+# @file: vm/values/pure/vcomplex.nim
+######################################################
 
-## This module implements complex numbers
-## and basic mathematical operations on them.
-##
-## Complex numbers are currently generic over 64-bit or 32-bit floats.
-
-runnableExamples:
-    from std/math import almostEqual, sqrt
-
-    func almostEqual(a, b: VComplexObj): bool =
-        almostEqual(a.re, b.re) and almostEqual(a.im, b.im)
-
-    let
-        z1 = complex(1.0, 2.0)
-        z2 = complex(3.0, -4.0)
-
-    assert almostEqual(z1 + z2, complex(4.0, -2.0))
-    assert almostEqual(z1 - z2, complex(-2.0, 6.0))
-    assert almostEqual(z1 * z2, complex(11.0, 2.0))
-    assert almostEqual(z1 / z2, complex(-0.2, 0.4))
-
-    assert almostEqual(abs(z1), sqrt(5.0))
-    assert almostEqual(conjugate(z1), complex(1.0, -2.0))
-
-    let (r, phi) = z1.polar
-    assert almostEqual(rect(r, phi), z1)
+# Contains code based on
+# the Complex module: https://raw.githubusercontent.com/nim-lang/Nim/version-1-6/lib/pure/complex.nim
+# which forms part of the Nim standard library.
+# (c) Copyright 2010 Andreas Rumpf
 
 {.push checks: off, line_dir: off, stack_trace: off, debugger: off.}
-# the user does not want to trace a part of the standard library!
+
+#=======================================
+# Libraries
+#=======================================
 
 import math
 
+#=======================================
+# Types
+#=======================================
+
 type
     VComplexObj*[T: SomeFloat] = object
-        ## A complex number, consisting of a real and an imaginary part.
-        re*, im*: T
-    VComplex* = VComplexObj[float64]
-        ## Alias for a complex number using 64-bit floats.
+        re*: T
+        im*: T
+
     Complex32* = VComplexObj[float32]
-        ## Alias for a complex number using 32-bit floats.
+    VComplex* = VComplexObj[float64]
+
+#=======================================
+# Helpers
+#=======================================
 
 func complex*[T: SomeFloat](re: T; im: T = 0.0): VComplexObj[T] =
-    ## Returns a `VComplexObj[T]` with real part `re` and imaginary part `im`.
     result.re = re
     result.im = im
 
 func complex32*(re: float32; im: float32 = 0.0): Complex32 =
-    ## Returns a `Complex32` with real part `re` and imaginary part `im`.
     result.re = re
     result.im = im
 
 func complex64*(re: float64; im: float64 = 0.0): VComplex =
-    ## Returns a `VComplex` with real part `re` and imaginary part `im`.
     result.re = re
     result.im = im
 
 template im*(arg: typedesc[float32]): Complex32 = complex32(0, 1)
-    ## Returns the imaginary unit (`complex32(0, 1)`).
 template im*(arg: typedesc[float64]): VComplex = complex64(0, 1)
-    ## Returns the imaginary unit (`complex64(0, 1)`).
 template im*(arg: float32): Complex32 = complex32(0, arg)
-    ## Returns `arg` as an imaginary number (`complex32(0, arg)`).
 template im*(arg: float64): VComplex = complex64(0, arg)
-    ## Returns `arg` as an imaginary number (`complex64(0, arg)`).
+
+#=======================================
+# Methods
+#=======================================
 
 func abs*[T](z: VComplexObj[T]): T =
-    ## Returns the absolute value of `z`,
-    ## that is the distance from (0, 0) to `z`.
     result = hypot(z.re, z.im)
 
 func abs2*[T](z: VComplexObj[T]): T =
-    ## Returns the squared absolute value of `z`,
-    ## that is the squared distance from (0, 0) to `z`.
-    ## This is more efficient than `abs(z) ^ 2`.
     result = z.re * z.re + z.im * z.im
 
 func conjugate*[T](z: VComplexObj[T]): VComplexObj[T] =
-    ## Returns the complex conjugate of `z` (`complex(z.re, -z.im)`).
     result.re = z.re
     result.im = -z.im
 
 func inv*[T](z: VComplexObj[T]): VComplexObj[T] =
-    ## Returns the multiplicative inverse of `z` (`1/z`).
     conjugate(z) / abs2(z)
 
 func `==`*[T](x, y: VComplexObj[T]): bool =
-    ## Compares two complex numbers for equality.
     result = x.re == y.re and x.im == y.im
 
 func `+`*[T](x: T; y: VComplexObj[T]): VComplexObj[T] =
-    ## Adds a real number to a complex number.
     result.re = x + y.re
     result.im = y.im
 
 func `+`*[T](x: VComplexObj[T]; y: T): VComplexObj[T] =
-    ## Adds a complex number to a real number.
     result.re = x.re + y
     result.im = x.im
 
 func `+`*[T](x, y: VComplexObj[T]): VComplexObj[T] =
-    ## Adds two complex numbers.
     result.re = x.re + y.re
     result.im = x.im + y.im
 
 func `-`*[T](z: VComplexObj[T]): VComplexObj[T] =
-    ## Unary minus for complex numbers.
     result.re = -z.re
     result.im = -z.im
 
 func `-`*[T](x: T; y: VComplexObj[T]): VComplexObj[T] =
-    ## Subtracts a complex number from a real number.
     result.re = x - y.re
     result.im = -y.im
 
 func `-`*[T](x: VComplexObj[T]; y: T): VComplexObj[T] =
-    ## Subtracts a real number from a complex number.
     result.re = x.re - y
     result.im = x.im
 
 func `-`*[T](x, y: VComplexObj[T]): VComplexObj[T] =
-    ## Subtracts two complex numbers.
     result.re = x.re - y.re
     result.im = x.im - y.im
 
 func `*`*[T](x: T; y: VComplexObj[T]): VComplexObj[T] =
-    ## Multiplies a real number with a complex number.
     result.re = x * y.re
     result.im = x * y.im
 
 func `*`*[T](x: VComplexObj[T]; y: T): VComplexObj[T] =
-    ## Multiplies a complex number with a real number.
     result.re = x.re * y
     result.im = x.im * y
 
 func `*`*[T](x, y: VComplexObj[T]): VComplexObj[T] =
-    ## Multiplies two complex numbers.
     result.re = x.re * y.re - x.im * y.im
     result.im = x.im * y.re + x.re * y.im
 
 func `/`*[T](x: VComplexObj[T]; y: T): VComplexObj[T] =
-    ## Divides a complex number by a real number.
     result.re = x.re / y
     result.im = x.im / y
 
 func `/`*[T](x: T; y: VComplexObj[T]): VComplexObj[T] =
-    ## Divides a real number by a complex number.
     result = x * inv(y)
 
 func `/`*[T](x, y: VComplexObj[T]): VComplexObj[T] =
-    ## Divides two complex numbers.
     var r, den: T
     if abs(y.re) < abs(y.im):
         r = y.re / y.im
@@ -169,30 +133,23 @@ func `/`*[T](x, y: VComplexObj[T]): VComplexObj[T] =
         result.im = (x.im - r * x.re) / den
 
 func `+=`*[T](x: var VComplexObj[T]; y: VComplexObj[T]) =
-    ## Adds `y` to `x`.
     x.re += y.re
     x.im += y.im
 
 func `-=`*[T](x: var VComplexObj[T]; y: VComplexObj[T]) =
-    ## Subtracts `y` from `x`.
     x.re -= y.re
     x.im -= y.im
 
 func `*=`*[T](x: var VComplexObj[T]; y: VComplexObj[T]) =
-    ## Multiplies `x` by `y`.
     let im = x.im * y.re + x.re * y.im
     x.re = x.re * y.re - x.im * y.im
     x.im = im
 
 func `/=`*[T](x: var VComplexObj[T]; y: VComplexObj[T]) =
-    ## Divides `x` by `y` in place.
     x = x / y
 
-
 func sqrt*[T](z: VComplexObj[T]): VComplexObj[T] =
-    ## Computes the
     ## ([principal](https://en.wikipedia.org/wiki/Square_root#Principal_square_root_of_a_complex_number))
-    ## square root of a complex number `z`.
     var x, y, w, r: T
 
     if z.re == 0.0 and z.im == 0.0:
@@ -215,7 +172,6 @@ func sqrt*[T](z: VComplexObj[T]): VComplexObj[T] =
             result.re = z.im / (result.im + result.im)
 
 func exp*[T](z: VComplexObj[T]): VComplexObj[T] =
-    ## Computes the exponential function (`e^z`).
     let
         rho = exp(z.re)
         theta = z.im
@@ -223,28 +179,16 @@ func exp*[T](z: VComplexObj[T]): VComplexObj[T] =
     result.im = rho * sin(theta)
 
 func ln*[T](z: VComplexObj[T]): VComplexObj[T] =
-    ## Returns the
-    ## ([principal value](https://en.wikipedia.org/wiki/Complex_logarithm#Principal_value)
-    ## of the) natural logarithm of `z`.
     result.re = ln(abs(z))
     result.im = arctan2(z.im, z.re)
 
 func log10*[T](z: VComplexObj[T]): VComplexObj[T] =
-    ## Returns the logarithm base 10 of `z`.
-    ##
-    ## **See also:**
-    ## * `ln func<#ln,VComplexObj[T]>`_
     result = ln(z) / ln(10.0)
 
 func log2*[T](z: VComplexObj[T]): VComplexObj[T] =
-    ## Returns the logarithm base 2 of `z`.
-    ##
-    ## **See also:**
-    ## * `ln func<#ln,VComplexObj[T]>`_
     result = ln(z) / ln(2.0)
 
 func pow*[T](x, y: VComplexObj[T]): VComplexObj[T] =
-    ## `x` raised to the power of `y`.
     if x.re == 0.0 and x.im == 0.0:
         if y.re == 0.0 and y.im == 0.0:
             result.re = 1.0
@@ -266,139 +210,92 @@ func pow*[T](x, y: VComplexObj[T]): VComplexObj[T] =
         result.im = s * sin(r)
 
 func pow*[T](x: VComplexObj[T]; y: T): VComplexObj[T] =
-    ## The complex number `x` raised to the power of the real number `y`.
     pow(x, complex[T](y))
 
 func sin*[T](z: VComplexObj[T]): VComplexObj[T] =
-    ## Returns the sine of `z`.
     result.re = sin(z.re) * cosh(z.im)
     result.im = cos(z.re) * sinh(z.im)
 
 func arcsin*[T](z: VComplexObj[T]): VComplexObj[T] =
-    ## Returns the inverse sine of `z`.
     result = -im(T) * ln(im(T) * z + sqrt(T(1.0) - z*z))
 
 func cos*[T](z: VComplexObj[T]): VComplexObj[T] =
-    ## Returns the cosine of `z`.
     result.re = cos(z.re) * cosh(z.im)
     result.im = -sin(z.re) * sinh(z.im)
 
 func arccos*[T](z: VComplexObj[T]): VComplexObj[T] =
-    ## Returns the inverse cosine of `z`.
     result = -im(T) * ln(z + sqrt(z*z - T(1.0)))
 
 func tan*[T](z: VComplexObj[T]): VComplexObj[T] =
-    ## Returns the tangent of `z`.
     result = sin(z) / cos(z)
 
 func arctan*[T](z: VComplexObj[T]): VComplexObj[T] =
-    ## Returns the inverse tangent of `z`.
     result = T(0.5)*im(T) * (ln(T(1.0) - im(T)*z) - ln(T(1.0) + im(T)*z))
 
 func cot*[T](z: VComplexObj[T]): VComplexObj[T] =
-    ## Returns the cotangent of `z`.
     result = cos(z)/sin(z)
 
 func arccot*[T](z: VComplexObj[T]): VComplexObj[T] =
-    ## Returns the inverse cotangent of `z`.
     result = T(0.5)*im(T) * (ln(T(1.0) - im(T)/z) - ln(T(1.0) + im(T)/z))
 
 func sec*[T](z: VComplexObj[T]): VComplexObj[T] =
-    ## Returns the secant of `z`.
     result = T(1.0) / cos(z)
 
 func arcsec*[T](z: VComplexObj[T]): VComplexObj[T] =
-    ## Returns the inverse secant of `z`.
     result = -im(T) * ln(im(T) * sqrt(1.0 - 1.0/(z*z)) + T(1.0)/z)
 
 func csc*[T](z: VComplexObj[T]): VComplexObj[T] =
-    ## Returns the cosecant of `z`.
     result = T(1.0) / sin(z)
 
 func arccsc*[T](z: VComplexObj[T]): VComplexObj[T] =
-    ## Returns the inverse cosecant of `z`.
     result = -im(T) * ln(sqrt(T(1.0) - T(1.0)/(z*z)) + im(T)/z)
 
 func sinh*[T](z: VComplexObj[T]): VComplexObj[T] =
-    ## Returns the hyperbolic sine of `z`.
     result = T(0.5) * (exp(z) - exp(-z))
 
 func arcsinh*[T](z: VComplexObj[T]): VComplexObj[T] =
-    ## Returns the inverse hyperbolic sine of `z`.
     result = ln(z + sqrt(z*z + 1.0))
 
 func cosh*[T](z: VComplexObj[T]): VComplexObj[T] =
-    ## Returns the hyperbolic cosine of `z`.
     result = T(0.5) * (exp(z) + exp(-z))
 
 func arccosh*[T](z: VComplexObj[T]): VComplexObj[T] =
-    ## Returns the inverse hyperbolic cosine of `z`.
     result = ln(z + sqrt(z*z - T(1.0)))
 
 func tanh*[T](z: VComplexObj[T]): VComplexObj[T] =
-    ## Returns the hyperbolic tangent of `z`.
     result = sinh(z) / cosh(z)
 
 func arctanh*[T](z: VComplexObj[T]): VComplexObj[T] =
-    ## Returns the inverse hyperbolic tangent of `z`.
     result = T(0.5) * (ln((T(1.0)+z) / (T(1.0)-z)))
 
 func coth*[T](z: VComplexObj[T]): VComplexObj[T] =
-    ## Returns the hyperbolic cotangent of `z`.
     result = cosh(z) / sinh(z)
 
 func arccoth*[T](z: VComplexObj[T]): VComplexObj[T] =
-    ## Returns the inverse hyperbolic cotangent of `z`.
     result = T(0.5) * (ln(T(1.0) + T(1.0)/z) - ln(T(1.0) - T(1.0)/z))
 
 func sech*[T](z: VComplexObj[T]): VComplexObj[T] =
-    ## Returns the hyperbolic secant of `z`.
     result = T(2.0) / (exp(z) + exp(-z))
 
 func arcsech*[T](z: VComplexObj[T]): VComplexObj[T] =
-    ## Returns the inverse hyperbolic secant of `z`.
     result = ln(1.0/z + sqrt(T(1.0)/z+T(1.0)) * sqrt(T(1.0)/z-T(1.0)))
 
 func csch*[T](z: VComplexObj[T]): VComplexObj[T] =
-    ## Returns the hyperbolic cosecant of `z`.
     result = T(2.0) / (exp(z) - exp(-z))
 
 func arccsch*[T](z: VComplexObj[T]): VComplexObj[T] =
-    ## Returns the inverse hyperbolic cosecant of `z`.
     result = ln(T(1.0)/z + sqrt(T(1.0)/(z*z) + T(1.0)))
 
 func phase*[T](z: VComplexObj[T]): T =
-    ## Returns the phase (or argument) of `z`, that is the angle in polar representation.
-    ##
-    ## | `result = arctan2(z.im, z.re)`
     arctan2(z.im, z.re)
 
 func polar*[T](z: VComplexObj[T]): tuple[r, phi: T] =
-    ## Returns `z` in polar coordinates.
-    ##
-    ## | `result.r = abs(z)`
-    ## | `result.phi = phase(z)`
-    ##
-    ## **See also:**
-    ## * `rect func<#rect,T,T>`_ for the inverse operation
     (r: abs(z), phi: phase(z))
 
 func rect*[T](r, phi: T): VComplexObj[T] =
-    ## Returns the complex number with polar coordinates `r` and `phi`.
-    ##
-    ## | `result.re = r * cos(phi)`
-    ## | `result.im = r * sin(phi)`
-    ##
-    ## **See also:**
-    ## * `polar func<#polar,VComplexObj[T]>`_ for the inverse operation
     complex(r * cos(phi), r * sin(phi))
 
-
 func `$`*(z: VComplexObj): string =
-    ## Returns `z`'s string representation as `"(re, im)"`.
-    runnableExamples:
-        doAssert $complex(1.0, 2.0) == "(1.0, 2.0)"
-
     result = "(" & $z.re & ", " & $z.im & ")"
 
 {.pop.}
