@@ -32,6 +32,7 @@ import helpers/regex as RegexHelper
 import vm/exec
 import vm/stack
 import vm/values/value
+import vm/values/clean
 
 #=======================================
 # Methods

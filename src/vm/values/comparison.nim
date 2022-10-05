@@ -25,6 +25,7 @@ import helpers/quantities as QuantitiesHelper
 import vm/exec
 import vm/stack
 import vm/values/value
+import vm/values/clean
 
 #=======================================
 # Methods
