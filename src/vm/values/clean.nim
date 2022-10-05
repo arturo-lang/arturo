@@ -11,7 +11,7 @@ import macros, sequtils, strutils, sugar
 import vm/values/types
 
 #=======================================
-# Methods
+# Helpers
 #=======================================
 
 # TODO(VM/values/clean) `cleanBlock` is too slow
@@ -35,6 +35,24 @@ template cleanedBlock*(va: ValueArray, inplace=false): untyped =
         cleanedBlockImpl(va)
     else:
         va
+
+iterator cleanedBlockValues*(v: Value): lent Value =
+    var i = 0
+    var L = v.a.len
+    when not defined(NOERRORLINES):
+        if v.dirty:
+            while i < L:
+                if v.a[i].kind != Newline:
+                    yield v.a[i]
+                inc(i)
+        else:
+            while i < L:
+                yield v.a[i]
+                inc(i)
+    else:
+        while i < L:
+            yield v.a[i]
+            inc(i)
 
 macro ensureCleaned*(name: untyped): untyped =
     let cleanName =  ident("clean" & ($name).capitalizeAscii())
