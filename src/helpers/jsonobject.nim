@@ -21,9 +21,8 @@ import tables, unicode
 when defined(WEB):
     import jsffi, strutils
 
-import helpers/regex as RegexHelper
-
 import vm/values/[printable, value]
+import vm/values/pure/[vregex]
 
 #=======================================
 # Helpers

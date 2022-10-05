@@ -23,9 +23,8 @@ when not defined(NOGMP):
 
 import helpers/bytes
 import helpers/quantities
-import helpers/regex
 
-import vm/values/pure/[vcolor, vcomplex, vrational]
+import vm/values/pure/[vcolor, vcomplex, vrational, vregex]
 
 #=======================================
 # Types
@@ -276,7 +275,7 @@ type
             of Symbol,
                SymbolLiteral:      
                    m*  : SymbolKind
-            of Regex:       rx* : RegexObj
+            of Regex:       rx* : VRegex
             of Quantity:
                 nm*: Value
                 unit*: QuantitySpec
