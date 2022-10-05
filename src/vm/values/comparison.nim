@@ -153,7 +153,7 @@ proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
                         if not (v==y.o[k]): return false
 
                     return true
-            of ValueKind.Color:
+            of Color:
                 return x.l == y.l
             of Function:
                 if x.fnKind==UserFunction:
