@@ -3,7 +3,7 @@
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
-# @file: vm/values/pure/vrational.nim
+# @file: vm/values/custom/vrational.nim
 ######################################################
 
 # Contains code based on

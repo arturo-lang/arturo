@@ -14,7 +14,7 @@ import vm/values/types
 # Methods
 #=======================================
 
-# TODO(VM/values/value) `cleanBlock` is too slow
+# TODO(VM/values/clean) `cleanBlock` is too slow
 #  when built without NOERRORLINES - which is our normal setup - this specific piece of code could be slowing down the whole language by up to 20%
 #  labels: vm, values, performance, enhancement, benchmark, critical
 
