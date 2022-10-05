@@ -14,8 +14,8 @@
 # Libraries
 #=======================================
 
-import complex, hashes, lenientops
-import macros, math, rationals, sequtils, strformat
+import hashes, lenientops
+import macros, math, sequtils, strformat
 import strutils, sugar, tables, times, unicode
 
 when not defined(NOSQLITE):
@@ -39,6 +39,8 @@ import vm/opcodes
 
 when not defined(WEB):
     import vm/errors
+
+import vm/values/pure/[vcomplex, vrational]
 
 import vm/values/clean
 import vm/values/types
@@ -205,11 +207,11 @@ func newFloating*(f: int): Value {.inline, enforceNoRaises.} =
 proc newFloating*(f: string): Value {.inline.} =
     return newFloating(parseFloat(f))
 
-func newComplex*(com: Complex64): Value {.inline.} =
+func newComplex*(com: VComplex): Value {.inline.} =
     Value(kind: ValueKind.Complex, z: com)
 
 func newComplex*(fre: float, fim: float): Value {.inline.} =
-    Value(kind: ValueKind.Complex, z: Complex64(re: fre, im: fim))
+    Value(kind: ValueKind.Complex, z: VComplex(re: fre, im: fim))
 
 func newComplex*(fre: Value, fim: Value): Value {.inline.} =
     var r: float
@@ -223,7 +225,7 @@ func newComplex*(fre: Value, fim: Value): Value {.inline.} =
 
     newComplex(r,i)
 
-func newRational*(rat: Rational[int]): Value {.inline, enforceNoRaises.} =
+func newRational*(rat: VRational): Value {.inline, enforceNoRaises.} =
     Value(kind: ValueKind.Rational, rat: rat)
 
 func newRational*(num: int, den: int): Value {.inline.} =

@@ -10,8 +10,7 @@
 # Libraries
 #=======================================
 
-import complex, rationals, tables
-import times, unicode
+import tables, times, unicode
 
 when not defined(NOSQLITE):
     import db_sqlite as sqlite
@@ -26,6 +25,8 @@ import helpers/bytes
 import helpers/colors
 import helpers/quantities
 import helpers/regex
+
+import vm/values/pure/[vcomplex, vrational]
 
 #=======================================
 # Types
@@ -252,8 +253,8 @@ type
                         else:
                             discard
             of Floating: f*: float
-            of Complex:     z*  : Complex64
-            of Rational:    rat*  : Rational[int]
+            of Complex:     z*  : VComplex
+            of Rational:    rat*  : VRational
             of Version: 
                 major*   : int
                 minor*   : int
