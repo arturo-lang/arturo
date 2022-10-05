@@ -16,21 +16,19 @@
 # Libraries
 #=======================================
 
-import rationals except Rational
 import algorithm, parseutils, sequtils, strformat, sugar, times, unicode
 
 import helpers/arrays
 when not defined(NOGMP):
     import helpers/bignums
 import helpers/bytes
-import helpers/colors
 import helpers/datasource
-import helpers/quantities
 when not defined(NOASCIIDECODE):
     import helpers/strings
 
 import vm/lib
 import vm/[bytecode, errors, eval, exec, opcodes, parse]
+
 
 #=======================================
 # Helpers

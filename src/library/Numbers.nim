@@ -16,8 +16,6 @@
 # Libraries
 #=======================================
 
-import complex except Complex
-import rationals except Rational
 import math, random, sequtils, sugar
 
 when defined(WEB):
@@ -27,7 +25,6 @@ when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
 import helpers/maths
-import helpers/quantities
 
 import vm/lib
 
