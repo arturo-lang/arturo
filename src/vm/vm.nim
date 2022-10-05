@@ -66,7 +66,7 @@ macro importLib(name: static[string]): untyped =
 #=======================================
 
 importLib "Arithmetic"
-importLib "Binary"
+importLib "Bitwise"
 importLib "Collections"
 importLib "Colors"
 importLib "Comparison"

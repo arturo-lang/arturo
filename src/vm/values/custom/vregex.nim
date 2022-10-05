@@ -3,7 +3,7 @@
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
-# @file: helpers/regex.nim
+# @file: vm/values/custom/vregex.nim
 ######################################################
 
 #=======================================
@@ -22,7 +22,7 @@ else:
 #=======================================
 
 type
-    RegexObj* = (when defined(WEB): RegExp else: Regex)
+    VRegex* = (when defined(WEB): RegExp else: Regex)
 
 #=======================================
 # Helpers
@@ -42,32 +42,32 @@ proc escapeForRegex*(s: string): string =
 # Methods
 #=======================================
 
-proc `$`*(rx: RegexObj): string =
+proc `$`*(rx: VRegex): string =
     when defined(WEB):
         $(rx)
     else:
         rx.pattern
 
-proc newRegexObj*(pattern: string): RegexObj =
+proc newRegexObj*(pattern: string): VRegex =
     when defined(WEB):
         newRegExp(cstring(pattern))
     else:
         re(pattern)
 
-proc contains*(str: string, rx: RegexObj): bool =
+proc contains*(str: string, rx: VRegex): bool =
     when defined(WEB):
         cstring(str).contains(rx)
     else:
         nre.contains(str, rx)
 
-proc contains*(str: string, rx: RegexObj, at: int): bool =
+proc contains*(str: string, rx: VRegex, at: int): bool =
     let robj = newRegexObj(".{" & $(at) & "}" & $(rx))
     when defined(WEB):
         cstring(str).contains(robj)
     else:
         nre.contains(str, robj)
 
-proc startsWith*(str: string, rx: RegexObj): bool =
+proc startsWith*(str: string, rx: VRegex): bool =
     when defined(WEB):
         cstring(str).startsWith(rx)
     else:
@@ -77,7 +77,7 @@ proc startsWith*(str: string, rx: RegexObj): bool =
         else:
             return false
 
-proc endsWith*(str: string, rx: RegexObj): bool =
+proc endsWith*(str: string, rx: VRegex): bool =
     when defined(WEB):
         cstring(str).endsWith(rx)
     else:
@@ -87,19 +87,19 @@ proc endsWith*(str: string, rx: RegexObj): bool =
         else:
             return false
 
-proc replaceAll*(str: string, rx: RegexObj, with: string): string =
+proc replaceAll*(str: string, rx: VRegex, with: string): string =
     when defined(WEB):
         $(replace(cstring(str), rx, cstring(with)))
     else:
         nre.replace(str, rx, with)
 
-proc split*(str: string, rx: RegexObj): seq[string] =
+proc split*(str: string, rx: VRegex): seq[string] =
     when defined(WEB):
         cstring(str).split(rx).map(x => $(x))
     else:
         nre.split(str, rx)
 
-proc matchAll*(str: string, rx: RegexObj): seq[string] =
+proc matchAll*(str: string, rx: VRegex): seq[string] =
     when defined(WEB):
         let globalR = rx
         rx.flags = "g"
@@ -108,7 +108,7 @@ proc matchAll*(str: string, rx: RegexObj): seq[string] =
     else:
         nre.findAll(str, rx)
 
-proc matchAllGroups*(str: string, rx: RegexObj): Table[string,string] =
+proc matchAllGroups*(str: string, rx: VRegex): Table[string,string] =
     when defined(WEB):
         discard
     else:
@@ -116,7 +116,7 @@ proc matchAllGroups*(str: string, rx: RegexObj): Table[string,string] =
         if not matches.isNone:
             result = matches.get.captures.toTable
 
-proc hash*(rx: RegexObj): Hash =
+proc hash*(rx: VRegex): Hash =
     when defined(WEB):
         hash($(rx))
     else:

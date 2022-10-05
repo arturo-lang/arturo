@@ -19,7 +19,6 @@
 when not defined(WEB):
     import os, sequtils, sugar
 
-    import helpers/colors as colorsHelper
     import helpers/path
     import helpers/url
 
