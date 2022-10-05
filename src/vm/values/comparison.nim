@@ -10,7 +10,6 @@
 # Libraries
 #=======================================
 
-import rationals except Rational
 import lenientops, tables, unicode
 
 when defined(WEB):
@@ -18,12 +17,11 @@ when defined(WEB):
     
 when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
-
-import helpers/colors as ColorsHelper
-import helpers/quantities as QuantitiesHelper
  
 import vm/exec
 import vm/stack
+
+import vm/values/pure/[vcolor, vcomplex, vquantity, vrational]
 import vm/values/value
 import vm/values/clean
 
@@ -155,7 +153,7 @@ proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
                         if not (v==y.o[k]): return false
 
                     return true
-            of ValueKind.Color:
+            of Color:
                 return x.l == y.l
             of Function:
                 if x.fnKind==UserFunction:

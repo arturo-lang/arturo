@@ -14,8 +14,6 @@
 # Libraries
 #=======================================
 
-import rationals except Rational
-
 import sequtils, strformat, strutils
 import sugar, tables, times, unicode
 
@@ -25,14 +23,12 @@ when defined(WEB):
 when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
-import helpers/colors as ColorsHelper
-import helpers/quantities as QuantitiesHelper
-import helpers/regex as RegexHelper
-
 import vm/exec
 import vm/stack
 import vm/values/value
 import vm/values/clean
+
+import vm/values/pure/[vcolor, vquantity, vrational, vregex]
 
 #=======================================
 # Methods

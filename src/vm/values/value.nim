@@ -14,8 +14,8 @@
 # Libraries
 #=======================================
 
-import complex, hashes, lenientops
-import macros, math, rationals, sequtils, strformat
+import hashes, lenientops
+import macros, math, sequtils, strformat
 import strutils, sugar, tables, times, unicode
 
 when not defined(NOSQLITE):
@@ -30,15 +30,14 @@ when not defined(NOGMP):
 
 import helpers/bytes as BytesHelper
 export Byte, ByteArray
-import helpers/colors as ColorsHelper
-import helpers/quantities as QuantitiesHelper
-import helpers/regex as RegexHelper
 import helpers/terminal as TerminalHelper
 
 import vm/opcodes
 
 when not defined(WEB):
     import vm/errors
+
+import vm/values/pure/[vcolor, vcomplex, vquantity, vrational, vregex]
 
 import vm/values/clean
 import vm/values/types
@@ -205,11 +204,11 @@ func newFloating*(f: int): Value {.inline, enforceNoRaises.} =
 proc newFloating*(f: string): Value {.inline.} =
     return newFloating(parseFloat(f))
 
-func newComplex*(com: Complex64): Value {.inline.} =
-    Value(kind: ValueKind.Complex, z: com)
+func newComplex*(com: VComplex): Value {.inline.} =
+    Value(kind: Complex, z: com)
 
 func newComplex*(fre: float, fim: float): Value {.inline.} =
-    Value(kind: ValueKind.Complex, z: Complex64(re: fre, im: fim))
+    Value(kind: Complex, z: VComplex(re: fre, im: fim))
 
 func newComplex*(fre: Value, fim: Value): Value {.inline.} =
     var r: float
@@ -223,17 +222,17 @@ func newComplex*(fre: Value, fim: Value): Value {.inline.} =
 
     newComplex(r,i)
 
-func newRational*(rat: Rational[int]): Value {.inline, enforceNoRaises.} =
-    Value(kind: ValueKind.Rational, rat: rat)
+func newRational*(rat: VRational): Value {.inline, enforceNoRaises.} =
+    Value(kind: Rational, rat: rat)
 
 func newRational*(num: int, den: int): Value {.inline.} =
-    Value(kind: ValueKind.Rational, rat: initRational(num, den))
+    Value(kind: Rational, rat: initRational(num, den))
 
 func newRational*(n: int): Value {.inline.} =
-    Value(kind: ValueKind.Rational, rat: toRational(n))
+    Value(kind: Rational, rat: toRational(n))
 
 func newRational*(n: float): Value {.inline.} =
-    Value(kind: ValueKind.Rational, rat: toRational(n))
+    Value(kind: Rational, rat: toRational(n))
 
 func newRational*(num: Value, den: Value): Value {.inline, enforceNoRaises.} =
     newRational(num.i, den.i)
@@ -323,7 +322,7 @@ func newSymbolLiteral*(m: SymbolKind): Value {.inline, enforceNoRaises.} =
 func newSymbolLiteral*(m: string): Value {.inline.} =
     newSymbolLiteral(parseEnum[SymbolKind](m))
 
-func newQuantity*(nm: Value, unit: QuantitySpec): Value {.inline, enforceNoRaises.} =
+func newQuantity*(nm: Value, unit: VQuantity): Value {.inline, enforceNoRaises.} =
     Value(kind: Quantity, nm: nm, unit: unit)
 
 proc newQuantity*(nm: Value, name: UnitName): Value {.inline.} =
@@ -369,7 +368,7 @@ proc convertQuantityValue*(nm: Value, fromU: UnitName, toU: UnitName, fromKind =
         else:
             return nm * newFloating(fmultiplier)
 
-func newRegex*(rx: RegexObj): Value {.inline, enforceNoRaises.} =
+func newRegex*(rx: VRegex): Value {.inline, enforceNoRaises.} =
     Value(kind: Regex, rx: rx)
 
 func newRegex*(rx: string): Value {.inline.} =
@@ -508,8 +507,8 @@ proc copyValue*(v: Value): Value {.inline.} =
                 when defined(WEB) or not defined(NOGMP): 
                     result = newInteger(v.bi)
         of Floating:    result = newFloating(v.f)
-        of ValueKind.Complex:     result = newComplex(v.z)
-        of ValueKind.Rational:    result = newRational(v.rat)
+        of Complex:     result = newComplex(v.z)
+        of Rational:    result = newRational(v.rat)
         of Type:        
             if likely(v.tpKind==BuiltinType):
                 result = newType(v.t)
@@ -630,7 +629,7 @@ func safePow*[T: SomeNumber](x: T, y: Natural): T =
 proc `+`*(x: Value, y: Value): Value =
     if x.kind==Color and y.kind==Color:
         return newColor(x.l + y.l)
-    if not (x.kind in [Integer, Floating, ValueKind.Complex, ValueKind.Rational]) or not (y.kind in [Integer, Floating, ValueKind.Complex, ValueKind.Rational]):
+    if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
         if x.kind == Quantity:
             if y.kind == Quantity:
                 if x.unit.name == y.unit.name:
@@ -673,27 +672,27 @@ proc `+`*(x: Value, y: Value): Value =
         else:
             if x.kind==Floating:
                 if y.kind==Floating: return newFloating(x.f+y.f)
-                elif y.kind==ValueKind.Complex: return newComplex(x.f+y.z)
-                elif y.kind==ValueKind.Rational: return newRational(toRational(x.f) + y.rat)
+                elif y.kind==Complex: return newComplex(x.f+y.z)
+                elif y.kind==Rational: return newRational(toRational(x.f) + y.rat)
                 else: 
                     if likely(y.iKind==NormalInteger):
                         return newFloating(x.f+y.i)
                     else:
                         when not defined(NOGMP):
                             return newFloating(x.f+y.bi)
-            elif x.kind==ValueKind.Complex:
+            elif x.kind==Complex:
                 if y.kind==Integer:
                     if likely(y.iKind==NormalInteger): return newComplex(x.z+(float)(y.i))
                     else: return VNULL
                 elif y.kind==Floating: return newComplex(x.z+y.f)
-                elif y.kind==ValueKind.Rational: return VNULL
+                elif y.kind==Rational: return VNULL
                 else: return newComplex(x.z+y.z)
-            elif x.kind==ValueKind.Rational:
+            elif x.kind==Rational:
                 if y.kind==Integer:
                     if likely(y.iKind==NormalInteger): return newRational(x.rat+y.i)
                     else: return VNULL
                 elif y.kind==Floating: return newRational(x.rat+toRational(y.f))
-                elif y.kind==ValueKind.Complex: return VNULL
+                elif y.kind==Complex: return VNULL
                 else: return newRational(x.rat+y.rat)
             else:
                 if y.kind==Floating: 
@@ -702,11 +701,11 @@ proc `+`*(x: Value, y: Value): Value =
                     else:
                         when not defined(NOGMP):
                             return newFloating(x.bi+y.f)
-                elif y.kind==ValueKind.Rational: return newRational(x.i+y.rat)
+                elif y.kind==Rational: return newRational(x.i+y.rat)
                 else: return newComplex((float)(x.i)+y.z)
 
 proc `+=`*(x: var Value, y: Value) =
-    if not (x.kind in [Integer, Floating, ValueKind.Complex, ValueKind.Rational]) or not (y.kind in [Integer, Floating, ValueKind.Complex, ValueKind.Rational]):
+    if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
         if x.kind == Quantity:
             if y.kind == Quantity:
                 if x.unit.name == y.unit.name:
@@ -750,27 +749,27 @@ proc `+=`*(x: var Value, y: Value) =
         else:
             if x.kind==Floating:
                 if y.kind==Floating: x.f += y.f
-                elif y.kind==ValueKind.Complex: x = newComplex(x.f + y.z)
-                elif y.kind==ValueKind.Rational: x = newRational(toRational(x.f) + y.rat)
+                elif y.kind==Complex: x = newComplex(x.f + y.z)
+                elif y.kind==Rational: x = newRational(toRational(x.f) + y.rat)
                 else: 
                     if y.iKind == NormalInteger:
                         x.f = x.f + y.i
                     else:
                         when not defined(NOGMP):
                             x = newFloating(x.f + y.bi)
-            elif x.kind==ValueKind.Complex:
+            elif x.kind==Complex:
                 if y.kind==Integer:
                     if likely(y.iKind==NormalInteger): x = newComplex(x.z + (float)(y.i))
                     else: discard
                 elif y.kind==Floating: x = newComplex(x.z + y.f)
-                elif y.kind==ValueKind.Rational: discard
+                elif y.kind==Rational: discard
                 else: x.z += y.z
-            elif x.kind==ValueKind.Rational:
+            elif x.kind==Rational:
                 if y.kind==Integer:
                     if likely(y.iKind==NormalInteger): x.rat += y.i
                     else: discard
                 elif y.kind==Floating: x.rat += toRational(y.f)
-                elif y.kind==ValueKind.Complex: discard
+                elif y.kind==Complex: discard
                 else: x.rat += y.rat
             else:
                 if y.kind==Floating: 
@@ -779,13 +778,13 @@ proc `+=`*(x: var Value, y: Value) =
                     else:
                         when not defined(NOGMP):
                             x = newFloating(x.bi+y.f)
-                elif y.kind==ValueKind.Rational: x = newRational(x.i+y.rat)
+                elif y.kind==Rational: x = newRational(x.i+y.rat)
                 else: x = newComplex((float)(x.i)+y.z)
 
 proc `-`*(x: Value, y: Value): Value = 
     if x.kind==Color and y.kind==Color:
         return newColor(x.l - y.l)
-    if not (x.kind in [Integer, Floating, ValueKind.Complex, ValueKind.Rational]) or not (y.kind in [Integer, Floating, ValueKind.Complex, ValueKind.Rational]):
+    if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
         if x.kind == Quantity:
             if y.kind == Quantity:
                 if x.unit.name == y.unit.name:
@@ -829,27 +828,27 @@ proc `-`*(x: Value, y: Value): Value =
         else:
             if x.kind==Floating:
                 if y.kind==Floating: return newFloating(x.f-y.f)
-                elif y.kind==ValueKind.Complex: return newComplex(x.f-y.z)
-                elif y.kind==ValueKind.Rational: return newRational(toRational(x.f)-y.rat)
+                elif y.kind==Complex: return newComplex(x.f-y.z)
+                elif y.kind==Rational: return newRational(toRational(x.f)-y.rat)
                 else: 
                     if likely(y.iKind==NormalInteger):
                         return newFloating(x.f-y.i)
                     else:
                         when not defined(NOGMP):
                             return newFloating(x.f-y.bi)
-            elif x.kind==ValueKind.Complex:
+            elif x.kind==Complex:
                 if y.kind==Integer:
                     if likely(y.iKind==NormalInteger): return newComplex(x.z-(float)(y.i))
                     else: return VNULL
                 elif y.kind==Floating: return newComplex(x.z-y.f)
-                elif y.kind==ValueKind.Rational: return VNULL
+                elif y.kind==Rational: return VNULL
                 else: return newComplex(x.z-y.z)
-            elif x.kind==ValueKind.Rational:
+            elif x.kind==Rational:
                 if y.kind==Integer:
                     if likely(y.iKind==NormalInteger): return newRational(x.rat-y.i)
                     else: return VNULL
                 elif y.kind==Floating: return newRational(x.rat-toRational(y.f))
-                elif y.kind==ValueKind.Complex: return VNULL
+                elif y.kind==Complex: return VNULL
                 else: return newRational(x.rat-y.rat)
             else:
                 if y.kind==Floating: 
@@ -858,11 +857,11 @@ proc `-`*(x: Value, y: Value): Value =
                     else:
                         when not defined(NOGMP):
                             return newFloating(x.bi-y.f)
-                elif y.kind==ValueKind.Rational: return newRational(x.i-y.rat)
+                elif y.kind==Rational: return newRational(x.i-y.rat)
                 else: return newComplex((float)(x.i)-y.z)
 
 proc `-=`*(x: var Value, y: Value) =
-    if not (x.kind in [Integer, Floating, ValueKind.Complex, ValueKind.Rational]) or not (y.kind in [Integer, Floating, ValueKind.Complex, ValueKind.Rational]):
+    if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
         if x.kind == Quantity:
             if y.kind == Quantity:
                 if x.unit.name == y.unit.name:
@@ -905,27 +904,27 @@ proc `-=`*(x: var Value, y: Value) =
         else:
             if x.kind==Floating:
                 if y.kind==Floating: x.f -= y.f
-                elif y.kind==ValueKind.Complex: x = newComplex(x.f - y.z)
-                elif y.kind==ValueKind.Rational: x = newRational(toRational(x.f) - y.rat)
+                elif y.kind==Complex: x = newComplex(x.f - y.z)
+                elif y.kind==Rational: x = newRational(toRational(x.f) - y.rat)
                 else: 
                     if y.iKind == NormalInteger:
                         x.f = x.f - y.i
                     else:
                         when not defined(NOGMP):
                             x = newFloating(x.f - y.bi)
-            elif x.kind==ValueKind.Complex:
+            elif x.kind==Complex:
                 if y.kind==Integer:
                     if likely(y.iKind==NormalInteger): x = newComplex(x.z - (float)(y.i))
                     else: discard
                 elif y.kind==Floating: x = newComplex(x.z - y.f)
-                elif y.kind==ValueKind.Rational: discard
+                elif y.kind==Rational: discard
                 else: x.z -= y.z
-            elif x.kind==ValueKind.Rational:
+            elif x.kind==Rational:
                 if y.kind==Integer:
                     if likely(y.iKind==NormalInteger): x.rat -= y.i
                     else: discard
                 elif y.kind==Floating: x.rat -= toRational(y.f)
-                elif y.kind==ValueKind.Complex: discard
+                elif y.kind==Complex: discard
                 else: x.rat -= y.rat
             else:
                 if y.kind==Floating: 
@@ -934,11 +933,11 @@ proc `-=`*(x: var Value, y: Value) =
                     else:
                         when not defined(NOGMP):
                             x = newFloating(x.bi-y.f)
-                elif y.kind==ValueKind.Rational: x = newRational(x.i-y.rat)
+                elif y.kind==Rational: x = newRational(x.i-y.rat)
                 else: x = newComplex((float)(x.i)-y.z)
 
 proc `*`*(x: Value, y: Value): Value =
-    if not (x.kind in [Integer, Floating, ValueKind.Complex, ValueKind.Rational]) or not (y.kind in [Integer, Floating, ValueKind.Complex, ValueKind.Rational]):
+    if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
         if x.kind == Quantity:
             if y.kind == Quantity:
                 let finalSpec = getFinalUnitAfterOperation("mul", x.unit, y.unit)
@@ -983,27 +982,27 @@ proc `*`*(x: Value, y: Value): Value =
         else:
             if x.kind==Floating:
                 if y.kind==Floating: return newFloating(x.f*y.f)
-                elif y.kind==ValueKind.Complex: return newComplex(x.f*y.z)
-                elif y.kind==ValueKind.Rational: return newRational(toRational(x.f)*y.rat)
+                elif y.kind==Complex: return newComplex(x.f*y.z)
+                elif y.kind==Rational: return newRational(toRational(x.f)*y.rat)
                 else:
                     if likely(y.iKind==NormalInteger):
                         return newFloating(x.f*y.i)
                     else:
                         when not defined(NOGMP):
                             return newFloating(x.f * y.bi)
-            elif x.kind==ValueKind.Complex:
+            elif x.kind==Complex:
                 if y.kind==Integer:
                     if likely(y.iKind==NormalInteger): return newComplex(x.z*(float)(y.i))
                     else: return VNULL
                 elif y.kind==Floating: return newComplex(x.z*y.f)
-                elif y.kind==ValueKind.Rational: return VNULL
+                elif y.kind==Rational: return VNULL
                 else: return newComplex(x.z*y.z)
-            elif x.kind==ValueKind.Rational:
+            elif x.kind==Rational:
                 if y.kind==Integer:
                     if likely(y.iKind==NormalInteger): return newRational(x.rat*y.i)
                     else: return VNULL
                 elif y.kind==Floating: return newRational(x.rat*toRational(y.f))
-                elif y.kind==ValueKind.Complex: return VNULL
+                elif y.kind==Complex: return VNULL
                 else: return newRational(x.rat*y.rat)
             else:
                 if y.kind==Floating: 
@@ -1012,11 +1011,11 @@ proc `*`*(x: Value, y: Value): Value =
                     else:
                         when not defined(NOGMP):
                             return newFloating(x.bi * y.f)
-                elif y.kind==ValueKind.Rational: return newRational(x.i*y.rat)
+                elif y.kind==Rational: return newRational(x.i*y.rat)
                 else: return newComplex((float)(x.i)*y.z)
 
 proc `*=`*(x: var Value, y: Value) =
-    if not (x.kind in [Integer, Floating, ValueKind.Complex, ValueKind.Rational]) or not (y.kind in [Integer, Floating, ValueKind.Complex, ValueKind.Rational]):
+    if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
         if x.kind == Quantity:
             if y.kind == Quantity:
                 let finalSpec = getFinalUnitAfterOperation("mul", x.unit, y.unit)
@@ -1061,26 +1060,26 @@ proc `*=`*(x: var Value, y: Value) =
         else:
             if x.kind==Floating:
                 if y.kind==Floating: x.f *= y.f
-                elif y.kind==ValueKind.Complex: x = newComplex(x.f * y.z)
-                elif y.kind==ValueKind.Rational: x = newRational(toRational(x.f) * y.rat)
+                elif y.kind==Complex: x = newComplex(x.f * y.z)
+                elif y.kind==Rational: x = newRational(toRational(x.f) * y.rat)
                 else: 
                     if y.iKind == NormalInteger:
                         x.f = x.f * y.i
                     else:
                         when not defined(NOGMP):
                             x = newFloating(x.f * y.bi)
-            elif x.kind==ValueKind.Complex:
+            elif x.kind==Complex:
                 if y.kind==Integer:
                     if likely(y.iKind==NormalInteger): x = newComplex(x.z * (float)(y.i))
                     else: discard
                 elif y.kind==Floating: x = newComplex(x.z * y.f)
                 else: x.z *= y.z
-            elif x.kind==ValueKind.Rational:
+            elif x.kind==Rational:
                 if y.kind==Integer:
                     if likely(y.iKind==NormalInteger): x.rat *= y.i
                     else: discard
                 elif y.kind==Floating: x.rat *= toRational(y.f)
-                elif y.kind==ValueKind.Complex: discard
+                elif y.kind==Complex: discard
                 else: x.rat *= y.rat
             else:
                 if y.kind==Floating: 
@@ -1089,7 +1088,7 @@ proc `*=`*(x: var Value, y: Value) =
                     else:
                         when not defined(NOGMP):
                             x = newFloating(x.bi*y.f)
-                elif y.kind==ValueKind.Rational: x = newRational(x.i * y.rat)
+                elif y.kind==Rational: x = newRational(x.i * y.rat)
                 else: x = newComplex((float)(x.i)*y.z)
 
 # method `/`*(x: FloatingValue, y: Float): Float {.base.} =
@@ -1101,7 +1100,7 @@ proc `*=`*(x: var Value, y: Value) =
 #     x.fv / y
 
 proc `/`*(x: Value, y: Value): Value =
-    if not (x.kind in [Integer, Floating, ValueKind.Complex, ValueKind.Rational]) or not (y.kind in [Integer, Floating, ValueKind.Complex, ValueKind.Rational]):
+    if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
         if x.kind == Quantity:
             if y.kind == Quantity:
                 let finalSpec = getFinalUnitAfterOperation("div", x.unit, y.unit)
@@ -1140,27 +1139,27 @@ proc `/`*(x: Value, y: Value): Value =
         else:
             if x.kind==Floating:
                 if y.kind==Floating: return newFloating(x.f/y.f)
-                elif y.kind==ValueKind.Complex: return newComplex(x.f/y.z)
-                elif y.kind==ValueKind.Rational: return newInteger(toRational(x.f) div y.rat)
+                elif y.kind==Complex: return newComplex(x.f/y.z)
+                elif y.kind==Rational: return newInteger(toRational(x.f) div y.rat)
                 else: 
                     if likely(y.iKind==NormalInteger):
                         return newFloating(x.f/y.i)
                     else:
                         when not defined(NOGMP):
                             return newFloating(x.f / y.bi)
-            elif x.kind==ValueKind.Complex:
+            elif x.kind==Complex:
                 if y.kind==Integer:
                     if likely(y.iKind==NormalInteger): return newComplex(x.z/(float)(y.i))
                     else: return VNULL
                 elif y.kind==Floating: return newComplex(x.z/y.f)
-                elif y.kind==ValueKind.Rational: return VNULL
+                elif y.kind==Rational: return VNULL
                 else: return newComplex(x.z/y.z)
-            elif x.kind==ValueKind.Rational:
+            elif x.kind==Rational:
                 if y.kind==Integer:
                     if likely(y.iKind==NormalInteger): return newInteger(x.rat div toRational(y.i))
                     else: return VNULL
                 elif y.kind==Floating: return newInteger(x.rat div toRational(y.f))
-                elif y.kind==ValueKind.Complex: return VNULL
+                elif y.kind==Complex: return VNULL
                 else: return newInteger(x.rat div y.rat)
             else:
                 if y.kind==Floating: 
@@ -1169,11 +1168,11 @@ proc `/`*(x: Value, y: Value): Value =
                     else:
                         when not defined(NOGMP):
                             return newFloating(x.bi/y.f)
-                elif y.kind==ValueKind.Rational: return newInteger(toRational(x.i) div y.rat)
+                elif y.kind==Rational: return newInteger(toRational(x.i) div y.rat)
                 else: return newComplex((float)(x.i)/y.z)
 
 proc `/=`*(x: var Value, y: Value) =
-    if not (x.kind in [Integer, Floating, ValueKind.Complex, ValueKind.Rational]) or not (y.kind in [Integer, Floating, ValueKind.Complex, ValueKind.Rational]):
+    if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
         if x.kind == Quantity:
             if y.kind == Quantity:
                 let finalSpec = getFinalUnitAfterOperation("div", x.unit, y.unit)
@@ -1220,26 +1219,26 @@ proc `/=`*(x: var Value, y: Value) =
         else:
             if x.kind==Floating:
                 if y.kind==Floating: x.f /= y.f
-                elif y.kind==ValueKind.Complex: x = newComplex(x.f / y.z)
-                elif y.kind==ValueKind.Rational: x = newInteger(toRational(x.f) div y.rat)
+                elif y.kind==Complex: x = newComplex(x.f / y.z)
+                elif y.kind==Rational: x = newInteger(toRational(x.f) div y.rat)
                 else:                     
                     if y.iKind == NormalInteger:
                         x.f = x.f / y.i
                     else:
                         when not defined(NOGMP):
                             x = newFloating(x.f / y.bi)
-            elif x.kind==ValueKind.Complex:
+            elif x.kind==Complex:
                 if y.kind==Integer:
                     if likely(y.iKind==NormalInteger): x = newComplex(x.z / (float)(y.i))
                     else: discard
                 elif y.kind==Floating: x = newComplex(x.z / y.f)
                 else: x.z /= y.z
-            elif x.kind==ValueKind.Rational:
+            elif x.kind==Rational:
                 if y.kind==Integer:
                     if likely(y.iKind==NormalInteger): x = newInteger(x.rat div toRational(y.i))
                     else: discard
                 elif y.kind==Floating: x = newInteger(x.rat div toRational(y.f))
-                elif y.kind==ValueKind.Complex: discard
+                elif y.kind==Complex: discard
                 else: x = newInteger(x.rat div y.rat)
             else:
                 if y.kind==Floating: 
@@ -1248,11 +1247,11 @@ proc `/=`*(x: var Value, y: Value) =
                     else:
                         when not defined(NOGMP):
                             x = newFloating(x.bi/y.f)
-                elif y.kind==ValueKind.Rational: x = newInteger(toRational(x.i) div y.rat)
+                elif y.kind==Rational: x = newInteger(toRational(x.i) div y.rat)
                 else: x = newComplex((float)(x.i)/y.z)
 
 proc `//`*(x: Value, y: Value): Value =
-    if not (x.kind in [Integer, Floating, ValueKind.Rational]) or not (y.kind in [Integer, Floating, ValueKind.Rational]):
+    if not (x.kind in [Integer, Floating, Rational]) or not (y.kind in [Integer, Floating, Rational]):
         if x.kind == Quantity:
             if y.kind == Quantity:
                 let finalSpec = getFinalUnitAfterOperation("fdiv", x.unit, y.unit)
@@ -1273,16 +1272,16 @@ proc `//`*(x: Value, y: Value): Value =
         else:
             if x.kind==Floating:
                 if y.kind==Floating: return newFloating(x.f / y.f)
-                elif y.kind==ValueKind.Rational: return newRational(toRational(x.f)/y.rat)
+                elif y.kind==Rational: return newRational(toRational(x.f)/y.rat)
                 else: 
                     if likely(y.iKind==NormalInteger):
                         return newFloating(x.f/(float)(y.i))
                     else:
                         when not defined(NOGMP):
                             return newFloating(x.f / y.bi)
-            elif x.kind==ValueKind.Rational:
+            elif x.kind==Rational:
                 if y.kind==Floating: return newRational(x.rat / toRational(y.f))
-                elif y.kind==ValueKind.Rational: return newRational(x.rat / y.rat)
+                elif y.kind==Rational: return newRational(x.rat / y.rat)
                 else: return newRational(x.rat / y.i)
             else:
                 if y.kind==Floating:
@@ -1295,7 +1294,7 @@ proc `//`*(x: Value, y: Value): Value =
 
 
 proc `//=`*(x: var Value, y: Value) =
-    if not (x.kind in [Integer, Floating, ValueKind.Rational]) or not (y.kind in [Integer, Floating, ValueKind.Rational]):
+    if not (x.kind in [Integer, Floating, Rational]) or not (y.kind in [Integer, Floating, Rational]):
         if x.kind == Quantity:
             if y.kind == Quantity:
                 let finalSpec = getFinalUnitAfterOperation("fdiv", x.unit, y.unit)
@@ -1316,16 +1315,16 @@ proc `//=`*(x: var Value, y: Value) =
         else:
             if x.kind==Floating:
                 if y.kind==Floating: x.f /= y.f
-                elif y.kind==ValueKind.Rational: x = newRational(toRational(x.f)/y.rat)
+                elif y.kind==Rational: x = newRational(toRational(x.f)/y.rat)
                 else: 
                     if y.iKind == NormalInteger:
                         x.f = x.f / (float)(y.i)
                     else:
                         when not defined(NOGMP):
                             x = newFloating(x.f / y.bi)
-            elif x.kind==ValueKind.Rational:
+            elif x.kind==Rational:
                 if y.kind==Floating: x.rat /= toRational(y.f)
-                elif y.kind==ValueKind.Rational: x.rat /= y.rat
+                elif y.kind==Rational: x.rat /= y.rat
                 else: x.rat /= y.i
             else:
                 if y.kind==Floating:
@@ -1337,7 +1336,7 @@ proc `//=`*(x: var Value, y: Value) =
                 else: x = newRational(x.i / y.rat)
                 
 proc `%`*(x: Value, y: Value): Value =
-    if not (x.kind in [Integer,Floating,ValueKind.Rational]) or not (y.kind in [Integer,Floating,ValueKind.Rational]):
+    if not (x.kind in [Integer,Floating,Rational]) or not (y.kind in [Integer,Floating,Rational]):
         if (x.kind == Quantity and y.kind == Quantity) and (x.unit.kind==y.unit.kind):
             if x.unit.name == y.unit.name:
                 return newQuantity(x.nm % y.nm, x.unit)
@@ -1373,7 +1372,7 @@ proc `%`*(x: Value, y: Value): Value =
         else:
             if x.kind==Floating:
                 if y.kind==Floating: return newFloating(x.f mod y.f)
-                elif y.kind==ValueKind.Rational: return newRational(toRational(x.f) mod y.rat)
+                elif y.kind==Rational: return newRational(toRational(x.f) mod y.rat)
                 else: 
                     if likely(y.iKind==NormalInteger):
                         return newFloating(x.f mod (float)(y.i))
@@ -1381,12 +1380,12 @@ proc `%`*(x: Value, y: Value): Value =
                         discard
                         # when not defined(NOGMP):
                         #     return newFloating(x.f mod y.bi)
-            elif x.kind==ValueKind.Rational:
+            elif x.kind==Rational:
                 if y.kind==Floating: return newRational(x.rat mod toRational(y.f))
-                elif y.kind==ValueKind.Rational: return newRational(x.rat mod y.rat)
+                elif y.kind==Rational: return newRational(x.rat mod y.rat)
                 else: return newRational(x.rat mod toRational(y.i))
             else:
-                if y.kind==ValueKind.Rational:
+                if y.kind==Rational:
                     return newRational(toRational(x.i) mod y.rat)
                 else:
                     if likely(x.iKind==NormalInteger):
@@ -1397,7 +1396,7 @@ proc `%`*(x: Value, y: Value): Value =
                         #     return newFloating(x.bi mod y.f)
 
 proc `%=`*(x: var Value, y: Value) =
-    if not (x.kind in [Integer,Floating,ValueKind.Rational]) or not (y.kind in [Integer,Floating,ValueKind.Rational]):
+    if not (x.kind in [Integer,Floating,Rational]) or not (y.kind in [Integer,Floating,Rational]):
         if (x.kind == Quantity and y.kind == Quantity) and (x.unit.kind==y.unit.kind):
             if x.unit.name == y.unit.name:
                 x.nm %= y.nm
@@ -1433,23 +1432,23 @@ proc `%=`*(x: var Value, y: Value) =
         else:
             if x.kind==Floating:
                 if y.kind==Floating: x = newFloating(x.f mod y.f)
-                elif y.kind==ValueKind.Rational: x = newRational(toRational(x.f) mod y.rat)
+                elif y.kind==Rational: x = newRational(toRational(x.f) mod y.rat)
                 else: 
                     if likely(y.iKind==NormalInteger):
                         x = newFloating(x.f mod (float)(y.i))
-            elif x.kind==ValueKind.Rational:
+            elif x.kind==Rational:
                 if y.kind==Floating: x = newRational(x.rat mod toRational(y.f))
-                elif y.kind==ValueKind.Rational: x = newRational(x.rat mod y.rat)
+                elif y.kind==Rational: x = newRational(x.rat mod y.rat)
                 else: x = newRational(x.rat mod toRational(y.i))
             else:
-                if y.kind==ValueKind.Rational:
+                if y.kind==Rational:
                     x = newRational(toRational(x.i) mod y.rat)
                 else:
                     if likely(x.iKind==NormalInteger):
                         x = newFloating((float)(x.i) mod y.f)
 
 proc `/%`*(x: Value, y: Value): Value =
-    if not (x.kind in [Integer,Floating,ValueKind.Rational]) or not (y.kind in [Integer,Floating,ValueKind.Rational]):
+    if not (x.kind in [Integer,Floating,Rational]) or not (y.kind in [Integer,Floating,Rational]):
         return newBlock(@[x/y, x%y])
     else:
         if x.kind==Integer and y.kind==Integer:
@@ -1475,7 +1474,7 @@ proc `/%`*(x: Value, y: Value): Value =
         else:
             if x.kind==Floating:
                 if y.kind==Floating: return newBlock(@[x/y, x%y])
-                elif y.kind==ValueKind.Rational: return newBlock(@[x/y, x%y])
+                elif y.kind==Rational: return newBlock(@[x/y, x%y])
                 else: 
                     if likely(y.iKind==NormalInteger):
                         return newBlock(@[x/y, x%y])
@@ -1483,12 +1482,12 @@ proc `/%`*(x: Value, y: Value): Value =
                         discard
                         # when not defined(NOGMP):
                         #     return newFloating(x.f mod y.bi)
-            elif x.kind==ValueKind.Rational:
+            elif x.kind==Rational:
                 if y.kind==Floating: return newBlock(@[x/y, x%y])
-                elif y.kind==ValueKind.Rational: return newBlock(@[x/y, x%y])
+                elif y.kind==Rational: return newBlock(@[x/y, x%y])
                 else: return newBlock(@[x/y, x%y])
             else:
-                if y.kind==ValueKind.Rational:
+                if y.kind==Rational:
                     return newBlock(@[x/y, x%y])
                 else:
                     if likely(x.iKind==NormalInteger):
@@ -1497,7 +1496,7 @@ proc `/%`*(x: Value, y: Value): Value =
                         discard
 
 proc `/%=`*(x: var Value, y: Value) =
-    if not (x.kind in [Integer,Floating,ValueKind.Rational]) or not (y.kind in [Integer,Floating,ValueKind.Rational]):
+    if not (x.kind in [Integer,Floating,Rational]) or not (y.kind in [Integer,Floating,Rational]):
         x = newBlock(@[x/y, x%y])
     else:
         if x.kind==Integer and y.kind==Integer:
@@ -1523,7 +1522,7 @@ proc `/%=`*(x: var Value, y: Value) =
         else:
             if x.kind==Floating:
                 if y.kind==Floating: x = newBlock(@[x/y, x%y])
-                elif y.kind==ValueKind.Rational: x = newBlock(@[x/y, x%y])
+                elif y.kind==Rational: x = newBlock(@[x/y, x%y])
                 else: 
                     if likely(y.iKind==NormalInteger):
                         x = newBlock(@[x/y, x%y])
@@ -1531,12 +1530,12 @@ proc `/%=`*(x: var Value, y: Value) =
                         discard
                         # when not defined(NOGMP):
                         #     return newFloating(x.f mod y.bi)
-            elif x.kind==ValueKind.Rational:
+            elif x.kind==Rational:
                 if y.kind==Floating: x = newBlock(@[x/y, x%y])
-                elif y.kind==ValueKind.Rational: x = newBlock(@[x/y, x%y])
+                elif y.kind==Rational: x = newBlock(@[x/y, x%y])
                 else: x = newBlock(@[x/y, x%y])
             else:
-                if y.kind==ValueKind.Rational:
+                if y.kind==Rational:
                     x = newBlock(@[x/y, x%y])
                 else:
                     if likely(x.iKind==NormalInteger):
@@ -1601,14 +1600,14 @@ proc `^`*(x: Value, y: Value): Value =
         else:
             if x.kind==Floating:
                 if y.kind==Floating: return newFloating(pow(x.f,y.f))
-                elif y.kind==ValueKind.Complex: return VNULL
+                elif y.kind==Complex: return VNULL
                 else: 
                     if likely(y.iKind==NormalInteger):
                         return newFloating(pow(x.f,(float)(y.i)))
                     else:
                         when not defined(NOGMP):
                             return newFloating(pow(x.f,y.bi))
-            elif x.kind==ValueKind.Complex:
+            elif x.kind==Complex:
                 if y.kind==Integer:
                     if likely(y.iKind==NormalInteger): return newComplex(pow(x.z,(float)(y.i)))
                     else: return VNULL
@@ -1652,14 +1651,14 @@ proc `^=`*(x: var Value, y: Value) =
         else:
             if x.kind==Floating:
                 if y.kind==Floating: x = newFloating(pow(x.f,y.f))
-                elif y.kind==ValueKind.Complex: discard
+                elif y.kind==Complex: discard
                 else: 
                     if likely(x.iKind==NormalInteger):
                         x = newFloating(pow(x.f,(float)(y.i)))
                     else:
                         when not defined(NOGMP):
                             x = newFloating(pow(x.f,y.bi))
-            elif x.kind==ValueKind.Complex:
+            elif x.kind==Complex:
                 if y.kind==Integer:
                     if likely(y.iKind==NormalInteger): x = newComplex(pow(x.z,(float)(y.i)))
                     else: discard
@@ -2120,8 +2119,8 @@ func `$`(v: Value): string {.inline,enforceNoRaises.} =
             # else:
             #     when defined(WEB) or not defined(NOGMP): 
             #         return $(v.bf)
-        of ValueKind.Complex      : return $(v.z.re) & (if v.z.im >= 0: "+" else: "") & $(v.z.im) & "i"
-        of ValueKind.Rational     : return $(v.rat)
+        of Complex      : return $(v.z.re) & (if v.z.im >= 0: "+" else: "") & $(v.z.im) & "i"
+        of Rational     : return $(v.rat)
         of Type         : 
             if v.tpKind==BuiltinType:
                 return ":" & ($v.t).toLowerAscii()
@@ -2256,8 +2255,8 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             # else:
             #     when not defined(WEB) and not defined(NOGMP): 
             #         dumpPrimitive($(v.bf), v)
-        of ValueKind.Complex      : dumpPrimitive($(v.z.re) & (if v.z.im >= 0: "+" else: "") & $(v.z.im) & "i", v)
-        of ValueKind.Rational     : dumpPrimitive($(v.rat), v)
+        of Complex      : dumpPrimitive($(v.z.re) & (if v.z.im >= 0: "+" else: "") & $(v.z.im) & "i", v)
+        of Rational     : dumpPrimitive($(v.rat), v)
         of Version      : dumpPrimitive(fmt("{v.major}.{v.minor}.{v.patch}{v.extra}"), v)
         of Type         : 
             if v.tpKind==BuiltinType:
@@ -2466,8 +2465,8 @@ func codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 when defined(WEB) or not defined(NOGMP):
                     result &= $(v.bi)
         of Floating     : result &= $(v.f)
-        of ValueKind.Complex      : result &= fmt("to :complex [{v.z.re} {v.z.im}]")
-        of ValueKind.Rational     : result &= fmt("to :rational [{v.rat.num} {v.rat.den}]")
+        of Complex      : result &= fmt("to :complex [{v.z.re} {v.z.im}]")
+        of Rational     : result &= fmt("to :rational [{v.rat.num} {v.rat.den}]")
         of Version      : result &= fmt("{v.major}.{v.minor}.{v.patch}{v.extra}")
         of Type         : 
             if v.tpKind==BuiltinType:
@@ -2606,8 +2605,8 @@ func sameValue*(x: Value, y: Value): bool {.inline.}=
         case x.kind:
             of Null: return true
             of Logical: return x.b == y.b
-            of ValueKind.Complex: return x.z == y.z
-            of ValueKind.Rational: return x.rat == y.rat
+            of Complex: return x.z == y.z
+            of Rational: return x.rat == y.rat
             of Version:
                 return x.major == y.major and x.minor == y.minor and x.patch == y.patch and x.extra == y.extra
             of Type: 
@@ -2687,12 +2686,12 @@ func hash*(v: Value): Hash {.inline.}=
                 when defined(WEB) or not defined(NOGMP):
                     result = cast[Hash](v.bi)
         of Floating     : result = cast[Hash](v.f)
-        of ValueKind.Complex      : 
+        of Complex      : 
             result = 1
             result = result !& cast[Hash](v.z.re)
             result = result !& cast[Hash](v.z.im)
             result = !$ result
-        of ValueKind.Rational     : result = hash(v.rat)
+        of Rational     : result = hash(v.rat)
         of Version      : 
             result = 1
             result = result !& cast[Hash](v.major)
