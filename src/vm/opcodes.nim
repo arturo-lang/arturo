@@ -12,7 +12,7 @@
 
 import hashes, strutils
 
-import vm/values/pure/[vregex]
+import vm/values/custom/[vregex]
 
 #=======================================
 # Types 

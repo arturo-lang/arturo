@@ -23,8 +23,6 @@ when not defined(WEB):
         import winlean
     else:
         import std/posix_utils
-
-    import vm/values/pure/[vquantity]
     
 import sequtils
 

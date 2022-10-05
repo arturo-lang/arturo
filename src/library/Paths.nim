@@ -22,8 +22,6 @@ when not defined(WEB):
     import helpers/path
     import helpers/url
 
-    import vm/values/pure/[vcolor]
-
 import vm/lib
 when not defined(WEB):
     import vm/env

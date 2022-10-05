@@ -28,8 +28,6 @@ import helpers/maths
 
 import vm/lib
 
-import vm/values/pure/[vcomplex, vquantity, vrational]
-
 #=======================================
 # Helpers
 #=======================================
