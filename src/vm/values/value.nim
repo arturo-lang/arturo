@@ -534,7 +534,11 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Binary:      result = newBinary(v.n)
 
         of Inline:      result = newInline(v.a)
-        of Block:       result = newBlock(v.a.map((vv)=>copyValue(vv)), copyValue(v.data))
+        of Block:       
+            if v.data.isNil: 
+                result = newBlock(v.a.map((vv)=>copyValue(vv)))
+            else:
+                result = newBlock(v.a.map((vv)=>copyValue(vv)), copyValue(v.data))
 
         of Dictionary:  result = newDictionary(v.d)
         of Object:      result = newObject(v.o, v.proto)
