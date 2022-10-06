@@ -468,13 +468,13 @@ func newInline*(a: sink ValueArray = @[], dirty = false): Value {.inline, enforc
 func newBlock*(a: sink ValueArray = @[], data: sink Value = VNULL, dirty = false): Value {.inline, enforceNoRaises.} =
     Value(kind: Block, a: a, data: data, dirty: dirty)
 
-func newIntegerBlock*[T](a: seq[T]): Value {.inline, enforceNoRaises.} =
+func newIntegerBlock*[T](a: sink seq[T]): Value {.inline, enforceNoRaises.} =
     newBlock(a.map(proc (x:T):Value = newInteger((int)(x))))
 
-proc newStringBlock*(a: seq[string]): Value {.inline, enforceNoRaises.} =
+proc newStringBlock*(a: sink seq[string]): Value {.inline, enforceNoRaises.} =
     newBlock(a.map(proc (x:string):Value = newString($x)))
 
-proc newStringBlock*(a: seq[cstring]): Value {.inline, enforceNoRaises.} =
+proc newStringBlock*(a: sink seq[cstring]): Value {.inline, enforceNoRaises.} =
     newBlock(a.map(proc (x:cstring):Value = newString(x)))
 
 func newNewline*(l: int): Value {.inline, enforceNoRaises.} =
