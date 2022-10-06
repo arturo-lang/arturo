@@ -14,7 +14,7 @@
 # Libraries
 #=======================================
 
-import lexbase, os, streams
+import lexbase, os, sequtils, streams
 import strutils, tables, unicode
 
 import vm/[errors, profiler, values/value]
@@ -84,8 +84,7 @@ proc parseDataBlock*(blk: Value): Value
 #=======================================
 
 template AddToken*(token: untyped): untyped =
-    addChild(topBlock, token)
-    #topBlock.refs.add(p.lineNumber)
+    topBlock.a.add(token)
 
 template LastToken*(): untyped = 
     topBlock.a[^1]
@@ -99,7 +98,7 @@ template stripTrailingNewlines*(): untyped =
         var firstN = lastN
         while firstN-1 >= 0 and topBlock.a[firstN-1].kind == Newline:
             firstN -= 1
-        removeChildren(topBlock, firstN..lastN)
+        topBlock.a.delete(firstN..lastN)
 
 #=======================================
 # Helpers
@@ -262,14 +261,10 @@ template parseString(p: var Parser, stopper: char = Quote) =
             of CR:
                 var prepos = pos-1
                 pos = lexbase.handleCR(p, pos)
-                # when defined(windows):
-                #     prepos += 1
                 SyntaxError_NewlineInQuotedString(p.lineNumber-1, getContext(p, prepos))
             of LF:
                 var prepos = pos-1
                 pos = lexbase.handleLF(p, pos)
-                # when defined(windows):
-                #     prepos += 1
                 SyntaxError_NewlineInQuotedString(p.lineNumber-1, getContext(p, prepos))
             else:
                 add(p.value, p.buf[pos])
@@ -526,21 +521,6 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
                 isSymbol = false
                 AddToken newColor(colorCode)
                 p.bufpos = pos
-                # var color: Value
-                # try:
-                #     color = newColor(colorCode)
-                #     isSymbol = false
-                #     AddToken color
-                #     p.bufpos = pos
-                # except:
-                #     try:
-                #         color = newColor("#" & colorCode)
-                #         isSymbol = false
-                #         AddToken color
-                #         p.bufpos = pos
-                #     except:
-                #         p.symbol = sharp
-                #         pos = oldPos
             else: 
                 if p.buf[pos+1] == '#':
                     inc pos
