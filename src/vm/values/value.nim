@@ -2154,8 +2154,8 @@ func `$`(v: Value): string {.inline,enforceNoRaises.} =
             # for i,child in v.a:
             #     result &= $(child) & " "
             # result &= "]"
-
-            result = "[" & cleanedBlock(v.a).map((child) => $(child)).join(" ") & "]"
+            ensureCleaned(v)
+            result = "[" & cleanV.map((child) => $(child)).join(" ") & "]"
 
         of Dictionary   :
             var items: seq[string] = @[]
@@ -2330,9 +2330,9 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
         of Inline,
             Block        :
             dumpBlockStart(v)
-            let blk = cleanedBlock(v.a)
-            for i,child in blk:
-                dump(child, level+1, i==(blk.len-1), muted=muted)
+            ensureCleaned(v)
+            for i,child in cleanV:
+                dump(child, level+1, i==(cleanV.len-1), muted=muted)
 
             stdout.write "\n"
 
@@ -2503,9 +2503,9 @@ func codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 result &= "\n"
             
             var parts: seq[string] = @[]
-            let blk = cleanedBlock(v.a)
-            for i,child in blk:
-                parts.add(codify(child,pretty,unwrapped,level+1, i==(blk.len-1), safeStrings=safeStrings))
+            ensureCleaned(v)
+            for i,child in cleanV:
+                parts.add(codify(child,pretty,unwrapped,level+1, i==(cleanV.len-1), safeStrings=safeStrings))
 
             result &= parts.join(" ")
 
@@ -2629,8 +2629,9 @@ func sameValue*(x: Value, y: Value): bool {.inline.}=
             of Color: return x.l == y.l
             of Inline,
                Block:
-                let cleanX = cleanedBlock(x.a)
-                let cleanY = cleanedBlock(y.a)
+                ensureCleaned(x)
+                ensureCleaned(y)
+
                 if cleanX.len != cleanY.len: return false
 
                 for i,child in cleanX:
