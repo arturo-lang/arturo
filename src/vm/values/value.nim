@@ -92,7 +92,7 @@ let VMAYBE* = Value(kind: Logical, b: Maybe)
 let VNULL* = Value(kind: Null)
 
 let VEMPTYSTR* = Value(kind: String, s: "")
-let VEMPTYARR* = Value(kind: Block, a: @[], data: VNULL)
+let VEMPTYARR* = Value(kind: Block, a: @[], data: nil)
 let VEMPTYDICT* = Value(kind: Dictionary, d: initOrderedTable[string,Value]())
 
 let VSTRINGT* = Value(kind: Type, tpKind: BuiltinType, t: String)
@@ -126,7 +126,7 @@ var
 # Forward Declarations
 #=======================================
 
-func newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline.}
+func newDictionary*(d: sink ValueDict = initOrderedTable[string,Value]()): Value {.inline.}
 func `$`(v: Value): string {.inline.}
 proc `+`*(x: Value, y: Value): Value
 proc `-`*(x: Value, y: Value): Value
@@ -282,38 +282,40 @@ func newChar*(c: char): Value {.inline.} =
 func newChar*(c: string): Value {.inline.} =
     Value(kind: Char, c: c.runeAt(0))
 
-func newString*(s: string, dedented: bool = false): Value {.inline, enforceNoRaises.} =
-    if not dedented: Value(kind: String, s: s)
-    else: Value(kind: String, s: unicode.strip(dedent(s)))
+func newString*(s: sink string, dedented: static bool = false): Value {.inline, enforceNoRaises.} =
+    when not dedented: 
+        Value(kind: String, s: s)
+    else: 
+        Value(kind: String, s: unicode.strip(dedent(s)))
 
-func newString*(s: cstring, dedented: bool = false): Value {.inline, enforceNoRaises.} =
+func newString*(s: cstring, dedented: static bool = false): Value {.inline, enforceNoRaises.} =
     newString($(s), dedented)
 
-func newWord*(w: string): Value {.inline, enforceNoRaises.} =
+func newWord*(w: sink string): Value {.inline, enforceNoRaises.} =
     Value(kind: Word, s: w)
 
-func newLiteral*(l: string): Value {.inline, enforceNoRaises.} =
+func newLiteral*(l: sink string): Value {.inline, enforceNoRaises.} =
     Value(kind: Literal, s: l)
 
-func newLabel*(l: string): Value {.inline, enforceNoRaises.} =
+func newLabel*(l: sink string): Value {.inline, enforceNoRaises.} =
     Value(kind: Label, s: l)
 
-func newAttribute*(a: string): Value {.inline, enforceNoRaises.} =
+func newAttribute*(a: sink string): Value {.inline, enforceNoRaises.} =
     Value(kind: Attribute, r: a)
 
-func newAttributeLabel*(a: string): Value {.inline, enforceNoRaises.} =
+func newAttributeLabel*(a: sink string): Value {.inline, enforceNoRaises.} =
     Value(kind: AttributeLabel, r: a)
 
-func newPath*(p: ValueArray): Value {.inline, enforceNoRaises.} =
+func newPath*(p: sink ValueArray): Value {.inline, enforceNoRaises.} =
     Value(kind: Path, p: p)
 
-func newPathLabel*(p: ValueArray): Value {.inline, enforceNoRaises.} =
+func newPathLabel*(p: sink ValueArray): Value {.inline, enforceNoRaises.} =
     Value(kind: PathLabel, p: p)
 
 func newSymbol*(m: SymbolKind): Value {.inline, enforceNoRaises.} =
     Value(kind: Symbol, m: m)
 
-func newSymbol*(m: string): Value {.inline.} =
+func newSymbol*(m: sink string): Value {.inline.} =
     newSymbol(parseEnum[SymbolKind](m))
 
 func newSymbolLiteral*(m: SymbolKind): Value {.inline, enforceNoRaises.} =
@@ -368,7 +370,7 @@ proc convertQuantityValue*(nm: Value, fromU: UnitName, toU: UnitName, fromKind =
         else:
             return nm * newFloating(fmultiplier)
 
-func newRegex*(rx: VRegex): Value {.inline, enforceNoRaises.} =
+func newRegex*(rx: sink VRegex): Value {.inline, enforceNoRaises.} =
     Value(kind: Regex, rx: rx)
 
 func newRegex*(rx: string): Value {.inline.} =
@@ -383,7 +385,7 @@ func newColor*(rgb: RGB): Value {.inline.} =
 func newColor*(l: string): Value {.inline.} =
     newColor(parseColor(l))
 
-func newDate*(dt: DateTime): Value {.inline, enforceNoRaises.} =
+func newDate*(dt: sink DateTime): Value {.inline, enforceNoRaises.} =
     let edict = {
         "hour"      : newInteger(dt.hour),
         "minute"    : newInteger(dt.minute),
@@ -402,10 +404,10 @@ func newDate*(dt: DateTime): Value {.inline, enforceNoRaises.} =
 func newBinary*(n: ByteArray = @[]): Value {.inline, enforceNoRaises.} =
     Value(kind: Binary, n: n)
 
-func newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline, enforceNoRaises.} =
+func newDictionary*(d: sink ValueDict = initOrderedTable[string,Value]()): Value {.inline, enforceNoRaises.} =
     Value(kind: Dictionary, d: d)
 
-func newObject*(o: ValueDict = initOrderedTable[string,Value](), proto: Prototype): Value {.inline, enforceNoRaises.} =
+func newObject*(o: sink ValueDict = initOrderedTable[string,Value](), proto: sink Prototype): Value {.inline, enforceNoRaises.} =
     Value(kind: Object, o: o, proto: proto)
 
 proc newObject*(args: ValueArray, prot: Prototype, initializer: proc (self: Value, prot: Prototype), o: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
@@ -434,7 +436,7 @@ proc newObject*(args: ValueDict, prot: Prototype, initializer: proc (self: Value
 func newFunction*(params: Value, main: Value, imports: Value = nil, exports: Value = nil, exportable: bool = false, memoize: bool = false): Value {.inline, enforceNoRaises.} =
     Value(kind: Function, fnKind: UserFunction, params: params, main: main, imports: imports, exports: exports, exportable: exportable, memoize: memoize)
 
-func newBuiltin*(name: string, al: SymbolKind, pr: PrecedenceKind, desc: string, ar: int, ag: OrderedTable[string,ValueSpec], at: OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: string, act: BuiltinAction): Value {.inline, enforceNoRaises.} =
+func newBuiltin*(name: sink string, al: SymbolKind, pr: PrecedenceKind, desc: sink string, ar: int, ag: sink OrderedTable[string,ValueSpec], at: sink OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: sink string, act: BuiltinAction): Value {.inline, enforceNoRaises.} =
     Value(
         kind    : Function, 
         fnKind  : BuiltinFunction, 
@@ -457,22 +459,22 @@ when not defined(NOSQLITE):
 # proc newDatabase*(db: mysql.DbConn): Value {.inline.} =
 #     Value(kind: Database, dbKind: MysqlDatabase, mysqldb: db)
 
-func newBytecode*(t: Translation): Value {.inline, enforceNoRaises.} =
+func newBytecode*(t: sink Translation): Value {.inline, enforceNoRaises.} =
     Value(kind: Bytecode, trans: t)
 
-func newInline*(a: ValueArray = @[], dirty = false): Value {.inline, enforceNoRaises.} =
+func newInline*(a: sink ValueArray = @[], dirty = false): Value {.inline, enforceNoRaises.} =
     Value(kind: Inline, a: a, dirty: dirty)
 
-func newBlock*(a: ValueArray = @[], data = VNULL, dirty = false): Value {.inline, enforceNoRaises.} =
+func newBlock*(a: sink ValueArray = @[], data: sink Value = nil, dirty = false): Value {.inline, enforceNoRaises.} =
     Value(kind: Block, a: a, data: data, dirty: dirty)
 
-func newIntegerBlock*[T](a: seq[T]): Value {.inline, enforceNoRaises.} =
+func newIntegerBlock*[T](a: sink seq[T]): Value {.inline, enforceNoRaises.} =
     newBlock(a.map(proc (x:T):Value = newInteger((int)(x))))
 
-proc newStringBlock*(a: seq[string]): Value {.inline, enforceNoRaises.} =
+proc newStringBlock*(a: sink seq[string]): Value {.inline, enforceNoRaises.} =
     newBlock(a.map(proc (x:string):Value = newString($x)))
 
-proc newStringBlock*(a: seq[cstring]): Value {.inline, enforceNoRaises.} =
+proc newStringBlock*(a: sink seq[cstring]): Value {.inline, enforceNoRaises.} =
     newBlock(a.map(proc (x:cstring):Value = newString(x)))
 
 func newNewline*(l: int): Value {.inline, enforceNoRaises.} =
@@ -532,7 +534,11 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Binary:      result = newBinary(v.n)
 
         of Inline:      result = newInline(v.a)
-        of Block:       result = newBlock(v.a.map((vv)=>copyValue(vv)), copyValue(v.data))
+        of Block:       
+            if v.data.isNil: 
+                result = newBlock(v.a.map((vv)=>copyValue(vv)))
+            else:
+                result = newBlock(v.a.map((vv)=>copyValue(vv)), copyValue(v.data))
 
         of Dictionary:  result = newDictionary(v.d)
         of Object:      result = newObject(v.o, v.proto)
@@ -571,12 +577,6 @@ when defined(WEB):
     
     proc flushFile*(buffer: var string) =
         echo buffer
-
-func addChild*(parent: Value, child: Value) {.inline, enforceNoRaises.} =
-    parent.a.add(child)
-
-func removeChildren*(parent: Value, rng: Slice[int]) {.inline, enforceNoRaises.} =
-    parent.a.delete(rng)
 
 func asFloat*(v: Value): float {.enforceNoRaises.} = 
     # get number value forcefully as a float

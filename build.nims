@@ -54,7 +54,7 @@ let
         "arm"               : "--cpu:arm",
         "arm64"             : "--cpu:arm64 --gcc.path:/usr/bin --gcc.exe:aarch64-linux-gnu-gcc --gcc.linkerexe:aarch64-linux-gnu-gcc",
         "debug"             : "-d:DEBUG --debugger:on --debuginfo --linedir:on",
-        "dev"               : "--embedsrc:on -d:DEV --listCmd --verbosity:1 --hints:on --warning:ProveInit:off",
+        "dev"               : "--embedsrc:on -d:DEV --listCmd --verbosity:1 --hints:on --hint:ProcessingStmt:off --warning:GcUnsafe:off --warning:ProveInit:off --warning:ProveField:off --warning:Uninit:off",
         "docgen"            : "-d:DOCGEN",
         "dontcompress"      : "",
         "dontinstall"       : "",

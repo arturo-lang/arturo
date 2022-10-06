@@ -71,7 +71,9 @@ func getUsedLibraryModules(funcs: seq[string]): seq[string] =
 
 proc showPackageInfo*(filepath: string) =
     let mainCode = doParse(filepath, isFile=true)
-    var scriptData = mainCode.data.d
+    var scriptData = 
+        if not mainCode.data.isNil: mainCode.data.d
+        else: initOrderedTable[string,Value]()
 
     var usedFunctions = getUsedLibraryFunctions(mainCode)
     if scriptData.hasKey("uses") and scriptData["uses"].kind==Block:

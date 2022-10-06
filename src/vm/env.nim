@@ -126,7 +126,7 @@ proc initEnv*(arguments: seq[string], version: string, build: string, script: Va
     ArturoVersion = version
     ArturoBuild = build
 
-    if script!=VNULL:
+    if not script.isNil:
         ScriptInfo = script
     else:
         ScriptInfo = newDictionary()
