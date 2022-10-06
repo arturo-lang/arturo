@@ -306,10 +306,10 @@ func newAttribute*(a: sink string): Value {.inline, enforceNoRaises.} =
 func newAttributeLabel*(a: sink string): Value {.inline, enforceNoRaises.} =
     Value(kind: AttributeLabel, r: a)
 
-func newPath*(p: ValueArray): Value {.inline, enforceNoRaises.} =
+func newPath*(p: sink ValueArray): Value {.inline, enforceNoRaises.} =
     Value(kind: Path, p: p)
 
-func newPathLabel*(p: ValueArray): Value {.inline, enforceNoRaises.} =
+func newPathLabel*(p: sink ValueArray): Value {.inline, enforceNoRaises.} =
     Value(kind: PathLabel, p: p)
 
 func newSymbol*(m: SymbolKind): Value {.inline, enforceNoRaises.} =
@@ -407,7 +407,7 @@ func newBinary*(n: ByteArray = @[]): Value {.inline, enforceNoRaises.} =
 func newDictionary*(d: sink ValueDict = initOrderedTable[string,Value]()): Value {.inline, enforceNoRaises.} =
     Value(kind: Dictionary, d: d)
 
-func newObject*(o: sink ValueDict = initOrderedTable[string,Value](), proto: Prototype): Value {.inline, enforceNoRaises.} =
+func newObject*(o: sink ValueDict = initOrderedTable[string,Value](), proto: sink Prototype): Value {.inline, enforceNoRaises.} =
     Value(kind: Object, o: o, proto: proto)
 
 proc newObject*(args: ValueArray, prot: Prototype, initializer: proc (self: Value, prot: Prototype), o: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
