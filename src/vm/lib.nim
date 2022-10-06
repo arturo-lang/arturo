@@ -13,8 +13,11 @@
 import sequtils, sets, strutils, tables
 export strutils, tables
 
-import vm/[globals, errors, stack, values/comparison, values/logic, values/printable, values/value]
-export comparison, globals, logic, printable, stack, value
+import vm/[globals, errors, stack, values/comparison, values/clean, values/logic, values/printable, values/value]
+export clean, comparison, globals, logic, printable, stack, value
+
+import vm/values/custom/[vcolor, vcomplex, vquantity, vrational, vregex]
+export vcolor, vcomplex, vquantity, vrational, vregex
 
 import vm/profiler
 

@@ -17,9 +17,8 @@
 import lexbase, os, streams
 import strutils, tables, unicode
 
-import helpers/quantities as QuantitiesHelper
-
 import vm/[errors, profiler, values/value]
+import vm/values/custom/[vquantity]
 
 #=======================================
 # Types
@@ -819,8 +818,8 @@ template parseExponent(p: var Parser) =
 proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.inline.} =
     var topBlock: Value
     var scriptStr: string = ""
-    if isDeferred: topBlock = newBlock()
-    else: topBlock = newInline()
+    if isDeferred: topBlock = newBlock(dirty=true)
+    else: topBlock = newInline(dirty=true)
     let initial = p.bufpos
     let initialLine = p.lineNumber
     while true:

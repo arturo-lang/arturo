@@ -12,7 +12,7 @@
 
 import hashes, strutils
 
-import helpers/regex
+import vm/values/custom/[vregex]
 
 #=======================================
 # Types 

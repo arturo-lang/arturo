@@ -46,15 +46,15 @@ proc defineSymbols*() =
             ; false
         """:
             ##########################################################
-            let blk = cleanedBlock(x.a)
+            ensureCleaned(x)
             # check if empty
-            if blk.len==0: 
+            if cleanX.len==0: 
                 push(newLogical(false))
                 return
 
             var allOK = true
 
-            for item in blk:
+            for item in cleanX:
                 var val: Value
                 if item.kind == Block: 
                     execBlock(item)
@@ -135,14 +135,14 @@ proc defineSymbols*() =
             ; false
         """:
             ##########################################################
-            let blk = cleanedBlock(x.a)
+            ensureCleaned(x)
             # check if empty
-            if blk.len==0: 
+            if cleanX.len==0: 
                 push(newLogical(false))
                 return
             
             var anyOK = false
-            for item in blk:
+            for item in cleanX:
                 var val: Value
                 if item.kind == Block: 
                     execBlock(item)

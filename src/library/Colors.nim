@@ -18,8 +18,6 @@
 
 import sequtils, sugar
 
-import helpers/colors as colorsHelper
-
 import vm/lib
 
 #=======================================
@@ -39,13 +37,13 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "blend given colors and get result",
         args        = {
-            "colorA"    : {ValueKind.Color},
-            "colorB"    : {ValueKind.Color}
+            "colorA"    : {Color},
+            "colorB"    : {Color}
         },
         attrs       = {
             "balance"   : ({Floating},"use different mix of color (0.0-1.0, default:0.5)")
         },
-        returns     = {ValueKind.Color},
+        returns     = {Color},
         example     = """
             blend #red #CCCCCC                  ; => #E66666
             ..........
@@ -67,11 +65,11 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "darken color by given percentage (0.0-1.0)",
         args        = {
-            "color"     : {ValueKind.Color},
+            "color"     : {Color},
             "percent"   : {Floating}
         },
         attrs       = NoAttrs,
-        returns     = {ValueKind.Color},
+        returns     = {Color},
         example     = """
             darken #red 0.2         ; => #CC0000
             darken #red 0.5         ; => #7F0000
@@ -89,11 +87,11 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "desaturate color by given percentage (0.0-1.0)",
         args        = {
-            "color"     : {ValueKind.Color},
+            "color"     : {Color},
             "percent"   : {Floating}
         },
         attrs       = NoAttrs,
-        returns     = {ValueKind.Color},
+        returns     = {Color},
         example     = """
             desaturate #red 0.2         ; => #E61919
             desaturate #red 0.5         ; => #BF4040
@@ -111,10 +109,10 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get complement for given color",
         args        = {
-            "color"     : {ValueKind.Color}
+            "color"     : {Color}
         },
         attrs       = NoAttrs,
-        returns     = {ValueKind.Color},
+        returns     = {Color},
         example     = """
             print #orange               ; #FFA500
 
@@ -131,11 +129,11 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "lighten color by given percentage (0.0-1.0)",
         args        = {
-            "color"     : {ValueKind.Color},
+            "color"     : {Color},
             "percent"   : {Floating}
         },
         attrs       = NoAttrs,
-        returns     = {ValueKind.Color},
+        returns     = {Color},
         example     = """
             print #lightblue            ; #ADD8E6
 
@@ -155,7 +153,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "create palette using given base color",
         args        = {
-            "color"     : {ValueKind.Color},
+            "color"     : {Color},
         },
         attrs       = {
             "triad"     : ({Logical},"generate a triad palette"),
@@ -219,11 +217,11 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "saturate color by given percentage (0.0-1.0)",
         args        = {
-            "color"     : {ValueKind.Color},
+            "color"     : {Color},
             "percent"   : {Floating}
         },
         attrs       = NoAttrs,
-        returns     = {ValueKind.Color},
+        returns     = {Color},
         example     = """
             print #lightblue            ; #ADD8E6
 
@@ -243,11 +241,11 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "spin color around the hue wheel by given amount",
         args        = {
-            "color"     : {ValueKind.Color},
+            "color"     : {Color},
             "amount"    : {Integer}
         },
         attrs       = NoAttrs,
-        returns     = {ValueKind.Color},
+        returns     = {Color},
         example     = """
             spin #red 90            ; => #80FF00
             spin #red 180           ; => #00FFFF
