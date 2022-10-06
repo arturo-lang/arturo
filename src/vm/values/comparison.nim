@@ -120,8 +120,8 @@ proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
             of Bytecode: return x.trans == y.trans
             of Inline,
                Block:
-                let cleanX = cleanedBlock(x.a)
-                let cleanY = cleanedBlock(y.a)
+                ensureCleaned(x)
+                ensureCleaned(y)
 
                 if cleanX.len != cleanY.len: return false
 
@@ -255,7 +255,9 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
             of Symbol: return false
             of Inline,
                Block:
-                return cleanedBlock(x.a).len < cleanedBlock(y.a).len
+                ensureCleaned(x)
+                ensureCleaned(y)
+                return cleanX.len < cleanY.len
             of Dictionary:
                 return false
             of Object:
