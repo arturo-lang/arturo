@@ -307,14 +307,14 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
             of Block:
                 case tp:
                     of Complex:
-                        let blk = cleanedBlock(y.a)
-                        return newComplex(blk[0], blk[1])
+                        ensureCleaned(y)
+                        return newComplex(cleanY[0], cleanY[1])
                     of Rational:
-                        let blk = cleanedBlock(y.a)
-                        return newRational(blk[0], blk[1])
+                        ensureCleaned(y)
+                        return newRational(cleanY[0], cleanY[1])
                     of Inline:
-                        let blk = cleanedBlock(y.a)
-                        return newInline(blk)
+                        ensureCleaned(y)
+                        return newInline(cleanY)
                     of Dictionary:
                         let stop = SP
                         execBlock(y)
