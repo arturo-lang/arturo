@@ -85,8 +85,6 @@ proc parseDataBlock*(blk: Value): Value
 
 template AddToken*(token: untyped): untyped =
     topBlock.add(token)
-    #addChild(topBlock, token)
-    #topBlock.refs.add(p.lineNumber)
 
 template LastToken*(): untyped = 
     topBlock[^1]
@@ -101,7 +99,6 @@ template stripTrailingNewlines*(): untyped =
         while firstN-1 >= 0 and topBlock[firstN-1].kind == Newline:
             firstN -= 1
         topBlock.delete(firstN..lastN)
-        #removeChildren(topBlock, firstN..lastN)
 
 #=======================================
 # Helpers
@@ -528,21 +525,6 @@ template parseAndAddSymbol(p: var Parser, topBlock: var ValueArray) =
                 isSymbol = false
                 AddToken newColor(colorCode)
                 p.bufpos = pos
-                # var color: Value
-                # try:
-                #     color = newColor(colorCode)
-                #     isSymbol = false
-                #     AddToken color
-                #     p.bufpos = pos
-                # except:
-                #     try:
-                #         color = newColor("#" & colorCode)
-                #         isSymbol = false
-                #         AddToken color
-                #         p.bufpos = pos
-                #     except:
-                #         p.symbol = sharp
-                #         pos = oldPos
             else: 
                 if p.buf[pos+1] == '#':
                     inc pos
@@ -820,10 +802,9 @@ template parseExponent(p: var Parser) =
 proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.inline.} =
     var topBlock: ValueArray
     var scriptStr: string = ""
-    # if isDeferred: topBlock = newBlock(dirty=true)
-    # else: topBlock = newInline(dirty=true)
     let initial = p.bufpos
     let initialLine = p.lineNumber
+    
     while true:
         setLen(p.value, 0)
         skip(p, scriptStr)
@@ -975,11 +956,9 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
     if scriptStr!="":
         if isDeferred: return newBlock(topBlock, parseDataBlock(doParse(scriptStr,false)), dirty=true)
         else: return newInline(topBlock, dirty=true)
-        #topBlock.data = parseDataBlock(doParse(scriptStr,false))
 
     if isDeferred: return newBlock(topBlock, dirty=true)
     else: return newInline(topBlock, dirty=true)
-    #return topBlock
 
 proc parseAsDictionary(blk: Value, start: int): Value =
     result = newDictionary()
