@@ -370,7 +370,7 @@ proc convertQuantityValue*(nm: Value, fromU: UnitName, toU: UnitName, fromKind =
         else:
             return nm * newFloating(fmultiplier)
 
-func newRegex*(rx: VRegex): Value {.inline, enforceNoRaises.} =
+func newRegex*(rx: sink VRegex): Value {.inline, enforceNoRaises.} =
     Value(kind: Regex, rx: rx)
 
 func newRegex*(rx: string): Value {.inline.} =
@@ -385,7 +385,7 @@ func newColor*(rgb: RGB): Value {.inline.} =
 func newColor*(l: string): Value {.inline.} =
     newColor(parseColor(l))
 
-func newDate*(dt: DateTime): Value {.inline, enforceNoRaises.} =
+func newDate*(dt: sink DateTime): Value {.inline, enforceNoRaises.} =
     let edict = {
         "hour"      : newInteger(dt.hour),
         "minute"    : newInteger(dt.minute),
@@ -436,7 +436,7 @@ proc newObject*(args: ValueDict, prot: Prototype, initializer: proc (self: Value
 func newFunction*(params: Value, main: Value, imports: Value = nil, exports: Value = nil, exportable: bool = false, memoize: bool = false): Value {.inline, enforceNoRaises.} =
     Value(kind: Function, fnKind: UserFunction, params: params, main: main, imports: imports, exports: exports, exportable: exportable, memoize: memoize)
 
-func newBuiltin*(name: sink string, al: SymbolKind, pr: PrecedenceKind, desc: sink string, ar: int, ag: OrderedTable[string,ValueSpec], at: OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: sink string, act: BuiltinAction): Value {.inline, enforceNoRaises.} =
+func newBuiltin*(name: sink string, al: SymbolKind, pr: PrecedenceKind, desc: sink string, ar: int, ag: sink OrderedTable[string,ValueSpec], at: sink OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: sink string, act: BuiltinAction): Value {.inline, enforceNoRaises.} =
     Value(
         kind    : Function, 
         fnKind  : BuiltinFunction, 
@@ -459,7 +459,7 @@ when not defined(NOSQLITE):
 # proc newDatabase*(db: mysql.DbConn): Value {.inline.} =
 #     Value(kind: Database, dbKind: MysqlDatabase, mysqldb: db)
 
-func newBytecode*(t: Translation): Value {.inline, enforceNoRaises.} =
+func newBytecode*(t: sink Translation): Value {.inline, enforceNoRaises.} =
     Value(kind: Bytecode, trans: t)
 
 func newInline*(a: sink ValueArray = @[], dirty = false): Value {.inline, enforceNoRaises.} =
