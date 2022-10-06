@@ -92,7 +92,7 @@ let VMAYBE* = Value(kind: Logical, b: Maybe)
 let VNULL* = Value(kind: Null)
 
 let VEMPTYSTR* = Value(kind: String, s: "")
-let VEMPTYARR* = Value(kind: Block, a: @[], data: VNULL)
+let VEMPTYARR* = Value(kind: Block, a: @[], data: nil)
 let VEMPTYDICT* = Value(kind: Dictionary, d: initOrderedTable[string,Value]())
 
 let VSTRINGT* = Value(kind: Type, tpKind: BuiltinType, t: String)
