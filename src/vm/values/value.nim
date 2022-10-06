@@ -126,7 +126,7 @@ var
 # Forward Declarations
 #=======================================
 
-func newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline.}
+func newDictionary*(d: sink ValueDict = initOrderedTable[string,Value]()): Value {.inline.}
 func `$`(v: Value): string {.inline.}
 proc `+`*(x: Value, y: Value): Value
 proc `-`*(x: Value, y: Value): Value
@@ -404,10 +404,10 @@ func newDate*(dt: DateTime): Value {.inline, enforceNoRaises.} =
 func newBinary*(n: ByteArray = @[]): Value {.inline, enforceNoRaises.} =
     Value(kind: Binary, n: n)
 
-func newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline, enforceNoRaises.} =
+func newDictionary*(d: sink ValueDict = initOrderedTable[string,Value]()): Value {.inline, enforceNoRaises.} =
     Value(kind: Dictionary, d: d)
 
-func newObject*(o: ValueDict = initOrderedTable[string,Value](), proto: Prototype): Value {.inline, enforceNoRaises.} =
+func newObject*(o: sink ValueDict = initOrderedTable[string,Value](), proto: Prototype): Value {.inline, enforceNoRaises.} =
     Value(kind: Object, o: o, proto: proto)
 
 proc newObject*(args: ValueArray, prot: Prototype, initializer: proc (self: Value, prot: Prototype), o: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
