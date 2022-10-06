@@ -104,7 +104,7 @@ proc setupLibrary*() =
     for i,importLibrary in Libraries:
         importLibrary()
 
-template initialize*(args: seq[string], filename: string, isFile:bool, scriptData:Value = VNULL, mutedColors: bool = false, portableData = "") =
+template initialize*(args: seq[string], filename: string, isFile:bool, scriptData:Value = nil, mutedColors: bool = false, portableData = "") =
     # function arity
     Arities = initTable[string,int]()
     # stack

@@ -1052,42 +1052,43 @@ proc defineSymbols*() =
                     argTypes[""] = {Nothing}
                 ret = newFunction(x,y,imports,exports,exportable,memoize)
             
-            if y.data.kind==Dictionary:
+            if not y.data.isNil:
+                if y.data.kind==Dictionary:
 
-                if (let descriptionData = y.data.d.getOrDefault("description", nil); not descriptionData.isNil):
-                    ret.info = descriptionData.s
+                    if (let descriptionData = y.data.d.getOrDefault("description", nil); not descriptionData.isNil):
+                        ret.info = descriptionData.s
 
-                if y.data.d.hasKey("options") and y.data.d["options"].kind==Dictionary:
-                    var options = initOrderedTable[string,(ValueSpec,string)]()
-                    for (k,v) in pairs(y.data.d["options"].d):
-                        if v.kind==Type:
-                            options[k] = ({v.t}, "")
-                        elif v.kind==String:
-                            options[k] = ({Logical}, v.s)
-                        elif v.kind==Block:
-                            var vspec: ValueSpec
-                            var i = 0
-                            while i < v.a.len and v.a[i].kind==Type:
-                                vspec.incl(v.a[i].t)
-                                i += 1
-                            if v.a[i].kind==String:
-                                options[k] = (vspec, v.a[i].s)
-                            else:
-                                options[k] = (vspec, "")
+                    if y.data.d.hasKey("options") and y.data.d["options"].kind==Dictionary:
+                        var options = initOrderedTable[string,(ValueSpec,string)]()
+                        for (k,v) in pairs(y.data.d["options"].d):
+                            if v.kind==Type:
+                                options[k] = ({v.t}, "")
+                            elif v.kind==String:
+                                options[k] = ({Logical}, v.s)
+                            elif v.kind==Block:
+                                var vspec: ValueSpec
+                                var i = 0
+                                while i < v.a.len and v.a[i].kind==Type:
+                                    vspec.incl(v.a[i].t)
+                                    i += 1
+                                if v.a[i].kind==String:
+                                    options[k] = (vspec, v.a[i].s)
+                                else:
+                                    options[k] = (vspec, "")
 
-                    ret.attrs = options
+                        ret.attrs = options
 
-                if (let returnsData = y.data.d.getOrDefault("returns", nil); not returnsData.isNil):
-                    if returnsData.kind==Type:
-                        ret.returns = {returnsData.t}
-                    else:
-                        var returns: ValueSpec
-                        for tp in returnsData.a:
-                            returns.incl(tp.t)
-                        ret.returns = returns
+                    if (let returnsData = y.data.d.getOrDefault("returns", nil); not returnsData.isNil):
+                        if returnsData.kind==Type:
+                            ret.returns = {returnsData.t}
+                        else:
+                            var returns: ValueSpec
+                            for tp in returnsData.a:
+                                returns.incl(tp.t)
+                            ret.returns = returns
 
-                if (let exampleData = y.data.d.getOrDefault("example", nil); not exampleData.isNil):
-                    ret.example = exampleData.s
+                    if (let exampleData = y.data.d.getOrDefault("example", nil); not exampleData.isNil):
+                        ret.example = exampleData.s
     
             ret.args = argTypes
             
