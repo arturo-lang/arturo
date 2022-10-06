@@ -282,11 +282,13 @@ func newChar*(c: char): Value {.inline.} =
 func newChar*(c: string): Value {.inline.} =
     Value(kind: Char, c: c.runeAt(0))
 
-func newString*(s: string, dedented: bool = false): Value {.inline, enforceNoRaises.} =
-    if not dedented: Value(kind: String, s: s)
-    else: Value(kind: String, s: unicode.strip(dedent(s)))
+func newString*(s: string, dedented: static bool = false): Value {.inline, enforceNoRaises.} =
+    when not dedented: 
+        Value(kind: String, s: s)
+    else: 
+        Value(kind: String, s: unicode.strip(dedent(s)))
 
-func newString*(s: cstring, dedented: bool = false): Value {.inline, enforceNoRaises.} =
+func newString*(s: cstring, dedented: static bool = false): Value {.inline, enforceNoRaises.} =
     newString($(s), dedented)
 
 func newWord*(w: string): Value {.inline, enforceNoRaises.} =
