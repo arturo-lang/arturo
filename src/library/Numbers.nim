@@ -692,25 +692,25 @@ proc defineSymbols*() =
             print gcd [48 60 120]         ; 12
         """:
             ##########################################################
-            let blk = cleanedBlock(x.a)
-            var current = blk[0]
+            ensureCleaned(x)
+            var current = cleanX[0]
 
             var i = 1
             # TODO(Numbers\gcd) not working for Web builds
             # labels: web,enhancement
-            while i<blk.len:
+            while i<cleanX.len:
                 if current.iKind==NormalInteger:
-                    if blk[i].iKind==BigInteger:
+                    if cleanX[i].iKind==BigInteger:
                         when not defined(NOGMP):
-                            current = newInteger(gcd(current.i, blk[i].bi))
+                            current = newInteger(gcd(current.i, cleanX[i].bi))
                     else:
-                        current = newInteger(gcd(current.i, blk[i].i))
+                        current = newInteger(gcd(current.i, cleanX[i].i))
                 else:
                     when not defined(NOGMP):
-                        if blk[i].iKind==BigInteger:
-                            current = newInteger(gcd(current.bi, blk[i].bi))
+                        if cleanX[i].iKind==BigInteger:
+                            current = newInteger(gcd(current.bi, cleanX[i].bi))
                         else:
-                            current = newInteger(gcd(current.bi, blk[i].i))
+                            current = newInteger(gcd(current.bi, cleanX[i].i))
                 inc(i)
 
             push(current)
@@ -753,25 +753,25 @@ proc defineSymbols*() =
             print lcm [48 60 120]         ; 240
         """:
             ##########################################################
-            let blk = cleanedBlock(x.a)
-            var current = blk[0]
+            ensureCleaned(x)
+            var current = cleanX[0]
 
             var i = 1
             # TODO(Numbers\lcm) not working for Web builds
             # labels: web,enhancement
-            while i<blk.len:
+            while i<cleanX.len:
                 if current.iKind==NormalInteger:
-                    if blk[i].iKind==BigInteger:
+                    if cleanX[i].iKind==BigInteger:
                         when not defined(NOGMP):
-                            current = newInteger(lcm(current.i, blk[i].bi))
+                            current = newInteger(lcm(current.i, cleanX[i].bi))
                     else:
-                        current = newInteger(lcm(current.i, blk[i].i))
+                        current = newInteger(lcm(current.i, cleanX[i].i))
                 else:
                     when not defined(NOGMP):
-                        if blk[i].iKind==BigInteger:
-                            current = newInteger(lcm(current.bi, blk[i].bi))
+                        if cleanX[i].iKind==BigInteger:
+                            current = newInteger(lcm(current.bi, cleanX[i].bi))
                         else:
-                            current = newInteger(lcm(current.bi, blk[i].i))
+                            current = newInteger(lcm(current.bi, cleanX[i].i))
                 inc(i)
 
             push(current)
@@ -959,17 +959,17 @@ proc defineSymbols*() =
             print product 1..10       ; 3628800
         """:
             ##########################################################
+            ensureCleaned(x)
             if (hadAttr("cartesian")):
-                let blk = cleanedBlock(x.a).map((z)=>z.a)
+                let blk = cleanX.map((z)=>z.a)
                 push(newBlock(cartesianProduct(blk).map((z) => newBlock(z))))
             else:
                 var i = 0
                 var product = I1.copyValue
-                let blk = cleanedBlock(x.a)
-                if blk.len==0: push(I0.copyValue)
+                if cleanX.len==0: push(I0.copyValue)
                 else:
-                    while i<blk.len:
-                        product *= blk[i]
+                    while i<cleanX.len:
+                        product *= cleanX[i]
                         i += 1
 
                     push(product)
@@ -1229,11 +1229,11 @@ proc defineSymbols*() =
             print sum 1..10           ; 55
         """:
             ##########################################################
+            ensureCleaned(x)
             var i = 0
             var sum = I0.copyValue
-            let blk = cleanedBlock(x.a)
-            while i<blk.len:
-                sum += blk[i]
+            while i<cleanX.len:
+                sum += cleanX[i]
                 i += 1
 
             push(sum)
