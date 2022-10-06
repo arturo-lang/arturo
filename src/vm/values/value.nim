@@ -465,7 +465,7 @@ func newBytecode*(t: Translation): Value {.inline, enforceNoRaises.} =
 func newInline*(a: sink ValueArray = @[], dirty = false): Value {.inline, enforceNoRaises.} =
     Value(kind: Inline, a: a, dirty: dirty)
 
-func newBlock*(a: sink ValueArray = @[], data: sink Value = VNULL, dirty = false): Value {.inline, enforceNoRaises.} =
+func newBlock*(a: sink ValueArray = @[], data: sink Value = nil, dirty = false): Value {.inline, enforceNoRaises.} =
     Value(kind: Block, a: a, data: data, dirty: dirty)
 
 func newIntegerBlock*[T](a: sink seq[T]): Value {.inline, enforceNoRaises.} =
