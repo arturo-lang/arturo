@@ -578,12 +578,6 @@ when defined(WEB):
     proc flushFile*(buffer: var string) =
         echo buffer
 
-template addChild*(parent: Value, child: Value) =
-    parent.a.add(child)
-
-func removeChildren*(parent: Value, rng: Slice[int]) {.inline, enforceNoRaises.} =
-    parent.a.delete(rng)
-
 func asFloat*(v: Value): float {.enforceNoRaises.} = 
     # get number value forcefully as a float
     if v.kind == Floating:
