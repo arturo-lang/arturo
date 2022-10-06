@@ -462,10 +462,10 @@ when not defined(NOSQLITE):
 func newBytecode*(t: Translation): Value {.inline, enforceNoRaises.} =
     Value(kind: Bytecode, trans: t)
 
-func newInline*(a: ValueArray = @[], dirty = false): Value {.inline, enforceNoRaises.} =
+func newInline*(a: sink ValueArray = @[], dirty = false): Value {.inline, enforceNoRaises.} =
     Value(kind: Inline, a: a, dirty: dirty)
 
-func newBlock*(a: ValueArray = @[], data = VNULL, dirty = false): Value {.inline, enforceNoRaises.} =
+func newBlock*(a: sink ValueArray = @[], data: sink Value = VNULL, dirty = false): Value {.inline, enforceNoRaises.} =
     Value(kind: Block, a: a, data: data, dirty: dirty)
 
 func newIntegerBlock*[T](a: seq[T]): Value {.inline, enforceNoRaises.} =
