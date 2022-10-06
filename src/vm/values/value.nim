@@ -578,7 +578,7 @@ when defined(WEB):
     proc flushFile*(buffer: var string) =
         echo buffer
 
-func addChild*(parent: Value, child: Value) {.inline, enforceNoRaises.} =
+func addChild*(parent: Value, child: sink Value) {.inline, enforceNoRaises.} =
     parent.a.add(child)
 
 func removeChildren*(parent: Value, rng: Slice[int]) {.inline, enforceNoRaises.} =
