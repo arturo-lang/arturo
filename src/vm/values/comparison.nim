@@ -10,7 +10,6 @@
 # Libraries
 #=======================================
 
-import rationals except Rational
 import lenientops, tables, unicode
 
 when defined(WEB):
@@ -18,13 +17,13 @@ when defined(WEB):
     
 when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
-
-import helpers/colors as ColorsHelper
-import helpers/quantities as QuantitiesHelper
  
 import vm/exec
 import vm/stack
+
+import vm/values/custom/[vcolor, vcomplex, vquantity, vrational]
 import vm/values/value
+import vm/values/clean
 
 #=======================================
 # Methods
@@ -121,8 +120,8 @@ proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
             of Bytecode: return x.trans == y.trans
             of Inline,
                Block:
-                let cleanX = cleanedBlock(x.a)
-                let cleanY = cleanedBlock(y.a)
+                ensureCleaned(x)
+                ensureCleaned(y)
 
                 if cleanX.len != cleanY.len: return false
 
@@ -154,7 +153,7 @@ proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
                         if not (v==y.o[k]): return false
 
                     return true
-            of ValueKind.Color:
+            of Color:
                 return x.l == y.l
             of Function:
                 if x.fnKind==UserFunction:
@@ -256,7 +255,9 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
             of Symbol: return false
             of Inline,
                Block:
-                return cleanedBlock(x.a).len < cleanedBlock(y.a).len
+                ensureCleaned(x)
+                ensureCleaned(y)
+                return cleanX.len < cleanY.len
             of Dictionary:
                 return false
             of Object:

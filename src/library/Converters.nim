@@ -16,21 +16,19 @@
 # Libraries
 #=======================================
 
-import rationals except Rational
 import algorithm, parseutils, sequtils, strformat, sugar, times, unicode
 
 import helpers/arrays
 when not defined(NOGMP):
     import helpers/bignums
 import helpers/bytes
-import helpers/colors
 import helpers/datasource
-import helpers/quantities
 when not defined(NOASCIIDECODE):
     import helpers/strings
 
 import vm/lib
 import vm/[bytecode, errors, eval, exec, opcodes, parse]
+
 
 #=======================================
 # Helpers
@@ -302,21 +300,22 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
             of Inline:
                 case tp:
                     of Block:
-                        return newBlock(cleanedBlock(y.a))
+                        ensureCleaned(y)
+                        return newBlock(cleanY)
                     else:
                         throwCannotConvert()
 
             of Block:
                 case tp:
                     of Complex:
-                        let blk = cleanedBlock(y.a)
-                        return newComplex(blk[0], blk[1])
+                        ensureCleaned(y)
+                        return newComplex(cleanY[0], cleanY[1])
                     of Rational:
-                        let blk = cleanedBlock(y.a)
-                        return newRational(blk[0], blk[1])
+                        ensureCleaned(y)
+                        return newRational(cleanY[0], cleanY[1])
                     of Inline:
-                        let blk = cleanedBlock(y.a)
-                        return newInline(blk)
+                        ensureCleaned(y)
+                        return newInline(cleanY)
                     of Dictionary:
                         let stop = SP
                         execBlock(y)
@@ -346,33 +345,34 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                             throwCannotConvert()
 
                     of Quantity:
-                        let blk = cleanedBlock(y.a)
-                        return newQuantity(blk[0], parseQuantitySpec(blk[1].s))
+                        ensureCleaned(y)
+                        return newQuantity(cleanY[0], parseQuantitySpec(cleanY[1].s))
 
                     of Color:
-                        let blk = cleanedBlock(y.a)
-                        if blk.len < 3 or blk.len > 4:
+                        ensureCleaned(y)
+                        if cleanY.len < 3 or cleanY.len > 4:
                             echo "wrong number of attributes"
                         else:
                             if (hadAttr("hsl")):
-                                if blk.len==3:
-                                    return newColor(HSLtoRGB((blk[0].i, blk[1].f, blk[2].f, 1.0)))
-                                elif blk.len==4:
-                                    return newColor(HSLtoRGB((blk[0].i, blk[1].f, blk[2].f, blk[3].f)))
+                                if cleanY.len==3:
+                                    return newColor(HSLtoRGB((cleanY[0].i, cleanY[1].f, cleanY[2].f, 1.0)))
+                                elif cleanY.len==4:
+                                    return newColor(HSLtoRGB((cleanY[0].i, cleanY[1].f, cleanY[2].f, cleanY[3].f)))
                             elif (hadAttr("hsv")):
-                                if blk.len==3:
-                                    return newColor(HSVtoRGB((blk[0].i, blk[1].f, blk[2].f, 1.0)))
-                                elif blk.len==4:
-                                    return newColor(HSVtoRGB((blk[0].i, blk[1].f, blk[2].f, blk[3].f)))
+                                if cleanY.len==3:
+                                    return newColor(HSVtoRGB((cleanY[0].i, cleanY[1].f, cleanY[2].f, 1.0)))
+                                elif cleanY.len==4:
+                                    return newColor(HSVtoRGB((cleanY[0].i, cleanY[1].f, cleanY[2].f, cleanY[3].f)))
                             else:
-                                if blk.len==3:
-                                    return newColor((blk[0].i, blk[1].i, blk[2].i, 255))
-                                elif blk.len==4:
-                                    return newColor((blk[0].i, blk[1].i, blk[2].i, blk[3].i))
+                                if cleanY.len==3:
+                                    return newColor((cleanY[0].i, cleanY[1].i, cleanY[2].i, 255))
+                                elif cleanY.len==4:
+                                    return newColor((cleanY[0].i, cleanY[1].i, cleanY[2].i, cleanY[3].i))
 
                     of Binary:
                         var res: ByteArray = @[]
-                        for item in cleanedBlock(y.a):
+                        ensureCleaned(y)
+                        for item in cleanY:
                             if item.kind==Integer:
                                 res &= numberToBinary(item.i)
                             else:
@@ -632,7 +632,8 @@ proc defineSymbols*() =
             elif (hadAttr("octal")):
                 push(newString(fmt"{x.i:o}"))
             elif (hadAttr("agnostic")):
-                let res = cleanedBlock(x.a).map(proc(v:Value):Value =
+                ensureCleaned(x)
+                let res = cleanX.map(proc(v:Value):Value =
                     if v.kind == Word and not SymExists(v.s): newLiteral(v.s)
                     else: v
                 )
@@ -816,9 +817,9 @@ proc defineSymbols*() =
                 if (hadAttr("raw")):
                     dict = initOrderedTable[string,Value]()
                     var idx = 0
-                    let blk = cleanedBlock(x.a)
-                    while idx < blk.len:
-                        dict[blk[idx].s] = blk[idx+1]
+                    ensureCleaned(x)
+                    while idx < cleanX.len:
+                        dict[cleanX[idx].s] = cleanX[idx+1]
                         idx += 2
                 else:
                     dict = execDictionaryBlock(x)
@@ -1195,15 +1196,16 @@ proc defineSymbols*() =
                 push convertedValueToType(x, y, tp, popAttr("format"))
             else:
                 var ret: ValueArray = @[]
-                let blk = cleanedBlock(x.a)
-                let tp = blk[0].t
+                ensureCleaned(x)
+                let tp = cleanX[0].t
                     
                 if y.kind==String:
                     ret = toSeq(runes(y.s)).map((c) => newChar(c))
                 else:
                     let aFormat = popAttr("format")
-                    for item in cleanedBlock(y.a):
-                        ret.add(convertedValueToType(blk[0], item, tp, aFormat))
+                    ensureCleaned(y)
+                    for item in cleanY:
+                        ret.add(convertedValueToType(cleanX[0], item, tp, aFormat))
 
                 push newBlock(ret)
         
@@ -1236,7 +1238,8 @@ proc defineSymbols*() =
                 blk.insert(GetSym(x.s))
                 blk.insert(newLabel(x.s))
             else:
-                for item in cleanedBlock(x.a):
+                ensureCleaned(x)
+                for item in cleanX:
                     blk.insert(GetSym(item.s))
                     blk.insert(newLabel(item.s))
 

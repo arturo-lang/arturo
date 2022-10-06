@@ -32,7 +32,6 @@ when not defined(WEB):
     import helpers/datasource
     import helpers/io
     import helpers/jsonobject
-    import helpers/quantities
     
 import vm/[bytecode, errors, lib, parse]
 
@@ -521,7 +520,9 @@ proc defineSymbols*() =
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("zip")
 
-                let files: seq[string] = cleanedBlock(y.a).map((z)=>z.s)
+                ensureCleaned(y)
+
+                let files: seq[string] = cleanY.map((z)=>z.s)
                 miniz.zip(files, x.s)
 
 #=======================================

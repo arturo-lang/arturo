@@ -14,8 +14,6 @@
 # Libraries
 #=======================================
 
-import rationals except Rational
-
 import sequtils, strformat, strutils
 import sugar, tables, times, unicode
 
@@ -25,13 +23,12 @@ when defined(WEB):
 when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
-import helpers/colors as ColorsHelper
-import helpers/quantities as QuantitiesHelper
-import helpers/regex as RegexHelper
-
 import vm/exec
 import vm/stack
 import vm/values/value
+import vm/values/clean
+
+import vm/values/custom/[vcolor, vcomplex, vquantity, vrational, vregex]
 
 #=======================================
 # Methods
@@ -189,7 +186,8 @@ proc `$`*(v: Value): string {.inline.} =
             #     result &= $(child) & " "
             # result &= "]"
 
-            result = "[" & cleanedBlock(v.a).map((child) => $(child)).join(" ") & "]"
+            ensureCleaned(v)
+            result = "[" & cleanV.map((child) => $(child)).join(" ") & "]"
 
         of Dictionary   :
             var items: seq[string] = @[]

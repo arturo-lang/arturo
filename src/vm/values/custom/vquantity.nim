@@ -3,7 +3,7 @@
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
-# @file: helpers/quantities.nim
+# @file: vm/values/custom/vquantity.nim
 ######################################################
 
 #=======================================
@@ -19,7 +19,7 @@ when not defined(WEB):
 # Types
 #=======================================
 
-# TODO(Helpers/quantities) More units to add?
+# TODO(vm/values/custom/vquantity) More units to add?
 #  labels: helpers, enhancement, open discussion
 
 type
@@ -99,7 +99,7 @@ type
         # Error value
         NoName
 
-    QuantitySpec* = object
+    VQuantity* = object
         kind*: UnitKind
         name*: UnitName
         
@@ -254,8 +254,8 @@ const
 
     }.toTable
 
-    ErrorQuantity* = QuantitySpec(kind: NoUnit, name: NoName)
-    NumericQuantity* = QuantitySpec(kind: NoUnit, name: B)
+    ErrorQuantity* = VQuantity(kind: NoUnit, name: NoName)
+    NumericQuantity* = VQuantity(kind: NoUnit, name: B)
 
 #=======================================
 # Helpers
@@ -325,17 +325,17 @@ proc stringify*(un: UnitName): string =
 proc stringify*(uk: UnitKind): string =
     toLowerAscii($(uk)).replace("unit","")
 
-func `$`*(qs: QuantitySpec): string =
+func `$`*(qs: VQuantity): string =
     stringify(qs.name)
 
 #=======================================
 # Methods
 #=======================================
 
-proc newQuantitySpec*(un: UnitName): QuantitySpec {.inline.} =
-    QuantitySpec(kind: quantityKindForName(un), name: un)
+proc newQuantitySpec*(un: UnitName): VQuantity {.inline.} =
+    VQuantity(kind: quantityKindForName(un), name: un)
 
-proc getQuantityMultiplier*(src: QuantitySpec, tgt: QuantitySpec): float =
+proc getQuantityMultiplier*(src: VQuantity, tgt: VQuantity): float =
     if src.kind != tgt.kind: return CannotConvertQuantity
 
     if src.kind == CurrencyUnit:
@@ -344,7 +344,7 @@ proc getQuantityMultiplier*(src: QuantitySpec, tgt: QuantitySpec): float =
         return ConversionRatio[src.name] / ConversionRatio[tgt.name]
 
 proc getQuantityMultiplier*(src: UnitName, tgt: UnitName, isCurrency=false): float =
-    # TODO(Helpers/quantities) Clean up `getQuantityMultiplier`
+    # TODO(vm/values/custom/vquantity) Clean up `getQuantityMultiplier`
     #  Do we need this?
     #  labels: helpers, values, cleanup
 
@@ -357,15 +357,15 @@ proc getQuantityMultiplier*(src: UnitName, tgt: UnitName, isCurrency=false): flo
     else:
         return ConversionRatio[src] / ConversionRatio[tgt]
 
-proc getCleanCorrelatedUnit*(b: QuantitySpec, a: QuantitySpec): QuantitySpec = 
+proc getCleanCorrelatedUnit*(b: VQuantity, a: VQuantity): VQuantity = 
     var s = ($(a.name)).replace("2","").replace("3","")
     
     if ($(b.name)).contains("2")    :   s &= "2"
     elif ($(b.name)).contains("3")  :   s &= "3"
 
-    return QuantitySpec(kind: b.kind, name: parseEnum[UnitName](s))
+    return VQuantity(kind: b.kind, name: parseEnum[UnitName](s))
 
-proc getFinalUnitAfterOperation*(op: string, argA: QuantitySpec, argB: QuantitySpec): QuantitySpec =
+proc getFinalUnitAfterOperation*(op: string, argA: VQuantity, argB: VQuantity): VQuantity =
     case op:
         of "mul":
             if argA.kind == LengthUnit and argB.kind == LengthUnit and argA.name in M..MI:
@@ -392,6 +392,6 @@ proc getFinalUnitAfterOperation*(op: string, argA: QuantitySpec, argB: QuantityS
 
     return ErrorQuantity
 
-proc parseQuantitySpec*(str: string): QuantitySpec =
+proc parseQuantitySpec*(str: string): VQuantity =
     let unitName = parseEnum[UnitName](toUpperAscii(str))
     newQuantitySpec(unitName)

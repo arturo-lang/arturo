@@ -461,12 +461,13 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Block:
+                ensureCleaned(x)
                 if y.kind==Block:
-                    let blk = cleanedBlock(y.a)
-                    for i,w in cleanedBlock(x.a):
-                        SetSym(w.s, blk[i])
+                    ensureCleaned(y)
+                    for i,w in cleanX:
+                        SetSym(w.s, cleanY[i])
                 else:
-                    for i,w in cleanedBlock(x.a):
+                    for i,w in cleanX:
                         SetSym(w.s, y)
             else:
                 SetInPlace(y)
@@ -814,12 +815,14 @@ proc defineSymbols*() =
             ##########################################################
             let z = pop()
             if Not(z.b)==True:
+                ensureCleaned(x)
+
                 let top = sTop()
 
                 var newb: Value = newBlock()
                 for old in top.a:
                     newb.a.add(old)
-                for cond in cleanedBlock(x.a):
+                for cond in cleanX:
                     newb.a.add(cond)
 
                 execBlock(newb)
