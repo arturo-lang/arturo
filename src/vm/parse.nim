@@ -84,21 +84,21 @@ proc parseDataBlock*(blk: Value): Value
 #=======================================
 
 template AddToken*(token: untyped): untyped =
-    topBlock.add(token)
+    topBlock.a.add(token)
 
 template LastToken*(): untyped = 
-    topBlock[^1]
+    topBlock.a[^1]
 
 template ReplaceLastToken*(with: untyped): untyped =
-    topBlock[^1] = with
+    topBlock.a[^1] = with
 
 template stripTrailingNewlines*(): untyped =
-    if topBlock[^1].kind == Newline:
-        let lastN = topBlock.len-1
+    if topBlock.a[^1].kind == Newline:
+        let lastN = topBlock.a.len-1
         var firstN = lastN
-        while firstN-1 >= 0 and topBlock[firstN-1].kind == Newline:
+        while firstN-1 >= 0 and topBlock.a[firstN-1].kind == Newline:
             firstN -= 1
-        topBlock.delete(firstN..lastN)
+        topBlock.a.delete(firstN..lastN)
 
 #=======================================
 # Helpers
@@ -261,14 +261,10 @@ template parseString(p: var Parser, stopper: char = Quote) =
             of CR:
                 var prepos = pos-1
                 pos = lexbase.handleCR(p, pos)
-                # when defined(windows):
-                #     prepos += 1
                 SyntaxError_NewlineInQuotedString(p.lineNumber-1, getContext(p, prepos))
             of LF:
                 var prepos = pos-1
                 pos = lexbase.handleLF(p, pos)
-                # when defined(windows):
-                #     prepos += 1
                 SyntaxError_NewlineInQuotedString(p.lineNumber-1, getContext(p, prepos))
             else:
                 add(p.value, p.buf[pos])
@@ -491,7 +487,7 @@ template parseNumber(p: var Parser) =
     else:
         p.bufpos = pos
 
-template parseAndAddSymbol(p: var Parser, topBlock: var ValueArray) =
+template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
     var pos = p.bufpos
     var isSymbol = true
     case p.buf[pos]:
@@ -800,11 +796,12 @@ template parseExponent(p: var Parser) =
     p.bufpos = pos
 
 proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.inline.} =
-    var topBlock: ValueArray
+    var topBlock: Value
     var scriptStr: string = ""
+    if isDeferred: topBlock = newBlock(dirty=true)
+    else: topBlock = newInline(dirty=true)
     let initial = p.bufpos
     let initialLine = p.lineNumber
-    
     while true:
         setLen(p.value, 0)
         skip(p, scriptStr)
@@ -954,11 +951,8 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                 inc(p.bufpos)
 
     if scriptStr!="":
-        if isDeferred: return newBlock(topBlock, parseDataBlock(doParse(scriptStr,false)), dirty=true)
-        else: return newInline(topBlock, dirty=true)
-
-    if isDeferred: return newBlock(topBlock, dirty=true)
-    else: return newInline(topBlock, dirty=true)
+        topBlock.data = parseDataBlock(doParse(scriptStr,false))
+    return topBlock
 
 proc parseAsDictionary(blk: Value, start: int): Value =
     result = newDictionary()
