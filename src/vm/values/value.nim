@@ -282,7 +282,7 @@ func newChar*(c: char): Value {.inline.} =
 func newChar*(c: string): Value {.inline.} =
     Value(kind: Char, c: c.runeAt(0))
 
-func newString*(s: string, dedented: static bool = false): Value {.inline, enforceNoRaises.} =
+func newString*(s: sink string, dedented: static bool = false): Value {.inline, enforceNoRaises.} =
     when not dedented: 
         Value(kind: String, s: s)
     else: 
@@ -291,19 +291,19 @@ func newString*(s: string, dedented: static bool = false): Value {.inline, enfor
 func newString*(s: cstring, dedented: static bool = false): Value {.inline, enforceNoRaises.} =
     newString($(s), dedented)
 
-func newWord*(w: string): Value {.inline, enforceNoRaises.} =
+func newWord*(w: sink string): Value {.inline, enforceNoRaises.} =
     Value(kind: Word, s: w)
 
-func newLiteral*(l: string): Value {.inline, enforceNoRaises.} =
+func newLiteral*(l: sink string): Value {.inline, enforceNoRaises.} =
     Value(kind: Literal, s: l)
 
-func newLabel*(l: string): Value {.inline, enforceNoRaises.} =
+func newLabel*(l: sink string): Value {.inline, enforceNoRaises.} =
     Value(kind: Label, s: l)
 
-func newAttribute*(a: string): Value {.inline, enforceNoRaises.} =
+func newAttribute*(a: sink string): Value {.inline, enforceNoRaises.} =
     Value(kind: Attribute, r: a)
 
-func newAttributeLabel*(a: string): Value {.inline, enforceNoRaises.} =
+func newAttributeLabel*(a: sink string): Value {.inline, enforceNoRaises.} =
     Value(kind: AttributeLabel, r: a)
 
 func newPath*(p: ValueArray): Value {.inline, enforceNoRaises.} =
@@ -315,7 +315,7 @@ func newPathLabel*(p: ValueArray): Value {.inline, enforceNoRaises.} =
 func newSymbol*(m: SymbolKind): Value {.inline, enforceNoRaises.} =
     Value(kind: Symbol, m: m)
 
-func newSymbol*(m: string): Value {.inline.} =
+func newSymbol*(m: sink string): Value {.inline.} =
     newSymbol(parseEnum[SymbolKind](m))
 
 func newSymbolLiteral*(m: SymbolKind): Value {.inline, enforceNoRaises.} =
@@ -436,7 +436,7 @@ proc newObject*(args: ValueDict, prot: Prototype, initializer: proc (self: Value
 func newFunction*(params: Value, main: Value, imports: Value = nil, exports: Value = nil, exportable: bool = false, memoize: bool = false): Value {.inline, enforceNoRaises.} =
     Value(kind: Function, fnKind: UserFunction, params: params, main: main, imports: imports, exports: exports, exportable: exportable, memoize: memoize)
 
-func newBuiltin*(name: string, al: SymbolKind, pr: PrecedenceKind, desc: string, ar: int, ag: OrderedTable[string,ValueSpec], at: OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: string, act: BuiltinAction): Value {.inline, enforceNoRaises.} =
+func newBuiltin*(name: sink string, al: SymbolKind, pr: PrecedenceKind, desc: sink string, ar: int, ag: OrderedTable[string,ValueSpec], at: OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: sink string, act: BuiltinAction): Value {.inline, enforceNoRaises.} =
     Value(
         kind    : Function, 
         fnKind  : BuiltinFunction, 
