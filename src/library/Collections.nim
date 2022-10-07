@@ -29,7 +29,6 @@ import helpers/combinatorics
 import helpers/strings
 import helpers/unisort
 
-import vm/exec
 import vm/lib
 
 #=======================================
