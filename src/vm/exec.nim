@@ -174,7 +174,8 @@ proc execBlock*(
                     return
             else:
                 when hasArgs:
-                    for i,arg in args.a:          
+                    for i, arg in mpairs(args.a):
+                    #for i,arg in args.a:          
                         if stack.peek(i).kind==Function:
                             Arities[arg.s] = stack.peek(i).params.a.len
                         else:
