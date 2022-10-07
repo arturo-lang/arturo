@@ -561,7 +561,10 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 addConst(consts, node.p[0], opLoad)
                 i = 1
                 while i<node.p.len:
-                    addConst(consts, node.p[i], opPush)
+                    if node.p[i].kind==Block:
+                        evalOne(node.p[i], consts, currentCommand, inBlock=true, isDictionary=isDictionary)
+                    else:
+                        addConst(consts, node.p[i], opPush)
                     i += 1
 
                 argStack.add(1)
