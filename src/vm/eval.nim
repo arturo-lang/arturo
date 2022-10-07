@@ -218,7 +218,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 let symalias = n.a[i+1].m
                 let aliased = Aliases.getOrDefault(symalias, NoAliasBinding)
                 if aliased != NoAliasBinding:
-                    let symfunc = Syms[aliased.name.s]
+                    let symfunc {.cursor.} = Syms[aliased.name.s]
 
                     if symfunc.kind==Function and aliased.precedence==InfixPrecedence:
                         i += step;
