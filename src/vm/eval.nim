@@ -472,10 +472,10 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 var hasThickArrow = false
                 var ab: seq[Value]
                 var sb: seq[Value]
-                let nextNode = n.a[i+1]
+                let nextNode {.cursor.} = n.a[i+1]
                 if (nextNode.kind == Word and nextNode.s == "function") or
                    (nextNode.kind == Symbol and nextNode.m == dollar):
-                    let afterNextNode = n.a[i+2]
+                    let afterNextNode {.cursor.} = n.a[i+2]
                     if afterNextNode.kind == Symbol and afterNextNode.m == thickarrowright:
                         i += 2
                         processThickArrowRight(ab,sb)
