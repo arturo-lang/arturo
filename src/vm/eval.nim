@@ -132,7 +132,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
         var bt: OpCode = opNop
         var doElse = true
 
-        let fn = fun
+        let fn {.cursor.} = fun
 
         if fn == ArrayF: bt = opArray
         elif fn == DictF: bt = opDict
