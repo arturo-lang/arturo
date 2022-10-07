@@ -697,8 +697,8 @@ proc doEval*(root: Value, isDictionary=false): Translation =
 
     result = Translation(constants: cnsts, instructions: newit)
     # TODO(VM/eval) add option for evaluation into optimized bytecode directly
-    # if optimized:
-    #     result.instructions = optimizeBytecode(result)
+    #  if optimized:
+    #      result.instructions = optimizeBytecode(result)
     # labels: vm, evaluator, enhancement
 
 template evalOrGet*(item: Value): untyped =
