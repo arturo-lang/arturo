@@ -266,7 +266,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     i += 1
                     if (i+1<childrenCount and n.a[i+1].kind == Word and Syms[n.a[i+1].s].kind == Function):
-                        let funcName = n.a[i+1].s
+                        let funcName {.cursor.} = n.a[i+1].s
                         let tmpFuncArity = TmpArities.getOrDefault(funcName, -1)
                         if tmpFuncArity != -1:
                             if tmpFuncArity>1:
