@@ -565,11 +565,11 @@ proc defineSymbols*() =
             print str\[z+1]               ; e
         """:
             ##########################################################
-            if y.kind==Block:
-                execBlock(y)
-                getValueFor(x, stack.pop())
-            else:
-                getValueFor(x, y)
+            # if y.kind==Block:
+            #     execBlock(y)
+            #     getValueFor(x, stack.pop())
+            # else:
+            getValueFor(x, y)
 
     builtin "in?",
         alias       = unaliased, 
