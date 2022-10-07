@@ -46,11 +46,10 @@ jobs:
         id: test
         uses: vmactions/freebsd-vm@v0
         with:
+          release: 12.0
           usesh: true
           prepare: |
-            pkg install -y wget gmp mpfr bash databases/sqlite3
-            pkg search nim
-            pkg install -y nim-1.6.6,1
+            pkg install -y wget nim gmp mpfr bash databases/sqlite3
           run: |
             ./build.nims install ${{ matrix.version }} log
             export PATH="$HOME/.arturo/bin:$PATH"
