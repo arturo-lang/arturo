@@ -1203,9 +1203,9 @@ proc defineSymbols*() =
             var key: Value
             if y.kind==String or y.kind==Integer: 
                 key = y
-            elif y.kind==Block:
-                execBlock(y)
-                key = pop()
+            # elif y.kind==Block:
+            #     execBlock(y)
+            #     key = pop()
             else:
                 key = newString($(y))
 
