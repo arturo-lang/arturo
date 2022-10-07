@@ -18,9 +18,10 @@ import vm/values/types
 #  when built without NOERRORLINES - which is our normal setup - this specific piece of code could be slowing down the whole language by up to 20%
 #  labels: vm, values, performance, enhancement, benchmark, critical
 
-func cleanBlock*(va: var ValueArray) {.inline,enforceNoRaises.} =
+template cleanBlock*(v: Value) =
     when not defined(NOERRORLINES):
-        va.keepIf((vv) => vv.kind != Newline)
+        if v.dirty:
+            v.a.keepIf((vv) => vv.kind != Newline)
     else:
         discard
 
