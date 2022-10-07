@@ -33,42 +33,6 @@ import vm/exec
 import vm/lib
 
 #=======================================
-# Helpers
-#=======================================
-
-proc getValueFor*(x: Value, y: Value) {.inline,enforceNoRaises.} =
-    case x.kind:
-        of Block: 
-            ensureCleaned(x)
-            push(GetArrayIndex(cleanX, y.i))
-        of Binary: 
-            push(newInteger((int)x.n[y.i]))
-        of Bytecode: 
-            if y.s == "data":
-                push(newBlock(x.trans.constants))
-            elif y.s == "code":
-                push(newBlock(x.trans.instructions.map((w) => newInteger((int)w))))
-            else:
-                push(VNULL)
-        of Dictionary: 
-            case y.kind:
-                of String,Word,Literal,Label:
-                    push(GetKey(x.d, y.s))
-                else:
-                    push(GetKey(x.d, $(y)))
-        of Object:
-            case y.kind:
-                of String,Word,Literal,Label:
-                    push(GetKey(x.o, y.s))
-                else:       
-                    push(GetKey(x.o, $(y)))
-        of String: 
-            push(newChar(x.s.runeAtPos(y.i)))
-        of Date: 
-            push(GetKey(x.e, y.s))
-        else: discard
-
-#=======================================
 # Methods
 #=======================================
 
@@ -565,11 +529,36 @@ proc defineSymbols*() =
             print str\[z+1]               ; e
         """:
             ##########################################################
-            if y.kind==Block:
-                execBlock(y)
-                getValueFor(x, stack.pop())
-            else:
-                getValueFor(x, y)
+            case x.kind:
+                of Block: 
+                    ensureCleaned(x)
+                    push(GetArrayIndex(cleanX, y.i))
+                of Binary: 
+                    push(newInteger((int)x.n[y.i]))
+                of Bytecode: 
+                    if y.s == "data":
+                        push(newBlock(x.trans.constants))
+                    elif y.s == "code":
+                        push(newBlock(x.trans.instructions.map((w) => newInteger((int)w))))
+                    else:
+                        push(VNULL)
+                of Dictionary: 
+                    case y.kind:
+                        of String,Word,Literal,Label:
+                            push(GetKey(x.d, y.s))
+                        else:
+                            push(GetKey(x.d, $(y)))
+                of Object:
+                    case y.kind:
+                        of String,Word,Literal,Label:
+                            push(GetKey(x.o, y.s))
+                        else:       
+                            push(GetKey(x.o, $(y)))
+                of String: 
+                    push(newChar(x.s.runeAtPos(y.i)))
+                of Date: 
+                    push(GetKey(x.e, y.s))
+                else: discard
 
     builtin "in?",
         alias       = unaliased, 
@@ -1200,45 +1189,44 @@ proc defineSymbols*() =
             ; xello
         """:
             ##########################################################
-            var key: Value
-            if y.kind==String or y.kind==Integer: 
-                key = y
-            elif y.kind==Block:
-                execBlock(y)
-                key = pop()
-            else:
-                key = newString($(y))
-
             case x.kind:
                 of Block: 
-                    cleanBlock(x.a)
-                    SetArrayIndex(x.a, key.i, z)
-                of Binary:
+                    cleanBlock(x)
+                    SetArrayIndex(x.a, y.i, z)
+                of Binary: 
                     let bn = numberToBinary(z.i)
                     if bn.len == 1:
-                        x.n[key.i] = bn[0]
+                        x.n[y.i] = bn[0]
                     else:
                         for bi, bt in bn:
-                            if not (bi+key.i < x.n.len):
+                            if not (bi+y.i < x.n.len):
                                 x.n.add((byte)0)
 
-                            x.n[bi + key.i] = bt
-                of Bytecode:
-                    if key.s=="data":
+                            x.n[bi + y.i] = bt
+                of Bytecode: 
+                    if y.s=="data":
                         x.trans.constants = y.a
-                    elif key.s=="code":
+                    elif y.s=="code":
                         x.trans.instructions = y.a.map((w) => (byte)(w.i))
                     else:
                         discard
-                of Dictionary:
-                    x.d[$(key)] = z
+                of Dictionary: 
+                    case y.kind:
+                        of String,Word,Literal,Label:
+                            x.d[y.s] = z
+                        else:
+                            x.d[$(y)] = z
                 of Object:
-                    x.o[$(key)] = z
-                of String:
+                    case y.kind:
+                        of String,Word,Literal,Label:
+                            x.o[y.s] = z
+                        else:
+                            x.o[$(y)] = z
+                of String: 
                     var res: string = ""
                     var idx = 0
                     for r in x.s.runes:
-                        if idx!=key.i: res.add r
+                        if idx!=y.i: res.add r
                         else: res.add z.c
                         idx += 1
 
