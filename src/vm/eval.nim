@@ -337,7 +337,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     let symalias = subnode.m
                     let aliased = Aliases.getOrDefault(symalias, NoAliasBinding)
                     if likely(aliased != NoAliasBinding):
-                        let symfunc = Syms[aliased.name.s]
+                        let symfunc {.cursor.} = Syms[aliased.name.s]
                         if symfunc.kind==Function:
                             if aliased.precedence==PrefixPrecedence:
                                 if symfunc.fnKind==BuiltinFunction and symfunc.arity!=0:
