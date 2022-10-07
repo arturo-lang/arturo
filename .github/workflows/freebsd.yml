@@ -46,7 +46,7 @@ jobs:
         id: test
         uses: vmactions/freebsd-vm@v0
         with:
-          release: 12.0
+          release: 12.3
           usesh: true
           prepare: |
             pkg install -y wget nim gmp mpfr bash databases/sqlite3
