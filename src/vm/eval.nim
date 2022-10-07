@@ -376,7 +376,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             i += 1
 
         # get next node
-        let subnode = n.a[i+1]
+        let subnode {.cursor.} = n.a[i+1]
 
         # we'll want to create the two blocks, 
         # for functions like loop, map, select, filter
