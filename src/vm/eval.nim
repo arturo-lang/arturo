@@ -513,7 +513,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 var pathCallV: Value = nil
 
                 if (let curr = Syms.getOrDefault(node.p[0].s, nil); not curr.isNil):
-                    let next = node.p[1]
+                    let next {.cursor.} = node.p[1]
                     if curr.kind==Dictionary and (next.kind==Literal or next.kind==Word):
                         if (let item = curr.d.getOrDefault(next.s, nil); not item.isNil):
                             if item.kind == Function:
@@ -533,7 +533,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                             #addConst(consts, newWord("get"), opCall)
                             i += 1
 
-                        let baseNode = node.p[0]
+                        let baseNode {.cursor.} = node.p[0]
 
                         if TmpArities.getOrDefault(baseNode.s, -1) == 0:
                             addConst(consts, baseNode, opCall)
@@ -575,7 +575,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         inc(i)
                         var subblock: seq[Value] = @[]
                         while i < n.a.len:
-                            let subnode = n.a[i]
+                            let subnode {.cursor.} = n.a[i]
                             subblock.add(subnode)
                             inc(i)
                         addTerminalValue(false):
@@ -608,7 +608,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         let symalias = node.m
                         let aliased = Aliases.getOrDefault(symalias, NoAliasBinding)
                         if likely(aliased != NoAliasBinding):
-                            let symfunc = Syms[aliased.name.s]
+                            let symfunc {.cursor.} = Syms[aliased.name.s]
                             if symfunc.kind==Function:
                                 if symfunc.fnKind == BuiltinFunction and symfunc.arity!=0:
                                     evalFunctionCall(symfunc, toHead=false, checkAhead=false):
