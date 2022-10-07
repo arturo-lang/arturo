@@ -418,7 +418,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
     var i = 0
     while i < n.a.len:
-        let node = n.a[i]
+        let node {.cursor.} = n.a[i]
 
         case node.kind:
             of Null:    addToCommand((byte)opConstN)
