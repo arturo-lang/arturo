@@ -132,7 +132,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
         var bt: OpCode = opNop
         var doElse = true
 
-        let fn = fun
+        let fn {.cursor.} = fun
 
         if fn == ArrayF: bt = opArray
         elif fn == DictF: bt = opDict
@@ -169,7 +169,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
         elif fn == ToF: 
             bt = opTo
             when checkAhead:
-                let nextNode = n.a[i+1]
+                let nextNode {.cursor.} = n.a[i+1]
                 if nextNode.kind==Type:
                     if nextNode.t==String:
                         addToCommand((byte)opToS)
@@ -218,7 +218,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 let symalias = n.a[i+1].m
                 let aliased = Aliases.getOrDefault(symalias, NoAliasBinding)
                 if aliased != NoAliasBinding:
-                    let symfunc = Syms[aliased.name.s]
+                    let symfunc {.cursor.} = Syms[aliased.name.s]
 
                     if symfunc.kind==Function and aliased.precedence==InfixPrecedence:
                         i += step;
@@ -266,7 +266,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     i += 1
                     if (i+1<childrenCount and n.a[i+1].kind == Word and Syms[n.a[i+1].s].kind == Function):
-                        let funcName = n.a[i+1].s
+                        let funcName {.cursor.} = n.a[i+1].s
                         let tmpFuncArity = TmpArities.getOrDefault(funcName, -1)
                         if tmpFuncArity != -1:
                             if tmpFuncArity>1:
@@ -304,7 +304,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
         i += 1
 
         while i < n.a.len and not ended:
-            let subnode = n.a[i]
+            let subnode {.cursor.} = n.a[i]
             ret.add(subnode)
 
             case subnode.kind:
@@ -337,7 +337,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     let symalias = subnode.m
                     let aliased = Aliases.getOrDefault(symalias, NoAliasBinding)
                     if likely(aliased != NoAliasBinding):
-                        let symfunc = Syms[aliased.name.s]
+                        let symfunc {.cursor.} = Syms[aliased.name.s]
                         if symfunc.kind==Function:
                             if aliased.precedence==PrefixPrecedence:
                                 if symfunc.fnKind==BuiltinFunction and symfunc.arity!=0:
@@ -376,7 +376,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             i += 1
 
         # get next node
-        let subnode = n.a[i+1]
+        let subnode {.cursor.} = n.a[i+1]
 
         # we'll want to create the two blocks, 
         # for functions like loop, map, select, filter
@@ -418,7 +418,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
     var i = 0
     while i < n.a.len:
-        let node = n.a[i]
+        let node {.cursor.} = n.a[i]
 
         case node.kind:
             of Null:    addToCommand((byte)opConstN)
@@ -468,14 +468,14 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         addConst(consts, node, opLoad)
 
             of Label: 
-                let funcIndx = node.s
+                let funcIndx {.cursor.} = node.s
                 var hasThickArrow = false
                 var ab: seq[Value]
                 var sb: seq[Value]
-                let nextNode = n.a[i+1]
+                let nextNode {.cursor.} = n.a[i+1]
                 if (nextNode.kind == Word and nextNode.s == "function") or
                    (nextNode.kind == Symbol and nextNode.m == dollar):
-                    let afterNextNode = n.a[i+2]
+                    let afterNextNode {.cursor.} = n.a[i+2]
                     if afterNextNode.kind == Symbol and afterNextNode.m == thickarrowright:
                         i += 2
                         processThickArrowRight(ab,sb)
@@ -513,7 +513,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 var pathCallV: Value = nil
 
                 if (let curr = Syms.getOrDefault(node.p[0].s, nil); not curr.isNil):
-                    let next = node.p[1]
+                    let next {.cursor.} = node.p[1]
                     if curr.kind==Dictionary and (next.kind==Literal or next.kind==Word):
                         if (let item = curr.d.getOrDefault(next.s, nil); not item.isNil):
                             if item.kind == Function:
@@ -533,7 +533,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                             #addConst(consts, newWord("get"), opCall)
                             i += 1
 
-                        let baseNode = node.p[0]
+                        let baseNode {.cursor.} = node.p[0]
 
                         if TmpArities.getOrDefault(baseNode.s, -1) == 0:
                             addConst(consts, baseNode, opCall)
@@ -575,7 +575,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         inc(i)
                         var subblock: seq[Value] = @[]
                         while i < n.a.len:
-                            let subnode = n.a[i]
+                            let subnode {.cursor.} = n.a[i]
                             subblock.add(subnode)
                             inc(i)
                         addTerminalValue(false):
@@ -608,7 +608,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         let symalias = node.m
                         let aliased = Aliases.getOrDefault(symalias, NoAliasBinding)
                         if likely(aliased != NoAliasBinding):
-                            let symfunc = Syms[aliased.name.s]
+                            let symfunc {.cursor.} = Syms[aliased.name.s]
                             if symfunc.kind==Function:
                                 if symfunc.fnKind == BuiltinFunction and symfunc.arity!=0:
                                     evalFunctionCall(symfunc, toHead=false, checkAhead=false):
