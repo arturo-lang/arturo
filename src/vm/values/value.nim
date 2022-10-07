@@ -2632,16 +2632,21 @@ func sameValue*(x: Value, y: Value): bool {.inline.}=
                 ensureCleaned(x)
                 ensureCleaned(y)
 
-                if cleanX.len != cleanY.len: return false
+                let xL = cleanX.len
+                let yL = cleanY.len
+                if xL != yL: return false
 
-                for i,child in cleanX:
-                    if not (sameValue(child,cleanY[i])): return false
+                var i = 0
+                while i < xL:
+                    if not (cleanX[i] == cleanY[i]): return false
+                    inc(i)
 
                 return true
+
             of Dictionary:
                 if x.d.len != y.d.len: return false
 
-                for k,v in pairs(x.d):
+                for k,v in mpairs(x.d):
                     if not y.d.hasKey(k): return false
                     if not (sameValue(v,y.d[k])): return false
 
@@ -2649,7 +2654,7 @@ func sameValue*(x: Value, y: Value): bool {.inline.}=
             of Object:
                 if x.o.len != y.o.len: return false
 
-                for k,v in pairs(x.o):
+                for k,v in mpairs(x.o):
                     if not y.o.hasKey(k): return false
                     if not (sameValue(v,y.o[k])): return false
 
