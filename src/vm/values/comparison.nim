@@ -129,7 +129,7 @@ proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
 
                 var i = 0
                 while i < xL:
-                    if cleanX[i] != cleanY[i]: return false
+                    if not (cleanX[i] == cleanY[i]): return false
                     inc(i)
 
                 return true
@@ -408,7 +408,7 @@ proc identical*(x: Value, y: Value): bool {.inline.} =
         if x.kind in [Inline, Block]:
             if x.a.len != y.a.len: return false
 
-            for i,child in x.a:
+            for i, child in mpairs(x.a):
                 if not (child==y.a[i]): 
                     return false
 
