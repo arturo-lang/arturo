@@ -56,7 +56,7 @@ jobs:
             bin/nim c koch
             ./koch tools
             cd nim-1.6.6/bin/
-            nim --version
+            nim --version 
           run: |
             ./build.nims install ${{ matrix.version }} log
             export PATH="$HOME/.arturo/bin:$PATH"
