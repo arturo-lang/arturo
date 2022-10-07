@@ -2634,11 +2634,12 @@ func sameValue*(x: Value, y: Value): bool {.inline.}=
 
                 let xL = cleanX.len
                 let yL = cleanY.len
+
                 if xL != yL: return false
 
                 var i = 0
                 while i < xL:
-                    if not (cleanX[i] == cleanY[i]): return false
+                    if not (sameValue(cleanX[i], cleanY[i])): return false
                     inc(i)
 
                 return true
