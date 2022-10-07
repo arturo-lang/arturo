@@ -304,7 +304,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
         i += 1
 
         while i < n.a.len and not ended:
-            let subnode = n.a[i]
+            let subnode {.cursor.} = n.a[i]
             ret.add(subnode)
 
             case subnode.kind:
