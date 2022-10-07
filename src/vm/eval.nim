@@ -169,7 +169,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
         elif fn == ToF: 
             bt = opTo
             when checkAhead:
-                let nextNode = n.a[i+1]
+                let nextNode {.cursor.} = n.a[i+1]
                 if nextNode.kind==Type:
                     if nextNode.t==String:
                         addToCommand((byte)opToS)
@@ -468,7 +468,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         addConst(consts, node, opLoad)
 
             of Label: 
-                let funcIndx = node.s
+                let funcIndx {.cursor.} = node.s
                 var hasThickArrow = false
                 var ab: seq[Value]
                 var sb: seq[Value]
