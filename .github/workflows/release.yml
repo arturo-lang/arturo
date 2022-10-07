@@ -172,6 +172,7 @@ jobs:
         id: test
         uses: vmactions/freebsd-vm@v0
         with:
+          release: 12.3
           usesh: true
           prepare: pkg install -y nim gmp bash databases/sqlite3
           run: |
