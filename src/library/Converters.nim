@@ -1003,7 +1003,7 @@ proc defineSymbols*() =
 
             var memoize = (hadAttr("memoize"))
             
-            cleanBlock(x.a)
+            cleanBlock(x)
 
             var ret: Value
             var argTypes = initOrderedTable[string,ValueSpec]()
