@@ -590,10 +590,7 @@ func asInt*(v: Value): int {.enforceNoRaises.} =
         result = (int)(v.f)
 
 func getArity*(x: Value): int {.enforceNoRaises.} =
-    if x.fnKind==BuiltinFunction:
-        return x.arity
-    else:
-        return x.params.a.len
+    return x.arity
 
 proc safeMulI*[T: SomeInteger](x: var T, y: T) {.inline, noSideEffect.} =
     x = x * y

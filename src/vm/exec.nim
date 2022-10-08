@@ -57,11 +57,7 @@ proc doExec*(cnst: ValueArray, it: ByteArray, args: Value = nil): ValueDict
 #=======================================
 
 proc setFunctionArity*(funName: string, fun: Value) {.inline,enforceNoRaises.} =
-    Arities[funName] = 
-        if fun.fnKind==BuiltinFunction:
-            fun.arity
-        else:
-            fun.params.a.len
+    Arities[funName] = fun.arity
 
 template doExec*(input: Translation, args: Value = nil): ValueDict =
     doExec(input.constants, input.instructions, args)
@@ -72,11 +68,7 @@ template pushByIndex(idx: int):untyped =
 proc storeByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inline,enforceNoRaises.}=
     hookProcProfiler("exec/storeByIndex"):
         if unlikely(stack.peek(0).kind==Function):
-            Arities[cnst[idx].s] = 
-                if stack.peek(0).fnKind==BuiltinFunction:
-                    stack.peek(0).arity
-                else:
-                    stack.peek(0).params.a.len
+            Arities[cnst[idx].s] = stack.peek(0).arity
 
         Syms[cnst[idx].s] =
             when doPop:
@@ -91,10 +83,8 @@ template loadByIndex(idx: int):untyped =
 template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
     if f.fnKind==UserFunction:
         hookProcProfiler("exec/callFunction:user"):
-            let fArity = f.params.a.len
-            
-            if unlikely(SP<fArity):
-                RuntimeError_NotEnoughArguments(fnName, fArity)
+            if unlikely(SP < f.arity):
+                RuntimeError_NotEnoughArguments(fnName, f.arity)
 
             if unlikely(f.memoize): 
                 execBlock(f.main, args=f.params, hasArgs=true, isFuncBlock=true, imports=f.imports, exports=f.exports, exportable=f.exportable, memoized=newString(fnName), isMemoized=true)
@@ -176,7 +166,7 @@ proc execBlock*(
                 when hasArgs:
                     for i,arg in args.a:          
                         if stack.peek(i).kind==Function:
-                            Arities[arg.s] = stack.peek(i).params.a.len
+                            Arities[arg.s] = stack.peek(i).arity
                         else:
                             Arities.del(arg.s)
 
