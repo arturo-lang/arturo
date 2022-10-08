@@ -309,9 +309,6 @@ type
                         exportable* : bool
                         memoize*    : bool
                     of BuiltinFunction:
-                        # TODO(VM/values/types) `arity` should be common to both User and BuiltIn functions
-                        #  Usually, when we want to get a User function's arity, we access its `params.a.len` - this doesn't make any sense. Plus, it's slower.
-                        #  labels: vm, values, enhancement
                         action*     : BuiltinAction
 
             of Database:
