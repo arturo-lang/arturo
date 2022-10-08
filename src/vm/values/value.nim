@@ -301,10 +301,10 @@ func newLabel*(l: sink string): Value {.inline, enforceNoRaises.} =
     Value(kind: Label, s: l)
 
 func newAttribute*(a: sink string): Value {.inline, enforceNoRaises.} =
-    Value(kind: Attribute, r: a)
+    Value(kind: Attribute, s: a)
 
 func newAttributeLabel*(a: sink string): Value {.inline, enforceNoRaises.} =
-    Value(kind: AttributeLabel, r: a)
+    Value(kind: AttributeLabel, s: a)
 
 func newPath*(p: sink ValueArray): Value {.inline, enforceNoRaises.} =
     Value(kind: Path, p: p)
@@ -523,8 +523,8 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Literal:     result = newLiteral(v.s)
         of Label:       result = newLabel(v.s)
 
-        of Attribute:        result = newAttribute(v.r)
-        of AttributeLabel:   result = newAttributeLabel(v.r)
+        of Attribute:        result = newAttribute(v.s)
+        of AttributeLabel:   result = newAttributeLabel(v.s)
 
         of Path:        result = newPath(v.p)
         of PathLabel:   result = newPathLabel(v.p)
@@ -2130,9 +2130,9 @@ func `$`(v: Value): string {.inline,enforceNoRaises.} =
         of String,
            Word, 
            Literal,
-           Label        : return v.s
-        of Attribute,
-           AttributeLabel    : return v.r
+           Label,
+           Attribute,
+           AttributeLabel        : return v.s
         of Path,
            PathLabel    :
             result = v.p.map((x) => $(x)).join("\\")
@@ -2201,8 +2201,8 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
         else:           stdout.write fmt("{v.s} :{($(v.kind)).toLowerAscii()}")
 
     proc dumpAttribute(v: Value) =
-        if not muted:   stdout.write fmt("{resetColor}{v.r}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
-        else:           stdout.write fmt("{v.r} :{($(v.kind)).toLowerAscii()}")
+        if not muted:   stdout.write fmt("{resetColor}{v.s}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
+        else:           stdout.write fmt("{v.s} :{($(v.kind)).toLowerAscii()}")
 
     proc dumpSymbol(v: Value) =
         if not muted:   stdout.write fmt("{resetColor}{v.m}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
@@ -2486,8 +2486,8 @@ func codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         of Word         : result &= v.s
         of Literal      : result &= "'" & v.s
         of Label        : result &= v.s & ":"
-        of Attribute         : result &= "." & v.r
-        of AttributeLabel    : result &= "." & v.r & ":"
+        of Attribute         : result &= "." & v.s
+        of AttributeLabel    : result &= "." & v.s & ":"
         of Symbol       :  result &= $(v.m)
         of SymbolLiteral: result &= "'" & $(v.m)
         of Quantity     : result &= $(v.nm) & ":" & toLowerAscii($(v.unit.name))
@@ -2619,9 +2619,9 @@ func sameValue*(x: Value, y: Value): bool {.inline.}=
             of String,
                Word,
                Label,
-               Literal: return x.s == y.s
-            of Attribute,
-               AttributeLabel: return x.r == y.r
+               Literal,
+               Attribute,
+               AttributeLabel: return x.s == y.s
             of Symbol,
                SymbolLiteral: return x.m == y.m
             of Quantity: return x.nm == y.nm and x.unit == y.unit
@@ -2706,10 +2706,9 @@ func hash*(v: Value): Hash {.inline.}=
         
         of Word,
            Literal,
-           Label        : result = hash(v.s)
-
-        of Attribute,
-           AttributeLabel    : result = hash(v.r)
+           Label,
+           Attribute,
+           AttributeLabel        : result = hash(v.s)
 
         of Path,
            PathLabel    : 
