@@ -159,7 +159,7 @@ proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
                 if x.fnKind==UserFunction:
                     return x.params == y.params and x.main == y.main and x.exports == y.exports
                 else:
-                    return x.fname == y.fname
+                    return x.action == y.action
             of Database:
                 if x.dbKind != y.dbKind: return false
                 when not defined(NOSQLITE):

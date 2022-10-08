@@ -227,15 +227,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                             evalFunctionCall(symfunc, toHead=false, checkAhead=false):
                                 addConst(consts, aliased.name, opCall)
 
-                            if symfunc.fnKind == BuiltinFunction:
-                                argStack.add(symfunc.arity)
-                            else:
-                                argStack.add(symfunc.params.a.len)
+                            argStack.add(symfunc.arity)
                         else:
-                            if symfunc.fnKind == BuiltinFunction:
-                                subargStack.add(symfunc.arity)
-                            else:
-                                argStack.add(symfunc.params.a.len)
+                            subargStack.add(symfunc.arity)
 
                         when inArrowBlock: ret.add(n.a[i])
                 
@@ -340,10 +334,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         let symfunc {.cursor.} = Syms[aliased.name.s]
                         if symfunc.kind==Function:
                             if aliased.precedence==PrefixPrecedence:
-                                if symfunc.fnKind==BuiltinFunction and symfunc.arity!=0:
+                                if symfunc.arity != 0:
                                     subargStack.add(symfunc.arity)
-                                elif symfunc.fnKind==UserFunction and symfunc.params.a.len!=0:
-                                    subargStack.add(symfunc.params.a.len)
                                 else:
                                     addTerminalValue(true):
                                         discard
@@ -521,7 +513,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                 if not pathCallV.isNil:
                     addConst(consts, pathCallV, opCall)
-                    argStack.add(pathCallV.params.a.len)
+                    argStack.add(pathCallV.arity)
                 else:
                     addTerminalValue(false):
                         addToCommand((byte)opGet)
@@ -614,9 +606,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                                     evalFunctionCall(symfunc, toHead=false, checkAhead=false):
                                         addConst(consts, aliased.name, opCall)
                                     argStack.add(symfunc.arity)
-                                elif symfunc.fnKind == UserFunction and symfunc.params.a.len!=0:
+                                elif symfunc.fnKind == UserFunction and symfunc.arity!=0:
                                     addConst(consts, aliased.name, opCall)
-                                    argStack.add(symfunc.params.a.len)
+                                    argStack.add(symfunc.arity)
                                 else:
                                     addTerminalValue(false):
                                         addConst(consts, aliased.name, opCall)
