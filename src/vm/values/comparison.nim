@@ -111,9 +111,9 @@ proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
             of String,
                Word,
                Label,
-               Literal: return x.s == y.s
-            of Attribute,
-               AttributeLabel: return x.r == y.r
+               Literal,
+               Attribute,
+               AttributeLabel: return x.s == y.s
             of Symbol: return x.m == y.m
             of Regex: return x.rx == y.rx
             of Binary: return x.n == y.n
