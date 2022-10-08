@@ -266,9 +266,9 @@ type
             of String,
                Word,
                Literal,
-               Label:       s*  : string
-            of Attribute,
-               AttributeLabel:   r*  : string
+               Label,
+               Attribute,
+               AttributeLabel:       s*  : string
             of Path,
                PathLabel:   p*  : ValueArray
             of Symbol,

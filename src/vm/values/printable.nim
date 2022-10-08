@@ -160,9 +160,9 @@ proc `$`*(v: Value): string {.inline.} =
         of String,
            Word, 
            Literal,
-           Label        : return v.s
-        of Attribute,
-           AttributeLabel    : return v.r
+           Label,
+           Attribute,
+           AttributeLabel        : return v.s
         of Path,
            PathLabel    :
             result = v.p.map((x) => $(x)).join("\\")

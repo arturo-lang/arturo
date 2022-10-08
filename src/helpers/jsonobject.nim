@@ -44,9 +44,9 @@ proc generateJsonNode*(n: Value): JsonNode =
         of String,
            Word,
            Literal,
-           Label        : result = newJString(n.s)
-        of Attribute,
-           AttributeLabel: result = newJString(n.r)
+           Label,
+           Attribute,
+           AttributeLabel   : result = newJString(n.s)
         of Path,
            PathLabel    : 
            result = newJArray()
@@ -117,9 +117,9 @@ when defined(WEB):
             of String,
                Word,
                Literal,
-               Label        : result = toJs(n.s)
-            of Attribute,
-               AttributeLabel: result = toJs(n.r)
+               Label,
+               Attribute,
+               AttributeLabel   : result = toJs(n.s)
             of Path,
                PathLabel    : 
                 var ret: seq[JsObject] = @[]
