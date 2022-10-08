@@ -289,11 +289,11 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                AttributeLabel:
                 case tp:
                     of String: 
-                        return newString(y.r)
+                        return newString(y.s)
                     of Literal:
-                        return newLiteral(y.r)
+                        return newLiteral(y.s)
                     of Word:
-                        return newWord(y.r)
+                        return newWord(y.s)
                     else:
                         throwCannotConvert()
 
