@@ -434,15 +434,12 @@ proc newObject*(args: ValueDict, prot: Prototype, initializer: proc (self: Value
     initializer(result, prot)
 
 func newFunction*(params: Value, main: Value, imports: Value = nil, exports: Value = nil, exportable: bool = false, memoize: bool = false): Value {.inline, enforceNoRaises.} =
-    Value(kind: Function, fnKind: UserFunction, params: params, main: main, imports: imports, exports: exports, exportable: exportable, memoize: memoize)
+    Value(kind: Function, fnKind: UserFunction, arity: params.a.len, params: params, main: main, imports: imports, exports: exports, exportable: exportable, memoize: memoize)
 
-func newBuiltin*(name: sink string, al: SymbolKind, pr: PrecedenceKind, desc: sink string, ar: int, ag: sink OrderedTable[string,ValueSpec], at: sink OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: sink string, act: BuiltinAction): Value {.inline, enforceNoRaises.} =
+func newBuiltin*(desc: sink string, ar: int, ag: sink OrderedTable[string,ValueSpec], at: sink OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: sink string, act: BuiltinAction): Value {.inline, enforceNoRaises.} =
     Value(
         kind    : Function, 
         fnKind  : BuiltinFunction, 
-        fname   : name, 
-        alias   : al, 
-        prec    : pr,
         info    : desc, 
         arity   : ar, 
         args    : ag, 
@@ -593,10 +590,7 @@ func asInt*(v: Value): int {.enforceNoRaises.} =
         result = (int)(v.f)
 
 func getArity*(x: Value): int {.enforceNoRaises.} =
-    if x.fnKind==BuiltinFunction:
-        return x.arity
-    else:
-        return x.params.a.len
+    return x.arity
 
 proc safeMulI*[T: SomeInteger](x: var T, y: T) {.inline, noSideEffect.} =
     x = x * y
@@ -2660,7 +2654,7 @@ func sameValue*(x: Value, y: Value): bool {.inline.}=
                 if x.fnKind==UserFunction:
                     return sameValue(x.params, y.params) and sameValue(x.main, y.main) and x.exports == y.exports
                 else:
-                    return x.fname == y.fname
+                    return x.action == y.action
             of Binary:
                 return x.n == y.n
             of Bytecode:
