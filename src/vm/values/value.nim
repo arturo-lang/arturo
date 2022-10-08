@@ -436,12 +436,11 @@ proc newObject*(args: ValueDict, prot: Prototype, initializer: proc (self: Value
 func newFunction*(params: Value, main: Value, imports: Value = nil, exports: Value = nil, exportable: bool = false, memoize: bool = false): Value {.inline, enforceNoRaises.} =
     Value(kind: Function, fnKind: UserFunction, params: params, main: main, imports: imports, exports: exports, exportable: exportable, memoize: memoize)
 
-func newBuiltin*(name: sink string, pr: PrecedenceKind, desc: sink string, ar: int, ag: sink OrderedTable[string,ValueSpec], at: sink OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: sink string, act: BuiltinAction): Value {.inline, enforceNoRaises.} =
+func newBuiltin*(name: sink string, desc: sink string, ar: int, ag: sink OrderedTable[string,ValueSpec], at: sink OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: sink string, act: BuiltinAction): Value {.inline, enforceNoRaises.} =
     Value(
         kind    : Function, 
         fnKind  : BuiltinFunction, 
         fname   : name, 
-        prec    : pr,
         info    : desc, 
         arity   : ar, 
         args    : ag, 

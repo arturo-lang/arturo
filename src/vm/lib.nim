@@ -77,7 +77,7 @@ template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, descriptio
         # TODO(VM/lib) Rewrite in a cleaner way
         #  labels: vm, cleanup
         when not defined(WEB):
-            let b = newBuiltin(n, rule, "[" & static (instantiationInfo().filename).replace(".nim") & ":" & $(static (instantiationInfo().line)) & "] " & description, static argsLen, args.toOrderedTable, attrs.toOrderedTable, returns, cleanExample, proc () =
+            let b = newBuiltin(n, "[" & static (instantiationInfo().filename).replace(".nim") & ":" & $(static (instantiationInfo().line)) & "] " & description, static argsLen, args.toOrderedTable, attrs.toOrderedTable, returns, cleanExample, proc () =
                 hookProcProfiler("lib/require"):
                     require(n, args)
 
@@ -89,7 +89,7 @@ template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, descriptio
                 {.emit: "////end: " & static (instantiationInfo().filename).replace(".nim") & "/" & n .}
             )
         else:
-            let b = newBuiltin(n, rule, "", static argsLen, initOrderedTable[string,ValueSpec](), initOrderedTable[string,(ValueSpec,string)](), returns, cleanExample, proc () =
+            let b = newBuiltin(n, "", static argsLen, initOrderedTable[string,ValueSpec](), initOrderedTable[string,(ValueSpec,string)](), returns, cleanExample, proc () =
                 require(n, args)
                 act
             )
