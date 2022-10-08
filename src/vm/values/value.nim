@@ -434,7 +434,7 @@ proc newObject*(args: ValueDict, prot: Prototype, initializer: proc (self: Value
     initializer(result, prot)
 
 func newFunction*(params: Value, main: Value, imports: Value = nil, exports: Value = nil, exportable: bool = false, memoize: bool = false): Value {.inline, enforceNoRaises.} =
-    Value(kind: Function, fnKind: UserFunction, params: params, main: main, imports: imports, exports: exports, exportable: exportable, memoize: memoize)
+    Value(kind: Function, fnKind: UserFunction, arity: params.a.len, params: params, main: main, imports: imports, exports: exports, exportable: exportable, memoize: memoize)
 
 func newBuiltin*(desc: sink string, ar: int, ag: sink OrderedTable[string,ValueSpec], at: sink OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: sink string, act: BuiltinAction): Value {.inline, enforceNoRaises.} =
     Value(
