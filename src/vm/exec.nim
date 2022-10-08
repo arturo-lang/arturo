@@ -115,7 +115,7 @@ template callByIndex(idx: int):untyped =
             callByName(cnst[idx].s)
 
 template fetchAttributeByIndex(idx: int):untyped =
-    stack.pushAttr(cnst[idx].r, move stack.pop())
+    stack.pushAttr(cnst[idx].s, move stack.pop())
 
 ####
 
