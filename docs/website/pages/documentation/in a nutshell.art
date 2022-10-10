@@ -128,6 +128,7 @@ if 2 > 1 [ print "yes!"]    ; yes!
 if 3 <> 2 -> print "true!"  ; true!
 
 ; if/else statements
+; note it's 'if?' not 'if'
 if? 2 > 3 -> print "2 is greater than 3"
 else -> print "2 is not greater than 3"         ; 2 is not greater than 3
 
@@ -135,7 +136,7 @@ else -> print "2 is not greater than 3"         ; 2 is not greater than 3
 switch 2 > 3 -> print "2 is greater than 3"
              -> print "2 is not greater than 3" ; 2 is not greater than 3
 
-a: (2 > 3)["yes"]["no"]         ; a: "no"
+a: (2 > 3)?["yes"]["no"]         ; a: "no"
 a: (2 > 3)? -> "yes" -> "no"    ; a: "no" (exactly the same as above)
 
 ; case/when statements
