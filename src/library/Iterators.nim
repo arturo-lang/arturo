@@ -95,8 +95,12 @@ template iterateThrough(
                         when rolling:
                             if rollingRight: push(res)
 
-                        for item in capturedItems.reversed:
-                            push(item)
+                        var j = indx+argsLen-1
+                        while j >= indx:
+                            push(collection[j])
+                            j -= 1
+                        # for item in capturedItems.reversed:
+                        #     push(item)
 
                         when rolling:
                             if not rollingRight: push(res)
