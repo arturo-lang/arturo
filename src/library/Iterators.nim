@@ -37,7 +37,7 @@ template iterableItemsFromLiteralParam(prm: untyped): ValueArray =
     elif InPlaced.kind==Integer:
         (toSeq(1..InPlaced.i)).map((w) => newInteger(w))
     else: # block or inline
-        cleanedBlock(InPlaced.a)
+        cleanedBlockValuesCopy(InPlaced.a)
 
 template iterableItemsFromParam(prm: untyped): ValueArray =
     if prm.kind==Dictionary: 
@@ -49,7 +49,7 @@ template iterableItemsFromParam(prm: untyped): ValueArray =
     elif prm.kind==Integer:
         (toSeq(1..prm.i)).map((w) => newInteger(w))
     else: # block or inline
-        cleanedBlock(prm.a)
+        cleanedBlockValuesCopy(prm)
 
 template iterateThrough(
     idx: Value, 
@@ -99,8 +99,6 @@ template iterateThrough(
                         while j >= indx:
                             push(collection[j])
                             j -= 1
-                        # for item in capturedItems.reversed:
-                        #     push(item)
 
                         when rolling:
                             if not rollingRight: push(res)
