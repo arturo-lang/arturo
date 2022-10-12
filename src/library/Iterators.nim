@@ -186,8 +186,8 @@ proc defineSymbols*() =
                 else:
                     res.add(newBlock(currentSet))
 
-            if withLiteral: InPlaced = newBlock(res)
-            else: push(newBlock(res))
+            if withLiteral: InPlaced = newBlock(move res)
+            else: push newBlock(res)
 
     builtin "cluster",
         alias       = unaliased, 
@@ -256,8 +256,8 @@ proc defineSymbols*() =
                 for v in sets.values:
                     res.add(newBlock(v))
 
-            if withLiteral: InPlaced = newBlock(res)
-            else: push(newBlock(res))
+            if withLiteral: InPlaced = newBlock(move res)
+            else: push newBlock(res)
 
     builtin "every?",
         alias       = unaliased, 
@@ -404,8 +404,8 @@ proc defineSymbols*() =
             if onlyLast:
                 res.reverse()
 
-            if withLiteral: InPlaced = newBlock(res)
-            else: push(newBlock(res))
+            if withLiteral: InPlaced = newBlock(move res)
+            else: push newBlock(res)
 
     builtin "fold",
         alias       = unaliased, 
@@ -619,8 +619,8 @@ proc defineSymbols*() =
             iterateThrough(withIndex, y, items, doForever, false, false):
                 res.add(move stack.pop())
 
-            if withLiteral: InPlaced = newBlock(res)
-            else: push(newBlock(res))
+            if withLiteral: InPlaced = newBlock(move res)
+            else: push newBlock(res)
 
     builtin "select",
         alias       = unaliased, 
@@ -709,8 +709,8 @@ proc defineSymbols*() =
                     startFrom = rlen-elemLimit
                 res = res[startFrom..rlen-1]
 
-            if withLiteral: InPlaced = newBlock(res)
-            else: push(newBlock(res))
+            if withLiteral: InPlaced = newBlock(move res)
+            else: push newBlock(res)
 
     builtin "some?",
         alias       = unaliased, 
