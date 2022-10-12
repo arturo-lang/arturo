@@ -75,7 +75,7 @@ template iterateThrough(
             if hasArgs and argsLen>1:
                 argsLen -= 1
 
-        var allArgs{.inject.}: Value = newBlock(args)
+        var allArgs: Value = newBlock(args)
 
         var withIndex = false
         if not idx.isNil:
