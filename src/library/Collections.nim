@@ -90,11 +90,10 @@ proc defineSymbols*() =
                 else:
                     if y.kind==Block:
                         ensureCleaned(y)
-                        for item in cleanY:
-                            InPlaced.a.add(item)
-                    else:
-                        InPlaced.a.add(y)
-            else:
+                  SetInPlace(newBlock(cleanAppend(InPlaced.a, y.a)))
+               else:
+                  InPlaced.a.add(y)
+         else:
                 if x.kind==String:
                     if y.kind==String:
                         push(newString(x.s & y.s))
