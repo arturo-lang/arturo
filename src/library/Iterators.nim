@@ -39,7 +39,7 @@ template iterableItemsFromLiteralParam(prm: untyped): ValueArray =
     else: # block or inline
         cleanedBlockValuesCopy(InPlaced())
 
-template iterableItemsFromParam(prm: untyped): ValueArray =
+func iterableItemsFromParam(prm: Value): ValueArray {.inline,enforceNoRaises.} =
     if prm.kind==Dictionary: 
         prm.d.flattenedDictionary()
     elif prm.kind==Object:
