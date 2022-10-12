@@ -58,6 +58,7 @@ template iterateThrough(
     forever: bool,
     rolling: bool,
     rollingRight: bool,
+    capturing: bool,
     performAction: untyped
 ): untyped =
     let collectionLen = collection.len
@@ -82,7 +83,8 @@ template iterateThrough(
             withIndex = true
             allArgs.a.insert(idx,0)
 
-        var capturedItems{.inject}: ValueArray
+        when capturing:
+            var capturedItems{.inject}: ValueArray
 
         var keepGoing{.inject.}: bool = true
         while keepGoing:
@@ -90,7 +92,9 @@ template iterateThrough(
             var run = 0
             while indx+argsLen<=collectionLen:
                 handleBranching:
-                    capturedItems = collection[indx..indx+argsLen-1]
+                    when capturing:
+                        capturedItems = collection[indx..indx+argsLen-1]
+
                     if hasArgs:
                         when rolling:
                             if rollingRight: push(res)
@@ -167,7 +171,7 @@ proc defineSymbols*() =
             var state: Value = VNULL # important
             var currentSet: ValueArray = @[]
 
-            iterateThrough(withIndex, y, items, doForever, false, false):
+            iterateThrough(withIndex, y, items, doForever, false, false, capturing=true):
                 let popped = move stack.pop()
                 if popped != state:
                     if len(currentSet)>0:
@@ -240,7 +244,7 @@ proc defineSymbols*() =
             var res: ValueArray = @[]
             var sets: OrderedTable[Value,ValueArray] = initOrderedTable[Value,ValueArray]()
 
-            iterateThrough(withIndex, y, items, doForever, false, false):
+            iterateThrough(withIndex, y, items, doForever, false, false, capturing=true):
                 let popped = move stack.pop()
                 # TODO(Iterators\cluster) Verify this is working right
                 #  labels: unit-test
@@ -299,7 +303,7 @@ proc defineSymbols*() =
 
             var all = true
 
-            iterateThrough(withIndex, y, items, doForever, false, false):
+            iterateThrough(withIndex, y, items, doForever, false, false, capturing=false):
                 let popped = move stack.pop()
                 if popped.kind==Logical and Not(popped.b)==True:
                     push(newLogical(false))
@@ -386,7 +390,7 @@ proc defineSymbols*() =
 
             var filteredItems = 0
 
-            iterateThrough(withIndex, y, items, doForever, false, false):
+            iterateThrough(withIndex, y, items, doForever, false, false, capturing=true):
                 let popped = move stack.pop()
                 if popped.kind==Logical and Not(popped.b)==True:
                     res.add(capturedItems)
@@ -491,7 +495,7 @@ proc defineSymbols*() =
 
             var res: Value = seed
 
-            iterateThrough(withIndex, y, items, doForever, true, doRightFold):
+            iterateThrough(withIndex, y, items, doForever, true, doRightFold, capturing=false):
                 res = move stack.pop()
 
             if withLiteral: InPlaced = res
@@ -562,7 +566,7 @@ proc defineSymbols*() =
             var items: ValueArray
             items = iterableItemsFromParam(x)
 
-            iterateThrough(withIndex, y, items, doForever, false, false):
+            iterateThrough(withIndex, y, items, doForever, false, false, capturing=false):
                 discard
 
     builtin "map",
@@ -616,7 +620,7 @@ proc defineSymbols*() =
 
             var res: ValueArray = @[]
 
-            iterateThrough(withIndex, y, items, doForever, false, false):
+            iterateThrough(withIndex, y, items, doForever, false, false, capturing=false):
                 res.add(move stack.pop())
 
             if withLiteral: InPlaced = newBlock(move res)
@@ -692,7 +696,7 @@ proc defineSymbols*() =
 
             var res: ValueArray = @[]
 
-            iterateThrough(withIndex, y, items, doForever, false, false):
+            iterateThrough(withIndex, y, items, doForever, false, false, capturing=true):
                 let popped = move stack.pop()
                 if popped.kind==Logical and popped.b==True:
                     res.add(capturedItems)
@@ -755,7 +759,7 @@ proc defineSymbols*() =
 
             var one = false
 
-            iterateThrough(withIndex, y, items, doForever, false, false):
+            iterateThrough(withIndex, y, items, doForever, false, false, capturing=false):
                 let popped = move stack.pop()
                 if popped.kind==Logical and popped.b==True:
                     push(newLogical(true))
