@@ -89,7 +89,9 @@ proc defineSymbols*() =
                         SetInPlace(newString($(InPlaced.c) & $(y.c)))
                 else:
                     if y.kind == Block:
-                        InPlaced = newBlock(cleanAppend(InPlaced.a, y.a))
+                        # TODO(Collections\append) In-place appending should actually work in-place
+                        #  labels: enhancement, library
+                        InPlaced.a = cleanAppend(InPlaced.a, y.a)
                     else:
                         InPlaced.a.add(y)
             else:
