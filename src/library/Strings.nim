@@ -143,10 +143,10 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "convert given string to capitalized",
         args        = {
-            "string": {String,Literal}
+            "string": {String,Char,Literal}
         },
         attrs       = NoAttrs,
-        returns     = {String,Nothing},
+        returns     = {String,Char,Nothing},
         example     = """
             print capitalize "hello World"      ; "Hello World"
             ..........
@@ -155,7 +155,12 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==String: push(newString(x.s.capitalize()))
-            else: InPlace.s = InPlaced.s.capitalize()
+            elif x.kind==Char: push(newChar(x.c.toUpper()))
+            else: 
+                if InPlace.kind==String:
+                    InPlace.s = InPlaced.s.capitalize()
+                else:
+                    InPlaced.c = InPlaced.c.toUpper()
 
     builtin "escape",
         alias       = unaliased, 
