@@ -22,6 +22,7 @@ template cleanBlock*(v: Value) =
     when not defined(NOERRORLINES):
         if v.dirty:
             v.a.keepIf((vv) => vv.kind != Newline)
+            v.dirty = false
     else:
         discard
 
@@ -37,23 +38,31 @@ template cleanedBlock*(va: ValueArray, inplace=false): untyped =
     else:
         va
 
-iterator cleanedBlockValues*(v: Value): lent Value =
-    var i = 0
-    var L = v.a.len
+template cleanedBlockValuesCopy*(v: Value): untyped =
     when not defined(NOERRORLINES):
         if v.dirty:
-            while i < L:
+            cleanedBlockImpl(v.a)
+        else:
+            v.a
+    else:
+        v.a
+
+iterator cleanedBlockValues*(v: Value, L: int): lent Value =
+    when not defined(NOERRORLINES):
+        if v.dirty:
+            for i in 0..L-1:
                 if v.a[i].kind != Newline:
                     yield v.a[i]
-                inc(i)
         else:
-            while i < L:
+            for i in 0..L-1:
                 yield v.a[i]
-                inc(i)
     else:
-        while i < L:
+        for i in 0..L-1:
             yield v.a[i]
-            inc(i)
+
+template cleanedBlockValues*(v: Value): untyped =
+    let l = v.a.len
+    cleanedBlockValues(v, l)
 
 macro ensureCleaned*(name: untyped): untyped =
     let cleanName =  ident("clean" & ($name).capitalizeAscii())

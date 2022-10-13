@@ -37,9 +37,9 @@ template iterableItemsFromLiteralParam(prm: untyped): ValueArray =
     elif InPlaced.kind==Integer:
         (toSeq(1..InPlaced.i)).map((w) => newInteger(w))
     else: # block or inline
-        cleanedBlock(InPlaced.a)
+        cleanedBlockValuesCopy(InPlaced())
 
-template iterableItemsFromParam(prm: untyped): ValueArray =
+func iterableItemsFromParam(prm: Value): ValueArray {.inline,enforceNoRaises.} =
     if prm.kind==Dictionary: 
         prm.d.flattenedDictionary()
     elif prm.kind==Object:
@@ -49,7 +49,7 @@ template iterableItemsFromParam(prm: untyped): ValueArray =
     elif prm.kind==Integer:
         (toSeq(1..prm.i)).map((w) => newInteger(w))
     else: # block or inline
-        cleanedBlock(prm.a)
+        cleanedBlockValuesCopy(prm)
 
 template iterateThrough(
     idx: Value, 
@@ -58,6 +58,7 @@ template iterateThrough(
     forever: bool,
     rolling: bool,
     rollingRight: bool,
+    capturing: bool,
     performAction: untyped
 ): untyped =
     let collectionLen = collection.len
@@ -75,14 +76,15 @@ template iterateThrough(
             if hasArgs and argsLen>1:
                 argsLen -= 1
 
-        var allArgs{.inject.}: Value = newBlock(args)
+        var allArgs: Value = newBlock(args)
 
         var withIndex = false
         if not idx.isNil:
             withIndex = true
             allArgs.a.insert(idx,0)
 
-        var capturedItems{.inject}: ValueArray
+        when capturing:
+            var capturedItems{.inject}: ValueArray
 
         var keepGoing{.inject.}: bool = true
         while keepGoing:
@@ -90,13 +92,17 @@ template iterateThrough(
             var run = 0
             while indx+argsLen<=collectionLen:
                 handleBranching:
-                    capturedItems = collection[indx..indx+argsLen-1]
+                    when capturing:
+                        capturedItems = collection[indx..indx+argsLen-1]
+
                     if hasArgs:
                         when rolling:
                             if rollingRight: push(res)
 
-                        for item in capturedItems.reversed:
-                            push(item)
+                        var j = indx+argsLen-1
+                        while j >= indx:
+                            push(collection[j])
+                            j -= 1
 
                         when rolling:
                             if not rollingRight: push(res)
@@ -104,6 +110,7 @@ template iterateThrough(
                     if withIndex:
                         push(newInteger(run))
 
+                    execBlock(nil, evaluated=preevaled, hasEval=true, args=allArgs, hasArgs=true)
                     performAction
                 do:
                     run += 1
@@ -164,8 +171,7 @@ proc defineSymbols*() =
             var state: Value = VNULL # important
             var currentSet: ValueArray = @[]
 
-            iterateThrough(withIndex, y, items, doForever, false, false):
-                execBlock(nil, evaluated=preevaled, hasEval=true, args=allArgs, hasArgs=true)
+            iterateThrough(withIndex, y, items, doForever, false, false, capturing=true):
                 let popped = move stack.pop()
                 if popped != state:
                     if len(currentSet)>0:
@@ -184,8 +190,8 @@ proc defineSymbols*() =
                 else:
                     res.add(newBlock(currentSet))
 
-            if withLiteral: InPlaced = newBlock(res)
-            else: push(newBlock(res))
+            if withLiteral: InPlaced = newBlock(move res)
+            else: push newBlock(res)
 
     builtin "cluster",
         alias       = unaliased, 
@@ -238,8 +244,7 @@ proc defineSymbols*() =
             var res: ValueArray = @[]
             var sets: OrderedTable[Value,ValueArray] = initOrderedTable[Value,ValueArray]()
 
-            iterateThrough(withIndex, y, items, doForever, false, false):
-                execBlock(nil, evaluated=preevaled, hasEval=true, args=allArgs, hasArgs=true)
+            iterateThrough(withIndex, y, items, doForever, false, false, capturing=true):
                 let popped = move stack.pop()
                 # TODO(Iterators\cluster) Verify this is working right
                 #  labels: unit-test
@@ -255,8 +260,8 @@ proc defineSymbols*() =
                 for v in sets.values:
                     res.add(newBlock(v))
 
-            if withLiteral: InPlaced = newBlock(res)
-            else: push(newBlock(res))
+            if withLiteral: InPlaced = newBlock(move res)
+            else: push newBlock(res)
 
     builtin "every?",
         alias       = unaliased, 
@@ -298,9 +303,7 @@ proc defineSymbols*() =
 
             var all = true
 
-            iterateThrough(withIndex, y, items, doForever, false, false):
-                execBlock(nil, evaluated=preevaled, hasEval=true, args=allArgs, hasArgs=true)
-
+            iterateThrough(withIndex, y, items, doForever, false, false, capturing=false):
                 let popped = move stack.pop()
                 if popped.kind==Logical and Not(popped.b)==True:
                     push(newLogical(false))
@@ -387,8 +390,7 @@ proc defineSymbols*() =
 
             var filteredItems = 0
 
-            iterateThrough(withIndex, y, items, doForever, false, false):
-                execBlock(nil, evaluated=preevaled, hasEval=true, args=allArgs, hasArgs=true)
+            iterateThrough(withIndex, y, items, doForever, false, false, capturing=true):
                 let popped = move stack.pop()
                 if popped.kind==Logical and Not(popped.b)==True:
                     res.add(capturedItems)
@@ -406,8 +408,8 @@ proc defineSymbols*() =
             if onlyLast:
                 res.reverse()
 
-            if withLiteral: InPlaced = newBlock(res)
-            else: push(newBlock(res))
+            if withLiteral: InPlaced = newBlock(move res)
+            else: push newBlock(res)
 
     builtin "fold",
         alias       = unaliased, 
@@ -493,8 +495,7 @@ proc defineSymbols*() =
 
             var res: Value = seed
 
-            iterateThrough(withIndex, y, items, doForever, true, doRightFold):
-                execBlock(nil, evaluated=preevaled, hasEval=true, args=allArgs, hasArgs=true)
+            iterateThrough(withIndex, y, items, doForever, true, doRightFold, capturing=false):
                 res = move stack.pop()
 
             if withLiteral: InPlaced = res
@@ -565,8 +566,8 @@ proc defineSymbols*() =
             var items: ValueArray
             items = iterableItemsFromParam(x)
 
-            iterateThrough(withIndex, y, items, doForever, false, false):
-                execBlock(nil, evaluated=preevaled, hasEval=true, args=allArgs, hasArgs=true)
+            iterateThrough(withIndex, y, items, doForever, false, false, capturing=false):
+                discard
 
     builtin "map",
         alias       = unaliased, 
@@ -619,12 +620,11 @@ proc defineSymbols*() =
 
             var res: ValueArray = @[]
 
-            iterateThrough(withIndex, y, items, doForever, false, false):
-                execBlock(nil, evaluated=preevaled, hasEval=true, args=allArgs, hasArgs=true)
+            iterateThrough(withIndex, y, items, doForever, false, false, capturing=false):
                 res.add(move stack.pop())
 
-            if withLiteral: InPlaced = newBlock(res)
-            else: push(newBlock(res))
+            if withLiteral: InPlaced = newBlock(move res)
+            else: push newBlock(res)
 
     builtin "select",
         alias       = unaliased, 
@@ -696,8 +696,7 @@ proc defineSymbols*() =
 
             var res: ValueArray = @[]
 
-            iterateThrough(withIndex, y, items, doForever, false, false):
-                execBlock(nil, evaluated=preevaled, hasEval=true, args=allArgs, hasArgs=true)
+            iterateThrough(withIndex, y, items, doForever, false, false, capturing=true):
                 let popped = move stack.pop()
                 if popped.kind==Logical and popped.b==True:
                     res.add(capturedItems)
@@ -714,8 +713,8 @@ proc defineSymbols*() =
                     startFrom = rlen-elemLimit
                 res = res[startFrom..rlen-1]
 
-            if withLiteral: InPlaced = newBlock(res)
-            else: push(newBlock(res))
+            if withLiteral: InPlaced = newBlock(move res)
+            else: push newBlock(res)
 
     builtin "some?",
         alias       = unaliased, 
@@ -760,8 +759,7 @@ proc defineSymbols*() =
 
             var one = false
 
-            iterateThrough(withIndex, y, items, doForever, false, false):
-                execBlock(nil, evaluated=preevaled, hasEval=true, args=allArgs, hasArgs=true)
+            iterateThrough(withIndex, y, items, doForever, false, false, capturing=false):
                 let popped = move stack.pop()
                 if popped.kind==Logical and popped.b==True:
                     push(newLogical(true))
