@@ -19,7 +19,7 @@ v0.9.81
 - Collections: added new `combine`, `decouple` & `rotate` methods
 - Converters: added new `in` method
 - Files: added new `hidden?` predicate & `timestamp` method
-- Iterators: added new `chunk` & `cluster` methods
+- Iterators: added new `chunk`, `cluster` & `gather` methods
 - Numbers: added new `factorial` & `lcm` methods
 - Paths: added new `absolute?` method
 - Reflection: added new `bytecode?`, `color?`, `complex?`, `object?`, `quantity?`, `rational?` & `version?` predicates
@@ -51,6 +51,7 @@ v0.9.81
 - Numbers\product: added `.cartesian` option
 - Numbers\range: make function work even with .step =< 0
 - Reflection\info: show origin module for built-in functions/constants
+- Strings\capitalize: added support for `:char` parameters
 
 ### Misc
 
