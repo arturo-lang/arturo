@@ -47,16 +47,16 @@ proc defineSymbols*() =
     #  labels: library, enhancement
 
     builtin "append",
-        alias       = doubleplus, 
-        rule = InfixPrecedence,
+        alias       = doubleplus,
+        rule        = InfixPrecedence,
         description = "append value to given collection",
-        args = {
+        args        = {
             "collection": {String, Char, Block, Binary, Literal},
-            "value": {Any}
+            "value"     : {Any}
         },
-        attrs = NoAttrs,
-        returns = {String, Block, Nothing},
-        example = """
+        attrs       = NoAttrs,
+        returns     = {String, Block, Nothing},
+        example     = """
             append "hell" "o"         ; => "hello"
             append [1 2 3] 4          ; => [1 2 3 4]
             append [1 2 3] [4 5]      ; => [1 2 3 4 5]
@@ -117,15 +117,15 @@ proc defineSymbols*() =
                         push newBlock(cleanAppend(x.a, y))
 
     builtin "chop",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "remove last item from given collection",
-        args = {
+        args        = {
             "collection": {String, Block, Literal}
         },
-        attrs = NoAttrs,
-        returns = {String, Block, Nothing},
-        example = """
+        attrs       = NoAttrs,
+        returns     = {String, Block, Nothing},
+        example     = """
             print chop "books"          ; book
             print chop chop "books"     ; boo
             ..........
@@ -150,19 +150,19 @@ proc defineSymbols*() =
                     else: push(newBlock(cleanX[0..^2]))
 
     builtin "combine",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "get all possible combinations of the elements in given collection",
-        args = {
+        args        = {
             "collection": {Block}
         },
-        attrs = {
-            "by": ({Integer}, "define size of each set"),
-            "repeated": ({Logical}, "allow for combinations with repeated elements"),
-            "count": ({Logical}, "just count the number of combinations")
+        attrs       = {
+            "by"        : ({Integer}, "define size of each set"),
+            "repeated"  : ({Logical}, "allow for combinations with repeated elements"),
+            "count"     : ({Logical}, "just count the number of combinations")
         },
-        returns = {Block, Integer},
-        example = """
+        returns     = {Block, Integer},
+        example     = """
             combine [A B C]
             ; => [[A B C]]
 
@@ -198,18 +198,18 @@ proc defineSymbols*() =
                         z)=>newBlock(z))))
 
     builtin "contains?",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "check if collection contains given value",
-        args = {
+        args        = {
             "collection": {String, Block, Dictionary},
-            "value": {Any}
+            "value"     : {Any}
         },
-        attrs = {
-            "at": ({Integer}, "check at given location within collection")
+        attrs       = {
+            "at"    : ({Integer}, "check at given location within collection")
         },
-        returns = {Logical},
-        example = """
+        returns     = {Logical},
+        example     = """
             arr: [1 2 3 4]
 
             contains? arr 5             ; => false
@@ -275,16 +275,16 @@ proc defineSymbols*() =
                         discard
 
     builtin "couple",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "get combination of elements in given collections as array of tuples",
-        args = {
-            "collectionA": {Block},
-            "collectionB": {Block}
+        args        = {
+            "collectionA"   : {Block},
+            "collectionB"   : {Block}
         },
-        attrs = NoAttrs,
-        returns = {Block},
-        example = """
+        attrs       = NoAttrs,
+        returns     = {Block},
+        example     = """
             couple ["one" "two" "three"] [1 2 3]
             ; => [[1 "one"] [2 "two"] [3 "three"]]
         """:
@@ -294,15 +294,15 @@ proc defineSymbols*() =
             push(newBlock(zip(cleanX, cleanY).map((z)=>newBlock(@[z[0], z[1]]))))
 
     builtin "decouple",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "get tuple of collections from a coupled collection of tuples",
-        args = {
+        args        = {
             "collection": {Block}
         },
-        attrs = NoAttrs,
-        returns = {Block},
-        example = """
+        attrs       = NoAttrs,
+        returns     = {Block},
+        example     = """
             c: couple ["one" "two" "three"] [1 2 3]
             ; c: [[1 "one"] [2 "two"] [3 "three"]]
 
@@ -315,16 +315,16 @@ proc defineSymbols*() =
             push(newBlock(@[newBlock(res[0]), newBlock(res[1])]))
 
     builtin "drop",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "drop first *number* of elements from given collection and return the remaining ones",
-        args = {
+        args        = {
             "collection": {String, Block, Literal},
-            "number": {Integer}
+            "number"    : {Integer}
         },
-        attrs = NoAttrs,
-        returns = {String, Block, Nothing},
-        example = """
+        attrs       = NoAttrs,
+        returns     = {String, Block, Nothing},
+        example     = """
             str: drop "some text" 5
             print str                     ; text
             ..........
@@ -347,15 +347,15 @@ proc defineSymbols*() =
                     else: push(newBlock(cleanX[y.i..^1]))
 
     builtin "empty",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "empty given collection",
-        args = {
+        args        = {
             "collection": {Literal}
         },
-        attrs = NoAttrs,
-        returns = {Nothing},
-        example = """
+        attrs       = NoAttrs,
+        returns     = {Nothing},
+        example     = """
             a: [1 2 3]
             empty 'a              ; a: []
             ..........
@@ -370,15 +370,15 @@ proc defineSymbols*() =
                 else: discard
 
     builtin "empty?",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "check if given collection is empty",
-        args = {
+        args        = {
             "collection": {String, Block, Dictionary, Null}
         },
-        attrs = NoAttrs,
-        returns = {Logical},
-        example = """
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
             empty? ""             ; => true
             empty? []             ; => true
             empty? #[]            ; => true
@@ -396,16 +396,16 @@ proc defineSymbols*() =
                 else: discard
 
     builtin "extend",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "get new dictionary by merging given ones",
-        args = {
-            "parent": {Dictionary},
+        args        = {
+            "parent"    : {Dictionary},
             "additional": {Dictionary}
         },
-        attrs = NoAttrs,
-        returns = {Dictionary},
-        example = """
+        attrs       = NoAttrs,
+        returns     = {Dictionary},
+        example     = """
             person: #[ name: "john" surname: "doe" ]
 
             print extend person #[ age: 35 ]
@@ -424,17 +424,17 @@ proc defineSymbols*() =
                 push(res)
 
     builtin "first",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "return the first item of the given collection",
-        args = {
+        args        = {
             "collection": {String, Block}
         },
-        attrs = {
-            "n": ({Integer}, "get first *n* items")
+        attrs       = {
+            "n"     : ({Integer}, "get first *n* items")
         },
-        returns = {Any, Null},
-        example = """
+        returns     = {Any, Null},
+        example     = """
             print first "this is some text"       ; t
             print first ["one" "two" "three"]     ; one
             ..........
@@ -459,18 +459,18 @@ proc defineSymbols*() =
                     else: push(cleanX[0])
 
     builtin "flatten",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "flatten given collection by eliminating nested blocks",
-        args = {
+        args        = {
             "collection": {Block},
 
         },
-        attrs = {
-            "once": ({Logical}, "do not perform recursive flattening")
+        attrs       = {
+            "once"  : ({Logical}, "do not perform recursive flattening")
         },
-        returns = {Block},
-        example = """
+        returns     = {Block},
+        example     = """
             arr: [[1 2 3] [4 5 6]]
             print flatten arr
             ; 1 2 3 4 5 6
@@ -492,17 +492,17 @@ proc defineSymbols*() =
                 push(newBlock(cleanedBlock(x.a)).flattened(once = hadAttr("once")))
 
     builtin "get",
-        alias = unaliased,
-        rule = InfixPrecedence,
+        alias       = unaliased,
+        rule        = InfixPrecedence,
         description = "get collection's item by given index",
-        args = {
+        args        = {
             "collection": {String, Block, Dictionary, Object, Date, Binary,
                     Bytecode},
-            "index": {Any}
+            "index"     : {Any}
         },
-        attrs = NoAttrs,
-        returns = {Any},
-        example = """
+        attrs       = NoAttrs,
+        returns     = {Any},
+        example     = """
             user: #[
                 name: "John"
                 surname: "Doe"
@@ -563,18 +563,18 @@ proc defineSymbols*() =
                 else: discard
 
     builtin "in?",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "check if value exists in given collection",
-        args = {
-            "value": {Any},
+        args        = {
+            "value"     : {Any},
             "collection": {String, Block, Dictionary}
         },
-        attrs = {
-            "at": ({Integer}, "check at given location within collection")
+        attrs       = {
+            "at"    : ({Integer}, "check at given location within collection")
         },
-        returns = {Logical},
-        example = """
+        returns     = {Logical},
+        example     = """
             arr: [1 2 3 4]
 
             in? 5 arr             ; => false
@@ -639,16 +639,16 @@ proc defineSymbols*() =
                         discard
 
     builtin "index",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "return first index of value in given collection",
-        args = {
+        args        = {
             "collection": {String, Block, Dictionary},
-            "value": {Any}
+            "value"     : {Any}
         },
-        attrs = NoAttrs,
-        returns = {Integer, String, Null},
-        example = """
+        attrs       = NoAttrs,
+        returns     = {Integer, String, Null},
+        example     = """
             ind: index "hello" "e"
             print ind                 ; 1
             ..........
@@ -681,17 +681,17 @@ proc defineSymbols*() =
                 else: discard
 
     builtin "insert",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "insert value in collection at given index",
-        args = {
+        args        = {
             "collection": {String, Block, Dictionary, Literal},
-            "index": {Integer, String},
-            "value": {Any}
+            "index"     : {Integer, String},
+            "value"     : {Any}
         },
-        attrs = NoAttrs,
-        returns = {String, Block, Dictionary, Nothing},
-        example = """
+        attrs       = NoAttrs,
+        returns     = {String, Block, Dictionary, Nothing},
+        example     = """
             insert [1 2 3 4] 0 "zero"
             ; => ["zero" 1 2 3 4]
 
@@ -730,16 +730,16 @@ proc defineSymbols*() =
                     else: discard
 
     builtin "key?",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "check if collection contains given key",
-        args = {
+        args        = {
             "collection": {Dictionary, Object},
-            "key": {Any}
+            "key"       : {Any}
         },
-        attrs = NoAttrs,
-        returns = {Logical},
-        example = """
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
             user: #[
                 name: "John"
                 surname: "Doe"
@@ -762,15 +762,15 @@ proc defineSymbols*() =
                 push(newLogical(x.o.hasKey(needle)))
 
     builtin "keys",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "get list of keys for given collection",
-        args = {
+        args        = {
             "dictionary": {Dictionary, Object}
         },
-        attrs = NoAttrs,
-        returns = {Block},
-        example = """
+        attrs       = NoAttrs,
+        returns     = {Block},
+        example     = """
             user: #[
                 name: "John"
                 surname: "Doe"
@@ -789,17 +789,17 @@ proc defineSymbols*() =
             push(newStringBlock(s))
 
     builtin "last",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "return the last item of the given collection",
-        args = {
+        args        = {
             "collection": {String, Block}
         },
-        attrs = {
-            "n": ({Integer}, "get last *n* items")
+        attrs       = {
+            "n"     : ({Integer}, "get last *n* items")
         },
-        returns = {Any, Null},
-        example = """
+        returns     = {Any, Null},
+        example     = """
             print last "this is some text"       ; t
             print last ["one" "two" "three"]     ; three
             ..........
@@ -824,17 +824,17 @@ proc defineSymbols*() =
                     else: push(cleanX[cleanX.len-1])
 
     builtin "max",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "get maximum element in given collection",
-        args = {
+        args        = {
             "collection": {Block}
         },
-        attrs = {
-            "index": ({Logical}, "retrieve index of maximum element"),
+        attrs       = {
+            "index" : ({Logical}, "retrieve index of maximum element"),
         },
-        returns = {Any, Null},
-        example = """
+        returns     = {Any, Null},
+        example     = """
             print max [4 2 8 5 1 9]       ; 9
         """:
             ##########################################################
@@ -862,17 +862,17 @@ proc defineSymbols*() =
                     push(maxElement)
 
     builtin "min",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "get minimum element in given collection",
-        args = {
+        args        = {
             "collection": {Block}
         },
-        attrs = {
-            "index": ({Logical}, "retrieve index of minimum element"),
+        attrs       = {
+            "index" : ({Logical}, "retrieve index of minimum element"),
         },
-        returns = {Any, Null},
-        example = """
+        returns     = {Any, Null},
+        example     = """
             print min [4 2 8 5 1 9]       ; 1
         """:
             ##########################################################
@@ -900,19 +900,19 @@ proc defineSymbols*() =
                     push(minElement)
 
     builtin "permutate",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "get all possible permutations of the elements in given collection",
-        args = {
+        args        = {
             "collection": {Block}
         },
-        attrs = {
-            "by": ({Integer}, "define size of each set"),
-            "repeated": ({Logical}, "allow for permutations with repeated elements"),
-            "count": ({Logical}, "just count the number of permutations")
+        attrs       = {
+            "by"        : ({Integer}, "define size of each set"),
+            "repeated"  : ({Logical}, "allow for permutations with repeated elements"),
+            "count"     : ({Logical}, "just count the number of permutations")
         },
-        returns = {Block},
-        example = """
+        returns     = {Block},
+        example     = """
             permutate [A B C]
             ; => [[A B C] [A C B] [B A C] [B C A] [C A B] [C B A]]
 
@@ -948,22 +948,22 @@ proc defineSymbols*() =
                         z)=>newBlock(z))))
 
     builtin "remove",
-        alias = doubleminus,
-        rule = InfixPrecedence,
+        alias       = doubleminus,
+        rule        = InfixPrecedence,
         description = "remove value from given collection",
-        args = {
+        args        = {
             "collection": {String, Block, Dictionary, Literal},
-            "value": {Any}
+            "value"     : {Any}
         },
-        attrs = {
-            "key": ({Logical}, "remove dictionary key"),
-            "once": ({Logical}, "remove only first occurence"),
-            "index": ({Logical}, "remove specific index"),
+        attrs       = {
+            "key"   : ({Logical}, "remove dictionary key"),
+            "once"  : ({Logical}, "remove only first occurence"),
+            "index" : ({Logical}, "remove specific index"),
             "prefix": ({Logical}, "remove first matching prefix from string"),
             "suffix": ({Logical}, "remove first matching suffix from string")
         },
-        returns = {String, Block, Dictionary, Nothing},
-        example = """
+        returns     = {String, Block, Dictionary, Nothing},
+        example     = """
             remove "hello" "l"        ; => "heo"
             print "hello" -- "l"      ; heo
             ..........
@@ -1030,16 +1030,16 @@ proc defineSymbols*() =
                         push(newDictionary(x.d.removeAll(y, key)))
 
     builtin "repeat",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "repeat value the given number of times and return new one",
-        args = {
-            "value": {Any, Literal},
-            "times": {Integer}
+        args        = {
+            "value" : {Any, Literal},
+            "times" : {Integer}
         },
-        attrs = NoAttrs,
-        returns = {String, Block},
-        example = """
+        attrs       = NoAttrs,
+        returns     = {String, Block},
+        example     = """
             print repeat "hello" 3
             ; hellohellohello
             ..........
@@ -1070,15 +1070,15 @@ proc defineSymbols*() =
                     push(newBlock(safeRepeat(x, y.i)))
 
     builtin "reverse",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "reverse given collection",
-        args = {
+        args        = {
             "collection": {String, Block, Literal}
         },
-        attrs = NoAttrs,
-        returns = {String, Block, Nothing},
-        example = """
+        attrs       = NoAttrs,
+        returns     = {String, Block, Nothing},
+        example     = """
             print reverse [1 2 3 4]           ; 4 3 2 1
             print reverse "Hello World"       ; dlroW olleH
             ..........
@@ -1108,18 +1108,18 @@ proc defineSymbols*() =
                 elif x.kind == String: push(newString(x.s.reversed))
 
     builtin "rotate",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "right-rotate collection by given distance",
-        args = {
+        args        = {
             "collection": {String, Block, Literal},
-            "distance": {Integer}
+            "distance"  : {Integer}
         },
-        attrs = {
-            "left": ({Logical}, "left rotation")
+        attrs       = {
+            "left"  : ({Logical}, "left rotation")
         },
-        returns = {String, Block, Nothing},
-        example = """
+        returns     = {String, Block, Nothing},
+        example     = """
             rotate [a b c d e] 1            ; => [e a b c d]
             rotate.left [a b c d e] 1       ; => [b c d e a]
 
@@ -1143,15 +1143,15 @@ proc defineSymbols*() =
                     push(newBlock(cleanX.rotatedLeft(distance)))
 
     builtin "sample",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "get a random element from given collection",
-        args = {
+        args        = {
             "collection": {Block}
         },
-        attrs = NoAttrs,
-        returns = {Any, Null},
-        example = """
+        attrs       = NoAttrs,
+        returns     = {Any, Null},
+        example     = """
             sample [1 2 3]        ; (return a random number from 1 to 3)
             print sample ["apple" "appricot" "banana"]
             ; apple
@@ -1162,18 +1162,18 @@ proc defineSymbols*() =
             else: push(sample(cleanX))
 
     builtin "set",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "set collection's item at index to given value",
-        args = {
+        args        = {
             "collection": {String, Block, Dictionary, Object, Binary,
                     Bytecode},
-            "index": {Any},
-            "value": {Any}
+            "index"     : {Any},
+            "value"     : {Any}
         },
-        attrs = NoAttrs,
-        returns = {Nothing},
-        example = """
+        attrs       = NoAttrs,
+        returns     = {Nothing},
+        example     = """
             myDict: #[
                 name: "John"
                 age: 34
@@ -1240,15 +1240,15 @@ proc defineSymbols*() =
                 else: discard
 
     builtin "shuffle",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "get given collection shuffled",
-        args = {
+        args        = {
             "collection": {Block, Literal}
         },
-        attrs = NoAttrs,
-        returns = {Block, Nothing},
-        example = """
+        attrs       = NoAttrs,
+        returns     = {Block, Nothing},
+        example     = """
             shuffle [1 2 3 4 5 6]         ; => [1 5 6 2 3 4 ]
             ..........
             arr: [2 5 9]
@@ -1263,15 +1263,15 @@ proc defineSymbols*() =
                 push(newBlock(cleanX.dup(shuffle)))
 
     builtin "size",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "get size/length of given collection",
-        args = {
+        args        = {
             "collection": {String, Block, Dictionary, Object}
         },
-        attrs = NoAttrs,
-        returns = {Integer},
-        example = """
+        attrs       = NoAttrs,
+        returns     = {Integer},
+        example     = """
             arr: ["one" "two" "three"]
             print size arr                ; 3
             ..........
@@ -1295,17 +1295,17 @@ proc defineSymbols*() =
                 push(newInteger(cleanX.len))
 
     builtin "slice",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "get a slice of collection between given indices",
-        args = {
+        args        = {
             "collection": {String, Block},
-            "from": {Integer},
-            "to": {Integer}
+            "from"      : {Integer},
+            "to"        : {Integer}
         },
-        attrs = NoAttrs,
-        returns = {String, Block},
-        example = """
+        attrs       = NoAttrs,
+        returns     = {String, Block},
+        example     = """
             slice "Hello" 0 3             ; => "Hell"
             ..........
             print slice 1..10 3 4         ; 4 5
@@ -1326,22 +1326,22 @@ proc defineSymbols*() =
                     push(newBlock())
 
     builtin "sort",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "sort given block in ascending order",
-        args = {
+        args        = {
             "collection": {Block, Dictionary, Literal}
         },
-        attrs = {
-            "as": ({Literal}, "localized by ISO 639-1 language code"),
-            "sensitive": ({Logical}, "case-sensitive sorting"),
+        attrs       = {
+            "as"        : ({Literal}, "localized by ISO 639-1 language code"),
+            "sensitive" : ({Logical}, "case-sensitive sorting"),
             "descending": ({Logical}, "sort in ascending order"),
-            "ascii": ({Logical}, "sort by ASCII transliterations"),
-            "values": ({Logical}, "sort dictionary by values"),
-            "by": ({String, Literal}, "sort array of collections by given key")
+            "ascii"     : ({Logical}, "sort by ASCII transliterations"),
+            "values"    : ({Logical}, "sort dictionary by values"),
+            "by"        : ({String, Literal}, "sort array of collections by given key")
         },
-        returns = {Block, Nothing},
-        example = """
+        returns     = {Block, Nothing},
+        example     = """
             a: [3 1 6]
             print sort a                  ; 1 3 6
             ..........
@@ -1441,17 +1441,17 @@ proc defineSymbols*() =
                         InPlaced.d.sort(system.cmp, order = sortOrdering)
 
     builtin "sorted?",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "check if given collection is already sorted",
-        args = {
+        args        = {
             "collection": {Block}
         },
-        attrs = {
+        attrs       = {
             "descending": ({Logical}, "check for sorting in ascending order")
         },
-        returns = {Logical},
-        example = """
+        returns     = {Logical},
+        example     = """
             sorted? [1 2 3 4 5]         ; => true
             sorted? [4 3 2 1 5]         ; => false
             sorted? [5 4 3 2 1]         ; => false
@@ -1473,22 +1473,22 @@ proc defineSymbols*() =
     #  Currently, simple split works fine - but using different attributes (at, every, by, etc) doesn't
     #  labels: library,bug
     builtin "split",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "split collection to components",
-        args = {
+        args        = {
             "collection": {String, Block, Literal}
         },
-        attrs = {
-            "words": ({Logical}, "split string by whitespace"),
-            "lines": ({Logical}, "split string by lines"),
-            "by": ({String, Regex, Block}, "split using given separator"),
-            "at": ({Integer}, "split collection at given position"),
-            "every": ({Integer}, "split collection every *n* elements"),
-            "path": ({Logical}, "split path components in string")
+        attrs       = {
+            "words" : ({Logical}, "split string by whitespace"),
+            "lines" : ({Logical}, "split string by lines"),
+            "by"    : ({String, Regex, Block}, "split using given separator"),
+            "at"    : ({Integer}, "split collection at given position"),
+            "every" : ({Integer}, "split collection every *n* elements"),
+            "path"  : ({Logical}, "split path components in string")
         },
-        returns = {Block, Nothing},
-        example = """
+        returns     = {Block, Nothing},
+        example     = """
             split "hello"                 ; => [`h` `e` `l` `l` `o`]
             ..........
             split.words "hello world"     ; => ["hello" "world"]
@@ -1604,15 +1604,15 @@ proc defineSymbols*() =
                 else: push(x)
 
     builtin "squeeze",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "reduce adjacent elements in given collection",
-        args = {
+        args        = {
             "collection": {String, Block, Literal}
         },
-        attrs = NoAttrs,
-        returns = {String, Block, Nothing},
-        example = """
+        attrs       = NoAttrs,
+        returns     = {String, Block, Nothing},
+        example     = """
             print squeeze [1 1 2 3 4 2 3 4 4 5 5 6 7]
             ; 1 2 3 4 2 3 4 5 6 7
             ..........
@@ -1665,16 +1665,16 @@ proc defineSymbols*() =
                     push(newBlock(ret))
 
     builtin "take",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "keep first <number> of elements from given collection and return the remaining ones",
-        args = {
+        args        = {
             "collection": {String, Block, Literal},
-            "number": {Integer}
+            "number"    : {Integer}
         },
-        attrs = NoAttrs,
-        returns = {String, Block, Nothing},
-        example = """
+        attrs       = NoAttrs,
+        returns     = {String, Block, Nothing},
+        example     = """
             str: take "some text" 5
             print str                     ; some
             ..........
@@ -1710,17 +1710,17 @@ proc defineSymbols*() =
                         push(newBlock(cleanX[0..upperLimit]))
 
     builtin "unique",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "get given block without duplicates",
-        args = {
+        args        = {
             "collection": {String, Block, Literal}
         },
-        attrs = {
-            "id": ({Logical}, "generate unique id using given prefix"),
+        attrs       = {
+            "id"    : ({Logical}, "generate unique id using given prefix"),
         },
-        returns = {Block, Nothing},
-        example = """
+        returns     = {Block, Nothing},
+        example     = """
             arr: [1 2 4 1 3 2]
             print unique arr              ; 1 2 4 3
             ..........
@@ -1741,15 +1741,15 @@ proc defineSymbols*() =
                 else: InPlace.a = InPlaced.a.deduplicated()
 
     builtin "values",
-        alias = unaliased,
-        rule = PrefixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "get list of values for given collection",
-        args = {
+        args        = {
             "dictionary": {Block, Dictionary, Object}
         },
-        attrs = NoAttrs,
-        returns = {Block},
-        example = """
+        attrs       = NoAttrs,
+        returns     = {Block},
+        example     = """
             user: #[
                 name: "John"
                 surname: "Doe"
