@@ -155,6 +155,30 @@ proc deduplicated*[T](s: openArray[T], isSorted: bool = false): seq[T] =
       for itm in items(s):
         if not result.contains(itm): result.add(itm)
 
+# Backward compatibility
+proc cleanAppend*(s: ValueArray, t: ValueArray): ValueArray {.inline,enforceNoRaises.} =
+    result = newSeq[Value](len(s) + len(t))
+    var cnt = 0
+    for i in s:
+        when not defined(NOERRORLINES):
+            if i.kind != Newline:
+                result[cnt] = i
+                cnt += 1
+        else:
+            result[cnt] = i
+            cnt += 1
+
+    for i in t:
+        when not defined(NOERRORLINES):
+            if i.kind != Newline:
+                result[cnt] = i
+                cnt += 1
+        else:
+            result[cnt] = i
+            cnt += 1
+
+    setLen(result, cnt)
+
 func cleanAppend*(s: Value, t: Value, singleValue: static bool = false): ValueArray {.inline,enforceNoRaises.} =
     let L1 = len(s.a)
     when not singleValue:
