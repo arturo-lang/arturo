@@ -47,7 +47,7 @@ proc defineSymbols*() =
     #  labels: library, enhancement
 
     builtin "append",
-        alias = doubleplus,
+        alias       = doubleplus, 
         rule = InfixPrecedence,
         description = "append value to given collection",
         args = {
