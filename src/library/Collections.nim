@@ -89,7 +89,6 @@ proc defineSymbols*() =
                         SetInPlace(newString($(InPlaced.c) & $(y.c)))
                 else:
                     if y.kind == Block:
-                        ensureCleaned(y)
                         InPlaced = newBlock(cleanAppend(InPlaced.a, y.a))
                     else:
                         InPlaced.a.add(y)
