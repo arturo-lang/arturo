@@ -507,6 +507,45 @@ proc defineSymbols*() =
             if withLiteral: InPlaced = res
             else: push(res)
 
+    builtin "gather",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "group together items in collection by block result and return dictionary",
+        args        = {
+            "collection"    : {Integer,String,Block,Inline,Dictionary,Object,Literal},
+            "params"        : {Literal,Block,Null},
+            "condition"     : {Block,Bytecode}
+        },
+        attrs       = {
+            "with"  : ({Literal},"use given index")
+        },
+        returns     = {Dictionary,Nothing},
+        # TODO(Iterators\gather) Add documentation example
+        #  labels: documentation, library, easy
+        example     = """
+        """:
+            ##########################################################
+            let preevaled = evalOrGet(z)
+            let withIndex = popAttr("with")
+            let doForever = false
+
+            var items: ValueArray
+
+            let withLiteral = x.kind==Literal
+            if withLiteral: items = iterableItemsFromLiteralParam(x)
+            else: items = iterableItemsFromParam(x)
+
+            var res: ValueDict = initOrderedTable[string,Value]()
+
+            iterateThrough(withIndex, y, items, doForever, false, false, capturing=true):
+                let popped = $(move stack.pop())
+
+                discard res.hasKeyOrPut(popped, newBlock())
+                res[popped].a.add(capturedItems)
+
+            if withLiteral: InPlaced = newDictionary(move res)
+            else: push newDictionary(res)
+
     builtin "loop",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
