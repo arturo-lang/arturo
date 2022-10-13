@@ -127,11 +127,6 @@ template iterateThrough(
 #  a nice name could be `arrange`
 #  labels: library, enhancement
 
-# TODO(Iterators) Add Ruby's equivalent of `group_by`
-#   a nice name could be `gather` - and the implementation should very similar to `cluster`
-#   or more like `dictionary.raw flatten.once cluster.value ARR BLK`
-#  labels: library, enhancement
-
 proc defineSymbols*() =
 
     when defined(VERBOSE):
@@ -510,7 +505,7 @@ proc defineSymbols*() =
     builtin "gather",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "group together items in collection by block result and return dictionary",
+        description = "group items in collection by block result and return dictionary",
         args        = {
             "collection"    : {Integer,String,Block,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
