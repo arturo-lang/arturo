@@ -123,6 +123,15 @@ template iterateThrough(
 # Methods
 #=======================================
 
+# TODO(Iterators) Add Ruby's equivalent of `sort_by`
+#  a nice name could be `arrange`
+#  labels: library, enhancement
+
+# TODO(Iterators) Add Ruby's equivalent of `group_by`
+#   a nice name could be `gather` - and the implementation should very similar to `cluster`
+#   or more like `dictionary.raw flatten.once cluster.value ARR BLK`
+#  labels: library, enhancement
+
 proc defineSymbols*() =
 
     when defined(VERBOSE):
