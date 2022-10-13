@@ -55,7 +55,7 @@ proc defineSymbols*() =
             var allOK = true
 
             for item in cleanX:
-                var val: Value
+                var val {.cursor.}: Value
                 if item.kind == Block: 
                     execBlock(item)
                     val = pop()
