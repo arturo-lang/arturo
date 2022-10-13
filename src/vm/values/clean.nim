@@ -47,23 +47,22 @@ template cleanedBlockValuesCopy*(v: Value): untyped =
     else:
         v.a
 
-# iterator cleanedBlockValues*(v: Value): lent Value =
-#     var i = 0
-#     var L = v.a.len
-#     when not defined(NOERRORLINES):
-#         if v.dirty:
-#             while i < L:
-#                 if v.a[i].kind != Newline:
-#                     yield v.a[i]
-#                 inc(i)
-#         else:
-#             while i < L:
-#                 yield v.a[i]
-#                 inc(i)
-#     else:
-#         while i < L:
-#             yield v.a[i]
-#             inc(i)
+iterator cleanedBlockValues*(v: Value, L: int): lent Value =
+    when not defined(NOERRORLINES):
+        if v.dirty:
+            for i in 0..L-1:
+                if v.a[i].kind != Newline:
+                    yield v.a[i]
+        else:
+            for i in 0..L-1:
+                yield v.a[i]
+    else:
+        for i in 0..L-1:
+            yield v.a[i]
+
+template cleanedBlockValues*(v: Value): untyped =
+    let l = v.a.len
+    cleanedBlockValues(v, l)
 
 macro ensureCleaned*(name: untyped): untyped =
     let cleanName =  ident("clean" & ($name).capitalizeAscii())
