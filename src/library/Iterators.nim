@@ -505,7 +505,7 @@ proc defineSymbols*() =
     builtin "gather",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "group items in collection by block result and return dictionary",
+        description = "group items in collection by block result and return as dictionary",
         args        = {
             "collection"    : {Integer,String,Block,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
