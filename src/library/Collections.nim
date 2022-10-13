@@ -90,7 +90,7 @@ proc defineSymbols*() =
                 else:
                     if y.kind == Block:
                         ensureCleaned(y)
-                        SetInPlace(newBlock(cleanAppend(InPlaced.a, y.a)))
+                        InPlaced = newBlock(cleanAppend(InPlaced.a, y.a))
                     else:
                         InPlaced.a.add(y)
             else:
