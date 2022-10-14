@@ -39,7 +39,7 @@ func Not*(x: logical): logical {.enforceNoRaises.} =
     elif x==False: return True
     else: return Maybe
 
-proc Not*(x: Value): logical {.inline,enforceNoRaises.} =
+proc Not*(x: Value): Value {.inline,enforceNoRaises.} =
     let xb = x.b
     if xb==True: return VFALSE
     elif xb==False: return VTRUE
