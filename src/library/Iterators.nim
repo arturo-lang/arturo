@@ -487,7 +487,7 @@ proc defineSymbols*() =
 
             var seed = I0
             if items.len > 0:
-                if items[0].kind == String:     seed = newString("")
+                if items[0].kind == String:     seed = VEMPTYSTR
                 elif items[0].kind == Floating: seed = newFloating(0.0)
                 elif items[0].kind == Block:    seed = VEMPTYARR
 

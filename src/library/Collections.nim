@@ -437,7 +437,7 @@ proc defineSymbols*() =
             ##########################################################
             if checkAttr("n"):
                 if x.kind == String:
-                    if x.s.len == 0: push(newString(""))
+                    if x.s.len == 0: push(VEMPTYSTR)
                     else: push(newString(x.s[0..aN.i-1]))
                 else:
                     ensureCleaned(x)
@@ -802,7 +802,7 @@ proc defineSymbols*() =
             ##########################################################
             if checkAttr("n"):
                 if x.kind == String:
-                    if x.s.len == 0: push(newString(""))
+                    if x.s.len == 0: push(VEMPTYSTR)
                     else: push(newString(x.s[x.s.len-aN.i..^1]))
                 else:
                     ensureCleaned(x)
@@ -1306,12 +1306,12 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind == String:
-                if x.s.len == 0: push(newString(""))
+                if x.s.len == 0: push(VEMPTYSTR)
                 else:
                     if y.i >= 0 and z.i <= x.s.runeLen:
                         push(newString(x.s.runeSubStr(y.i, z.i-y.i+1)))
                     else:
-                        push(newString(""))
+                        push(VEMPTYSTR)
             else:
                 ensureCleaned(x)
                 if y.i >= 0 and z.i <= cleanX.len-1:
@@ -1690,7 +1690,7 @@ proc defineSymbols*() =
                         InPlaced.a = InPlaced.a[0..upperLimit]
             else:
                 if x.kind == String:
-                    if x.s.len == 0: push(newString(""))
+                    if x.s.len == 0: push(VEMPTYSTR)
                     else:
                         if upperLimit > x.s.len - 1:
                             upperLimit = x.s.len-1

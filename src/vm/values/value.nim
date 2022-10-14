@@ -489,7 +489,7 @@ proc newStringDictionary*(a: TableRef[string, seq[string]], collapseBlocks=false
             if v.len==1:
                 result.d[k] = newString(v[0])
             elif v.len==0:
-                result.d[k] = newString("")
+                result.d[k] = VEMPTYSTR
             else:
                 result.d[k] = newStringBlock(v)
         else:
