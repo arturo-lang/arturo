@@ -51,5 +51,16 @@ func Or*(x,y: logical): logical {.enforceNoRaises.} =
     if x==False and y==False: return False
     else: return Maybe
 
+proc Or*(x: Value, y: Value): Value {.enforceNoRaises.} =
+    let xb = x.b
+    if xb==True: return VTRUE
+    let yb = y.b
+    if yb==True: return VTRUE
+    if xb==False and yb==False: return VFALSE
+    else: return VMAYBE
+
 func Xor*(x,y: logical): logical {.enforceNoRaises.} =
+    return And(Or(x,y),Not(And(x,y)))
+
+proc Xor*(x: Value, y: Value): Value {.inline,enforceNoRaises.} =
     return And(Or(x,y),Not(And(x,y)))
