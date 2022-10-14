@@ -819,7 +819,7 @@ proc defineSymbols*() =
 
                 let top = sTop()
 
-                var newb: Value = VEMPTYARR
+                var newb: Value = newBlock()
                 for old in top.a:
                     newb.a.add(old)
                 for cond in cleanX:

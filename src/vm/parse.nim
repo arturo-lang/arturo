@@ -955,7 +955,7 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
     return topBlock
 
 proc parseAsDictionary(blk: Value, start: int): Value =
-    result = VEMPTYDICT
+    result = newDictionary()
     var i = start
     while i < blk.a.len:
         case blk.a[i].kind:
@@ -985,7 +985,7 @@ proc parseAsDictionary(blk: Value, start: int): Value =
             i += 1
 
 proc parseAsBlock(blk: Value, start: int): Value =
-    result = VEMPTYARR
+    result = newBlock()
     var i = start
     var values: ValueArray = @[]
     while i < blk.a.len:

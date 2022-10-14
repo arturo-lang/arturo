@@ -30,8 +30,8 @@ when not defined(NOPARSERS):
         if items.len == 1 and items[0].kind == xnText:
             return newString(items[0].text)
 
-        var children = VEMPTYARR
-        result = VEMPTYDICT
+        var children = newBlock()
+        result = newDictionary()
         for child in n.items:
             let subtags = toSeq(n.items).map((x) => x.tag)
             if count(subtags, child.tag)>1:

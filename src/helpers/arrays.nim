@@ -23,7 +23,7 @@ import vm/values/clean
 # TODO(Helpers\arrays) verify/debug implementation for flattened
 #  labels: library, helpers, bug
 proc flattened*(v: Value,once = false,level = 0): Value =
-    result = VEMPTYARR
+    result = newBlock()
 
     for item in v.a:
         if item.kind==Block and ((not once) or (once and level==0)):

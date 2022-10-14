@@ -25,9 +25,9 @@ when not defined(NOPARSERS):
     #  Same as with `parseXMLNode`: we first have to define what this means. Basically, what would an HTML-parsing function normally yield? How are children/nodes/attributes supposed to fit in Arturo's value system: arrays, dictionaries, scalars, etc?
     #  labels: helpers, library, enhancement, bug, open discussion
     proc parseHtmlNode(node: XmlNode): Value =
-        result = VEMPTYDICT
+        result = newDictionary()
         if node.kind()==xnElement:
-            result.d["attrs"] = VEMPTYDICT
+            result.d["attrs"] = newDictionary()
             if node.attrsLen() > 0:
                 for k,v in pairs(node.attrs()):
                     result.d["attrs"].d[k] = newString(v)

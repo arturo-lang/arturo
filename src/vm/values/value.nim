@@ -478,12 +478,12 @@ func newNewline*(l: int): Value {.inline, enforceNoRaises.} =
     Value(kind: Newline, line: l)
 
 proc newStringDictionary*(a: Table[string, string]): Value =
-    result = VEMPTYDICT
+    result = newDictionary()
     for k,v in a.pairs:
         result.d[k] = newString(v)
 
 proc newStringDictionary*(a: TableRef[string, seq[string]], collapseBlocks=false): Value =
-    result = VEMPTYDICT
+    result = newDictionary()
     for k,v in a.pairs:
         if collapseBlocks:
             if v.len==1:

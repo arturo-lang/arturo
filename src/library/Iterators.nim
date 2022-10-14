@@ -535,7 +535,7 @@ proc defineSymbols*() =
             iterateThrough(withIndex, y, items, doForever, false, false, capturing=true):
                 let popped = $(move stack.pop())
 
-                discard res.hasKeyOrPut(popped, VEMPTYARR)
+                discard res.hasKeyOrPut(popped, newBlock())
                 res[popped].a.add(capturedItems)
 
             if withLiteral: InPlaced = newDictionary(move res)
