@@ -155,14 +155,14 @@ proc newLogical*(b: bool): Value {.inline, enforceNoRaises.} =
     else: VFALSE
 
 proc newLogical*(s: string): Value {.inline, enforceNoRaises.} =
-    if s=="true": newLogical(True)
-    elif s=="false": newLogical(False)
-    else: newLogical(Maybe)
+    if s=="true": VTRUE
+    elif s=="false": VFALSE
+    else: VMAYBE
 
 proc newLogical*(i: int): Value {.inline, enforceNoRaises.} =
-    if i==1: newLogical(True)
-    elif i==0: newLogical(False)
-    else: newLogical(Maybe)
+    if i==1: VTRUE
+    elif i==0: VFALSE
+    else: VMAYBE
 
 when defined(WEB):
     proc newInteger*(bi: JsBigInt): Value {.inline.} =

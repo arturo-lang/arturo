@@ -44,8 +44,8 @@ proc getCmdlineArgumentArray*(): Value =
     Arguments
 
 proc parseCmdlineValue*(v: string): Value =
-    if v=="" or v=="true" or v=="on": return newLogical(True)
-    elif v=="false" or v=="off": return newLogical(False)
+    if v=="" or v=="true" or v=="on": return VTRUE
+    elif v=="false" or v=="off": return VFALSE
     else:
         try:
             discard parseFloat(v)
