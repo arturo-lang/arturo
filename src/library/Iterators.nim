@@ -313,7 +313,7 @@ proc defineSymbols*() =
                     break
 
             if all:
-                push(newLogical(true))
+                push(VTRUE)
 
     builtin "filter",
         alias       = unaliased, 
@@ -802,7 +802,7 @@ proc defineSymbols*() =
             iterateThrough(withIndex, y, items, doForever, false, false, capturing=false):
                 let popped = move stack.pop()
                 if popped.kind==Logical and popped.b==True:
-                    push(newLogical(true))
+                    push(VTRUE)
                     one = true
                     keepGoing = false
                     break

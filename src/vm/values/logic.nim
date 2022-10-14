@@ -26,6 +26,12 @@ func And*(x,y: logical): logical {.enforceNoRaises.} =
     if x==True and y==True: return True
     else: return Maybe
 
+# proc And*(x: Value, y: Value): Value {.inline,enforceNoRaises.} =
+#     if x.b==False: return VFALSE
+#     if y.b==False: return VFALSE
+#     if x.b==True and y.b==True: return VTRUE
+#     else: return VMAYBE
+
 func Not*(x: logical): logical {.enforceNoRaises.} =
     if x==True: return False
     elif x==False: return True

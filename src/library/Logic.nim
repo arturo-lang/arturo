@@ -68,7 +68,7 @@ proc defineSymbols*() =
                     break
 
             if allOK:
-                push(newLogical(true))
+                push(VTRUE)
 
     builtin "and?",
         alias       = unaliased, 
@@ -152,7 +152,7 @@ proc defineSymbols*() =
 
                 if val==VTRUE:
                     anyOK = true
-                    push(newLogical(true))
+                    push(VTRUE)
                     break
                 
             if not anyOK:
@@ -220,7 +220,7 @@ proc defineSymbols*() =
                         # block block
                         execBlock(x)
                         if Not(pop().b)==True:
-                            push(newLogical(true))
+                            push(VTRUE)
                             return
 
                         execBlock(y)
@@ -232,7 +232,7 @@ proc defineSymbols*() =
                 else:
                     # logical block
                     if Not(x.b)==True:
-                        push(newLogical(true))
+                        push(VTRUE)
                         return
 
                     execBlock(y)
@@ -341,7 +341,7 @@ proc defineSymbols*() =
                         # block block
                         execBlock(x)
                         if pop().b==True:
-                            push(newLogical(true))
+                            push(VTRUE)
                             return
 
                         execBlock(y)
@@ -353,7 +353,7 @@ proc defineSymbols*() =
                 else:
                     # logical block
                     if x.b==True:
-                        push(newLogical(true))
+                        push(VTRUE)
                         return
 
                     execBlock(y)

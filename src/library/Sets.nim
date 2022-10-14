@@ -159,7 +159,7 @@ proc defineSymbols*() =
                     push(newLogical(contains))
             else:
                 if x == y:
-                    push(newLogical(true))
+                    push(VTRUE)
                 else:
                     var contains = true
                     let xblk = cleanedBlock(x.a)
@@ -215,7 +215,7 @@ proc defineSymbols*() =
                     push(newLogical(contains))
             else:
                 if x == y:
-                    push(newLogical(true))
+                    push(VTRUE)
                 else:
                     var contains = true
                     let xblk = cleanedBlock(x.a)

@@ -832,7 +832,7 @@ proc defineSymbols*() =
                     execBlock(y)
                     discard pop()
                     discard pop()
-                    push(newLogical(true))
+                    push(VTRUE)
             else:
                 push(z)
 
