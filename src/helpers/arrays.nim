@@ -202,25 +202,18 @@ func cleanAppend*(s: Value, t: Value, singleValue: static bool = false): ValueAr
 
     setLen(result, cnt)
 
-proc cleanAppendInPlace*(s: var ValueArray, t: ValueArray) {.inline,enforceNoRaises.} =
-    let buffer = s
-    s = newSeq[Value](len(s) + len(t))
-    var cnt = 0
-    for i in buffer:
-        when not defined(NOERRORLINES):
-            if i.kind != Newline:
-                s[cnt] = i
-                cnt += 1
-        else:
-            s[cnt] = i
-            cnt += 1
-    for i in t:
-        when not defined(NOERRORLINES):
-            if i.kind != Newline:
-                s[cnt] = i
-                cnt += 1
-        else:
-            s[cnt] = i
-            cnt += 1
+proc cleanAppendInPlace*(s: var Value, t: Value) {.inline,enforceNoRaises.} =
 
-    setLen(s, cnt)
+    cleanBlock(s)
+
+    let L1 = len(s.a)
+    let L2 = len(t.a)
+
+    s.a.setLen(L1 + L2)
+
+    var cnt = L1
+    for i in cleanedBlockValues(t, L2):
+        s.a[cnt] = i
+        cnt += 1
+
+    setLen(s.a, cnt)

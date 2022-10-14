@@ -85,7 +85,7 @@ proc defineSymbols*() =
                     if y.kind == Block:
                         # TODO(Collections\append) In-place appending should actually work in-place
                         #  labels: enhancement, library
-                        InPlaced.a.cleanAppendInPlace(y.a)
+                        InPlaced.cleanAppendInPlace(y)
                     else:
                         InPlaced.a.add(y)
             else:
