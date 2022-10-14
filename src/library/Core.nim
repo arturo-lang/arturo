@@ -418,8 +418,9 @@ proc defineSymbols*() =
             if condition: 
                 let preevaled = evalOrGet(y)
                 execBlock(nil, evaluated=preevaled, hasEval=true)
-                
-            push(newLogical(condition))
+                push(VTRUE)
+            else:
+                push(VFALSE)
 
     builtin "let",
         alias       = colon, 
