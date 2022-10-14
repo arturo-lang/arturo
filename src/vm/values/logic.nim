@@ -38,6 +38,12 @@ func Not*(x: logical): logical {.enforceNoRaises.} =
     if x==True: return False
     elif x==False: return True
     else: return Maybe
+
+proc Not*(x: Value): logical {.inline,enforceNoRaises.} =
+    let xb = x.b
+    if xb==True: return VFALSE
+    elif xb==False: return VTRUE
+    else: return VMAYBE
     
 func Or*(x,y: logical): logical {.enforceNoRaises.} =
     if x==True: return True
