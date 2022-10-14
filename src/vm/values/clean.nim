@@ -71,10 +71,10 @@ macro ensureCleaned*(name: untyped): untyped =
         result = quote do:
             var `cleanedBlock`: ValueArray
             let `cleanName` {.cursor.} = (
-                if `name`.dirty: 
-                    `cleanedBlock` = cleanedBlockImpl(`name`.a) 
+                if `name`.dirty:
+                    `cleanedBlock` = cleanedBlockImpl(`name`.a)
                     `cleanedBlock`
-                else: 
+                else:
                     `name`.a
             )
     else:
