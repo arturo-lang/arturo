@@ -27,7 +27,6 @@ import vm/[
     parse, 
     profiler, 
     stack, 
-    values/logic, 
     values/value
 ]
 

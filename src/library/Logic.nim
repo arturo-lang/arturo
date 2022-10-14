@@ -263,7 +263,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Logical and y.kind==Logical:
-                push(newLogical(Not(Or(x.b, y.b))))
+                push(Not(Or(x, y)))
             else:
                 if x.kind==Block:
                     if y.kind==Block:
@@ -278,7 +278,7 @@ proc defineSymbols*() =
                     else:
                         # block logical
                         execBlock(x)
-                        push(newLogical(Not(Or(pop().b, y.b))))
+                        push(Not(Or(pop(), y)))
                 else:
                     # logical block
                     if x.b==True:
@@ -334,7 +334,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Logical and y.kind==Logical:
-                push(newLogical(Or(x.b, y.b)))
+                push(Or(x, y))
             else:
                 if x.kind==Block:
                     if y.kind==Block:
@@ -349,7 +349,7 @@ proc defineSymbols*() =
                     else:
                         # block logical
                         execBlock(x)
-                        push(newLogical(Or(pop().b, y.b)))
+                        push(Or(pop(), y))
                 else:
                     # logical block
                     if x.b==True:
