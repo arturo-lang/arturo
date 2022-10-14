@@ -339,7 +339,7 @@ proc defineSymbols*() =
             ##########################################################
             let preevaled = evalOrGet(x)
             let y = pop() # pop the value of the previous operation (hopefully an 'if?' or 'when?')
-            if Not(y.b)==True: execBlock(nil, evaluated=preevaled, hasEval=true)
+            if y.b==False: execBlock(nil, evaluated=preevaled, hasEval=true)
             
     builtin "ensure",
         alias       = unaliased, 
@@ -359,7 +359,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             execBlock(x)
-            if Not(pop().b)==True:
+            if pop().b==False:
                 AssertionError_AssertionFailed(x.codify())
 
     builtin "if",
@@ -814,7 +814,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             let z = pop()
-            if Not(z.b)==True:
+            if z.b==False:
                 ensureCleaned(x)
 
                 let top = sTop()

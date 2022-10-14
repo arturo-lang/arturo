@@ -98,7 +98,7 @@ proc defineSymbols*() =
                     if y.kind==Block:
                         # block block
                         execBlock(x)
-                        if Not(pop().b)==True:
+                        if pop().b==False:
                             push(VFALSE)
                             return
 
@@ -110,7 +110,7 @@ proc defineSymbols*() =
                         push(newLogical(And(pop().b,y.b)))
                 else:
                     # logical block
-                    if Not(x.b)==True:
+                    if x.b==False:
                         push(VFALSE)
                         return
 
@@ -219,7 +219,7 @@ proc defineSymbols*() =
                     if y.kind==Block:
                         # block block
                         execBlock(x)
-                        if Not(pop().b)==True:
+                        if pop().b==False:
                             push(VTRUE)
                             return
 
@@ -231,7 +231,7 @@ proc defineSymbols*() =
                         push(newLogical(Not(And(pop().b, y.b))))
                 else:
                     # logical block
-                    if Not(x.b)==True:
+                    if x.b==False:
                         push(VTRUE)
                         return
 

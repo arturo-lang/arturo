@@ -593,10 +593,10 @@ proc doExec*(cnst: ValueArray, it: ByteArray, args: Value = nil): ValueDict =
                     if stack.pop().b==True:
                         i = (int)((uint16)(it[i+1]) shl 8 + (byte)(it[i+2]))
                 of opJmpIfN             : 
-                    if Not(stack.pop().b)==True:
+                    if stack.pop().b==False:
                         i = (int)(it[i+1])
                 of opJmpIfNX            : 
-                    if Not(stack.pop().b)==True:
+                    if stack.pop().b==False:
                         i = (int)((uint16)(it[i+1]) shl 8 + (byte)(it[i+2]))
                 of opRet                : discard
                 of opEnd                : break
