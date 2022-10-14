@@ -1372,7 +1372,7 @@ proc defineSymbols*() =
 
                             push(newBlock(sorted))
                         else:
-                            push(newDictionary())
+                            push(VEMPTYDICT)
                     else:
                         var sortAscii = (hadAttr("ascii"))
 

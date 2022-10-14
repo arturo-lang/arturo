@@ -237,7 +237,7 @@ proc defineSymbols*() =
                 ret["version"] = newString(response.version)
                 
                 ret["body"] = newString(response.body)
-                ret["headers"] = newDictionary()
+                ret["headers"] = VEMPTYDICT
 
                 if (hadAttr("raw")):
                     ret["status"] = newString(response.status)
@@ -356,7 +356,7 @@ proc defineSymbols*() =
                             try:
                                 reqBodyV = valueFromJson(reqBody) 
                             except:
-                                reqBodyV = newDictionary()
+                                reqBodyV = VEMPTYDICT
                                 for k,v in decodeQuery(reqBody):
                                     reqBodyV.d[k] = newString(v)
                         else: 

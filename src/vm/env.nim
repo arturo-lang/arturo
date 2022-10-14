@@ -129,7 +129,7 @@ proc initEnv*(arguments: seq[string], version: string, build: string, script: Va
     if not script.isNil:
         ScriptInfo = script
     else:
-        ScriptInfo = newDictionary()
+        ScriptInfo = VEMPTYDICT
 
     PathStack = @[]
     when not defined(WEB):

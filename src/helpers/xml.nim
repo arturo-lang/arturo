@@ -31,7 +31,7 @@ when not defined(NOPARSERS):
             return newString(items[0].text)
 
         var children = VEMPTYARR
-        result = newDictionary()
+        result = VEMPTYDICT
         for child in n.items:
             let subtags = toSeq(n.items).map((x) => x.tag)
             if count(subtags, child.tag)>1:
