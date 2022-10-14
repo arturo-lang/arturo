@@ -202,7 +202,7 @@ func cleanAppend*(s: Value, t: Value, singleValue: static bool = false): ValueAr
 
     setLen(result, cnt)
 
-proc cleanAppendInPlace*(s: var ValueArray, t: ValueArray): ValueArray {.inline,enforceNoRaises.} =
+proc cleanAppendInPlace*(s: var ValueArray, t: ValueArray) {.inline,enforceNoRaises.} =
     let buffer = s
     s = newSeq[Value](len(s) + len(t))
     var cnt = 0
