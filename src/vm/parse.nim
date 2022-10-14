@@ -985,7 +985,7 @@ proc parseAsDictionary(blk: Value, start: int): Value =
             i += 1
 
 proc parseAsBlock(blk: Value, start: int): Value =
-    result = newBlock()
+    result = VEMPTYARR
     var i = start
     var values: ValueArray = @[]
     while i < blk.a.len:

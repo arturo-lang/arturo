@@ -489,7 +489,7 @@ proc defineSymbols*() =
             if items.len > 0:
                 if items[0].kind == String:     seed = newString("")
                 elif items[0].kind == Floating: seed = newFloating(0.0)
-                elif items[0].kind == Block:    seed = newBlock()
+                elif items[0].kind == Block:    seed = VEMPTYARR
 
             if checkAttr("seed"):
                 seed = aSeed
@@ -535,7 +535,7 @@ proc defineSymbols*() =
             iterateThrough(withIndex, y, items, doForever, false, false, capturing=true):
                 let popped = $(move stack.pop())
 
-                discard res.hasKeyOrPut(popped, newBlock())
+                discard res.hasKeyOrPut(popped, VEMPTYARR)
                 res[popped].a.add(capturedItems)
 
             if withLiteral: InPlaced = newDictionary(move res)

@@ -140,7 +140,7 @@ proc defineSymbols*() =
                     push(newString(x.s[0..^2]))
                 elif x.kind == Block:
                     ensureCleaned(x)
-                    if cleanX.len == 0: push(newBlock())
+                    if cleanX.len == 0: push(VEMPTYARR)
                     else: push(newBlock(cleanX[0..^2]))
 
     builtin "combine",
@@ -337,7 +337,7 @@ proc defineSymbols*() =
                     push(newString(x.s[y.i..^1]))
                 elif x.kind == Block:
                     ensureCleaned(x)
-                    if cleanX.len == 0: push(newBlock())
+                    if cleanX.len == 0: push(VEMPTYARR)
                     else: push(newBlock(cleanX[y.i..^1]))
 
     builtin "empty",
@@ -441,7 +441,7 @@ proc defineSymbols*() =
                     else: push(newString(x.s[0..aN.i-1]))
                 else:
                     ensureCleaned(x)
-                    if cleanX.len == 0: push(newBlock())
+                    if cleanX.len == 0: push(VEMPTYARR)
                     else: push(newBlock(cleanX[0..aN.i-1]))
             else:
                 if x.kind == String:
@@ -806,7 +806,7 @@ proc defineSymbols*() =
                     else: push(newString(x.s[x.s.len-aN.i..^1]))
                 else:
                     ensureCleaned(x)
-                    if cleanX.len == 0: push(newBlock())
+                    if cleanX.len == 0: push(VEMPTYARR)
                     else: push(newBlock(cleanX[cleanX.len-aN.i..^1]))
             else:
                 if x.kind == String:
@@ -1317,7 +1317,7 @@ proc defineSymbols*() =
                 if y.i >= 0 and z.i <= cleanX.len-1:
                     push(newBlock(cleanX[y.i..z.i]))
                 else:
-                    push(newBlock())
+                    push(VEMPTYARR)
 
     builtin "sort",
         alias       = unaliased,
@@ -1353,7 +1353,7 @@ proc defineSymbols*() =
 
             if x.kind == Block:
                 ensureCleaned(x)
-                if cleanX.len == 0: push(newBlock())
+                if cleanX.len == 0: push(VEMPTYARR)
                 else:
                     if checkAttr("by"):
                         if cleanX.len > 0:
@@ -1697,7 +1697,7 @@ proc defineSymbols*() =
                         push(newString(x.s[0..upperLimit]))
                 elif x.kind == Block:
                     ensureCleaned(x)
-                    if cleanX.len == 0: push(newBlock())
+                    if cleanX.len == 0: push(VEMPTYARR)
                     else:
                         if upperLimit > cleanX.len - 1:
                             upperLimit = cleanX.len-1

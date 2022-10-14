@@ -1030,7 +1030,7 @@ proc defineSymbols*() =
                     step = -step
 
             if step==0:
-                push newBlock()
+                push VEMPTYARR
             else:
                 if limX < limY:
                     var j = limX

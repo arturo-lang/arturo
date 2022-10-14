@@ -146,7 +146,7 @@ proc execBlock*(
     try:
         when isFuncBlock:
             when isMemoized:
-                passedParams = newBlock()
+                passedParams = VEMPTYARR
     
                 when hasArgs:
                     var i=0

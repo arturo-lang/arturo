@@ -173,7 +173,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Null:
-                push(newBlock())
+                push(VEMPTYARR)
             else:
                 push(x)
             push(VFALSE)
@@ -819,7 +819,7 @@ proc defineSymbols*() =
 
                 let top = sTop()
 
-                var newb: Value = newBlock()
+                var newb: Value = VEMPTYARR
                 for old in top.a:
                     newb.a.add(old)
                 for cond in cleanX:
