@@ -122,7 +122,7 @@ proc safeCycle*(va: ValueArray, times: int): ValueArray =
     result = newSeq[Value](times * va.len)
     var o = 0
     for i in 0 ..< times:
-        for e in va: 
+        for e in va:
             result[o] = copyValue(e)
             inc o
 
@@ -201,3 +201,26 @@ func cleanAppend*(s: Value, t: Value, singleValue: static bool = false): ValueAr
         inc cnt
 
     setLen(result, cnt)
+
+proc cleanAppendInPlace*(s: var ValueArray, t: ValueArray): ValueArray {.inline,enforceNoRaises.} =
+    let buffer = s
+    s = newSeq[Value](len(s) + len(t))
+    var cnt = 0
+    for i in buffer:
+        when not defined(NOERRORLINES):
+            if i.kind != Newline:
+                s[cnt] = i
+                cnt += 1
+        else:
+            s[cnt] = i
+            cnt += 1
+    for i in t:
+        when not defined(NOERRORLINES):
+            if i.kind != Newline:
+                s[cnt] = i
+                cnt += 1
+        else:
+            s[cnt] = i
+            cnt += 1
+
+    setLen(s, cnt)
