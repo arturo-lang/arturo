@@ -418,8 +418,7 @@ proc defineSymbols*() =
             if condition: 
                 let preevaled = evalOrGet(y)
                 execBlock(nil, evaluated=preevaled, hasEval=true)
-                # if vmReturn:
-                #     return ReturnResult
+                
             push(newLogical(condition))
 
     builtin "let",
