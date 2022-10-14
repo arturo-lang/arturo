@@ -307,7 +307,7 @@ proc defineSymbols*() =
             iterateThrough(withIndex, y, items, doForever, false, false, capturing=false):
                 let popped = move stack.pop()
                 if popped.kind==Logical and Not(popped.b)==True:
-                    push(newLogical(false))
+                    push(VFALSE)
                     all = false
                     keepGoing = false
                     break
@@ -808,7 +808,7 @@ proc defineSymbols*() =
                     break
 
             if not one:
-                push(newLogical(false))
+                push(VFALSE)
 
 #=======================================
 # Add Library

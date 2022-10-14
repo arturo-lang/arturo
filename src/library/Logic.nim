@@ -49,7 +49,7 @@ proc defineSymbols*() =
             ensureCleaned(x)
             # check if empty
             if cleanX.len==0: 
-                push(newLogical(false))
+                push(VFALSE)
                 return
 
             var allOK = true
@@ -64,7 +64,7 @@ proc defineSymbols*() =
 
                 if val!=VTRUE:
                     allOK = false
-                    push(newLogical(false))
+                    push(VFALSE)
                     break
 
             if allOK:
@@ -99,7 +99,7 @@ proc defineSymbols*() =
                         # block block
                         execBlock(x)
                         if Not(pop().b)==True:
-                            push(newLogical(false))
+                            push(VFALSE)
                             return
 
                         execBlock(y)
@@ -111,7 +111,7 @@ proc defineSymbols*() =
                 else:
                     # logical block
                     if Not(x.b)==True:
-                        push(newLogical(false))
+                        push(VFALSE)
                         return
 
                     execBlock(y)
@@ -138,7 +138,7 @@ proc defineSymbols*() =
             ensureCleaned(x)
             # check if empty
             if cleanX.len==0: 
-                push(newLogical(false))
+                push(VFALSE)
                 return
             
             var anyOK = false
@@ -156,7 +156,7 @@ proc defineSymbols*() =
                     break
                 
             if not anyOK:
-                push(newLogical(false))
+                push(VFALSE)
 
     constant "false",
         alias       = unaliased,
@@ -180,7 +180,7 @@ proc defineSymbols*() =
             print false? [1 2 3]        ; false
         """:
             ##########################################################
-            if x.kind != Logical: push(newLogical(false))
+            if x.kind != Logical: push(VFALSE)
             else: push(newLogical(Not(x.b)))
 
     constant "maybe",
@@ -270,7 +270,7 @@ proc defineSymbols*() =
                         # block block
                         execBlock(x)
                         if pop().b==True:
-                            push(newLogical(false))
+                            push(VFALSE)
                             return
 
                         execBlock(y)
@@ -282,7 +282,7 @@ proc defineSymbols*() =
                 else:
                     # logical block
                     if x.b==True:
-                        push(newLogical(false))
+                        push(VFALSE)
                         return
 
                     execBlock(y)
@@ -381,7 +381,7 @@ proc defineSymbols*() =
             print true? [1 2 3]         ; false
         """:
             ##########################################################
-            if x.kind != Logical: push(newLogical(false))
+            if x.kind != Logical: push(VFALSE)
             else: push(x)
 
     builtin "xnor?",

@@ -146,7 +146,7 @@ proc defineSymbols*() =
             ##########################################################
             if (hadAttr("proper")):
                 if x == y: 
-                    push(newLogical(false))
+                    push(VFALSE)
                 else:
                     var contains = true
                     let xblk = cleanedBlock(x.a)
@@ -202,7 +202,7 @@ proc defineSymbols*() =
             ##########################################################
             if (hadAttr("proper")):
                 if x == y: 
-                    push(newLogical(false))
+                    push(VFALSE)
                 else:
                     var contains = true
                     let xblk = cleanedBlock(x.a)

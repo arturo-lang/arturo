@@ -176,7 +176,7 @@ proc defineSymbols*() =
                 push(newBlock())
             else:
                 push(x)
-            push(newLogical(false))
+            push(VFALSE)
 
     builtin "continue",
         alias       = unaliased, 
