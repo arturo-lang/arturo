@@ -181,7 +181,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind != Logical: push(VFALSE)
-            else: push(newLogical(Not(x.b)))
+            else: push(Not(x))
 
     constant "maybe",
         alias       = unaliased,
@@ -224,7 +224,7 @@ proc defineSymbols*() =
                             return
 
                         execBlock(y)
-                        push(newLogical(Not(pop().b)))
+                        push(Not(pop()))
                     else:
                         # block logical
                         execBlock(x)
@@ -236,7 +236,7 @@ proc defineSymbols*() =
                         return
 
                     execBlock(y)
-                    push(newLogical(Not(pop().b)))
+                    push(Not(pop()))
 
     builtin "nor?",
         alias       = unaliased, 
@@ -274,7 +274,7 @@ proc defineSymbols*() =
                             return
 
                         execBlock(y)
-                        push(newLogical(Not(pop().b)))
+                        push(Not(pop()))
                     else:
                         # block logical
                         execBlock(x)
@@ -286,7 +286,7 @@ proc defineSymbols*() =
                         return
 
                     execBlock(y)
-                    push(newLogical(Not(pop().b)))
+                    push(Not(pop()))
 
     builtin "not?",
         alias       = unaliased, 
@@ -307,10 +307,10 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Logical:
-                push(newLogical(Not(x.b)))
+                push(Not(x))
             else:
                 execBlock(x)
-                push(newLogical(Not(pop().b)))
+                push(Not(pop()))
 
     builtin "or?",
         alias       = unaliased, 
