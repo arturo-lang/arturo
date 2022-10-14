@@ -750,9 +750,9 @@ proc defineSymbols*() =
                     x.ts.methods["compare"] = newFunction(
                         newBlock(@[newWord("this"),newWord("that")]),
                         newBlock(@[
-                            newWord("if"), newPath(@[newWord("this"), key]), newSymbol(greaterthan), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(1)]),
-                            newWord("if"), newPath(@[newWord("this"), key]), newSymbol(equal), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(0)]),
-                            newWord("return"), newWord("neg"), newInteger(1)
+                            newWord("if"), newPath(@[newWord("this"), key]), newSymbol(greaterthan), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),I1]),
+                            newWord("if"), newPath(@[newWord("this"), key]), newSymbol(equal), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),I0]),
+                            newWord("return"), newWord("neg"), I1
                         ])
                     )
             # let methods = execBlock(z,dictionary=true)

@@ -1975,7 +1975,7 @@ proc factorial*(x: Value): Value =
                         return newInteger(fac(x.i))
                     else:
                         let items = (toSeq(1..x.i)).map((w)=>newInteger(w))
-                        var res = newInteger(1)
+                        var res = I1
                         for item in items:
                             res = res * item
                         return res
@@ -1984,7 +1984,7 @@ proc factorial*(x: Value): Value =
             else:
                 when defined(WEB):
                     let items = (toSeq(1..x.i)).map((w)=>newInteger(w))
-                    var res = newInteger(1)
+                    var res = I1
                     for item in items:
                         res = res * item
                 elif defined(NOGMP):
