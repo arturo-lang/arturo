@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import hashes, sets, strutils, tables, unicode
+import hashes, sequtils, sets, strutils, tables, unicode
 
 import vm/values/comparison
 import vm/values/value
@@ -122,7 +122,7 @@ proc safeCycle*(va: ValueArray, times: int): ValueArray =
     result = newSeq[Value](times * va.len)
     var o = 0
     for i in 0 ..< times:
-        for e in va: 
+        for e in va:
             result[o] = copyValue(e)
             inc o
 
@@ -201,3 +201,19 @@ func cleanAppend*(s: Value, t: Value, singleValue: static bool = false): ValueAr
         inc cnt
 
     setLen(result, cnt)
+
+proc cleanAppendInPlace*(s: var Value, t: Value) {.inline,enforceNoRaises.} =
+
+    cleanBlock(s)
+
+    let L1 = len(s.a)
+    let L2 = len(t.a)
+
+    s.a.setLen(L1 + L2)
+
+    var cnt = L1
+    for i in cleanedBlockValues(t, L2):
+        s.a[cnt] = i
+        cnt += 1
+
+    setLen(s.a, cnt)
