@@ -60,6 +60,17 @@ template cleanedBlockValuesCopy*(v: Value): untyped =
         v.a
 
 iterator cleanedBlockValues*(v: Value, L: int): lent Value =
+    ## This iterator must to be used into a *for loop*
+    ## It'll yield a `ValueArray` per operation,
+    ## while ignores `Newline` objects
+    ##
+    ## Usage:
+    ## ```nim
+    ## for i in cleanedBlockValues(y, y.a.len):
+    ##      x.a[cnt] = i
+    ##      inc cnt
+    ## ```
+
     when not defined(NOERRORLINES):
         if v.dirty:
             for i in 0..L-1:
@@ -73,6 +84,20 @@ iterator cleanedBlockValues*(v: Value, L: int): lent Value =
             yield v.a[i]
 
 template cleanedBlockValues*(v: Value): untyped =
+    ## This iterator must to be used into a *for loop*
+    ## It'll yield a `ValueArray` per operation,
+    ## while ignores `Newline` objects
+    ##
+    ## Note:
+    ## - It'll detect automatically `y.a`'s length
+    ##
+    ## Usage:
+    ## ```nim
+    ## for i in cleanedBlockValues(y):
+    ##      x.a[cnt] = i
+    ##      inc cnt
+    ## ```
+
     let l = v.a.len
     cleanedBlockValues(v, l)
 
