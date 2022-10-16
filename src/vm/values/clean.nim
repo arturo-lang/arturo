@@ -6,6 +6,10 @@
 # @file: vm/values/clean.nim
 ######################################################
 
+## This module has templates, functions and macros used to clean blocks
+## Blocks can have `Newline` types,
+## so when you want to convert it to another value, you must to remove them
+
 import macros, sequtils, strutils, sugar
 
 import vm/values/types
