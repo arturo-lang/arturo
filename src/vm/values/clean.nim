@@ -23,10 +23,18 @@ import vm/values/types
 #  labels: vm, values, performance, enhancement, benchmark, critical
 
 template cleanBlock*(v: Value) =
+    ## Removes all `Newline` objects from a `Value`
+    ## Note:
+    ## - v must to be a `Value`, not a `ValueArray`
+    ##   - This is a optimization,
+    ##     because `Value`s have a `.dirty` attribute,
+    ##     if `.dirty` is false it'll do nothing.
+    ##   - When done, `.dirty`'ll be setted to `false`
+
     when not defined(NOERRORLINES):
         if v.dirty:
             v.a.keepIf((vv) => vv.kind != Newline)
-            v.dirty = false
+            v.dirty = false ## Updates `.dirty` value
     else:
         discard
 
