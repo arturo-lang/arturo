@@ -221,6 +221,16 @@ func cleanAppend*(s: Value, t: Value, singleValue: static bool = false): ValueAr
     setLen(result, cnt)
 
 proc cleanAppendInPlace*(s: var Value, t: Value) {.inline,enforceNoRaises.} =
+    ## Appends `t` to `s`, cleaning the blocks without return a new value
+    ##
+    ## Note:
+    ## - Use if `x.kind == Literal`, in `builtin` functions
+    ##   - Else, use `cleanAppend`
+    ## - `s` and `t` values must to be a `Value`,
+    ##   and their values must to be a `ValueArray`
+    ## - This don't return a new value, it modifies `s`
+    ##
+    ## To understand more about cleaning blocks, read `vm/values/clean.nim`
 
     cleanBlock(s)
 
