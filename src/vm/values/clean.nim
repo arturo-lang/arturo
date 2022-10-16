@@ -34,7 +34,7 @@ template cleanBlock*(v: Value) =
     when not defined(NOERRORLINES):
         if v.dirty:
             v.a.keepIf((vv) => vv.kind != Newline)
-            v.dirty = false
+            v.dirty = false ## Updates `.dirty` value
     else:
         discard
 
