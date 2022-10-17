@@ -157,6 +157,14 @@ proc deduplicated*[T](s: openArray[T], isSorted: bool = false): seq[T] =
 
 # Backward compatibility
 proc cleanAppend*(s: ValueArray, t: ValueArray): ValueArray {.inline,enforceNoRaises.} =
+    ## Appends `t` to `s`, cleaning the blocks and returning a `ValueArray`
+    ##
+    ## Note:
+    ## - Use if `x.kind != Literal` in `builtin` functions
+    ## - `s` and `t` must be a `ValueArray`, not a `Value`
+    ##
+    ## To understand more about cleaning blocks, read `vm/values/clean.nim`
+
     result = newSeq[Value](len(s) + len(t))
     var cnt = 0
     for i in s:
@@ -180,6 +188,14 @@ proc cleanAppend*(s: ValueArray, t: ValueArray): ValueArray {.inline,enforceNoRa
     setLen(result, cnt)
 
 func cleanAppend*(s: Value, t: Value, singleValue: static bool = false): ValueArray {.inline,enforceNoRaises.} =
+    ## Appends `t` to `s`, cleaning the blocks and returning a `ValueArray`
+    ##
+    ## Note:
+    ## - Use if `x.kind != Literal` in `builtin` functions
+    ## - `s` and `t` must be a Block value
+    ##
+    ## To understand more about cleaning blocks, read `vm/values/clean.nim`
+
     let L1 = len(s.a)
     when not singleValue:
         let L2 = len(t.a)
@@ -203,6 +219,15 @@ func cleanAppend*(s: Value, t: Value, singleValue: static bool = false): ValueAr
     setLen(result, cnt)
 
 proc cleanAppendInPlace*(s: var Value, t: Value) {.inline,enforceNoRaises.} =
+    ## Appends `t` to `s`, cleaning the blocks and changing `s` in-place
+    ##
+    ## Note:
+    ## - Use if `x.kind == Literal`, in `builtin` functions
+    ##   - Else, use `cleanAppend`
+    ## - `s` and `t` values must be a Block value,
+    ## - It doesn't return a new value, it modifies `s`
+    ##
+    ## To understand more about cleaning blocks, read `vm/values/clean.nim`
 
     cleanBlock(s)
 
