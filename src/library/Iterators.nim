@@ -515,18 +515,19 @@ proc defineSymbols*() =
             "with"  : ({Literal},"use given index")
         },
         returns     = {Dictionary,Nothing},
-        # TODO(Iterators\gather) Add documentation example for `.with`
-        #  labels: documentation, library, easy
         example     = """
             print gather [1 2 3 4 5 6] 'x [
                 x % 2
             ]
             ; [1:[1 3 5] 0:[2 4 6]]
-            ...
+
             print gather ["New York" "Washington" "Minnesota" "Montana" "New Hampshire" "New Mexico"] 'x [
                 size x
             ]
             ; [8:[New York] 10:[Washington New Mexico] 9:[Minnesota] 7:[Montana] 13:[New Hampshire]]
+            ..........
+            gather.with:'i ["one" "two" "three" "four"] 'x -> i%2
+            ; [0:[one three] 1:[two four]]
         """:
             ##########################################################
             let preevaled = evalOrGet(z)
