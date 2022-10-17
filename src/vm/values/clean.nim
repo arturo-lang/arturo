@@ -6,9 +6,9 @@
 # @file: vm/values/clean.nim
 ######################################################
 
-## This module has templates, functions and macros used to clean blocks
-## Blocks can have `Newline` types,
-## so when you want to convert it to another value, you must to remove them
+## This module has helper used to clean blocks
+## Blocks may have `Newline` Values,
+## so when you want to actually use its contents, we make sure that there will be none
 
 import macros, sequtils, strutils, sugar
 
@@ -23,13 +23,13 @@ import vm/values/types
 #  labels: vm, values, performance, enhancement, benchmark, critical
 
 template cleanBlock*(v: Value) =
-    ## Removes all `Newline` objects from a `Value`
+    ## Removes all `Newline` values from a Block value, in-place
     ## Note:
-    ## - v must to be a `Value`, not a `ValueArray`
-    ##   - This is a optimization,
-    ##     because `Value`s have a `.dirty` attribute,
+    ## - v must be a `Value`, not a `ValueArray`
+    ##   - This is an optimization,
+    ##     as Block values have a `.dirty` attribute,
     ##     if `.dirty` is false it'll do nothing.
-    ##   - When done, `.dirty`'ll be setted to `false`
+    ##   - When done, `.dirty`'ll be set to `false`
 
     when not defined(NOERRORLINES):
         if v.dirty:
@@ -60,9 +60,9 @@ template cleanedBlockValuesCopy*(v: Value): untyped =
         v.a
 
 iterator cleanedBlockValues*(v: Value, L: int): lent Value =
-    ## This iterator must to be used into a *for loop*
-    ## It'll yield a `ValueArray` per operation,
-    ## while ignores `Newline` objects
+    ## This must be used inside a *for loop*
+    ## It'll yield a `Value` object per iteration,
+    ## while ignoring `Newline` values
     ##
     ## Usage:
     ## ```nim
@@ -84,12 +84,12 @@ iterator cleanedBlockValues*(v: Value, L: int): lent Value =
             yield v.a[i]
 
 template cleanedBlockValues*(v: Value): untyped =
-    ## This iterator must to be used into a *for loop*
-    ## It'll yield a `ValueArray` per operation,
-    ## while ignores `Newline` objects
+    ## This must be used inside a *for loop*
+    ## It'll yield a `Value` object per iteration,
+    ## while ignoring `Newline` values
     ##
     ## Note:
-    ## - It'll detect automatically `y.a`'s length
+    ## - It'll detect `v.a`'s length automatically
     ##
     ## Usage:
     ## ```nim
