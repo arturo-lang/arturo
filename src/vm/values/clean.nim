@@ -6,6 +6,10 @@
 # @file: vm/values/clean.nim
 ######################################################
 
+## This module has helper used to clean blocks
+## Blocks may have `Newline` Values,
+## so when you want to actually use its contents, we make sure that there will be none
+
 import macros, sequtils, strutils, sugar
 
 import vm/values/types
@@ -19,10 +23,18 @@ import vm/values/types
 #  labels: vm, values, performance, enhancement, benchmark, critical
 
 template cleanBlock*(v: Value) =
+    ## Removes all `Newline` values from a Block value, in-place
+    ## Note:
+    ## - v must be a `Value`, not a `ValueArray`
+    ##   - This is an optimization,
+    ##     as Block values have a `.dirty` attribute,
+    ##     if `.dirty` is false it'll do nothing.
+    ##   - When done, `.dirty`'ll be set to `false`
+
     when not defined(NOERRORLINES):
         if v.dirty:
             v.a.keepIf((vv) => vv.kind != Newline)
-            v.dirty = false
+            v.dirty = false ## Updates `.dirty` value
     else:
         discard
 
@@ -48,6 +60,17 @@ template cleanedBlockValuesCopy*(v: Value): untyped =
         v.a
 
 iterator cleanedBlockValues*(v: Value, L: int): lent Value =
+    ## This must be used inside a *for loop*
+    ## It'll yield a `Value` object per iteration,
+    ## while ignoring `Newline` values
+    ##
+    ## Usage:
+    ## ```nim
+    ## for i in cleanedBlockValues(y, y.a.len):
+    ##      x.a[cnt] = i
+    ##      inc cnt
+    ## ```
+
     when not defined(NOERRORLINES):
         if v.dirty:
             for i in 0..L-1:
@@ -61,6 +84,20 @@ iterator cleanedBlockValues*(v: Value, L: int): lent Value =
             yield v.a[i]
 
 template cleanedBlockValues*(v: Value): untyped =
+    ## This must be used inside a *for loop*
+    ## It'll yield a `Value` object per iteration,
+    ## while ignoring `Newline` values
+    ##
+    ## Note:
+    ## - It'll detect `v.a`'s length automatically
+    ##
+    ## Usage:
+    ## ```nim
+    ## for i in cleanedBlockValues(y):
+    ##      x.a[cnt] = i
+    ##      inc cnt
+    ## ```
+
     let l = v.a.len
     cleanedBlockValues(v, l)
 
