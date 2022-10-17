@@ -161,7 +161,7 @@ proc cleanAppend*(s: ValueArray, t: ValueArray): ValueArray {.inline,enforceNoRa
     ##
     ## Note:
     ## - Use if `x.kind != Literal` in `builtin` functions
-    ## - `s` and `t` must to be a `ValueArray`, not a `Value`
+    ## - `s` and `t` must be a `ValueArray`, not a `Value`
     ##
     ## To understand more about cleaning blocks, read `vm/values/clean.nim`
 
@@ -192,8 +192,7 @@ func cleanAppend*(s: Value, t: Value, singleValue: static bool = false): ValueAr
     ##
     ## Note:
     ## - Use if `x.kind != Literal` in `builtin` functions
-    ## - `s` and `t` must to be a `Value`,
-    ##   and their values must to be a `ValueArray`
+    ## - `s` and `t` must be a Block value
     ##
     ## To understand more about cleaning blocks, read `vm/values/clean.nim`
 
@@ -220,13 +219,12 @@ func cleanAppend*(s: Value, t: Value, singleValue: static bool = false): ValueAr
     setLen(result, cnt)
 
 proc cleanAppendInPlace*(s: var Value, t: Value) {.inline,enforceNoRaises.} =
-    ## Appends `t` to `s`, cleaning the blocks without return a new value
+    ## Appends `t` to `s`, cleaning the blocks and changing `s` in-place
     ##
     ## Note:
     ## - Use if `x.kind == Literal`, in `builtin` functions
     ##   - Else, use `cleanAppend`
-    ## - `s` and `t` values must to be a `Value`,
-    ##   and their values must to be a `ValueArray`
+    ## - `s` and `t` values must be a Block value,
     ## - It doesn't return a new value, it modifies `s`
     ##
     ## To understand more about cleaning blocks, read `vm/values/clean.nim`
