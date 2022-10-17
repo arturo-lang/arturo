@@ -28,7 +28,7 @@ import vm/[errors, eval, exec]
 #=======================================
 
 template iterableItemsFromLiteralParam(prm: untyped): ValueArray =
-    if InPlace.kind==Dictionary: 
+    if InPlace.kind==Dictionary:
         InPlaced.d.flattenedDictionary()
     elif InPlaced.kind==Object:
         InPlaced.o.flattenedDictionary()
@@ -40,7 +40,7 @@ template iterableItemsFromLiteralParam(prm: untyped): ValueArray =
         cleanedBlockValuesCopy(InPlaced())
 
 func iterableItemsFromParam(prm: Value): ValueArray {.inline,enforceNoRaises.} =
-    if prm.kind==Dictionary: 
+    if prm.kind==Dictionary:
         prm.d.flattenedDictionary()
     elif prm.kind==Object:
         prm.o.flattenedDictionary()
@@ -52,8 +52,8 @@ func iterableItemsFromParam(prm: Value): ValueArray {.inline,enforceNoRaises.} =
         cleanedBlockValuesCopy(prm)
 
 template iterateThrough(
-    idx: Value, 
-    params: Value, 
+    idx: Value,
+    params: Value,
     collection: ValueArray,
     forever: bool,
     rolling: bool,
@@ -133,7 +133,7 @@ proc defineSymbols*() =
         echo "- Importing: Iterators"
 
     builtin "chunk",
-        alias       = unaliased, 
+        alias       = unaliased,
         rule        = PrefixPrecedence,
         description = "chunk together consecutive items in collection that abide by given predicate",
         args        = {
@@ -185,7 +185,7 @@ proc defineSymbols*() =
                             res.add(newBlock(currentSet))
                         currentSet = @[]
                     state = popped
-                
+
                 currentSet.add(capturedItems)
 
             if len(currentSet)>0:
@@ -198,7 +198,7 @@ proc defineSymbols*() =
             else: push newBlock(res)
 
     builtin "cluster",
-        alias       = unaliased, 
+        alias       = unaliased,
         rule        = PrefixPrecedence,
         description = "group together items in collection that abide by given predicate",
         args        = {
@@ -214,7 +214,7 @@ proc defineSymbols*() =
         example     = """
             cluster 1..10 => odd?
             ; => [[1 3 5 7 9] [2 4 6 8 10]]
-            
+
             cluster 1..10 'x -> prime? x
             ; => [[1 4 6 8 9 10] [2 3 5 7]]
             ..........
@@ -225,7 +225,7 @@ proc defineSymbols*() =
             ; => [[false [1 4 6 8 9 10]] [true [2 3 5 7]]]
             ..........
             #.raw flatten.once cluster.value 1..10 'x [
-                (prime? x)? -> "prime" 
+                (prime? x)? -> "prime"
                             -> "composite"
             ]
             ; => [composite:[1 4 6 8 9 10] prime:[2 3 5 7]]
@@ -265,7 +265,7 @@ proc defineSymbols*() =
             else: push newBlock(res)
 
     builtin "every?",
-        alias       = unaliased, 
+        alias       = unaliased,
         rule        = PrefixPrecedence,
         description = "check if every item in collection satisfies given condition",
         args        = {
@@ -278,7 +278,7 @@ proc defineSymbols*() =
         },
         returns     = {Logical},
         example     = """
-            if every? [2 4 6 8] 'x [even? x] 
+            if every? [2 4 6 8] 'x [even? x]
                 -> print "every number is an even integer"
             ; every number is an even integer
             ..........
@@ -316,7 +316,7 @@ proc defineSymbols*() =
                 push(newLogical(true))
 
     builtin "filter",
-        alias       = unaliased, 
+        alias       = unaliased,
         rule        = PrefixPrecedence,
         description = "get collection's items by filtering those that do not fulfil given condition",
         args        = {
@@ -405,7 +405,7 @@ proc defineSymbols*() =
 
             if (onlyFirst or onlyLast) and stoppedAt < items.len:
                 res.add(items[stoppedAt..items.len-1])
-            
+
             if onlyLast:
                 res.reverse()
 
@@ -413,7 +413,7 @@ proc defineSymbols*() =
             else: push newBlock(res)
 
     builtin "fold",
-        alias       = unaliased, 
+        alias       = unaliased,
         rule        = PrefixPrecedence,
         description = "left-fold given collection returning accumulator",
         args        = {
@@ -429,10 +429,10 @@ proc defineSymbols*() =
         returns     = {Block,Null,Nothing},
         example     = """
             fold 1..10 [x,y]-> x + y
-            ; => 55 (1+2+3+4..) 
+            ; => 55 (1+2+3+4..)
 
             fold 1..10 .seed:1 [x,y][ x * y ]
-            ; => 3628800 (10!) 
+            ; => 3628800 (10!)
             ..........
             fold 1..3 [x,y]-> x - y
             ; => -6
@@ -449,8 +449,8 @@ proc defineSymbols*() =
             ; => (1+(2+(3+(4+(5+0)))))
             ..........
             fold 1..10 [x y z] [
-                print [x y z] 
-                x + z - y 
+                print [x y z]
+                x + z - y
             ]
             ; 0 1 2
             ; 1 3 4
@@ -459,15 +459,15 @@ proc defineSymbols*() =
             ; 4 9 10
             ; => 5
             ..........
-            fold.with:'i 1..5 [x y][ 
-                print [i x y] 
+            fold.with:'i 1..5 [x y][
+                print [i x y]
                 i * x+y
             ]
-            ; 0 0 1 
-            ; 1 0 2 
-            ; 2 2 3 
-            ; 3 10 4 
-            ; 4 42 5 
+            ; 0 0 1
+            ; 1 0 2
+            ; 2 2 3
+            ; 3 10 4
+            ; 4 42 5
             ; => 188
         """:
             ##########################################################
@@ -503,7 +503,7 @@ proc defineSymbols*() =
             else: push(res)
 
     builtin "gather",
-        alias       = unaliased, 
+        alias       = unaliased,
         rule        = PrefixPrecedence,
         description = "group items in collection by block result and return as dictionary",
         args        = {
@@ -515,9 +515,18 @@ proc defineSymbols*() =
             "with"  : ({Literal},"use given index")
         },
         returns     = {Dictionary,Nothing},
-        # TODO(Iterators\gather) Add documentation example
+        # TODO(Iterators\gather) Add documentation example for `.with`
         #  labels: documentation, library, easy
         example     = """
+            print gather [1 2 3 4 5 6] 'x [
+                x % 2
+            ]
+            ; [1:[1 3 5] 0:[2 4 6]]
+            ...
+            print gather ["New York" "Washington" "Minnesota" "Montana" "New Hampshire" "New Mexico"] 'x [
+                size x
+            ]
+            ; [8:[New York] 10:[Washington New Mexico] 9:[Minnesota] 7:[Montana] 13:[New Hampshire]]
         """:
             ##########################################################
             let preevaled = evalOrGet(z)
@@ -542,7 +551,7 @@ proc defineSymbols*() =
             else: push newDictionary(res)
 
     builtin "loop",
-        alias       = unaliased, 
+        alias       = unaliased,
         rule        = PrefixPrecedence,
         description = "loop through collection, using given iterator and block",
         args        = {
@@ -581,7 +590,7 @@ proc defineSymbols*() =
                 name: "John"
                 surname: "Doe"
             ]
-            
+
             loop user [k v][
                 print [k "=>" v]
             ]
@@ -595,7 +604,7 @@ proc defineSymbols*() =
             ; 1 => one
             ; 2 => two
             ..........
-            loop.forever [1 2 3] => print 
+            loop.forever [1 2 3] => print
             ; 1 2 3 1 2 3 1 2 3 ...
         """:
             ##########################################################
@@ -610,7 +619,7 @@ proc defineSymbols*() =
                 discard
 
     builtin "map",
-        alias       = unaliased, 
+        alias       = unaliased,
         rule        = PrefixPrecedence,
         description = "map collection's items by applying given action",
         args        = {
@@ -633,17 +642,17 @@ proc defineSymbols*() =
             print arr
             ; 2 4 6 8 10
             ..........
-            map 1..6 [x y][ 
-                print ["mapping" x "and" y "->" x+y] 
+            map 1..6 [x y][
+                print ["mapping" x "and" y "->" x+y]
                 x+y
             ]
-            ; mapping 1 and 2 -> 3 
-            ; mapping 3 and 4 -> 7 
+            ; mapping 1 and 2 -> 3
+            ; mapping 3 and 4 -> 7
             ; mapping 5 and 6 -> 11
             ; => [3 7 11]
             ..........
-            map.with:'i ["one" "two" "three" "four"] 'x [ 
-                (even? i)? -> upper x -> x 
+            map.with:'i ["one" "two" "three" "four"] 'x [
+                (even? i)? -> upper x -> x
             ]
             ; => ["ONE" "two" "THREE" "four"]
         """:
@@ -667,7 +676,7 @@ proc defineSymbols*() =
             else: push newBlock(res)
 
     builtin "select",
-        alias       = unaliased, 
+        alias       = unaliased,
         rule        = PrefixPrecedence,
         description = "get collection's items that fulfil given condition",
         args        = {
@@ -757,7 +766,7 @@ proc defineSymbols*() =
             else: push newBlock(res)
 
     builtin "some?",
-        alias       = unaliased, 
+        alias       = unaliased,
         rule        = PrefixPrecedence,
         description = "check if any of collection's items satisfy given condition",
         args        = {
@@ -770,7 +779,7 @@ proc defineSymbols*() =
         },
         returns     = {Logical},
         example     = """
-            if some? [1 3 5 6 7] 'x [even? x] 
+            if some? [1 3 5 6 7] 'x [even? x]
                 -> print "at least one number is an even integer"
             ; at least one number is an even integer
             ..........
