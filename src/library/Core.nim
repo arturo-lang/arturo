@@ -476,7 +476,11 @@ proc defineSymbols*() =
                         else:
                             SetSym(w.s, y)
             else:
-                SetInPlace(y)
+                if y.readonly:
+                    SetInPlace(copyValue(y))
+                else:
+                    SetInPlace(y)
+                    
                 if y.kind==Function:
                     Arities[x.s] = y.arity
 
