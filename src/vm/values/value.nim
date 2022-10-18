@@ -101,7 +101,7 @@ let
 
     VNOTHING*       = Value(kind: Nothing, readonly: true)
 
-#--------
+    #--------
 
     NoAliasBinding*     = AliasBinding(precedence: PostfixPrecedence, name: nil)
 
@@ -551,6 +551,9 @@ proc copyValue*(v: Value): Value {.inline.} =
             when not defined(NOSQLITE):
                 if v.dbKind == SqliteDatabase: result = newDatabase(v.sqlitedb)
                 #elif v.dbKind == MysqlDatabase: result = newDatabase(v.mysqldb)
+
+        of Regex:
+            result = newRegex(v.rx)
 
         of Newline:
             echo "found NEWLINE when copying value!"
