@@ -533,7 +533,9 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Inline:      result = newInline(v.a)
         of Block:       
             if v.data.isNil: 
-                result = newBlock(v.a.map((vv)=>copyValue(vv)))
+                let newValues = cleanedBlockValuesCopy(v)
+                result = Value(kind: Block, a: newValues)
+                #result = newBlock(v.a.map((vv)=>copyValue(vv)))
             else:
                 result = newBlock(v.a.map((vv)=>copyValue(vv)), copyValue(v.data))
 
@@ -547,7 +549,11 @@ proc copyValue*(v: Value): Value {.inline.} =
                 if v.dbKind == SqliteDatabase: result = newDatabase(v.sqlitedb)
                 #elif v.dbKind == MysqlDatabase: result = newDatabase(v.mysqldb)
 
-        else: discard
+        of Newline:
+            echo "found NEWLINE when copying value!"
+        else: 
+            echo "found UNSUPPORTED value when copying value!"
+            discard
 
 #=======================================
 # Predicates
