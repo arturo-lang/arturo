@@ -90,6 +90,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
     proc addConst(consts: var seq[Value], v: Value, op: OpCode) =
         var indx = consts.indexOfValue(v)
         if indx == -1:
+            v.readonly = true
             consts.add(v)
             indx = consts.len-1
 
@@ -114,6 +115,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
         var indx = consts.indexOfValue(v)
         if indx == -1:
+            v.readonly = true
             consts.add(v)
             indx = consts.len-1
 
