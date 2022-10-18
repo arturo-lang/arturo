@@ -228,7 +228,7 @@ type
         True = 1,
         Maybe = 2
 
-    Value* {.acyclic.} = ref object 
+    Value* {.final,acyclic.} = ref object 
         info*: string
 
         case kind*: ValueKind:
