@@ -89,7 +89,7 @@ let VTRUE*  = Value(kind: Logical, b: True, readonly: true)
 let VFALSE* = Value(kind: Logical, b: False, readonly: true)
 let VMAYBE* = Value(kind: Logical, b: Maybe, readonly: true)
 
-let VNULL* = Value(kind: Null)
+let VNULL* = Value(kind: Null, readonly: true)
 
 let VEMPTYSTR* = Value(kind: String, s: "", readonly: true)
 let VEMPTYARR* = Value(kind: Block, a: @[], data: nil, readonly: true)
