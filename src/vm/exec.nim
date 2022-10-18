@@ -70,11 +70,18 @@ proc storeByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inlin
         if unlikely(stack.peek(0).kind==Function):
             Arities[cnst[idx].s] = stack.peek(0).arity
 
-        Syms[cnst[idx].s] =
-            when doPop:
-                move stack.pop()
-            else:
-                stack.peek(0)
+        if stack.peek(0).readonly:
+            Syms[cnst[idx].s] =
+                when doPop:
+                    copyValue(stack.pop())
+                else:
+                    copyValue(stack.peek(0))
+        else:
+            Syms[cnst[idx].s] =
+                when doPop:
+                    move stack.pop()
+                else:
+                    stack.peek(0)
 
 template loadByIndex(idx: int):untyped =
     hookProcProfiler("exec/loadByIndex"):
