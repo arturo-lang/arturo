@@ -9,7 +9,7 @@ permutations: function [arr][
     xs: new arr
     sign: 1
 
-    ret: new @[@[xs, sign]]
+    ret: @[@[new xs, sign]]
 
     while [true][
         while [d > 1][
@@ -28,7 +28,7 @@ permutations: function [arr][
         xs\[d]: tmp
 
         sign: neg sign
-        'ret ++ @[new @[xs, sign]]
+        'ret ++ @[@[new xs, sign]]
         c\[d]: c\[d] + 1
     ]
 
