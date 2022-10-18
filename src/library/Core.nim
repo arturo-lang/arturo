@@ -465,10 +465,16 @@ proc defineSymbols*() =
                 if y.kind==Block:
                     ensureCleaned(y)
                     for i,w in cleanX:
-                        SetSym(w.s, cleanY[i])
+                        if cleanY[i].readonly:
+                            SetSym(w.s, copyValue(cleanY[i]))
+                        else:
+                            SetSym(w.s, cleanY[i])
                 else:
                     for i,w in cleanX:
-                        SetSym(w.s, y)
+                        if y.readonly:
+                            SetSym(w.s, copyValue(y))
+                        else:
+                            SetSym(w.s, y)
             else:
                 SetInPlace(y)
                 if y.kind==Function:
