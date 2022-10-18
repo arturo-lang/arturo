@@ -230,6 +230,7 @@ type
 
     Value* {.final,acyclic.} = ref object 
         info*: string
+        readonly*: bool
 
         case kind*: ValueKind:
             of Null,
