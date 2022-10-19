@@ -464,22 +464,13 @@ proc defineSymbols*() =
                 ensureCleaned(x)
                 if y.kind==Block:
                     ensureCleaned(y)
-                    for i,w in cleanX:
-                        if cleanY[i].readonly:
-                            SetSym(w.s, copyValue(cleanY[i]))
-                        else:
-                            SetSym(w.s, cleanY[i])
+                    for i,w in pairs(cleanX):
+                        SetSym(w.s, cleanY[i], safe=true)
                 else:
-                    for i,w in cleanX:
-                        if y.readonly:
-                            SetSym(w.s, copyValue(y))
-                        else:
-                            SetSym(w.s, y)
+                    for w in items(cleanX):
+                        SetSym(w.s, y, safe=true)
             else:
-                if y.readonly:
-                    SetInPlace(copyValue(y))
-                else:
-                    SetInPlace(y)
+                SetInPlace(y, safe=true)
                     
                 if y.kind==Function:
                     Arities[x.s] = y.arity
@@ -575,11 +566,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             push(x)
-            #echo "emitting: ReturnTriggered"
             raise ReturnTriggered()
-            # vmReturn = true
-            # # return ReturnResult
-            # #return Syms
 
     builtin "switch",
         alias       = question, 

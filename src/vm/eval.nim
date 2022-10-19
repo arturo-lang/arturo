@@ -220,7 +220,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 let symalias = n.a[i+1].m
                 let aliased = Aliases.getOrDefault(symalias, NoAliasBinding)
                 if aliased != NoAliasBinding:
-                    let symfunc {.cursor.} = Syms[aliased.name.s]
+                    let symfunc {.cursor.} = GetSym(aliased.name.s)
 
                     if symfunc.kind==Function and aliased.precedence==InfixPrecedence:
                         i += step;
@@ -261,7 +261,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     # let's inspect the following symbol
 
                     i += 1
-                    if (i+1<childrenCount and n.a[i+1].kind == Word and Syms[n.a[i+1].s].kind == Function):
+                    if (i+1<childrenCount and n.a[i+1].kind == Word and GetSym(n.a[i+1].s).kind == Function):
                         let funcName {.cursor.} = n.a[i+1].s
                         let tmpFuncArity = TmpArities.getOrDefault(funcName, -1)
                         if tmpFuncArity != -1:
@@ -333,7 +333,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     let symalias = subnode.m
                     let aliased = Aliases.getOrDefault(symalias, NoAliasBinding)
                     if likely(aliased != NoAliasBinding):
-                        let symfunc {.cursor.} = Syms[aliased.name.s]
+                        let symfunc {.cursor.} = GetSym(aliased.name.s)
                         if symfunc.kind==Function:
                             if aliased.precedence==PrefixPrecedence:
                                 if symfunc.arity != 0:
@@ -602,7 +602,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         let symalias = node.m
                         let aliased = Aliases.getOrDefault(symalias, NoAliasBinding)
                         if likely(aliased != NoAliasBinding):
-                            let symfunc {.cursor.} = Syms[aliased.name.s]
+                            let symfunc {.cursor.} = GetSym(aliased.name.s)
                             if symfunc.kind==Function:
                                 if symfunc.fnKind == BuiltinFunction and symfunc.arity!=0:
                                     evalFunctionCall(symfunc, toHead=false, checkAhead=false):
