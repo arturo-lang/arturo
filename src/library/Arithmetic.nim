@@ -45,7 +45,7 @@ proc defineSymbols*() =
             add 'a 1           ; a: 5
         """:
             ##########################################################
-            if x.kind==Literal  : InPlace += y
+            if x.kind==Literal  : ensureInPlace(); InPlaced += y
             else                : push(x+y)
 
     builtin "dec",
@@ -64,7 +64,7 @@ proc defineSymbols*() =
             dec 'a             ; a: 3
         """:
             ##########################################################
-            if x.kind==Literal  : InPlace -= I1
+            if x.kind==Literal  : ensureInPlace(); InPlaced -= I1
             else                : push(x-I1)
         
     builtin "div",
@@ -85,7 +85,7 @@ proc defineSymbols*() =
             div 'a 3           ; a: 2
         """:
             ##########################################################
-            if x.kind==Literal  : InPlace /= y
+            if x.kind==Literal  : ensureInPlace(); InPlaced /= y
             else                : push(x/y)
 
     builtin "divmod",
@@ -108,7 +108,7 @@ proc defineSymbols*() =
             divmod 'a 4             ; a: [1, 2]
         """:
             ##########################################################
-            if x.kind==Literal  : InPlace /%= y
+            if x.kind==Literal  : ensureInPlace(); InPlaced /%= y
             else                : push(x/%y)
 
     builtin "fdiv",
@@ -128,7 +128,7 @@ proc defineSymbols*() =
             fdiv 'a 3          ; a: 2.0
         """:
             ##########################################################
-            if x.kind==Literal  : InPlace //= y
+            if x.kind==Literal  : ensureInPlace(); InPlaced //= y
             else                : push(x//y)
 
     builtin "inc",
@@ -147,7 +147,7 @@ proc defineSymbols*() =
             inc 'a             ; a: 5
         """:
             ##########################################################
-            if x.kind==Literal  : InPlace += I1
+            if x.kind==Literal  : ensureInPlace(); InPlaced += I1
             else                : push(x+I1)
 
     builtin "mod",
@@ -168,7 +168,7 @@ proc defineSymbols*() =
             mod 'a 3           ; a: 2
         """:
             ##########################################################
-            if x.kind==Literal  : InPlace %= y
+            if x.kind==Literal  : ensureInPlace(); InPlaced %= y
             else                : push(x%y)
 
     builtin "mul",
@@ -189,7 +189,7 @@ proc defineSymbols*() =
             mul 'a 2           ; a: 10
         """:
             ##########################################################
-            if x.kind==Literal  : InPlace *= y
+            if x.kind==Literal  : ensureInPlace(); InPlaced *= y
             else                : push(x*y)
 
     builtin "neg",
@@ -208,7 +208,7 @@ proc defineSymbols*() =
             neg 'a             ; a: -5
         """:
             ##########################################################
-            if x.kind==Literal  : InPlace *= I1M
+            if x.kind==Literal  : ensureInPlace(); InPlaced *= I1M
             else                : push(x * I1M)
 
     builtin "pow",
@@ -229,7 +229,7 @@ proc defineSymbols*() =
             pow 'a 2           ; a: 25
         """:
             ##########################################################
-            if x.kind==Literal  : InPlace ^= y
+            if x.kind==Literal  : ensureInPlace(); InPlaced ^= y
             else                : push(x^y)
 
     # TODO(Arithmetic) add `powmod` built-in function?
@@ -253,7 +253,7 @@ proc defineSymbols*() =
             sub 'a 2           ; a: 5
         """:
             ##########################################################
-            if x.kind==Literal  : InPlace -= y
+            if x.kind==Literal  : ensureInPlace(); InPlaced -= y
             else                : push(x-y)
 
 #=======================================

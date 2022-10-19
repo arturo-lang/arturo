@@ -62,12 +62,14 @@ proc defineSymbols*() =
             ##########################################################
             if (hadAttr("symmetric")):
                 if x.kind==Literal:
-                    SetInPlace(newBlock(toSeq(symmetricDifference(toHashSet(cleanedBlock(InPlace.a)), toHashSet(cleanedBlock(y.a))))))
+                    ensureInPlace()
+                    SetInPlace(newBlock(toSeq(symmetricDifference(toHashSet(cleanedBlock(InPlaced.a)), toHashSet(cleanedBlock(y.a))))))
                 else:
                     push(newBlock(toSeq(symmetricDifference(toHashSet(cleanedBlock(x.a)), toHashSet(cleanedBlock(y.a))))))
             else:
                 if x.kind==Literal:
-                    SetInPlace(newBlock(toSeq(difference(toHashSet(cleanedBlock(InPlace.a)), toHashSet(cleanedBlock(y.a))))))
+                    ensureInPlace()
+                    SetInPlace(newBlock(toSeq(difference(toHashSet(cleanedBlock(InPlaced.a)), toHashSet(cleanedBlock(y.a))))))
                 else:
                     push(newBlock(toSeq(difference(toHashSet(cleanedBlock(x.a)), toHashSet(cleanedBlock(y.a))))))
 
@@ -92,7 +94,8 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                SetInPlace(newBlock(toSeq(intersection(toHashSet(cleanedBlock(InPlace.a)), toHashSet(cleanedBlock(y.a))))))
+                ensureInPlace()
+                SetInPlace(newBlock(toSeq(intersection(toHashSet(cleanedBlock(InPlaced.a)), toHashSet(cleanedBlock(y.a))))))
             else:
                 push(newBlock(toSeq(intersection(toHashSet(cleanedBlock(x.a)), toHashSet(cleanedBlock(y.a))))))
 
@@ -111,7 +114,8 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                SetInPlace(newBlock(toSeq(powerset(toHashSet(cleanedBlock(InPlace.a)))).map((hs) => newBlock(toSeq(hs)))))
+                ensureInPlace()
+                SetInPlace(newBlock(toSeq(powerset(toHashSet(cleanedBlock(InPlaced.a)))).map((hs) => newBlock(toSeq(hs)))))
             else:
                 push(newBlock(toSeq(powerset(toHashSet(cleanedBlock(x.a))).map((hs) => newBlock(toSeq(hs))))))
 
@@ -248,7 +252,8 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                SetInPlace(newBlock(toSeq(union(toHashSet(cleanedBlock(InPlace.a)), toHashSet(cleanedBlock(y.a))))))
+                ensureInPlace()
+                SetInPlace(newBlock(toSeq(union(toHashSet(cleanedBlock(InPlaced.a)), toHashSet(cleanedBlock(y.a))))))
             else:
                 push(newBlock(toSeq(union(toHashSet(cleanedBlock(x.a)), toHashSet(cleanedBlock(y.a))))))
 

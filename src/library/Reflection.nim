@@ -416,7 +416,7 @@ proc defineSymbols*() =
                         RuntimeError_AliasNotFound($(x.m))
                 else:
                     searchable = x.s
-                    value = InPlace
+                    value = FetchSym(x.s)
                 
                 if (hadAttr("get")):
                     push(newDictionary(getInfo(searchable, value, Aliases)))

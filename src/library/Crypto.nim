@@ -58,7 +58,8 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                InPlace.s = InPlaced.s.crc32()
+                ensureInPlace()
+                InPlaced.s = InPlaced.s.crc32()
             else:
                 push(newString(x.s.crc32()))
 
@@ -83,12 +84,14 @@ proc defineSymbols*() =
             ##########################################################
             if (hadAttr("url")):
                 if x.kind==Literal:
-                    InPlace.s = InPlaced.s.decodeUrl()
+                    ensureInPlace()
+                    InPlaced.s = InPlaced.s.decodeUrl()
                 else:
                     push(newString(x.s.decodeUrl()))
             else:
                 if x.kind==Literal:
-                    InPlace.s = InPlaced.s.decode()
+                    ensureInPlace()
+                    InPlaced.s = InPlaced.s.decode()
                 else:
                     push(newString(x.s.decode()))
 
@@ -122,7 +125,8 @@ proc defineSymbols*() =
                 let spaces = (hadAttr("spaces"))
                 let slashes = (hadAttr("slashes"))
                 if x.kind==Literal:
-                    InPlace.s = InPlaced.s.urlencode(encodeSpaces=spaces, encodeSlashes=slashes)
+                    ensureInPlace()
+                    InPlaced.s = InPlaced.s.urlencode(encodeSpaces=spaces, encodeSlashes=slashes)
                 else:
                     push(newString(x.s.urlencode(encodeSpaces=spaces, encodeSlashes=slashes)))
 
@@ -134,7 +138,8 @@ proc defineSymbols*() =
                         dest = aTo.s
 
                     if x.kind==Literal:
-                        InPlace.s = convert(InPlaced.s, srcEncoding=src, destEncoding=dest)
+                        ensureInPlace()
+                        InPlaced.s = convert(InPlaced.s, srcEncoding=src, destEncoding=dest)
                     else:
                         push(newString(convert(x.s, srcEncoding=src, destEncoding=dest)))
                 else:
@@ -147,7 +152,8 @@ proc defineSymbols*() =
                     var dest = aTo.s
 
                     if x.kind==Literal:
-                        InPlace.s = convert(InPlaced.s, srcEncoding=src, destEncoding=dest)
+                        ensureInPlace()
+                        InPlaced.s = convert(InPlaced.s, srcEncoding=src, destEncoding=dest)
                     else:
                         push(newString(convert(x.s, srcEncoding=src, destEncoding=dest)))
                 else:
@@ -156,7 +162,8 @@ proc defineSymbols*() =
 
             else:
                 if x.kind==Literal:
-                    InPlace.s = InPlaced.s.encode()
+                    ensureInPlace()
+                    InPlaced.s = InPlaced.s.encode()
                 else:
                     push(newString(x.s.encode()))
 
@@ -185,12 +192,14 @@ proc defineSymbols*() =
                 ##########################################################
                 if (hadAttr("sha")):
                     if x.kind==Literal:
-                        SetInPlace(newString(($(secureHash(InPlace.s))).toLowerAscii()))
+                        ensureInPlace()
+                        SetInPlace(newString(($(secureHash(InPlaced.s))).toLowerAscii()))
                     else:
                         push(newString(($(secureHash(x.s))).toLowerAscii()))
                 else:
                     if x.kind==Literal:
-                        SetInPlace(newString(($(toMD5(InPlace.s))).toLowerAscii()))
+                        ensureInPlace()
+                        SetInPlace(newString(($(toMD5(InPlaced.s))).toLowerAscii()))
                     else:
                         push(newString(($(toMD5(x.s))).toLowerAscii()))
 
