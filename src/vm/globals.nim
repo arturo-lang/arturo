@@ -105,7 +105,7 @@ proc checkInPlaced*(ipv: Value, varname: string) {.inline.} =
     if unlikely(ipv.readonly):
         RuntimeError_CannotModifyConstant(varname)
 
-template doInPlace*(): untyped = 
+template ensureInPlace*(): untyped = 
     var InPlaced {.cursor,inject.} = Syms.getOrDefault(x.s, nil)
     InPlaced.checkInPlaced(x.s)
     
