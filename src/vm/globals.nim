@@ -99,6 +99,26 @@ template GetSym*(s: string): untyped =
 
 # In-Place symbols
 
+template InPlacement*(): untyped = 
+    var InPlacer {.cursor,inject.} = Syms.getOrDefault(x.s, nil)
+    if unlikely(InPlacer.isNil):
+        RuntimeError_SymbolNotFound(x.s, suggestAlternative(x.s))
+    if InPlacer.readonly:
+        RuntimeError_CannotModifyConstant(x.s)
+
+# macro InPlacement*(): untyped =
+#     result = quote do:
+#         let InPlacer {.cursor.} = Syms.getOrDefault(x.s, nil)
+#         if unlikely(InPlacer.isNil):
+#             RuntimeError_SymbolNotFound(x.s, suggestAlternative(x.s))
+#         if InPlacer.readonly:
+#             RuntimeError_CannotModifyConstant(x.s)
+
+#     else:
+#         result = quote do:
+#             let `cleanName` {.cursor.} = `name`.a
+
+
 # TODO(Globals/InPlace) Should convert to proc?
 #  labels: performance, benchmark
 template InPlace*(): untyped =
