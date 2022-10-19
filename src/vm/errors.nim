@@ -222,6 +222,11 @@ proc RuntimeError_SymbolNotFound*(sym: string, alter: seq[string]) =
           "symbol not found: " & sym & ";" & 
           "perhaps you meant... " & alter.map((x) => "_" & x & "_ ?").join(sep)
 
+proc RuntimeError_CannotModifyConstant*(sym: string) =
+    panic RuntimeError,
+          "cannot perform in-place modification: " & sym & ";" & 
+          "value is a readonly constant"
+
 proc RuntimeError_FileNotFound*(path: string) =
     panic RuntimeError,
           "file not found: " & path
