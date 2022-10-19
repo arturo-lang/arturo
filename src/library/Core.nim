@@ -464,22 +464,26 @@ proc defineSymbols*() =
                 ensureCleaned(x)
                 if y.kind==Block:
                     ensureCleaned(y)
-                    for i,w in cleanX:
-                        if cleanY[i].readonly:
-                            SetSym(w.s, copyValue(cleanY[i]))
-                        else:
-                            SetSym(w.s, cleanY[i])
+                    for i,w in pairs(cleanX):
+                        SetSym(w.s, cleanY[i], safe=true)
+                        # SetSym(w.s, w, safe=true)
+                        # if cleanY[i].readonly:
+                        #     SetSym(w.s, copyValue(cleanY[i]))
+                        # else:
+                        #     SetSym(w.s, cleanY[i])
                 else:
-                    for i,w in cleanX:
-                        if y.readonly:
-                            SetSym(w.s, copyValue(y))
-                        else:
-                            SetSym(w.s, y)
+                    for w in items(cleanX):
+                        SetSym(w.s, y, safe=true)
+                        # if y.readonly:
+                        #     SetSym(w.s, copyValue(y))
+                        # else:
+                        #     SetSym(w.s, y)
             else:
-                if y.readonly:
-                    SetInPlace(copyValue(y))
-                else:
-                    SetInPlace(y)
+                SetInPlace(y, safe=true)
+                # if y.readonly:
+                #     SetInPlace(copyValue(y))
+                # else:
+                #     SetInPlace(y)
                     
                 if y.kind==Function:
                     Arities[x.s] = y.arity
