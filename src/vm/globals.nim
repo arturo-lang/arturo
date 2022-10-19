@@ -98,7 +98,7 @@ template SetInPlace*(v: Value): untyped =
 template SymExists*(s: string): untyped =
     Syms.hasKey(s)
 
-proc GetSym*(s: string, unsafe: static bool = false): Value {.inline.} =
+proc FetchSym*(s: string, unsafe: static bool = false): Value {.inline.} =
     when not unsafe:
         if (result = Syms.getOrDefault(s, nil); unlikely(result.isNil)):
             RuntimeError_SymbolNotFound(s, suggestAlternative(s))
@@ -108,5 +108,5 @@ proc GetSym*(s: string, unsafe: static bool = false): Value {.inline.} =
 template SetSym*(s: string, v: Value): untyped =
     Syms[s] = v
 
-template WithSym*(s: string): untyped =
+template GetSym*(s: string): untyped =
     Syms[s]
