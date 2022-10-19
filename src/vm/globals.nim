@@ -115,6 +115,13 @@ template InPlace*(): untyped =
         #  labels: performance, enhancement
         if unlikely(not SymExists(x.s)):
             RuntimeError_SymbolNotFound(x.s, suggestAlternative(x.s))
+
+        # TODO(Globals/InPlace) Should make sure the symbol is not a *readonly* constant
+        #  This is done already, but it makes the whole thing even more inefficient
+        #  labels: enhancement, values
+        if unlikely(GetSym(x.s).readonly):
+            RuntimeError_CannotModifyConstant(x.s)
+
         GetSym(x.s)
 
 template InPlaced*(): untyped =
