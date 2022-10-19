@@ -147,7 +147,19 @@ template handleVMErrors*(blk: untyped): untyped =
         blk
     except:
         let e = getCurrentException()
-        showVMErrors(e)
+        # TODO(VM/vm) Better handling for KeyError exceptions
+        #  Since they are not currently handled through GetSym, we capture them here
+        #  But it would be better if they were directly handled in the error module
+        #  labels: vm, error handling, enhancement
+        if $(e.name) in [KeyError]:
+            try:
+                let symb = e.msg.replace("key not found: ", "")
+                RuntimeError_SymbolNotFound(symb, suggestAlternative(symb))
+            except:
+                let e = getCurrentException()
+                showVMErrors(e)
+        else:
+            showVMErrors(e)
 
         if e.name == ProgramError:
             let code = parseInt(e.msg.split(";;")[1].split("<:>")[0])
