@@ -71,6 +71,8 @@ template SetArrayIndex*(arr: ValueArray, indx: int, v: Value): untyped =
         RuntimeError_OutOfBounds(indx, arr.len-1)
     arr[indx] = v
 
+# TODO(Globals/InPlace) Should convert to proc?
+#  labels: performance, benchmark
 template InPlace*(): untyped =
     when defined(PROFILER):
         hookProcProfiler("globals/InPlace"):
@@ -79,6 +81,10 @@ template InPlace*(): untyped =
             discard Syms[x.s]
         Syms[x.s]
     else:
+        # TODO(Globals/InPlace) Inefficient implementation
+        #  In case the variable exists, which it most likely does, we are doing a double lookup. 
+        #  We should be able to avoid this.
+        #  labels: performance, enhancement
         if unlikely(not Syms.hasKey(x.s)):
             RuntimeError_SymbolNotFound(x.s, suggestAlternative(x.s))
         Syms[x.s]
