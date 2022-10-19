@@ -1198,7 +1198,7 @@ proc `/=`*(x: var Value, y: Value) =
             if likely(x.iKind==NormalInteger):
                 if likely(y.iKind==NormalInteger):
                     try:
-                        x = newInteger(x.i div y.i)
+                        x.i = x.i div y.i
                     except OverflowDefect:
                         when defined(WEB):
                             x = newInteger(big(x.i) div big(y.i))

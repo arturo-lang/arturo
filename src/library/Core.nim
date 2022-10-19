@@ -143,7 +143,7 @@ proc defineSymbols*() =
                 var fun: Value
 
                 if x.kind==Literal or x.kind==String:
-                    fun = InPlace
+                    fun = FetchSym(x.s)#InPlace
                 else:
                     fun = x
 
@@ -790,7 +790,7 @@ proc defineSymbols*() =
             print g 10              ; 12
         """:
             ##########################################################
-            push(InPlace)
+            push(FetchSym(x.s))#push(InPlace)
 
     builtin "when?",
         alias       = unaliased, 

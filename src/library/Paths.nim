@@ -291,9 +291,10 @@ proc defineSymbols*() =
                 ##########################################################
                 if (hadAttr("executable")):
                     if x.kind==Literal:
+                        ensureInPlace()
                         if (hadAttr("tilde")):
-                            InPlace.s = InPlaced.s.expandTilde()
-                        InPlace.s.normalizeExe()
+                            InPlaced.s = InPlaced.s.expandTilde()
+                        InPlaced.s.normalizeExe()
                     else:
                         var ret: string
                         if (hadAttr("tilde")):
@@ -304,9 +305,10 @@ proc defineSymbols*() =
                         push(newString(ret))
                 else:
                     if x.kind==Literal:
+                        ensureInPlace()
                         if (hadAttr("tilde")):
-                            InPlace.s = InPlaced.s.expandTilde()
-                        InPlace.s.normalizePath()
+                            InPlaced.s = InPlaced.s.expandTilde()
+                        InPlaced.s.normalizePath()
                     else:
                         if (hadAttr("tilde")):
                             push(newString(normalizedPath(x.s.expandTilde())))
