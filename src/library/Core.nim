@@ -575,11 +575,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             push(x)
-            #echo "emitting: ReturnTriggered"
             raise ReturnTriggered()
-            # vmReturn = true
-            # # return ReturnResult
-            # #return Syms
 
     builtin "switch",
         alias       = question, 

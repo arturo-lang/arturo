@@ -107,3 +107,6 @@ proc GetSym*(s: string, unsafe: static bool = false): Value {.inline.} =
 
 template SetSym*(s: string, v: Value): untyped =
     Syms[s] = v
+
+template WithSym*(s: string): untyped =
+    Syms[s]
