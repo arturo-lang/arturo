@@ -83,7 +83,7 @@ proc storeByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inlin
 
 template loadByIndex(idx: int):untyped =
     hookProcProfiler("exec/loadByIndex"):
-        stack.push(GetSym(cnst[idx].s))
+        stack.push(FetchSym(cnst[idx].s))
 
 template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
     if f.fnKind==UserFunction:
@@ -99,7 +99,7 @@ template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
         f.action()
 
 template callByName*(symIndx: string):untyped =
-    let fun = GetSym(symIndx)
+    let fun = FetchSym(symIndx)
     callFunction(fun, symIndx)
 
 template callByIndex(idx: int):untyped =
@@ -265,7 +265,7 @@ template execInternal*(path: string): untyped =
     )
 
 template callInternal*(fname: string, getValue: bool, args: varargs[Value]): untyped =
-    let fun = WithSym(fname)
+    let fun = GetSym(fname)
     for v in args.reversed:
         push(v)
 

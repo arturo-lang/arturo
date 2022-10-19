@@ -156,7 +156,7 @@ template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, descriptio
 #  labels: vm, library, enhancement, open discussion
 template constant*(n: string, alias: SymbolKind, description: string, v: Value):untyped =
     SetSym(n, v)
-    WithSym(n).info = "[" & static (instantiationInfo().filename).replace(".nim") & ":" & $(static (instantiationInfo().line)) & "] " & description
+    GetSym(n).info = "[" & static (instantiationInfo().filename).replace(".nim") & ":" & $(static (instantiationInfo().line)) & "] " & description
     when alias != unaliased:
         Aliases[alias] = AliasBinding(
             precedence: PrefixPrecedence,
