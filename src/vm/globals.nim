@@ -108,9 +108,14 @@ proc checkInPlaced*(ipv: Value, varname: string) {.inline.} =
     if unlikely(ipv.readonly):
         RuntimeError_CannotModifyConstant(varname)
 
+template InPlaced*(): untyped =
+    InPlaceAddr[]
+
 template ensureInPlace*(): untyped = 
-    var InPlaced {.cursor,inject.} = Syms.getOrDefault(x.s, nil)
-    InPlaced.checkInPlaced(x.s)
+    var InPlaceAddr {.inject.} = addr Syms[x.s] #Syms.getOrDefault(x.s, nil)
+    if InPlaced.readonly:
+        RuntimeError_CannotModifyConstant(x.s)
+    #InPlaced.checkInPlaced(x.s)
     
 
 # macro InPlacement*(): untyped =
