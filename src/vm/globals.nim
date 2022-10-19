@@ -99,6 +99,9 @@ template GetSym*(s: string): untyped =
 
 # In-Place symbols
 
+template PreInPlaced*(): untyped =
+    Syms[x.s]
+
 proc checkInPlaced*(ipv: Value, varname: string) {.inline.} =
     if unlikely(ipv.isNil):
         RuntimeError_SymbolNotFound(varname, suggestAlternative(varname))
@@ -153,3 +156,4 @@ template ensureInPlace*(): untyped =
 
 template SetInPlace*(v: Value, safe: static bool = false): untyped =
     SetSym(x.s, v, safe)
+
