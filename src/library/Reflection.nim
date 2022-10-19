@@ -409,7 +409,7 @@ proc defineSymbols*() =
                     for (sym, binding) in pairs(Aliases):
                         if sym == x.m:
                             searchable = binding.name.s
-                            value = GetSym(searchable)
+                            value = FetchSym(searchable)
                             break
 
                     if value.isNil:

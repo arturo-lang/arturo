@@ -36,7 +36,7 @@ var
     Libraries* {.global.} : seq[BuiltinAction]
 
 #=======================================
-# Methods
+# Helpers
 #=======================================
 
 func suggestAlternative*(s: string, reference: ValueDict = Syms): seq[string] {.inline.} =
@@ -55,6 +55,8 @@ func suggestAlternative*(s: string, reference: ValueDict = Syms): seq[string] {.
 # Methods
 #=======================================
 
+# Safe Dictionary/Array access
+
 template GetKey*(dict: ValueDict, key: string): untyped =
     let toRet = dict.getOrDefault(key, nil)
     if unlikely(toRet.isNil):
@@ -71,39 +73,52 @@ template SetArrayIndex*(arr: ValueArray, indx: int, v: Value): untyped =
         RuntimeError_OutOfBounds(indx, arr.len-1)
     arr[indx] = v
 
-# TODO(Globals/InPlace) Should convert to proc?
-#  labels: performance, benchmark
-template InPlace*(): untyped =
-    when defined(PROFILER):
-        hookProcProfiler("globals/InPlace"):
-            if unlikely(not Syms.hasKey(x.s)):
-                RuntimeError_SymbolNotFound(x.s, suggestAlternative(x.s))
-            discard Syms[x.s]
-        Syms[x.s]
-    else:
-        # TODO(Globals/InPlace) Inefficient implementation
-        #  In case the variable exists, which it most likely does, we are doing a double lookup. 
-        #  We should be able to avoid this.
-        #  labels: performance, enhancement
-        if unlikely(not Syms.hasKey(x.s)):
-            RuntimeError_SymbolNotFound(x.s, suggestAlternative(x.s))
-        Syms[x.s]
-
-template InPlaced*(): untyped =
-    Syms[x.s]
-
-template SetInPlace*(v: Value): untyped =
-    Syms[x.s] = v
+# Symbol table
 
 template SymExists*(s: string): untyped =
     Syms.hasKey(s)
 
-proc GetSym*(s: string, unsafe: static bool = false): Value {.inline.} =
+proc FetchSym*(s: string, unsafe: static bool = false): Value {.inline.} =
     when not unsafe:
         if (result = Syms.getOrDefault(s, nil); unlikely(result.isNil)):
             RuntimeError_SymbolNotFound(s, suggestAlternative(s))
     else:
         Syms[s]
 
-template SetSym*(s: string, v: Value): untyped =
-    Syms[s] = v
+template SetSym*(s: string, v: Value, safe: static bool = false): untyped =
+    when safe:
+        if v.readonly:
+            Syms[s] = copyValue(v)
+        else:
+            Syms[s] = v
+    else:
+        Syms[s] = v
+
+template GetSym*(s: string): untyped =
+    Syms[s]
+
+# In-Place symbols
+
+# TODO(Globals/InPlace) Should convert to proc?
+#  labels: performance, benchmark
+template InPlace*(): untyped =
+    when defined(PROFILER):
+        hookProcProfiler("globals/InPlace"):
+            if unlikely(not SymExists(x.s)):
+                RuntimeError_SymbolNotFound(x.s, suggestAlternative(x.s))
+            discard GetSym(x.s)
+        GetSym(x.s)
+    else:
+        # TODO(Globals/InPlace) Inefficient implementation
+        #  In case the variable exists, which it most likely does, we are doing a double lookup. 
+        #  We should be able to avoid this.
+        #  labels: performance, enhancement
+        if unlikely(not SymExists(x.s)):
+            RuntimeError_SymbolNotFound(x.s, suggestAlternative(x.s))
+        GetSym(x.s)
+
+template InPlaced*(): untyped =
+    GetSym(x.s)
+
+template SetInPlace*(v: Value, safe: static bool = false): untyped =
+    SetSym(x.s, v, safe)
