@@ -38,7 +38,7 @@ template iterableItemsFromLiteralParam(prm: untyped): ValueArray =
     elif InPlaced.kind==Integer:
         (toSeq(1..InPlaced.i)).map((w) => newInteger(w))
     else: # block or inline
-        cleanedBlockValuesCopy(InPlaced)
+        cleanedBlockValuesCopy(InPlaced())
 
 func iterableItemsFromParam(prm: Value): ValueArray {.inline,enforceNoRaises.} =
     if prm.kind==Dictionary:
