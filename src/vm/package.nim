@@ -61,7 +61,7 @@ proc getUsedLibraryFunctions(code: Value): seq[string] =
     result.sort()
 
 func getUsedLibraryModules(funcs: seq[string]): seq[string] =
-    result = deduplicate(funcs.map((f) => getInfo(f, Syms[f], Aliases)["module"].s))
+    result = deduplicate(funcs.map((f) => getInfo(f, WithSym(f), Aliases)["module"].s))
 
     result.sort()
 

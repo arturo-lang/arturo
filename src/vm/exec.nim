@@ -71,17 +71,15 @@ proc storeByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inlin
             Arities[cnst[idx].s] = stack.peek(0).arity
 
         if stack.peek(0).readonly:
-            Syms[cnst[idx].s] =
-                when doPop:
-                    copyValue(stack.pop())
-                else:
-                    copyValue(stack.peek(0))
+            SetSym(cnst[idx].s,
+                when doPop: copyValue(stack.pop())
+                else: copyValue(stack.peek(0))
+            )
         else:
-            Syms[cnst[idx].s] =
-                when doPop:
-                    move stack.pop()
-                else:
-                    stack.peek(0)
+            SetSym(cnst[idx].s,
+                when doPop: move stack.pop()
+                else: stack.peek(0)
+            )
 
 template loadByIndex(idx: int):untyped =
     hookProcProfiler("exec/loadByIndex"):
@@ -180,7 +178,7 @@ proc execBlock*(
             if not imports.isNil:
                 savedSyms = Syms
                 for k,v in pairs(imports.d):
-                    Syms[k] = v
+                    SetSym(k, v)
 
         let evaled = 
             when not hasEval:   
@@ -214,7 +212,7 @@ proc execBlock*(
                 else:
                     for k in exports.a:
                         if (let newSymsKey = newSyms.getOrDefault(k.s, nil); not newSymsKey.isNil):
-                            Syms[k.s] = newSymsKey
+                            SetSym(k.s, newSymsKey)
             else:
                 when hasArgs:
                     for arg in args.a:
@@ -267,7 +265,7 @@ template execInternal*(path: string): untyped =
     )
 
 template callInternal*(fname: string, getValue: bool, args: varargs[Value]): untyped =
-    let fun = Syms[fname]
+    let fun = WithSym(fname)
     for v in args.reversed:
         push(v)
 
@@ -302,7 +300,7 @@ proc doExec*(cnst: ValueArray, it: ByteArray, args: Value = nil): ValueDict =
     if not args.isNil:
         for arg in args.a:
             # pop argument and set it
-            Syms[arg.s] = move stack.pop()
+            SetSym(arg.s, move stack.pop())
 
     while true:
         {.computedGoTo.}

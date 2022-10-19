@@ -134,7 +134,7 @@ template initialize*(args: seq[string], filename: string, isFile:bool, scriptDat
     Memoizer = initOrderedTable[(string,Hash),Value]()
 
     if portableData != "":
-        Syms["_portable"] = valueFromJson(portableData)
+        SetSym("_portable", valueFromJson(portableData))
 
     # library
     setupLibrary()
