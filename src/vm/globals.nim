@@ -99,12 +99,16 @@ template GetSym*(s: string): untyped =
 
 # In-Place symbols
 
-template InPlacement*(): untyped = 
-    var InPlacer {.cursor,inject.} = Syms.getOrDefault(x.s, nil)
-    if unlikely(InPlacer.isNil):
-        RuntimeError_SymbolNotFound(x.s, suggestAlternative(x.s))
-    if InPlacer.readonly:
-        RuntimeError_CannotModifyConstant(x.s)
+proc checkInPlaced*(ipv: Value, varname: string) {.inline.} =
+    if unlikely(ipv.isNil):
+        RuntimeError_SymbolNotFound(varname, suggestAlternative(varname))
+    if unlikely(ipv.readonly):
+        RuntimeError_CannotModifyConstant(varname)
+
+template doInPlace*(): untyped = 
+    var InPlaced {.cursor,inject.} = Syms.getOrDefault(x.s, nil)
+    InPlaced.checkInPlaced(x.s)
+    
 
 # macro InPlacement*(): untyped =
 #     result = quote do:
@@ -119,33 +123,33 @@ template InPlacement*(): untyped =
 #             let `cleanName` {.cursor.} = `name`.a
 
 
-# TODO(Globals/InPlace) Should convert to proc?
-#  labels: performance, benchmark
-template InPlace*(): untyped =
-    when defined(PROFILER):
-        hookProcProfiler("globals/InPlace"):
-            if unlikely(not SymExists(x.s)):
-                RuntimeError_SymbolNotFound(x.s, suggestAlternative(x.s))
-            discard GetSym(x.s)
-        GetSym(x.s)
-    else:
-        # TODO(Globals/InPlace) Inefficient implementation
-        #  In case the variable exists, which it most likely does, we are doing a double lookup. 
-        #  We should be able to avoid this.
-        #  labels: performance, enhancement
-        if unlikely(not SymExists(x.s)):
-            RuntimeError_SymbolNotFound(x.s, suggestAlternative(x.s))
+# # TODO(Globals/InPlace) Should convert to proc?
+# #  labels: performance, benchmark
+# template InPlace*(): untyped =
+#     when defined(PROFILER):
+#         hookProcProfiler("globals/InPlace"):
+#             if unlikely(not SymExists(x.s)):
+#                 RuntimeError_SymbolNotFound(x.s, suggestAlternative(x.s))
+#             discard GetSym(x.s)
+#         GetSym(x.s)
+#     else:
+#         # TODO(Globals/InPlace) Inefficient implementation
+#         #  In case the variable exists, which it most likely does, we are doing a double lookup. 
+#         #  We should be able to avoid this.
+#         #  labels: performance, enhancement
+#         if unlikely(not SymExists(x.s)):
+#             RuntimeError_SymbolNotFound(x.s, suggestAlternative(x.s))
 
-        # TODO(Globals/InPlace) Should make sure the symbol is not a *readonly* constant
-        #  This is done already, but it makes the whole thing even more inefficient
-        #  labels: enhancement, values
-        if unlikely(GetSym(x.s).readonly):
-            RuntimeError_CannotModifyConstant(x.s)
+#         # TODO(Globals/InPlace) Should make sure the symbol is not a *readonly* constant
+#         #  This is done already, but it makes the whole thing even more inefficient
+#         #  labels: enhancement, values
+#         if unlikely(GetSym(x.s).readonly):
+#             RuntimeError_CannotModifyConstant(x.s)
 
-        GetSym(x.s)
+#         GetSym(x.s)
 
-template InPlaced*(): untyped =
-    GetSym(x.s)
+# template InPlaced*(): untyped =
+#     GetSym(x.s)
 
 template SetInPlace*(v: Value, safe: static bool = false): untyped =
     SetSym(x.s, v, safe)
