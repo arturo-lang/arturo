@@ -85,8 +85,14 @@ proc FetchSym*(s: string, unsafe: static bool = false): Value {.inline.} =
     else:
         Syms[s]
 
-template SetSym*(s: string, v: Value): untyped =
-    Syms[s] = v
+template SetSym*(s: string, v: Value, safe: static bool = false): untyped =
+    when safe:
+        if v.readonly:
+            Syms[s] = copyValue(v)
+        else:
+            Syms[s] = v
+    else:
+        Syms[s] = v
 
 template GetSym*(s: string): untyped =
     Syms[s]
@@ -114,5 +120,5 @@ template InPlace*(): untyped =
 template InPlaced*(): untyped =
     GetSym(x.s)
 
-template SetInPlace*(v: Value): untyped =
-    SetSym(x.s, v)
+template SetInPlace*(v: Value, safe: static bool = false): untyped =
+    SetSym(x.s, v, safe)
