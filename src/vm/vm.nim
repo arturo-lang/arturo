@@ -151,7 +151,7 @@ template handleVMErrors*(blk: untyped): untyped =
         #  Since they are not currently handled through GetSym, we capture them here
         #  But it would be better if they were directly handled in the error module
         #  labels: vm, error handling, enhancement
-        if e is KeyError:
+        if e of KeyError:
             try:
                 let symb = e.msg.replace("key not found: ", "")
                 RuntimeError_SymbolNotFound(symb, suggestAlternative(symb))
