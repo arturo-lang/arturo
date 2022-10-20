@@ -224,8 +224,8 @@ proc RuntimeError_SymbolNotFound*(sym: string, alter: seq[string]) =
 
 proc RuntimeError_CannotModifyConstant*(sym: string) =
     panic RuntimeError,
-          "cannot perform in-place modification: " & sym & ";" & 
-          "value is a readonly constant"
+          "value points to a readonly constant: " & sym & ";" &
+          "which cannot be modified in-place"
 
 proc RuntimeError_FileNotFound*(path: string) =
     panic RuntimeError,
