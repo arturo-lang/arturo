@@ -195,7 +195,7 @@ proc defineSymbols*() =
                 else:
                     res.add(newBlock(currentSet))
 
-            if withLiteral: PreInPlaced = newBlock(move res)
+            if withLiteral: RawInPlaced = newBlock(move res)
             else: push newBlock(res)
 
     builtin "cluster",
@@ -262,7 +262,7 @@ proc defineSymbols*() =
                 for v in sets.values:
                     res.add(newBlock(v))
 
-            if withLiteral: PreInPlaced = newBlock(move res)
+            if withLiteral: RawInPlaced = newBlock(move res)
             else: push newBlock(res)
 
     builtin "every?",
@@ -410,7 +410,7 @@ proc defineSymbols*() =
             if onlyLast:
                 res.reverse()
 
-            if withLiteral: PreInPlaced = newBlock(move res)
+            if withLiteral: RawInPlaced = newBlock(move res)
             else: push newBlock(res)
 
     builtin "fold",
@@ -500,7 +500,7 @@ proc defineSymbols*() =
             iterateThrough(withIndex, y, items, doForever, true, doRightFold, capturing=false):
                 res = move stack.pop()
 
-            if withLiteral: PreInPlaced = res
+            if withLiteral: RawInPlaced = res
             else: push(res)
 
     builtin "gather",
@@ -549,7 +549,7 @@ proc defineSymbols*() =
                 discard res.hasKeyOrPut(popped, newBlock())
                 res[popped].a.add(capturedItems)
 
-            if withLiteral: PreInPlaced = newDictionary(move res)
+            if withLiteral: RawInPlaced = newDictionary(move res)
             else: push newDictionary(res)
 
     builtin "loop",
@@ -674,7 +674,7 @@ proc defineSymbols*() =
             iterateThrough(withIndex, y, items, doForever, false, false, capturing=false):
                 res.add(move stack.pop())
 
-            if withLiteral: PreInPlaced = newBlock(move res)
+            if withLiteral: RawInPlaced = newBlock(move res)
             else: push newBlock(res)
 
     builtin "select",
@@ -764,7 +764,7 @@ proc defineSymbols*() =
                     startFrom = rlen-elemLimit
                 res = res[startFrom..rlen-1]
 
-            if withLiteral: PreInPlaced = newBlock(move res)
+            if withLiteral: RawInPlaced = newBlock(move res)
             else: push newBlock(res)
 
     builtin "some?",
