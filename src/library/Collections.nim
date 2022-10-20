@@ -71,7 +71,8 @@ proc defineSymbols*() =
             #  https://github.com/arturo-lang/benchmarks/blob/main/results/17-8-2022/micro.md
             #  labels: enhancement, library, performance
             if x.kind == Literal:
-                if InPlace.kind == String:
+                ensureInPlace()
+                if InPlaced.kind == String:
                     if y.kind == String:
                         InPlaced.s &= y.s
                     elif y.kind == Char:
@@ -130,7 +131,8 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind == Literal:
-                if InPlace.kind == String:
+                ensureInPlace()
+                if InPlaced.kind == String:
                     InPlaced.s = InPlaced.s[0..^2]
                 elif InPlaced.kind == Block:
                     if InPlaced.a.len > 0:
@@ -327,7 +329,8 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind == Literal:
-                if InPlace.kind == String:
+                ensureInPlace()
+                if InPlaced.kind == String:
                     InPlaced.s = InPlaced.s[y.i..^1]
                 elif InPlaced.kind == Block:
                     if InPlaced.a.len > 0:
@@ -357,7 +360,8 @@ proc defineSymbols*() =
             empty 'str            ; str: ""
         """:
             ##########################################################
-            case InPlace.kind:
+            ensureInPlace()
+            case InPlaced.kind:
                 of String: InPlaced.s = ""
                 of Block: InPlaced.a = @[]
                 of Dictionary: InPlaced.d = initOrderedTable[string, Value]()
@@ -407,7 +411,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind == Literal:
-                discard InPlace
+                ensureInPlace()
                 for k, v in pairs(y.d):
                     InPlaced.d[k] = v
             else:
@@ -481,7 +485,8 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind == Literal:
-                InPlace = InPlaced.flattened(once = hadAttr("once"))
+                ensureInPlace()
+                SetInPlace(InPlaced.flattened(once = hadAttr("once")))
             else:
                 push(newBlock(cleanedBlock(x.a)).flattened(once = hadAttr("once")))
 
@@ -701,7 +706,8 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind == Literal:
-                case InPlace.kind:
+                ensureInPlace()
+                case InPlaced.kind:
                     of String: InPlaced.s.insert(z.s, y.i)
                     of Block: InPlaced.a.insert(z, y.i)
                     of Dictionary:
@@ -972,13 +978,14 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind == Literal:
-                if InPlace.kind == String:
+                ensureInPlace()
+                if InPlaced.kind == String:
                     if (hadAttr("once")):
                         SetInPlace(newString(InPlaced.s.removeFirst(y.s)))
                     elif (hadAttr("prefix")):
-                        InPlace.s.removePrefix(y.s)
+                        InPlaced.s.removePrefix(y.s)
                     elif (hadAttr("suffix")):
-                        InPlace.s.removeSuffix(y.s)
+                        InPlaced.s.removeSuffix(y.s)
                     else:
                         SetInPlace(newString(InPlaced.s.removeAll(y)))
                 elif InPlaced.kind == Block:
@@ -1048,7 +1055,8 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind == Literal:
-                if InPlace.kind == String:
+                ensureInPlace()
+                if InPlaced.kind == String:
                     SetInPlace(newString(InPlaced.s.repeat(y.i)))
                 elif InPlaced.kind == Block:
                     SetInPlace(newBlock(InPlaced.a.cycle(y.i)))
@@ -1091,7 +1099,8 @@ proc defineSymbols*() =
                     result[s.high - i] = c
 
             if x.kind == Literal:
-                if InPlace.kind == String:
+                ensureInPlace()
+                if InPlaced.kind == String:
                     InPlaced.s.reverse()
                 else:
                     InPlaced.a.reverse()
@@ -1123,9 +1132,10 @@ proc defineSymbols*() =
             let distance = if (not hadAttr("left")): -y.i else: y.i
 
             if x.kind == Literal:
-                if InPlace.kind == String:
-                    InPlaced = newString(toSeq(runes(x.s)).map((x) => $(
-                            x)).rotatedLeft(distance).join(""))
+                ensureInPlace()
+                if InPlaced.kind == String:
+                    SetInPlace(newString(toSeq(runes(x.s)).map((x) => $(
+                            x)).rotatedLeft(distance).join("")))
                 elif InPlaced.kind == Block:
                     InPlaced.a.rotateLeft(distance)
             else:
@@ -1251,7 +1261,8 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind == Literal:
-                InPlace.a.shuffle()
+                ensureInPlace()
+                InPlaced.a.shuffle()
             else:
                 ensureCleaned(x)
                 push(newBlock(cleanX.dup(shuffle)))
@@ -1405,8 +1416,9 @@ proc defineSymbols*() =
                 push(newDictionary(sorted))
 
             else:
-                if InPlace.kind == Block:
-                    if InPlace.a.len > 0:
+                ensureInPlace()
+                if InPlaced.kind == Block:
+                    if InPlaced.a.len > 0:
                         if checkAttr("by"):
                             InPlaced.a.sort(
                                 proc (v1, v2: Value): int =
@@ -1421,7 +1433,7 @@ proc defineSymbols*() =
                                     InPlaced.a.unisort("en", sensitive = true,
                                             order = sortOrdering)
                                 else:
-                                    if InPlace.a[0].kind == String:
+                                    if InPlaced.a[0].kind == String:
                                         InPlaced.a.unisort("en",
                                                 order = sortOrdering)
                                     else:
@@ -1501,7 +1513,8 @@ proc defineSymbols*() =
             # TODO(Collections\split) Verify it's working right
             #  labels: library, bug, unit-test, critical
             if x.kind == Literal:
-                if InPlace.kind == String:
+                ensureInPlace()
+                if InPlaced.kind == String:
                     if (hadAttr("words")):
                         SetInPlace(newStringBlock(strutils.splitWhitespace(InPlaced.s)))
                     elif (hadAttr("lines")):
@@ -1618,7 +1631,8 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind == Literal:
-                if InPlace.kind == String:
+                ensureInPlace()
+                if InPlaced.kind == String:
                     var i = 0
                     var ret = ""
                     while i < InPlaced.s.len:
@@ -1678,7 +1692,8 @@ proc defineSymbols*() =
             ##########################################################
             var upperLimit = y.i-1
             if x.kind == Literal:
-                if InPlace.kind == String:
+                ensureInPlace()
+                if InPlaced.kind == String:
                     if x.s.len > 0:
                         if upperLimit > InPlaced.s.len - 1:
                             upperLimit = InPlaced.s.len-1
@@ -1732,7 +1747,9 @@ proc defineSymbols*() =
                 if x.kind == Block:
                     ensureCleaned(x)
                     push(newBlock(cleanX.deduplicated()))
-                else: InPlace.a = InPlaced.a.deduplicated()
+                else: 
+                    ensureInPlace()
+                    InPlaced.a = InPlaced.a.deduplicated()
 
     builtin "values",
         alias       = unaliased,

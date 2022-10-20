@@ -56,7 +56,8 @@ proc defineSymbols*() =
                 balance = aBalance.f
 
             if x.kind == Literal:
-                SetInPlace(newColor(blendColors(InPlace.l, y.l, balance)))
+                ensureInPlace()
+                SetInPlace(newColor(blendColors(InPlaced.l, y.l, balance)))
             else:
                 push newColor(blendColors(x.l, y.l, balance))
 
@@ -78,7 +79,8 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind == Literal:
-                SetInPlace(newColor(alterColorValue(InPlace.l, y.f * (-1))))
+                ensureInPlace()
+                SetInPlace(newColor(alterColorValue(InPlaced.l, y.f * (-1))))
             else:
                 push newColor(alterColorValue(x.l, y.f * (-1)))
 
@@ -100,7 +102,8 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind == Literal:
-                SetInPlace(newColor(saturateColor(InPlace.l, y.f * (-1))))
+                ensureInPlace()
+                SetInPlace(newColor(saturateColor(InPlaced.l, y.f * (-1))))
             else:
                 push newColor(saturateColor(x.l, y.f * (-1)))
 
@@ -120,7 +123,8 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind == Literal:
-                SetInPlace(newColor(invertColor(InPlace.l)))
+                ensureInPlace()
+                SetInPlace(newColor(invertColor(InPlaced.l)))
             else:
                 push newColor(invertColor(x.l))
 
@@ -144,7 +148,8 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind == Literal:
-                SetInPlace(newColor(alterColorValue(InPlace.l, y.f)))
+                ensureInPlace()
+                SetInPlace(newColor(alterColorValue(InPlaced.l, y.f)))
             else:
                 push newColor(alterColorValue(x.l, y.f))
 
@@ -232,7 +237,8 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind == Literal:
-                SetInPlace(newColor(saturateColor(InPlace.l, y.f)))
+                ensureInPlace()
+                SetInPlace(newColor(saturateColor(InPlaced.l, y.f)))
             else:
                 push newColor(saturateColor(x.l, y.f))
 
@@ -255,7 +261,8 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind == Literal:
-                SetInPlace(newColor(spinColor(InPlace.l, y.i)))
+                ensureInPlace()
+                SetInPlace(newColor(spinColor(InPlaced.l, y.i)))
             else:
                 push newColor(spinColor(x.l, y.i))
 
