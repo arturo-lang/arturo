@@ -21,7 +21,7 @@ when not defined(NOGMP):
 import vm/exec
 import vm/stack
 
-import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrational]
+import vm/values/custom/[vcolor, vcomplex, vquantity, vrational]
 import vm/values/value
 import vm/values/clean
 
