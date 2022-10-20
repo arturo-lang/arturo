@@ -23,7 +23,7 @@ when not defined(NOGMP):
 
 import helpers/bytes
 
-import vm/values/custom/[vcolor, vcomplex, vquantity, vrational, vregex]
+import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrational, vregex]
 
 #=======================================
 # Types
@@ -223,11 +223,6 @@ type
 
     SymbolDict*   = OrderedTable[SymbolKind,AliasBinding]
 
-    logical* = enum
-        False = 0, 
-        True = 1,
-        Maybe = 2
-
     Value* {.final,acyclic.} = ref object 
         info*: string
         readonly*: bool
@@ -236,7 +231,7 @@ type
             of Null,
                Nothing,
                Any:        discard 
-            of Logical:     b*  : logical
+            of Logical:     b*  : VLogical
             of Integer:  
                 case iKind*: IntegerKind:
                     # TODO(VM/values/types) Wrap Normal and BigInteger in one type
