@@ -13,7 +13,7 @@ define :matrix [X][
 kroneckerProduct: function [a,b][
     M: size a\X, N: size first a\X
     P: size b\X, Q: size first b\X
-    result: to :matrix @[new array.of:M*P array.of:N*Q 0]
+    result: to :matrix @[array.of:M*P array.of:N*Q 0]
 
     loop 0..dec M 'i [
         loop 0..dec N 'j [

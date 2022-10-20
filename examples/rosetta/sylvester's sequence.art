@@ -1,5 +1,5 @@
 sylvester: function [lim][
-    result: new [2]
+    result: [2]
     loop 2..lim 'x [
         'result ++ inc fold result .seed:1 [a b][a * b]
     ]

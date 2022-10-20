@@ -1,7 +1,7 @@
 commonPathPrefix: function [lst][
     paths: map lst => [split.by:"/" &]
 
-    common: new []
+    common: []
     firstPath: first paths
     loop .with:'i firstPath 'part [
         found: true

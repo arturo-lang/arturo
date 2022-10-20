@@ -12,8 +12,8 @@ RevCodes: #[]
 loop Codes [k,v]-> RevCodes\[v]: k
 
 encodeBacon: function [plaintext,message][
-    et: new ""
-    result: new ""
+    et: ""
+    result: ""
     loop lower plaintext 'c [
         'et ++ (lower? c)? -> Codes\[c] -> space
     ]
@@ -30,8 +30,8 @@ encodeBacon: function [plaintext,message][
 ]
 
 decodeBacon: function [message][
-    et: new ""
-    result: new ""
+    et: ""
+    result: ""
     loop message 'c [
         if or? lower? c upper? c [
             if? lower? c -> 'et ++ `A`
@@ -40,7 +40,7 @@ decodeBacon: function [message][
             if 5 = size et [
                 if? key? RevCodes et -> 'result ++ RevCodes\[et]
                 else -> 'result ++ " "
-                et: new ""
+                et: ""
             ]
         ]
     ]

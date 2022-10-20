@@ -675,15 +675,16 @@ sort 'a         ; yep, now a *has* been sorted in-place!
 And this is *very powerful*: in Arturo, most of the built-in functions in the library come with this feature included. Practically, whenever you see a function taking a literal first parameter, that means you can use it for in-place modifying a variable (yes, even `add` works like that!).
 
 > ⚠️ **Word of caution:**
-> Since in-place modifiers work internally, by modifying the pointed value and not the value itself, every time you use a variable-literal for this purpose, always make sure it has been initially assigned with a `new`:
+> Values in Arturo are always passed by reference - unless they are constant/readonly values. So if you want to assign one variable to another and then modify one of them in-place, make sure you use `new`; otherwise, both values will change!
 >
 > ```red
 > a: 1
-> inc 'a    ; this does increment variable a by one,
->           ; but it will sooner or later create a complete mess!
+> b: a
+> inc 'a    ; both a and b are now 2
 >
-> a: new 1  ; this is the right way to do it
-> inc 'a    ; and works beautifully ;-)   
+> c: 1      
+> d: new c  ; we copy the value of c into d
+> inc 'c    ; now c is 2 and d is 1, as expected
 > ```
 
 <h2 id="syntactic-sugar">Syntactic sugar</h2>

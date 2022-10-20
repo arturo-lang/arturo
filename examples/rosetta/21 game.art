@@ -5,7 +5,7 @@ print "-----------------------------"
 players: ["A" "B"]
 currentPlayer: sample players
 nextPlayer: first players -- currentPlayer
-runningTotal: new 0
+runningTotal: 0
 num: 0
 
 getNum: function [][

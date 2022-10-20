@@ -1,7 +1,7 @@
 ord0: to :integer `0`
 happy?: function [x][
     n: x
-    past: new []
+    past: []
 
     while [n <> 1][
         s: to :string n

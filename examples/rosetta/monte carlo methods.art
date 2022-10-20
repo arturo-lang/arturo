@@ -1,5 +1,5 @@
 Pi: function [throws][
-    inside: new 0.0
+    inside: 0.0
     do.times: throws [
         if 1 > hypot random 0 1.0 random 0 1.0 -> inc 'inside
     ]

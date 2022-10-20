@@ -1,7 +1,7 @@
 gen: function [n][
     result: n
     while [not? in? result [1 89]][
-        s: new 0
+        s: 0
         loop digits result 'd ->
             's + d*d
         result: s
@@ -13,7 +13,7 @@ chainsEndingWith89: function [ndigits][
     [prevCount,currCount]: #[]
     loop 0..9 'i -> prevCount\[i*i]: 1
 
-    res: new 0
+    res: 0
 
     loop 2..ndigits 'x [
         currCount: #[]

@@ -13,7 +13,7 @@ anagrams: #[]
 loop wordset 'word [
     anagram: sort to [:char] word
     unless key? anagrams anagram ->
-        anagrams\[anagram]: new []
+        anagrams\[anagram]: []
 
     anagrams\[anagram]: anagrams\[anagram] ++ word
 ]

@@ -1,5 +1,5 @@
 josephus: function [n,k][
-    p: new 0..n-1
+    p: 0..n-1
     i: 0
     seq: []
 

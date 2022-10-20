@@ -4,7 +4,7 @@ sortTable: function [tbl][
     unless null? c: <= attr 'column -> column: to :string c
     unless null? attr 'reverse -> reversed?: true
 
-    result: new sort.by: column map tbl 'r [
+    result: sort.by: column map tbl 'r [
         to :dictionary flatten couple 0..dec size r r
     ]
 

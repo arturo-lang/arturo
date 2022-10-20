@@ -2,8 +2,8 @@ rand: first.n: 4 unique map 1..10 => [sample 0..9]
 bulls: 0
 
 while [bulls <> 4][
-    bulls: new 0
-	cows: new 0
+    bulls: 0
+	cows: 0
 
     got: strip input "make a guess: "
     if? or? not? numeric? got

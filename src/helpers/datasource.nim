@@ -42,8 +42,8 @@ type
 proc getSource*(src: string): DataSource {.inline.} =
     when not defined(WEB):
         when defined(PORTABLE):
-            if Syms.hasKey("_portable") and Syms["_portable"].d.hasKey("embed") and Syms["_portable"].d["embed"].d.hasKey(src):
-                return (Syms["_portable"].d["embed"].d[src].s, FileData)
+            if SymExists("_portable") and GetSym("_portable").d.hasKey("embed") and GetSym("_portable").d["embed"].d.hasKey(src):
+                return (GetSym("_portable").d["embed"].d[src].s, FileData)
                             
         if src.isUrl():
             when defined(SAFE): RuntimeError_OperationNotPermitted("read")

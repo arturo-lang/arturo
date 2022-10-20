@@ -2,14 +2,14 @@ i: 2
 j: to :integer sqrt 2.0
 k: new j
 d: new j
-n: new 500
+n: 500
 n0: n
 
 while ø [
     prints d
     i: (i - k * d) * 100
-    k: new 20 * j
-    d: new 1
+    k: 20 * j
+    d: 1
     while [d =< 10][
         if i < d * k+d [
             dec 'd

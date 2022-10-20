@@ -833,7 +833,7 @@ proc defineSymbols*() =
 
             if checkAttr("with"):
                 for x in aWith.a:
-                    dict[x.s] = GetSym(x.s)
+                    dict[x.s] = FetchSym(x.s)
 
             if (hadAttr("lower")):
                 var oldDict = dict
@@ -988,7 +988,7 @@ proc defineSymbols*() =
             if checkAttr("import"):
                 var ret = initOrderedTable[string,Value]()
                 for item in aImport.a:
-                    ret[item.s] = GetSym(item.s)
+                    ret[item.s] = FetchSym(item.s)
                 imports = newDictionary(ret)
 
             var exports: Value = nil
@@ -1236,12 +1236,12 @@ proc defineSymbols*() =
             ##########################################################
             var blk: ValueArray = cleanedBlock(y.a)
             if x.kind == Literal:
-                blk.insert(GetSym(x.s))
+                blk.insert(FetchSym(x.s))
                 blk.insert(newLabel(x.s))
             else:
                 ensureCleaned(x)
                 for item in cleanX:
-                    blk.insert(GetSym(item.s))
+                    blk.insert(FetchSym(item.s))
                     blk.insert(newLabel(item.s))
 
             push(newBlock(blk))

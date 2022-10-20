@@ -1,7 +1,7 @@
 ; by @Krenium
 
 digits: function [n][
-    res: new []
+    res: []
     while -> n > 0 [
         'res ++ n % 10
         n: n / 10
@@ -10,8 +10,8 @@ digits: function [n][
 ]
 
 luhn?: function [n][
-    s1: new 0
-    s2: new 0
+    s1: 0
+    s2: 0
     loop.with: 'i digits n 'd [
         if? even? i -> 's1 + d
         else [

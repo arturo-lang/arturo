@@ -1,5 +1,5 @@
 lcs: function [a,b][
-    ls: new array.of: @[inc size a, inc size b] 0
+    ls: array.of: @[inc size a, inc size b] 0
 
     loop.with:'i a 'x [
         loop.with:'j b 'y [
@@ -7,7 +7,7 @@ lcs: function [a,b][
                                    -> max @[ls\[i+1]\[j], ls\[i]\[j+1]]
         ]
     ]
-    [result, x, y]: @[new "", size a, size b]
+    [result, x, y]: @["", size a, size b]
 
     while [and? [x > 0][y > 0]][
         if? ls\[x]\[y] = ls\[x-1]\[y] -> x: x-1

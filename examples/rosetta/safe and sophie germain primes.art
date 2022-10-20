@@ -2,7 +2,7 @@ sophieG?: function [p][
     and? [prime? p][prime? 1 + 2*p]
 ]
 
-sophieGermaines: new [2]
+sophieGermaines: [2]
 i: 3
 while [50 > size sophieGermaines][
     if sophieG? i ->

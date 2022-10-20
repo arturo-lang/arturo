@@ -60,47 +60,50 @@ const
 # Fixed Values
 #=======================================
 
-let I0*  = Value(kind: Integer, iKind: NormalInteger, i: 0)
-let I1*  = Value(kind: Integer, iKind: NormalInteger, i: 1)
-let I2*  = Value(kind: Integer, iKind: NormalInteger, i: 2)
-let I3*  = Value(kind: Integer, iKind: NormalInteger, i: 3)
-let I4*  = Value(kind: Integer, iKind: NormalInteger, i: 4)
-let I5*  = Value(kind: Integer, iKind: NormalInteger, i: 5)
-let I6*  = Value(kind: Integer, iKind: NormalInteger, i: 6)
-let I7*  = Value(kind: Integer, iKind: NormalInteger, i: 7)
-let I8*  = Value(kind: Integer, iKind: NormalInteger, i: 8)
-let I9*  = Value(kind: Integer, iKind: NormalInteger, i: 9)
-let I10* = Value(kind: Integer, iKind: NormalInteger, i: 10)
-let I11* = Value(kind: Integer, iKind: NormalInteger, i: 11)
-let I12* = Value(kind: Integer, iKind: NormalInteger, i: 12)
-let I13* = Value(kind: Integer, iKind: NormalInteger, i: 13)
-let I14* = Value(kind: Integer, iKind: NormalInteger, i: 14)
-let I15* = Value(kind: Integer, iKind: NormalInteger, i: 15)
+let
+    I0*             = Value(kind: Integer, iKind: NormalInteger, i: 0, readonly: true)
+    I1*             = Value(kind: Integer, iKind: NormalInteger, i: 1, readonly: true)
+    I2*             = Value(kind: Integer, iKind: NormalInteger, i: 2, readonly: true)
+    I3*             = Value(kind: Integer, iKind: NormalInteger, i: 3, readonly: true)
+    I4*             = Value(kind: Integer, iKind: NormalInteger, i: 4, readonly: true)
+    I5*             = Value(kind: Integer, iKind: NormalInteger, i: 5, readonly: true)
+    I6*             = Value(kind: Integer, iKind: NormalInteger, i: 6, readonly: true)
+    I7*             = Value(kind: Integer, iKind: NormalInteger, i: 7, readonly: true)
+    I8*             = Value(kind: Integer, iKind: NormalInteger, i: 8, readonly: true)
+    I9*             = Value(kind: Integer, iKind: NormalInteger, i: 9, readonly: true)
+    I10*            = Value(kind: Integer, iKind: NormalInteger, i: 10, readonly: true)
+    I11*            = Value(kind: Integer, iKind: NormalInteger, i: 11, readonly: true)
+    I12*            = Value(kind: Integer, iKind: NormalInteger, i: 12, readonly: true)
+    I13*            = Value(kind: Integer, iKind: NormalInteger, i: 13, readonly: true)
+    I14*            = Value(kind: Integer, iKind: NormalInteger, i: 14, readonly: true)
+    I15*            = Value(kind: Integer, iKind: NormalInteger, i: 15, readonly: true)
 
-let I1M* = Value(kind: Integer, iKind: NormalInteger, i: -1)
+    I1M*            = Value(kind: Integer, iKind: NormalInteger, i: -1, readonly: true)
 
-let F0*  = Value(kind: Floating, f: 0.0)
-let F1*  = Value(kind: Floating, f: 1.0)
-let F2*  = Value(kind: Floating, f: 2.0)
+    F0*             = Value(kind: Floating, f: 0.0, readonly: true)
+    F1*             = Value(kind: Floating, f: 1.0, readonly: true)
+    F2*             = Value(kind: Floating, f: 2.0, readonly: true)
 
-let F1M* = Value(kind: Floating, f: -1.0)
+    F1M*            = Value(kind: Floating, f: -1.0, readonly: true)
 
-let VTRUE*  = Value(kind: Logical, b: True)
-let VFALSE* = Value(kind: Logical, b: False)
-let VMAYBE* = Value(kind: Logical, b: Maybe)
+    VTRUE*          = Value(kind: Logical, b: True, readonly: true)
+    VFALSE*         = Value(kind: Logical, b: False, readonly: true)
+    VMAYBE*         = Value(kind: Logical, b: Maybe, readonly: true)
 
-let VNULL* = Value(kind: Null)
+    VNULL*          = Value(kind: Null, readonly: true)
 
-let VEMPTYSTR* = Value(kind: String, s: "")
-let VEMPTYARR* = Value(kind: Block, a: @[], data: nil)
-let VEMPTYDICT* = Value(kind: Dictionary, d: initOrderedTable[string,Value]())
+    VEMPTYSTR*      = Value(kind: String, s: "", readonly: true)
+    VEMPTYARR*      = Value(kind: Block, a: @[], data: nil, readonly: true)
+    VEMPTYDICT*     = Value(kind: Dictionary, d: initOrderedTable[string,Value](), readonly: true)
 
-let VSTRINGT* = Value(kind: Type, tpKind: BuiltinType, t: String)
-let VINTEGERT* = Value(kind: Type, tpKind: BuiltinType, t: Integer)
+    VSTRINGT*       = Value(kind: Type, tpKind: BuiltinType, t: String, readonly: true)
+    VINTEGERT*      = Value(kind: Type, tpKind: BuiltinType, t: Integer, readonly: true)
 
-let VNOTHING* = Value(kind: Nothing)
+    VNOTHING*       = Value(kind: Nothing, readonly: true)
 
-let NoAliasBinding* = AliasBinding(precedence: PostfixPrecedence, name: nil)
+    #--------
+
+    NoAliasBinding*     = AliasBinding(precedence: PostfixPrecedence, name: nil)
 
 #=======================================
 # Variables
@@ -533,7 +536,9 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Inline:      result = newInline(v.a)
         of Block:       
             if v.data.isNil: 
-                result = newBlock(v.a.map((vv)=>copyValue(vv)))
+                let newValues = cleanedBlockValuesCopy(v)
+                result = Value(kind: Block, a: newValues)
+                #result = newBlock(v.a.map((vv)=>copyValue(vv)))
             else:
                 result = newBlock(v.a.map((vv)=>copyValue(vv)), copyValue(v.data))
 
@@ -547,7 +552,14 @@ proc copyValue*(v: Value): Value {.inline.} =
                 if v.dbKind == SqliteDatabase: result = newDatabase(v.sqlitedb)
                 #elif v.dbKind == MysqlDatabase: result = newDatabase(v.mysqldb)
 
-        else: discard
+        of Regex:
+            result = newRegex(v.rx)
+
+        of Newline:
+            echo "found NEWLINE when copying value!"
+        else: 
+            echo "found UNSUPPORTED value when copying value!"
+            discard
 
 #=======================================
 # Predicates
@@ -1186,7 +1198,7 @@ proc `/=`*(x: var Value, y: Value) =
             if likely(x.iKind==NormalInteger):
                 if likely(y.iKind==NormalInteger):
                     try:
-                        x = newInteger(x.i div y.i)
+                        x.i = x.i div y.i
                     except OverflowDefect:
                         when defined(WEB):
                             x = newInteger(big(x.i) div big(y.i))

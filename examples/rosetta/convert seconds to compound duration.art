@@ -4,7 +4,7 @@ Quantities: @[7 * 24 * 60 * 60, 24 * 60 * 60, 60 * 60, 60, 1]
 durationString: function [d][
     dur: d
     idx: 0
-    result: new []
+    result: []
     while [not? zero? dur][
         q: dur / Quantities\[idx]
         if not? zero? q [

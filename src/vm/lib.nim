@@ -95,7 +95,7 @@ template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, descriptio
             )
 
         Arities[n] = static argsLen
-        Syms[n] = b
+        SetSym(n, b)
 
         when n=="array"             : ArrayF = b
         elif n=="dictionary"        : DictF = b
@@ -155,8 +155,8 @@ template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, descriptio
 #  So, we should either make documentation possible for constants as well, or merge the two things into one concept
 #  labels: vm, library, enhancement, open discussion
 template constant*(n: string, alias: SymbolKind, description: string, v: Value):untyped =
-    Syms[n] = (v)
-    Syms[n].info = "[" & static (instantiationInfo().filename).replace(".nim") & ":" & $(static (instantiationInfo().line)) & "] " & description
+    SetSym(n, v)
+    GetSym(n).info = "[" & static (instantiationInfo().filename).replace(".nim") & ":" & $(static (instantiationInfo().line)) & "] " & description
     when alias != unaliased:
         Aliases[alias] = AliasBinding(
             precedence: PrefixPrecedence,

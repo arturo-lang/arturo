@@ -1,5 +1,5 @@
 latinSquare: function [n][
-    square: new []
+    square: []
     variants: shuffle permutate 0..n-1
     while -> n > size square [
         row: sample variants

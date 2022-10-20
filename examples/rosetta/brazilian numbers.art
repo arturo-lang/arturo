@@ -11,7 +11,7 @@ brazilian?: function [n][
 printFirstByRule: function [rule,title][
     print ~"First 20 |title|brazilian numbers:"
     i: 7
-    found: new []
+    found: []
     while [20 > size found][
         if brazilian? i ->
             'found ++ i

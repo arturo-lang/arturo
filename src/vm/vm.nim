@@ -134,7 +134,7 @@ template initialize*(args: seq[string], filename: string, isFile:bool, scriptDat
     Memoizer = initOrderedTable[(string,Hash),Value]()
 
     if portableData != "":
-        Syms["_portable"] = valueFromJson(portableData)
+        SetSym("_portable", valueFromJson(portableData))
 
     # library
     setupLibrary()
@@ -147,6 +147,11 @@ template handleVMErrors*(blk: untyped): untyped =
         blk
     except:
         let e = getCurrentException()
+        # TODO(VM/vm) Better handling for KeyError exceptions
+        #  Since they are not currently handled through GetSym, we capture them here
+        #  But it would be better if they were directly handled in the error module
+        #  labels: vm, error handling, enhancement
+        
         showVMErrors(e)
 
         if e.name == ProgramError:

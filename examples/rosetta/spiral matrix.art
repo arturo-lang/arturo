@@ -1,5 +1,5 @@
 spiralMatrix: function [n][
-    m: new array.of: @[n,n] null
+    m: array.of: @[n,n] null
 
     [dx, dy, x, y]: [1, 0, 0, 0]
 

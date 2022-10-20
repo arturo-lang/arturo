@@ -2,7 +2,7 @@ orderDisjoint: function [m,n][
     ms: split.words m
     ns: split.words n
 
-    indexes: new []
+    indexes: []
 
     loop ns 'item [
         idx: index ms item
