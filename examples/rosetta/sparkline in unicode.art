@@ -7,7 +7,7 @@ while ø [
     mn: min numbers
     mx: max numbers
     extent: mx-mn
-    sparkLine: new ""
+    sparkLine: ""
     loop numbers 'n [
         i: to :integer barcount*(n-mn)//extent
         'sparkLine ++ bar\[i]

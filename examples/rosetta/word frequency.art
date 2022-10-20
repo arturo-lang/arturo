@@ -6,7 +6,7 @@ findFrequency: function [file, count][
         freqs\[word]: freqs\[word] + 1
     ]
     freqs: sort.values.descending freqs
-    result: new []
+    result: []
     loop 0..dec count 'x [
         'result ++ @[@[get keys freqs x, get values freqs x]]
     ]

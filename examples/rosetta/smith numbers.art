@@ -1,6 +1,6 @@
 digitSum: function [v][
     n: new v
-    result: new 0
+    result: 0
     while [n > 0][
         'result + n % 10
         'n / 10

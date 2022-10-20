@@ -1,6 +1,6 @@
 thueMorse: function [base, howmany][
     i: 0
-    result: new []
+    result: []
     while [howmany > size result][
         'result ++ (sum digits.base:base i) % base
         i: i + 1

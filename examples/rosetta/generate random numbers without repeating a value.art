@@ -1,5 +1,5 @@
 generateUniqueRandoms: function [][
-    result: new []
+    result: []
 
     while [20 > size result][
         rand: sample 1..20

@@ -1,5 +1,5 @@
 getPrimes: function [upto][
-    result: new [2]
+    result: [2]
     loop range.step:2 3 upto 'x [
         divisible: false
         loop 2..inc x/2 'z [

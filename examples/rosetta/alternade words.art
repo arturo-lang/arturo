@@ -1,7 +1,7 @@
 words: map read.lines relative "unixdict.txt" => strip
 
 loop words 'word [
-    sw: new size word
+    sw: size word
     if 6 > sw ->
         continue
 

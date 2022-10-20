@@ -4,8 +4,8 @@ commatize: function [x][
 
 isqrt: function [x][
     num: new x
-    q: new 1
-    r: new 0
+    q: 1
+    r: 0
 
     while [q =< num]-> shl.safe 'q 2
     while [q > 1][
@@ -14,7 +14,7 @@ isqrt: function [x][
         shr 'r 1
         if t >= 0 [
             num: t
-            r: new r+q
+            r: r+q
         ]
     ]
     return r

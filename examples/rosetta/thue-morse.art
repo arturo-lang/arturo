@@ -1,7 +1,7 @@
 thueMorse: function [maxSteps][
-    result: new []
+    result: []
     val: [0]
-    count: new 0
+    count: 0
     while [true][
         'result ++ join to [:string] val
         inc 'count

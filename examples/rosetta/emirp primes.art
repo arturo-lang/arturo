@@ -1,5 +1,5 @@
 emirps: function [upto][
-    result: new []
+    result: []
     loop range .step: 2 11 upto 'x [
         if prime? x [
             reversed: to :integer reverse to :string x

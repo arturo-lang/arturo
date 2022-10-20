@@ -6,7 +6,7 @@ valid?: function [n][
 ]
 
 cnt: 0
-i: new 3
+i: 3
 
 while [cnt < 10][
     if and? [not? prime? i][valid? i][

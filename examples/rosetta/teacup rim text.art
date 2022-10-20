@@ -9,7 +9,7 @@ rotateable?: function [w][
     return true
 ]
 
-results: new []
+results: []
 loop select wordset 'word [3 =< size word] 'word [
     if rotateable? word ->
         'results ++ @[ sort map 1..size word 'i [ rotate word i ]]

@@ -3,7 +3,7 @@ sortDisjoint: function [data, indices][
     inds: new indices
     sort 'inds
 
-    vals: new []
+    vals: []
     loop inds 'i -> 'vals ++ result\[i]
     sort 'vals
 

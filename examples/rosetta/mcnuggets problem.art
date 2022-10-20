@@ -1,5 +1,5 @@
 nonMcNuggets: function [lim][
-    result: new 0..lim
+    result: 0..lim
 
     loop range.step:6 1 lim 'x [
         loop range.step:9 1 lim 'y [

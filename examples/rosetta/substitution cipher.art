@@ -1,14 +1,14 @@
 key: {:]kYV}(!7P$n5_0i R:?jOWtF/=-pe'AD&@r6%ZXs"v*N[#wSl9zq2^+g;LoB`aGh{3.HIu4fbK)mU8|dMET><,Qc\C1yxJ:}
  
 encode: function [str][
-    bs: new []
+    bs: []
     loop split str 'ch ->
         'bs ++ to :string key\[(to :integer to :char ch)-32]
     return join bs
 ]
 
 decode: function [str][
-    bs: new []
+    bs: []
     loop split str 'ch ->
         'bs ++ to :string to :char (index key ch)+32
     return join bs

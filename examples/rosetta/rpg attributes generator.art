@@ -2,10 +2,10 @@ vals: []
 
 while [or? 75 > sum vals 
             2 > size select vals => [&>=15]] [
-    vals: new []
+    vals: []
 
     while [6 > size vals][
-        rands: new map 1..4 => [random 1 6]
+        rands: map 1..4 => [random 1 6]
         remove 'rands .once (min rands)
         'vals ++ sum rands
     ]

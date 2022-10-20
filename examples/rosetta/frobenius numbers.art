@@ -2,8 +2,8 @@ primes: select 0..10000 => prime?
 frobenius: function [n] -> sub sub primes\[n] * primes\[n+1] primes\[n] primes\[n+1]
 
 frob: 0
-lst: new []
-j: new 0
+lst: []
+j: 0
 while [frob < 10000] [
     'lst ++ frob: <= frobenius j
     inc 'j

@@ -1,4 +1,4 @@
-q: new [1 1]
+q: [1 1]
 n: 2 
 while [n<1001][
     'q ++ (get q n-q\[n-1]) + get q n-q\[n-2]

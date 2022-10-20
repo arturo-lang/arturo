@@ -2,7 +2,7 @@ eqIndex: function [row][
     suml: 0
     delayed: 0
     sumr: sum row
-    result: new []
+    result: []
     loop.with:'i row 'r [
         suml: suml + delayed
         sumr: sumr - r

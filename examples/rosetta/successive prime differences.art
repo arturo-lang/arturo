@@ -4,7 +4,7 @@ findDiffs: function [r][
     if r=[1] -> return [[2 3]]
     i: 3
     tupled: map 0..dec size r 'x -> fold slice r 0 x [a b][a+b]
-    diffs: new []
+    diffs: []
     while [i < LIM][
         if prime? i [
             prset: map tupled 't -> i + t

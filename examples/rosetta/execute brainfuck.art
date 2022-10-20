@@ -4,15 +4,15 @@
 ;
  
 Tape: [0]
-DataPointer: new 0
-InstructionPointer: new 0
+DataPointer: 0
+InstructionPointer: 0
  
 ; Look for jumps in Code an register them
 ; in the Jumps table
  
 precomputeJumps: function [][
-    vstack: new []
-    jumphash: new #[]
+    vstack: []
+    jumphash: #[]
     instrPointer: 0
  
     while [instrPointer<CodeLength] [
@@ -63,11 +63,11 @@ interpret: function [].export:[DataPointer,InstructionPointer,Tape][
                 set Tape DataPointer inp
             ]
             when? ["["] ->
-                if 0 = get Tape DataPointer [ InstructionPointer: new get Jumps InstructionPointer ]
+                if 0 = get Tape DataPointer [ InstructionPointer: new Jumps\[InstructionPointer] ]
 
             when? ["]"] ->
                 if 0 <> get Tape DataPointer [
-                    InstructionPointer: new get Jumps InstructionPointer
+                    InstructionPointer: new Jumps\[InstructionPointer]
                 ]
  
         inc 'InstructionPointer

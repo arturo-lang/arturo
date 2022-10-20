@@ -1,4 +1,4 @@
-result: new []
+result: []
 
 queens: function [n, i, a, b, c][
     if? i < n [
@@ -24,7 +24,7 @@ queens BoardSize, 0, [], [], []
 loop result 'solution [
     loop solution 'col [
        
-        line: new repeat "-" BoardSize
+        line: repeat "-" BoardSize
         line\[col-1]: `Q`
         print line
     ]
