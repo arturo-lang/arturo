@@ -12,7 +12,7 @@
 
 import std/editdistance, sequtils, tables
 
-import vm/[errors, profiler, values/value]
+import vm/[errors, values/value]
 
 #=======================================
 # Globals
