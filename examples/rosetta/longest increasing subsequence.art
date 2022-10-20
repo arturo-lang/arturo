@@ -1,5 +1,5 @@
 lis: function [d][
-    l: new [[]]
+    l: [[]]
     loop d 'num [
         x: []
         loop l 'seq [

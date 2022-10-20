@@ -1,5 +1,5 @@
 almostPrime: function [k, listLen][
-    result: new []
+    result: []
     test: 2
     c: 0
 

@@ -1,7 +1,7 @@
 totient: function [n][
     tt: new n
     nn: new n
-    i: new 2
+    i: 2
 
     while [nn >= i ^ 2][
         if zero? nn % i [
@@ -10,7 +10,7 @@ totient: function [n][
             'tt - tt/i
         ]
         if i = 2 -> 
-            i: new 1
+            i: 1
 
         'i + 2
     ]
@@ -20,12 +20,12 @@ totient: function [n][
     return tt
 ]
 
-x: new 1
-num: new 0
+x: 1
+num: 0
 
 while [num < 20][
     tot: new x
-    s: new 0
+    s: 0
 
     while [tot <> 1][
         tot: totient tot

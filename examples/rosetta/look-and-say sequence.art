@@ -2,7 +2,7 @@ lookAndSay: function [n][
     if n=0 -> return "1"
     previous: lookAndSay n-1
 
-    result: new ""
+    result: ""
     currentCounter: 0
     currentCh: first previous
     loop previous 'ch [

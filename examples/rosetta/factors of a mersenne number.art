@@ -5,10 +5,10 @@ mersenneFactors: function [q][
           -> shl 'r 1
     d: new 1 + 2 * q
     while [true][
-        i: new 1
+        i: 1
         p: new r
         while [p <> 0][
-            i: new (i * i) % d
+            i: (i * i) % d
             if p < 0 -> 'i * 2
             if i > d -> 'i - d
             shl 'p 1

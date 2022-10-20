@@ -1,5 +1,5 @@
-n: new 1
-d: new 1
+n: 1
+d: 1
 calkinWilf: function [] .export:[n,d] [
     n: (d - n) + 2 * (n/d) * d 
     tmp: d
@@ -12,9 +12,9 @@ first20: [[1 1]] ++ map 1..19 => calkinWilf
 print "The first 20 terms of the Calkwin-Wilf sequence are:"
 print map first20 'f -> ~"|f\0|/|f\1|"
 
-n: new 1
-d: new 1
-indx: new 1
+n: 1
+d: 1
+indx: 1
 
 target: [83116, 51639]
 

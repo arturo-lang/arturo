@@ -1,8 +1,8 @@
 floyd: function [rowcount][
-    result: new [[1]]
+    result: [[1]]
     while [rowcount > size result][
         n: inc last last result
-        row: new []
+        row: []
         loop n..n+size last result 'k -> 'row ++ @[k]
         'result ++ @[row]
     ]

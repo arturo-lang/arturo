@@ -15,8 +15,8 @@ narcissistic?: function [n][
     n = sum map split.every:2 to :string n 'p -> getPair p sdigs
 ]
 
-i: new 0
-counter: new 0
+i: 0
+counter: 0
 while [counter < 25][
     if narcissistic? i [
         print i

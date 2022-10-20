@@ -16,7 +16,7 @@ getCode: function [ch][
 ]
 
 soundex: function [str][
-    result: new to :string first str
+    result: to :string first str
 
     prev: getCode first str
     loop.with:'i str 'c [
@@ -29,7 +29,7 @@ soundex: function [str][
     ]
 
     if? 4 < size result ->
-        result: new slice result 0 3
+        result: slice result 0 3
     else [
         do.times: 4-size result ->
             'result ++ `0`

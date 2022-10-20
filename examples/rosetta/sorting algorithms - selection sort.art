@@ -1,5 +1,5 @@
 selectionSort: function [items][
-    sorted: new []
+    sorted: []
     tmp: new items
     while [not? empty? tmp][
         minIndex: index tmp min tmp

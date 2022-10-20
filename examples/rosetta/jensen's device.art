@@ -1,5 +1,5 @@
 harmonicSum: function [variable, lo, hi, term][
-    result: new 0.0
+    result: 0.0
     loop lo..hi 'n ->
         'result + do ~"|variable|: |n| |term|"
     result

@@ -1,4 +1,4 @@
-specials: new [2 3]
+specials: [2 3]
 lim: 1050
 lastP: 3
 lastGap: 1

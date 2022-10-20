@@ -87,7 +87,8 @@ proc defineSymbols*() =
             )
             
             if x.kind==Literal:
-                SetInPlace(newDate(InPlace.eobj + ti))
+                ensureInPlace()
+                SetInPlace(newDate(InPlaced.eobj + ti))
             else:
                 push(newDate(x.eobj + ti))
 
@@ -148,7 +149,8 @@ proc defineSymbols*() =
             )
             
             if x.kind==Literal:
-                SetInPlace(newDate(InPlace.eobj - ti))
+                ensureInPlace()
+                SetInPlace(newDate(InPlaced.eobj - ti))
             else:
                 push(newDate(x.eobj - ti))
 

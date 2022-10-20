@@ -1,10 +1,10 @@
 pDigits: [2 3 5 7]
  
 lst: map pDigits 'd -> @[d]
-result: new []
+result: []
 
 while [0 <> size lst][
-    nextList: new []
+    nextList: []
     loop lst 'digitSeq [
         currSum: sum digitSeq
         loop pDigits 'n [

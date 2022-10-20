@@ -1,11 +1,11 @@
 Z: function [x][
     if x=0 -> return "0"
-    fib: new [2 1]
+    fib: [2 1]
     n: new x
     while -> n > first fib
           -> insert 'fib 0 fib\0 + fib\1
     
-    result: new ""
+    result: ""
     loop fib 'f [
         if? f =< n [
             'result ++ "1"

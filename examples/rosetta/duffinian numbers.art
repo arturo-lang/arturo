@@ -5,7 +5,7 @@ duffinian?: function [n]->
              [1] = intersection factors sum fn fn
          ]
 
-first50: new []
+first50: []
 i: 0
 while [50 > size first50][
     if duffinian? i -> 'first50 ++ i
@@ -17,7 +17,7 @@ loop split.every: 10 first50 'row [
     print map to [:string] row 'item -> pad item 3
 ]
 
-first15: new []
+first15: []
 i: 0
 while [15 > size first15][
     if every? i..i+2 => duffinian? [

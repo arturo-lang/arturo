@@ -1,7 +1,7 @@
 properDivisors: function [n]->
     (factors n) -- n
 
-abundant: new 0 deficient: new 0 perfect: new 0
+[abundant, deficient, perfect]: 0
 
 loop 1..20000 'x [
     s: sum properDivisors x

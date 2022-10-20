@@ -291,10 +291,10 @@ proc defineSymbols*() =
                     callHandler = proc (call: WebviewCallKind, value: Value): Value =
                         result = VNULL
                         if call==FunctionCall:
-                            if Syms.hasKey(value.d["method"].s) and Syms[value.d["method"].s].kind==Function:
+                            if SymExists(value.d["method"].s) and GetSym(value.d["method"].s).kind==Function:
                                 let prevSP = SP
 
-                                let fun = Syms[value.d["method"].s]
+                                let fun = GetSym(value.d["method"].s)
                                 for v in value.d["args"].a.reversed:
                                     push(v)
 

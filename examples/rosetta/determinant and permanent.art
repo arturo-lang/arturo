@@ -9,7 +9,7 @@ permutations: function [arr][
     xs: new arr
     sign: 1
 
-    ret: new @[@[xs, sign]]
+    ret: @[@[new xs, sign]]
 
     while [true][
         while [d > 1][
@@ -28,7 +28,7 @@ permutations: function [arr][
         xs\[d]: tmp
 
         sign: neg sign
-        'ret ++ @[new @[xs, sign]]
+        'ret ++ @[@[new xs, sign]]
         c\[d]: c\[d] + 1
     ]
 
@@ -37,7 +37,7 @@ permutations: function [arr][
 
 perm: function [a][
     n: 0..dec size a
-    result: new 0.0
+    result: 0.0
     loop permutate n 'sigma [
         x: 1.0
         loop n 'i -> x: x * get a\[i] sigma\[i]
@@ -48,7 +48,7 @@ perm: function [a][
 
 det: function [a][
     n: 0..dec size a
-    result: new 0.0
+    result: 0.0
     loop.with:'i permutations n 'p[
         x: p\1
         loop n 'i -> x: x * get a\[i] p\0\[i]
