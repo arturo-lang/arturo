@@ -60,17 +60,24 @@ func suggestAlternative*(s: string, reference: ValueDict = Syms): seq[string] {.
 #---------------------
 
 template GetKey*(dict: ValueDict, key: string): untyped =
+    ## Checks if a symbol name exists in given dictionary
+    ## - if it doesn't, raise a SymbolNotFound error
+    ## - otherwise, return its value
     let toRet = dict.getOrDefault(key, nil)
     if unlikely(toRet.isNil):
         RuntimeError_KeyNotFound(key, suggestAlternative(key, reference=dict))
     toRet
 
 template GetArrayIndex*(arr: ValueArray, indx: int): untyped =
+    ## Get element by index in given ValueArray
+    ## with bounds checking
     if unlikely(indx < 0 or indx > (arr.len)-1):
         RuntimeError_OutOfBounds(indx, arr.len-1)
     arr[indx]
 
 template SetArrayIndex*(arr: ValueArray, indx: int, v: Value): untyped =
+    ## Set element at index in given ValueArray
+    ## with bounds checking
     if unlikely(indx < 0 or indx > (arr.len)-1):
         RuntimeError_OutOfBounds(indx, arr.len-1)
     arr[indx] = v
@@ -85,8 +92,8 @@ template SymExists*(s: string): untyped =
 
 proc FetchSym*(s: string, unsafe: static bool = false): Value {.inline.} =
     ## Checks if a symbol name exists in the symbol table
-    ## it it doesn't, raise a SymbolNotFoundError
-    ## otherwise, return its value
+    ## - if it doesn't, raise a SymbolNotFound error
+    ## - otherwise, return its value
     when not unsafe:
         if (result = Syms.getOrDefault(s, nil); unlikely(result.isNil)):
             RuntimeError_SymbolNotFound(s, suggestAlternative(s))
@@ -103,7 +110,8 @@ template SetSym*(s: string, v: Value, safe: static bool = false): untyped =
     ## Sets symbol to given value in the symbol table
     when safe:
         ## When do it safely, also check if the value to be assigned is a read-only value
-        ## if it is - we have to copy it first
+        ## - if it is - we have to copy it first
+        ## - otherwise, go ahead and just assign it (pointer copy!)
         if v.readonly:
             Syms[s] = copyValue(v)
         else:
