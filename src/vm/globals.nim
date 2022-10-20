@@ -111,10 +111,20 @@ proc checkInPlaced*(ipv: Value, varname: string) {.inline.} =
 template InPlaced*(): untyped =
     InPlaceAddr[]
 
+proc showKeyError*(varname: string) =
+    if Syms.hasKey(varname):
+        RuntimeError_CannotModifyConstant(varname)
+    else:
+        RuntimeError_SymbolNotFound(varname, suggestAlternative(varname))
+
 template ensureInPlace*(): untyped = 
-    var InPlaceAddr {.inject.} = addr Syms[x.s] #Syms.getOrDefault(x.s, nil)
-    if InPlaced.readonly:
-        RuntimeError_CannotModifyConstant(x.s)
+    var InPlaceAddr {.inject.}: ptr Value
+    try:
+        InPlaceAddr = addr Syms[x.s] #Syms.getOrDefault(x.s, nil)
+        if unlikely(InPlaced.readonly):
+            RuntimeError_CannotModifyConstant(x.s)
+    except:
+        showKeyError(x.s)
     #InPlaced.checkInPlaced(x.s)
     
 
