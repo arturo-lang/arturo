@@ -37,7 +37,7 @@ import vm/opcodes
 when not defined(WEB):
     import vm/errors
 
-import vm/values/custom/[vcolor, vcomplex, vquantity, vrational, vregex]
+import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrational, vregex]
 
 import vm/values/clean
 import vm/values/types
