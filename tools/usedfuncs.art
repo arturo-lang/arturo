@@ -1,0 +1,76 @@
+stdLib: couple keys symbols values symbols
+stdLib: map select stdLib 'entry [
+    result: false
+    if function?.builtin entry\1 -> result: true
+    result
+] 'entry -> to :word entry\0
+stdLib: sort stdLib
+
+symAliases: #[]
+loop keys symbols 'ss [
+    inf: info.get ss
+    if key? inf 'alias ->
+        symAliases\[inf\alias]: ss
+]
+
+getAliasedFunction: function [s][
+    print ["looking up:" s]
+    loop keys symbols 'declared [
+        try? [
+            inf: info.get declared
+            if and? [key? inf 'alias][inf\alias = to :string s] -> return declared
+        ]
+        else [
+            return null
+        ]
+    ]
+    return null
+]
+
+getFunctionsInBlock: function [code][
+    'result ++ select to :block code => word?
+    'result ++ select to :block code => symbol?
+    loop select to :block code 'item -> or? inline? item block? item 'bl ->
+        getFunctionsInBlock bl
+]
+
+getFunctions: function [scr][
+    code: to :block read scr
+    result: new []
+
+    getFunctionsInBlock code
+
+    if zero? size result -> return [[][]]
+
+    funcs: select sort result => word?
+
+    syms: select sort result => symbol?
+    syms: select syms 'sym -> key? symAliases to :string sym
+    syms: map syms 'sym -> to :word symAliases\[to :string sym]
+
+    ffs: select sort funcs ++ syms 'ss ->
+        and? [contains? keys symbols to :string ss][function?.builtin var to :literal ss]
+    non: (sort funcs ++ syms)--ffs
+
+    return @[ffs, non]
+]
+
+results: #[]
+
+loop select list "examples/rosetta" 'x -> suffix? x ".art" 'scr [
+    print ["processing:" scr]
+    try [
+        fs: getFunctions scr
+        loop fs\0 'fnc [
+            unless key? results fnc -> results\[fnc]: 0
+            results\[fnc]: results\[fnc] + 1
+        ]
+    ]
+]
+
+results: sort.values results
+inspect results
+
+; if? standalone? [
+;     inspect getFunctions arg\0
+; ]
