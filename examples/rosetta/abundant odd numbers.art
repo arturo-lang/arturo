@@ -10,7 +10,7 @@ while [found<25][
     'i + 2
 ]
 
-[i, found]: @[1, 0]
+[i, found]: [1, 0]
 while [found<1000][
     if abundant? i [
         inc 'found
