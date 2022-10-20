@@ -408,8 +408,8 @@ proc defineSymbols*() =
             ; yep, that's not correct
         """:
             ##########################################################
-            var a: logical
-            var b: logical
+            var a: VLogical
+            var b: VLogical
             if x.kind == Logical: 
                 a = x.b
             else:
@@ -448,8 +448,8 @@ proc defineSymbols*() =
             ; nope, that's not correct
         """:
             ##########################################################
-            var a: logical
-            var b: logical
+            var a: VLogical
+            var b: VLogical
             if x.kind == Logical: 
                 a = x.b
             else:
