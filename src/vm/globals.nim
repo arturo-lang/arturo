@@ -12,7 +12,7 @@
 
 import std/editdistance, sequtils, tables
 
-import vm/[errors, profiler, values/value]
+import vm/[errors, values/value]
 
 #=======================================
 # Globals
@@ -55,38 +55,63 @@ func suggestAlternative*(s: string, reference: ValueDict = Syms): seq[string] {.
 # Methods
 #=======================================
 
-# Safe Dictionary/Array access
+#---------------------
+# Safe access
+#---------------------
 
 template GetKey*(dict: ValueDict, key: string): untyped =
+    ## Checks if a symbol name exists in given dictionary
+    ## - if it doesn't, raise a SymbolNotFound error
+    ## - otherwise, return its value
     let toRet = dict.getOrDefault(key, nil)
     if unlikely(toRet.isNil):
         RuntimeError_KeyNotFound(key, suggestAlternative(key, reference=dict))
     toRet
 
 template GetArrayIndex*(arr: ValueArray, indx: int): untyped =
+    ## Get element by index in given ValueArray
+    ## with bounds checking
     if unlikely(indx < 0 or indx > (arr.len)-1):
         RuntimeError_OutOfBounds(indx, arr.len-1)
     arr[indx]
 
 template SetArrayIndex*(arr: ValueArray, indx: int, v: Value): untyped =
+    ## Set element at index in given ValueArray
+    ## with bounds checking
     if unlikely(indx < 0 or indx > (arr.len)-1):
         RuntimeError_OutOfBounds(indx, arr.len-1)
     arr[indx] = v
 
+#---------------------
 # Symbol table
+#---------------------
 
 template SymExists*(s: string): untyped =
+    ## Checks if a symbol name exists in the symbol table
     Syms.hasKey(s)
 
 proc FetchSym*(s: string, unsafe: static bool = false): Value {.inline.} =
+    ## Checks if a symbol name exists in the symbol table
+    ## - if it doesn't, raise a SymbolNotFound error
+    ## - otherwise, return its value
     when not unsafe:
         if (result = Syms.getOrDefault(s, nil); unlikely(result.isNil)):
             RuntimeError_SymbolNotFound(s, suggestAlternative(s))
     else:
         Syms[s]
 
+template GetSym*(s: string): untyped =
+    ## Get value for given symbol in table
+    ## Hint: if the key doesn't exist, it will throw an error
+    ##       so, we have to make sure we know it exists beforehand
+    Syms[s]
+
 template SetSym*(s: string, v: Value, safe: static bool = false): untyped =
+    ## Sets symbol to given value in the symbol table
     when safe:
+        ## When do it safely, also check if the value to be assigned is a read-only value
+        ## - if it is - we have to copy it first
+        ## - otherwise, go ahead and just assign it (pointer copy!)
         if v.readonly:
             Syms[s] = copyValue(v)
         else:
@@ -94,38 +119,39 @@ template SetSym*(s: string, v: Value, safe: static bool = false): untyped =
     else:
         Syms[s] = v
 
-template GetSym*(s: string): untyped =
-    Syms[s]
-
+#---------------------
 # In-Place symbols
+#---------------------
 
-# TODO(Globals/InPlace) Should convert to proc?
-#  labels: performance, benchmark
-template InPlace*(): untyped =
-    when defined(PROFILER):
-        hookProcProfiler("globals/InPlace"):
-            if unlikely(not SymExists(x.s)):
-                RuntimeError_SymbolNotFound(x.s, suggestAlternative(x.s))
-            discard GetSym(x.s)
-        GetSym(x.s)
-    else:
-        # TODO(Globals/InPlace) Inefficient implementation
-        #  In case the variable exists, which it most likely does, we are doing a double lookup. 
-        #  We should be able to avoid this.
-        #  labels: performance, enhancement
-        if unlikely(not SymExists(x.s)):
-            RuntimeError_SymbolNotFound(x.s, suggestAlternative(x.s))
-
-        # TODO(Globals/InPlace) Should make sure the symbol is not a *readonly* constant
-        #  This is done already, but it makes the whole thing even more inefficient
-        #  labels: enhancement, values
-        if unlikely(GetSym(x.s).readonly):
-            RuntimeError_CannotModifyConstant(x.s)
-
-        GetSym(x.s)
+template RawInPlaced*(): untyped =
+    ## Get InPlaced symbol without any checks
+    ## Hint: if the key doesn't exist, it will throw an error
+    ##       so, we have to make sure we know it exists beforehand
+    Syms[x.s]
 
 template InPlaced*(): untyped =
-    GetSym(x.s)
+    ## Get access to InPlaced symbol with 
+    ## Hint: always after having called `ensureInPlace` first!
+    InPlaceAddr[]
+
+proc showInPlaceError*(varname: string) =
+    ## Show error in case `ensureInPlace` fails
+    if SymExists(varname):
+        RuntimeError_CannotModifyConstant(varname)
+    else:
+        RuntimeError_SymbolNotFound(varname, suggestAlternative(varname))
+
+template ensureInPlace*(): untyped = 
+    ## To be used whenever, and always before,
+    ## we want to access an InPlace symbol
+    var InPlaceAddr {.inject.}: ptr Value
+    try:
+        InPlaceAddr = addr Syms[x.s]
+        if unlikely(InPlaced.readonly):
+            RuntimeError_CannotModifyConstant(x.s)
+    except:
+        showInPlaceError(x.s)
 
 template SetInPlace*(v: Value, safe: static bool = false): untyped =
+    ## Sets InPlace symbol to given value in the symbol table
     SetSym(x.s, v, safe)
