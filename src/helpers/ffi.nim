@@ -19,6 +19,8 @@ when not defined(WEB):
 
     import vm/[errors, values/value]
 
+    import vm/values/custom/[vlogical]
+
     #=======================================
     # Types
     #=======================================
