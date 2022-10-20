@@ -1,6 +1,6 @@
 mianChowla: function [n][
-    result: new [1]
-    sums: new [2]
+    result: [1]
+    sums: [2]
     candidate: 1
 
     while [n > size result][

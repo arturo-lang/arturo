@@ -1,5 +1,5 @@
 lynchBell?: function [num][
-    hset: new []
+    hset: []
     loop digits num 'd [
         if d=0 -> return false
         if or? [0 <> mod num d]

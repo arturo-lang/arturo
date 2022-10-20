@@ -1,5 +1,5 @@
 pascalTriangle: function [n][
-    triangle: new [[1]]
+    triangle: [[1]]
 
     loop 1..dec n 'x [
         'triangle ++ @[map couple (last triangle)++[0] [0]++(last triangle) 'x -> x\[0] + x\[1]]

@@ -1,6 +1,6 @@
 perms: function [n][
     str: repeat to :string n 2
-    result: new []
+    result: []
     lim: dec size digits n
     loop 0..lim 'd ->
         'result ++ slice str d lim+d
@@ -8,7 +8,7 @@ perms: function [n][
     return to [:integer] result
 ]
  
-circulars: new []
+circulars: []
  
 circular?: function [x][
     if not? prime? x -> return false

@@ -11,7 +11,7 @@ findSpot: function [l,e][
     return dec size l
 ]
  
-sortedLst: new []
+sortedLst: []
 
 loop lst 'element ->
     insert 'sortedLst findSpot sortedLst element element

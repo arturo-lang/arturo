@@ -5,7 +5,7 @@ brilliant?: function [x][
                    size digits last pf
 ]
 
-brilliants: new []
+brilliants: []
 i: 2
 while [100 > size brilliants][
     if brilliant? i -> 'brilliants ++ i

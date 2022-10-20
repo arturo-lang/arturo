@@ -1,7 +1,7 @@
 wordset: map read.lines relative "unixdict.txt" => strip
 
 wordset: select wordset 'word -> 12 =< size word
-results: new []
+results: []
 loop wordset 'a [
     loop select wordset 'word [equal? size a size word] 'b [
         if a <> b [

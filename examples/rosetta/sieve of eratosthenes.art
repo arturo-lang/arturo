@@ -7,7 +7,7 @@ sieve: function [upto][
             ]
         ]
     ]
-    result: new []
+    result: []
     loop.with:'i composites 'c [
         unless c -> 'result ++ i
     ]

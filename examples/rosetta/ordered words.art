@@ -2,7 +2,7 @@ ordered?: function [w]->
     w = join sort split w
 
 words: read.lines relative "unixdict.txt"
-ret: new []
+ret: []
 loop words 'wrd [
     if ordered? wrd ->
         'ret ++ #[w: wrd l: size wrd]

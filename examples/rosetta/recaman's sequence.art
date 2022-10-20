@@ -5,9 +5,9 @@ recamanSucc: function [seen, n, r].memoize[
 ]
 
 recamanUntil: function [p][
-    n: new 1
+    n: 1
     r: 0
-    rs: new @[r]
+    rs: @[r]
     seen: rs
     blnNew: true
     while [not? do p][

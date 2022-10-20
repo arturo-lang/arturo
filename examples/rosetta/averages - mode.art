@@ -1,5 +1,5 @@
 getMode: function [arr][
-    freqs: new #[]
+    freqs: #[]
     loop arr 'i [
         k: to :string i
         if not? key? freqs k -> set freqs k 0

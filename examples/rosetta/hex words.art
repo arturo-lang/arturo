@@ -1,5 +1,5 @@
 words: map read.lines relative "unixdict.txt" => strip
-hexWords: new []
+hexWords: []
 
 digRoot: function [num][
     res: num

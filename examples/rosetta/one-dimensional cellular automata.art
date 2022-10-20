@@ -1,6 +1,6 @@
 evolve: function [arr][
     ary: [0] ++ arr ++ [0]
-    ret: new []
+    ret: []
     loop 1..(size ary)-2 'i [
         a: ary\[i-1]
         b: ary\[i]

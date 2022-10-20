@@ -4,7 +4,7 @@ f: function [n]->
 loop 1..22 'i ->
     print [i "->" f i]
 
-i: new 1, nonSquares: new []
+i: 1, nonSquares: []
 while [i<1000000][ 'nonSquares ++ f i, inc 'i]
 squares: map 1..1001 'x -> x ^ 2
 

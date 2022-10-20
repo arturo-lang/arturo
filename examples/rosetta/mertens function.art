@@ -20,6 +20,6 @@ print ""
 mertens1000: map 1..1000 => mertens
 print ["Times M(x) is zero between 1 and 1000:" size select mertens1000 => zero?]
 
-crossed: new 0
+crossed: 0
 fold mertens1000 [a,b][if and? zero? b not? zero? a -> inc 'crossed, b]
 print ["Times M(x) crosses zero between 1 and 1000:" crossed]

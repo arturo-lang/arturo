@@ -3,7 +3,7 @@ compress: function [str][
     loop 0..255 'i -> dict\[to :char i]: i
 
     w: ""
-    result: new []
+    result: []
     loop str 'c [
         wc: w ++ c
         if? key? dict wc -> w: wc

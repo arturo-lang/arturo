@@ -4,8 +4,8 @@ egyptianDiv: function [dividend, divisor][
 
     if dividend < divisor -> return @[0, dividend]
 
-    powersOfTwo: new [1]
-    doublings: new @[divisor]
+    powersOfTwo: [1]
+    doublings: @[divisor]
     d: divisor
     
     while [true][

@@ -4,7 +4,7 @@ a: function [n][
 ]
 
 aInv: function [x][
-    k: new 0
+    k: 0
     while [x > 2 + k*(1+k^2)/2]
         -> inc 'k
     return k

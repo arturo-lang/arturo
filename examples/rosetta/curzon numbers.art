@@ -2,7 +2,7 @@ curzon?: function [n,base]->
     zero? (inc base^n) % inc base*n
 
 first50: function [b][
-    result: new []
+    result: []
     i: 1
     while [50 > size result][
         if curzon? i b -> 'result ++ i 

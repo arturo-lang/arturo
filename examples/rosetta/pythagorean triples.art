@@ -1,4 +1,4 @@
-triples: new []
+triples: []
 loop 1..50 'x [
     loop 1..50 'y [
         loop (max @[x y])..100 'z [

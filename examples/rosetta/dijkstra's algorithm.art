@@ -19,7 +19,7 @@ Inf: 1234567890
 dijkstraPath: function [gr, fst, lst][
     dist: #[]
     prev: #[]
-    result: new []
+    result: []
     notSeen: new gr\vertices
     loop gr\vertices 'vertex ->
         dist\[vertex]: Inf

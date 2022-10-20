@@ -4,7 +4,7 @@ JO: function [n]-> (J n) * (J n+1)
 
 printFirst: function [label, what, predicate, count][
     print ["First" count label++":"]
-    result: new []
+    result: []
     i: 0
     while [count > size result][
         num: do ~"|what| i"

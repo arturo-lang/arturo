@@ -1,7 +1,7 @@
 words: read.lines relative "unixdict.txt"
 
 getOdd: function [w][
-    odd: new ""
+    odd: ""
     loop.with:'i w 'ch [
         if even? i -> 'odd ++ ch
     ]

@@ -8,7 +8,7 @@ orientation: function [P Q R][
 ]
 
 calculateConvexHull: function [points][
-    result: new []
+    result: []
 
     if 3 > size points [
         loop points 'p -> 'result ++ p

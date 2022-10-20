@@ -2,7 +2,7 @@ stay: 0
 swit: 0
 
 loop 1..1000 'i [
-    lst: shuffle new [1 0 0]
+    lst: shuffle [1 0 0]
     rand: random 0 2
     user: lst\[rand]
     remove 'lst rand
