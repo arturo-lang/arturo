@@ -15,8 +15,8 @@
 #=======================================
 
 import hashes, lenientops
-import macros, math, sequtils, strformat
-import strutils, sugar, tables, times, unicode
+import macros, math, sequtils, strutils
+import sugar, tables, times, unicode
 
 when not defined(NOSQLITE):
     import db_sqlite as sqlite
@@ -30,9 +30,6 @@ when not defined(NOGMP):
 
 import helpers/bytes as BytesHelper
 export Byte, ByteArray
-import helpers/terminal as TerminalHelper
-
-import vm/opcodes
 
 when not defined(WEB):
     import vm/errors
