@@ -28,13 +28,13 @@ import vm/stack
 import vm/values/value
 import vm/values/clean
 
-import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrational, vregex]
+import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrational, vregex, vsymbol]
 
 #=======================================
 # Methods
 #=======================================
 
-func `$`*(s: SymbolKind): string =
+func `$`*(s: VSymbol): string =
     case s:
         of thickarrowleft           : result = "<="
         of thickarrowright          : result = "=>"
