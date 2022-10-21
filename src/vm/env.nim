@@ -17,6 +17,7 @@ import os, strutils, tables, times
 import helpers/terminal
 
 import vm/[parse,values/value]
+import vm/values/custom/[vlogical]
 
 #=======================================
 # Globals
