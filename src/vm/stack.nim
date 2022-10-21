@@ -137,22 +137,3 @@ proc getAttrsDict*(): Value =
     result = newDictionary(Attrs)
 
     emptyAttrs()
-
-# Debugging
-
-proc dumpStack*() =
-    var i = 0
-    while i < SP:
-        when not defined(WEB):
-            stdout.write fmt("{i}: ")
-        var item = Stack[i]
-
-        item.dump(0, false)
-
-        i += 1
-
-# when defined(VERBOSE):
-
-#     proc printAttrs*() =
-#         for k,v in pairs(Attrs):
-#             echo k & " => " & $(v)
