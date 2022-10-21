@@ -6,6 +6,13 @@
 # @file: vm/eval.nim
 #=======================================================
 
+## This module contains the evaluator for the Arturo VM.
+## 
+## The evaluator:
+## - takes a Block of values coming from the parser
+## - interpretes and returns a Translation (that is: a 
+##   list of constants + the bytecode instructions)
+
 #=======================================
 # Libraries
 #=======================================
