@@ -26,7 +26,7 @@ when not defined(WEB) and not defined(PORTABLE):
     import helpers/terminal
     import vm/[bytecode, env, errors, package, version]
 
-import vm/[parse, values/value, vm]
+import vm/[parse, values/value, values/printable, vm]
 
 when not defined(WEB) and not defined(PORTABLE):
 
