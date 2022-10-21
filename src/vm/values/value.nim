@@ -2027,95 +2027,95 @@ proc factorial*(x: Value): Value =
             when not defined(WEB):
                 RuntimeError_NumberOutOfPermittedRange("factorial",valueAsString(x), "")
 
-func `$`(v: Value): string {.inline,enforceNoRaises.} =
-    case v.kind:
-        of Null         : return "null"
-        of Logical      : return $(v.b)
-        of Integer      : 
-            if likely(v.iKind==NormalInteger): return $(v.i)
-            else:
-                when defined(WEB) or not defined(NOGMP): 
-                    return $(v.bi)
-        of Version      : return fmt("{v.major}.{v.minor}.{v.patch}{v.extra}")
-        of Floating     : 
-            #if v.fKind==NormalFloating: 
-            if v.f==Inf: return "∞"
-            elif v.f==NegInf: return "-∞"
-            else: return $(v.f)
-            # else:
-            #     when defined(WEB) or not defined(NOGMP): 
-            #         return $(v.bf)
-        of Complex      : return $(v.z.re) & (if v.z.im >= 0: "+" else: "") & $(v.z.im) & "i"
-        of Rational     : return $(v.rat)
-        of Type         : 
-            if v.tpKind==BuiltinType:
-                return ":" & ($v.t).toLowerAscii()
-            else:
-                return ":" & v.ts.name
-        of Char         : return $(v.c)
-        of String,
-           Word, 
-           Literal,
-           Label,
-           Attribute,
-           AttributeLabel        : return v.s
-        of Path,
-           PathLabel    :
-            result = v.p.map((x) => $(x)).join("\\")
+# func `$`(v: Value): string {.inline,enforceNoRaises.} =
+#     case v.kind:
+#         of Null         : return "null"
+#         of Logical      : return $(v.b)
+#         of Integer      : 
+#             if likely(v.iKind==NormalInteger): return $(v.i)
+#             else:
+#                 when defined(WEB) or not defined(NOGMP): 
+#                     return $(v.bi)
+#         of Version      : return fmt("{v.major}.{v.minor}.{v.patch}{v.extra}")
+#         of Floating     : 
+#             #if v.fKind==NormalFloating: 
+#             if v.f==Inf: return "∞"
+#             elif v.f==NegInf: return "-∞"
+#             else: return $(v.f)
+#             # else:
+#             #     when defined(WEB) or not defined(NOGMP): 
+#             #         return $(v.bf)
+#         of Complex      : return $(v.z.re) & (if v.z.im >= 0: "+" else: "") & $(v.z.im) & "i"
+#         of Rational     : return $(v.rat)
+#         of Type         : 
+#             if v.tpKind==BuiltinType:
+#                 return ":" & ($v.t).toLowerAscii()
+#             else:
+#                 return ":" & v.ts.name
+#         of Char         : return $(v.c)
+#         of String,
+#            Word, 
+#            Literal,
+#            Label,
+#            Attribute,
+#            AttributeLabel        : return v.s
+#         of Path,
+#            PathLabel    :
+#             result = v.p.map((x) => $(x)).join("\\")
 
-        of Color        :
-            return $(v.l)
-        of Symbol,
-           SymbolLiteral:
-            return $(v.m)
-        of Quantity:
-            return $(v.nm) & stringify(v.unit.name)
-        of Regex:
-            return $(v.rx)
-        of Date     : return $(v.eobj)
-        of Binary   : return v.n.map((child) => fmt"{child:02X}").join(" ")
-        of Inline,
-           Block     :
-            # result = "["
-            # for i,child in v.a:
-            #     result &= $(child) & " "
-            # result &= "]"
-            ensureCleaned(v)
-            result = "[" & cleanV.map((child) => $(child)).join(" ") & "]"
+#         of Color        :
+#             return $(v.l)
+#         of Symbol,
+#            SymbolLiteral:
+#             return $(v.m)
+#         of Quantity:
+#             return $(v.nm) & stringify(v.unit.name)
+#         of Regex:
+#             return $(v.rx)
+#         of Date     : return $(v.eobj)
+#         of Binary   : return v.n.map((child) => fmt"{child:02X}").join(" ")
+#         of Inline,
+#            Block     :
+#             # result = "["
+#             # for i,child in v.a:
+#             #     result &= $(child) & " "
+#             # result &= "]"
+#             ensureCleaned(v)
+#             result = "[" & cleanV.map((child) => $(child)).join(" ") & "]"
 
-        of Dictionary   :
-            var items: seq[string] = @[]
-            for key,value in v.d:
-                items.add(key  & ":" & $(value))
+#         of Dictionary   :
+#             var items: seq[string] = @[]
+#             for key,value in v.d:
+#                 items.add(key  & ":" & $(value))
 
-            result = "[" & items.join(" ") & "]"
+#             result = "[" & items.join(" ") & "]"
 
-        of Object       :
-            var items: seq[string] = @[]
-            for key,value in v.o:
-                items.add(key  & ":" & $(value))
+#         of Object       :
+#             var items: seq[string] = @[]
+#             for key,value in v.o:
+#                 items.add(key  & ":" & $(value))
 
-            result = "[" & items.join(" ") & "]"
+#             result = "[" & items.join(" ") & "]"
 
-        of Function     : 
-            result = ""
-            if v.fnKind==UserFunction:
-                result &= "<function>" & $(v.params)
-                result &= "(" & fmt("{cast[ByteAddress](v.main):#X}") & ")"
-            else:
-                result &= "<function:builtin>" 
+#         of Function     : 
+#             result = ""
+#             if v.fnKind==UserFunction:
+#                 result &= "<function>" & $(v.params)
+#                 result &= "(" & fmt("{cast[ByteAddress](v.main):#X}") & ")"
+#             else:
+#                 result &= "<function:builtin>" 
 
-        of Database:
-            when not defined(NOSQLITE):
-                if v.dbKind==SqliteDatabase: result = fmt("<database>({cast[ByteAddress](v.sqlitedb):#X})")
-                #elif v.dbKind==MysqlDatabase: result = fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
+#         of Database:
+#             when not defined(NOSQLITE):
+#                 if v.dbKind==SqliteDatabase: result = fmt("<database>({cast[ByteAddress](v.sqlitedb):#X})")
+#                 #elif v.dbKind==MysqlDatabase: result = fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
 
-        of Bytecode:
-            result = "<bytecode>" & "(" & fmt("{cast[ByteAddress](v):#X}") & ")"
+#         of Bytecode:
+#             result = "<bytecode>" & "(" & fmt("{cast[ByteAddress](v):#X}") & ")"
         
-        of Newline: discard
-        of Nothing: discard
-        of ANY: discard
+#         of Newline: discard
+#         of Nothing: discard
+#         of ANY: discard
 
 proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepend="") {.exportc.} = 
     proc dumpPrimitive(str: string, v: Value) =
