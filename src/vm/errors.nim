@@ -6,6 +6,8 @@
 # @file: vm/errors.nim
 #=======================================================
 
+## Error handling for the VM.
+
 # TODO(VM/errors) General cleanup needed
 #  Do we need all these different errors? Could it be done in a more organized function by, at least, using some template? Are there other errors - mostly coming from built-in functions - that are not reported, which we could add?
 #  labels: vm, error handling, enhancement, cleanup
@@ -130,7 +132,7 @@ proc showVMErrors*(e: ref Exception) =
 # Methods
 #=======================================
 
-## Compiler errors
+# Compiler errors
 
 proc CompilerError_ScriptNotExists*(name: string) =
     panic CompilerError,
@@ -143,7 +145,7 @@ proc CompilerError_UnrecognizedOption*(name: string) =
           "_" & name & "_",
           throw=false
 
-## Syntax errors
+# Syntax errors
 
 proc SyntaxError_MissingClosingBracket*(lineno: int, context: string) =
     CurrentLine = lineno
@@ -173,13 +175,13 @@ proc SyntaxError_EmptyLiteral*(lineno: int, context: string) =
           "empty literal value;;" & 
           "near: " & context
 
-## Assertion errors
+# Assertion errors
 
 proc AssertionError_AssertionFailed*(context: string) =
     panic AssertionError,
           context
 
-## Runtime errors
+# Runtime errors
 
 proc RuntimeError_IntegerParsingOverflow*(lineno: int, number: string) =
     CurrentLine = lineno
@@ -284,7 +286,7 @@ proc RuntimeError_OperationNotPermitted*(operation: string) =
           "unsafe operation: " & operation & ";" &
           "not permitted in online playground"
 
-## Program errors
+# Program errors
 
 proc ProgramError_panic*(message: string, code: int) =
     panic ProgramError,
