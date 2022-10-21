@@ -572,18 +572,6 @@ template isNothing*(v: Value): bool =
 # Helpers
 #=======================================
 
-when defined(WEB):
-    var stdout: string = ""
-
-    proc resetStdout*()=
-        stdout = ""
-
-    proc write*(buffer: var string, str: string) =
-        buffer &= str
-    
-    proc flushFile*(buffer: var string) =
-        echo buffer
-
 func asFloat*(v: Value): float {.enforceNoRaises.} = 
     # get number value forcefully as a float
     if v.kind == Floating:

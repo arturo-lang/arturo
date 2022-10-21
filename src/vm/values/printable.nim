@@ -34,6 +34,22 @@ import vm/values/clean
 import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrational, vregex]
 
 #=======================================
+# Helpers
+#=======================================
+
+when defined(WEB):
+    var stdout: string = ""
+
+    proc resetStdout*()=
+        stdout = ""
+
+    proc write*(buffer: var string, str: string) =
+        buffer &= str
+    
+    proc flushFile*(buffer: var string) =
+        echo buffer
+
+#=======================================
 # Methods
 #=======================================
 
