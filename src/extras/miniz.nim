@@ -319,8 +319,8 @@ when not(defined(MINIZ_NO_ARCHIVE_APIS)):
       m_version_made_by*: mz_uint16
       m_version_needed*: mz_uint16
       m_bit_flag*: mz_uint16
-      m_method*: mz_uint16    ##ifndef MINIZ_NO_TIME
-      m_time*: time_t         ##endif
+      m_method*: mz_uint16    
+      m_time*: time_t         
       m_crc32*: mz_uint32
       m_comp_size*: mz_uint64
       m_uncomp_size*: mz_uint64
@@ -555,7 +555,7 @@ type
 
 
 # Initializes the decompressor to its initial state.
-##define tinfl_init(r) do { (r)->m_state = 0; } MZ_MACRO_END
+# define tinfl_init(r) do { (r)->m_state = 0; } MZ_MACRO_END
 template tinfl_init*(r: typed): void=
   r.m_state = 0
 
@@ -826,7 +826,7 @@ when not(defined(MINIZ_NO_ZLIB_APIS)):
   func tdefl_create_comp_flags_from_zip_params*(level: cint; window_bits: cint; 
       strategy: cint): mz_uint {.importc.}
 
-### Public Library
+# Public Library
 
 proc compressString*(src: string, level: int = 6): string =
   var maxLenOut = mz_compressBound(mz_ulong src.len)
@@ -931,8 +931,8 @@ iterator pairs*(zip: var Zip): (int, string) =
     yield (i, zip.get_file_name(i))
 
 func file_index_inexact(zip: var Zip, path: string): int = 
-  # returns file index per file path. Tries inexact search if exact search fails.
-  # Throws exception if path is ambigous
+  ## returns file index per file path. Tries inexact search if exact search fails.
+  ## Throws exception if path is ambigous
   result = zip.c.addr.mz_zip_reader_locate_file(path, "", 0)
   if result == -1:
     for i, f in zip:
