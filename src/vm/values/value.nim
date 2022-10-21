@@ -624,6 +624,26 @@ func safePow*[T: SomeNumber](x: T, y: Natural): T =
                 break
             safeMulI(x, x)
 
+func valueAsString*(v: Value): string {.inline,enforceNoRaises.} =
+    # This works only for number values, which is precisely
+    # what we need for this module.
+    # The proper `$` implementation is in `values/printable`.
+    case v.kind:
+        of Integer:
+            if likely(v.iKind == NormalInteger): 
+                result = $v.i
+            else:
+                when defined(WEB) or not defined(NOGMP): 
+                    result = $v.bi
+        of Floating:
+            result = $v.f
+        of Rational:
+            result = $v.rat
+        of Complex:
+            result = $v.z
+        else:
+            result = ""
+
 #=======================================
 # Methods
 #=======================================
@@ -658,7 +678,7 @@ proc `+`*(x: Value, y: Value): Value =
                         elif not defined(NOGMP):
                             return newInteger(newInt(x.i)+y.i)
                         else:
-                            RuntimeError_IntegerOperationOverflow("add", $(x), $(y))
+                            RuntimeError_IntegerOperationOverflow("add", valueAsString(x), valueAsString(y))
                 else:
                     when defined(WEB):
                         return newInteger(big(x.i)+y.bi)
@@ -734,7 +754,7 @@ proc `+=`*(x: var Value, y: Value) =
                         elif not defined(NOGMP):
                             x = newInteger(newInt(x.i)+y.i)
                         else:
-                            RuntimeError_IntegerOperationOverflow("add", $(x), $(y))
+                            RuntimeError_IntegerOperationOverflow("add", valueAsString(x), valueAsString(y))
                 else:
                     when defined(WEB):
                         x = newInteger(big(x.i)+y.bi)
@@ -813,7 +833,7 @@ proc `-`*(x: Value, y: Value): Value =
                         elif not defined(NOGMP):
                             return newInteger(newInt(x.i)-y.i)
                         else:
-                            RuntimeError_IntegerOperationOverflow("sub", $(x), $(y))
+                            RuntimeError_IntegerOperationOverflow("sub", valueAsString(x), valueAsString(y))
                 else:
                     when defined(WEB):
                         return newInteger(big(x.i)-y.bi)
@@ -890,7 +910,7 @@ proc `-=`*(x: var Value, y: Value) =
                         elif not defined(NOGMP):
                             x = newInteger(newInt(x.i)-y.i)
                         else:
-                            RuntimeError_IntegerOperationOverflow("sub", $(x), $(y))
+                            RuntimeError_IntegerOperationOverflow("sub", valueAsString(x), valueAsString(y))
                 else:
                     when defined(WEB):
                         x = newInteger(big(x.i)-y.bi)
@@ -949,7 +969,7 @@ proc `*`*(x: Value, y: Value): Value =
                 let finalSpec = getFinalUnitAfterOperation("mul", x.unit, y.unit)
                 if unlikely(finalSpec == ErrorQuantity):
                     when not defined(WEB):
-                        RuntimeError_IncompatibleQuantityOperation("mul", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
+                        RuntimeError_IncompatibleQuantityOperation("mul", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
                 else:
                     return newQuantity(x.nm * convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
             else:
@@ -968,7 +988,7 @@ proc `*`*(x: Value, y: Value): Value =
                         elif not defined(NOGMP):
                             return newInteger(newInt(x.i)*y.i)
                         else:
-                            RuntimeError_IntegerOperationOverflow("mul", $(x), $(y))
+                            RuntimeError_IntegerOperationOverflow("mul", valueAsString(x), valueAsString(y))
                 else:
                     when defined(WEB):
                         return newInteger(big(x.i)*y.bi)
@@ -1027,7 +1047,7 @@ proc `*=`*(x: var Value, y: Value) =
                 let finalSpec = getFinalUnitAfterOperation("mul", x.unit, y.unit)
                 if unlikely(finalSpec == ErrorQuantity):
                     when not defined(WEB):
-                        RuntimeError_IncompatibleQuantityOperation("mul", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
+                        RuntimeError_IncompatibleQuantityOperation("mul", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
                 else:
                     x = newQuantity(x.nm * convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
             else:
@@ -1046,7 +1066,7 @@ proc `*=`*(x: var Value, y: Value) =
                         elif not defined(NOGMP):
                             x = newInteger(newInt(x.i)*y.i)
                         else:
-                            RuntimeError_IntegerOperationOverflow("mul", $(x), $(y))
+                            RuntimeError_IntegerOperationOverflow("mul", valueAsString(x), valueAsString(y))
                 else:
                     when defined(WEB):
                         x = newInteger(big(x.i)*y.bi)
@@ -1112,7 +1132,7 @@ proc `/`*(x: Value, y: Value): Value =
                 let finalSpec = getFinalUnitAfterOperation("div", x.unit, y.unit)
                 if unlikely(finalSpec == ErrorQuantity):
                     when not defined(WEB):
-                        RuntimeError_IncompatibleQuantityOperation("div", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
+                        RuntimeError_IncompatibleQuantityOperation("div", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
                 elif finalSpec == NumericQuantity:
                     return x.nm / y.nm
                 else:
@@ -1184,7 +1204,7 @@ proc `/=`*(x: var Value, y: Value) =
                 let finalSpec = getFinalUnitAfterOperation("div", x.unit, y.unit)
                 if unlikely(finalSpec == ErrorQuantity):
                     when not defined(WEB):
-                        RuntimeError_IncompatibleQuantityOperation("div", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
+                        RuntimeError_IncompatibleQuantityOperation("div", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
                 elif finalSpec == NumericQuantity:
                     x = x.nm / y.nm
                 else:
@@ -1205,7 +1225,7 @@ proc `/=`*(x: var Value, y: Value) =
                         elif not defined(NOGMP):
                             x = newInteger(newInt(x.i) div y.i)
                         else:
-                            RuntimeError_IntegerOperationOverflow("div", $(x), $(y))
+                            RuntimeError_IntegerOperationOverflow("div", valueAsString(x), valueAsString(y))
                 else:
                     when defined(WEB):
                         x = newInteger(big(x.i) div y.bi)
@@ -1263,7 +1283,7 @@ proc `//`*(x: Value, y: Value): Value =
                 let finalSpec = getFinalUnitAfterOperation("fdiv", x.unit, y.unit)
                 if unlikely(finalSpec == ErrorQuantity):
                     when not defined(WEB):
-                        RuntimeError_IncompatibleQuantityOperation("fdiv", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
+                        RuntimeError_IncompatibleQuantityOperation("fdiv", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
                 elif finalSpec == NumericQuantity:
                     return x.nm // y.nm
                 else:
@@ -1306,7 +1326,7 @@ proc `//=`*(x: var Value, y: Value) =
                 let finalSpec = getFinalUnitAfterOperation("fdiv", x.unit, y.unit)
                 if unlikely(finalSpec == ErrorQuantity):
                     when not defined(WEB):
-                        RuntimeError_IncompatibleQuantityOperation("fdiv", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
+                        RuntimeError_IncompatibleQuantityOperation("fdiv", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
                 elif finalSpec == NumericQuantity:
                     x = x.nm // y.nm
                 else:
@@ -1351,7 +1371,7 @@ proc `%`*(x: Value, y: Value): Value =
         else:
             if unlikely(x.unit.kind != y.unit.kind):
                 when not defined(WEB):
-                    RuntimeError_IncompatibleQuantityOperation("mod", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
+                    RuntimeError_IncompatibleQuantityOperation("mod", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
             else:
                 return VNULL
     else:
@@ -1411,7 +1431,7 @@ proc `%=`*(x: var Value, y: Value) =
         else:
             if unlikely(x.unit.kind != y.unit.kind):
                 when not defined(WEB):
-                    RuntimeError_IncompatibleQuantityOperation("mod", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
+                    RuntimeError_IncompatibleQuantityOperation("mod", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
             else:
                 x = VNULL
     else:
@@ -1558,17 +1578,17 @@ proc `^`*(x: Value, y: Value): Value =
                 elif y.i == 3: return x * x * x
                 else:
                     when not defined(WEB):
-                        RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
+                        RuntimeError_IncompatibleQuantityOperation("pow", valueAsString(x), valueAsString(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
             elif y.kind==Floating and (y.f > 0 and y.f < 4):
                 if y.f == 1.0: return x
                 elif y.f == 2.0: return x * x
                 elif y.f == 3.0: return x * x * x
                 else:
                     when not defined(WEB):
-                        RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
+                        RuntimeError_IncompatibleQuantityOperation("pow", valueAsString(x), valueAsString(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
             else:
                 when not defined(WEB):
-                    RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
+                    RuntimeError_IncompatibleQuantityOperation("pow", valueAsString(x), valueAsString(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
         else: 
             return VNULL
     else:
@@ -1586,12 +1606,12 @@ proc `^`*(x: Value, y: Value): Value =
                         elif not defined(NOGMP):
                             return newInteger(pow(x.i,(culong)(y.i)))
                         else:
-                            RuntimeError_IntegerOperationOverflow("pow", $(x), $(y))
+                            RuntimeError_IntegerOperationOverflow("pow", valueAsString(x), valueAsString(y))
                 else:
                     when defined(WEB):
                         return newInteger(big(x.i) ** y.bi)
                     elif not defined(NOGMP):
-                        RuntimeError_NumberOutOfPermittedRange("pow",$(x), $(y))
+                        RuntimeError_NumberOutOfPermittedRange("pow",valueAsString(x), valueAsString(y))
             else:
                 when defined(WEB):
                     if likely(y.iKind==NormalInteger): 
@@ -1602,7 +1622,7 @@ proc `^`*(x: Value, y: Value): Value =
                     if likely(y.iKind==NormalInteger):
                         return newInteger(pow(x.bi,(culong)(y.i)))
                     else:
-                        RuntimeError_NumberOutOfPermittedRange("pow",$(x), $(y))
+                        RuntimeError_NumberOutOfPermittedRange("pow",valueAsString(x), valueAsString(y))
         else:
             if x.kind==Floating:
                 if y.kind==Floating: return newFloating(pow(x.f,y.f))
@@ -1637,17 +1657,17 @@ proc `^=`*(x: var Value, y: Value) =
                 elif y.i == 3: x *= x * x
                 else:
                     when not defined(WEB):
-                        RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
+                        RuntimeError_IncompatibleQuantityOperation("pow", valueAsString(x), valueAsString(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
             elif y.kind==Floating and (y.f > 0 and y.f < 4):
                 if y.f == 1.0: discard
                 elif y.f == 2.0: x *= x
                 elif y.f == 3.0: x *= x * x
                 else:
                     when not defined(WEB):
-                        RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
+                        RuntimeError_IncompatibleQuantityOperation("pow", valueAsString(x), valueAsString(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
             else:
                 when not defined(WEB):
-                    RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
+                    RuntimeError_IncompatibleQuantityOperation("pow", valueAsString(x), valueAsString(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
         else: 
             x = VNULL
     else:
@@ -1859,7 +1879,7 @@ proc `>>`*(x: Value, y: Value): Value =
                 when defined(WEB):
                     return newInteger(big(x.i) shr y.bi)
                 elif not defined(NOGMP):
-                    RuntimeError_NumberOutOfPermittedRange("shr",$(x), $(y))
+                    RuntimeError_NumberOutOfPermittedRange("shr",valueAsString(x), valueAsString(y))
         else:
             when defined(WEB):
                 if unlikely(y.iKind==BigInteger):
@@ -1868,7 +1888,7 @@ proc `>>`*(x: Value, y: Value): Value =
                     return newInteger(x.bi shr big(y.i))
             elif not defined(NOGMP):
                 if unlikely(y.iKind==BigInteger):
-                    RuntimeError_NumberOutOfPermittedRange("shr",$(x), $(y))
+                    RuntimeError_NumberOutOfPermittedRange("shr",valueAsString(x), valueAsString(y))
                 else:
                     return newInteger(x.bi shr (culong)(y.i))
 
@@ -1883,7 +1903,7 @@ proc `>>=`*(x: var Value, y: Value) =
                 when defined(WEB):
                     x = newInteger(big(x.i) shr y.bi)
                 elif not defined(NOGMP):
-                    RuntimeError_NumberOutOfPermittedRange("shr",$(x), $(y))
+                    RuntimeError_NumberOutOfPermittedRange("shr",valueAsString(x), valueAsString(y))
         else:
             when defined(WEB):
                 if unlikely(y.iKind==BigInteger):
@@ -1892,7 +1912,7 @@ proc `>>=`*(x: var Value, y: Value) =
                     x = newInteger(x.bi shr big(y.i))
             elif not defined(NOGMP):
                 if unlikely(y.iKind==BigInteger):
-                    RuntimeError_NumberOutOfPermittedRange("shr",$(x), $(y))
+                    RuntimeError_NumberOutOfPermittedRange("shr",valueAsString(x), valueAsString(y))
                 else:
                     x = newInteger(x.bi shr (culong)(y.i))
 
@@ -1907,7 +1927,7 @@ proc `<<`*(x: Value, y: Value): Value =
                 when defined(WEB):
                     return newInteger(big(x.i) shl y.bi)
                 elif not defined(NOGMP):
-                    RuntimeError_NumberOutOfPermittedRange("shl",$(x), $(y))
+                    RuntimeError_NumberOutOfPermittedRange("shl",valueAsString(x), valueAsString(y))
         else:
             when defined(WEB):
                 if unlikely(y.iKind==BigInteger):
@@ -1916,7 +1936,7 @@ proc `<<`*(x: Value, y: Value): Value =
                     return newInteger(x.bi shl big(y.i))
             elif not defined(NOGMP):
                 if unlikely(y.iKind==BigInteger):
-                    RuntimeError_NumberOutOfPermittedRange("shl",$(x), $(y))
+                    RuntimeError_NumberOutOfPermittedRange("shl",valueAsString(x), valueAsString(y))
                 else:
                     return newInteger(x.bi shl (culong)(y.i))
 
@@ -1931,7 +1951,7 @@ proc `<<=`*(x: var Value, y: Value) =
                 when defined(WEB):
                     x = newInteger(big(x.i) shl y.bi)
                 elif not defined(NOGMP):
-                    RuntimeError_NumberOutOfPermittedRange("shl",$(x), $(y))
+                    RuntimeError_NumberOutOfPermittedRange("shl",valueAsString(x), valueAsString(y))
         else:
             when defined(WEB):
                 if unlikely(y.iKind==BigInteger):
@@ -1940,7 +1960,7 @@ proc `<<=`*(x: var Value, y: Value) =
                     x = newInteger(x.bi shl big(y.i))
             elif not defined(NOGMP):
                 if unlikely(y.iKind==BigInteger):
-                    RuntimeError_NumberOutOfPermittedRange("shl",$(x), $(y))
+                    RuntimeError_NumberOutOfPermittedRange("shl",valueAsString(x), valueAsString(y))
                 else:
                     x = newInteger(x.bi shl (culong)(y.i))
 
@@ -2000,12 +2020,12 @@ proc factorial*(x: Value): Value =
                     for item in items:
                         res = res * item
                 elif defined(NOGMP):
-                    RuntimeError_NumberOutOfPermittedRange("factorial",$(x), "")
+                    RuntimeError_NumberOutOfPermittedRange("factorial",valueAsString(x), "")
                 else:
                     return newInteger(newInt().fac(x.i))
         else:
             when not defined(WEB):
-                RuntimeError_NumberOutOfPermittedRange("factorial",$(x), "")
+                RuntimeError_NumberOutOfPermittedRange("factorial",valueAsString(x), "")
 
 func `$`(v: Value): string {.inline,enforceNoRaises.} =
     case v.kind:
