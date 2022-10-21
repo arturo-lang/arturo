@@ -37,7 +37,7 @@ import vm/opcodes
 when not defined(WEB):
     import vm/errors
 
-import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrational, vregex]
+import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrational, vregex, vsymbol]
 
 import vm/values/clean
 import vm/values/types
@@ -315,17 +315,17 @@ func newPath*(p: sink ValueArray): Value {.inline, enforceNoRaises.} =
 func newPathLabel*(p: sink ValueArray): Value {.inline, enforceNoRaises.} =
     Value(kind: PathLabel, p: p)
 
-func newSymbol*(m: SymbolKind): Value {.inline, enforceNoRaises.} =
+func newSymbol*(m: VSymbol): Value {.inline, enforceNoRaises.} =
     Value(kind: Symbol, m: m)
 
 func newSymbol*(m: sink string): Value {.inline.} =
-    newSymbol(parseEnum[SymbolKind](m))
+    newSymbol(parseEnum[VSymbol](m))
 
-func newSymbolLiteral*(m: SymbolKind): Value {.inline, enforceNoRaises.} =
+func newSymbolLiteral*(m: VSymbol): Value {.inline, enforceNoRaises.} =
     Value(kind: SymbolLiteral, m: m)
 
 func newSymbolLiteral*(m: string): Value {.inline.} =
-    newSymbolLiteral(parseEnum[SymbolKind](m))
+    newSymbolLiteral(parseEnum[VSymbol](m))
 
 func newQuantity*(nm: Value, unit: VQuantity): Value {.inline, enforceNoRaises.} =
     Value(kind: Quantity, nm: nm, unit: unit)
@@ -2007,7 +2007,7 @@ proc factorial*(x: Value): Value =
             when not defined(WEB):
                 RuntimeError_NumberOutOfPermittedRange("factorial",$(x), "")
 
-func `$`(s: SymbolKind): string {.enforceNoRaises.} =
+func `$`(s: VSymbol): string {.enforceNoRaises.} =
     case s:
         of thickarrowleft           : result = "<="
         of thickarrowright          : result = "=>"
