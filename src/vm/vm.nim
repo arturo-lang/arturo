@@ -31,6 +31,9 @@ import vm/[
     version
 ]
 
+when defined(WEB):
+    import vm/values/printable
+
 #=======================================
 # Packaging setup
 #=======================================
