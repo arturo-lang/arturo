@@ -146,12 +146,7 @@ template handleVMErrors*(blk: untyped): untyped =
     try:
         blk
     except:
-        let e = getCurrentException()
-        # TODO(VM/vm) Better handling for KeyError exceptions
-        #  Since they are not currently handled through GetSym, we capture them here
-        #  But it would be better if they were directly handled in the error module
-        #  labels: vm, error handling, enhancement
-        
+        let e = getCurrentException()        
         showVMErrors(e)
 
         if e.name == ProgramError:
