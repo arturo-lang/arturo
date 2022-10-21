@@ -33,7 +33,10 @@ when not defined(WEB):
     import helpers/io
     import helpers/jsonobject
     
-import vm/[bytecode, errors, lib, parse]
+import vm/lib
+
+when not defined(WEB):
+    import vm/[bytecode, errors, parse]
 
 #=======================================
 # Methods
