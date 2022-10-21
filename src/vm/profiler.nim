@@ -11,6 +11,11 @@
 # which forms part of the Nim standard library.
 # (c) Copyright 2015 Andreas Rumpf
 
+## Profiler for the Arturo VM.
+## 
+## To enable, compile with: 
+## `./build.nims install profiler`
+
 when defined(PROFILER):
     {.push profiler: off.}
 
