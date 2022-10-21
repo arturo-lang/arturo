@@ -32,7 +32,7 @@ var
     # stack
     Stack*                  : seq[Value]
     Attrs*                  : OrderedTable[string,Value]
-    SP*, AP*, CSP*          : int
+    SP*                     : int
 
 #=======================================
 # Methods
