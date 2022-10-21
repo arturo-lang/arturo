@@ -6,6 +6,13 @@
 # @file: vm/exec.nim
 #=======================================================
 
+## This module contains the main loop for the Arturo VM.
+## 
+## Here:
+## - we take a Translation (= constants + bytecode)
+## - go through each and every one of the bytecode
+##   instructions and execute them, one by one
+
 # TODO(VM/exec) General cleanup needed
 #  labels: vm, execution, enhancement, cleanup
 
