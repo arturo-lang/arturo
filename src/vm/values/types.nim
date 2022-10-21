@@ -23,7 +23,7 @@ when not defined(NOGMP):
 
 import helpers/bytes
 
-import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrational, vregex]
+import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrational, vregex, vsymbol]
 
 #=======================================
 # Types
@@ -125,7 +125,7 @@ type
         methods*    : ValueDict
         inherits*   : Prototype
 
-    SymbolDict*   = OrderedTable[SymbolKind,AliasBinding]
+    SymbolDict*   = OrderedTable[VSymbol,AliasBinding]
 
     Value* {.final,acyclic.} = ref object 
         info*: string
@@ -173,7 +173,7 @@ type
                PathLabel:   p*  : ValueArray
             of Symbol,
                SymbolLiteral:      
-                   m*  : SymbolKind
+                   m*  : VSymbol
             of Regex:       rx* : VRegex
             of Quantity:
                 nm*: Value
