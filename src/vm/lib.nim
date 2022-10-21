@@ -16,8 +16,8 @@ export strutils, tables
 import vm/[globals, errors, stack, values/comparison, values/clean, values/printable, values/value]
 export clean, comparison, globals, printable, stack, value
 
-import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrational, vregex]
-export vcolor, vcomplex, vlogical, vquantity, vrational, vregex
+import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrational, vregex, vsymbol]
+export vcolor, vcomplex, vlogical, vquantity, vrational, vregex, vsymbol
 
 import vm/profiler
 
@@ -57,7 +57,7 @@ else:
 #     else:
 #         args
 
-template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, description: string, args: untyped, attrs: untyped, returns: ValueSpec, example: string, act: untyped):untyped =
+template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: string, args: untyped, attrs: untyped, returns: ValueSpec, example: string, act: untyped):untyped =
     
     when not defined(PORTABLE) or not compact or funcs.contains(n):
         
@@ -154,7 +154,7 @@ template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, descriptio
 #  But then, it also over-complicates documentation generation for constants.
 #  So, we should either make documentation possible for constants as well, or merge the two things into one concept
 #  labels: vm, library, enhancement, open discussion
-template constant*(n: string, alias: SymbolKind, description: string, v: Value):untyped =
+template constant*(n: string, alias: VSymbol, description: string, v: Value):untyped =
     SetSym(n, v)
     GetSym(n).info = "[" & static (instantiationInfo().filename).replace(".nim") & ":" & $(static (instantiationInfo().line)) & "] " & description
     when alias != unaliased:

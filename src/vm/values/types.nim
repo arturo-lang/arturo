@@ -23,7 +23,7 @@ when not defined(NOGMP):
 
 import helpers/bytes
 
-import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrational, vregex]
+import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrational, vregex, vsymbol]
 
 #=======================================
 # Types
@@ -40,102 +40,6 @@ type
     IntArray*   = seq[int]
 
     BuiltinAction* = proc ()
-
-    SymbolKind* = enum
-        thickarrowleft          # <=
-        thickarrowright         # =>
-        thickarrowboth          # <=>
-        thickarrowdoubleleft    # <<=
-        thickarrowdoubleright   # =>>
-        thickarrowdoubleboth    # <<=>>
-        arrowleft               # <-
-        arrowright              # ->
-        arrowboth               # <->
-        arrowdoubleleft         # <<-
-        arrowdoubleright        # ->>
-        arrowdoubleboth         # <<->>
-        reversearrowleft        # -<
-        reversearrowright       # >-
-        reversearrowboth        # >-<
-        reversearrowdoubleleft  # -<<
-        reversearrowdoubleright # >>-
-        reversearrowdoubleboth  # >>-<<
-        doublearrowleft         # <<
-        doublearrowright        # >>
-        triplearrowleft         # <<<
-        triplearrowright        # >>>
-        longarrowleft           # <--
-        longarrowright          # -->
-        longarrowboth           # <-->
-        longthickarrowleft      # <==
-        longthickarrowright     # ==>
-        longthickarrowboth      # <==>
-        tildeleft               # <~
-        tilderight              # ~>
-        tildeboth               # <~>
-        triangleleft            # <|
-        triangleright           # |>
-        triangleboth            # <|>
-
-        equalless               # =<
-        greaterequal            # >=
-        lessgreater             # <>
-
-        lesscolon               # <:
-        minuscolon              # -:
-        greatercolon            # >:
-
-        tilde                   # ~
-        exclamation             # !
-        doubleexclamation       # !!
-        question                # ?
-        doublequestion          # ??
-        at                      # @
-        sharp                   # #
-        doublesharp             # ## 
-        triplesharp             # ###
-        quadruplesharp          # ####
-        quintuplesharp          # #####
-        sextuplesharp           # ######
-        dollar                  # $
-        percent                 # %
-        caret                   # ^
-        ampersand               # &
-        asterisk                # *
-        minus                   # -
-        doubleminus             # --
-        underscore              # _
-        equal                   # =
-        doubleequal             # ==
-        approxequal             # =~
-        plus                    # +
-        doubleplus              # ++
-
-        lessthan                # <
-        greaterthan             # >
-       
-        slash                   # /
-        slashpercent            # %/
-        doubleslash             # //
-        backslash               # 
-        doublebackslash         #
-        logicaland              #
-        logicalor               #
-        pipe                    # |     
-        turnstile               # |-
-        doubleturnstile         # |=
-
-        ellipsis                # ..
-        longellipsis            # ...
-        dotslash                # ./
-        colon                   # :
-        doublecolon             # ::
-        doublepipe              # ||
-
-        slashedzero             # ø
-        infinite                # ∞
-
-        unaliased               # used only for builtins
 
     # TODO(VM/values/types add new `:matrix` type?
     #  this would normally go with a separate Linear Algebra-related stdlib module
@@ -221,7 +125,7 @@ type
         methods*    : ValueDict
         inherits*   : Prototype
 
-    SymbolDict*   = OrderedTable[SymbolKind,AliasBinding]
+    SymbolDict*   = OrderedTable[VSymbol,AliasBinding]
 
     Value* {.final,acyclic.} = ref object 
         info*: string
@@ -269,7 +173,7 @@ type
                PathLabel:   p*  : ValueArray
             of Symbol,
                SymbolLiteral:      
-                   m*  : SymbolKind
+                   m*  : VSymbol
             of Regex:       rx* : VRegex
             of Quantity:
                 nm*: Value
