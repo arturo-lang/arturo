@@ -69,7 +69,7 @@ proc defineSymbols*() =
             if (hadAttr("infix")):
                 prec = InfixPrecedence
 
-            var sym: SymbolKind
+            var sym: VSymbol
             if x.kind==String:
                 sym = doParse(x.s, isFile=false).a[0].m
             elif x.kind==Block:
