@@ -23,6 +23,8 @@ when defined(WEB):
 when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
+import helpers/terminal as TerminalHelper
+
 import vm/exec
 import vm/stack
 import vm/values/value
