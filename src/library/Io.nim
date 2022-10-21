@@ -1,10 +1,10 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: library/Io.nim
-######################################################
+#=======================================================
 
 #=======================================
 # Pragmas
@@ -58,7 +58,7 @@ proc defineSymbols*() =
         example     = """
             clear             ; (clears the screen)
         """:
-            ##########################################################
+            #=======================================================
             clearTerminal()
 
     builtin "color",
@@ -80,7 +80,7 @@ proc defineSymbols*() =
             print color #green "Hello!"                ; Hello! (in green)
             print color #red.bold "Some text"          ; Some text (in red/bold)
         """:
-            ##########################################################
+            #=======================================================
             var color = ""
 
             case x.l:
@@ -138,7 +138,7 @@ proc defineSymbols*() =
             cursor false    ; (hides the cursor)
             cursor true     ; (shows the cursor)
             """:
-                ##########################################################
+                #=======================================================
                 if x.b==True:
                     stdout.showCursor()
                 else:
@@ -158,7 +158,7 @@ proc defineSymbols*() =
             goto 10 15      ; (move cursor to column 10, line 15)
             goto 10 ø       ; (move cursor to column 10, same line)
             """:
-                ##########################################################
+                #=======================================================
                 if x.kind==Null:
                     if y.kind==Null:
                         discard
@@ -209,7 +209,7 @@ proc defineSymbols*() =
             ; a recoverable file and also use autocompletions and hints
             ; based on give reference
             """:
-                ##########################################################
+                #=======================================================
                 if (hadAttr("repl")):
                     # when defined(windows):
                     #     stdout.write(x.s)
@@ -249,7 +249,7 @@ proc defineSymbols*() =
         example     = """
             print "Hello world!"          ; Hello world!
         """:
-            ##########################################################
+            #=======================================================
             if x.kind==Block:
                 when defined(WEB):
                     stdout = ""
@@ -290,7 +290,7 @@ proc defineSymbols*() =
             
             ; Hello world!
         """:
-            ##########################################################
+            #=======================================================
             when defined(WEB):
                 stdout = ""
 
@@ -324,7 +324,7 @@ proc defineSymbols*() =
             print terminal      ; [width:107 height:34]
             terminal\width      ; => 107
             """:
-                ##########################################################
+                #=======================================================
                 let size = terminalSize()
                 var ret = {
                     "width": newInteger(size[0]),

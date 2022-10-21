@@ -1,10 +1,10 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: library/Crypto.nim
-######################################################
+#=======================================================
 
 # TODO(Crypto) more potential built-in function candidates?
 #  labels: library, enhancement, open discussion
@@ -56,7 +56,7 @@ proc defineSymbols*() =
             print crc "The quick brown fox jumps over the lazy dog"
             ; 414FA339
         """:
-            ##########################################################
+            #=======================================================
             if x.kind==Literal:
                 ensureInPlace()
                 InPlaced.s = InPlaced.s.crc32()
@@ -81,7 +81,7 @@ proc defineSymbols*() =
             print decode.url "http%3A%2F%2Ffoo+bar%2F"
             ; http://foo bar/
         """:
-            ##########################################################
+            #=======================================================
             if (hadAttr("url")):
                 if x.kind==Literal:
                     ensureInPlace()
@@ -120,7 +120,7 @@ proc defineSymbols*() =
             print encode.url "http://foo bar/"
             ; http%3A%2F%2Ffoo+bar%2F
         """:
-            ##########################################################
+            #=======================================================
             if (hadAttr("url")):
                 let spaces = (hadAttr("spaces"))
                 let slashes = (hadAttr("slashes"))
@@ -189,7 +189,7 @@ proc defineSymbols*() =
             print digest.sha "Hello world"
             ; 7b502c3a1f48c8609ae212cdfb639dee39673f5e
             """:
-                ##########################################################
+                #=======================================================
                 if (hadAttr("sha")):
                     if x.kind==Literal:
                         ensureInPlace()
@@ -223,7 +223,7 @@ proc defineSymbols*() =
             b: [1 2 3]
             print (hash a)=(hash b) ; true
         """:
-            ##########################################################
+            #=======================================================
             if (hadAttr("string")):
                 push(newString($(hash(x))))
             else:

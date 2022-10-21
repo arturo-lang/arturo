@@ -1,4 +1,4 @@
-######################################################
+#=======================================================
 # nim-gmp
 # GMP BigNum library wrapper
 # for Nim
@@ -7,7 +7,7 @@
 # 
 # @license: see LICENSE file
 # @file: extras/gmp.nim
-######################################################
+#=======================================================
 
 # Code based on Nim GMP wrapper
 # (c) Copyright 2014 Will Szumski
