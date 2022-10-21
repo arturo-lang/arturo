@@ -34,8 +34,10 @@ const
     opLoadAny   = opLoad0..opLoad13
     #opCallAny   = opCall0..opCall13
 
-    BcodeMagic              = (uint32)0x86BC0DE0
-    BcodeMagicCompressed    = (uint32)0x86BC0DE1
+when not defined(WEB):
+    const
+        BcodeMagic              = (uint32)0x86BC0DE0
+        BcodeMagicCompressed    = (uint32)0x86BC0DE1
 
 #=======================================
 # Helpers
