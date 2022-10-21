@@ -22,7 +22,7 @@ when defined(WEB):
     import jsffi, strutils
 
 import vm/values/[printable, value]
-import vm/values/custom/[vregex]
+import vm/values/custom/[vlogical, vregex]
 
 #=======================================
 # Helpers

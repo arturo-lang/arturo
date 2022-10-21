@@ -27,9 +27,10 @@ import vm/[
     parse, 
     profiler, 
     stack, 
-    values/logic, 
     values/value
 ]
+
+import vm/values/custom/[vlogical]
 
 #=======================================
 # Types

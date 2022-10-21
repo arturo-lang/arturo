@@ -37,7 +37,7 @@ import vm/opcodes
 when not defined(WEB):
     import vm/errors
 
-import vm/values/custom/[vcolor, vcomplex, vquantity, vrational, vregex]
+import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrational, vregex]
 
 import vm/values/clean
 import vm/values/types
@@ -148,7 +148,7 @@ template newNull*(): Value =
 template newNothing*(): Value =
     VNOTHING
 
-proc newLogical*(b: logical): Value {.inline, enforceNoRaises.} =
+proc newLogical*(b: VLogical): Value {.inline, enforceNoRaises.} =
     if b==True: VTRUE
     elif b==False: VFALSE
     else: VMAYBE
@@ -2006,11 +2006,6 @@ proc factorial*(x: Value): Value =
         else:
             when not defined(WEB):
                 RuntimeError_NumberOutOfPermittedRange("factorial",$(x), "")
-
-func `$`*(b: logical): string  {.enforceNoRaises.} =
-    if b==True: return "true"
-    elif b==False: return "false"
-    else: return "maybe"
 
 func `$`(s: SymbolKind): string {.enforceNoRaises.} =
     case s:

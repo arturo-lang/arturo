@@ -20,6 +20,8 @@ when not defined(PORTABLE):
 
 import vm/[bytecode, globals, profiler, values/value]
 
+import vm/values/custom/[vlogical]
+
 #=======================================
 # Variables
 #=======================================
