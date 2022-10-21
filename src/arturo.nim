@@ -6,6 +6,11 @@
 # @file: arturo.nim
 #=======================================================
 
+## This is the point where the whole magic starts.
+## 
+## The purpose of this module is to parse the command-
+## line arguments and pass the control to the VM.
+
 #=======================================
 # Libraries
 #=======================================
