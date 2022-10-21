@@ -17,14 +17,12 @@
 #=======================================
 
 when not defined(WEB):
-    import os, osproc, sugar
+    import os, osproc, sequtils, sugar
 
     when defined(windows):
         import winlean
     else:
         import std/posix_utils
-    
-import sequtils
 
 import vm/lib
 import vm/[env, errors]
