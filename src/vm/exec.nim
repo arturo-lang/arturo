@@ -115,7 +115,7 @@ template callByIndex(idx: int):untyped =
 template fetchAttributeByIndex(idx: int):untyped =
     stack.pushAttr(cnst[idx].s, move stack.pop())
 
-####
+#---------------------------------------
 
 template execIsolated*(evaled:Translation): untyped =
     doExec(evaled)
