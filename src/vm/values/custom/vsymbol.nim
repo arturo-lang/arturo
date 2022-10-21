@@ -111,7 +111,7 @@ type
 # Methods
 #=======================================
 
-func `$`(s: VSymbol): string {.enforceNoRaises.} =
+func `$`*(s: VSymbol): string {.enforceNoRaises.} =
     case s:
         of thickarrowleft           : result = "<="
         of thickarrowright          : result = "=>"
