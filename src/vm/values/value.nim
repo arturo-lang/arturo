@@ -130,7 +130,7 @@ var
 #=======================================
 
 func newDictionary*(d: sink ValueDict = initOrderedTable[string,Value]()): Value {.inline.}
-func `$`(v: Value): string {.inline.}
+func valueAsString(v: Value): string {.inline,enforceNoRaises.}
 proc `+`*(x: Value, y: Value): Value
 proc `-`*(x: Value, y: Value): Value
 proc `*`*(x: Value, y: Value): Value
