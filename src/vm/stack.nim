@@ -10,9 +10,6 @@
 # Libraries
 #=======================================
 
-when not defined(WEB):
-    import strformat
-
 import macros, strutils, tables
 
 import vm/profiler
