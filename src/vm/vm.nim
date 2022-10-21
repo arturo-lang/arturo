@@ -25,11 +25,13 @@ import vm/[
     exec, 
     globals, 
     parse, 
-    profiler,
     stack, 
     values/value, 
     version
 ]
+
+when not defined(WEB):
+    import vm/profiler
 
 when defined(WEB):
     import vm/values/printable
