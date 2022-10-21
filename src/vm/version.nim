@@ -6,6 +6,9 @@
 # @file: vm/version.nim
 #=======================================================
 
+## General version information 
+## about the current build.
+
 #=======================================
 # Libraries
 #=======================================
