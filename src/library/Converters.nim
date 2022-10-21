@@ -1,10 +1,10 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: library/Converters.nim
-######################################################
+#=======================================================
 
 #=======================================
 # Pragmas
@@ -550,7 +550,7 @@ proc defineSymbols*() =
                                             ; with zeros
             ; => [[0 0 0 0] [0 0 0 0] [0 0 0 0]]
         """:
-            ##########################################################
+            #=======================================================
             if checkAttr("of"):
                 if aOf.kind == Integer:
                     let size = aOf.i
@@ -624,7 +624,7 @@ proc defineSymbols*() =
             print as.ascii "thís ìß ñot à tést"
             ; this iss not a test
         """:
-            ##########################################################
+            #=======================================================
             if (hadAttr("binary")):
                 push(newString(fmt"{x.i:b}"))
             elif (hadAttr("hex")):
@@ -721,7 +721,7 @@ proc defineSymbols*() =
             ; NAME: John, SURNAME: Doe, AGE: 35
             ; NAME: Jane, SURNAME: Doe, AGE: 33
         """:
-            ##########################################################
+            #=======================================================
             x.ts.fields = cleanedBlock(y.a)
 
             if checkAttr("as"):
@@ -809,7 +809,7 @@ proc defineSymbols*() =
             ]
             ; e: [name:John, surname:Doe, age:35]
         """:
-            ##########################################################
+            #=======================================================
             var dict: ValueDict
 
             if x.kind==Block:
@@ -868,7 +868,7 @@ proc defineSymbols*() =
             print from.octal "1011"         ; 521
             print from.hex "0xDEADBEEF"     ; 3735928559
         """:
-            ##########################################################
+            #=======================================================
             if (hadAttr("binary")):
                 try:
                     push(newInteger(parseBinInt(x.s)))
@@ -983,7 +983,7 @@ proc defineSymbols*() =
                 print ["Fibonacci of" x "=" fib x]
             ]
         """:
-            ##########################################################
+            #=======================================================
             var imports: Value = nil
             if checkAttr("import"):
                 var ret = initOrderedTable[string,Value]()
@@ -1111,7 +1111,7 @@ proc defineSymbols*() =
             print in'm2 1:yd2
             ; 0.836127m²
         """:
-            ##########################################################
+            #=======================================================
             let qs = parseQuantitySpec(x.s)
             if y.kind==Quantity:
                 push newQuantity(convertQuantityValue(y.nm, y.unit.name, qs.name), qs)
@@ -1191,7 +1191,7 @@ proc defineSymbols*() =
             to :color .hsl [255 0.2 0.4]
             ; => #5C527A
         """:
-            ##########################################################
+            #=======================================================
             if x.kind==Type:
                 let tp = x.t
                 push convertedValueToType(x, y, tp, popAttr("format"))
@@ -1233,7 +1233,7 @@ proc defineSymbols*() =
             print multiplier
             ; the multiple of 10 is 20 
         """:
-            ##########################################################
+            #=======================================================
             var blk: ValueArray = cleanedBlock(y.a)
             if x.kind == Literal:
                 blk.insert(FetchSym(x.s))

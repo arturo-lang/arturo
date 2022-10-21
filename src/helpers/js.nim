@@ -1,11 +1,11 @@
 
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: helpers/js.nim
-######################################################
+#=======================================================
 
 # TODO(Helpers/js) Do we even need this?
 #  Some of the functions in here were written by me and then included in Nim's stdlib. So, right now, they are like duplicates. If we don't need them at all - or the Helper module itself - we'd better remove it altogether.

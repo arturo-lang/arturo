@@ -1,10 +1,10 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: vm/parse.nim
-######################################################
+#=======================================================
 
 # TODO(VM/parser) General cleanup needed
 #  There are various pieces of commented-out code that make the final result pretty much illegible. Let's clean this up.
