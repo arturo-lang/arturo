@@ -362,7 +362,7 @@ proc convertQuantityValue*(nm: Value, fromU: UnitName, toU: UnitName, fromKind =
 
     if unlikely(fromK!=toK):
         when not defined(WEB):
-            RuntimeError_CannotConvertQuantity($(nm), stringify(fromU), stringify(fromK), stringify(toU), stringify(toK))
+            RuntimeError_CannotConvertQuantity(valueAsString(nm), stringify(fromU), stringify(fromK), stringify(toU), stringify(toK))
     
     if toK == TemperatureUnit:
         return convertToTemperatureUnit(nm, fromU, toU)
