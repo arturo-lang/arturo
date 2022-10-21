@@ -18,7 +18,7 @@ import lexbase, os, sequtils, streams
 import strutils, tables, unicode
 
 import vm/[errors, profiler, values/value]
-import vm/values/custom/[vquantity]
+import vm/values/custom/[vquantity, vsymbol]
 
 #=======================================
 # Types
@@ -28,7 +28,7 @@ type
     Parser* = object of BaseLexer
         value*: string
         values*: seq[ValueArray]
-        symbol*: SymbolKind
+        symbol*: VSymbol
 
 #=======================================
 # Constants
