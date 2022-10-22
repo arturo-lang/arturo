@@ -35,7 +35,7 @@ import vm/lib
 # Helpers
 #=======================================
 
-template processTrigonometric*(fun: untyped): untyped =
+template processTrigonometric(fun: untyped): untyped =
     var v = x
     if x.kind == Quantity:
         v = convertQuantityValue(x.nm, x.unit.name, RAD)
