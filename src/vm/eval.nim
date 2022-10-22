@@ -6,12 +6,13 @@
 # @file: vm/eval.nim
 #=======================================================
 
-## This module contains the evaluator for the Arturo VM.
+## This module contains the evaluator for the VM.
 ## 
 ## The evaluator:
 ## - takes a Block of values coming from the parser
-## - interpretes and returns a Translation (that is: a 
-##   list of constants + the bytecode instructions)
+## - interpretes it and returns a Translation object
+## 
+## The main entry point is ``doEval``.
 
 #=======================================
 # Libraries
@@ -686,6 +687,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             for b in currentCommand.reversed: it.add(b)
 
 proc doEval*(root: Value, isDictionary=false): Translation = 
+    ## Take a parsed Block of values and return its translation - 
+    ## that is: the constants found + the list of bytecode instructions
     hookProcProfiler("eval/doEval"):
         var cnsts: ValueArray = @[]
         var newit: ByteArray = @[]
