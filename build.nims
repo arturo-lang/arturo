@@ -412,7 +412,7 @@ proc buildDocs*() =
     showHeader "docs"
 
     section "Generating documentation..."
-    exec(r"nim doc --project --index:on --outdir:dev-docs --skipUserCfg:on --colors:off --cincludes:extras --path:src src/arturo.nim")
+    exec(r"nim doc --project --index:on --outdir:dev-docs {FLAGS} src/arturo.nim".fmt)
 
 proc performTests*() =
     showHeader "test"
