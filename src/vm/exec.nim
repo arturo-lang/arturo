@@ -63,9 +63,6 @@ proc doExec*(cnst: ValueArray, it: ByteArray, args: Value = nil): ValueDict
 # Helpers
 #=======================================
 
-proc setFunctionArity*(funName: string, fun: Value) {.inline,enforceNoRaises.} =
-    Arities[funName] = fun.arity
-
 template doExec*(input: Translation, args: Value = nil): ValueDict =
     doExec(input.constants, input.instructions, args)
 
