@@ -91,16 +91,16 @@ proc parseDataBlock*(blk: Value): Value
 # Templates
 #=======================================
 
-template AddToken*(token: untyped): untyped =
+template AddToken(token: untyped): untyped =
     topBlock.a.add(token)
 
-template LastToken*(): untyped = 
+template LastToken(): untyped = 
     topBlock.a[^1]
 
-template ReplaceLastToken*(with: untyped): untyped =
+template ReplaceLastToken(with: untyped): untyped =
     topBlock.a[^1] = with
 
-template stripTrailingNewlines*(): untyped =
+template stripTrailingNewlines(): untyped =
     if topBlock.a[^1].kind == Newline:
         let lastN = topBlock.a.len-1
         var firstN = lastN
