@@ -29,9 +29,9 @@ const AttrsSize* = 10
 
 var
     # stack
-    Stack*                  : seq[Value]
-    Attrs*                  : OrderedTable[string,Value]
-    SP*                     : int
+    Stack*                  : seq[Value]                        ## The main stack
+    SP*                     : int                               ## The main stack pointer
+    Attrs*                  : OrderedTable[string,Value]        ## The attributes table
 
 #=======================================
 # Methods
@@ -40,11 +40,14 @@ var
 ## Main stack
 
 template push*(v: Value) = 
+    ## push given value onto the stack
     hookProcProfiler("stack/push"):
         Stack[SP] = v
         SP += 1
 
 template push*(v: ValueArray, a: int, b: int, reversed=false, doMove=false) =
+    ## push values from given array onto the stack, using ``a`` and ``b`` as 
+    ## index delimiters
     when reversed:
         var j = b - 1
         while j >= a:
@@ -57,6 +60,7 @@ template push*(v: ValueArray, a: int, b: int, reversed=false, doMove=false) =
             j += 1
 
 template pop*(): Value = 
+    ## pop last value from the stack
     when defined(PROFILER):
         hookProcProfiler("stack/pop"):
             SP -= 1
@@ -66,21 +70,33 @@ template pop*(): Value =
     Stack[SP]
 
 template popN*(n: int) =
+    ## simulate popping ``n`` values from the stack
+    ## 
+    ## **Hint**: This doesn't return any value whatsoever; 
+    ## all it does is decrease the stack pointer accordingly
     SP -= n
 
 template peek*(pos: int): Value =
+    ## return last ``pos`` value from the stack, 
+    ## without popping it
     Stack[SP-1-pos]
 
 # TODO(VM/stack) `peekRange` not working
 #  and unused... but it could be fixed, if we can defined reverse ranges
 #  labels: vm, enhancement
 template peekRange*(posFrom: int, posTo: int): ValueArray =
+    ## return a range of values from the stack, using ``posFrom`` 
+    ## and ``posTo`` as index delimiters, without popping them
     Stack[SP-1-posFrom .. SP-1-posTo]
 
 template sTop*(): Value =
+    ## get top-most value from the stack
     Stack[SP-1]
 
 template squeeze*(pos: int, v: Value) =
+    ## forcefully insert given value at given position 
+    ## in the stack (``pos`` being the distance from 
+    ## the top of the stack)
     when pos==1:
         let tmp = Stack[SP-1]
         Stack[SP-1] = v
@@ -93,46 +109,69 @@ template squeeze*(pos: int, v: Value) =
     SP += 1
 
 template sTopsFrom*(start: int): ValueArray =
+    ## return a range of values from the stack, using ``start`` 
+    ## as a starting index, without popping them
     Stack[start..SP-1]
 
 template emptyStack*() =
+    ## empty the stack
+    ## 
+    ## **Hint:** This doesn't involve deleting any elements; 
+    ## all this does is to reset the stack pointer to zero
     SP = 0
 
 # TODO(VM/stack) should our main stack use `newSeqOfCap`?
 #  ...and `.add`/`.pop`? This should be benchmarked.
 #  labels: performance, benchmark, vm, values, open-discussion
 template createMainStack*() =
+    ## initialize the main stack
     newSeq(Stack, StackSize)
     emptyStack()
 
 ## Attributes stack
 
 template pushAttr*(label: string, v: Value) =
+    ## set attribute ``label`` to given value
     Attrs[label] = v
 
 template emptyAttrs*() =
+    ## empty the attributes table
     Attrs = initOrderedTable[string,Value]()
 
 template createAttrsStack*() =
+    ## initialize the attributes table
     emptyAttrs()
 
 proc getAttr*(attr: string): Value {.inline,enforceNoRaises.} =
+    ## get attribute ``attr`` from the attributes table
+    ## 
+    ## **Hint:** Returns ``VNULL`` if attribute doesn't exist
     Attrs.getOrDefault(attr, VNULL)
 
 proc popAttr*(attr: string): Value {.inline,enforceNoRaises.} =
+    ## pop attribute ``attr`` from the attributes table
+    ## 
+    ## **Hint:** Returns ``nil`` if attribute doesn't exist
     result = nil
     hookProcProfiler("stack/popAttr"):
         discard Attrs.pop(attr, result)
 
 macro checkAttr*(name: untyped): untyped =
+    ## check if attribute ``name`` exists in the attributes table
+    ## 
+    ## **Hint:** To be normally used with ``if`` statements (as 
+    ## a condition)
     let attrName =  ident('a' & ($name).capitalizeAscii())
     result = quote do:
         (let `attrName` = popAttr(`name`); not `attrName`.isNil)
 
 template hadAttr*(attr: string): bool = 
+    ## check if attribute ``attr`` exists in the attributes table
+    ## and pop it, if it does
     (not popAttr(attr).isNil)
 
 proc getAttrsDict*(): Value =
+    ## get the attributes table as a Dictionary value
     result = newDictionary(Attrs)
 
     emptyAttrs()
