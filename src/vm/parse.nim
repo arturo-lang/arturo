@@ -33,10 +33,10 @@ import vm/values/custom/[vquantity, vsymbol]
 #=======================================
 
 type
-    Parser* = object of BaseLexer
-        value*: string
-        values*: seq[ValueArray]
-        symbol*: VSymbol
+    Parser = object of BaseLexer
+        value: string
+        values: seq[ValueArray]
+        symbol: VSymbol
 
 #=======================================
 # Constants
@@ -114,7 +114,7 @@ template stripTrailingNewlines*(): untyped =
 
 # Error reporting
 
-func getContext*(p: var Parser, curPos: int): string =
+func getContext(p: var Parser, curPos: int): string =
     result = ""
 
     var i = curPos
@@ -803,7 +803,7 @@ template parseExponent(p: var Parser) =
 
     p.bufpos = pos
 
-proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.inline.} =
+proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inline.} =
     var topBlock: Value
     var scriptStr: string = ""
     if isDeferred: topBlock = newBlock(dirty=true)
