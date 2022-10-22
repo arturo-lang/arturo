@@ -52,7 +52,6 @@ type
 
 var
     Memoizer*: OrderedTable[MemoizerKey,Value]
-    CurrentDump*: Translation = nil
 
 #=======================================
 # Forward Declarations
