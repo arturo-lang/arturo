@@ -45,7 +45,7 @@ const
     ProgramError*   = "Program"
     CompilerError*  = "Compiler"
 
-    Alternative*  = "perhaps you meant"
+    Alternative     = "perhaps you meant"
 
 #=======================================
 # Variables
