@@ -13,6 +13,8 @@
 ## - parses the different tokens and returns a Block of
 ##   valid values (that can later be used in conjuction 
 ##   with e.g. the evaluator)
+## 
+## The main entry point is `doParse`.
 
 # TODO(VM/parser) General cleanup needed
 #  There are various pieces of commented-out code that make the final result pretty much illegible. Let's clean this up.
