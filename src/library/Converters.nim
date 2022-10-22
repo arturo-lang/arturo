@@ -37,13 +37,13 @@ import vm/[bytecode, errors, eval, exec, opcodes, parse]
 # Helpers
 #=======================================
 
-proc parseFL*(s: string): float =
+proc parseFL(s: string): float =
     result = 0.0
     let L = parseutils.parseFloat(s, result, 0)
     if L != s.len or L == 0:
         raise newException(ValueError, "invalid float: " & s)
 
-proc generateCustomObject*(prot: Prototype, arguments: ValueArray | ValueDict): Value =
+proc generateCustomObject(prot: Prototype, arguments: ValueArray | ValueDict): Value =
     newObject(arguments, prot, proc (self: Value, prot: Prototype) =
         if (let initMethod = prot.methods.getOrDefault("init", nil); not initMethod.isNil):
             push self
@@ -59,7 +59,7 @@ template throwConversionFailed(): untyped =
 # TODO(Converters) Make sure `convertedValueToType` works fine + add tests
 #  labels: library, cleanup, unit-test
 
-proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Value =
+proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Value =
     if y.kind == tp and y.kind!=Quantity:
         return y
     else:
