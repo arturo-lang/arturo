@@ -6,10 +6,10 @@
 # @file: vm/exec.nim
 #=======================================================
 
-## This module contains the main loop for the Arturo VM.
+## This module contains the main loop for the VM.
 ## 
 ## Here:
-## - we take a Translation (= constants + bytecode)
+## - we take a Translation object
 ## - go through each and every one of the bytecode
 ##   instructions and execute them, one by one
 
