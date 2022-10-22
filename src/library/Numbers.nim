@@ -6,6 +6,9 @@
 # @file: library/Numbers.nim
 #=======================================================
 
+## The main Numbers module 
+## (part of the standard library)
+
 #=======================================
 # Pragmas
 #=======================================

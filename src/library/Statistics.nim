@@ -6,6 +6,9 @@
 # @file: library/Statistics.nim
 #=======================================================
 
+## The main Statistics module 
+## (part of the standard library)
+
 #=======================================
 # Pragmas
 #=======================================

@@ -6,6 +6,9 @@
 # @file: library/Iterators.nim
 #=======================================================
 
+## The main Iterators module 
+## (part of the standard library)
+
 #=======================================
 # Pragmas
 #=======================================

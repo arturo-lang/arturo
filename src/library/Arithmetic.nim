@@ -6,6 +6,9 @@
 # @file: library/Arithmetic.nim
 #=======================================================
 
+## The main Arithmetic module 
+## (part of the standard library)
+
 #=======================================
 # Pragmas
 #=======================================

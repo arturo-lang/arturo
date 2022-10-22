@@ -6,6 +6,9 @@
 # @file: library/Collections.nim
 #=======================================================
 
+## The main Collections module 
+## (part of the standard library)
+
 #=======================================
 # Pragmas
 #=======================================

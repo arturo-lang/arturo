@@ -6,6 +6,9 @@
 # @file: library/Converters.nim
 #=======================================================
 
+## The main Converters module 
+## (part of the standard library)
+
 #=======================================
 # Pragmas
 #=======================================

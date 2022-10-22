@@ -6,6 +6,9 @@
 # @file: library/Databases.nim
 #=======================================================
 
+## The main Databases module 
+## (part of the standard library)
+
 #=======================================
 # Pragmas
 #=======================================
