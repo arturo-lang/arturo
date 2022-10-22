@@ -97,7 +97,7 @@ template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
     else:
         f.action()
 
-template callByName*(symIndx: string):untyped =
+template callByName(symIndx: string):untyped =
     let fun = FetchSym(symIndx)
     callFunction(fun, symIndx)
 
@@ -116,10 +116,10 @@ template fetchAttributeByIndex(idx: int):untyped =
 template execIsolated*(evaled:Translation): untyped =
     doExec(evaled)
 
-template getMemoized*(fn: string, v: Value): Value =
+template getMemoized(fn: string, v: Value): Value =
     Memoizer.getOrDefault((fn, value.hash(v)), nil)
 
-template setMemoized*(fn: string, v: Value, res: Value) =
+template setMemoized(fn: string, v: Value, res: Value) =
     Memoizer[(fn, value.hash(v))] = res
 
 proc execBlock*(
