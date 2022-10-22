@@ -1,0 +1,5 @@
+#!/usr/bin/env arturo
+execute "rm dev-docs/*.idx"
+execute.directly "./build.nims docs"
+execute "mv dev-docs/arturo.html dev-docs/index.html"
+execute "cp -R dev-docs/* ../dev-docs/"
