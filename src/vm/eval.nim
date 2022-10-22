@@ -34,13 +34,13 @@ import vm/values/custom/[vlogical, vsymbol]
 #=======================================
 
 var
-    TmpArities*    : Table[string,int]
+    TmpArities : Table[string,int]
 
 #=======================================
 # Helpers
 #=======================================
 
-func indexOfValue*(a: seq[Value], item: Value): int {.inline.}=
+func indexOfValue(a: seq[Value], item: Value): int {.inline.}=
     result = 0
     for i in items(a):
         if sameValue(item, i): return
