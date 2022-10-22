@@ -6,11 +6,11 @@
 # @file: vm/vm.nim
 #=======================================================
 
-## This is the main VM module.
+## The main VM module.
 ## 
 ## It initializes our main settings, orchestrates the 
 ## different components of the VM and executes the given
-## code.
+## code via ``run``.
 
 #=======================================
 # Libraries
@@ -115,7 +115,7 @@ proc setupLibrary*() =
     for i,importLibrary in Libraries:
         importLibrary()
 
-template initialize*(args: seq[string], filename: string, isFile:bool, scriptData:Value = nil, mutedColors: bool = false, portableData = "") =
+template initialize(args: seq[string], filename: string, isFile:bool, scriptData:Value = nil, mutedColors: bool = false, portableData = "") =
     # function arity
     Arities = initTable[string,int]()
     # stack
