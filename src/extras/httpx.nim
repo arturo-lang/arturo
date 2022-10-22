@@ -42,10 +42,10 @@ type
         Server, Client, Dispatcher
 
     Data = object
-        fdKind: FdKind ## Determines the fd kind (server, client, dispatcher)
-                                     ## - Client specific data.
-                                     ## A queue of data that needs to be sent when the FD becomes writeable.
-        sendQueue: string
+        ## Determines the fd kind (server, client, dispatcher)
+        fdKind: FdKind 
+        ## A queue of data that needs to be sent when the FD becomes writeable.
+        sendQueue: string 
         ## The number of characters in `sendQueue` that have been sent already.
         bytesSent: int
         ## Big chunk of data read from client during request.
@@ -122,7 +122,7 @@ func initData(fdKind: FdKind, ip = ""): Data =
              bytesSent: 0,
              data: "",
              headersFinished: false,
-             headersFinishPos: -1, ## By default we assume the fast case: end of data.
+             headersFinishPos: -1, # By default we assume the fast case: end of data.
              ip: ip
     )
 
@@ -523,7 +523,7 @@ func body*(req: Request): Option[string] =
     let pos = req.selector.getData(req.client).headersFinishPos
     if pos == -1: 
         return none(string)
-    result = some(req.selector.getData(req.client).data[pos .. ^1])
+    result = some(req.selector.getData(req.client).data[pos..^1])
 
     when not defined(release):
         let length =
