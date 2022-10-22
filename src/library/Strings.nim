@@ -1,10 +1,10 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: library/Strings.nim
-######################################################
+#=======================================================
 
 #=======================================
 # Pragmas
@@ -89,7 +89,7 @@ proc defineSymbols*() =
             alphabet.lower.upper.all 'es
             ; => [a b c d e f g h i j k l m n ñ o p q r s t u v w x y z á é í ó ú ü A B C D E F G H I J K L M N Ñ O P Q R S T U V W X Y Z Á É Í Ó Ú Ü]
         """:
-            ##########################################################
+            #=======================================================
             let lower = hadAttr("lower")
             let upper = hadAttr("upper")
             let all = hadAttr("all")
@@ -124,7 +124,7 @@ proc defineSymbols*() =
             ascii? "Hællø wœrld"    ; false
             ascii? "Γειά!"          ; false
         """:
-            ##########################################################
+            #=======================================================
             if x.kind==Char:
                 push(newLogical(ord(x.c)<128))
             else:
@@ -153,7 +153,7 @@ proc defineSymbols*() =
             str: "hello World"
             capitalize 'str                     ; str: "Hello World"
         """:
-            ##########################################################
+            #=======================================================
             if x.kind==String: push(newString(x.s.capitalize()))
             elif x.kind==Char: push(newChar(x.c.toUpper()))
             else: 
@@ -195,7 +195,7 @@ proc defineSymbols*() =
             print escape.xml str
             ; a long &quot;string&quot; + with \diffe\rent symbols.
         """:
-            ##########################################################
+            #=======================================================
             if x.kind==Literal:
                 ensureInPlace()
                 if (hadAttr("json")):
@@ -247,7 +247,7 @@ proc defineSymbols*() =
             ; ##########two
             ; ##########three
         """:
-            ##########################################################
+            #=======================================================
             var count = 4
             var padding = " "
 
@@ -313,7 +313,7 @@ proc defineSymbols*() =
             print join @["1 + 2 = " 1+2]
             ; 1 + 2 = 3
         """:
-            ##########################################################
+            #=======================================================
             if (hadAttr("path")):
                 if x.kind==Literal:
                     ensureInPlace()
@@ -382,7 +382,7 @@ proc defineSymbols*() =
             lower ch    
             ; => `a`  
         """:
-            ##########################################################
+            #=======================================================
             if x.kind==String: push(newString(x.s.toLower()))
             elif x.kind==Char: push(newChar(x.c.toLower()))
             else: 
@@ -407,7 +407,7 @@ proc defineSymbols*() =
             lower? "Hello World"     ; => false
             lower? "hello"           ; => true
         """:
-            ##########################################################
+            #=======================================================
             if x.kind==Char:
                 push(newLogical(x.c.isLower()))
             else:
@@ -438,7 +438,7 @@ proc defineSymbols*() =
             match "x: 123, y: 456" "[0-9]+"         ; => [123 456]
             match "this is a string" "[0-9]+"       ; => []
         """:
-            ##########################################################
+            #=======================================================
             var rgx : VRegex
             
             if y.kind==Regex: rgx = y.rx
@@ -464,7 +464,7 @@ proc defineSymbols*() =
             numeric? "18966"           ; => true
             numeric? "123xxy"          ; => false
         """:
-            ##########################################################
+            #=======================================================
             try:
                 if x.kind==Char:
                     discard parseFloat($(x.c))
@@ -506,7 +506,7 @@ proc defineSymbols*() =
             ;      three
 
         """:
-            ##########################################################
+            #=======================================================
             var count = 0
             if x.kind==Literal:
                 ensureInPlace()
@@ -553,7 +553,7 @@ proc defineSymbols*() =
             pad.with:`0` to :string 123 5   
             ; => 00123
         """:
-            ##########################################################
+            #=======================================================
             var padding = ' '.Rune
             if checkAttr("with"):
                 padding = aWith.c
@@ -590,7 +590,7 @@ proc defineSymbols*() =
             str: "ello"
             prefix 'str                        ; str: "hello"
         """:
-            ##########################################################
+            #=======================================================
             if x.kind==String: push(newString(y.s & x.s))
             else: 
                 ensureInPlace()
@@ -610,7 +610,7 @@ proc defineSymbols*() =
             prefix? "hello" "he"          ; => true
             prefix? "boom" "he"           ; => false
         """:
-            ##########################################################
+            #=======================================================
             if y.kind==Regex:
                 push(newLogical(x.s.startsWith(y.rx)))
             else:
@@ -637,7 +637,7 @@ proc defineSymbols*() =
             greeting: "hello"
             print ~"|greeting|, your number is |x|"       ; hello, your number is 2
             """:
-                ##########################################################
+                #=======================================================
                 let recursive = not (hadAttr("once"))
                 let templated = (hadAttr("template"))
                 var res = ""
@@ -728,7 +728,7 @@ proc defineSymbols*() =
             replace "hello" ["h" "l"] "x"           ; => "xexxo"
             replace "hello" ["h" "o"] ["x" "z"]     ; => "xellz"
         """:
-            ##########################################################
+            #=======================================================
             if x.kind==String:
                 if y.kind==String:
                     push(newString(x.s.replaceAll(y.s, z.s)))
@@ -786,7 +786,7 @@ proc defineSymbols*() =
             ; strip leading: > Hello World      < 
             ; strip trailing: >      Hello World <
         """:
-            ##########################################################
+            #=======================================================
             var leading = (hadAttr("start"))
             var trailing = (hadAttr("end"))
 
@@ -815,7 +815,7 @@ proc defineSymbols*() =
             str: "hell"
             suffix 'str                        ; str: "hello"
         """:
-            ##########################################################
+            #=======================================================
             if x.kind==String: push(newString(x.s & y.s))
             else: 
                 ensureInPlace()
@@ -835,7 +835,7 @@ proc defineSymbols*() =
             suffix? "hello" "lo"          ; => true
             suffix? "boom" "lo"           ; => false
         """:
-            ##########################################################
+            #=======================================================
             if y.kind==Regex:
                 push(newLogical(x.s.endsWith(y.rx)))
             else:
@@ -870,7 +870,7 @@ proc defineSymbols*() =
             truncate.preserve.with:"---" str 30
             ; => "Lorem ipsum dolor sit amet,---"
         """: 
-            ##########################################################
+            #=======================================================
             var with = "..."
             if checkAttr("with"):
                 with = aWith.s
@@ -905,7 +905,7 @@ proc defineSymbols*() =
             upper ch    
             ; => `A`                     
         """:
-            ##########################################################
+            #=======================================================
             if x.kind==String: push(newString(x.s.toUpper()))
             elif x.kind==Char: push(newChar(x.c.toUpper()))
             else: 
@@ -930,7 +930,7 @@ proc defineSymbols*() =
             upper? "Hello World"     ; => false
             upper? "HELLO"           ; => true
         """:
-            ##########################################################
+            #=======================================================
             if x.kind==Char:
                 push(newLogical(x.c.isUpper()))
             else:
@@ -973,7 +973,7 @@ proc defineSymbols*() =
             ; eight nine
             ; ten 
         """:
-            ##########################################################
+            #=======================================================
             var cutoff = 80
             if checkAttr("at"):
                 cutoff = aAt.i
@@ -998,7 +998,7 @@ proc defineSymbols*() =
             whitespace? " "               ; => true
             whitespace? "\n \n"           ; => true
         """:
-            ##########################################################
+            #=======================================================
             push(newLogical(x.s.isEmptyOrWhitespace()))
 
 #=======================================

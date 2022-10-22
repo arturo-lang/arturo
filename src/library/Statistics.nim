@@ -1,10 +1,10 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: library/Statistics.nim
-######################################################
+#=======================================================
 
 #=======================================
 # Pragmas
@@ -45,7 +45,7 @@ proc defineSymbols*() =
             print average [2 4 5 6 7 2 3]
             ; 4.142857142857143
         """:
-            ##########################################################
+            #=======================================================
             var res = F0.copyValue
             ensureCleaned(x)
             for num in cleanX:
@@ -76,7 +76,7 @@ proc defineSymbols*() =
             deviation.sample arr        ; => 1.290994448735806
             deviation.sample arr2       ; => 45.65847597731914
         """:
-            ##########################################################
+            #=======================================================
             ensureCleaned(x)
             if (hadAttr("sample")):
                 push newFloating(standardDeviationS(cleanX.map((z)=>asFloat(z))))
@@ -104,7 +104,7 @@ proc defineSymbols*() =
             kurtosis.sample arr         ; => -1.200000000000001
             kurtosis.sample arr2        ; => 0.5886192422439724
         """:
-            ##########################################################
+            #=======================================================
             ensureCleaned(x)
             if (hadAttr("sample")):
                 push newFloating(kurtosisS(cleanX.map((z)=>asFloat(z))))
@@ -127,7 +127,7 @@ proc defineSymbols*() =
             print median [1 5 2 3 4 7 9 8]
             ; 3.5
         """:
-            ##########################################################
+            #=======================================================
             ensureCleaned(x)
             if cleanX.len==0: 
                 push(VNULL)
@@ -161,7 +161,7 @@ proc defineSymbols*() =
             skewness.sample arr         ; => 0.0
             skewness.sample arr2        ; => 1.40680083744453
         """:
-            ##########################################################
+            #=======================================================
             ensureCleaned(x)
             if (hadAttr("sample")):
                 push newFloating(skewnessS(cleanX.map((z)=>asFloat(z))))
@@ -189,7 +189,7 @@ proc defineSymbols*() =
             variance.sample arr         ; => 1.666666666666667
             variance.sample arr2        ; => 2084.696428571428
         """:
-            ##########################################################
+            #=======================================================
             ensureCleaned(x)
             if (hadAttr("sample")):
                 push newFloating(varianceS(cleanX.map((z)=>asFloat(z))))

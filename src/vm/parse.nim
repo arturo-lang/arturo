@@ -1,10 +1,18 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: vm/parse.nim
-######################################################
+#=======================================================
+
+## This module contains the parser/lexer for the VM.
+## 
+## The parser:
+## - takes a string/text
+## - parses the different tokens and returns a block of
+##   valid Arturo values (that can later be used in 
+##   conjuction with e.g. the evaluator)
 
 # TODO(VM/parser) General cleanup needed
 #  There are various pieces of commented-out code that make the final result pretty much illegible. Let's clean this up.
@@ -104,7 +112,7 @@ template stripTrailingNewlines*(): untyped =
 # Helpers
 #=======================================
 
-## Error reporting
+# Error reporting
 
 func getContext*(p: var Parser, curPos: int): string =
     result = ""
@@ -125,7 +133,7 @@ func getContext*(p: var Parser, curPos: int): string =
 
     result &= ";" & repeat("~%",6 + curPos-initial) & "_^_"
 
-## Lexer/parser
+# Lexer/parser
 
 template skip(p: var Parser, scriptStr: var string) =
   var pos = p.bufpos
