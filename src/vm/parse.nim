@@ -8,7 +8,7 @@
 
 ## This module contains the parser/lexer for the VM.
 ## 
-## The parser:
+## In general, the parser:
 ## - takes a string/text
 ## - parses the different tokens and returns a Block of
 ##   valid values (that can later be used in conjuction 
