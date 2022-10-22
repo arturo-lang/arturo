@@ -110,8 +110,9 @@ proc FetchSym*(s: string, unsafe: static bool = false): Value {.inline.} =
 
 template GetSym*(s: string): untyped =
     ## Get value for given symbol in table
-    ## **Hint:** if the key doesn't exist, it will throw an error
-    ##       so, we have to make sure we know it exists beforehand
+    ## 
+    ## **Hint:** if the key doesn't exist, it will throw an error;
+    ## so, we have to make sure we know it exists beforehand
     Syms[s]
 
 template SetSym*(s: string, v: Value, safe: static bool = false): untyped =
@@ -133,12 +134,14 @@ template SetSym*(s: string, v: Value, safe: static bool = false): untyped =
 
 template RawInPlaced*(): untyped =
     ## Get InPlaced symbol without any checks
-    ## **Hint:** if the key doesn't exist, it will throw an error
-    ##       so, we have to make sure we know it exists beforehand
+    ## 
+    ## **Hint:** if the key doesn't exist, it will throw an error;
+    ## so, we have to make sure we know it exists beforehand
     Syms[x.s]
 
 template InPlaced*(): untyped =
-    ## Get access to InPlaced symbol with 
+    ## Get access to InPlaced symbol
+    ## 
     ## **Hint:** always after having called `ensureInPlace` first!
     InPlaceAddr[]
 
@@ -150,7 +153,7 @@ proc showInPlaceError*(varname: string) =
         RuntimeError_SymbolNotFound(varname, suggestAlternative(varname))
 
 template ensureInPlace*(): untyped = 
-    ## To be used whenever, and always before,
+    ## To be used whenever, and always before, 
     ## we want to access an InPlace symbol
     var InPlaceAddr {.inject.}: ptr Value
     try:
