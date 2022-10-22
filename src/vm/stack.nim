@@ -21,11 +21,14 @@ import vm/values/value
 # Constants
 #=======================================
 
-# TODO(VM/stack) Re-consider the starting values for our StackSize & AttrsSize
+# TODO(VM/stack) Re-consider the starting values for our StackSize
 #  How does it influence the overall performance? This has to be thoroughly tested & benchmarked.
 #  labels: vm, benchmark, unit-test
-const StackSize* = 100000
-const AttrsSize* = 10
+const StackSize* = 100000   ## The initial stack size
+
+#=======================================
+# Variables
+#=======================================
 
 var
     # stack
@@ -37,7 +40,7 @@ var
 # Methods
 #=======================================
 
-## Main stack
+# Main stack
 
 template push*(v: Value) = 
     ## push given value onto the stack
@@ -128,7 +131,7 @@ template createMainStack*() =
     newSeq(Stack, StackSize)
     emptyStack()
 
-## Attributes stack
+# Attributes table
 
 template pushAttr*(label: string, v: Value) =
     ## set attribute ``label`` to given value
