@@ -1027,6 +1027,8 @@ proc parseAsBlock(blk: Value, start: int): Value =
 #=======================================
 
 proc parseDataBlock*(blk: Value): Value =
+    ## Parse given Value as a data block
+    ## and return the parsed result
     if blk.kind != Block or blk.a.len == 0:
         return VNULL
 
@@ -1083,6 +1085,8 @@ when defined(PYTHONIC):
         lines.join("\n")
 
 proc doParse*(input: string, isFile: bool = true): Value =
+    ## Parses a string or file path
+    ## and returns the result as a Block of values
     hookProcProfiler("parse/doParse"):
         var p: Parser
 
