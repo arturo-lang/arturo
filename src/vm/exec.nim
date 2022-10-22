@@ -66,6 +66,7 @@ proc doExec*(cnst: ValueArray, it: ByteArray, args: Value = nil): ValueDict
 #=======================================
 
 template doExec*(input: Translation, args: Value = nil): ValueDict =
+    ## Same as ``doExec(input.constants, input.instructions, args)``
     doExec(input.constants, input.instructions, args)
 
 template pushByIndex(idx: int):untyped =
