@@ -6,6 +6,9 @@
 # @file: library/Crypto.nim
 #=======================================================
 
+## The main Crypto module 
+## (part of the standard library)
+
 # TODO(Crypto) more potential built-in function candidates?
 #  labels: library, enhancement, open discussion
 

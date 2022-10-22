@@ -6,6 +6,9 @@
 # @file: library/Bitwise.nim
 #=======================================================
 
+## The main Bitwise module 
+## (part of the standard library)
+
 #=======================================
 # Pragmas
 #=======================================

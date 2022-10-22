@@ -6,6 +6,9 @@
 # @file: library/Reflection.nim
 #=======================================================
 
+## The main Reflection module 
+## (part of the standard library)
+
 #=======================================
 # Pragmas
 #=======================================

@@ -6,6 +6,9 @@
 # @file: library/Strings.nim
 #=======================================================
 
+## The main Strings module 
+## (part of the standard library)
+
 #=======================================
 # Pragmas
 #=======================================

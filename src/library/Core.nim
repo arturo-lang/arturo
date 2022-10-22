@@ -6,6 +6,9 @@
 # @file: library/Core.nim
 #=======================================================
 
+## The main Core module 
+## (part of the standard library)
+
 # TODO(Core) General cleanup needed
 #  labels: library, enhancement, cleanup
 

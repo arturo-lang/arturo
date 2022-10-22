@@ -6,6 +6,9 @@
 # @file: library/Comparison.nim
 #=======================================================
 
+## The main Comparison module 
+## (part of the standard library)
+
 #=======================================
 # Pragmas
 #=======================================
