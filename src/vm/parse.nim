@@ -11,8 +11,8 @@
 ## The parser:
 ## - takes a string/text
 ## - parses the different tokens and returns a Block of
-##   valid Arturo values (that can later be used in 
-##   conjuction with e.g. the evaluator)
+##   valid values (that can later be used in conjuction 
+##   with e.g. the evaluator)
 
 # TODO(VM/parser) General cleanup needed
 #  There are various pieces of commented-out code that make the final result pretty much illegible. Let's clean this up.
@@ -1027,7 +1027,7 @@ proc parseAsBlock(blk: Value, start: int): Value =
 #=======================================
 
 proc parseDataBlock*(blk: Value): Value =
-    ## Parse given Value as a data block
+    ## Parse given value as a data block
     ## and return the parsed result
     if blk.kind != Block or blk.a.len == 0:
         return VNULL
@@ -1085,8 +1085,8 @@ when defined(PYTHONIC):
         lines.join("\n")
 
 proc doParse*(input: string, isFile: bool = true): Value =
-    ## Parses a string or file path
-    ## and returns the result as a Block of values
+    ## Parse a string or file path
+    ## and return the result as a Block of values
     hookProcProfiler("parse/doParse"):
         var p: Parser
 
