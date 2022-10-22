@@ -26,13 +26,18 @@ import vm/[errors, values/value]
 
 var
     # symbols
-    Syms* {.global.}      : ValueDict
+    Syms* {.global.}      : ValueDict           ## The symbol table: all the variables 
+                                                ## with their associated values
 
     # symbol aliases
-    Aliases* {.global.}   : SymbolDict
+    Aliases* {.global.}   : SymbolDict          ## The symbol aliases: all the symbols
+                                                ## with all their associated variables
+                                                ## they point to
 
     # function arity reference
-    Arities* {.global.}   : Table[string,int]
+    Arities* {.global.}   : Table[string,int]   ## The arity table: a simple association
+                                                ## of function names with the arity of 
+                                                ## the function they represent
 
     # libraries 
     Libraries* {.global.} : seq[BuiltinAction]
@@ -41,7 +46,7 @@ var
 # Helpers
 #=======================================
 
-func suggestAlternative*(s: string, reference: ValueDict = Syms): seq[string] {.inline.} =
+func suggestAlternative(s: string, reference: ValueDict = Syms): seq[string] {.inline.} =
     var levs = initOrderedTable[string,int]()
 
     for k,v in pairs(reference):
@@ -104,16 +109,16 @@ proc FetchSym*(s: string, unsafe: static bool = false): Value {.inline.} =
 
 template GetSym*(s: string): untyped =
     ## Get value for given symbol in table
-    ## Hint: if the key doesn't exist, it will throw an error
+    ## **Hint:** if the key doesn't exist, it will throw an error
     ##       so, we have to make sure we know it exists beforehand
     Syms[s]
 
 template SetSym*(s: string, v: Value, safe: static bool = false): untyped =
     ## Sets symbol to given value in the symbol table
     when safe:
-        ## When do it safely, also check if the value to be assigned is a read-only value
-        ## - if it is - we have to copy it first
-        ## - otherwise, go ahead and just assign it (pointer copy!)
+        # When doing it safely, also check if the value to be assigned is a read-only value
+        # - if it is - we have to copy it first
+        # - otherwise, go ahead and just assign it (pointer copy!)
         if v.readonly:
             Syms[s] = copyValue(v)
         else:
@@ -127,13 +132,13 @@ template SetSym*(s: string, v: Value, safe: static bool = false): untyped =
 
 template RawInPlaced*(): untyped =
     ## Get InPlaced symbol without any checks
-    ## Hint: if the key doesn't exist, it will throw an error
+    ## **Hint:** if the key doesn't exist, it will throw an error
     ##       so, we have to make sure we know it exists beforehand
     Syms[x.s]
 
 template InPlaced*(): untyped =
     ## Get access to InPlaced symbol with 
-    ## Hint: always after having called `ensureInPlace` first!
+    ## **Hint:** always after having called `ensureInPlace` first!
     InPlaceAddr[]
 
 proc showInPlaceError*(varname: string) =
