@@ -26,9 +26,9 @@ import vm/values/custom/[vlogical]
 #=======================================
 
 var 
-    PathStack*  {.threadvar.}: seq[string]
-    HomeDir*    : string
-    TmpDir*     : string
+    PathStack*  {.threadvar.}: seq[string]      ## The main path stack
+    HomeDir*    : string                        ## User's home directory
+    TmpDir*     : string                        ## User's temp directory
 
     #--------------------
     # private
@@ -44,9 +44,11 @@ var
 #=======================================
 
 proc getCmdlineArgumentArray*(): Value =
+    ## return all command0line arguments as 
+    ## a Block value
     Arguments
 
-proc parseCmdlineValue*(v: string): Value =
+proc parseCmdlineValue(v: string): Value =
     if v=="" or v=="true" or v=="on": return newLogical(True)
     elif v=="false" or v=="off": return newLogical(False)
     else:
@@ -59,6 +61,8 @@ proc parseCmdlineValue*(v: string): Value =
 # TODO(Env\parseCmdlineArguments) verify it's working right
 #  labels: vm,library,language,unit-test
 proc parseCmdlineArguments*(): ValueDict =
+    ## parse command-line arguments and return 
+    ## result as a Dictionary value
     result = initOrderedTable[string,Value]()
     var values: ValueArray = @[]
 
@@ -77,6 +81,7 @@ proc parseCmdlineArguments*(): ValueDict =
     result["values"] = newBlock(values)
 
 proc getSystemInfo*(): ValueDict =
+    ## return system info as a Dictionary value
     {
         "author"    : newString("Yanis Zafirópulos"),
         "copyright" : newString("(c) 2019-2022"),
@@ -98,6 +103,7 @@ proc getSystemInfo*(): ValueDict =
     }.toOrderedTable
 
 proc getPathInfo*(): ValueDict =
+    ## return path info as a Dictionary value
     {
         "current"   : newString(getCurrentDir()),
         "home"      : newString(HomeDir),
@@ -105,6 +111,7 @@ proc getPathInfo*(): ValueDict =
     }.toOrderedTable
 
 proc getScriptInfo*(): Value =
+    ## return script info as a Dictionary value
     ScriptInfo
 
 #=======================================
@@ -112,19 +119,24 @@ proc getScriptInfo*(): Value =
 #=======================================
 
 proc entryPath*(): string =
+    ## get initial script path
     PathStack[0]
 
 proc currentPath*(): string =
+    ## get current path
     PathStack[^1]
 
 proc addPath*(newPath: string) =
+    ## add given path to path stack
     var (dir, _, _) = splitFile(newPath)
     PathStack.add(dir)
 
 proc popPath*(): string =
+    ## pop last path from path stack
     PathStack.pop()
 
 proc initEnv*(arguments: seq[string], version: string, build: string, script: Value) =
+    ## initialize environment with given arguments
     Arguments = newStringBlock(arguments)
     ArturoVersion = version
     ArturoBuild = build
@@ -140,4 +152,5 @@ proc initEnv*(arguments: seq[string], version: string, build: string, script: Va
         TmpDir  = getTempDir()
 
 proc setColors*(muted: bool = false) =
+    ## switch terminal colors on/off, globally
     NoColors = muted
