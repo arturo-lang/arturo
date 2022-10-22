@@ -40,7 +40,8 @@ var
                                                 ## the function they represent
 
     # libraries 
-    Libraries* {.global.} : seq[BuiltinAction]
+    Libraries* {.global.} : seq[BuiltinAction]  ## The list of all builtin libraries
+                                                ## to be imported at startup
 
 #=======================================
 # Helpers
