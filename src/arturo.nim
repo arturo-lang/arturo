@@ -6,10 +6,12 @@
 # @file: arturo.nim
 #=======================================================
 
-## This is the point where the whole magic starts.
+## This is the main entry point where 
+## the whole magic begins.
 ## 
-## The purpose of this module is to parse the command-
-## line arguments and pass the control to the VM.
+## The purpose of this module is to parse the 
+## command-line arguments and pass the control 
+## to the VM.
 
 #=======================================
 # Libraries
