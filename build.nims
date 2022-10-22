@@ -413,6 +413,7 @@ proc buildDocs*() =
 
     section "Generating documentation..."
     exec(r"nim doc --project --index:on --outdir:dev-docs {FLAGS} src/arturo.nim".fmt)
+    exec(r"nim buildIndex -o:dev-docs/theindex.html dev-docs")
 
 proc performTests*() =
     showHeader "test"
