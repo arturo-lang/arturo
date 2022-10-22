@@ -67,7 +67,7 @@ proc showVMErrors*(e: ref Exception)
 # Main
 #=======================================
 
-proc getLineError*(): string =
+proc getLineError(): string =
     result = ""
     if CurrentFile != "<repl>":
         if CurrentLine==0: CurrentLine = 1
@@ -76,6 +76,7 @@ proc getLineError*(): string =
         result &= (bold(grayColor)).replace(";","%&") & "File: " & resetColor & (fg(grayColor)).replace(";","%&") & CurrentFile & ";" & (bold(grayColor)).replace(";","%&") & "Line: " & resetColor & (fg(grayColor)).replace(";","%&") & $(CurrentLine) & resetColor & ";;"
 
 proc panic*(context: string, error: string, throw=true) =
+    ## throw error, using given context and error message
     var errorMsg = error
     if $(context) notin [CompilerError]:
         when not defined(NOERRORLINES):
@@ -93,6 +94,7 @@ proc panic*(context: string, error: string, throw=true) =
 #=======================================
 
 proc showVMErrors*(e: ref Exception) =
+    ## show error message
     var header: string
     try:
         header = $(e.name)
