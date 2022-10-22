@@ -10,7 +10,7 @@
 ## 
 ## The parser:
 ## - takes a string/text
-## - parses the different tokens and returns a block of
+## - parses the different tokens and returns a Block of
 ##   valid Arturo values (that can later be used in 
 ##   conjuction with e.g. the evaluator)
 
