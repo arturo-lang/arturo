@@ -687,7 +687,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             for b in currentCommand.reversed: it.add(b)
 
 proc doEval*(root: Value, isDictionary=false): Translation = 
-    ## Take a parsed Block of values and return its translation - 
+    ## Take a parsed Block of values and return its Translation - 
     ## that is: the constants found + the list of bytecode instructions
     hookProcProfiler("eval/doEval"):
         var cnsts: ValueArray = @[]
