@@ -173,12 +173,14 @@ template handleVMErrors*(blk: untyped): untyped =
 when not defined(WEB):
 
     proc runBytecode*(code: Translation, filename: string, args: seq[string]) =
+        ## Takes compiled Arturo bytecode and executes it.
         handleVMErrors:
             initialize(args, filename, isFile=true)
 
             discard doExec(code)
 
     proc run*(code: var string, args: seq[string], isFile: bool, doExecute: bool = true, withData=""): Translation {.exportc:"run".} =
+        ## Takes a string of Arturo code and executes it.
         handleVMErrors:
 
             if isFile:
