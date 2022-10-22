@@ -805,7 +805,9 @@ proc `+`*(x: Value, y: Value): Value =
                 else: return newComplex((float)(x.i)+y.z)
 
 proc `+=`*(x: var Value, y: Value) =
-    ## add given values and store the result in the first value
+    ## add given values 
+    ## and store the result in the first value
+    ## 
     ## **Hint:** In-place, mutating operation
     if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
         if x.kind == Quantity:
@@ -964,7 +966,9 @@ proc `-`*(x: Value, y: Value): Value =
                 else: return newComplex((float)(x.i)-y.z)
 
 proc `-=`*(x: var Value, y: Value) =
-    ## subtract given values and assign the result to the first value
+    ## subtract given values and 
+    ## store the result in the first value
+    ## 
     ## **Hint:** In-place, mutating operation
     if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
         if x.kind == Quantity:
@@ -1042,7 +1046,8 @@ proc `-=`*(x: var Value, y: Value) =
                 else: x = newComplex((float)(x.i)-y.z)
 
 proc `*`*(x: Value, y: Value): Value =
-    ## multiply given values and return the result
+    ## multiply given values 
+    ## and return the result
     if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
         if x.kind == Quantity:
             if y.kind == Quantity:
@@ -1121,7 +1126,9 @@ proc `*`*(x: Value, y: Value): Value =
                 else: return newComplex((float)(x.i)*y.z)
 
 proc `*=`*(x: var Value, y: Value) =
-    ## multiply given values and store the result in the first one
+    ## multiply given values 
+    ## and store the result in the first one
+    ## 
     ## **Hint:** In-place, mutating operation
     if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
         if x.kind == Quantity:
@@ -1284,6 +1291,7 @@ proc `/`*(x: Value, y: Value): Value =
 proc `/=`*(x: var Value, y: Value) =
     ## divide (integer division) given values 
     ## and store the result in the first one 
+    ## 
     ## **Hint:** In-place, mutating operation
     if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
         if x.kind == Quantity:
@@ -1411,6 +1419,7 @@ proc `//`*(x: Value, y: Value): Value =
 proc `//=`*(x: var Value, y: Value) =
     ## divide (floating-point division) given values 
     ## and store the result in the first one 
+    ## 
     ## **Hint:** In-place, mutating operation
     if not (x.kind in [Integer, Floating, Rational]) or not (y.kind in [Integer, Floating, Rational]):
         if x.kind == Quantity:
@@ -1518,6 +1527,7 @@ proc `%`*(x: Value, y: Value): Value =
 proc `%=`*(x: var Value, y: Value) =
     ## perform the modulo operation between given values
     ## and store the result in the first one
+    ## 
     ## **Hint:** In-place, mutating operation
     if not (x.kind in [Integer,Floating,Rational]) or not (y.kind in [Integer,Floating,Rational]):
         if (x.kind == Quantity and y.kind == Quantity) and (x.unit.kind==y.unit.kind):
@@ -1623,6 +1633,7 @@ proc `/%`*(x: Value, y: Value): Value =
 proc `/%=`*(x: var Value, y: Value) =
     ## perform the divmod operation between given values
     ## and store the result in the first one
+    ## 
     ## **Hint:** In-place, mutating operation
     if not (x.kind in [Integer,Floating,Rational]) or not (y.kind in [Integer,Floating,Rational]):
         x = newBlock(@[x/y, x%y])
@@ -1755,6 +1766,7 @@ proc `^`*(x: Value, y: Value): Value =
 proc `^=`*(x: var Value, y: Value) =
     ## perform the power operation between given values
     ## and store the result in the first value
+    ## 
     ## **Hint:** In-place, mutation operation
     if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
         if x.kind == Quantity:
@@ -1839,6 +1851,7 @@ proc `&&`*(x: Value, y: Value): Value =
 proc `&&=`*(x: var Value, y: Value) =
     ## perform binary-and between given values
     ## and store the result in the first value
+    ## 
     ## **Hint:** In-place, mutation operation
     if (x.kind == Binary or y.kind==Binary) and (x.kind in [Integer, Binary] and y.kind in [Integer, Binary]):
         var a = (if x.kind==Binary: x.n else: numberToBinary(x.i))
@@ -1901,6 +1914,7 @@ proc `||`*(x: Value, y: Value): Value =
 proc `||=`*(x: var Value, y: Value) =
     ## perform binary-or between given values
     ## and store the result in the first value
+    ## 
     ## **Hint:** In-place, mutation operation
     if (x.kind == Binary or y.kind==Binary) and (x.kind in [Integer, Binary] and y.kind in [Integer, Binary]):
         var a = (if x.kind==Binary: x.n else: numberToBinary(x.i))
@@ -1962,6 +1976,7 @@ proc `^^`*(x: Value, y: Value): Value =
 proc `^^=`*(x: var Value, y: Value) =
     ## perform binary-xor between given values
     ## and store the result in the first value
+    ## 
     ## **Hint:** In-place, mutation operation
     if (x.kind == Binary or y.kind==Binary) and (x.kind in [Integer, Binary] and y.kind in [Integer, Binary]):
         var a = (if x.kind==Binary: x.n else: numberToBinary(x.i))
@@ -2019,6 +2034,7 @@ proc `>>`*(x: Value, y: Value): Value =
 proc `>>=`*(x: var Value, y: Value) =
     ## perform binary-right-shift between given values
     ## and store the result in the first value
+    ## 
     ## **Hint:** In-place, mutation operation
     if not (x.kind==Integer) or not (y.kind==Integer):
         x = VNULL
@@ -2072,6 +2088,7 @@ proc `<<`*(x: Value, y: Value): Value =
 proc `<<=`*(x: var Value, y: Value) =
     ## perform binary-left-shift between given values
     ## and store the result in the first value
+    ## 
     ## **Hint:** In-place, mutation operation
     if not (x.kind==Integer) or not (y.kind==Integer):
         x = VNULL
@@ -2098,7 +2115,7 @@ proc `<<=`*(x: var Value, y: Value) =
 
 proc `!!`*(x: Value): Value =
     ## perform binary-not for given value
-    ## 
+    ## and return the result
     if x.kind == Binary:
         return newBinary(not x.n)
     elif not (x.kind==Integer):
@@ -2113,6 +2130,7 @@ proc `!!`*(x: Value): Value =
 proc `!!=`*(x: var Value) =
     ## perform binary-not for given value
     ## and store the result back in it
+    ## 
     ## **Hint:** In-place, mutation operation
     if x.kind == Binary:
         x = newBinary(not x.n)
