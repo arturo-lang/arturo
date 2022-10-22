@@ -1,10 +1,10 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: vm/values/clean.nim
-######################################################
+#=======================================================
 
 ## This module has helper used to clean blocks
 ## Blocks may have `Newline` Values,

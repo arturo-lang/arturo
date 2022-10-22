@@ -1,15 +1,20 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: vm/profiler.nim
-######################################################
+#=======================================================
 
 # Contains code (mainly the call tree tracer) based on
 # the Nimprof module: https://github.com/nim-lang/Nim/blob/version-1-6/lib/pure/nimprof.nim
 # which forms part of the Nim standard library.
 # (c) Copyright 2015 Andreas Rumpf
+
+## Profiler for the Arturo VM.
+## 
+## To enable, compile with: 
+## `./build.nims install profiler`
 
 when defined(PROFILER):
     {.push profiler: off.}

@@ -1,10 +1,10 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: helpers/json.nim
-######################################################
+#=======================================================
 
 # TODO(Helpers/jsonobject) Rename file?
 #  The filename seems a bit confusing even to me? Could we not change it to something more... self-explanatory? 

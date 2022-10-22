@@ -1,10 +1,10 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: library/Collections.nim
-######################################################
+#=======================================================
 
 #=======================================
 # Pragmas
@@ -66,7 +66,7 @@ proc defineSymbols*() =
             'b ++ 4
             print b                   ; [1 2 3 4]
         """:
-            ##########################################################
+            #=======================================================
             # TODO(Collections\append) Append for arrays vs strings seems to be much slower
             #  https://github.com/arturo-lang/benchmarks/blob/main/results/17-8-2022/micro.md
             #  labels: enhancement, library, performance
@@ -129,7 +129,7 @@ proc defineSymbols*() =
             ..........
             chop [1 2 3 4]              ; => [1 2 3]
         """:
-            ##########################################################
+            #=======================================================
             if x.kind == Literal:
                 ensureInPlace()
                 if InPlaced.kind == String:
@@ -177,7 +177,7 @@ proc defineSymbols*() =
             combine.count.repeated.by:2 [A B C]
             ; => 6
         """:
-            ##########################################################
+            #=======================================================
             let doRepeat = hadAttr("repeated")
 
             ensureCleaned(x)
@@ -233,7 +233,7 @@ proc defineSymbols*() =
             print contains?.at:1 ["one" "two" "three"] "two"
             ; true
         """:
-            ##########################################################
+            #=======================================================
             if checkAttr("at"):
                 let at = aAt.i
                 case x.kind:
@@ -284,7 +284,7 @@ proc defineSymbols*() =
             couple ["one" "two" "three"] [1 2 3]
             ; => [[1 "one"] [2 "two"] [3 "three"]]
         """:
-            ##########################################################
+            #=======================================================
             ensureCleaned(x)
             ensureCleaned(y)
             push(newBlock(zip(cleanX, cleanY).map((z)=>newBlock(@[z[0], z[1]]))))
@@ -305,7 +305,7 @@ proc defineSymbols*() =
             decouple c
             ; => ["one" "two" "three"] [1 2 3]
         """:
-            ##########################################################
+            #=======================================================
             ensureCleaned(x)
             let res = unzip(cleanX.map((z)=>(z.a[0], z.a[1])))
             push(newBlock(@[newBlock(res[0]), newBlock(res[1])]))
@@ -327,7 +327,7 @@ proc defineSymbols*() =
             arr: 1..10
             drop 'arr 3                   ; arr: [4 5 6 7 8 9 10]
         """:
-            ##########################################################
+            #=======================================================
             if x.kind == Literal:
                 ensureInPlace()
                 if InPlaced.kind == String:
@@ -359,7 +359,7 @@ proc defineSymbols*() =
             str: "some text"
             empty 'str            ; str: ""
         """:
-            ##########################################################
+            #=======================================================
             ensureInPlace()
             case InPlaced.kind:
                 of String: InPlaced.s = ""
@@ -383,7 +383,7 @@ proc defineSymbols*() =
 
             empty? [1 "two" 3]    ; => false
         """:
-            ##########################################################
+            #=======================================================
             case x.kind:
                 of Null: push(VTRUE)
                 of String: push(newLogical(x.s == ""))
@@ -409,7 +409,7 @@ proc defineSymbols*() =
             print extend person #[ age: 35 ]
             ; [name:john surname:doe age:35]
         """:
-            ##########################################################
+            #=======================================================
             if x.kind == Literal:
                 ensureInPlace()
                 for k, v in pairs(y.d):
@@ -438,7 +438,7 @@ proc defineSymbols*() =
             ..........
             print first.n:2 ["one" "two" "three"] ; one two
         """:
-            ##########################################################
+            #=======================================================
             if checkAttr("n"):
                 if x.kind == String:
                     if x.s.len == 0: push(newString(""))
@@ -483,7 +483,7 @@ proc defineSymbols*() =
             flatten.once [1 [2 3] [4 [5 6]]]
             ; => [1 2 3 4 [5 6]]
         """:
-            ##########################################################
+            #=======================================================
             if x.kind == Literal:
                 ensureInPlace()
                 SetInPlace(InPlaced.flattened(once = hadAttr("once")))
@@ -528,7 +528,7 @@ proc defineSymbols*() =
             z: 0
             print str\[z+1]               ; e
         """:
-            ##########################################################
+            #=======================================================
             case x.kind:
                 of Block:
                     ensureCleaned(x)
@@ -601,7 +601,7 @@ proc defineSymbols*() =
             print in?.at:1 "two" ["one" "two" "three"]
             ; true
         """:
-            ##########################################################
+            #=======================================================
             if checkAttr("at"):
                 let at = aAt.i
                 case y.kind:
@@ -656,7 +656,7 @@ proc defineSymbols*() =
             type index "hello" "x"
             ; :null
         """:
-            ##########################################################
+            #=======================================================
             case x.kind:
                 of String:
                     let indx = x.s.find(y.s)
@@ -704,7 +704,7 @@ proc defineSymbols*() =
             insert 'dict 'name "Jane"
             ; dict: [name: "Jane"]
         """:
-            ##########################################################
+            #=======================================================
             if x.kind == Literal:
                 ensureInPlace()
                 case InPlaced.kind:
@@ -751,7 +751,7 @@ proc defineSymbols*() =
             ]
             ; Hello John
         """:
-            ##########################################################
+            #=======================================================
             var needle: string
             if y.kind == String: needle = y.s
             else: needle = $(y)
@@ -779,7 +779,7 @@ proc defineSymbols*() =
             keys user
             => ["name" "surname"]
         """:
-            ##########################################################
+            #=======================================================
             var s: seq[string]
             if x.kind == Dictionary:
                 s = toSeq(x.d.keys)
@@ -805,7 +805,7 @@ proc defineSymbols*() =
             ..........
             print last.n:2 ["one" "two" "three"] ; two three
         """:
-            ##########################################################
+            #=======================================================
             if checkAttr("n"):
                 if x.kind == String:
                     if x.s.len == 0: push(newString(""))
@@ -837,7 +837,7 @@ proc defineSymbols*() =
         example     = """
             print max [4 2 8 5 1 9]       ; 9
         """:
-            ##########################################################
+            #=======================================================
             ensureCleaned(x)
             if cleanX.len == 0: push(VNULL)
             else:
@@ -875,7 +875,7 @@ proc defineSymbols*() =
         example     = """
             print min [4 2 8 5 1 9]       ; 1
         """:
-            ##########################################################
+            #=======================================================
             ensureCleaned(x)
             if cleanX.len == 0: push(VNULL)
             else:
@@ -931,7 +931,7 @@ proc defineSymbols*() =
             permutate.count.repeated.by:2 [A B C]
             ; => 9
         """:
-            ##########################################################
+            #=======================================================
             let doRepeat = hadAttr("repeated")
 
             ensureCleaned(x)
@@ -976,7 +976,7 @@ proc defineSymbols*() =
             ..........
             remove [1 2 3 4] 4        ; => [1 2 3]
         """:
-            ##########################################################
+            #=======================================================
             if x.kind == Literal:
                 ensureInPlace()
                 if InPlaced.kind == String:
@@ -1053,7 +1053,7 @@ proc defineSymbols*() =
             repeat [[1 2 3]] 3
             ; => [[1 2 3] [1 2 3] [1 2 3]]
         """:
-            ##########################################################
+            #=======================================================
             if x.kind == Literal:
                 ensureInPlace()
                 if InPlaced.kind == String:
@@ -1088,7 +1088,7 @@ proc defineSymbols*() =
             reverse 'str
             print str                         ; gnirts ym
         """:
-            ##########################################################
+            #=======================================================
             proc reverse(s: var string) =
                 for i in 0 .. s.high div 2:
                     swap(s[i], s[s.high - i])
@@ -1128,7 +1128,7 @@ proc defineSymbols*() =
 
             rotate 1..6 4                   ; => [3 4 5 6 1 2]
         """:
-            ##########################################################
+            #=======================================================
             let distance = if (not hadAttr("left")): -y.i else: y.i
 
             if x.kind == Literal:
@@ -1160,7 +1160,7 @@ proc defineSymbols*() =
             print sample ["apple" "appricot" "banana"]
             ; apple
         """:
-            ##########################################################
+            #=======================================================
             ensureCleaned(x)
             if cleanX.len == 0: push(VNULL)
             else: push(sample(cleanX))
@@ -1198,7 +1198,7 @@ proc defineSymbols*() =
             print str
             ; xello
         """:
-            ##########################################################
+            #=======================================================
             case x.kind:
                 of Block:
                     cleanBlock(x)
@@ -1259,7 +1259,7 @@ proc defineSymbols*() =
             shuffle 'arr
             print arr                     ; 5 9 2
         """:
-            ##########################################################
+            #=======================================================
             if x.kind == Literal:
                 ensureInPlace()
                 InPlaced.a.shuffle()
@@ -1288,7 +1288,7 @@ proc defineSymbols*() =
 
             print size "你好!"              ; 3
         """:
-            ##########################################################
+            #=======================================================
             if x.kind == String:
                 push(newInteger(runeLen(x.s)))
             elif x.kind == Dictionary:
@@ -1315,7 +1315,7 @@ proc defineSymbols*() =
             ..........
             print slice 1..10 3 4         ; 4 5
         """:
-            ##########################################################
+            #=======================================================
             if x.kind == String:
                 if x.s.len == 0: push(newString(""))
                 else:
@@ -1356,7 +1356,7 @@ proc defineSymbols*() =
             sort 'b
             print b                       ; one three two
         """:
-            ##########################################################
+            #=======================================================
             var sortOrdering = SortOrder.Ascending
 
             if (hadAttr("descending")):
@@ -1466,7 +1466,7 @@ proc defineSymbols*() =
             sorted?.descending [4 3 2 1 5]      ; => false
             sorted?.descending [1 2 3 4 5]      ; => false
         """:
-            ##########################################################
+            #=======================================================
             var ascending = true
 
             if (hadAttr("descending")):
@@ -1509,7 +1509,7 @@ proc defineSymbols*() =
             split.at:3 'arr
             ; => [ [1 2 3 4] [5 6 7 8 9] ]
         """:
-            ##########################################################
+            #=======================================================
             # TODO(Collections\split) Verify it's working right
             #  labels: library, bug, unit-test, critical
             if x.kind == Literal:
@@ -1629,7 +1629,7 @@ proc defineSymbols*() =
             print squeeze "hello world"
             ; helo world
         """:
-            ##########################################################
+            #=======================================================
             if x.kind == Literal:
                 ensureInPlace()
                 if InPlaced.kind == String:
@@ -1689,7 +1689,7 @@ proc defineSymbols*() =
             arr: 1..10
             take 'arr 3                   ; arr: [1 2 3]
         """:
-            ##########################################################
+            #=======================================================
             var upperLimit = y.i-1
             if x.kind == Literal:
                 ensureInPlace()
@@ -1737,7 +1737,7 @@ proc defineSymbols*() =
             unique 'arr
             print arr                     ; 1 2 4 3
         """:
-            ##########################################################
+            #=======================================================
             if (hadAttr("id")):
                 # TODO(System\unique) make `.id` work for Web/JS builds
                 #  labels: library,enhancement,web
@@ -1769,7 +1769,7 @@ proc defineSymbols*() =
             values user
             => ["John" "Doe"]
         """:
-            ##########################################################
+            #=======================================================
             if x.kind == Block:
                 push x
             elif x.kind == Dictionary:

@@ -1,10 +1,10 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: library/Logic.nim
-######################################################
+#=======================================================
 
 #=======================================
 # Pragmas
@@ -45,7 +45,7 @@ proc defineSymbols*() =
             print all? @[true false true true]
             ; false
         """:
-            ##########################################################
+            #=======================================================
             ensureCleaned(x)
             # check if empty
             if cleanX.len==0: 
@@ -90,7 +90,7 @@ proc defineSymbols*() =
             
             ; yep, that's correct!
         """:
-            ##########################################################
+            #=======================================================
             if x.kind==Logical and y.kind==Logical:
                 push(newLogical(And(x.b,y.b)))
             else:
@@ -134,7 +134,7 @@ proc defineSymbols*() =
             print any? @[false false false]
             ; false
         """:
-            ##########################################################
+            #=======================================================
             ensureCleaned(x)
             # check if empty
             if cleanX.len==0: 
@@ -179,7 +179,7 @@ proc defineSymbols*() =
 
             print false? [1 2 3]        ; false
         """:
-            ##########################################################
+            #=======================================================
             if x.kind != Logical: push(newLogical(false))
             else: push(newLogical(Not(x.b)))
 
@@ -211,7 +211,7 @@ proc defineSymbols*() =
             
             ; nope, that's not correct
         """:
-            ##########################################################
+            #=======================================================
             if x.kind==Logical and y.kind==Logical:
                 push(newLogical(Not(And(x.b, y.b))))
             else:
@@ -261,7 +261,7 @@ proc defineSymbols*() =
             
             ; nope, that's not correct
         """:
-            ##########################################################
+            #=======================================================
             if x.kind==Logical and y.kind==Logical:
                 push(newLogical(Not(Or(x.b, y.b))))
             else:
@@ -305,7 +305,7 @@ proc defineSymbols*() =
             
             ; we're still not ready!
         """:
-            ##########################################################
+            #=======================================================
             if x.kind==Logical:
                 push(newLogical(Not(x.b)))
             else:
@@ -332,7 +332,7 @@ proc defineSymbols*() =
             
             ; yep, that's correct!
         """:
-            ##########################################################
+            #=======================================================
             if x.kind==Logical and y.kind==Logical:
                 push(newLogical(Or(x.b, y.b)))
             else:
@@ -380,7 +380,7 @@ proc defineSymbols*() =
 
             print true? [1 2 3]         ; false
         """:
-            ##########################################################
+            #=======================================================
             if x.kind != Logical: push(newLogical(false))
             else: push(x)
 
@@ -407,7 +407,7 @@ proc defineSymbols*() =
             
             ; yep, that's not correct
         """:
-            ##########################################################
+            #=======================================================
             var a: VLogical
             var b: VLogical
             if x.kind == Logical: 
@@ -447,7 +447,7 @@ proc defineSymbols*() =
             
             ; nope, that's not correct
         """:
-            ##########################################################
+            #=======================================================
             var a: VLogical
             var b: VLogical
             if x.kind == Logical: 

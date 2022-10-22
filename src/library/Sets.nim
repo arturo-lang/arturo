@@ -1,10 +1,10 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: library/Sets.nim
-######################################################
+#=======================================================
 
 #=======================================
 # Pragmas
@@ -59,7 +59,7 @@ proc defineSymbols*() =
             print difference.symmetric [1 2 3 4] [3 4 5 6]
             ; 1 2 5 6
         """:
-            ##########################################################
+            #=======================================================
             if (hadAttr("symmetric")):
                 if x.kind==Literal:
                     ensureInPlace()
@@ -92,7 +92,7 @@ proc defineSymbols*() =
             intersection 'a b
             ; a: [3 4]
         """:
-            ##########################################################
+            #=======================================================
             if x.kind==Literal:
                 ensureInPlace()
                 SetInPlace(newBlock(toSeq(intersection(toHashSet(cleanedBlock(InPlaced.a)), toHashSet(cleanedBlock(y.a))))))
@@ -112,7 +112,7 @@ proc defineSymbols*() =
             powerset [1 2 3]
             ;  [[] [1] [2] [1 3] [3] [1 2] [2 3] [1 2 3]]
         """:
-            ##########################################################
+            #=======================================================
             if x.kind==Literal:
                 ensureInPlace()
                 SetInPlace(newBlock(toSeq(powerset(toHashSet(cleanedBlock(InPlaced.a)))).map((hs) => newBlock(toSeq(hs)))))
@@ -147,7 +147,7 @@ proc defineSymbols*() =
             subset?.proper [1 3] [1 3]
             ; => false
         """:
-            ##########################################################
+            #=======================================================
             if (hadAttr("proper")):
                 if x == y: 
                     push(newLogical(false))
@@ -203,7 +203,7 @@ proc defineSymbols*() =
             superset?.proper [1 3] [1 3]
             ; => false
         """:
-            ##########################################################
+            #=======================================================
             if (hadAttr("proper")):
                 if x == y: 
                     push(newLogical(false))
@@ -250,7 +250,7 @@ proc defineSymbols*() =
             union 'a b
             ; a: [1 2 3 4 5 6]
         """:
-            ##########################################################
+            #=======================================================
             if x.kind==Literal:
                 ensureInPlace()
                 SetInPlace(newBlock(toSeq(union(toHashSet(cleanedBlock(InPlaced.a)), toHashSet(cleanedBlock(y.a))))))

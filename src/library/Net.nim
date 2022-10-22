@@ -1,10 +1,10 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: library/Net.nim
-######################################################
+#=======================================================
 
 #=======================================
 # Pragmas
@@ -65,7 +65,7 @@ proc defineSymbols*() =
             
             ; (downloads file with a different name)
             """:
-                ##########################################################
+                #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("download")
                 let path = x.s
 
@@ -102,7 +102,7 @@ proc defineSymbols*() =
                     password: "mypass123"
                 ]
             """:
-                ##########################################################
+                #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("mail")
                 let recipient = x.s
                 let message = y.d
@@ -174,7 +174,7 @@ proc defineSymbols*() =
             print request.post "https://httpbin.org/post" #[some:"arg" another: 123]
             ; ...same as above...
             """:
-                ##########################################################
+                #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("request")
 
                 var url = x.s
@@ -311,7 +311,7 @@ proc defineSymbols*() =
             ; the app will respond to GET requests to "/" or "/post?id=..."
             ; and also POST requests to "/getinfo" with an 'id' parameter
             """:
-                ##########################################################
+                #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("serve")
 
                 # get parameters

@@ -1,10 +1,10 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: library/Iterators.nim
-######################################################
+#=======================================================
 
 #=======================================
 # Pragmas
@@ -160,7 +160,7 @@ proc defineSymbols*() =
             chunk [1 7 5 4 3 6 8 2] [x y]-> even? x+y
             ; => [[1 7] [5 4 3 6] [8 2]]
         """:
-            ##########################################################
+            #=======================================================
             let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
             let showValue = hadAttr("value")
@@ -234,7 +234,7 @@ proc defineSymbols*() =
             cluster.with: 'i ["one" "two" "three" "four" "five" "six"] [] -> even? i
             ; => [["one" "three" "five"] ["two" "four" "six"]]
         """:
-            ##########################################################
+            #=======================================================
             let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
             let showValue = hadAttr("value")
@@ -295,7 +295,7 @@ proc defineSymbols*() =
             print every?.with:'i ["one" "two" "three"] 'x -> 4 > (size x)-i
             ; true
         """:
-            ##########################################################
+            #=======================================================
             let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
             let doForever = false
@@ -360,7 +360,7 @@ proc defineSymbols*() =
             filter.last:3 1..10 => odd?
             => [1 2 3 4 6 8 10]
         """:
-            ##########################################################
+            #=======================================================
             let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
             var onlyFirst = false
@@ -471,7 +471,7 @@ proc defineSymbols*() =
             ; 4 42 5
             ; => 188
         """:
-            ##########################################################
+            #=======================================================
             let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
             let doRightFold = hadAttr("right")
@@ -530,7 +530,7 @@ proc defineSymbols*() =
             gather.with:'i ["one" "two" "three" "four"] 'x -> i%2
             ; [0:[one three] 1:[two four]]
         """:
-            ##########################################################
+            #=======================================================
             let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
             let doForever = false
@@ -609,7 +609,7 @@ proc defineSymbols*() =
             loop.forever [1 2 3] => print
             ; 1 2 3 1 2 3 1 2 3 ...
         """:
-            ##########################################################
+            #=======================================================
             let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
             let doForever = hadAttr("forever")
@@ -658,7 +658,7 @@ proc defineSymbols*() =
             ]
             ; => ["ONE" "two" "THREE" "four"]
         """:
-            ##########################################################
+            #=======================================================
             let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
             let doForever = false
@@ -721,7 +721,7 @@ proc defineSymbols*() =
             select.last:3 1..10 => odd?
             => [5 7 9]
         """:
-            ##########################################################
+            #=======================================================
             let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
             var onlyFirst = false
@@ -800,7 +800,7 @@ proc defineSymbols*() =
             print some?.with:'i ["three" "two" "one" "four" "five"] 'x -> i >= size x
             ; true
         """:
-            ##########################################################
+            #=======================================================
             let preevaled = evalOrGet(z)
             let withIndex = popAttr("with")
             let doForever = false

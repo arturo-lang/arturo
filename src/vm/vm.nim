@@ -1,10 +1,16 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: vm/vm.nim
-######################################################
+#=======================================================
+
+## This is the main VM module.
+## 
+## It initializes our main settings, orchestrates the 
+## different components of the VM and executes the given
+## code.
 
 #=======================================
 # Libraries

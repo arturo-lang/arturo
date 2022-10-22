@@ -1,10 +1,17 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: vm/exec.nim
-######################################################
+#=======================================================
+
+## This module contains the main loop for the Arturo VM.
+## 
+## Here:
+## - we take a Translation (= constants + bytecode)
+## - go through each and every one of the bytecode
+##   instructions and execute them, one by one
 
 # TODO(VM/exec) General cleanup needed
 #  labels: vm, execution, enhancement, cleanup
@@ -108,7 +115,7 @@ template callByIndex(idx: int):untyped =
 template fetchAttributeByIndex(idx: int):untyped =
     stack.pushAttr(cnst[idx].s, move stack.pop())
 
-####
+#---------------------------------------
 
 template execIsolated*(evaled:Translation): untyped =
     doExec(evaled)
