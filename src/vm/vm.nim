@@ -111,7 +111,7 @@ var
 # Helpers
 #=======================================
 
-proc setupLibrary*() =
+proc setupLibrary() =
     for i,importLibrary in Libraries:
         importLibrary()
 
@@ -153,7 +153,7 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
     # set VM as initialized
     initialized = true
 
-template handleVMErrors*(blk: untyped): untyped =
+template handleVMErrors(blk: untyped): untyped =
     try:
         blk
     except:
