@@ -30,9 +30,6 @@ when defined(WEB):
 when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
-import helpers/bytes as BytesHelper
-export Byte, ByteArray
-
 when not defined(WEB):
     import vm/errors
 
