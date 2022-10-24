@@ -1,10 +1,13 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: library/Colors.nim
-######################################################
+#=======================================================
+
+## The main Colors module 
+## (part of the standard library)
 
 #=======================================
 # Pragmas
@@ -50,7 +53,7 @@ proc defineSymbols*() =
             blend .balance: 0.75 #red #CCCCCC   
             ; => #D99999
         """:
-            ##########################################################
+            #=======================================================
             var balance = 0.5
             if checkAttr("balance"):
                 balance = aBalance.f
@@ -77,7 +80,7 @@ proc defineSymbols*() =
 
             darken #9944CC 0.3      ; => #6B308F
         """:
-            ##########################################################
+            #=======================================================
             if x.kind == Literal:
                 ensureInPlace()
                 SetInPlace(newColor(alterColorValue(InPlaced.l, y.f * (-1))))
@@ -100,7 +103,7 @@ proc defineSymbols*() =
 
             desaturate #9944CC 0.3      ; => #9558B8
         """:
-            ##########################################################
+            #=======================================================
             if x.kind == Literal:
                 ensureInPlace()
                 SetInPlace(newColor(saturateColor(InPlaced.l, y.f * (-1))))
@@ -121,7 +124,7 @@ proc defineSymbols*() =
 
             invert #orange              ; => #0059FF
         """:
-            ##########################################################
+            #=======================================================
             if x.kind == Literal:
                 ensureInPlace()
                 SetInPlace(newColor(invertColor(InPlaced.l)))
@@ -146,7 +149,7 @@ proc defineSymbols*() =
 
             lighten #9944CC 0.3         ; => #C758FF
         """:
-            ##########################################################
+            #=======================================================
             if x.kind == Literal:
                 ensureInPlace()
                 SetInPlace(newColor(alterColorValue(InPlaced.l, y.f)))
@@ -192,7 +195,7 @@ proc defineSymbols*() =
             palette.random.size:10 #red
             ; => [#FF0000 #00FF00 #0000FF #00FE00 #F30000 #00FD00 #0000ED #EC0000 #00F800 #0000D8]
         """:
-            ##########################################################
+            #=======================================================
             if (hadAttr("triad")):
                 push newBlock(triadPalette(x.l).map((c) => newColor(c)))
             elif (hadAttr("tetrad")):
@@ -235,7 +238,7 @@ proc defineSymbols*() =
 
             saturate #9944CC 0.3        ; => #A030E0
         """:
-            ##########################################################
+            #=======================================================
             if x.kind == Literal:
                 ensureInPlace()
                 SetInPlace(newColor(saturateColor(InPlaced.l, y.f)))
@@ -259,7 +262,7 @@ proc defineSymbols*() =
             spin #123456 45         ; => #231256
             spin #123456 360        ; => #123456
         """:
-            ##########################################################
+            #=======================================================
             if x.kind == Literal:
                 ensureInPlace()
                 SetInPlace(newColor(spinColor(InPlaced.l, y.i)))

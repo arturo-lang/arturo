@@ -1,10 +1,13 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: library/Shell.nim
-######################################################
+#=======================================================
+
+## The main System module 
+## (part of the standard library)
 
 #=======================================
 # Pragmas
@@ -76,7 +79,7 @@ proc defineSymbols*() =
             print env\PATH
             ; /Users/drkameleon/.arturo/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
             """:
-                ##########################################################
+                #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("env")
                 var res: ValueDict = initOrderedTable[string,Value]()
 
@@ -110,7 +113,7 @@ proc defineSymbols*() =
             split.lines execute "ls"
             ; => ["tests" "var" "data.txt"]
             """:
-                ##########################################################
+                #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("execute")
 
                 # get arguments & options
@@ -173,7 +176,7 @@ proc defineSymbols*() =
             ..........
             exit.with: 3      ; (terminates the program with code 3)
         """:
-            ##########################################################
+            #=======================================================
             var errCode = QuitSuccess
             if checkAttr("with"):
                 errCode = aWith.i
@@ -201,7 +204,7 @@ proc defineSymbols*() =
             ; quits with the default exit code (= 0) and
             ; just outputs a simple - unformatted - message
         """:
-            ##########################################################
+            #=======================================================
             var code = 0
             if checkAttr("code"):
                 code = aCode.i
@@ -238,7 +241,7 @@ proc defineSymbols*() =
 
             print "done!"
             """:
-                ##########################################################
+                #=======================================================
                 if x.kind == Integer:
                     sleep(x.i)
                 else:
@@ -266,7 +269,7 @@ proc defineSymbols*() =
                 ;       ]
                 ; ]
             """:
-                ##########################################################
+                #=======================================================
                 var ret = initOrderedTable[string,Value]()
 
                 ret["id"] = newInteger(getCurrentProcessId())
@@ -303,7 +306,7 @@ proc defineSymbols*() =
             ; when running as regular user
             superuser?          ; => false
             """:
-                ##########################################################
+                #=======================================================
                 push newLogical(isAdmin())
 
     constant "sys",
@@ -333,7 +336,7 @@ proc defineSymbols*() =
                 ; terminate background process
                 terminate pid
             """:
-                ##########################################################
+                #=======================================================
                 var errCode = QuitSuccess
                 let pid = x.i
                 if checkAttr("code"):

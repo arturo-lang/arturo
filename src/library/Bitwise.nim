@@ -1,10 +1,13 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: library/Bitwise.nim
-######################################################
+#=======================================================
+
+## The main Bitwise module 
+## (part of the standard library)
 
 #=======================================
 # Pragmas
@@ -49,7 +52,7 @@ proc defineSymbols*() =
             a: 2
             and 'a 3           ; a: 2
         """:
-            ##########################################################
+            #=======================================================
             if x.kind==Literal : ensureInPlace(); InPlaced &&= y
             else               : push(x && y)
 
@@ -70,7 +73,7 @@ proc defineSymbols*() =
             a: 2
             nand 'a 3          ; a: -3
         """:
-            ##########################################################
+            #=======================================================
             if x.kind==Literal : ensureInPlace(); InPlaced &&= y; !!= InPlaced
             else               : push(!! (x && y))
 
@@ -90,7 +93,7 @@ proc defineSymbols*() =
             a: 2
             nor 'a 3           ; a: -4
         """:
-            ##########################################################
+            #=======================================================
             if x.kind==Literal : ensureInPlace(); InPlaced ||= y; !!= InPlaced
             else               : push(!! (x || y))
 
@@ -109,7 +112,7 @@ proc defineSymbols*() =
             a: 123
             not 'a             ; a: -124
         """:
-            ##########################################################
+            #=======================================================
             if x.kind==Literal : ensureInPlace(); !!= InPlaced 
             else               : push(!! x)
 
@@ -129,7 +132,7 @@ proc defineSymbols*() =
             a: 2
             or 'a 3            ; a: 3
         """:
-            ##########################################################
+            #=======================================================
             if x.kind==Literal : ensureInPlace(); InPlaced ||= y
             else               : push(x || y)
 
@@ -151,7 +154,7 @@ proc defineSymbols*() =
             a: 2
             shl 'a 3           ; a: 16
         """:
-            ##########################################################
+            #=======================================================
             if x.kind==Literal : 
                 ensureInPlace(); 
                 let valBefore = InPlaced 
@@ -181,7 +184,7 @@ proc defineSymbols*() =
             a: 16
             shr 'a 3           ; a: 2
         """:
-            ##########################################################
+            #=======================================================
             if x.kind==Literal : ensureInPlace(); InPlaced >>= y
             else               : push(x >> y)
 
@@ -201,7 +204,7 @@ proc defineSymbols*() =
             a: 2
             xnor 'a 3          ; a: -2
         """:
-            ##########################################################
+            #=======================================================
             if x.kind==Literal : ensureInPlace(); InPlaced ^^= y; !!= InPlaced
             else               : push(!! (x ^^ y))
         
@@ -221,7 +224,7 @@ proc defineSymbols*() =
             a: 2
             xor 'a 3           ; a: 1
         """:
-            ##########################################################
+            #=======================================================
             if x.kind==Literal : ensureInPlace(); InPlaced ^^= y
             else               : push(x ^^ y)
 

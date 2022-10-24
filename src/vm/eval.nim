@@ -1,10 +1,18 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: vm/eval.nim
-######################################################
+#=======================================================
+
+## This module contains the evaluator for the VM.
+## 
+## The evaluator:
+## - takes a Block of values coming from the parser
+## - interpretes it and returns a Translation object
+## 
+## The main entry point is ``doEval``.
 
 #=======================================
 # Libraries
@@ -27,13 +35,13 @@ import vm/values/custom/[vlogical, vsymbol]
 #=======================================
 
 var
-    TmpArities*    : Table[string,int]
+    TmpArities : Table[string,int]
 
 #=======================================
 # Helpers
 #=======================================
 
-func indexOfValue*(a: seq[Value], item: Value): int {.inline.}=
+func indexOfValue(a: seq[Value], item: Value): int {.inline.}=
     result = 0
     for i in items(a):
         if sameValue(item, i): return
@@ -679,6 +687,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             for b in currentCommand.reversed: it.add(b)
 
 proc doEval*(root: Value, isDictionary=false): Translation = 
+    ## Take a parsed Block of values and return its Translation - 
+    ## that is: the constants found + the list of bytecode instructions
     hookProcProfiler("eval/doEval"):
         var cnsts: ValueArray = @[]
         var newit: ByteArray = @[]

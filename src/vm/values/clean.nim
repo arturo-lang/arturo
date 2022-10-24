@@ -1,10 +1,10 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: vm/values/clean.nim
-######################################################
+#=======================================================
 
 ## This module has helper used to clean blocks
 ## Blocks may have `Newline` Values,
@@ -23,13 +23,12 @@ import vm/values/types
 #  labels: vm, values, performance, enhancement, benchmark, critical
 
 template cleanBlock*(v: Value) =
-    ## Removes all `Newline` values from a Block value, in-place
-    ## Note:
-    ## - v must be a `Value`, not a `ValueArray`
-    ##   - This is an optimization,
-    ##     as Block values have a `.dirty` attribute,
-    ##     if `.dirty` is false it'll do nothing.
-    ##   - When done, `.dirty`'ll be set to `false`
+    ## remove all Newline values from a Block value, in-place 
+    ## 
+    ## **Hint**: ``v`` must be a Value, not a ValueArray ( 
+    ## This is an optimization, as Block values have a 
+    ## `.dirty` attribute: if `.dirty` is false it'll do 
+    ## nothing.). When done, `.dirty`'ll be set to *false*.
 
     when not defined(NOERRORLINES):
         if v.dirty:
@@ -60,15 +59,17 @@ template cleanedBlockValuesCopy*(v: Value): untyped =
         v.a
 
 iterator cleanedBlockValues*(v: Value, L: int): lent Value =
-    ## This must be used inside a *for loop*
-    ## It'll yield a `Value` object per iteration,
-    ## while ignoring `Newline` values
-    ##
-    ## Usage:
+    ## yield a Value object per iteration, while 
+    ## ignoring all Newline values
+    ## 
+    ## **Note:** 
+    ## - This is to be used inside a *for loop*.
+    ## 
+    ## **Usage:**
     ## ```nim
     ## for i in cleanedBlockValues(y, y.a.len):
-    ##      x.a[cnt] = i
-    ##      inc cnt
+    ##     x.a[cnt] = i
+    ##     inc cnt
     ## ```
 
     when not defined(NOERRORLINES):
@@ -84,14 +85,14 @@ iterator cleanedBlockValues*(v: Value, L: int): lent Value =
             yield v.a[i]
 
 template cleanedBlockValues*(v: Value): untyped =
-    ## This must be used inside a *for loop*
-    ## It'll yield a `Value` object per iteration,
-    ## while ignoring `Newline` values
+    ## yield a Value object per iteration, while 
+    ## ignoring all Newline values
     ##
-    ## Note:
-    ## - It'll detect `v.a`'s length automatically
+    ## **Note:** 
+    ## - Detects `v.a`'s length automatically
+    ## - This is to be used inside a *for loop*.
     ##
-    ## Usage:
+    ## **Usage:**
     ## ```nim
     ## for i in cleanedBlockValues(y):
     ##      x.a[cnt] = i

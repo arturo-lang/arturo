@@ -1,10 +1,13 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: library/Reflection.nim
-######################################################
+#=======================================================
+
+## The main Reflection module 
+## (part of the standard library)
 
 #=======================================
 # Pragmas
@@ -44,7 +47,7 @@ proc defineSymbols*() =
         example     = """
             print arity\print   ; 1
         """:
-            ##########################################################
+            #=======================================================
             var ret = initOrderedTable[string,Value]()
             for k,v in pairs(Arities):
                 ret[k] = newInteger(v)
@@ -76,7 +79,7 @@ proc defineSymbols*() =
             print multiply.with: 6 5
             ; 60
         """:
-            ##########################################################
+            #=======================================================
             let val = popAttr(x.s)
             if val.isNil:
                 push(VNULL)
@@ -106,7 +109,7 @@ proc defineSymbols*() =
             
             ; John I'm afraid I'll greet you later!
         """:
-            ##########################################################
+            #=======================================================
             if getAttr(x.s) != VNULL:
                 push(VTRUE)
             else:
@@ -125,7 +128,7 @@ proc defineSymbols*() =
             attribute? first [.something x]
             ; => true
         """:
-            ##########################################################
+            #=======================================================
             push(newLogical(x.kind==Attribute))
 
     builtin "attributeLabel?",
@@ -141,7 +144,7 @@ proc defineSymbols*() =
             attributeLabel? first [.something: x]
             ; => true
         """:
-            ##########################################################
+            #=======================================================
             push(newLogical(x.kind==AttributeLabel))
 
     builtin "attrs",
@@ -164,7 +167,7 @@ proc defineSymbols*() =
             ;    later:    true
             ; ]
         """:
-            ##########################################################
+            #=======================================================
             push(getAttrsDict())
 
     builtin "benchmark",
@@ -191,7 +194,7 @@ proc defineSymbols*() =
             ]
             ; => 0.3237628936767578
         """:
-            ##########################################################
+            #=======================================================
             let preevaled = evalOrGet(x)
             if (hadAttr("get")):
                 let time = getBenchmark:
@@ -215,7 +218,7 @@ proc defineSymbols*() =
             binary? to :binary "string"
             ; => true
         """:
-            ##########################################################
+            #=======================================================
             push(newLogical(x.kind==Binary))
 
     builtin "block?",
@@ -233,7 +236,7 @@ proc defineSymbols*() =
             print block? "hello"            ; false
             print block? 123                ; false
         """:
-            ##########################################################
+            #=======================================================
             push(newLogical(x.kind==Block))
 
     builtin "bytecode?",
@@ -252,7 +255,7 @@ proc defineSymbols*() =
             print bytecode? bcode      ; true
             print bytecode? code       ; false
         """:
-            ##########################################################
+            #=======================================================
             push(newLogical(x.kind==Bytecode))
 
     builtin "char?",
@@ -268,7 +271,7 @@ proc defineSymbols*() =
             print char? `a`         ; true
             print char? 123         ; false
         """:
-            ##########################################################
+            #=======================================================
             push(newLogical(x.kind==Char))
 
     builtin "color?",
@@ -286,7 +289,7 @@ proc defineSymbols*() =
 
             print color? 123            ; false
         """:
-            ##########################################################
+            #=======================================================
             push(newLogical(x.kind==Color))
 
     builtin "complex?",
@@ -304,7 +307,7 @@ proc defineSymbols*() =
 
             print complex? 123          ; false
         """:
-            ##########################################################
+            #=======================================================
             push(newLogical(x.kind==Complex))
 
     builtin "database?",
@@ -320,7 +323,7 @@ proc defineSymbols*() =
             database? open "my.db"
             ; => true
         """:
-            ##########################################################
+            #=======================================================
             push(newLogical(x.kind==Database))
 
     builtin "date?",
@@ -336,7 +339,7 @@ proc defineSymbols*() =
             print date? now             ; true
             print date? "hello"         ; false
         """:
-            ##########################################################
+            #=======================================================
             push(newLogical(x.kind==Date))
 
     builtin "dictionary?",
@@ -352,7 +355,7 @@ proc defineSymbols*() =
             print dictionary? #[name: "John"]   ; true
             print dictionary? 123               ; false
         """:
-            ##########################################################
+            #=======================================================
             push(newLogical(x.kind==Dictionary))
 
     when not defined(WEB):
@@ -399,7 +402,7 @@ proc defineSymbols*() =
             print info.get 'print
             ; [name:print address:0x1028B3410 type::function module:Io args:[value:[:any]] attrs:[] returns:[:nothing] description:print given value to screen with newline example:print "Hello world!"          ; Hello world!]
             """:
-                ##########################################################
+                #=======================================================
                 let showExamples = (hadAttr("examples"))
                 var searchable = ""
                 var value: Value = nil
@@ -436,7 +439,7 @@ proc defineSymbols*() =
             inline? first [(something) x]
             ; => true
         """:
-            ##########################################################
+            #=======================================================
             push(newLogical(x.kind==Inline))
 
     builtin "inspect",
@@ -456,7 +459,7 @@ proc defineSymbols*() =
             a: "some text"
             inspect a                 ; some text :string
         """:
-            ##########################################################
+            #=======================================================
             when defined(WEB):
                 resetStdout()
             let mutedOutput = (hadAttr("muted")) or NoColors
@@ -480,7 +483,7 @@ proc defineSymbols*() =
             integer?.big 123                    ; => false
             integer?.big 12345678901234567890   ; => true
         """:
-            ##########################################################
+            #=======================================================
             if (hadAttr("big")):
                 push(newLogical(x.kind==Integer and x.iKind==BigInteger))
             else:
@@ -504,7 +507,7 @@ proc defineSymbols*() =
             is? [:string] ["one" "two"]     ; => true
             is? [:integer] [1 "two]         ; => false
         """:
-            ##########################################################
+            #=======================================================
             if y.kind != Object:
                 if x.kind == Type:
                     if x.t == Any:
@@ -551,7 +554,7 @@ proc defineSymbols*() =
             print floating? 123         ; false
             print floating? "hello"     ; false
         """:
-            ##########################################################
+            #=======================================================
             push(newLogical(x.kind==Floating))
 
     builtin "function?",
@@ -578,7 +581,7 @@ proc defineSymbols*() =
             function?.builtin var'f         ; => false
             function?.builtin var'print     ; => true
         """:
-            ##########################################################
+            #=======================================================
             if (hadAttr("builtin")):
                 push(newLogical(x.kind==Function and x.fnKind==BuiltinFunction))
             else:
@@ -597,7 +600,7 @@ proc defineSymbols*() =
             label? first [something: x]
             ; => true
         """:
-            ##########################################################
+            #=======================================================
             push(newLogical(x.kind==Label))
 
     builtin "literal?",
@@ -614,7 +617,7 @@ proc defineSymbols*() =
             print literal? "x"          ; false
             print literal? 123          ; false
         """:
-            ##########################################################
+            #=======================================================
             push(newLogical(x.kind==Literal))
 
     builtin "logical?",
@@ -634,7 +637,7 @@ proc defineSymbols*() =
             print logical? 1=1          ; true
             print logical? 123          ; false
         """:
-            ##########################################################
+            #=======================================================
             push(newLogical(x.kind==Logical))
 
     builtin "null?",
@@ -652,7 +655,7 @@ proc defineSymbols*() =
 
             print null? 123             ; false
         """:
-            ##########################################################
+            #=======================================================
             push(newLogical(x.kind==Null))
 
     builtin "object?",
@@ -672,7 +675,7 @@ proc defineSymbols*() =
             print object? x             ; true
             print object? "hello"       ; false
         """:
-            ##########################################################
+            #=======================================================
             push(newLogical(x.kind==Object))
 
     builtin "path?",
@@ -688,7 +691,7 @@ proc defineSymbols*() =
             path? first [a\b\c x]
             ; => true
         """:
-            ##########################################################
+            #=======================================================
             push(newLogical(x.kind==Path))
 
     builtin "pathLabel?",
@@ -704,7 +707,7 @@ proc defineSymbols*() =
             pathLabel? first [a\b\c: x]
             ; => true
         """:
-            ##########################################################
+            #=======================================================
             push(newLogical(x.kind==PathLabel))
 
     builtin "quantity?",
@@ -722,7 +725,7 @@ proc defineSymbols*() =
 
             print quantity? 3           ; false 
         """:
-            ##########################################################
+            #=======================================================
             push(newLogical(x.kind==Quantity))
 
     builtin "rational?",
@@ -740,7 +743,7 @@ proc defineSymbols*() =
             print rational? r           ; true
             print rational? 3.14        ; false
         """:
-            ##########################################################
+            #=======================================================
             push(newLogical(x.kind==Rational))
 
     builtin "regex?",
@@ -757,7 +760,7 @@ proc defineSymbols*() =
             print regex? "[a-z]+"       ; false
             print regex? 123            ; false
         """:
-            ##########################################################
+            #=======================================================
             push(newLogical(x.kind==Regex))
 
     builtin "set?",
@@ -775,7 +778,7 @@ proc defineSymbols*() =
             
             print set? 'zoom          ; false
         """:
-            ##########################################################
+            #=======================================================
             push(newLogical(SymExists(x.s)))
 
     builtin "stack",
@@ -791,7 +794,7 @@ proc defineSymbols*() =
             print stack
             ; 1 2 3 done
         """:
-            ##########################################################
+            #=======================================================
             push(newBlock(Stack[0..SP-1]))
 
     builtin "standalone?",
@@ -811,7 +814,7 @@ proc defineSymbols*() =
                 print "Nothing to do!"
             ]
         """:
-            ##########################################################
+            #=======================================================
             push(newLogical(PathStack.len == 1))
 
     builtin "string?",
@@ -828,7 +831,7 @@ proc defineSymbols*() =
             print string? 'x            ; false
             print string? 123           ; false
         """:
-            ##########################################################
+            #=======================================================
             push(newLogical(x.kind==String))
 
     builtin "symbol?",
@@ -844,7 +847,7 @@ proc defineSymbols*() =
             symbol? first [+ x]
             ; => true
         """:
-            ##########################################################
+            #=======================================================
             push(newLogical(x.kind==Symbol))
 
     builtin "symbolLiteral?",
@@ -860,7 +863,7 @@ proc defineSymbols*() =
             symbolLiteral? '++
             ; => true
         """:
-            ##########################################################
+            #=======================================================
             push(newLogical(x.kind==SymbolLiteral))
 
     builtin "symbols",
@@ -881,7 +884,7 @@ proc defineSymbols*() =
             ;    b: "hello"
             ;_]
         """:
-            ##########################################################
+            #=======================================================
             var symbols: ValueDict = initOrderedTable[string,Value]()
             for k,v in pairs(Syms):
                 if k[0]!=toUpperAscii(k[0]):
@@ -901,7 +904,7 @@ proc defineSymbols*() =
             print type 18966          ; :integer
             print type "hello world"  ; :string
         """:
-            ##########################################################
+            #=======================================================
             if x.kind != Object:
                 push(newType(x.kind))
             else:
@@ -921,7 +924,7 @@ proc defineSymbols*() =
             print type? "string"        ; false
             print type? 123             ; false
         """:
-            ##########################################################
+            #=======================================================
             push(newLogical(x.kind==Type))
 
     builtin "version?",
@@ -937,7 +940,7 @@ proc defineSymbols*() =
             print version? 1.0.2        ; true
             print version? "1.0.2"      ; false
         """:
-            ##########################################################
+            #=======================================================
             push(newLogical(x.kind==Version))
 
     builtin "word?",
@@ -953,7 +956,7 @@ proc defineSymbols*() =
             word? first [something x]
             ; => true
         """:
-            ##########################################################
+            #=======================================================
             push(newLogical(x.kind==Word))
 
 #=======================================

@@ -1,10 +1,16 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: vm/vm.nim
-######################################################
+#=======================================================
+
+## The main VM module.
+## 
+## It initializes our main settings, orchestrates the 
+## different components of the VM and executes the given
+## code via ``run``.
 
 #=======================================
 # Libraries
@@ -105,11 +111,11 @@ var
 # Helpers
 #=======================================
 
-proc setupLibrary*() =
+proc setupLibrary() =
     for i,importLibrary in Libraries:
         importLibrary()
 
-template initialize*(args: seq[string], filename: string, isFile:bool, scriptData:Value = nil, mutedColors: bool = false, portableData = "") =
+template initialize(args: seq[string], filename: string, isFile:bool, scriptData:Value = nil, mutedColors: bool = false, portableData = "") =
     # function arity
     Arities = initTable[string,int]()
     # stack
@@ -136,8 +142,6 @@ template initialize*(args: seq[string], filename: string, isFile:bool, scriptDat
 
     Syms = initOrderedTable[string,Value]()
 
-    Memoizer = initOrderedTable[(string,Hash),Value]()
-
     if portableData != "":
         SetSym("_portable", valueFromJson(portableData))
 
@@ -147,7 +151,7 @@ template initialize*(args: seq[string], filename: string, isFile:bool, scriptDat
     # set VM as initialized
     initialized = true
 
-template handleVMErrors*(blk: untyped): untyped =
+template handleVMErrors(blk: untyped): untyped =
     try:
         blk
     except:
@@ -167,12 +171,14 @@ template handleVMErrors*(blk: untyped): untyped =
 when not defined(WEB):
 
     proc runBytecode*(code: Translation, filename: string, args: seq[string]) =
+        ## Takes compiled Arturo bytecode and executes it.
         handleVMErrors:
             initialize(args, filename, isFile=true)
 
             discard doExec(code)
 
     proc run*(code: var string, args: seq[string], isFile: bool, doExecute: bool = true, withData=""): Translation {.exportc:"run".} =
+        ## Takes a string of Arturo code and executes it.
         handleVMErrors:
 
             if isFile:

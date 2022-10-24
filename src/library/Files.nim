@@ -1,10 +1,13 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: library/Files.nim
-######################################################
+#=======================================================
+
+## The main Files module 
+## (part of the standard library)
 
 #=======================================
 # Pragmas
@@ -71,7 +74,7 @@ proc defineSymbols*() =
             copy "testfolder" normalize.tilde "~/Desktop/testfolder"
             ; copied whole folder
             """:
-                ##########################################################
+                #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("copy")
 
                 var target = y.s
@@ -101,7 +104,7 @@ proc defineSymbols*() =
             delete "testscript.art"
             ; file deleted
             """:
-                ##########################################################
+                #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("delete")
                 
                 if (hadAttr("directory")): 
@@ -128,7 +131,7 @@ proc defineSymbols*() =
                 print "file exists!" 
             ]
             """:
-                ##########################################################
+                #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("exists?")
 
                 if (hadAttr("directory")): 
@@ -149,7 +152,7 @@ proc defineSymbols*() =
             hidden? "README.md"     ; => false
             hidden? ".git"          ; => true
             """:
-                ##########################################################
+                #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("hidden?")
 
                 push newLogical(isHidden(x.s))
@@ -191,7 +194,7 @@ proc defineSymbols*() =
             permissions.set:#[others:#[write:true]] "bin/arturo"
             ; gave write permission to 'others'
             """:
-                ##########################################################
+                #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("permissions")
 
                 try:
@@ -283,7 +286,7 @@ proc defineSymbols*() =
             ; or even convert Markdown to HTML on-the-fly
             html: read.markdown "## Hello"     ; "<h2>Hello</h2>"
             """:
-                ##########################################################
+                #=======================================================
                 if (hadAttr("binary")):
                     var f: File
                     discard f.open(x.s)
@@ -343,7 +346,7 @@ proc defineSymbols*() =
             rename "README.md" "READIT.md"
             ; file renamed
             """:
-                ##########################################################
+                #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("rename")
 
                 var source = x.s
@@ -382,7 +385,7 @@ proc defineSymbols*() =
             ; hard-links (effectively copies) our readme file
             ; to our desktop
             """:
-                ##########################################################
+                #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("symlink")
 
                 var source = x.s
@@ -411,7 +414,7 @@ proc defineSymbols*() =
             timestamp "some-file-that-does-not-exist.txt"
             ; => null
             """:
-                ##########################################################
+                #=======================================================
                 try:
                     push newDictionary({
                         "created": newDate(local(getCreationTime(x.s))),
@@ -434,7 +437,7 @@ proc defineSymbols*() =
             example     = """
             unzip "folder" "archive.zip"
             """:
-                ##########################################################
+                #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("unzip")
 
                 miniz.unzip(y.s, x.s)
@@ -453,7 +456,7 @@ proc defineSymbols*() =
             ; => 13704B 
             ; (size in bytes)
             """:
-                ##########################################################
+                #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("volume")
 
                 push newQuantity(newInteger(getFileSize(x.s)), newQuantitySpec(B))
@@ -484,7 +487,7 @@ proc defineSymbols*() =
             ; append to an existing file
             write.append "somefile.txt" "Yes, Hello again!"
             """:
-                ##########################################################
+                #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("write")
 
                 if y.kind==Bytecode:
@@ -520,7 +523,7 @@ proc defineSymbols*() =
             example     = """
             zip "dest.zip" ["file1.txt" "img.png"]
             """:
-                ##########################################################
+                #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("zip")
 
                 ensureCleaned(y)

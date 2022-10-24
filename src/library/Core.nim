@@ -1,10 +1,13 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: library/Core.nim
-######################################################
+#=======================================================
+
+## The main Core module 
+## (part of the standard library)
 
 # TODO(Core) General cleanup needed
 #  labels: library, enhancement, cleanup
@@ -64,7 +67,7 @@ proc defineSymbols*() =
             print 2 <=> 3
             ; 6
         """:
-            ##########################################################
+            #=======================================================
             var prec = PrefixPrecedence
             if (hadAttr("infix")):
                 prec = InfixPrecedence
@@ -104,7 +107,7 @@ proc defineSymbols*() =
             ; x: 3
             ; after loop
         """:
-            ##########################################################
+            #=======================================================
             raise BreakTriggered()
 
     builtin "call",
@@ -129,7 +132,7 @@ proc defineSymbols*() =
             ..........
             call $[x][x+2] [5]            ; 7
         """:
-            ##########################################################
+            #=======================================================
             if checkAttr("external"):
                 when not defined(WEB):
                     let externalLibrary = aExternal.s
@@ -171,7 +174,7 @@ proc defineSymbols*() =
                 when? [=2] -> print "a is 2"
                 else       -> print "a is greater than 2"
         """:
-            ##########################################################
+            #=======================================================
             if x.kind==Null:
                 push(newBlock())
             else:
@@ -204,7 +207,7 @@ proc defineSymbols*() =
             ; after check
             ; after loop
         """:
-            ##########################################################
+            #=======================================================
             raise ContinueTriggered()
 
     builtin "do",
@@ -242,7 +245,7 @@ proc defineSymbols*() =
             ; Hello!
             ; Hello!
         """:
-            ##########################################################
+            #=======================================================
             var times = 1
             var currentTime = 0
 
@@ -312,7 +315,7 @@ proc defineSymbols*() =
             print a         ; 3
             print b         ; 3
         """:
-            ##########################################################
+            #=======================================================
             push(x)
             push(x)
 
@@ -336,7 +339,7 @@ proc defineSymbols*() =
                 print "nope, x was not greater than z"
             ]
         """:
-            ##########################################################
+            #=======================================================
             let preevaled = evalOrGet(x)
             let y = pop() # pop the value of the previous operation (hopefully an 'if?' or 'when?')
             if Not(y.b)==True: execBlock(nil, evaluated=preevaled, hasEval=true)
@@ -357,7 +360,7 @@ proc defineSymbols*() =
 
             print "good, the number is positive indeed. let's continue..."
         """:
-            ##########################################################
+            #=======================================================
             execBlock(x)
             if Not(pop().b)==True:
                 AssertionError_AssertionFailed(x.codify())
@@ -378,7 +381,7 @@ proc defineSymbols*() =
             if x=2 -> print "yes, that's right!"
             ; yes, that's right!
         """:
-            ##########################################################
+            #=======================================================
             let condition = not (x.kind==Null or (x.kind==Logical and x.b==False))
             if condition: 
                 let preevaled = evalOrGet(y)
@@ -413,7 +416,7 @@ proc defineSymbols*() =
                 print "nope, x was not greater than z"
             ]
         """:
-            ##########################################################
+            #=======================================================
             let condition = not (x.kind==Null or (x.kind==Logical and x.b==False))
             if condition: 
                 let preevaled = evalOrGet(y)
@@ -459,7 +462,7 @@ proc defineSymbols*() =
             ]
             [d,m]: divmod 10 3      ; d: 3, m: 1
         """:
-            ##########################################################
+            #=======================================================
             if x.kind==Block:
                 ensureCleaned(x)
                 if y.kind==Block:
@@ -495,7 +498,7 @@ proc defineSymbols*() =
             print d                 ; HelloWorld
             print c                 ; Hello
         """:
-            ##########################################################
+            #=======================================================
             push(copyValue(x))
 
     constant "null",
@@ -524,7 +527,7 @@ proc defineSymbols*() =
             1 2 3
             pop.discard 1   ; popped 3 from the stack
         """:
-            ##########################################################
+            #=======================================================
             let doDiscard = (hadAttr("discard"))
 
             if x.i==1:
@@ -564,7 +567,7 @@ proc defineSymbols*() =
             print f 3         ; 6
             print f 6         ; 10
         """:
-            ##########################################################
+            #=======================================================
             push(x)
             raise ReturnTriggered()
 
@@ -586,7 +589,7 @@ proc defineSymbols*() =
                        -> print "nope, that's not right!"
             ; yes, that's right!
         """:
-            ##########################################################
+            #=======================================================
             let condition = not (x.kind==Null or (x.kind==Logical and x.b==False))
             if condition: 
                 execBlock(y)
@@ -613,7 +616,7 @@ proc defineSymbols*() =
             
             ; we catch the exception but do nothing with it
         """:
-            ##########################################################
+            #=======================================================
             let verbose = (hadAttr("verbose"))
             let execInParent = (hadAttr("import"))
             try:
@@ -650,7 +653,7 @@ proc defineSymbols*() =
             
             ; something went terribly wrong...
         """:
-            ##########################################################
+            #=======================================================
             let verbose = (hadAttr("verbose"))
             let execInParent = (hadAttr("import"))
             try:
@@ -683,7 +686,7 @@ proc defineSymbols*() =
             unless x=1 -> print "yep, x is not 1!"
             ; yep, x is not 1!
         """:
-            ##########################################################
+            #=======================================================
             let condition = x.kind==Null or (x.kind==Logical and x.b==False)
             if condition: 
                 let preevaled = evalOrGet(y)
@@ -718,7 +721,7 @@ proc defineSymbols*() =
             ]
             ; x was greater than z
         """:
-            ##########################################################
+            #=======================================================
             let condition = x.kind==Null or (x.kind==Logical and x.b==False)
             if condition: 
                 let preevaled = evalOrGet(y)
@@ -755,7 +758,7 @@ proc defineSymbols*() =
             ; i => 8 
             ; i => 9 
         """:
-            ##########################################################
+            #=======================================================
             let preevaledX = evalOrGet(x)
             let preevaledY = evalOrGet(y)
 
@@ -789,7 +792,7 @@ proc defineSymbols*() =
             g: var 'f               
             print g 10              ; 12
         """:
-            ##########################################################
+            #=======================================================
             push(FetchSym(x.s))#push(InPlace)
 
     builtin "when?",
@@ -809,7 +812,7 @@ proc defineSymbols*() =
                 when? [=2] -> print "a is 2"
                 else       -> print "a is greater than 2"
         """:
-            ##########################################################
+            #=======================================================
             let z = pop()
             if Not(z.b)==True:
                 ensureCleaned(x)
@@ -867,7 +870,7 @@ proc defineSymbols*() =
                 print "something"   ; infinitely
             ]
         """:
-            ##########################################################
+            #=======================================================
             var execInParent = (hadAttr("import"))
 
             if x.kind==Null:

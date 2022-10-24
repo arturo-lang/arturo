@@ -1,10 +1,13 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: library/Dates.nim
-######################################################
+#=======================================================
+
+## The main Dates module 
+## (part of the standard library)
 
 #=======================================
 # Pragmas
@@ -59,7 +62,7 @@ proc defineSymbols*() =
             print after.weeks:2 now
             ; 2021-04-05T11:25:42+02:00
         """:
-            ##########################################################
+            #=======================================================
             var nanoseconds, milliseconds, seconds,
                 minutes, hours, days, weeks,
                 months, years = 0
@@ -121,7 +124,7 @@ proc defineSymbols*() =
             print before.years:1 now
             ; 2020-03-22T11:27:23+01:00
         """:
-            ##########################################################
+            #=======================================================
             var nanoseconds, milliseconds, seconds,
                 minutes, hours, days, weeks,
                 months, years = 0
@@ -169,7 +172,7 @@ proc defineSymbols*() =
             print map 2019..2021 => leap? 
             ; false true false
         """:
-            ##########################################################
+            #=======================================================
             if x.kind==Integer:
                 push(newLogical(isLeapYear(x.i)))
             else:
@@ -203,7 +206,7 @@ proc defineSymbols*() =
             
             print now\year      ; 2020
         """:
-            ##########################################################
+            #=======================================================
             push(newDate(now()))
 
 #=======================================

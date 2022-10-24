@@ -1,10 +1,19 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: vm/exec.nim
-######################################################
+#=======================================================
+
+## This module contains the main loop for the VM.
+## 
+## Here:
+## - we take a Translation object
+## - go through each and every one of the bytecode
+##   instructions and execute them, one by one
+## 
+## The main entry point is ``execBlock``.
 
 # TODO(VM/exec) General cleanup needed
 #  labels: vm, execution, enhancement, cleanup
@@ -44,8 +53,7 @@ type
 #=======================================
 
 var
-    Memoizer*: OrderedTable[MemoizerKey,Value]
-    CurrentDump*: Translation = nil
+    Memoizer: OrderedTable[MemoizerKey,Value] = initOrderedTable[MemoizerKey,Value]()
 
 #=======================================
 # Forward Declarations
@@ -57,10 +65,8 @@ proc doExec*(cnst: ValueArray, it: ByteArray, args: Value = nil): ValueDict
 # Helpers
 #=======================================
 
-proc setFunctionArity*(funName: string, fun: Value) {.inline,enforceNoRaises.} =
-    Arities[funName] = fun.arity
-
 template doExec*(input: Translation, args: Value = nil): ValueDict =
+    ## Same as ``doExec(input.constants, input.instructions, args)``
     doExec(input.constants, input.instructions, args)
 
 template pushByIndex(idx: int):untyped =
@@ -82,6 +88,8 @@ template loadByIndex(idx: int):untyped =
         stack.push(FetchSym(cnst[idx].s))
 
 template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
+    ## Take a Function value, whether a user or a built-in one, 
+    ## and execute it.
     if f.fnKind==UserFunction:
         hookProcProfiler("exec/callFunction:user"):
             if unlikely(SP < f.arity):
@@ -94,7 +102,7 @@ template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
     else:
         f.action()
 
-template callByName*(symIndx: string):untyped =
+template callByName(symIndx: string):untyped =
     let fun = FetchSym(symIndx)
     callFunction(fun, symIndx)
 
@@ -108,15 +116,16 @@ template callByIndex(idx: int):untyped =
 template fetchAttributeByIndex(idx: int):untyped =
     stack.pushAttr(cnst[idx].s, move stack.pop())
 
-####
+#---------------------------------------
 
 template execIsolated*(evaled:Translation): untyped =
+    ## Same as ``execBlock(evaled)``
     doExec(evaled)
 
-template getMemoized*(fn: string, v: Value): Value =
+template getMemoized(fn: string, v: Value): Value =
     Memoizer.getOrDefault((fn, value.hash(v)), nil)
 
-template setMemoized*(fn: string, v: Value, res: Value) =
+template setMemoized(fn: string, v: Value, res: Value) =
     Memoizer[(fn, value.hash(v))] = res
 
 proc execBlock*(
@@ -134,6 +143,8 @@ proc execBlock*(
     memoized        : Value = nil,
     isMemoized      : static bool = false
 ) =
+    ## Execute an unevaluated Block value or pre-evaluated Translation
+    ## with given arguments and manage the call stack
     var newSyms: ValueDict
 
     when isFuncBlock or ((not isFuncBlock) and (not execInParent)):
@@ -236,6 +247,7 @@ proc execBlock*(
                                     v = newsymV
 
 proc execDictionaryBlock*(blk: Value): ValueDict =
+    ## Execute given Block value and return a Dictionary
     var newSyms: ValueDict
 
     try:
@@ -248,6 +260,7 @@ proc execDictionaryBlock*(blk: Value): ValueDict =
                     {k: v}
 
 template execInternal*(path: string): untyped =
+    ## Execute internal script using given path
     execBlock(
         doParse(
             static readFile(
@@ -261,6 +274,7 @@ template execInternal*(path: string): untyped =
     )
 
 template callInternal*(fname: string, getValue: bool, args: varargs[Value]): untyped =
+    ## Call function by name, directly and - optionally - return the result
     let fun = GetSym(fname)
     for v in args.reversed:
         push(v)
@@ -271,6 +285,8 @@ template callInternal*(fname: string, getValue: bool, args: varargs[Value]): unt
         pop()
 
 template handleBranching*(tryDoing, finalize: untyped): untyped =
+    ## Wrapper for code that may throw *Break* or *Continue* signals, 
+    ## or other errors that are to be caught
     try:
         tryDoing
     except BreakTriggered:
@@ -287,6 +303,8 @@ template handleBranching*(tryDoing, finalize: untyped): untyped =
 #=======================================
 
 proc doExec*(cnst: ValueArray, it: ByteArray, args: Value = nil): ValueDict = 
+    # Execute given constants+instructions with given arguments
+    # and return the resulting symbol table (before internally restoring it)
     var i = 0
     var op {.register.}: OpCode
     var oldSyms: ValueDict
