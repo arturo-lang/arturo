@@ -23,7 +23,7 @@ when not defined(NOGMP):
 
 import helpers/bytes
 
-import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrational, vregex, vsymbol]
+import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrational, vregex, vsymbol]
 
 #=======================================
 # Types
@@ -35,7 +35,7 @@ type
 
     Translation* = ref object
         constants*: ValueArray
-        instructions*: ByteArray
+        instructions*: VBinary
 
     IntArray*   = seq[int]
 
@@ -182,7 +182,7 @@ type
             of Date:        
                 e*     : ValueDict         
                 eobj*  : DateTime
-            of Binary:      n*  : ByteArray
+            of Binary:      n*  : VBinary
             of Inline,
                Block:       
                    a*       : ValueArray
