@@ -19,12 +19,12 @@ when not defined(WEB):
 
 import os
 
-import helpers/bytes as bytesHelper
-
 import opcodes
 export opcodes
 
 import vm/values/value
+
+import vm/values/custom/[vbinary]
 
 #=======================================
 # Constants
@@ -75,7 +75,7 @@ template keep(): untyped =
     result[p] = current()
     p.inc()
 
-proc optimize(trans: Translation): ByteArray =
+proc optimize(trans: Translation): VBinary =
     let a = trans.instructions
     var i = 0
     var p = 0
