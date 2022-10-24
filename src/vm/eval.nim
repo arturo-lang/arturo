@@ -35,7 +35,7 @@ import vm/values/custom/[vbinary, vlogical, vsymbol]
 #=======================================
 
 var
-    TmpArities : Table[string,int]
+    TmpArities {.noInit.} : Table[string,int]
 
 #=======================================
 # Helpers
