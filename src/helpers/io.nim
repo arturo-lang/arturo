@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import vm/values/value
+import vm/values/custom/[vbinary]
 
 #=======================================
 # Methods
@@ -29,7 +29,7 @@ proc writeToFile*(path: string, contents: string, append = false) {.tags: [Write
     else: 
         raise newException(IOError, "cannot open: " & path)
 
-proc writeToFile*(path: string, contents: ByteArray, append = false) {.tags: [WriteIOEffect].} =
+proc writeToFile*(path: string, contents: VBinary, append = false) {.tags: [WriteIOEffect].} =
     var fm : FileMode = fmWrite
     if append: fm = fmAppend
 

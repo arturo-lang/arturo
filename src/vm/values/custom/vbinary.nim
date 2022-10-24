@@ -3,44 +3,50 @@
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
-# @file: helpers/bytes.nim
+# @file: vm/values/custom/vbinary.nim
 #=======================================================
+
+## The internal `:binary` type
 
 #=======================================
 # Libraries
 #=======================================
 
-import algorithm, sequtils, sugar
+import algorithm, sequtils, strformat
+import strutils, sugar
 
 #=======================================
 # Types
 #=======================================
 
-type
+type 
     Byte* = byte
-    ByteArray*  = seq[Byte]
+    VBinary*  = seq[Byte]
 
 #=======================================
 # Overloads
 #=======================================
 
-proc `and`*(a: ByteArray, b: ByteArray): ByteArray =
+proc `and`*(a: VBinary, b: VBinary): VBinary =
     zip(a, b).map((tup) => tup[0] and tup[1])
 
-proc `or`*(a: ByteArray, b: ByteArray): ByteArray =
+proc `or`*(a: VBinary, b: VBinary): VBinary =
     zip(a, b).map((tup) => tup[0] or tup[1])
 
-proc `xor`*(a: ByteArray, b: ByteArray): ByteArray =
+proc `xor`*(a: VBinary, b: VBinary): VBinary =
     zip(a, b).map((tup) => tup[0] xor tup[1])
 
-proc `not`*(a: ByteArray): ByteArray =
+proc `not`*(a: VBinary): VBinary =
     a.map((w) => not w)
+
+func `$`*(a: VBinary): string =
+    a.map((child) => fmt"{child:02X}").join(" ")
 
 #=======================================
 # Methods
 #=======================================
 
-proc substitute*(a: ByteArray, needle: ByteArray, replacement: ByteArray): ByteArray =
+proc substitute*(a: VBinary, needle: VBinary, replacement: VBinary): VBinary =
     var i = 0
     let aLen = a.len
     let needleLen = needle.len
@@ -53,7 +59,7 @@ proc substitute*(a: ByteArray, needle: ByteArray, replacement: ByteArray): ByteA
             i = i + 1
     result.add(a[i..^1])
 
-proc numberToBinary*(i: int | float): ByteArray =
+proc numberToBinary*(i: int | float): VBinary =
     if i==0: return @[(byte)0]
     var bytes = toSeq(cast[array[0..7, byte]](i)).reversed
     var i=0

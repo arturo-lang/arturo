@@ -27,12 +27,13 @@ import strutils, sugar, unicode
 
 
 import helpers/arrays
-import helpers/bytes
 import helpers/combinatorics
 import helpers/strings
 import helpers/unisort
 
 import vm/lib
+
+import vm/values/custom/[vbinary]
 
 #=======================================
 # Methods

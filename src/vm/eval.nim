@@ -28,7 +28,7 @@ when not defined(PORTABLE):
 
 import vm/[bytecode, globals, profiler, values/value]
 
-import vm/values/custom/[vlogical, vsymbol]
+import vm/values/custom/[vbinary, vlogical, vsymbol]
 
 #=======================================
 # Variables
@@ -63,9 +63,9 @@ when not defined(NOERRORLINES):
             it.add((byte)opEol)
             it.add((byte)line)
 
-proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool = false, isDictionary: bool = false) =
+proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = false, isDictionary: bool = false) =
     var argStack: seq[int] = @[]
-    var currentCommand: ByteArray = @[]
+    var currentCommand: VBinary = @[]
 
     let childrenCount = n.a.len
 
@@ -691,7 +691,7 @@ proc doEval*(root: Value, isDictionary=false): Translation =
     ## that is: the constants found + the list of bytecode instructions
     hookProcProfiler("eval/doEval"):
         var cnsts: ValueArray = @[]
-        var newit: ByteArray = @[]
+        var newit: VBinary = @[]
 
         TmpArities = Arities
 

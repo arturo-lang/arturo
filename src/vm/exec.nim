@@ -39,7 +39,7 @@ import vm/[
     values/value
 ]
 
-import vm/values/custom/[vlogical]
+import vm/values/custom/[vbinary, vlogical]
 
 #=======================================
 # Types
@@ -59,7 +59,7 @@ var
 # Forward Declarations
 #=======================================
 
-proc doExec*(cnst: ValueArray, it: ByteArray, args: Value = nil): ValueDict
+proc doExec*(cnst: ValueArray, it: VBinary, args: Value = nil): ValueDict
 
 #=======================================
 # Helpers
@@ -302,7 +302,7 @@ template handleBranching*(tryDoing, finalize: untyped): untyped =
 # Methods
 #=======================================
 
-proc doExec*(cnst: ValueArray, it: ByteArray, args: Value = nil): ValueDict = 
+proc doExec*(cnst: ValueArray, it: VBinary, args: Value = nil): ValueDict = 
     # Execute given constants+instructions with given arguments
     # and return the resulting symbol table (before internally restoring it)
     var i = 0
