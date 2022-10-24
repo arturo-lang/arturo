@@ -33,6 +33,8 @@ import helpers/unisort
 
 import vm/lib
 
+import vm/values/custom/[vbinary]
+
 #=======================================
 # Methods
 #=======================================
