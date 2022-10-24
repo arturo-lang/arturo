@@ -31,7 +31,7 @@ import vm/stack
 import vm/values/value
 import vm/values/clean
 
-import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrational, vregex]
+import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrational, vregex]
 
 #=======================================
 # Helpers
@@ -102,7 +102,7 @@ proc `$`*(v: Value): string {.inline.} =
 
         of Date     : return $(v.eobj)
         of Binary   : 
-            result = v.n.map((child) => fmt"{child:02X}").join(" ")
+            result = $(v.n)
         of Inline,
            Block     :
             # result = "["
