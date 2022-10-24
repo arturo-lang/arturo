@@ -24,7 +24,7 @@ import algorithm, parseutils, sequtils, strformat, sugar, times, unicode
 import helpers/arrays
 when not defined(NOGMP):
     import helpers/bignums
-import helpers/bytes
+
 import helpers/datasource
 when not defined(NOASCIIDECODE):
     import helpers/strings
@@ -32,6 +32,7 @@ when not defined(NOASCIIDECODE):
 import vm/lib
 import vm/[bytecode, errors, eval, exec, opcodes, parse]
 
+import vm/values/custom/[vbinary]
 
 #=======================================
 # Helpers
@@ -251,7 +252,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                     of Regex:
                         return newRegex(y.s)
                     of Binary:
-                        var ret: ByteArray = newSeq[byte](y.s.len)
+                        var ret: VBinary = newSeq[byte](y.s.len)
                         for i,ch in y.s:
                             ret[i] = (byte)(ord(ch))
                         return newBinary(ret)
@@ -373,7 +374,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                                     return newColor((cleanY[0].i, cleanY[1].i, cleanY[2].i, cleanY[3].i))
 
                     of Binary:
-                        var res: ByteArray = @[]
+                        var res: VBinary = @[]
                         ensureCleaned(y)
                         for item in cleanY:
                             if item.kind==Integer:
