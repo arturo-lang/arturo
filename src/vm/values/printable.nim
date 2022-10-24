@@ -102,7 +102,7 @@ proc `$`*(v: Value): string {.inline.} =
 
         of Date     : return $(v.eobj)
         of Binary   : 
-            result = v.n.map((child) => fmt"{child:02X}").join(" ")
+            result = $(v.n)
         of Inline,
            Block     :
             # result = "["
