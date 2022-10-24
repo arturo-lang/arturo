@@ -6,6 +6,8 @@
 # @file: vm/values/custom/vcomplex.nim
 #=======================================================
 
+## The internal `:complex` type
+
 # Contains code based on
 # the Complex module: https://raw.githubusercontent.com/nim-lang/Nim/version-1-6/lib/pure/complex.nim
 # which forms part of the Nim standard library.
