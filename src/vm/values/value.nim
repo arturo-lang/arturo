@@ -447,8 +447,8 @@ func newDate*(dt: sink DateTime): Value {.inline, enforceNoRaises.} =
     }.toOrderedTable
     Value(kind: Date, e: edict, eobj: dt)
 
-func newBinary*(n: ByteArray = @[]): Value {.inline, enforceNoRaises.} =
-    ## create Binary value from ByteArray
+func newBinary*(n: VBinary = @[]): Value {.inline, enforceNoRaises.} =
+    ## create Binary value from VBinary
     Value(kind: Binary, n: n)
 
 func newDictionary*(d: sink ValueDict = initOrderedTable[string,Value]()): Value {.inline, enforceNoRaises.} =
