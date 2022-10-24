@@ -12,7 +12,8 @@
 # Libraries
 #=======================================
 
-import algorithm, sequtils, sugar
+import algorithm, sequtils, strformat
+import strutils, sugar
 
 #=======================================
 # Types
@@ -37,6 +38,9 @@ proc `xor`*(a: VBinary, b: VBinary): VBinary =
 
 proc `not`*(a: VBinary): VBinary =
     a.map((w) => not w)
+
+func `$`*(a: VBinary): string =
+    a.map((child) => fmt"{child:02X}").join(" ")
 
 #=======================================
 # Methods
