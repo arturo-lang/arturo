@@ -16,7 +16,7 @@
 # Libraries
 #=======================================
 
-import hashes, macros, os, random
+import macros, os, random
 import strutils, tables
 
 when defined(WEB):
