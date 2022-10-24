@@ -10,8 +10,6 @@
 # Libraries
 #=======================================
 
-import vm/values/value
-
 import vm/values/custom/[vbinary]
 
 #=======================================
