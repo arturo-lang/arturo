@@ -1,10 +1,12 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: vm/values/value.nim
-######################################################
+#=======================================================
+
+## Arturo's main Value object.
 
 # TODO(VM/values/value) General cleanup needed
 #  There are various pieces of commented-out code that make the final result pretty much illegible. Let's clean this up.
@@ -58,45 +60,45 @@ const
 #=======================================
 
 let
-    I0*             = Value(kind: Integer, iKind: NormalInteger, i: 0, readonly: true)
-    I1*             = Value(kind: Integer, iKind: NormalInteger, i: 1, readonly: true)
-    I2*             = Value(kind: Integer, iKind: NormalInteger, i: 2, readonly: true)
-    I3*             = Value(kind: Integer, iKind: NormalInteger, i: 3, readonly: true)
-    I4*             = Value(kind: Integer, iKind: NormalInteger, i: 4, readonly: true)
-    I5*             = Value(kind: Integer, iKind: NormalInteger, i: 5, readonly: true)
-    I6*             = Value(kind: Integer, iKind: NormalInteger, i: 6, readonly: true)
-    I7*             = Value(kind: Integer, iKind: NormalInteger, i: 7, readonly: true)
-    I8*             = Value(kind: Integer, iKind: NormalInteger, i: 8, readonly: true)
-    I9*             = Value(kind: Integer, iKind: NormalInteger, i: 9, readonly: true)
-    I10*            = Value(kind: Integer, iKind: NormalInteger, i: 10, readonly: true)
-    I11*            = Value(kind: Integer, iKind: NormalInteger, i: 11, readonly: true)
-    I12*            = Value(kind: Integer, iKind: NormalInteger, i: 12, readonly: true)
-    I13*            = Value(kind: Integer, iKind: NormalInteger, i: 13, readonly: true)
-    I14*            = Value(kind: Integer, iKind: NormalInteger, i: 14, readonly: true)
-    I15*            = Value(kind: Integer, iKind: NormalInteger, i: 15, readonly: true)
+    I0*             = Value(kind: Integer, iKind: NormalInteger, i: 0, readonly: true)      ## constant 0
+    I1*             = Value(kind: Integer, iKind: NormalInteger, i: 1, readonly: true)      ## constant 1
+    I2*             = Value(kind: Integer, iKind: NormalInteger, i: 2, readonly: true)      ## constant 2
+    I3*             = Value(kind: Integer, iKind: NormalInteger, i: 3, readonly: true)      ## constant 3
+    I4*             = Value(kind: Integer, iKind: NormalInteger, i: 4, readonly: true)      ## constant 4
+    I5*             = Value(kind: Integer, iKind: NormalInteger, i: 5, readonly: true)      ## constant 5
+    I6*             = Value(kind: Integer, iKind: NormalInteger, i: 6, readonly: true)      ## constant 6
+    I7*             = Value(kind: Integer, iKind: NormalInteger, i: 7, readonly: true)      ## constant 7
+    I8*             = Value(kind: Integer, iKind: NormalInteger, i: 8, readonly: true)      ## constant 8
+    I9*             = Value(kind: Integer, iKind: NormalInteger, i: 9, readonly: true)      ## constant 9
+    I10*            = Value(kind: Integer, iKind: NormalInteger, i: 10, readonly: true)     ## constant 10
+    I11*            = Value(kind: Integer, iKind: NormalInteger, i: 11, readonly: true)     ## constant 11
+    I12*            = Value(kind: Integer, iKind: NormalInteger, i: 12, readonly: true)     ## constant 12
+    I13*            = Value(kind: Integer, iKind: NormalInteger, i: 13, readonly: true)     ## constant 13
+    I14*            = Value(kind: Integer, iKind: NormalInteger, i: 14, readonly: true)     ## constant 14
+    I15*            = Value(kind: Integer, iKind: NormalInteger, i: 15, readonly: true)     ## constant 15
 
-    I1M*            = Value(kind: Integer, iKind: NormalInteger, i: -1, readonly: true)
+    I1M*            = Value(kind: Integer, iKind: NormalInteger, i: -1, readonly: true)     ## constant -1
 
-    F0*             = Value(kind: Floating, f: 0.0, readonly: true)
-    F1*             = Value(kind: Floating, f: 1.0, readonly: true)
-    F2*             = Value(kind: Floating, f: 2.0, readonly: true)
+    F0*             = Value(kind: Floating, f: 0.0, readonly: true)                         ## constant 0.0
+    F1*             = Value(kind: Floating, f: 1.0, readonly: true)                         ## constant 1.0
+    F2*             = Value(kind: Floating, f: 2.0, readonly: true)                         ## constant 2.0
 
-    F1M*            = Value(kind: Floating, f: -1.0, readonly: true)
+    F1M*            = Value(kind: Floating, f: -1.0, readonly: true)                        ## constant -1.0
 
-    VTRUE*          = Value(kind: Logical, b: True, readonly: true)
-    VFALSE*         = Value(kind: Logical, b: False, readonly: true)
-    VMAYBE*         = Value(kind: Logical, b: Maybe, readonly: true)
+    VTRUE*          = Value(kind: Logical, b: True, readonly: true)                         ## constant True
+    VFALSE*         = Value(kind: Logical, b: False, readonly: true)                        ## constant False
+    VMAYBE*         = Value(kind: Logical, b: Maybe, readonly: true)                        ## constant Maybe
 
-    VNULL*          = Value(kind: Null, readonly: true)
+    VNULL*          = Value(kind: Null, readonly: true)                                     ## constant Null
 
-    VEMPTYSTR*      = Value(kind: String, s: "", readonly: true)
-    VEMPTYARR*      = Value(kind: Block, a: @[], data: nil, readonly: true)
-    VEMPTYDICT*     = Value(kind: Dictionary, d: initOrderedTable[string,Value](), readonly: true)
+    VEMPTYSTR*      = Value(kind: String, s: "", readonly: true)                                    ## constant ""
+    VEMPTYARR*      = Value(kind: Block, a: @[], data: nil, readonly: true)                         ## constant []
+    VEMPTYDICT*     = Value(kind: Dictionary, d: initOrderedTable[string,Value](), readonly: true)  ## constant #[]
 
-    VSTRINGT*       = Value(kind: Type, tpKind: BuiltinType, t: String, readonly: true)
-    VINTEGERT*      = Value(kind: Type, tpKind: BuiltinType, t: Integer, readonly: true)
+    VSTRINGT*       = Value(kind: Type, tpKind: BuiltinType, t: String, readonly: true)     ## constant ``:string``
+    VINTEGERT*      = Value(kind: Type, tpKind: BuiltinType, t: Integer, readonly: true)    ## constant ``:integer``
 
-    VNOTHING*       = Value(kind: Nothing, readonly: true)
+    VNOTHING*       = Value(kind: Nothing, readonly: true)                                  ## constant Nothing
 
     #--------
 
@@ -155,11 +157,13 @@ proc newLogical*(b: bool): Value {.inline, enforceNoRaises.} =
     else: VFALSE
 
 proc newLogical*(s: string): Value {.inline, enforceNoRaises.} =
+    ## create Logical value from string
     if s=="true": newLogical(True)
     elif s=="false": newLogical(False)
     else: newLogical(Maybe)
 
 proc newLogical*(i: int): Value {.inline, enforceNoRaises.} =
+    ## create Logical value from int
     if i==1: newLogical(True)
     elif i==0: newLogical(False)
     else: newLogical(Maybe)
@@ -173,12 +177,15 @@ when not defined(NOGMP):
         result = Value(kind: Integer, iKind: BigInteger, bi: bi)
 
 func newInteger*(i: int): Value {.inline, enforceNoRaises.} =
+    ## create Integer value from int
     result = Value(kind: Integer, iKind: NormalInteger, i: i)
 
 func newInteger*(i: int64): Value {.inline, enforceNoRaises.} =
+    ## create Integer value from int64
     newInteger((int)(i))
 
 proc newInteger*(i: string, lineno: int = 1): Value {.inline.} =
+    ## create Integer value from string
     try:
         return newInteger(parseInt(i))
     except ValueError:
@@ -190,27 +197,34 @@ proc newInteger*(i: string, lineno: int = 1): Value {.inline.} =
             RuntimeError_IntegerParsingOverflow(lineno, i)
 
 func newBigInteger*(i: int): Value {.inline.} =
+    ## create Integer (BigInteger) value from int
     when defined(WEB):
         result = Value(kind: Integer, iKind: BigInteger, bi: big(i))
     elif not defined(NOGMP):
         result = Value(kind: Integer, iKind: BigInteger, bi: newInt(i))
 
 func newFloating*(f: float): Value {.inline, enforceNoRaises.} =
+    ## create Floating value from float
     Value(kind: Floating, f: f)
 
 func newFloating*(f: int): Value {.inline, enforceNoRaises.} =
+    ## create Floating value from int
     Value(kind: Floating, f: (float)(f))
 
 proc newFloating*(f: string): Value {.inline.} =
+    ## create Floating value from string
     return newFloating(parseFloat(f))
 
 func newComplex*(com: VComplex): Value {.inline.} =
+    ## create Complex value from VComplex
     Value(kind: Complex, z: com)
 
 func newComplex*(fre: float, fim: float): Value {.inline.} =
+    ## create Complex value from real + imaginary parts (float)
     Value(kind: Complex, z: VComplex(re: fre, im: fim))
 
 func newComplex*(fre: Value, fim: Value): Value {.inline.} =
+    ## create Complex value from real + imaginary parts (Value)
     var r: float
     var i: float
 
@@ -223,21 +237,27 @@ func newComplex*(fre: Value, fim: Value): Value {.inline.} =
     newComplex(r,i)
 
 func newRational*(rat: VRational): Value {.inline, enforceNoRaises.} =
+    ## create Rational value from VRational
     Value(kind: Rational, rat: rat)
 
 func newRational*(num: int, den: int): Value {.inline.} =
+    ## create Rational value from numerator + denominator (int)
     Value(kind: Rational, rat: initRational(num, den))
 
 func newRational*(n: int): Value {.inline.} =
+    ## create Rational value from int
     Value(kind: Rational, rat: toRational(n))
 
 func newRational*(n: float): Value {.inline.} =
+    ## create Rational value from float
     Value(kind: Rational, rat: toRational(n))
 
 func newRational*(num: Value, den: Value): Value {.inline, enforceNoRaises.} =
+    ## create Rational value from numerator + denominator (Value)
     newRational(num.i, den.i)
 
 func newVersion*(v: string): Value {.inline.} =
+    ## create Version value from string
     var numPart = ""
     var extraPart = ""
     var lastIndex : int
@@ -258,9 +278,11 @@ func newVersion*(v: string): Value {.inline.} =
                          extra: extraPart)
 
 func newType*(t: ValueKind): Value {.inline, enforceNoRaises.} =
+    ## create Type (BuiltinType) value from ValueKind
     Value(kind: Type, tpKind: BuiltinType, t: t)
 
 proc newUserType*(n: string, f: ValueArray = @[]): Value {.inline.} =
+    ## create Type (UserType) value from string
     if (let lookup = TypeLookup.getOrDefault(n, nil); not lookup.isNil):
         return lookup
     else:
@@ -268,69 +290,89 @@ proc newUserType*(n: string, f: ValueArray = @[]): Value {.inline.} =
         TypeLookup[n] = result
 
 proc newType*(t: string): Value {.inline.} =
+    ## create Type value from string
     try:
         newType(parseEnum[ValueKind](t.capitalizeAscii()))
     except ValueError:
         newUserType(t)
 
 func newChar*(c: Rune): Value {.inline, enforceNoRaises.} =
+    ## create Char value from Rune
     Value(kind: Char, c: c)
 
 func newChar*(c: char): Value {.inline.} =
+    ## create Char value from char
     Value(kind: Char, c: ($c).runeAt(0))
 
 func newChar*(c: string): Value {.inline.} =
+    ## create Char value from string
     Value(kind: Char, c: c.runeAt(0))
 
 func newString*(s: sink string, dedented: static bool = false): Value {.inline, enforceNoRaises.} =
+    ## create String value from string
     when not dedented: 
         Value(kind: String, s: s)
     else: 
         Value(kind: String, s: unicode.strip(dedent(s)))
 
 func newString*(s: cstring, dedented: static bool = false): Value {.inline, enforceNoRaises.} =
+    ## create String value from cstring
     newString($(s), dedented)
 
 func newWord*(w: sink string): Value {.inline, enforceNoRaises.} =
+    ## create Word value from string
     Value(kind: Word, s: w)
 
 func newLiteral*(l: sink string): Value {.inline, enforceNoRaises.} =
+    ## create Literal value from string
     Value(kind: Literal, s: l)
 
 func newLabel*(l: sink string): Value {.inline, enforceNoRaises.} =
+    ## create Label value from string
     Value(kind: Label, s: l)
 
 func newAttribute*(a: sink string): Value {.inline, enforceNoRaises.} =
+    ## create Attribute value from string
     Value(kind: Attribute, s: a)
 
 func newAttributeLabel*(a: sink string): Value {.inline, enforceNoRaises.} =
+    ## create AttributeLabel value from string
     Value(kind: AttributeLabel, s: a)
 
 func newPath*(p: sink ValueArray): Value {.inline, enforceNoRaises.} =
+    ## create Path value from ValueArray
     Value(kind: Path, p: p)
 
 func newPathLabel*(p: sink ValueArray): Value {.inline, enforceNoRaises.} =
+    ## create PathLabel value from ValueArray
     Value(kind: PathLabel, p: p)
 
 func newSymbol*(m: VSymbol): Value {.inline, enforceNoRaises.} =
+    ## create Symbol value from VSymbol
     Value(kind: Symbol, m: m)
 
 func newSymbol*(m: sink string): Value {.inline.} =
+    ## create Symbol value from string
     newSymbol(parseEnum[VSymbol](m))
 
 func newSymbolLiteral*(m: VSymbol): Value {.inline, enforceNoRaises.} =
+    ## create SymbolLiteral value from VSymbol
     Value(kind: SymbolLiteral, m: m)
 
 func newSymbolLiteral*(m: string): Value {.inline.} =
+    ## create SymbolLiteral value from string
     newSymbolLiteral(parseEnum[VSymbol](m))
 
 func newQuantity*(nm: Value, unit: VQuantity): Value {.inline, enforceNoRaises.} =
+    ## create Quantity value from numerica value ``nm`` (Value) + ``unit`` (VQuantity)
     Value(kind: Quantity, nm: nm, unit: unit)
 
 proc newQuantity*(nm: Value, name: UnitName): Value {.inline.} =
+    ## create Quantity value from numerica value ``nm`` (Value) + unit ``name`` (UnitName)
     newQuantity(nm, newQuantitySpec(name))
 
 proc convertToTemperatureUnit*(v: Value, src: UnitName, tgt: UnitName): Value =
+    ## convert given temperature value ``v`` from ``src`` unit to ``tgt``
     case src:
         of C:
             if tgt==F: return v * newFloating(9/5) + newInteger(32)
@@ -352,6 +394,7 @@ proc convertToTemperatureUnit*(v: Value, src: UnitName, tgt: UnitName): Value =
         else: discard
 
 proc convertQuantityValue*(nm: Value, fromU: UnitName, toU: UnitName, fromKind = NoUnit, toKind = NoUnit, op = ""): Value =
+    ## convert given quantity value ``nm`` from ``fromU`` unit to ``toU`` 
     var fromK = fromKind
     var toK = toKind
     if fromK==NoUnit: fromK = quantityKindForName(fromU)
@@ -371,21 +414,27 @@ proc convertQuantityValue*(nm: Value, fromU: UnitName, toU: UnitName, fromKind =
             return nm * newFloating(fmultiplier)
 
 func newRegex*(rx: sink VRegex): Value {.inline, enforceNoRaises.} =
+    ## create Regex value from VRegex
     Value(kind: Regex, rx: rx)
 
 func newRegex*(rx: string): Value {.inline.} =
+    ## create Regex value from string
     newRegex(newRegexObj(rx))
 
 func newColor*(l: VColor): Value {.inline, enforceNoRaises.} =
+    ## create Color value from VColor
     Value(kind: Color, l: l)
 
 func newColor*(rgb: RGB): Value {.inline.} =
+    ## create Color value from RGB
     newColor(colorFromRGB(rgb))
 
 func newColor*(l: string): Value {.inline.} =
+    ## create Color value from string
     newColor(parseColor(l))
 
 func newDate*(dt: sink DateTime): Value {.inline, enforceNoRaises.} =
+    ## create Date value from DateTime
     let edict = {
         "hour"      : newInteger(dt.hour),
         "minute"    : newInteger(dt.minute),
@@ -402,15 +451,20 @@ func newDate*(dt: sink DateTime): Value {.inline, enforceNoRaises.} =
     Value(kind: Date, e: edict, eobj: dt)
 
 func newBinary*(n: ByteArray = @[]): Value {.inline, enforceNoRaises.} =
+    ## create Binary value from ByteArray
     Value(kind: Binary, n: n)
 
 func newDictionary*(d: sink ValueDict = initOrderedTable[string,Value]()): Value {.inline, enforceNoRaises.} =
+    ## create Dictionary value from ValueDict
     Value(kind: Dictionary, d: d)
 
 func newObject*(o: sink ValueDict = initOrderedTable[string,Value](), proto: sink Prototype): Value {.inline, enforceNoRaises.} =
+    ## create Object value from ValueDict with given prototype
     Value(kind: Object, o: o, proto: proto)
 
 proc newObject*(args: ValueArray, prot: Prototype, initializer: proc (self: Value, prot: Prototype), o: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
+    ## create Object value from ValueArray with given prototype 
+    ## and initializer function
     var fields = o
     var i = 0
     while i<args.len and i<prot.fields.len:
@@ -423,6 +477,9 @@ proc newObject*(args: ValueArray, prot: Prototype, initializer: proc (self: Valu
     initializer(result, prot)
 
 proc newObject*(args: ValueDict, prot: Prototype, initializer: proc (self: Value, prot: Prototype), o: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
+    ## create Object value from ValueDict with given prototype 
+    ## and initializer function, using another object ``o`` as 
+    ## a parent object
     var fields = o
     for k,v in pairs(args):
         for item in prot.fields:
@@ -434,9 +491,11 @@ proc newObject*(args: ValueDict, prot: Prototype, initializer: proc (self: Value
     initializer(result, prot)
 
 func newFunction*(params: Value, main: Value, imports: Value = nil, exports: Value = nil, exportable: bool = false, memoize: bool = false): Value {.inline, enforceNoRaises.} =
+    ## create Function (UserFunction) value with given parameters, ``main`` body, etc
     Value(kind: Function, fnKind: UserFunction, arity: params.a.len, params: params, main: main, imports: imports, exports: exports, exportable: exportable, memoize: memoize)
 
 func newBuiltin*(desc: sink string, ar: int, ag: sink OrderedTable[string,ValueSpec], at: sink OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: sink string, act: BuiltinAction): Value {.inline, enforceNoRaises.} =
+    ## create Function (BuiltinFunction) value with given details
     Value(
         kind    : Function, 
         fnKind  : BuiltinFunction, 
@@ -451,38 +510,48 @@ func newBuiltin*(desc: sink string, ar: int, ag: sink OrderedTable[string,ValueS
 
 when not defined(NOSQLITE):
     proc newDatabase*(db: sqlite.DbConn): Value {.inline.} =
+        ## create Database value from DbConn
         Value(kind: Database, dbKind: SqliteDatabase, sqlitedb: db)
 
 # proc newDatabase*(db: mysql.DbConn): Value {.inline.} =
 #     Value(kind: Database, dbKind: MysqlDatabase, mysqldb: db)
 
 func newBytecode*(t: sink Translation): Value {.inline, enforceNoRaises.} =
+    ## create Bytecode value from Translation
     Value(kind: Bytecode, trans: t)
 
 func newInline*(a: sink ValueArray = @[], dirty = false): Value {.inline, enforceNoRaises.} =
+    ## create Inline value from ValueArray
     Value(kind: Inline, a: a, dirty: dirty)
 
 func newBlock*(a: sink ValueArray = @[], data: sink Value = nil, dirty = false): Value {.inline, enforceNoRaises.} =
+    ## create Block value from ValueArray
     Value(kind: Block, a: a, data: data, dirty: dirty)
 
 func newIntegerBlock*[T](a: sink seq[T]): Value {.inline, enforceNoRaises.} =
+    ## create Block value from an array of ints
     newBlock(a.map(proc (x:T):Value = newInteger((int)(x))))
 
 proc newStringBlock*(a: sink seq[string]): Value {.inline, enforceNoRaises.} =
+    ## create Block value from an array of strings
     newBlock(a.map(proc (x:string):Value = newString($x)))
 
 proc newStringBlock*(a: sink seq[cstring]): Value {.inline, enforceNoRaises.} =
+    ## create Block value from an array of cstrings
     newBlock(a.map(proc (x:cstring):Value = newString(x)))
 
 func newNewline*(l: int): Value {.inline, enforceNoRaises.} =
+    ## create Newline value with given line number
     Value(kind: Newline, line: l)
 
 proc newStringDictionary*(a: Table[string, string]): Value =
+    ## create Dictionary value from a string-string Table
     result = newDictionary()
     for k,v in a.pairs:
         result.d[k] = newString(v)
 
 proc newStringDictionary*(a: TableRef[string, seq[string]], collapseBlocks=false): Value =
+    ## create Dictionary value from a string-seq[string] TableRef
     result = newDictionary()
     for k,v in a.pairs:
         if collapseBlocks:
@@ -496,6 +565,11 @@ proc newStringDictionary*(a: TableRef[string, seq[string]], collapseBlocks=false
             result.d[k] = newStringBlock(v)
 
 proc copyValue*(v: Value): Value {.inline.} =
+    ## copy given value (deep copy) and return 
+    ## the result
+    ## 
+    ## **Hint**: extensively use for pointer disambiguation, 
+    ## ``new`` and value copying, in general (when needed)
     case v.kind:
         of Null:        result = VNULL
         of Logical:     result = newLogical(v.b)
@@ -563,9 +637,11 @@ proc copyValue*(v: Value): Value {.inline.} =
 #=======================================
 
 template isNull*(v: Value): bool =
+    ## check if given value is Null
     v.kind==Null
 
 template isNothing*(v: Value): bool =
+    ## check if given value is Nothing
     v.kind==Nothing
 
 #=======================================
@@ -573,26 +649,33 @@ template isNothing*(v: Value): bool =
 #=======================================
 
 func asFloat*(v: Value): float {.enforceNoRaises.} = 
-    # get number value forcefully as a float
+    ## get numeric value forcefully as a float
+    ## 
+    ## **Hint:** We have to make sure the value is 
+    ## either an Integer or a Floating value
     if v.kind == Floating:
         result = v.f
     else:
         result = (float)(v.i)
 
 func asInt*(v: Value): int {.enforceNoRaises.} = 
-    # get number value forcefully as an int
+    ## get numeric value forcefully as an int
+    ## 
+    ## **Hint:** We have to make sure the value is 
+    ## either an Integer or a Floating value
     if v.kind == Integer:
         result = v.i
     else:
         result = (int)(v.f)
 
 func getArity*(x: Value): int {.enforceNoRaises.} =
+    ## get arity of given Function value
     return x.arity
 
-proc safeMulI*[T: SomeInteger](x: var T, y: T) {.inline, noSideEffect.} =
+proc safeMulI[T: SomeInteger](x: var T, y: T) {.inline, noSideEffect.} =
     x = x * y
 
-func safePow*[T: SomeNumber](x: T, y: Natural): T =
+func safePow[T: SomeNumber](x: T, y: Natural): T =
     case y
     of 0: result = 1
     of 1: result = x
@@ -610,6 +693,11 @@ func safePow*[T: SomeNumber](x: T, y: Natural): T =
             safeMulI(x, x)
 
 func valueAsString*(v: Value): string {.inline,enforceNoRaises.} =
+    ## get numeric value forcefully as a string
+    ## 
+    ## **Hint:** We have to make sure the value is 
+    ## either an Integer, Floating, Rational or Complex value
+
     # This works only for number values, which is precisely
     # what we need for this module.
     # The proper `$` implementation is in `values/printable`.
@@ -638,6 +726,7 @@ func valueAsString*(v: Value): string {.inline,enforceNoRaises.} =
 #  labels: vm, values, error handling, unit-test
 
 proc `+`*(x: Value, y: Value): Value =
+    ## add given values and return the result
     if x.kind==Color and y.kind==Color:
         return newColor(x.l + y.l)
     if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
@@ -716,6 +805,10 @@ proc `+`*(x: Value, y: Value): Value =
                 else: return newComplex((float)(x.i)+y.z)
 
 proc `+=`*(x: var Value, y: Value) =
+    ## add given values 
+    ## and store the result in the first value
+    ## 
+    ## **Hint:** In-place, mutating operation
     if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
         if x.kind == Quantity:
             if y.kind == Quantity:
@@ -793,6 +886,7 @@ proc `+=`*(x: var Value, y: Value) =
                 else: x = newComplex((float)(x.i)+y.z)
 
 proc `-`*(x: Value, y: Value): Value = 
+    ## subtract given values and return the result
     if x.kind==Color and y.kind==Color:
         return newColor(x.l - y.l)
     if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
@@ -872,6 +966,10 @@ proc `-`*(x: Value, y: Value): Value =
                 else: return newComplex((float)(x.i)-y.z)
 
 proc `-=`*(x: var Value, y: Value) =
+    ## subtract given values and 
+    ## store the result in the first value
+    ## 
+    ## **Hint:** In-place, mutating operation
     if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
         if x.kind == Quantity:
             if y.kind == Quantity:
@@ -948,6 +1046,8 @@ proc `-=`*(x: var Value, y: Value) =
                 else: x = newComplex((float)(x.i)-y.z)
 
 proc `*`*(x: Value, y: Value): Value =
+    ## multiply given values 
+    ## and return the result
     if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
         if x.kind == Quantity:
             if y.kind == Quantity:
@@ -1026,6 +1126,10 @@ proc `*`*(x: Value, y: Value): Value =
                 else: return newComplex((float)(x.i)*y.z)
 
 proc `*=`*(x: var Value, y: Value) =
+    ## multiply given values 
+    ## and store the result in the first one
+    ## 
+    ## **Hint:** In-place, mutating operation
     if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
         if x.kind == Quantity:
             if y.kind == Quantity:
@@ -1111,6 +1215,8 @@ proc `*=`*(x: var Value, y: Value) =
 #     x.fv / y
 
 proc `/`*(x: Value, y: Value): Value =
+    ## divide (integer division) given values 
+    ## and return the result
     if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
         if x.kind == Quantity:
             if y.kind == Quantity:
@@ -1183,6 +1289,10 @@ proc `/`*(x: Value, y: Value): Value =
                 else: return newComplex((float)(x.i)/y.z)
 
 proc `/=`*(x: var Value, y: Value) =
+    ## divide (integer division) given values 
+    ## and store the result in the first one 
+    ## 
+    ## **Hint:** In-place, mutating operation
     if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
         if x.kind == Quantity:
             if y.kind == Quantity:
@@ -1262,6 +1372,8 @@ proc `/=`*(x: var Value, y: Value) =
                 else: x = newComplex((float)(x.i)/y.z)
 
 proc `//`*(x: Value, y: Value): Value =
+    ## divide (floating-point division) given values 
+    ## and return the result
     if not (x.kind in [Integer, Floating, Rational]) or not (y.kind in [Integer, Floating, Rational]):
         if x.kind == Quantity:
             if y.kind == Quantity:
@@ -1305,6 +1417,10 @@ proc `//`*(x: Value, y: Value): Value =
 
 
 proc `//=`*(x: var Value, y: Value) =
+    ## divide (floating-point division) given values 
+    ## and store the result in the first one 
+    ## 
+    ## **Hint:** In-place, mutating operation
     if not (x.kind in [Integer, Floating, Rational]) or not (y.kind in [Integer, Floating, Rational]):
         if x.kind == Quantity:
             if y.kind == Quantity:
@@ -1347,6 +1463,8 @@ proc `//=`*(x: var Value, y: Value) =
                 else: x = newRational(x.i / y.rat)
                 
 proc `%`*(x: Value, y: Value): Value =
+    ## perform the modulo operation between given values 
+    ## and return the result
     if not (x.kind in [Integer,Floating,Rational]) or not (y.kind in [Integer,Floating,Rational]):
         if (x.kind == Quantity and y.kind == Quantity) and (x.unit.kind==y.unit.kind):
             if x.unit.name == y.unit.name:
@@ -1407,6 +1525,10 @@ proc `%`*(x: Value, y: Value): Value =
                         #     return newFloating(x.bi mod y.f)
 
 proc `%=`*(x: var Value, y: Value) =
+    ## perform the modulo operation between given values
+    ## and store the result in the first one
+    ## 
+    ## **Hint:** In-place, mutating operation
     if not (x.kind in [Integer,Floating,Rational]) or not (y.kind in [Integer,Floating,Rational]):
         if (x.kind == Quantity and y.kind == Quantity) and (x.unit.kind==y.unit.kind):
             if x.unit.name == y.unit.name:
@@ -1459,6 +1581,8 @@ proc `%=`*(x: var Value, y: Value) =
                         x = newFloating((float)(x.i) mod y.f)
 
 proc `/%`*(x: Value, y: Value): Value =
+    ## perform the divmod operation between given values
+    ## and return the result as a *tuple* Block value
     if not (x.kind in [Integer,Floating,Rational]) or not (y.kind in [Integer,Floating,Rational]):
         return newBlock(@[x/y, x%y])
     else:
@@ -1507,6 +1631,10 @@ proc `/%`*(x: Value, y: Value): Value =
                         discard
 
 proc `/%=`*(x: var Value, y: Value) =
+    ## perform the divmod operation between given values
+    ## and store the result in the first one
+    ## 
+    ## **Hint:** In-place, mutating operation
     if not (x.kind in [Integer,Floating,Rational]) or not (y.kind in [Integer,Floating,Rational]):
         x = newBlock(@[x/y, x%y])
     else:
@@ -1555,6 +1683,8 @@ proc `/%=`*(x: var Value, y: Value) =
                         discard
 
 proc `^`*(x: Value, y: Value): Value =
+    ## perform the power operation between given values
+    ## 
     if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
         if x.kind == Quantity:
             if y.kind==Integer and (y.i > 0 and y.i < 4):
@@ -1634,6 +1764,10 @@ proc `^`*(x: Value, y: Value): Value =
                 else: return VNULL
 
 proc `^=`*(x: var Value, y: Value) =
+    ## perform the power operation between given values
+    ## and store the result in the first value
+    ## 
+    ## **Hint:** In-place, mutation operation
     if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
         if x.kind == Quantity:
             if y.kind==Integer and (y.i > 0 and y.i < 4):
@@ -1685,6 +1819,8 @@ proc `^=`*(x: var Value, y: Value) =
                 else: discard
 
 proc `&&`*(x: Value, y: Value): Value =
+    ## perform binary-and between given values
+    ## and return the result
     if (x.kind == Binary or y.kind==Binary) and (x.kind in [Integer, Binary] and y.kind in [Integer, Binary]):
         var a = (if x.kind==Binary: x.n else: numberToBinary(x.i))
         var b = (if y.kind==Binary: y.n else: numberToBinary(y.i))
@@ -1713,6 +1849,10 @@ proc `&&`*(x: Value, y: Value): Value =
                     return newInteger(x.bi and y.i)
 
 proc `&&=`*(x: var Value, y: Value) =
+    ## perform binary-and between given values
+    ## and store the result in the first value
+    ## 
+    ## **Hint:** In-place, mutation operation
     if (x.kind == Binary or y.kind==Binary) and (x.kind in [Integer, Binary] and y.kind in [Integer, Binary]):
         var a = (if x.kind==Binary: x.n else: numberToBinary(x.i))
         var b = (if y.kind==Binary: y.n else: numberToBinary(y.i))
@@ -1741,6 +1881,8 @@ proc `&&=`*(x: var Value, y: Value) =
                     x = newInteger(x.bi and y.i)
 
 proc `||`*(x: Value, y: Value): Value =
+    ## perform binary-or between given values
+    ## and return the result
     if (x.kind == Binary or y.kind==Binary) and (x.kind in [Integer, Binary] and y.kind in [Integer, Binary]):
         var a = (if x.kind==Binary: x.n else: numberToBinary(x.i))
         var b = (if y.kind==Binary: y.n else: numberToBinary(y.i))
@@ -1770,6 +1912,10 @@ proc `||`*(x: Value, y: Value): Value =
                     return newInteger(x.bi or y.i)
 
 proc `||=`*(x: var Value, y: Value) =
+    ## perform binary-or between given values
+    ## and store the result in the first value
+    ## 
+    ## **Hint:** In-place, mutation operation
     if (x.kind == Binary or y.kind==Binary) and (x.kind in [Integer, Binary] and y.kind in [Integer, Binary]):
         var a = (if x.kind==Binary: x.n else: numberToBinary(x.i))
         var b = (if y.kind==Binary: y.n else: numberToBinary(y.i))
@@ -1798,6 +1944,8 @@ proc `||=`*(x: var Value, y: Value) =
                     x = newInteger(x.bi or y.i)
 
 proc `^^`*(x: Value, y: Value): Value =
+    ## perform binary-xor between given values
+    ## and return the result
     if (x.kind == Binary or y.kind==Binary) and (x.kind in [Integer, Binary] and y.kind in [Integer, Binary]):
         var a = (if x.kind==Binary: x.n else: numberToBinary(x.i))
         var b = (if y.kind==Binary: y.n else: numberToBinary(y.i))
@@ -1826,6 +1974,10 @@ proc `^^`*(x: Value, y: Value): Value =
                     return newInteger(x.bi xor y.i)
 
 proc `^^=`*(x: var Value, y: Value) =
+    ## perform binary-xor between given values
+    ## and store the result in the first value
+    ## 
+    ## **Hint:** In-place, mutation operation
     if (x.kind == Binary or y.kind==Binary) and (x.kind in [Integer, Binary] and y.kind in [Integer, Binary]):
         var a = (if x.kind==Binary: x.n else: numberToBinary(x.i))
         var b = (if y.kind==Binary: y.n else: numberToBinary(y.i))
@@ -1854,6 +2006,8 @@ proc `^^=`*(x: var Value, y: Value) =
                     x = newInteger(x.bi xor y.i)
 
 proc `>>`*(x: Value, y: Value): Value =
+    ## perform binary-right-shift between given values
+    ## and return the result
     if not (x.kind==Integer) or not (y.kind==Integer):
         return VNULL
     else:
@@ -1878,6 +2032,10 @@ proc `>>`*(x: Value, y: Value): Value =
                     return newInteger(x.bi shr (culong)(y.i))
 
 proc `>>=`*(x: var Value, y: Value) =
+    ## perform binary-right-shift between given values
+    ## and store the result in the first value
+    ## 
+    ## **Hint:** In-place, mutation operation
     if not (x.kind==Integer) or not (y.kind==Integer):
         x = VNULL
     else:
@@ -1902,6 +2060,8 @@ proc `>>=`*(x: var Value, y: Value) =
                     x = newInteger(x.bi shr (culong)(y.i))
 
 proc `<<`*(x: Value, y: Value): Value =
+    ## perform binary-left-shift between given values
+    ## and return the result
     if not (x.kind==Integer) or not (y.kind==Integer):
         return VNULL
     else:
@@ -1926,6 +2086,10 @@ proc `<<`*(x: Value, y: Value): Value =
                     return newInteger(x.bi shl (culong)(y.i))
 
 proc `<<=`*(x: var Value, y: Value) =
+    ## perform binary-left-shift between given values
+    ## and store the result in the first value
+    ## 
+    ## **Hint:** In-place, mutation operation
     if not (x.kind==Integer) or not (y.kind==Integer):
         x = VNULL
     else:
@@ -1950,6 +2114,8 @@ proc `<<=`*(x: var Value, y: Value) =
                     x = newInteger(x.bi shl (culong)(y.i))
 
 proc `!!`*(x: Value): Value =
+    ## perform binary-not for given value
+    ## and return the result
     if x.kind == Binary:
         return newBinary(not x.n)
     elif not (x.kind==Integer):
@@ -1962,6 +2128,10 @@ proc `!!`*(x: Value): Value =
                 return newInteger(not x.bi)
 
 proc `!!=`*(x: var Value) =
+    ## perform binary-not for given value
+    ## and store the result back in it
+    ## 
+    ## **Hint:** In-place, mutation operation
     if x.kind == Binary:
         x = newBinary(not x.n)
     elif not (x.kind==Integer):
@@ -1982,6 +2152,7 @@ proc `!!=`*(x: var Value) =
 # proc cmp*[T](x,y:ref T){.error.}
 
 proc factorial*(x: Value): Value =
+    ## calculate factorial of given value
     if not (x.kind == Integer):
         return VNULL
     else:
@@ -2013,6 +2184,7 @@ proc factorial*(x: Value): Value =
                 RuntimeError_NumberOutOfPermittedRange("factorial",valueAsString(x), "")
 
 func sameValue*(x: Value, y: Value): bool {.inline.}=
+    ## check if the given values are same
     if x.kind in [Integer, Floating] and y.kind in [Integer, Floating]:
         if x.kind==Integer:
             if y.kind==Integer: 
@@ -2128,6 +2300,7 @@ func sameValue*(x: Value, y: Value): bool {.inline.}=
 # TODO(Value\hash) Verify hashing is done right
 #  labels: vm,unit-test
 func hash*(v: Value): Hash {.inline.}=
+    ## calculate the hash for given value
     case v.kind:
         of Null         : result = 0
         of Logical      : result = cast[Hash](v.b)

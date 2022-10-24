@@ -408,6 +408,13 @@ proc buildPackage*() =
 
     echo "{CLEAR}".fmt
 
+proc buildDocs*() =
+    showHeader "docs"
+
+    section "Generating documentation..."
+    exec(r"nim doc --project --index:on --outdir:dev-docs {FLAGS} src/arturo.nim".fmt)
+    exec(r"nim buildIndex -o:dev-docs/theindex.html dev-docs")
+
 proc performTests*() =
     showHeader "test"
     try:
@@ -476,7 +483,7 @@ while true:
 
     case p.kind:
         of cmdArgument:
-            if p.key in ["install", "package", "test", "benchmark", "help"]:
+            if p.key in ["install", "package", "docs", "test", "benchmark", "help"]:
                 if MODE == "":
                     MODE = p.key
                 else:
@@ -531,6 +538,7 @@ try:
     case MODE:
         of "install"    :   buildArturo()
         of "package"    :   buildPackage()
+        of "docs"       :   buildDocs()
         of "test"       :   performTests()
         of "benchmark"  :   performBenchmarks()
         of "help"       :   showHelp()

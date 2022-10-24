@@ -1,10 +1,13 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: library/Databases.nim
-######################################################
+#=======================================================
+
+## The main Databases module 
+## (part of the standard library)
 
 #=======================================
 # Pragmas
@@ -62,7 +65,7 @@ proc defineSymbols*() =
 
             close db            ; and close it
             """:
-                ##########################################################
+                #=======================================================
                 if x.dbKind == SqliteDatabase:
                     closeSqliteDb(x.sqlitedb)
                 # elif x.dbKind == MysqlDatabase:
@@ -94,7 +97,7 @@ proc defineSymbols*() =
             ; perform a safe query with given parameters
             print query db .with: ["johndoe"] {!sql SELECT * FROM users WHERE name = ?}
             """:
-                ##########################################################
+                #=======================================================
                 var with: seq[string] = @[]
                 if checkAttr("with"):
                     with = aWith.a.map((x) => $(x))
@@ -128,7 +131,7 @@ proc defineSymbols*() =
             example     = """
             db: open "my.db"    ; opens an SQLite database named 'my.db'
             """:
-                ##########################################################
+                #=======================================================
                 var dbKind = SqliteDatabase
 
                 if (hadAttr("mysql")):

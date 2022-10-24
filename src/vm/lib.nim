@@ -1,10 +1,12 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: vm/common.nim
-######################################################
+#=======================================================
+
+## Helpers & utilities for Arturo's standard library.
 
 #=======================================
 # Libraries
@@ -26,8 +28,8 @@ import vm/profiler
 #=======================================
 
 const
-    NoArgs*      = static {"" : {Nothing}}
-    NoAttrs*     = static {"" : ({Nothing},"")}
+    NoArgs*      = static {"" : {Nothing}}          ## Shortcut for no arguments
+    NoAttrs*     = static {"" : ({Nothing},"")}     ## Shortcut for no attributes
 
 #=======================================
 # Templates
@@ -58,6 +60,9 @@ else:
 #         args
 
 template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: string, args: untyped, attrs: untyped, returns: ValueSpec, example: string, act: untyped):untyped =
+    ## add new builtin, function with given name, alias, 
+    ## rule, etc - followed by the code block to be 
+    ## executed when the function is called
     
     when not defined(PORTABLE) or not compact or funcs.contains(n):
         
@@ -154,7 +159,10 @@ template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: 
 #  But then, it also over-complicates documentation generation for constants.
 #  So, we should either make documentation possible for constants as well, or merge the two things into one concept
 #  labels: vm, library, enhancement, open discussion
+
 template constant*(n: string, alias: VSymbol, description: string, v: Value):untyped =
+    ## add new constant with given name, alias, description - 
+    ## followed by the value it's assigned to
     SetSym(n, v)
     GetSym(n).info = "[" & static (instantiationInfo().filename).replace(".nim") & ":" & $(static (instantiationInfo().line)) & "] " & description
     when alias != unaliased:
@@ -164,6 +172,9 @@ template constant*(n: string, alias: VSymbol, description: string, v: Value):unt
         )
 
 proc showWrongArgumentTypeError*(name: string, pos: int, params: openArray[Value], expected: openArray[(string, set[ValueKind])]) =
+    ## show relevant error message in case ``require`` 
+    ## fails to validate the arguments passed to the 
+    ## function
     var expectedValues = toSeq((expected[pos][1]).items)
     let acceptedStr = expectedValues.map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
     let actualStr = params.map(proc(x:Value):string = ":" & ($(x.kind)).toLowerAscii()).join(" ")
@@ -172,6 +183,8 @@ proc showWrongArgumentTypeError*(name: string, pos: int, params: openArray[Value
     RuntimeError_WrongArgumentType(name, actualStr, ordinalPos, acceptedStr)
 
 template require*(name: string, spec: untyped): untyped =
+    ## make sure that the given arguments match the given spec, 
+    ## before passing the control to the function
     when spec!=NoArgs:
         if unlikely(SP<(static spec.len)):
             RuntimeError_NotEnoughArguments(name, spec.len)

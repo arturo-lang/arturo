@@ -1,10 +1,13 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: library/Path.nim
-######################################################
+#=======================================================
+
+## The main Paths module 
+## (part of the standard library)
 
 #=======================================
 # Pragmas
@@ -52,7 +55,7 @@ proc defineSymbols*() =
             absolute? "/usr/bin"        ; => true
             absolute? "usr/bin"         ; => false
             """:
-                ##########################################################
+                #=======================================================
                 push(newLogical(isAbsolute(x.s)))
 
         # TODO(Paths\extract) implement for Web/JS builds
@@ -125,7 +128,7 @@ proc defineSymbols*() =
             extract.hue #magenta
             ; => 300
             """:
-                ##########################################################
+                #=======================================================
                 if x.kind==Color:
                     if (hadAttr("red")):
                         push newInteger(RGBfromColor(x.l).r)
@@ -223,7 +226,7 @@ proc defineSymbols*() =
             ; var
             ; data.txt
             """:
-                ##########################################################
+                #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("list")
                 let recursive = (hadAttr("recursive"))
                 let relative = (hadAttr("relative"))
@@ -257,7 +260,7 @@ proc defineSymbols*() =
             ..........
             do.import module 'html    ; (imports given module)
             """:
-                ##########################################################
+                #=======================================================
                 push(newString(HomeDir & ".arturo/lib/" & x.s & ".art"))
         
         builtin "normalize",
@@ -288,7 +291,7 @@ proc defineSymbols*() =
             normalize.executable "myscript"
             ; => ./myscript          
             """:
-                ##########################################################
+                #=======================================================
                 if (hadAttr("executable")):
                     if x.kind==Literal:
                         ensureInPlace()
@@ -335,7 +338,7 @@ proc defineSymbols*() =
             print relative "test.txt"
             ; /Users/admin/Desktop/test.txt
             """:
-                ##########################################################
+                #=======================================================
                 push(newString(joinPath(env.currentPath(),x.s)))
 
 #=======================================

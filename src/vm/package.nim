@@ -1,10 +1,12 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: vm/package.nim
-######################################################
+#=======================================================
+
+## This module contains helpers related to the Packager.
 
 # TODO(VM/package) Needs thorough revision & testing
 #  This looks - and is - very draft-ish. First, we have to see whether it's working at all. Then, probably re-write the whole thing from scratch...

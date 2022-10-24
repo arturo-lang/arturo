@@ -1,10 +1,12 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: vm/errors.nim
-######################################################
+#=======================================================
+
+## Error handling for the VM.
 
 # TODO(VM/errors) General cleanup needed
 #  Do we need all these different errors? Could it be done in a more organized function by, at least, using some template? Are there other errors - mostly coming from built-in functions - that are not reported, which we could add?
@@ -43,7 +45,7 @@ const
     ProgramError*   = "Program"
     CompilerError*  = "Compiler"
 
-    Alternative*  = "perhaps you meant"
+    Alternative     = "perhaps you meant"
 
 #=======================================
 # Variables
@@ -65,7 +67,7 @@ proc showVMErrors*(e: ref Exception)
 # Main
 #=======================================
 
-proc getLineError*(): string =
+proc getLineError(): string =
     result = ""
     if CurrentFile != "<repl>":
         if CurrentLine==0: CurrentLine = 1
@@ -74,6 +76,7 @@ proc getLineError*(): string =
         result &= (bold(grayColor)).replace(";","%&") & "File: " & resetColor & (fg(grayColor)).replace(";","%&") & CurrentFile & ";" & (bold(grayColor)).replace(";","%&") & "Line: " & resetColor & (fg(grayColor)).replace(";","%&") & $(CurrentLine) & resetColor & ";;"
 
 proc panic*(context: string, error: string, throw=true) =
+    ## throw error, using given context and error message
     var errorMsg = error
     if $(context) notin [CompilerError]:
         when not defined(NOERRORLINES):
@@ -91,6 +94,7 @@ proc panic*(context: string, error: string, throw=true) =
 #=======================================
 
 proc showVMErrors*(e: ref Exception) =
+    ## show error message
     var header: string
     try:
         header = $(e.name)
@@ -130,7 +134,7 @@ proc showVMErrors*(e: ref Exception) =
 # Methods
 #=======================================
 
-## Compiler errors
+# Compiler errors
 
 proc CompilerError_ScriptNotExists*(name: string) =
     panic CompilerError,
@@ -143,7 +147,7 @@ proc CompilerError_UnrecognizedOption*(name: string) =
           "_" & name & "_",
           throw=false
 
-## Syntax errors
+# Syntax errors
 
 proc SyntaxError_MissingClosingBracket*(lineno: int, context: string) =
     CurrentLine = lineno
@@ -173,13 +177,13 @@ proc SyntaxError_EmptyLiteral*(lineno: int, context: string) =
           "empty literal value;;" & 
           "near: " & context
 
-## Assertion errors
+# Assertion errors
 
 proc AssertionError_AssertionFailed*(context: string) =
     panic AssertionError,
           context
 
-## Runtime errors
+# Runtime errors
 
 proc RuntimeError_IntegerParsingOverflow*(lineno: int, number: string) =
     CurrentLine = lineno
@@ -284,7 +288,7 @@ proc RuntimeError_OperationNotPermitted*(operation: string) =
           "unsafe operation: " & operation & ";" &
           "not permitted in online playground"
 
-## Program errors
+# Program errors
 
 proc ProgramError_panic*(message: string, code: int) =
     panic ProgramError,

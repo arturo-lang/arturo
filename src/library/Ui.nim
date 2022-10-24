@@ -1,10 +1,13 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: library/Ui.nim
-######################################################
+#=======================================================
+
+## The main Ui module 
+## (part of the standard library)
 
 #=======================================
 # Pragmas
@@ -64,7 +67,7 @@ proc defineSymbols*() =
             alert.error "Ooops!" "Something went wrong!"
             ; show an OS notification with an error message
             """:
-                ##########################################################
+                #=======================================================
                 var alertIcon = NoIcon
 
                 if (hadAttr("info")):
@@ -90,7 +93,7 @@ proc defineSymbols*() =
             example     = """
             clip "this is something to be pasted into the clipboard"
             """:
-                ##########################################################
+                #=======================================================
                 setClipboard(x.s)
 
     when not defined(NODIALOGS):
@@ -114,7 +117,7 @@ proc defineSymbols*() =
             selectedFolder: dialog.folder "Select a folder"
             ; same as above, only for folder selection
             """:
-                ##########################################################
+                #=======================================================
                 var path = ""
                 let selectFiles = not hadAttr("folder")
                 if checkAttr("path"): 
@@ -160,7 +163,7 @@ proc defineSymbols*() =
             ; => 'ok (if user clicked OK)
             ; => 'cancel (if user clicked Cancel)
             """:
-                ##########################################################
+                #=======================================================
                 var popupIcon = NoIcon
                 var popupType = OKDialog
 
@@ -211,7 +214,7 @@ proc defineSymbols*() =
             unclip 
             ; => "this is something to be pasted into the clipboard"
             """:
-                ##########################################################
+                #=======================================================
                 push newString(getClipboard())
 
     when not defined(NOWEBVIEW):
@@ -252,7 +255,7 @@ proc defineSymbols*() =
             ---
             ; (opens a webview with given attributes)
             """:
-                ##########################################################
+                #=======================================================
                 var title = "Arturo"
                 var width = 640
                 var height = 480
@@ -330,7 +333,7 @@ proc defineSymbols*() =
                     returns     = {Integer,Nothing},
                     example     = """
                     """:
-                        ##########################################################
+                        #=======================================================
                         wv.evaluate(x.s)
 
                 wv.show()

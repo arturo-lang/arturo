@@ -1,10 +1,12 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: vm/values/custom/vrational.nim
-######################################################
+#=======================================================
+
+## The internal `:rational` type
 
 # Contains code based on
 # the Rationals module: https://raw.githubusercontent.com/nim-lang/Nim/version-1-6/lib/pure/rationals.nim

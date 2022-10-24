@@ -1,10 +1,20 @@
-######################################################
+#=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: vm/parse.nim
-######################################################
+#=======================================================
+
+## This module contains the parser/lexer for the VM.
+## 
+## In general, the parser:
+## - takes a string/text
+## - parses the different tokens and returns a Block of
+##   valid values (that can later be used in conjuction 
+##   with e.g. the evaluator)
+## 
+## The main entry point is `doParse`.
 
 # TODO(VM/parser) General cleanup needed
 #  There are various pieces of commented-out code that make the final result pretty much illegible. Let's clean this up.
@@ -25,10 +35,10 @@ import vm/values/custom/[vquantity, vsymbol]
 #=======================================
 
 type
-    Parser* = object of BaseLexer
-        value*: string
-        values*: seq[ValueArray]
-        symbol*: VSymbol
+    Parser = object of BaseLexer
+        value: string
+        values: seq[ValueArray]
+        symbol: VSymbol
 
 #=======================================
 # Constants
@@ -83,16 +93,16 @@ proc parseDataBlock*(blk: Value): Value
 # Templates
 #=======================================
 
-template AddToken*(token: untyped): untyped =
+template AddToken(token: untyped): untyped =
     topBlock.a.add(token)
 
-template LastToken*(): untyped = 
+template LastToken(): untyped = 
     topBlock.a[^1]
 
-template ReplaceLastToken*(with: untyped): untyped =
+template ReplaceLastToken(with: untyped): untyped =
     topBlock.a[^1] = with
 
-template stripTrailingNewlines*(): untyped =
+template stripTrailingNewlines(): untyped =
     if topBlock.a[^1].kind == Newline:
         let lastN = topBlock.a.len-1
         var firstN = lastN
@@ -104,9 +114,9 @@ template stripTrailingNewlines*(): untyped =
 # Helpers
 #=======================================
 
-## Error reporting
+# Error reporting
 
-func getContext*(p: var Parser, curPos: int): string =
+func getContext(p: var Parser, curPos: int): string =
     result = ""
 
     var i = curPos
@@ -125,7 +135,7 @@ func getContext*(p: var Parser, curPos: int): string =
 
     result &= ";" & repeat("~%",6 + curPos-initial) & "_^_"
 
-## Lexer/parser
+# Lexer/parser
 
 template skip(p: var Parser, scriptStr: var string) =
   var pos = p.bufpos
@@ -795,7 +805,7 @@ template parseExponent(p: var Parser) =
 
     p.bufpos = pos
 
-proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.inline.} =
+proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inline.} =
     var topBlock: Value
     var scriptStr: string = ""
     if isDeferred: topBlock = newBlock(dirty=true)
@@ -1019,6 +1029,8 @@ proc parseAsBlock(blk: Value, start: int): Value =
 #=======================================
 
 proc parseDataBlock*(blk: Value): Value =
+    ## Parse given value as a data block
+    ## and return the parsed result
     if blk.kind != Block or blk.a.len == 0:
         return VNULL
 
@@ -1075,6 +1087,8 @@ when defined(PYTHONIC):
         lines.join("\n")
 
 proc doParse*(input: string, isFile: bool = true): Value =
+    ## Parse a string or file path
+    ## and return the result as a Block of values
     hookProcProfiler("parse/doParse"):
         var p: Parser
 
