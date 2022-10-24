@@ -26,13 +26,13 @@ import vm/[errors, values/value]
 
 var
     # symbols
-    Syms*       {.global,noInit.} : ValueDict   ## The symbol table: all the variables 
-                                                ## with their associated values
+    Syms*       {.global,noInit.} : ValueDict       ## The symbol table: all the variables 
+                                                    ## with their associated values
 
     # symbol aliases
-    Aliases*    {.global,noInit.} : SymbolDict  ## The symbol aliases: all the symbols
-                                                ## with all their associated variables
-                                                ## they point to
+    Aliases*    {.global,noInit.} : SymbolDict      ## The symbol aliases: all the symbols
+                                                    ## with all their associated variables
+                                                    ## they point to
 
     # function arity reference
     Arities* {.global.}   : Table[string,int]   ## The arity table: a simple association
