@@ -27,7 +27,6 @@ import strutils, sugar, unicode
 
 
 import helpers/arrays
-import helpers/bytes
 import helpers/combinatorics
 import helpers/strings
 import helpers/unisort
