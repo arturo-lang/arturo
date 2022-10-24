@@ -26,11 +26,11 @@ import vm/[errors, values/value]
 
 var
     # symbols
-    Syms* {.global.}      : ValueDict           ## The symbol table: all the variables 
+    Syms*       {.global,noInit.} : ValueDict   ## The symbol table: all the variables 
                                                 ## with their associated values
 
     # symbol aliases
-    Aliases* {.global.}   : SymbolDict          ## The symbol aliases: all the symbols
+    Aliases*    {.global,noInit.} : SymbolDict  ## The symbol aliases: all the symbols
                                                 ## with all their associated variables
                                                 ## they point to
 
