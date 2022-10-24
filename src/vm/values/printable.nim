@@ -31,7 +31,7 @@ import vm/stack
 import vm/values/value
 import vm/values/clean
 
-import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrational, vregex]
+import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrational, vregex]
 
 #=======================================
 # Helpers
