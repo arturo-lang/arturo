@@ -32,9 +32,9 @@ const StackSize* = 100000   ## The initial stack size
 
 var
     # stack
-    Stack*                  : seq[Value]                        ## The main stack
+    Stack*       {.noInit.} : seq[Value]                        ## The main stack
     SP*                     : int                               ## The main stack pointer
-    Attrs*                  : OrderedTable[string,Value]        ## The attributes table
+    Attrs*       {.noInit.} : OrderedTable[string,Value]        ## The attributes table
 
 #=======================================
 # Methods
