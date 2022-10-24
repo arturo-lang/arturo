@@ -21,8 +21,6 @@ when defined(WEB):
 when not defined(NOGMP):
     import helpers/bignums
 
-import helpers/bytes
-
 import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrational, vregex, vsymbol]
 
 #=======================================
