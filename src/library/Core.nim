@@ -874,10 +874,11 @@ proc defineSymbols*() =
                 let preevaledY = evalOrGet(y)
                 while true:
                     handleBranching:
-                        if execInParent:
-                            execBlock(nil, evaluated=preevaledY, hasEval=true, execInParent=true)
-                        else:
-                            execBlock(nil, evaluated=preevaledY, hasEval=true)
+                        execUnscoped(preevaledY)
+                        # if execInParent:
+                        #     execBlock(nil, evaluated=preevaledY, hasEval=true, execInParent=true)
+                        # else:
+                        #     execBlock(nil, evaluated=preevaledY, hasEval=true)
                     do:
                         discard
             else:
