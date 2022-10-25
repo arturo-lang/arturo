@@ -262,7 +262,6 @@ proc defineSymbols*() =
                 let xblock = doEval(x)
                 let stop = SP
                 execUnscoped(xblock)
-                #discard doExec(xblock)
 
                 var res: ValueArray = @[]
                 while SP>stop:
@@ -302,7 +301,6 @@ proc defineSymbols*() =
                 let xblock = doEval(x)
                 let stop = SP
                 execUnscoped(xblock)
-                #discard doExec(xblock)
 
                 var res: ValueArray = @[]
                 while SP>stop:
