@@ -302,7 +302,7 @@ template handleBranching*(tryDoing, finalize: untyped): untyped =
 # Methods
 #=======================================
 
-template execUnscoped*(input: Translation) =
+template execUnscoped*(input: Translation or Value) =
     ## Execute given bytecode without scoping
     ## 
     ## This means:
@@ -311,7 +311,11 @@ template execUnscoped*(input: Translation) =
     ## - Symbols re-assigned inside will overwrite 
     ##   the value in the outer scope (if it exists)
     
-    ExecLoop(input.constants, input.instructions)
+    when input is Translation:
+        ExecLoop(input.constants, input.instructions)
+    else:
+        let preevaled = evalOrGet(input)
+        ExecLoop(preevaled.constants, preevaled.instructions)
 
 proc ExecLoop*(cnst: ValueArray, it: VBinary) =
     ## The main execution loop.
