@@ -591,9 +591,11 @@ proc defineSymbols*() =
             #=======================================================
             let condition = not (x.kind==Null or (x.kind==Logical and x.b==False))
             if condition: 
-                execBlock(y)
+                execUnscoped(y)
+                #execBlock(y)
             else:
-                execBlock(z)
+                execUnscoped(z)
+                #execBlock(z)
 
     builtin "try",
         alias       = unaliased, 
