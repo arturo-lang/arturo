@@ -343,8 +343,6 @@ proc defineSymbols*() =
             let y = pop() # pop the value of the previous operation (hopefully an 'if?' or 'when?')
             if Not(y.b)==True: 
                 execUnscoped(x)
-                # let preevaled = evalOrGet(x)
-                # execUnscoped(preevaled)
             
     builtin "ensure",
         alias       = unaliased, 
@@ -387,8 +385,6 @@ proc defineSymbols*() =
             let condition = not (x.kind==Null or (x.kind==Logical and x.b==False))
             if condition: 
                 execUnscoped(y)
-                # let preevaled = evalOrGet(y)
-                # execUnscoped(preevaled)
 
     builtin "if?",
         alias       = unaliased, 
@@ -423,8 +419,6 @@ proc defineSymbols*() =
             let condition = not (x.kind==Null or (x.kind==Logical and x.b==False))
             if condition: 
                 execUnscoped(y)
-                # let preevaled = evalOrGet(y)
-                # execUnscoped(preevaled)
 
             push(newLogical(condition))
 
@@ -693,8 +687,6 @@ proc defineSymbols*() =
             let condition = x.kind==Null or (x.kind==Logical and x.b==False)
             if condition: 
                 execUnscoped(y)
-                # let preevaled = evalOrGet(y)
-                # execUnscoped(preevaled)
 
     builtin "unless?",
         alias       = unaliased, 
@@ -729,8 +721,6 @@ proc defineSymbols*() =
             let condition = x.kind==Null or (x.kind==Logical and x.b==False)
             if condition: 
                 execUnscoped(y)
-                # let preevaled = evalOrGet(y)
-                # execUnscoped(preevaled)
 
             push(newLogical(condition))
 
@@ -830,11 +820,13 @@ proc defineSymbols*() =
                 for cond in cleanX:
                     newb.a.add(cond)
 
-                execBlock(newb)
+                execUnscoped(newb)
+                #execBlock(newb)
 
                 let res = sTop()
                 if (res.b)==True: 
-                    execBlock(y)
+                    execUnscoped(y)
+                    #execBlock(y)
                     discard pop()
                     discard pop()
                     push(newLogical(true))
@@ -893,18 +885,12 @@ proc defineSymbols*() =
                 let preevaledY = evalOrGet(y)
 
                 execUnscoped(preevaledX)
-                #execBlock(nil, evaluated=preevaledX, hasEval=true)
                 var popped = pop()
 
                 while not (popped.kind==Null or (popped.kind==Logical and popped.b==False)):
                     handleBranching:
                         execUnscoped(preevaledY)
                         execUnscoped(preevaledX)
-                        # if execInParent:
-                        #     execBlock(nil, evaluated=preevaledY, hasEval=true, execInParent=true)
-                        # else:
-                        #     execBlock(nil, evaluated=preevaledY, hasEval=true)
-                        # execBlock(nil, evaluated=preevaledX, hasEval=true)
                         popped = pop()
                     do:
                         discard
