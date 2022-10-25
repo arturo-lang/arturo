@@ -765,7 +765,7 @@ proc defineSymbols*() =
                 handleBranching:
                     execUnscoped(preevaledX)
                     execUnscoped(preevaledY)
-                    
+
                     let popped = pop()
                     let condition = not (popped.kind==Null or (popped.kind==Logical and popped.b==False))
                     if condition:
@@ -887,16 +887,19 @@ proc defineSymbols*() =
                 let preevaledX = evalOrGet(x)
                 let preevaledY = evalOrGet(y)
 
-                execBlock(nil, evaluated=preevaledX, hasEval=true)
+                execUnscoped(preevaledX)
+                #execBlock(nil, evaluated=preevaledX, hasEval=true)
                 var popped = pop()
 
                 while not (popped.kind==Null or (popped.kind==Logical and popped.b==False)):
                     handleBranching:
-                        if execInParent:
-                            execBlock(nil, evaluated=preevaledY, hasEval=true, execInParent=true)
-                        else:
-                            execBlock(nil, evaluated=preevaledY, hasEval=true)
-                        execBlock(nil, evaluated=preevaledX, hasEval=true)
+                        execUnscoped(preevaledY)
+                        execUnscoped(preevaledX)
+                        # if execInParent:
+                        #     execBlock(nil, evaluated=preevaledY, hasEval=true, execInParent=true)
+                        # else:
+                        #     execBlock(nil, evaluated=preevaledY, hasEval=true)
+                        # execBlock(nil, evaluated=preevaledX, hasEval=true)
                         popped = pop()
                     do:
                         discard
