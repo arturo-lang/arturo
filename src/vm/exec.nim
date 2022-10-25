@@ -334,10 +334,7 @@ template execLeakless*(input: Translation or Value, protected: ValueArray) =
         Syms[psym.s] = move stack.pop()
 
         if not existingVal.isNil:
-            if existingVal.kind==Function:
-                toRestore.add((psym.s, existingVal, Arities[psym.s]))
-            else:
-                toRestore.add((psym.s, existingVal, -1))
+            toRestore.add((psym.s, existingVal, Arities.getOrDefault(psym.s, -1)))
     
     when input is Translation:
         ExecLoop(input.constants, input.instructions)
