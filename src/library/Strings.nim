@@ -676,7 +676,8 @@ proc defineSymbols*() =
 
                         # execute/reduce ('array') the resulting block
                         let stop = SP
-                        discard execIsolated(evaled)
+                        execUnscoped(evaled)
+    
                         let arr: ValueArray = sTopsFrom(stop)
                         SP = stop
 
