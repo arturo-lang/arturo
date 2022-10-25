@@ -302,6 +302,17 @@ template handleBranching*(tryDoing, finalize: untyped): untyped =
 # Methods
 #=======================================
 
+template execUnscoped*(input: Translation) =
+    ## Execute given bytecode without scoping
+    ## 
+    ## This means:
+    ## - Symbols declared inside will be available 
+    ##   in the outer scope
+    ## - Symbols re-assigned inside will overwrite 
+    ##   the value in the outer scope (if it exists)
+    
+    ExecLoop(input.constants, inputs.instructions)
+
 proc ExecLoop*(cnst: ValueArray, it: VBinary) =
     ## The main execution loop.
     ## 
