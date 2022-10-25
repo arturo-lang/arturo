@@ -256,20 +256,21 @@ proc defineSymbols*() =
 
             var evaled: Translation
             if x.kind==Block:
-                evaled = doEval(x)
+                evaled = evalOrGet(x)
 
             while currentTime < times:
-                if x.kind==Block:
-                    # discard executeBlock(x)
-                    if execInParent:
-                        execBlock(nil, evaluated=evaled, hasEval=true, execInParent=true)
-                    else:
-                        execBlock(nil, evaluated=evaled, hasEval=true)
-                elif x.kind==Bytecode:
-                    if execInParent:
-                        execBlock(nil, evaluated=x.trans, hasEval=true, execInParent=true)
-                    else:
-                        execBlock(nil, evaluated=x.trans, hasEval=true)
+                if x.kind in {Block,Bytecode}:
+                    execUnscoped(evaled)
+                #     # discard executeBlock(x)
+                #     if execInParent:
+                #         execBlock(nil, evaluated=evaled, hasEval=true, execInParent=true)
+                #     else:
+                #         execBlock(nil, evaluated=evaled, hasEval=true)
+                # elif x.kind==Bytecode:
+                #     if execInParent:
+                #         execBlock(nil, evaluated=x.trans, hasEval=true, execInParent=true)
+                #     else:
+                #         execBlock(nil, evaluated=x.trans, hasEval=true)
                     
                 else: # string
                     let (src, tp) = getSource(x.s)
