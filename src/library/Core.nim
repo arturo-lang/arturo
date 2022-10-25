@@ -726,7 +726,7 @@ proc defineSymbols*() =
             if condition: 
                 let preevaled = evalOrGet(y)
                 execUnscoped(preevaled)
-                
+
             push(newLogical(condition))
 
     builtin "until",
@@ -763,8 +763,10 @@ proc defineSymbols*() =
 
             while true:
                 handleBranching:
-                    execBlock(nil, evaluated=preevaledX, hasEval=true)
-                    execBlock(nil, evaluated=preevaledY, hasEval=true)
+                    execUnscoped(preevaledX)
+                    execUnscoped(preevaledY)
+                    #execBlock(nil, evaluated=preevaledX, hasEval=true)
+                    #execBlock(nil, evaluated=preevaledY, hasEval=true)
                     let popped = pop()
                     let condition = not (popped.kind==Null or (popped.kind==Logical and popped.b==False))
                     if condition:
