@@ -118,10 +118,6 @@ template fetchAttributeByIndex(idx: int):untyped =
 
 #---------------------------------------
 
-template execIsolated*(evaled:Translation): untyped =
-    ## Same as ``execBlock(evaled)``
-    doExec(evaled)
-
 template getMemoized(fn: string, v: Value): Value =
     Memoizer.getOrDefault((fn, value.hash(v)), nil)
 
