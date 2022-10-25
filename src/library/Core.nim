@@ -362,7 +362,8 @@ proc defineSymbols*() =
             print "good, the number is positive indeed. let's continue..."
         """:
             #=======================================================
-            execBlock(x)
+            execUnscoped(x)
+            #execBlock(x)
             if Not(pop().b)==True:
                 AssertionError_AssertionFailed(x.codify())
 
