@@ -342,7 +342,9 @@ proc defineSymbols*() =
             #=======================================================
             let preevaled = evalOrGet(x)
             let y = pop() # pop the value of the previous operation (hopefully an 'if?' or 'when?')
-            if Not(y.b)==True: execBlock(nil, evaluated=preevaled, hasEval=true)
+            if Not(y.b)==True: 
+                execUnscoped(preevaled)
+                #execBlock(nil, evaluated=preevaled, hasEval=true)
             
     builtin "ensure",
         alias       = unaliased, 
@@ -385,7 +387,8 @@ proc defineSymbols*() =
             let condition = not (x.kind==Null or (x.kind==Logical and x.b==False))
             if condition: 
                 let preevaled = evalOrGet(y)
-                execBlock(nil, evaluated=preevaled, hasEval=true)
+                execUnscoped(preevaled)
+                #execBlock(nil, evaluated=preevaled, hasEval=true)
 
     builtin "if?",
         alias       = unaliased, 
@@ -420,7 +423,8 @@ proc defineSymbols*() =
             let condition = not (x.kind==Null or (x.kind==Logical and x.b==False))
             if condition: 
                 let preevaled = evalOrGet(y)
-                execBlock(nil, evaluated=preevaled, hasEval=true)
+                execUnscoped(preevaled)
+                #execBlock(nil, evaluated=preevaled, hasEval=true)
                 # if vmReturn:
                 #     return ReturnResult
             push(newLogical(condition))
