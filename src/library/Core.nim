@@ -765,8 +765,7 @@ proc defineSymbols*() =
                 handleBranching:
                     execUnscoped(preevaledX)
                     execUnscoped(preevaledY)
-                    #execBlock(nil, evaluated=preevaledX, hasEval=true)
-                    #execBlock(nil, evaluated=preevaledY, hasEval=true)
+                    
                     let popped = pop()
                     let condition = not (popped.kind==Null or (popped.kind==Logical and popped.b==False))
                     if condition:
