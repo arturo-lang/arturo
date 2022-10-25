@@ -146,7 +146,7 @@ proc defineSymbols*() =
                 var fun: Value
 
                 if x.kind==Literal or x.kind==String:
-                    fun = FetchSym(x.s)#InPlace
+                    fun = FetchSym(x.s)
                 else:
                     fun = x
 
@@ -261,16 +261,6 @@ proc defineSymbols*() =
             while currentTime < times:
                 if x.kind in {Block,Bytecode}:
                     execUnscoped(evaled)
-                #     # discard executeBlock(x)
-                #     if execInParent:
-                #         execBlock(nil, evaluated=evaled, hasEval=true, execInParent=true)
-                #     else:
-                #         execBlock(nil, evaluated=evaled, hasEval=true)
-                # elif x.kind==Bytecode:
-                #     if execInParent:
-                #         execBlock(nil, evaluated=x.trans, hasEval=true, execInParent=true)
-                #     else:
-                #         execBlock(nil, evaluated=x.trans, hasEval=true)
                     
                 else: # string
                     let (src, tp) = getSource(x.s)
@@ -363,7 +353,6 @@ proc defineSymbols*() =
         """:
             #=======================================================
             execUnscoped(x)
-            #execBlock(x)
             if Not(pop().b)==True:
                 AssertionError_AssertionFailed(x.codify())
 
@@ -592,10 +581,8 @@ proc defineSymbols*() =
             let condition = not (x.kind==Null or (x.kind==Logical and x.b==False))
             if condition: 
                 execUnscoped(y)
-                #execBlock(y)
             else:
                 execUnscoped(z)
-                #execBlock(z)
 
     builtin "try",
         alias       = unaliased, 
@@ -792,7 +779,7 @@ proc defineSymbols*() =
             print g 10              ; 12
         """:
             #=======================================================
-            push(FetchSym(x.s))#push(InPlace)
+            push(FetchSym(x.s))
 
     builtin "when?",
         alias       = unaliased, 
@@ -825,12 +812,10 @@ proc defineSymbols*() =
                     newb.a.add(cond)
 
                 execUnscoped(newb)
-                #execBlock(newb)
 
                 let res = sTop()
                 if (res.b)==True: 
                     execUnscoped(y)
-                    #execBlock(y)
                     discard pop()
                     discard pop()
                     push(newLogical(true))
@@ -879,10 +864,6 @@ proc defineSymbols*() =
                 while true:
                     handleBranching:
                         execUnscoped(preevaledY)
-                        # if execInParent:
-                        #     execBlock(nil, evaluated=preevaledY, hasEval=true, execInParent=true)
-                        # else:
-                        #     execBlock(nil, evaluated=preevaledY, hasEval=true)
                     do:
                         discard
             else:
