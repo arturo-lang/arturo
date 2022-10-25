@@ -313,6 +313,45 @@ template execUnscoped*(input: Translation or Value) =
         let preevaled = evalOrGet(input)
         ExecLoop(preevaled.constants, preevaled.instructions)
 
+template execLeakless*(input: Translation or Value, protected: ValueArray) =
+    ## Execute given bytecode without scoping
+    ## but by "protecting" selected symbols from
+    ## leaks
+    ## 
+    ## This means:
+    ## - Symbols declared inside will be available 
+    ##   in the outer scope
+    ## - Symbols re-assigned inside will overwrite 
+    ##   the value in the outer scope (if it exists)
+    ## - Symbols that are "protected" will NOT leak 
+    ##   to the outer scope: neither will they keep
+    ##   being visible (if they weren't already), nor
+    ##   will they overwrite outer scope's values
+    
+    var toRestore: seq[(string,Value,int)] = @[]
+    for psym in protected:
+        var existingVal = Syms.getOrDefault(psym.s, nil)
+        Syms[psym.s] = move stack.pop()
+
+        if not existingVal.isNil:
+            if existingVal.kind==Function:
+                toRestore.add((psym.s, existingVal, Arities[psym.s]))
+            else:
+                toRestore.add((psym.s, existingVal, -1))
+    
+    when input is Translation:
+        ExecLoop(input.constants, input.instructions)
+    else:
+        let preevaled = evalOrGet(input)
+        ExecLoop(preevaled.constants, preevaled.instructions)
+
+    for tr in toRestore:
+        Syms[tr[0]] = tr[1]
+        if tr[2] != -1:
+            Arities[tr[0]] = tr[2]
+        else:
+            Arities.del(tr[0])
+
 proc ExecLoop*(cnst: ValueArray, it: VBinary) =
     ## The main execution loop.
     ## 
