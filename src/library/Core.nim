@@ -694,7 +694,8 @@ proc defineSymbols*() =
             let condition = x.kind==Null or (x.kind==Logical and x.b==False)
             if condition: 
                 let preevaled = evalOrGet(y)
-                execBlock(nil, evaluated=preevaled, hasEval=true)
+                execUnscoped(preevaled)
+                #execBlock(nil, evaluated=preevaled, hasEval=true)
 
     builtin "unless?",
         alias       = unaliased, 
@@ -729,7 +730,8 @@ proc defineSymbols*() =
             let condition = x.kind==Null or (x.kind==Logical and x.b==False)
             if condition: 
                 let preevaled = evalOrGet(y)
-                execBlock(nil, evaluated=preevaled, hasEval=true)
+                execUnscoped(preevaled)
+                #execBlock(nil, evaluated=preevaled, hasEval=true)
                 # if vmReturn:
                 #     return ReturnResult
             push(newLogical(condition))
