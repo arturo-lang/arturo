@@ -311,7 +311,7 @@ template execUnscoped*(input: Translation) =
     ## - Symbols re-assigned inside will overwrite 
     ##   the value in the outer scope (if it exists)
     
-    ExecLoop(input.constants, inputs.instructions)
+    ExecLoop(input.constants, input.instructions)
 
 proc ExecLoop*(cnst: ValueArray, it: VBinary) =
     ## The main execution loop.
