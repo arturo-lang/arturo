@@ -342,8 +342,9 @@ proc defineSymbols*() =
             #=======================================================
             let y = pop() # pop the value of the previous operation (hopefully an 'if?' or 'when?')
             if Not(y.b)==True: 
-                let preevaled = evalOrGet(x)
-                execUnscoped(preevaled)
+                execUnscoped(x)
+                # let preevaled = evalOrGet(x)
+                # execUnscoped(preevaled)
             
     builtin "ensure",
         alias       = unaliased, 
@@ -385,8 +386,9 @@ proc defineSymbols*() =
             #=======================================================
             let condition = not (x.kind==Null or (x.kind==Logical and x.b==False))
             if condition: 
-                let preevaled = evalOrGet(y)
-                execUnscoped(preevaled)
+                execUnscoped(y)
+                # let preevaled = evalOrGet(y)
+                # execUnscoped(preevaled)
 
     builtin "if?",
         alias       = unaliased, 
@@ -420,8 +422,9 @@ proc defineSymbols*() =
             #=======================================================
             let condition = not (x.kind==Null or (x.kind==Logical and x.b==False))
             if condition: 
-                let preevaled = evalOrGet(y)
-                execUnscoped(preevaled)
+                execUnscoped(y)
+                # let preevaled = evalOrGet(y)
+                # execUnscoped(preevaled)
 
             push(newLogical(condition))
 
@@ -689,8 +692,9 @@ proc defineSymbols*() =
             #=======================================================
             let condition = x.kind==Null or (x.kind==Logical and x.b==False)
             if condition: 
-                let preevaled = evalOrGet(y)
-                execUnscoped(preevaled)
+                execUnscoped(y)
+                # let preevaled = evalOrGet(y)
+                # execUnscoped(preevaled)
 
     builtin "unless?",
         alias       = unaliased, 
@@ -724,8 +728,9 @@ proc defineSymbols*() =
             #=======================================================
             let condition = x.kind==Null or (x.kind==Logical and x.b==False)
             if condition: 
-                let preevaled = evalOrGet(y)
-                execUnscoped(preevaled)
+                execUnscoped(y)
+                # let preevaled = evalOrGet(y)
+                # execUnscoped(preevaled)
 
             push(newLogical(condition))
 
