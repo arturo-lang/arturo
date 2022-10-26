@@ -137,6 +137,33 @@ template callInternal*(fname: string, getValue: bool, args: varargs[Value]): unt
     when getValue:
         pop()
 
+template prepareLeakless*(protected: ValueArray): untyped =
+    ## Prepare for leak-less block execution
+    ## 
+    ## **Hint:** To be used in the Iterators module
+
+    var toRestore{.inject.}: seq[(string,Value,int)] = protected.map((psym) =>
+        (psym.s, Syms.getOrDefault(psym.s, nil), Arities.getOrDefault(psym.s, -1))
+    )
+
+template finalizeLeakless*(): untyped =
+    ## Finalize leak-less block execution
+    ## 
+    ## **Hint:** To be used in the Iterators module
+
+    for (sym, val, arity) in toRestore:
+        if val.isNil:
+            Syms.del(sym)
+            Arities.del(sym)
+        else:
+            Syms[sym] = val
+            if arity != -1:
+                Arities[sym] = arity
+        if arity != -1:
+            Arities[sym] = arity
+        else:
+            Arities.del(sym)
+
 template handleBranching*(tryDoing, finalize: untyped): untyped =
     ## Wrapper for code that may throw *Break* or *Continue* signals, 
     ## or other errors that are to be caught
@@ -185,50 +212,6 @@ template execInternal*(path: string) =
     )
 
     ExecLoop(preevaled.constants, preevaled.instructions)
-
-template prepareLeakless*(protected: ValueArray): untyped =
-    var toRestore{.inject.}: seq[(string,Value,int)] = protected.map((psym) =>
-        (psym.s, Syms.getOrDefault(psym.s, nil), Arities.getOrDefault(psym.s, -1))
-    )
-
-template finalizeLeakless*(): untyped =
-    for (sym, val, arity) in toRestore:
-        if val.isNil:
-            Syms.del(sym)
-            Arities.del(sym)
-        else:
-            Syms[sym] = val
-            if arity != -1:
-                Arities[sym] = arity
-        if arity != -1:
-            Arities[sym] = arity
-        else:
-            Arities.del(sym)
-
-# template execLeakless*(input: Translation or Value, protected: ValueArray) =
-#     ## Execute given bytecode without scoping
-#     ## but by "protecting" selected symbols from
-#     ## leaks
-#     ## 
-#     ## This means:
-#     ## - Symbols declared inside will be available 
-#     ##   in the outer scope
-#     ## - Symbols re-assigned inside will overwrite 
-#     ##   the value in the outer scope (if it exists)
-#     ## - Symbols that are "protected" will NOT leak 
-#     ##   to the outer scope: neither will they keep
-#     ##   being visible (if they weren't already), nor
-#     ##   will they overwrite outer scope's values
-    
-    
-
-#     when input is Translation:
-#         ExecLoop(input.constants, input.instructions)
-#     else:
-#         let preevaled = evalOrGet(input)
-#         ExecLoop(preevaled.constants, preevaled.instructions)
-
-
 
 proc execDictionary*(blk: Value): ValueDict =
     ## Execute given Block value and return 
