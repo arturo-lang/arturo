@@ -176,7 +176,7 @@ lookup: function [what :string :literal :regex :type][
 
 ; start the REPL
 
-while [true] .import [
+while [true] [
     ;push null
     Got: null
 
@@ -195,8 +195,8 @@ while [true] .import [
         inp: inp ++ "\n" ++ input ".. " ++ indentation
     ]
 
-    try?.verbose.import [
-        try.verbose.import to :block inp
+    try?.verbose [
+        try.verbose to :block inp
 
         StackSize: size stack
         
