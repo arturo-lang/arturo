@@ -579,7 +579,6 @@ proc defineSymbols*() =
 
                     if tp!=TextData:
                         execUnscoped(doParse(x.s, isFile=false))
-                        #execBlock(doParse(x.s, isFile=false))#, isIsolated=true)
                     else:
                         echo "file does not exist"
 
