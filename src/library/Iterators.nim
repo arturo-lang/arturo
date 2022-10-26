@@ -115,7 +115,7 @@ template iterateThrough(
                         push(newInteger(run))
 
                     execLeakless(preevaled, allArgs.a)
-                    #execBlock(nil, evaluated=preevaled, hasEval=true, args=allArgs, hasArgs=true)
+                    
                     performAction
                 do:
                     run += 1
