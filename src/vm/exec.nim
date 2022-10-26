@@ -122,123 +122,123 @@ template getMemoized(fid: Hash, v: Value): Value =
 template setMemoized(fid: Hash, v: Value, res: Value) =
     Memoizer[(fid, value.hash(v))] = res
 
-proc execBlock*(
-    blk             : Value, 
-    args            : Value = nil, 
-    hasArgs         : static bool = false,
-    evaluated       : Translation = nil, 
-    hasEval         : static bool = false,
-    execInParent    : static bool = false, 
-    isFuncBlock     : static bool = false, 
-    imports         : Value = nil,
-    exports         : Value = nil,
-    exportable      : bool = false,
-    inTryBlock      : static bool = false,
-    memoized        : Value = nil,
-    isMemoized      : static bool = false
-) =
-    ## Execute an unevaluated Block value or pre-evaluated Translation
-    ## with given arguments and manage the call stack
-    var newSyms: ValueDict
+# proc execBlock*(
+#     blk             : Value, 
+#     args            : Value = nil, 
+#     hasArgs         : static bool = false,
+#     evaluated       : Translation = nil, 
+#     hasEval         : static bool = false,
+#     execInParent    : static bool = false, 
+#     isFuncBlock     : static bool = false, 
+#     imports         : Value = nil,
+#     exports         : Value = nil,
+#     exportable      : bool = false,
+#     inTryBlock      : static bool = false,
+#     memoized        : Value = nil,
+#     isMemoized      : static bool = false
+# ) =
+#     ## Execute an unevaluated Block value or pre-evaluated Translation
+#     ## with given arguments and manage the call stack
+#     var newSyms: ValueDict
 
-    when isFuncBlock or ((not isFuncBlock) and (not execInParent)):
-        let savedArities = Arities
+#     when isFuncBlock or ((not isFuncBlock) and (not execInParent)):
+#         let savedArities = Arities
 
-    when isFuncBlock:
-        var savedSyms: OrderedTable[string,Value]
+#     when isFuncBlock:
+#         var savedSyms: OrderedTable[string,Value]
 
-    when isMemoized:
-        var passedParams: Value
+#     when isMemoized:
+#         var passedParams: Value
 
-    try:
-        when isFuncBlock:
-            when isMemoized:
-                passedParams = newBlock()
+#     try:
+#         when isFuncBlock:
+#             when isMemoized:
+#                 passedParams = newBlock()
     
-                when hasArgs:
-                    var i=0
-                    let argsLen = len(args.a)
-                    while i < argsLen:
-                        passedParams.a.add(stack.peek(i))
-                        inc i
-                    #passedParams.a.add(stack.peekRange(0, args.a.len-1))
+#                 when hasArgs:
+#                     var i=0
+#                     let argsLen = len(args.a)
+#                     while i < argsLen:
+#                         passedParams.a.add(stack.peek(i))
+#                         inc i
+#                     #passedParams.a.add(stack.peekRange(0, args.a.len-1))
 
-                if (let memd = getMemoized(memoized.s, passedParams); not memd.isNil):
-                    when hasArgs:
-                        popN args.a.len
-                    push memd
-                    return
-            else:
-                when hasArgs:
-                    for i,arg in args.a:          
-                        if stack.peek(i).kind==Function:
-                            Arities[arg.s] = stack.peek(i).arity
-                        else:
-                            Arities.del(arg.s)
+#                 if (let memd = getMemoized(memoized.s, passedParams); not memd.isNil):
+#                     when hasArgs:
+#                         popN args.a.len
+#                     push memd
+#                     return
+#             else:
+#                 when hasArgs:
+#                     for i,arg in args.a:          
+#                         if stack.peek(i).kind==Function:
+#                             Arities[arg.s] = stack.peek(i).arity
+#                         else:
+#                             Arities.del(arg.s)
 
-            if not imports.isNil:
-                savedSyms = Syms
-                for k,v in pairs(imports.d):
-                    SetSym(k, v)
+#             if not imports.isNil:
+#                 savedSyms = Syms
+#                 for k,v in pairs(imports.d):
+#                     SetSym(k, v)
 
-        let evaled = 
-            when not hasEval:   
-                doEval(blk)
-            else: 
-                evaluated
+#         let evaled = 
+#             when not hasEval:   
+#                 doEval(blk)
+#             else: 
+#                 evaluated
 
-        when hasArgs:
-            newSyms = doExec(evaled, args)
-        else:
-            newSyms = doExec(evaled)
+#         when hasArgs:
+#             newSyms = doExec(evaled, args)
+#         else:
+#             newSyms = doExec(evaled)
 
-    except ReturnTriggered:
-        when not isFuncBlock:
-            raise
-        else:
-            discard
+#     except ReturnTriggered:
+#         when not isFuncBlock:
+#             raise
+#         else:
+#             discard
         
-    finally:
-        when isFuncBlock:
-            when isMemoized:
-                setMemoized(memoized.s, passedParams, stack.peek(0))
+#     finally:
+#         when isFuncBlock:
+#             when isMemoized:
+#                 setMemoized(memoized.s, passedParams, stack.peek(0))
 
-            if not imports.isNil:
-                Syms = savedSyms
+#             if not imports.isNil:
+#                 Syms = savedSyms
 
-            Arities = savedArities
-            if not exports.isNil():
-                if exportable:
-                    Syms = newSyms
-                else:
-                    for k in exports.a:
-                        if (let newSymsKey = newSyms.getOrDefault(k.s, nil); not newSymsKey.isNil):
-                            SetSym(k.s, newSymsKey)
-            else:
-                when hasArgs:
-                    for arg in args.a:
-                        Arities.del(arg.s)
+#             Arities = savedArities
+#             if not exports.isNil():
+#                 if exportable:
+#                     Syms = newSyms
+#                 else:
+#                     for k in exports.a:
+#                         if (let newSymsKey = newSyms.getOrDefault(k.s, nil); not newSymsKey.isNil):
+#                             SetSym(k.s, newSymsKey)
+#             else:
+#                 when hasArgs:
+#                     for arg in args.a:
+#                         Arities.del(arg.s)
 
-        else:
-            when not inTryBlock:
-                when execInParent:
-                    Syms = newSyms
-                else:
-                    Arities = savedArities
-                    for k, v in mpairs(Syms):
-                        if not (v.kind==Function and v.fnKind==BuiltinFunction):
-                            if (let newsymV = newSyms.getOrDefault(k, nil); not newsymV.isNil):
-                                v = newsymV
-            else:
-                if getCurrentException().isNil():
-                    when execInParent:
-                        Syms = newSyms
-                    else:
-                        Arities = savedArities
-                        for k, v in mpairs(Syms):
-                            if not (v.kind==Function and v.fnKind==BuiltinFunction):
-                                if (let newsymV = newSyms.getOrDefault(k, nil); not newsymV.isNil):
-                                    v = newsymV
+#         else:
+#             when not inTryBlock:
+#                 when execInParent:
+#                     Syms = newSyms
+#                 else:
+#                     Arities = savedArities
+#                     for k, v in mpairs(Syms):
+#                         if not (v.kind==Function and v.fnKind==BuiltinFunction):
+#                             if (let newsymV = newSyms.getOrDefault(k, nil); not newsymV.isNil):
+#                                 v = newsymV
+#             else:
+#                 if getCurrentException().isNil():
+#                     when execInParent:
+#                         Syms = newSyms
+#                     else:
+#                         Arities = savedArities
+#                         for k, v in mpairs(Syms):
+#                             if not (v.kind==Function and v.fnKind==BuiltinFunction):
+#                                 if (let newsymV = newSyms.getOrDefault(k, nil); not newsymV.isNil):
+#                                     v = newsymV
 
 template callInternal*(fname: string, getValue: bool, args: varargs[Value]): untyped =
     ## Call function by name, directly and - optionally - return the result
