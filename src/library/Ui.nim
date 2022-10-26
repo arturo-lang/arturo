@@ -313,7 +313,6 @@ proc defineSymbols*() =
                             let prevSP = SP
                             if not isNil(parsed):
                                 execUnscoped(parsed)
-                                #execBlock(parsed)
                             if SP > prevSP:
                                 result = pop()
                         elif call==WebviewEvent:
