@@ -302,7 +302,8 @@ proc defineSymbols*() =
                                     push(v)
 
                                 if fun.fnKind==UserFunction:
-                                    execBlock(fun.main, args=fun.params, hasArgs=true, isFuncBlock=true, imports=fun.imports, exports=fun.exports)
+                                    execFunction(fun)
+                                    #execBlock(fun.main, args=fun.params, hasArgs=true, isFuncBlock=true, imports=fun.imports, exports=fun.exports)
                                 else:
                                     fun.action()
 
