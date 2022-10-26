@@ -93,7 +93,7 @@ template loadByIndex(idx: int):untyped =
 
 template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
     ## Take a Function value, whether a user or a built-in one, 
-    ## and execute it.
+    ## and execute it
     if f.fnKind==UserFunction:
         hookProcProfiler("exec/callFunction:user"):
             if unlikely(SP < f.arity):
@@ -126,7 +126,8 @@ template setMemoized(fid: Hash, v: Value, res: Value) =
     Memoizer[(fid, value.hash(v))] = res
 
 template callInternal*(fname: string, getValue: bool, args: varargs[Value]): untyped =
-    ## Call function by name, directly and - optionally - return the result
+    ## Call function by name, directly and - 
+    ## optionally - return the result
     let fun = GetSym(fname)
     for v in args.reversed:
         push(v)
