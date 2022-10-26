@@ -154,7 +154,7 @@ proc defineSymbols*() =
                     push(v)
 
                 if fun.fnKind==UserFunction:
-                    let fid: Hash
+                    var fid: Hash
                     if x.kind==Literal or x.kind==String:
                         fid = hash(x.s)
                     else:
