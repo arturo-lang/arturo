@@ -368,6 +368,7 @@ proc execFunction*(fun: Value, fname: string) =
     var memoizedParams: Value = nil
     var savedSyms: ValueDict
 
+    var savedArities = Arities
     let argsL = len(fun.params.a)
 
     try:
@@ -408,22 +409,32 @@ proc execFunction*(fun: Value, fname: string) =
         if fun.memoize:
             setMemoized(fname, memoizedParams, stack.peek(0))
 
-        if not fun.imports.isNil:
-            Syms = savedSyms
-
-        Arities = savedArities
-        if not exports.isNil():
-            if exportable:
-                Syms = newSyms
-            else:
-                for k in exports.a:
-                    if (let newSymsKey = newSyms.getOrDefault(k.s, nil); not newSymsKey.isNil):
-                        SetSym(k.s, newSymsKey)
+        if fun.exportable:
+            for k in fun.params.a:
+                if (let savedSym = savedSyms.getOrDefault(k.s, nil); not savedSym.isNil):
+                    Syms[k.s] = savedSym
+                    if (let savedArity = savedArities.getOrDefault(k.s, -1); savedArity != -1):
+                        Arities[k.s] = savedArity
+                    else:
+                        Arities.del(k.s)
+                else:
+                    Syms.del(k.s)
+                    Arities.del(k.s)
         else:
-            when hasArgs:
-                for arg in args.a:
-                    Arities.del(arg.s)
-    
+            if not fun.exports.isNil:
+                for k in fun.exports.a:
+                    if (let newSym = Syms.getOrDefault(k.s, nil); not newSym.isNil):
+                        savedSyms[k.s] = newSym
+                        if (let newArity = Arities.getOrDefault(k.s, -1); newArity != -1):
+                            savedArities[k.s] = newArity
+                        else:
+                            savedArities.del(k.s)
+            
+                Syms = savedSyms
+                Arities = savedArities
+            else:
+                Syms = savedSyms
+                Arities = savedArities
 
 proc ExecLoop*(cnst: ValueArray, it: VBinary) =
     ## The main execution loop.
