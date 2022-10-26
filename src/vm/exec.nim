@@ -224,7 +224,7 @@ proc execDictionary*(blk: Value): ValueDict =
     let savedSyms = Syms
     let savedArities = Arities
 
-    let preevaled = doEval(blk)
+    let preevaled = doEval(blk, isDictionary=true)
 
     ExecLoop(preevaled.constants, preevaled.instructions)
 
