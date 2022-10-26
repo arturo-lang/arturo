@@ -204,6 +204,7 @@ template execLeakless*(input: Translation or Value, protected: ValueArray) =
     var toRestore: seq[(string,Value,int)] = @[]
     for psym in protected:
         var existingVal = Syms.getOrDefault(psym.s, nil)
+
         Syms[psym.s] = move stack.pop()
 
         if not existingVal.isNil:
@@ -216,7 +217,11 @@ template execLeakless*(input: Translation or Value, protected: ValueArray) =
         ExecLoop(preevaled.constants, preevaled.instructions)
 
     for tr in toRestore:
-        Syms[tr[0]] = tr[1]
+        if tr[1].isNil:
+            Syms.del(tr[0])
+        else:
+            Syms[tr[0]] = tr[1]
+            
         if tr[2] != -1:
             Arities[tr[0]] = tr[2]
         else:
