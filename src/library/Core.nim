@@ -271,15 +271,6 @@ proc defineSymbols*() =
                     let parsed = doParse(src, isFile=false)
                     if not parsed.isNil:
                         execUnscoped(parsed)
-                    # if execInParent:
-                    #     let parsed = doParse(src, isFile=false)
-
-                    #     if not isNil(parsed):
-                    #         execBlock(parsed, execInParent=true)
-                    # else:
-                    #     let parsed = doParse(src, isFile=false)
-                    #     if not isNil(parsed):
-                    #         execBlock(parsed)
 
                     if tp==FileData:
                         discard popPath()
