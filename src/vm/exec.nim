@@ -22,7 +22,7 @@
 # Libraries
 #=======================================
 
-import hashes, sugar, tables
+import hashes, tables
 
 when defined(VERBOSE):
     import strformat
