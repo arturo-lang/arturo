@@ -996,7 +996,13 @@ proc defineSymbols*() =
                     if (hadAttr("once")):
                         SetInPlace(newBlock(InPlaced.a.removeFirst(y)))
                     elif (hadAttr("index")):
-                        SetInPlace(newBlock(InPlaced.a.removeByIndex(y.i)))
+                        # TODO(General) All `SetInPlace` or `InPlace=` that change the type of object should be changed
+                        #  It doesn't work when in-place changing passed parameters to a function
+                        #  The above is mostly a hack to get around this
+                        #  labels: bug, critical, vm
+                        InPlaced.kind = Block
+                        InPlaced.a = InPlaced.a.removeByIndex(y.i)
+                        #SetInPlace(newBlock(InPlaced.a.removeByIndex(y.i)))
                     else:
                         SetInPlace(newBlock(InPlaced.a.removeAll(y)))
                 elif InPlaced.kind == Dictionary:
