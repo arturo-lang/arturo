@@ -223,6 +223,12 @@ proc execDictionary*(blk: Value): ValueDict =
     
     DictSyms.add(initOrderedTable[string,Value]())
 
+    let preevaled = doEval(blk, isDictionary=true)
+
+    ExecLoop(preevaled.constants, preevaled.instructions)
+
+    result = DictSyms.pop()
+
     # let savedSyms = Syms
     # let savedArities = Arities
 
@@ -238,7 +244,7 @@ proc execDictionary*(blk: Value): ValueDict =
     # Syms = savedSyms
     # Arities = savedArities
 
-    result = DictSyms.pop()
+    
 
 proc execFunction*(fun: Value, fid: Hash) =
     ## Execute given Function value with scoping
@@ -406,8 +412,8 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                     else:
                         discard
 
-                of opDStore             : discard
-                of opDStoreX            : discard
+                of opDStore             : i += 1; dStoreByIndex(cnst, (int)(it[i]))
+                of opDStoreX            : i += 2; dStoreByIndex(cnst, (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
 
                 # [0x20-0x2F]
                 # push values
