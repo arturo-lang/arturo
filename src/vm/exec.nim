@@ -46,7 +46,7 @@ import vm/values/custom/[vbinary, vlogical]
 #=======================================
 
 type
-    MemoizerKey = (string, Hash)
+    MemoizerKey = (Hash, Hash)
 
 #=======================================
 # Variables
@@ -96,7 +96,7 @@ template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
             if unlikely(SP < f.arity):
                 RuntimeError_NotEnoughArguments(fnName, f.arity)
 
-            execFunction(f)
+            execFunction(f, hash(fnName))
             # if unlikely(f.memoize): 
             #     execBlock(f.main, args=f.params, hasArgs=true, isFuncBlock=true, imports=f.imports, exports=f.exports, exportable=f.exportable, memoized=newString(fnName), isMemoized=true)
             # else:
@@ -120,10 +120,10 @@ template fetchAttributeByIndex(idx: int):untyped =
 
 #---------------------------------------
 
-template getMemoized(fn: string, v: Value): Value =
+template getMemoized(fid: Hash, v: Value): Value =
     Memoizer.getOrDefault((fn, value.hash(v)), nil)
 
-template setMemoized(fn: string, v: Value, res: Value) =
+template setMemoized(fid: Hash, v: Value, res: Value) =
     Memoizer[(fn, value.hash(v))] = res
 
 proc execBlock*(
@@ -351,7 +351,7 @@ template execLeakless*(input: Translation or Value, protected: ValueArray) =
         else:
             Arities.del(tr[0])
 
-proc execFunction*(fun: Value, fname: string) =
+proc execFunction*(fun: Value, fid: Hash) =
     ## Execute given Function value with scoping
     ## 
     ## This means:
@@ -383,7 +383,7 @@ proc execFunction*(fun: Value, fname: string) =
 
             # this specific call result has already been memoized
             # so we can just return it
-            if (let memd = getMemoized(fname, memoizedParams); not memd.isNil):
+            if (let memd = getMemoized(fid, memoizedParams); not memd.isNil):
                 popN argsL
                 push memd
                 return
@@ -408,7 +408,7 @@ proc execFunction*(fun: Value, fname: string) =
 
     finally:
         if fun.memoize:
-            setMemoized(fname, memoizedParams, stack.peek(0))
+            setMemoized(fid, memoizedParams, stack.peek(0))
 
         if fun.exportable:
             for k in fun.params.a:
