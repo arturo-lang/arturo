@@ -269,7 +269,7 @@ type
         opInc           = 0xAD
         opDec           = 0xAE
 
-        RSRV3           = 0xAF      # reserved
+        RSRV1           = 0xAF      # reserved
 
         #---------------------------------
         # LOW-LEVEL OPERATIONS
