@@ -698,7 +698,6 @@ proc defineSymbols*() =
                     while keepGoing:
                         res = res.replace(Interpolated, proc (match: RegexMatch): string =
                                     execUnscoped(doParse(match.captures[0], isFile=false))
-                                    #execBlock(doParse(match.captures[0], isFile=false))
                                     $(pop())
                                 )
 
