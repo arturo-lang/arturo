@@ -204,7 +204,6 @@ proc defineSymbols*() =
             else:
                 benchmark "":
                     execUnscoped(preevaled)
-                    #execBlock(nil, evaluated=preevaled, hasEval=true)
 
     builtin "binary?",
         alias       = unaliased, 
