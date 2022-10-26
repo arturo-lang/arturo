@@ -60,7 +60,6 @@ var
 #=======================================
 
 proc ExecLoop*(cnst: ValueArray, it: VBinary)
-#proc doExec*(cnst: ValueArray, it: VBinary, args: Value = nil): ValueDict
 
 #=======================================
 # Helpers
