@@ -312,12 +312,14 @@ proc defineSymbols*() =
                             let parsed = doParse(value.s, isFile=false)
                             let prevSP = SP
                             if not isNil(parsed):
-                                execBlock(parsed)
+                                execUnscoped(parsed)
+                                #execBlock(parsed)
                             if SP > prevSP:
                                 result = pop()
                         elif call==WebviewEvent:
                             if (let onEvent = on.getOrDefault(value.s, nil); not onEvent.isNil):
-                                execBlock(onEvent)
+                                execUnscoped(onEvent)
+                                #execBlock(onEvent)
                         else:
                             discard
                 )
