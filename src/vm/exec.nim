@@ -97,10 +97,6 @@ template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
                 RuntimeError_NotEnoughArguments(fnName, f.arity)
 
             execFunction(f, hash(fnName))
-            # if unlikely(f.memoize): 
-            #     execBlock(f.main, args=f.params, hasArgs=true, isFuncBlock=true, imports=f.imports, exports=f.exports, exportable=f.exportable, memoized=newString(fnName), isMemoized=true)
-            # else:
-            #     execBlock(f.main, args=f.params, hasArgs=true, isFuncBlock=true, imports=f.imports, exports=f.exports, exportable=f.exportable)
     else:
         f.action()
 
