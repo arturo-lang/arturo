@@ -808,9 +808,7 @@ proc defineSymbols*() =
             "condition" : {Block,Bytecode,Null},
             "action"    : {Block,Bytecode}
         },
-        attrs       = {
-            "import": ({Logical},"execute at root level")
-        },
+        attrs       = NoAttrs,
         returns     = {Nothing},
         example     = """
             i: 0 
@@ -835,8 +833,6 @@ proc defineSymbols*() =
             ]
         """:
             #=======================================================
-            var execInParent = (hadAttr("import"))
-
             if x.kind==Null:
                 let preevaledY = evalOrGet(y)
                 while true:
