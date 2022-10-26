@@ -372,39 +372,39 @@ proc execFunction*(fun: Value, fid: Hash) =
     var savedArities = Arities
     let argsL = len(fun.params.a)
 
+    if fun.memoize:
+        memoizedParams = newBlock()
+
+        var i=0
+        while i < argsL:
+            memoizedParams.a.add(stack.peek(i))
+            inc i
+
+        # this specific call result has already been memoized
+        # so we can just return it
+        if (let memd = getMemoized(fid, memoizedParams); not memd.isNil):
+            popN argsL
+            push memd
+            return
+    else:
+        for i,arg in fun.params.a:          
+            if stack.peek(i).kind==Function:
+                Arities[arg.s] = stack.peek(i).arity
+            else:
+                Arities.del(arg.s)
+        
+    savedSyms = Syms
+    if not fun.imports.isNil:
+        for k,v in pairs(fun.imports.d):
+            SetSym(k, v)
+
+    for arg in fun.params.a:
+        # pop argument and set it
+        SetSym(arg.s, move stack.pop())
+
+    let preevaled = doEval(fun.main)
+
     try:
-        if fun.memoize:
-            memoizedParams = newBlock()
-
-            var i=0
-            while i < argsL:
-                memoizedParams.a.add(stack.peek(i))
-                inc i
-
-            # this specific call result has already been memoized
-            # so we can just return it
-            if (let memd = getMemoized(fid, memoizedParams); not memd.isNil):
-                popN argsL
-                push memd
-                return
-        else:
-            for i,arg in fun.params.a:          
-                if stack.peek(i).kind==Function:
-                    Arities[arg.s] = stack.peek(i).arity
-                else:
-                    Arities.del(arg.s)
-            
-        savedSyms = Syms
-        if not fun.imports.isNil:
-            for k,v in pairs(fun.imports.d):
-                SetSym(k, v)
-
-        for arg in fun.params.a:
-            # pop argument and set it
-            SetSym(arg.s, move stack.pop())
-
-        let preevaled = doEval(fun.main)
-
         ExecLoop(preevaled.constants, preevaled.instructions)
 
     except ReturnTriggered:
