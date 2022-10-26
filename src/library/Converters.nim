@@ -951,7 +951,7 @@ proc defineSymbols*() =
             ; |        returns  :integer :floating
             ; |--------------------------------------------------------------------------------
             ..........
-            publicF: function .export['x] [z][
+            publicF: function .export:['x] [z][
                 print ["z =>" z]
                 x: 5
             ]
