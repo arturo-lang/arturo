@@ -1,10 +1,8 @@
 [name:John surname:Doe age:35]
 [name:John surname:Doe age:35]
 [name:John surname:Doe location:[country:Spain]]
-[country:Greece continent:Europe entity:EU]
-[continent:Europe entity:EU country:Spain]
-[some:value]
-a: not set -> CORRECT
+[continent:Europe country:Greece entity:EU]
+[continent:Europe country:Spain entity:EU]
 [some:value]
 [some:value]
 [name:John surname:Doe]
