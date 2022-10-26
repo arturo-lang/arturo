@@ -207,25 +207,26 @@ template execLeakless*(input: Translation or Value, protected: ValueArray) =
 
         Syms[psym.s] = move stack.pop()
 
-        if not existingVal.isNil:
-            toRestore.add((psym.s, existingVal, Arities.getOrDefault(psym.s, -1)))
-    
+        toRestore.add((psym.s, existingVal, Arities.getOrDefault(psym.s, -1)))
+
     when input is Translation:
         ExecLoop(input.constants, input.instructions)
     else:
         let preevaled = evalOrGet(input)
         ExecLoop(preevaled.constants, preevaled.instructions)
 
-    for tr in toRestore:
-        if tr[1].isNil:
-            Syms.del(tr[0])
+    for (sym, val, arity) in toRestore:
+        if val.isNil:
+            Syms.del(sym)
+            Arities.del(sym)
         else:
-            Syms[tr[0]] = tr[1]
-            
-        if tr[2] != -1:
-            Arities[tr[0]] = tr[2]
+            Syms[sym] = val
+            if arity != -1:
+                Arities[sym] = arity
+        if arity != -1:
+            Arities[sym] = arity
         else:
-            Arities.del(tr[0])
+            Arities.del(sym)
 
 proc execDictionary*(blk: Value): ValueDict =
     ## Execute given Block value and return 
