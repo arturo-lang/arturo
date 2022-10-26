@@ -650,12 +650,7 @@ proc defineSymbols*() =
             let execInParent = (hadAttr("import"))
             try:
                 execUnscoped(x)
-                # let preevaled = evalOrGet(x)
-                # if execInParent:
-                #     execBlock(nil, evaluated=preevaled, hasEval=true, execInParent=true, inTryBlock=true)
-                # else:
-                #     execBlock(nil, evaluated=preevaled, hasEval=true, inTryBlock=true)
-
+                
                 push(VTRUE)
             except:
                 let e = getCurrentException()
