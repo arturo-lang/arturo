@@ -115,7 +115,7 @@ template iterateThrough(
                         push(newInteger(run))
 
                     execLeakless(preevaled, allArgs.a)
-                    
+
                     performAction
                 do:
                     run += 1
