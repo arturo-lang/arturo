@@ -297,7 +297,7 @@ template execUnscoped*(input: Translation or Value) =
         let preevaled = evalOrGet(input)
         ExecLoop(preevaled.constants, preevaled.instructions)
 
-template execInternal*(path: string): untyped =
+template execInternal*(path: string) =
     ## Execute internal script using given path
     
     let preevaled = doParse(
@@ -309,7 +309,7 @@ template execInternal*(path: string): untyped =
         isFile = false
     )
 
-    execUnscoped(preevaled)
+    ExecLoop(preevaled.constants, preevaled.instructions)
 
 template execLeakless*(input: Translation or Value, protected: ValueArray) =
     ## Execute given bytecode without scoping
