@@ -318,7 +318,6 @@ proc defineSymbols*() =
                         elif call==WebviewEvent:
                             if (let onEvent = on.getOrDefault(value.s, nil); not onEvent.isNil):
                                 execUnscoped(onEvent)
-                                #execBlock(onEvent)
                         else:
                             discard
                 )
