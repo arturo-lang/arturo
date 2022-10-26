@@ -64,8 +64,10 @@ type
         opEol           = 0x1C
         opEolX          = 0x1D
 
-        RSRV1           = 0x1E      # reserved
-        RSRV2           = 0x1F      # reserved
+        # dictionary keys storage
+
+        opDStore        = 0x1E
+        opDStoreX       = 0x1F
  
         # [0x20-0x2F]
         # push values
