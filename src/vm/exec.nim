@@ -240,19 +240,6 @@ proc execBlock*(
                                 if (let newsymV = newSyms.getOrDefault(k, nil); not newsymV.isNil):
                                     v = newsymV
 
-proc execDictionaryBlock*(blk: Value): ValueDict =
-    ## Execute given Block value and return a Dictionary
-    var newSyms: ValueDict
-
-    try:
-        newSyms = doExec(doEval(blk, isDictionary=true))
-        
-    finally:
-        return collect(initOrderedTable()):
-            for k, v in pairs(newSyms):
-                if (let symV = Syms.getOrDefault(k, nil); symV.isNil or symV != v):
-                    {k: v}
-
 template callInternal*(fname: string, getValue: bool, args: varargs[Value]): untyped =
     ## Call function by name, directly and - optionally - return the result
     let fun = GetSym(fname)
@@ -348,6 +335,25 @@ template execLeakless*(input: Translation or Value, protected: ValueArray) =
             Arities[tr[0]] = tr[2]
         else:
             Arities.del(tr[0])
+
+proc execDictionary*(blk: Value): ValueDict =
+    ## Execute given Block value and return 
+    ## a Dictionary
+
+    let savedSyms = Syms
+    let savedArities = Arities
+
+    let preevaled = doEval(blk)
+
+    ExecLoop(preevaled.constants, preevaled.instructions)
+
+    result = collect(initOrderedTable()):
+        for k, v in pairs(Syms):
+            if (let savedSym = savedSyms.getOrDefault(k, nil); savedSym.isNil or savedSym != v):
+                {k: v}
+
+    Syms = savedSyms
+    Arities = savedArities
 
 proc execFunction*(fun: Value, fid: Hash) =
     ## Execute given Function value with scoping
