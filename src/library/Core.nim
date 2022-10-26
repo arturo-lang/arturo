@@ -610,7 +610,6 @@ proc defineSymbols*() =
             "action": {Block,Bytecode}
         },
         attrs       = {
-            "import"    : ({Logical},"execute at root level"),
             "verbose"   : ({Logical},"print all error messages as usual")
         },
         returns     = {Logical},
@@ -627,7 +626,6 @@ proc defineSymbols*() =
         """:
             #=======================================================
             let verbose = (hadAttr("verbose"))
-            let execInParent = (hadAttr("import"))
             try:
                 execUnscoped(x)
 
