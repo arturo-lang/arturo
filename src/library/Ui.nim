@@ -22,7 +22,7 @@
 import vm/lib
 
 when not defined(NOWEBVIEW):
-    import algorithm
+    import algorithm, hashes
 
     import helpers/url
     import helpers/webviews
@@ -302,7 +302,8 @@ proc defineSymbols*() =
                                     push(v)
 
                                 if fun.fnKind==UserFunction:
-                                    execFunction(fun)
+                                    let fid = hash(value.d["method"].s)
+                                    execFunction(fun, fid)
                                     #execBlock(fun.main, args=fun.params, hasArgs=true, isFuncBlock=true, imports=fun.imports, exports=fun.exports)
                                 else:
                                     fun.action()
