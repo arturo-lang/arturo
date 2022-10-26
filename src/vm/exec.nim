@@ -121,10 +121,10 @@ template fetchAttributeByIndex(idx: int):untyped =
 #---------------------------------------
 
 template getMemoized(fid: Hash, v: Value): Value =
-    Memoizer.getOrDefault((fn, value.hash(v)), nil)
+    Memoizer.getOrDefault((fid, value.hash(v)), nil)
 
 template setMemoized(fid: Hash, v: Value, res: Value) =
-    Memoizer[(fn, value.hash(v))] = res
+    Memoizer[(fid, value.hash(v))] = res
 
 proc execBlock*(
     blk             : Value, 
