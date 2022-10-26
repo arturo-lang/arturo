@@ -132,6 +132,19 @@ template SetSym*(s: string, v: Value, safe: static bool = false): untyped =
     else:
         Syms[s] = v
 
+template SetDictSym*(s: string, v: Value, safe: static bool = false): untyped =
+    ## Sets symbol to topmost Dictionary symbol table
+    when safe:
+        # When doing it safely, also check if the value to be assigned is a read-only value
+        # - if it is - we have to copy it first
+        # - otherwise, go ahead and just assign it (pointer copy!)
+        if v.readonly:
+            DictSyms[^1][s] = copyValue(v)
+        else:
+            DictSyms[^1][s] = v
+    else:
+        DictSyms[^1][s] = v
+
 #---------------------
 # In-Place symbols
 #---------------------
