@@ -115,6 +115,21 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 addToCommand((byte)indx)
                 addToCommand((byte)op)
 
+    proc addShortConst(consts: var seq[Value], v: Value, op: OpCode) =
+        var indx = consts.indexOfValue(v)
+        if indx == -1:
+            v.readonly = true
+            consts.add(v)
+            indx = consts.len-1
+
+        if indx>255:
+            addToCommand((byte)indx)
+            addToCommand((byte)indx shr 8)
+            addToCommand((byte)(op)+1)
+        else:
+            addToCommand((byte)indx)
+            addToCommand((byte)op)
+
     template addToCommandHead(b: byte, at = 0):untyped =
         currentCommand.insert(b, at)
 
@@ -492,7 +507,11 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                     if not isDictionary:
                         TmpArities.del(funcIndx)
 
-                addConst(consts, node, opStore)
+                if unlikely(isDictionary):
+                    addShortConst(consts, node, opDStore)
+                else:
+                    addConst(consts, node, opStore)
+                    
                 argStack.add(1)
 
                 if hasThickArrow:
