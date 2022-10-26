@@ -65,10 +65,6 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary)
 # Helpers
 #=======================================
 
-template doExec*(input: Translation, args: Value = nil): ValueDict =
-    ## Same as ``doExec(input.constants, input.instructions, args)``
-    doExec(input.constants, input.instructions, args)
-
 template pushByIndex(idx: int):untyped =
     stack.push(cnst[idx])
 
