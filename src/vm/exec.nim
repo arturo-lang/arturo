@@ -186,35 +186,12 @@ template execInternal*(path: string) =
 
     ExecLoop(preevaled.constants, preevaled.instructions)
 
-template execLeakless*(input: Translation or Value, protected: ValueArray) =
-    ## Execute given bytecode without scoping
-    ## but by "protecting" selected symbols from
-    ## leaks
-    ## 
-    ## This means:
-    ## - Symbols declared inside will be available 
-    ##   in the outer scope
-    ## - Symbols re-assigned inside will overwrite 
-    ##   the value in the outer scope (if it exists)
-    ## - Symbols that are "protected" will NOT leak 
-    ##   to the outer scope: neither will they keep
-    ##   being visible (if they weren't already), nor
-    ##   will they overwrite outer scope's values
-    
-    var toRestore: seq[(string,Value,int)] = @[]
-    for psym in protected:
-        var existingVal = Syms.getOrDefault(psym.s, nil)
+template prepareLeakless*(protected: ValueArray): untyped =
+    var toRestore{.inject.}: seq[(string,Value,int)] = protected.map((psym) =>
+        (psym.s, Syms.getOrDefault(psym.s, nil), Arities.getOrDefault(psym.s, -1))
+    )
 
-        Syms[psym.s] = move stack.pop()
-
-        toRestore.add((psym.s, existingVal, Arities.getOrDefault(psym.s, -1)))
-
-    when input is Translation:
-        ExecLoop(input.constants, input.instructions)
-    else:
-        let preevaled = evalOrGet(input)
-        ExecLoop(preevaled.constants, preevaled.instructions)
-
+template finalizeLeakless*(): untyped =
     for (sym, val, arity) in toRestore:
         if val.isNil:
             Syms.del(sym)
@@ -227,6 +204,31 @@ template execLeakless*(input: Translation or Value, protected: ValueArray) =
             Arities[sym] = arity
         else:
             Arities.del(sym)
+
+# template execLeakless*(input: Translation or Value, protected: ValueArray) =
+#     ## Execute given bytecode without scoping
+#     ## but by "protecting" selected symbols from
+#     ## leaks
+#     ## 
+#     ## This means:
+#     ## - Symbols declared inside will be available 
+#     ##   in the outer scope
+#     ## - Symbols re-assigned inside will overwrite 
+#     ##   the value in the outer scope (if it exists)
+#     ## - Symbols that are "protected" will NOT leak 
+#     ##   to the outer scope: neither will they keep
+#     ##   being visible (if they weren't already), nor
+#     ##   will they overwrite outer scope's values
+    
+    
+
+#     when input is Translation:
+#         ExecLoop(input.constants, input.instructions)
+#     else:
+#         let preevaled = evalOrGet(input)
+#         ExecLoop(preevaled.constants, preevaled.instructions)
+
+
 
 proc execDictionary*(blk: Value): ValueDict =
     ## Execute given Block value and return 
