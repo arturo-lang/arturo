@@ -349,6 +349,22 @@ template execLeakless*(input: Translation or Value, protected: ValueArray) =
         else:
             Arities.del(tr[0])
 
+proc execFunction*(fun: Value) =
+    ## Execute given Function value with scoping
+    ## 
+    ## This means:
+    ## - All symbols declared inside will NOT be 
+    ##   available in the outer scope
+    ## - Symbols re-assigned inside will NOT 
+    ##   overwrite the value in the outer scope
+    ## - Symbols declared in `.exports` will not 
+    ##   abide by this rule
+    ## - If the whole function is marked as 
+    ##   `.exportable`, then none of the symbols 
+    ##   will abide by this rule and it will behave 
+    ##   pretty much like `execLeakless`
+    discard
+
 proc ExecLoop*(cnst: ValueArray, it: VBinary) =
     ## The main execution loop.
     ## 
