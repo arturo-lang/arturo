@@ -611,11 +611,12 @@ proc defineSymbols*() =
             let verbose = (hadAttr("verbose"))
             let execInParent = (hadAttr("import"))
             try:
-                let preevaled = evalOrGet(x)
-                if execInParent:
-                    execBlock(nil, evaluated=preevaled, hasEval=true, execInParent=true, inTryBlock=true)
-                else:
-                    execBlock(nil, evaluated=preevaled, hasEval=true, inTryBlock=true)
+                execUnscoped(x)
+                # let preevaled = evalOrGet(x)
+                # if execInParent:
+                #     execBlock(nil, evaluated=preevaled, hasEval=true, execInParent=true, inTryBlock=true)
+                # else:
+                #     execBlock(nil, evaluated=preevaled, hasEval=true, inTryBlock=true)
             except:
                 let e = getCurrentException()
                 if verbose:
