@@ -175,7 +175,7 @@ when not defined(WEB):
         handleVMErrors:
             initialize(args, filename, isFile=true)
 
-            discard doExec(code)
+            execUnscoped(code)
 
     proc run*(code: var string, args: seq[string], isFile: bool, doExecute: bool = true, withData=""): Translation {.exportc:"run".} =
         ## Takes a string of Arturo code and executes it.
@@ -204,7 +204,7 @@ when not defined(WEB):
             let evaled = mainCode.doEval()
 
             if doExecute:
-                discard doExec(evaled)
+                execUnscoped(evaled)
 
             showProfilerData()
 
@@ -232,7 +232,7 @@ else:
 
             let evaled = mainCode.doEval()
 
-            Syms = doExec(evaled)
+            execUnscoped(evaled)
 
             var ret: Value = VNULL
 
