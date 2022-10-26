@@ -158,7 +158,7 @@ proc defineSymbols*() =
                     if x.kind==Literal or x.kind==String:
                         fid = hash(x.s)
                     else:
-                        fid = hash(x)
+                        fid = hash(fun)
 
                     execFunction(fun, fid)
                     #execBlock(fun.main, args=fun.params, hasArgs=true, isFuncBlock=true, imports=fun.imports, exports=fun.exports)
