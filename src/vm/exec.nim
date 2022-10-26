@@ -220,21 +220,25 @@ template execLeakless*(input: Translation or Value, protected: ValueArray) =
 proc execDictionary*(blk: Value): ValueDict =
     ## Execute given Block value and return 
     ## a Dictionary
+    
+    DictSyms.add(initOrderedTable[string,Value]())
 
-    let savedSyms = Syms
-    let savedArities = Arities
+    # let savedSyms = Syms
+    # let savedArities = Arities
 
-    let preevaled = doEval(blk, isDictionary=true)
+    # let preevaled = doEval(blk, isDictionary=true)
 
-    ExecLoop(preevaled.constants, preevaled.instructions)
+    # ExecLoop(preevaled.constants, preevaled.instructions)
 
-    result = collect(initOrderedTable()):
-        for k, v in pairs(Syms):
-            if (let savedSym = savedSyms.getOrDefault(k, nil); savedSym.isNil or savedSym != v):
-                {k: v}
+    # result = collect(initOrderedTable()):
+    #     for k, v in pairs(Syms):
+    #         if (let savedSym = savedSyms.getOrDefault(k, nil); savedSym.isNil or savedSym != v):
+    #             {k: v}
 
-    Syms = savedSyms
-    Arities = savedArities
+    # Syms = savedSyms
+    # Arities = savedArities
+
+    result = DictSyms.pop()
 
 proc execFunction*(fun: Value, fid: Hash) =
     ## Execute given Function value with scoping
