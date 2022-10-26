@@ -18,7 +18,7 @@ f
 print ["x after:" x]
 
 ; FUNCTION CALL WITH .EXPORT
-; from the inside can we access the outer variable
+; from the inside we can access the outer variable
 ; and modify it
 
 y: 1
@@ -90,7 +90,7 @@ loop [3 4] 'r [
 
 ; MULTIPLE NESTED DO-BLOCKS
 ; children can access and modify parents' scope symbols
-; but not create new ones in them
+; and also(!) create new ones in them
 
 do [
 	a:9
@@ -101,8 +101,7 @@ do [
 			y:x+b
 			print [x a b y]
 		]
-		; y was already defined,
-		; so it should be kept
+
 		print [x a b y]
 	]
 
@@ -110,12 +109,12 @@ do [
  		print [a b y x]
  	]
  	else [
- 		print "b: not set -> CORRECT"
+ 		print "b: not set -> NOT CORRECT"
  	]
 ]
 
 ; LOOP BLOCK
-; the local parameters have to remain local
+; the local/injected parameters have to remain local
 ; and be removed afterwards
 
 j: 0 
@@ -134,7 +133,7 @@ else [
 ]
 
 ; LOOP BLOCK WITH INTERNAL VARS
-; the local parameters and variables have to remain local
+; the local/injected parameters and variables have to remain local
 ; and be removed afterwards
 
 j: 0 
@@ -157,11 +156,11 @@ if? set? 'h [
 	print h
 ]
 else [
-	print "h: not set -> CORRECT"
+	print "h: not set -> NOT CORRECT"
 ]
 
 ; MAP BLOCK
-; the local parameters have to remain local
+; the local/injected parameters have to remain local
 ; and be removed afterwards
 
 print map [1 2 3 4] 'm [
@@ -174,15 +173,3 @@ if? set? 'm [
 else [
 	print "m: not set -> CORRECT"
 ]
-
-; DO WITH .IMPORT
-; all variables modified or created inside
-; should be merged into the parent block
-
-do.import [
-	j: 666
-	u: "zap!"
-]
-
-print j
-print u
