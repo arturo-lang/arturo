@@ -224,7 +224,6 @@ proc defineSymbols*() =
             "code"  : {String,Block,Bytecode}
         },
         attrs       = {
-            "import": ({Logical},"execute at root level"),
             "times" : ({Integer},"repeat block execution given number of times")
         },
         returns     = {Any,Nothing},
@@ -257,8 +256,6 @@ proc defineSymbols*() =
 
             if checkAttr("times"):
                 times = aTimes.i
-
-            var execInParent = (hadAttr("import"))
 
             var evaled: Translation
             if x.kind==Block:
