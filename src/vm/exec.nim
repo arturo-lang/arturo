@@ -237,23 +237,6 @@ proc execDictionary*(blk: Value): ValueDict =
 
     result = DictSyms.pop()
 
-    # let savedSyms = Syms
-    # let savedArities = Arities
-
-    # let preevaled = doEval(blk, isDictionary=true)
-
-    # ExecLoop(preevaled.constants, preevaled.instructions)
-
-    # result = collect(initOrderedTable()):
-    #     for k, v in pairs(Syms):
-    #         if (let savedSym = savedSyms.getOrDefault(k, nil); savedSym.isNil or savedSym != v):
-    #             {k: v}
-
-    # Syms = savedSyms
-    # Arities = savedArities
-
-    
-
 proc execFunction*(fun: Value, fid: Hash) =
     ## Execute given Function value with scoping
     ## 
