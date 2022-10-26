@@ -300,13 +300,15 @@ template execUnscoped*(input: Translation or Value) =
 template execInternal*(path: string) =
     ## Execute internal script using given path
     
-    let preevaled = doParse(
-        static readFile(
-            normalizedPath(
-                parentDir(currentSourcePath()) & "/../library/internal/" & path & ".art"
-            )
-        ),
-        isFile = false
+    let preevaled = doEval(
+        doParse(
+            static readFile(
+                normalizedPath(
+                    parentDir(currentSourcePath()) & "/../library/internal/" & path & ".art"
+                )
+            ),
+            isFile = false
+        )
     )
 
     ExecLoop(preevaled.constants, preevaled.instructions)
