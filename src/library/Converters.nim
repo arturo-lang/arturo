@@ -802,7 +802,6 @@ proc defineSymbols*() =
             var dict: ValueDict
 
             if x.kind==Block:
-                #dict = execDictionary(x)
                 if (hadAttr("raw")):
                     dict = initOrderedTable[string,Value]()
                     var idx = 0
