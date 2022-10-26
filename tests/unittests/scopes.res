@@ -41,13 +41,11 @@ in fibo 4 , q = 12
 fibo 4 = 5 
 13 9 4 17 
 13 9 4 17 
-b: not set -> CORRECT
+9 4 17 13 
 j : 10 
 o: not set -> CORRECT
 j : 10 
 o: not set -> CORRECT
-h: not set -> CORRECT
+8
 2 4 6 8 
 m: not set -> CORRECT
-666
-zap!
