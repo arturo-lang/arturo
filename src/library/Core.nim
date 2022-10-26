@@ -161,7 +161,6 @@ proc defineSymbols*() =
                         fid = hash(fun)
 
                     execFunction(fun, fid)
-                    #execBlock(fun.main, args=fun.params, hasArgs=true, isFuncBlock=true, imports=fun.imports, exports=fun.exports)
                 else:
                     fun.action()
         
