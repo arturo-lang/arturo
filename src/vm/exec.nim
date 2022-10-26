@@ -349,7 +349,7 @@ template execLeakless*(input: Translation or Value, protected: ValueArray) =
         else:
             Arities.del(tr[0])
 
-proc execFunction*(fun: Value) =
+proc execFunction*(fun: Value, fname: string) =
     ## Execute given Function value with scoping
     ## 
     ## This means:
@@ -363,7 +363,66 @@ proc execFunction*(fun: Value) =
     ##   `.exportable`, then none of the symbols 
     ##   will abide by this rule and it will behave 
     ##   pretty much like `execLeakless`
-    discard
+    
+    var memoizedParams: Value = nil
+    var savedSyms: ValueDict
+
+    let argsL = len(fun.params.a)
+
+    try:
+        if fun.memoize:
+            memoizedParams = newBlock()
+
+            var i=0
+            while i < argsL:
+                memoizedParams.a.add(stack.peek(i))
+                inc i
+
+            # this specific call result has already been memoized
+            # so we can just return it
+            if (let memd = getMemoized(fname, memoizedParams); not memd.isNil):
+                popN argsL
+                push memd
+                return
+        else:
+            for i,arg in fun.params.a:          
+                if stack.peek(i).kind==Function:
+                    Arities[arg.s] = stack.peek(i).arity
+                else:
+                    Arities.del(arg.s)
+            
+        savedSyms = Syms
+        if not fun.imports.isNil:
+            for k,v in pairs(fun.imports.d):
+                SetSym(k, v)
+
+        let preevaled = doEval(fun.main)
+
+        ExecLoop(preevaled.constants, preevaled.instructions)
+
+    except ReturnTriggered:
+        discard
+
+    finally:
+        if fun.memoize:
+            setMemoized(fname, memoizedParams, stack.peek(0))
+
+        if not fun.imports.isNil:
+            Syms = savedSyms
+
+        Arities = savedArities
+        if not exports.isNil():
+            if exportable:
+                Syms = newSyms
+            else:
+                for k in exports.a:
+                    if (let newSymsKey = newSyms.getOrDefault(k.s, nil); not newSymsKey.isNil):
+                        SetSym(k.s, newSymsKey)
+        else:
+            when hasArgs:
+                for arg in args.a:
+                    Arities.del(arg.s)
+    
 
 proc ExecLoop*(cnst: ValueArray, it: VBinary) =
     ## The main execution loop.
