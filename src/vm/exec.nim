@@ -399,6 +399,10 @@ proc execFunction*(fun: Value, fid: Hash) =
             for k,v in pairs(fun.imports.d):
                 SetSym(k, v)
 
+        for arg in fun.params.a:
+            # pop argument and set it
+            SetSym(arg.s, move stack.pop())
+
         let preevaled = doEval(fun.main)
 
         ExecLoop(preevaled.constants, preevaled.instructions)
