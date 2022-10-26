@@ -90,6 +90,8 @@ template iterateThrough(
         when capturing:
             var capturedItems{.inject}: ValueArray
 
+        prepareLeakless(allArgs.a)
+
         var keepGoing{.inject.}: bool = true
         while keepGoing:
             var indx{.inject.} = 0
@@ -114,7 +116,11 @@ template iterateThrough(
                     if withIndex:
                         push(newInteger(run))
 
-                    execLeakless(preevaled, allArgs.a)
+                    for arg in allArgs.a:
+                        Syms[arg.s] = move stack.pop()
+
+                    execUnscoped(preevaled)
+                    #execLeakless(preevaled, allArgs.a)
 
                     performAction
                 do:
@@ -123,6 +129,8 @@ template iterateThrough(
 
                     if not forever:
                         keepGoing = false
+
+        finalizeLeakless()
 
 #=======================================
 # Methods
