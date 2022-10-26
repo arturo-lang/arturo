@@ -42,6 +42,10 @@ var
     # libraries 
     Libraries* {.global.} : seq[BuiltinAction]  ## The list of all builtin libraries
                                                 ## to be imported at startup
+    
+    # dictionary symbols stack
+    DictSyms* {.global.}  : seq[ValueDict]      ## The stack of dictionaries to be filled
+                                                ## when using `execDictionary`
 
 #=======================================
 # Helpers
