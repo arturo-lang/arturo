@@ -83,6 +83,14 @@ proc storeByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inlin
         when doPop:
             stack.popN(1)
 
+proc dStoreByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inline,enforceNoRaises.}=
+    hookProcProfiler("exec/storeByIndex"):
+        var stackTop {.cursor.} = stack.peek(0)
+
+        SetDictSym(cnst[idx].s, stackTop, safe=true)
+        when doPop:
+            stack.popN(1)
+
 template loadByIndex(idx: int):untyped =
     hookProcProfiler("exec/loadByIndex"):
         stack.push(FetchSym(cnst[idx].s))
