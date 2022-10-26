@@ -235,11 +235,6 @@ proc defineSymbols*() =
                 print ["x =>" x]          ; x => 3
             ]
             ..........
-            do.import [
-                x: 3
-            ]
-            print ["x =>" x]              ; x => 3
-            ..........
             print do "https://raw.githubusercontent.com/arturo-lang/arturo/master/examples/projecteuler/euler1.art"
             ; 233168
             ..........
