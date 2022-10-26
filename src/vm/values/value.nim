@@ -2378,9 +2378,14 @@ func hash*(v: Value): Hash {.inline.}=
                 result = 1
                 result = result !& hash(v.params)
                 result = result !& hash(v.main)
-                result = result !& hash(v.imports)
-                result = result !& hash(v.exports)
+                if not v.imports.isNil:
+                    result = result !& hash(v.imports)
+
+                if not v.exports.isNil:
+                    result = result !& hash(v.exports)
+
                 result = result !& hash(v.exportable)
+
                 result = result !& hash(v.memoize)
                 result = !$ result
             else:
