@@ -332,6 +332,10 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
     ## It takes an array of constants, our data (``cnst``)
     ## and array of bytes, our instructions/bytecode (``it``),
     ## goes through them and executes them one-by-one
+    ## 
+    ## **Hint:** Not to be called directly! Better use one 
+    ## of the helpers above!
+
     var
         i   {.register.}: int = 0
         op  {.register.}: OpCode
