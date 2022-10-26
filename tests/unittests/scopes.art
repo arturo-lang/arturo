@@ -114,7 +114,7 @@ do [
 ]
 
 ; LOOP BLOCK
-; the local/injected parameters have to remain local
+; the injected parameters have to remain local (in that case 'o)
 ; and be removed afterwards
 
 j: 0 
@@ -133,8 +133,9 @@ else [
 ]
 
 ; LOOP BLOCK WITH INTERNAL VARS
-; the local/injected parameters and variables have to remain local
+; the injected parameters and variables have to remain local
 ; and be removed afterwards
+; all other ones (e.g. 'h) will be exported
 
 j: 0 
 
@@ -160,7 +161,7 @@ else [
 ]
 
 ; MAP BLOCK
-; the local/injected parameters have to remain local
+; the injected parameters have to remain local (e.g. 'm)
 ; and be removed afterwards
 
 print map [1 2 3 4] 'm [
