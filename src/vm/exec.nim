@@ -402,8 +402,8 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                     else:
                         discard
 
-                of RSRV1                : discard
-                of RSRV2                : discard
+                of opDStore             : discard
+                of opDStoreX            : discard
 
                 # [0x20-0x2F]
                 # push values
@@ -605,7 +605,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opInc                : IncF.action()
                 of opDec                : DecF.action()
 
-                of RSRV3                : discard
+                of RSRV1                : discard
 
                 #of RSRV3..RSRV14        : discard
 
