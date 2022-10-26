@@ -199,7 +199,6 @@ proc defineSymbols*() =
             if (hadAttr("get")):
                 let time = getBenchmark:
                     execUnscoped(preevaled)
-                    #execBlock(nil, evaluated=preevaled, hasEval=true)
 
                 push newQuantity(newFloating(time), newQuantitySpec(MS))
             else:
