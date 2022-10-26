@@ -759,21 +759,6 @@ proc defineSymbols*() =
                             newWord("return"), newWord("neg"), newInteger(1)
                         ])
                     )
-            # let methods = execBlock(z,dictionary=true)
-            # for k,v in pairs(methods):
-            #     # add a `this` first parameter
-            #     v.params.a.insert(newWord("this"),0)
-            #     # add as first command in block: 
-            #     # ensure [:TYPE = type this]
-            #     v.main.a.insert(newWord("ensure"),0)
-            #     v.main.a.insert(newBlock(@[
-            #         newUserType(x.name),
-            #         newSymbol(equal),
-            #         newWord("type"),
-            #         newWord("this")
-            #     ]),1)
-            #     SetSym(k, v)
-            #     Arities[k] = v.params.a.len
 
     builtin "dictionary",
         alias       = sharp, 
