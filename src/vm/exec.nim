@@ -253,20 +253,6 @@ proc execDictionaryBlock*(blk: Value): ValueDict =
                 if (let symV = Syms.getOrDefault(k, nil); symV.isNil or symV != v):
                     {k: v}
 
-template execInternal*(path: string): untyped =
-    ## Execute internal script using given path
-    execBlock(
-        doParse(
-            static readFile(
-                normalizedPath(
-                    parentDir(currentSourcePath()) & "/../library/internal/" & path & ".art"
-                )
-            ),
-            isFile = false
-        ),
-        execInParent = true
-    )
-
 template callInternal*(fname: string, getValue: bool, args: varargs[Value]): untyped =
     ## Call function by name, directly and - optionally - return the result
     let fun = GetSym(fname)
@@ -310,6 +296,20 @@ template execUnscoped*(input: Translation or Value) =
     else:
         let preevaled = evalOrGet(input)
         ExecLoop(preevaled.constants, preevaled.instructions)
+
+template execInternal*(path: string): untyped =
+    ## Execute internal script using given path
+    
+    let preevaled = doParse(
+        static readFile(
+            normalizedPath(
+                parentDir(currentSourcePath()) & "/../library/internal/" & path & ".art"
+            )
+        ),
+        isFile = false
+    )
+
+    execUnscoped(preevaled)
 
 template execLeakless*(input: Translation or Value, protected: ValueArray) =
     ## Execute given bytecode without scoping
