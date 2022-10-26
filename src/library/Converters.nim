@@ -731,7 +731,7 @@ proc defineSymbols*() =
             if checkAttr("as"):
                 x.ts.inherits = aAs.ts
 
-            x.ts.methods = newDictionary(execDictionaryBlock(z)).d
+            x.ts.methods = newDictionary(execDictionary(z)).d
             if (let initMethod = x.ts.methods.getOrDefault("init", nil); not initMethod.isNil):
                 x.ts.methods["init"] = newFunction(
                     newBlock(@[newWord("this")]),
@@ -811,12 +811,12 @@ proc defineSymbols*() =
                         dict[cleanX[idx].s] = cleanX[idx+1]
                         idx += 2
                 else:
-                    dict = execDictionaryBlock(x)
+                    dict = execDictionary(x)
             elif x.kind==String:
                 let (src, tp) = getSource(x.s)
 
                 if tp!=TextData:
-                    dict = execDictionaryBlock(doParse(src, isFile=false))#, isIsolated=true)
+                    dict = execDictionary(doParse(src, isFile=false))#, isIsolated=true)
                 else:
                     echo "file does not exist"
 
