@@ -84,7 +84,7 @@ proc panic*(context: VMErrorKind, error: string, throw=true) =
             errorMsg = getLineError() & errorMsg
         else:
             discard 
-    let err = VMError(name: context, msg:move errorMsg)
+    let err = VMError(name: cstring($(context)), msg:move errorMsg)
     if throw:
         raise err
     else:
