@@ -322,7 +322,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                         return newInline(cleanY)
                     of Dictionary:
                         let stop = SP
-                        execBlock(y)
+                        execUnscoped(y)
 
                         let arr: ValueArray = sTopsFrom(stop)
                         var dict: ValueDict = initOrderedTable[string,Value]()
@@ -339,7 +339,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                     of Object:
                         if x.tpKind==UserType:
                             let stop = SP
-                            execBlock(y)
+                            execUnscoped(y)
 
                             let arr: ValueArray = sTopsFrom(stop)
                             SP = stop
@@ -573,12 +573,12 @@ proc defineSymbols*() =
                 let stop = SP
 
                 if x.kind==Block:
-                    execBlock(x)
+                    execUnscoped(x)
                 elif x.kind==String:
                     let (_{.inject.}, tp) = getSource(x.s)
 
                     if tp!=TextData:
-                        execBlock(doParse(x.s, isFile=false))#, isIsolated=true)
+                        execUnscoped(doParse(x.s, isFile=false))
                     else:
                         echo "file does not exist"
 
@@ -731,7 +731,7 @@ proc defineSymbols*() =
             if checkAttr("as"):
                 x.ts.inherits = aAs.ts
 
-            x.ts.methods = newDictionary(execDictionaryBlock(z)).d
+            x.ts.methods = newDictionary(execDictionary(z)).d
             if (let initMethod = x.ts.methods.getOrDefault("init", nil); not initMethod.isNil):
                 x.ts.methods["init"] = newFunction(
                     newBlock(@[newWord("this")]),
@@ -759,21 +759,6 @@ proc defineSymbols*() =
                             newWord("return"), newWord("neg"), newInteger(1)
                         ])
                     )
-            # let methods = execBlock(z,dictionary=true)
-            # for k,v in pairs(methods):
-            #     # add a `this` first parameter
-            #     v.params.a.insert(newWord("this"),0)
-            #     # add as first command in block: 
-            #     # ensure [:TYPE = type this]
-            #     v.main.a.insert(newWord("ensure"),0)
-            #     v.main.a.insert(newBlock(@[
-            #         newUserType(x.name),
-            #         newSymbol(equal),
-            #         newWord("type"),
-            #         newWord("this")
-            #     ]),1)
-            #     SetSym(k, v)
-            #     Arities[k] = v.params.a.len
 
     builtin "dictionary",
         alias       = sharp, 
@@ -817,7 +802,6 @@ proc defineSymbols*() =
             var dict: ValueDict
 
             if x.kind==Block:
-                #dict = execDictionary(x)
                 if (hadAttr("raw")):
                     dict = initOrderedTable[string,Value]()
                     var idx = 0
@@ -826,12 +810,12 @@ proc defineSymbols*() =
                         dict[cleanX[idx].s] = cleanX[idx+1]
                         idx += 2
                 else:
-                    dict = execDictionaryBlock(x)
+                    dict = execDictionary(x)
             elif x.kind==String:
                 let (src, tp) = getSource(x.s)
 
                 if tp!=TextData:
-                    dict = execDictionaryBlock(doParse(src, isFile=false))#, isIsolated=true)
+                    dict = execDictionary(doParse(src, isFile=false))#, isIsolated=true)
                 else:
                     echo "file does not exist"
 
@@ -966,7 +950,7 @@ proc defineSymbols*() =
             ; |        returns  :integer :floating
             ; |--------------------------------------------------------------------------------
             ..........
-            publicF: function .export['x] [z][
+            publicF: function .export:['x] [z][
                 print ["z =>" z]
                 x: 5
             ]

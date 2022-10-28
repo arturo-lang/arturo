@@ -360,10 +360,10 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             while j < v.trans.instructions.len:
                 let op = (OpCode)(v.trans.instructions[j])
                 instrs.add(newWord(stringify(((OpCode)(op)))))
-                if op in [opPush, opStore, opCall, opLoad, opStorl, opAttr, opEol]:
+                if op in {opPush, opStore, opCall, opLoad, opStorl, opAttr, opEol}:
                     j += 1
                     instrs.add(newInteger((int)v.trans.instructions[j]))
-                elif op in [opPushX, opStoreX, opCallX, opLoadX, opStorlX, opEolX]:
+                elif op in {opPushX, opStoreX, opCallX, opLoadX, opStorlX, opEolX}:
                     j += 2
                     instrs.add(newInteger((int)((uint16)(v.trans.instructions[j-1]) shl 8 + (byte)(v.trans.instructions[j]))))
 

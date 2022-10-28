@@ -1,6 +1,6 @@
 ; import a file
-do.import {file.art}
+do {file.art}
 
 ; import another file
 ; from relative folder location
-do.import relative "another_file.art"
+do relative "another_file.art"
