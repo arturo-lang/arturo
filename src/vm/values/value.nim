@@ -1371,7 +1371,7 @@ proc `/=`*(x: var Value, y: Value) =
 proc `//`*(x: Value, y: Value): Value =
     ## divide (floating-point division) given values 
     ## and return the result
-    if not (x.kind in [Integer, Floating, Rational]) or not (y.kind in [Integer, Floating, Rational]):
+    if not (x.kind in {Integer, Floating, Rational}) or not (y.kind in {Integer, Floating, Rational}):
         if x.kind == Quantity:
             if y.kind == Quantity:
                 let finalSpec = getFinalUnitAfterOperation("fdiv", x.unit, y.unit)
@@ -1418,7 +1418,7 @@ proc `//=`*(x: var Value, y: Value) =
     ## and store the result in the first one 
     ## 
     ## **Hint:** In-place, mutating operation
-    if not (x.kind in [Integer, Floating, Rational]) or not (y.kind in [Integer, Floating, Rational]):
+    if not (x.kind in {Integer, Floating, Rational}) or not (y.kind in {Integer, Floating, Rational}):
         if x.kind == Quantity:
             if y.kind == Quantity:
                 let finalSpec = getFinalUnitAfterOperation("fdiv", x.unit, y.unit)
@@ -1462,7 +1462,7 @@ proc `//=`*(x: var Value, y: Value) =
 proc `%`*(x: Value, y: Value): Value =
     ## perform the modulo operation between given values 
     ## and return the result
-    if not (x.kind in [Integer,Floating,Rational]) or not (y.kind in [Integer,Floating,Rational]):
+    if not (x.kind in {Integer,Floating,Rational}) or not (y.kind in {Integer,Floating,Rational}):
         if (x.kind == Quantity and y.kind == Quantity) and (x.unit.kind==y.unit.kind):
             if x.unit.name == y.unit.name:
                 return newQuantity(x.nm % y.nm, x.unit)
@@ -1526,7 +1526,7 @@ proc `%=`*(x: var Value, y: Value) =
     ## and store the result in the first one
     ## 
     ## **Hint:** In-place, mutating operation
-    if not (x.kind in [Integer,Floating,Rational]) or not (y.kind in [Integer,Floating,Rational]):
+    if not (x.kind in {Integer,Floating,Rational}) or not (y.kind in {Integer,Floating,Rational}):
         if (x.kind == Quantity and y.kind == Quantity) and (x.unit.kind==y.unit.kind):
             if x.unit.name == y.unit.name:
                 x.nm %= y.nm
@@ -1580,7 +1580,7 @@ proc `%=`*(x: var Value, y: Value) =
 proc `/%`*(x: Value, y: Value): Value =
     ## perform the divmod operation between given values
     ## and return the result as a *tuple* Block value
-    if not (x.kind in [Integer,Floating,Rational]) or not (y.kind in [Integer,Floating,Rational]):
+    if not (x.kind in {Integer,Floating,Rational}) or not (y.kind in {Integer,Floating,Rational}):
         return newBlock(@[x/y, x%y])
     else:
         if x.kind==Integer and y.kind==Integer:
@@ -1632,7 +1632,7 @@ proc `/%=`*(x: var Value, y: Value) =
     ## and store the result in the first one
     ## 
     ## **Hint:** In-place, mutating operation
-    if not (x.kind in [Integer,Floating,Rational]) or not (y.kind in [Integer,Floating,Rational]):
+    if not (x.kind in {Integer,Floating,Rational}) or not (y.kind in {Integer,Floating,Rational}):
         x = newBlock(@[x/y, x%y])
     else:
         if x.kind==Integer and y.kind==Integer:
@@ -1682,7 +1682,7 @@ proc `/%=`*(x: var Value, y: Value) =
 proc `^`*(x: Value, y: Value): Value =
     ## perform the power operation between given values
     ## 
-    if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
+    if not (x.kind in {Integer, Floating}) or not (y.kind in {Integer, Floating}):
         if x.kind == Quantity:
             if y.kind==Integer and (y.i > 0 and y.i < 4):
                 if y.i == 1: return x
@@ -1765,7 +1765,7 @@ proc `^=`*(x: var Value, y: Value) =
     ## and store the result in the first value
     ## 
     ## **Hint:** In-place, mutation operation
-    if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
+    if not (x.kind in {Integer, Floating}) or not (y.kind in {Integer, Floating}):
         if x.kind == Quantity:
             if y.kind==Integer and (y.i > 0 and y.i < 4):
                 if y.i == 1: discard
@@ -1818,7 +1818,7 @@ proc `^=`*(x: var Value, y: Value) =
 proc `&&`*(x: Value, y: Value): Value =
     ## perform binary-and between given values
     ## and return the result
-    if (x.kind == Binary or y.kind==Binary) and (x.kind in [Integer, Binary] and y.kind in [Integer, Binary]):
+    if (x.kind == Binary or y.kind==Binary) and (x.kind in {Integer, Binary} and y.kind in {Integer, Binary}):
         var a = (if x.kind==Binary: x.n else: numberToBinary(x.i))
         var b = (if y.kind==Binary: y.n else: numberToBinary(y.i))
         return newBinary(a and b)
@@ -1850,7 +1850,7 @@ proc `&&=`*(x: var Value, y: Value) =
     ## and store the result in the first value
     ## 
     ## **Hint:** In-place, mutation operation
-    if (x.kind == Binary or y.kind==Binary) and (x.kind in [Integer, Binary] and y.kind in [Integer, Binary]):
+    if (x.kind == Binary or y.kind==Binary) and (x.kind in {Integer, Binary} and y.kind in {Integer, Binary}):
         var a = (if x.kind==Binary: x.n else: numberToBinary(x.i))
         var b = (if y.kind==Binary: y.n else: numberToBinary(y.i))
         x = newBinary(a and b)
@@ -1880,7 +1880,7 @@ proc `&&=`*(x: var Value, y: Value) =
 proc `||`*(x: Value, y: Value): Value =
     ## perform binary-or between given values
     ## and return the result
-    if (x.kind == Binary or y.kind==Binary) and (x.kind in [Integer, Binary] and y.kind in [Integer, Binary]):
+    if (x.kind == Binary or y.kind==Binary) and (x.kind in {Integer, Binary} and y.kind in {Integer, Binary}):
         var a = (if x.kind==Binary: x.n else: numberToBinary(x.i))
         var b = (if y.kind==Binary: y.n else: numberToBinary(y.i))
         return newBinary(a or b)
@@ -1913,7 +1913,7 @@ proc `||=`*(x: var Value, y: Value) =
     ## and store the result in the first value
     ## 
     ## **Hint:** In-place, mutation operation
-    if (x.kind == Binary or y.kind==Binary) and (x.kind in [Integer, Binary] and y.kind in [Integer, Binary]):
+    if (x.kind == Binary or y.kind==Binary) and (x.kind in {Integer, Binary} and y.kind in {Integer, Binary}):
         var a = (if x.kind==Binary: x.n else: numberToBinary(x.i))
         var b = (if y.kind==Binary: y.n else: numberToBinary(y.i))
         x = newBinary(a or b)
@@ -1943,7 +1943,7 @@ proc `||=`*(x: var Value, y: Value) =
 proc `^^`*(x: Value, y: Value): Value =
     ## perform binary-xor between given values
     ## and return the result
-    if (x.kind == Binary or y.kind==Binary) and (x.kind in [Integer, Binary] and y.kind in [Integer, Binary]):
+    if (x.kind == Binary or y.kind==Binary) and (x.kind in {Integer, Binary} and y.kind in {Integer, Binary}):
         var a = (if x.kind==Binary: x.n else: numberToBinary(x.i))
         var b = (if y.kind==Binary: y.n else: numberToBinary(y.i))
         return newBinary(a xor b)
@@ -1975,7 +1975,7 @@ proc `^^=`*(x: var Value, y: Value) =
     ## and store the result in the first value
     ## 
     ## **Hint:** In-place, mutation operation
-    if (x.kind == Binary or y.kind==Binary) and (x.kind in [Integer, Binary] and y.kind in [Integer, Binary]):
+    if (x.kind == Binary or y.kind==Binary) and (x.kind in {Integer, Binary} and y.kind in {Integer, Binary}):
         var a = (if x.kind==Binary: x.n else: numberToBinary(x.i))
         var b = (if y.kind==Binary: y.n else: numberToBinary(y.i))
         x = newBinary(a xor b)
@@ -2182,7 +2182,7 @@ proc factorial*(x: Value): Value =
 
 func sameValue*(x: Value, y: Value): bool {.inline.}=
     ## check if the given values are same
-    if x.kind in [Integer, Floating] and y.kind in [Integer, Floating]:
+    if x.kind in {Integer, Floating} and y.kind in {Integer, Floating}:
         if x.kind==Integer:
             if y.kind==Integer: 
                 if likely(x.iKind==NormalInteger and y.iKind==NormalInteger):
