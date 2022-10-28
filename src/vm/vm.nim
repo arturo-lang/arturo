@@ -158,7 +158,7 @@ template handleVMErrors(blk: untyped): untyped =
         let e = getCurrentException()        
         showVMErrors(e)
 
-        if e.name == ProgramError:
+        if e.name == $(ProgramError):
             let code = parseInt(e.msg.split(";;")[1].split("<:>")[0])
             quit(code)
         else:
