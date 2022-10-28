@@ -53,7 +53,7 @@ template skip(steps: int): untyped =
 
 template current(): untyped = a[i]
 template next(): untyped    = 
-    while Op(a[i+1]) in [opEol,opEolX]: 
+    while Op(a[i+1]) in {opEol,opEolX}: 
         if Op(a[i+1])==opEol: skip(2)
         else: skip(3)
     a[i+1]
