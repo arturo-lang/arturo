@@ -42,6 +42,10 @@ var
     # libraries 
     Libraries* {.global.} : seq[BuiltinAction]  ## The list of all builtin libraries
                                                 ## to be imported at startup
+    
+    # dictionary symbols stack
+    DictSyms* {.global.}  : seq[ValueDict]      ## The stack of dictionaries to be filled
+                                                ## when using `execDictionary`
 
 #=======================================
 # Helpers
@@ -127,6 +131,19 @@ template SetSym*(s: string, v: Value, safe: static bool = false): untyped =
             Syms[s] = v
     else:
         Syms[s] = v
+
+template SetDictSym*(s: string, v: Value, safe: static bool = false): untyped =
+    ## Sets symbol to topmost Dictionary symbol table
+    when safe:
+        # When doing it safely, also check if the value to be assigned is a read-only value
+        # - if it is - we have to copy it first
+        # - otherwise, go ahead and just assign it (pointer copy!)
+        if v.readonly:
+            DictSyms[^1][s] = copyValue(v)
+        else:
+            DictSyms[^1][s] = v
+    else:
+        DictSyms[^1][s] = v
 
 #---------------------
 # In-Place symbols

@@ -15,7 +15,7 @@ printFirstByRule: function [rule,title][
     while [20 > size found][
         if brazilian? i ->
             'found ++ i
-        do.import rule
+        do rule
     ]
     print found 
     print ""

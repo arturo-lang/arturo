@@ -3,14 +3,16 @@ on: [pull_request_target]
 
 jobs:
   triage:
+    permissions:
+      contents: read
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
     - name: "Cancel similar actions in progress"
-        uses: styfle/cancel-workflow-action@0.10.0
-        with:
-          all_but_latest: true
-          access_token: ${{ github.token }}
-
-    - uses: actions/labeler@main
+      uses: styfle/cancel-workflow-action@0.10.0
+      with:
+        all_but_latest: true
+        access_token: ${{ github.token }}
+    - uses: actions/labeler@v4
       with:
         repo-token: "${{ secrets.GITHUB_TOKEN }}"

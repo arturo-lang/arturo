@@ -676,7 +676,8 @@ proc defineSymbols*() =
 
                         # execute/reduce ('array') the resulting block
                         let stop = SP
-                        discard execIsolated(evaled)
+                        execUnscoped(evaled)
+    
                         let arr: ValueArray = sTopsFrom(stop)
                         SP = stop
 
@@ -696,7 +697,7 @@ proc defineSymbols*() =
 
                     while keepGoing:
                         res = res.replace(Interpolated, proc (match: RegexMatch): string =
-                                    execBlock(doParse(match.captures[0], isFile=false))
+                                    execUnscoped(doParse(match.captures[0], isFile=false))
                                     $(pop())
                                 )
 

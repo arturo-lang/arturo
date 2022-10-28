@@ -22,7 +22,7 @@
 import vm/lib
 
 when not defined(NOWEBVIEW):
-    import algorithm
+    import algorithm, hashes
 
     import helpers/url
     import helpers/webviews
@@ -302,7 +302,8 @@ proc defineSymbols*() =
                                     push(v)
 
                                 if fun.fnKind==UserFunction:
-                                    execBlock(fun.main, args=fun.params, hasArgs=true, isFuncBlock=true, imports=fun.imports, exports=fun.exports)
+                                    let fid = hash(value.d["method"].s)
+                                    execFunction(fun, fid)
                                 else:
                                     fun.action()
 
@@ -312,12 +313,12 @@ proc defineSymbols*() =
                             let parsed = doParse(value.s, isFile=false)
                             let prevSP = SP
                             if not isNil(parsed):
-                                execBlock(parsed)
+                                execUnscoped(parsed)
                             if SP > prevSP:
                                 result = pop()
                         elif call==WebviewEvent:
                             if (let onEvent = on.getOrDefault(value.s, nil); not onEvent.isNil):
-                                execBlock(onEvent)
+                                execUnscoped(onEvent)
                         else:
                             discard
                 )
