@@ -11,6 +11,7 @@ v0.9.81
 - Added new `:rational` type (along with all relevant operations)
 - Added new `:quantity` type (measurements + unit support, along with all relevant operations)
 - Added scientific notation support for number literals
+- Changed scoping rules (most blocks will now be completely scope-less, with the exception of iterators & functions)
 
 ### Library
 
@@ -61,7 +62,7 @@ v0.9.81
 - Fixed handling of Unicode, locale-dependent sorting (including non-ASCII languages & sorting using digraphs/trigraphs, e.g. Hungarian)
 - Functions in dictionaries are now directly callable (e.g. `dict\f 10`)
 - Better support for Bytecode handling (+ built-in compression)
-- Various performance-related enhancements
+- Various performance-related enhancements (> ~500% performance boost)
 
 v0.9.7.2
 ========
