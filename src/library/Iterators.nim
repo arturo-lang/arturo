@@ -101,23 +101,46 @@ template iterateThrough(
                     when capturing:
                         capturedItems = collection[indx..indx+argsLen-1]
 
-                    if hasArgs:
-                        when rolling:
-                            if rollingRight: push(res)
-
-                        var j = indx+argsLen-1
-                        while j >= indx:
-                            push(collection[j])
-                            j -= 1
-
-                        when rolling:
-                            if not rollingRight: push(res)
+                    var argi = 0
 
                     if withIndex:
-                        push(newInteger(run))
+                        Syms[args[argi].s] = newInteger(run)
+                        inc argi
 
-                    for arg in args:
-                        Syms[arg.s] = move stack.pop()
+                    if hasArgs:
+                        when rolling:
+                            if not rollingRight:
+                                Syms[args[argi].s] = res
+                                inc argi
+
+                        var j = indx
+                        while j < indx+argsLen:
+                            Syms[args[argi].s] = collection[j]
+                            inc argi
+                            inc j
+
+                        when rolling:
+                            if rollingRight:
+                                Syms[args[argi].s] = res
+                                #inc argi
+
+                    # if hasArgs:
+                    #     when rolling:
+                    #         if rollingRight: push(res)
+
+                    #     var j = indx+argsLen-1
+                    #     while j >= indx:
+                    #         push(collection[j])
+                    #         j -= 1
+
+                    #     when rolling:
+                    #         if not rollingRight: push(res)
+
+                    # if withIndex:
+                    #     push(newInteger(run))
+
+                    # for arg in args:
+                    #     Syms[arg.s] = move stack.pop()
 
                     execUnscoped(preevaled)
                     #execLeakless(preevaled, allArgs.a)
