@@ -158,7 +158,6 @@ template finalizeLeakless*(): untyped =
             if Syms.pop(sym, delSym):
                 if delSym.kind==Function:
                     Arities.del(sym)
-            #Arities.del(sym)
         else:
             Syms[sym] = val
             if arity != -1:
