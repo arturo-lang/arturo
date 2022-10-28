@@ -124,7 +124,6 @@ template iterateThrough(
                                 Syms[args[argi].s] = res
 
                     execUnscoped(preevaled)
-                    #execLeakless(preevaled, allArgs.a)
 
                     performAction
                 do:
