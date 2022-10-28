@@ -161,10 +161,6 @@ template finalizeLeakless*(): untyped =
             Syms[sym] = val
             if arity != -1:
                 Arities[sym] = arity
-        # if arity != -1:
-        #     Arities[sym] = arity
-        # else:
-        #     Arities.del(sym)
 
 template handleBranching*(tryDoing, finalize: untyped): untyped =
     ## Wrapper for code that may throw *Break* or *Continue* signals, 
