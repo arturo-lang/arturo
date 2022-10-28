@@ -34,17 +34,18 @@ type
     ContinueTriggered* = ref object of Defect
     VMError* = ref object of Defect
 
+    VMErrorContext* = enum
+        RuntimeError*   = "Runtime"
+        AssertionError* = "Assertion"
+        SyntaxError*    = "Syntax"
+        ProgramError*   = "Program"
+        CompilerError*  = "Compiler"
+
 #=======================================
 # Constants
 #=======================================
 
 const
-    RuntimeError*   = "Runtime"
-    AssertionError* = "Assertion"
-    SyntaxError*    = "Syntax"
-    ProgramError*   = "Program"
-    CompilerError*  = "Compiler"
-
     Alternative     = "perhaps you meant"
 
 #=======================================
