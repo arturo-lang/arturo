@@ -80,15 +80,15 @@ template iterateThrough(
             if hasArgs and argsLen>1:
                 argsLen -= 1
 
-        var allArgs: Value = newBlock(args)
-
         var withIndex = false
         if not idx.isNil:
             withIndex = true
-            allArgs.a.insert(idx,0)
+            args.insert(idx,0)
 
         when capturing:
             var capturedItems{.inject}: ValueArray
+
+        prepareLeakless(args)
 
         var keepGoing{.inject.}: bool = true
         while keepGoing:
@@ -99,22 +99,30 @@ template iterateThrough(
                     when capturing:
                         capturedItems = collection[indx..indx+argsLen-1]
 
-                    if hasArgs:
-                        when rolling:
-                            if rollingRight: push(res)
-
-                        var j = indx+argsLen-1
-                        while j >= indx:
-                            push(collection[j])
-                            j -= 1
-
-                        when rolling:
-                            if not rollingRight: push(res)
+                    var argi = 0
 
                     if withIndex:
-                        push(newInteger(run))
+                        Syms[args[argi].s] = newInteger(run)
+                        inc argi
 
-                    execBlock(nil, evaluated=preevaled, hasEval=true, args=allArgs, hasArgs=true)
+                    if hasArgs:
+                        when rolling:
+                            if not rollingRight:
+                                Syms[args[argi].s] = res
+                                inc argi
+
+                        var j = indx
+                        while j < indx+argsLen:
+                            Syms[args[argi].s] = collection[j]
+                            inc argi
+                            inc j
+
+                        when rolling:
+                            if rollingRight:
+                                Syms[args[argi].s] = res
+
+                    execUnscoped(preevaled)
+
                     performAction
                 do:
                     run += 1
@@ -122,6 +130,8 @@ template iterateThrough(
 
                     if not forever:
                         keepGoing = false
+
+        finalizeLeakless()
 
 #=======================================
 # Methods

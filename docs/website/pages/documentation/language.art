@@ -40,6 +40,10 @@ Here, you'll find everything you may need to know about the language (and perhap
        - [:attributeLabel](#attributeLabel)
 - [Precedence and evaluation](#precedence-and-evaluation)
    * [The right-to-left rule](#the-right-to-left-rule)
+- [Scope and rules](#scope-and-rules)
+   * [Blocks](#blocks)
+   * [Iterators](#iterators)
+   * [Functions](#functions)
 - [In-place variable modification](#in-place-variable-modification)
    * [Using literals](#using-literals)
 - [Syntactic sugar](#syntactic-sugar)
@@ -626,6 +630,71 @@ or (giving precedence to the multiplication, artificially, using parentheses):
 ```red
 (2 * 3) + 4
 ``` 
+
+<h2 id="scope-and-rules">Scope and rules</h2>
+
+Contrary to what you might expect, Arturo doesn't feature a traditional concept of *scope*. There are no real *local* or *global* variables, no *local* or *global* functions, no *local* or *global* blocks, no *local* or *global* anything.
+
+Generally, if a variable has been previously declared at the moment and location of its usage, then it is available. Otherwise, it is not.
+
+But let's see a couple of concrete cases to make this clearer.
+
+<h3 id="blocks">Blocks</h3>
+
+Arturo doesn't have a block scope.
+
+In a few words, this means:
+
+- A variable declared inside a block is available outside of it
+- A variable previously declared outside of a block is available inside
+- The changes of an existing variable, inside a block, persist after the block
+
+```red
+x: 1    ; here, we declare a variable x
+        ; and set it to 1
+do [
+    x: 2      ; here, we re-assign the value of x
+              ; to 2
+    print x   ; prints 2
+    y: 3      ; here, we declare a variable y
+              ; and set it to 3
+]
+print x     ; prints 2 (the value of x has been changed)
+print y     ; prints 3 (the value of y is still available)
+```
+
+<h3 id="iterators">Iterators</h3>
+
+Iterators (such as `loop`, `map`, etc) always work with a block as well. But in a special way.
+
+Basically, the logic is identical to the one of blocks, but with a slight difference: 
+- the *injected* variables (e.g. the iteration arguments), are available only inside the block, but not after the iteration is over
+- any previous value is "protected" and restored if needed
+
+```red
+x: 3
+loop.with:'i ["one" "two" "three"] 'x [
+  print i  ; prints 0, 1, 2,...
+  print x  ; prints "one", "two", "three",...
+]
+print x    ; prints 3 (the value of x has been restored)
+print i    ; ERROR: variable not found 
+           ; (i is not available anymore)
+```
+
+<h3 id="functions">Functions</h3>
+
+Functions are totally different. Why? Because they do have their own scope.
+
+The general idea is:
+
+- A variable declared inside a function is available only inside the function
+- A variable previously declared outside of a function is available inside
+- The changes of an existing variable, inside a function, do not persist after the function
+
+If we want to *export* a specific symbol to the outer scope, that is, make it available outside of the function, we can use the `.export` option.
+
+If we want to export *all* of the symbols - thus, practically making the function *scope-less*, we may use the `.exportable` option.
 
 <h2 id="in-place-variable-modification">In-place variable modification</h2>
 

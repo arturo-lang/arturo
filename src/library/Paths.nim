@@ -258,7 +258,7 @@ proc defineSymbols*() =
             example     = """
             print module 'html        ; /usr/local/lib/arturo/html.art
             ..........
-            do.import module 'html    ; (imports given module)
+            do module 'html    ; (imports given module)
             """:
                 #=======================================================
                 push(newString(HomeDir & ".arturo/lib/" & x.s & ".art"))

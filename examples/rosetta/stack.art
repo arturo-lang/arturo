@@ -1,9 +1,9 @@
 Stack: $[]-> []
 
 pushTo:     function [st val]-> 'st ++ val
-popStack:   function [st]     [
-    result: last st
-    remove 'st .index (size st)-1 
+popStack:   function [s]     [
+    result: last s
+    remove 's .index (size s)-1 
     return result
 ]
 emptyStack: function [st]-> empty 'st
