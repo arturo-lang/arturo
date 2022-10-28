@@ -153,8 +153,12 @@ template finalizeLeakless*(): untyped =
 
     for (sym, val, arity) in toRestore:
         if val.isNil:
-            Syms.del(sym)
-            Arities.del(sym)
+            #Syms.del(sym)
+            var delSym: Value
+            if Syms.pop(sym, delSym):
+                if delSym.kind==Function:
+                    Arities.del(sym)
+            #Arities.del(sym)
         else:
             Syms[sym] = val
             if arity != -1:
