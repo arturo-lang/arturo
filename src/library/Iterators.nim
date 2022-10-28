@@ -80,17 +80,17 @@ template iterateThrough(
             if hasArgs and argsLen>1:
                 argsLen -= 1
 
-        var allArgs: Value = newBlock(args)
+        #var allArgs: Value = newBlock(args)
 
         var withIndex = false
         if not idx.isNil:
             withIndex = true
-            allArgs.a.insert(idx,0)
+            args.insert(idx,0)
 
         when capturing:
             var capturedItems{.inject}: ValueArray
 
-        prepareLeakless(allArgs.a)
+        prepareLeakless(args)
 
         var keepGoing{.inject.}: bool = true
         while keepGoing:
@@ -116,7 +116,7 @@ template iterateThrough(
                     if withIndex:
                         push(newInteger(run))
 
-                    for arg in allArgs.a:
+                    for arg in args:
                         Syms[arg.s] = move stack.pop()
 
                     execUnscoped(preevaled)
