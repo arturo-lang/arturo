@@ -145,7 +145,7 @@ proc defineSymbols*() =
             else:
                 var fun: Value
 
-                if x.kind==Literal or x.kind==String:
+                if x.kind in {Literal, String}:
                     fun = FetchSym(x.s)
                 else:
                     fun = x
@@ -155,7 +155,7 @@ proc defineSymbols*() =
 
                 if fun.fnKind==UserFunction:
                     var fid: Hash
-                    if x.kind==Literal or x.kind==String:
+                    if x.kind in {Literal,String}:
                         fid = hash(x.s)
                     else:
                         fid = hash(fun)
