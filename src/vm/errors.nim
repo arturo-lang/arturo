@@ -35,11 +35,11 @@ type
     VMError* = ref object of Defect
 
     VMErrorContext* = enum
-        RuntimeError*   = "Runtime"
-        AssertionError* = "Assertion"
-        SyntaxError*    = "Syntax"
-        ProgramError*   = "Program"
-        CompilerError*  = "Compiler"
+        RuntimeError   = "Runtime"
+        AssertionError = "Assertion"
+        SyntaxError    = "Syntax"
+        ProgramError   = "Program"
+        CompilerError  = "Compiler"
 
 #=======================================
 # Constants
