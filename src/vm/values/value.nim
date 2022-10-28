@@ -726,7 +726,7 @@ proc `+`*(x: Value, y: Value): Value =
     ## add given values and return the result
     if x.kind==Color and y.kind==Color:
         return newColor(x.l + y.l)
-    if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
+    if not (x.kind in {Integer, Floating, Complex, Rational}) or not (y.kind in {Integer, Floating, Complex, Rational}):
         if x.kind == Quantity:
             if y.kind == Quantity:
                 if x.unit.name == y.unit.name:
@@ -806,7 +806,7 @@ proc `+=`*(x: var Value, y: Value) =
     ## and store the result in the first value
     ## 
     ## **Hint:** In-place, mutating operation
-    if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
+    if not (x.kind in {Integer, Floating, Complex, Rational}) or not (y.kind in {Integer, Floating, Complex, Rational}):
         if x.kind == Quantity:
             if y.kind == Quantity:
                 if x.unit.name == y.unit.name:
@@ -886,7 +886,7 @@ proc `-`*(x: Value, y: Value): Value =
     ## subtract given values and return the result
     if x.kind==Color and y.kind==Color:
         return newColor(x.l - y.l)
-    if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
+    if not (x.kind in {Integer, Floating, Complex, Rational}) or not (y.kind in {Integer, Floating, Complex, Rational}):
         if x.kind == Quantity:
             if y.kind == Quantity:
                 if x.unit.name == y.unit.name:
@@ -967,7 +967,7 @@ proc `-=`*(x: var Value, y: Value) =
     ## store the result in the first value
     ## 
     ## **Hint:** In-place, mutating operation
-    if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
+    if not (x.kind in {Integer, Floating, Complex, Rational}) or not (y.kind in {Integer, Floating, Complex, Rational}):
         if x.kind == Quantity:
             if y.kind == Quantity:
                 if x.unit.name == y.unit.name:
@@ -1045,7 +1045,7 @@ proc `-=`*(x: var Value, y: Value) =
 proc `*`*(x: Value, y: Value): Value =
     ## multiply given values 
     ## and return the result
-    if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
+    if not (x.kind in {Integer, Floating, Complex, Rational}) or not (y.kind in {Integer, Floating, Complex, Rational}):
         if x.kind == Quantity:
             if y.kind == Quantity:
                 let finalSpec = getFinalUnitAfterOperation("mul", x.unit, y.unit)
@@ -1127,7 +1127,7 @@ proc `*=`*(x: var Value, y: Value) =
     ## and store the result in the first one
     ## 
     ## **Hint:** In-place, mutating operation
-    if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
+    if not (x.kind in {Integer, Floating, Complex, Rational}) or not (y.kind in {Integer, Floating, Complex, Rational}):
         if x.kind == Quantity:
             if y.kind == Quantity:
                 let finalSpec = getFinalUnitAfterOperation("mul", x.unit, y.unit)
@@ -1214,7 +1214,7 @@ proc `*=`*(x: var Value, y: Value) =
 proc `/`*(x: Value, y: Value): Value =
     ## divide (integer division) given values 
     ## and return the result
-    if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
+    if not (x.kind in {Integer, Floating, Complex, Rational}) or not (y.kind in {Integer, Floating, Complex, Rational}):
         if x.kind == Quantity:
             if y.kind == Quantity:
                 let finalSpec = getFinalUnitAfterOperation("div", x.unit, y.unit)
@@ -1290,7 +1290,7 @@ proc `/=`*(x: var Value, y: Value) =
     ## and store the result in the first one 
     ## 
     ## **Hint:** In-place, mutating operation
-    if not (x.kind in [Integer, Floating, Complex, Rational]) or not (y.kind in [Integer, Floating, Complex, Rational]):
+    if not (x.kind in {Integer, Floating, Complex, Rational}) or not (y.kind in {Integer, Floating, Complex, Rational}):
         if x.kind == Quantity:
             if y.kind == Quantity:
                 let finalSpec = getFinalUnitAfterOperation("div", x.unit, y.unit)
