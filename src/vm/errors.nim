@@ -41,6 +41,8 @@ type
         ProgramError   = "Program"
         CompilerError  = "Compiler"
 
+        UndefinedError = "Undefined"
+
 #=======================================
 # Constants
 #=======================================
@@ -97,12 +99,22 @@ proc panic*(context: VMErrorKind, error: string, throw=true) =
 proc showVMErrors*(e: ref Exception) =
     ## show error message
     var header: string
+    var errorKind: VMErrorKind = UndefinedError
     try:
         header = $(e.name)
 
-        if $(header) notin [RuntimeError, AssertionError, SyntaxError, ProgramError, CompilerError]:
+        try:
+            # try checking if it's a valid error context
+            errorKind = parseEnum[VMErrorKind](header)
+        except ValueError:
+            # if not, show it as an uncaught runtime exception
             e.msg = getLineError() & "uncaught system exception:;" & e.msg
-            header = RuntimeError
+            header = $(RuntimeError)
+
+            
+        # if $(header) notin [RuntimeError, AssertionError, SyntaxError, ProgramError, CompilerError]:
+        #     e.msg = getLineError() & "uncaught system exception:;" & e.msg
+        #     header = RuntimeError
     except:
         header = "HEADER"
 
@@ -113,7 +125,7 @@ proc showVMErrors*(e: ref Exception) =
     when not defined(WEB):
         var message = ""
         
-        if $(header)==ProgramError:
+        if errorKind==ProgramError:
             let liner = e.msg.split("<:>")[0].split(";;")[0]
             let msg = e.msg.split("<:>")[1]
             message = liner & ";;" & msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
