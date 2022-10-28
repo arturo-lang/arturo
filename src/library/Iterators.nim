@@ -122,25 +122,6 @@ template iterateThrough(
                         when rolling:
                             if rollingRight:
                                 Syms[args[argi].s] = res
-                                #inc argi
-
-                    # if hasArgs:
-                    #     when rolling:
-                    #         if rollingRight: push(res)
-
-                    #     var j = indx+argsLen-1
-                    #     while j >= indx:
-                    #         push(collection[j])
-                    #         j -= 1
-
-                    #     when rolling:
-                    #         if not rollingRight: push(res)
-
-                    # if withIndex:
-                    #     push(newInteger(run))
-
-                    # for arg in args:
-                    #     Syms[arg.s] = move stack.pop()
 
                     execUnscoped(preevaled)
                     #execLeakless(preevaled, allArgs.a)
