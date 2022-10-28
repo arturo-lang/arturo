@@ -34,7 +34,7 @@ type
     ContinueTriggered* = ref object of Defect
     VMError* = ref object of Defect
 
-    VMErrorContext* = enum
+    VMErrorKind* = enum
         RuntimeError   = "Runtime"
         AssertionError = "Assertion"
         SyntaxError    = "Syntax"
