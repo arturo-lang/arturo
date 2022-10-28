@@ -76,10 +76,10 @@ proc getLineError(): string =
             ExecStack.add(CurrentLine)
         result &= (bold(grayColor)).replace(";","%&") & "File: " & resetColor & (fg(grayColor)).replace(";","%&") & CurrentFile & ";" & (bold(grayColor)).replace(";","%&") & "Line: " & resetColor & (fg(grayColor)).replace(";","%&") & $(CurrentLine) & resetColor & ";;"
 
-proc panic*(context: string, error: string, throw=true) =
+proc panic*(context: VMErrorKind, error: string, throw=true) =
     ## throw error, using given context and error message
     var errorMsg = error
-    if $(context) notin [CompilerError]:
+    if context != CompilerError:
         when not defined(NOERRORLINES):
             errorMsg = getLineError() & errorMsg
         else:
