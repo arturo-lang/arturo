@@ -35,7 +35,7 @@ import vm/values/clean
 proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
     if x.kind==Nothing and y.kind==Nothing: return true
     
-    if x.kind in [Integer, Floating, Rational] and y.kind in [Integer, Floating, Rational]:
+    if x.kind in {Integer, Floating, Rational} and y.kind in {Integer, Floating, Rational}:
         if x.kind==Integer:
             if y.kind==Integer: 
                 if likely(x.iKind==NormalInteger and y.iKind==NormalInteger):
@@ -171,7 +171,7 @@ proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
                 return false
 
 proc `<`*(x: Value, y: Value): bool {.inline.}=
-    if x.kind in [Integer, Floating, Rational] and y.kind in [Integer, Floating, Rational]:
+    if x.kind in {Integer, Floating, Rational} and y.kind in {Integer, Floating, Rational}:
         if x.kind==Integer:
             if y.kind==Integer: 
                 if likely(x.iKind==NormalInteger and y.iKind==NormalInteger):
@@ -272,7 +272,7 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
                 return false
 
 proc `>`*(x: Value, y: Value): bool {.inline.}=
-    if x.kind in [Integer, Floating, Rational] and y.kind in [Integer, Floating, Rational]:
+    if x.kind in {Integer, Floating, Rational} and y.kind in {Integer, Floating, Rational}:
         if x.kind==Integer:
             if y.kind==Integer: 
                 if likely(x.iKind==NormalInteger and y.iKind==NormalInteger):
@@ -401,7 +401,7 @@ proc find*(a: openArray[Value], item: Value): int {.inline.}=
 
 proc identical*(x: Value, y: Value): bool {.inline.} =
     if x == y and x.kind == y.kind:
-        if x.kind in [Inline, Block]:
+        if x.kind in {Inline, Block}:
             if x.a.len != y.a.len: return false
 
             for i,child in x.a:

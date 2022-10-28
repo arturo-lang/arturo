@@ -390,12 +390,16 @@ template parseCurlyString(p: var Parser) =
                 inc(pos)
     p.bufpos = pos
 
-    if verbatimString:
-        AddToken newString(p.value)
-    elif regexString:
-        AddToken newRegex(p.value)
+    if unlikely(p.buf[p.bufpos] == Colon):
+        inc(p.bufpos)
+        AddToken newLabel(p.value)
     else:
-        AddToken newString(p.value, dedented=true)
+        if verbatimString:
+            AddToken newString(p.value)
+        elif regexString:
+            AddToken newRegex(p.value)
+        else:
+            AddToken newString(p.value, dedented=true)
 
 template parseFullLineString(p: var Parser) =
     var pos = p.bufpos + 2
@@ -822,7 +826,11 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inl
                 break
             of Quote:
                 parseString(p)
-                AddToken newString(p.value)
+                if unlikely(p.buf[p.bufpos] == Colon):
+                    inc(p.bufpos)
+                    AddToken newLabel(p.value)
+                else:
+                    AddToken newString(p.value)
             of BackTick:
                 parseString(p, stopper=BackTick)
                 AddToken newChar(p.value)

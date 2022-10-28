@@ -22,7 +22,7 @@
 # Libraries
 #=======================================
 
-import algorithm
+import algorithm, hashes
 
 import helpers/datasource
 when not defined(WEB):
@@ -145,8 +145,8 @@ proc defineSymbols*() =
             else:
                 var fun: Value
 
-                if x.kind==Literal or x.kind==String:
-                    fun = FetchSym(x.s)#InPlace
+                if x.kind in {Literal, String}:
+                    fun = FetchSym(x.s)
                 else:
                     fun = x
 
@@ -154,7 +154,13 @@ proc defineSymbols*() =
                     push(v)
 
                 if fun.fnKind==UserFunction:
-                    execBlock(fun.main, args=fun.params, hasArgs=true, isFuncBlock=true, imports=fun.imports, exports=fun.exports)
+                    var fid: Hash
+                    if x.kind in {Literal,String}:
+                        fid = hash(x.s)
+                    else:
+                        fid = hash(fun)
+
+                    execFunction(fun, fid)
                 else:
                     fun.action()
         
@@ -218,7 +224,6 @@ proc defineSymbols*() =
             "code"  : {String,Block,Bytecode}
         },
         attrs       = {
-            "import": ({Logical},"execute at root level"),
             "times" : ({Integer},"repeat block execution given number of times")
         },
         returns     = {Any,Nothing},
@@ -229,11 +234,6 @@ proc defineSymbols*() =
                 x: 3
                 print ["x =>" x]          ; x => 3
             ]
-            ..........
-            do.import [
-                x: 3
-            ]
-            print ["x =>" x]              ; x => 3
             ..........
             print do "https://raw.githubusercontent.com/arturo-lang/arturo/master/examples/projecteuler/euler1.art"
             ; 233168
@@ -252,24 +252,13 @@ proc defineSymbols*() =
             if checkAttr("times"):
                 times = aTimes.i
 
-            var execInParent = (hadAttr("import"))
-
             var evaled: Translation
             if x.kind==Block:
-                evaled = doEval(x)
+                evaled = evalOrGet(x)
 
             while currentTime < times:
-                if x.kind==Block:
-                    # discard executeBlock(x)
-                    if execInParent:
-                        execBlock(nil, evaluated=evaled, hasEval=true, execInParent=true)
-                    else:
-                        execBlock(nil, evaluated=evaled, hasEval=true)
-                elif x.kind==Bytecode:
-                    if execInParent:
-                        execBlock(nil, evaluated=x.trans, hasEval=true, execInParent=true)
-                    else:
-                        execBlock(nil, evaluated=x.trans, hasEval=true)
+                if x.kind in {Block,Bytecode}:
+                    execUnscoped(evaled)
                     
                 else: # string
                     let (src, tp) = getSource(x.s)
@@ -277,23 +266,15 @@ proc defineSymbols*() =
                     if tp==FileData:
                         addPath(x.s)
 
-                    if execInParent:
-                        let parsed = doParse(src, isFile=false)
-
-                        if not isNil(parsed):
-                            execBlock(parsed, execInParent=true)
-                    else:
-                        let parsed = doParse(src, isFile=false)
-                        if not isNil(parsed):
-                            execBlock(parsed)
+                    let parsed = doParse(src, isFile=false)
+                    if not parsed.isNil:
+                        execUnscoped(parsed)
 
                     if tp==FileData:
                         discard popPath()
                 
                 currentTime += 1
 
-    # TODO(Core\dup) verify this works correctly
-    #  labels: library, unit-test
     builtin "dup",
         alias       = thickarrowleft, 
         rule        = PrefixPrecedence,
@@ -340,9 +321,9 @@ proc defineSymbols*() =
             ]
         """:
             #=======================================================
-            let preevaled = evalOrGet(x)
             let y = pop() # pop the value of the previous operation (hopefully an 'if?' or 'when?')
-            if Not(y.b)==True: execBlock(nil, evaluated=preevaled, hasEval=true)
+            if Not(y.b)==True: 
+                execUnscoped(x)
             
     builtin "ensure",
         alias       = unaliased, 
@@ -361,7 +342,7 @@ proc defineSymbols*() =
             print "good, the number is positive indeed. let's continue..."
         """:
             #=======================================================
-            execBlock(x)
+            execUnscoped(x)
             if Not(pop().b)==True:
                 AssertionError_AssertionFailed(x.codify())
 
@@ -384,8 +365,7 @@ proc defineSymbols*() =
             #=======================================================
             let condition = not (x.kind==Null or (x.kind==Logical and x.b==False))
             if condition: 
-                let preevaled = evalOrGet(y)
-                execBlock(nil, evaluated=preevaled, hasEval=true)
+                execUnscoped(y)
 
     builtin "if?",
         alias       = unaliased, 
@@ -419,10 +399,8 @@ proc defineSymbols*() =
             #=======================================================
             let condition = not (x.kind==Null or (x.kind==Logical and x.b==False))
             if condition: 
-                let preevaled = evalOrGet(y)
-                execBlock(nil, evaluated=preevaled, hasEval=true)
-                # if vmReturn:
-                #     return ReturnResult
+                execUnscoped(y)
+
             push(newLogical(condition))
 
     builtin "let",
@@ -592,9 +570,9 @@ proc defineSymbols*() =
             #=======================================================
             let condition = not (x.kind==Null or (x.kind==Logical and x.b==False))
             if condition: 
-                execBlock(y)
+                execUnscoped(y)
             else:
-                execBlock(z)
+                execUnscoped(z)
 
     builtin "try",
         alias       = unaliased, 
@@ -604,7 +582,6 @@ proc defineSymbols*() =
             "action": {Block,Bytecode}
         },
         attrs       = {
-            "import"    : ({Logical},"execute at root level"),
             "verbose"   : ({Logical},"print all error messages as usual")
         },
         returns     = {Nothing},
@@ -618,13 +595,8 @@ proc defineSymbols*() =
         """:
             #=======================================================
             let verbose = (hadAttr("verbose"))
-            let execInParent = (hadAttr("import"))
             try:
-                let preevaled = evalOrGet(x)
-                if execInParent:
-                    execBlock(nil, evaluated=preevaled, hasEval=true, execInParent=true, inTryBlock=true)
-                else:
-                    execBlock(nil, evaluated=preevaled, hasEval=true, inTryBlock=true)
+                execUnscoped(x)
             except:
                 let e = getCurrentException()
                 if verbose:
@@ -638,7 +610,6 @@ proc defineSymbols*() =
             "action": {Block,Bytecode}
         },
         attrs       = {
-            "import"    : ({Logical},"execute at root level"),
             "verbose"   : ({Logical},"print all error messages as usual")
         },
         returns     = {Logical},
@@ -655,13 +626,8 @@ proc defineSymbols*() =
         """:
             #=======================================================
             let verbose = (hadAttr("verbose"))
-            let execInParent = (hadAttr("import"))
             try:
-                let preevaled = evalOrGet(x)
-                if execInParent:
-                    execBlock(nil, evaluated=preevaled, hasEval=true, execInParent=true, inTryBlock=true)
-                else:
-                    execBlock(nil, evaluated=preevaled, hasEval=true, inTryBlock=true)
+                execUnscoped(x)
 
                 push(VTRUE)
             except:
@@ -689,8 +655,7 @@ proc defineSymbols*() =
             #=======================================================
             let condition = x.kind==Null or (x.kind==Logical and x.b==False)
             if condition: 
-                let preevaled = evalOrGet(y)
-                execBlock(nil, evaluated=preevaled, hasEval=true)
+                execUnscoped(y)
 
     builtin "unless?",
         alias       = unaliased, 
@@ -724,10 +689,8 @@ proc defineSymbols*() =
             #=======================================================
             let condition = x.kind==Null or (x.kind==Logical and x.b==False)
             if condition: 
-                let preevaled = evalOrGet(y)
-                execBlock(nil, evaluated=preevaled, hasEval=true)
-                # if vmReturn:
-                #     return ReturnResult
+                execUnscoped(y)
+
             push(newLogical(condition))
 
     builtin "until",
@@ -764,8 +727,9 @@ proc defineSymbols*() =
 
             while true:
                 handleBranching:
-                    execBlock(nil, evaluated=preevaledX, hasEval=true)
-                    execBlock(nil, evaluated=preevaledY, hasEval=true)
+                    execUnscoped(preevaledX)
+                    execUnscoped(preevaledY)
+
                     let popped = pop()
                     let condition = not (popped.kind==Null or (popped.kind==Logical and popped.b==False))
                     if condition:
@@ -793,7 +757,7 @@ proc defineSymbols*() =
             print g 10              ; 12
         """:
             #=======================================================
-            push(FetchSym(x.s))#push(InPlace)
+            push(FetchSym(x.s))
 
     builtin "when?",
         alias       = unaliased, 
@@ -825,11 +789,11 @@ proc defineSymbols*() =
                 for cond in cleanX:
                     newb.a.add(cond)
 
-                execBlock(newb)
+                execUnscoped(newb)
 
                 let res = sTop()
                 if (res.b)==True: 
-                    execBlock(y)
+                    execUnscoped(y)
                     discard pop()
                     discard pop()
                     push(newLogical(true))
@@ -844,9 +808,7 @@ proc defineSymbols*() =
             "condition" : {Block,Bytecode,Null},
             "action"    : {Block,Bytecode}
         },
-        attrs       = {
-            "import": ({Logical},"execute at root level")
-        },
+        attrs       = NoAttrs,
         returns     = {Nothing},
         example     = """
             i: 0 
@@ -871,32 +833,24 @@ proc defineSymbols*() =
             ]
         """:
             #=======================================================
-            var execInParent = (hadAttr("import"))
-
             if x.kind==Null:
                 let preevaledY = evalOrGet(y)
                 while true:
                     handleBranching:
-                        if execInParent:
-                            execBlock(nil, evaluated=preevaledY, hasEval=true, execInParent=true)
-                        else:
-                            execBlock(nil, evaluated=preevaledY, hasEval=true)
+                        execUnscoped(preevaledY)
                     do:
                         discard
             else:
                 let preevaledX = evalOrGet(x)
                 let preevaledY = evalOrGet(y)
 
-                execBlock(nil, evaluated=preevaledX, hasEval=true)
+                execUnscoped(preevaledX)
                 var popped = pop()
 
                 while not (popped.kind==Null or (popped.kind==Logical and popped.b==False)):
                     handleBranching:
-                        if execInParent:
-                            execBlock(nil, evaluated=preevaledY, hasEval=true, execInParent=true)
-                        else:
-                            execBlock(nil, evaluated=preevaledY, hasEval=true)
-                        execBlock(nil, evaluated=preevaledX, hasEval=true)
+                        execUnscoped(preevaledY)
+                        execUnscoped(preevaledX)
                         popped = pop()
                     do:
                         discard

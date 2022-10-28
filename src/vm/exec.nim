@@ -22,7 +22,7 @@
 # Libraries
 #=======================================
 
-import hashes, sugar, tables
+import hashes, tables
 
 when defined(VERBOSE):
     import strformat
@@ -46,7 +46,7 @@ import vm/values/custom/[vbinary, vlogical]
 #=======================================
 
 type
-    MemoizerKey = (string, Hash)
+    MemoizerKey = (Hash, Hash)
 
 #=======================================
 # Variables
@@ -59,15 +59,11 @@ var
 # Forward Declarations
 #=======================================
 
-proc doExec*(cnst: ValueArray, it: VBinary, args: Value = nil): ValueDict
+proc ExecLoop*(cnst: ValueArray, it: VBinary)
 
 #=======================================
 # Helpers
 #=======================================
-
-template doExec*(input: Translation, args: Value = nil): ValueDict =
-    ## Same as ``doExec(input.constants, input.instructions, args)``
-    doExec(input.constants, input.instructions, args)
 
 template pushByIndex(idx: int):untyped =
     stack.push(cnst[idx])
@@ -83,22 +79,27 @@ proc storeByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inlin
         when doPop:
             stack.popN(1)
 
+proc dStoreByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inline,enforceNoRaises.}=
+    hookProcProfiler("exec/storeByIndex"):
+        var stackTop {.cursor.} = stack.peek(0)
+
+        SetDictSym(cnst[idx].s, stackTop, safe=true)
+        when doPop:
+            stack.popN(1)
+
 template loadByIndex(idx: int):untyped =
     hookProcProfiler("exec/loadByIndex"):
         stack.push(FetchSym(cnst[idx].s))
 
 template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
     ## Take a Function value, whether a user or a built-in one, 
-    ## and execute it.
+    ## and execute it
     if f.fnKind==UserFunction:
         hookProcProfiler("exec/callFunction:user"):
             if unlikely(SP < f.arity):
                 RuntimeError_NotEnoughArguments(fnName, f.arity)
 
-            if unlikely(f.memoize): 
-                execBlock(f.main, args=f.params, hasArgs=true, isFuncBlock=true, imports=f.imports, exports=f.exports, exportable=f.exportable, memoized=newString(fnName), isMemoized=true)
-            else:
-                execBlock(f.main, args=f.params, hasArgs=true, isFuncBlock=true, imports=f.imports, exports=f.exports, exportable=f.exportable)
+            execFunction(f, hash(fnName))
     else:
         f.action()
 
@@ -118,163 +119,15 @@ template fetchAttributeByIndex(idx: int):untyped =
 
 #---------------------------------------
 
-template execIsolated*(evaled:Translation): untyped =
-    ## Same as ``execBlock(evaled)``
-    doExec(evaled)
+template getMemoized(fid: Hash, v: Value): Value =
+    Memoizer.getOrDefault((fid, value.hash(v)), nil)
 
-template getMemoized(fn: string, v: Value): Value =
-    Memoizer.getOrDefault((fn, value.hash(v)), nil)
-
-template setMemoized(fn: string, v: Value, res: Value) =
-    Memoizer[(fn, value.hash(v))] = res
-
-proc execBlock*(
-    blk             : Value, 
-    args            : Value = nil, 
-    hasArgs         : static bool = false,
-    evaluated       : Translation = nil, 
-    hasEval         : static bool = false,
-    execInParent    : static bool = false, 
-    isFuncBlock     : static bool = false, 
-    imports         : Value = nil,
-    exports         : Value = nil,
-    exportable      : bool = false,
-    inTryBlock      : static bool = false,
-    memoized        : Value = nil,
-    isMemoized      : static bool = false
-) =
-    ## Execute an unevaluated Block value or pre-evaluated Translation
-    ## with given arguments and manage the call stack
-    var newSyms: ValueDict
-
-    when isFuncBlock or ((not isFuncBlock) and (not execInParent)):
-        let savedArities = Arities
-
-    when isFuncBlock:
-        var savedSyms: OrderedTable[string,Value]
-
-    when isMemoized:
-        var passedParams: Value
-
-    try:
-        when isFuncBlock:
-            when isMemoized:
-                passedParams = newBlock()
-    
-                when hasArgs:
-                    var i=0
-                    let argsLen = len(args.a)
-                    while i < argsLen:
-                        passedParams.a.add(stack.peek(i))
-                        inc i
-                    #passedParams.a.add(stack.peekRange(0, args.a.len-1))
-
-                if (let memd = getMemoized(memoized.s, passedParams); not memd.isNil):
-                    when hasArgs:
-                        popN args.a.len
-                    push memd
-                    return
-            else:
-                when hasArgs:
-                    for i,arg in args.a:          
-                        if stack.peek(i).kind==Function:
-                            Arities[arg.s] = stack.peek(i).arity
-                        else:
-                            Arities.del(arg.s)
-
-            if not imports.isNil:
-                savedSyms = Syms
-                for k,v in pairs(imports.d):
-                    SetSym(k, v)
-
-        let evaled = 
-            when not hasEval:   
-                doEval(blk)
-            else: 
-                evaluated
-
-        when hasArgs:
-            newSyms = doExec(evaled, args)
-        else:
-            newSyms = doExec(evaled)
-
-    except ReturnTriggered:
-        when not isFuncBlock:
-            raise
-        else:
-            discard
-        
-    finally:
-        when isFuncBlock:
-            when isMemoized:
-                setMemoized(memoized.s, passedParams, stack.peek(0))
-
-            if not imports.isNil:
-                Syms = savedSyms
-
-            Arities = savedArities
-            if not exports.isNil():
-                if exportable:
-                    Syms = newSyms
-                else:
-                    for k in exports.a:
-                        if (let newSymsKey = newSyms.getOrDefault(k.s, nil); not newSymsKey.isNil):
-                            SetSym(k.s, newSymsKey)
-            else:
-                when hasArgs:
-                    for arg in args.a:
-                        Arities.del(arg.s)
-
-        else:
-            when not inTryBlock:
-                when execInParent:
-                    Syms = newSyms
-                else:
-                    Arities = savedArities
-                    for k, v in mpairs(Syms):
-                        if not (v.kind==Function and v.fnKind==BuiltinFunction):
-                            if (let newsymV = newSyms.getOrDefault(k, nil); not newsymV.isNil):
-                                v = newsymV
-            else:
-                if getCurrentException().isNil():
-                    when execInParent:
-                        Syms = newSyms
-                    else:
-                        Arities = savedArities
-                        for k, v in mpairs(Syms):
-                            if not (v.kind==Function and v.fnKind==BuiltinFunction):
-                                if (let newsymV = newSyms.getOrDefault(k, nil); not newsymV.isNil):
-                                    v = newsymV
-
-proc execDictionaryBlock*(blk: Value): ValueDict =
-    ## Execute given Block value and return a Dictionary
-    var newSyms: ValueDict
-
-    try:
-        newSyms = doExec(doEval(blk, isDictionary=true))
-        
-    finally:
-        return collect(initOrderedTable()):
-            for k, v in pairs(newSyms):
-                if (let symV = Syms.getOrDefault(k, nil); symV.isNil or symV != v):
-                    {k: v}
-
-template execInternal*(path: string): untyped =
-    ## Execute internal script using given path
-    execBlock(
-        doParse(
-            static readFile(
-                normalizedPath(
-                    parentDir(currentSourcePath()) & "/../library/internal/" & path & ".art"
-                )
-            ),
-            isFile = false
-        ),
-        execInParent = true
-    )
+template setMemoized(fid: Hash, v: Value, res: Value) =
+    Memoizer[(fid, value.hash(v))] = res
 
 template callInternal*(fname: string, getValue: bool, args: varargs[Value]): untyped =
-    ## Call function by name, directly and - optionally - return the result
+    ## Call function by name, directly and - 
+    ## optionally - return the result
     let fun = GetSym(fname)
     for v in args.reversed:
         push(v)
@@ -283,6 +136,31 @@ template callInternal*(fname: string, getValue: bool, args: varargs[Value]): unt
 
     when getValue:
         pop()
+
+template prepareLeakless*(protected: ValueArray): untyped =
+    ## Prepare for leak-less block execution
+    ## 
+    ## **Hint:** To be used in the Iterators module
+
+    var toRestore{.inject.}: seq[(string,Value,int)] = protected.map((psym) =>
+        (psym.s, Syms.getOrDefault(psym.s, nil), Arities.getOrDefault(psym.s, -1))
+    )
+
+template finalizeLeakless*(): untyped =
+    ## Finalize leak-less block execution
+    ## 
+    ## **Hint:** To be used in the Iterators module
+
+    for (sym, val, arity) in toRestore:
+        if val.isNil:
+            var delSym: Value
+            if Syms.pop(sym, delSym):
+                if delSym.kind==Function:
+                    Arities.del(sym)
+        else:
+            Syms[sym] = val
+            if arity != -1:
+                Arities[sym] = arity
 
 template handleBranching*(tryDoing, finalize: untyped): untyped =
     ## Wrapper for code that may throw *Break* or *Continue* signals, 
@@ -302,25 +180,156 @@ template handleBranching*(tryDoing, finalize: untyped): untyped =
 # Methods
 #=======================================
 
-proc doExec*(cnst: ValueArray, it: VBinary, args: Value = nil): ValueDict = 
-    # Execute given constants+instructions with given arguments
-    # and return the resulting symbol table (before internally restoring it)
-    var i = 0
-    var op {.register.}: OpCode
-    var oldSyms: ValueDict
+template execUnscoped*(input: Translation or Value) =
+    ## Execute given bytecode without scoping
+    ## 
+    ## This means:
+    ## - Symbols declared inside will be available 
+    ##   in the outer scope
+    ## - Symbols re-assigned inside will overwrite 
+    ##   the value in the outer scope (if it exists)
+    
+    when input is Translation:
+        ExecLoop(input.constants, input.instructions)
+    else:
+        let preevaled = evalOrGet(input)
+        ExecLoop(preevaled.constants, preevaled.instructions)
 
-    oldSyms = Syms
+template execInternal*(path: string) =
+    ## Execute internal script using given path
+    
+    let preevaled = doEval(
+        doParse(
+            static readFile(
+                normalizedPath(
+                    parentDir(currentSourcePath()) & "/../library/internal/" & path & ".art"
+                )
+            ),
+            isFile = false
+        )
+    )
 
-    if not args.isNil:
-        for arg in args.a:
-            # pop argument and set it
-            SetSym(arg.s, move stack.pop())
+    ExecLoop(preevaled.constants, preevaled.instructions)
+
+proc execDictionary*(blk: Value): ValueDict =
+    ## Execute given Block value and return 
+    ## a Dictionary
+    
+    DictSyms.add(initOrderedTable[string,Value]())
+
+    let preevaled = doEval(blk, isDictionary=true)
+
+    ExecLoop(preevaled.constants, preevaled.instructions)
+
+    result = DictSyms.pop()
+
+proc execFunction*(fun: Value, fid: Hash) =
+    ## Execute given Function value with scoping
+    ## 
+    ## This means:
+    ## - All symbols declared inside will NOT be 
+    ##   available in the outer scope
+    ## - Symbols re-assigned inside will NOT 
+    ##   overwrite the value in the outer scope
+    ## - Symbols declared in `.exports` will not 
+    ##   abide by this rule
+    ## - If the whole function is marked as 
+    ##   `.exportable`, then none of the symbols 
+    ##   will abide by this rule and it will behave 
+    ##   pretty much like `execLeakless`
+    
+    var memoizedParams: Value = nil
+    var savedSyms: ValueDict
+
+    var savedArities = Arities
+    let argsL = len(fun.params.a)
+
+    if fun.memoize:
+        memoizedParams = newBlock()
+
+        var i=0
+        while i < argsL:
+            memoizedParams.a.add(stack.peek(i))
+            inc i
+
+        # this specific call result has already been memoized
+        # so we can just return it
+        if (let memd = getMemoized(fid, memoizedParams); not memd.isNil):
+            popN argsL
+            push memd
+            return
+    else:
+        for i,arg in fun.params.a:          
+            if stack.peek(i).kind==Function:
+                Arities[arg.s] = stack.peek(i).arity
+            else:
+                Arities.del(arg.s)
+        
+    savedSyms = Syms
+    if not fun.imports.isNil:
+        for k,v in pairs(fun.imports.d):
+            SetSym(k, v)
+
+    for arg in fun.params.a:
+        # pop argument and set it
+        SetSym(arg.s, move stack.pop())
+
+    if fun.bcode.isNil:
+        fun.bcode = newBytecode(doEval(fun.main))
+
+    try:
+        ExecLoop(fun.bcode.trans.constants, fun.bcode.trans.instructions)
+
+    except ReturnTriggered:
+        discard
+
+    finally:
+        if fun.memoize:
+            setMemoized(fid, memoizedParams, stack.peek(0))
+
+        if fun.exportable:
+            for k in fun.params.a:
+                if (let savedSym = savedSyms.getOrDefault(k.s, nil); not savedSym.isNil):
+                    Syms[k.s] = savedSym
+                    if (let savedArity = savedArities.getOrDefault(k.s, -1); savedArity != -1):
+                        Arities[k.s] = savedArity
+                    else:
+                        Arities.del(k.s)
+                else:
+                    Syms.del(k.s)
+                    Arities.del(k.s)
+        else:
+            if not fun.exports.isNil:
+                for k in fun.exports.a:
+                    if (let newSym = Syms.getOrDefault(k.s, nil); not newSym.isNil):
+                        savedSyms[k.s] = newSym
+                        if (let newArity = Arities.getOrDefault(k.s, -1); newArity != -1):
+                            savedArities[k.s] = newArity
+                        else:
+                            savedArities.del(k.s)
+            
+                Syms = savedSyms
+                Arities = savedArities
+            else:
+                Syms = savedSyms
+                Arities = savedArities
+
+proc ExecLoop*(cnst: ValueArray, it: VBinary) =
+    ## The main execution loop.
+    ## 
+    ## It takes an array of constants, our data (``cnst``)
+    ## and array of bytes, our instructions/bytecode (``it``),
+    ## goes through them and executes them one-by-one
+    ## 
+    ## **Hint:** Not to be called directly! Better use one 
+    ## of the helpers above!
+
+    var
+        i   {.register.}: int = 0
+        op  {.register.}: OpCode
 
     while true:
         {.computedGoTo.}
-
-        # if vmBreak:
-        #     break
 
         op = (OpCode)(it[i])
 
@@ -381,8 +390,8 @@ proc doExec*(cnst: ValueArray, it: VBinary, args: Value = nil): ValueDict =
                     else:
                         discard
 
-                of RSRV1                : discard
-                of RSRV2                : discard
+                of opDStore             : i += 1; dStoreByIndex(cnst, (int)(it[i]))
+                of opDStoreX            : i += 2; dStoreByIndex(cnst, (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
 
                 # [0x20-0x2F]
                 # push values
@@ -584,7 +593,7 @@ proc doExec*(cnst: ValueArray, it: VBinary, args: Value = nil): ValueDict =
                 of opInc                : IncF.action()
                 of opDec                : DecF.action()
 
-                of RSRV3                : discard
+                of RSRV1                : discard
 
                 #of RSRV3..RSRV14        : discard
 
@@ -621,8 +630,3 @@ proc doExec*(cnst: ValueArray, it: VBinary, args: Value = nil): ValueDict =
                 of opEnd                : break
 
         i += 1
-
-    result = Syms
-
-    Syms = oldSyms
-    

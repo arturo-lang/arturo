@@ -180,7 +180,7 @@ when isMainModule and not defined(WEB):
 
         setColors(muted = muted)
 
-        if unrecognizedOption!="" and ((action==evalCode and code=="") or (action notin [execFile, evalCode])):
+        if unrecognizedOption!="" and ((action==evalCode and code=="") or (action notin {execFile, evalCode})):
             CompilerError_UnrecognizedOption(unrecognizedOption)
             echo ""
             printHelp(withHeader=false)

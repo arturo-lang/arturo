@@ -38,12 +38,12 @@ print ei
 ; but not be confused or altered them
 
 country: "Spain"
-ent: "EU"
+entity: "EU"
 
 location: #[
 	continent: "Europe"
 	country: "Greece"
-	entity: ent
+	entity: entity
 ]
 
 print location
@@ -54,9 +54,9 @@ print location
 ; to inject outer fields/variable
 ; (with the same name and value)
 
-location: #.with:['country][
+location: #.with:['entity][
 	continent: "Europe"
-	entity: "EU"
+	country: "Spain"
 ]
 
 print location
@@ -65,23 +65,6 @@ print location
 ; IN A BLOCK
 
 do [ 
-    a: #[
-        some: "value"
-    ]
-    print a
-]
-
-if? set? 'a [
-	print a
-]
-else [
-	print "a: not set -> CORRECT"
-]
-
-; DICTIONARY 
-; IN AN IMPORTED BLOCK
-
-do.import [ 
     b: #[
         some: "value"
     ]
