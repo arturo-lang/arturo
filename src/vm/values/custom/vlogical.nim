@@ -46,6 +46,9 @@ func Or*(x,y: VLogical): VLogical {.inline,enforceNoRaises.} =
 func Xor*(x,y: VLogical): VLogical {.inline,enforceNoRaises.} =
     return And(Or(x,y),Not(And(x,y)))
 
+func Nand*(x,y: VLogical): VLogical {.inline,enforceNoRaises.} =
+    return Not(And(x,y))
+
 func `$`*(b: VLogical): string  {.enforceNoRaises.} =
     if b==True: return "true"
     elif b==False: return "false"
