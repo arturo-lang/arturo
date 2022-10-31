@@ -232,6 +232,11 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             if doElse:
                 default
 
+    template addCurrentCommentToBytecode() =
+        if inBlock: (for b in currentCommand: it.add(b))
+        else: (for b in currentCommand.reversed: it.add(b))
+        currentCommand.setLen(0)
+
     template addTerminalValue(inArrowBlock: bool, code: untyped) =
         block:
             ## Check for potential Infix operator ahead
@@ -274,10 +279,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 if not (i+1<childrenCount and n.a[i+1].kind == Symbol and n.a[i+1].m == pipe):
                     if argStack.len==0:
                         # The command is finished
-                        
-                        if inBlock: (for b in currentCommand: it.add(b))
-                        else: (for b in currentCommand.reversed: it.add(b))
-                        currentCommand.setLen(0)
+                        addCurrentCommentToBytecode()
                 else:
                     # TODO(Eval\addTerminalValue) Verify pipe operators are working
                     # labels: vm,evaluator,enhancement,unit-test
@@ -299,9 +301,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                             else:
                                 addTrailingConst(consts, n.a[i+1], opCall)
                                 if argStack.len==0:
-                                    if inBlock: (for b in currentCommand: it.add(b))
-                                    else: (for b in currentCommand.reversed: it.add(b))
-                                    currentCommand.setLen(0)
+                                    addCurrentCommentToBytecode()
                             i += 1
             else:
                 if subargStack.len != 0: subargStack[^1] -= 1
