@@ -425,7 +425,7 @@ proc defineSymbols*() =
                 execUnscoped(y)
                 b = pop().b
 
-            push(newLogical(Not(Xor(a, b))))
+            push(newLogical(Xnor(a, b)))
 
     builtin "xor?",
         alias       = unaliased, 
