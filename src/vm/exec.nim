@@ -552,6 +552,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 # branching
                 of opIf                 : IfF.action()
                 of opIfE                : IfEF.action()
+                of opUnless             : UnlessF.action()
                 of opElse               : ElseF.action()
                 of opWhile              : WhileF.action()
                 of opReturn             : ReturnF.action()
