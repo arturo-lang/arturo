@@ -383,7 +383,9 @@ proc parseOpCode*(x: string): OpCode =
         return opNop
 
 func stringify*(x: OpCode): string {.inline.} =
-    ($(x)).replace("op").toLowerAscii()
+    result = $(x)
+    removePrefix(result, "op")
+    result = result.toLowerAscii()
 
 func hash*(x: OpCode): Hash {.inline.} =
     cast[Hash](ord(x))
