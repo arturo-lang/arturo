@@ -260,11 +260,12 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 if blk.kind == Block:
                     currentCommand.delete(0..shift)
                     discard currentCommand.pop()
-                    currentCommand.add([(byte)opJmpIfN, (byte)0])
+                    currentCommand.add([(byte)opJmpIfNot, (byte)0, (byte)0])
                     let injPos = currentCommand.len - 1
                     evalOne(blk, consts, currentCommand, inBlock=inBlock, isDictionary=isDictionary)
                     let finPos = currentCommand.len - injPos - 1
-                    currentCommand[injPos] = (byte)finPos
+                    currentCommand[injPos] = (byte)finPos shr 8
+                    currentCommand[injPos+1] = (byte)finPos
 
         for b in currentCommand:
             it.add(b)
