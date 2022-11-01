@@ -22,7 +22,7 @@
 # Libraries
 #=======================================
 
-import hashes, tables
+import hashes, macros, tables
 
 when defined(VERBOSE):
     import strformat
@@ -118,6 +118,14 @@ template callByIndex(idx: int):untyped =
 
 template fetchAttributeByIndex(idx: int):untyped =
     stack.pushAttr(cnst[idx].s, move stack.pop())
+
+macro performConditionalJump(symb: untyped): untyped =
+    result = quote do:
+        let x = move stack.pop()
+        let y = move stack.pop()
+        i += 2
+        if `symb`(x,y):
+            i += (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
 
 #---------------------------------------
 
@@ -625,47 +633,12 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                     if x.kind==Null or (x.kind==Logical and x.b==False):
                         i += (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
 
-                of opJmpIfEq            :
-                    let x = move stack.pop()
-                    let y = move stack.pop()
-                    i += 2
-                    if x == y:
-                        i += (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
-
-                of opJmpIfNe            :
-                    let x = move stack.pop()
-                    let y = move stack.pop()
-                    i += 2
-                    if not(x == y):
-                        i += (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
-
-                of opJmpIfGt            :
-                    let x = move stack.pop()
-                    let y = move stack.pop()
-                    i += 2
-                    if x > y:
-                        i += (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
-
-                of opJmpIfGe            :
-                    let x = move stack.pop()
-                    let y = move stack.pop()
-                    i += 2
-                    if x >= y:
-                        i += (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
-
-                of opJmpIfLt            :
-                    let x = move stack.pop()
-                    let y = move stack.pop()
-                    i += 2
-                    if x < y:
-                        i += (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
-
-                of opJmpIfLe            :
-                    let x = move stack.pop()
-                    let y = move stack.pop()
-                    i += 2
-                    if x <= y:
-                        i += (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
+                of opJmpIfEq            : performConditionalJump(`==`)
+                of opJmpIfNe            : performConditionalJump(`!=`)
+                of opJmpIfGt            : performConditionalJump(`>`)
+                of opJmpIfGe            : performConditionalJump(`>=`)
+                of opJmpIfLt            : performConditionalJump(`<`)
+                of opJmpIfLe            : performConditionalJump(`<=`)
 
                 # flow control
                 of opGoto               :
