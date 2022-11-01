@@ -122,9 +122,10 @@ proc `$`*(v: Value): string {.inline.} =
 
         of Object:
             if (let printMethod = v.proto.methods.getOrDefault("print", nil); not printMethod.isNil):
-                push v
-                callFunction(printMethod)
-                result = pop().s
+                return v.proto.doPrint(v)
+                # push v
+                # callFunction(printMethod)
+                # result = pop().s
             else:
                 var items: seq[string] = @[]
                 for key,value in v.o:
