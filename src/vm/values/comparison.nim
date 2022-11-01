@@ -17,9 +17,6 @@ when defined(WEB):
     
 when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
- 
-#import vm/exec
-#import vm/stack
 
 import vm/values/custom/[vcolor, vcomplex, vquantity, vrational]
 import vm/values/value
@@ -142,10 +139,6 @@ proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
             of Object:
                 if (let compareMethod = x.proto.methods.getOrDefault("compare", nil); not compareMethod.isNil):
                     return x.proto.doCompare(x,y) == 0
-                    # push y
-                    # push x
-                    # callFunction(compareMethod)
-                    # return (pop().i == 0)
                 else:
                     if x.o.len != y.o.len: return false
 
@@ -264,10 +257,6 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
             of Object:
                 if (let compareMethod = x.proto.methods.getOrDefault("compare", nil); not compareMethod.isNil):
                     return x.proto.doCompare(x, y) == -1
-                    # push y
-                    # push x
-                    # callFunction(compareMethod)
-                    # return (pop().i == -1)
                 else:
                     return false
             else:
@@ -364,10 +353,6 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
             of Object:
                 if (let compareMethod = x.proto.methods.getOrDefault("compare", nil); not compareMethod.isNil):
                     return x.proto.doCompare(x,y) == 1
-                    # push y
-                    # push x
-                    # callFunction(compareMethod)
-                    # return (pop().i == 1)
                 else:
                     return false
             else:
