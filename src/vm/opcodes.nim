@@ -285,15 +285,20 @@ type
         opOver          = 0xB3
         opSwap          = 0xB4
 
+        # conditional jumps
+        opJmpIf         = 0xB5
+        opJmpIfNot      = 0xB6
+        opJmpIfEq       = 0xB7
+        opJmpIfNe       = 0xB8
+        opJmpIfGt       = 0xB9
+        opJmpIfGe       = 0xBA
+        opJmpIfLt       = 0xBB
+        opJmpIfLe       = 0xBC
+
         # flow control
-        opJmp           = 0xB5
-        opJmpX          = 0xB6
-        opJmpIf         = 0xB7
-        opJmpIfX        = 0xB8
-        opJmpIfN        = 0xB9
-        opJmpIfNX       = 0xBA
-        opRet           = 0xBB
-        opEnd           = 0xBC
+        opGoto          = 0xBD
+        opRet           = 0xBE
+        opEnd           = 0xBF
 
 when false:
     #=======================================
