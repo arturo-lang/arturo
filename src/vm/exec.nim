@@ -41,6 +41,8 @@ import vm/[
 
 import vm/values/custom/[vbinary, vlogical]
 
+import vm/values/comparison
+
 #=======================================
 # Types
 #=======================================
