@@ -109,18 +109,17 @@ var
     TypeLookup = initOrderedTable[string,Value]()
 
     # global implementation references
-    AddF*, SubF*, MulF*, DivF*, FdivF*, ModF*, PowF*    : Value
-    NegF*, BNotF*, BAndF*, BOrF*, ShlF*, ShrF*          : Value
-    NotF*, AndF*, OrF*                                  : Value 
-    EqF*, NeF*, GtF*, GeF*, LtF*, LeF*                  : Value
-    IfF*, IfEF*, UnlessF*, ElseF*, WhileF*, ReturnF*    : Value
-    ToF*, PrintF*                                       : Value
-    GetF*, SetF*                                        : Value
-    ArrayF*, DictF*, FuncF*                             : Value
-    RangeF*, LoopF*, MapF*, SelectF*                    : Value
-    SizeF*, ReplaceF*, SplitF*, JoinF*, ReverseF*       : Value 
-    IncF*, DecF*                                        : Value
-    SwitchF*                                            : Value
+    AddF*, SubF*, MulF*, DivF*, FdivF*, ModF*, PowF*            : Value
+    NegF*, BNotF*, BAndF*, BOrF*, ShlF*, ShrF*                  : Value
+    NotF*, AndF*, OrF*                                          : Value 
+    EqF*, NeF*, GtF*, GeF*, LtF*, LeF*                          : Value
+    IfF*, IfEF*, UnlessF*, ElseF*, SwitchF*, WhileF*, ReturnF*  : Value
+    ToF*, PrintF*                                               : Value
+    GetF*, SetF*                                                : Value
+    ArrayF*, DictF*, FuncF*                                     : Value
+    RangeF*, LoopF*, MapF*, SelectF*                            : Value
+    SizeF*, ReplaceF*, SplitF*, JoinF*, ReverseF*               : Value 
+    IncF*, DecF*                                                : Value
 
 #=======================================
 # Forward Declarations
