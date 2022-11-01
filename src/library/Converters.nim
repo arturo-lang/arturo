@@ -742,6 +742,10 @@ proc defineSymbols*() =
                     newBlock(@[newWord("this")]),
                     printMethod
                 )
+                x.ts.doPrint = proc(v:Value):string =
+                    push v
+                    callFunction(x.ts.methods["print"])
+                    stack.pop().s
 
             if (let compareMethod = x.ts.methods.getOrDefault("compare", nil); not compareMethod.isNil):
                 if compareMethod.kind==Block:
