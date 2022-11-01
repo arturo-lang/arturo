@@ -47,8 +47,9 @@ proc parseFL(s: string): float =
 proc generateCustomObject(prot: Prototype, arguments: ValueArray | ValueDict): Value =
     newObject(arguments, prot, proc (self: Value, prot: Prototype) =
         if (let initMethod = prot.methods.getOrDefault("init", nil); not initMethod.isNil):
-            push self
-            callFunction(initMethod)
+            prot.doInit(self)
+            # push self
+            # callFunction(initMethod)
     )
 
 template throwCannotConvert(): untyped = 
@@ -737,6 +738,10 @@ proc defineSymbols*() =
                     newBlock(@[newWord("this")]),
                     initMethod
                 )
+                x.ts.doInit = proc (v:Value) =
+                    push v
+                    callFunction(x.ts.methods["init"])
+
             if (let printMethod = x.ts.methods.getOrDefault("print", nil); not printMethod.isNil):
                 x.ts.methods["print"] = newFunction(
                     newBlock(@[newWord("this")]),
