@@ -333,6 +333,8 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
 
         op = (OpCode)(it[i])
 
+        #echo "Executing: " & (stringify(op)) & " at " & $(i)# & " with next: " & $(it[i+1])
+
         hookOpProfiler($(op)):
 
             when defined(VERBOSE):
@@ -621,8 +623,10 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                     if stack.pop().b==True:
                         i = (int)((uint16)(it[i+1]) shl 8 + (byte)(it[i+2]))
                 of opJmpIfN             : 
-                    if Not(stack.pop().b)==True:
-                        i = (int)(it[i+1])
+                    let popped = move stack.pop()
+                    i += 1
+                    if popped.kind==Null or (popped.kind==Logical and popped.b==False):
+                        i += (int)(it[i])
                 of opJmpIfNX            : 
                     if Not(stack.pop().b)==True:
                         i = (int)((uint16)(it[i+1]) shl 8 + (byte)(it[i+2]))
