@@ -782,30 +782,7 @@ proc doEval*(root: Value, isDictionary=false): Translation =
             newit = optimizeBytecode(newit)
 
     result = Translation(constants: cnsts, instructions: newit)
-    # var instrs: ValueArray = @[]
-    # var j = 0
-    # while j < result.instructions.len:
-    #     let op = (OpCode)(result.instructions[j])
-    #     instrs.add(newWord(stringify(((OpCode)(op)))))
-    #     if op in {opPush, opStore, opCall, opLoad, opStorl, opAttr, opEol, opJmpIfN}:
-    #         j += 1
-    #         instrs.add(newInteger((int)result.instructions[j]))
-    #     elif op in {opPushX, opStoreX, opCallX, opLoadX, opStorlX, opEolX}:
-    #         j += 2
-    #         instrs.add(newInteger((int)((uint16)(result.instructions[j-1]) shl 8 + (byte)(result.instructions[j]))))
 
-    #     j += 1
-    
-    # var i = 0
-    # while i < instrs.len:
-    #     stdout.write $(i) & ": " & instrs[i].s
-    #     i += 1
-    #     if i < instrs.len and instrs[i].kind==Integer:
-    #         stdout.write "\t\t"
-    #         while i < instrs.len and instrs[i].kind==Integer:
-    #             stdout.write " #" & $(instrs[i].i)
-    #             i += 1
-    #     stdout.write "\n"
     # TODO(VM/eval) add option for evaluation into optimized bytecode directly
     #  if optimized:
     #      result.instructions = optimizeBytecode(result)
