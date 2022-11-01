@@ -148,6 +148,7 @@ template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: 
         elif n=="reverse"           : ReverseF = b
         elif n=="inc"               : IncF = b
         elif n=="dec"               : DecF = b
+        elif n=="switch"            : SwitchF = b
 
         when alias != unaliased:
             Aliases[alias] = AliasBinding(
