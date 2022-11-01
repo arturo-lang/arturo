@@ -626,22 +626,46 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                         i += (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
 
                 of opJmpIfEq            :
-                    discard
+                    let x = move stack.pop()
+                    let y = move stack.pop()
+                    i += 2
+                    if x == y:
+                        i += (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
 
                 of opJmpIfNe            :
-                    discard
+                    let x = move stack.pop()
+                    let y = move stack.pop()
+                    i += 2
+                    if not(x == y):
+                        i += (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
 
                 of opJmpIfGt            :
-                    discard
+                    let x = move stack.pop()
+                    let y = move stack.pop()
+                    i += 2
+                    if x > y:
+                        i += (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
 
                 of opJmpIfGe            :
-                    discard
+                    let x = move stack.pop()
+                    let y = move stack.pop()
+                    i += 2
+                    if x >= y:
+                        i += (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
 
                 of opJmpIfLt            :
-                    discard
+                    let x = move stack.pop()
+                    let y = move stack.pop()
+                    i += 2
+                    if x < y:
+                        i += (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
 
                 of opJmpIfLe            :
-                    discard
+                    let x = move stack.pop()
+                    let y = move stack.pop()
+                    i += 2
+                    if x <= y:
+                        i += (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
 
                 # flow control
                 of opGoto               :
