@@ -25,9 +25,7 @@ when not defined(NOGMP):
 
 import helpers/terminal as TerminalHelper
 
-#import vm/exec
 import vm/opcodes
-#import vm/stack
 import vm/values/value
 import vm/values/clean
 
@@ -123,9 +121,6 @@ proc `$`*(v: Value): string {.inline.} =
         of Object:
             if (let printMethod = v.proto.methods.getOrDefault("print", nil); not printMethod.isNil):
                 return v.proto.doPrint(v)
-                # push v
-                # callFunction(printMethod)
-                # result = pop().s
             else:
                 var items: seq[string] = @[]
                 for key,value in v.o:
