@@ -114,8 +114,8 @@ var
     NotF*, AndF*, OrF*                                  : Value 
     EqF*, NeF*, GtF*, GeF*, LtF*, LeF*                  : Value
     IfF*, IfEF*, UnlessF*, ElseF*, WhileF*, ReturnF*    : Value
-    GetF*, SetF*, ToF*                                  : Value
-    PrintF*                                             : Value
+    ToF*, PrintF*                                       : Value
+    GetF*, SetF*                                        : Value
     ArrayF*, DictF*, FuncF*                             : Value
     RangeF*, LoopF*, MapF*, SelectF*                    : Value
     SizeF*, ReplaceF*, SplitF*, JoinF*, ReverseF*       : Value 

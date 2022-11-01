@@ -197,8 +197,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         elif fn == ElseF: bt = opElse
         elif fn == WhileF: bt = opWhile
         elif fn == ReturnF: bt = opReturn
-        elif fn == GetF: bt = opGet
-        elif fn == SetF: bt = opSet
         elif fn == ToF: 
             bt = opTo
             when checkAhead:
@@ -217,6 +215,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                         funcArity -= 1
                         i += 1
         elif fn == PrintF: bt = opPrint
+        elif fn == GetF: bt = opGet
+        elif fn == SetF: bt = opSet
         elif fn == RangeF: bt = opRange
         elif fn == LoopF: bt = opLoop
         elif fn == MapF: bt = opMap
