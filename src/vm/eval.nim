@@ -74,6 +74,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
     var foundIfE = false
     var foundUnless = false
     var foundElse = false
+    var foundSwitch = false
 
     #------------------------
     # Helper Functions
@@ -204,6 +205,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         elif fn == ElseF: 
             foundElse = true
             bt = opElse
+        elif fn == SwitchF: 
+            foundSwitch = true
+            bt = opSwitch
         elif fn == WhileF: bt = opWhile
         elif fn == ReturnF: bt = opReturn
         elif fn == ToF: 
