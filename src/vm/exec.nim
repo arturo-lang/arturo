@@ -564,6 +564,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opIfE                : IfEF.action()
                 of opUnless             : UnlessF.action()
                 of opElse               : ElseF.action()
+                of opSwitch             : SwitchF.action()
                 of opWhile              : WhileF.action()
                 of opReturn             : ReturnF.action()
 
@@ -575,9 +576,6 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opToI                : 
                     stack.push(VINTEGERT)
                     ToF.action()
-
-                # i/o operations
-                of opPrint              : PrintF.action()
 
                 # [0xA0-0xAF]
                 # getters/setters
@@ -606,11 +604,31 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opInc                : IncF.action()
                 of opDec                : DecF.action()
 
+                # [0xB0-0xBF]
+                # i/o operations
+                of opPrint              : PrintF.action()
+
+                of RSRV1                : discard
+                of RSRV2                : discard
+                of RSRV3                : discard
+                of RSRV4                : discard
+                of RSRV5                : discard
+                of RSRV6                : discard
+                of RSRV7                : discard
+                of RSRV8                : discard
+                of RSRV9                : discard
+                of RSRV10               : discard
+                of RSRV11               : discard
+                of RSRV12               : discard
+                of RSRV13               : discard
+                of RSRV14               : discard
+                of RSRV15               : discard
+
                 #---------------------------------
                 # LOW-LEVEL OPERATIONS
                 #---------------------------------
 
-                # [0xB0-0xBF]
+                # [0xC0-0xCF]
                 # no operation
                 of opNop                : discard
 
