@@ -71,6 +71,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
     let childrenCount = n.a.len
 
     var foundIf = false
+    var foundIfE = false
+    var foundElse = false
 
     #------------------------
     # Helper Functions
@@ -192,9 +194,13 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         elif fn == IfF: 
             foundIf = true
             bt = opIf
-        elif fn == IfEF: bt = opIfE
+        elif fn == IfEF: 
+            foundIfE = true
+            bt = opIfE
         elif fn == UnlessF: bt = opUnless
-        elif fn == ElseF: bt = opElse
+        elif fn == ElseF: 
+            foundElse = true
+            bt = opElse
         elif fn == WhileF: bt = opWhile
         elif fn == ReturnF: bt = opReturn
         elif fn == ToF: 
@@ -241,9 +247,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
     template addCurrentCommentToBytecode() =
         if not inBlock: reverse(currentCommand)
 
-        if foundIf:
-            foundIf = false
-
+        if foundIf or (foundIfE and i+1<childrenCount and n.a[i+1].kind == Word and GetSym(n.a[i+1].s) == ElseF):
             var cnstId = -1
             var shift = -1
             if (OpCode)(currentCommand[0]) in {opPush0..opPush13}:
@@ -289,9 +293,41 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                     currentCommand.add([(byte)injectable, (byte)0, (byte)0])
                     let injPos = currentCommand.len - 2
                     evalOne(blk, consts, currentCommand, inBlock=inBlock, isDictionary=isDictionary)
+                    if foundIfE:
+                        currentCommand.add([(byte)opNop, (byte)opNop, (byte)opNop])
                     let finPos = currentCommand.len - injPos - 2
                     currentCommand[injPos] = (byte)finPos shr 8
                     currentCommand[injPos+1] = (byte)finPos
+            
+            foundIf = false
+            foundIfE = false
+        
+        elif foundElse and it[^1] == (byte)opNop:
+            var cnstId = -1
+            var shift = -1
+            if (OpCode)(currentCommand[0]) in {opPush0..opPush13}:
+                cnstId = (int)(currentCommand[0]) - (int)(opPush0)
+                shift = 0
+            elif (OpCode)(currentCommand[0]) == opPush:
+                cnstId = (int)(currentCommand[1])
+                shift = 1
+            elif (OpCode)(currentCommand[0]) == opPushX:
+                cnstId = ((int)(currentCommand[1]) shl 8) + (int)(currentCommand[2])
+                shift = 2
+
+            if cnstId != -1:
+                let blk = consts[cnstId]
+                if blk.kind == Block:
+                    currentCommand.delete(0..shift)
+                    discard currentCommand.pop()
+
+                    evalOne(blk, consts, currentCommand, inBlock=inBlock, isDictionary=isDictionary)
+                    let currentPos = currentCommand.len
+                    it[^3] = (byte)opGoto
+                    it[^2] = (byte)currentPos shr 8
+                    it[^1] = (byte)currentPos
+                    
+            foundElse = false
 
         for b in currentCommand:
             it.add(b)
