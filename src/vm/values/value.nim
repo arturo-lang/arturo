@@ -113,7 +113,7 @@ var
     NegF*, BNotF*, BAndF*, BOrF*, ShlF*, ShrF*          : Value
     NotF*, AndF*, OrF*                                  : Value 
     EqF*, NeF*, GtF*, GeF*, LtF*, LeF*                  : Value
-    IfF*, IfEF*, ElseF*, WhileF*, ReturnF*              : Value
+    IfF*, IfEF*, UnlessF*, ElseF*, WhileF*, ReturnF*    : Value
     GetF*, SetF*, ToF*                                  : Value
     PrintF*                                             : Value
     ArrayF*, DictF*, FuncF*                             : Value
