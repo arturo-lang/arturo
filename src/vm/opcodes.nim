@@ -232,16 +232,14 @@ type
         opIfE           = 0x97
         opUnless        = 0x98
         opElse          = 0x99
-        opWhile         = 0x9A
-        opReturn        = 0x9B
+        opSwitch        = 0x9A
+        opWhile         = 0x9B
+        opReturn        = 0x9C
 
         # converters
-        opTo            = 0x9C
-        opToS           = 0x9D  
-        opToI           = 0x9E
-
-        # i/o operations
-        opPrint         = 0x9F
+        opTo            = 0x9D
+        opToS           = 0x9E  
+        opToI           = 0x9F
 
         # [0xA0-0xAF]
         # getters/setters
@@ -270,34 +268,54 @@ type
         opInc           = 0xAE
         opDec           = 0xAF
 
+        # [0xB0-0xBF]
+        # i/o operations
+        opPrint         = 0xB0
+
+        RSRV1           = 0xB1
+        RSRV2           = 0xB2
+        RSRV3           = 0xB3
+        RSRV4           = 0xB4
+        RSRV5           = 0xB5
+        RSRV6           = 0xB6
+        RSRV7           = 0xB7
+        RSRV8           = 0xB8
+        RSRV9           = 0xB9
+        RSRV10          = 0xBA
+        RSRV11          = 0xBB
+        RSRV12          = 0xBC
+        RSRV13          = 0xBD
+        RSRV14          = 0xBE
+        RSRV15          = 0xBF
+
         #---------------------------------
         # LOW-LEVEL OPERATIONS
         #---------------------------------
 
         # [0xB0-0xBF]
         # no operation
-        opNop           = 0xB0
+        opNop           = 0xC0
 
         # stack operations
-        opPop           = 0xB1
-        opDup           = 0xB2
-        opOver          = 0xB3
-        opSwap          = 0xB4
+        opPop           = 0xC1
+        opDup           = 0xC2
+        opOver          = 0xC3
+        opSwap          = 0xC4
 
         # conditional jumps
-        opJmpIf         = 0xB5
-        opJmpIfNot      = 0xB6
-        opJmpIfEq       = 0xB7
-        opJmpIfNe       = 0xB8
-        opJmpIfGt       = 0xB9
-        opJmpIfGe       = 0xBA
-        opJmpIfLt       = 0xBB
-        opJmpIfLe       = 0xBC
+        opJmpIf         = 0xC5
+        opJmpIfNot      = 0xC6
+        opJmpIfEq       = 0xC7
+        opJmpIfNe       = 0xC8
+        opJmpIfGt       = 0xC9
+        opJmpIfGe       = 0xCA
+        opJmpIfLt       = 0xCB
+        opJmpIfLe       = 0xCC
 
         # flow control
-        opGoto          = 0xBD
-        opRet           = 0xBE
-        opEnd           = 0xBF
+        opGoto          = 0xCD
+        opRet           = 0xCE
+        opEnd           = 0xCF
 
 when false:
     #=======================================
