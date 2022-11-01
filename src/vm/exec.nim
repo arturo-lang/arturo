@@ -624,6 +624,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                     let x = move stack.pop()
                     i += 2
                     if x.kind==Null or (x.kind==Logical and x.b==False):
+                        #echo "Jumping forward to " & $((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i])))
                         i += (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
 
                 of opJmpIfEq            :
