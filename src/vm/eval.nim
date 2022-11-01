@@ -261,7 +261,32 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 if blk.kind == Block:
                     currentCommand.delete(0..shift)
                     discard currentCommand.pop()
-                    currentCommand.add([(byte)opJmpIfNot, (byte)0, (byte)0])
+                    var injectable = opJmpIfNot
+                    case (OpCode)currentCommand[^1]:
+                        of opNot:
+                            discard currentCommand.pop()
+                            injectable = opJmpIf
+                        of opEq:
+                            discard currentCommand.pop()
+                            injectable = opJmpIfNe
+                        of opNe:
+                            discard currentCommand.pop()
+                            injectable = opJmpIfEq
+                        of opGt:
+                            discard currentCommand.pop()
+                            injectable = opJmpIfLe
+                        of opGe:
+                            discard currentCommand.pop()
+                            injectable = opJmpIfLt
+                        of opLt:
+                            discard currentCommand.pop()
+                            injectable = opJmpIfGe
+                        of opLe:
+                            discard currentCommand.pop()
+                            injectable = opJmpIfGt
+                        else:
+                            discard
+                    currentCommand.add([(byte)injectable, (byte)0, (byte)0])
                     let injPos = currentCommand.len - 2
                     evalOne(blk, consts, currentCommand, inBlock=inBlock, isDictionary=isDictionary)
                     let finPos = currentCommand.len - injPos - 2
