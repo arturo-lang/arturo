@@ -759,6 +759,11 @@ proc defineSymbols*() =
                             newWord("return"), newWord("neg"), newInteger(1)
                         ])
                     )
+                x.ts.doCompare = proc(v1,v2:Value):int =
+                    push v2
+                    push v1
+                    callFunction(x.ts.methods["compare"])
+                    stack.pop().i
 
     builtin "dictionary",
         alias       = sharp, 
