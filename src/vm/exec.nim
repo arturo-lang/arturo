@@ -642,7 +642,8 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
 
                 # flow control
                 of opGoto               :
-                    discard
+                    i += 2
+                    i += (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
 
                 of opRet                :
                     discard
