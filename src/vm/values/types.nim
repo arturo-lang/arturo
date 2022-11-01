@@ -121,6 +121,7 @@ type
         name*       : string
         fields*     : ValueArray
         methods*    : ValueDict
+        doCompare*  : proc (a,b:Value): int
         inherits*   : Prototype
 
     SymbolDict*   = OrderedTable[VSymbol,AliasBinding]
