@@ -133,10 +133,10 @@ template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: 
         elif n=="else"              : ElseF = b
         elif n=="while"             : WhileF = b
         elif n=="return"            : ReturnF = b
-        elif n=="get"               : GetF = b 
-        elif n=="set"               : SetF = b
         elif n=="to"                : ToF = b
         elif n=="print"             : PrintF = b
+        elif n=="get"               : GetF = b 
+        elif n=="set"               : SetF = b
         elif n=="range"             : RangeF = b
         elif n=="loop"              : LoopF = b
         elif n=="map"               : MapF = b 
