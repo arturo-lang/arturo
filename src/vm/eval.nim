@@ -238,75 +238,36 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 default
 
     template addCurrentCommentToBytecode() =
-        # echo "BEFORE!!!"
-        # for b in currentCommand:
-        #     if foundIf:
-        #         echo stringify((OpCode)b)
-        #echo "in block:" & $(inBlock)
         if not inBlock: reverse(currentCommand)
 
-        # echo "command:"
-        # echo "==========="
-        # for a in currentCommand:
-        #     echo stringify((OpCode)a)
-
         if foundIf:
-            # echo "FOUND IF: -> INBLOCK:" & $(inBlock)
+            foundIf = false
+
             var cnstId = -1
             var shift = -1
             if (OpCode)(currentCommand[0]) in {opPush0..opPush13}:
-                #echo "it's a constant push"
                 cnstId = (int)(currentCommand[0]) - (int)(opPush0)
                 shift = 0
             elif (OpCode)(currentCommand[0]) == opPush:
-                #echo "it's a short constant push"
                 cnstId = (int)(currentCommand[1])
                 shift = 1
             elif (OpCode)(currentCommand[0]) == opPushX:
-                #echo "it's a long constant push"
                 cnstId = ((int)(currentCommand[1]) shl 8) + (int)(currentCommand[2])
                 shift = 2
 
             if cnstId != -1:
                 let blk = consts[cnstId]
                 if blk.kind == Block:
-                    # echo "and it's a block - so, let's inject a jump"
                     currentCommand.delete(0..shift)
-                    # echo "deleting first " & $(shift) & " elements"
                     discard currentCommand.pop()
-                    # echo "also deleting last element"
-                    #let injPos = currentCommand.len
-                    #echo "injPos/current length: " & $(injPos)
-                    # echo "command [before injection]:"
-                    # echo "==========="
-                    # for a in currentCommand:
-                    #     echo stringify((OpCode)a)
                     currentCommand.add([(byte)opJmpIfN, (byte)0])
                     let injPos = currentCommand.len - 1
                     evalOne(blk, consts, currentCommand, inBlock=inBlock, isDictionary=isDictionary)
-                    # echo "command [after injection]:"
-                    # echo "==========="
-                    # for a in currentCommand:
-                    #     echo stringify((OpCode)a)
-                    #let finPos = currentCommand.len-1# + 2 # the size of the jump
-                    #currentCommand.add((byte)opNop)
                     let finPos = currentCommand.len - injPos - 1
-                    # echo "jump-to index: " & $(finPos)
-                    # echo "resetting jump-to index..."
                     currentCommand[injPos] = (byte)finPos
-                    #currentCommand.insert([(byte)opJmpIfN, (byte)finPos], injPos)
-                    # echo "command [at the end]:"
-                    # echo "==========="
-                    # for a in currentCommand:
-                    #     echo stringify((OpCode)a)
 
         for b in currentCommand:
-            # if foundIf:
-            #     echo stringify((OpCode)b)
             it.add(b)
-
-        if foundIf:
-            foundIf = false
     
         currentCommand.setLen(0)
 
