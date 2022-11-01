@@ -121,6 +121,7 @@ type
         name*       : string
         fields*     : ValueArray
         methods*    : ValueDict
+        doInit*     : proc (v:Value)
         doPrint*    : proc (v:Value): string
         doCompare*  : proc (a,b:Value): int
         inherits*   : Prototype
