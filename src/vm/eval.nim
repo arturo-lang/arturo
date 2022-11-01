@@ -193,6 +193,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             foundIf = true
             bt = opIf
         elif fn == IfEF: bt = opIfE
+        elif fn == UnlessF: bt = opUnless
         elif fn == ElseF: bt = opElse
         elif fn == WhileF: bt = opWhile
         elif fn == ReturnF: bt = opReturn
