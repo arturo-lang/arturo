@@ -556,10 +556,6 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opWhile              : WhileF.action()
                 of opReturn             : ReturnF.action()
 
-                # getters/setters
-                of opGet                : GetF.action()
-                of opSet                : SetF.action()
-
                 # converters
                 of opTo                 : ToF.action()
                 of opToS                : 
@@ -569,9 +565,13 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                     stack.push(VINTEGERT)
                     ToF.action()
 
-                # [0xA0-0xAF]
                 # i/o operations
                 of opPrint              : PrintF.action()
+
+                # [0xA0-0xAF]
+                # getters/setters
+                of opGet                : GetF.action()
+                of opSet                : SetF.action()
 
                 # generators          
                 of opArray              : ArrayF.action()
@@ -594,10 +594,6 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 # increment/decrement
                 of opInc                : IncF.action()
                 of opDec                : DecF.action()
-
-                of RSRV1                : discard
-
-                #of RSRV3..RSRV14        : discard
 
                 #---------------------------------
                 # LOW-LEVEL OPERATIONS
