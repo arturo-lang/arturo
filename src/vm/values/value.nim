@@ -120,6 +120,7 @@ var
     RangeF*, LoopF*, MapF*, SelectF*                    : Value
     SizeF*, ReplaceF*, SplitF*, JoinF*, ReverseF*       : Value 
     IncF*, DecF*                                        : Value
+    SwitchF*                                            : Value
 
 #=======================================
 # Forward Declarations
