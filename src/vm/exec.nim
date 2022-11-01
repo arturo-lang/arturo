@@ -613,24 +613,65 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opOver               : stack.push(stack.peek(1))
                 of opSwap               : swap(Stack[SP-1], Stack[SP-2])
 
+                # conditional jumps
+                of opJmpIf              :
+                    let x = move stack.pop()
+                    i += 2
+                    if not (x.kind==Null or (x.kind==Logical and x.b==False)):
+                        i += (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
+                
+                of opJmpIfNot           :
+                    let x = move stack.pop()
+                    i += 2
+                    if x.kind==Null or (x.kind==Logical and x.b==False):
+                        i += (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
+
+                of opJmpIfEq            :
+                    discard
+
+                of opJmpIfNe            :
+                    discard
+
+                of opJmpIfGt            :
+                    discard
+
+                of opJmpIfGe            :
+                    discard
+
+                of opJmpIfLt            :
+                    discard
+
+                of opJmpIfLe            :
+                    discard
+
                 # flow control
-                of opJmp                : i = (int)(it[i+1])
-                of opJmpX               : i = (int)((uint16)(it[i+1]) shl 8 + (byte)(it[i+2]))
-                of opJmpIf              : 
-                    if stack.pop().b==True:
-                        i = (int)(it[i+1])
-                of opJmpIfX             : 
-                    if stack.pop().b==True:
-                        i = (int)((uint16)(it[i+1]) shl 8 + (byte)(it[i+2]))
-                of opJmpIfN             : 
-                    let popped = move stack.pop()
-                    i += 1
-                    if popped.kind==Null or (popped.kind==Logical and popped.b==False):
-                        i += (int)(it[i])
-                of opJmpIfNX            : 
-                    if Not(stack.pop().b)==True:
-                        i = (int)((uint16)(it[i+1]) shl 8 + (byte)(it[i+2]))
-                of opRet                : discard
-                of opEnd                : break
+                of opGoto               :
+                    discard
+
+                of opRet                :
+                    discard
+
+                of opEnd                :
+                    break
+
+                # # flow control
+                # of opJmp                : i = (int)(it[i+1])
+                # of opJmpX               : i = (int)((uint16)(it[i+1]) shl 8 + (byte)(it[i+2]))
+                # of opJmpIf              : 
+                #     if stack.pop().b==True:
+                #         i = (int)(it[i+1])
+                # of opJmpIfX             : 
+                #     if stack.pop().b==True:
+                #         i = (int)((uint16)(it[i+1]) shl 8 + (byte)(it[i+2]))
+                # of opJmpIfN             : 
+                #     let popped = move stack.pop()
+                #     i += 1
+                #     if popped.kind==Null or (popped.kind==Logical and popped.b==False):
+                #         i += (int)(it[i])
+                # of opJmpIfNX            : 
+                #     if Not(stack.pop().b)==True:
+                #         i = (int)((uint16)(it[i+1]) shl 8 + (byte)(it[i+2]))
+                # of opRet                : discard
+                # of opEnd                : break
 
         i += 1
