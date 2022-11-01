@@ -55,6 +55,7 @@ func indexOfValue(a: seq[Value], item: Value): int {.inline.}=
 
 when not defined(NOERRORLINES):
     template addEol(line: untyped):untyped =
+        discard
         if line > 255:
             it.add((byte)opEolX)
             it.add((byte)line shr 8)
@@ -68,6 +69,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
     var currentCommand: VBinary = @[]
 
     let childrenCount = n.a.len
+
+    var foundIf = false
 
     #------------------------
     # Helper Functions
@@ -186,7 +189,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         elif fn == GeF: bt = opGe
         elif fn == LtF: bt = opLt
         elif fn == LeF: bt = opLe
-        elif fn == IfF: bt = opIf
+        elif fn == IfF: 
+            foundIf = true
+            bt = opIf
         elif fn == IfEF: bt = opIfE
         elif fn == ElseF: bt = opElse
         elif fn == WhileF: bt = opWhile
@@ -233,8 +238,76 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 default
 
     template addCurrentCommentToBytecode() =
-        if inBlock: (for b in currentCommand: it.add(b))
-        else: (for b in currentCommand.reversed: it.add(b))
+        # echo "BEFORE!!!"
+        # for b in currentCommand:
+        #     if foundIf:
+        #         echo stringify((OpCode)b)
+        #echo "in block:" & $(inBlock)
+        if not inBlock: reverse(currentCommand)
+
+        # echo "command:"
+        # echo "==========="
+        # for a in currentCommand:
+        #     echo stringify((OpCode)a)
+
+        if foundIf:
+            # echo "FOUND IF: -> INBLOCK:" & $(inBlock)
+            var cnstId = -1
+            var shift = -1
+            if (OpCode)(currentCommand[0]) in {opPush0..opPush13}:
+                #echo "it's a constant push"
+                cnstId = (int)(currentCommand[0]) - (int)(opPush0)
+                shift = 0
+            elif (OpCode)(currentCommand[0]) == opPush:
+                #echo "it's a short constant push"
+                cnstId = (int)(currentCommand[1])
+                shift = 1
+            elif (OpCode)(currentCommand[0]) == opPushX:
+                #echo "it's a long constant push"
+                cnstId = ((int)(currentCommand[1]) shl 8) + (int)(currentCommand[2])
+                shift = 2
+
+            if cnstId != -1:
+                let blk = consts[cnstId]
+                if blk.kind == Block:
+                    # echo "and it's a block - so, let's inject a jump"
+                    currentCommand.delete(0..shift)
+                    # echo "deleting first " & $(shift) & " elements"
+                    discard currentCommand.pop()
+                    # echo "also deleting last element"
+                    #let injPos = currentCommand.len
+                    #echo "injPos/current length: " & $(injPos)
+                    # echo "command [before injection]:"
+                    # echo "==========="
+                    # for a in currentCommand:
+                    #     echo stringify((OpCode)a)
+                    currentCommand.add([(byte)opJmpIfN, (byte)0])
+                    let injPos = currentCommand.len - 1
+                    evalOne(blk, consts, currentCommand, inBlock=inBlock, isDictionary=isDictionary)
+                    # echo "command [after injection]:"
+                    # echo "==========="
+                    # for a in currentCommand:
+                    #     echo stringify((OpCode)a)
+                    #let finPos = currentCommand.len-1# + 2 # the size of the jump
+                    #currentCommand.add((byte)opNop)
+                    let finPos = currentCommand.len - injPos - 1
+                    # echo "jump-to index: " & $(finPos)
+                    # echo "resetting jump-to index..."
+                    currentCommand[injPos] = (byte)finPos
+                    #currentCommand.insert([(byte)opJmpIfN, (byte)finPos], injPos)
+                    # echo "command [at the end]:"
+                    # echo "==========="
+                    # for a in currentCommand:
+                    #     echo stringify((OpCode)a)
+
+        for b in currentCommand:
+            # if foundIf:
+            #     echo stringify((OpCode)b)
+            it.add(b)
+
+        if foundIf:
+            foundIf = false
+    
         currentCommand.setLen(0)
 
     template addTerminalValue(inArrowBlock: bool, code: untyped) =
@@ -721,6 +794,30 @@ proc doEval*(root: Value, isDictionary=false): Translation =
             newit = optimizeBytecode(newit)
 
     result = Translation(constants: cnsts, instructions: newit)
+    # var instrs: ValueArray = @[]
+    # var j = 0
+    # while j < result.instructions.len:
+    #     let op = (OpCode)(result.instructions[j])
+    #     instrs.add(newWord(stringify(((OpCode)(op)))))
+    #     if op in {opPush, opStore, opCall, opLoad, opStorl, opAttr, opEol, opJmpIfN}:
+    #         j += 1
+    #         instrs.add(newInteger((int)result.instructions[j]))
+    #     elif op in {opPushX, opStoreX, opCallX, opLoadX, opStorlX, opEolX}:
+    #         j += 2
+    #         instrs.add(newInteger((int)((uint16)(result.instructions[j-1]) shl 8 + (byte)(result.instructions[j]))))
+
+    #     j += 1
+    
+    # var i = 0
+    # while i < instrs.len:
+    #     stdout.write $(i) & ": " & instrs[i].s
+    #     i += 1
+    #     if i < instrs.len and instrs[i].kind==Integer:
+    #         stdout.write "\t\t"
+    #         while i < instrs.len and instrs[i].kind==Integer:
+    #             stdout.write " #" & $(instrs[i].i)
+    #             i += 1
+    #     stdout.write "\n"
     # TODO(VM/eval) add option for evaluation into optimized bytecode directly
     #  if optimized:
     #      result.instructions = optimizeBytecode(result)
