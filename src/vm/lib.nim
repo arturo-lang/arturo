@@ -131,6 +131,7 @@ template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: 
         elif n=="if?"               : IfEF = b
         elif n=="unless"            : UnlessF = b
         elif n=="else"              : ElseF = b
+        elif n=="switch"            : SwitchF = b
         elif n=="while"             : WhileF = b
         elif n=="return"            : ReturnF = b
         elif n=="to"                : ToF = b
@@ -148,7 +149,6 @@ template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: 
         elif n=="reverse"           : ReverseF = b
         elif n=="inc"               : IncF = b
         elif n=="dec"               : DecF = b
-        elif n=="switch"            : SwitchF = b
 
         when alias != unaliased:
             Aliases[alias] = AliasBinding(
