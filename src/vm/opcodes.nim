@@ -230,46 +230,45 @@ type
         # branching
         opIf            = 0x96
         opIfE           = 0x97
-        opElse          = 0x98
-        opWhile         = 0x99
-        opReturn        = 0x9A
-
-        # getters/setters
-        opGet           = 0x9B
-        opSet           = 0x9C
+        opUnless        = 0x98
+        opElse          = 0x99
+        opWhile         = 0x9A
+        opReturn        = 0x9B
 
         # converters
-        opTo            = 0x9D
-        opToS           = 0x9E  
-        opToI           = 0x9F
+        opTo            = 0x9C
+        opToS           = 0x9D  
+        opToI           = 0x9E
+
+        # i/o operations
+        opPrint         = 0x9F
 
         # [0xA0-0xAF]
-        # i/o operations
-        opPrint         = 0xA0
+        # getters/setters
+        opGet           = 0xA0
+        opSet           = 0xA1
 
         # generators
-        opArray         = 0xA1
-        opDict          = 0xA2
-        opFunc          = 0xA3
+        opArray         = 0xA2
+        opDict          = 0xA3
+        opFunc          = 0xA4
 
         # ranges & iterators
-        opRange         = 0xA4
-        opLoop          = 0xA5
-        opMap           = 0xA6
-        opSelect        = 0xA7
+        opRange         = 0xA5
+        opLoop          = 0xA6
+        opMap           = 0xA7
+        opSelect        = 0xA8
 
         # collections
-        opSize          = 0xA8
-        opReplace       = 0xA9
-        opSplit         = 0xAA
-        opJoin          = 0xAB
-        opReverse       = 0xAC
+        opSize          = 0xA9
+        opReplace       = 0xAA
+        opSplit         = 0xAB
+        opJoin          = 0xAC
+        opReverse       = 0xAD
 
         # increment/decrement
-        opInc           = 0xAD
-        opDec           = 0xAE
-
-        RSRV1           = 0xAF      # reserved
+        opInc           = 0xAE
+        opDec           = 0xAF
 
         #---------------------------------
         # LOW-LEVEL OPERATIONS
