@@ -25,9 +25,9 @@ when not defined(NOGMP):
 
 import helpers/terminal as TerminalHelper
 
-import vm/exec
+#import vm/exec
 import vm/opcodes
-import vm/stack
+#import vm/stack
 import vm/values/value
 import vm/values/clean
 
