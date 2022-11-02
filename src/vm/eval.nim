@@ -148,7 +148,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 (byte)op
             ])
 
-    proc addTrailingConst(currentCommand: var VBinary, consts: var seq[Value], v: Value, op: OpCode) {.enforceNoRaises.} =
+    proc addTrailingConst(currentCommand: var VBinary, consts: var seq[Value], v: Value, op: OpCode) {.inline,enforceNoRaises.} =
         var atPos = 0
         if currentCommand[0] in opStore0.byte..opStoreX.byte:
             atPos = 1
