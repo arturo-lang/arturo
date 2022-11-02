@@ -77,7 +77,10 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
     #------------------------
 
     template addToCommand(b: untyped):untyped {.dirty.} =
-        currentCommand.add(b)
+        when b is byte:
+            currentCommand.add((byte)b)
+        else:
+            currentCommand.add(b)
 
     template addToCommandHead(b: untyped, at = 0):untyped {.dirty.} =
         currentCommand.insert(b, at)
@@ -90,7 +93,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             indx = consts.len-1
 
         if indx <= 13:
-            addToCommand((byte)(((byte)(op)-0x0E) + (byte)(indx)))
+            addToCommand(((byte)(op)-0x0E) + (byte)(indx))
         else:
             if indx>255:
                 addToCommand([
@@ -203,13 +206,13 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 let nextNode {.cursor.} = n.a[i+1]
                 if nextNode.kind==Type:
                     if nextNode.t==String:
-                        addToCommand((byte)opToS)
+                        addToCommand(opToS)
                         bt = opNop
                         doElse = false
                         funcArity -= 1
                         i += 1
                     elif nextNode.t==Integer:
-                        addToCommand((byte)opToI)
+                        addToCommand(opToI)
                         bt = opNop
                         doElse = false
                         funcArity -= 1
@@ -233,7 +236,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             if toHead:
                 addToCommandHead((byte)bt)
             else:
-                addToCommand((byte)bt)
+                addToCommand(bt)
 
             return true
         else:
@@ -643,32 +646,32 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         let node {.cursor.} = n.a[i]
 
         case node.kind:
-            of Null:    addToCommand((byte)opConstN)
+            of Null:    addToCommand(opConstN)
             of Logical: 
                 # TODO(VM/eval) needs to be inside an `addTerminalValue` block?
                 #  this look like a bug...
                 #  labels: evaluator, bug
-                if node.b==True: addToCommand((byte)opConstBT)
-                elif node.b==False: addToCommand((byte)opConstBF)
-                else: addToCommand((byte)opConstBM)
+                if node.b==True: addToCommand(opConstBT)
+                elif node.b==False: addToCommand(opConstBF)
+                else: addToCommand(opConstBM)
 
             of Integer:
                 addTerminalValue(false):
                     when defined(WEB) or not defined(NOGMP):
                         if likely(node.iKind==NormalInteger):
-                            if node.i>=0 and node.i<=15: addToCommand((byte)((byte)(opConstI0) + (byte)(node.i)))
+                            if node.i>=0 and node.i<=15: addToCommand((byte)(opConstI0) + (byte)(node.i))
                             else: addConst(currentCommand, consts, node, opPush)
                         else:
                             addConst(currentCommand, consts, node, opPush)
                     else:
-                        if node.i>=0 and node.i<=15: addToCommand((byte)((byte)(opConstI0) + (byte)(node.i)))
+                        if node.i>=0 and node.i<=15: addToCommand((byte)(opConstI0) + (byte)(node.i))
                         else: addConst(currentCommand, consts, node, opPush)
 
             of Floating:
                 addTerminalValue(false):
-                    if node.f==0.0: addToCommand((byte)opConstF0)
-                    elif node.f==1.0: addToCommand((byte)opConstF1)
-                    elif node.f==2.0: addToCommand((byte)opConstF2)
+                    if node.f==0.0: addToCommand(opConstF0)
+                    elif node.f==1.0: addToCommand(opConstF1)
+                    elif node.f==2.0: addToCommand(opConstF2)
                     else: addConst(currentCommand, consts, node, opPush)
 
             of Word:
@@ -729,7 +732,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
             of Attribute:
                 addConst(currentCommand, consts, node, opAttr)
-                addToCommand((byte)opConstBT)
+                addToCommand(opConstBT)
 
             of AttributeLabel:
                 addConst(currentCommand, consts, node, opAttr)
@@ -750,12 +753,12 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                     argStack.add(pathCallV.arity)
                 else:
                     addTerminalValue(false):
-                        addToCommand((byte)opGet)
+                        addToCommand(opGet)
                         #addConst(currentCommand, consts, newWord("get"), opCall)
                         
                         var i=1
                         while i<node.p.len-1:
-                            addToCommand((byte)opGet)
+                            addToCommand(opGet)
                             #addConst(currentCommand, consts, newWord("get"), opCall)
                             i += 1
 
@@ -775,12 +778,12 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                             i += 1
 
             of PathLabel:
-                addToCommand((byte)opSet)
+                addToCommand(opSet)
                 #addConst(currentCommand, consts, newWord("set"), opCall)
                     
                 var i=1
                 while i<node.p.len-1:
-                    addToCommand((byte)opGet)
+                    addToCommand(opGet)
                     #addConst(currentCommand, consts, newWord("get"), opCall)
                     i += 1
                 
@@ -856,21 +859,21 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             of String:
                 addTerminalValue(false):
                     if node.s.len==0:
-                        addToCommand((byte)opConstS)
+                        addToCommand(opConstS)
                     else:
                         addConst(currentCommand, consts, node, opPush)
 
             of Block:
                 addTerminalValue(false):
                     if node.a.len==0:
-                        addToCommand((byte)opConstA)
+                        addToCommand(opConstA)
                     else:
                         addConst(currentCommand, consts, node, opPush)
 
             of Dictionary:
                 addTerminalValue(false):
                     if node.d.len==0:
-                        addToCommand((byte)opConstD)
+                        addToCommand(opConstD)
                     else:
                         addConst(currentCommand, consts, node, opPush)
 
