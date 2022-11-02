@@ -101,7 +101,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 stdout.write "\n"
                 i += 1
 
-    template addToCommand(b: byte):untyped =
+    template addToCommand(b: byte):untyped {.dirty.} =
         currentCommand.add(b)
 
     proc addConst(currentCommand: var VBinary, consts: var seq[Value], v: Value, op: OpCode) {.inline,enforceNoRaises.} =
