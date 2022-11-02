@@ -912,6 +912,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                     else:
                         addConst(currentCommand, consts, node, opPush)
 
+            # TODO(VM/eval) Inline blocks not evaluated correctly
+            #  more than one commands in the block, seem to be evaluated in a reverse order
+            #  labels: vm,evaluator,bug
             of Inline: 
                 addTerminalValue():
                     evalOne(node, consts, currentCommand, inBlock=true, isDictionary=isDictionary)
