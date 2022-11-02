@@ -251,7 +251,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             if doElse:
                 default
 
-    proc getConstIdWithShift(pos: int): (int,int) {.enforceNoRaises.} =
+    proc getConstIdWithShift(currentCommand: var VBinary, pos: int): (int,int) {.inline,enforceNoRaises.} =
         if (OpCode)(currentCommand[pos]) in {opPush0..opPush13}:
             return ((int)(currentCommand[pos]) - (int)(opPush0), 0)
         elif (OpCode)(currentCommand[pos]) == opPush:
@@ -262,7 +262,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         return (-1, -1)
 
     proc processIf(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
-        let (cnstId, shift) = getConstIdWithShift(0)
+        let (cnstId, shift) = getConstIdWithShift(currentCommand, 0)
 
         if cnstId != -1:
             let blk = consts[cnstId]
@@ -307,7 +307,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         foundIfE = false
 
     proc processUnless(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
-        let (cnstId, shift) = getConstIdWithShift(0)
+        let (cnstId, shift) = getConstIdWithShift(currentCommand, 0)
 
         if cnstId != -1:
             let blk = consts[cnstId]
@@ -351,7 +351,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         foundUnless = false
 
     proc processLess(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
-        let (cnstId, shift) = getConstIdWithShift(0)
+        let (cnstId, shift) = getConstIdWithShift(currentCommand, 0)
 
         if cnstId != -1:
             let blk = consts[cnstId]
@@ -368,12 +368,12 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         foundElse = false
 
     proc processSwitch(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
-        let (cnstId, shift) = getConstIdWithShift(0)
+        let (cnstId, shift) = getConstIdWithShift(currentCommand, 0)
 
         if cnstId != -1:
             let blk = consts[cnstId]
             if blk.kind == Block:
-                let (cnstId2, shift2) = getConstIdWithShift(1+shift)
+                let (cnstId2, shift2) = getConstIdWithShift(currentCommand, 1+shift)
 
                 if cnstId2 != -1:
                     let blk2 = consts[cnstId2]
