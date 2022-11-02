@@ -269,7 +269,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
             if cnstId != -1:
                 let blk = consts[cnstId]
-                if blk.kind == Block:
+                if blk.kind == Block and (OpCode)(currentCommand[^1]) in {opIf,opIfE}:
                     currentCommand.delete(0..shift)
                     discard currentCommand.pop()
                     var injectable = opJmpIfNot
@@ -324,7 +324,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
             if cnstId != -1:
                 let blk = consts[cnstId]
-                if blk.kind == Block:
+                if blk.kind == Block and (OpCode)(currentCommand[^1]) == opUnless:
                     currentCommand.delete(0..shift)
                     discard currentCommand.pop()
                     var injectable = opJmpIf
@@ -421,7 +421,15 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                     if cnstId2 != -1:
                         let blk2 = consts[cnstId2]
                         if blk2.kind == Block:
+                            # for b in currentCommand:
+                            #     echo stringify((OpCode)b)
                             currentCommand.delete(0..shift+shift2+1)
+                            var toPushBack: VBinary
+                            var jpb = currentCommand.len - 1
+                            while (OpCode)(currentCommand[jpb]) != opSwitch:
+                                toPushBack.add(currentCommand.pop())
+                                jpb -= 1
+                            reverse(toPushBack)
                             discard currentCommand.pop()
                             var injectable = opJmpIfNot
                             case (OpCode)currentCommand[^1]:
@@ -462,6 +470,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                             currentCommand[preInjection] = (byte)opGoto
                             currentCommand[preInjection+1] = (byte)currentPos shr 8
                             currentCommand[preInjection+2] = (byte)currentPos
+                            if toPushBack.len > 0:
+                                currentCommand.add(toPushBack)
 
             foundSwitch = false
 
