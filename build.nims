@@ -76,7 +76,7 @@ let
         "profile"           : "-d:PROFILE --profiler:on --stackTrace:on",
         "profilenative"     : "--debugger:native",
         "profiler"          : "-d:PROFILER --profiler:on --stackTrace:on",
-        "release"           : "--passC:'-flto' --passL:'-flto'",
+        "release"           : "-d:strip --passC:'-flto' --passL:'-flto'",
         "safe"              : "-d:SAFE",
         "vcc"               : "",
         "verbose"           : "-d:VERBOSE",
