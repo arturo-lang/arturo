@@ -148,7 +148,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 (byte)op
             ])
 
-    proc addTrailingConst(consts: var seq[Value], v: Value, op: OpCode) {.enforceNoRaises.} =
+    proc addTrailingConst(currentCommand: var VBinary, consts: var seq[Value], v: Value, op: OpCode) {.enforceNoRaises.} =
         var atPos = 0
         if currentCommand[0] in opStore0.byte..opStoreX.byte:
             atPos = 1
@@ -163,12 +163,16 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             addToCommandHead((byte)(((byte)(op)-0x0E) + (byte)(indx)), atPos)
         else:
             if indx>255:
-                addToCommandHead((byte)indx, atPos)
-                addToCommandHead((byte)indx shr 8, atPos)
-                addToCommandHead((byte)(op)+1, atPos)
+                addToCommandHead([
+                    (byte)(op)+1,
+                    (byte)indx shr 8,
+                    (byte)indx
+                ], atPos)
             else:
-                addToCommandHead((byte)indx, atPos)
-                addToCommandHead((byte)op, atPos)
+                addToCommandHead([
+                    (byte)op,
+                    (byte)indx
+                ], atPos)
 
     template evalFunctionCall(fun: untyped, toHead: bool, checkAhead: bool, default: untyped): untyped =
         var bt: OpCode = opNop
@@ -520,9 +524,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                                 # TODO(VM/eval) to be fixed
                                 #  labels: bug, evaluator, vm
                                 evalFunctionCall(n.a[i+1], toHead=true, checkAhead=false):
-                                    addTrailingConst(consts, n.a[i+1], opCall)
+                                    addTrailingConst(currentCommand, consts, n.a[i+1], opCall)
                             else:
-                                addTrailingConst(consts, n.a[i+1], opCall)
+                                addTrailingConst(currentCommand, consts, n.a[i+1], opCall)
                                 if argStack.len==0:
                                     addCurrentCommentToBytecode()
                             i += 1
