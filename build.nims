@@ -76,7 +76,7 @@ let
         "profile"           : "-d:PROFILE --profiler:on --stackTrace:on",
         "profilenative"     : "--debugger:native",
         "profiler"          : "-d:PROFILER --profiler:on --stackTrace:on",
-        "release"           : "--passC:'-flto' --passL:'-flto'",
+        "release"           : "-d:strip --passC:'-flto' --passL:'-flto'",
         "safe"              : "-d:SAFE",
         "vcc"               : "",
         "verbose"           : "-d:VERBOSE",
@@ -101,7 +101,7 @@ var
 
     FLAGS*              = "--skipUserCfg:on --colors:off -d:danger " &
                           "--panics:off --mm:orc -d:useMalloc --checks:off " &
-                          "-d:ssl --cincludes:extras --nimcache:.cache " & 
+                          "-d:ssl --cincludes:extras --opt:speed --nimcache:.cache " & 
                           "--path:src "
     CONFIG              ="@full"
 
@@ -250,7 +250,7 @@ proc miniBuild*() =
         FLAGS = "{FLAGS} {OPTIONS[k]}".fmt
 
     # plus, shrinking + the MINI flag
-    FLAGS = FLAGS.replace("--opt:speed ","") & " --opt:size -d:MINI"
+    FLAGS = FLAGS & " -d:MINI"
     if hostOS=="freebsd":
         FLAGS = FLAGS & " --verbosity:3 "
 
