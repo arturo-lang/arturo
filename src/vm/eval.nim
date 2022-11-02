@@ -104,7 +104,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
     template addToCommand(b: byte):untyped =
         currentCommand.add(b)
 
-    proc addConst(consts: var seq[Value], v: Value, op: OpCode) =
+    proc addConst(consts: var seq[Value], v: Value, op: OpCode) {.enforceNoRaises.} =
         var indx = consts.indexOfValue(v)
         if indx == -1:
             v.readonly = true
@@ -122,7 +122,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 addToCommand((byte)indx)
                 addToCommand((byte)op)
 
-    proc addShortConst(consts: var seq[Value], v: Value, op: OpCode) =
+    proc addShortConst(consts: var seq[Value], v: Value, op: OpCode) {.enforceNoRaises.} =
         var indx = consts.indexOfValue(v)
         if indx == -1:
             v.readonly = true
@@ -140,7 +140,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
     template addToCommandHead(b: byte, at = 0):untyped =
         currentCommand.insert(b, at)
 
-    proc addTrailingConst(consts: var seq[Value], v: Value, op: OpCode) =
+    proc addTrailingConst(consts: var seq[Value], v: Value, op: OpCode) {.enforceNoRaises.} =
         var atPos = 0
         if currentCommand[0] in opStore0.byte..opStoreX.byte:
             atPos = 1
@@ -251,7 +251,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             if doElse:
                 default
 
-    proc getConstIdWithShift(pos: int): (int,int) =
+    proc getConstIdWithShift(pos: int): (int,int) {.enforceNoRaises.} =
         if (OpCode)(currentCommand[pos]) in {opPush0..opPush13}:
             return ((int)(currentCommand[pos]) - (int)(opPush0), 0)
         elif (OpCode)(currentCommand[pos]) == opPush:
@@ -261,7 +261,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         
         return (-1, -1)
 
-    proc processIf(consts: var seq[Value], it: var VBinary) =
+    proc processIf(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
         let (cnstId, shift) = getConstIdWithShift(0)
 
         if cnstId != -1:
@@ -306,7 +306,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         foundIf = false
         foundIfE = false
 
-    proc processUnless(consts: var seq[Value], it: var VBinary) =
+    proc processUnless(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
         let (cnstId, shift) = getConstIdWithShift(0)
 
         if cnstId != -1:
@@ -350,7 +350,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         
         foundUnless = false
 
-    proc processLess(consts: var seq[Value], it: var VBinary) =
+    proc processLess(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
         let (cnstId, shift) = getConstIdWithShift(0)
 
         if cnstId != -1:
@@ -367,7 +367,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 
         foundElse = false
 
-    proc processSwitch(consts: var seq[Value], it: var VBinary) =
+    proc processSwitch(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
         let (cnstId, shift) = getConstIdWithShift(0)
 
         if cnstId != -1:
