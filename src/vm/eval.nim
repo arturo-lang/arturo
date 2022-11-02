@@ -20,9 +20,6 @@
 
 import algorithm, sequtils, tables, unicode
 
-when defined(VERBOSE):
-    import strutils, sugar
-
 when not defined(PORTABLE):
     import strformat
 
@@ -79,27 +76,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
     #------------------------
     # Helper Functions
     #------------------------
-
-    when defined(VERBOSE):
-        proc debugCurrentCommand() =
-            var i = 0
-
-            while i < currentCommand.len:
-                stdout.write fmt("{i}: ")
-                var instr = (OpCode)(currentCommand[i])
-
-                stdout.write ($instr).replace("op").toLowerAscii()
-
-                case instr:
-                    of opPush, opStore, opLoad, opCall, opAttr :
-                        i += 1
-                        let indx = currentCommand[i]
-                        stdout.write fmt("\t#{indx}\n")
-                    else:
-                        discard
-
-                stdout.write "\n"
-                i += 1
 
     template addToCommand(b: untyped):untyped {.dirty.} =
         currentCommand.add(b)
@@ -174,7 +150,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                     (byte)indx
                 ], atPos)
 
-    template evalFunctionCall(fun: untyped, toHead: bool, checkAhead: bool, default: untyped): untyped =
+    proc evalFunctionCall(currentCommand: var VBinary, fun: var Value, toHead: bool, checkAhead: bool, i: var int, funcArity: var int): bool {.enforceNoRaises.} =
         var bt: OpCode = opNop
         var doElse = true
 
@@ -224,7 +200,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         elif fn == ReturnF: bt = opReturn
         elif fn == ToF: 
             bt = opTo
-            when checkAhead:
+            if checkAhead:
                 let nextNode {.cursor.} = n.a[i+1]
                 if nextNode.kind==Type:
                     if nextNode.t==String:
@@ -255,13 +231,14 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         elif fn == DecF: bt = opDec
 
         if bt != opNop:
-            when toHead:
+            if toHead:
                 addToCommandHead((byte)bt)
             else:
                 addToCommand((byte)bt)
+
+            return true
         else:
-            if doElse:
-                default
+            return not doElse
 
     proc getConstIdWithShift(currentCommand: var VBinary, pos: int): (int,int) {.inline,enforceNoRaises.} =
         if (OpCode)(currentCommand[pos]) in {opPush0..opPush13}:
@@ -477,13 +454,13 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 let symalias = n.a[i+1].m
                 let aliased = Aliases.getOrDefault(symalias, NoAliasBinding)
                 if aliased != NoAliasBinding:
-                    let symfunc {.cursor.} = GetSym(aliased.name.s)
+                    var symfunc {.cursor.} = GetSym(aliased.name.s)
 
                     if symfunc.kind==Function and aliased.precedence==InfixPrecedence:
                         i += step;
                         
                         when not inArrowBlock:
-                            evalFunctionCall(symfunc, toHead=false, checkAhead=false):
+                            if not evalFunctionCall(currentCommand, symfunc, toHead=false, checkAhead=false, i, i):
                                 addConst(currentCommand, consts, aliased.name, opCall)
 
                             argStack.add(symfunc.arity)
@@ -523,7 +500,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                                 argStack.add(tmpFuncArity-1)
                                 # TODO(VM/eval) to be fixed
                                 #  labels: bug, evaluator, vm
-                                evalFunctionCall(n.a[i+1], toHead=true, checkAhead=false):
+                                if not evalFunctionCall(currentCommand, n.a[i+1], toHead=true, checkAhead=false, i, i):
                                     addTrailingConst(currentCommand, consts, n.a[i+1], opCall)
                             else:
                                 addTrailingConst(currentCommand, consts, n.a[i+1], opCall)
@@ -699,8 +676,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 var funcArity = TmpArities.getOrDefault(node.s, -1)
                 if funcArity != -1:
                     if likely(funcArity!=0):
-                        if (let symf = Syms.getOrDefault(node.s, nil); not symf.isNil):
-                            evalFunctionCall(symf, toHead=false, checkAhead=true):
+                        if (var symf = Syms.getOrDefault(node.s, nil); not symf.isNil):
+                            if not evalFunctionCall(currentCommand, symf, toHead=false, checkAhead=true, i, funcArity):
                                 addConst(currentCommand, consts, node, opCall)
                                 # funcArity -> funcArity-1 for ToS/ToI!
                         else:
@@ -858,10 +835,10 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                         let symalias = node.m
                         let aliased = Aliases.getOrDefault(symalias, NoAliasBinding)
                         if likely(aliased != NoAliasBinding):
-                            let symfunc {.cursor.} = GetSym(aliased.name.s)
+                            var symfunc {.cursor.} = GetSym(aliased.name.s)
                             if symfunc.kind==Function:
                                 if symfunc.fnKind == BuiltinFunction and symfunc.arity!=0:
-                                    evalFunctionCall(symfunc, toHead=false, checkAhead=false):
+                                    if not evalFunctionCall(currentCommand, symfunc, toHead=false, checkAhead=false, i, i):
                                         addConst(currentCommand, consts, aliased.name, opCall)
                                     argStack.add(symfunc.arity)
                                 elif symfunc.fnKind == UserFunction and symfunc.arity!=0:

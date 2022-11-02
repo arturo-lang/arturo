@@ -41,9 +41,6 @@ when not defined(NODIALOGS):
 
 proc defineSymbols*() =
 
-    when defined(VERBOSE):
-        echo "- Importing: Ui"
-
     when not defined(NODIALOGS):
         
         builtin "alert",

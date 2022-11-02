@@ -41,9 +41,6 @@ import vm/values/custom/[vbinary]
 
 proc defineSymbols*() =
 
-    when defined(VERBOSE):
-        echo "- Importing: Collections"
-
     builtin "append",
         alias       = doubleplus,
         rule        = InfixPrecedence,

@@ -79,7 +79,6 @@ let
         "release"           : "-d:strip --passC:'-flto' --passL:'-flto'",
         "safe"              : "-d:SAFE",
         "vcc"               : "",
-        "verbose"           : "-d:VERBOSE",
         "web"               : "--verbosity:3 -d:WEB"
     }.toTable
 

@@ -37,9 +37,6 @@ import vm/[env, errors, eval, exec, parse]
 
 proc defineSymbols*() =
 
-    when defined(VERBOSE):
-        echo "- Importing: Core"
-
     builtin "alias",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
