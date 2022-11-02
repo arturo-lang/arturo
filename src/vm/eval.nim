@@ -251,18 +251,18 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             if doElse:
                 default
 
+    proc getConstIdWithShift(pos: int): (int,int) =
+        if (OpCode)(currentCommand[pos]) in {opPush0..opPush13}:
+            return ((int)(currentCommand[pos]) - (int)(opPush0), 0)
+        elif (OpCode)(currentCommand[pos]) == opPush:
+            return ((int)(currentCommand[pos+1]), 1)
+        elif (OpCode)(currentCommand[pos]) == opPushX:
+            return (((int)(currentCommand[pos+1]) shl 8) + (int)(currentCommand[pos+2]), 2)
+        
+        return (-1, -1)
+
     proc processIf(consts: var seq[Value], it: var VBinary) =
-        var cnstId = -1
-        var shift = -1
-        if (OpCode)(currentCommand[0]) in {opPush0..opPush13}:
-            cnstId = (int)(currentCommand[0]) - (int)(opPush0)
-            shift = 0
-        elif (OpCode)(currentCommand[0]) == opPush:
-            cnstId = (int)(currentCommand[1])
-            shift = 1
-        elif (OpCode)(currentCommand[0]) == opPushX:
-            cnstId = ((int)(currentCommand[1]) shl 8) + (int)(currentCommand[2])
-            shift = 2
+        let (cnstId, shift) = getConstIdWithShift(0)
 
         if cnstId != -1:
             let blk = consts[cnstId]
@@ -307,17 +307,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         foundIfE = false
 
     proc processUnless(consts: var seq[Value], it: var VBinary) =
-        var cnstId = -1
-        var shift = -1
-        if (OpCode)(currentCommand[0]) in {opPush0..opPush13}:
-            cnstId = (int)(currentCommand[0]) - (int)(opPush0)
-            shift = 0
-        elif (OpCode)(currentCommand[0]) == opPush:
-            cnstId = (int)(currentCommand[1])
-            shift = 1
-        elif (OpCode)(currentCommand[0]) == opPushX:
-            cnstId = ((int)(currentCommand[1]) shl 8) + (int)(currentCommand[2])
-            shift = 2
+        let (cnstId, shift) = getConstIdWithShift(0)
 
         if cnstId != -1:
             let blk = consts[cnstId]
@@ -361,17 +351,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         foundUnless = false
 
     proc processLess(consts: var seq[Value], it: var VBinary) =
-        var cnstId = -1
-        var shift = -1
-        if (OpCode)(currentCommand[0]) in {opPush0..opPush13}:
-            cnstId = (int)(currentCommand[0]) - (int)(opPush0)
-            shift = 0
-        elif (OpCode)(currentCommand[0]) == opPush:
-            cnstId = (int)(currentCommand[1])
-            shift = 1
-        elif (OpCode)(currentCommand[0]) == opPushX:
-            cnstId = ((int)(currentCommand[1]) shl 8) + (int)(currentCommand[2])
-            shift = 2
+        let (cnstId, shift) = getConstIdWithShift(0)
 
         if cnstId != -1:
             let blk = consts[cnstId]
@@ -388,32 +368,12 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         foundElse = false
 
     proc processSwitch(consts: var seq[Value], it: var VBinary) =
-        var cnstId = -1
-        var shift = -1
-        if (OpCode)(currentCommand[0]) in {opPush0..opPush13}:
-            cnstId = (int)(currentCommand[0]) - (int)(opPush0)
-            shift = 0
-        elif (OpCode)(currentCommand[0]) == opPush:
-            cnstId = (int)(currentCommand[1])
-            shift = 1
-        elif (OpCode)(currentCommand[0]) == opPushX:
-            cnstId = ((int)(currentCommand[1]) shl 8) + (int)(currentCommand[2])
-            shift = 2
+        let (cnstId, shift) = getConstIdWithShift(0)
 
         if cnstId != -1:
             let blk = consts[cnstId]
             if blk.kind == Block:
-                var cnstId2 = -1
-                var shift2 = -1
-                if (OpCode)(currentCommand[1+shift]) in {opPush0..opPush13}:
-                    cnstId2 = (int)(currentCommand[1+shift]) - (int)(opPush0)
-                    shift2 = 0
-                elif (OpCode)(currentCommand[1+shift]) == opPush:
-                    cnstId2 = (int)(currentCommand[1+shift+1])
-                    shift2 = 1
-                elif (OpCode)(currentCommand[1+shift]) == opPushX:
-                    cnstId2 = ((int)(currentCommand[1+shift+1]) shl 8) + (int)(currentCommand[1+shift+2])
-                    shift2 = 2
+                let (cnstId2, shift2) = getConstIdWithShift(1+shift)
 
                 if cnstId2 != -1:
                     let blk2 = consts[cnstId2]
