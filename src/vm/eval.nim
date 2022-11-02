@@ -83,7 +83,10 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             currentCommand.add(b)
 
     template addToCommandHead(b: untyped, at = 0):untyped {.dirty.} =
-        currentCommand.insert(b, at)
+        when b is OpCode:
+            currentCommand.insert((byte)b, at)
+        else:
+            currentCommand.insert(b, at)
 
     proc addConst(currentCommand: var VBinary, consts: var seq[Value], v: Value, op: OpCode) {.inline,enforceNoRaises.} =
         var indx = consts.indexOfValue(v)
@@ -138,7 +141,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             indx = consts.len-1
 
         if indx <= 13:
-            addToCommandHead((byte)(((byte)(op)-0x0E) + (byte)(indx)), atPos)
+            addToCommandHead(((byte)(op)-0x0E) + (byte)(indx), atPos)
         else:
             if indx>255:
                 addToCommandHead([
@@ -234,7 +237,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
         if bt != opNop:
             if toHead:
-                addToCommandHead((byte)bt)
+                addToCommandHead(bt)
             else:
                 addToCommand(bt)
 
