@@ -101,7 +101,7 @@ var
 
     FLAGS*              = "--skipUserCfg:on --colors:off -d:danger " &
                           "--panics:off --mm:orc -d:useMalloc --checks:off " &
-                          "-d:ssl --cincludes:extras --nimcache:.cache " & 
+                          "-d:ssl --cincludes:extras --opt:speed --nimcache:.cache " & 
                           "--path:src "
     CONFIG              ="@full"
 
