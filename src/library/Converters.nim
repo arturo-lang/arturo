@@ -506,9 +506,6 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
 
 proc defineSymbols*() =
 
-    when defined(VERBOSE):
-        echo "- Importing: Converters"
-
     # TODO(Converters) resolving `from`/`to`/`as`/`in` clutter?
     #  Right now, we have 4 different built-in function performing different-but-similar actions.
     #  Is there any way to remove all ambiguity - by either reducing them, merging them, extending them or explaining their functionality more thoroughly?

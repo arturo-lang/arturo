@@ -1124,10 +1124,8 @@ proc doParse*(input: string, isFile: bool = true): Value =
         # do parse    
         let rootBlock = parseBlock(p, 0)
 
-        # if everything went fine, return result
-        when defined(VERBOSE):
-            rootBlock.dump(0,false)
-
+        # close lexer
         lexbase.close(p)
-            
+
+    # if everything went fine, return result     
     return rootBlock

@@ -33,9 +33,6 @@ import vm/[env, errors, eval, exec]
 #=======================================
 
 proc defineSymbols*() =
-
-    when defined(VERBOSE):
-        echo "- Importing: Reflection"
     
     builtin "arity",
         alias       = unaliased, 

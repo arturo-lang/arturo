@@ -24,10 +24,6 @@
 
 import hashes, macros, tables
 
-when defined(VERBOSE):
-    import strformat
-    import helpers/debug
-
 import vm/[
     bytecode, 
     errors, 
@@ -346,9 +342,6 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
         #echo "Executing: " & (stringify(op)) & " at " & $(i)# & " with next: " & $(it[i+1])
 
         hookOpProfiler($(op)):
-
-            when defined(VERBOSE):
-                echo "exec: " & $(op)
 
             case op:
                 # [0x00-0x1F]

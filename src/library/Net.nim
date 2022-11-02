@@ -42,12 +42,8 @@ when defined(SAFE):
 
 proc defineSymbols*() =
 
-    when defined(VERBOSE):
-        echo "- Importing: Net"
-
     when not defined(WEB):
         
-
         builtin "download",
             alias       = unaliased, 
             rule        = PrefixPrecedence,
