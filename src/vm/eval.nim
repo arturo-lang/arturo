@@ -52,7 +52,6 @@ func indexOfValue(a: seq[Value], item: Value): int {.inline.}=
 
 when not defined(NOERRORLINES):
     template addEol(line: untyped):untyped =
-        discard
         if line > 255:
             it.add((byte)opEolX)
             it.add((byte)line shr 8)
