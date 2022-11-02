@@ -104,6 +104,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
     template addToCommand(b: untyped):untyped {.dirty.} =
         currentCommand.add(b)
 
+    template addToCommandHead(b: untyped, at = 0):untyped {.dirty.} =
+        currentCommand.insert(b, at)
+
     proc addConst(currentCommand: var VBinary, consts: var seq[Value], v: Value, op: OpCode) {.inline,enforceNoRaises.} =
         var indx = consts.indexOfValue(v)
         if indx == -1:
@@ -144,9 +147,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 (byte)indx,
                 (byte)op
             ])
-
-    template addToCommandHead(b: byte, at = 0):untyped =
-        currentCommand.insert(b, at)
 
     proc addTrailingConst(consts: var seq[Value], v: Value, op: OpCode) {.enforceNoRaises.} =
         var atPos = 0
