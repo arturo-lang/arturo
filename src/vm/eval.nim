@@ -77,7 +77,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
     #------------------------
 
     template addToCommand(b: untyped):untyped {.dirty.} =
-        when b is byte:
+        when b is OpCode:
             currentCommand.add((byte)b)
         else:
             currentCommand.add(b)
