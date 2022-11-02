@@ -101,7 +101,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 stdout.write "\n"
                 i += 1
 
-    template addToCommand(b: byte | openArray[byte]):untyped {.dirty.} =
+    template addToCommand(b: untyped):untyped {.dirty.} =
         currentCommand.add(b)
 
     proc addConst(currentCommand: var VBinary, consts: var seq[Value], v: Value, op: OpCode) {.inline,enforceNoRaises.} =
@@ -115,12 +115,16 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             addToCommand((byte)(((byte)(op)-0x0E) + (byte)(indx)))
         else:
             if indx>255:
-                addToCommand((byte)indx)
-                addToCommand((byte)indx shr 8)
-                addToCommand((byte)(op)+1)
+                addToCommand([
+                    (byte)indx,
+                    (byte)indx shr 8,
+                    (byte)(op)+1
+                ])
             else:
-                addToCommand((byte)indx)
-                addToCommand((byte)op)
+                addToCommand([
+                    (byte)indx,
+                    (byte)op
+                ])
 
     proc addShortConst(currentCommand: var VBinary, consts: var seq[Value], v: Value, op: OpCode) {.inline,enforceNoRaises.} =
         var indx = consts.indexOfValue(v)
@@ -130,12 +134,16 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             indx = consts.len-1
 
         if indx>255:
-            addToCommand((byte)indx)
-            addToCommand((byte)indx shr 8)
-            addToCommand((byte)(op)+1)
+            addToCommand([
+                (byte)indx,
+                (byte)indx shr 8,
+                (byte)(op)+1
+            ])
         else:
-            addToCommand((byte)indx)
-            addToCommand((byte)op)
+            addToCommand([
+                (byte)indx,
+                (byte)op
+            ])
 
     template addToCommandHead(b: byte, at = 0):untyped =
         currentCommand.insert(b, at)
