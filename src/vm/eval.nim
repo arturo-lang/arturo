@@ -451,10 +451,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             ## Check for potential Infix operator ahead
             
             if (i+1<childrenCount and n.a[i+1].kind == Symbol):
-                when not inArrowBlock:
-                    let step = 1
-                else:
-                    let step = 1
+                let step = 1
 
                 let symalias = n.a[i+1].m
                 let aliased = Aliases.getOrDefault(symalias, NoAliasBinding)
