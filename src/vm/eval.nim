@@ -251,229 +251,241 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             if doElse:
                 default
 
+    proc processIf(consts: var seq[Value], it: var VBinary) =
+        var cnstId = -1
+        var shift = -1
+        if (OpCode)(currentCommand[0]) in {opPush0..opPush13}:
+            cnstId = (int)(currentCommand[0]) - (int)(opPush0)
+            shift = 0
+        elif (OpCode)(currentCommand[0]) == opPush:
+            cnstId = (int)(currentCommand[1])
+            shift = 1
+        elif (OpCode)(currentCommand[0]) == opPushX:
+            cnstId = ((int)(currentCommand[1]) shl 8) + (int)(currentCommand[2])
+            shift = 2
+
+        if cnstId != -1:
+            let blk = consts[cnstId]
+            if blk.kind == Block and (OpCode)(currentCommand[^1]) in {opIf,opIfE}:
+                currentCommand.delete(0..shift)
+                discard currentCommand.pop()
+                var injectable = opJmpIfNot
+                case (OpCode)currentCommand[^1]:
+                    of opNot:
+                        discard currentCommand.pop()
+                        injectable = opJmpIf
+                    of opEq:
+                        discard currentCommand.pop()
+                        injectable = opJmpIfNe
+                    of opNe:
+                        discard currentCommand.pop()
+                        injectable = opJmpIfEq
+                    of opGt:
+                        discard currentCommand.pop()
+                        injectable = opJmpIfLe
+                    of opGe:
+                        discard currentCommand.pop()
+                        injectable = opJmpIfLt
+                    of opLt:
+                        discard currentCommand.pop()
+                        injectable = opJmpIfGe
+                    of opLe:
+                        discard currentCommand.pop()
+                        injectable = opJmpIfGt
+                    else:
+                        discard
+                currentCommand.add([(byte)injectable, (byte)0, (byte)0])
+                let injPos = currentCommand.len - 2
+                evalOne(blk, consts, currentCommand, inBlock=inBlock, isDictionary=isDictionary)
+                if foundIfE:
+                    currentCommand.add([(byte)opNop, (byte)opNop, (byte)opNop])
+                let finPos = currentCommand.len - injPos - 2
+                currentCommand[injPos] = (byte)finPos shr 8
+                currentCommand[injPos+1] = (byte)finPos
+        
+        foundIf = false
+        foundIfE = false
+
+    proc processUnless(consts: var seq[Value], it: var VBinary) =
+        var cnstId = -1
+        var shift = -1
+        if (OpCode)(currentCommand[0]) in {opPush0..opPush13}:
+            cnstId = (int)(currentCommand[0]) - (int)(opPush0)
+            shift = 0
+        elif (OpCode)(currentCommand[0]) == opPush:
+            cnstId = (int)(currentCommand[1])
+            shift = 1
+        elif (OpCode)(currentCommand[0]) == opPushX:
+            cnstId = ((int)(currentCommand[1]) shl 8) + (int)(currentCommand[2])
+            shift = 2
+
+        if cnstId != -1:
+            let blk = consts[cnstId]
+            if blk.kind == Block and (OpCode)(currentCommand[^1]) == opUnless:
+                currentCommand.delete(0..shift)
+                discard currentCommand.pop()
+                var injectable = opJmpIf
+                case (OpCode)currentCommand[^1]:
+                    of opNot:
+                        discard currentCommand.pop()
+                        injectable = opJmpIfNot
+                    of opEq:
+                        discard currentCommand.pop()
+                        injectable = opJmpIfEq
+                    of opNe:
+                        discard currentCommand.pop()
+                        injectable = opJmpIfNe
+                    of opGt:
+                        discard currentCommand.pop()
+                        injectable = opJmpIfGt
+                    of opGe:
+                        discard currentCommand.pop()
+                        injectable = opJmpIfGe
+                    of opLt:
+                        discard currentCommand.pop()
+                        injectable = opJmpIfLt
+                    of opLe:
+                        discard currentCommand.pop()
+                        injectable = opJmpIfLe
+                    else:
+                        discard
+                currentCommand.add([(byte)injectable, (byte)0, (byte)0])
+                let injPos = currentCommand.len - 2
+                evalOne(blk, consts, currentCommand, inBlock=inBlock, isDictionary=isDictionary)
+                if foundIfE:
+                    currentCommand.add([(byte)opNop, (byte)opNop, (byte)opNop])
+                let finPos = currentCommand.len - injPos - 2
+                currentCommand[injPos] = (byte)finPos shr 8
+                currentCommand[injPos+1] = (byte)finPos
+        
+        foundUnless = false
+
+    proc processLess(consts: var seq[Value], it: var VBinary) =
+        var cnstId = -1
+        var shift = -1
+        if (OpCode)(currentCommand[0]) in {opPush0..opPush13}:
+            cnstId = (int)(currentCommand[0]) - (int)(opPush0)
+            shift = 0
+        elif (OpCode)(currentCommand[0]) == opPush:
+            cnstId = (int)(currentCommand[1])
+            shift = 1
+        elif (OpCode)(currentCommand[0]) == opPushX:
+            cnstId = ((int)(currentCommand[1]) shl 8) + (int)(currentCommand[2])
+            shift = 2
+
+        if cnstId != -1:
+            let blk = consts[cnstId]
+            if blk.kind == Block:
+                currentCommand.delete(0..shift)
+                discard currentCommand.pop()
+
+                evalOne(blk, consts, currentCommand, inBlock=inBlock, isDictionary=isDictionary)
+                let currentPos = currentCommand.len
+                it[^3] = (byte)opGoto
+                it[^2] = (byte)currentPos shr 8
+                it[^1] = (byte)currentPos
+                
+        foundElse = false
+
+    proc processSwitch(consts: var seq[Value], it: var VBinary) =
+        var cnstId = -1
+        var shift = -1
+        if (OpCode)(currentCommand[0]) in {opPush0..opPush13}:
+            cnstId = (int)(currentCommand[0]) - (int)(opPush0)
+            shift = 0
+        elif (OpCode)(currentCommand[0]) == opPush:
+            cnstId = (int)(currentCommand[1])
+            shift = 1
+        elif (OpCode)(currentCommand[0]) == opPushX:
+            cnstId = ((int)(currentCommand[1]) shl 8) + (int)(currentCommand[2])
+            shift = 2
+
+        if cnstId != -1:
+            let blk = consts[cnstId]
+            if blk.kind == Block:
+                var cnstId2 = -1
+                var shift2 = -1
+                if (OpCode)(currentCommand[1+shift]) in {opPush0..opPush13}:
+                    cnstId2 = (int)(currentCommand[1+shift]) - (int)(opPush0)
+                    shift2 = 0
+                elif (OpCode)(currentCommand[1+shift]) == opPush:
+                    cnstId2 = (int)(currentCommand[1+shift+1])
+                    shift2 = 1
+                elif (OpCode)(currentCommand[1+shift]) == opPushX:
+                    cnstId2 = ((int)(currentCommand[1+shift+1]) shl 8) + (int)(currentCommand[1+shift+2])
+                    shift2 = 2
+
+                if cnstId2 != -1:
+                    let blk2 = consts[cnstId2]
+                    if blk2.kind == Block:
+                        # for b in currentCommand:
+                        #     echo stringify((OpCode)b)
+                        currentCommand.delete(0..shift+shift2+1)
+                        var toPushBack: VBinary
+                        var jpb = currentCommand.len - 1
+                        while (OpCode)(currentCommand[jpb]) != opSwitch:
+                            toPushBack.add(currentCommand.pop())
+                            jpb -= 1
+                        reverse(toPushBack)
+                        discard currentCommand.pop()
+                        var injectable = opJmpIfNot
+                        case (OpCode)currentCommand[^1]:
+                            of opNot:
+                                discard currentCommand.pop()
+                                injectable = opJmpIf
+                            of opEq:
+                                discard currentCommand.pop()
+                                injectable = opJmpIfNe
+                            of opNe:
+                                discard currentCommand.pop()
+                                injectable = opJmpIfEq
+                            of opGt:
+                                discard currentCommand.pop()
+                                injectable = opJmpIfLe
+                            of opGe:
+                                discard currentCommand.pop()
+                                injectable = opJmpIfLt
+                            of opLt:
+                                discard currentCommand.pop()
+                                injectable = opJmpIfGe
+                            of opLe:
+                                discard currentCommand.pop()
+                                injectable = opJmpIfGt
+                            else:
+                                discard
+                        currentCommand.add([(byte)injectable, (byte)0, (byte)0])
+                        let injPos = currentCommand.len - 2
+                        evalOne(blk2, consts, currentCommand, inBlock=inBlock, isDictionary=isDictionary)
+                        let preInjection = currentCommand.len
+                        currentCommand.add([(byte)opNop, (byte)opNop, (byte)opNop])
+                        let finPos = currentCommand.len - injPos - 2
+                        currentCommand[injPos] = (byte)finPos shr 8
+                        currentCommand[injPos+1] = (byte)finPos
+                        let lastLen = currentCommand.len
+                        evalOne(blk, consts, currentCommand, inBlock=inBlock, isDictionary=isDictionary)
+                        let currentPos = currentCommand.len - lastLen
+                        currentCommand[preInjection] = (byte)opGoto
+                        currentCommand[preInjection+1] = (byte)currentPos shr 8
+                        currentCommand[preInjection+2] = (byte)currentPos
+                        if toPushBack.len > 0:
+                            currentCommand.add(toPushBack)
+
+        foundSwitch = false
+
     template addCurrentCommentToBytecode() =
         if not inBlock: reverse(currentCommand)
 
         if foundIf or (foundIfE and i+1<childrenCount and n.a[i+1].kind == Word and GetSym(n.a[i+1].s) == ElseF):
-            var cnstId = -1
-            var shift = -1
-            if (OpCode)(currentCommand[0]) in {opPush0..opPush13}:
-                cnstId = (int)(currentCommand[0]) - (int)(opPush0)
-                shift = 0
-            elif (OpCode)(currentCommand[0]) == opPush:
-                cnstId = (int)(currentCommand[1])
-                shift = 1
-            elif (OpCode)(currentCommand[0]) == opPushX:
-                cnstId = ((int)(currentCommand[1]) shl 8) + (int)(currentCommand[2])
-                shift = 2
-
-            if cnstId != -1:
-                let blk = consts[cnstId]
-                if blk.kind == Block and (OpCode)(currentCommand[^1]) in {opIf,opIfE}:
-                    currentCommand.delete(0..shift)
-                    discard currentCommand.pop()
-                    var injectable = opJmpIfNot
-                    case (OpCode)currentCommand[^1]:
-                        of opNot:
-                            discard currentCommand.pop()
-                            injectable = opJmpIf
-                        of opEq:
-                            discard currentCommand.pop()
-                            injectable = opJmpIfNe
-                        of opNe:
-                            discard currentCommand.pop()
-                            injectable = opJmpIfEq
-                        of opGt:
-                            discard currentCommand.pop()
-                            injectable = opJmpIfLe
-                        of opGe:
-                            discard currentCommand.pop()
-                            injectable = opJmpIfLt
-                        of opLt:
-                            discard currentCommand.pop()
-                            injectable = opJmpIfGe
-                        of opLe:
-                            discard currentCommand.pop()
-                            injectable = opJmpIfGt
-                        else:
-                            discard
-                    currentCommand.add([(byte)injectable, (byte)0, (byte)0])
-                    let injPos = currentCommand.len - 2
-                    evalOne(blk, consts, currentCommand, inBlock=inBlock, isDictionary=isDictionary)
-                    if foundIfE:
-                        currentCommand.add([(byte)opNop, (byte)opNop, (byte)opNop])
-                    let finPos = currentCommand.len - injPos - 2
-                    currentCommand[injPos] = (byte)finPos shr 8
-                    currentCommand[injPos+1] = (byte)finPos
-            
-            foundIf = false
-            foundIfE = false
+            processIf(consts, it)
 
         elif foundUnless:
-            var cnstId = -1
-            var shift = -1
-            if (OpCode)(currentCommand[0]) in {opPush0..opPush13}:
-                cnstId = (int)(currentCommand[0]) - (int)(opPush0)
-                shift = 0
-            elif (OpCode)(currentCommand[0]) == opPush:
-                cnstId = (int)(currentCommand[1])
-                shift = 1
-            elif (OpCode)(currentCommand[0]) == opPushX:
-                cnstId = ((int)(currentCommand[1]) shl 8) + (int)(currentCommand[2])
-                shift = 2
-
-            if cnstId != -1:
-                let blk = consts[cnstId]
-                if blk.kind == Block and (OpCode)(currentCommand[^1]) == opUnless:
-                    currentCommand.delete(0..shift)
-                    discard currentCommand.pop()
-                    var injectable = opJmpIf
-                    case (OpCode)currentCommand[^1]:
-                        of opNot:
-                            discard currentCommand.pop()
-                            injectable = opJmpIfNot
-                        of opEq:
-                            discard currentCommand.pop()
-                            injectable = opJmpIfEq
-                        of opNe:
-                            discard currentCommand.pop()
-                            injectable = opJmpIfNe
-                        of opGt:
-                            discard currentCommand.pop()
-                            injectable = opJmpIfGt
-                        of opGe:
-                            discard currentCommand.pop()
-                            injectable = opJmpIfGe
-                        of opLt:
-                            discard currentCommand.pop()
-                            injectable = opJmpIfLt
-                        of opLe:
-                            discard currentCommand.pop()
-                            injectable = opJmpIfLe
-                        else:
-                            discard
-                    currentCommand.add([(byte)injectable, (byte)0, (byte)0])
-                    let injPos = currentCommand.len - 2
-                    evalOne(blk, consts, currentCommand, inBlock=inBlock, isDictionary=isDictionary)
-                    if foundIfE:
-                        currentCommand.add([(byte)opNop, (byte)opNop, (byte)opNop])
-                    let finPos = currentCommand.len - injPos - 2
-                    currentCommand[injPos] = (byte)finPos shr 8
-                    currentCommand[injPos+1] = (byte)finPos
-            
-            foundUnless = false
+            processUnless(consts, it)
         
         elif foundElse and it[^1] == (byte)opNop:
-            var cnstId = -1
-            var shift = -1
-            if (OpCode)(currentCommand[0]) in {opPush0..opPush13}:
-                cnstId = (int)(currentCommand[0]) - (int)(opPush0)
-                shift = 0
-            elif (OpCode)(currentCommand[0]) == opPush:
-                cnstId = (int)(currentCommand[1])
-                shift = 1
-            elif (OpCode)(currentCommand[0]) == opPushX:
-                cnstId = ((int)(currentCommand[1]) shl 8) + (int)(currentCommand[2])
-                shift = 2
-
-            if cnstId != -1:
-                let blk = consts[cnstId]
-                if blk.kind == Block:
-                    currentCommand.delete(0..shift)
-                    discard currentCommand.pop()
-
-                    evalOne(blk, consts, currentCommand, inBlock=inBlock, isDictionary=isDictionary)
-                    let currentPos = currentCommand.len
-                    it[^3] = (byte)opGoto
-                    it[^2] = (byte)currentPos shr 8
-                    it[^1] = (byte)currentPos
-                    
-            foundElse = false
+            processLess(consts, it)
 
         elif foundSwitch:
-            var cnstId = -1
-            var shift = -1
-            if (OpCode)(currentCommand[0]) in {opPush0..opPush13}:
-                cnstId = (int)(currentCommand[0]) - (int)(opPush0)
-                shift = 0
-            elif (OpCode)(currentCommand[0]) == opPush:
-                cnstId = (int)(currentCommand[1])
-                shift = 1
-            elif (OpCode)(currentCommand[0]) == opPushX:
-                cnstId = ((int)(currentCommand[1]) shl 8) + (int)(currentCommand[2])
-                shift = 2
-
-            if cnstId != -1:
-                let blk = consts[cnstId]
-                if blk.kind == Block:
-                    var cnstId2 = -1
-                    var shift2 = -1
-                    if (OpCode)(currentCommand[1+shift]) in {opPush0..opPush13}:
-                        cnstId2 = (int)(currentCommand[1+shift]) - (int)(opPush0)
-                        shift2 = 0
-                    elif (OpCode)(currentCommand[1+shift]) == opPush:
-                        cnstId2 = (int)(currentCommand[1+shift+1])
-                        shift2 = 1
-                    elif (OpCode)(currentCommand[1+shift]) == opPushX:
-                        cnstId2 = ((int)(currentCommand[1+shift+1]) shl 8) + (int)(currentCommand[1+shift+2])
-                        shift2 = 2
-
-                    if cnstId2 != -1:
-                        let blk2 = consts[cnstId2]
-                        if blk2.kind == Block:
-                            # for b in currentCommand:
-                            #     echo stringify((OpCode)b)
-                            currentCommand.delete(0..shift+shift2+1)
-                            var toPushBack: VBinary
-                            var jpb = currentCommand.len - 1
-                            while (OpCode)(currentCommand[jpb]) != opSwitch:
-                                toPushBack.add(currentCommand.pop())
-                                jpb -= 1
-                            reverse(toPushBack)
-                            discard currentCommand.pop()
-                            var injectable = opJmpIfNot
-                            case (OpCode)currentCommand[^1]:
-                                of opNot:
-                                    discard currentCommand.pop()
-                                    injectable = opJmpIf
-                                of opEq:
-                                    discard currentCommand.pop()
-                                    injectable = opJmpIfNe
-                                of opNe:
-                                    discard currentCommand.pop()
-                                    injectable = opJmpIfEq
-                                of opGt:
-                                    discard currentCommand.pop()
-                                    injectable = opJmpIfLe
-                                of opGe:
-                                    discard currentCommand.pop()
-                                    injectable = opJmpIfLt
-                                of opLt:
-                                    discard currentCommand.pop()
-                                    injectable = opJmpIfGe
-                                of opLe:
-                                    discard currentCommand.pop()
-                                    injectable = opJmpIfGt
-                                else:
-                                    discard
-                            currentCommand.add([(byte)injectable, (byte)0, (byte)0])
-                            let injPos = currentCommand.len - 2
-                            evalOne(blk2, consts, currentCommand, inBlock=inBlock, isDictionary=isDictionary)
-                            let preInjection = currentCommand.len
-                            currentCommand.add([(byte)opNop, (byte)opNop, (byte)opNop])
-                            let finPos = currentCommand.len - injPos - 2
-                            currentCommand[injPos] = (byte)finPos shr 8
-                            currentCommand[injPos+1] = (byte)finPos
-                            let lastLen = currentCommand.len
-                            evalOne(blk, consts, currentCommand, inBlock=inBlock, isDictionary=isDictionary)
-                            let currentPos = currentCommand.len - lastLen
-                            currentCommand[preInjection] = (byte)opGoto
-                            currentCommand[preInjection+1] = (byte)currentPos shr 8
-                            currentCommand[preInjection+2] = (byte)currentPos
-                            if toPushBack.len > 0:
-                                currentCommand.add(toPushBack)
-
-            foundSwitch = false
+            processSwitch(consts, it)
 
         for b in currentCommand:
             it.add(b)
