@@ -250,7 +250,7 @@ proc miniBuild*() =
         FLAGS = "{FLAGS} {OPTIONS[k]}".fmt
 
     # plus, shrinking + the MINI flag
-    FLAGS = FLAGS & " --opt:size -d:MINI"
+    FLAGS = FLAGS & " -d:MINI"
     if hostOS=="freebsd":
         FLAGS = FLAGS & " --verbosity:3 "
 
