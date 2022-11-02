@@ -104,7 +104,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
     template addToCommand(b: byte):untyped =
         currentCommand.add(b)
 
-    proc addConst(currentCommand: var VBinary, consts: var seq[Value], v: Value, op: OpCode) {.enforceNoRaises.} =
+    proc addConst(currentCommand: var VBinary, consts: var seq[Value], v: Value, op: OpCode) {.inline,enforceNoRaises.} =
         var indx = consts.indexOfValue(v)
         if indx == -1:
             v.readonly = true
@@ -122,7 +122,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 addToCommand((byte)indx)
                 addToCommand((byte)op)
 
-    proc addShortConst(currentCommand: var VBinary, consts: var seq[Value], v: Value, op: OpCode) {.enforceNoRaises.} =
+    proc addShortConst(currentCommand: var VBinary, consts: var seq[Value], v: Value, op: OpCode) {.inline,enforceNoRaises.} =
         var indx = consts.indexOfValue(v)
         if indx == -1:
             v.readonly = true
