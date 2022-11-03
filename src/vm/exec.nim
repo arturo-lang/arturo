@@ -115,6 +115,9 @@ template callByIndex(idx: int):untyped =
 template fetchAttributeByIndex(idx: int):untyped =
     stack.pushAttr(cnst[idx].s, move stack.pop())
 
+template setAttributeByIndex(idx: int):untyped =
+    stack.pushAttr(cnst[idx].s, VTRUE)
+
 macro performConditionalJump(symb: untyped): untyped =
     result = quote do:
         let x = move stack.pop()
