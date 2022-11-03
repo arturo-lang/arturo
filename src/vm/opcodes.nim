@@ -169,7 +169,7 @@ type
         opCall          = 0x6E
         opCallX         = 0x6F
 
-        # [0x70-0x7F]
+        # [0x70-0x8F]
         # attributes
         opAttr0         = 0x70   
         opAttr1         = 0x71
@@ -189,133 +189,151 @@ type
         opAttr          = 0x7E
         opAttrX         = 0x7F
 
+        opSetAttr0      = 0x80   
+        opSetAttr1      = 0x81
+        opSetAttr2      = 0x82
+        opSetAttr3      = 0x83
+        opSetAttr4      = 0x84
+        opSetAttr5      = 0x85
+        opSetAttr6      = 0x86
+        opSetAttr7      = 0x87
+        opSetAttr8      = 0x88
+        opSetAttr9      = 0x89
+        opSetAttr10     = 0x8A
+        opSetAttr11     = 0x8B
+        opSetAttr12     = 0x8C
+        opSetAttr13     = 0x8D
+
+        opSetAttr       = 0x8E
+        opSetAttrX      = 0x8F
+
         #---------------------------------
         # OP FUNCTIONS
         #---------------------------------
 
-        # [0x80-0x8F]
+        # [0x90-0x9F]
         # arithmetic operators
-        opAdd           = 0x80
-        opSub           = 0x81
-        opMul           = 0x82
-        opDiv           = 0x83
-        opFdiv          = 0x84
-        opMod           = 0x85
-        opPow           = 0x86
+        opAdd           = 0x90
+        opSub           = 0x91
+        opMul           = 0x92
+        opDiv           = 0x93
+        opFdiv          = 0x94
+        opMod           = 0x95
+        opPow           = 0x96
 
-        opNeg           = 0x87
+        opNeg           = 0x97
 
         # binary operators
-        opBNot          = 0x88
-        opBAnd          = 0x89
-        opBOr           = 0x8A
+        opBNot          = 0x98
+        opBAnd          = 0x99
+        opBOr           = 0x9A
 
-        opShl           = 0x8B
-        opShr           = 0x8C
+        opShl           = 0x9B
+        opShr           = 0x9C
 
         # logical operators
-        opNot           = 0x8D
-        opAnd           = 0x8E
-        opOr            = 0x8F
-
-        # [0x90-0x9F]
-        # comparison operators
-        opEq            = 0x90
-        opNe            = 0x91
-        opGt            = 0x92
-        opGe            = 0x93
-        opLt            = 0x94
-        opLe            = 0x95
-
-        # branching
-        opIf            = 0x96
-        opIfE           = 0x97
-        opUnless        = 0x98
-        opElse          = 0x99
-        opSwitch        = 0x9A
-        opWhile         = 0x9B
-        opReturn        = 0x9C
-
-        # converters
-        opTo            = 0x9D
-        opToS           = 0x9E  
-        opToI           = 0x9F
+        opNot           = 0x9D
+        opAnd           = 0x9E
+        opOr            = 0x9F
 
         # [0xA0-0xAF]
-        # getters/setters
-        opGet           = 0xA0
-        opSet           = 0xA1
+        # comparison operators
+        opEq            = 0xA0
+        opNe            = 0xA1
+        opGt            = 0xA2
+        opGe            = 0xA3
+        opLt            = 0xA4
+        opLe            = 0xA5
 
-        # generators
-        opArray         = 0xA2
-        opDict          = 0xA3
-        opFunc          = 0xA4
+        # branching
+        opIf            = 0xA6
+        opIfE           = 0xA7
+        opUnless        = 0xA8
+        opElse          = 0xA9
+        opSwitch        = 0xAA
+        opWhile         = 0xAB
+        opReturn        = 0xAC
 
-        # ranges & iterators
-        opRange         = 0xA5
-        opLoop          = 0xA6
-        opMap           = 0xA7
-        opSelect        = 0xA8
-
-        # collections
-        opSize          = 0xA9
-        opReplace       = 0xAA
-        opSplit         = 0xAB
-        opJoin          = 0xAC
-        opReverse       = 0xAD
-
-        # increment/decrement
-        opInc           = 0xAE
-        opDec           = 0xAF
+        # converters
+        opTo            = 0xAD
+        opToS           = 0xAE  
+        opToI           = 0xAF
 
         # [0xB0-0xBF]
-        # i/o operations
-        opPrint         = 0xB0
+        # getters/setters
+        opGet           = 0xB0
+        opSet           = 0xB1
 
-        RSRV1           = 0xB1
-        RSRV2           = 0xB2
-        RSRV3           = 0xB3
-        RSRV4           = 0xB4
-        RSRV5           = 0xB5
-        RSRV6           = 0xB6
-        RSRV7           = 0xB7
-        RSRV8           = 0xB8
-        RSRV9           = 0xB9
-        RSRV10          = 0xBA
-        RSRV11          = 0xBB
-        RSRV12          = 0xBC
-        RSRV13          = 0xBD
-        RSRV14          = 0xBE
-        RSRV15          = 0xBF
+        # generators
+        opArray         = 0xB2
+        opDict          = 0xB3
+        opFunc          = 0xB4
+
+        # ranges & iterators
+        opRange         = 0xB5
+        opLoop          = 0xB6
+        opMap           = 0xB7
+        opSelect        = 0xB8
+
+        # collections
+        opSize          = 0xB9
+        opReplace       = 0xBA
+        opSplit         = 0xBB
+        opJoin          = 0xBC
+        opReverse       = 0xBD
+
+        # increment/decrement
+        opInc           = 0xBE
+        opDec           = 0xBF
+
+        # [0xC0-0xCF]
+        # i/o operations
+        opPrint         = 0xC0
+
+        RSRV1           = 0xC1
+        RSRV2           = 0xC2
+        RSRV3           = 0xC3
+        RSRV4           = 0xC4
+        RSRV5           = 0xC5
+        RSRV6           = 0xC6
+        RSRV7           = 0xC7
+        RSRV8           = 0xC8
+        RSRV9           = 0xC9
+        RSRV10          = 0xCA
+        RSRV11          = 0xCB
+        RSRV12          = 0xCC
+        RSRV13          = 0xCD
+        RSRV14          = 0xCE
+        RSRV15          = 0xCF
 
         #---------------------------------
         # LOW-LEVEL OPERATIONS
         #---------------------------------
 
-        # [0xB0-0xBF]
+        # [0xD0-0xDF]
         # no operation
-        opNop           = 0xC0
+        opNop           = 0xD0
 
         # stack operations
-        opPop           = 0xC1
-        opDup           = 0xC2
-        opOver          = 0xC3
-        opSwap          = 0xC4
+        opPop           = 0xD1
+        opDup           = 0xD2
+        opOver          = 0xD3
+        opSwap          = 0xD4
 
         # conditional jumps
-        opJmpIf         = 0xC5
-        opJmpIfNot      = 0xC6
-        opJmpIfEq       = 0xC7
-        opJmpIfNe       = 0xC8
-        opJmpIfGt       = 0xC9
-        opJmpIfGe       = 0xCA
-        opJmpIfLt       = 0xCB
-        opJmpIfLe       = 0xCC
+        opJmpIf         = 0xD5
+        opJmpIfNot      = 0xD6
+        opJmpIfEq       = 0xD7
+        opJmpIfNe       = 0xD8
+        opJmpIfGt       = 0xD9
+        opJmpIfGe       = 0xDA
+        opJmpIfLt       = 0xDB
+        opJmpIfLe       = 0xDC
 
         # flow control
-        opGoto          = 0xCD
-        opRet           = 0xCE
-        opEnd           = 0xCF
+        opGoto          = 0xDD
+        opRet           = 0xDE
+        opEnd           = 0xDF
 
 when false:
     #=======================================
