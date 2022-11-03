@@ -168,6 +168,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                     (byte)indx
                 ], atPos)
 
+    template addTrailingConst(v: Value, op: OpCode): untyped =
+        addTrailingConst(currentCommand, consts, v, op)
+
     proc evalFunctionCall(currentCommand: var VBinary, fun: var Value, toHead: bool, checkAhead: bool, i: var int, funcArity: var int): bool {.enforceNoRaises.} =
         var bt: OpCode = opNop
         var doElse = true
@@ -509,9 +512,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                             # TODO(VM/eval) to be fixed
                             #  labels: bug, evaluator, vm
                             if not evalFunctionCall(currentCommand, nextNode, toHead=true, checkAhead=false, i, i):
-                                addTrailingConst(currentCommand, consts, nextNode, opCall)
+                                addTrailingConst(nextNode, opCall)
                         else:
-                            addTrailingConst(currentCommand, consts, nextNode, opCall)
+                            addTrailingConst(nextNode, opCall)
                             if argStack.len==0:
                                 addCurrentCommandToBytecode()
                         i += 1
