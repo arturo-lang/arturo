@@ -77,6 +77,19 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
     var foundSwitch = false
 
     #------------------------
+    # Shortcuts
+    #------------------------
+
+    template addConst(v: Value, op: OpCode): untyped =
+        addConst(currentCommand, consts, v, op)
+
+    template addShortConst(v: Value, op: OpCode): untyped =
+        addShortConst(currentCommand, consts, v, op)
+
+    template addTrailingConst(v: Value, op: OpCode): untyped =
+        addTrailingConst(currentCommand, consts, v, op)
+
+    #------------------------
     # Helper Functions
     #------------------------
 
@@ -115,9 +128,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                     (byte)op
                 ])
 
-    template addConst(v: Value, op: OpCode): untyped =
-        addConst(currentCommand, consts, v, op)
-
     proc addShortConst(currentCommand: var VBinary, consts: var seq[Value], v: Value, op: OpCode) {.inline,enforceNoRaises.} =
         var indx = consts.indexOfValue(v)
         if indx == -1:
@@ -137,9 +147,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 (byte)indx,
                 (byte)op
             ])
-
-    template addShortConst(v: Value, op: OpCode): untyped =
-        addShortConst(currentCommand, consts, v, op)
 
     proc addTrailingConst(currentCommand: var VBinary, consts: var seq[Value], v: Value, op: OpCode) {.inline,enforceNoRaises.} =
         var atPos = 0
@@ -167,9 +174,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                     (byte)op,
                     (byte)indx
                 ], atPos)
-
-    template addTrailingConst(v: Value, op: OpCode): untyped =
-        addTrailingConst(currentCommand, consts, v, op)
 
     proc evalFunctionCall(currentCommand: var VBinary, fun: var Value, toHead: bool, checkAhead: bool, i: var int, funcArity: var int): bool {.enforceNoRaises.} =
         var bt: OpCode = opNop
