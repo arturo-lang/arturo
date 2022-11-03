@@ -536,7 +536,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 # OP FUNCTIONS
                 #---------------------------------
 
-                # [0x80-0x8F]
+                # [0x90-0x9F]
                 # arithmetic operators
                 of opAdd                : AddF.action()
                 of opSub                : SubF.action()
@@ -561,7 +561,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opAnd                : AndF.action()
                 of opOr                 : OrF.action()
 
-                # [0x90-0x9F]
+                # [0xA0-0xAF]
                 # comparison operators
                 of opEq                 : EqF.action()
                 of opNe                 : NeF.action()
@@ -588,7 +588,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                     stack.push(VINTEGERT)
                     ToF.action()
 
-                # [0xA0-0xAF]
+                # [0xB0-0xBF]
                 # getters/setters
                 of opGet                : GetF.action()
                 of opSet                : SetF.action()
@@ -615,7 +615,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opInc                : IncF.action()
                 of opDec                : DecF.action()
 
-                # [0xB0-0xBF]
+                # [0xC0-0xCF]
                 # i/o operations
                 of opPrint              : PrintF.action()
 
@@ -639,7 +639,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 # LOW-LEVEL OPERATIONS
                 #---------------------------------
 
-                # [0xC0-0xCF]
+                # [0xD0-0xDF]
                 # no operation
                 of opNop                : discard
 
