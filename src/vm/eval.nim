@@ -115,6 +115,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                     (byte)op
                 ])
 
+    template addConst(v: Value, op: OpCode): untyped =
+        addConst(currentCommand, consts, v, op)
+
     proc addShortConst(currentCommand: var VBinary, consts: var seq[Value], v: Value, op: OpCode) {.inline,enforceNoRaises.} =
         var indx = consts.indexOfValue(v)
         if indx == -1:
@@ -464,7 +467,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 if symfunc.kind==Function and aliased.precedence==InfixPrecedence:
                     i += 1
                     if (not inBlock) and (not evalFunctionCall(currentCommand, symfunc, toHead=false, checkAhead=false, i, i)):
-                        addConst(currentCommand, consts, aliased.name, opCall)
+                        addConst(aliased.name, opCall)
                     result = symfunc.arity
 
     template resetArgStackAndCheckForTrailingPipe(currentArgStack: var seq[int], commandFinished: untyped, withTrailingPipe: untyped) =
@@ -671,19 +674,19 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                     when defined(WEB) or not defined(NOGMP):
                         if likely(node.iKind==NormalInteger):
                             if node.i>=0 and node.i<=15: addToCommand((byte)(opConstI0) + (byte)(node.i))
-                            else: addConst(currentCommand, consts, node, opPush)
+                            else: addConst(node, opPush)
                         else:
-                            addConst(currentCommand, consts, node, opPush)
+                            addConst(node, opPush)
                     else:
                         if node.i>=0 and node.i<=15: addToCommand((byte)(opConstI0) + (byte)(node.i))
-                        else: addConst(currentCommand, consts, node, opPush)
+                        else: addConst(node, opPush)
 
             of Floating:
                 addTerminalValue(inBlock=false):
                     if node.f==0.0: addToCommand(opConstF0)
                     elif node.f==1.0: addToCommand(opConstF1)
                     elif node.f==2.0: addToCommand(opConstF2)
-                    else: addConst(currentCommand, consts, node, opPush)
+                    else: addConst(node, opPush)
 
             of Word:
                 var funcArity = TmpArities.getOrDefault(node.s, -1)
@@ -691,17 +694,17 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                     if likely(funcArity!=0):
                         if (var symf = Syms.getOrDefault(node.s, nil); not symf.isNil):
                             if not evalFunctionCall(currentCommand, symf, toHead=false, checkAhead=true, i, funcArity):
-                                addConst(currentCommand, consts, node, opCall)
+                                addConst(node, opCall)
                                 # funcArity -> funcArity-1 for ToS/ToI!
                         else:
-                            addConst(currentCommand, consts, node, opCall)
+                            addConst(node, opCall)
                         argStack.add(funcArity)
                     else:
                         addTerminalValue(inBlock=false):
-                            addConst(currentCommand, consts, node, opCall)
+                            addConst(node, opCall)
                 else:
                     addTerminalValue(inBlock=false):
-                        addConst(currentCommand, consts, node, opLoad)
+                        addConst(node, opLoad)
 
             of Label: 
                 let funcIndx {.cursor.} = node.s
@@ -728,26 +731,26 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 if unlikely(isDictionary):
                     addShortConst(currentCommand, consts, node, opDStore)
                 else:
-                    addConst(currentCommand, consts, node, opStore)
+                    addConst(node, opStore)
                     
                 argStack.add(1)
 
                 if hasThickArrow:
-                    addConst(currentCommand, consts, newWord("function"), opCall)
+                    addConst(newWord("function"), opCall)
                     argStack.add(2)
 
                     # add the blocks
                     addTerminalValue(inBlock=false):
-                        addConst(currentCommand, consts, newBlock(ab), opPush)
+                        addConst(newBlock(ab), opPush)
                     addTerminalValue(inBlock=false):
-                        addConst(currentCommand, consts, newBlock(sb), opPush) 
+                        addConst(newBlock(sb), opPush) 
 
             of Attribute:
-                addConst(currentCommand, consts, node, opAttr)
+                addConst(node, opAttr)
                 addToCommand(opConstBT)
 
             of AttributeLabel:
-                addConst(currentCommand, consts, node, opAttr)
+                addConst(node, opAttr)
                 argStack[argStack.len-1] += 1
 
             of Path:
@@ -761,7 +764,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                                 pathCallV = item
 
                 if not pathCallV.isNil:
-                    addConst(currentCommand, consts, pathCallV, opCall)
+                    addConst(pathCallV, opCall)
                     argStack.add(pathCallV.arity)
                 else:
                     addTerminalValue(inBlock=false):
@@ -775,16 +778,16 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                         let baseNode {.cursor.} = node.p[0]
 
                         if TmpArities.getOrDefault(baseNode.s, -1) == 0:
-                            addConst(currentCommand, consts, baseNode, opCall)
+                            addConst(baseNode, opCall)
                         else:
-                            addConst(currentCommand, consts, baseNode, opLoad)
+                            addConst(baseNode, opLoad)
 
                         i = 1
                         while i<node.p.len:
                             if node.p[i].kind==Block:
                                 evalOne(node.p[i], consts, currentCommand, inBlock=true, isDictionary=isDictionary)
                             else:
-                                addConst(currentCommand, consts, node.p[i], opPush)
+                                addConst(node.p[i], opPush)
                             i += 1
 
             of PathLabel:
@@ -795,13 +798,13 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                     addToCommand(opGet)
                     i += 1
                 
-                addConst(currentCommand, consts, node.p[0], opLoad)
+                addConst(node.p[0], opLoad)
                 i = 1
                 while i<node.p.len:
                     if node.p[i].kind==Block:
                         evalOne(node.p[i], consts, currentCommand, inBlock=true, isDictionary=isDictionary)
                     else:
-                        addConst(currentCommand, consts, node.p[i], opPush)
+                        addConst(node.p[i], opPush)
                     i += 1
 
                 argStack.add(1)
@@ -816,7 +819,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                             subblock.add(subnode)
                             inc(i)
                         addTerminalValue(inBlock=false):
-                            addConst(currentCommand, consts, newBlock(subblock), opPush)
+                            addConst(newBlock(subblock), opPush)
                             
                     of arrowright       : 
                         var subargStack: seq[int] = @[]
@@ -825,7 +828,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
                         let subblock = processArrowRight()
                         addTerminalValue(inBlock=false):
-                            addConst(currentCommand, consts, newBlock(subblock), opPush)
+                            addConst(newBlock(subblock), opPush)
 
                     of thickarrowright  : 
                         # TODO(Eval\addTerminalValue) Thick arrow-right not working with pipes
@@ -837,9 +840,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
                         # add the blocks
                         addTerminalValue(inBlock=false):
-                            addConst(currentCommand, consts, newBlock(ab), opPush)
+                            addConst(newBlock(ab), opPush)
                         addTerminalValue(inBlock=false):
-                            addConst(currentCommand, consts, newBlock(sb), opPush)            
+                            addConst(newBlock(sb), opPush)            
 
                         i += 1
                     else:
@@ -850,41 +853,41 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                             if symfunc.kind==Function:
                                 if symfunc.fnKind == BuiltinFunction and symfunc.arity!=0:
                                     if not evalFunctionCall(currentCommand, symfunc, toHead=false, checkAhead=false, i, i):
-                                        addConst(currentCommand, consts, aliased.name, opCall)
+                                        addConst(aliased.name, opCall)
                                     argStack.add(symfunc.arity)
                                 elif symfunc.fnKind == UserFunction and symfunc.arity!=0:
-                                    addConst(currentCommand, consts, aliased.name, opCall)
+                                    addConst(aliased.name, opCall)
                                     argStack.add(symfunc.arity)
                                 else:
                                     addTerminalValue(inBlock=false):
-                                        addConst(currentCommand, consts, aliased.name, opCall)
+                                        addConst(aliased.name, opCall)
                             else:
                                 addTerminalValue(inBlock=false):
-                                    addConst(currentCommand, consts, aliased.name, opLoad)
+                                    addConst(aliased.name, opLoad)
                         else:
                             addTerminalValue(inBlock=false):
-                                addConst(currentCommand, consts, node, opPush)
+                                addConst(node, opPush)
 
             of String:
                 addTerminalValue(inBlock=false):
                     if node.s.len==0:
                         addToCommand(opConstS)
                     else:
-                        addConst(currentCommand, consts, node, opPush)
+                        addConst(node, opPush)
 
             of Block:
                 addTerminalValue(inBlock=false):
                     if node.a.len==0:
                         addToCommand(opConstA)
                     else:
-                        addConst(currentCommand, consts, node, opPush)
+                        addConst(node, opPush)
 
             of Dictionary:
                 addTerminalValue(inBlock=false):
                     if node.d.len==0:
                         addToCommand(opConstD)
                     else:
-                        addConst(currentCommand, consts, node, opPush)
+                        addConst(node, opPush)
 
             # TODO(VM/eval) Inline blocks not evaluated correctly
             #  more than one commands in the block, seem to be evaluated in a reverse order
@@ -909,7 +912,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
             of Complex, Rational, Version, Type, Char, Literal, SymbolLiteral, Quantity, Regex, Color, Object, Function:
                 addTerminalValue(inBlock=false):
-                    addConst(currentCommand, consts, node, opPush)
+                    addConst(node, opPush)
 
             # else:
             # # of Complex, Rational, Version, Type, Char,
@@ -917,7 +920,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             # #    Regex, Color, Object, Function:
 
             #     addTerminalValue(inBlock=false):
-            #         addConst(currentCommand, consts, node, opPush)
+            #         addConst(node, opPush)
 
         i += 1
 
