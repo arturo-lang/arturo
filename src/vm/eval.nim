@@ -446,57 +446,41 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
     
         currentCommand.setLen(0)
 
-    proc preAddTerminalValue(consts: var ValueArray, currentCommand: var VBinary, i: var int, n: Value) =
-        ## Check for potential Infix operator ahead
-            
-        if (i+1<childrenCount and n.a[i+1].kind == Symbol):
-            let step = 1
+    proc getArityForInfixOperatorAhead(inBlock: bool, consts: var ValueArray, currentCommand: var VBinary, i: var int, n: Value): int = 
+        result = -1
+        if i >= childrenCount - 1: return
+        let nextNode {.cursor.} = n.a[i+1]
+        if nextNode.kind == Symbol:
 
-            let symalias = n.a[i+1].m
-            let aliased = Aliases.getOrDefault(symalias, NoAliasBinding)
-            if aliased != NoAliasBinding:
+            if (let aliased = Aliases.getOrDefault(nextNode.m, NoAliasBinding); aliased != NoAliasBinding):
                 var symfunc {.cursor.} = GetSym(aliased.name.s)
 
                 if symfunc.kind==Function and aliased.precedence==InfixPrecedence:
-                    i += step;
-                    
-                    if not evalFunctionCall(currentCommand, symfunc, toHead=false, checkAhead=false, i, i):
+                    i += 1
+                    if (not inBlock) and (not evalFunctionCall(currentCommand, symfunc, toHead=false, checkAhead=false, i, i)):
                         addConst(currentCommand, consts, aliased.name, opCall)
+                    result = symfunc.arity
 
-                    argStack.add(symfunc.arity)
+    template resetArgStackAndCheckForTrailingPipe(currentArgStack: var seq[int], commandFinished: untyped, withTrailingPipe: untyped) =
+        if currentArgStack.len != 0: currentArgStack[^1] -= 1
 
-    proc preAddTerminalSubValue(consts: var ValueArray, currentCommand: var VBinary, i: var int, n: Value, subargStack: var seq[int], ret: var ValueArray) =
-        ## Check for potential Infix operator ahead
+        while currentArgStack.len != 0 and currentArgStack[^1] == 0:
+            discard currentArgStack.pop()
+            currentArgStack[^1] -= 1
+
+        if not (i+1<childrenCount and n.a[i+1].kind == Symbol and n.a[i+1].m == pipe):
+            if currentArgStack.len == 0:
+                commandFinished
+        else:
+            withTrailingPipe
             
-        if (i+1<childrenCount and n.a[i+1].kind == Symbol):
-            let step = 1
-
-            let symalias = n.a[i+1].m
-            let aliased = Aliases.getOrDefault(symalias, NoAliasBinding)
-            if aliased != NoAliasBinding:
-                var symfunc {.cursor.} = GetSym(aliased.name.s)
-
-                if symfunc.kind==Function and aliased.precedence==InfixPrecedence:
-                    i += step;
-                    
-                    subargStack.add(symfunc.arity)
-
-                    ret.add(n.a[i])
-
     proc postAddTerminalValue(consts: var ValueArray, currentCommand: var VBinary, i: var int, n: Value, it: var VBinary) =
         # Check if command complete
 
-        if argStack.len != 0: argStack[^1] -= 1
-
-        while argStack.len != 0 and argStack[^1] == 0:
-            discard argStack.pop()
-            argStack[^1] -= 1
-
-        if not (i+1<childrenCount and n.a[i+1].kind == Symbol and n.a[i+1].m == pipe):
-            if argStack.len==0:
-                # The command is finished
-                addCurrentCommandToBytecode()
-        else:
+        resetArgStackAndCheckForTrailingPipe(argStack):
+            # The command is finished
+            addCurrentCommandToBytecode()
+        do:
             # TODO(Eval\addTerminalValue) Verify pipe operators are working
             # labels: vm,evaluator,enhancement,unit-test
             
@@ -523,44 +507,56 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
     proc postAddTerminalSubValue(consts: var ValueArray, currentCommand: var VBinary, i: var int, n: Value, subargStack: var seq[int], ret: var ValueArray, ended: var bool) =
         # Check if command complete
 
-        if subargStack.len != 0: subargStack[^1] -= 1
+        resetArgStackAndCheckForTrailingPipe(subargStack):
+            # The subcommand is finished
+            ended = true
+        do:
+            discard
 
-        while subargStack.len != 0 and subargStack[^1] == 0:
-            discard subargStack.pop()
-            subargStack[^1] -= 1
-
-        # TODO(Eval\addTerminalValue) pipes not working along with sub-blocks
-        #  it's mainly when we might combine `->`/`=>` sugar with pipes 
-        # labels: vm,evaluator,enhancement,bug
-
-        # Check for a trailing pipe
-        if not (i+1<childrenCount and n.a[i+1].kind == Symbol and n.a[i+1].m == pipe):
-            if subargStack.len==0:
-                # The subcommand is finished
-                
-                ended = true
-
-    template addTerminalValue(code: untyped): untyped {.dirty.} =
+    template addTerminalValue(inBlock: bool, code: untyped): untyped {.dirty.} =
         block:
             # Check for potential Infix operator ahead
-            preAddTerminalValue(consts, currentCommand, i, n)
-            
+            if (let infixArity = getArityForInfixOperatorAhead(inBlock, consts, currentCommand, i, n); infixArity != -1):
+                when not inBlock:
+                    argStack.add(infixArity)
+                else:
+                    subargStack.add(infixArity)
+                    ret.add(n.a[i])
+
             # Run main code
             code
 
-            # Check if command complete
-            postAddTerminalValue(consts, currentCommand, i, n, it)
+            # Check if command is complete
+            when not inBlock:
+                postAddTerminalValue(consts, currentCommand, i, n, it)
+            else:
+                postAddTerminalSubValue(consts, currentCommand, i, n, subargStack, ret, ended)
 
-    template addTerminalSubValue(code: untyped): untyped {.dirty.} =
-        block:
-            # Check for potential Infix operator ahead
-            preAddTerminalSubValue(consts, currentCommand, i, n, subargStack, ret)
+
+    # template addTerminalValue(code: untyped): untyped {.dirty.} =
+    #     block:
+    #         # Check for potential Infix operator ahead
+    #         if (let infixArity = getArityForInfixOperatorAhead(true, consts, currentCommand, i, n); infixArity != -1):
+    #             argStack.add(infixArity)
             
-            # Run main code
-            code
+    #         # Run main code
+    #         code
 
-            # Check if command complete
-            postAddTerminalSubValue(consts, currentCommand, i, n, subargStack, ret, ended)
+    #         # Check if command complete
+    #         postAddTerminalValue(consts, currentCommand, i, n, it)
+
+    # template addTerminalSubValue(code: untyped): untyped {.dirty.} =
+    #     block:
+    #         # Check for potential Infix operator ahead
+    #         if (let infixArity = getArityForInfixOperatorAhead(false, consts, currentCommand, i, n); infixArity != -1):
+    #             subargStack.add(infixArity)
+    #             ret.add(n.a[i])
+            
+    #         # Run main code
+    #         code
+
+    #         # Check if command complete
+    #         postAddTerminalSubValue(consts, currentCommand, i, n, subargStack, ret, ended)
 
     template processNextCommand(): untyped =
         i += 1
@@ -581,7 +577,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                    Path,
                    Inline,
                    Block: 
-                    addTerminalSubValue():
+                    addTerminalValue(inBlock=true):
                         discard
                 of Word:
                     let funcArity = TmpArities.getOrDefault(subnode.s, -1)
@@ -589,10 +585,10 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                         if funcArity!=0:
                             subargStack.add(funcArity)
                         else:
-                            addTerminalSubValue():
+                            addTerminalValue(inBlock=true):
                                 discard
                     else:
-                        addTerminalSubValue():
+                        addTerminalValue(inBlock=true):
                             discard
 
                 of Symbol: 
@@ -605,17 +601,17 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                                 if symfunc.arity != 0:
                                     subargStack.add(symfunc.arity)
                                 else:
-                                    addTerminalSubValue():
+                                    addTerminalValue(inBlock=true):
                                         discard
                             else:
                                 ret.add(newSymbol(ampersand))
                                 swap(ret[^1],ret[^2])
                                 subargStack.add(symfunc.arity-1)
                         else:
-                            addTerminalSubValue():
+                            addTerminalValue(inBlock=true):
                                 discard
                     else:
-                        addTerminalSubValue():
+                        addTerminalValue(inBlock=true):
                             discard
 
                 of AttributeLabel:
@@ -691,7 +687,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 else: addToCommand(opConstBM)
 
             of Integer:
-                addTerminalValue():
+                addTerminalValue(inBlock=false):
                     when defined(WEB) or not defined(NOGMP):
                         if likely(node.iKind==NormalInteger):
                             if node.i>=0 and node.i<=15: addToCommand((byte)(opConstI0) + (byte)(node.i))
@@ -703,7 +699,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                         else: addConst(currentCommand, consts, node, opPush)
 
             of Floating:
-                addTerminalValue():
+                addTerminalValue(inBlock=false):
                     if node.f==0.0: addToCommand(opConstF0)
                     elif node.f==1.0: addToCommand(opConstF1)
                     elif node.f==2.0: addToCommand(opConstF2)
@@ -721,10 +717,10 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                             addConst(currentCommand, consts, node, opCall)
                         argStack.add(funcArity)
                     else:
-                        addTerminalValue():
+                        addTerminalValue(inBlock=false):
                             addConst(currentCommand, consts, node, opCall)
                 else:
-                    addTerminalValue():
+                    addTerminalValue(inBlock=false):
                         addConst(currentCommand, consts, node, opLoad)
 
             of Label: 
@@ -760,9 +756,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                     argStack.add(2)
 
                     # add the blocks
-                    addTerminalValue():
+                    addTerminalValue(inBlock=false):
                         addConst(currentCommand, consts, newBlock(ab), opPush)
-                    addTerminalValue():
+                    addTerminalValue(inBlock=false):
                         addConst(currentCommand, consts, newBlock(sb), opPush) 
 
             of Attribute:
@@ -787,7 +783,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                     addConst(currentCommand, consts, pathCallV, opCall)
                     argStack.add(pathCallV.arity)
                 else:
-                    addTerminalValue():
+                    addTerminalValue(inBlock=false):
                         addToCommand(opGet)
                         #addConst(currentCommand, consts, newWord("get"), opCall)
                         
@@ -842,7 +838,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                             let subnode {.cursor.} = n.a[i]
                             subblock.add(subnode)
                             inc(i)
-                        addTerminalValue():
+                        addTerminalValue(inBlock=false):
                             addConst(currentCommand, consts, newBlock(subblock), opPush)
                             
                     of arrowright       : 
@@ -851,7 +847,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                         var ret: seq[Value] = @[]
 
                         let subblock = processNextCommand()
-                        addTerminalValue():
+                        addTerminalValue(inBlock=false):
                             addConst(currentCommand, consts, newBlock(subblock), opPush)
 
                     of thickarrowright  : 
@@ -862,9 +858,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                         processThickArrowRight(ab, sb)          
 
                         # add the blocks
-                        addTerminalValue():
+                        addTerminalValue(inBlock=false):
                             addConst(currentCommand, consts, newBlock(ab), opPush)
-                        addTerminalValue():
+                        addTerminalValue(inBlock=false):
                             addConst(currentCommand, consts, newBlock(sb), opPush)            
 
                         i += 1
@@ -882,31 +878,31 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                                     addConst(currentCommand, consts, aliased.name, opCall)
                                     argStack.add(symfunc.arity)
                                 else:
-                                    addTerminalValue():
+                                    addTerminalValue(inBlock=false):
                                         addConst(currentCommand, consts, aliased.name, opCall)
                             else:
-                                addTerminalValue():
+                                addTerminalValue(inBlock=false):
                                     addConst(currentCommand, consts, aliased.name, opLoad)
                         else:
-                            addTerminalValue():
+                            addTerminalValue(inBlock=false):
                                 addConst(currentCommand, consts, node, opPush)
 
             of String:
-                addTerminalValue():
+                addTerminalValue(inBlock=false):
                     if node.s.len==0:
                         addToCommand(opConstS)
                     else:
                         addConst(currentCommand, consts, node, opPush)
 
             of Block:
-                addTerminalValue():
+                addTerminalValue(inBlock=false):
                     if node.a.len==0:
                         addToCommand(opConstA)
                     else:
                         addConst(currentCommand, consts, node, opPush)
 
             of Dictionary:
-                addTerminalValue():
+                addTerminalValue(inBlock=false):
                     if node.d.len==0:
                         addToCommand(opConstD)
                     else:
@@ -916,7 +912,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             #  more than one commands in the block, seem to be evaluated in a reverse order
             #  labels: vm,evaluator,bug,critical
             of Inline: 
-                addTerminalValue():
+                addTerminalValue(inBlock=false):
                     evalOne(node, consts, currentCommand, inBlock=true, isDictionary=isDictionary)
 
             of Newline: 
@@ -938,7 +934,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             #    Literal, SymbolLiteral, Quantity,
             #    Regex, Color, Object, Function:
 
-                addTerminalValue():
+                addTerminalValue(inBlock=false):
                     addConst(currentCommand, consts, node, opPush)
 
         i += 1
