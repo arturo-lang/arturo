@@ -138,8 +138,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
         var indx = consts.indexOfValue(v)
         if indx == -1:
-            v.readonly = true
-            consts.add(v)
+            let newv = v
+            newv.readonly = true
+            consts.add(newv)
             indx = consts.len-1
 
         if indx <= 13:
