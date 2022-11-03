@@ -925,10 +925,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         i += 1
 
     if currentCommand!=[]:
-        if inBlock: 
-            for b in currentCommand: it.add(b)
-        else:
-            for b in currentCommand.reversed: it.add(b)
+        addCurrentCommandToBytecode()
 
 proc doEval*(root: Value, isDictionary=false): Translation = 
     ## Take a parsed Block of values and return its Translation - 
