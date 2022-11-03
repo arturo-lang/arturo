@@ -494,7 +494,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opCall               : i += 1; callByIndex((int)(it[i]))
                 of opCallX              : i += 2; callByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
 
-                # [0x70-0x7F]
+                # [0x70-0x8F]
                 # attributes
                 of opAttr0              : fetchAttributeByIndex(0)
                 of opAttr1              : fetchAttributeByIndex(1)
@@ -510,9 +510,27 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opAttr11             : fetchAttributeByIndex(11)
                 of opAttr12             : fetchAttributeByIndex(12)
                 of opAttr13             : fetchAttributeByIndex(13)
-                #of opAttr0..opAttr13    : fetchAttributeByIndex((int)(op)-(int)(opAttr0))
+                
                 of opAttr               : i += 1; fetchAttributeByIndex((int)(it[i]))
                 of opAttrX              : i += 2; fetchAttributeByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
+
+                of opSetAttr0           : setAttributeByIndex(0)
+                of opSetAttr1           : setAttributeByIndex(1)
+                of opSetAttr2           : setAttributeByIndex(2)
+                of opSetAttr3           : setAttributeByIndex(3)
+                of opSetAttr4           : setAttributeByIndex(4)
+                of opSetAttr5           : setAttributeByIndex(5)
+                of opSetAttr6           : setAttributeByIndex(6)
+                of opSetAttr7           : setAttributeByIndex(7)
+                of opSetAttr8           : setAttributeByIndex(8)
+                of opSetAttr9           : setAttributeByIndex(9)
+                of opSetAttr10          : setAttributeByIndex(10)
+                of opSetAttr11          : setAttributeByIndex(11)
+                of opSetAttr12          : setAttributeByIndex(12)
+                of opSetAttr13          : setAttributeByIndex(13)
+                
+                of opSetAttr            : i += 1; setAttributeByIndex((int)(it[i]))
+                of opSetAttrX           : i += 2; setAttributeByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
 
                 #---------------------------------
                 # OP FUNCTIONS
