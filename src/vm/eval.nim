@@ -538,7 +538,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             else:
                 postAddTerminalSubValue(consts, currentCommand, i, n, subargStack, ret, ended)
 
-    template processNextCommand(): untyped =
+    template processArrowRight(): untyped =
         i += 1
 
         while i < nLen and not ended:
@@ -823,7 +823,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                         var ended = false
                         var ret: seq[Value] = @[]
 
-                        let subblock = processNextCommand()
+                        let subblock = processArrowRight()
                         addTerminalValue(inBlock=false):
                             addConst(currentCommand, consts, newBlock(subblock), opPush)
 
