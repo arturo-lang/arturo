@@ -921,7 +921,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
         i += 1
 
-    if currentCommand!=[]:
+    if currentCommand.len > 0:
         addCurrentCommandToBytecode()
 
 proc doEval*(root: Value, isDictionary=false): Translation = 
