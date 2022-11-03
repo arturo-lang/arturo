@@ -138,6 +138,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 (byte)op
             ])
 
+    template addShortConst(v: Value, op: OpCode): untyped =
+        addShortConst(currentCommand, consts, v, op)
+
     proc addTrailingConst(currentCommand: var VBinary, consts: var seq[Value], v: Value, op: OpCode) {.inline,enforceNoRaises.} =
         var atPos = 0
         if currentCommand[0] in opStore0.byte..opStoreX.byte:
@@ -729,7 +732,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                         TmpArities.del(funcIndx)
 
                 if unlikely(isDictionary):
-                    addShortConst(currentCommand, consts, node, opDStore)
+                    addShortConst(node, opDStore)
                 else:
                     addConst(node, opStore)
                     
