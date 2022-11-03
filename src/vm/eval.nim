@@ -560,8 +560,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                     addTerminalValue(inBlock=true):
                         discard
                 of Word:
-                    let funcArity = TmpArities.getOrDefault(subnode.s, -1)
-                    if funcArity != -1:
+                    if (let funcArity = TmpArities.getOrDefault(subnode.s, -1); funcArity != -1):
                         if funcArity!=0:
                             subargStack.add(funcArity)
                         else:
@@ -767,12 +766,10 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 else:
                     addTerminalValue(inBlock=false):
                         addToCommand(opGet)
-                        #addConst(currentCommand, consts, newWord("get"), opCall)
                         
                         var i=1
                         while i<node.p.len-1:
                             addToCommand(opGet)
-                            #addConst(currentCommand, consts, newWord("get"), opCall)
                             i += 1
 
                         let baseNode {.cursor.} = node.p[0]
