@@ -444,8 +444,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         elif foundSwitch:
             processSwitch(consts, it)
 
-        for b in currentCommand:
-            it.add(b)
+        it.add(currentCommand)
+        # for b in currentCommand:
+        #     it.add(b)
     
         currentCommand.setLen(0)
 
