@@ -488,21 +488,21 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             # let's inspect the following symbol
 
             i += 1
-            if (i+1<nLen and n.a[i+1].kind == Word and GetSym(n.a[i+1].s).kind == Function):
-                let funcName {.cursor.} = n.a[i+1].s
-                let tmpFuncArity = TmpArities.getOrDefault(funcName, -1)
-                if tmpFuncArity != -1:
-                    if tmpFuncArity>1:
-                        argStack.add(tmpFuncArity-1)
-                        # TODO(VM/eval) to be fixed
-                        #  labels: bug, evaluator, vm
-                        if not evalFunctionCall(currentCommand, n.a[i+1], toHead=true, checkAhead=false, i, i):
-                            addTrailingConst(currentCommand, consts, n.a[i+1], opCall)
-                    else:
-                        addTrailingConst(currentCommand, consts, n.a[i+1], opCall)
-                        if argStack.len==0:
-                            addCurrentCommandToBytecode()
-                    i += 1
+            if i+1<nLen:
+                var nextNode {.cursor.} = n.a[i+1]
+                if nextNode.kind == Word and GetSym(nextNode.s).kind == Function:
+                    if (let tmpFuncArity = TmpArities.getOrDefault(nextNode.s, -1); tmpFuncArity != -1):
+                        if tmpFuncArity>1:
+                            argStack.add(tmpFuncArity-1)
+                            # TODO(VM/eval) to be fixed
+                            #  labels: bug, evaluator, vm
+                            if not evalFunctionCall(currentCommand, nextNode, toHead=true, checkAhead=false, i, i):
+                                addTrailingConst(currentCommand, consts, nextNode, opCall)
+                        else:
+                            addTrailingConst(currentCommand, consts, nextNode, opCall)
+                            if argStack.len==0:
+                                addCurrentCommandToBytecode()
+                        i += 1
 
     proc postAddTerminalSubValue(consts: var ValueArray, currentCommand: var VBinary, i: var int, n: Value, subargStack: var seq[int], ret: var ValueArray, ended: var bool) =
         # Check if command complete
