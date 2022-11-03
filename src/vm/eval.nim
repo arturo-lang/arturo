@@ -532,32 +532,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             else:
                 postAddTerminalSubValue(consts, currentCommand, i, n, subargStack, ret, ended)
 
-
-    # template addTerminalValue(code: untyped): untyped {.dirty.} =
-    #     block:
-    #         # Check for potential Infix operator ahead
-    #         if (let infixArity = getArityForInfixOperatorAhead(true, consts, currentCommand, i, n); infixArity != -1):
-    #             argStack.add(infixArity)
-            
-    #         # Run main code
-    #         code
-
-    #         # Check if command complete
-    #         postAddTerminalValue(consts, currentCommand, i, n, it)
-
-    # template addTerminalSubValue(code: untyped): untyped {.dirty.} =
-    #     block:
-    #         # Check for potential Infix operator ahead
-    #         if (let infixArity = getArityForInfixOperatorAhead(false, consts, currentCommand, i, n); infixArity != -1):
-    #             subargStack.add(infixArity)
-    #             ret.add(n.a[i])
-            
-    #         # Run main code
-    #         code
-
-    #         # Check if command complete
-    #         postAddTerminalSubValue(consts, currentCommand, i, n, subargStack, ret, ended)
-
     template processNextCommand(): untyped =
         i += 1
 
