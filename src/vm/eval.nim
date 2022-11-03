@@ -449,8 +449,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             processSwitch(consts, it)
 
         it.add(currentCommand)
-        # for b in currentCommand:
-        #     it.add(b)
     
         currentCommand.setLen(0)
 
@@ -794,12 +792,10 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
             of PathLabel:
                 addToCommand(opSet)
-                #addConst(currentCommand, consts, newWord("set"), opCall)
                     
                 var i=1
                 while i<node.p.len-1:
                     addToCommand(opGet)
-                    #addConst(currentCommand, consts, newWord("get"), opCall)
                     i += 1
                 
                 addConst(currentCommand, consts, node.p[0], opLoad)
