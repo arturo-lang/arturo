@@ -646,9 +646,12 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
     # Main Eval Loop
     #------------------------
 
-    var i = 0
+    var i: int = 0
+    #var node: Value
     while i < nLen:
-        let node {.cursor.} = n.a[i]
+        {.computedGoTo.}
+        
+        let node = n.a[i]
 
         case node.kind:
             of Null:    addToCommand(opConstN)
@@ -903,13 +906,17 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
                 discard
 
-            else:
-            # of Complex, Rational, Version, Type, Char,
-            #    Literal, SymbolLiteral, Quantity,
-            #    Regex, Color, Object, Function:
-
+            of Complex, Rational, Version, Type, Char, Literal, SymbolLiteral, Quantity, Regex, Color, Object, Function:
                 addTerminalValue(inBlock=false):
                     addConst(currentCommand, consts, node, opPush)
+
+            # else:
+            # # of Complex, Rational, Version, Type, Char,
+            # #    Literal, SymbolLiteral, Quantity,
+            # #    Regex, Color, Object, Function:
+
+            #     addTerminalValue(inBlock=false):
+            #         addConst(currentCommand, consts, node, opPush)
 
         i += 1
 
