@@ -51,7 +51,7 @@ func indexOfValue(a: seq[Value], item: Value): int {.inline.}=
 #=======================================
 
 when not defined(NOERRORLINES):
-    template addEol(line: untyped):untyped =
+    template addEol(it: var VBinary, line: untyped):untyped =
         if line > 255:
             it.add((byte)opEolX)
             it.add((byte)line shr 8)
@@ -603,10 +603,10 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         i -= 1
         ret
 
-    template processThickArrowRight(argblock: var seq[Value], subblock: var seq[Value]): untyped =
+    proc processThickArrowRight(argblock: var seq[Value], subblock: var seq[Value], it: var VBinary, n: Value, i: var int, funcArity: var int) =
         while n.a[i+1].kind == Newline:
             when not defined(NOERRORLINES):
-                addEol(n.a[i+1].line)
+                addEol(it, n.a[i+1].line)
             i += 1
 
         # get next node
@@ -617,8 +617,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         # so let's get them ready
         argblock = @[]
         subblock = @[subnode]
-
-        var funcArity{.inject.}: int = 0
 
         # if it's a word
         if subnode.kind==Word:
@@ -715,7 +713,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                     let afterNextNode {.cursor.} = n.a[i+2]
                     if afterNextNode.kind == Symbol and afterNextNode.m == thickarrowright:
                         i += 2
-                        processThickArrowRight(ab,sb)
+                        var funcArity: int = 0
+                        processThickArrowRight(ab, sb, it, n, i, funcArity)
                         TmpArities[funcIndx] = funcArity
                         hasThickArrow = true
                         i += 1
@@ -836,7 +835,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                         # labels: vm,evaluator,enhancement,bug
                         var ab: seq[Value]
                         var sb: seq[Value]
-                        processThickArrowRight(ab, sb)          
+                        var funcArity: int = 0
+                        processThickArrowRight(ab, sb, it, n, i, funcArity)          
 
                         # add the blocks
                         addTerminalValue(inBlock=false):
@@ -901,7 +901,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 #  Also, we have to figure out whether the commented-out code is needed at all
                 #  labels: vm, evaluator, cleanup
                 when not defined(NOERRORLINES) and not defined(OPTIMIZED):
-                    addEol(node.line)
+                    addEol(it, node.line)
                 else:
                     discard
 
