@@ -64,7 +64,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
     var argStack: seq[int] = @[]
     var currentCommand: VBinary = @[]
 
-    let childrenCount = n.a.len
+    let nLen = n.a.len
 
     var foundIf = false
     var foundIfE = false
@@ -429,7 +429,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
     template addCurrentCommandToBytecode() {.dirty.} =
         if not inBlock: reverse(currentCommand)
 
-        if foundIf or (foundIfE and i+1<childrenCount and n.a[i+1].kind == Word and GetSym(n.a[i+1].s) == ElseF):
+        if foundIf or (foundIfE and i+1<nLen and n.a[i+1].kind == Word and GetSym(n.a[i+1].s) == ElseF):
             processIf(consts, it)
 
         elif foundUnless:
@@ -448,7 +448,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
     proc getArityForInfixOperatorAhead(inBlock: bool, consts: var ValueArray, currentCommand: var VBinary, i: var int, n: Value): int = 
         result = -1
-        if i >= childrenCount - 1: return
+        if i >= nLen - 1: return
         let nextNode {.cursor.} = n.a[i+1]
         if nextNode.kind == Symbol:
 
@@ -468,7 +468,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             discard currentArgStack.pop()
             currentArgStack[^1] -= 1
 
-        if not (i+1<childrenCount and n.a[i+1].kind == Symbol and n.a[i+1].m == pipe):
+        if not (i+1<nLen and n.a[i+1].kind == Symbol and n.a[i+1].m == pipe):
             if currentArgStack.len == 0:
                 commandFinished
         else:
@@ -488,7 +488,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             # let's inspect the following symbol
 
             i += 1
-            if (i+1<childrenCount and n.a[i+1].kind == Word and GetSym(n.a[i+1].s).kind == Function):
+            if (i+1<nLen and n.a[i+1].kind == Word and GetSym(n.a[i+1].s).kind == Function):
                 let funcName {.cursor.} = n.a[i+1].s
                 let tmpFuncArity = TmpArities.getOrDefault(funcName, -1)
                 if tmpFuncArity != -1:
@@ -535,7 +535,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
     template processNextCommand(): untyped =
         i += 1
 
-        while i < n.a.len and not ended:
+        while i < nLen and not ended:
             let subnode {.cursor.} = n.a[i]
             ret.add(subnode)
 
@@ -647,7 +647,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
     #------------------------
 
     var i = 0
-    while i < n.a.len:
+    while i < nLen:
         let node {.cursor.} = n.a[i]
 
         case node.kind:
@@ -808,7 +808,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                     of doublecolon      :
                         inc(i)
                         var subblock: seq[Value] = @[]
-                        while i < n.a.len:
+                        while i < nLen:
                             let subnode {.cursor.} = n.a[i]
                             subblock.add(subnode)
                             inc(i)
