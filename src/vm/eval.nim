@@ -757,8 +757,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                         addConst(newBlock(sb), opPush) 
 
             of Attribute:
-                addConst(node, opAttr)
-                addToCommand(opConstBT)
+                addConst(node, opSetAttr)
 
             of AttributeLabel:
                 addConst(node, opAttr)
