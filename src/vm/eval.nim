@@ -53,12 +53,16 @@ func indexOfValue(a: seq[Value], item: Value): int {.inline.}=
 when not defined(NOERRORLINES):
     template addEol(it: var VBinary, line: untyped):untyped =
         if line > 255:
-            it.add((byte)opEolX)
-            it.add((byte)line shr 8)
-            it.add((byte)line)
+            it.add([
+                (byte)opEolX,
+                (byte)line shr 8,
+                (byte)line
+            ])
         else:
-            it.add((byte)opEol)
-            it.add((byte)line)
+            it.add([
+                (byte)opEol,
+                (byte)line
+            ])
 
 proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = false, isDictionary: bool = false) =
     var argStack: seq[int] = @[]
