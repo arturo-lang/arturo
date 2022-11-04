@@ -29,7 +29,7 @@ import vm/values/custom/[vbinary, vlogical, vsymbol]
 #=======================================
 
 var
-    StoredEval : Table[Value, Translation]
+    StoredEval : Table[Hash, Translation]
     TmpArities : Table[string,int]
 
 #=======================================
@@ -939,27 +939,31 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 proc doEval*(root: Value, isDictionary=false, useStored: static bool = true): Translation {.inline.} = 
     ## Take a parsed Block of values and return its Translation - 
     ## that is: the constants found + the list of bytecode instructions
-    hookProcProfiler("eval/doEval"):
-        when useStored:
-            if not root.dynamic and (let stEv = StoredEval.getOrDefault(root, nil); not stEv.isNil):
+    
+    var vhash: Hash = -1
+    
+    when useStored:
+        if not root.dynamic:
+            vhash = hash(root)
+            if (let stEv = StoredEval.getOrDefault(vhash, nil); not stEv.isNil):
                 return stEv
 
-        var cnsts: ValueArray = @[]
-        var newit: VBinary = @[]
+    var cnsts: ValueArray = @[]
+    var newit: VBinary = @[]
 
-        TmpArities = Arities
+    TmpArities = Arities
 
-        evalOne(root, cnsts, newit, isDictionary=isDictionary)
-        newit.add((byte)opEnd)
+    evalOne(root, cnsts, newit, isDictionary=isDictionary)
+    newit.add((byte)opEnd)
 
-        when defined(OPTIMIZED):
-            newit = optimizeBytecode(newit)
+    # when defined(OPTIMIZED):
+    #     newit = optimizeBytecode(newit)
 
     result = Translation(constants: cnsts, instructions: newit)
 
     when useStored:
-        if not root.dynamic:
-            StoredEval[root] = result
+        if vhash != -1:
+            StoredEval[vhash] = result
 
     # TODO(VM/eval) add option for evaluation into optimized bytecode directly
     #  if optimized:
