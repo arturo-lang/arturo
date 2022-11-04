@@ -18,7 +18,8 @@
 # Libraries
 #=======================================
 
-import algorithm, sequtils, tables, unicode
+import algorithm, hashes
+import sequtils, tables, unicode
 
 import vm/[bytecode, globals, profiler, values/value]
 
