@@ -965,11 +965,6 @@ proc doEval*(root: Value, isDictionary=false, useStored: static bool = true): Tr
         if vhash != -1:
             StoredEval[vhash] = result
 
-    # TODO(VM/eval) add option for evaluation into optimized bytecode directly
-    #  if optimized:
-    #      result.instructions = optimizeBytecode(result)
-    # labels: vm, evaluator, enhancement
-
 template evalOrGet*(item: Value): untyped =
     if item.kind==Bytecode: item.trans
     else: doEval(item)
