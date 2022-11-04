@@ -21,7 +21,7 @@
 import algorithm, hashes
 import sequtils, tables, unicode
 
-import vm/[bytecode, globals, profiler, values/value]
+import vm/[bytecode, globals, values/value]
 
 import vm/values/custom/[vbinary, vlogical, vsymbol]
 
