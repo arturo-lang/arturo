@@ -944,10 +944,7 @@ proc doEval*(root: Value, isDictionary=false, useStored=true): Translation {.inl
     hookProcProfiler("eval/doEval"):
         if useStored and (let stEv = StoredEval.getOrDefault(root, nil); not stEv.isNil):
             return stEv
-            #echo "retrieving"
-            #return root.data.trans
 
-        echo "actually evaluating"
         dump(root)
         var cnsts: ValueArray = @[]
         var newit: VBinary = @[]
