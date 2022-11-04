@@ -943,7 +943,6 @@ proc doEval*(root: Value, isDictionary=false, useStored=true): Translation {.inl
         if useStored and (let stEv = StoredEval.getOrDefault(root, nil); not stEv.isNil):
             return stEv
 
-        dump(root)
         var cnsts: ValueArray = @[]
         var newit: VBinary = @[]
 
