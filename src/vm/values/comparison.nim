@@ -30,8 +30,6 @@ import vm/values/clean
 #  labels: vm, values, enhancement, unit-test
 
 proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
-    if x.kind==Nothing and y.kind==Nothing: return true
-    
     if x.kind in {Integer, Floating, Rational} and y.kind in {Integer, Floating, Rational}:
         if x.kind==Integer:
             if y.kind==Integer: 
