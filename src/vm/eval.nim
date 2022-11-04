@@ -24,8 +24,6 @@ import vm/[bytecode, globals, profiler, values/value]
 
 import vm/values/custom/[vbinary, vlogical, vsymbol]
 
-import vm/values/printable
-
 #=======================================
 # Variables
 #=======================================
