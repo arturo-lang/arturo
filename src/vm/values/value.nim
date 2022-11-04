@@ -95,8 +95,6 @@ let
     VSTRINGT*       = Value(kind: Type, tpKind: BuiltinType, t: String, readonly: true)     ## constant ``:string``
     VINTEGERT*      = Value(kind: Type, tpKind: BuiltinType, t: Integer, readonly: true)    ## constant ``:integer``
 
-    VNOTHING*       = Value(kind: Nothing, readonly: true)                                  ## constant Nothing
-
     #--------
 
     NoAliasBinding*     = AliasBinding(precedence: PostfixPrecedence, name: nil)
