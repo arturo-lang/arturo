@@ -936,12 +936,13 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
     if currentCommand.len > 0:
         addCurrentCommandToBytecode()
 
-proc doEval*(root: Value, isDictionary=false, useStored=true): Translation {.inline.} = 
+proc doEval*(root: Value, isDictionary=false, useStored: static bool = true): Translation {.inline.} = 
     ## Take a parsed Block of values and return its Translation - 
     ## that is: the constants found + the list of bytecode instructions
     hookProcProfiler("eval/doEval"):
-        if useStored and not root.dynamic and (let stEv = StoredEval.getOrDefault(root, nil); not stEv.isNil):
-            return stEv
+        when useStored:
+            if not root.dynamic and (let stEv = StoredEval.getOrDefault(root, nil); not stEv.isNil):
+                return stEv
 
         var cnsts: ValueArray = @[]
         var newit: VBinary = @[]
@@ -956,8 +957,9 @@ proc doEval*(root: Value, isDictionary=false, useStored=true): Translation {.inl
 
     result = Translation(constants: cnsts, instructions: newit)
 
-    if useStored and not root.dynamic:
-        StoredEval[root] = result
+    when useStored:
+        if not root.dynamic:
+            StoredEval[root] = result
 
     # TODO(VM/eval) add option for evaluation into optimized bytecode directly
     #  if optimized:
