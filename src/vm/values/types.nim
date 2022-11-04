@@ -209,7 +209,6 @@ type
                         exports*    : Value
                         exportable* : bool
                         memoize*    : bool
-                        #bcode*      : Value
                     of BuiltinFunction:
                         action*     : BuiltinAction
 
