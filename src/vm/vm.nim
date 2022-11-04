@@ -201,7 +201,7 @@ when not defined(WEB):
                     portableData=withData
                 )
 
-            let evaled = mainCode.doEval()
+            let evaled = doEval(mainCode, useStored=false)
 
             if doExecute:
                 execUnscoped(evaled)
@@ -230,7 +230,7 @@ else:
                     mainCode.data
                 )
 
-            let evaled = mainCode.doEval()
+            let evaled = doEval(mainCode, useStored=false)
 
             execUnscoped(evaled)
 
