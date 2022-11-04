@@ -622,18 +622,6 @@ proc copyValue*(v: Value): Value {.inline.} =
             discard
 
 #=======================================
-# Predicates
-#=======================================
-
-template isNull*(v: Value): bool =
-    ## check if given value is Null
-    v.kind==Null
-
-template isNothing*(v: Value): bool =
-    ## check if given value is Nothing
-    v.kind==Nothing
-
-#=======================================
 # Helpers
 #=======================================
 
