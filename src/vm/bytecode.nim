@@ -88,6 +88,7 @@ proc optimize(trans: Translation): VBinary =
         case Op(initial):
             of opStore0..opStore13: 
                 if Op(next) in opLoadAny and By(opLoad)-a[i+1]==By(opStore)-initial:
+                    echo "optimized STORL"
                     # (opStore*) + (opLoad*) -> (opStorl*)
                     inject(): By(opStorl0) + initial - By(opStore0) 
                     skip(2)
@@ -95,6 +96,7 @@ proc optimize(trans: Translation): VBinary =
                     consume(1)
             of opPush0..opPush13, opLoad0..opLoad13:
                 if Op(next) == Op(initial):
+                    echo "optimized DUP"
                     # (opPush/opLoad*) x N -> (opPush/opLoad*) + (opDup) x N
                     keep()
                     while Op(next) == Op(initial):
