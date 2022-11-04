@@ -940,7 +940,7 @@ proc doEval*(root: Value, isDictionary=false, useStored=true): Translation {.inl
     ## Take a parsed Block of values and return its Translation - 
     ## that is: the constants found + the list of bytecode instructions
     hookProcProfiler("eval/doEval"):
-        if useStored and (let stEv = StoredEval.getOrDefault(root, nil); not stEv.isNil):
+        if useStored and not root.dynamic and (let stEv = StoredEval.getOrDefault(root, nil); not stEv.isNil):
             return stEv
 
         var cnsts: ValueArray = @[]
@@ -956,7 +956,7 @@ proc doEval*(root: Value, isDictionary=false, useStored=true): Translation {.inl
 
     result = Translation(constants: cnsts, instructions: newit)
 
-    if useStored:
+    if useStored and not root.dynamic:
         StoredEval[root] = result
 
     # TODO(VM/eval) add option for evaluation into optimized bytecode directly
