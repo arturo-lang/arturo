@@ -189,6 +189,7 @@ type
                    a*       : ValueArray
                    data*    : Value
                    dirty*   : bool
+                   dynamic* : bool
             of Dictionary:  d*  : ValueDict
             of Object:
                 o*: ValueDict   # fields
