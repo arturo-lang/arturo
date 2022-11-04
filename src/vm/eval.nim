@@ -24,11 +24,14 @@ import vm/[bytecode, globals, profiler, values/value]
 
 import vm/values/custom/[vbinary, vlogical, vsymbol]
 
+import vm/values/printable
+
 #=======================================
 # Variables
 #=======================================
 
 var
+    StoredEval : Table[Value, Translation]
     TmpArities : Table[string,int]
 
 #=======================================
@@ -935,10 +938,17 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
     if currentCommand.len > 0:
         addCurrentCommandToBytecode()
 
-proc doEval*(root: Value, isDictionary=false): Translation = 
+proc doEval*(root: Value, isDictionary=false, useStored=true): Translation {.inline.} = 
     ## Take a parsed Block of values and return its Translation - 
     ## that is: the constants found + the list of bytecode instructions
     hookProcProfiler("eval/doEval"):
+        if useStored and (let stEv = StoredEval.getOrDefault(root, nil); not stEv.isNil):
+            return stEv
+            #echo "retrieving"
+            #return root.data.trans
+
+        echo "actually evaluating"
+        dump(root)
         var cnsts: ValueArray = @[]
         var newit: VBinary = @[]
 
@@ -951,6 +961,9 @@ proc doEval*(root: Value, isDictionary=false): Translation =
             newit = optimizeBytecode(newit)
 
     result = Translation(constants: cnsts, instructions: newit)
+
+    if useStored:
+        StoredEval[root] = result
 
     # TODO(VM/eval) add option for evaluation into optimized bytecode directly
     #  if optimized:
