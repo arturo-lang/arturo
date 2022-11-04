@@ -20,9 +20,6 @@
 
 import algorithm, sequtils, tables, unicode
 
-when not defined(PORTABLE):
-    import strformat
-
 import vm/[bytecode, globals, profiler, values/value]
 
 import vm/values/custom/[vbinary, vlogical, vsymbol]
