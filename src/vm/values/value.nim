@@ -138,12 +138,6 @@ func hash*(v: Value): Hash {.inline.}
 # Constructors
 #=======================================
 
-template newNull*(): Value =
-    VNULL
-
-template newNothing*(): Value =
-    VNOTHING
-
 proc newLogical*(b: VLogical): Value {.inline, enforceNoRaises.} =
     if b==True: VTRUE
     elif b==False: VFALSE
