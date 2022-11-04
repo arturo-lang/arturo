@@ -941,7 +941,7 @@ proc doEval*(root: Value, isDictionary=false, useStored: static bool = true): Tr
     ## Take a parsed Block of values and return its Translation - 
     ## that is: the constants found + the list of bytecode instructions
     
-    var vhash: Hash = -1
+    var vhash {.used.}: Hash = -1
     
     when useStored:
         if not root.dynamic:
