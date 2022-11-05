@@ -101,7 +101,7 @@ template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
 
             execFunction(f, hash(fnName))
     else:
-        f.action()
+        f.action()()
 
 template callByName(symIndx: string):untyped =
     let fun = FetchSym(symIndx)
@@ -237,7 +237,7 @@ proc execFunction*(fun: Value, fid: Hash) =
     ##   `.exportable`, then none of the symbols 
     ##   will abide by this rule and it will behave 
     ##   pretty much like `execLeakless`
-    
+
     var memoizedParams: Value = nil
     var savedSyms: ValueDict
 
@@ -274,11 +274,11 @@ proc execFunction*(fun: Value, fid: Hash) =
         # pop argument and set it
         SetSym(arg.s, move stack.pop())
 
-    if fun.bcode.isNil:
-        fun.bcode = newBytecode(doEval(fun.main))
+    if fun.bcode().isNil:
+        fun.bcode() = newBytecode(doEval(fun.main))
 
     try:
-        ExecLoop(fun.bcode.trans.constants, fun.bcode.trans.instructions)
+        ExecLoop(fun.bcode().trans.constants, bcode(fun).trans.instructions)
 
     except ReturnTriggered:
         discard
@@ -515,83 +515,83 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
 
                 # [0x80-0x8F]
                 # arithmetic operators
-                of opAdd                : AddF.action()
-                of opSub                : SubF.action()
-                of opMul                : MulF.action()
-                of opDiv                : DivF.action()
-                of opFdiv               : FdivF.action()
-                of opMod                : ModF.action()
-                of opPow                : PowF.action()
+                of opAdd                : AddF.action()()
+                of opSub                : SubF.action()()
+                of opMul                : MulF.action()()
+                of opDiv                : DivF.action()()
+                of opFdiv               : FdivF.action()()
+                of opMod                : ModF.action()()
+                of opPow                : PowF.action()()
 
-                of opNeg                : NegF.action()
+                of opNeg                : NegF.action()()
 
                 # binary operators
-                of opBNot               : BNotF.action()
-                of opBAnd               : BAndF.action() 
-                of opBOr                : BOrF.action()
+                of opBNot               : BNotF.action()()
+                of opBAnd               : BAndF.action()()
+                of opBOr                : BOrF.action()()
 
-                of opShl                : ShlF.action()
-                of opShr                : ShrF.action()
+                of opShl                : ShlF.action()()
+                of opShr                : ShrF.action()()
 
                 # logical operators
-                of opNot                : NotF.action()
-                of opAnd                : AndF.action()
-                of opOr                 : OrF.action()
+                of opNot                : NotF.action()()
+                of opAnd                : AndF.action()()
+                of opOr                 : OrF.action()()
 
                 # [0x90-0x9F]
                 # comparison operators
-                of opEq                 : EqF.action()
-                of opNe                 : NeF.action()
-                of opGt                 : GtF.action()
-                of opGe                 : GeF.action()
-                of opLt                 : LtF.action()
-                of opLe                 : LeF.action()
+                of opEq                 : EqF.action()()
+                of opNe                 : NeF.action()()
+                of opGt                 : GtF.action()()
+                of opGe                 : GeF.action()()
+                of opLt                 : LtF.action()()
+                of opLe                 : LeF.action()()
 
                 # branching
-                of opIf                 : IfF.action()
-                of opIfE                : IfEF.action()
-                of opElse               : ElseF.action()
-                of opWhile              : WhileF.action()
-                of opReturn             : ReturnF.action()
+                of opIf                 : IfF.action()()
+                of opIfE                : IfEF.action()()
+                of opElse               : ElseF.action()()
+                of opWhile              : WhileF.action()()
+                of opReturn             : ReturnF.action()()
 
                 # getters/setters
-                of opGet                : GetF.action()
-                of opSet                : SetF.action()
+                of opGet                : GetF.action()()
+                of opSet                : SetF.action()()
 
                 # converters
-                of opTo                 : ToF.action()
+                of opTo                 : ToF.action()()
                 of opToS                : 
                     stack.push(VSTRINGT)
-                    ToF.action()
+                    ToF.action()()
                 of opToI                : 
                     stack.push(VINTEGERT)
-                    ToF.action()
+                    ToF.action()()
 
                 # [0xA0-0xAF]
                 # i/o operations
-                of opPrint              : PrintF.action()
+                of opPrint              : PrintF.action()()
 
                 # generators          
-                of opArray              : ArrayF.action()
-                of opDict               : DictF.action()
-                of opFunc               : FuncF.action()
+                of opArray              : ArrayF.action()()
+                of opDict               : DictF.action()()
+                of opFunc               : FuncF.action()()
 
                 # ranges & iterators
-                of opRange              : RangeF.action()
-                of opLoop               : LoopF.action()
-                of opMap                : MapF.action()
-                of opSelect             : SelectF.action()
+                of opRange              : RangeF.action()()
+                of opLoop               : LoopF.action()()
+                of opMap                : MapF.action()()
+                of opSelect             : SelectF.action()()
 
                 # collections
-                of opSize               : SizeF.action()
-                of opReplace            : ReplaceF.action()
-                of opSplit              : SplitF.action()
-                of opJoin               : JoinF.action()
-                of opReverse            : ReverseF.action()
+                of opSize               : SizeF.action()()
+                of opReplace            : ReplaceF.action()()
+                of opSplit              : SplitF.action()()
+                of opJoin               : JoinF.action()()
+                of opReverse            : ReverseF.action()()
 
                 # increment/decrement
-                of opInc                : IncF.action()
-                of opDec                : DecF.action()
+                of opInc                : IncF.action()()
+                of opDec                : DecF.action()()
 
                 of RSRV1                : discard
 

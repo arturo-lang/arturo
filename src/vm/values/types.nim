@@ -125,6 +125,26 @@ type
 
     SymbolDict*   = OrderedTable[VSymbol,AliasBinding]
 
+    FunctionType* = ref object
+        args*   : OrderedTable[string,ValueSpec]
+        attrs*  : OrderedTable[string,(ValueSpec,string)]
+        arity*  : int
+        returns*: ValueSpec
+        example*: string
+        case fnKind*: FunctionKind:
+            of UserFunction:
+                # TODO(VM/values/types) merge Function `params` and `args` into one field?
+                #  labels: vm, values, enhancement
+                params*     : Value
+                main*       : Value
+                imports*    : Value
+                exports*    : Value
+                exportable* : bool
+                memoize*   : bool
+                bcode*      : Value
+            of BuiltinFunction:
+                action*     : BuiltinAction
+
     Value* {.final,acyclic.} = ref object 
         info*: string
         readonly*: bool
@@ -191,24 +211,7 @@ type
                 o*: ValueDict   # fields
                 proto*: Prototype # custom type pointer
             of Function:    
-                args*   : OrderedTable[string,ValueSpec]
-                attrs*  : OrderedTable[string,(ValueSpec,string)]
-                arity*  : int
-                returns*: ValueSpec
-                example*: string
-                case fnKind*: FunctionKind:
-                    of UserFunction:
-                        # TODO(VM/values/types) merge Function `params` and `args` into one field?
-                        #  labels: vm, values, enhancement
-                        params*     : Value
-                        main*       : Value
-                        imports*    : Value
-                        exports*    : Value
-                        exportable* : bool
-                        memoize*    : bool
-                        bcode*      : Value
-                    of BuiltinFunction:
-                        action*     : BuiltinAction
+                funcType*: FunctionType
 
             of Database:
                 case dbKind*: DatabaseKind:
@@ -222,3 +225,24 @@ type
 
             of Newline:
                 line*: int
+
+template makeFuncAccessor*(name: untyped) =
+  template name*(val: Value): typeof(val.funcType.name) =
+    assert val.kind == Function
+    val.funcType.name
+
+
+makeFuncAccessor(args)
+makeFuncAccessor(attrs)
+makeFuncAccessor(arity)
+makeFuncAccessor(returns)
+makeFuncAccessor(example)
+makeFuncAccessor(fnKind)
+makeFuncAccessor(params)
+makeFuncAccessor(main)
+makeFuncAccessor(imports)
+makeFuncAccessor(exports)
+makeFuncAccessor(exportable)
+makeFuncAccessor(memoize)
+makeFuncAccessor(bcode)
+makeFuncAccessor(action)

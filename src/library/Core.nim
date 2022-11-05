@@ -162,7 +162,7 @@ proc defineSymbols*() =
 
                     execFunction(fun, fid)
                 else:
-                    fun.action()
+                    fun.action()()
         
     builtin "case",
         alias       = unaliased, 
