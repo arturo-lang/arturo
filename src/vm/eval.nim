@@ -281,7 +281,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         
         return (-1, -1)
 
-    proc processIf(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
+    proc optimizeIf(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
         let (cnstId, shift) = getConstIdWithShift(currentCommand, 0)
 
         if cnstId != -1:
@@ -326,7 +326,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         foundIf = false
         foundIfE = false
 
-    proc processUnless(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
+    proc optimizeUnless(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
         let (cnstId, shift) = getConstIdWithShift(currentCommand, 0)
 
         if cnstId != -1:
@@ -370,7 +370,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         
         foundUnless = false
 
-    proc processLess(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
+    proc optimizeLess(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
         let (cnstId, shift) = getConstIdWithShift(currentCommand, 0)
 
         if cnstId != -1:
@@ -387,7 +387,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 
         foundElse = false
 
-    proc processSwitch(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
+    proc optimizeSwitch(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
         let (cnstId, shift) = getConstIdWithShift(currentCommand, 0)
 
         if cnstId != -1:
@@ -452,7 +452,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
         foundSwitch = false
 
-    proc processAdd(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
+    proc optimizeAdd(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
         if (OpCode)(currentCommand[^1]) == opAdd:
             if currentCommand.len == 3 and (OpCode)(currentCommand[0])==opConstI1:
                 currentCommand = @[currentCommand[1], (byte)(opInc)]
@@ -468,7 +468,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
         foundAdd = false
 
-    proc processSub(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
+    proc optimizeSub(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
         if (OpCode)(currentCommand[^1]) == opSub:
             if currentCommand.len == 3 and (OpCode)(currentCommand[0])==opConstI1:
                 currentCommand = @[currentCommand[1], (byte)(opDec)]
@@ -482,22 +482,22 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         if not inBlock: reverse(currentCommand)
 
         if foundIf or (foundIfE and i+1<nLen and n.a[i+1].kind == Word and GetSym(n.a[i+1].s) == ElseF):
-            processIf(consts, it)
+            optimizeIf(consts, it)
 
         elif foundUnless:
-            processUnless(consts, it)
+            optimizeUnless(consts, it)
         
         elif foundElse and it[^1] == (byte)opNop:
-            processLess(consts, it)
+            optimizeLess(consts, it)
 
         elif foundSwitch:
-            processSwitch(consts, it)
+            optimizeSwitch(consts, it)
 
         elif foundAdd:
-            processAdd(consts, it)
+            optimizeAdd(consts, it)
 
         elif foundSub:
-            processSub(consts, it)
+            optimizeSub(consts, it)
 
         it.add(currentCommand)
     
