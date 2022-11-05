@@ -74,6 +74,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
     var foundUnless = false
     var foundElse = false
     var foundSwitch = false
+    var foundAdd = false
+    var foundSub = false
 
     #------------------------
     # Shortcuts
@@ -183,8 +185,12 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         if fn == ArrayF: bt = opArray
         elif fn == DictF: bt = opDict
         elif fn == FuncF: bt = opFunc 
-        elif fn == AddF: bt = opAdd
-        elif fn == SubF: bt = opSub
+        elif fn == AddF: 
+            bt = opAdd
+            foundAdd = true
+        elif fn == SubF: 
+            bt = opSub
+            foundSub = true
         elif fn == MulF: bt = opMul
         elif fn == DivF: bt = opDiv
         elif fn == FdivF: bt = opFdiv
@@ -446,6 +452,32 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
         foundSwitch = false
 
+    proc processAdd(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
+        if (OpCode)(currentCommand[^1]) == opAdd:
+            if currentCommand.len == 3 and (OpCode)(currentCommand[0])==opConstI1:
+                currentCommand = @[currentCommand[1], (byte)(opInc)]
+            elif (OpCode)(currentCommand[^2])==opConstI1:
+                currentCommand[^2] = (byte)(opInc)
+                discard currentCommand.pop()
+        elif (OpCode)(currentCommand[0]) == opAdd:
+            if currentCommand.len == 3 and (OpCode)(currentCommand[2])==opConstI1:
+                currentCommand = @[(byte)(opInc), currentCommand[1]]
+            elif (OpCode)(currentCommand[1])==opConstI1:
+                currentCommand[1] = (byte)(opInc)
+                currentCommand.delete(0)
+
+        foundAdd = false
+
+    proc processSub(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
+        if (OpCode)(currentCommand[^1]) == opSub:
+            if currentCommand.len == 3 and (OpCode)(currentCommand[0])==opConstI1:
+                currentCommand = @[currentCommand[1], (byte)(opDec)]
+        elif (OpCode)(currentCommand[0])==opSub:
+            if currentCommand.len == 3 and (OpCode)(currentCommand[2])==opConstI1:
+                currentCommand = @[(byte)(opDec), currentCommand[1]]
+
+        foundSub = false
+
     template addCurrentCommandToBytecode() {.dirty.} =
         if not inBlock: reverse(currentCommand)
 
@@ -460,6 +492,12 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
         elif foundSwitch:
             processSwitch(consts, it)
+
+        elif foundAdd:
+            processAdd(consts, it)
+
+        elif foundSub:
+            processSub(consts, it)
 
         it.add(currentCommand)
     
