@@ -445,7 +445,9 @@ func newDate*(dt: sink DateTime): Value {.inline, enforceNoRaises.} =
         "year"      : newInteger(dt.year),
         "utc"       : newInteger(dt.utcOffset)
     }.toOrderedTable
-    Value(kind: Date, e: edict, eobj: dt)
+    let newTime = new DateTime
+    newTime[] = dt
+    Value(kind: Date, e: edict, eobj: newTime)
 
 func newBinary*(n: VBinary = @[]): Value {.inline, enforceNoRaises.} =
     ## create Binary value from VBinary
@@ -613,7 +615,7 @@ proc copyValue*(v: Value): Value {.inline.} =
         of PathLabel:   result = newPathLabel(v.p)
 
         of Symbol:      result = newSymbol(v.m)
-        of Date:        result = newDate(v.eobj)
+        of Date:        result = newDate(v.eobj[])
         of Binary:      result = newBinary(v.n)
 
         of Inline:      result = newInline(v.a)
