@@ -199,7 +199,7 @@ type
             of Color:       l*  : VColor
             of Date:        
                 e*     : ValueDict         
-                eobj*  : DateTime
+                eobj*  : ref DateTime
             of Binary:      n*  : VBinary
             of Inline,
                Block:       
@@ -246,3 +246,5 @@ makeFuncAccessor(exportable)
 makeFuncAccessor(memoize)
 makeFuncAccessor(bcode)
 makeFuncAccessor(action)
+
+converter toDateTime*(dt: ref DateTime): DateTime = dt[]
