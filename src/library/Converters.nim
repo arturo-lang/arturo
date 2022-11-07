@@ -1075,21 +1075,21 @@ proc defineSymbols*() =
                                 else:
                                     options[k] = (vspec, "")
 
-                        ret.attrs = options
+                        ret.attrs() = options
 
                     if (let returnsData = y.data.d.getOrDefault("returns", nil); not returnsData.isNil):
                         if returnsData.kind==Type:
-                            ret.returns = {returnsData.t}
+                            ret.returns() = {returnsData.t}
                         else:
                             var returns: ValueSpec
                             for tp in returnsData.a:
                                 returns.incl(tp.t)
-                            ret.returns = returns
+                            ret.returns() = returns
 
                     if (let exampleData = y.data.d.getOrDefault("example", nil); not exampleData.isNil):
-                        ret.example = exampleData.s
+                        ret.example() = exampleData.s
     
-            ret.args = argTypes
+            ret.args() = argTypes
             
             push(ret)
 

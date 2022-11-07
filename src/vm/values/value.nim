@@ -437,7 +437,9 @@ func newDate*(dt: sink DateTime): Value {.inline, enforceNoRaises.} =
         "year"      : newInteger(dt.year),
         "utc"       : newInteger(dt.utcOffset)
     }.toOrderedTable
-    Value(kind: Date, e: edict, eobj: dt)
+    let newTime = new DateTime
+    newTime[] = dt
+    Value(kind: Date, e: edict, eobj: newTime)
 
 func newBinary*(n: VBinary = @[]): Value {.inline, enforceNoRaises.} =
     ## create Binary value from VBinary
@@ -481,20 +483,35 @@ proc newObject*(args: ValueDict, prot: Prototype, initializer: proc (self: Value
 
 func newFunction*(params: Value, main: Value, imports: Value = nil, exports: Value = nil, exportable: bool = false, memoize: bool = false): Value {.inline, enforceNoRaises.} =
     ## create Function (UserFunction) value with given parameters, ``main`` body, etc
-    Value(kind: Function, fnKind: UserFunction, arity: params.a.len, params: params, main: main, imports: imports, exports: exports, exportable: exportable, memoize: memoize)
+    Value(
+        kind: Function,
+        funcType: VFunction(
+            fnKind: UserFunction,
+            arity: params.a.len,
+            params: params,
+            main: main,
+            imports: imports,
+            exports: exports,
+            exportable: exportable,
+            memoize: memoize,
+            bcode: nil
+        )
+    )
 
 func newBuiltin*(desc: sink string, ar: int, ag: sink OrderedTable[string,ValueSpec], at: sink OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: sink string, act: BuiltinAction): Value {.inline, enforceNoRaises.} =
     ## create Function (BuiltinFunction) value with given details
     Value(
-        kind    : Function, 
-        fnKind  : BuiltinFunction, 
-        info    : desc, 
-        arity   : ar, 
-        args    : ag, 
-        attrs   : at, 
-        returns : ret, 
-        example : exa, 
-        action  : act
+        kind: Function,
+        info: desc,
+        funcType: VFunction(
+            fnKind: BuiltinFunction,
+            arity: ar,
+            args: ag,
+            attrs: at,
+            returns: ret,
+            example: exa,
+            action: act
+        )
     )
 
 when not defined(NOSQLITE):
@@ -590,7 +607,7 @@ proc copyValue*(v: Value): Value {.inline.} =
         of PathLabel:   result = newPathLabel(v.p)
 
         of Symbol:      result = newSymbol(v.m)
-        of Date:        result = newDate(v.eobj)
+        of Date:        result = newDate(v.eobj[])
         of Binary:      result = newBinary(v.n)
 
         of Inline:      result = newInline(v.a)
