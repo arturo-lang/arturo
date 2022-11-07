@@ -125,7 +125,7 @@ type
 
     SymbolDict*   = OrderedTable[VSymbol,AliasBinding]
 
-    FunctionType* = ref object
+    VFunction* = ref object
         args*   : OrderedTable[string,ValueSpec]
         attrs*  : OrderedTable[string,(ValueSpec,string)]
         arity*  : int
@@ -211,7 +211,7 @@ type
                 o*: ValueDict   # fields
                 proto*: Prototype # custom type pointer
             of Function:    
-                funcType*: FunctionType
+                funcType*: VFunction
 
             of Database:
                 case dbKind*: DatabaseKind:
@@ -225,6 +225,14 @@ type
 
             of Newline:
                 line*: int
+    ValueObj = typeof(Value()[])
+
+{.hints: on.} # Apparently we cannot disable just `Name` hints?
+{.hint: "'Value's inner type is currently '" & $sizeof(ValueObj) & "'.".}
+{.hints: off.}
+
+when sizeof(ValueObj) > 64: # At time of writing it was '56', 8 - 64 bit integers seems like a good warning site? Can always go smaller
+    {.warning: "'Value's inner object is large which will impact performance".}
 
 template makeFuncAccessor*(name: untyped) =
   template name*(val: Value): typeof(val.funcType.name) =

@@ -493,7 +493,7 @@ func newFunction*(params: Value, main: Value, imports: Value = nil, exports: Val
     ## create Function (UserFunction) value with given parameters, ``main`` body, etc
     Value(
         kind: Function,
-        funcType: FunctionType(
+        funcType: VFunction(
             fnKind: UserFunction,
             arity: params.a.len,
             params: params,
@@ -511,7 +511,7 @@ func newBuiltin*(desc: sink string, ar: int, ag: sink OrderedTable[string,ValueS
     Value(
         kind: Function,
         info: desc,
-        funcType: FunctionType(
+        funcType: VFunction(
             fnKind: BuiltinFunction,
             arity: ar,
             args: ag,
