@@ -68,7 +68,7 @@ jobs:
       - name: Setup nim
         uses: jiro4989/setup-nim-action@v1
         with:
-          nim-version: '1.6.6'
+          nim-version: 'stable'
 
       - name: Verify dependecies
         run: |
