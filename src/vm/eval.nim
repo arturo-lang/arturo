@@ -23,6 +23,8 @@ import sequtils, tables, unicode
 
 import vm/[bytecode, globals, values/value]
 
+import vm/profiler
+
 import vm/values/custom/[vbinary, vlogical, vsymbol]
 
 #=======================================
@@ -702,38 +704,20 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
     var i: int = 0
     #var node: Value
     while i < nLen:
-        {.computedGoTo.}
         
-        let node = n.a[i]
+        let node {.cursor.} = n.a[i]
+
+        hookMiscProfiler($(node.kind))
 
         case node.kind:
-            of Null:    addToCommand(opConstN)
-            of Logical: 
-                # TODO(VM/eval) needs to be inside an `addTerminalValue` block?
-                #  this look like a bug...
-                #  labels: evaluator, bug
-                if node.b==True: addToCommand(opConstBT)
-                elif node.b==False: addToCommand(opConstBF)
-                else: addToCommand(opConstBM)
-
-            of Integer:
-                addTerminalValue(inBlock=false):
-                    when defined(WEB) or not defined(NOGMP):
-                        if likely(node.iKind==NormalInteger):
-                            if node.i>=0 and node.i<=15: addToCommand((byte)(opConstI0) + (byte)(node.i))
-                            else: addConst(node, opPush)
-                        else:
-                            addConst(node, opPush)
-                    else:
-                        if node.i>=0 and node.i<=15: addToCommand((byte)(opConstI0) + (byte)(node.i))
-                        else: addConst(node, opPush)
-
-            of Floating:
-                addTerminalValue(inBlock=false):
-                    if node.f==0.0: addToCommand(opConstF0)
-                    elif node.f==1.0: addToCommand(opConstF1)
-                    elif node.f==2.0: addToCommand(opConstF2)
-                    else: addConst(node, opPush)
+            of Newline: 
+                # TODO(Eval/evalOne) verify Newline handling works properly
+                #  Also, we have to figure out whether the commented-out code is needed at all
+                #  labels: vm, evaluator, cleanup
+                when not defined(NOERRORLINES) and not defined(OPTIMIZED):
+                    addEol(it, node.line)
+                else:
+                    discard
 
             of Word:
                 var funcArity = TmpArities.getOrDefault(node.s, -1)
@@ -753,7 +737,37 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                     addTerminalValue(inBlock=false):
                         addConst(node, opLoad)
 
+            of Block:
+                addTerminalValue(inBlock=false):
+                    if node.a.len==0:
+                        addToCommand(opConstA)
+                    else:
+                        addConst(node, opPush)
+
+            of Integer:
+                addTerminalValue(inBlock=false):
+                    when defined(WEB) or not defined(NOGMP):
+                        if likely(node.iKind==NormalInteger):
+                            if node.i>=0 and node.i<=15: addToCommand((byte)(opConstI0) + (byte)(node.i))
+                            else: addConst(node, opPush)
+                        else:
+                            addConst(node, opPush)
+                    else:
+                        if node.i>=0 and node.i<=15: addToCommand((byte)(opConstI0) + (byte)(node.i))
+                        else: addConst(node, opPush)
+
+            of String:
+                {.linearScanEnd.}
+                addTerminalValue(inBlock=false):
+                    if node.s.len==0:
+                        addToCommand(opConstS)
+                    else:
+                        addConst(node, opPush)
+
+            #---------------------------
+
             of Label: 
+                
                 let funcIndx {.cursor.} = node.s
                 var hasThickArrow = false
                 var ab: seq[Value]
@@ -791,6 +805,22 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                         addConst(newBlock(ab), opPush)
                     addTerminalValue(inBlock=false):
                         addConst(newBlock(sb), opPush) 
+            
+            of Null:    addToCommand(opConstN)
+            of Logical: 
+                # TODO(VM/eval) needs to be inside an `addTerminalValue` block?
+                #  this look like a bug...
+                #  labels: evaluator, bug
+                if node.b==True: addToCommand(opConstBT)
+                elif node.b==False: addToCommand(opConstBF)
+                else: addToCommand(opConstBM)
+
+            of Floating:
+                addTerminalValue(inBlock=false):
+                    if node.f==0.0: addToCommand(opConstF0)
+                    elif node.f==1.0: addToCommand(opConstF1)
+                    elif node.f==2.0: addToCommand(opConstF2)
+                    else: addConst(node, opPush)
 
             of Attribute:
                 addConst(node, opAttr)
@@ -915,20 +945,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                             addTerminalValue(inBlock=false):
                                 addConst(node, opPush)
 
-            of String:
-                addTerminalValue(inBlock=false):
-                    if node.s.len==0:
-                        addToCommand(opConstS)
-                    else:
-                        addConst(node, opPush)
-
-            of Block:
-                addTerminalValue(inBlock=false):
-                    if node.a.len==0:
-                        addToCommand(opConstA)
-                    else:
-                        addConst(node, opPush)
-
             of Dictionary:
                 addTerminalValue(inBlock=false):
                     if node.d.len==0:
@@ -942,15 +958,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             of Inline: 
                 addTerminalValue(inBlock=false):
                     evalOne(node, consts, currentCommand, inBlock=true, isDictionary=isDictionary)
-
-            of Newline: 
-                # TODO(Eval/evalOne) verify Newline handling works properly
-                #  Also, we have to figure out whether the commented-out code is needed at all
-                #  labels: vm, evaluator, cleanup
-                when not defined(NOERRORLINES) and not defined(OPTIMIZED):
-                    addEol(it, node.line)
-                else:
-                    discard
 
             of Date, Binary, Database, Bytecode,
                Nothing, Any: 
