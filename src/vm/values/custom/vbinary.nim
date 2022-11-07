@@ -22,19 +22,29 @@ import strutils, sugar
 type 
     Byte* = byte
     VBinary*  = seq[Byte]
+    
+#=======================================
+# Helpers
+#=======================================
+
+template loopOp(a, b: VBinary, op: untyped) =
+  if 0 notin [a.len, b.len]:
+    result = newSeq[byte](min(a.high, b.high))
+    for i in 0..result.high:
+      result[i] = op(a[i], b[i])
 
 #=======================================
 # Overloads
 #=======================================
 
-proc `and`*(a: VBinary, b: VBinary): VBinary =
-    zip(a, b).map((tup) => tup[0] and tup[1])
+proc `and`*(a, b: VBinary): VBinary =
+    loopOp(a, b, `and`)
 
 proc `or`*(a: VBinary, b: VBinary): VBinary =
-    zip(a, b).map((tup) => tup[0] or tup[1])
+    loopOp(a, b, `or`)
 
 proc `xor`*(a: VBinary, b: VBinary): VBinary =
-    zip(a, b).map((tup) => tup[0] xor tup[1])
+    loopOp(a, b, `xor`)
 
 proc `not`*(a: VBinary): VBinary =
     a.map((w) => not w)
