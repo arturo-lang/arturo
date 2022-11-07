@@ -37,7 +37,7 @@ var
 # Helpers
 #=======================================
 
-func indexOfValue(a: seq[Value], item: Value): int {.inline.}=
+func indexOfValue(a: seq[Value], item: Value): int {.inline,enforceNoRaises.}=
     result = 0
     for i in items(a):
         if consideredEqual(item, i): return
