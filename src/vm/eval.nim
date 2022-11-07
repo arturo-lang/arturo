@@ -702,7 +702,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
     #------------------------
 
     var i: int = 0
-    #var node: Value
+
     while i < nLen:
         
         let node {.cursor.} = n.a[i]
