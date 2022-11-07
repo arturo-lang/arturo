@@ -305,7 +305,7 @@ proc defineSymbols*() =
                                     let fid = hash(value.d["method"].s)
                                     execFunction(fun, fid)
                                 else:
-                                    fun.action()
+                                    fun.action()()
 
                                 if SP > prevSP:
                                     result = pop()
