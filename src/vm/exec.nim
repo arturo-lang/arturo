@@ -283,7 +283,7 @@ proc execFunction*(fun: Value, fid: Hash) =
     let evaled = doEval(fun.main)
 
     try:
-        ExecLoop(evaled.trans.constants, evaled.trans.instructions)
+        ExecLoop(evaled.constants, evaled.instructions)
 
     except ReturnTriggered:
         discard
