@@ -2160,6 +2160,96 @@ proc factorial*(x: Value): Value =
             when not defined(WEB):
                 RuntimeError_NumberOutOfPermittedRange("factorial",valueAsString(x), "")
 
+func consideredEqual*(x: Value, y: Value): bool {.inline,enforceNoRaises.} =
+    let xKind = x.kind
+    let yKind = y.kind
+    if xKind in {Word,Label,Attribute,AttributeLabel} and yKind in {Word,Label,Attribute,AttributeLabel}:
+        return x.s == y.s
+
+    if xKind != yKind: return false
+
+    case xKind:
+        of Integer:
+            if x.iKind != y.iKind: return false
+            when not defined(NOGMP):
+                if likely(x.iKind == NormalInteger):
+                    return x.i == y.i
+                else:
+                    return x.bi == y.bi
+            else:
+                return x.i == y.i
+        of String, Literal:
+            return x.s == y.s
+        of Floating:
+            return x.f == y.f
+        of Block:
+            {.linearScanEnd.}
+            if x.a.len != y.a.len: return false
+            for i in 0..x.a.high:
+                if not consideredEqual(x.a[i], y.a[i]): return false
+            return true
+    
+        #---------------------------
+
+        of Null: return true
+        of Logical: return x.b == y.b
+        of Complex: return x.z == y.z
+        of Rational: return x.rat == y.rat
+        of Version:
+            return x.major == y.major and x.minor == y.minor and x.patch == y.patch and x.extra == y.extra
+        of Type: 
+            if x.tpKind != y.tpKind: return false
+            if x.tpKind==BuiltinType:
+                return x.t == y.t
+            else:
+                return x.ts.name == y.ts.name
+        of Char: return x.c == y.c
+        of Symbol,
+           SymbolLiteral: return x.m == y.m
+        of Quantity: return x.nm == y.nm and x.unit == y.unit
+        of Regex: return x.rx == y.rx
+        of Color: return x.l == y.l
+        of Inline:
+            if x.a.len != y.a.len: return false
+            for i in 0..x.a.high:
+                if not consideredEqual(x.a[i], y.a[i]): return false
+            return true
+        of Dictionary:
+            if x.d.len != y.d.len: return false
+
+            for k,v in pairs(x.d):
+                if not y.d.hasKey(k): return false
+                if not consideredEqual(v,y.d[k]): return false
+
+            return true
+        of Object:
+            if x.o.len != y.o.len: return false
+            if x.proto != y.proto: return false
+
+            for k,v in pairs(x.o):
+                if not y.o.hasKey(k): return false
+                if not consideredEqual(v,y.o[k]): return false
+
+            return true
+        of Function:
+            if x.fnKind==UserFunction:
+                return consideredEqual(x.params, y.params) and consideredEqual(x.main, y.main) and x.exports == y.exports
+            else:
+                return x.action == y.action
+        of Binary:
+            return x.n == y.n
+        of Bytecode:
+            return x.trans == y.trans
+        of Database:
+            if x.dbKind != y.dbKind: return false
+            when not defined(NOSQLITE):
+                if x.dbKind==SqliteDatabase: return cast[ByteAddress](x.sqlitedb) == cast[ByteAddress](y.sqlitedb)
+                #elif x.dbKind==MysqlDatabase: return cast[ByteAddress](x.mysqldb) == cast[ByteAddress](y.mysqldb)
+        of Date:
+            return x.eobj == y.eobj
+        else:
+            return false
+
 func sameValue*(x: Value, y: Value): bool {.inline.}=
     ## check if the given values are same
     if x.kind in {Integer, Floating} and y.kind in {Integer, Floating}:
