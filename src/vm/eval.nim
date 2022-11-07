@@ -41,8 +41,6 @@ func indexOfValue(a: seq[Value], item: Value): int {.inline,enforceNoRaises.}=
     result = 0
     for i in items(a):
         if consideredEqual(item, i): return
-        # if sameValue(item, i): return
-        # if item.kind in {Word, Label} and i.kind in {Word, Label} and item.s==i.s: return
         inc(result)
     result = -1
 
