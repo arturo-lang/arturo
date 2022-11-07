@@ -125,6 +125,26 @@ type
 
     SymbolDict*   = OrderedTable[VSymbol,AliasBinding]
 
+    VFunction* = ref object
+        args*   : OrderedTable[string,ValueSpec]
+        attrs*  : OrderedTable[string,(ValueSpec,string)]
+        arity*  : int
+        returns*: ValueSpec
+        example*: string
+        case fnKind*: FunctionKind:
+            of UserFunction:
+                # TODO(VM/values/types) merge Function `params` and `args` into one field?
+                #  labels: vm, values, enhancement
+                params*     : Value
+                main*       : Value
+                imports*    : Value
+                exports*    : Value
+                exportable* : bool
+                memoize*   : bool
+                bcode*      : Value
+            of BuiltinFunction:
+                action*     : BuiltinAction
+
     Value* {.final,acyclic.} = ref object 
         info*: string
         readonly*: bool
@@ -179,7 +199,7 @@ type
             of Color:       l*  : VColor
             of Date:        
                 e*     : ValueDict         
-                eobj*  : DateTime
+                eobj*  : ref DateTime
             of Binary:      n*  : VBinary
             of Inline,
                Block:       
@@ -191,24 +211,7 @@ type
                 o*: ValueDict   # fields
                 proto*: Prototype # custom type pointer
             of Function:    
-                args*   : OrderedTable[string,ValueSpec]
-                attrs*  : OrderedTable[string,(ValueSpec,string)]
-                arity*  : int
-                returns*: ValueSpec
-                example*: string
-                case fnKind*: FunctionKind:
-                    of UserFunction:
-                        # TODO(VM/values/types) merge Function `params` and `args` into one field?
-                        #  labels: vm, values, enhancement
-                        params*     : Value
-                        main*       : Value
-                        imports*    : Value
-                        exports*    : Value
-                        exportable* : bool
-                        memoize*    : bool
-                        bcode*      : Value
-                    of BuiltinFunction:
-                        action*     : BuiltinAction
+                funcType*: VFunction
 
             of Database:
                 case dbKind*: DatabaseKind:
@@ -222,3 +225,34 @@ type
 
             of Newline:
                 line*: int
+    ValueObj = typeof(Value()[])
+
+{.hints: on.} # Apparently we cannot disable just `Name` hints?
+{.hint: "'Value's inner type is currently '" & $sizeof(ValueObj) & "'.".}
+{.hints: off.}
+
+when sizeof(ValueObj) > 64: # At time of writing it was '56', 8 - 64 bit integers seems like a good warning site? Can always go smaller
+    {.warning: "'Value's inner object is large which will impact performance".}
+
+template makeFuncAccessor*(name: untyped) =
+  template name*(val: Value): typeof(val.funcType.name) =
+    assert val.kind == Function
+    val.funcType.name
+
+
+makeFuncAccessor(args)
+makeFuncAccessor(attrs)
+makeFuncAccessor(arity)
+makeFuncAccessor(returns)
+makeFuncAccessor(example)
+makeFuncAccessor(fnKind)
+makeFuncAccessor(params)
+makeFuncAccessor(main)
+makeFuncAccessor(imports)
+makeFuncAccessor(exports)
+makeFuncAccessor(exportable)
+makeFuncAccessor(memoize)
+makeFuncAccessor(bcode)
+makeFuncAccessor(action)
+
+converter toDateTime*(dt: ref DateTime): DateTime = dt[]
