@@ -964,17 +964,10 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
                 discard
 
-            of Complex, Rational, Version, Type, Char, Literal, SymbolLiteral, Quantity, Regex, Color, Object, Function:
+            else:
+                # of Complex, Rational, Version, Type, Char, Literal, SymbolLiteral, Quantity, Regex, Color, Object, Function:
                 addTerminalValue(inBlock=false):
                     addConst(node, opPush)
-
-            # else:
-            # # of Complex, Rational, Version, Type, Char,
-            # #    Literal, SymbolLiteral, Quantity,
-            # #    Regex, Color, Object, Function:
-
-            #     addTerminalValue(inBlock=false):
-            #         addConst(node, opPush)
 
         i += 1
 
