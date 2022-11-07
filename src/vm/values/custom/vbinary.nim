@@ -22,9 +22,9 @@ import strutils, sugar
 type 
     Byte* = byte
     VBinary*  = seq[Byte]
-
+    
 #=======================================
-# Overloads
+# Helpers
 #=======================================
 
 template loopOp(a, b: VBinary, op: untyped) =
@@ -33,6 +33,9 @@ template loopOp(a, b: VBinary, op: untyped) =
     for i in 0..result.high:
       result[i] = op(a[i], b[i])
 
+#=======================================
+# Overloads
+#=======================================
 
 proc `and`*(a, b: VBinary): VBinary =
     loopOp(a, b, `and`)
