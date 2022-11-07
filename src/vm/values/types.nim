@@ -143,7 +143,7 @@ type
                 imports*    : Value
                 exports*    : Value
                 exportable* : bool
-                memoize*   : bool
+                memoize*    : bool
                 bcode*      : Value
             of BuiltinFunction:
                 action*     : BuiltinAction
