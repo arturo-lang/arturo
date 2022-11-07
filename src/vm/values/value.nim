@@ -2161,6 +2161,11 @@ proc factorial*(x: Value): Value =
                 RuntimeError_NumberOutOfPermittedRange("factorial",valueAsString(x), "")
 
 func consideredEqual*(x: Value, y: Value): bool {.inline,enforceNoRaises.} =
+    ## check whether given values are to be considered equal
+    ## 
+    ## **Hint:** This is a helper function *solely* for the
+    ## evaluator and should not be used anywhere else
+
     let xKind = x.kind
     let yKind = y.kind
     if xKind in {Word,Label,Attribute,AttributeLabel} and yKind in {Word,Label,Attribute,AttributeLabel}:
@@ -2249,120 +2254,6 @@ func consideredEqual*(x: Value, y: Value): bool {.inline,enforceNoRaises.} =
             return x.eobj == y.eobj
         else:
             return false
-
-func sameValue*(x: Value, y: Value): bool {.inline.}=
-    ## check if the given values are same
-    if x.kind in {Integer, Floating} and y.kind in {Integer, Floating}:
-        if x.kind==Integer:
-            if y.kind==Integer: 
-                if likely(x.iKind==NormalInteger and y.iKind==NormalInteger):
-                    return x.i==y.i
-                elif x.iKind==NormalInteger and y.iKind==BigInteger:
-                    when defined(WEB):
-                        return big(x.i)==y.bi
-                    elif not defined(NOGMP):
-                        return x.i==y.bi
-                elif x.iKind==BigInteger and y.iKind==NormalInteger:
-                    when defined(WEB):
-                        return x.bi==big(y.i)
-                    elif not defined(NOGMP):
-                        return x.bi==y.i
-                else:
-                    when defined(WEB) or not defined(NOGMP):
-                        return x.bi==y.bi
-            else: 
-                if likely(x.iKind==NormalInteger):
-                    return (float)(x.i)==y.f
-                else:
-                    when defined(WEB):
-                        return x.bi==big((int)(y.f))
-                    elif not defined(NOGMP):
-                        return (x.bi)==(int)(y.f)
-        else:
-            if y.kind==Integer: 
-                if likely(y.iKind==NormalInteger):
-                    return x.f==(float)(y.i)
-                else:
-                    when defined(WEB):
-                        return big((int)(x.f))==y.bi
-                    elif not defined(NOGMP):
-                        return (int)(x.f)==y.bi        
-            else: return x.f==y.f
-    else:
-        if x.kind != y.kind: return false
-
-        case x.kind:
-            of Null: return true
-            of Logical: return x.b == y.b
-            of Complex: return x.z == y.z
-            of Rational: return x.rat == y.rat
-            of Version:
-                return x.major == y.major and x.minor == y.minor and x.patch == y.patch and x.extra == y.extra
-            of Type: 
-                if x.tpKind != y.tpKind: return false
-                if x.tpKind==BuiltinType:
-                    return x.t == y.t
-                else:
-                    return x.ts.name == y.ts.name
-            of Char: return x.c == y.c
-            of String,
-               Word,
-               Label,
-               Literal,
-               Attribute,
-               AttributeLabel: return x.s == y.s
-            of Symbol,
-               SymbolLiteral: return x.m == y.m
-            of Quantity: return x.nm == y.nm and x.unit == y.unit
-            of Regex: return x.rx == y.rx
-            of Color: return x.l == y.l
-            of Inline,
-               Block:
-                ensureCleaned(x)
-                ensureCleaned(y)
-
-                if cleanX.len != cleanY.len: return false
-
-                for i,child in cleanX:
-                    if not (sameValue(child,cleanY[i])): return false
-
-                return true
-            of Dictionary:
-                if x.d.len != y.d.len: return false
-
-                for k,v in pairs(x.d):
-                    if not y.d.hasKey(k): return false
-                    if not (sameValue(v,y.d[k])): return false
-
-                return true
-            of Object:
-                if x.o.len != y.o.len: return false
-
-                for k,v in pairs(x.o):
-                    if not y.o.hasKey(k): return false
-                    if not (sameValue(v,y.o[k])): return false
-
-                if x.proto != y.proto: return false
-
-                return true
-            of Function:
-                if x.fnKind==UserFunction:
-                    return sameValue(x.params, y.params) and sameValue(x.main, y.main) and x.exports == y.exports
-                else:
-                    return x.action == y.action
-            of Binary:
-                return x.n == y.n
-            of Bytecode:
-                return x.trans == y.trans
-            of Database:
-                if x.dbKind != y.dbKind: return false
-                when not defined(NOSQLITE):
-                    if x.dbKind==SqliteDatabase: return cast[ByteAddress](x.sqlitedb) == cast[ByteAddress](y.sqlitedb)
-                    #elif x.dbKind==MysqlDatabase: return cast[ByteAddress](x.mysqldb) == cast[ByteAddress](y.mysqldb)
-            of Date:
-                return x.eobj == y.eobj
-            else:
-                return false
 
 # TODO(Value\hash) Verify hashing is done right
 #  labels: vm,unit-test
