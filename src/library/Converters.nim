@@ -1044,14 +1044,14 @@ proc defineSymbols*() =
                 var mainBody: ValueArray = y.a
                 mainBody.insert(body)
 
-                ret = newFunction(newBlock(args),newBlock(mainBody),imports,exports,exportable,memoize)
+                ret = newFunction(newBlock(args),newBlock(mainBody),imports,exports,exportable,memoize,inline)
             else:
                 if x.a.len > 0:
                     for arg in x.a:
                         argTypes[arg.s] = {Any}
                 else:
                     argTypes[""] = {Nothing}
-                ret = newFunction(x,y,imports,exports,exportable,memoize)
+                ret = newFunction(x,y,imports,exports,exportable,memoize,inline)
             
             if not y.data.isNil:
                 if y.data.kind==Dictionary:
