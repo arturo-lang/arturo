@@ -481,7 +481,7 @@ proc newObject*(args: ValueDict, prot: Prototype, initializer: proc (self: Value
     
     initializer(result, prot)
 
-func newFunction*(params: Value, main: Value, imports: Value = nil, exports: Value = nil, exportable: bool = false, memoize: bool = false): Value {.inline, enforceNoRaises.} =
+func newFunction*(params: Value, main: Value, imports: Value = nil, exports: Value = nil, exportable: bool = false, memoize: bool = false, inline: bool = false): Value {.inline, enforceNoRaises.} =
     ## create Function (UserFunction) value with given parameters, ``main`` body, etc
     Value(
         kind: Function,
@@ -494,6 +494,7 @@ func newFunction*(params: Value, main: Value, imports: Value = nil, exports: Val
             exports: exports,
             exportable: exportable,
             memoize: memoize,
+            inline: inline,
             bcode: nil
         )
     )
