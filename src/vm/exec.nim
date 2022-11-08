@@ -22,7 +22,8 @@
 # Libraries
 #=======================================
 
-import hashes, macros, tables
+import hashes, macros, sequtils
+import sugar, tables
 
 import vm/[
     bytecode, 
@@ -97,7 +98,15 @@ template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
             if unlikely(SP < f.arity):
                 RuntimeError_NotEnoughArguments(fnName, f.arity)
 
-            execFunction(f, hash(fnName))
+            if f.inline: 
+                var safeToProceed = true
+                for i in 0..f.params.a.high:          
+                    if stack.peek(i).kind==Function:
+                        safeToProceed = false
+                        break
+                if safeToProceed: execFunctionInline(f, hash(fnName))
+                else: execFunction(f, hash(fnName))
+            else: execFunction(f, hash(fnName))
     else:
         f.action()()
 
@@ -239,10 +248,6 @@ proc execFunction*(fun: Value, fid: Hash) =
     ##   overwrite the value in the outer scope
     ## - Symbols declared in `.exports` will not 
     ##   abide by this rule
-    ## - If the whole function is marked as 
-    ##   `.exportable`, then none of the symbols 
-    ##   will abide by this rule and it will behave 
-    ##   pretty much like `execLeakless`
 
     var memoizedParams: Value = nil
     var savedSyms: ValueDict
@@ -293,32 +298,70 @@ proc execFunction*(fun: Value, fid: Hash) =
         if fun.memoize:
             setMemoized(fid, memoizedParams, stack.peek(0))
 
-        if fun.exportable:
-            for k in fun.params.a:
-                if (let savedSym = savedSyms.getOrDefault(k.s, nil); not savedSym.isNil):
-                    Syms[k.s] = savedSym
-                    if (let savedArity = savedArities.getOrDefault(k.s, -1); savedArity != -1):
-                        Arities[k.s] = savedArity
+        if not fun.exports.isNil:
+            for k in fun.exports.a:
+                if (let newSym = Syms.getOrDefault(k.s, nil); not newSym.isNil):
+                    savedSyms[k.s] = newSym
+                    if (let newArity = Arities.getOrDefault(k.s, -1); newArity != -1):
+                        savedArities[k.s] = newArity
                     else:
-                        Arities.del(k.s)
-                else:
-                    Syms.del(k.s)
-                    Arities.del(k.s)
+                        savedArities.del(k.s)
+        
+            Syms = savedSyms
+            Arities = savedArities
         else:
-            if not fun.exports.isNil:
-                for k in fun.exports.a:
-                    if (let newSym = Syms.getOrDefault(k.s, nil); not newSym.isNil):
-                        savedSyms[k.s] = newSym
-                        if (let newArity = Arities.getOrDefault(k.s, -1); newArity != -1):
-                            savedArities[k.s] = newArity
-                        else:
-                            savedArities.del(k.s)
-            
-                Syms = savedSyms
-                Arities = savedArities
-            else:
-                Syms = savedSyms
-                Arities = savedArities
+            Syms = savedSyms
+            Arities = savedArities
+
+proc execFunctionInline*(fun: Value, fid: Hash) =
+    ## Execute given Function value without scoping
+    ## 
+    ## This means:
+    ## - No symbols are expected to be declared inside
+    ## - Symbols re-assigned inside will NOT 
+    ##   overwrite the value in the outer scope
+    ## - Symbols declared in `.exports` will not 
+    ##   abide by this rule
+
+    var memoizedParams: Value = nil
+ 
+    let argsL = len(fun.params.a)
+
+    if fun.memoize:
+        memoizedParams = newBlock()
+
+        var i=0
+        while i < argsL:
+            memoizedParams.a.add(stack.peek(i))
+            inc i
+
+        # this specific call result has already been memoized
+        # so we can just return it
+        if (let memd = getMemoized(fid, memoizedParams); not memd.isNil):
+            popN argsL
+            push memd
+            return
+
+    prepareLeakless(fun.params.a)
+
+    for arg in fun.params.a:
+        # pop argument and set it
+        SetSym(arg.s, move stack.pop())
+
+    if fun.bcode().isNil:
+        fun.bcode() = newBytecode(doEval(fun.main))
+
+    try:
+        ExecLoop(fun.bcode().trans.constants, fun.bcode().trans.instructions)
+
+    except ReturnTriggered:
+        discard
+
+    finally:
+        if fun.memoize:
+            setMemoized(fid, memoizedParams, stack.peek(0))
+
+        finalizeLeakless()
 
 proc ExecLoop*(cnst: ValueArray, it: VBinary) =
     ## The main execution loop.
