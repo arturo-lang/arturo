@@ -142,10 +142,9 @@ type
                 main*       : Value
                 imports*    : Value
                 exports*    : Value
-                exportable* : bool
                 memoize*    : bool
-                bcode*      : Value
                 inline*     : bool
+                bcode*      : Value
             of BuiltinFunction:
                 action*     : BuiltinAction
 
@@ -254,7 +253,6 @@ makeFuncAccessor(params)
 makeFuncAccessor(main)
 makeFuncAccessor(imports)
 makeFuncAccessor(exports)
-makeFuncAccessor(exportable)
 makeFuncAccessor(memoize)
 makeFuncAccessor(bcode)
 makeFuncAccessor(inline)

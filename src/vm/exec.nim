@@ -248,10 +248,6 @@ proc execFunction*(fun: Value, fid: Hash) =
     ##   overwrite the value in the outer scope
     ## - Symbols declared in `.exports` will not 
     ##   abide by this rule
-    ## - If the whole function is marked as 
-    ##   `.exportable`, then none of the symbols 
-    ##   will abide by this rule and it will behave 
-    ##   pretty much like `execLeakless`
 
     var memoizedParams: Value = nil
     var savedSyms: ValueDict
@@ -302,32 +298,32 @@ proc execFunction*(fun: Value, fid: Hash) =
         if fun.memoize:
             setMemoized(fid, memoizedParams, stack.peek(0))
 
-        if fun.exportable:
-            for k in fun.params.a:
-                if (let savedSym = savedSyms.getOrDefault(k.s, nil); not savedSym.isNil):
-                    Syms[k.s] = savedSym
-                    if (let savedArity = savedArities.getOrDefault(k.s, -1); savedArity != -1):
-                        Arities[k.s] = savedArity
+        # if fun.exportable:
+        #     for k in fun.params.a:
+        #         if (let savedSym = savedSyms.getOrDefault(k.s, nil); not savedSym.isNil):
+        #             Syms[k.s] = savedSym
+        #             if (let savedArity = savedArities.getOrDefault(k.s, -1); savedArity != -1):
+        #                 Arities[k.s] = savedArity
+        #             else:
+        #                 Arities.del(k.s)
+        #         else:
+        #             Syms.del(k.s)
+        #             Arities.del(k.s)
+        # else:
+        if not fun.exports.isNil:
+            for k in fun.exports.a:
+                if (let newSym = Syms.getOrDefault(k.s, nil); not newSym.isNil):
+                    savedSyms[k.s] = newSym
+                    if (let newArity = Arities.getOrDefault(k.s, -1); newArity != -1):
+                        savedArities[k.s] = newArity
                     else:
-                        Arities.del(k.s)
-                else:
-                    Syms.del(k.s)
-                    Arities.del(k.s)
+                        savedArities.del(k.s)
+        
+            Syms = savedSyms
+            Arities = savedArities
         else:
-            if not fun.exports.isNil:
-                for k in fun.exports.a:
-                    if (let newSym = Syms.getOrDefault(k.s, nil); not newSym.isNil):
-                        savedSyms[k.s] = newSym
-                        if (let newArity = Arities.getOrDefault(k.s, -1); newArity != -1):
-                            savedArities[k.s] = newArity
-                        else:
-                            savedArities.del(k.s)
-            
-                Syms = savedSyms
-                Arities = savedArities
-            else:
-                Syms = savedSyms
-                Arities = savedArities
+            Syms = savedSyms
+            Arities = savedArities
 
 proc execFunctionInline*(fun: Value, fid: Hash) =
     ## Execute given Function value without scoping

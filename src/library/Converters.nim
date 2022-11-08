@@ -908,7 +908,7 @@ proc defineSymbols*() =
         attrs       = {
             "import"    : ({Block},"import/embed given list of symbols from current environment"),
             "export"    : ({Block},"export given symbols to parent"),
-            "exportable": ({Logical},"export all symbols to parent"),
+            #"exportable": ({Logical},"export all symbols to parent"),
             "memoize"   : ({Logical},"store results of function calls"),
             "inline"    : ({Logical},"execute function without scope")
         },
@@ -1001,14 +1001,16 @@ proc defineSymbols*() =
                 imports = newDictionary(ret)
 
             var exports: Value = nil
-            var exportable = (hadAttr("exportable"))
+            #var exportable = (hadAttr("exportable"))
 
-            if exportable:
-                exports = VNULL # important, in case the function is all-exportable
-                                # since we check for exports.isNil *first*
-            else:
-                if checkAttr("export"):
-                    exports = aExport
+            if checkAttr("export"):
+                exports = aExport
+
+            # if exportable:
+            #     exports = VNULL # important, in case the function is all-exportable
+            #                     # since we check for exports.isNil *first*
+            # else:
+                
 
             var memoize = (hadAttr("memoize"))
             var inline = (hadAttr("inline"))
@@ -1059,14 +1061,14 @@ proc defineSymbols*() =
                 var mainBody: ValueArray = y.a
                 mainBody.insert(body)
 
-                ret = newFunction(newBlock(args),newBlock(mainBody),imports,exports,exportable,memoize,inline)
+                ret = newFunction(newBlock(args),newBlock(mainBody),imports,exports,memoize,inline)
             else:
                 if x.a.len > 0:
                     for arg in x.a:
                         argTypes[arg.s] = {Any}
                 else:
                     argTypes[""] = {Nothing}
-                ret = newFunction(x,y,imports,exports,exportable,memoize,inline)
+                ret = newFunction(x,y,imports,exports,memoize,inline)
             
             if not y.data.isNil:
                 if y.data.kind==Dictionary:
