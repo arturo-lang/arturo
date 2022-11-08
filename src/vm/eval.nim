@@ -64,6 +64,15 @@ when not defined(NOERRORLINES):
                 (byte)line
             ])
 
+func hasBranching(blk: Value, continueW: string = "continue", breakW: string = "break"): bool {.enforceNoRaises.} =
+    for item in blk.a:
+        if item.kind==Word and (item.s==continueW or item.s==breakW):
+            return true
+        elif item.kind==Block:
+            if hasBranching(item, continueW, breakW):
+                return true
+    return false
+
 proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = false, isDictionary: bool = false) =
     var argStack: seq[int] = @[]
     var currentCommand: VBinary = @[]
@@ -75,6 +84,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
     var foundUnless = false
     var foundElse = false
     var foundSwitch = false
+    var foundWhile = false
     var foundAdd = false
     var foundSub = false
 
@@ -227,7 +237,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         elif fn == SwitchF: 
             foundSwitch = true
             bt = opSwitch
-        elif fn == WhileF: bt = opWhile
+        elif fn == WhileF: 
+            foundWhile = true
+            bt = opWhile
         elif fn == ReturnF: bt = opReturn
         elif fn == ToF: 
             bt = opTo
@@ -453,6 +465,63 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
         foundSwitch = false
 
+    proc optimizeWhile(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
+        if (OpCode)(currentCommand[^1]) == opWhile:
+
+            let (cnstId, shift) = getConstIdWithShift(currentCommand, 0)
+
+            if cnstId != -1:
+                let blk1 = consts[cnstId]
+                if blk1.kind == Block:
+                    let (cnstId2, shift2) = getConstIdWithShift(currentCommand, 1+shift)
+
+                    if cnstId2 != -1:
+                        let blk2 = consts[cnstId2]
+                        if blk2.kind == Block:
+                            if not hasBranching(blk1):
+                                currentCommand.delete(0..shift+shift2+1)
+                                discard currentCommand.pop()
+                                let initialLen = currentCommand.len
+                                evalOne(blk2, consts, currentCommand, inBlock=inBlock, isDictionary=isDictionary)
+                                var injectable = opJmpIfNot
+                                case (OpCode)currentCommand[^1]:
+                                    of opNot:
+                                        discard currentCommand.pop()
+                                        injectable = opJmpIf
+                                    of opEq:
+                                        discard currentCommand.pop()
+                                        injectable = opJmpIfNe
+                                    of opNe:
+                                        discard currentCommand.pop()
+                                        injectable = opJmpIfEq
+                                    of opGt:
+                                        discard currentCommand.pop()
+                                        injectable = opJmpIfLe
+                                    of opGe:
+                                        discard currentCommand.pop()
+                                        injectable = opJmpIfLt
+                                    of opLt:
+                                        discard currentCommand.pop()
+                                        injectable = opJmpIfGe
+                                    of opLe:
+                                        discard currentCommand.pop()
+                                        injectable = opJmpIfGt
+                                    else:
+                                        discard
+                                currentCommand.add([(byte)injectable, (byte)0, (byte)0])
+                                let injPos = currentCommand.len - 2
+                                evalOne(blk1, consts, currentCommand, inBlock=inBlock, isDictionary=isDictionary)
+                                currentCommand.add([(byte)opGoup, (byte)0, (byte)0])
+                                let gotoPos = currentCommand.len - 2
+                                let finPos = currentCommand.len - injPos - 2
+                                currentCommand[injPos] = (byte)finPos shr 8
+                                currentCommand[injPos+1] = (byte)finPos
+                                let dist = currentCommand.len - initialLen
+                                currentCommand[gotoPos] = (byte)dist shr 8
+                                currentCommand[gotoPos+1] = (byte)dist
+
+        foundWhile = false
+
     proc optimizeAdd(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
         if (OpCode)(currentCommand[^1]) == opAdd:
             if currentCommand.len == 3 and (OpCode)(currentCommand[0])==opConstI1:
@@ -493,6 +562,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
         elif foundSwitch:
             optimizeSwitch(consts, it)
+
+        elif foundWhile:
+            optimizeWhile(consts, it)
 
         elif foundAdd:
             optimizeAdd(consts, it)
