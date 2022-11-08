@@ -623,7 +623,7 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Dictionary:  result = newDictionary(v.d)
         of Object:      result = newObject(v.o, v.proto)
 
-        of Function:    result = newFunction(v.params, v.main, v.imports, v.exports, v.exportable, v.memoize)
+        of Function:    result = newFunction(v.params, v.main, v.imports, v.exports, v.exportable, v.memoize, v.inline)
 
         of Database:    
             when not defined(NOSQLITE):
