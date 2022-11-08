@@ -621,7 +621,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 # LOW-LEVEL OPERATIONS
                 #---------------------------------
 
-                # [0xC0-0xCF]
+                # [0xC0-0xDF]
                 # no operation
                 of opNop                : discard
 
@@ -651,10 +651,18 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opJmpIfLt            : performConditionalJump(`<`)
                 of opJmpIfLe            : performConditionalJump(`<=`)
 
+                of RSRV16               : discard
+                of RSRV17               : discard
+                of RSRV18               : discard
+
                 # flow control
                 of opGoto               :
                     i += 2
                     i += (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
+
+                of opGoup               :
+                    i += 2
+                    i -= (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
 
                 of opRet                :
                     discard
