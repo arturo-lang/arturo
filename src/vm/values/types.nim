@@ -235,9 +235,13 @@ when sizeof(ValueObj) > 64: # At time of writing it was '56', 8 - 64 bit integer
     {.warning: "'Value's inner object is large which will impact performance".}
 
 template makeFuncAccessor*(name: untyped) =
-  template name*(val: Value): typeof(val.funcType.name) =
-    assert val.kind == Function
-    val.funcType.name
+    proc name*(val: Value): typeof(val.funcType.name) {.inline.} =
+        assert val.kind == Function
+        val.funcType.name
+
+    proc `name=`*(val: Value, newVal: typeof(val.funcType.name)) {.inline.} =
+        assert val.kind == Function
+        val.funcType.name = newVal
 
 
 makeFuncAccessor(args)
