@@ -900,7 +900,8 @@ proc defineSymbols*() =
             "import"    : ({Block},"import/embed given list of symbols from current environment"),
             "export"    : ({Block},"export given symbols to parent"),
             "exportable": ({Logical},"export all symbols to parent"),
-            "memoize"   : ({Logical},"store results of function calls")
+            "memoize"   : ({Logical},"store results of function calls"),
+            "inline"    : ({Logical},"execute function without scope")
         },
         returns     = {Function},
         example     = """
