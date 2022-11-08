@@ -615,7 +615,6 @@ proc copyValue*(v: Value): Value {.inline.} =
             if v.data.isNil: 
                 let newValues = cleanedBlockValuesCopy(v)
                 result = Value(kind: Block, a: newValues)
-                #result = newBlock(v.a.map((vv)=>copyValue(vv)))
             else:
                 result = newBlock(v.a.map((vv)=>copyValue(vv)), copyValue(v.data))
 
