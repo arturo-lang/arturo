@@ -1013,6 +1013,8 @@ proc defineSymbols*() =
             var memoize = (hadAttr("memoize"))
             var inline = (hadAttr("inline"))
 
+            # TODO(Converters\function) Verify safety of implicit `.inline`s
+            #  labels: library, benchmark, open discussion
             if not inline:
                 if canBeInlined(y):
                     inline = true
