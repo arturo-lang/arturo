@@ -493,7 +493,8 @@ func newFunction*(params: Value, main: Value, imports: Value = nil, exports: Val
             imports: imports,
             exports: exports,
             exportable: exportable,
-            memoize: memoize
+            memoize: memoize,
+            bcode: nil
         )
     )
 
