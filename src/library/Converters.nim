@@ -1002,6 +1002,7 @@ proc defineSymbols*() =
                     exports = aExport
 
             var memoize = (hadAttr("memoize"))
+            var inline = (hadAttr("inline"))
             
             cleanBlock(x)
 
