@@ -269,10 +269,14 @@ func newVersion*(v: string): Value {.inline.} =
     extraPart &= v[lastIndex+1 .. ^1]
 
     let parts: seq[string] = numPart.split(".")
-    Value(kind: Version, major: parseInt(parts[0]), 
-                         minor: parseInt(parts[1]), 
-                         patch: parseInt(parts[2]), 
-                         extra: extraPart)
+    Value(kind: Version,
+        version: VVersion(
+            major: parseInt(parts[0]),
+            minor: parseInt(parts[1]),
+            patch: parseInt(parts[2]),
+            extra: extraPart
+        )
+    )
 
 func newType*(t: ValueKind): Value {.inline, enforceNoRaises.} =
     ## create Type (BuiltinType) value from ValueKind

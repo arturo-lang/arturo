@@ -26,10 +26,11 @@ import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vration
 #=======================================
 # Types
 #=======================================
- 
+
 type
     ValueArray* = seq[Value]
-    ValueDict*  = OrderedTable[string,Value]
+    ValueStackDict* = OrderedTable[string, Value]
+    ValueDict*  = OrderedTableRef[string, Value]
 
     Translation* = ref object
         constants*: ValueArray
@@ -144,38 +145,40 @@ type
                 bcode*      : Value
             of BuiltinFunction:
                 action*     : BuiltinAction
+    VVersion* = ref object
+        major*   : int
+        minor*   : int
+        patch*   : int
+        extra*   : string
 
-    Value* {.final,acyclic.} = ref object 
+    Value* {.final,acyclic.} = ref object
         info*: string
         readonly*: bool
 
         case kind*: ValueKind:
             of Null,
                Nothing,
-               Any:        discard 
+               Any:        discard
             of Logical:     b*  : VLogical
-            of Integer:  
+            of Integer:
                 case iKind*: IntegerKind:
                     # TODO(VM/values/types) Wrap Normal and BigInteger in one type
                     #  Perhaps, we could do that via class inheritance, with the two types inheriting a new `Integer` type, provided that it's properly benchmarked first.
-                    #  labels: vm, values, enhancement, benchmark, open discussion 
+                    #  labels: vm, values, enhancement, benchmark, open discussion
                     of NormalInteger:   i*  : int
-                    of BigInteger:      
+                    of BigInteger:
                         when defined(WEB):
                             bi* : JsBigInt
                         elif not defined(NOGMP):
-                            bi* : Int    
+                            bi* : Int
                         else:
                             discard
             of Floating: f*: float
             of Complex:     z*  : VComplex
             of Rational:    rat*  : VRational
-            of Version: 
-                major*   : int
-                minor*   : int
-                patch*   : int
-                extra*   : string
-            of Type:        
+            of Version:
+                version*: VVersion
+            of Type:
                 t*  : ValueKind
                 case tpKind*: TypeKind:
                     of UserType:    ts* : Prototype
@@ -190,19 +193,19 @@ type
             of Path,
                PathLabel:   p*  : ValueArray
             of Symbol,
-               SymbolLiteral:      
+               SymbolLiteral:
                    m*  : VSymbol
             of Regex:       rx* : VRegex
             of Quantity:
                 nm*: Value
                 unit*: VQuantity
             of Color:       l*  : VColor
-            of Date:        
-                e*     : ValueDict         
+            of Date:
+                e*     : ValueDict
                 eobj*  : ref DateTime
             of Binary:      n*  : VBinary
             of Inline,
-               Block:       
+               Block:
                    a*       : ValueArray
                    data*    : Value
                    dirty*   : bool
@@ -210,12 +213,12 @@ type
             of Object:
                 o*: ValueDict   # fields
                 proto*: Prototype # custom type pointer
-            of Function:    
+            of Function:
                 funcType*: VFunction
 
             of Database:
                 case dbKind*: DatabaseKind:
-                    of SqliteDatabase: 
+                    of SqliteDatabase:
                         when not defined(NOSQLITE):
                             sqlitedb*: sqlite.DbConn
                     of MysqlDatabase: discard
@@ -234,7 +237,21 @@ type
 when sizeof(ValueObj) > 64: # At time of writing it was '56', 8 - 64 bit integers seems like a good warning site? Can always go smaller
     {.warning: "'Value's inner object is large which will impact performance".}
 
-template makeFuncAccessor*(name: untyped) =
+template makeVersionAccessor(name: untyped) =
+    proc name*(val: Value): typeof(val.version.name) {.inline.} =
+        assert val.kind == Version
+        val.version.name
+
+    proc `name=`*(val: Value, newVal: typeof(val.version.name)) {.inline.} =
+        assert val.kind == Version
+        val.version.name = newVal
+
+makeVersionAccessor(major)
+makeVersionAccessor(minor)
+makeVersionAccessor(patch)
+makeVersionAccessor(extra)
+
+template makeFuncAccessor(name: untyped) =
     proc name*(val: Value): typeof(val.funcType.name) {.inline.} =
         assert val.kind == Function
         val.funcType.name
@@ -259,4 +276,9 @@ makeFuncAccessor(memoize)
 makeFuncAccessor(bcode)
 makeFuncAccessor(action)
 
+
+
 converter toDateTime*(dt: ref DateTime): DateTime = dt[]
+converter toHeapTable*(valueDict: sink ValueStackDict): ValueDict =
+  result = newOrderedTable[string, Value](0)
+  result[] = valueDict
