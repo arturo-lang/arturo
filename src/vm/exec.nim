@@ -298,18 +298,6 @@ proc execFunction*(fun: Value, fid: Hash) =
         if fun.memoize:
             setMemoized(fid, memoizedParams, stack.peek(0))
 
-        # if fun.exportable:
-        #     for k in fun.params.a:
-        #         if (let savedSym = savedSyms.getOrDefault(k.s, nil); not savedSym.isNil):
-        #             Syms[k.s] = savedSym
-        #             if (let savedArity = savedArities.getOrDefault(k.s, -1); savedArity != -1):
-        #                 Arities[k.s] = savedArity
-        #             else:
-        #                 Arities.del(k.s)
-        #         else:
-        #             Syms.del(k.s)
-        #             Arities.del(k.s)
-        # else:
         if not fun.exports.isNil:
             for k in fun.exports.a:
                 if (let newSym = Syms.getOrDefault(k.s, nil); not newSym.isNil):
