@@ -298,7 +298,7 @@ type
         # LOW-LEVEL OPERATIONS
         #---------------------------------
 
-        # [0xB0-0xBF]
+        # [0xB0-0xCF]
         # no operation
         opNop           = 0xC0      # ()                #                   # 
 
@@ -318,10 +318,15 @@ type
         opJmpIfLt       = 0xCB      # (idx,idxB)        # cond              #
         opJmpIfLe       = 0xCC      # (idx,idxB)        # cond              #
 
+        RSRV16          = 0xCD      #
+        RSRV17          = 0xCE      #
+        RSRV18          = 0xCF      #
+
         # flow control
-        opGoto          = 0xCD      # (idx,idxB)        #                   #
-        opRet           = 0xCE      # ()                #                   #
-        opEnd           = 0xCF      # ()                #                   #
+        opGoto          = 0xD0      # (idx,idxB)        #                   #
+        opGoup          = 0xD1      # (idx,idxB)        #                   #
+        opRet           = 0xD2      # ()                #                   #
+        opEnd           = 0xD3      # ()                #                   #
 
 when false:
     #=======================================
