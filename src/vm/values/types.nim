@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import tables, times, unicode
+import std/[tables, times, unicode, setutils]
 
 when not defined(NOSQLITE):
     import db_sqlite as sqlite
@@ -151,15 +151,21 @@ type
         patch*   : int
         extra*   : string
 
+    ValueFlag* = enum
+      isDirty, isReadOnly, isTrue, isMaybe
+
+    ValueFlags* = set[ValueFlag]
+
     Value* {.final,acyclic.} = ref object
         info*: string
-        readonly*: bool
+        flags*: ValueFlags
 
         case kind*: ValueKind:
             of Null,
                Nothing,
-               Any:        discard
-            of Logical:     b*  : VLogical
+               Any,
+               Logical:
+                   discard
             of Integer:
                 case iKind*: IntegerKind:
                     # TODO(VM/values/types) Wrap Normal and BigInteger in one type
@@ -208,7 +214,6 @@ type
                Block:
                    a*       : ValueArray
                    data*    : Value
-                   dirty*   : bool
             of Dictionary:  d*  : ValueDict
             of Object:
                 o*: ValueDict   # fields
@@ -245,6 +250,37 @@ template makeVersionAccessor(name: untyped) =
     proc `name=`*(val: Value, newVal: typeof(val.version.name)) {.inline.} =
         assert val.kind == Version
         val.version.name = newVal
+
+proc readonly*(val: Value): bool {.inline.} = isReadOnly in val.flags
+proc `readonly=`*(val: Value, newVal: bool) {.inline.} = val.flags[isReadOnly] = newVal
+
+proc dirty*(val: Value): bool {.inline.} = isDirty in val.flags
+proc `dirty=`*(val: Value, newVal: bool) {.inline.} = val.flags[isDirty] = newVal
+
+proc b*(val: Value): VLogical {.inline.} =
+    assert val.kind == Logical
+    assert (val.flags * {isMaybe, isTrue}).len <= 1 # Ensure we do not have {isMaybe, isTrue}
+    if val.flags * {isMaybe} == {isMaybe}:
+        Maybe
+    elif val.flags * {isTrue} == {isTrue}:
+        True
+    else:
+        False
+
+proc `b=`*(val: Value, newVal: VLogical) {.inline.} =
+    assert val.kind == Logical
+    case newVal
+    of Maybe:
+        val.flags.excl isTrue
+        val.flags.incl isMaybe
+    of True:
+        val.flags.excl isMaybe
+        val.flags.incl isTrue
+    else:
+        val.flags.excl {isMaybe, isTrue}
+
+
+
 
 makeVersionAccessor(major)
 makeVersionAccessor(minor)
