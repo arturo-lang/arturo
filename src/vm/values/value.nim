@@ -646,7 +646,7 @@ proc copyValue*(v: Value): Value {.inline.} =
             else:
                 result = newBlock(v.a.map((vv)=>copyValue(vv)), copyValue(v.data))
 
-        of Dictionary:  result = newDictionary(v.d)
+        of Dictionary:  result = newDictionary(v.d[])
         of Object:      result = newObject(v.o, v.proto)
 
         of Function:    result = newFunction(v.params, v.main, v.imports, v.exports, v.exportable, v.memoize)
