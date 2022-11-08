@@ -280,10 +280,11 @@ proc execFunction*(fun: Value, fid: Hash) =
         # pop argument and set it
         SetSym(arg.s, move stack.pop())
 
-    let evaled = doEval(fun.main)
+    if fun.bcode().isNil:
+        fun.bcode() = newBytecode(doEval(fun.main))
 
     try:
-        ExecLoop(evaled.constants, evaled.instructions)
+        ExecLoop(fun.bcode().trans.constants, fun.bcode().trans.instructions)
 
     except ReturnTriggered:
         discard
