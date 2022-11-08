@@ -239,7 +239,7 @@ proc execFunction*(fun: Value, fid: Hash) =
     ##   pretty much like `execLeakless`
 
     var memoizedParams: Value = nil
-    var savedSyms: ValueDict
+    var savedSyms: ValueStackDict
 
     var savedArities = Arities
     let argsL = len(fun.params.a)
@@ -265,7 +265,7 @@ proc execFunction*(fun: Value, fid: Hash) =
             else:
                 Arities.del(arg.s)
         
-    savedSyms = Syms
+    savedSyms = Syms[]
     if not fun.imports.isNil:
         for k,v in pairs(fun.imports.d):
             SetSym(k, v)
@@ -308,10 +308,10 @@ proc execFunction*(fun: Value, fid: Hash) =
                         else:
                             savedArities.del(k.s)
             
-                Syms = savedSyms
+                Syms[] = savedSyms
                 Arities = savedArities
             else:
-                Syms = savedSyms
+                Syms[] = savedSyms
                 Arities = savedArities
 
 proc ExecLoop*(cnst: ValueArray, it: VBinary) =
