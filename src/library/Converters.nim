@@ -38,6 +38,17 @@ import vm/values/custom/[vbinary]
 # Helpers
 #=======================================
 
+func canBeInlined(v: Value): bool {.enforceNoRaises.} =
+    for item in v.a:
+        if item.kind == Label:
+            return false
+        elif item.kind == Word and item.s == "let":
+            return false
+        elif item.kind == Block:
+            if not canBeInlined(item):
+                return false
+    return true
+
 proc parseFL(s: string): float =
     result = 0.0
     let L = parseutils.parseFloat(s, result, 0)
@@ -1003,6 +1014,10 @@ proc defineSymbols*() =
 
             var memoize = (hadAttr("memoize"))
             var inline = (hadAttr("inline"))
+
+            if not inline:
+                if canBeInlined(y):
+                    inline = true
             
             cleanBlock(x)
 
