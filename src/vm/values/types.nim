@@ -145,6 +145,7 @@ type
                 exportable* : bool
                 memoize*    : bool
                 bcode*      : Value
+                inline*     : bool
             of BuiltinFunction:
                 action*     : BuiltinAction
 
@@ -256,6 +257,7 @@ makeFuncAccessor(exports)
 makeFuncAccessor(exportable)
 makeFuncAccessor(memoize)
 makeFuncAccessor(bcode)
+makeFuncAccessor(inline)
 makeFuncAccessor(action)
 
 converter toDateTime*(dt: ref DateTime): DateTime = dt[]
