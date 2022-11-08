@@ -481,7 +481,7 @@ proc newObject*(args: ValueDict, prot: Prototype, initializer: proc (self: Value
     
     initializer(result, prot)
 
-func newFunction*(params: Value, main: Value, imports: Value = nil, exports: Value = nil, exportable: bool = false, memoize: bool = false, inline: bool = false): Value {.inline, enforceNoRaises.} =
+func newFunction*(params: Value, main: Value, imports: Value = nil, exports: Value = nil, memoize: bool = false, inline: bool = false): Value {.inline, enforceNoRaises.} =
     ## create Function (UserFunction) value with given parameters, ``main`` body, etc
     Value(
         kind: Function,
@@ -492,7 +492,6 @@ func newFunction*(params: Value, main: Value, imports: Value = nil, exports: Val
             main: main,
             imports: imports,
             exports: exports,
-            exportable: exportable,
             memoize: memoize,
             inline: inline,
             bcode: nil
@@ -623,7 +622,7 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Dictionary:  result = newDictionary(v.d)
         of Object:      result = newObject(v.o, v.proto)
 
-        of Function:    result = newFunction(v.params, v.main, v.imports, v.exports, v.exportable, v.memoize, v.inline)
+        of Function:    result = newFunction(v.params, v.main, v.imports, v.exports, v.memoize, v.inline)
 
         of Database:    
             when not defined(NOSQLITE):
@@ -2363,9 +2362,8 @@ func hash*(v: Value): Hash {.inline.}=
                 if not v.exports.isNil:
                     result = result !& hash(v.exports)
 
-                result = result !& hash(v.exportable)
-
                 result = result !& hash(v.memoize)
+                result = result !& hash(v.inline)
                 result = !$ result
             else:
                 result = cast[Hash](unsafeAddr v)
