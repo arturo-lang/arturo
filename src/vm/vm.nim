@@ -116,8 +116,8 @@ proc setupLibrary() =
         importLibrary()
 
 template initialize(args: seq[string], filename: string, isFile:bool, scriptData:Value = nil, mutedColors: bool = false, portableData = "") =
-    # function arity
-    Arities = initTable[string,int]()
+    # # function arity
+    # Arities = initTable[string,int]()
     # stack
     createMainStack()
 
