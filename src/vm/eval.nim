@@ -783,9 +783,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
         case node.kind:
             of Newline: 
-                # TODO(Eval/evalOne) verify Newline handling works properly
-                #  Also, we have to figure out whether the commented-out code is needed at all
-                #  labels: vm, evaluator, cleanup
                 when not defined(NOERRORLINES) and not defined(OPTIMIZED):
                     addEol(it, node.line)
                 else:
