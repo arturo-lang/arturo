@@ -163,18 +163,21 @@ template finalizeLeakless*(): untyped =
     ## 
     ## **Hint:** To be used in the Iterators module
 
-    for (sym, val, arity) in toRestore:
+    for (sym, val) in toRestore:
         if val.isNil:
-            var delSym: Value
-            if Syms.pop(sym, delSym):
-                if delSym.kind==Function:
-                    discard
-                    #Arities.del(sym)
+            Syms.del(sym)
         else:
             Syms[sym] = val
-            if arity != -1:
-                discard
-                #Arities[sym] = arity
+        #     var delSym: Value
+        #     if Syms.pop(sym, delSym):
+        #         if delSym.kind==Function:
+        #             discard
+        #             #Arities.del(sym)
+        # else:
+        #     Syms[sym] = val
+        #     if arity != -1:
+        #         discard
+        #         #Arities[sym] = arity
 
 template handleBranching*(tryDoing, finalize: untyped): untyped =
     ## Wrapper for code that may throw *Break* or *Continue* signals, 
