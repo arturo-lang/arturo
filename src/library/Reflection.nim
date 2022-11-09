@@ -46,8 +46,8 @@ proc defineSymbols*() =
         """:
             #=======================================================
             var ret = initOrderedTable[string,Value]()
-            for k,v in pairs(Arities):
-                ret[k] = newInteger(v)
+            # for k,v in pairs(Arities):
+            #     ret[k] = newInteger(v)
 
             push(newDictionary(ret))
             
