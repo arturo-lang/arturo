@@ -450,8 +450,8 @@ proc defineSymbols*() =
             else:
                 SetInPlace(y, safe=true)
                     
-                if y.kind==Function:
-                    Arities[x.s] = y.arity
+                # if y.kind==Function:
+                #     Arities[x.s] = y.arity
 
     builtin "new",
         alias       = unaliased, 
