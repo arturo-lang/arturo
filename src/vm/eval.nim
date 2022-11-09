@@ -1062,7 +1062,7 @@ proc doEval*(root: Value, isDictionary=false, useStored: static bool = true): Tr
     var newit: VBinary = @[]
 
     # TEMP
-    TmpArities = initOrderedTable[string, Value]()
+    TmpArities = initTable[string, int]()
     #TmpArities = Arities
 
     evalOne(root, cnsts, newit, isDictionary=isDictionary)
