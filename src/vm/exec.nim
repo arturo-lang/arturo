@@ -255,7 +255,6 @@ proc execFunction*(fun: Value, fid: Hash) =
     var memoizedParams: Value = nil
     var savedSyms: ValueDict
 
-    #var savedArities = Arities
     let argsL = len(fun.params.a)
 
     if fun.memoize:
@@ -272,13 +271,6 @@ proc execFunction*(fun: Value, fid: Hash) =
             popN argsL
             push memd
             return
-    else:
-        discard
-        # for i,arg in fun.params.a:          
-        #     if stack.peek(i).kind==Function:
-        #         Arities[arg.s] = stack.peek(i).arity
-        #     else:
-        #         Arities.del(arg.s)
         
     savedSyms = Syms
     if not fun.imports.isNil:
@@ -306,16 +298,8 @@ proc execFunction*(fun: Value, fid: Hash) =
             for k in fun.exports.a:
                 if (let newSym = Syms.getOrDefault(k.s, nil); not newSym.isNil):
                     savedSyms[k.s] = newSym
-                    # if (let newArity = Arities.getOrDefault(k.s, -1); newArity != -1):
-                    #     savedArities[k.s] = newArity
-                    # else:
-                    #     savedArities.del(k.s)
         
-            Syms = savedSyms
-            #Arities = savedArities
-        else:
-            Syms = savedSyms
-            #Arities = savedArities
+        Syms = savedSyms
 
 proc execFunctionInline*(fun: Value, fid: Hash) =
     ## Execute given Function value without scoping
