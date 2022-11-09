@@ -18,8 +18,8 @@
 # Libraries
 #=======================================
 
-import algorithm, hashes
-import sequtils, tables, unicode
+import algorithm, hashes, sequtils
+import sugar, tables, unicode
 
 import vm/[bytecode, globals, values/value]
 
@@ -1063,6 +1063,10 @@ proc doEval*(root: Value, isDictionary=false, useStored: static bool = true): Tr
 
     # TEMP
     TmpArities = initTable[string, int]()
+    TmpArities = collect:
+        for k,v in Syms.pairs:
+            if v.kind == Function:
+                {k: v.arity}
     #TmpArities = Arities
 
     evalOne(root, cnsts, newit, isDictionary=isDictionary)
