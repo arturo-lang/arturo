@@ -19,6 +19,8 @@
 # Libraries
 #=======================================
 
+import sugar
+
 import helpers/benchmark
 when not defined(WEB):
     import helpers/helper
@@ -45,10 +47,11 @@ proc defineSymbols*() =
             print arity\print   ; 1
         """:
             #=======================================================
-            var ret: OrderedTable[string,Value] = collect:
-                for k,v in Syms.pairs:
-                    if v.kind == Function:
-                        {k: v.arity}
+            let ret = 
+                collect(initOrderedTable[string, Value]()):
+                    for k,v in Syms.pairs:
+                        if v.kind == Function:
+                            {k: newInteger(v.arity)}
 
             push(newDictionary(ret))
             
