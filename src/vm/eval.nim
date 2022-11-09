@@ -882,9 +882,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             
             of Null:    addToCommand(opConstN)
             of Logical: 
-                # TODO(VM/eval) needs to be inside an `addTerminalValue` block?
-                #  this look like a bug...
-                #  labels: evaluator, bug
                 if node.b==True: addToCommand(opConstBT)
                 elif node.b==False: addToCommand(opConstBF)
                 else: addToCommand(opConstBM)
