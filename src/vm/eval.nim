@@ -1061,12 +1061,10 @@ proc doEval*(root: Value, isDictionary=false, useStored: static bool = true): Tr
     var cnsts: ValueArray = @[]
     var newit: VBinary = @[]
 
-    # TEMP
     TmpArities = collect:
         for k,v in Syms.pairs:
             if v.kind == Function:
                 {k: v.arity}
-    #TmpArities = Arities
 
     evalOne(root, cnsts, newit, isDictionary=isDictionary)
     newit.add((byte)opEnd)
