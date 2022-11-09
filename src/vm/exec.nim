@@ -163,11 +163,11 @@ template finalizeLeakless*(): untyped =
     ## 
     ## **Hint:** To be used in the Iterators module
 
-    for (sym, val) in toRestore:
+    for (sym, val) in mitems(toRestore):
         if val.isNil:
             Syms.del(sym)
         else:
-            Syms[sym] = val
+            Syms[sym] = move val
 
 template handleBranching*(tryDoing, finalize: untyped): untyped =
     ## Wrapper for code that may throw *Break* or *Continue* signals, 
