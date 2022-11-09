@@ -804,7 +804,12 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                             addConst(node, opCall)
                 else:
                     addTerminalValue(inBlock=false):
-                        addConst(node, opLoad)
+                        if node.s == "true":
+                            addToCommand(opConstBT)
+                        elif node.s == "false":
+                            addToCommand(opConstBF)
+                        else:
+                            addConst(node, opLoad)
 
             of Block:
                 addTerminalValue(inBlock=false):
