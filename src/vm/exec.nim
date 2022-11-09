@@ -71,9 +71,6 @@ proc storeByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inlin
     hookProcProfiler("exec/storeByIndex"):
         var stackTop {.cursor.} = stack.peek(0)
 
-        # if unlikely(stackTop.kind==Function):
-        #     Arities[cnst[idx].s] = stackTop.arity
-
         SetSym(cnst[idx].s, stackTop, safe=true)
         when doPop:
             stack.popN(1)
