@@ -45,9 +45,10 @@ proc defineSymbols*() =
             print arity\print   ; 1
         """:
             #=======================================================
-            var ret = initOrderedTable[string,Value]()
-            # for k,v in pairs(Arities):
-            #     ret[k] = newInteger(v)
+            var ret: OrderedTable[string,Value] = collect:
+                for k,v in Syms.pairs:
+                    if v.kind == Function:
+                        {k: v.arity}
 
             push(newDictionary(ret))
             
