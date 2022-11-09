@@ -99,7 +99,6 @@ template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: 
                 act
             )
 
-        #Arities[n] = static argsLen
         SetSym(n, b)
 
         when n=="array"             : ArrayF = b
