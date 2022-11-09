@@ -1061,7 +1061,9 @@ proc doEval*(root: Value, isDictionary=false, useStored: static bool = true): Tr
     var cnsts: ValueArray = @[]
     var newit: VBinary = @[]
 
-    TmpArities = Arities
+    # TEMP
+    TmpArities = initOrderedTable[string, Value]()
+    #TmpArities = Arities
 
     evalOne(root, cnsts, newit, isDictionary=isDictionary)
     newit.add((byte)opEnd)
