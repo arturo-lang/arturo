@@ -22,8 +22,7 @@
 # Libraries
 #=======================================
 
-import hashes, macros, sequtils
-import sugar, tables
+import hashes, macros, sugar, tables
 
 import vm/[
     bytecode, 
@@ -154,9 +153,10 @@ template prepareLeakless*(protected: ValueArray): untyped =
     ## 
     ## **Hint:** To be used in the Iterators module
 
-    var toRestore{.inject.}: seq[(string,Value)] = protected.map((psym) =>
-        (psym.s, Syms.getOrDefault(psym.s, nil))
-    )
+    var toRestore{.inject.}: seq[(string,Value)] = 
+        collect:
+            for psym in protected:
+                (psym.s, Syms.getOrDefault(psym.s, nil))
 
 template finalizeLeakless*(): untyped =
     ## Finalize leak-less block execution
