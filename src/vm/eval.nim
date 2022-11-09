@@ -1062,7 +1062,6 @@ proc doEval*(root: Value, isDictionary=false, useStored: static bool = true): Tr
     var newit: VBinary = @[]
 
     # TEMP
-    TmpArities = initTable[string, int]()
     TmpArities = collect:
         for k,v in Syms.pairs:
             if v.kind == Function:
