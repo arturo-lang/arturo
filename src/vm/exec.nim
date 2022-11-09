@@ -154,9 +154,8 @@ template prepareLeakless*(protected: ValueArray): untyped =
     ## 
     ## **Hint:** To be used in the Iterators module
 
-    var toRestore{.inject.}: seq[(string,Value,int)] = protected.map((psym) =>
-        (psym.s, Syms.getOrDefault(psym.s, nil), -1)
-        #(psym.s, Syms.getOrDefault(psym.s, nil), Arities.getOrDefault(psym.s, -1))
+    var toRestore{.inject.}: seq[(string,Value)] = protected.map((psym) =>
+        (psym.s, Syms.getOrDefault(psym.s, nil))
     )
 
 template finalizeLeakless*(): untyped =
