@@ -18,8 +18,8 @@
 # Libraries
 #=======================================
 
-import algorithm, hashes
-import sequtils, tables, unicode
+import algorithm, hashes, sequtils
+import sugar, tables, unicode
 
 import vm/[bytecode, globals, values/value]
 
@@ -1061,7 +1061,10 @@ proc doEval*(root: Value, isDictionary=false, useStored: static bool = true): Tr
     var cnsts: ValueArray = @[]
     var newit: VBinary = @[]
 
-    TmpArities = Arities
+    TmpArities = collect:
+        for k,v in Syms.pairs:
+            if v.kind == Function:
+                {k: v.arity}
 
     evalOne(root, cnsts, newit, isDictionary=isDictionary)
     newit.add((byte)opEnd)
