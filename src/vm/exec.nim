@@ -22,8 +22,7 @@
 # Libraries
 #=======================================
 
-import hashes, macros, sequtils
-import sugar, tables
+import hashes, macros, sugar, tables
 
 import vm/[
     bytecode, 
@@ -70,9 +69,6 @@ template pushByIndex(idx: int):untyped =
 proc storeByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inline,enforceNoRaises.}=
     hookProcProfiler("exec/storeByIndex"):
         var stackTop {.cursor.} = stack.peek(0)
-
-        if unlikely(stackTop.kind==Function):
-            Arities[cnst[idx].s] = stackTop.arity
 
         SetSym(cnst[idx].s, stackTop, safe=true)
         when doPop:
@@ -157,25 +153,21 @@ template prepareLeakless*(protected: ValueArray): untyped =
     ## 
     ## **Hint:** To be used in the Iterators module
 
-    var toRestore{.inject.}: seq[(string,Value,int)] = protected.map((psym) =>
-        (psym.s, Syms.getOrDefault(psym.s, nil), Arities.getOrDefault(psym.s, -1))
-    )
+    var toRestore{.inject.}: seq[(string,Value)] = 
+        collect:
+            for psym in protected:
+                (psym.s, Syms.getOrDefault(psym.s, nil))
 
 template finalizeLeakless*(): untyped =
     ## Finalize leak-less block execution
     ## 
     ## **Hint:** To be used in the Iterators module
 
-    for (sym, val, arity) in toRestore:
+    for (sym, val) in mitems(toRestore):
         if val.isNil:
-            var delSym: Value
-            if Syms.pop(sym, delSym):
-                if delSym.kind==Function:
-                    Arities.del(sym)
+            Syms.del(sym)
         else:
-            Syms[sym] = val
-            if arity != -1:
-                Arities[sym] = arity
+            Syms[sym] = move val
 
 template handleBranching*(tryDoing, finalize: untyped): untyped =
     ## Wrapper for code that may throw *Break* or *Continue* signals, 
@@ -252,7 +244,6 @@ proc execFunction*(fun: Value, fid: Hash) =
     var memoizedParams: Value = nil
     var savedSyms: ValueDict
 
-    var savedArities = Arities
     let argsL = len(fun.params.a)
 
     if fun.memoize:
@@ -269,12 +260,6 @@ proc execFunction*(fun: Value, fid: Hash) =
             popN argsL
             push memd
             return
-    else:
-        for i,arg in fun.params.a:          
-            if stack.peek(i).kind==Function:
-                Arities[arg.s] = stack.peek(i).arity
-            else:
-                Arities.del(arg.s)
         
     savedSyms = Syms
     if not fun.imports.isNil:
@@ -302,16 +287,8 @@ proc execFunction*(fun: Value, fid: Hash) =
             for k in fun.exports.a:
                 if (let newSym = Syms.getOrDefault(k.s, nil); not newSym.isNil):
                     savedSyms[k.s] = newSym
-                    if (let newArity = Arities.getOrDefault(k.s, -1); newArity != -1):
-                        savedArities[k.s] = newArity
-                    else:
-                        savedArities.del(k.s)
         
-            Syms = savedSyms
-            Arities = savedArities
-        else:
-            Syms = savedSyms
-            Arities = savedArities
+        Syms = savedSyms
 
 proc execFunctionInline*(fun: Value, fid: Hash) =
     ## Execute given Function value without scoping
