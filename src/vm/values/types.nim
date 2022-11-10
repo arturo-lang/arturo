@@ -252,28 +252,24 @@ template `dirty=`*(val: Value, newVal: bool) = val.flags[isDirty] = newVal
 template dynamic*(val: Value): bool = isDynamic in val.flags
 template `dynamic=`*(val: Value, newVal: bool) = val.flags[isDynamic] = newVal
 
-template isFalse*(val: Value): bool = val.flags.contains isFalse
-template isTrue*(val: Value): bool = val.flags.contains isTrue
-template isMaybe*(val: Value): bool = val.flags.contains isMaybe
-
-template b*(val: Value): VLogical =
-    assert val.kind == Logical
-    assert (val.flags * {isMaybe, isTrue}).len <= 1 # Ensure we do not have {isMaybe, isTrue}
-    if val.isMaybe:
+proc b*(val: Value): VLogical {.inline.} =
+    assert (val.flags * {isFalse, isMaybe, isTrue}).len == 1
+    if isMaybe in val.flags:
         Maybe
-    elif val.isTrue:
+    elif isTrue in val.flags:
         True
-    elif val.isFalse:
-        False
     else:
-      assert false
-      return
+        False
 
 template `b=`*(val: Value, newVal: VLogical) =
     assert val.kind == Logical
     val.flags.excl {isTrue, isFalse, isMaybe}
     const flags = [False: isFalse, True: isTrue, Maybe: isMaybe]
     val.flags.incl flags[newVal]
+
+template isFalse*(val: Value): bool = isFalse in val.flags
+template isMaybe*(val: Value): bool = isMaybe in val.flags
+template isTrue*(val: Value): bool = isTrue in val.flags
 
 
 template makeAccessor(field, subfield: untyped) =
