@@ -22,11 +22,7 @@
 # Libraries
 #=======================================
 
-import hashes, tables
-
-when defined(VERBOSE):
-    import strformat
-    import helpers/debug
+import hashes, macros, sugar, tables
 
 import vm/[
     bytecode, 
@@ -40,6 +36,8 @@ import vm/[
 ]
 
 import vm/values/custom/[vbinary, vlogical]
+
+import vm/values/comparison
 
 #=======================================
 # Types
@@ -72,9 +70,6 @@ proc storeByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inlin
     hookProcProfiler("exec/storeByIndex"):
         var stackTop {.cursor.} = stack.peek(0)
 
-        if unlikely(stackTop.kind==Function):
-            Arities[cnst[idx].s] = stackTop.arity
-
         SetSym(cnst[idx].s, stackTop, safe=true)
         when doPop:
             stack.popN(1)
@@ -99,7 +94,15 @@ template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
             if unlikely(SP < f.arity):
                 RuntimeError_NotEnoughArguments(fnName, f.arity)
 
-            execFunction(f, hash(fnName))
+            if f.inline: 
+                var safeToProceed = true
+                for i in 0..f.params.a.high:          
+                    if stack.peek(i).kind==Function:
+                        safeToProceed = false
+                        break
+                if safeToProceed: execFunctionInline(f, hash(fnName))
+                else: execFunction(f, hash(fnName))
+            else: execFunction(f, hash(fnName))
     else:
         f.action()()
 
@@ -116,6 +119,14 @@ template callByIndex(idx: int):untyped =
 
 template fetchAttributeByIndex(idx: int):untyped =
     stack.pushAttr(cnst[idx].s, move stack.pop())
+
+macro performConditionalJump(symb: untyped): untyped =
+    result = quote do:
+        let x = move stack.pop()
+        let y = move stack.pop()
+        i += 2
+        if `symb`(x,y):
+            i += (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
 
 #---------------------------------------
 
@@ -142,25 +153,21 @@ template prepareLeakless*(protected: ValueArray): untyped =
     ## 
     ## **Hint:** To be used in the Iterators module
 
-    var toRestore{.inject.}: seq[(string,Value,int)] = protected.map((psym) =>
-        (psym.s, Syms.getOrDefault(psym.s, nil), Arities.getOrDefault(psym.s, -1))
-    )
+    var toRestore{.inject.}: seq[(string,Value)] = 
+        collect:
+            for psym in protected:
+                (psym.s, Syms.getOrDefault(psym.s, nil))
 
 template finalizeLeakless*(): untyped =
     ## Finalize leak-less block execution
     ## 
     ## **Hint:** To be used in the Iterators module
 
-    for (sym, val, arity) in toRestore:
+    for (sym, val) in mitems(toRestore):
         if val.isNil:
-            var delSym: Value
-            if Syms.pop(sym, delSym):
-                if delSym.kind==Function:
-                    Arities.del(sym)
+            Syms.del(sym)
         else:
-            Syms[sym] = val
-            if arity != -1:
-                Arities[sym] = arity
+            Syms[sym] = move val
 
 template handleBranching*(tryDoing, finalize: untyped): untyped =
     ## Wrapper for code that may throw *Break* or *Continue* signals, 
@@ -233,15 +240,10 @@ proc execFunction*(fun: Value, fid: Hash) =
     ##   overwrite the value in the outer scope
     ## - Symbols declared in `.exports` will not 
     ##   abide by this rule
-    ## - If the whole function is marked as 
-    ##   `.exportable`, then none of the symbols 
-    ##   will abide by this rule and it will behave 
-    ##   pretty much like `execLeakless`
 
     var memoizedParams: Value = nil
     var savedSyms: ValueDict
 
-    var savedArities = Arities
     let argsL = len(fun.params.a)
 
     if fun.memoize:
@@ -258,12 +260,6 @@ proc execFunction*(fun: Value, fid: Hash) =
             popN argsL
             push memd
             return
-    else:
-        for i,arg in fun.params.a:          
-            if stack.peek(i).kind==Function:
-                Arities[arg.s] = stack.peek(i).arity
-            else:
-                Arities.del(arg.s)
         
     savedSyms = Syms
     if not fun.imports.isNil:
@@ -278,7 +274,7 @@ proc execFunction*(fun: Value, fid: Hash) =
         fun.bcode = newBytecode(doEval(fun.main))
 
     try:
-        ExecLoop(fun.bcode().trans.constants, bcode(fun).trans.instructions)
+        ExecLoop(fun.bcode().trans.constants, fun.bcode().trans.instructions)
 
     except ReturnTriggered:
         discard
@@ -287,32 +283,62 @@ proc execFunction*(fun: Value, fid: Hash) =
         if fun.memoize:
             setMemoized(fid, memoizedParams, stack.peek(0))
 
-        if fun.exportable:
-            for k in fun.params.a:
-                if (let savedSym = savedSyms.getOrDefault(k.s, nil); not savedSym.isNil):
-                    Syms[k.s] = savedSym
-                    if (let savedArity = savedArities.getOrDefault(k.s, -1); savedArity != -1):
-                        Arities[k.s] = savedArity
-                    else:
-                        Arities.del(k.s)
-                else:
-                    Syms.del(k.s)
-                    Arities.del(k.s)
-        else:
-            if not fun.exports.isNil:
-                for k in fun.exports.a:
-                    if (let newSym = Syms.getOrDefault(k.s, nil); not newSym.isNil):
-                        savedSyms[k.s] = newSym
-                        if (let newArity = Arities.getOrDefault(k.s, -1); newArity != -1):
-                            savedArities[k.s] = newArity
-                        else:
-                            savedArities.del(k.s)
-            
-                Syms = savedSyms
-                Arities = savedArities
-            else:
-                Syms = savedSyms
-                Arities = savedArities
+        if not fun.exports.isNil:
+            for k in fun.exports.a:
+                if (let newSym = Syms.getOrDefault(k.s, nil); not newSym.isNil):
+                    savedSyms[k.s] = newSym
+        
+        Syms = savedSyms
+
+proc execFunctionInline*(fun: Value, fid: Hash) =
+    ## Execute given Function value without scoping
+    ## 
+    ## This means:
+    ## - No symbols are expected to be declared inside
+    ## - Symbols re-assigned inside will NOT 
+    ##   overwrite the value in the outer scope
+    ## - Symbols declared in `.exports` will not 
+    ##   abide by this rule
+
+    var memoizedParams: Value = nil
+ 
+    let argsL = len(fun.params.a)
+
+    if fun.memoize:
+        memoizedParams = newBlock()
+
+        var i=0
+        while i < argsL:
+            memoizedParams.a.add(stack.peek(i))
+            inc i
+
+        # this specific call result has already been memoized
+        # so we can just return it
+        if (let memd = getMemoized(fid, memoizedParams); not memd.isNil):
+            popN argsL
+            push memd
+            return
+
+    prepareLeakless(fun.params.a)
+
+    for arg in fun.params.a:
+        # pop argument and set it
+        SetSym(arg.s, move stack.pop())
+
+    if fun.bcode().isNil:
+        fun.bcode() = newBytecode(doEval(fun.main))
+
+    try:
+        ExecLoop(fun.bcode().trans.constants, fun.bcode().trans.instructions)
+
+    except ReturnTriggered:
+        discard
+
+    finally:
+        if fun.memoize:
+            setMemoized(fid, memoizedParams, stack.peek(0))
+
+        finalizeLeakless()
 
 proc ExecLoop*(cnst: ValueArray, it: VBinary) =
     ## The main execution loop.
@@ -333,10 +359,9 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
 
         op = (OpCode)(it[i])
 
-        hookOpProfiler($(op)):
+        #echo "Executing: " & (stringify(op)) & " at " & $(i)# & " with next: " & $(it[i+1])
 
-            when defined(VERBOSE):
-                echo "exec: " & $(op)
+        hookOpProfiler($(op)):
 
             case op:
                 # [0x00-0x1F]
@@ -550,13 +575,11 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 # branching
                 of opIf                 : IfF.action()()
                 of opIfE                : IfEF.action()()
+                of opUnless             : UnlessF.action()()
                 of opElse               : ElseF.action()()
+                of opSwitch             : SwitchF.action()()
                 of opWhile              : WhileF.action()()
                 of opReturn             : ReturnF.action()()
-
-                # getters/setters
-                of opGet                : GetF.action()()
-                of opSet                : SetF.action()()
 
                 # converters
                 of opTo                 : ToF.action()()
@@ -568,8 +591,9 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                     ToF.action()()
 
                 # [0xA0-0xAF]
-                # i/o operations
-                of opPrint              : PrintF.action()()
+                # getters/setters
+                of opGet                : GetF.action()()
+                of opSet                : SetF.action()()
 
                 # generators          
                 of opArray              : ArrayF.action()()
@@ -593,15 +617,31 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opInc                : IncF.action()()
                 of opDec                : DecF.action()()
 
-                of RSRV1                : discard
+                # [0xB0-0xBF]
+                # i/o operations
+                of opPrint              : PrintF.action()()
 
-                #of RSRV3..RSRV14        : discard
+                of RSRV1                : discard
+                of RSRV2                : discard
+                of RSRV3                : discard
+                of RSRV4                : discard
+                of RSRV5                : discard
+                of RSRV6                : discard
+                of RSRV7                : discard
+                of RSRV8                : discard
+                of RSRV9                : discard
+                of RSRV10               : discard
+                of RSRV11               : discard
+                of RSRV12               : discard
+                of RSRV13               : discard
+                of RSRV14               : discard
+                of RSRV15               : discard
 
                 #---------------------------------
                 # LOW-LEVEL OPERATIONS
                 #---------------------------------
 
-                # [0xB0-0xBF]
+                # [0xC0-0xDF]
                 # no operation
                 of opNop                : discard
 
@@ -611,22 +651,43 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opOver               : stack.push(stack.peek(1))
                 of opSwap               : swap(Stack[SP-1], Stack[SP-2])
 
+                # conditional jumps
+                of opJmpIf              :
+                    let x = move stack.pop()
+                    i += 2
+                    if not (x.kind==Null or (x.kind==Logical and x.b==False)):
+                        i += (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
+                
+                of opJmpIfNot           :
+                    let x = move stack.pop()
+                    i += 2
+                    if x.kind==Null or (x.kind==Logical and x.b==False):
+                        i += (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
+
+                of opJmpIfEq            : performConditionalJump(`==`)
+                of opJmpIfNe            : performConditionalJump(`!=`)
+                of opJmpIfGt            : performConditionalJump(`>`)
+                of opJmpIfGe            : performConditionalJump(`>=`)
+                of opJmpIfLt            : performConditionalJump(`<`)
+                of opJmpIfLe            : performConditionalJump(`<=`)
+
+                of RSRV16               : discard
+                of RSRV17               : discard
+                of RSRV18               : discard
+
                 # flow control
-                of opJmp                : i = (int)(it[i+1])
-                of opJmpX               : i = (int)((uint16)(it[i+1]) shl 8 + (byte)(it[i+2]))
-                of opJmpIf              : 
-                    if stack.pop().b==True:
-                        i = (int)(it[i+1])
-                of opJmpIfX             : 
-                    if stack.pop().b==True:
-                        i = (int)((uint16)(it[i+1]) shl 8 + (byte)(it[i+2]))
-                of opJmpIfN             : 
-                    if Not(stack.pop().b)==True:
-                        i = (int)(it[i+1])
-                of opJmpIfNX            : 
-                    if Not(stack.pop().b)==True:
-                        i = (int)((uint16)(it[i+1]) shl 8 + (byte)(it[i+2]))
-                of opRet                : discard
-                of opEnd                : break
+                of opGoto               :
+                    i += 2
+                    i += (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
+
+                of opGoup               :
+                    i += 2
+                    i -= (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
+
+                of opRet                :
+                    discard
+
+                of opEnd                :
+                    break
 
         i += 1

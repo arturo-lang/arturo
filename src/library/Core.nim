@@ -37,9 +37,6 @@ import vm/[env, errors, eval, exec, parse]
 
 proc defineSymbols*() =
 
-    when defined(VERBOSE):
-        echo "- Importing: Core"
-
     builtin "alias",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -452,9 +449,6 @@ proc defineSymbols*() =
                         SetSym(w.s, y, safe=true)
             else:
                 SetInPlace(y, safe=true)
-                    
-                if y.kind==Function:
-                    Arities[x.s] = y.arity
 
     builtin "new",
         alias       = unaliased, 

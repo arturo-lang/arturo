@@ -47,9 +47,6 @@ when not defined(WEB):
 
 proc defineSymbols*() =
 
-    when defined(VERBOSE):
-        echo "- Importing: Files"
-
     # TODO(Files) more potential built-in function candidates?
     #  labels: library, enhancement, open discussion
 

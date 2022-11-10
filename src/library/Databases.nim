@@ -44,9 +44,6 @@ import vm/lib
 
 proc defineSymbols*() =
 
-    when defined(VERBOSE):
-        echo "- Importing: Databases"
-
     when not defined(NOSQLITE):
 
         builtin "close",

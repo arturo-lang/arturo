@@ -49,9 +49,6 @@ template processTrigonometric(fun: untyped): untyped =
 
 proc defineSymbols*() =
 
-    when defined(VERBOSE):
-        echo "- Importing: Numbers"
-
     builtin "abs",
         alias       = unaliased, 
         rule        = PrefixPrecedence,

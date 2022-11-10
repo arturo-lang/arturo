@@ -28,9 +28,6 @@ import vm/[exec]
 
 proc defineSymbols*() =
 
-    when defined(VERBOSE):
-        echo "- Importing: Logic"
-
     builtin "all?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
