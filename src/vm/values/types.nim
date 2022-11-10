@@ -252,18 +252,18 @@ template `dirty=`*(val: Value, newVal: bool) = val.flags[isDirty] = newVal
 template dynamic*(val: Value): bool = isDynamic in val.flags
 template `dynamic=`*(val: Value, newVal: bool) = val.flags[isDynamic] = newVal
 
-template isFalse*(val: Value): bool = ValueFlags.isFalse in val.flags
-template isTrue*(val: Value): bool = ValueFlags.isTrue in val.flags
-template isMaybe*(val: Value): bool = ValueFlags.isMaybe in val.flags
+template isFalse*(val: Value): bool = val.flags.contains isFalse
+template isTrue*(val: Value): bool = val.flags.contains isTrue
+template isMaybe*(val: Value): bool = val.flags.contains isMaybe
 
 template b*(val: Value): VLogical =
     assert val.kind == Logical
     assert (val.flags * {isMaybe, isTrue}).len <= 1 # Ensure we do not have {isMaybe, isTrue}
-    if val.flags * {isMaybe} == {isMaybe}:
+    if val.isMaybe:
         Maybe
-    elif val.flags * {isTrue} == {isTrue}:
+    elif val.isTrue:
         True
-    elif val.flags * {isFalse} == {isFalse}:
+    elif val.isFalse:
         False
     else:
       assert false
