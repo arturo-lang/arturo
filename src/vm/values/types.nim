@@ -154,7 +154,7 @@ type
         extra*   : string
 
     ValueFlag* = enum
-      isDirty, isDynamic, isReadOnly, isTrue, isMaybe
+      isDirty, isDynamic, isReadOnly, isTrue, isMaybe, isFalse
 
     ValueFlags* = set[ValueFlag]
 
@@ -252,6 +252,10 @@ template `dirty=`*(val: Value, newVal: bool) = val.flags[isDirty] = newVal
 template dynamic*(val: Value): bool = isDynamic in val.flags
 template `dynamic=`*(val: Value, newVal: bool) = val.flags[isDynamic] = newVal
 
+template isFalse*(val: Value): bool = ValueFlags.isFalse in val.flags
+template isTrue*(val: Value): bool = ValueFlags.isTrue in val.flags
+template isMaybe*(val: Value): bool = ValueFlags.isMaybe in val.flags
+
 template b*(val: Value): VLogical =
     assert val.kind == Logical
     assert (val.flags * {isMaybe, isTrue}).len <= 1 # Ensure we do not have {isMaybe, isTrue}
@@ -259,20 +263,17 @@ template b*(val: Value): VLogical =
         Maybe
     elif val.flags * {isTrue} == {isTrue}:
         True
-    else:
+    elif val.flags * {isFalse} == {isFalse}:
         False
+    else:
+      assert false
+      return
 
 template `b=`*(val: Value, newVal: VLogical) =
     assert val.kind == Logical
-    case newVal
-    of Maybe:
-        val.flags.excl isTrue
-        val.flags.incl isMaybe
-    of True:
-        val.flags.excl isMaybe
-        val.flags.incl isTrue
-    else:
-        val.flags.excl {isMaybe, isTrue}
+    val.flags.excl {isTrue, isFalse, isMaybe}
+    const flags = [False: isFalse, True: isTrue, Maybe: isMaybe]
+    val.flags.incl flags[newVal]
 
 
 template makeAccessor(field, subfield: untyped) =

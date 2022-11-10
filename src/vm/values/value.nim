@@ -87,9 +87,9 @@ let
 
     F1M*            = makeConst Value(kind: Floating, f: -1.0)                        ## constant -1.0
 
-    VTRUE*          = makeConst Value(kind: Logical, flags: {isTrue})                 ## constant True
+    VTRUE*          = makeConst Value(kind: Logical, flags: {ValueFlag.isTrue})                 ## constant True
     VFALSE*         = makeConst Value(kind: Logical, flags: {})                       ## constant False
-    VMAYBE*         = makeConst Value(kind: Logical, flags: {isMaybe})                ## constant Maybe
+    VMAYBE*         = makeConst Value(kind: Logical, flags: {ValueFlag.isMaybe})                ## constant Maybe
 
     VNULL*          = makeConst Value(kind: Null)                                     ## constant Null
 
