@@ -538,19 +538,19 @@ func newBytecode*(t: sink Translation): Value {.inline, enforceNoRaises.} =
 func newInline*(a: sink ValueArray = @[], dirty = false): Value {.inline, enforceNoRaises.} =
     ## create Inline value from ValueArray
     let flags =
-      if dirty:
-          {isDirty}
-      else:
-          {}
+        if dirty:
+            {isDirty}
+        else:
+            {}
     Value(kind: Inline, a: a, flags: flags)
 
 func newBlock*(a: sink ValueArray = @[], data: sink Value = nil, dirty = false): Value {.inline, enforceNoRaises.} =
     ## create Block value from ValueArray
     let flags =
-      if dirty:
-          {isDirty}
-      else:
-          {}
+        if dirty:
+            {isDirty}
+        else:
+            {}
     Value(kind: Block, a: a, data: data, flags: flags)
 
 func newIntegerBlock*[T](a: sink seq[T]): Value {.inline, enforceNoRaises.} =
