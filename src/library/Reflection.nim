@@ -33,9 +33,6 @@ import vm/[env, errors, eval, exec]
 #=======================================
 
 proc defineSymbols*() =
-
-    when defined(VERBOSE):
-        echo "- Importing: Reflection"
     
     builtin "arity",
         alias       = unaliased, 
@@ -49,8 +46,9 @@ proc defineSymbols*() =
         """:
             #=======================================================
             var ret = initOrderedTable[string,Value]()
-            for k,v in pairs(Arities):
-                ret[k] = newInteger(v)
+            for k,v in Syms.pairs:
+                if v.kind == Function:
+                    ret[k] = newInteger(v.arity)
 
             push(newDictionary(ret))
             

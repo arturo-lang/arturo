@@ -48,9 +48,6 @@ when defined(WEB):
 
 proc defineSymbols*() =
 
-    when defined(VERBOSE):
-        echo "- Importing: Io"
-
     builtin "clear",
         alias       = unaliased, 
         rule        = PrefixPrecedence,

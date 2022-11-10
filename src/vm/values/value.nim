@@ -95,8 +95,6 @@ let
     VSTRINGT*       = Value(kind: Type, tpKind: BuiltinType, t: String, readonly: true)     ## constant ``:string``
     VINTEGERT*      = Value(kind: Type, tpKind: BuiltinType, t: Integer, readonly: true)    ## constant ``:integer``
 
-    VNOTHING*       = Value(kind: Nothing, readonly: true)                                  ## constant Nothing
-
     #--------
 
     NoAliasBinding*     = AliasBinding(precedence: PostfixPrecedence, name: nil)
@@ -109,17 +107,17 @@ var
     TypeLookup = initOrderedTable[string,Value]()
 
     # global implementation references
-    AddF*, SubF*, MulF*, DivF*, FdivF*, ModF*, PowF*    : Value
-    NegF*, BNotF*, BAndF*, BOrF*, ShlF*, ShrF*          : Value
-    NotF*, AndF*, OrF*                                  : Value 
-    EqF*, NeF*, GtF*, GeF*, LtF*, LeF*                  : Value
-    IfF*, IfEF*, ElseF*, WhileF*, ReturnF*              : Value
-    GetF*, SetF*, ToF*                                  : Value
-    PrintF*                                             : Value
-    ArrayF*, DictF*, FuncF*                             : Value
-    RangeF*, LoopF*, MapF*, SelectF*                    : Value
-    SizeF*, ReplaceF*, SplitF*, JoinF*, ReverseF*       : Value 
-    IncF*, DecF*                                        : Value
+    AddF*, SubF*, MulF*, DivF*, FdivF*, ModF*, PowF*            : Value
+    NegF*, BNotF*, BAndF*, BOrF*, ShlF*, ShrF*                  : Value
+    NotF*, AndF*, OrF*                                          : Value 
+    EqF*, NeF*, GtF*, GeF*, LtF*, LeF*                          : Value
+    IfF*, IfEF*, UnlessF*, ElseF*, SwitchF*, WhileF*, ReturnF*  : Value
+    ToF*, PrintF*                                               : Value
+    GetF*, SetF*                                                : Value
+    ArrayF*, DictF*, FuncF*                                     : Value
+    RangeF*, LoopF*, MapF*, SelectF*                            : Value
+    SizeF*, ReplaceF*, SplitF*, JoinF*, ReverseF*               : Value 
+    IncF*, DecF*                                                : Value
 
 #=======================================
 # Forward Declarations
@@ -137,12 +135,6 @@ func hash*(v: Value): Hash {.inline.}
 #=======================================
 # Constructors
 #=======================================
-
-template newNull*(): Value =
-    VNULL
-
-template newNothing*(): Value =
-    VNOTHING
 
 proc newLogical*(b: VLogical): Value {.inline, enforceNoRaises.} =
     if b==True: VTRUE
@@ -489,7 +481,7 @@ proc newObject*(args: ValueDict, prot: Prototype, initializer: proc (self: Value
     
     initializer(result, prot)
 
-func newFunction*(params: Value, main: Value, imports: Value = nil, exports: Value = nil, exportable: bool = false, memoize: bool = false): Value {.inline, enforceNoRaises.} =
+func newFunction*(params: Value, main: Value, imports: Value = nil, exports: Value = nil, memoize: bool = false, inline: bool = false): Value {.inline, enforceNoRaises.} =
     ## create Function (UserFunction) value with given parameters, ``main`` body, etc
     Value(
         kind: Function,
@@ -500,8 +492,8 @@ func newFunction*(params: Value, main: Value, imports: Value = nil, exports: Val
             main: main,
             imports: imports,
             exports: exports,
-            exportable: exportable,
             memoize: memoize,
+            inline: inline,
             bcode: nil
         )
     )
@@ -623,14 +615,13 @@ proc copyValue*(v: Value): Value {.inline.} =
             if v.data.isNil: 
                 let newValues = cleanedBlockValuesCopy(v)
                 result = Value(kind: Block, a: newValues)
-                #result = newBlock(v.a.map((vv)=>copyValue(vv)))
             else:
                 result = newBlock(v.a.map((vv)=>copyValue(vv)), copyValue(v.data))
 
         of Dictionary:  result = newDictionary(v.d)
         of Object:      result = newObject(v.o, v.proto)
 
-        of Function:    result = newFunction(v.params, v.main, v.imports, v.exports, v.exportable, v.memoize)
+        of Function:    result = newFunction(v.params, v.main, v.imports, v.exports, v.memoize, v.inline)
 
         of Database:    
             when not defined(NOSQLITE):
@@ -645,18 +636,6 @@ proc copyValue*(v: Value): Value {.inline.} =
         else: 
             echo "found UNSUPPORTED value when copying value!"
             discard
-
-#=======================================
-# Predicates
-#=======================================
-
-template isNull*(v: Value): bool =
-    ## check if given value is Null
-    v.kind==Null
-
-template isNothing*(v: Value): bool =
-    ## check if given value is Nothing
-    v.kind==Nothing
 
 #=======================================
 # Helpers
@@ -2197,119 +2176,100 @@ proc factorial*(x: Value): Value =
             when not defined(WEB):
                 RuntimeError_NumberOutOfPermittedRange("factorial",valueAsString(x), "")
 
-func sameValue*(x: Value, y: Value): bool {.inline.}=
-    ## check if the given values are same
-    if x.kind in {Integer, Floating} and y.kind in {Integer, Floating}:
-        if x.kind==Integer:
-            if y.kind==Integer: 
-                if likely(x.iKind==NormalInteger and y.iKind==NormalInteger):
-                    return x.i==y.i
-                elif x.iKind==NormalInteger and y.iKind==BigInteger:
-                    when defined(WEB):
-                        return big(x.i)==y.bi
-                    elif not defined(NOGMP):
-                        return x.i==y.bi
-                elif x.iKind==BigInteger and y.iKind==NormalInteger:
-                    when defined(WEB):
-                        return x.bi==big(y.i)
-                    elif not defined(NOGMP):
-                        return x.bi==y.i
+func consideredEqual*(x: Value, y: Value): bool {.inline,enforceNoRaises.} =
+    ## check whether given values are to be considered equal
+    ## 
+    ## **Hint:** This is a helper function *solely* for the
+    ## evaluator and should not be used anywhere else
+
+    let xKind = x.kind
+    let yKind = y.kind
+    if xKind in {Word,Label,Attribute,AttributeLabel} and yKind in {Word,Label,Attribute,AttributeLabel}:
+        return x.s == y.s
+
+    if xKind != yKind: return false
+
+    case xKind:
+        of Integer:
+            if x.iKind != y.iKind: return false
+            when not defined(NOGMP):
+                if likely(x.iKind == NormalInteger):
+                    return x.i == y.i
                 else:
-                    when defined(WEB) or not defined(NOGMP):
-                        return x.bi==y.bi
-            else: 
-                if likely(x.iKind==NormalInteger):
-                    return (float)(x.i)==y.f
-                else:
-                    when defined(WEB):
-                        return x.bi==big((int)(y.f))
-                    elif not defined(NOGMP):
-                        return (x.bi)==(int)(y.f)
-        else:
-            if y.kind==Integer: 
-                if likely(y.iKind==NormalInteger):
-                    return x.f==(float)(y.i)
-                else:
-                    when defined(WEB):
-                        return big((int)(x.f))==y.bi
-                    elif not defined(NOGMP):
-                        return (int)(x.f)==y.bi        
-            else: return x.f==y.f
-    else:
-        if x.kind != y.kind: return false
-
-        case x.kind:
-            of Null: return true
-            of Logical: return x.b == y.b
-            of Complex: return x.z == y.z
-            of Rational: return x.rat == y.rat
-            of Version:
-                return x.major == y.major and x.minor == y.minor and x.patch == y.patch and x.extra == y.extra
-            of Type: 
-                if x.tpKind != y.tpKind: return false
-                if x.tpKind==BuiltinType:
-                    return x.t == y.t
-                else:
-                    return x.ts.name == y.ts.name
-            of Char: return x.c == y.c
-            of String,
-               Word,
-               Label,
-               Literal,
-               Attribute,
-               AttributeLabel: return x.s == y.s
-            of Symbol,
-               SymbolLiteral: return x.m == y.m
-            of Quantity: return x.nm == y.nm and x.unit == y.unit
-            of Regex: return x.rx == y.rx
-            of Color: return x.l == y.l
-            of Inline,
-               Block:
-                ensureCleaned(x)
-                ensureCleaned(y)
-
-                if cleanX.len != cleanY.len: return false
-
-                for i,child in cleanX:
-                    if not (sameValue(child,cleanY[i])): return false
-
-                return true
-            of Dictionary:
-                if x.d.len != y.d.len: return false
-
-                for k,v in pairs(x.d):
-                    if not y.d.hasKey(k): return false
-                    if not (sameValue(v,y.d[k])): return false
-
-                return true
-            of Object:
-                if x.o.len != y.o.len: return false
-
-                for k,v in pairs(x.o):
-                    if not y.o.hasKey(k): return false
-                    if not (sameValue(v,y.o[k])): return false
-
-                if x.proto != y.proto: return false
-
-                return true
-            of Function:
-                if x.fnKind==UserFunction:
-                    return sameValue(x.params, y.params) and sameValue(x.main, y.main) and x.exports == y.exports
-                else:
-                    return x.action == y.action
-            of Binary:
-                return x.n == y.n
-            of Bytecode:
-                return x.trans == y.trans
-            of Database:
-                if x.dbKind != y.dbKind: return false
-                when not defined(NOSQLITE):
-                    if x.dbKind==SqliteDatabase: return cast[ByteAddress](x.sqlitedb) == cast[ByteAddress](y.sqlitedb)
-                    #elif x.dbKind==MysqlDatabase: return cast[ByteAddress](x.mysqldb) == cast[ByteAddress](y.mysqldb)
-            of Date:
-                return x.eobj == y.eobj
+                    return x.bi == y.bi
             else:
-                return false
+                return x.i == y.i
+        of String, Literal:
+            return x.s == y.s
+        of Floating:
+            return x.f == y.f
+        of Block:
+            {.linearScanEnd.}
+            if x.a.len != y.a.len: return false
+            for i in 0..x.a.high:
+                if not consideredEqual(x.a[i], y.a[i]): return false
+            return true
+    
+        #---------------------------
+
+        of Null: return true
+        of Logical: return x.b == y.b
+        of Complex: return x.z == y.z
+        of Rational: return x.rat == y.rat
+        of Version:
+            return x.major == y.major and x.minor == y.minor and x.patch == y.patch and x.extra == y.extra
+        of Type: 
+            if x.tpKind != y.tpKind: return false
+            if x.tpKind==BuiltinType:
+                return x.t == y.t
+            else:
+                return x.ts.name == y.ts.name
+        of Char: return x.c == y.c
+        of Symbol,
+           SymbolLiteral: return x.m == y.m
+        of Quantity: return x.nm == y.nm and x.unit == y.unit
+        of Regex: return x.rx == y.rx
+        of Color: return x.l == y.l
+        of Inline:
+            if x.a.len != y.a.len: return false
+            for i in 0..x.a.high:
+                if not consideredEqual(x.a[i], y.a[i]): return false
+            return true
+        of Dictionary:
+            if x.d.len != y.d.len: return false
+
+            for k,v in pairs(x.d):
+                if not y.d.hasKey(k): return false
+                if not consideredEqual(v,y.d[k]): return false
+
+            return true
+        of Object:
+            if x.o.len != y.o.len: return false
+            if x.proto != y.proto: return false
+
+            for k,v in pairs(x.o):
+                if not y.o.hasKey(k): return false
+                if not consideredEqual(v,y.o[k]): return false
+
+            return true
+        of Function:
+            if x.fnKind==UserFunction:
+                return consideredEqual(x.params, y.params) and consideredEqual(x.main, y.main) and x.exports == y.exports
+            else:
+                return x.action == y.action
+        of Binary:
+            return x.n == y.n
+        of Bytecode:
+            return x.trans == y.trans
+        of Database:
+            if x.dbKind != y.dbKind: return false
+            when not defined(NOSQLITE):
+                if x.dbKind==SqliteDatabase: return cast[ByteAddress](x.sqlitedb) == cast[ByteAddress](y.sqlitedb)
+                #elif x.dbKind==MysqlDatabase: return cast[ByteAddress](x.mysqldb) == cast[ByteAddress](y.mysqldb)
+        of Date:
+            return x.eobj == y.eobj
+        else:
+            return false
 
 # TODO(Value\hash) Verify hashing is done right
 #  labels: vm,unit-test
@@ -2401,9 +2361,8 @@ func hash*(v: Value): Hash {.inline.}=
                 if not v.exports.isNil:
                     result = result !& hash(v.exports)
 
-                result = result !& hash(v.exportable)
-
                 result = result !& hash(v.memoize)
+                result = result !& hash(v.inline)
                 result = !$ result
             else:
                 result = cast[Hash](unsafeAddr v)

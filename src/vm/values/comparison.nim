@@ -17,9 +17,6 @@ when defined(WEB):
     
 when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
- 
-import vm/exec
-import vm/stack
 
 import vm/values/custom/[vcolor, vcomplex, vquantity, vrational]
 import vm/values/value
@@ -33,8 +30,6 @@ import vm/values/clean
 #  labels: vm, values, enhancement, unit-test
 
 proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
-    if x.kind==Nothing and y.kind==Nothing: return true
-    
     if x.kind in {Integer, Floating, Rational} and y.kind in {Integer, Floating, Rational}:
         if x.kind==Integer:
             if y.kind==Integer: 
@@ -141,10 +136,7 @@ proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
 
             of Object:
                 if (let compareMethod = x.proto.methods.getOrDefault("compare", nil); not compareMethod.isNil):
-                    push y
-                    push x
-                    callFunction(compareMethod)
-                    return (pop().i == 0)
+                    return x.proto.doCompare(x,y) == 0
                 else:
                     if x.o.len != y.o.len: return false
 
@@ -262,10 +254,7 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
                 return false
             of Object:
                 if (let compareMethod = x.proto.methods.getOrDefault("compare", nil); not compareMethod.isNil):
-                    push y
-                    push x
-                    callFunction(compareMethod)
-                    return (pop().i == -1)
+                    return x.proto.doCompare(x, y) == -1
                 else:
                     return false
             else:
@@ -361,10 +350,7 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
                 return false
             of Object:
                 if (let compareMethod = x.proto.methods.getOrDefault("compare", nil); not compareMethod.isNil):
-                    push y
-                    push x
-                    callFunction(compareMethod)
-                    return (pop().i == 1)
+                    return x.proto.doCompare(x,y) == 1
                 else:
                     return false
             else:

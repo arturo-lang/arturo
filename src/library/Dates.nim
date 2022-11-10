@@ -29,9 +29,6 @@ import vm/lib
 
 proc defineSymbols*() =
 
-    when defined(VERBOSE):
-        echo "- Importing: Dates"
-
     # TODO(Dates) more potential built-in function candidates?
     #  we could also make use of our recently-added `:quantity` values
     #  labels: library, enhancement, open discussion

@@ -26,10 +26,7 @@ import vm/lib
 #=======================================
 
 proc defineSymbols*() =
-
-    when defined(VERBOSE):
-        echo "- Importing: Bitwise"
-
+    
     # TODO(Binary) more potential built-in function candidates?
     #  I'm thinking that we could probably add functions that allows to either clear or "set" a specific bit.
     #  Potentially, this could lead to the need of having another - e.g. `:bitset` - type.
