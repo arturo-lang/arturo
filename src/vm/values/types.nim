@@ -249,6 +249,9 @@ proc `readonly=`*(val: Value, newVal: bool) {.inline.} = val.flags[isReadOnly] =
 proc dirty*(val: Value): bool {.inline.} = isDirty in val.flags
 proc `dirty=`*(val: Value, newVal: bool) {.inline.} = val.flags[isDirty] = newVal
 
+proc dynamic*(val: Value): bool {.inline.} = isDynamic in val.flags
+proc `dynamic=`*(val: Value, newVal: bool) {.inline.} = val.flags[isDynamic] = newVal
+
 proc b*(val: Value): VLogical {.inline.} =
     assert val.kind == Logical
     assert (val.flags * {isMaybe, isTrue}).len <= 1 # Ensure we do not have {isMaybe, isTrue}
