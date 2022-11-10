@@ -38,6 +38,15 @@ import vm/values/custom/[vbinary]
 # Helpers
 #=======================================
 
+func canBeInlined(v: Value): bool {.enforceNoRaises.} =
+    for item in v.a:
+        if item.kind == Label:
+            return false
+        elif item.kind == Block:
+            if not canBeInlined(item):
+                return false
+    return true
+
 proc parseFL(s: string): float =
     result = 0.0
     let L = parseutils.parseFloat(s, result, 0)
@@ -47,8 +56,9 @@ proc parseFL(s: string): float =
 proc generateCustomObject(prot: Prototype, arguments: ValueArray | ValueDict): Value =
     newObject(arguments, prot, proc (self: Value, prot: Prototype) =
         if (let initMethod = prot.methods.getOrDefault("init", nil); not initMethod.isNil):
-            push self
-            callFunction(initMethod)
+            prot.doInit(self)
+            # push self
+            # callFunction(initMethod)
     )
 
 template throwCannotConvert(): untyped = 
@@ -505,9 +515,6 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
 
 proc defineSymbols*() =
 
-    when defined(VERBOSE):
-        echo "- Importing: Converters"
-
     # TODO(Converters) resolving `from`/`to`/`as`/`in` clutter?
     #  Right now, we have 4 different built-in function performing different-but-similar actions.
     #  Is there any way to remove all ambiguity - by either reducing them, merging them, extending them or explaining their functionality more thoroughly?
@@ -737,11 +744,19 @@ proc defineSymbols*() =
                     newBlock(@[newWord("this")]),
                     initMethod
                 )
+                x.ts.doInit = proc (v:Value) =
+                    push v
+                    callFunction(x.ts.methods["init"])
+
             if (let printMethod = x.ts.methods.getOrDefault("print", nil); not printMethod.isNil):
                 x.ts.methods["print"] = newFunction(
                     newBlock(@[newWord("this")]),
                     printMethod
                 )
+                x.ts.doPrint = proc(v:Value):string =
+                    push v
+                    callFunction(x.ts.methods["print"])
+                    stack.pop().s
 
             if (let compareMethod = x.ts.methods.getOrDefault("compare", nil); not compareMethod.isNil):
                 if compareMethod.kind==Block:
@@ -759,6 +774,11 @@ proc defineSymbols*() =
                             newWord("return"), newWord("neg"), newInteger(1)
                         ])
                     )
+                x.ts.doCompare = proc(v1,v2:Value):int =
+                    push v2
+                    push v1
+                    callFunction(x.ts.methods["compare"])
+                    stack.pop().i
 
     builtin "dictionary",
         alias       = sharp, 
@@ -888,8 +908,8 @@ proc defineSymbols*() =
         attrs       = {
             "import"    : ({Block},"import/embed given list of symbols from current environment"),
             "export"    : ({Block},"export given symbols to parent"),
-            "exportable": ({Logical},"export all symbols to parent"),
-            "memoize"   : ({Logical},"store results of function calls")
+            "memoize"   : ({Logical},"store results of function calls"),
+            "inline"    : ({Logical},"execute function without scope")
         },
         returns     = {Function},
         example     = """
@@ -980,16 +1000,18 @@ proc defineSymbols*() =
                 imports = newDictionary(ret)
 
             var exports: Value = nil
-            var exportable = (hadAttr("exportable"))
 
-            if exportable:
-                exports = VNULL # important, in case the function is all-exportable
-                                # since we check for exports.isNil *first*
-            else:
-                if checkAttr("export"):
-                    exports = aExport
-
+            if checkAttr("export"):
+                exports = aExport
+                
             var memoize = (hadAttr("memoize"))
+            var inline = (hadAttr("inline"))
+
+            # TODO(Converters\function) Verify safety of implicit `.inline`s
+            #  labels: library, benchmark, open discussion
+            if not inline:
+                if canBeInlined(y):
+                    inline = true
             
             cleanBlock(x)
 
@@ -1031,14 +1053,14 @@ proc defineSymbols*() =
                 var mainBody: ValueArray = y.a
                 mainBody.insert(body)
 
-                ret = newFunction(newBlock(args),newBlock(mainBody),imports,exports,exportable,memoize)
+                ret = newFunction(newBlock(args),newBlock(mainBody),imports,exports,memoize,inline)
             else:
                 if x.a.len > 0:
                     for arg in x.a:
                         argTypes[arg.s] = {Any}
                 else:
                     argTypes[""] = {Nothing}
-                ret = newFunction(x,y,imports,exports,exportable,memoize)
+                ret = newFunction(x,y,imports,exports,memoize,inline)
             
             if not y.data.isNil:
                 if y.data.kind==Dictionary:

@@ -270,6 +270,11 @@ template hookProcProfiler*(name: string, actionContent: untyped): untyped =
     else:
         actionContent
 
+template hookMiscProfiler*(name: string): untyped =
+    when defined(PROFILER):
+        var newRow = addMetricIfNotExists(name, "misc")
+        newRow.runs += 1
+
 #=======================================
 # Methods
 #=======================================
@@ -279,7 +284,8 @@ proc initProfiler*() =
         PR = {
             "functions": initOrderedTable[string, ProfilerDataRow](),
             "ops": initOrderedTable[string, ProfilerDataRow](),
-            "procs": initOrderedTable[string, ProfilerDataRow]()
+            "procs": initOrderedTable[string, ProfilerDataRow](),
+            "misc": initOrderedTable[string, ProfilerDataRow]()
         }.toOrderedTable
 
         # TODO(VM/profiler) Completely remove or make it work "properly"
@@ -296,6 +302,7 @@ proc showProfilerData*() =
         printProfilerDataTable("functions")
         printProfilerDataTable("ops")
         printProfilerDataTable("procs")
+        printProfilerDataTable("misc")
         when false:
             printProfilerCallTree()
     else:

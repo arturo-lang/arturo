@@ -37,9 +37,6 @@ when defined(SAFE):
 
 proc defineSymbols*() =
 
-    when defined(VERBOSE):
-        echo "- Importing: Paths"
-
     when not defined(WEB):
 
         builtin "absolute?",

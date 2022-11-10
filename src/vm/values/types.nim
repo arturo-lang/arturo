@@ -121,6 +121,9 @@ type
         name*       : string
         fields*     : ValueArray
         methods*    : ValueDict
+        doInit*     : proc (v:Value)
+        doPrint*    : proc (v:Value): string
+        doCompare*  : proc (a,b:Value): int
         inherits*   : Prototype
 
     SymbolDict*   = OrderedTable[VSymbol,AliasBinding]
@@ -139,8 +142,8 @@ type
                 main*       : Value
                 imports*    : Value
                 exports*    : Value
-                exportable* : bool
-                memoize*   : bool
+                memoize*    : bool
+                inline*     : bool
                 bcode*      : Value
             of BuiltinFunction:
                 action*     : BuiltinAction
@@ -151,7 +154,7 @@ type
         extra*   : string
 
     ValueFlag* = enum
-      isDirty, isReadOnly, isTrue, isMaybe
+      isDirty, isDynamic, isReadOnly, isTrue, isMaybe
 
     ValueFlags* = set[ValueFlag]
 
@@ -219,7 +222,6 @@ type
                 proto*: Prototype # custom type pointer
             of Function:
                 funcType*: VFunction
-
             of Database:
                 case dbKind*: DatabaseKind:
                     of SqliteDatabase:
@@ -304,9 +306,9 @@ makeFuncAccessor(params)
 makeFuncAccessor(main)
 makeFuncAccessor(imports)
 makeFuncAccessor(exports)
-makeFuncAccessor(exportable)
 makeFuncAccessor(memoize)
 makeFuncAccessor(bcode)
+makeFuncAccessor(inline)
 makeFuncAccessor(action)
 
 

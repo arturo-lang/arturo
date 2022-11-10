@@ -143,9 +143,6 @@ template iterateThrough(
 
 proc defineSymbols*() =
 
-    when defined(VERBOSE):
-        echo "- Importing: Iterators"
-
     builtin "chunk",
         alias       = unaliased,
         rule        = PrefixPrecedence,
