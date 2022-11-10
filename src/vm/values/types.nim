@@ -243,16 +243,16 @@ type
 when sizeof(ValueObj) > 72: # At time of writing it was '72', 8 - 64 bit integers seems like a good warning site? Can always go smaller
     {.warning: "'Value's inner object is large which will impact performance".}
 
-proc readonly*(val: Value): bool {.inline.} = isReadOnly in val.flags
-proc `readonly=`*(val: Value, newVal: bool) {.inline.} = val.flags[isReadOnly] = newVal
+template readonly*(val: Value): bool = isReadOnly in val.flags
+template `readonly=`*(val: Value, newVal: bool) = val.flags[isReadOnly] = newVal
 
-proc dirty*(val: Value): bool {.inline.} = isDirty in val.flags
-proc `dirty=`*(val: Value, newVal: bool) {.inline.} = val.flags[isDirty] = newVal
+template dirty*(val: Value): bool = isDirty in val.flags
+template `dirty=`*(val: Value, newVal: bool) = val.flags[isDirty] = newVal
 
-proc dynamic*(val: Value): bool {.inline.} = isDynamic in val.flags
-proc `dynamic=`*(val: Value, newVal: bool) {.inline.} = val.flags[isDynamic] = newVal
+template dynamic*(val: Value): bool = isDynamic in val.flags
+template `dynamic=`*(val: Value, newVal: bool) = val.flags[isDynamic] = newVal
 
-proc b*(val: Value): VLogical {.inline.} =
+template b*(val: Value): VLogical =
     assert val.kind == Logical
     assert (val.flags * {isMaybe, isTrue}).len <= 1 # Ensure we do not have {isMaybe, isTrue}
     if val.flags * {isMaybe} == {isMaybe}:
@@ -262,7 +262,7 @@ proc b*(val: Value): VLogical {.inline.} =
     else:
         False
 
-proc `b=`*(val: Value, newVal: VLogical) {.inline.} =
+template `b=`*(val: Value, newVal: VLogical) =
     assert val.kind == Logical
     case newVal
     of Maybe:
@@ -275,44 +275,33 @@ proc `b=`*(val: Value, newVal: VLogical) {.inline.} =
         val.flags.excl {isMaybe, isTrue}
 
 
-template makeVersionAccessor(name: untyped) =
-    proc name*(val: Value): typeof(val.version.name) {.inline.} =
-        assert val.kind == Version
-        val.version.name
+template makeAccessor(field, subfield: untyped) =
+    template subfield*(val: Value): typeof(val.field.subfield) =
+        val.field.subfield
 
-    proc `name=`*(val: Value, newVal: typeof(val.version.name)) {.inline.} =
-        assert val.kind == Version
-        val.version.name = newVal
+    template `subfield=`*(val: Value, newVal: typeof(val.field.subfield)) =
+        val.field.subfield = newVal
 
-makeVersionAccessor(major)
-makeVersionAccessor(minor)
-makeVersionAccessor(patch)
-makeVersionAccessor(extra)
-
-template makeFuncAccessor(name: untyped) =
-    proc name*(val: Value): typeof(val.funcType.name) {.inline.} =
-        assert val.kind == Function
-        val.funcType.name
-
-    proc `name=`*(val: Value, newVal: typeof(val.funcType.name)) {.inline.} =
-        assert val.kind == Function
-        val.funcType.name = newVal
+makeAccessor(version, major)
+makeAccessor(version, minor)
+makeAccessor(version, patch)
+makeAccessor(version, extra)
 
 
-makeFuncAccessor(args)
-makeFuncAccessor(attrs)
-makeFuncAccessor(arity)
-makeFuncAccessor(returns)
-makeFuncAccessor(example)
-makeFuncAccessor(fnKind)
-makeFuncAccessor(params)
-makeFuncAccessor(main)
-makeFuncAccessor(imports)
-makeFuncAccessor(exports)
-makeFuncAccessor(memoize)
-makeFuncAccessor(bcode)
-makeFuncAccessor(inline)
-makeFuncAccessor(action)
+makeAccessor(funcType, args)
+makeAccessor(funcType, attrs)
+makeAccessor(funcType, arity)
+makeAccessor(funcType, returns)
+makeAccessor(funcType, example)
+makeAccessor(funcType, fnKind)
+makeAccessor(funcType, params)
+makeAccessor(funcType, main)
+makeAccessor(funcType, imports)
+makeAccessor(funcType, exports)
+makeAccessor(funcType, memoize)
+makeAccessor(funcType, bcode)
+makeAccessor(funcType, inline)
+makeAccessor(funcType, action)
 
 
 
