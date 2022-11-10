@@ -43,9 +43,6 @@ import vm/lib
 
 proc defineSymbols*() =
 
-    when defined(VERBOSE):
-        echo "- Importing: Crypto"
-
     builtin "crc",
         alias       = unaliased, 
         rule        = PrefixPrecedence,

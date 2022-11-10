@@ -27,9 +27,6 @@ import vm/lib
 
 proc defineSymbols*() =
 
-    when defined(VERBOSE):
-        echo "- Importing: Arithmetic"
-
     builtin "add",
         alias       = plus, 
         rule        = InfixPrecedence,

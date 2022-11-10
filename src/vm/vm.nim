@@ -116,8 +116,6 @@ proc setupLibrary() =
         importLibrary()
 
 template initialize(args: seq[string], filename: string, isFile:bool, scriptData:Value = nil, mutedColors: bool = false, portableData = "") =
-    # function arity
-    Arities = initTable[string,int]()
     # stack
     createMainStack()
 
@@ -201,7 +199,7 @@ when not defined(WEB):
                     portableData=withData
                 )
 
-            let evaled = mainCode.doEval()
+            let evaled = doEval(mainCode, useStored=false)
 
             if doExecute:
                 execUnscoped(evaled)
@@ -230,7 +228,7 @@ else:
                     mainCode.data
                 )
 
-            let evaled = mainCode.doEval()
+            let evaled = doEval(mainCode, useStored=false)
 
             execUnscoped(evaled)
 

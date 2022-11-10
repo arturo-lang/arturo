@@ -121,6 +121,9 @@ type
         name*       : string
         fields*     : ValueArray
         methods*    : ValueDict
+        doInit*     : proc (v:Value)
+        doPrint*    : proc (v:Value): string
+        doCompare*  : proc (a,b:Value): int
         inherits*   : Prototype
 
     SymbolDict*   = OrderedTable[VSymbol,AliasBinding]
@@ -139,8 +142,8 @@ type
                 main*       : Value
                 imports*    : Value
                 exports*    : Value
-                exportable* : bool
-                memoize*   : bool
+                memoize*    : bool
+                inline*     : bool
                 bcode*      : Value
             of BuiltinFunction:
                 action*     : BuiltinAction
@@ -206,13 +209,13 @@ type
                    a*       : ValueArray
                    data*    : Value
                    dirty*   : bool
+                   dynamic* : bool
             of Dictionary:  d*  : ValueDict
             of Object:
                 o*: ValueDict   # fields
                 proto*: Prototype # custom type pointer
             of Function:    
                 funcType*: VFunction
-
             of Database:
                 case dbKind*: DatabaseKind:
                     of SqliteDatabase: 
@@ -250,9 +253,9 @@ makeFuncAccessor(params)
 makeFuncAccessor(main)
 makeFuncAccessor(imports)
 makeFuncAccessor(exports)
-makeFuncAccessor(exportable)
 makeFuncAccessor(memoize)
 makeFuncAccessor(bcode)
+makeFuncAccessor(inline)
 makeFuncAccessor(action)
 
 converter toDateTime*(dt: ref DateTime): DateTime = dt[]

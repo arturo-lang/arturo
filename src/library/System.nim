@@ -45,9 +45,6 @@ when not defined(WEB):
 
 proc defineSymbols*() =
 
-    when defined(VERBOSE):
-        echo "- Importing: System"
-
     constant "arg",
         alias       = unaliased,
         description = "access command-line arguments as a list":
