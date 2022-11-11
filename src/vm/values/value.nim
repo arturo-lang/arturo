@@ -539,7 +539,7 @@ func newInline*(a: sink ValueArray = @[], dirty = false): Value {.inline, enforc
     ## create Inline value from ValueArray
     let flags =
         if dirty:
-            {isDirty}
+            {IsDirty}
         else:
             {}
     Value(kind: Inline, a: a, flags: flags)
@@ -548,7 +548,7 @@ func newBlock*(a: sink ValueArray = @[], data: sink Value = nil, dirty = false):
     ## create Block value from ValueArray
     let flags =
         if dirty:
-            {isDirty}
+            {IsDirty}
         else:
             {}
     Value(kind: Block, a: a, data: data, flags: flags)
@@ -2232,7 +2232,7 @@ func consideredEqual*(x: Value, y: Value): bool {.inline,enforceNoRaises.} =
         #---------------------------
 
         of Null: return true
-        of Logical: return x.flags - {isDirty, isDynamic, isReadOnly} == y.flags - {isDirty, isDynamic, isReadOnly}
+        of Logical: return x.flags - {IsDirty, IsDynamic, IsReadOnly} == y.flags - {IsDirty, IsDynamic, IsReadOnly}
         of Complex: return x.z == y.z
         of Rational: return x.rat == y.rat
         of Version:
