@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import tables, times, unicode
+import std/[tables, times, unicode, setutils]
 
 when not defined(NOSQLITE):
     import db_sqlite as sqlite
@@ -26,10 +26,10 @@ import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vration
 #=======================================
 # Types
 #=======================================
- 
+
 type
     ValueArray* = seq[Value]
-    ValueDict*  = OrderedTable[string,Value]
+    ValueDict*  = OrderedTable[string, Value]
 
     Translation* = ref object
         constants*: ValueArray
@@ -147,38 +147,46 @@ type
                 bcode*      : Value
             of BuiltinFunction:
                 action*     : BuiltinAction
+    VVersion* = ref object
+        major*   : int
+        minor*   : int
+        patch*   : int
+        extra*   : string
 
-    Value* {.final,acyclic.} = ref object 
+    ValueFlag* = enum
+      isDirty, isDynamic, isReadOnly, isTrue, isMaybe, isFalse
+
+    ValueFlags* = set[ValueFlag]
+
+    Value* {.final,acyclic.} = ref object
         info*: string
-        readonly*: bool
+        flags*: ValueFlags
 
         case kind*: ValueKind:
             of Null,
                Nothing,
-               Any:        discard 
-            of Logical:     b*  : VLogical
-            of Integer:  
+               Any,
+               Logical:
+                   discard
+            of Integer:
                 case iKind*: IntegerKind:
                     # TODO(VM/values/types) Wrap Normal and BigInteger in one type
                     #  Perhaps, we could do that via class inheritance, with the two types inheriting a new `Integer` type, provided that it's properly benchmarked first.
-                    #  labels: vm, values, enhancement, benchmark, open discussion 
+                    #  labels: vm, values, enhancement, benchmark, open discussion
                     of NormalInteger:   i*  : int
-                    of BigInteger:      
+                    of BigInteger:
                         when defined(WEB):
                             bi* : JsBigInt
                         elif not defined(NOGMP):
-                            bi* : Int    
+                            bi* : Int
                         else:
                             discard
             of Floating: f*: float
             of Complex:     z*  : VComplex
             of Rational:    rat*  : VRational
-            of Version: 
-                major*   : int
-                minor*   : int
-                patch*   : int
-                extra*   : string
-            of Type:        
+            of Version:
+                version*: VVersion
+            of Type:
                 t*  : ValueKind
                 case tpKind*: TypeKind:
                     of UserType:    ts* : Prototype
@@ -193,32 +201,30 @@ type
             of Path,
                PathLabel:   p*  : ValueArray
             of Symbol,
-               SymbolLiteral:      
+               SymbolLiteral:
                    m*  : VSymbol
             of Regex:       rx* : VRegex
             of Quantity:
                 nm*: Value
                 unit*: VQuantity
             of Color:       l*  : VColor
-            of Date:        
-                e*     : ValueDict         
+            of Date:
+                e*     : ValueDict
                 eobj*  : ref DateTime
             of Binary:      n*  : VBinary
             of Inline,
-               Block:       
+               Block:
                    a*       : ValueArray
                    data*    : Value
-                   dirty*   : bool
-                   dynamic* : bool
             of Dictionary:  d*  : ValueDict
             of Object:
                 o*: ValueDict   # fields
                 proto*: Prototype # custom type pointer
-            of Function:    
+            of Function:
                 funcType*: VFunction
             of Database:
                 case dbKind*: DatabaseKind:
-                    of SqliteDatabase: 
+                    of SqliteDatabase:
                         when not defined(NOSQLITE):
                             sqlitedb*: sqlite.DbConn
                     of MysqlDatabase: discard
@@ -234,28 +240,66 @@ type
 {.hint: "'Value's inner type is currently '" & $sizeof(ValueObj) & "'.".}
 {.hints: off.}
 
-when sizeof(ValueObj) > 64: # At time of writing it was '56', 8 - 64 bit integers seems like a good warning site? Can always go smaller
+when sizeof(ValueObj) > 72: # At time of writing it was '72', 8 - 64 bit integers seems like a good warning site? Can always go smaller
     {.warning: "'Value's inner object is large which will impact performance".}
 
-template makeFuncAccessor*(name: untyped) =
-  template name*(val: Value): typeof(val.funcType.name) =
-    assert val.kind == Function
-    val.funcType.name
+template readonly*(val: Value): bool = isReadOnly in val.flags
+template `readonly=`*(val: Value, newVal: bool) = val.flags[isReadOnly] = newVal
+
+template dirty*(val: Value): bool = isDirty in val.flags
+template `dirty=`*(val: Value, newVal: bool) = val.flags[isDirty] = newVal
+
+template dynamic*(val: Value): bool = isDynamic in val.flags
+template `dynamic=`*(val: Value, newVal: bool) = val.flags[isDynamic] = newVal
+
+proc b*(val: Value): VLogical {.inline.} =
+    assert (val.flags * {isFalse, isMaybe, isTrue}).len == 1
+    if isMaybe in val.flags:
+        Maybe
+    elif isTrue in val.flags:
+        True
+    else:
+        False
+
+template `b=`*(val: Value, newVal: VLogical) =
+    assert val.kind == Logical
+    val.flags.excl {isTrue, isFalse, isMaybe}
+    const flags = [False: isFalse, True: isTrue, Maybe: isMaybe]
+    val.flags.incl flags[newVal]
+
+template isFalse*(val: Value): bool = isFalse in val.flags
+template isMaybe*(val: Value): bool = isMaybe in val.flags
+template isTrue*(val: Value): bool = isTrue in val.flags
 
 
-makeFuncAccessor(args)
-makeFuncAccessor(attrs)
-makeFuncAccessor(arity)
-makeFuncAccessor(returns)
-makeFuncAccessor(example)
-makeFuncAccessor(fnKind)
-makeFuncAccessor(params)
-makeFuncAccessor(main)
-makeFuncAccessor(imports)
-makeFuncAccessor(exports)
-makeFuncAccessor(memoize)
-makeFuncAccessor(bcode)
-makeFuncAccessor(inline)
-makeFuncAccessor(action)
+template makeAccessor(field, subfield: untyped) =
+    template subfield*(val: Value): typeof(val.field.subfield) =
+        val.field.subfield
+
+    template `subfield=`*(val: Value, newVal: typeof(val.field.subfield)) =
+        val.field.subfield = newVal
+
+makeAccessor(version, major)
+makeAccessor(version, minor)
+makeAccessor(version, patch)
+makeAccessor(version, extra)
+
+
+makeAccessor(funcType, args)
+makeAccessor(funcType, attrs)
+makeAccessor(funcType, arity)
+makeAccessor(funcType, returns)
+makeAccessor(funcType, example)
+makeAccessor(funcType, fnKind)
+makeAccessor(funcType, params)
+makeAccessor(funcType, main)
+makeAccessor(funcType, imports)
+makeAccessor(funcType, exports)
+makeAccessor(funcType, memoize)
+makeAccessor(funcType, bcode)
+makeAccessor(funcType, inline)
+makeAccessor(funcType, action)
+
+
 
 converter toDateTime*(dt: ref DateTime): DateTime = dt[]

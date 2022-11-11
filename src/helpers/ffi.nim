@@ -19,7 +19,7 @@ when not defined(WEB):
 
     import vm/[errors, values/value]
 
-    import vm/values/custom/[vlogical]
+    #import vm/values/custom/[vlogical]
 
     #=======================================
     # Types
@@ -83,7 +83,7 @@ when not defined(WEB):
             result = DynlibFormat % [path]
 
     func boolToInt*(v: Value): int =
-        if v.b==True: result = 1
+        if isTrue(v): result = 1
         else: result = 0
 
     #=======================================
