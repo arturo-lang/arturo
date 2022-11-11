@@ -22,6 +22,7 @@ when not defined(NOGMP):
     import helpers/bignums
 
 import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrational, vregex, vsymbol]
+import vm/values/flags
 
 #=======================================
 # Types
