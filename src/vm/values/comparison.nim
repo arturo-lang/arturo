@@ -98,7 +98,7 @@ proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
 
         case x.kind:
             of Null: return true
-            of Logical: return x.flags - {IsDirty, IsDynamic, IsReadOnly} == y.flags - {IsDirty, IsDynamic, IsReadOnly}
+            of Logical: return x.b == y.b
             of Complex: return x.z == y.z
             of Version:
                 return x.major == y.major and x.minor == y.minor and x.patch == y.patch
