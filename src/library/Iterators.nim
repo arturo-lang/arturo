@@ -316,8 +316,7 @@ proc defineSymbols*() =
             var all = true
 
             iterateThrough(withIndex, y, items, doForever, false, false, capturing=false):
-                let popped = move stack.pop()
-                if popped.kind==Logical and Not(popped.b)==True:
+                if isFalse(move stack.pop()):
                     push(newLogical(false))
                     all = false
                     keepGoing = false
@@ -378,12 +377,12 @@ proc defineSymbols*() =
             var elemLimit = -1
             if checkAttr("first"):
                 onlyFirst = true
-                if aFirst.kind == Logical and aFirst.b == True: elemLimit = 1
+                if isTrue(aFirst): elemLimit = 1
                 else: elemLimit = aFirst.i
 
             if checkAttr("last"):
                 onlyLast = true
-                if aLast.kind == Logical and aLast.b == True: elemLimit = 1
+                if isTrue(aLast): elemLimit = 1
                 else: elemLimit = aLast.i
 
             let doForever = false
@@ -404,7 +403,7 @@ proc defineSymbols*() =
 
             iterateThrough(withIndex, y, items, doForever, false, false, capturing=true):
                 let popped = move stack.pop()
-                if popped.kind==Logical and Not(popped.b)==True:
+                if isFalse(popped):
                     res.add(capturedItems)
                 else:
                     if onlyFirst or onlyLast:
@@ -739,12 +738,12 @@ proc defineSymbols*() =
             var elemLimit = -1
             if checkAttr("first"):
                 onlyFirst = true
-                if aFirst.kind == Logical and aFirst.b == True: elemLimit = 1
+                if isTrue(aFirst): elemLimit = 1
                 else: elemLimit = aFirst.i
 
             if checkAttr("last"):
                 onlyLast = true
-                if aLast.kind == Logical and aLast.b == True: elemLimit = 1
+                if isTrue(aLast): elemLimit = 1
                 else: elemLimit = aLast.i
 
             let doForever = false
@@ -758,8 +757,7 @@ proc defineSymbols*() =
             var res: ValueArray = @[]
 
             iterateThrough(withIndex, y, items, doForever, false, false, capturing=true):
-                let popped = move stack.pop()
-                if popped.kind==Logical and popped.b==True:
+                if isTrue(move stack.pop()):
                     res.add(capturedItems)
 
                     if onlyFirst:
@@ -821,8 +819,7 @@ proc defineSymbols*() =
             var one = false
 
             iterateThrough(withIndex, y, items, doForever, false, false, capturing=false):
-                let popped = move stack.pop()
-                if popped.kind==Logical and popped.b==True:
+                if isTrue(move stack.pop()):
                     push(newLogical(true))
                     one = true
                     keepGoing = false

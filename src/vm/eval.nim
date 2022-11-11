@@ -25,7 +25,7 @@ import vm/[bytecode, globals, values/value]
 
 import vm/profiler
 
-import vm/values/custom/[vbinary, vlogical, vsymbol]
+import vm/values/custom/[vbinary, vsymbol]
 
 #=======================================
 # Variables
@@ -882,8 +882,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             
             of Null:    addToCommand(opConstN)
             of Logical: 
-                if node.b==True: addToCommand(opConstBT)
-                elif node.b==False: addToCommand(opConstBF)
+                if isTrue(node): addToCommand(opConstBT)
+                elif isFalse(node): addToCommand(opConstBF)
                 else: addToCommand(opConstBM)
 
             of Floating:

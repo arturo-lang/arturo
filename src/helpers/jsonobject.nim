@@ -22,7 +22,7 @@ when defined(WEB):
     import jsffi, strutils
 
 import vm/values/[printable, value]
-import vm/values/custom/[vlogical, vregex]
+import vm/values/custom/[vregex]
 
 #=======================================
 # Helpers
@@ -35,7 +35,7 @@ import vm/values/custom/[vlogical, vregex]
 proc generateJsonNode*(n: Value): JsonNode =
     case n.kind
         of Null         : result = newJNull()
-        of Logical      : result = newJBool(if n.b==True: true else: false)
+        of Logical      : result = newJBool(if isTrue(n): true else: false)
         of Integer      : result = newJInt(n.i)
         of Floating     : result = newJFloat(n.f)
         of Version      : result = newJString($(n))

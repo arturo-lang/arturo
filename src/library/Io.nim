@@ -139,7 +139,7 @@ proc defineSymbols*() =
             cursor true     ; (shows the cursor)
             """:
                 #=======================================================
-                if x.b==True:
+                if isTrue(x):
                     stdout.showCursor()
                 else:
                     stdout.hideCursor()
