@@ -18,10 +18,9 @@ when defined(WEB):
 when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
-import vm/values/custom/[vcolor, vcomplex, vquantity, vrational]
+import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrational]
 import vm/values/value
 import vm/values/clean
-import vm/values/flags
 
 #=======================================
 # Methods
