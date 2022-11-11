@@ -139,6 +139,17 @@ proc `//`*(x: Value, y: Value): Value
 func hash*(v: Value): Hash {.inline.}
 
 #=======================================
+# Helpers
+#=======================================
+
+converter toDateTime*(dt: ref DateTime): DateTime = dt[]
+
+template isNull*(val: Value): bool  = val.kind == Null
+template isFalse*(val: Value): bool = IsFalse in val.flags
+template isMaybe*(val: Value): bool = IsMaybe in val.flags
+template isTrue*(val: Value): bool  = IsTrue in val.flags
+
+#=======================================
 # Constructors
 #=======================================
 
