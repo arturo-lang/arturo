@@ -58,9 +58,9 @@ const
 #=======================================
 
 template makeConst(v: Value): untyped =
-  var res = v
-  res.readOnly = true
-  res
+    var res = v
+    res.readOnly = true
+    res
 
 let
     I0*             = makeConst Value(kind: Integer, iKind: NormalInteger, i: 0)      ## constant 0
