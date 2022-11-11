@@ -25,3 +25,11 @@ type
         IsMaybe         # Logical MAYBE
 
     ValueFlags* = set[ValueFlag]
+
+#=======================================
+# Constants
+#=======================================
+
+const
+    NonLogical* = {IsReadOnly, IsDirty, IsDynamic}
+    
