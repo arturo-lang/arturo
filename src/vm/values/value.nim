@@ -2244,7 +2244,7 @@ func consideredEqual*(x: Value, y: Value): bool {.inline,enforceNoRaises.} =
         #---------------------------
 
         of Null: return true
-        of Logical: return x.flags - {IsDirty, IsDynamic, IsReadOnly} == y.flags - {IsDirty, IsDynamic, IsReadOnly}
+        of Logical: return x.b == y.b
         of Complex: return x.z == y.z
         of Rational: return x.rat == y.rat
         of Version:
