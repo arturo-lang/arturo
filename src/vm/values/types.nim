@@ -256,7 +256,7 @@ template `dirty=`*(val: Value, newVal: bool) = val.flags[IsDirty] = newVal
 template dynamic*(val: Value): bool = IsDynamic in val.flags
 template `dynamic=`*(val: Value, newVal: bool) = val.flags[IsDynamic] = newVal
 
-template b*(val: Value): VLogical = val.flags - NonLogicalF
+template b*(val: Value): VLogical = VLogical(val.flags - NonLogicalF)
 template `b=`*(val: Value, newVal: VLogical) = val.flags = val.flags - LogicalF + newVal
 
 template makeAccessor(field, subfield: untyped) =
