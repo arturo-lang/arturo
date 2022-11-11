@@ -37,4 +37,5 @@ type
 #=======================================
 
 const
-    NonLogical* = ValueFlag.fullSet - {IsTrue, IsFalse, IsMaybe}
+    LogicalF*    = {IsTrue, IsFalse, IsMaybe}
+    NonLogicalF* = ValueFlag.fullSet - LogicalF
