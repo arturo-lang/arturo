@@ -98,7 +98,7 @@ proc defineSymbols*() =
                     if y.kind==Block:
                         # block block
                         execUnscoped(x)
-                        if Not(pop().b)==True:
+                        if isFalse(move stack.pop()):
                             push(newLogical(false))
                             return
 
@@ -110,7 +110,7 @@ proc defineSymbols*() =
                         push(newLogical(And(pop().b,y.b)))
                 else:
                     # logical block
-                    if Not(x.b)==True:
+                    if isFalse(x):
                         push(newLogical(false))
                         return
 
@@ -219,7 +219,7 @@ proc defineSymbols*() =
                     if y.kind==Block:
                         # block block
                         execUnscoped(x)
-                        if Not(pop().b)==True:
+                        if isFalse(move stack.pop()):
                             push(newLogical(true))
                             return
 
@@ -231,7 +231,7 @@ proc defineSymbols*() =
                         push(newLogical(Nand(pop().b, y.b)))
                 else:
                     # logical block
-                    if Not(x.b)==True:
+                    if isFalse(x):
                         push(newLogical(true))
                         return
 
@@ -269,7 +269,7 @@ proc defineSymbols*() =
                     if y.kind==Block:
                         # block block
                         execUnscoped(x)
-                        if pop().b==True:
+                        if isTrue(move stack.pop()):
                             push(newLogical(false))
                             return
 
@@ -281,7 +281,7 @@ proc defineSymbols*() =
                         push(newLogical(Nor(pop().b, y.b)))
                 else:
                     # logical block
-                    if x.b==True:
+                    if isTrue(x):
                         push(newLogical(false))
                         return
 
@@ -340,7 +340,7 @@ proc defineSymbols*() =
                     if y.kind==Block:
                         # block block
                         execUnscoped(x)
-                        if pop().b==True:
+                        if isTrue(move stack.pop()):
                             push(newLogical(true))
                             return
 
@@ -352,7 +352,7 @@ proc defineSymbols*() =
                         push(newLogical(Or(pop().b, y.b)))
                 else:
                     # logical block
-                    if x.b==True:
+                    if isTrue(x):
                         push(newLogical(true))
                         return
 

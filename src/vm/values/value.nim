@@ -56,44 +56,49 @@ const
 # Fixed Values
 #=======================================
 
+template makeConst(v: Value): untyped =
+  var res = v
+  res.readOnly = true
+  res
+
 let
-    I0*             = Value(kind: Integer, iKind: NormalInteger, i: 0, readonly: true)      ## constant 0
-    I1*             = Value(kind: Integer, iKind: NormalInteger, i: 1, readonly: true)      ## constant 1
-    I2*             = Value(kind: Integer, iKind: NormalInteger, i: 2, readonly: true)      ## constant 2
-    I3*             = Value(kind: Integer, iKind: NormalInteger, i: 3, readonly: true)      ## constant 3
-    I4*             = Value(kind: Integer, iKind: NormalInteger, i: 4, readonly: true)      ## constant 4
-    I5*             = Value(kind: Integer, iKind: NormalInteger, i: 5, readonly: true)      ## constant 5
-    I6*             = Value(kind: Integer, iKind: NormalInteger, i: 6, readonly: true)      ## constant 6
-    I7*             = Value(kind: Integer, iKind: NormalInteger, i: 7, readonly: true)      ## constant 7
-    I8*             = Value(kind: Integer, iKind: NormalInteger, i: 8, readonly: true)      ## constant 8
-    I9*             = Value(kind: Integer, iKind: NormalInteger, i: 9, readonly: true)      ## constant 9
-    I10*            = Value(kind: Integer, iKind: NormalInteger, i: 10, readonly: true)     ## constant 10
-    I11*            = Value(kind: Integer, iKind: NormalInteger, i: 11, readonly: true)     ## constant 11
-    I12*            = Value(kind: Integer, iKind: NormalInteger, i: 12, readonly: true)     ## constant 12
-    I13*            = Value(kind: Integer, iKind: NormalInteger, i: 13, readonly: true)     ## constant 13
-    I14*            = Value(kind: Integer, iKind: NormalInteger, i: 14, readonly: true)     ## constant 14
-    I15*            = Value(kind: Integer, iKind: NormalInteger, i: 15, readonly: true)     ## constant 15
+    I0*             = makeConst Value(kind: Integer, iKind: NormalInteger, i: 0)      ## constant 0
+    I1*             = makeConst Value(kind: Integer, iKind: NormalInteger, i: 1)      ## constant 1
+    I2*             = makeConst Value(kind: Integer, iKind: NormalInteger, i: 2)      ## constant 2
+    I3*             = makeConst Value(kind: Integer, iKind: NormalInteger, i: 3)      ## constant 3
+    I4*             = makeConst Value(kind: Integer, iKind: NormalInteger, i: 4)      ## constant 4
+    I5*             = makeConst Value(kind: Integer, iKind: NormalInteger, i: 5)      ## constant 5
+    I6*             = makeConst Value(kind: Integer, iKind: NormalInteger, i: 6)      ## constant 6
+    I7*             = makeConst Value(kind: Integer, iKind: NormalInteger, i: 7)      ## constant 7
+    I8*             = makeConst Value(kind: Integer, iKind: NormalInteger, i: 8)      ## constant 8
+    I9*             = makeConst Value(kind: Integer, iKind: NormalInteger, i: 9)      ## constant 9
+    I10*            = makeConst Value(kind: Integer, iKind: NormalInteger, i: 10)     ## constant 10
+    I11*            = makeConst Value(kind: Integer, iKind: NormalInteger, i: 11)     ## constant 11
+    I12*            = makeConst Value(kind: Integer, iKind: NormalInteger, i: 12)     ## constant 12
+    I13*            = makeConst Value(kind: Integer, iKind: NormalInteger, i: 13)     ## constant 13
+    I14*            = makeConst Value(kind: Integer, iKind: NormalInteger, i: 14)     ## constant 14
+    I15*            = makeConst Value(kind: Integer, iKind: NormalInteger, i: 15)     ## constant 15
 
-    I1M*            = Value(kind: Integer, iKind: NormalInteger, i: -1, readonly: true)     ## constant -1
+    I1M*            = makeConst Value(kind: Integer, iKind: NormalInteger, i: -1)     ## constant -1
 
-    F0*             = Value(kind: Floating, f: 0.0, readonly: true)                         ## constant 0.0
-    F1*             = Value(kind: Floating, f: 1.0, readonly: true)                         ## constant 1.0
-    F2*             = Value(kind: Floating, f: 2.0, readonly: true)                         ## constant 2.0
+    F0*             = makeConst Value(kind: Floating, f: 0.0)                         ## constant 0.0
+    F1*             = makeConst Value(kind: Floating, f: 1.0)                         ## constant 1.0
+    F2*             = makeConst Value(kind: Floating, f: 2.0)                         ## constant 2.0
 
-    F1M*            = Value(kind: Floating, f: -1.0, readonly: true)                        ## constant -1.0
+    F1M*            = makeConst Value(kind: Floating, f: -1.0)                        ## constant -1.0
 
-    VTRUE*          = Value(kind: Logical, b: True, readonly: true)                         ## constant True
-    VFALSE*         = Value(kind: Logical, b: False, readonly: true)                        ## constant False
-    VMAYBE*         = Value(kind: Logical, b: Maybe, readonly: true)                        ## constant Maybe
+    VTRUE*          = makeConst Value(kind: Logical, flags: {ValueFlag.isTrue})                 ## constant True
+    VFALSE*         = makeConst Value(kind: Logical, flags: {ValueFlag.isFalse})                       ## constant False
+    VMAYBE*         = makeConst Value(kind: Logical, flags: {ValueFlag.isMaybe})                ## constant Maybe
 
-    VNULL*          = Value(kind: Null, readonly: true)                                     ## constant Null
+    VNULL*          = makeConst Value(kind: Null)                                     ## constant Null
 
-    VEMPTYSTR*      = Value(kind: String, s: "", readonly: true)                                    ## constant ""
-    VEMPTYARR*      = Value(kind: Block, a: @[], data: nil, readonly: true)                         ## constant []
-    VEMPTYDICT*     = Value(kind: Dictionary, d: initOrderedTable[string,Value](), readonly: true)  ## constant #[]
+    VEMPTYSTR*      = makeConst Value(kind: String, s: "")                                    ## constant ""
+    VEMPTYARR*      = makeConst Value(kind: Block, a: @[], data: nil)                         ## constant []
+    VEMPTYDICT*     = makeConst Value(kind: Dictionary, d: initOrderedTable[string,Value]())  ## constant #[]
 
-    VSTRINGT*       = Value(kind: Type, tpKind: BuiltinType, t: String, readonly: true)     ## constant ``:string``
-    VINTEGERT*      = Value(kind: Type, tpKind: BuiltinType, t: Integer, readonly: true)    ## constant ``:integer``
+    VSTRINGT*       = makeConst Value(kind: Type, tpKind: BuiltinType, t: String)     ## constant ``:string``
+    VINTEGERT*      = makeConst Value(kind: Type, tpKind: BuiltinType, t: Integer)    ## constant ``:integer``
 
     #--------
 
@@ -261,10 +266,14 @@ func newVersion*(v: string): Value {.inline.} =
     extraPart &= v[lastIndex+1 .. ^1]
 
     let parts: seq[string] = numPart.split(".")
-    Value(kind: Version, major: parseInt(parts[0]), 
-                         minor: parseInt(parts[1]), 
-                         patch: parseInt(parts[2]), 
-                         extra: extraPart)
+    Value(kind: Version,
+        version: VVersion(
+            major: parseInt(parts[0]),
+            minor: parseInt(parts[1]),
+            patch: parseInt(parts[2]),
+            extra: extraPart
+        )
+    )
 
 func newType*(t: ValueKind): Value {.inline, enforceNoRaises.} =
     ## create Type (BuiltinType) value from ValueKind
@@ -528,11 +537,21 @@ func newBytecode*(t: sink Translation): Value {.inline, enforceNoRaises.} =
 
 func newInline*(a: sink ValueArray = @[], dirty = false): Value {.inline, enforceNoRaises.} =
     ## create Inline value from ValueArray
-    Value(kind: Inline, a: a, dirty: dirty)
+    let flags =
+        if dirty:
+            {isDirty}
+        else:
+            {}
+    Value(kind: Inline, a: a, flags: flags)
 
 func newBlock*(a: sink ValueArray = @[], data: sink Value = nil, dirty = false): Value {.inline, enforceNoRaises.} =
     ## create Block value from ValueArray
-    Value(kind: Block, a: a, data: data, dirty: dirty)
+    let flags =
+        if dirty:
+            {isDirty}
+        else:
+            {}
+    Value(kind: Block, a: a, data: data, flags: flags)
 
 func newIntegerBlock*[T](a: sink seq[T]): Value {.inline, enforceNoRaises.} =
     ## create Block value from an array of ints
@@ -2213,7 +2232,7 @@ func consideredEqual*(x: Value, y: Value): bool {.inline,enforceNoRaises.} =
         #---------------------------
 
         of Null: return true
-        of Logical: return x.b == y.b
+        of Logical: return x.flags - {isDirty, isDynamic, isReadOnly} == y.flags - {isDirty, isDynamic, isReadOnly}
         of Complex: return x.z == y.z
         of Rational: return x.rat == y.rat
         of Version:

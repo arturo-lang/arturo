@@ -85,12 +85,12 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
             of Logical:
                 case tp:
                     of Integer:
-                        if y.b==True: return I1
-                        elif y.b==False: return I0
+                        if isTrue(y): return I1
+                        elif isFalse(y): return I0
                         else: return VNULL
                     of Floating:
-                        if y.b==True: return F1
-                        elif y.b==False: return F0
+                        if isTrue(y): return F1
+                        elif isFalse(y): return F0
                         else: return VNULL
                     of String:
                         if y.b==True: return newString("true")
@@ -1086,21 +1086,21 @@ proc defineSymbols*() =
                                 else:
                                     options[k] = (vspec, "")
 
-                        ret.attrs() = options
+                        ret.attrs = options
 
                     if (let returnsData = y.data.d.getOrDefault("returns", nil); not returnsData.isNil):
                         if returnsData.kind==Type:
-                            ret.returns() = {returnsData.t}
+                            ret.returns = {returnsData.t}
                         else:
                             var returns: ValueSpec
                             for tp in returnsData.a:
                                 returns.incl(tp.t)
-                            ret.returns() = returns
+                            ret.returns = returns
 
                     if (let exampleData = y.data.d.getOrDefault("example", nil); not exampleData.isNil):
-                        ret.example() = exampleData.s
+                        ret.example = exampleData.s
     
-            ret.args() = argTypes
+            ret.args = argTypes
             
             push(ret)
 
