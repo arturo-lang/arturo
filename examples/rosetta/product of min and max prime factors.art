@@ -1,0 +1,10 @@
+; by @Krenium
+
+prints "    1"  ; special case 1 since the result is normally null
+                ; for the factors of 1
+
+loop 2..100 'i [
+    f: factors.prime i
+    prints to :string .format:"5d" mul min f max f
+    if 0 = i%10 -> print ""
+]
