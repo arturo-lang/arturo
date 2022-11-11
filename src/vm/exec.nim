@@ -35,7 +35,7 @@ import vm/[
     values/value
 ]
 
-import vm/values/custom/[vbinary, vlogical]
+import vm/values/custom/[vbinary]
 
 import vm/values/comparison
 
@@ -655,13 +655,13 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opJmpIf              :
                     let x = move stack.pop()
                     i += 2
-                    if not (x.kind==Null or (x.kind==Logical and x.b==False)):
+                    if not (x.kind==Null or isFalse(x)):
                         i += (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
                 
                 of opJmpIfNot           :
                     let x = move stack.pop()
                     i += 2
-                    if x.kind==Null or (x.kind==Logical and x.b==False):
+                    if x.kind==Null or isFalse(x):
                         i += (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
 
                 of opJmpIfEq            : performConditionalJump(`==`)

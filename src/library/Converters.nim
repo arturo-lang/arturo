@@ -85,12 +85,12 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
             of Logical:
                 case tp:
                     of Integer:
-                        if y.b==True: return I1
-                        elif y.b==False: return I0
+                        if isTrue(y): return I1
+                        elif isFalse(y): return I0
                         else: return VNULL
                     of Floating:
-                        if y.b==True: return F1
-                        elif y.b==False: return F0
+                        if isTrue(y): return F1
+                        elif isFalse(y): return F0
                         else: return VNULL
                     of String:
                         if y.b==True: return newString("true")

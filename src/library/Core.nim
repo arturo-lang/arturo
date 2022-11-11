@@ -319,7 +319,7 @@ proc defineSymbols*() =
         """:
             #=======================================================
             let y = pop() # pop the value of the previous operation (hopefully an 'if?' or 'when?')
-            if Not(y.b)==True: 
+            if isFalse(y): 
                 execUnscoped(x)
             
     builtin "ensure",
@@ -340,7 +340,7 @@ proc defineSymbols*() =
         """:
             #=======================================================
             execUnscoped(x)
-            if Not(pop().b)==True:
+            if isFalse(pop()):
                 AssertionError_AssertionFailed(x.codify())
 
     builtin "if",
@@ -360,7 +360,7 @@ proc defineSymbols*() =
             ; yes, that's right!
         """:
             #=======================================================
-            let condition = not (x.kind==Null or (x.kind==Logical and x.b==False))
+            let condition = not (x.kind==Null or isFalse(x))
             if condition: 
                 execUnscoped(y)
 
@@ -394,7 +394,7 @@ proc defineSymbols*() =
             ]
         """:
             #=======================================================
-            let condition = not (x.kind==Null or (x.kind==Logical and x.b==False))
+            let condition = not (x.kind==Null or isFalse(x))
             if condition: 
                 execUnscoped(y)
 
@@ -562,7 +562,7 @@ proc defineSymbols*() =
             ; yes, that's right!
         """:
             #=======================================================
-            let condition = not (x.kind==Null or (x.kind==Logical and x.b==False))
+            let condition = not (x.kind==Null or isFalse(x))
             if condition: 
                 execUnscoped(y)
             else:
@@ -647,7 +647,7 @@ proc defineSymbols*() =
             ; yep, x is not 1!
         """:
             #=======================================================
-            let condition = x.kind==Null or (x.kind==Logical and x.b==False)
+            let condition = x.kind==Null or isFalse(x)
             if condition: 
                 execUnscoped(y)
 
@@ -681,7 +681,7 @@ proc defineSymbols*() =
             ; x was greater than z
         """:
             #=======================================================
-            let condition = x.kind==Null or (x.kind==Logical and x.b==False)
+            let condition = x.kind==Null or isFalse(x)
             if condition: 
                 execUnscoped(y)
 
@@ -725,7 +725,7 @@ proc defineSymbols*() =
                     execUnscoped(preevaledY)
 
                     let popped = pop()
-                    let condition = not (popped.kind==Null or (popped.kind==Logical and popped.b==False))
+                    let condition = not (popped.kind==Null or isFalse(popped))
                     if condition:
                         break
                 do:
@@ -772,7 +772,7 @@ proc defineSymbols*() =
         """:
             #=======================================================
             let z = pop()
-            if Not(z.b)==True:
+            if isFalse(z):
                 ensureCleaned(x)
 
                 let top = sTop()
@@ -785,8 +785,7 @@ proc defineSymbols*() =
 
                 execUnscoped(newb)
 
-                let res = sTop()
-                if (res.b)==True: 
+                if isTrue(sTop()):
                     execUnscoped(y)
                     discard pop()
                     discard pop()
@@ -841,7 +840,7 @@ proc defineSymbols*() =
                 execUnscoped(preevaledX)
                 var popped = pop()
 
-                while not (popped.kind==Null or (popped.kind==Logical and popped.b==False)):
+                while not (popped.kind==Null or isFalse(popped)):
                     handleBranching:
                         execUnscoped(preevaledY)
                         execUnscoped(preevaledX)
