@@ -21,6 +21,7 @@ when not defined(NOGMP):
 import vm/values/custom/[vcolor, vcomplex, vquantity, vrational]
 import vm/values/value
 import vm/values/clean
+import vm/values/flags
 
 #=======================================
 # Methods
@@ -97,7 +98,7 @@ proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
 
         case x.kind:
             of Null: return true
-            of Logical: return x.flags - {isDirty, isDynamic, isReadOnly} == y.flags - {isDirty, isDynamic, isReadOnly}
+            of Logical: return x.flags - {IsDirty, IsDynamic, IsReadOnly} == y.flags - {IsDirty, IsDynamic, IsReadOnly}
             of Complex: return x.z == y.z
             of Version:
                 return x.major == y.major and x.minor == y.minor and x.patch == y.patch
