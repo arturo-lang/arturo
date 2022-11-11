@@ -37,6 +37,7 @@ import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vration
 
 import vm/values/clean
 import vm/values/types
+import vm/values/flags
 export types
 
 #=======================================
