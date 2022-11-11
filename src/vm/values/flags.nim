@@ -12,14 +12,14 @@
 
 type
     ValueFlag* = enum
-        ReadOnly    # Value has to be copied on assignment
+        IsReadOnly      # Value has to be copied on assignment
 
-        Dirty       # For blocks: it may contain Newline values
-        Dynamic     # For blocks: it has to be re-evaluated
-                    #             prior to execution
+        IsDirty         # For blocks: it may contain Newline values
+        IsDynamic       # For blocks: it has to be re-evaluated
+                        #             prior to execution
                     
-        True        # Logical TRUE
-        False       # Logical FALSE
-        Maybe       # Logical MAYBE
+        IsTrue          # Logical TRUE
+        IsFalse         # Logical FALSE
+        IsMaybe         # Logical MAYBE
 
     ValueFlags* = set[ValueFlag]
