@@ -153,11 +153,6 @@ type
         patch*   : int
         extra*   : string
 
-    ValueFlag* = enum
-      isDirty, isDynamic, isReadOnly, isTrue, isMaybe, isFalse
-
-    ValueFlags* = set[ValueFlag]
-
     Value* {.final,acyclic.} = ref object
         info*: string
         flags*: ValueFlags
