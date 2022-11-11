@@ -9,14 +9,26 @@
 ## The internal `:logical` type
 
 #=======================================
+# Libraries
+#=======================================
+
+import vm/values/flags
+
+#=======================================
 # Types
 #=======================================
 
 type 
-    VLogical* = enum
-        False = 0, 
-        True = 1,
-        Maybe = 2
+    VLogical* = ValueFlags
+
+#=======================================
+# Constants
+#=======================================
+
+const 
+    True*    = {IsTrue}
+    False*   = {IsFalse}
+    Maybe*   = {IsMaybe}
 
 #=======================================
 # Methods
