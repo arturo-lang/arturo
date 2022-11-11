@@ -239,33 +239,33 @@ type
 when sizeof(ValueObj) > 72: # At time of writing it was '72', 8 - 64 bit integers seems like a good warning site? Can always go smaller
     {.warning: "'Value's inner object is large which will impact performance".}
 
-template readonly*(val: Value): bool = isReadOnly in val.flags
-template `readonly=`*(val: Value, newVal: bool) = val.flags[isReadOnly] = newVal
+template readonly*(val: Value): bool = IsReadOnly in val.flags
+template `readonly=`*(val: Value, newVal: bool) = val.flags[IsReadOnly] = newVal
 
-template dirty*(val: Value): bool = isDirty in val.flags
-template `dirty=`*(val: Value, newVal: bool) = val.flags[isDirty] = newVal
+template dirty*(val: Value): bool = IsDirty in val.flags
+template `dirty=`*(val: Value, newVal: bool) = val.flags[IsDirty] = newVal
 
-template dynamic*(val: Value): bool = isDynamic in val.flags
-template `dynamic=`*(val: Value, newVal: bool) = val.flags[isDynamic] = newVal
+template dynamic*(val: Value): bool = IsDynamic in val.flags
+template `dynamic=`*(val: Value, newVal: bool) = val.flags[IsDynamic] = newVal
 
 proc b*(val: Value): VLogical {.inline.} =
-    assert (val.flags * {isFalse, isMaybe, isTrue}).len == 1
-    if isMaybe in val.flags:
+    assert (val.flags * {IsFalse, IsMaybe, IsTrue}).len == 1
+    if IsMaybe in val.flags:
         Maybe
-    elif isTrue in val.flags:
+    elif IsTrue in val.flags:
         True
     else:
         False
 
 template `b=`*(val: Value, newVal: VLogical) =
     assert val.kind == Logical
-    val.flags.excl {isTrue, isFalse, isMaybe}
-    const flags = [False: isFalse, True: isTrue, Maybe: isMaybe]
+    val.flags.excl {IsTrue, IsFalse, IsMaybe}
+    const flags = [False: IsFalse, True: IsTrue, Maybe: IsMaybe]
     val.flags.incl flags[newVal]
 
-template isFalse*(val: Value): bool = isFalse in val.flags
-template isMaybe*(val: Value): bool = isMaybe in val.flags
-template isTrue*(val: Value): bool = isTrue in val.flags
+template isFalse*(val: Value): bool = IsFalse in val.flags
+template isMaybe*(val: Value): bool = IsMaybe in val.flags
+template isTrue*(val: Value): bool = IsTrue in val.flags
 
 
 template makeAccessor(field, subfield: untyped) =
