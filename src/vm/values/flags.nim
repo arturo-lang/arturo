@@ -9,6 +9,12 @@
 ## Miscellaneous flags/switches for Value objects
 
 #=======================================
+# Libraries
+#=======================================
+
+import std/setutils
+
+#=======================================
 # Types
 #=======================================
 
@@ -31,5 +37,4 @@ type
 #=======================================
 
 const
-    NonLogical* = {IsReadOnly, IsDirty, IsDynamic}
-    
+    NonLogical* = ValueFlag.fullSet - {IsTrue, IsFalse, IsMaybe}
