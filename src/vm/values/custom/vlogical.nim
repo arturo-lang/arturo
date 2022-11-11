@@ -19,16 +19,22 @@ import vm/values/flags
 #=======================================
 
 type 
-    VLogical* = ValueFlags
+    VLogical* = distinct ValueFlags
 
 #=======================================
 # Constants
 #=======================================
 
 const 
-    True*    = {IsTrue}
-    False*   = {IsFalse}
-    Maybe*   = {IsMaybe}
+    True*    = VLogical({IsTrue})
+    False*   = VLogical({IsFalse})
+    Maybe*   = VLogical({IsMaybe})
+
+#=======================================
+# Overloads
+#=======================================
+
+proc `==`*(a, b: VLogical): bool {.borrow.}
 
 #=======================================
 # Methods
