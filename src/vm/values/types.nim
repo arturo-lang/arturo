@@ -257,8 +257,7 @@ template dynamic*(val: Value): bool = IsDynamic in val.flags
 template `dynamic=`*(val: Value, newVal: bool) = val.flags[IsDynamic] = newVal
 
 template b*(val: Value): VLogical = val.flags - NonLogicalF
-template `b=`*(val: Value, newVal: VLogical) = 
-    val.flags = val.flags - LogicalF + newVal
+template `b=`*(val: Value, newVal: VLogical) = val.flags = val.flags - LogicalF + newVal
 
 template makeAccessor(field, subfield: untyped) =
     template subfield*(val: Value): typeof(val.field.subfield) =
@@ -290,5 +289,3 @@ makeAccessor(funcType, memoize)
 makeAccessor(funcType, bcode)
 makeAccessor(funcType, inline)
 makeAccessor(funcType, action)
-
-converter toDateTime*(dt: ref DateTime): DateTime = dt[]
