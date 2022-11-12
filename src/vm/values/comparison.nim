@@ -18,7 +18,7 @@ when defined(WEB):
 when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
-import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrational]
+import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrational, vversion]
 import vm/values/value
 import vm/values/clean
 
@@ -100,7 +100,7 @@ proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
             of Logical: return x.b == y.b
             of Complex: return x.z == y.z
             of Version:
-                return x.major == y.major and x.minor == y.minor and x.patch == y.patch
+                return x.version == y.version
             of Type: return x.t == y.t
             of Char: return x.c == y.c
             of String,
@@ -227,17 +227,7 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
         case x.kind:
             of Null: return false
             of Logical: return false
-            of Version:
-                if x.major < y.major: return true
-                elif x.major > y.major: return false
-
-                if x.minor < y.minor: return true
-                elif x.minor > y.minor: return false
-
-                if x.patch < y.patch: return true
-                elif x.patch > y.patch: return false
-
-                return false
+            of Version: return x.version < y.version
             of Type: return false
             of Char: return $(x.c) < $(y.c)
             of String,
@@ -325,17 +315,7 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
         case x.kind:
             of Null: return false
             of Logical: return false
-            of Version:
-                if x.major > y.major: return true
-                elif x.major < y.major: return false
-
-                if x.minor > y.minor: return true
-                elif x.minor < y.minor: return false
-
-                if x.patch > y.patch: return true
-                elif x.patch < y.patch: return false
-
-                return false
+            of Version: return x.version > y.version
             of Type: return false
             of Char: return $(x.c) > $(y.c)
             of String,

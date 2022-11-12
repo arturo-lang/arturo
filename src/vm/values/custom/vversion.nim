@@ -27,9 +27,28 @@ type
 # Overloads
 #=======================================
 
+proc `==`*(a, b: VVersion): bool =
+    return a.major == b.major and a.minor == b.minor and a.patch == b.patch and a.extra == b.extra
 
+proc `<`*(a, b: VVersion): bool =
+    if a.major < b.major:
+        return true
+    elif a.major == b.major:
+        if a.minor < b.minor:
+            return true
+        elif a.minor == b.minor:
+            if a.patch < b.patch:
+                return true
+    return false
 
-#=======================================
-# Methods
-#=======================================
+proc `>`*(a, b: VVersion): bool =
+    if a.major > b.major:
+        return true
+    elif a.major == b.major:
+        if a.minor > b.minor:
+            return true
+        elif a.minor == b.minor:
+            if a.patch > b.patch:
+                return true
+    return false
 
