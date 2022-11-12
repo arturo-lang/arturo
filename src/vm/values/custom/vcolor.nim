@@ -1267,7 +1267,7 @@ func HSVtoRGB*(hsv: HSV): RGB =
     let f = float(h*6 - hI)
     let p = v * (1 - s)
     let q = v * float(1 - f*s)
-    let t = v * (float)(1 - (1 - f) * s)
+    let t = v * float(1 - (1 - f) * s)
     
     if hI==0: (r, g, b) = (v, t, p)
     elif hI==1: (r, g, b) = (q, v, p)

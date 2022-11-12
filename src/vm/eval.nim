@@ -285,11 +285,11 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
     proc getConstIdWithShift(currentCommand: var VBinary, pos: int): (int,int) {.inline,enforceNoRaises.} =
         let currentCommandLast = currentCommand[pos]
-        if (OpCode)(currentCommandLast) in {opPush0..opPush13}:
+        if OpCode(currentCommandLast) in {opPush0..opPush13}:
             return (int(currentCommandLast) - int(opPush0), 0)
-        elif (OpCode)(currentCommandLast) == opPush:
+        elif OpCode(currentCommandLast) == opPush:
             return (int(currentCommand[pos+1]), 1)
-        elif (OpCode)(currentCommandLast) == opPushX:
+        elif OpCode(currentCommandLast) == opPushX:
             return ((int(currentCommand[pos+1]) shl 8) + int(currentCommand[pos+2]), 2)
         
         return (-1, -1)
@@ -299,7 +299,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
         if cnstId != -1:
             let blk = consts[cnstId]
-            if blk.kind == Block and (OpCode)(currentCommand[^1]) in {opIf,opIfE}:
+            if blk.kind == Block and OpCode(currentCommand[^1]) in {opIf,opIfE}:
                 currentCommand.delete(0..shift)
                 discard currentCommand.pop()
                 var injectable = opJmpIfNot
@@ -344,7 +344,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
         if cnstId != -1:
             let blk = consts[cnstId]
-            if blk.kind == Block and (OpCode)(currentCommand[^1]) == opUnless:
+            if blk.kind == Block and OpCode(currentCommand[^1]) == opUnless:
                 currentCommand.delete(0..shift)
                 discard currentCommand.pop()
                 var injectable = opJmpIf
@@ -416,7 +416,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                         currentCommand.delete(0..shift+shift2+1)
                         var toPushBack: VBinary
                         var jpb = currentCommand.len - 1
-                        while (OpCode)(currentCommand[jpb]) != opSwitch:
+                        while OpCode(currentCommand[jpb]) != opSwitch:
                             toPushBack.add(currentCommand.pop())
                             jpb -= 1
                         reverse(toPushBack)
@@ -466,7 +466,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         foundSwitch = false
 
     proc optimizeWhile(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
-        if (OpCode)(currentCommand[^1]) == opWhile:
+        if OpCode(currentCommand[^1]) == opWhile:
 
             let (cnstId, shift) = getConstIdWithShift(currentCommand, 0)
 
@@ -523,27 +523,27 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         foundWhile = false
 
     proc optimizeAdd(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
-        if (OpCode)(currentCommand[^1]) == opAdd:
-            if currentCommand.len == 3 and (OpCode)(currentCommand[0])==opConstI1:
+        if OpCode(currentCommand[^1]) == opAdd:
+            if currentCommand.len == 3 and OpCode(currentCommand[0])==opConstI1:
                 currentCommand = @[currentCommand[1], (byte)(opInc)]
-            elif (OpCode)(currentCommand[^2])==opConstI1:
+            elif OpCode(currentCommand[^2])==opConstI1:
                 currentCommand[^2] = (byte)(opInc)
                 discard currentCommand.pop()
-        elif (OpCode)(currentCommand[0]) == opAdd:
-            if currentCommand.len == 3 and (OpCode)(currentCommand[2])==opConstI1:
+        elif OpCode(currentCommand[0]) == opAdd:
+            if currentCommand.len == 3 and OpCode(currentCommand[2])==opConstI1:
                 currentCommand = @[(byte)(opInc), currentCommand[1]]
-            elif (OpCode)(currentCommand[1])==opConstI1:
+            elif OpCode(currentCommand[1])==opConstI1:
                 currentCommand[1] = (byte)(opInc)
                 currentCommand.delete(0)
 
         foundAdd = false
 
     proc optimizeSub(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
-        if (OpCode)(currentCommand[^1]) == opSub:
-            if currentCommand.len == 3 and (OpCode)(currentCommand[0])==opConstI1:
+        if OpCode(currentCommand[^1]) == opSub:
+            if currentCommand.len == 3 and OpCode(currentCommand[0])==opConstI1:
                 currentCommand = @[currentCommand[1], (byte)(opDec)]
-        elif (OpCode)(currentCommand[0])==opSub:
-            if currentCommand.len == 3 and (OpCode)(currentCommand[2])==opConstI1:
+        elif OpCode(currentCommand[0])==opSub:
+            if currentCommand.len == 3 and OpCode(currentCommand[2])==opConstI1:
                 currentCommand = @[(byte)(opDec), currentCommand[1]]
 
         foundSub = false

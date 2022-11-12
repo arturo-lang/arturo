@@ -1224,7 +1224,7 @@ proc defineSymbols*() =
                     if y.s == "data":
                         x.trans.constants = y.a
                     elif y.s == "code":
-                        x.trans.instructions = y.a.map((w) => (byte)(w.i))
+                        x.trans.instructions = y.a.map((w) => byte(w.i))
                     else:
                         discard
                 of Dictionary:

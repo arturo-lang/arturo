@@ -210,7 +210,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                     of Integer: return newInteger(ord(y.c))
                     of Floating: return newFloating((float)ord(y.c))
                     of String: return newString($(y.c))
-                    of Binary: return newBinary(@[(byte)(ord(y.c))])
+                    of Binary: return newBinary(@[byte(ord(y.c))])
                     else: throwCannotConvert()
 
             of String:
@@ -264,7 +264,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                     of Binary:
                         var ret: VBinary = newSeq[byte](y.s.len)
                         for i,ch in y.s:
-                            ret[i] = (byte)(ord(ch))
+                            ret[i] = byte(ord(ch))
                         return newBinary(ret)
                     of Block:
                         return doParse(y.s, isFile=false)
@@ -412,7 +412,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                         else:
                             throwCannotConvert()
                     of Bytecode:
-                        var evaled = Translation(constants: y.d["data"].a, instructions: y.d["code"].a.map(proc (x:Value):byte = (byte)(x.i)))
+                        var evaled = Translation(constants: y.d["data"].a, instructions: y.d["code"].a.map(proc (x:Value):byte = byte(x.i)))
                         if (hadAttr("optimized")):
                             evaled.instructions = optimizeBytecode(evaled)
 

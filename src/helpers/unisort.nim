@@ -153,7 +153,7 @@ func unicmp(x,y: Value, charset: seq[Rune], transformable: HashSet[Rune], ngraph
                 if sensitive:
                     result = cmp(int(xr), int(yr))
                 else:
-                    result = cmp((int)(toLower(xr)), (int)(toLower(yr)))
+                    result = cmp(int(toLower(xr)), int(toLower(yr)))
             else:
                 result = xri - yri
 
