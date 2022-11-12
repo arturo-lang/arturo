@@ -45,8 +45,8 @@ when not defined(WEB):
 # Helpers
 #=======================================
 
-template Op(sth: untyped): untyped = (OpCode)(sth)
-template By(sth: untyped): untyped = (Byte)(sth)
+template Op(sth: untyped): untyped = OpCode(sth)
+template By(sth: untyped): untyped = Byte(sth)
 
 template skip(steps: int): untyped =
     i.inc(steps)

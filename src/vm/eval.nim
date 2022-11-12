@@ -126,13 +126,13 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             indx = consts.len-1
 
         if indx <= 13:
-            addToCommand(((byte)(op)-0x0E) + (byte)(indx))
+            addToCommand((byte(op)-0x0E) + byte(indx))
         else:
             if indx>255:
                 addToCommand([
                     byte(indx),
                     byte(indx) shr 8,
-                    (byte)(op)+1
+                    byte(op)+1
                 ])
             else:
                 addToCommand([
@@ -152,7 +152,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             addToCommand([
                 byte(indx),
                 byte(indx) shr 8,
-                (byte)(op)+1
+                byte(op)+1
             ])
         else:
             addToCommand([
@@ -173,11 +173,11 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             indx = consts.len-1
 
         if indx <= 13:
-            addToCommandHead(((byte)(op)-0x0E) + (byte)(indx), atPos)
+            addToCommandHead((byte(op)-0x0E) + byte(indx), atPos)
         else:
             if indx>255:
                 addToCommandHead([
-                    (byte)(op)+1,
+                    byte(op)+1,
                     byte(indx) shr 8,
                     byte(indx)
                 ], atPos)
@@ -285,11 +285,11 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
     proc getConstIdWithShift(currentCommand: var VBinary, pos: int): (int,int) {.inline,enforceNoRaises.} =
         let currentCommandLast = currentCommand[pos]
-        if (OpCode)(currentCommandLast) in {opPush0..opPush13}:
-            return ((int)(currentCommandLast) - (int)(opPush0), 0)
-        elif (OpCode)(currentCommandLast) == opPush:
+        if OpCode(currentCommandLast) in {opPush0..opPush13}:
+            return (int(currentCommandLast) - int(opPush0), 0)
+        elif OpCode(currentCommandLast) == opPush:
             return ((int)(currentCommand[pos+1]), 1)
-        elif (OpCode)(currentCommandLast) == opPushX:
+        elif OpCode(currentCommandLast) == opPushX:
             return (((int)(currentCommand[pos+1]) shl 8) + (int)(currentCommand[pos+2]), 2)
         
         return (-1, -1)
@@ -525,15 +525,15 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
     proc optimizeAdd(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
         if (OpCode)(currentCommand[^1]) == opAdd:
             if currentCommand.len == 3 and (OpCode)(currentCommand[0])==opConstI1:
-                currentCommand = @[currentCommand[1], (byte)(opInc)]
+                currentCommand = @[currentCommand[1], byte(opInc)]
             elif (OpCode)(currentCommand[^2])==opConstI1:
-                currentCommand[^2] = (byte)(opInc)
+                currentCommand[^2] = byte(opInc)
                 discard currentCommand.pop()
         elif (OpCode)(currentCommand[0]) == opAdd:
             if currentCommand.len == 3 and (OpCode)(currentCommand[2])==opConstI1:
-                currentCommand = @[(byte)(opInc), currentCommand[1]]
+                currentCommand = @[byte(opInc), currentCommand[1]]
             elif (OpCode)(currentCommand[1])==opConstI1:
-                currentCommand[1] = (byte)(opInc)
+                currentCommand[1] = byte(opInc)
                 currentCommand.delete(0)
 
         foundAdd = false
@@ -541,10 +541,10 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
     proc optimizeSub(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
         if (OpCode)(currentCommand[^1]) == opSub:
             if currentCommand.len == 3 and (OpCode)(currentCommand[0])==opConstI1:
-                currentCommand = @[currentCommand[1], (byte)(opDec)]
+                currentCommand = @[currentCommand[1], byte(opDec)]
         elif (OpCode)(currentCommand[0])==opSub:
             if currentCommand.len == 3 and (OpCode)(currentCommand[2])==opConstI1:
-                currentCommand = @[(byte)(opDec), currentCommand[1]]
+                currentCommand = @[byte(opDec), currentCommand[1]]
 
         foundSub = false
 
@@ -822,12 +822,12 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 addTerminalValue(inBlock=false):
                     when defined(WEB) or not defined(NOGMP):
                         if likely(node.iKind==NormalInteger):
-                            if node.i>=0 and node.i<=15: addToCommand((byte)(opConstI0) + (byte)(node.i))
+                            if node.i>=0 and node.i<=15: addToCommand(byte(opConstI0) + (byte)(node.i))
                             else: addConst(node, opPush)
                         else:
                             addConst(node, opPush)
                     else:
-                        if node.i>=0 and node.i<=15: addToCommand((byte)(opConstI0) + (byte)(node.i))
+                        if node.i>=0 and node.i<=15: addToCommand(byte(opConstI0) + (byte)(node.i))
                         else: addConst(node, opPush)
 
             of String:

@@ -188,7 +188,7 @@ func newInteger*(i: int): Value {.inline, enforceNoRaises.} =
 
 func newInteger*(i: int64): Value {.inline, enforceNoRaises.} =
     ## create Integer value from int64
-    newInteger((int)(i))
+    newInteger(int(i))
 
 proc newInteger*(i: string, lineno: int = 1): Value {.inline.} =
     ## create Integer value from string
@@ -215,7 +215,7 @@ func newFloating*(f: float): Value {.inline, enforceNoRaises.} =
 
 func newFloating*(f: int): Value {.inline, enforceNoRaises.} =
     ## create Floating value from int
-    Value(kind: Floating, f: (float)(f))
+    Value(kind: Floating, f: float(f))
 
 proc newFloating*(f: string): Value {.inline.} =
     ## create Floating value from string
@@ -567,7 +567,7 @@ func newBlock*(a: sink ValueArray = @[], data: sink Value = nil, dirty = false):
 
 func newIntegerBlock*[T](a: sink seq[T]): Value {.inline, enforceNoRaises.} =
     ## create Block value from an array of ints
-    newBlock(a.map(proc (x:T):Value = newInteger((int)(x))))
+    newBlock(a.map(proc (x:T):Value = newInteger(int(x))))
 
 proc newStringBlock*(a: sink seq[string]): Value {.inline, enforceNoRaises.} =
     ## create Block value from an array of strings

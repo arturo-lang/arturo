@@ -1510,7 +1510,7 @@ func analogousPalette*(c: VColor, size: int): Palette =
 
 func monochromePalette*(c: VColor, size: int): Palette =
     var hsv = RGBtoHSV(c)
-    let modification = 1.0 / (float)(size)
+    let modification = 1.0 / float(size)
     var i = 0
     while i < size:
         result.add(colorFromRGB(HSVtoRGB(hsv)))
