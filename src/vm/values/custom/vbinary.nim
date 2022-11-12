@@ -70,7 +70,7 @@ proc substitute*(a: VBinary, needle: VBinary, replacement: VBinary): VBinary =
     result.add(a[i..^1])
 
 proc numberToBinary*(i: int | float): VBinary =
-    if i==0: return @[(byte)0]
+    if i==0: return @[byte(0)]
     var bytes = toSeq(cast[array[0..7, byte]](i)).reversed
     var i=0
     while i < bytes.len and bytes[i] == 0:

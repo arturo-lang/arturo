@@ -38,15 +38,15 @@ const
 
 when not defined(WEB):
     const
-        BcodeMagic              = (uint32)0x86BC0DE0
-        BcodeMagicCompressed    = (uint32)0x86BC0DE1
+        BcodeMagic              = uint32(0x86BC0DE0)
+        BcodeMagicCompressed    = uint32(0x86BC0DE1)
 
 #=======================================
 # Helpers
 #=======================================
 
-template Op(sth: untyped): untyped = (OpCode)(sth)
-template By(sth: untyped): untyped = (Byte)(sth)
+template Op(sth: untyped): untyped = OpCode(sth)
+template By(sth: untyped): untyped = Byte(sth)
 
 template skip(steps: int): untyped =
     i.inc(steps)
