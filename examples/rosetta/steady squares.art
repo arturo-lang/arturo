@@ -1,0 +1,18 @@
+; by @Krenium
+
+steady?: function [n][
+    mask: 1
+    d: n
+    while -> d <> 0 [
+        mask: mask * 10
+        d: d / 10
+    ]
+    n = (n * n) % mask
+]
+
+loop 0..1000 'n [
+    loop [1 5 6] 'd [
+        r: d + 10 * n     ; only check numbers that end with 1, 5, 6
+        if steady? r -> print ~"|r|^2 = |r*r|"
+    ]
+]
