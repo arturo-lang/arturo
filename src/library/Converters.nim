@@ -432,7 +432,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                     of Dictionary:
                         return newDictionary({
                             "data": newBlock(y.trans.constants),
-                            "code": newBlock(y.trans.instructions.map((w) => newInteger((int)w)))
+                            "code": newBlock(y.trans.instructions.map((w) => newInteger(int(w))))
                         }.toOrderedTable)
                     else:
                         throwCannotConvert()
