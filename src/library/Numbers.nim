@@ -368,7 +368,7 @@ proc defineSymbols*() =
             print ceil 4            ; 4
         """:
             #=======================================================
-            push(newInteger((int)(ceil(asFloat(x)))))
+            push(newInteger(int(ceil(asFloat(x)))))
 
     builtin "conj",
         alias       = unaliased, 
@@ -659,7 +659,7 @@ proc defineSymbols*() =
             print floor 4           ; 4
         """:
             #=======================================================
-            push(newInteger((int)(floor(asFloat(x)))))
+            push(newInteger(int(floor(asFloat(x)))))
 
     when not defined(WEB):
         builtin "gamma",
