@@ -54,14 +54,14 @@ when not defined(NOERRORLINES):
     template addEol(it: var VBinary, line: untyped):untyped =
         if line > 255:
             it.add([
-                (byte)opEolX,
-                (byte)line shr 8,
-                (byte)line
+                byte(opEolX),
+                byte(line shr 8),
+                byte(line)
             ])
         else:
             it.add([
-                (byte)opEol,
-                (byte)line
+                byte(opEol),
+                byte(line)
             ])
 
 func hasBranching(blk: Value, continueW: string = "continue", breakW: string = "break"): bool {.enforceNoRaises.} =
@@ -107,13 +107,13 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
     template addToCommand(b: untyped):untyped {.dirty.} =
         when b is OpCode:
-            currentCommand.add((byte)b)
+            currentCommand.add(byte(b))
         else:
             currentCommand.add(b)
 
     template addToCommandHead(b: untyped, at = 0):untyped {.dirty.} =
         when b is OpCode:
-            currentCommand.insert((byte)b, at)
+            currentCommand.insert(byte(b), at)
         else:
             currentCommand.insert(b, at)
 
@@ -126,18 +126,18 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             indx = consts.len-1
 
         if indx <= 13:
-            addToCommand(((byte)(op)-0x0E) + (byte)(indx))
+            addToCommand((byte(op)-0x0E) + byte(indx))
         else:
             if indx>255:
                 addToCommand([
-                    (byte)indx,
-                    (byte)indx shr 8,
-                    (byte)(op)+1
+                    byte(indx),
+                    byte(indx shr 8),
+                    byte(op)+1
                 ])
             else:
                 addToCommand([
-                    (byte)indx,
-                    (byte)op
+                    byte(indx),
+                    byte(op)
                 ])
 
     proc addShortConst(currentCommand: var VBinary, consts: var seq[Value], v: Value, op: OpCode) {.inline,enforceNoRaises.} =
@@ -150,14 +150,14 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
         if indx>255:
             addToCommand([
-                (byte)indx,
-                (byte)indx shr 8,
-                (byte)(op)+1
+                byte(indx),
+                byte(indx shr 8),
+                byte(op)+1
             ])
         else:
             addToCommand([
-                (byte)indx,
-                (byte)op
+                byte(indx),
+                byte(op)
             ])
 
     proc addTrailingConst(currentCommand: var VBinary, consts: var seq[Value], v: Value, op: OpCode) {.inline,enforceNoRaises.} =
@@ -173,18 +173,18 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             indx = consts.len-1
 
         if indx <= 13:
-            addToCommandHead(((byte)(op)-0x0E) + (byte)(indx), atPos)
+            addToCommandHead((byte(op)-0x0E) + byte(indx), atPos)
         else:
             if indx>255:
                 addToCommandHead([
-                    (byte)(op)+1,
-                    (byte)indx shr 8,
-                    (byte)indx
+                    byte(op)+1,
+                    byte(indx shr 8),
+                    byte(indx)
                 ], atPos)
             else:
                 addToCommandHead([
-                    (byte)op,
-                    (byte)indx
+                    byte(op),
+                    byte(indx)
                 ], atPos)
 
     proc evalFunctionCall(currentCommand: var VBinary, fun: var Value, toHead: bool, checkAhead: bool, i: var int, funcArity: var int): bool {.enforceNoRaises.} =
@@ -285,12 +285,12 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
     proc getConstIdWithShift(currentCommand: var VBinary, pos: int): (int,int) {.inline,enforceNoRaises.} =
         let currentCommandLast = currentCommand[pos]
-        if (OpCode)(currentCommandLast) in {opPush0..opPush13}:
-            return ((int)(currentCommandLast) - (int)(opPush0), 0)
-        elif (OpCode)(currentCommandLast) == opPush:
-            return ((int)(currentCommand[pos+1]), 1)
-        elif (OpCode)(currentCommandLast) == opPushX:
-            return (((int)(currentCommand[pos+1]) shl 8) + (int)(currentCommand[pos+2]), 2)
+        if OpCode(currentCommandLast) in {opPush0..opPush13}:
+            return (int(currentCommandLast) - int(opPush0), 0)
+        elif OpCode(currentCommandLast) == opPush:
+            return (int(currentCommand[pos+1]), 1)
+        elif OpCode(currentCommandLast) == opPushX:
+            return ((int(currentCommand[pos+1]) shl 8) + int(currentCommand[pos+2]), 2)
         
         return (-1, -1)
 
@@ -299,11 +299,11 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
         if cnstId != -1:
             let blk = consts[cnstId]
-            if blk.kind == Block and (OpCode)(currentCommand[^1]) in {opIf,opIfE}:
+            if blk.kind == Block and OpCode(currentCommand[^1]) in {opIf,opIfE}:
                 currentCommand.delete(0..shift)
                 discard currentCommand.pop()
                 var injectable = opJmpIfNot
-                case (OpCode)currentCommand[^1]:
+                case OpCode(currentCommand[^1]):
                     of opNot:
                         discard currentCommand.pop()
                         injectable = opJmpIf
@@ -327,14 +327,14 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                         injectable = opJmpIfGt
                     else:
                         discard
-                currentCommand.add([(byte)injectable, (byte)0, (byte)0])
+                currentCommand.add([byte(injectable), byte(0), byte(0)])
                 let injPos = currentCommand.len - 2
                 evalOne(blk, consts, currentCommand, inBlock=inBlock, isDictionary=isDictionary)
                 if foundIfE:
-                    currentCommand.add([(byte)opNop, (byte)opNop, (byte)opNop])
+                    currentCommand.add([byte(opNop), byte(opNop), byte(opNop)])
                 let finPos = currentCommand.len - injPos - 2
-                currentCommand[injPos] = (byte)finPos shr 8
-                currentCommand[injPos+1] = (byte)finPos
+                currentCommand[injPos] = byte(finPos shr 8)
+                currentCommand[injPos+1] = byte(finPos)
         
         foundIf = false
         foundIfE = false
@@ -344,11 +344,11 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
         if cnstId != -1:
             let blk = consts[cnstId]
-            if blk.kind == Block and (OpCode)(currentCommand[^1]) == opUnless:
+            if blk.kind == Block and OpCode(currentCommand[^1]) == opUnless:
                 currentCommand.delete(0..shift)
                 discard currentCommand.pop()
                 var injectable = opJmpIf
-                case (OpCode)currentCommand[^1]:
+                case OpCode(currentCommand[^1]):
                     of opNot:
                         discard currentCommand.pop()
                         injectable = opJmpIfNot
@@ -372,14 +372,14 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                         injectable = opJmpIfLe
                     else:
                         discard
-                currentCommand.add([(byte)injectable, (byte)0, (byte)0])
+                currentCommand.add([byte(injectable), byte(0), byte(0)])
                 let injPos = currentCommand.len - 2
                 evalOne(blk, consts, currentCommand, inBlock=inBlock, isDictionary=isDictionary)
                 if foundIfE:
-                    currentCommand.add([(byte)opNop, (byte)opNop, (byte)opNop])
+                    currentCommand.add([byte(opNop), byte(opNop), byte(opNop)])
                 let finPos = currentCommand.len - injPos - 2
-                currentCommand[injPos] = (byte)finPos shr 8
-                currentCommand[injPos+1] = (byte)finPos
+                currentCommand[injPos] = byte(finPos shr 8)
+                currentCommand[injPos+1] = byte(finPos)
         
         foundUnless = false
 
@@ -394,9 +394,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
                 evalOne(blk, consts, currentCommand, inBlock=inBlock, isDictionary=isDictionary)
                 let currentPos = currentCommand.len
-                it[^3] = (byte)opGoto
-                it[^2] = (byte)currentPos shr 8
-                it[^1] = (byte)currentPos
+                it[^3] = byte(opGoto)
+                it[^2] = byte(currentPos shr 8)
+                it[^1] = byte(currentPos)
                 
         foundElse = false
 
@@ -412,17 +412,17 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                     let blk2 = consts[cnstId2]
                     if blk2.kind == Block:
                         # for b in currentCommand:
-                        #     echo stringify((OpCode)b)
+                        #     echo stringify(OpCode(b))
                         currentCommand.delete(0..shift+shift2+1)
                         var toPushBack: VBinary
                         var jpb = currentCommand.len - 1
-                        while (OpCode)(currentCommand[jpb]) != opSwitch:
+                        while OpCode(currentCommand[jpb]) != opSwitch:
                             toPushBack.add(currentCommand.pop())
                             jpb -= 1
                         reverse(toPushBack)
                         discard currentCommand.pop()
                         var injectable = opJmpIfNot
-                        case (OpCode)currentCommand[^1]:
+                        case OpCode(currentCommand[^1]):
                             of opNot:
                                 discard currentCommand.pop()
                                 injectable = opJmpIf
@@ -446,27 +446,27 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                                 injectable = opJmpIfGt
                             else:
                                 discard
-                        currentCommand.add([(byte)injectable, (byte)0, (byte)0])
+                        currentCommand.add([byte(injectable), byte(0), byte(0)])
                         let injPos = currentCommand.len - 2
                         evalOne(blk2, consts, currentCommand, inBlock=inBlock, isDictionary=isDictionary)
                         let preInjection = currentCommand.len
-                        currentCommand.add([(byte)opNop, (byte)opNop, (byte)opNop])
+                        currentCommand.add([byte(opNop), byte(opNop), byte(opNop)])
                         let finPos = currentCommand.len - injPos - 2
-                        currentCommand[injPos] = (byte)finPos shr 8
-                        currentCommand[injPos+1] = (byte)finPos
+                        currentCommand[injPos] = byte(finPos shr 8)
+                        currentCommand[injPos+1] = byte(finPos)
                         let lastLen = currentCommand.len
                         evalOne(blk, consts, currentCommand, inBlock=inBlock, isDictionary=isDictionary)
                         let currentPos = currentCommand.len - lastLen
-                        currentCommand[preInjection] = (byte)opGoto
-                        currentCommand[preInjection+1] = (byte)currentPos shr 8
-                        currentCommand[preInjection+2] = (byte)currentPos
+                        currentCommand[preInjection] = byte(opGoto)
+                        currentCommand[preInjection+1] = byte(currentPos shr 8)
+                        currentCommand[preInjection+2] = byte(currentPos)
                         if toPushBack.len > 0:
                             currentCommand.add(toPushBack)
 
         foundSwitch = false
 
     proc optimizeWhile(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
-        if (OpCode)(currentCommand[^1]) == opWhile:
+        if OpCode(currentCommand[^1]) == opWhile:
 
             let (cnstId, shift) = getConstIdWithShift(currentCommand, 0)
 
@@ -484,7 +484,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                                 let initialLen = currentCommand.len
                                 evalOne(blk2, consts, currentCommand, inBlock=inBlock, isDictionary=isDictionary)
                                 var injectable = opJmpIfNot
-                                case (OpCode)currentCommand[^1]:
+                                case OpCode(currentCommand[^1]):
                                     of opNot:
                                         discard currentCommand.pop()
                                         injectable = opJmpIf
@@ -508,43 +508,43 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                                         injectable = opJmpIfGt
                                     else:
                                         discard
-                                currentCommand.add([(byte)injectable, (byte)0, (byte)0])
+                                currentCommand.add([byte(injectable), byte(0), byte(0)])
                                 let injPos = currentCommand.len - 2
                                 evalOne(blk1, consts, currentCommand, inBlock=inBlock, isDictionary=isDictionary)
-                                currentCommand.add([(byte)opGoup, (byte)0, (byte)0])
+                                currentCommand.add([byte(opGoup), byte(0), byte(0)])
                                 let gotoPos = currentCommand.len - 2
                                 let finPos = currentCommand.len - injPos - 2
-                                currentCommand[injPos] = (byte)finPos shr 8
-                                currentCommand[injPos+1] = (byte)finPos
+                                currentCommand[injPos] = byte(finPos shr 8)
+                                currentCommand[injPos+1] = byte(finPos)
                                 let dist = currentCommand.len - initialLen
-                                currentCommand[gotoPos] = (byte)dist shr 8
-                                currentCommand[gotoPos+1] = (byte)dist
+                                currentCommand[gotoPos] = byte(dist shr 8)
+                                currentCommand[gotoPos+1] = byte(dist)
 
         foundWhile = false
 
     proc optimizeAdd(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
-        if (OpCode)(currentCommand[^1]) == opAdd:
-            if currentCommand.len == 3 and (OpCode)(currentCommand[0])==opConstI1:
-                currentCommand = @[currentCommand[1], (byte)(opInc)]
-            elif (OpCode)(currentCommand[^2])==opConstI1:
-                currentCommand[^2] = (byte)(opInc)
+        if OpCode(currentCommand[^1]) == opAdd:
+            if currentCommand.len == 3 and OpCode(currentCommand[0])==opConstI1:
+                currentCommand = @[currentCommand[1], byte(opInc)]
+            elif OpCode(currentCommand[^2])==opConstI1:
+                currentCommand[^2] = byte(opInc)
                 discard currentCommand.pop()
-        elif (OpCode)(currentCommand[0]) == opAdd:
-            if currentCommand.len == 3 and (OpCode)(currentCommand[2])==opConstI1:
-                currentCommand = @[(byte)(opInc), currentCommand[1]]
-            elif (OpCode)(currentCommand[1])==opConstI1:
-                currentCommand[1] = (byte)(opInc)
+        elif OpCode(currentCommand[0]) == opAdd:
+            if currentCommand.len == 3 and OpCode(currentCommand[2])==opConstI1:
+                currentCommand = @[byte(opInc), currentCommand[1]]
+            elif OpCode(currentCommand[1])==opConstI1:
+                currentCommand[1] = byte(opInc)
                 currentCommand.delete(0)
 
         foundAdd = false
 
     proc optimizeSub(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
-        if (OpCode)(currentCommand[^1]) == opSub:
-            if currentCommand.len == 3 and (OpCode)(currentCommand[0])==opConstI1:
-                currentCommand = @[currentCommand[1], (byte)(opDec)]
-        elif (OpCode)(currentCommand[0])==opSub:
-            if currentCommand.len == 3 and (OpCode)(currentCommand[2])==opConstI1:
-                currentCommand = @[(byte)(opDec), currentCommand[1]]
+        if OpCode(currentCommand[^1]) == opSub:
+            if currentCommand.len == 3 and OpCode(currentCommand[0])==opConstI1:
+                currentCommand = @[currentCommand[1], byte(opDec)]
+        elif OpCode(currentCommand[0])==opSub:
+            if currentCommand.len == 3 and OpCode(currentCommand[2])==opConstI1:
+                currentCommand = @[byte(opDec), currentCommand[1]]
 
         foundSub = false
 
@@ -557,7 +557,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         elif foundUnless:
             optimizeUnless(consts, it)
         
-        elif foundElse and it[^1] == (byte)opNop:
+        elif foundElse and it[^1] == byte(opNop):
             optimizeLess(consts, it)
 
         elif foundSwitch:
@@ -822,12 +822,12 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 addTerminalValue(inBlock=false):
                     when defined(WEB) or not defined(NOGMP):
                         if likely(node.iKind==NormalInteger):
-                            if node.i>=0 and node.i<=15: addToCommand((byte)(opConstI0) + (byte)(node.i))
+                            if node.i>=0 and node.i<=15: addToCommand(byte(opConstI0) + byte(node.i))
                             else: addConst(node, opPush)
                         else:
                             addConst(node, opPush)
                     else:
-                        if node.i>=0 and node.i<=15: addToCommand((byte)(opConstI0) + (byte)(node.i))
+                        if node.i>=0 and node.i<=15: addToCommand(byte(opConstI0) + byte(node.i))
                         else: addConst(node, opPush)
 
             of String:
@@ -1066,7 +1066,7 @@ proc doEval*(root: Value, isDictionary=false, useStored: static bool = true): Tr
                 {k: v.arity}
 
     evalOne(root, cnsts, newit, isDictionary=isDictionary)
-    newit.add((byte)opEnd)
+    newit.add(byte(opEnd))
 
     # when defined(OPTIMIZED):
     #     newit = optimizeBytecode(newit)
