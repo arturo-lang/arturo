@@ -342,7 +342,7 @@ when false:
                     yield (op, pos, true, int(bs[pos + 1]))
                     pos += 2
                 of opPushX, opStoreX, opLoadX, opCallX, opStorlX, opEol:
-                    yield (op, pos, true, (int)(((uint16)(bs[pos + 1]) shl 8) + (byte)bs[pos + 2]))
+                    yield (op, pos, true, int((uint16(bs[pos + 1]) shl 8) + (byte)bs[pos + 2]))
                     pos += 3
                 else: 
                     yield (op, pos, false, 0)
@@ -364,7 +364,7 @@ when false:
                     firstTup = (op, pos, true, int(bs[pos + 1]))
                     pos += 2
                 of opPushX, opStoreX, opLoadX, opCallX, opStorlX, opEol:
-                    firstTup = (op, pos, true, (int)(((uint16)(bs[pos + 1]) shl 8) + (byte)bs[pos + 2]))
+                    firstTup = (op, pos, true, int((uint16(bs[pos + 1]) shl 8) + (byte)bs[pos + 2]))
                     pos += 3
                 else: 
                     firstTup = (op, pos, false, 0)
@@ -376,7 +376,7 @@ when false:
                         secondTup = (op, pos, true, int(bs[pos + 1]))
                         #pos += 2
                     of opPushX, opStoreX, opLoadX, opCallX, opStorlX, opEol:
-                        secondTup = (op, pos, true, (int)(((uint16)(bs[pos + 1]) shl 8) + (byte)bs[pos + 2]))
+                        secondTup = (op, pos, true, int((uint16(bs[pos + 1]) shl 8) + (byte)bs[pos + 2]))
                         #pos += 3
                     else: 
                         secondTup = (op, pos, false, 0)

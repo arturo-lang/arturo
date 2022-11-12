@@ -1743,7 +1743,7 @@ proc `^`*(x: Value, y: Value): Value =
                         when defined(WEB):
                             return newInteger(big(x.i) ** big(y.i))
                         elif not defined(NOGMP):
-                            return newInteger(pow(x.i,(culong)(y.i)))
+                            return newInteger(pow(x.i,culong(y.i)))
                         else:
                             RuntimeError_IntegerOperationOverflow("pow", valueAsString(x), valueAsString(y))
                 else:
@@ -1759,7 +1759,7 @@ proc `^`*(x: Value, y: Value): Value =
                         return newInteger(x.bi ** y.bi)
                 elif not defined(NOGMP):
                     if likely(y.iKind==NormalInteger):
-                        return newInteger(pow(x.bi,(culong)(y.i)))
+                        return newInteger(pow(x.bi,culong(y.i)))
                     else:
                         RuntimeError_NumberOutOfPermittedRange("pow",valueAsString(x), valueAsString(y))
         else:
@@ -2053,7 +2053,7 @@ proc `>>`*(x: Value, y: Value): Value =
                 if unlikely(y.iKind==BigInteger):
                     RuntimeError_NumberOutOfPermittedRange("shr",valueAsString(x), valueAsString(y))
                 else:
-                    return newInteger(x.bi shr (culong)(y.i))
+                    return newInteger(x.bi shr culong(y.i))
 
 proc `>>=`*(x: var Value, y: Value) =
     ## perform binary-right-shift between given values
@@ -2081,7 +2081,7 @@ proc `>>=`*(x: var Value, y: Value) =
                 if unlikely(y.iKind==BigInteger):
                     RuntimeError_NumberOutOfPermittedRange("shr",valueAsString(x), valueAsString(y))
                 else:
-                    x = newInteger(x.bi shr (culong)(y.i))
+                    x = newInteger(x.bi shr culong(y.i))
 
 proc `<<`*(x: Value, y: Value): Value =
     ## perform binary-left-shift between given values
@@ -2107,7 +2107,7 @@ proc `<<`*(x: Value, y: Value): Value =
                 if unlikely(y.iKind==BigInteger):
                     RuntimeError_NumberOutOfPermittedRange("shl",valueAsString(x), valueAsString(y))
                 else:
-                    return newInteger(x.bi shl (culong)(y.i))
+                    return newInteger(x.bi shl culong(y.i))
 
 proc `<<=`*(x: var Value, y: Value) =
     ## perform binary-left-shift between given values
@@ -2135,7 +2135,7 @@ proc `<<=`*(x: var Value, y: Value) =
                 if unlikely(y.iKind==BigInteger):
                     RuntimeError_NumberOutOfPermittedRange("shl",valueAsString(x), valueAsString(y))
                 else:
-                    x = newInteger(x.bi shl (culong)(y.i))
+                    x = newInteger(x.bi shl culong(y.i))
 
 proc `!!`*(x: Value): Value =
     ## perform binary-not for given value

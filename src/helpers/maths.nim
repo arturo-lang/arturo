@@ -210,7 +210,7 @@ when defined(WEB):
         var num = n
         if num < bigZero: num = num * big(-1)
         while num > bigZero:
-            result.add((int)(toNumber(num mod bigBase)))
+            result.add(int(toNumber(num mod bigBase)))
             num = num div bigBase
 
         result.reverse()
@@ -363,7 +363,7 @@ elif not defined(NOGMP):
         if z.iKind==NormalInteger: Z = newBigInteger(z.i)
 
         if y.iKind==NormalInteger:
-            newInteger(exp(X.bi, (culong)(y.i), Z.bi))
+            newInteger(exp(X.bi, culong(y.i), Z.bi))
         else:
             newInteger(exp(X.bi, y.bi, Z.bi))
 else:
