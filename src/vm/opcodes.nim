@@ -339,7 +339,7 @@ when false:
             let op = (OpCode)bs[pos]
             case op:
                 of opPush, opStore, opLoad, opCall, opStorl, opAttr:
-                    yield (op, pos, true, (int)(bs[pos + 1]))
+                    yield (op, pos, true, int(bs[pos + 1]))
                     pos += 2
                 of opPushX, opStoreX, opLoadX, opCallX, opStorlX, opEol:
                     yield (op, pos, true, (int)(((uint16)(bs[pos + 1]) shl 8) + (byte)bs[pos + 2]))
@@ -361,7 +361,7 @@ when false:
             let op = (OpCode)bs[pos]
             case op:
                 of opPush, opStore, opLoad, opCall, opStorl, opAttr:
-                    firstTup = (op, pos, true, (int)(bs[pos + 1]))
+                    firstTup = (op, pos, true, int(bs[pos + 1]))
                     pos += 2
                 of opPushX, opStoreX, opLoadX, opCallX, opStorlX, opEol:
                     firstTup = (op, pos, true, (int)(((uint16)(bs[pos + 1]) shl 8) + (byte)bs[pos + 2]))
@@ -373,7 +373,7 @@ when false:
                 let op = (OpCode)bs[pos]
                 case op:
                     of opPush, opStore, opLoad, opCall, opStorl, opAttr:
-                        secondTup = (op, pos, true, (int)(bs[pos + 1]))
+                        secondTup = (op, pos, true, int(bs[pos + 1]))
                         #pos += 2
                     of opPushX, opStoreX, opLoadX, opCallX, opStorlX, opEol:
                         secondTup = (op, pos, true, (int)(((uint16)(bs[pos + 1]) shl 8) + (byte)bs[pos + 2]))

@@ -286,11 +286,11 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
     proc getConstIdWithShift(currentCommand: var VBinary, pos: int): (int,int) {.inline,enforceNoRaises.} =
         let currentCommandLast = currentCommand[pos]
         if (OpCode)(currentCommandLast) in {opPush0..opPush13}:
-            return ((int)(currentCommandLast) - (int)(opPush0), 0)
+            return (int(currentCommandLast) - int(opPush0), 0)
         elif (OpCode)(currentCommandLast) == opPush:
-            return ((int)(currentCommand[pos+1]), 1)
+            return (int(currentCommand[pos+1]), 1)
         elif (OpCode)(currentCommandLast) == opPushX:
-            return (((int)(currentCommand[pos+1]) shl 8) + (int)(currentCommand[pos+2]), 2)
+            return ((int(currentCommand[pos+1]) shl 8) + int(currentCommand[pos+2]), 2)
         
         return (-1, -1)
 

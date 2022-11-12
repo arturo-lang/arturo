@@ -126,7 +126,7 @@ macro performConditionalJump(symb: untyped): untyped =
         let y = move stack.pop()
         i += 2
         if `symb`(x,y):
-            i += (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
+            i += (int)((uint16)(it[i-1]) shl 8 + byte(it[i]))
 
 #---------------------------------------
 
@@ -357,7 +357,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
     while true:
         {.computedGoTo.}
 
-        op = (OpCode)(it[i])
+        op = OpCode(it[i])
 
         #echo "Executing: " & (stringify(op)) & " at " & $(i)# & " with next: " & $(it[i+1])
 
@@ -405,18 +405,18 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opEol                : 
                     when not defined(NOERRORLINES):
                         i += 1
-                        CurrentLine = (int)(it[i])
+                        CurrentLine = int(it[i])
                     else:
                         discard
                 of opEolX               :   
                     when not defined(NOERRORLINES):
                         i += 2
-                        CurrentLine = (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
+                        CurrentLine = (int)((uint16)(it[i-1]) shl 8 + byte(it[i]))
                     else:
                         discard
 
-                of opDStore             : i += 1; dStoreByIndex(cnst, (int)(it[i]))
-                of opDStoreX            : i += 2; dStoreByIndex(cnst, (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
+                of opDStore             : i += 1; dStoreByIndex(cnst, int(it[i]))
+                of opDStoreX            : i += 2; dStoreByIndex(cnst, (int)((uint16)(it[i-1]) shl 8 + byte(it[i]))) 
 
                 # [0x20-0x2F]
                 # push values
@@ -434,9 +434,9 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opPush11             : pushByIndex(11)
                 of opPush12             : pushByIndex(12)
                 of opPush13             : pushByIndex(13)
-                #of opPush0..opPush13    : pushByIndex((int)(op)-(int)(opPush0))
-                of opPush               : i += 1; pushByIndex((int)(it[i]))
-                of opPushX              : i += 2; pushByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
+                #of opPush0..opPush13    : pushByIndex(int(op)-int(opPush0))
+                of opPush               : i += 1; pushByIndex(int(it[i]))
+                of opPushX              : i += 2; pushByIndex((int)((uint16)(it[i-1]) shl 8 + byte(it[i]))) 
 
                 # [0x30-0x3F]
                 # store variables (from <- stack)
@@ -454,8 +454,8 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opStore11            : storeByIndex(cnst, 11)
                 of opStore12            : storeByIndex(cnst, 12)
                 of opStore13            : storeByIndex(cnst, 13)
-                of opStore              : i += 1; storeByIndex(cnst, (int)(it[i]))   
-                of opStoreX             : i += 2; storeByIndex(cnst, (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i])))              
+                of opStore              : i += 1; storeByIndex(cnst, int(it[i]))   
+                of opStoreX             : i += 2; storeByIndex(cnst, (int)((uint16)(it[i-1]) shl 8 + byte(it[i])))              
 
                 # [0x40-0x4F]
                 # load variables (to -> stack)
@@ -473,8 +473,8 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opLoad11             : loadByIndex(11)
                 of opLoad12             : loadByIndex(12)
                 of opLoad13             : loadByIndex(13)
-                of opLoad               : i += 1; loadByIndex((int)(it[i]))
-                of opLoadX              : i += 2; loadByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
+                of opLoad               : i += 1; loadByIndex(int(it[i]))
+                of opLoadX              : i += 2; loadByIndex((int)((uint16)(it[i-1]) shl 8 + byte(it[i]))) 
 
                 # [0x50-0x5F]
                 # store-load variables (from <- stack, without popping)
@@ -492,8 +492,8 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opStorl11            : storeByIndex(cnst, 11, doPop=false)
                 of opStorl12            : storeByIndex(cnst, 12, doPop=false)
                 of opStorl13            : storeByIndex(cnst, 13, doPop=false)
-                of opStorl              : i += 1; storeByIndex(cnst, (int)(it[i]), doPop=false)   
-                of opStorlX             : i += 2; storeByIndex(cnst, (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i])), doPop=false)              
+                of opStorl              : i += 1; storeByIndex(cnst, int(it[i]), doPop=false)   
+                of opStorlX             : i += 2; storeByIndex(cnst, (int)((uint16)(it[i-1]) shl 8 + byte(it[i])), doPop=false)              
 
                 # [0x60-0x6F]
                 # function calls
@@ -511,8 +511,8 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opCall11             : callByIndex(11)
                 of opCall12             : callByIndex(12)
                 of opCall13             : callByIndex(13)          
-                of opCall               : i += 1; callByIndex((int)(it[i]))
-                of opCallX              : i += 2; callByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
+                of opCall               : i += 1; callByIndex(int(it[i]))
+                of opCallX              : i += 2; callByIndex((int)((uint16)(it[i-1]) shl 8 + byte(it[i]))) 
 
                 # [0x70-0x7F]
                 # attributes
@@ -530,9 +530,9 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opAttr11             : fetchAttributeByIndex(11)
                 of opAttr12             : fetchAttributeByIndex(12)
                 of opAttr13             : fetchAttributeByIndex(13)
-                #of opAttr0..opAttr13    : fetchAttributeByIndex((int)(op)-(int)(opAttr0))
-                of opAttr               : i += 1; fetchAttributeByIndex((int)(it[i]))
-                of opAttrX              : i += 2; fetchAttributeByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
+                #of opAttr0..opAttr13    : fetchAttributeByIndex(int(op)-int(opAttr0))
+                of opAttr               : i += 1; fetchAttributeByIndex(int(it[i]))
+                of opAttrX              : i += 2; fetchAttributeByIndex((int)((uint16)(it[i-1]) shl 8 + byte(it[i]))) 
 
                 #---------------------------------
                 # OP FUNCTIONS
@@ -656,13 +656,13 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                     let x = move stack.pop()
                     i += 2
                     if not (x.kind==Null or isFalse(x)):
-                        i += (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
+                        i += (int)((uint16)(it[i-1]) shl 8 + byte(it[i]))
                 
                 of opJmpIfNot           :
                     let x = move stack.pop()
                     i += 2
                     if x.kind==Null or isFalse(x):
-                        i += (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
+                        i += (int)((uint16)(it[i-1]) shl 8 + byte(it[i]))
 
                 of opJmpIfEq            : performConditionalJump(`==`)
                 of opJmpIfNe            : performConditionalJump(`!=`)
@@ -678,11 +678,11 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 # flow control
                 of opGoto               :
                     i += 2
-                    i += (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
+                    i += (int)((uint16)(it[i-1]) shl 8 + byte(it[i]))
 
                 of opGoup               :
                     i += 2
-                    i -= (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
+                    i -= (int)((uint16)(it[i-1]) shl 8 + byte(it[i]))
 
                 of opRet                :
                     discard

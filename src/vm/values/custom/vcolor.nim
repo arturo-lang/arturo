@@ -1472,7 +1472,7 @@ func blendColors*(c1: VColor, c2: VColor, balance: float): RGB =
     let b = (float)(rgb1.b) * w1 + (float)(rgb2.b) * w2
     let a = (float)(rgb1.a) * w1 + (float)(rgb2.a) * w2
 
-    return ((int)(r.round), (int)(g.round), (int)(b.round), (int)(a.round))
+    return (int(r.round), int(g.round), int(b.round), int(a.round))
 
 func spinColor*(c: VColor, amount: int): VColor =
     var hsl = RGBtoHSL(c)
@@ -1497,7 +1497,7 @@ func splitPalette*(c: VColor): Palette =
 
 func analogousPalette*(c: VColor, size: int): Palette =
     let slices = 30
-    let part = (int)(360 / slices)
+    let part = int(360 / slices)
 
     var hsl = RGBtoHSL(c)
     hsl.h = ((hsl.h - (part * (size shr 1))) + 720) mod 360
