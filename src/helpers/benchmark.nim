@@ -27,4 +27,4 @@ template benchmark*(benchmarkName: string, code: untyped) =
 template getBenchmark*(code: untyped): float =
     let t0 = getMonoTime()
     code
-    ((float)(ticks(getMonoTime()) - ticks(t0)))/(float)(1000000)
+    ((float)(ticks(getMonoTime()) - ticks(t0)))/float(1000000)

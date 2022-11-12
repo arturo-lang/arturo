@@ -55,7 +55,7 @@ proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
                     return false
             else: 
                 if x.iKind==NormalInteger:
-                    return (float)(x.i)==y.f
+                    return float(x.i)==y.f
                 else:
                     when defined(WEB):
                         return x.bi==big(int(y.f))
@@ -74,7 +74,7 @@ proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
         else:
             if y.kind==Integer: 
                 if y.iKind==NormalInteger:
-                    return x.f==(float)(y.i)
+                    return x.f==float(y.i)
                 else:
                     when defined(WEB):
                         return big(int(x.f))==y.bi
@@ -283,7 +283,7 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
                 return cmp(toRational(x.i), y.rat) > 0
             else: 
                 if x.iKind==NormalInteger:
-                    return (float)(x.i)>y.f
+                    return float(x.i)>y.f
                 else:
                     when defined(WEB):
                         return x.bi>big(int(y.f))
@@ -302,7 +302,7 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
         else:
             if y.kind==Integer: 
                 if likely(y.iKind==NormalInteger):
-                    return x.f>(float)(y.i)
+                    return x.f>float(y.i)
                 else:
                     when defined(WEB):
                         return big(int(x.f))>y.bi

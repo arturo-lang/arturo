@@ -1263,10 +1263,10 @@ func HSVtoRGB*(hsv: HSV): RGB =
     var g = 0.0
     var b = 0.0
 
-    let hI = (float)(h*6)
-    let f = (float)(h*6 - hI)
+    let hI = float(h*6)
+    let f = float(h*6 - hI)
     let p = v * (1 - s)
-    let q = v * (float)(1 - f*s)
+    let q = v * float(1 - f*s)
     let t = v * (float)(1 - (1 - f) * s)
     
     if hI==0: (r, g, b) = (v, t, p)
@@ -1467,10 +1467,10 @@ func blendColors*(c1: VColor, c2: VColor, balance: float): RGB =
     let w1 = 1.0 - balance
     let w2 = balance
 
-    let r = (float)(rgb1.r) * w1 + (float)(rgb2.r) * w2
-    let g = (float)(rgb1.g) * w1 + (float)(rgb2.g) * w2
-    let b = (float)(rgb1.b) * w1 + (float)(rgb2.b) * w2
-    let a = (float)(rgb1.a) * w1 + (float)(rgb2.a) * w2
+    let r = float(rgb1.r) * w1 + float(rgb2.r) * w2
+    let g = float(rgb1.g) * w1 + float(rgb2.g) * w2
+    let b = float(rgb1.b) * w1 + float(rgb2.b) * w2
+    let a = float(rgb1.a) * w1 + float(rgb2.a) * w2
 
     return (int(r.round), int(g.round), int(b.round), int(a.round))
 
@@ -1510,7 +1510,7 @@ func analogousPalette*(c: VColor, size: int): Palette =
 
 func monochromePalette*(c: VColor, size: int): Palette =
     var hsv = RGBtoHSV(c)
-    let modification = 1.0 / (float)(size)
+    let modification = 1.0 / float(size)
     var i = 0
     while i < size:
         result.add(colorFromRGB(HSVtoRGB(hsv)))
