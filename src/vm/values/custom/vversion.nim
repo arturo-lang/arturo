@@ -27,10 +27,13 @@ type
 # Overloads
 #=======================================
 
-proc `==`*(a, b: VVersion): bool =
-    return a.major == b.major and a.minor == b.minor and a.patch == b.patch and a.extra == b.extra
+func `==`*(a, b: VVersion): bool {.inline,enforceNoRaises.} =
+    return a.major == b.major and 
+           a.minor == b.minor and 
+           a.patch == b.patch and 
+           a.extra == b.extra
 
-proc `<`*(a, b: VVersion): bool =
+func `<`*(a, b: VVersion): bool {.inline,enforceNoRaises.} =
     if a.major < b.major:
         return true
     elif a.major == b.major:
@@ -41,7 +44,7 @@ proc `<`*(a, b: VVersion): bool =
                 return true
     return false
 
-proc `>`*(a, b: VVersion): bool =
+func `>`*(a, b: VVersion): bool {.inline,enforceNoRaises.} =
     if a.major > b.major:
         return true
     elif a.major == b.major:
