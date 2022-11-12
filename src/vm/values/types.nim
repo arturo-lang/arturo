@@ -148,11 +148,6 @@ type
                 bcode*      : Value
             of BuiltinFunction:
                 action*     : BuiltinAction
-    VVersion* = ref object
-        major*   : int
-        minor*   : int
-        patch*   : int
-        extra*   : string
 
     Value* {.final,acyclic.} = ref object
         info*: string
