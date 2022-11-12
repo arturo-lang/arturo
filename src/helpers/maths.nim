@@ -149,7 +149,7 @@ func factors*(n: int): seq[int] =
     result = @[]
 
     var i = 1
-    let s = (int)sqrt((float)n)
+    let s = int(sqrt(float(n)))
     while i <= s:
         if n mod i == 0:
             let d = n div i
@@ -169,7 +169,7 @@ func primeFactorization*(n: int): seq[int] =
         x = x div 2
 
     var i = 3
-    while i <= (int)sqrt((float)x):
+    while i <= int(sqrt(float(x))):
         while x mod i == 0:
             result.add(i)
             x = x div i
@@ -210,7 +210,7 @@ when defined(WEB):
         var num = n
         if num < bigZero: num = num * big(-1)
         while num > bigZero:
-            result.add((int)(toNumber(num mod bigBase)))
+            result.add(int(toNumber(num mod bigBase)))
             num = num div bigBase
 
         result.reverse()
@@ -363,7 +363,7 @@ elif not defined(NOGMP):
         if z.iKind==NormalInteger: Z = newBigInteger(z.i)
 
         if y.iKind==NormalInteger:
-            newInteger(exp(X.bi, (culong)(y.i), Z.bi))
+            newInteger(exp(X.bi, culong(y.i), Z.bi))
         else:
             newInteger(exp(X.bi, y.bi, Z.bi))
 else:

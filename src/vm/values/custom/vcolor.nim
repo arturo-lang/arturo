@@ -1251,10 +1251,10 @@ func HSLtoRGB*(hsl: HSL): RGB =
         g = (hueToRGB(p, q, h) * 255).round
         b = (hueToRGB(p, q, h - 1/3.0) * 255).round
 
-    return ((int)r, (int)g, (int)b, (int)a)
+    return (int(r), int(g), int(b), int(a))
 
 func HSVtoRGB*(hsv: HSV): RGB =
-    let h = (((float)hsv.h)/360)
+    let h = float(hsv.h)/360
     let s = hsv.s
     let v = hsv.v
     let a = (hsv.a*255).round
@@ -1263,11 +1263,11 @@ func HSVtoRGB*(hsv: HSV): RGB =
     var g = 0.0
     var b = 0.0
 
-    let hI = (float)(h*6)
-    let f = (float)(h*6 - hI)
+    let hI = float(h*6)
+    let f = float(h*6 - hI)
     let p = v * (1 - s)
-    let q = v * (float)(1 - f*s)
-    let t = v * (float)(1 - (1 - f) * s)
+    let q = v * float(1 - f*s)
+    let t = v * float(1 - (1 - f) * s)
     
     if hI==0: (r, g, b) = (v, t, p)
     elif hI==1: (r, g, b) = (q, v, p)
@@ -1280,7 +1280,7 @@ func HSVtoRGB*(hsv: HSV): RGB =
     g = 255*g
     b = 255*b
 
-    return ((int)r, (int)g, (int)b, (int)a)
+    return (int(r), int(g), int(b), int(a))
 
 func RGBtoHSL*(c: VColor): HSL =
     let rgb = RGBfromColor(c)
@@ -1313,7 +1313,7 @@ func RGBtoHSL*(c: VColor): HSL =
     else:
         s = D / (1 - abs(2*l - 1))
 
-    return ((int)h,s,l,a)
+    return (int(h),s,l,a)
 
 func RGBtoHSV*(c: VColor): HSV =
     let rgb = RGBfromColor(c)
@@ -1343,7 +1343,7 @@ func RGBtoHSV*(c: VColor): HSV =
 
         if h < 0:   h += 360.0
 
-    return ((int)h,s/100.0,v/100.0,a)
+    return (int(h),s/100.0,v/100.0,a)
 
 #=======================================
 # Helpers
@@ -1467,12 +1467,12 @@ func blendColors*(c1: VColor, c2: VColor, balance: float): RGB =
     let w1 = 1.0 - balance
     let w2 = balance
 
-    let r = (float)(rgb1.r) * w1 + (float)(rgb2.r) * w2
-    let g = (float)(rgb1.g) * w1 + (float)(rgb2.g) * w2
-    let b = (float)(rgb1.b) * w1 + (float)(rgb2.b) * w2
-    let a = (float)(rgb1.a) * w1 + (float)(rgb2.a) * w2
+    let r = float(rgb1.r) * w1 + float(rgb2.r) * w2
+    let g = float(rgb1.g) * w1 + float(rgb2.g) * w2
+    let b = float(rgb1.b) * w1 + float(rgb2.b) * w2
+    let a = float(rgb1.a) * w1 + float(rgb2.a) * w2
 
-    return ((int)(r.round), (int)(g.round), (int)(b.round), (int)(a.round))
+    return (int(r.round), int(g.round), int(b.round), int(a.round))
 
 func spinColor*(c: VColor, amount: int): VColor =
     var hsl = RGBtoHSL(c)
@@ -1497,7 +1497,7 @@ func splitPalette*(c: VColor): Palette =
 
 func analogousPalette*(c: VColor, size: int): Palette =
     let slices = 30
-    let part = (int)(360 / slices)
+    let part = int(360 / slices)
 
     var hsl = RGBtoHSL(c)
     hsl.h = ((hsl.h - (part * (size shr 1))) + 720) mod 360
@@ -1510,7 +1510,7 @@ func analogousPalette*(c: VColor, size: int): Palette =
 
 func monochromePalette*(c: VColor, size: int): Palette =
     var hsv = RGBtoHSV(c)
-    let modification = 1.0 / (float)(size)
+    let modification = 1.0 / float(size)
     var i = 0
     while i < size:
         result.add(colorFromRGB(HSVtoRGB(hsv)))

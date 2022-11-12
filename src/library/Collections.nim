@@ -535,13 +535,13 @@ proc defineSymbols*() =
                     ensureCleaned(x)
                     push(GetArrayIndex(cleanX, y.i))
                 of Binary:
-                    push(newInteger((int)x.n[y.i]))
+                    push(newInteger(int(x.n[y.i])))
                 of Bytecode:
                     if y.s == "data":
                         push(newBlock(x.trans.constants))
                     elif y.s == "code":
                         push(newBlock(x.trans.instructions.map((w) =>
-                                newInteger((int)w))))
+                                newInteger(int(w)))))
                     else:
                         push(VNULL)
                 of Dictionary:
@@ -1217,14 +1217,14 @@ proc defineSymbols*() =
                     else:
                         for bi, bt in bn:
                             if not (bi+y.i < x.n.len):
-                                x.n.add((byte)0)
+                                x.n.add(byte(0))
 
                             x.n[bi + y.i] = bt
                 of Bytecode:
                     if y.s == "data":
                         x.trans.constants = y.a
                     elif y.s == "code":
-                        x.trans.instructions = y.a.map((w) => (byte)(w.i))
+                        x.trans.instructions = y.a.map((w) => byte(w.i))
                     else:
                         discard
                 of Dictionary:

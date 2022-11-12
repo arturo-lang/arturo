@@ -354,7 +354,7 @@ proc defineSymbols*() =
                     when defined(windows):
                         discard terminateProcess(pid, errCode)
                     else:
-                        sendSignal((int32)pid, errCode)
+                        sendSignal(int32(pid), errCode)
 
 #=======================================
 # Add Library

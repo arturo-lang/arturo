@@ -202,7 +202,7 @@ when defined(PROFILER):
 template getMetric*(actionContent: untyped): int =
     let t0 = getMonoTime()
     actionContent
-    (int)(ticks(getMonoTime()) - ticks(t0))
+    int(ticks(getMonoTime()) - ticks(t0))
 
 template addMetricIfNotExists*(name: string, metric: untyped): untyped =
     if not PR[metric].hasKey(name):
