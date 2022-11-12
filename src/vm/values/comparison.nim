@@ -55,12 +55,12 @@ proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
                     return false
             else: 
                 if x.iKind==NormalInteger:
-                    return (float)(x.i)==y.f
+                    return float(x.i)==y.f
                 else:
                     when defined(WEB):
-                        return x.bi==big((int)(y.f))
+                        return x.bi==big(int(y.f))
                     elif not defined(NOGMP):
-                        return (x.bi)==(int)(y.f)
+                        return (x.bi)==int(y.f)
         elif x.kind==Rational:
             if y.kind==Integer:
                 if likely(y.iKind==NormalInteger):
@@ -74,12 +74,12 @@ proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
         else:
             if y.kind==Integer: 
                 if y.iKind==NormalInteger:
-                    return x.f==(float)(y.i)
+                    return x.f==float(y.i)
                 else:
                     when defined(WEB):
-                        return big((int)(x.f))==y.bi
+                        return big(int(x.f))==y.bi
                     elif not defined(NOGMP):
-                        return (int)(x.f)==y.bi        
+                        return int(x.f)==y.bi        
             elif y.kind==Rational:
                 return toRational(x.f)==y.rat
             else: return x.f==y.f
@@ -188,9 +188,9 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
                     return x.i<y.f
                 else:
                     when defined(WEB):
-                        return x.bi<big((int)(y.f))
+                        return x.bi<big(int(y.f))
                     elif not defined(NOGMP):
-                        return (x.bi)<(int)(y.f)
+                        return (x.bi)<int(y.f)
         elif x.kind==Rational:
             if y.kind==Integer:
                 if likely(y.iKind==NormalInteger):
@@ -207,9 +207,9 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
                     return x.f<y.i
                 else:
                     when defined(WEB):
-                        return big((int)(x.f))<y.bi
+                        return big(int(x.f))<y.bi
                     elif not defined(NOGMP):
-                        return (int)(x.f)<y.bi      
+                        return int(x.f)<y.bi      
             elif y.kind==Rational:
                 return cmp(toRational(x.f), y.rat) < 0  
             else: return x.f<y.f
@@ -283,12 +283,12 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
                 return cmp(toRational(x.i), y.rat) > 0
             else: 
                 if x.iKind==NormalInteger:
-                    return (float)(x.i)>y.f
+                    return float(x.i)>y.f
                 else:
                     when defined(WEB):
-                        return x.bi>big((int)(y.f))
+                        return x.bi>big(int(y.f))
                     elif not defined(NOGMP):
-                        return (x.bi)>(int)(y.f)
+                        return (x.bi)>int(y.f)
         elif x.kind==Rational:
             if y.kind==Integer:
                 if likely(y.iKind==NormalInteger):
@@ -302,12 +302,12 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
         else:
             if y.kind==Integer: 
                 if likely(y.iKind==NormalInteger):
-                    return x.f>(float)(y.i)
+                    return x.f>float(y.i)
                 else:
                     when defined(WEB):
-                        return big((int)(x.f))>y.bi
+                        return big(int(x.f))>y.bi
                     elif not defined(NOGMP):
-                        return (int)(x.f)>y.bi   
+                        return int(x.f)>y.bi   
             elif y.kind==Rational:
                 return cmp(toRational(x.f), y.rat) > 0     
             else: return x.f>y.f
