@@ -101,7 +101,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
             of Integer:
                 case tp:
                     of Logical: return newLogical(y.i!=0)
-                    of Floating: return newFloating((float)y.i)
+                    of Floating: return newFloating(float(y.i))
                     of Rational: return newRational(y.i)
                     of Char: return newChar(toUTF8(Rune(y.i)))
                     of String: 
@@ -135,9 +135,9 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
             of Floating:
                 case tp:
                     of Logical: return newLogical(y.f!=0.0)
-                    of Integer: return newInteger((int)y.f)
+                    of Integer: return newInteger(int(y.f))
                     of Rational: return newRational(y.f)
-                    of Char: return newChar(chr((int)y.f))
+                    of Char: return newChar(chr(int(y.f)))
                     of String: 
                         # TODO(Converters\to) add `.format` support for Quantity to String conversions
                         #  It should be working pretty much like Floating to String conversions work
@@ -208,9 +208,9 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
             of Char:
                 case tp:
                     of Integer: return newInteger(ord(y.c))
-                    of Floating: return newFloating((float)ord(y.c))
+                    of Floating: return newFloating(float(ord(y.c)))
                     of String: return newString($(y.c))
-                    of Binary: return newBinary(@[(byte)(ord(y.c))])
+                    of Binary: return newBinary(@[byte(ord(y.c))])
                     else: throwCannotConvert()
 
             of String:
@@ -264,7 +264,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                     of Binary:
                         var ret: VBinary = newSeq[byte](y.s.len)
                         for i,ch in y.s:
-                            ret[i] = (byte)(ord(ch))
+                            ret[i] = byte(ord(ch))
                         return newBinary(ret)
                     of Block:
                         return doParse(y.s, isFile=false)
@@ -412,7 +412,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                         else:
                             throwCannotConvert()
                     of Bytecode:
-                        var evaled = Translation(constants: y.d["data"].a, instructions: y.d["code"].a.map(proc (x:Value):byte = (byte)(x.i)))
+                        var evaled = Translation(constants: y.d["data"].a, instructions: y.d["code"].a.map(proc (x:Value):byte = byte(x.i)))
                         if (hadAttr("optimized")):
                             evaled.instructions = optimizeBytecode(evaled)
 
@@ -432,7 +432,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                     of Dictionary:
                         return newDictionary({
                             "data": newBlock(y.trans.constants),
-                            "code": newBlock(y.trans.instructions.map((w) => newInteger((int)w)))
+                            "code": newBlock(y.trans.instructions.map((w) => newInteger(int(w))))
                         }.toOrderedTable)
                     else:
                         throwCannotConvert()
@@ -893,7 +893,7 @@ proc defineSymbols*() =
                 except ValueError:
                     push(VNULL)
             elif (hadAttr("opcode")):
-                push(newInteger((int)parseOpcode(x.s)))
+                push(newInteger(int(parseOpcode(x.s))))
             else:
                 push(x)
 

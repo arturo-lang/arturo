@@ -22,6 +22,7 @@ when not defined(NOGMP):
     import helpers/bignums
 
 import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrational, vregex, vsymbol]
+import vm/values/flags
 
 #=======================================
 # Types
@@ -153,11 +154,6 @@ type
         patch*   : int
         extra*   : string
 
-    ValueFlag* = enum
-      isDirty, isDynamic, isReadOnly, isTrue, isMaybe, isFalse
-
-    ValueFlags* = set[ValueFlag]
-
     Value* {.final,acyclic.} = ref object
         info*: string
         flags*: ValueFlags
@@ -236,6 +232,8 @@ type
                 line*: int
     ValueObj = typeof(Value()[])
 
+# Benchmarking
+
 {.hints: on.} # Apparently we cannot disable just `Name` hints?
 {.hint: "'Value's inner type is currently '" & $sizeof(ValueObj) & "'.".}
 {.hints: off.}
@@ -243,34 +241,23 @@ type
 when sizeof(ValueObj) > 72: # At time of writing it was '72', 8 - 64 bit integers seems like a good warning site? Can always go smaller
     {.warning: "'Value's inner object is large which will impact performance".}
 
-template readonly*(val: Value): bool = isReadOnly in val.flags
-template `readonly=`*(val: Value, newVal: bool) = val.flags[isReadOnly] = newVal
+#=======================================
+# Accessors
+#=======================================
 
-template dirty*(val: Value): bool = isDirty in val.flags
-template `dirty=`*(val: Value, newVal: bool) = val.flags[isDirty] = newVal
+# Flags
 
-template dynamic*(val: Value): bool = isDynamic in val.flags
-template `dynamic=`*(val: Value, newVal: bool) = val.flags[isDynamic] = newVal
+template readonly*(val: Value): bool = IsReadOnly in val.flags
+template `readonly=`*(val: Value, newVal: bool) = val.flags[IsReadOnly] = newVal
 
-proc b*(val: Value): VLogical {.inline.} =
-    assert (val.flags * {isFalse, isMaybe, isTrue}).len == 1
-    if isMaybe in val.flags:
-        Maybe
-    elif isTrue in val.flags:
-        True
-    else:
-        False
+template dirty*(val: Value): bool = IsDirty in val.flags
+template `dirty=`*(val: Value, newVal: bool) = val.flags[IsDirty] = newVal
 
-template `b=`*(val: Value, newVal: VLogical) =
-    assert val.kind == Logical
-    val.flags.excl {isTrue, isFalse, isMaybe}
-    const flags = [False: isFalse, True: isTrue, Maybe: isMaybe]
-    val.flags.incl flags[newVal]
+template dynamic*(val: Value): bool = IsDynamic in val.flags
+template `dynamic=`*(val: Value, newVal: bool) = val.flags[IsDynamic] = newVal
 
-template isFalse*(val: Value): bool = isFalse in val.flags
-template isMaybe*(val: Value): bool = isMaybe in val.flags
-template isTrue*(val: Value): bool = isTrue in val.flags
-
+template b*(val: Value): VLogical = VLogical(val.flags - NonLogicalF)
+template `b=`*(val: Value, newVal: VLogical) = val.flags = val.flags - LogicalF + newVal
 
 template makeAccessor(field, subfield: untyped) =
     template subfield*(val: Value): typeof(val.field.subfield) =
@@ -279,11 +266,14 @@ template makeAccessor(field, subfield: untyped) =
     template `subfield=`*(val: Value, newVal: typeof(val.field.subfield)) =
         val.field.subfield = newVal
 
+# Version
+
 makeAccessor(version, major)
 makeAccessor(version, minor)
 makeAccessor(version, patch)
 makeAccessor(version, extra)
 
+# Function
 
 makeAccessor(funcType, args)
 makeAccessor(funcType, attrs)
@@ -299,7 +289,3 @@ makeAccessor(funcType, memoize)
 makeAccessor(funcType, bcode)
 makeAccessor(funcType, inline)
 makeAccessor(funcType, action)
-
-
-
-converter toDateTime*(dt: ref DateTime): DateTime = dt[]

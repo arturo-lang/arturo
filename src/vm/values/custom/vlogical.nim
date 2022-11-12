@@ -9,14 +9,32 @@
 ## The internal `:logical` type
 
 #=======================================
+# Libraries
+#=======================================
+
+import vm/values/flags
+
+#=======================================
 # Types
 #=======================================
 
 type 
-    VLogical* = enum
-        False = 0, 
-        True = 1,
-        Maybe = 2
+    VLogical* = distinct ValueFlags
+
+#=======================================
+# Constants
+#=======================================
+
+const 
+    True*    = VLogical({IsTrue})
+    False*   = VLogical({IsFalse})
+    Maybe*   = VLogical({IsMaybe})
+
+#=======================================
+# Overloads
+#=======================================
+
+proc `==`*(a, b: VLogical): bool {.borrow.}
 
 #=======================================
 # Methods
