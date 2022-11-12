@@ -1815,8 +1815,8 @@ proc `^=`*(x: var Value, y: Value) =
             x = VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
-            let res = pow((float)x.i,(float)y.i)
-            x = newInteger((int)res)
+            let res = pow(float(x.i),float(y.i))
+            x = newInteger(int(res))
         else:
             if x.kind==Floating:
                 if y.kind==Floating: x = newFloating(pow(x.f,y.f))

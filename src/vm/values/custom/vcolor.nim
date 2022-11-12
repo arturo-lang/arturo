@@ -1251,10 +1251,10 @@ func HSLtoRGB*(hsl: HSL): RGB =
         g = (hueToRGB(p, q, h) * 255).round
         b = (hueToRGB(p, q, h - 1/3.0) * 255).round
 
-    return ((int)r, (int)g, (int)b, (int)a)
+    return (int(r), int(g), int(b), int(a))
 
 func HSVtoRGB*(hsv: HSV): RGB =
-    let h = (((float)hsv.h)/360)
+    let h = (float(hsv.h)/360)
     let s = hsv.s
     let v = hsv.v
     let a = (hsv.a*255).round
@@ -1280,7 +1280,7 @@ func HSVtoRGB*(hsv: HSV): RGB =
     g = 255*g
     b = 255*b
 
-    return ((int)r, (int)g, (int)b, (int)a)
+    return (int(r), int(g), int(b), int(a))
 
 func RGBtoHSL*(c: VColor): HSL =
     let rgb = RGBfromColor(c)
@@ -1313,7 +1313,7 @@ func RGBtoHSL*(c: VColor): HSL =
     else:
         s = D / (1 - abs(2*l - 1))
 
-    return ((int)h,s,l,a)
+    return (int(h),s,l,a)
 
 func RGBtoHSV*(c: VColor): HSV =
     let rgb = RGBfromColor(c)
@@ -1343,7 +1343,7 @@ func RGBtoHSV*(c: VColor): HSV =
 
         if h < 0:   h += 360.0
 
-    return ((int)h,s/100.0,v/100.0,a)
+    return (int(h),s/100.0,v/100.0,a)
 
 #=======================================
 # Helpers

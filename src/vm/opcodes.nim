@@ -339,10 +339,10 @@ when false:
             let op = (OpCode)bs[pos]
             case op:
                 of opPush, opStore, opLoad, opCall, opStorl, opAttr:
-                    yield (op, pos, true, (int)(bs[pos + 1]))
+                    yield (op, pos, true, int(bs[pos + 1]))
                     pos += 2
                 of opPushX, opStoreX, opLoadX, opCallX, opStorlX, opEol:
-                    yield (op, pos, true, (int)(((uint16)(bs[pos + 1]) shl 8) + (byte)bs[pos + 2]))
+                    yield (op, pos, true, int((uint16(bs[pos + 1]) shl 8) + byte(bs[pos + 2])))
                     pos += 3
                 else: 
                     yield (op, pos, false, 0)
@@ -358,25 +358,25 @@ when false:
         var pos = 0
         var firstTup, secondTup: OpCodeTuple
         while pos < bs.len:
-            let op = (OpCode)bs[pos]
+            let op = OpCode(bs[pos])
             case op:
                 of opPush, opStore, opLoad, opCall, opStorl, opAttr:
-                    firstTup = (op, pos, true, (int)(bs[pos + 1]))
+                    firstTup = (op, pos, true, int(bs[pos + 1]))
                     pos += 2
                 of opPushX, opStoreX, opLoadX, opCallX, opStorlX, opEol:
-                    firstTup = (op, pos, true, (int)(((uint16)(bs[pos + 1]) shl 8) + (byte)bs[pos + 2]))
+                    firstTup = (op, pos, true, int((uint16(bs[pos + 1]) shl 8) + byte(bs[pos + 2])))
                     pos += 3
                 else: 
                     firstTup = (op, pos, false, 0)
                     pos += 1
             if pos < bs.len:
-                let op = (OpCode)bs[pos]
+                let op = OpCode(bs[pos])
                 case op:
                     of opPush, opStore, opLoad, opCall, opStorl, opAttr:
-                        secondTup = (op, pos, true, (int)(bs[pos + 1]))
+                        secondTup = (op, pos, true, int(bs[pos + 1]))
                         #pos += 2
                     of opPushX, opStoreX, opLoadX, opCallX, opStorlX, opEol:
-                        secondTup = (op, pos, true, (int)(((uint16)(bs[pos + 1]) shl 8) + (byte)bs[pos + 2]))
+                        secondTup = (op, pos, true, int((uint16(bs[pos + 1]) shl 8) + byte(bs[pos + 2])))
                         #pos += 3
                     else: 
                         secondTup = (op, pos, false, 0)
