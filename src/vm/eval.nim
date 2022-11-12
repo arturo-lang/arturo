@@ -126,7 +126,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             indx = consts.len-1
 
         if indx <= 13:
-            addToCommand(((byte)(op)-0x0E) + (byte)(indx))
+            addToCommand((byte(op)-0x0E) + byte(indx))
         else:
             if indx>255:
                 addToCommand([
@@ -173,7 +173,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             indx = consts.len-1
 
         if indx <= 13:
-            addToCommandHead(((byte)(op)-0x0E) + (byte)(indx), atPos)
+            addToCommandHead((byte(op)-0x0E) + byte(indx), atPos)
         else:
             if indx>255:
                 addToCommandHead([
@@ -327,7 +327,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                         injectable = opJmpIfGt
                     else:
                         discard
-                currentCommand.add([byte(injectable), (byte)0, (byte)0])
+                currentCommand.add([byte(injectable), byte(0), byte(0)])
                 let injPos = currentCommand.len - 2
                 evalOne(blk, consts, currentCommand, inBlock=inBlock, isDictionary=isDictionary)
                 if foundIfE:
@@ -372,7 +372,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                         injectable = opJmpIfLe
                     else:
                         discard
-                currentCommand.add([byte(injectable), (byte)0, (byte)0])
+                currentCommand.add([byte(injectable), byte(0), byte(0)])
                 let injPos = currentCommand.len - 2
                 evalOne(blk, consts, currentCommand, inBlock=inBlock, isDictionary=isDictionary)
                 if foundIfE:
@@ -446,7 +446,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                                 injectable = opJmpIfGt
                             else:
                                 discard
-                        currentCommand.add([byte(injectable), (byte)0, (byte)0])
+                        currentCommand.add([byte(injectable), byte(0), byte(0)])
                         let injPos = currentCommand.len - 2
                         evalOne(blk2, consts, currentCommand, inBlock=inBlock, isDictionary=isDictionary)
                         let preInjection = currentCommand.len
@@ -508,10 +508,10 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                                         injectable = opJmpIfGt
                                     else:
                                         discard
-                                currentCommand.add([byte(injectable), (byte)0, (byte)0])
+                                currentCommand.add([byte(injectable), byte(0), byte(0)])
                                 let injPos = currentCommand.len - 2
                                 evalOne(blk1, consts, currentCommand, inBlock=inBlock, isDictionary=isDictionary)
-                                currentCommand.add([byte(opGoup), (byte)0, (byte)0])
+                                currentCommand.add([byte(opGoup), byte(0), byte(0)])
                                 let gotoPos = currentCommand.len - 2
                                 let finPos = currentCommand.len - injPos - 2
                                 currentCommand[injPos] = byte(finPos shr 8)
@@ -525,15 +525,15 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
     proc optimizeAdd(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
         if OpCode(currentCommand[^1]) == opAdd:
             if currentCommand.len == 3 and OpCode(currentCommand[0])==opConstI1:
-                currentCommand = @[currentCommand[1], (byte)(opInc)]
+                currentCommand = @[currentCommand[1], byte(opInc)]
             elif OpCode(currentCommand[^2])==opConstI1:
-                currentCommand[^2] = (byte)(opInc)
+                currentCommand[^2] = byte(opInc)
                 discard currentCommand.pop()
         elif OpCode(currentCommand[0]) == opAdd:
             if currentCommand.len == 3 and OpCode(currentCommand[2])==opConstI1:
-                currentCommand = @[(byte)(opInc), currentCommand[1]]
+                currentCommand = @[byte(opInc), currentCommand[1]]
             elif OpCode(currentCommand[1])==opConstI1:
-                currentCommand[1] = (byte)(opInc)
+                currentCommand[1] = byte(opInc)
                 currentCommand.delete(0)
 
         foundAdd = false
@@ -541,10 +541,10 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
     proc optimizeSub(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
         if OpCode(currentCommand[^1]) == opSub:
             if currentCommand.len == 3 and OpCode(currentCommand[0])==opConstI1:
-                currentCommand = @[currentCommand[1], (byte)(opDec)]
+                currentCommand = @[currentCommand[1], byte(opDec)]
         elif OpCode(currentCommand[0])==opSub:
             if currentCommand.len == 3 and OpCode(currentCommand[2])==opConstI1:
-                currentCommand = @[(byte)(opDec), currentCommand[1]]
+                currentCommand = @[byte(opDec), currentCommand[1]]
 
         foundSub = false
 
@@ -822,12 +822,12 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 addTerminalValue(inBlock=false):
                     when defined(WEB) or not defined(NOGMP):
                         if likely(node.iKind==NormalInteger):
-                            if node.i>=0 and node.i<=15: addToCommand((byte)(opConstI0) + (byte)(node.i))
+                            if node.i>=0 and node.i<=15: addToCommand(byte(opConstI0) + byte(node.i))
                             else: addConst(node, opPush)
                         else:
                             addConst(node, opPush)
                     else:
-                        if node.i>=0 and node.i<=15: addToCommand((byte)(opConstI0) + (byte)(node.i))
+                        if node.i>=0 and node.i<=15: addToCommand(byte(opConstI0) + byte(node.i))
                         else: addConst(node, opPush)
 
             of String:

@@ -149,7 +149,7 @@ func factors*(n: int): seq[int] =
     result = @[]
 
     var i = 1
-    let s = (int)sqrt(float(n))
+    let s = int(sqrt(float(n)))
     while i <= s:
         if n mod i == 0:
             let d = n div i
@@ -169,7 +169,7 @@ func primeFactorization*(n: int): seq[int] =
         x = x div 2
 
     var i = 3
-    while i <= (int)sqrt(float(x)):
+    while i <= int(sqrt(float(x))):
         while x mod i == 0:
             result.add(i)
             x = x div i

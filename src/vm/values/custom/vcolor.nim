@@ -1254,7 +1254,7 @@ func HSLtoRGB*(hsl: HSL): RGB =
     return (int(r), int(g), int(b), int(a))
 
 func HSVtoRGB*(hsv: HSV): RGB =
-    let h = (((float)hsv.h)/360)
+    let h = float(hsv.h)/360
     let s = hsv.s
     let v = hsv.v
     let a = (hsv.a*255).round

@@ -358,7 +358,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 instrs.add(newWord(stringify((OpCode(op)))))
                 if op in {opPush, opStore, opCall, opLoad, opStorl, opAttr, opEol}:
                     j += 1
-                    instrs.add(newInteger((int)v.trans.instructions[j]))
+                    instrs.add(newInteger(int(v.trans.instructions[j])))
                 elif op in {opPushX, opStoreX, opCallX, opLoadX, opStorlX, opEolX, opJmpIf, opJmpIfNot, opJmpIfEq, opJmpIfNe, opJmpIfGt, opJmpIfGe, opJmpIfLt, opJmpIfLe, opGoto, opGoup}:
                     j += 2
                     instrs.add(newInteger(int(uint16(v.trans.instructions[j-1]) shl 8 + byte(v.trans.instructions[j]))))

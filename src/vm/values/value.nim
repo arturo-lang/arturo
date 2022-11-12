@@ -88,9 +88,9 @@ let
 
     F1M*            = makeConst Value(kind: Floating, f: -1.0)                        ## constant -1.0
 
-    VTRUE*          = makeConst Value(kind: Logical, flags: (ValueFlags)True)         ## constant True
-    VFALSE*         = makeConst Value(kind: Logical, flags: (ValueFlags)False)        ## constant False
-    VMAYBE*         = makeConst Value(kind: Logical, flags: (ValueFlags)Maybe)        ## constant Maybe
+    VTRUE*          = makeConst Value(kind: Logical, flags: ValueFlags(True))         ## constant True
+    VFALSE*         = makeConst Value(kind: Logical, flags: ValueFlags(False))        ## constant False
+    VMAYBE*         = makeConst Value(kind: Logical, flags: ValueFlags(Maybe))        ## constant Maybe
 
     VNULL*          = makeConst Value(kind: Null)                                     ## constant Null
 
@@ -1815,8 +1815,8 @@ proc `^=`*(x: var Value, y: Value) =
             x = VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
-            let res = pow((float)x.i,(float)y.i)
-            x = newInteger((int)res)
+            let res = pow(float(x.i),float(y.i))
+            x = newInteger(int(res))
         else:
             if x.kind==Floating:
                 if y.kind==Floating: x = newFloating(pow(x.f,y.f))
