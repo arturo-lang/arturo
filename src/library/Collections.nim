@@ -541,7 +541,7 @@ proc defineSymbols*() =
                         push(newBlock(x.trans.constants))
                     elif y.s == "code":
                         push(newBlock(x.trans.instructions.map((w) =>
-                                newInteger((int)w))))
+                                newInteger(int(w)))))
                     else:
                         push(VNULL)
                 of Dictionary:
