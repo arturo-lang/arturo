@@ -33,7 +33,7 @@ when not defined(NOGMP):
 when not defined(WEB):
     import vm/errors
 
-import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrational, vregex, vsymbol]
+import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrational, vregex, vsymbol, vversion]
 
 import vm/values/clean
 import vm/values/types
