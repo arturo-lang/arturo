@@ -155,7 +155,7 @@ type
         extra*   : string
 
     Value* {.final,acyclic.} = ref object
-        info*: string
+        infoRef*: ref string
         flags*: ValueFlags
 
         case kind*: ValueKind:
@@ -258,6 +258,9 @@ template `dynamic=`*(val: Value, newVal: bool) = val.flags[IsDynamic] = newVal
 
 template b*(val: Value): VLogical = VLogical(val.flags - NonLogicalF)
 template `b=`*(val: Value, newVal: VLogical) = val.flags = val.flags - LogicalF + newVal
+
+template info*(val: Value): lent string = val.infoRef[]
+template `info=`*(val: Value, newVal: string) = val.infoRef[] = newVal
 
 template makeAccessor(field, subfield: untyped) =
     template subfield*(val: Value): typeof(val.field.subfield) =
