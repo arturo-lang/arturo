@@ -1019,13 +1019,13 @@ proc defineSymbols*() =
             var argTypes = initOrderedTable[string,ValueSpec]()
 
             if x.a.countIt(it.kind == Type) > 0:
-                var args: ValueArray = @[]
+                var args: seq[string] = @[]
                 var body: ValueArray = @[]
                 
                 var i = 0
                 while i < x.a.len:
                     let varName = x.a[i]
-                    args.add(x.a[i])
+                    args.add(x.a[i].s)
                     argTypes[x.a[i].s] = {}
                     if i+1 < x.a.len and x.a[i+1].kind == Type:
                         var typeArr: ValueArray = @[]
@@ -1053,14 +1053,14 @@ proc defineSymbols*() =
                 var mainBody: ValueArray = y.a
                 mainBody.insert(body)
 
-                ret = newFunction(newBlock(args),newBlock(mainBody),imports,exports,memoize,inline)
+                ret = newFunction(args,newBlock(mainBody),imports,exports,memoize,inline)
             else:
                 if x.a.len > 0:
                     for arg in x.a:
                         argTypes[arg.s] = {Any}
                 else:
                     argTypes[""] = {Nothing}
-                ret = newFunction(x,y,imports,exports,memoize,inline)
+                ret = newFunction(x.a.map((w)=>w.s),y,imports,exports,memoize,inline)
             
             if not y.data.isNil:
                 if y.data.kind==Dictionary:
