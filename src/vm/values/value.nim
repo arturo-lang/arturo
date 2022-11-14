@@ -470,6 +470,10 @@ func newDictionary*(d: sink ValueDict = initOrderedTable[string,Value]()): Value
     ## create Dictionary value from ValueDict
     Value(kind: Dictionary, d: d)
 
+func newDictionary*(d: sink SymTable = initTable[string,Value]()): Value {.inline, enforceNoRaises.} =
+    ## create Dictionary value from SymTable
+    newDictionary(toSeq(d.pairs).toOrderedTable)
+
 func newObject*(o: sink ValueDict = initOrderedTable[string,Value](), proto: sink Prototype): Value {.inline, enforceNoRaises.} =
     ## create Object value from ValueDict with given prototype
     Value(kind: Object, o: o, proto: proto)
