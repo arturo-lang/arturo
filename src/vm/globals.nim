@@ -12,7 +12,7 @@
 # Libraries
 #=======================================
 
-import algorithm, sequtils, tables
+import sequtils, tables
 
 import helpers/strings
 
@@ -57,14 +57,14 @@ func suggestAlternative(s: string, reference: SymTable | ValueDict = Syms): seq[
     var levs = initOrderedTable[string,float]()
 
     for k,v in pairs(reference):
-        levs[k] = jaro(s,k)
+        levs[k] = 1 - jaro(s,k)
 
     proc cmper (x, y: (string, float)): int {.closure.} = 
         let pts = cmp(x[1], y[1])
         if pts == 0: return cmp(x[0], y[0])
         else: return pts
 
-    levs.sort(cmper, SortOrder.Descending)
+    levs.sort(cmper)
 
     for k,v in levs:
         debugEcho $(k) & " => " & $(v)
