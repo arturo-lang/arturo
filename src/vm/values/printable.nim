@@ -508,7 +508,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
 
         of Function:
             result &= "function "
-            result &= codify(v.params,pretty,unwrapped,level+1, false, safeStrings=safeStrings)
+            result &= codify(newWordBlock(v.params),pretty,unwrapped,level+1, false, safeStrings=safeStrings)
             result &= " "
             result &= codify(v.main,pretty,unwrapped,level+1, true, safeStrings=safeStrings)
 
