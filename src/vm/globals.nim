@@ -26,7 +26,7 @@ import vm/[errors, values/value]
 
 var
     # symbols
-    Syms* {.global.}      : ValueDict           ## The symbol table: all the variables 
+    Syms* {.global.}      : SymTable            ## The symbol table: all the variables 
                                                 ## with their associated values
 
     # symbol aliases
@@ -51,7 +51,7 @@ var
 # Helpers
 #=======================================
 
-func suggestAlternative(s: string, reference: ValueDict = Syms): seq[string] {.inline.} =
+func suggestAlternative(s: string, reference: SymTable | ValueDict = Syms): seq[string] {.inline.} =
     var levs = initOrderedTable[string,int]()
 
     for k,v in pairs(reference):
