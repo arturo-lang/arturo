@@ -506,13 +506,13 @@ proc newObject*(args: ValueDict, prot: Prototype, initializer: proc (self: Value
     
     initializer(result, prot)
 
-func newFunction*(params: Value, main: Value, imports: Value = nil, exports: Value = nil, memoize: bool = false, inline: bool = false): Value {.inline, enforceNoRaises.} =
+func newFunction*(params: seq[string], main: Value, imports: Value = nil, exports: Value = nil, memoize: bool = false, inline: bool = false): Value {.inline, enforceNoRaises.} =
     ## create Function (UserFunction) value with given parameters, ``main`` body, etc
     Value(
         kind: Function,
         funcType: VFunction(
             fnKind: UserFunction,
-            arity: params.a.len,
+            arity: params.len,
             params: params,
             main: main,
             imports: imports,
@@ -2290,7 +2290,7 @@ func consideredEqual*(x: Value, y: Value): bool {.inline,enforceNoRaises.} =
             return true
         of Function:
             if x.fnKind==UserFunction:
-                return consideredEqual(x.params, y.params) and consideredEqual(x.main, y.main) and x.exports == y.exports
+                return x.params == y.params and consideredEqual(x.main, y.main) and x.exports == y.exports
             else:
                 return x.action == y.action
         of Binary:
@@ -2402,8 +2402,7 @@ func hash*(v: Value): Hash {.inline.}=
                 result = !$ result
             else:
                 result = cast[Hash](unsafeAddr v)
-            # result = hash(v.params) !& hash(v.main)
-            # result = !$ result
+                
         of Database:
             when not defined(NOSQLITE):
                 if v.dbKind==SqliteDatabase: result = cast[Hash](cast[ByteAddress](v.sqlitedb))
