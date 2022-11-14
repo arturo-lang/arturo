@@ -1,6 +1,10 @@
 3rd-party:
   - src/extras/*
 
+bytecode:
+  - src/vm/bytecode.nim
+  - src/vm/opcodes.nim
+
 ci:
   - .github/workflows/freebsd.yml
   - .github/workflows/linux.yml
@@ -8,11 +12,17 @@ ci:
   - .github/workflows/web.yml
   - .github/workflows/windows.yml
 
+command line:
+  - src/arturo.nim
+
 documentation:
   - examples/projecteuler/*
   - examples/rosetta/*
   - docs/*
   - docs/wiki/*
+
+error handling: 
+  - src/vm/errors.nim
 
 evaluator:
   - src/vm/eval.nim
@@ -64,11 +74,8 @@ unit-test:
   - tests/benchmarks/*
   - tests/unittests/*
 
-error handling: 
-  - src/vm/errors.nim
-
 values:
-  - src/vm/value.nim
+  - src/vm/values/*
 
 vm:
   - src/vm/*
