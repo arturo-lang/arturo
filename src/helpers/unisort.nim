@@ -262,7 +262,7 @@ proc unisort*(a: var openArray[Value], lang: string,
         ngraphset = getCharsetWithNgraphs(lang)
 
     var n = a.len
-    var b: seq[Value]
+    var b: ValueArray
     newSeq(b, n div 2)
     var s = 1
     while s < n:
@@ -278,11 +278,11 @@ proc unisort*(a: var openArray[Value], lang: string, sensitive:bool = false, ord
 proc unisorted*(a: openArray[Value], lang: string, cmp: CompProc,
                 sensitive:bool = false,
                 order = SortOrder.Ascending,
-                ascii:bool = false): seq[Value] =
+                ascii:bool = false): ValueArray =
     result = newSeq[Value](a.len)
     for i in 0 .. a.high:
         result[i] = a[i]
     unisort(result, lang, cmp, sensitive, order, ascii)
 
-proc unisorted*(a: openArray[Value], lang: string, sensitive:bool = false, order = SortOrder.Ascending, ascii:bool = false): seq[Value] =
+proc unisorted*(a: openArray[Value], lang: string, sensitive:bool = false, order = SortOrder.Ascending, ascii:bool = false): ValueArray =
     unisorted(a, lang, unicmp, sensitive, order, ascii)

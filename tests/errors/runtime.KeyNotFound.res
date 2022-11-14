@@ -4,6 +4,6 @@ Doe
      error | Line: 9
            | 
            | dictionary key not found: country
-           | perhaps you meant... name ?
-           |                or... surname ?
+           | perhaps you meant... surname ?
            |                or... age ?
+           |                or... name ?

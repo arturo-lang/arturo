@@ -12,7 +12,9 @@
 # Libraries
 #=======================================
 
-import std/editdistance, sequtils, tables
+import sequtils, tables
+
+import helpers/strings
 
 import vm/[errors, values/value]
 
@@ -26,7 +28,7 @@ import vm/[errors, values/value]
 
 var
     # symbols
-    Syms* {.global.}      : ValueDict           ## The symbol table: all the variables 
+    Syms* {.global.}      : SymTable            ## The symbol table: all the variables 
                                                 ## with their associated values
 
     # symbol aliases
@@ -51,13 +53,17 @@ var
 # Helpers
 #=======================================
 
-func suggestAlternative(s: string, reference: ValueDict = Syms): seq[string] {.inline.} =
-    var levs = initOrderedTable[string,int]()
+func suggestAlternative(s: string, reference: SymTable | ValueDict = Syms): seq[string] {.inline.} =
+    var levs = initOrderedTable[string,float]()
 
     for k,v in pairs(reference):
-        levs[k] = editDistance(s,k)
+        levs[k] = 1 - jaro(s,k)
 
-    proc cmper (x, y: (string, int)): int {.closure.} = cmp(x[1], y[1])
+    proc cmper (x, y: (string, float)): int {.closure.} = 
+        let pts = cmp(x[1], y[1])
+        if pts == 0: return cmp(x[0], y[0])
+        else: return pts
+
     levs.sort(cmper)
 
     if levs.len > 3: result = toSeq(levs.keys)[0..2]
