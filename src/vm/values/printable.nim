@@ -72,7 +72,7 @@ proc `$`*(v: Value): string {.inline.} =
             return $(v.z.re) & (if v.z.im >= 0: "+" else: "") & $(v.z.im) & "i"
         of Rational     :
             return $(v.rat)
-        of Version      : return fmt("{v.major}.{v.minor}.{v.patch}{v.extra}")
+        of Version      : return $(v.version)
         of Type         : 
             if v.tpKind==BuiltinType:
                 return ":" & ($v.t).toLowerAscii()
@@ -214,7 +214,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             #         dumpPrimitive($(v.bf), v)
         of Complex      : dumpPrimitive($(v.z.re) & (if v.z.im >= 0: "+" else: "") & $(v.z.im) & "i", v)
         of Rational     : dumpPrimitive($(v.rat), v)
-        of Version      : dumpPrimitive(fmt("{v.major}.{v.minor}.{v.patch}{v.extra}"), v)
+        of Version      : dumpPrimitive($(v.version), v)
         of Type         : 
             if v.tpKind==BuiltinType:
                 dumpPrimitive(($(v.t)).toLowerAscii(), v)
