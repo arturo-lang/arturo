@@ -242,7 +242,7 @@ proc execFunction*(fun: Value, fid: Hash) =
     ##   abide by this rule
 
     var memoizedParams: Value = nil
-    var savedSyms: ValueDict
+    var savedSyms: SymTable
 
     let argsL = len(fun.params.a)
 
