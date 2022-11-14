@@ -34,7 +34,7 @@ var
     # stack
     Stack*                  : seq[Value]                        ## The main stack
     SP*                     : int                               ## The main stack pointer
-    Attrs*                  : OrderedTable[string,Value]        ## The attributes table
+    Attrs*                  : SymTable                          ## The attributes table
 
 #=======================================
 # Methods
