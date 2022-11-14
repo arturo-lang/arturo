@@ -506,6 +506,9 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
             if not (pretty and unwrapped and level==0):
                 result &= "]"
 
+        # TODO(VM/values/printable) `codify` not working properly for Function values
+        #  what if the Function is a memoized one? no attributes are currently being taken into account
+        #  labels: vm, values, bug
         of Function:
             result &= "function "
             result &= codify(newWordBlock(v.params),pretty,unwrapped,level+1, false, safeStrings=safeStrings)
