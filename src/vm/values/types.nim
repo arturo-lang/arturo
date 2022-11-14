@@ -32,6 +32,8 @@ type
     ValueArray* = seq[Value]
     ValueDict*  = OrderedTable[string, Value]
 
+    SymTable*   = Table[string, Value]
+
     Translation* = ref object
         constants*: ValueArray
         instructions*: VBinary
