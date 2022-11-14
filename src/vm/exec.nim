@@ -45,13 +45,14 @@ import vm/values/comparison
 
 type
     MemoizerKey = (Hash, Hash)
+    MemoizerTable = Table[MemoizerKey, Value]
 
 #=======================================
 # Variables
 #=======================================
 
 var
-    Memoizer: OrderedTable[MemoizerKey,Value] = initOrderedTable[MemoizerKey,Value]()
+    Memoizer: MemoizerTable = initOrderedTable[MemoizerKey,Value]()
 
 #=======================================
 # Forward Declarations
