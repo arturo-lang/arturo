@@ -2249,7 +2249,7 @@ func consideredEqual*(x: Value, y: Value): bool {.inline,enforceNoRaises.} =
         of Logical: return x.b == y.b
         of Complex: return x.z == y.z
         of Rational: return x.rat == y.rat
-        of Version: x.version = y.version
+        of Version: x.version == y.version
         of Type: 
             if x.tpKind != y.tpKind: return false
             if x.tpKind==BuiltinType:
