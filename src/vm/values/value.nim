@@ -583,6 +583,10 @@ proc newStringBlock*(a: sink seq[cstring]): Value {.inline, enforceNoRaises.} =
     ## create Block value from an array of cstrings
     newBlock(a.map(proc (x:cstring):Value = newString(x)))
 
+proc newWordBlock*(a: sink seq[string]): Value {.inline, enforceNoRaises.} =
+    ## create Block value from an array of strings
+    newBlock(a.map(proc (x:string):Value = newWord(x)))
+
 func newNewline*(l: int): Value {.inline, enforceNoRaises.} =
     ## create Newline value with given line number
     Value(kind: Newline, line: l)
@@ -2402,7 +2406,7 @@ func hash*(v: Value): Hash {.inline.}=
                 result = !$ result
             else:
                 result = cast[Hash](unsafeAddr v)
-                
+
         of Database:
             when not defined(NOSQLITE):
                 if v.dbKind==SqliteDatabase: result = cast[Hash](cast[ByteAddress](v.sqlitedb))
