@@ -741,7 +741,7 @@ proc defineSymbols*() =
             x.ts.methods = newDictionary(execDictionary(z)).d
             if (let initMethod = x.ts.methods.getOrDefault("init", nil); not initMethod.isNil):
                 x.ts.methods["init"] = newFunction(
-                    newBlock(@[newWord("this")]),
+                    @["this"],
                     initMethod
                 )
                 x.ts.doInit = proc (v:Value) =
@@ -750,7 +750,7 @@ proc defineSymbols*() =
 
             if (let printMethod = x.ts.methods.getOrDefault("print", nil); not printMethod.isNil):
                 x.ts.methods["print"] = newFunction(
-                    newBlock(@[newWord("this")]),
+                    @["this"],
                     printMethod
                 )
                 x.ts.doPrint = proc(v:Value):string =
@@ -761,13 +761,13 @@ proc defineSymbols*() =
             if (let compareMethod = x.ts.methods.getOrDefault("compare", nil); not compareMethod.isNil):
                 if compareMethod.kind==Block:
                     x.ts.methods["compare"] = newFunction(
-                        newBlock(@[newWord("this"),newWord("that")]),
+                        @["this","that"],
                         compareMethod
                     )
                 else:
                     let key = compareMethod
                     x.ts.methods["compare"] = newFunction(
-                        newBlock(@[newWord("this"),newWord("that")]),
+                        @["this","that"],
                         newBlock(@[
                             newWord("if"), newPath(@[newWord("this"), key]), newSymbol(greaterthan), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(1)]),
                             newWord("if"), newPath(@[newWord("this"), key]), newSymbol(equal), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(0)]),
