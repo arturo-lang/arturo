@@ -131,7 +131,7 @@ template pushAttr*(label: string, v: Value) =
 
 template emptyAttrs*() =
     ## empty the attributes table
-    Attrs = initOrderedTable[string,Value]()
+    Attrs = initTable[string,Value]()
 
 template createAttrsStack*() =
     ## initialize the attributes table
