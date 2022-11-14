@@ -21,7 +21,7 @@ when defined(WEB):
 when not defined(NOGMP):
     import helpers/bignums
 
-import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrational, vregex, vsymbol]
+import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrational, vregex, vsymbol, vversion]
 import vm/values/flags
 
 #=======================================
@@ -148,11 +148,6 @@ type
                 bcode*      : Value
             of BuiltinFunction:
                 action*     : BuiltinAction
-    VVersion* = ref object
-        major*   : int
-        minor*   : int
-        patch*   : int
-        extra*   : string
 
     Value* {.final,acyclic.} = ref object
         infoRef*: ref string
