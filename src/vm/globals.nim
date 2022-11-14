@@ -66,9 +66,6 @@ func suggestAlternative(s: string, reference: SymTable | ValueDict = Syms): seq[
 
     levs.sort(cmper)
 
-    for k,v in levs:
-        debugEcho $(k) & " => " & $(v)
-
     if levs.len > 3: result = toSeq(levs.keys)[0..2]
     else: result = toSeq(levs.keys)
 
