@@ -138,7 +138,7 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
         if isFile: env.addPath(filename)
         else: env.addPath(getCurrentDir())
 
-    Syms = initOrderedTable[string,Value]()
+    Syms = initTable[string,Value]()
 
     if portableData != "":
         SetSym("_portable", valueFromJson(portableData))
