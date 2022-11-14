@@ -141,7 +141,7 @@ type
             of UserFunction:
                 # TODO(VM/values/types) merge Function `params` and `args` into one field?
                 #  labels: vm, values, enhancement
-                params*     : Value
+                params*     : seq[string]
                 main*       : Value
                 imports*    : Value
                 exports*    : Value
