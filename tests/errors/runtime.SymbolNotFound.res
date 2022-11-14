@@ -2,6 +2,6 @@
      error | Line: 2
            | 
            | symbol not found: y
-           | perhaps you meant... e ?
-           |                or... x ?
-           |                or... or ?
+           | perhaps you meant... type ?
+           |                or... hypot ?
+           |                or... type? ?
