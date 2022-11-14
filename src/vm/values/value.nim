@@ -521,9 +521,11 @@ func newFunction*(params: Value, main: Value, imports: Value = nil, exports: Val
 
 func newBuiltin*(desc: sink string, ar: int, ag: sink OrderedTable[string,ValueSpec], at: sink OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: sink string, act: BuiltinAction): Value {.inline, enforceNoRaises.} =
     ## create Function (BuiltinFunction) value with given details
+    let descRef = new string
+    descRef[] = desc
     Value(
         kind: Function,
-        info: desc,
+        infoRef: descRef,
         funcType: VFunction(
             fnKind: BuiltinFunction,
             arity: ar,
