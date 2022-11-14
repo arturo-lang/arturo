@@ -52,7 +52,7 @@ type
 #=======================================
 
 var
-    Memoizer: MemoizerTable = initOrderedTable[MemoizerKey,Value]()
+    Memoizer: MemoizerTable = initTable[MemoizerKey,Value]()
 
 #=======================================
 # Forward Declarations
