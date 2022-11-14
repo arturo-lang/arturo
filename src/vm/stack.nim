@@ -32,9 +32,9 @@ const StackSize* = 100000   ## The initial stack size
 
 var
     # stack
-    Stack*                  : seq[Value]                        ## The main stack
+    Stack*                  : ValueArray                        ## The main stack
     SP*                     : int                               ## The main stack pointer
-    Attrs*                  : OrderedTable[string,Value]        ## The attributes table
+    Attrs*                  : SymTable                          ## The attributes table
 
 #=======================================
 # Methods
@@ -131,7 +131,7 @@ template pushAttr*(label: string, v: Value) =
 
 template emptyAttrs*() =
     ## empty the attributes table
-    Attrs = initOrderedTable[string,Value]()
+    Attrs = initTable[string,Value]()
 
 template createAttrsStack*() =
     ## initialize the attributes table

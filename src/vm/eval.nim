@@ -39,7 +39,7 @@ var
 # Helpers
 #=======================================
 
-func indexOfValue(a: seq[Value], item: Value): int {.inline,enforceNoRaises.}=
+func indexOfValue(a: ValueArray, item: Value): int {.inline,enforceNoRaises.}=
     result = 0
     for i in items(a):
         if consideredEqual(item, i): return
@@ -117,7 +117,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         else:
             currentCommand.insert(b, at)
 
-    proc addConst(currentCommand: var VBinary, consts: var seq[Value], v: Value, op: OpCode) {.inline,enforceNoRaises.} =
+    proc addConst(currentCommand: var VBinary, consts: var ValueArray, v: Value, op: OpCode) {.inline,enforceNoRaises.} =
         var indx = consts.indexOfValue(v)
         if indx == -1:
             let newv = v
@@ -140,7 +140,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                     byte(op)
                 ])
 
-    proc addShortConst(currentCommand: var VBinary, consts: var seq[Value], v: Value, op: OpCode) {.inline,enforceNoRaises.} =
+    proc addShortConst(currentCommand: var VBinary, consts: var ValueArray, v: Value, op: OpCode) {.inline,enforceNoRaises.} =
         var indx = consts.indexOfValue(v)
         if indx == -1:
             let newv = v
@@ -160,7 +160,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 byte(op)
             ])
 
-    proc addTrailingConst(currentCommand: var VBinary, consts: var seq[Value], v: Value, op: OpCode) {.inline,enforceNoRaises.} =
+    proc addTrailingConst(currentCommand: var VBinary, consts: var ValueArray, v: Value, op: OpCode) {.inline,enforceNoRaises.} =
         var atPos = 0
         if currentCommand[0] in opStore0.byte..opStoreX.byte:
             atPos = 1
@@ -294,7 +294,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         
         return (-1, -1)
 
-    proc optimizeIf(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
+    proc optimizeIf(consts: var ValueArray, it: var VBinary) {.enforceNoRaises.} =
         let (cnstId, shift) = getConstIdWithShift(currentCommand, 0)
 
         if cnstId != -1:
@@ -339,7 +339,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         foundIf = false
         foundIfE = false
 
-    proc optimizeUnless(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
+    proc optimizeUnless(consts: var ValueArray, it: var VBinary) {.enforceNoRaises.} =
         let (cnstId, shift) = getConstIdWithShift(currentCommand, 0)
 
         if cnstId != -1:
@@ -383,7 +383,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         
         foundUnless = false
 
-    proc optimizeLess(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
+    proc optimizeLess(consts: var ValueArray, it: var VBinary) {.enforceNoRaises.} =
         let (cnstId, shift) = getConstIdWithShift(currentCommand, 0)
 
         if cnstId != -1:
@@ -400,7 +400,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 
         foundElse = false
 
-    proc optimizeSwitch(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
+    proc optimizeSwitch(consts: var ValueArray, it: var VBinary) {.enforceNoRaises.} =
         let (cnstId, shift) = getConstIdWithShift(currentCommand, 0)
 
         if cnstId != -1:
@@ -465,7 +465,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
         foundSwitch = false
 
-    proc optimizeWhile(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
+    proc optimizeWhile(consts: var ValueArray, it: var VBinary) {.enforceNoRaises.} =
         if OpCode(currentCommand[^1]) == opWhile:
 
             let (cnstId, shift) = getConstIdWithShift(currentCommand, 0)
@@ -522,7 +522,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
         foundWhile = false
 
-    proc optimizeAdd(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
+    proc optimizeAdd(consts: var ValueArray, it: var VBinary) {.enforceNoRaises.} =
         if OpCode(currentCommand[^1]) == opAdd:
             if currentCommand.len == 3 and OpCode(currentCommand[0])==opConstI1:
                 currentCommand = @[currentCommand[1], byte(opInc)]
@@ -538,7 +538,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
         foundAdd = false
 
-    proc optimizeSub(consts: var seq[Value], it: var VBinary) {.enforceNoRaises.} =
+    proc optimizeSub(consts: var ValueArray, it: var VBinary) {.enforceNoRaises.} =
         if OpCode(currentCommand[^1]) == opSub:
             if currentCommand.len == 3 and OpCode(currentCommand[0])==opConstI1:
                 currentCommand = @[currentCommand[1], byte(opDec)]
@@ -728,7 +728,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         i -= 1
         ret
 
-    proc processThickArrowRight(argblock: var seq[Value], subblock: var seq[Value], it: var VBinary, n: Value, i: var int, funcArity: var int) =
+    proc processThickArrowRight(argblock: var ValueArray, subblock: var ValueArray, it: var VBinary, n: Value, i: var int, funcArity: var int) =
         while n.a[i+1].kind == Newline:
             when not defined(NOERRORLINES):
                 addEol(it, n.a[i+1].line)
@@ -844,8 +844,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 
                 let funcIndx {.cursor.} = node.s
                 var hasThickArrow = false
-                var ab: seq[Value]
-                var sb: seq[Value]
+                var ab: ValueArray
+                var sb: ValueArray
                 let nextNode {.cursor.} = n.a[i+1]
                 if (nextNode.kind == Word and nextNode.s == "function") or
                    (nextNode.kind == Symbol and nextNode.m == dollar):
@@ -961,7 +961,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 case node.m:
                     of doublecolon      :
                         inc(i)
-                        var subblock: seq[Value] = @[]
+                        var subblock: ValueArray = @[]
                         while i < nLen:
                             let subnode {.cursor.} = n.a[i]
                             subblock.add(subnode)
@@ -972,7 +972,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                     of arrowright       : 
                         var subargStack: seq[int] = @[]
                         var ended = false
-                        var ret: seq[Value] = @[]
+                        var ret: ValueArray = @[]
 
                         let subblock = processArrowRight()
                         addTerminalValue(inBlock=false):
@@ -981,8 +981,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                     of thickarrowright  : 
                         # TODO(Eval\addTerminalValue) Thick arrow-right not working with pipes
                         # labels: vm,evaluator,enhancement,bug
-                        var ab: seq[Value]
-                        var sb: seq[Value]
+                        var ab: ValueArray
+                        var sb: ValueArray
                         var funcArity: int = 0
                         processThickArrowRight(ab, sb, it, n, i, funcArity)          
 

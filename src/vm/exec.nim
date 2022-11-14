@@ -45,13 +45,14 @@ import vm/values/comparison
 
 type
     MemoizerKey = (Hash, Hash)
+    MemoizerTable = Table[MemoizerKey, Value]
 
 #=======================================
 # Variables
 #=======================================
 
 var
-    Memoizer: OrderedTable[MemoizerKey,Value] = initOrderedTable[MemoizerKey,Value]()
+    Memoizer: MemoizerTable = initTable[MemoizerKey,Value]()
 
 #=======================================
 # Forward Declarations
@@ -242,7 +243,7 @@ proc execFunction*(fun: Value, fid: Hash) =
     ##   abide by this rule
 
     var memoizedParams: Value = nil
-    var savedSyms: ValueDict
+    var savedSyms: SymTable
 
     let argsL = len(fun.params.a)
 

@@ -41,7 +41,7 @@ when not defined(WEB):
 
 when not defined(WEB):
     var
-        templateStore = initOrderedTable[string,Translation]()
+        templateStore = initTable[string,Translation]()
 
 #=======================================
 # Helpers
