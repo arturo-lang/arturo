@@ -470,7 +470,7 @@ func newDictionary*(d: sink ValueDict = initOrderedTable[string,Value]()): Value
     ## create Dictionary value from ValueDict
     Value(kind: Dictionary, d: d)
 
-func newDictionary*(d: sink SymTable = initTable[string,Value]()): Value {.inline, enforceNoRaises.} =
+func newDictionary*(d: sink SymTable): Value {.inline, enforceNoRaises.} =
     ## create Dictionary value from SymTable
     newDictionary(toSeq(d.pairs).toOrderedTable)
 
