@@ -228,11 +228,12 @@ type
             of Newline:
                 line*: int
     ValueObj = typeof(Value()[])
+    FuncObj = typeof(VFunction()[])
 
 # Benchmarking
-
 {.hints: on.} # Apparently we cannot disable just `Name` hints?
-{.hint: "'Value's inner type is currently '" & $sizeof(ValueObj) & "'.".}
+{.hint: "Value's inner type is currently " & $sizeof(ValueObj) & ".".}
+{.hint: "Function's inner type is currently " & $sizeof(FuncObj) & ".".}
 {.hints: off.}
 
 when sizeof(ValueObj) > 72: # At time of writing it was '72', 8 - 64 bit integers seems like a good warning site? Can always go smaller
