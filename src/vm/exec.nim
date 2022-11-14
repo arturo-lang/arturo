@@ -149,7 +149,7 @@ template callInternal*(fname: string, getValue: bool, args: varargs[Value]): unt
     when getValue:
         pop()
 
-template prepareLeakless*(protected: ValueArray): untyped =
+template prepareLeakless*(protected: seq[string] | ValueArray): untyped =
     ## Prepare for leak-less block execution
     ## 
     ## **Hint:** To be used in the Iterators module
@@ -157,7 +157,10 @@ template prepareLeakless*(protected: ValueArray): untyped =
     var toRestore{.inject.}: seq[(string,Value)] = 
         collect:
             for psym in protected:
-                (psym.s, Syms.getOrDefault(psym.s, nil))
+                when protected is ValueArray:
+                    (psym.s, Syms.getOrDefault(psym.s, nil))
+                else:
+                    (psym, Syms.getOrDefault(psym, nil))
 
 template finalizeLeakless*(): untyped =
     ## Finalize leak-less block execution
