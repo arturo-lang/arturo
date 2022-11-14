@@ -32,7 +32,7 @@ const StackSize* = 100000   ## The initial stack size
 
 var
     # stack
-    Stack*                  : seq[Value]                        ## The main stack
+    Stack*                  : ValueArray                        ## The main stack
     SP*                     : int                               ## The main stack pointer
     Attrs*                  : SymTable                          ## The attributes table
 
