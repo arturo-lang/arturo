@@ -12,7 +12,9 @@
 # Libraries
 #=======================================
 
-import std/editdistance, sequtils, tables
+import algorithm, sequtils, tables
+
+import helpers/strings
 
 import vm/[errors, values/value]
 
@@ -52,13 +54,20 @@ var
 #=======================================
 
 func suggestAlternative(s: string, reference: SymTable | ValueDict = Syms): seq[string] {.inline.} =
-    var levs = initOrderedTable[string,int]()
+    var levs = initOrderedTable[string,float]()
 
     for k,v in pairs(reference):
-        levs[k] = editDistance(s,k)
+        levs[k] = jaro(s,k)
 
-    proc cmper (x, y: (string, int)): int {.closure.} = cmp(x[1], y[1])
-    levs.sort(cmper)
+    proc cmper (x, y: (string, float)): int {.closure.} = 
+        let pts = cmp(x[1], y[1])
+        if pts == 0: return cmp(x[0], y[0])
+        else: return pts
+
+    levs.sort(cmper, SortOrder.Descending)
+
+    for k,v in levs:
+        debugEcho $(k) & " => " & $(v)
 
     if levs.len > 3: result = toSeq(levs.keys)[0..2]
     else: result = toSeq(levs.keys)
