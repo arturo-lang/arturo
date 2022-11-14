@@ -12,6 +12,8 @@
 # Libraries
 #=======================================
 
+import strformat
+
 #=======================================
 # Types
 #=======================================
@@ -41,3 +43,6 @@ func `>`*(a, b: VVersion): bool {.inline,enforceNoRaises.} =
         a.minor > b.minor or
         (a.minor == b.minor and a.patch > b.patch)
     ))
+
+func `$`*(v: VVersion): string {.inline,enforceNoRaises.} =
+    fmt("{v.major}.{v.minor}.{v.patch}{v.extra}")
