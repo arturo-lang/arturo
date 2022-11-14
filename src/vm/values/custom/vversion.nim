@@ -28,30 +28,16 @@ type
 #=======================================
 
 func `==`*(a, b: VVersion): bool {.inline,enforceNoRaises.} =
-    return a.major == b.major and 
-           a.minor == b.minor and 
-           a.patch == b.patch and 
-           a.extra == b.extra
+    a[] == b[]
 
 func `<`*(a, b: VVersion): bool {.inline,enforceNoRaises.} =
-    if a.major < b.major:
-        return true
-    elif a.major == b.major:
-        if a.minor < b.minor:
-            return true
-        elif a.minor == b.minor:
-            if a.patch < b.patch:
-                return true
-    return false
+    a.major < b.major or (a.major == b.major and (
+        a.minor < b.minor or
+        (a.minor == b.minor and a.patch < b.patch)
+    ))
 
 func `>`*(a, b: VVersion): bool {.inline,enforceNoRaises.} =
-    if a.major > b.major:
-        return true
-    elif a.major == b.major:
-        if a.minor > b.minor:
-            return true
-        elif a.minor == b.minor:
-            if a.patch > b.patch:
-                return true
-    return false
-
+    a.major > b.major or (a.major == b.major and (
+        a.minor > b.minor or
+        (a.minor == b.minor and a.patch > b.patch)
+    ))
