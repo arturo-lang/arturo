@@ -165,7 +165,10 @@ template constant*(n: string, alias: VSymbol, description: string, v: Value):unt
     ## add new constant with given name, alias, description - 
     ## followed by the value it's assigned to
     SetSym(n, v)
-    GetSym(n).info = "[" & static (instantiationInfo().filename).replace(".nim") & ":" & $(static (instantiationInfo().line)) & "] " & description
+    GetSym(n).info = ValueInfo(
+        description: "[" & static (instantiationInfo().filename).replace(".nim") & ":" & $(static (instantiationInfo().line)) & "] " & description,
+        kind: v.kind
+    )
     when alias != unaliased:
         Aliases[alias] = AliasBinding(
             precedence: PrefixPrecedence,
