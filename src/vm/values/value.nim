@@ -506,13 +506,14 @@ proc newObject*(args: ValueDict, prot: Prototype, initializer: proc (self: Value
     
     initializer(result, prot)
 
-func newFunction*(params: Value, main: Value, imports: Value = nil, exports: Value = nil, memoize: bool = false, inline: bool = false): Value {.inline, enforceNoRaises.} =
+func newFunction*(params: seq[string], main: Value, imports: Value = nil, exports: Value = nil, memoize: bool = false, inline: bool = false): Value {.inline, enforceNoRaises.} =
     ## create Function (UserFunction) value with given parameters, ``main`` body, etc
     Value(
         kind: Function,
+        info: nil,
         funcType: VFunction(
             fnKind: UserFunction,
-            arity: params.a.len,
+            arity: int8(params.len),
             params: params,
             main: main,
             imports: imports,
@@ -523,23 +524,27 @@ func newFunction*(params: Value, main: Value, imports: Value = nil, exports: Val
         )
     )
 
-func newBuiltin*(desc: sink string, ar: int, ag: sink OrderedTable[string,ValueSpec], at: sink OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: sink string, act: BuiltinAction): Value {.inline, enforceNoRaises.} =
+func newBuiltin*(desc: sink string, modl: sink string, line: int, ar: int8, ag: sink OrderedTable[string,ValueSpec], at: sink OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: sink string, act: BuiltinAction): Value {.inline, enforceNoRaises.} =
     ## create Function (BuiltinFunction) value with given details
-    let descRef = new string
-    descRef[] = desc
-    Value(
+    result = Value(
         kind: Function,
-        infoRef: descRef,
-        funcType: VFunction(
-            fnKind: BuiltinFunction,
-            arity: ar,
+        info: ValueInfo(
+            descr: desc,
+            module: modl,
+            kind: Function,
             args: ag,
             attrs: at,
             returns: ret,
-            example: exa,
+            example: exa
+        ),
+        funcType: VFunction(
+            fnKind: BuiltinFunction,
+            arity: ar,
             action: act
         )
     )
+    when defined(DOCGEN):
+        result.info.line = line
 
 when not defined(NOSQLITE):
     proc newDatabase*(db: sqlite.DbConn): Value {.inline.} =
@@ -582,6 +587,10 @@ proc newStringBlock*(a: sink seq[string]): Value {.inline, enforceNoRaises.} =
 proc newStringBlock*(a: sink seq[cstring]): Value {.inline, enforceNoRaises.} =
     ## create Block value from an array of cstrings
     newBlock(a.map(proc (x:cstring):Value = newString(x)))
+
+proc newWordBlock*(a: sink seq[string]): Value {.inline, enforceNoRaises.} =
+    ## create Block value from an array of strings
+    newBlock(a.map(proc (x:string):Value = newWord(x)))
 
 func newNewline*(l: int): Value {.inline, enforceNoRaises.} =
     ## create Newline value with given line number
@@ -697,10 +706,6 @@ func asInt*(v: Value): int {.enforceNoRaises.} =
         result = v.i
     else:
         result = int(v.f)
-
-func getArity*(x: Value): int {.enforceNoRaises.} =
-    ## get arity of given Function value
-    return x.arity
 
 proc safeMulI[T: SomeInteger](x: var T, y: T) {.inline, noSideEffect.} =
     x = x * y
@@ -2290,7 +2295,7 @@ func consideredEqual*(x: Value, y: Value): bool {.inline,enforceNoRaises.} =
             return true
         of Function:
             if x.fnKind==UserFunction:
-                return consideredEqual(x.params, y.params) and consideredEqual(x.main, y.main) and x.exports == y.exports
+                return x.params == y.params and consideredEqual(x.main, y.main) and x.exports == y.exports
             else:
                 return x.action == y.action
         of Binary:
@@ -2402,8 +2407,7 @@ func hash*(v: Value): Hash {.inline.}=
                 result = !$ result
             else:
                 result = cast[Hash](unsafeAddr v)
-            # result = hash(v.params) !& hash(v.main)
-            # result = !$ result
+
         of Database:
             when not defined(NOSQLITE):
                 if v.dbKind==SqliteDatabase: result = cast[Hash](cast[ByteAddress](v.sqlitedb))

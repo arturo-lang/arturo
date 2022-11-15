@@ -741,7 +741,7 @@ proc defineSymbols*() =
             x.ts.methods = newDictionary(execDictionary(z)).d
             if (let initMethod = x.ts.methods.getOrDefault("init", nil); not initMethod.isNil):
                 x.ts.methods["init"] = newFunction(
-                    newBlock(@[newWord("this")]),
+                    @["this"],
                     initMethod
                 )
                 x.ts.doInit = proc (v:Value) =
@@ -750,7 +750,7 @@ proc defineSymbols*() =
 
             if (let printMethod = x.ts.methods.getOrDefault("print", nil); not printMethod.isNil):
                 x.ts.methods["print"] = newFunction(
-                    newBlock(@[newWord("this")]),
+                    @["this"],
                     printMethod
                 )
                 x.ts.doPrint = proc(v:Value):string =
@@ -761,13 +761,13 @@ proc defineSymbols*() =
             if (let compareMethod = x.ts.methods.getOrDefault("compare", nil); not compareMethod.isNil):
                 if compareMethod.kind==Block:
                     x.ts.methods["compare"] = newFunction(
-                        newBlock(@[newWord("this"),newWord("that")]),
+                        @["this","that"],
                         compareMethod
                     )
                 else:
                     let key = compareMethod
                     x.ts.methods["compare"] = newFunction(
-                        newBlock(@[newWord("this"),newWord("that")]),
+                        @["this","that"],
                         newBlock(@[
                             newWord("if"), newPath(@[newWord("this"), key]), newSymbol(greaterthan), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(1)]),
                             newWord("if"), newPath(@[newWord("this"), key]), newSymbol(equal), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(0)]),
@@ -1019,13 +1019,13 @@ proc defineSymbols*() =
             var argTypes = initOrderedTable[string,ValueSpec]()
 
             if x.a.countIt(it.kind == Type) > 0:
-                var args: ValueArray = @[]
+                var args: seq[string] = @[]
                 var body: ValueArray = @[]
                 
                 var i = 0
                 while i < x.a.len:
                     let varName = x.a[i]
-                    args.add(x.a[i])
+                    args.add(x.a[i].s)
                     argTypes[x.a[i].s] = {}
                     if i+1 < x.a.len and x.a[i+1].kind == Type:
                         var typeArr: ValueArray = @[]
@@ -1053,20 +1053,23 @@ proc defineSymbols*() =
                 var mainBody: ValueArray = y.a
                 mainBody.insert(body)
 
-                ret = newFunction(newBlock(args),newBlock(mainBody),imports,exports,memoize,inline)
+                ret = newFunction(args,newBlock(mainBody),imports,exports,memoize,inline)
             else:
                 if x.a.len > 0:
                     for arg in x.a:
                         argTypes[arg.s] = {Any}
                 else:
                     argTypes[""] = {Nothing}
-                ret = newFunction(x,y,imports,exports,memoize,inline)
+                ret = newFunction(x.a.map((w)=>w.s),y,imports,exports,memoize,inline)
+
+            ret.info = ValueInfo(kind: Function)
             
             if not y.data.isNil:
                 if y.data.kind==Dictionary:
 
                     if (let descriptionData = y.data.d.getOrDefault("description", nil); not descriptionData.isNil):
-                        ret.info = descriptionData.s
+                        ret.info.descr = descriptionData.s
+                        ret.info.module = ""
 
                     if y.data.d.hasKey("options") and y.data.d["options"].kind==Dictionary:
                         var options = initOrderedTable[string,(ValueSpec,string)]()
@@ -1086,21 +1089,21 @@ proc defineSymbols*() =
                                 else:
                                     options[k] = (vspec, "")
 
-                        ret.attrs = options
+                        ret.info.attrs = options
 
                     if (let returnsData = y.data.d.getOrDefault("returns", nil); not returnsData.isNil):
                         if returnsData.kind==Type:
-                            ret.returns = {returnsData.t}
+                            ret.info.returns = {returnsData.t}
                         else:
                             var returns: ValueSpec
                             for tp in returnsData.a:
                                 returns.incl(tp.t)
-                            ret.returns = returns
+                            ret.info.returns = returns
 
                     if (let exampleData = y.data.d.getOrDefault("example", nil); not exampleData.isNil):
-                        ret.example = exampleData.s
+                        ret.info.example = exampleData.s
     
-            ret.args = argTypes
+            ret.info.args = argTypes
             
             push(ret)
 
