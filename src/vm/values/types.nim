@@ -23,7 +23,7 @@ when defined(WEB):
 when not defined(NOGMP):
     import helpers/bignums
 
-import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrational, vregex, vsymbol, vversion]
+import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vsymbol, vversion]
 import vm/values/flags
 
 #=======================================
