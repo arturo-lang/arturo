@@ -148,7 +148,7 @@ type
                 discard
 
     VFunction* = ref object
-        arity*  : int
+        arity*  : int8
         case fnKind*: FunctionKind:
             of UserFunction:
                 # TODO(VM/values/types) merge Function `params` and `args` into one field?

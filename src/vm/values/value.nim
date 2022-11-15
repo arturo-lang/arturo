@@ -513,7 +513,7 @@ func newFunction*(params: seq[string], main: Value, imports: Value = nil, export
         info: nil,
         funcType: VFunction(
             fnKind: UserFunction,
-            arity: params.len,
+            arity: int8(params.len),
             params: params,
             main: main,
             imports: imports,
@@ -524,7 +524,7 @@ func newFunction*(params: seq[string], main: Value, imports: Value = nil, export
         )
     )
 
-func newBuiltin*(desc: sink string, modl: sink string, line: int, ar: int, ag: sink OrderedTable[string,ValueSpec], at: sink OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: sink string, act: BuiltinAction): Value {.inline, enforceNoRaises.} =
+func newBuiltin*(desc: sink string, modl: sink string, line: int, ar: int8, ag: sink OrderedTable[string,ValueSpec], at: sink OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: sink string, act: BuiltinAction): Value {.inline, enforceNoRaises.} =
     ## create Function (BuiltinFunction) value with given details
     result = Value(
         kind: Function,
@@ -706,10 +706,6 @@ func asInt*(v: Value): int {.enforceNoRaises.} =
         result = v.i
     else:
         result = int(v.f)
-
-func getArity*(x: Value): int {.enforceNoRaises.} =
-    ## get arity of given Function value
-    return x.arity
 
 proc safeMulI[T: SomeInteger](x: var T, y: T) {.inline, noSideEffect.} =
     x = x * y
