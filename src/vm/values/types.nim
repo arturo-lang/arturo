@@ -291,11 +291,14 @@ makeAccessor(version, extra)
 
 # Function
 
-makeAccessor(funcType, args)
-makeAccessor(funcType, attrs)
+makeAccessor(info, description)
+makeAccessor(info, module)
+makeAccessor(info, args)
+makeAccessor(info, attrs)
+makeAccessor(info, returns)
+makeAccessor(info, example)
+
 makeAccessor(funcType, arity)
-makeAccessor(funcType, returns)
-makeAccessor(funcType, example)
 makeAccessor(funcType, fnKind)
 makeAccessor(funcType, params)
 makeAccessor(funcType, main)
