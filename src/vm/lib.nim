@@ -161,12 +161,12 @@ template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: 
 #  So, we should either make documentation possible for constants as well, or merge the two things into one concept
 #  labels: vm, library, enhancement, open discussion
 
-template constant*(n: string, alias: VSymbol, description: string, v: Value):untyped =
+template constant*(n: string, alias: VSymbol, description: string, v: Value): untyped =
     ## add new constant with given name, alias, description - 
     ## followed by the value it's assigned to
     SetSym(n, v)
     GetSym(n).info = ValueInfo(
-        description: "[" & static (instantiationInfo().filename).replace(".nim") & ":" & $(static (instantiationInfo().line)) & "] " & description,
+        descr: "[" & static (instantiationInfo().filename).replace(".nim") & ":" & $(static (instantiationInfo().line)) & "] " & description,
         kind: v.kind
     )
     when alias != unaliased:
