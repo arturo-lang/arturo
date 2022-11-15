@@ -2379,6 +2379,9 @@ func hash*(v: Value): Hash {.inline.}=
                 result = result !& hash(i)
             result = !$ result
 
+        of Range        :
+            result = hash(v.rng[])
+
         of Dictionary   : 
             result = 1
             for k,v in pairs(v.d):
