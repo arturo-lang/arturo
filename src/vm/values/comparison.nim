@@ -128,7 +128,7 @@ proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
                 return true
 
             of Range:
-                return x.rng == v.rng
+                return x.rng == y.rng
 
             of Dictionary:
                 if x.d.len != y.d.len: return false
