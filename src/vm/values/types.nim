@@ -160,8 +160,8 @@ type
                 action*     : BuiltinAction
 
     Value* {.final,acyclic.} = ref object
-        infoRef*: ref string
-        flags*: ValueFlags
+        info*   : ValueInfo
+        flags*  : ValueFlags
 
         case kind*: ValueKind:
             of Null,
