@@ -28,6 +28,23 @@ type
     VRange* = GenericRange[int]
 
 #=======================================
+# Constants
+#=======================================
+
+const
+    InfiniteRange* = 9999888776543210
+
+#=======================================
+# Methods
+#=======================================
+
+func len*(self: VRange): int64 =
+    if self.infinite:
+        return InfiniteRange
+    else:
+        return abs(self.stop - self.start) div abs(self.step)
+
+#=======================================
 # Overloads
 #=======================================
 

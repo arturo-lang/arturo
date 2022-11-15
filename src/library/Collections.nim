@@ -33,7 +33,7 @@ import helpers/unisort
 
 import vm/lib
 
-import vm/values/custom/[vbinary]
+import vm/values/custom/[vbinary, vrange]
 
 #=======================================
 # Methods
@@ -1322,7 +1322,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get size/length of given collection",
         args        = {
-            "collection": {String, Block, Dictionary, Object}
+            "collection": {String, Block, Range, Dictionary, Object}
         },
         attrs       = NoAttrs,
         returns     = {Integer},
@@ -1345,6 +1345,8 @@ proc defineSymbols*() =
                 push(newInteger(x.d.len))
             elif x.kind == Object:
                 push(newInteger(x.o.len))
+            elif x.kind == Range:
+                push(newInteger(x.rng.len))
             else:
                 ensureCleaned(x)
                 push(newInteger(cleanX.len))
