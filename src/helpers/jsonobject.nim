@@ -64,6 +64,10 @@ proc generateJsonNode*(n: Value): JsonNode =
            result = newJArray()
            for v in n.a:
                 result.add(generateJsonNode(v))
+        of Range        :
+            result = newJArray()
+            result.add(newJInt(n.rng.start))
+            result.add(newJInt(n.rng.stop))
         of Dictionary   :
             result = newJObject()
             for k,v in pairs(n.d):
