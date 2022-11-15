@@ -79,9 +79,6 @@ template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: 
         else:
             const cleanExample = replace(strutils.strip(example),"\n            ","\n")
             
-        # TODO(VM/lib) Rewrite in a cleaner way
-        #  labels: vm, cleanup
-
         template moduleName():untyped = static instantiationInfo().filename.replace(".nim")
 
         let b = newBuiltin(
