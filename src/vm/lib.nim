@@ -81,23 +81,29 @@ template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: 
             
         # TODO(VM/lib) Rewrite in a cleaner way
         #  labels: vm, cleanup
-        when not defined(WEB):
-            let b = newBuiltin(description, static (instantiationInfo().filename).replace(".nim"), static (instantiationInfo().line), static argsLen, args.toOrderedTable, attrs.toOrderedTable, returns, cleanExample, proc () =
+
+        template moduleName():untyped = static instantiationInfo().filename.replace(".nim")
+
+        let b = newBuiltin(
+            when not defined(WEB): description else: "",
+            when not defined(WEB): moduleName() else: "",
+            when not defined(WEB): static (instantiationInfo().line) else: 0,
+            static argsLen, 
+            when not defined(WEB): args.toOrderedTable else: initOrderedTable[string,ValueSpec](),
+            when not defined(WEB): attrs.toOrderedTable else: initOrderedTable[string,(ValueSpec,string)](),
+            returns, 
+            cleanExample, 
+            proc () =
                 hookProcProfiler("lib/require"):
                     require(n, args)
 
-                {.emit: "////implementation: " & static (instantiationInfo().filename).replace(".nim") & "/" & n .}
+                {.emit: "////implementation: " & moduleName() & "/" & n .}
 
                 hookFunctionProfiler(n):
                     act
 
-                {.emit: "////end: " & static (instantiationInfo().filename).replace(".nim") & "/" & n .}
-            )
-        else:
-            let b = newBuiltin("", "", 0, static argsLen, initOrderedTable[string,ValueSpec](), initOrderedTable[string,(ValueSpec,string)](), returns, cleanExample, proc () =
-                require(n, args)
-                act
-            )
+                {.emit: "////end: " & moduleName() & "/" & n .}
+        )
 
         SetSym(n, b)
 
