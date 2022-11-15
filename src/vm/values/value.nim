@@ -2190,14 +2190,6 @@ proc `!!=`*(x: var Value) =
             when not defined(NOGMP):
                 x = newInteger(not x.bi)
 
-# proc `==`*[T](x,y:ref T){.error.}
-# proc `<`*[T](x,y:ref T){.error.}
-# proc `>`*[T](x,y:ref T){.error.}
-# proc `<=`*[T](x,y:ref T){.error.}
-# proc `>=`*[T](x,y:ref T){.error.}
-# proc `!=`*[T](x,y:ref T){.error.}
-# proc cmp*[T](x,y:ref T){.error.}
-
 proc factorial*(x: Value): Value =
     ## calculate factorial of given value
     if not (x.kind == Integer):
