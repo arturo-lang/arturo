@@ -115,9 +115,6 @@ template emptyStack*() =
     ## all this does is to reset the stack pointer to zero
     SP = 0
 
-# TODO(VM/stack) should our main stack use `newSeqOfCap`?
-#  ...and `.add`/`.pop`? This should be benchmarked.
-#  labels: performance, benchmark, vm, values, open-discussion
 template createMainStack*() =
     ## initialize the main stack
     newSeq(Stack, StackSize)
