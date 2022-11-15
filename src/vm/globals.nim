@@ -36,11 +36,6 @@ var
                                                 ## with all their associated variables
                                                 ## they point to
 
-    # # function arity reference
-    # Arities* {.global.}   : Table[string,int]   ## The arity table: a simple association
-    #                                             ## of function names with the arity of 
-    #                                             ## the function they represent
-
     # libraries 
     Libraries* {.global.} : seq[BuiltinAction]  ## The list of all builtin libraries
                                                 ## to be imported at startup
