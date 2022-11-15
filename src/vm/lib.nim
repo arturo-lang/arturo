@@ -82,7 +82,7 @@ template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: 
         # TODO(VM/lib) Rewrite in a cleaner way
         #  labels: vm, cleanup
         when not defined(WEB):
-            let b = newBuiltin("[" & static (instantiationInfo().filename).replace(".nim") & ":" & $(static (instantiationInfo().line)) & "] " & description, static argsLen, args.toOrderedTable, attrs.toOrderedTable, returns, cleanExample, proc () =
+            let b = newBuiltin(description, static (instantiationInfo().filename).replace(".nim"), static (instantiationInfo().line), static argsLen, args.toOrderedTable, attrs.toOrderedTable, returns, cleanExample, proc () =
                 hookProcProfiler("lib/require"):
                     require(n, args)
 
@@ -94,7 +94,7 @@ template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: 
                 {.emit: "////end: " & static (instantiationInfo().filename).replace(".nim") & "/" & n .}
             )
         else:
-            let b = newBuiltin("", static argsLen, initOrderedTable[string,ValueSpec](), initOrderedTable[string,(ValueSpec,string)](), returns, cleanExample, proc () =
+            let b = newBuiltin("", "", 0, static argsLen, initOrderedTable[string,ValueSpec](), initOrderedTable[string,(ValueSpec,string)](), returns, cleanExample, proc () =
                 require(n, args)
                 act
             )
@@ -161,11 +161,21 @@ template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: 
 #  So, we should either make documentation possible for constants as well, or merge the two things into one concept
 #  labels: vm, library, enhancement, open discussion
 
-template constant*(n: string, alias: VSymbol, description: string, v: Value):untyped =
+template constant*(n: string, alias: VSymbol, description: string, v: Value): untyped =
     ## add new constant with given name, alias, description - 
     ## followed by the value it's assigned to
     SetSym(n, v)
-    GetSym(n).info = "[" & static (instantiationInfo().filename).replace(".nim") & ":" & $(static (instantiationInfo().line)) & "] " & description
+    var vInfo = ValueInfo(
+        descr: description,
+        module: static (instantiationInfo().filename).replace(".nim"),
+        kind: v.kind
+    )
+
+    when defined(DOCGEN):
+        vInfo.line = static (instantiationInfo().line)
+
+    GetSym(n).info = vInfo
+
     when alias != unaliased:
         Aliases[alias] = AliasBinding(
             precedence: PrefixPrecedence,

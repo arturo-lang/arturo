@@ -33,7 +33,7 @@ import vm/values/custom/[vbinary, vsymbol]
 
 var
     StoredEval : Table[Hash, Translation]
-    TmpArities : Table[string,int]
+    TmpArities : Table[string,int8]
 
 #=======================================
 # Helpers
@@ -187,7 +187,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                     byte(indx)
                 ], atPos)
 
-    proc evalFunctionCall(currentCommand: var VBinary, fun: var Value, toHead: bool, checkAhead: bool, i: var int, funcArity: var int): bool {.enforceNoRaises.} =
+    proc evalFunctionCall(currentCommand: var VBinary, fun: var Value, toHead: bool, checkAhead: bool, i: var int, funcArity: var int8): bool {.enforceNoRaises.} =
         var bt: OpCode = opNop
         var doElse = true
 
@@ -576,7 +576,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
     
         currentCommand.setLen(0)
 
-    proc getArityForInfixOperatorAhead(inBlock: bool, consts: var ValueArray, currentCommand: var VBinary, i: var int, n: Value): int = 
+    proc getArityForInfixOperatorAhead(inBlock: bool, consts: var ValueArray, currentCommand: var VBinary, i: var int, n: Value): int {.enforceNoRaises.} = 
         result = -1
         if i >= nLen - 1: return
         let nextNode {.cursor.} = n.a[i+1]
@@ -587,7 +587,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
                 if symfunc.kind==Function and aliased.precedence==InfixPrecedence:
                     i += 1
-                    if (not inBlock) and (not evalFunctionCall(currentCommand, symfunc, toHead=false, checkAhead=false, i, i)):
+                    var placeholder: int8
+                    if (not inBlock) and (not evalFunctionCall(currentCommand, symfunc, toHead=false, checkAhead=false, i, placeholder)):
                         addConst(aliased.name, opCall)
                     result = symfunc.arity
 
@@ -626,7 +627,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                             argStack.add(tmpFuncArity-1)
                             # TODO(VM/eval) to be fixed
                             #  labels: bug, evaluator, vm
-                            if not evalFunctionCall(currentCommand, nextNode, toHead=true, checkAhead=false, i, i):
+                            var placeholder: int8
+                            if not evalFunctionCall(currentCommand, nextNode, toHead=true, checkAhead=false, i, placeholder):
                                 addTrailingConst(nextNode, opCall)
                         else:
                             addTrailingConst(nextNode, opCall)
@@ -728,7 +730,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         i -= 1
         ret
 
-    proc processThickArrowRight(argblock: var ValueArray, subblock: var ValueArray, it: var VBinary, n: Value, i: var int, funcArity: var int) =
+    proc processThickArrowRight(argblock: var ValueArray, subblock: var ValueArray, it: var VBinary, n: Value, i: var int, funcArity: var int8) =
         while n.a[i+1].kind == Newline:
             when not defined(NOERRORLINES):
                 addEol(it, n.a[i+1].line)
@@ -758,7 +760,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             # replace ampersand symbols, 
             # sequentially, with arguments
             var idx = 0
-            var fnd = 0
+            var fnd: int8 = 0
             while idx<subnode.a.len:
                 if subnode.a[idx].kind==Symbol and subnode.a[idx].m==ampersand:
                     let arg = newWord("_" & $(fnd))
@@ -852,13 +854,13 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                     let afterNextNode {.cursor.} = n.a[i+2]
                     if afterNextNode.kind == Symbol and afterNextNode.m == thickarrowright:
                         i += 2
-                        var funcArity: int = 0
+                        var funcArity: int8 = 0
                         processThickArrowRight(ab, sb, it, n, i, funcArity)
                         TmpArities[funcIndx] = funcArity
                         hasThickArrow = true
                         i += 1
                     else:
-                        TmpArities[funcIndx] = afterNextNode.a.countIt(it.kind != Type) #n.a[i+2].a.len
+                        TmpArities[funcIndx] = int8(afterNextNode.a.countIt(it.kind != Type)) #n.a[i+2].a.len
                 else:
                     if not isDictionary:
                         TmpArities.del(funcIndx)
@@ -983,7 +985,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                         # labels: vm,evaluator,enhancement,bug
                         var ab: ValueArray
                         var sb: ValueArray
-                        var funcArity: int = 0
+                        var funcArity: int8 = 0
                         processThickArrowRight(ab, sb, it, n, i, funcArity)          
 
                         # add the blocks
@@ -1000,7 +1002,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                             var symfunc {.cursor.} = GetSym(aliased.name.s)
                             if symfunc.kind==Function:
                                 if symfunc.fnKind == BuiltinFunction and symfunc.arity!=0:
-                                    if not evalFunctionCall(currentCommand, symfunc, toHead=false, checkAhead=false, i, i):
+                                    var placeholder: int8
+                                    if not evalFunctionCall(currentCommand, symfunc, toHead=false, checkAhead=false, i, placeholder):
                                         addConst(aliased.name, opCall)
                                     argStack.add(symfunc.arity)
                                 elif symfunc.fnKind == UserFunction and symfunc.arity!=0:

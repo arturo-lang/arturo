@@ -131,7 +131,7 @@ proc `$`*(v: Value): string {.inline.} =
         of Function     : 
             result = ""
             if v.fnKind==UserFunction:
-                result &= "<function>" & $(v.params)
+                result &= "<function>" & $(newWordBlock(v.params))
                 result &= "(" & fmt("{cast[ByteAddress](v.main):#X}") & ")"
             else:
                 result &= "<function:builtin>" 
@@ -333,7 +333,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             dumpBlockStart(v)
 
             if v.fnKind==UserFunction:
-                dump(v.params, level+1, false, muted=muted)
+                dump(newWordBlock(v.params), level+1, false, muted=muted)
                 dump(v.main, level+1, true, muted=muted)
             else:
                 for i in 0..level: stdout.write "\t"
@@ -506,9 +506,12 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
             if not (pretty and unwrapped and level==0):
                 result &= "]"
 
+        # TODO(VM/values/printable) `codify` not working properly for Function values
+        #  what if the Function is a memoized one? no attributes are currently being taken into account
+        #  labels: vm, values, bug
         of Function:
             result &= "function "
-            result &= codify(v.params,pretty,unwrapped,level+1, false, safeStrings=safeStrings)
+            result &= codify(newWordBlock(v.params),pretty,unwrapped,level+1, false, safeStrings=safeStrings)
             result &= " "
             result &= codify(v.main,pretty,unwrapped,level+1, true, safeStrings=safeStrings)
 

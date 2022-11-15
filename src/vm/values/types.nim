@@ -131,17 +131,28 @@ type
 
     SymbolDict*   = OrderedTable[VSymbol,AliasBinding]
 
+    ValueInfo* = ref object
+        descr*          : string
+        module*         : string
+
+        when defined(DOCGEN):
+            line*       : int
+
+        case kind*: ValueKind:
+            of Function:
+                args*       : OrderedTable[string,ValueSpec]
+                attrs*      : OrderedTable[string,(ValueSpec,string)]
+                returns*    : ValueSpec
+                example*    : string
+            else:
+                discard
+
     VFunction* = ref object
-        args*   : OrderedTable[string,ValueSpec]
-        attrs*  : OrderedTable[string,(ValueSpec,string)]
-        arity*  : int
-        returns*: ValueSpec
-        example*: string
+        arity*  : int8
+
         case fnKind*: FunctionKind:
             of UserFunction:
-                # TODO(VM/values/types) merge Function `params` and `args` into one field?
-                #  labels: vm, values, enhancement
-                params*     : Value
+                params*     : seq[string]
                 main*       : Value
                 imports*    : Value
                 exports*    : Value
@@ -152,8 +163,10 @@ type
                 action*     : BuiltinAction
 
     Value* {.final,acyclic.} = ref object
-        infoRef*: ref string
-        flags*: ValueFlags
+        when not defined(PORTABLE):
+            info*   : ValueInfo
+
+        flags*  : ValueFlags
 
         case kind*: ValueKind:
             of Null,
@@ -228,11 +241,12 @@ type
             of Newline:
                 line*: int
     ValueObj = typeof(Value()[])
+    FuncObj = typeof(VFunction()[])
 
 # Benchmarking
-
 {.hints: on.} # Apparently we cannot disable just `Name` hints?
-{.hint: "'Value's inner type is currently '" & $sizeof(ValueObj) & "'.".}
+{.hint: "Value's inner type is currently " & $sizeof(ValueObj) & ".".}
+{.hint: "Function's inner type is currently " & $sizeof(FuncObj) & ".".}
 {.hints: off.}
 
 when sizeof(ValueObj) > 72: # At time of writing it was '72', 8 - 64 bit integers seems like a good warning site? Can always go smaller
@@ -256,22 +270,21 @@ template `dynamic=`*(val: Value, newVal: bool) = val.flags[IsDynamic] = newVal
 template b*(val: Value): VLogical = VLogical(val.flags - NonLogicalF)
 template `b=`*(val: Value, newVal: VLogical) = val.flags = val.flags - LogicalF + newVal
 
-template info*(val: Value): lent string =
-    if val.infoRef.isNil:
-        ""
-    else:
-        val.infoRef[]
-template `info=`*(val: Value, newVal: string) =
-    if val.infoRef.isNil:
-        new val.infoRef
-    val.infoRef[] = newVal
-
 template makeAccessor(field, subfield: untyped) =
     template subfield*(val: Value): typeof(val.field.subfield) =
         val.field.subfield
 
     template `subfield=`*(val: Value, newVal: typeof(val.field.subfield)) =
         val.field.subfield = newVal
+
+# Info
+
+makeAccessor(info, descr)
+makeAccessor(info, module)
+makeAccessor(info, args)
+makeAccessor(info, attrs)
+makeAccessor(info, returns)
+makeAccessor(info, example)
 
 # Version
 
@@ -282,11 +295,7 @@ makeAccessor(version, extra)
 
 # Function
 
-makeAccessor(funcType, args)
-makeAccessor(funcType, attrs)
 makeAccessor(funcType, arity)
-makeAccessor(funcType, returns)
-makeAccessor(funcType, example)
 makeAccessor(funcType, fnKind)
 makeAccessor(funcType, params)
 makeAccessor(funcType, main)
