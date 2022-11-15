@@ -26,6 +26,7 @@ type
         stop*       : T
         step*       : T
         infinite*   : bool
+        numeric*    : bool 
         dir*        : RangeDirection
 
     VRange* = GenericRange[int]
@@ -35,10 +36,17 @@ type
 #=======================================
 
 func `$`*(v: VRange): string {.inline,enforceNoRaises.} =
-    let start = $(v.start)
+    var start: string
     var stop: string
+
+    if v.numeric: start = $(v.start)
+    else: start = "`" & $(chr(v.start)) & "`"
+
     if v.infinite: stop = "∞"
-    else: stop = $(v.stop)
+    else: 
+        if v.numeric: stop = $(v.stop)
+        else: stop = "`" & $(chr(v.stop)) & "`"
+        
     result = start & ".." & stop
 
     if v.step != 1:
