@@ -1117,6 +1117,49 @@ proc defineSymbols*() =
                     push(newBlock(cleanX.reversed))
                 elif x.kind == String: push(newString(x.s.reversed))
 
+    builtin "rng",
+        alias       = unaliased, 
+        rule        = InfixPrecedence,
+        description = "get list of values in given range (inclusive)",
+        args        = {
+            "from"  : {Integer, Char},
+            "to"    : {Integer, Floating, Char}
+        },
+        attrs       = {
+            "step"  : ({Integer},"use step between range values")
+        },
+        returns     = {Block},
+        example     = """
+        """:
+            #=======================================================
+            var limX: int
+            var limY: int
+            var numeric = true
+            var infinite = false
+
+            if x.kind == Integer: limX = x.i
+            else:
+                numeric = false
+                limX = ord(x.c)
+
+            if y.kind == Integer: limY = y.i
+            elif y.kind == Floating:
+                if y.f == Inf: infinite = true
+                else:
+                    limY = int(y.f)
+            else:
+                limY = ord(y.c)
+
+            var step = 1
+            if checkAttr("step"):
+                step = aStep.i
+                if step < 0:
+                    step = -step
+
+            let forward = limX < limY
+
+            push newRange(limX, limY, step, infinite, numeric, forward)
+
     builtin "rotate",
         alias       = unaliased,
         rule        = PrefixPrecedence,
