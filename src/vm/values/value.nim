@@ -524,12 +524,13 @@ func newFunction*(params: seq[string], main: Value, imports: Value = nil, export
         )
     )
 
-func newBuiltin*(desc: sink string, ar: int, ag: sink OrderedTable[string,ValueSpec], at: sink OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: sink string, act: BuiltinAction): Value {.inline, enforceNoRaises.} =
+func newBuiltin*(desc: sink string, modl: sink string, line: int, ar: int, ag: sink OrderedTable[string,ValueSpec], at: sink OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: sink string, act: BuiltinAction): Value {.inline, enforceNoRaises.} =
     ## create Function (BuiltinFunction) value with given details
-    Value(
+    result = Value(
         kind: Function,
         info: ValueInfo(
             descr: desc,
+            module: modl,
             kind: Function,
             args: ag,
             attrs: at,
@@ -542,6 +543,8 @@ func newBuiltin*(desc: sink string, ar: int, ag: sink OrderedTable[string,ValueS
             action: act
         )
     )
+    when defined(DOCGEN):
+        result.info.line = line
 
 when not defined(NOSQLITE):
     proc newDatabase*(db: sqlite.DbConn): Value {.inline.} =
