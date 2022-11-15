@@ -134,6 +134,10 @@ type
     ValueInfo* = ref object
         descr*          : string
         module*         : string
+
+        when defined(DOCGEN):
+            line*       : int
+
         case kind*: ValueKind:
             of Function:
                 args*       : OrderedTable[string,ValueSpec]
