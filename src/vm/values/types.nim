@@ -88,12 +88,13 @@ type
         Function        = 26
         Inline          = 27
         Block           = 28
-        Database        = 29
-        Bytecode        = 30
+        Range           = 29
+        Database        = 30
+        Bytecode        = 31
 
-        Newline         = 31
-        Nothing         = 32
-        Any             = 33
+        Newline         = 32
+        Nothing         = 33
+        Any             = 34
 
     ValueSpec* = set[ValueKind]
 
@@ -224,6 +225,8 @@ type
                Block:
                    a*       : ValueArray
                    data*    : Value
+            of Range:
+                    rng*    : VRange
             of Dictionary:  d*  : ValueDict
             of Object:
                 o*: ValueDict   # fields
