@@ -1061,12 +1061,15 @@ proc defineSymbols*() =
                 else:
                     argTypes[""] = {Nothing}
                 ret = newFunction(x.a.map((w)=>w.s),y,imports,exports,memoize,inline)
+
+            ret.info = ValueInfo(kind: Function)
             
             if not y.data.isNil:
                 if y.data.kind==Dictionary:
 
                     if (let descriptionData = y.data.d.getOrDefault("description", nil); not descriptionData.isNil):
-                        ret.info = descriptionData.s
+                        ret.info.description = descriptionData.s
+                        ret.info.module = ""
 
                     if y.data.d.hasKey("options") and y.data.d["options"].kind==Dictionary:
                         var options = initOrderedTable[string,(ValueSpec,string)]()
@@ -1086,21 +1089,21 @@ proc defineSymbols*() =
                                 else:
                                     options[k] = (vspec, "")
 
-                        ret.attrs = options
+                        ret.info.attrs = options
 
                     if (let returnsData = y.data.d.getOrDefault("returns", nil); not returnsData.isNil):
                         if returnsData.kind==Type:
-                            ret.returns = {returnsData.t}
+                            ret.info.returns = {returnsData.t}
                         else:
                             var returns: ValueSpec
                             for tp in returnsData.a:
                                 returns.incl(tp.t)
-                            ret.returns = returns
+                            ret.info.returns = returns
 
                     if (let exampleData = y.data.d.getOrDefault("example", nil); not exampleData.isNil):
-                        ret.example = exampleData.s
+                        ret.info.example = exampleData.s
     
-            ret.args = argTypes
+            ret.info.args = argTypes
             
             push(ret)
 
