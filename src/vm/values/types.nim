@@ -131,6 +131,18 @@ type
 
     SymbolDict*   = OrderedTable[VSymbol,AliasBinding]
 
+    ValueInfo* = ref object
+        description*    : string
+        module*         : string
+        case kind*: ValueKind:
+            of Function:
+                args*       : OrderedTable[string,ValueSpec]
+                attrs*      : OrderedTable[string,(ValueSpec,string)]
+                returns*    : ValueSpec
+                example*    : string
+            else:
+                discard
+
     VFunction* = ref object
         args*   : OrderedTable[string,ValueSpec]
         attrs*  : OrderedTable[string,(ValueSpec,string)]
