@@ -88,7 +88,7 @@ func getTypeString(vs: ValueSpec):string =
     return specs.join(" ")
 
 proc getUsageForFunction(n: string, v: Value): seq[string] =
-    let args = toSeq(v.args.pairs)
+    let args = toSeq(v.info.args.pairs)
     result = @[]
     let lenBefore = n.len
     var spaceBefore = ""
@@ -106,7 +106,7 @@ proc getUsageForFunction(n: string, v: Value): seq[string] =
         result.add fmt("{spaceBefore} {arg[0]} {fg(grayColor)}{getTypeString(arg[1])}")
 
 proc getOptionsForFunction(v: Value): seq[string] =
-    var attrs = toSeq(v.attrs.pairs)
+    var attrs = toSeq(v.info.attrs.pairs)
     if attrs.len==1 and attrs[0][0]=="": return @[]
 
     var maxLen = 0
@@ -187,8 +187,8 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
     result["address"] = newString(fmt("{cast[ByteAddress](v):#X}"))
     result["type"] = newType(v.kind)
 
-    if v.info!="":
-        var desc = v.info
+    if not v.info.isNil:
+        var desc = v.info.description
         if desc.contains("]"):
             let parts = desc.split("]")
             desc = parts[1].strip()
@@ -200,50 +200,50 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
 
         result["description"] = newString(desc)
 
-    if v.kind==Function:
-        var args = initOrderedTable[string,Value]()
-        if v.args.len > 0 and (toSeq(v.args.keys))[0]!="":
-            for k,spec in v.args:
-                var specs:ValueArray = @[]
-                for s in spec:
-                    specs.add(newType(s))
+        if v.info.kind==Function:
+            var args = initOrderedTable[string,Value]()
+            if v.info.args.len > 0 and (toSeq(v.info.args.keys))[0]!="":
+                for k,spec in v.args:
+                    var specs:ValueArray = @[]
+                    for s in spec:
+                        specs.add(newType(s))
 
-                args[k] = newBlock(specs)
-        result["args"] = newDictionary(args)
+                    args[k] = newBlock(specs)
+            result["args"] = newDictionary(args)
 
-        var attrs = initOrderedTable[string,Value]()
-        if v.attrs.len > 0 and (toSeq(v.attrs.keys))[0]!="":
-            for k,dd in v.attrs:
-                let spec = dd[0]
-                let descr = dd[1]
+            var attrs = initOrderedTable[string,Value]()
+            if v.info.attrs.len > 0 and (toSeq(v.info.attrs.keys))[0]!="":
+                for k,dd in v.info.attrs:
+                    let spec = dd[0]
+                    let descr = dd[1]
 
-                var ss = initOrderedTable[string,Value]()
+                    var ss = initOrderedTable[string,Value]()
 
-                var specs:ValueArray = @[]
-                for s in spec:
-                    specs.add(newType(s))
+                    var specs:ValueArray = @[]
+                    for s in spec:
+                        specs.add(newType(s))
 
-                ss["types"] = newBlock(specs)
-                ss["description"] = newString(descr)
+                    ss["types"] = newBlock(specs)
+                    ss["description"] = newString(descr)
 
-                attrs[k] = newDictionary(ss)
-        result["attrs"] = newDictionary(attrs)
+                    attrs[k] = newDictionary(ss)
+            result["attrs"] = newDictionary(attrs)
 
-        var returns:ValueArray = @[]
-        if v.returns.len > 0:
-            for ret in v.returns:
-                returns.add(newType(ret))
-        else:
-            returns = @[newType(Nothing)]
+            var returns:ValueArray = @[]
+            if v.info.returns.len > 0:
+                for ret in v.info.returns:
+                    returns.add(newType(ret))
+            else:
+                returns = @[newType(Nothing)]
 
-        result["returns"] = newBlock(returns)
+            result["returns"] = newBlock(returns)
 
-        let alias = getAlias(n, aliases)
-        if alias[0]!="":
-            result["alias"] = newString(alias[0])
-            result["infix?"] = newLogical(alias[1]==InfixPrecedence)
+            let alias = getAlias(n, aliases)
+            if alias[0]!="":
+                result["alias"] = newString(alias[0])
+                result["infix?"] = newLogical(alias[1]==InfixPrecedence)
 
-        result["example"] = newStringBlock(splitExamples(v.example))
+            result["example"] = newStringBlock(splitExamples(v.info.example))
 
 # TODO(Helpers/helper) embed "see also" functions in info screens
 #  related: https://github.com/arturo-lang/arturo/issues/466#issuecomment-1065274429
@@ -264,8 +264,8 @@ proc printInfo*(n: string, v: Value, aliases: SymbolDict, withExamples = false) 
 
     # Print header
     printLine()
-    if v.info.contains("]"):
-        let mdl = v.info.split("]")[0].strip().replace("[","").strip().split(":")[0].strip()
+    if (not v.info.isNil) and v.info.description.contains("]"):
+        let mdl = v.info.description.split("]")[0].strip().replace("[","").strip().split(":")[0].strip()
         printOneData(n,fmt("{typeStr}{fg(grayColor)}{align(mdl,32)}"),bold(magentaColor),resetColor)
     else:
         printOneData(n,fmt("{typeStr}{fg(grayColor)}{address}"),bold(magentaColor),resetColor)
@@ -280,8 +280,8 @@ proc printInfo*(n: string, v: Value, aliases: SymbolDict, withExamples = false) 
 
     # If it's a function or builtin constant,
     # print its description/info
-    if v.info!="":
-        var desc: string = v.info
+    if not v.info.isNil:
+        var desc: string = v.info.description
         if desc.contains("]"):
             desc = desc.split("]")[1].strip()
         
@@ -289,30 +289,30 @@ proc printInfo*(n: string, v: Value, aliases: SymbolDict, withExamples = false) 
             printOneData("",d)
         printLine()
 
-    # If it's a function,
-    # print more details
-    if v.kind==Function:
-        printMultiData("usage", getUsageForFunction(n,v), bold(greenColor))
-        let opts = getOptionsForFunction(v)
-        if opts.len>0:
+        # If it's a function,
+        # print more details
+        if v.info.kind==Function:
+            printMultiData("usage", getUsageForFunction(n,v), bold(greenColor))
+            let opts = getOptionsForFunction(v)
+            if opts.len>0:
+                printEmptyLine()
+                printMultiData("options",opts,bold(greenColor))
+                
             printEmptyLine()
-            printMultiData("options",opts,bold(greenColor))
-            
-        printEmptyLine()
 
-        printOneData("returns",getTypeString(v.returns),bold(greenColor),fg(grayColor))
-        printLine()
+            printOneData("returns",getTypeString(v.info.returns),bold(greenColor),fg(grayColor))
+            printLine()
 
-        if v.example.strip()!="" and withExamples:
-            echo initialSep & repeat(' ', 36) & "EXAMPLES" & repeat(' ', 36) 
-            printLine()
-            printEmptyLine()
-            let examples = splitExamples(v.example)
-            for i, example in examples:
-                syntaxHighlight(example)
-                if i!=examples.len - 1:
-                    printEmptyLine()
-                    printLine('.')
-                    printEmptyLine()
-            printEmptyLine()
-            printLine()
+            if v.info.example.strip()!="" and withExamples:
+                echo initialSep & repeat(' ', 36) & "EXAMPLES" & repeat(' ', 36) 
+                printLine()
+                printEmptyLine()
+                let examples = splitExamples(v.info.example)
+                for i, example in examples:
+                    syntaxHighlight(example)
+                    if i!=examples.len - 1:
+                        printEmptyLine()
+                        printLine('.')
+                        printEmptyLine()
+                printEmptyLine()
+                printLine()
