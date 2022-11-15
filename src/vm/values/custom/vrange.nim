@@ -17,17 +17,13 @@
 #=======================================
 
 type
-    RangeDirection* = enum
-        Forward
-        Backward
-
     GenericRange[T] = ref object
         start*      : T
         stop*       : T
         step*       : T
         infinite*   : bool
         numeric*    : bool 
-        dir*        : RangeDirection
+        forward*    : bool
 
     VRange* = GenericRange[int]
 
@@ -46,7 +42,7 @@ func `$`*(v: VRange): string {.inline,enforceNoRaises.} =
     else: 
         if v.numeric: stop = $(v.stop)
         else: stop = "`" & $(chr(v.stop)) & "`"
-        
+
     result = start & ".." & stop
 
     if v.step != 1:
