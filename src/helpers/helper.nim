@@ -188,7 +188,7 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
     result["type"] = newType(v.kind)
 
     if not v.info.isNil:
-        var desc = v.info.description
+        var desc = v.info.descr
         if desc.contains("]"):
             let parts = desc.split("]")
             desc = parts[1].strip()
@@ -264,8 +264,8 @@ proc printInfo*(n: string, v: Value, aliases: SymbolDict, withExamples = false) 
 
     # Print header
     printLine()
-    if (not v.info.isNil) and v.info.description.contains("]"):
-        let mdl = v.info.description.split("]")[0].strip().replace("[","").strip().split(":")[0].strip()
+    if (not v.info.isNil) and v.info.descr.contains("]"):
+        let mdl = v.info.descr.split("]")[0].strip().replace("[","").strip().split(":")[0].strip()
         printOneData(n,fmt("{typeStr}{fg(grayColor)}{align(mdl,32)}"),bold(magentaColor),resetColor)
     else:
         printOneData(n,fmt("{typeStr}{fg(grayColor)}{address}"),bold(magentaColor),resetColor)
@@ -281,7 +281,7 @@ proc printInfo*(n: string, v: Value, aliases: SymbolDict, withExamples = false) 
     # If it's a function or builtin constant,
     # print its description/info
     if not v.info.isNil:
-        var desc: string = v.info.description
+        var desc: string = v.info.descr
         if desc.contains("]"):
             desc = desc.split("]")[1].strip()
         

@@ -529,7 +529,7 @@ func newBuiltin*(desc: sink string, ar: int, ag: sink OrderedTable[string,ValueS
     Value(
         kind: Function,
         info: ValueInfo(
-            description: desc,
+            descr: desc,
             kind: Function,
             args: ag,
             attrs: at,

@@ -132,7 +132,7 @@ type
     SymbolDict*   = OrderedTable[VSymbol,AliasBinding]
 
     ValueInfo* = ref object
-        description*    : string
+        descr*          : string
         module*         : string
         case kind*: ValueKind:
             of Function:
@@ -282,6 +282,15 @@ template makeAccessor(field, subfield: untyped) =
     template `subfield=`*(val: Value, newVal: typeof(val.field.subfield)) =
         val.field.subfield = newVal
 
+# Info
+
+makeAccessor(info, descr)
+makeAccessor(info, module)
+makeAccessor(info, args)
+makeAccessor(info, attrs)
+makeAccessor(info, returns)
+makeAccessor(info, example)
+
 # Version
 
 makeAccessor(version, major)
@@ -290,13 +299,6 @@ makeAccessor(version, patch)
 makeAccessor(version, extra)
 
 # Function
-
-makeAccessor(info, description)
-makeAccessor(info, module)
-makeAccessor(info, args)
-makeAccessor(info, attrs)
-makeAccessor(info, returns)
-makeAccessor(info, example)
 
 makeAccessor(funcType, arity)
 makeAccessor(funcType, fnKind)
