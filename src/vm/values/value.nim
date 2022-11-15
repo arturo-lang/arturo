@@ -33,7 +33,7 @@ when not defined(NOGMP):
 when not defined(WEB):
     import vm/errors
 
-import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrational, vregex, vsymbol, vversion]
+import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vsymbol, vversion]
 
 import vm/values/clean
 import vm/values/types
@@ -591,6 +591,18 @@ proc newStringBlock*(a: sink seq[cstring]): Value {.inline, enforceNoRaises.} =
 proc newWordBlock*(a: sink seq[string]): Value {.inline, enforceNoRaises.} =
     ## create Block value from an array of strings
     newBlock(a.map(proc (x:string):Value = newWord(x)))
+
+proc newRange*(start: int, stop: int, step: int, infinite: bool, numeric: bool, forward: bool): Value {.inline,enforceNoRaises.} =
+    Value(kind: Range, rng: 
+        VRange(
+            start: start, 
+            stop: stop, 
+            step: step, 
+            infinite: infinite, 
+            numeric: numeric, 
+            forward: forward
+        )
+    )
 
 func newNewline*(l: int): Value {.inline, enforceNoRaises.} =
     ## create Newline value with given line number
