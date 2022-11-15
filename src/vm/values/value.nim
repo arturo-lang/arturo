@@ -510,6 +510,7 @@ func newFunction*(params: seq[string], main: Value, imports: Value = nil, export
     ## create Function (UserFunction) value with given parameters, ``main`` body, etc
     Value(
         kind: Function,
+        info: nil,
         funcType: VFunction(
             fnKind: UserFunction,
             arity: params.len,
@@ -525,18 +526,19 @@ func newFunction*(params: seq[string], main: Value, imports: Value = nil, export
 
 func newBuiltin*(desc: sink string, ar: int, ag: sink OrderedTable[string,ValueSpec], at: sink OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: sink string, act: BuiltinAction): Value {.inline, enforceNoRaises.} =
     ## create Function (BuiltinFunction) value with given details
-    let descRef = new string
-    descRef[] = desc
     Value(
         kind: Function,
-        infoRef: descRef,
-        funcType: VFunction(
-            fnKind: BuiltinFunction,
-            arity: ar,
+        info: ValueInfo(
+            description: desc,
+            kind: Function,
             args: ag,
             attrs: at,
             returns: ret,
-            example: exa,
+            example: exa
+        ),
+        funcType: VFunction(
+            fnKind: BuiltinFunction,
+            arity: ar,
             action: act
         )
     )
