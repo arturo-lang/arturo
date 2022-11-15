@@ -337,23 +337,7 @@ func `$`*(qs: VQuantity): string =
 proc newQuantitySpec*(un: UnitName): VQuantity {.inline.} =
     VQuantity(kind: quantityKindForName(un), name: un)
 
-proc getQuantityMultiplier*(src: VQuantity, tgt: VQuantity): float =
-    if src.kind != tgt.kind: return CannotConvertQuantity
-
-    if src.kind == CurrencyUnit:
-        return getExchangeRate(src.name, tgt.name)
-    else:
-        return ConversionRatio[src.name] / ConversionRatio[tgt.name]
-
 proc getQuantityMultiplier*(src: UnitName, tgt: UnitName, isCurrency=false): float =
-    # TODO(vm/values/custom/vquantity) Clean up `getQuantityMultiplier`
-    #  Do we need this?
-    #  labels: helpers, values, cleanup
-
-    # let srcKind = quantityKindForName(src)
-    # let tgtKind = quantityKindForName(tgt)
-    # if srcKind != tgtKind: return CannotConvertQuantity
-
     if isCurrency:
         return getExchangeRate(src, tgt)
     else:
