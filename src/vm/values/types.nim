@@ -151,8 +151,6 @@ type
         arity*  : int8
         case fnKind*: FunctionKind:
             of UserFunction:
-                # TODO(VM/values/types) merge Function `params` and `args` into one field?
-                #  labels: vm, values, enhancement
                 params*     : seq[string]
                 main*       : Value
                 imports*    : Value
@@ -164,7 +162,9 @@ type
                 action*     : BuiltinAction
 
     Value* {.final,acyclic.} = ref object
-        info*   : ValueInfo
+        when not defined(PORTABLE):
+            info*   : ValueInfo
+            
         flags*  : ValueFlags
 
         case kind*: ValueKind:
