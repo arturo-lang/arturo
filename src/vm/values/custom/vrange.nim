@@ -31,6 +31,9 @@ type
 # Overloads
 #=======================================
 
+func `==`*(a, b: VRange): bool {.inline,enforceNoRaises.} =
+    a[] == b[]
+
 func `$`*(v: VRange): string {.inline,enforceNoRaises.} =
     var start: string
     var stop: string
