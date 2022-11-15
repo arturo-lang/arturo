@@ -188,17 +188,16 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
     result["type"] = newType(v.kind)
 
     if not v.info.isNil:
-        var desc = v.info.descr
-        if desc.contains("]"):
-            let parts = desc.split("]")
-            desc = parts[1].strip()
-            let modl = parts[0].strip().strip(chars={'['})
-            let subparts = modl.split(":")
-            result["module"] = newString(subparts[0])
-            when defined(DOCGEN):
-                result["source"] = newString("https://github.com/arturo-lang/arturo/blob/master/src/library/{subparts[0]}.nim#L{subparts[1]}".fmt)
+        if v.info.descr != "":
+            result["description"] = newString(v.info.descr)
 
-        result["description"] = newString(desc)
+        if v.info.module != "":
+            result["module"] = newString(v.info.module)
+
+        when defined(DOCGEN):
+            if v.info.line != 0:
+                result["line"] = newInteger(v.info.line)
+                result["source"] = newString("https://github.com/arturo-lang/arturo/blob/master/src/library/{result['module']}.nim#L{result['line']]}".fmt)
 
         if v.info.kind==Function:
             var args = initOrderedTable[string,Value]()
@@ -264,8 +263,8 @@ proc printInfo*(n: string, v: Value, aliases: SymbolDict, withExamples = false) 
 
     # Print header
     printLine()
-    if (not v.info.isNil) and v.info.descr.contains("]"):
-        let mdl = v.info.descr.split("]")[0].strip().replace("[","").strip().split(":")[0].strip()
+    if (not v.info.isNil) and v.info.module != "":
+        let mdl = v.info.module
         printOneData(n,fmt("{typeStr}{fg(grayColor)}{align(mdl,32)}"),bold(magentaColor),resetColor)
     else:
         printOneData(n,fmt("{typeStr}{fg(grayColor)}{address}"),bold(magentaColor),resetColor)
@@ -282,8 +281,6 @@ proc printInfo*(n: string, v: Value, aliases: SymbolDict, withExamples = false) 
     # print its description/info
     if not v.info.isNil:
         var desc: string = v.info.descr
-        if desc.contains("]"):
-            desc = desc.split("]")[1].strip()
         
         for d in getShortData(desc):
             printOneData("",d)
