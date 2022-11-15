@@ -149,6 +149,7 @@ type
 
     VFunction* = ref object
         arity*  : int8
+        
         case fnKind*: FunctionKind:
             of UserFunction:
                 params*     : seq[string]
@@ -164,7 +165,7 @@ type
     Value* {.final,acyclic.} = ref object
         when not defined(PORTABLE):
             info*   : ValueInfo
-            
+
         flags*  : ValueFlags
 
         case kind*: ValueKind:
