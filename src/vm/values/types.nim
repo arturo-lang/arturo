@@ -144,11 +144,7 @@ type
                 discard
 
     VFunction* = ref object
-        args*   : OrderedTable[string,ValueSpec]
-        attrs*  : OrderedTable[string,(ValueSpec,string)]
         arity*  : int
-        returns*: ValueSpec
-        example*: string
         case fnKind*: FunctionKind:
             of UserFunction:
                 # TODO(VM/values/types) merge Function `params` and `args` into one field?
