@@ -1068,7 +1068,7 @@ proc defineSymbols*() =
                 if y.data.kind==Dictionary:
 
                     if (let descriptionData = y.data.d.getOrDefault("description", nil); not descriptionData.isNil):
-                        ret.info.description = descriptionData.s
+                        ret.info.descr = descriptionData.s
                         ret.info.module = ""
 
                     if y.data.d.hasKey("options") and y.data.d["options"].kind==Dictionary:
