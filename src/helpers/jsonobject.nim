@@ -143,6 +143,11 @@ when defined(WEB):
                 for v in n.a:
                     ret.add(generateJsObject(v))
                 result = toJs(ret)
+            of Range        :
+                var ret: seq[JsObject] = @[]
+                ret.add(toJs(n.rng.start))
+                ret.add(toJs(n.rng.stop))
+                result = toJs(ret)
             of Dictionary   :
                 result = newJsObject()
                 for k,v in pairs(n.d):
