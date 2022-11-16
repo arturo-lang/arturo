@@ -44,6 +44,16 @@ func len*(self: VRange): int64 =
     else:
         return (1 + abs(self.stop - self.start)) div abs(self.step)
 
+func reversed*(self: VRange): VRange =
+    VRange(
+        start: self.stop,
+        stop: self.start,
+        step: self.step,
+        infinite: self.infinite,
+        numeric: self.numeric,
+        forward: not self.forward
+    )
+
 #=======================================
 # Overloads
 #=======================================
