@@ -582,6 +582,8 @@ proc defineSymbols*() =
 
                 if x.kind==Block:
                     execUnscoped(x)
+                elif x.kind==Range:
+                    push(newBlock(toSeq(items(x.rng))))
                 elif x.kind==String:
                     let (_{.inject.}, tp) = getSource(x.s)
 
