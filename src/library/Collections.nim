@@ -199,7 +199,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "check if collection contains given value",
         args        = {
-            "collection": {String, Block, Dictionary},
+            "collection": {String, Block, Range, Dictionary},
             "value"     : {Any}
         },
         attrs       = {
@@ -248,6 +248,13 @@ proc defineSymbols*() =
                     of Block:
                         ensureCleaned(x)
                         push(newLogical(cleanX[at] == y))
+                    of Range:
+                        var res = false
+                        for (i,item) in pairs(x.rng):
+                            if i == at and item == y:
+                                res = true
+                                break
+                        push(newLogical(res))
                     of Dictionary:
                         let values = toSeq(x.d.values)
                         push(newLogical(values[at] == y))
@@ -265,6 +272,13 @@ proc defineSymbols*() =
                     of Block:
                         ensureCleaned(x)
                         push(newLogical(y in cleanX))
+                    of Range:
+                        var res = false
+                        for item in items(x.rng):
+                            if item == y:
+                                res = true
+                                break
+                        push(newLogical(res))
                     of Dictionary:
                         let values = toSeq(x.d.values)
                         push(newLogical(y in values))
