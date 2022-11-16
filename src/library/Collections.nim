@@ -902,7 +902,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get minimum element in given collection",
         args        = {
-            "collection": {Block}
+            "collection": {Block,Range}
         },
         attrs       = {
             "index" : ({Logical}, "retrieve index of minimum element"),
@@ -912,28 +912,35 @@ proc defineSymbols*() =
             print min [4 2 8 5 1 9]       ; 1
         """:
             #=======================================================
-            ensureCleaned(x)
-            if cleanX.len == 0: push(VNULL)
+            let withIndex = hadAttr("index")
+
+            if x.kind==Range:
+                let (minIndex, minElement) = x.rng.min
+                if withIndex: push(newInteger(minIndex))
+                else: push(minElement)
             else:
-                var minElement = cleanX[0]
-                var minIndex = 0
-                if (hadAttr("index")):
-                    var i = 1
-                    while i < cleanX.len:
-                        if (cleanX[i] < minElement):
-                            minElement = cleanX[i]
-                            minIndex = i
-                        inc(i)
-
-                    push(newInteger(minIndex))
+                ensureCleaned(x)
+                if cleanX.len == 0: push(VNULL)
                 else:
-                    var i = 1
-                    while i < cleanX.len:
-                        if (cleanX[i] < minElement):
-                            minElement = cleanX[i]
-                        inc(i)
+                    var minElement = cleanX[0]
+                    var minIndex = 0
+                    if withIndex:
+                        var i = 1
+                        while i < cleanX.len:
+                            if (cleanX[i] < minElement):
+                                minElement = cleanX[i]
+                                minIndex = i
+                            inc(i)
 
-                    push(minElement)
+                        push(newInteger(minIndex))
+                    else:
+                        var i = 1
+                        while i < cleanX.len:
+                            if (cleanX[i] < minElement):
+                                minElement = cleanX[i]
+                            inc(i)
+
+                        push(minElement)
 
     builtin "permutate",
         alias       = unaliased,
