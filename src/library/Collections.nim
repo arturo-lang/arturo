@@ -1262,8 +1262,8 @@ proc defineSymbols*() =
         """:
             #=======================================================
             if x.kind == Range:
-                let items = toSeq(x.rng.items)
-                push(sample(items))
+                let rnd = rand(0..int(x.rng.len-1))
+                push(x.rng[rnd])
             else:
                 ensureCleaned(x)
                 if cleanX.len == 0: push(VNULL)
