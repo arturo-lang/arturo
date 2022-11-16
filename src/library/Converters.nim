@@ -29,6 +29,8 @@ import helpers/datasource
 when not defined(NOASCIIDECODE):
     import helpers/strings
 
+import helpers/ranges
+
 import vm/lib
 import vm/[bytecode, errors, eval, exec, opcodes, parse]
 

@@ -28,6 +28,7 @@ import strutils, sugar, unicode
 
 import helpers/arrays
 import helpers/combinatorics
+import helpers/ranges
 import helpers/strings
 import helpers/unisort
 
