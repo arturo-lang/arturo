@@ -870,7 +870,7 @@ proc defineSymbols*() =
             let withIndex = hadAttr("index")
 
             if x.kind==Range:
-                let (maxIndex, maxElement) = x.rng.max
+                let (maxIndex, maxElement) = max(x.rng)
                 if withIndex: push(newInteger(maxIndex))
                 else: push(maxElement)
             else:
@@ -915,7 +915,7 @@ proc defineSymbols*() =
             let withIndex = hadAttr("index")
 
             if x.kind==Range:
-                let (minIndex, minElement) = x.rng.min
+                let (minIndex, minElement) = min(x.rng)
                 if withIndex: push(newInteger(minIndex))
                 else: push(minElement)
             else:
@@ -1125,7 +1125,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "reverse given collection",
         args        = {
-            "collection": {String, Block, Literal}
+            "collection": {String, Block, Range, Literal}
         },
         attrs       = NoAttrs,
         returns     = {String, Block, Nothing},
@@ -1151,13 +1151,18 @@ proc defineSymbols*() =
                 ensureInPlace()
                 if InPlaced.kind == String:
                     InPlaced.s.reverse()
+                elif InPlaced.kind == Range:
+                    InPlaced.rng = InPlaced.rng.reversed()
                 else:
                     InPlaced.a.reverse()
             else:
                 if x.kind == Block:
                     ensureCleaned(x)
                     push(newBlock(cleanX.reversed))
-                elif x.kind == String: push(newString(x.s.reversed))
+                elif x.kind == Range:
+                    push(newRange(x.rng.reversed()))
+                else:
+                    push(newString(reversed(x.s)))
 
     builtin "rng",
         alias       = unaliased, 
