@@ -1229,9 +1229,13 @@ proc defineSymbols*() =
                     ret = toSeq(runes(y.s)).map((c) => newChar(c))
                 else:
                     let aFormat = popAttr("format")
-                    ensureCleaned(y)
-                    for item in cleanY:
-                        ret.add(convertedValueToType(cleanX[0], item, tp, aFormat))
+                    if y.kind == Block:
+                        ensureCleaned(y)
+                        for item in cleanY:
+                            ret.add(convertedValueToType(cleanX[0], item, tp, aFormat))
+                    else:
+                        for item in y.rng:
+                            ret.add(convertedValueToType(cleanX[0], item, tp, aFormat))
 
                 push newBlock(ret)
         
