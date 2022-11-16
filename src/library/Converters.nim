@@ -515,8 +515,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                Any,
                Path,
                PathLabel,
-               Binary,
-               Range: discard
+               Binary: discard
 
 #=======================================
 # Methods
@@ -1234,7 +1233,7 @@ proc defineSymbols*() =
                         for item in cleanY:
                             ret.add(convertedValueToType(cleanX[0], item, tp, aFormat))
                     else:
-                        for item in y.rng:
+                        for item in items(y.rng):
                             ret.add(convertedValueToType(cleanX[0], item, tp, aFormat))
 
                 push newBlock(ret)
