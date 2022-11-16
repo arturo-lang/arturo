@@ -1325,7 +1325,7 @@ proc defineSymbols*() =
             "collection": {String, Block, Range, Dictionary, Object}
         },
         attrs       = NoAttrs,
-        returns     = {Integer},
+        returns     = {Integer, Floating},
         example     = """
             arr: ["one" "two" "three"]
             print size arr                ; 3
@@ -1346,7 +1346,9 @@ proc defineSymbols*() =
             elif x.kind == Object:
                 push(newInteger(x.o.len))
             elif x.kind == Range:
-                push(newInteger(x.rng.len))
+                let sz = x.rng.len
+                if sz == InfiniteRange: push(newFloating(Inf))
+                else: push(newInteger(sz))
             else:
                 ensureCleaned(x)
                 push(newInteger(cleanX.len))
