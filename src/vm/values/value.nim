@@ -604,6 +604,9 @@ proc newRange*(start: int, stop: int, step: int, infinite: bool, numeric: bool, 
         )
     )
 
+proc newRange*(rng: VRange): Value {.inline, enforceNoRaises.} =
+    Value(kind: Range, rng: rng)
+
 func newNewline*(l: int): Value {.inline, enforceNoRaises.} =
     ## create Newline value with given line number
     Value(kind: Newline, line: l)
