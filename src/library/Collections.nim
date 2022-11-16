@@ -441,7 +441,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "return the first item of the given collection",
         args        = {
-            "collection": {String, Block}
+            "collection": {String, Block, Range}
         },
         attrs       = {
             "n"     : ({Integer}, "get first *n* items")
@@ -458,6 +458,14 @@ proc defineSymbols*() =
                 if x.kind == String:
                     if x.s.len == 0: push(newString(""))
                     else: push(newString(x.s[0..aN.i-1]))
+                elif x.kind == Range:
+                    var res: ValueArray = newSeq[Value](aN.i)
+                    var i = 0
+                    for item in items(x.rng):
+                        res[i] = item
+                        i += 1
+                        if i == aN.i: break
+                    push(newBlock(res))
                 else:
                     ensureCleaned(x)
                     if cleanX.len == 0: push(newBlock())
@@ -466,6 +474,10 @@ proc defineSymbols*() =
                 if x.kind == String:
                     if x.s.len == 0: push(VNULL)
                     else: push(newChar(x.s.runeAt(0)))
+                elif x.kind == Range:
+                    for item in items(x.rng):
+                        push(item)
+                        break
                 else:
                     ensureCleaned(x)
                     if cleanX.len == 0: push(VNULL)
