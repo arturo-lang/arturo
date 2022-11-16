@@ -1155,6 +1155,9 @@ proc defineSymbols*() =
                 step = aStep.i
                 if step < 0:
                     step = -step
+                elif step == 0:
+                    step = 1
+                    # preferrably show error message?
 
             let forward = limX < limY
 
