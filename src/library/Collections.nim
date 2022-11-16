@@ -1785,7 +1785,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "keep first <number> of elements from given collection and return the remaining ones",
         args        = {
-            "collection": {String, Block, Literal},
+            "collection": {String, Block, Range, Literal},
             "number"    : {Integer}
         },
         attrs       = NoAttrs,
@@ -1811,6 +1811,14 @@ proc defineSymbols*() =
                         if upperLimit > InPlaced.a.len - 1:
                             upperLimit = InPlaced.a.len-1
                         InPlaced.a = InPlaced.a[0..upperLimit]
+                elif InPlaced.kind == Range:
+                    var res: ValueArray = newSeq[Value](upperLimit+1)
+                    var i = 0
+                    for item in items(InPlaced.rng):
+                        res[i] = item
+                        i += 1
+                        if i == upperLimit+1: break
+                    InPlaced = newBlock(res)
             else:
                 if x.kind == String:
                     if x.s.len == 0: push(newString(""))
@@ -1825,6 +1833,14 @@ proc defineSymbols*() =
                         if upperLimit > cleanX.len - 1:
                             upperLimit = cleanX.len-1
                         push(newBlock(cleanX[0..upperLimit]))
+                elif x.kind == Range:
+                    var res: ValueArray = newSeq[Value](upperLimit+1)
+                    var i = 0
+                    for item in items(x.rng):
+                        res[i] = item
+                        i += 1
+                        if i == upperLimit+1: break
+                    push(newBlock(res))
 
     builtin "unique",
         alias       = unaliased,
