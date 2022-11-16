@@ -546,8 +546,17 @@ proc defineSymbols*() =
             #=======================================================
             case x.kind:
                 of Block:
-                    ensureCleaned(x)
-                    push(GetArrayIndex(cleanX, y.i))
+                    if likely(y.kind==Integer):
+                        ensureCleaned(x)
+                        push(GetArrayIndex(cleanX, y.i))
+                    else:
+                        let rLen = y.rng.len
+                        var res: ValueArray = newSeq[Value](rLen)
+                        var i = 0
+                        for item in items(y.rng):
+                            res[i] = GetArrayIndex(x.a, item.i)
+                            i += 1
+                        push(newBlock(res))
                 of Binary:
                     push(newInteger(int(x.n[y.i])))
                 of Bytecode:
