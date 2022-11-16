@@ -466,9 +466,7 @@ proc defineSymbols*() =
                     if x.s.len == 0: push(VNULL)
                     else: push(newChar(x.s.runeAt(0)))
                 elif x.kind == Range:
-                    for item in items(x.rng):
-                        push(item)
-                        break
+                    push(x.rng[0])
                 else:
                     ensureCleaned(x)
                     if cleanX.len == 0: push(VNULL)
