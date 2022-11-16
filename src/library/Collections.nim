@@ -522,8 +522,7 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "get collection's item by given index",
         args        = {
-            "collection": {String, Block, Dictionary, Object, Date, Binary,
-                    Bytecode},
+            "collection": {String, Block, Dictionary, Object, Date, Binary, Bytecode},
             "index"     : {Any}
         },
         attrs       = NoAttrs,
