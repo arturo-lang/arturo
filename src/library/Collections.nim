@@ -582,7 +582,7 @@ proc defineSymbols*() =
         description = "check if value exists in given collection",
         args        = {
             "value"     : {Any},
-            "collection": {String, Block, Dictionary}
+            "collection": {String, Block, Range, Dictionary}
         },
         attrs       = {
             "at"    : ({Integer}, "check at given location within collection")
@@ -630,6 +630,13 @@ proc defineSymbols*() =
                     of Block:
                         ensureCleaned(y)
                         push(newLogical(cleanY[at] == x))
+                    of Range:
+                        var res = false
+                        for (i,item) in pairs(y.rng):
+                            if i == at and item == x:
+                                res = true
+                                break
+                        push(newLogical(res))
                     of Dictionary:
                         let values = toSeq(y.d.values)
                         push(newLogical(values[at] == x))
@@ -646,6 +653,13 @@ proc defineSymbols*() =
                             push(newLogical(x.s in y.s))
                     of Block:
                         push(newLogical(x in y.a))
+                    of Range:
+                        var res = false
+                        for item in items(y.rng):
+                            if item == x:
+                                res = true
+                                break
+                        push(newLogical(res))
                     of Dictionary:
                         let values = toSeq(y.d.values)
                         push(newLogical(x in values))
