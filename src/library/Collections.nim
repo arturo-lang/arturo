@@ -816,7 +816,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "return the last item of the given collection",
         args        = {
-            "collection": {String, Block}
+            "collection": {String, Block, Range}
         },
         attrs       = {
             "n"     : ({Integer}, "get last *n* items")
@@ -833,6 +833,9 @@ proc defineSymbols*() =
                 if x.kind == String:
                     if x.s.len == 0: push(newString(""))
                     else: push(newString(x.s[x.s.len-aN.i..^1]))
+                elif x.kind == Range:
+                    let items = toSeq(x.rng.items)
+                    push(newBlock(items[x.rng.len-aN.i..^1]))
                 else:
                     ensureCleaned(x)
                     if cleanX.len == 0: push(newBlock())
@@ -841,6 +844,9 @@ proc defineSymbols*() =
                 if x.kind == String:
                     if x.s.len == 0: push(VNULL)
                     else: push(newChar(toRunes(x.s)[^1]))
+                elif x.kind == Range:
+                    let items = toSeq(x.rng.items)
+                    push(items[x.rng.len-1])
                 else:
                     ensureCleaned(x)
                     if cleanX.len == 0: push(VNULL)
