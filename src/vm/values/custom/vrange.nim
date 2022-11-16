@@ -42,7 +42,7 @@ func len*(self: VRange): int64 =
     if self.infinite:
         return InfiniteRange
     else:
-        return abs(self.stop - self.start)+1 div abs(self.step)
+        return (1 + abs(self.stop - self.start)) div abs(self.step)
 
 #=======================================
 # Overloads
