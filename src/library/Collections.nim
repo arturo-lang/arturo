@@ -1880,7 +1880,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get list of values for given collection",
         args        = {
-            "dictionary": {Block, Dictionary, Object}
+            "dictionary": {Block, Range, Dictionary, Object}
         },
         attrs       = NoAttrs,
         returns     = {Block},
@@ -1896,6 +1896,9 @@ proc defineSymbols*() =
             #=======================================================
             if x.kind == Block:
                 push x
+            elif x.kind == Range:
+                let items = toSeq(x.rng.items)
+                push(newBlock(items))
             elif x.kind == Dictionary:
                 let s = toSeq(x.d.values)
                 push(newBlock(s))
