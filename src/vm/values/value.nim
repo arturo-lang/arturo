@@ -711,7 +711,7 @@ iterator items*(rng: VRange): Value =
 
     var j = rng.start
     var i = 0
-    while i < rLen-1:
+    while i < rLen:
         yield 
             if numeric: newInteger(j)
             else: newChar(char(j))
