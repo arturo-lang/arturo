@@ -881,6 +881,10 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                         addConst(newBlock(ab), opPush)
                     addTerminalValue(inBlock=false):
                         addConst(newBlock(sb), opPush) 
+
+            of Range:
+                addTerminalValue(inBlock=false):
+                    addConst(node, opPush)      
             
             of Null:    addToCommand(opConstN)
             of Logical: 
