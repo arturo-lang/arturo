@@ -1144,7 +1144,7 @@ proc defineSymbols*() =
 
             if y.kind == Integer: limY = y.i
             elif y.kind == Floating:
-                if y.f == Inf: infinite = true
+                if y.f == Inf or y.f == NegInf: infinite = true
                 else:
                     limY = int(y.f)
             else:
