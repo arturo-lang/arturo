@@ -250,12 +250,7 @@ proc defineSymbols*() =
                         ensureCleaned(x)
                         push(newLogical(cleanX[at] == y))
                     of Range:
-                        var res = false
-                        for (i,item) in pairs(x.rng):
-                            if i == at and item == y:
-                                res = true
-                                break
-                        push(newLogical(res))
+                        push(newLogical(x.rng[at] == y))
                     of Dictionary:
                         let values = toSeq(x.d.values)
                         push(newLogical(values[at] == y))
@@ -274,12 +269,7 @@ proc defineSymbols*() =
                         ensureCleaned(x)
                         push(newLogical(y in cleanX))
                     of Range:
-                        var res = false
-                        for item in items(x.rng):
-                            if item == y:
-                                res = true
-                                break
-                        push(newLogical(res))
+                        push(newLogical(y in x.rng))
                     of Dictionary:
                         let values = toSeq(x.d.values)
                         push(newLogical(y in values))
@@ -643,12 +633,7 @@ proc defineSymbols*() =
                         ensureCleaned(y)
                         push(newLogical(cleanY[at] == x))
                     of Range:
-                        var res = false
-                        for (i,item) in pairs(y.rng):
-                            if i == at and item == x:
-                                res = true
-                                break
-                        push(newLogical(res))
+                        push(newLogical(y.rng[at] == x))
                     of Dictionary:
                         let values = toSeq(y.d.values)
                         push(newLogical(values[at] == x))
@@ -666,12 +651,7 @@ proc defineSymbols*() =
                     of Block:
                         push(newLogical(x in y.a))
                     of Range:
-                        var res = false
-                        for item in items(y.rng):
-                            if item == x:
-                                res = true
-                                break
-                        push(newLogical(res))
+                        push(newLogical(x in y.rng))
                     of Dictionary:
                         let values = toSeq(y.d.values)
                         push(newLogical(x in values))
