@@ -55,3 +55,12 @@ iterator pairs*(rng: VRange): (int,Value) =
 #=======================================
 # Methods
 #=======================================
+
+func `[]`*(rng: VRange, idx: int): Value =
+    for (i, item) in pairs(rng):
+        if i == idx: return item
+
+    raise newException(ValueError, "Index out of range")
+
+func contains*(rng: VRange, v: Value): bool {.inline,enforceNoRaises.} =
+    rng.find(v) >= 0
