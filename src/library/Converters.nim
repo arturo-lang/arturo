@@ -406,6 +406,12 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                     else:
                         discard
 
+            of Range:
+                if tp == Block:
+                    return newBlock(toSeq(y.rng.items))
+                else:
+                    throwCannotConvert()
+
             of Dictionary:
                 case tp:
                     of Object:
