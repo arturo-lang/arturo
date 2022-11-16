@@ -701,6 +701,23 @@ proc copyValue*(v: Value): Value {.inline.} =
 # Helpers
 #=======================================
 
+iterator items*(rng: VRange): Value =
+    let rLen = rng.len
+    let numeric = rng.numeric
+
+    let step = 
+        if rng.forward: rng.step
+        else: -1 * rng.step
+
+    var j = rng.start
+    var i = 0
+    while i < rLen-1:
+        yield 
+            if numeric: newInteger(j)
+            else: newChar(char(j))
+        j += step
+        i += 1
+
 func asFloat*(v: Value): float {.enforceNoRaises.} = 
     ## get numeric value forcefully as a float
     ## 
