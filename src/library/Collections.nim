@@ -857,7 +857,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get maximum element in given collection",
         args        = {
-            "collection": {Block}
+            "collection": {Block,Range}
         },
         attrs       = {
             "index" : ({Logical}, "retrieve index of maximum element"),
@@ -867,28 +867,35 @@ proc defineSymbols*() =
             print max [4 2 8 5 1 9]       ; 9
         """:
             #=======================================================
-            ensureCleaned(x)
-            if cleanX.len == 0: push(VNULL)
+            let withIndex = hadAttr("index")
+
+            if x.kind==Range:
+                let (maxIndex, maxElement) = x.rng.max
+                if withIndex: push(newInteger(maxIndex))
+                else: push(maxElement)
             else:
-                var maxElement = cleanX[0]
-                if (hadAttr("index")):
-                    var maxIndex = 0
-                    var i = 1
-                    while i < cleanX.len:
-                        if (cleanX[i] > maxElement):
-                            maxElement = cleanX[i]
-                            maxIndex = i
-                        inc(i)
-
-                    push(newInteger(maxIndex))
+                ensureCleaned(x)
+                if cleanX.len == 0: push(VNULL)
                 else:
-                    var i = 1
-                    while i < cleanX.len:
-                        if (cleanX[i] > maxElement):
-                            maxElement = cleanX[i]
-                        inc(i)
+                    var maxElement = cleanX[0]
+                    if withIndex:
+                        var maxIndex = 0
+                        var i = 1
+                        while i < cleanX.len:
+                            if (cleanX[i] > maxElement):
+                                maxElement = cleanX[i]
+                                maxIndex = i
+                            inc(i)
 
-                    push(maxElement)
+                        push(newInteger(maxIndex))
+                    else:
+                        var i = 1
+                        while i < cleanX.len:
+                            if (cleanX[i] > maxElement):
+                                maxElement = cleanX[i]
+                            inc(i)
+
+                        push(maxElement)
 
     builtin "min",
         alias       = unaliased,
