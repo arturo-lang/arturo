@@ -1251,7 +1251,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get a random element from given collection",
         args        = {
-            "collection": {Block}
+            "collection": {Block,Range}
         },
         attrs       = NoAttrs,
         returns     = {Any, Null},
@@ -1261,9 +1261,13 @@ proc defineSymbols*() =
             ; apple
         """:
             #=======================================================
-            ensureCleaned(x)
-            if cleanX.len == 0: push(VNULL)
-            else: push(sample(cleanX))
+            if x.kind == Range:
+                let items = toSeq(x.rng.items)
+                push(sample(items))
+            else:
+                ensureCleaned(x)
+                if cleanX.len == 0: push(VNULL)
+                else: push(sample(cleanX))
 
     builtin "set",
         alias       = unaliased,
