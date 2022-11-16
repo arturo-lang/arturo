@@ -663,7 +663,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "return first index of value in given collection",
         args        = {
-            "collection": {String, Block, Dictionary},
+            "collection": {String, Block, Range, Dictionary},
             "value"     : {Any}
         },
         attrs       = NoAttrs,
@@ -686,6 +686,10 @@ proc defineSymbols*() =
                 of Block:
                     ensureCleaned(x)
                     let indx = cleanX.find(y)
+                    if indx != -1: push(newInteger(indx))
+                    else: push(VNULL)
+                of Range:
+                    let indx = x.rng.find(y)
                     if indx != -1: push(newInteger(indx))
                     else: push(VNULL)
                 of Dictionary:
