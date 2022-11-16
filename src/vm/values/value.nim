@@ -675,6 +675,8 @@ proc copyValue*(v: Value): Value {.inline.} =
                 result = Value(kind: Block, a: newValues)
             else:
                 result = newBlock(v.a.map((vv)=>copyValue(vv)), copyValue(v.data))
+        of Range:
+            result = newRange(v.rng.start, v.rng.stop, v.rng.step, v.rng.infinite, v.rng.numeric, v.rng.forward)
 
         of Dictionary:  result = newDictionary(v.d)
         of Object:      result = newObject(v.o, v.proto)
