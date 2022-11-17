@@ -511,7 +511,7 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "get collection's item by given index",
         args        = {
-            "collection": {String, Block, Dictionary, Object, Date, Binary, Bytecode},
+            "collection": {String, Block, Range, Dictionary, Object, Date, Binary, Bytecode},
             "index"     : {Any}
         },
         attrs       = NoAttrs,
@@ -555,6 +555,17 @@ proc defineSymbols*() =
                         var i = 0
                         for item in items(y.rng):
                             res[i] = GetArrayIndex(x.a, item.i)
+                            i += 1
+                        push(newBlock(res))
+                of Range:
+                    if likely(y.kind==Integer):
+                        push(x.rng[y.i])
+                    else:
+                        let rLen = y.rng.len
+                        var res: ValueArray = newSeq[Value](rLen)
+                        var i = 0
+                        for item in items(y.rng):
+                            res[i] = x.rng[item.i]
                             i += 1
                         push(newBlock(res))
                 of Binary:
@@ -1173,8 +1184,8 @@ proc defineSymbols*() =
                 else:
                     push(newString(reversed(x.s)))
 
-    builtin "rng",
-        alias       = unaliased, 
+    builtin "range",
+        alias       = ellipsis, 
         rule        = InfixPrecedence,
         description = "get list of values in given range (inclusive)",
         args        = {
@@ -1198,9 +1209,14 @@ proc defineSymbols*() =
                 numeric = false
                 limX = ord(x.c)
 
+            var forward: bool
+
             if y.kind == Integer: limY = y.i
             elif y.kind == Floating:
-                if y.f == Inf or y.f == NegInf: infinite = true
+                if y.f == Inf or y.f == NegInf: 
+                    infinite = true
+                    if y.f == Inf: forward = true
+                    else: forward = false
                 else:
                     limY = int(y.f)
             else:
@@ -1215,7 +1231,8 @@ proc defineSymbols*() =
                     step = 1
                     # preferrably show error message?
 
-            let forward = limX < limY
+            if not infinite:
+                forward = limX < limY
 
             push newRange(limX, limY, step, infinite, numeric, forward)
 
