@@ -32,17 +32,17 @@ type
 #=======================================
 
 const
-    InfiniteRange* = 9999888776543210
+    InfiniteRange* = high(int) - 1
 
 #=======================================
 # Methods
 #=======================================
 
-func len*(self: VRange): int64 =
+func len*(self: VRange): int =
     if self.infinite:
         return InfiniteRange
     else:
-        return (1 + abs(self.stop - self.start)) div abs(self.step)
+        return (abs(self.stop - self.start) div abs(self.step)) + 1
 
 func reversed*(self: VRange): VRange =
     VRange(
