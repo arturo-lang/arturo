@@ -12,6 +12,7 @@
 
 import vm/values/custom/vrange
 
+import vm/values/comparison
 import vm/values/value
 
 #=======================================
@@ -34,6 +35,24 @@ iterator items*(rng: VRange): Value =
             else: newChar(char(j))
         j += step
         i += 1
+
+proc nextItem*(rng: VRange): iterator(): Value =
+    return iterator(): Value =
+        let rLen = rng.len
+        let numeric = rng.numeric
+
+        let step = 
+            if rng.forward: rng.step
+            else: -1 * rng.step
+
+        var j = rng.start
+        var i = 0
+        while i < rLen:
+            yield 
+                if numeric: newInteger(j)
+                else: newChar(char(j))
+            j += step
+            i += 1
 
 iterator pairs*(rng: VRange): (int,Value) =
     let rLen = rng.len
@@ -62,7 +81,7 @@ func `[]`*(rng: VRange, idx: int): Value =
 
     raise newException(ValueError, "Index out of range")
 
-func contains*(rng: VRange, v: Value): bool {.inline,enforceNoRaises.} =
+proc contains*(rng: VRange, v: Value): bool {.inline,enforceNoRaises.} =
     rng.find(v) >= 0
 
 func min*(rng: VRange): (int,Value) {.inline,enforceNoRaises.} =
