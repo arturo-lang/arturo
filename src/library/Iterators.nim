@@ -22,9 +22,12 @@
 import algorithm, sequtils, sugar, unicode
 
 import helpers/dictionaries
+import helpers/ranges
 
 import vm/lib
 import vm/[errors, eval, exec]
+
+import vm/values/custom/vrange
 
 #=======================================
 # Helpers
@@ -56,15 +59,34 @@ func iterableItemsFromParam(prm: Value): ValueArray {.inline,enforceNoRaises.} =
         cleanedBlockValuesCopy(prm)
 
 template iterateThrough(
+    withRange: bool,
     idx: Value,
     params: Value,
-    collection: ValueArray,
+    withLiteral: bool,
     forever: bool,
     rolling: bool,
     rollingRight: bool,
     capturing: bool,
-    performAction: untyped
+    prepareAction: untyped,
+    performAction: untyped,
+    finalAction: untyped
 ): untyped =
+    when not withRange:
+        var collection{.inject.}: ValueArray = 
+            if not withLiteral:
+                iterableItemsFromParam(x)
+            else:
+                iterableItemsFromLiteralParam(x)
+    else:
+        var collection{.inject.}: VRange =
+            if not withLiteral:
+                x.rng
+            else:
+                Syms[x.s].rng
+        let nextRangeItem = nextItem(collection)
+
+    prepareAction
+
     let collectionLen = collection.len
 
     if collectionLen > 0:
@@ -97,7 +119,12 @@ template iterateThrough(
             while indx+argsLen<=collectionLen:
                 handleBranching:
                     when capturing:
-                        capturedItems = collection[indx..indx+argsLen-1]
+                        when withRange:
+                            capturedItems = collect:
+                                for i in indx..indx+argsLen-1:
+                                    nextRangeItem()
+                        else:
+                            capturedItems = collection[indx..indx+argsLen-1]
 
                     var argi = 0
 
@@ -111,11 +138,20 @@ template iterateThrough(
                                 Syms[args[argi].s] = res
                                 inc argi
 
-                        var j = indx
-                        while j < indx+argsLen:
-                            Syms[args[argi].s] = collection[j]
-                            inc argi
-                            inc j
+                        when capturing and withRange:
+                            for capt in capturedItems:
+                                Syms[args[argi].s] = capt
+                                inc argi
+                        elif withRange:
+                            for i in indx..indx+argsLen-1:
+                                Syms[args[argi].s] = nextRangeItem()
+                                inc argi
+                        else:
+                            var j = indx
+                            while j < indx+argsLen:
+                                Syms[args[argi].s] = collection[j]
+                                inc argi
+                                inc j
 
                         when rolling:
                             if rollingRight:
@@ -133,6 +169,50 @@ template iterateThrough(
 
         finalizeLeakless()
 
+        finalAction
+
+template startIterateThrough(
+    idx: Value,
+    params: Value,
+    withLiteral: bool,
+    forever: bool,
+    rolling: bool,
+    rollingRight: bool,
+    capturing: bool,
+    prepareAction: untyped,
+    performAction: untyped,
+    finalAction: untyped
+): untyped =
+    let isRange{.inject.}= x.kind==Range or (x.kind==Literal and FetchSym(x.s).kind==Range)
+    if isRange:
+        iterateThrough(
+            true,
+            idx,
+            params,
+            withLiteral,
+            forever,
+            rolling,
+            rollingRight,
+            capturing,
+            prepareAction,
+            performAction,
+            finalAction
+        )
+    else:
+        iterateThrough(
+            false,
+            idx,
+            params,
+            withLiteral,
+            forever,
+            rolling,
+            rollingRight,
+            capturing,
+            prepareAction,
+            performAction,
+            finalAction
+        )
+
 #=======================================
 # Methods
 #=======================================
@@ -148,7 +228,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "chunk together consecutive items in collection that abide by given predicate",
         args        = {
-            "collection"    : {Integer,String,Block,Inline,Dictionary,Object,Literal},
+            "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
             "condition"     : {Block,Bytecode}
         },
@@ -176,17 +256,15 @@ proc defineSymbols*() =
             let showValue = hadAttr("value")
             let doForever = false
 
-            var items: ValueArray
-
             let withLiteral = x.kind==Literal
-            if withLiteral: items = iterableItemsFromLiteralParam(x)
-            else: items = iterableItemsFromParam(x)
 
             var res: ValueArray = @[]
             var state: Value = VNULL # important
             var currentSet: ValueArray = @[]
 
-            iterateThrough(withIndex, y, items, doForever, false, false, capturing=true):
+            startIterateThrough(withIndex, y, withLiteral, doForever, false, false, capturing=true):
+                discard
+            do:
                 let popped = move stack.pop()
                 if popped != state:
                     if len(currentSet)>0:
@@ -198,6 +276,8 @@ proc defineSymbols*() =
                     state = popped
 
                 currentSet.add(capturedItems)
+            do:
+                discard
 
             if len(currentSet)>0:
                 if showValue:
@@ -213,7 +293,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "group together items in collection that abide by given predicate",
         args        = {
-            "collection"    : {Integer,String,Block,Inline,Dictionary,Object,Literal},
+            "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
             "condition"     : {Block,Bytecode}
         },
@@ -250,20 +330,20 @@ proc defineSymbols*() =
             let showValue = hadAttr("value")
             let doForever = false
 
-            var items: ValueArray
-
             let withLiteral = x.kind==Literal
-            if withLiteral: items = iterableItemsFromLiteralParam(x)
-            else: items = iterableItemsFromParam(x)
 
             var res: ValueArray = @[]
             var sets: OrderedTable[Value,ValueArray] = initOrderedTable[Value,ValueArray]()
 
-            iterateThrough(withIndex, y, items, doForever, false, false, capturing=true):
+            startIterateThrough(withIndex, y, withLiteral, doForever, false, false, capturing=true):
+                discard
+            do:
                 let popped = move stack.pop()
 
                 discard sets.hasKeyOrPut(popped, @[])
                 sets[popped].add(capturedItems)
+            do:
+                discard
 
             if showValue:
                 for k,v in sets.pairs:
@@ -280,7 +360,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "check if every item in collection satisfies given condition",
         args        = {
-            "collection"    : {Integer,String,Block,Inline,Dictionary,Object},
+            "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object},
             "params"        : {Literal,Block,Null},
             "condition"     : {Block,Bytecode}
         },
@@ -310,17 +390,18 @@ proc defineSymbols*() =
             let withIndex = popAttr("with")
             let doForever = false
 
-            var items: ValueArray
-            items = iterableItemsFromParam(x)
-
             var all = true
 
-            iterateThrough(withIndex, y, items, doForever, false, false, capturing=false):
+            startIterateThrough(withIndex, y, false, doForever, false, false, capturing=false):
+                discard
+            do:
                 if isFalse(move stack.pop()):
                     push(newLogical(false))
                     all = false
                     keepGoing = false
                     break
+            do:
+                discard
 
             if all:
                 push(newLogical(true))
@@ -330,7 +411,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get collection's items by filtering those that do not fulfil given condition",
         args        = {
-            "collection"    : {Integer,String,Block,Inline,Dictionary,Object,Literal},
+            "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
             "condition"     : {Block,Bytecode}
         },
@@ -387,21 +468,29 @@ proc defineSymbols*() =
 
             let doForever = false
 
-            var items: ValueArray
-
             let withLiteral = x.kind==Literal
-            if withLiteral: items = iterableItemsFromLiteralParam(x)
-            else: items = iterableItemsFromParam(x)
+
+            # var items: ValueArray
+
+            
+            # if withLiteral: items = iterableItemsFromLiteralParam(x)
+            # else: items = iterableItemsFromParam(x)
 
             var res: ValueArray = @[]
             var stoppedAt = -1
 
-            if onlyLast:
-                items.reverse()
+            # fix needed!!!
+            
 
             var filteredItems = 0
 
-            iterateThrough(withIndex, y, items, doForever, false, false, capturing=true):
+            startIterateThrough(withIndex, y, withLiteral, doForever, false, false, capturing=true):
+                if onlyLast:
+                    when collection is VRange:
+                        collection = collection.reversed()
+                    else:
+                        collection.reverse()
+            do:
                 let popped = move stack.pop()
                 if isFalse(popped):
                     res.add(capturedItems)
@@ -412,9 +501,15 @@ proc defineSymbols*() =
                             stoppedAt = indx+1
                             keepGoing = false
                             break
+            do:
+                if (onlyFirst or onlyLast) and stoppedAt < collection.len:
+                    when collection is VRange:
+                        discard
+                        # for i in stoppedAt..collection.len-1:
+                        #     res.add(VRange(collection)[i])
+                    else:
+                        res.add(collection[stoppedAt..collection.len-1])
 
-            if (onlyFirst or onlyLast) and stoppedAt < items.len:
-                res.add(items[stoppedAt..items.len-1])
 
             if onlyLast:
                 res.reverse()
@@ -427,7 +522,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "left-fold given collection returning accumulator",
         args        = {
-            "collection"    : {Integer,String,Block,Inline,Dictionary,Object},
+            "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object},
             "params"        : {Literal,Block,Null},
             "action"        : {Block,Bytecode}
         },
@@ -486,28 +581,40 @@ proc defineSymbols*() =
             let doRightFold = hadAttr("right")
             let doForever = false
 
-            var items: ValueArray
+            #var items: ValueArray
 
             let withLiteral = x.kind==Literal
-            if withLiteral: items = iterableItemsFromLiteralParam(x)
-            else: items = iterableItemsFromParam(x)
+            # if withLiteral: items = iterableItemsFromLiteralParam(x)
+            # else: items = iterableItemsFromParam(x)
 
-            if doRightFold:
-                items.reverse
+            # if doRightFold:
+            #     items.reverse
 
             var seed = I0
-            if items.len > 0:
-                if items[0].kind == String:     seed = newString("")
-                elif items[0].kind == Floating: seed = newFloating(0.0)
-                elif items[0].kind == Block:    seed = newBlock()
+            
 
-            if checkAttr("seed"):
-                seed = aSeed
+            var res: Value# = seed
 
-            var res: Value = seed
+            startIterateThrough(withIndex, y, withLiteral, doForever, true, doRightFold, capturing=false):
+                if doRightFold:
+                    when collection is VRange:
+                        collection = collection.reversed()
+                    else:
+                        collection.reverse()
+                if collection.len > 0:
+                    if collection[0].kind == String:     seed = newString("")
+                    elif collection[0].kind == Floating: seed = newFloating(0.0)
+                    elif collection[0].kind == Block:    seed = newBlock()
+                #fix needed!
 
-            iterateThrough(withIndex, y, items, doForever, true, doRightFold, capturing=false):
+                if checkAttr("seed"):
+                    seed = aSeed
+
+                res = seed
+            do:
                 res = move stack.pop()
+            do:
+                discard
 
             if withLiteral: RawInPlaced = res
             else: push(res)
@@ -517,7 +624,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "group items in collection by block result and return as dictionary",
         args        = {
-            "collection"    : {Integer,String,Block,Inline,Dictionary,Object,Literal},
+            "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
             "condition"     : {Block,Bytecode}
         },
@@ -544,19 +651,19 @@ proc defineSymbols*() =
             let withIndex = popAttr("with")
             let doForever = false
 
-            var items: ValueArray
-
             let withLiteral = x.kind==Literal
-            if withLiteral: items = iterableItemsFromLiteralParam(x)
-            else: items = iterableItemsFromParam(x)
 
             var res: ValueDict = initOrderedTable[string,Value]()
 
-            iterateThrough(withIndex, y, items, doForever, false, false, capturing=true):
+            startIterateThrough(withIndex, y, withLiteral, doForever, false, false, capturing=true):
+                discard
+            do:
                 let popped = $(move stack.pop())
 
                 discard res.hasKeyOrPut(popped, newBlock())
                 res[popped].a.add(capturedItems)
+            do:
+                discard
 
             if withLiteral: RawInPlaced = newDictionary(move res)
             else: push newDictionary(res)
@@ -566,7 +673,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "loop through collection, using given iterator and block",
         args        = {
-            "collection"    : {Integer,String,Block,Inline,Dictionary,Object},
+            "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object},
             "params"        : {Literal,Block,Null},
             "action"        : {Block,Bytecode}
         },
@@ -623,10 +730,11 @@ proc defineSymbols*() =
             let withIndex = popAttr("with")
             let doForever = hadAttr("forever")
 
-            var items: ValueArray
-            items = iterableItemsFromParam(x)
-
-            iterateThrough(withIndex, y, items, doForever, false, false, capturing=false):
+            startIterateThrough(withIndex, y, false, doForever, false, false, capturing=false):
+                discard
+            do:
+                discard
+            do:
                 discard
 
     builtin "map",
@@ -634,7 +742,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "map collection's items by applying given action",
         args        = {
-            "collection"    : {Integer,String,Block,Inline,Dictionary,Object,Literal},
+            "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
             "condition"     : {Block,Bytecode}
         },
@@ -672,16 +780,16 @@ proc defineSymbols*() =
             let withIndex = popAttr("with")
             let doForever = false
 
-            var items: ValueArray
-
             let withLiteral = x.kind==Literal
-            if withLiteral: items = iterableItemsFromLiteralParam(x)
-            else: items = iterableItemsFromParam(x)
 
             var res: ValueArray = @[]
 
-            iterateThrough(withIndex, y, items, doForever, false, false, capturing=false):
+            startIterateThrough(withIndex, y, withLiteral, doForever, false, false, capturing=false):
+                discard
+            do:
                 res.add(move stack.pop())
+            do:
+                discard
 
             if withLiteral: RawInPlaced = newBlock(move res)
             else: push newBlock(res)
@@ -691,7 +799,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get collection's items that fulfil given condition",
         args        = {
-            "collection"    : {Integer,String,Block,Inline,Dictionary,Object,Literal},
+            "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
             "condition"     : {Block,Bytecode}
         },
@@ -747,16 +855,13 @@ proc defineSymbols*() =
                 else: elemLimit = aLast.i
 
             let doForever = false
-
-            var items: ValueArray
-
             let withLiteral = x.kind==Literal
-            if withLiteral: items = iterableItemsFromLiteralParam(x)
-            else: items = iterableItemsFromParam(x)
 
             var res: ValueArray = @[]
 
-            iterateThrough(withIndex, y, items, doForever, false, false, capturing=true):
+            startIterateThrough(withIndex, y, withLiteral, doForever, false, false, capturing=true):
+                discard
+            do:
                 if isTrue(move stack.pop()):
                     res.add(capturedItems)
 
@@ -764,6 +869,8 @@ proc defineSymbols*() =
                         if elemLimit == res.len:
                             keepGoing = false
                             break
+            do:
+                discard
 
             if onlyLast:
                 let rlen = res.len
@@ -780,7 +887,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "check if any of collection's items satisfy given condition",
         args        = {
-            "collection"    : {Integer,String,Block,Inline,Dictionary,Object},
+            "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object},
             "params"        : {Literal,Block,Null},
             "condition"     : {Block,Bytecode}
         },
@@ -813,17 +920,18 @@ proc defineSymbols*() =
             let withIndex = popAttr("with")
             let doForever = false
 
-            var items: ValueArray
-            items = iterableItemsFromParam(x)
-
             var one = false
 
-            iterateThrough(withIndex, y, items, doForever, false, false, capturing=false):
+            startIterateThrough(withIndex, y, false, doForever, false, false, capturing=false):
+                discard
+            do:
                 if isTrue(move stack.pop()):
                     push(newLogical(true))
                     one = true
                     keepGoing = false
                     break
+            do:
+                discard
 
             if not one:
                 push(newLogical(false))
