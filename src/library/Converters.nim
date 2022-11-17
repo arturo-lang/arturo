@@ -588,22 +588,27 @@ proc defineSymbols*() =
                 if x.kind==Range:
                     push(newBlock(toSeq(items(x.rng))))
                 else:
-                    let stop = SP
-
                     if x.kind==Block:
+                        let stop = SP
                         execUnscoped(x)
+                        let arr: ValueArray = sTopsFrom(stop)
+                        SP = stop
+
+                        push(newBlock(arr))
                     elif x.kind==String:
+                        let stop = SP
                         let (_{.inject.}, tp) = getSource(x.s)
 
                         if tp!=TextData:
                             execUnscoped(doParse(x.s, isFile=false))
                         else:
                             echo "file does not exist"
+                        let arr: ValueArray = sTopsFrom(stop)
+                        SP = stop
 
-                    let arr: ValueArray = sTopsFrom(stop)
-                    SP = stop
-
-                    push(newBlock(arr))
+                        push(newBlock(arr))
+                    else:
+                        push(newBlock(@[x]))
 
     builtin "as",
         alias       = unaliased, 
