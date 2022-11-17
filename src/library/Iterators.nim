@@ -77,17 +77,29 @@ template iterateThrough(
                 iterableItemsFromParam(x)
             else:
                 iterableItemsFromLiteralParam(x)
+        let collectionLen = collection.len
     else:
-        var collection{.inject.}: VRange =
+        var collection{.inject,cursor.}: VRange =
             if not withLiteral:
                 x.rng
             else:
                 Syms[x.s].rng
-        let nextRangeItem = nextItem(collection)
 
+        let rLen = collection.len
+        let numeric = collection.numeric
+
+        let step = 
+            if collection.forward: collection.step
+            else: -1 * collection.step
+
+        var jr = collection.start
+        #var ir = 0
+
+        let collectionLen = rLen
+            
     prepareAction
 
-    let collectionLen = collection.len
+    #let collectionLen = collection.len
 
     if collectionLen > 0:
         var args: ValueArray
@@ -121,15 +133,19 @@ template iterateThrough(
                     when capturing:
                         when withRange:
                             capturedItems = collect:
-                                for i in indx..indx+argsLen-1:
-                                    nextRangeItem()
+                                for i in indx..indx+argsLen-1:                        
+                                    jr += step
+                                    if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr-step)#newInteger(jr-step)
+                                    else: newChar(char(jr-step))
+            
+                                    #nextRangeItem()
                         else:
                             capturedItems = collection[indx..indx+argsLen-1]
 
                     var argi = 0
 
                     if withIndex:
-                        Syms[args[argi].s] = newInteger(run)
+                        Syms[args[argi].s] = Value(kind: Integer, iKind: NormalInteger, i: run)#newInteger(run)
                         inc argi
 
                     if hasArgs:
@@ -144,7 +160,11 @@ template iterateThrough(
                                 inc argi
                         elif withRange:
                             for i in indx..indx+argsLen-1:
-                                Syms[args[argi].s] = nextRangeItem()
+                                
+                                Syms[args[argi].s] = 
+                                    if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr)#newInteger(jr)
+                                    else: newChar(char(jr))
+                                jr += step
                                 inc argi
                         else:
                             var j = indx
