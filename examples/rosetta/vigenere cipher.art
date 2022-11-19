@@ -1,4 +1,4 @@
-Letters: append `A`..`Z` `a`..`z`
+Letters: (@`A`..`Z`) ++ (@`a`..`z`)
 encrypt: function [msg, key][
     pos: 0
     result: ""
