@@ -36,7 +36,7 @@ permutations: function [arr][
 ]
 
 perm: function [a][
-    n: 0..dec size a
+    n: @ 0..dec size a
     result: 0.0
     loop permutate n 'sigma [
         x: 1.0
@@ -47,7 +47,7 @@ perm: function [a][
 ]
 
 det: function [a][
-    n: 0..dec size a
+    n: @ 0..dec size a
     result: 0.0
     loop.with:'i permutations n 'p[
         x: p\1
