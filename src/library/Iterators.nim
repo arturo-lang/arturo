@@ -33,28 +33,28 @@ import vm/values/custom/vrange
 # Helpers
 #=======================================
 
-template iteratorLoop(forever: bool, body: untyped) {.dirty.} =
+template iteratorLoop(forever: bool, before: untyped, body: untyped) {.dirty.} =
     var keepGoing{.inject.}: bool = true
     while keepGoing:
         var indx{.inject.} = 0
         var run = 0
         while indx+loopStep<=collectionLen:
+            before
+
             handleBranching:
                 body
             do:
                 run += 1
                 indx += loopStep
 
-                if not forever:
-                    keepGoing = false
+        if not forever:
+            keepGoing = false
 
 template prepareRange(rng: VRange) {.dirty.} =
     let numeric = rng.numeric
     
     var step = rng.step
     if not rng.forward: step *= -1
-
-    var jr = rng.start
 
     let collectionLen = rng.len
 
@@ -77,6 +77,8 @@ template iterateRangeWithLiteral(
         var captured{.inject}: Value
 
     iteratorLoop(inf):
+        var jr = rng.start
+    do:
         when cap:
             captured =
                 if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr)
@@ -112,6 +114,8 @@ template iterateBlockWithLiteral(
         var captured{.inject}: Value
 
     iteratorLoop(inf):
+        discard
+    do:
         when cap:
             captured = blk[indx]
             
@@ -152,6 +156,8 @@ template iterateRangeWithParams(
         var captured{.inject}: ValueArray
 
     iteratorLoop(inf):
+        var jr = rng.start
+    do:
         when cap:
             if argsLen > 0:
                 captured = newSeq[Value](loopStep)
@@ -225,6 +231,8 @@ template iterateBlockWithParams(
         var captured{.inject}: ValueArray
 
     iteratorLoop(inf):
+        discard
+    do:
         when cap:
             if argsLen > 0:
                 captured = blk[indx..indx+loopStep-1]
