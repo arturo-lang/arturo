@@ -50,9 +50,9 @@ template iteratorLoop(forever: bool, body: untyped) {.dirty.} =
 
 template prepareRange(rng: VRange) {.dirty.} =
     let numeric = rng.numeric
-    let step = 
-        if rng.forward: rng.step
-        else: -1 * rng.step
+    
+    var step = rng.step
+    if not rng.forward: step *= -1
 
     var jr = rng.start
 
