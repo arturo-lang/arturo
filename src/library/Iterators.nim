@@ -653,6 +653,9 @@ proc defineSymbols*() =
                                 break
 
                 if onlyFirst or onlyLast and stoppedAt < rang.len:
+                    # TODO(Iterators\filter): optimize implementation for Range values with `.last`
+                    #  this goes again through the whole range, which is not necessary
+                    #  labels: enhancement, performance, library
                     res.add(rang[stoppedAt..rang.len-1])
                 
                 if onlyLast:
@@ -1048,6 +1051,11 @@ proc defineSymbols*() =
                             keepGoing = false
                             break
             do:
+                # TODO(Iterators\select) not optimal implementation for `.last`
+                #  This requires adding all the elements (as usual) and selecting the ones we want afterwards - that's obviously not the best way
+                #  We could "copy" the idea from `filter` and reverse the range/block when necessary
+                #  labels: enhancement, performance, library
+
                 if onlyLast:
                     let rlen = res.len
                     var startFrom = 0
