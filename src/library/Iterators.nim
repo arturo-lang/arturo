@@ -602,20 +602,23 @@ proc defineSymbols*() =
             #=======================================================
             prepareIteration()
 
-            var onlyFirst = false
-            var onlyLast = false
             var elemLimit = -1
-            var stoppedAt = -1
-            if checkAttr("first"):
-                onlyFirst = true
-                if isTrue(aFirst): elemLimit = 1
-                else: elemLimit = aFirst.i
-
-            if checkAttr("last"):
-                onlyLast = true
-                if isTrue(aLast): elemLimit = 1
-                else: elemLimit = aLast.i
             
+            let onlyFirst = 
+                if checkAttr("first"):
+                    if isTrue(aFirst): elemLimit = 1
+                    else: elemLimit = aFirst.i
+                    true
+                else: false
+
+            let onlyLast = 
+                if checkAttr("last"):
+                    if isTrue(aLast): elemLimit = 1
+                    else: elemLimit = aLast.i
+                    true
+                else: false
+                
+            var stoppedAt = -1
             var filteredItems = 0
 
             if iterable.kind==Range:
@@ -999,18 +1002,21 @@ proc defineSymbols*() =
         """:
             #=======================================================
             doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newBlock()):
-                var onlyFirst = false
-                var onlyLast = false
                 var elemLimit = -1
-                if checkAttr("first"):
-                    onlyFirst = true
-                    if isTrue(aFirst): elemLimit = 1
-                    else: elemLimit = aFirst.i
+                
+                let onlyFirst = 
+                    if checkAttr("first"):
+                        if isTrue(aFirst): elemLimit = 1
+                        else: elemLimit = aFirst.i
+                        true
+                    else: false
 
-                if checkAttr("last"):
-                    onlyLast = true
-                    if isTrue(aLast): elemLimit = 1
-                    else: elemLimit = aLast.i
+                let onlyLast = 
+                    if checkAttr("last"):
+                        if isTrue(aLast): elemLimit = 1
+                        else: elemLimit = aLast.i
+                        true
+                    else: false
 
                 var res: ValueArray
             do:
