@@ -74,17 +74,17 @@ template iterateRangeWithLiteral(
     let loopStep = 1
 
     when cap:
-        var capturedItems{.inject}: Value
+        var captured{.inject}: Value
 
     iteratorLoop(inf):
         when cap:
-            capturedItems =
+            captured =
                 if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr)
                 else: newChar(char(jr))
 
             jr += step
             
-            Syms[lit] = capturedItems
+            Syms[lit] = captured
         else:
             Syms[lit] = 
                 if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr)
@@ -109,13 +109,13 @@ template iterateBlockWithLiteral(
     let loopStep = 1
 
     when cap:
-        var capturedItems{.inject}: Value
+        var captured{.inject}: Value
 
     iteratorLoop(inf):
         when cap:
-            capturedItems = blk[indx]
+            captured = blk[indx]
             
-            Syms[lit] = capturedItems
+            Syms[lit] = captured
         else:
             Syms[lit] = blk[indx]
 
@@ -149,16 +149,16 @@ template iterateRangeWithParams(
             loopStep -= 1
     
     when cap:
-        var capturedItems{.inject}: ValueArray
+        var captured{.inject}: ValueArray
 
     iteratorLoop(inf):
         when cap:
             if argsLen > 0:
-                capturedItems = newSeq[Value](loopStep)
+                captured = newSeq[Value](loopStep)
                 var k = indx
                 var cnt = 0
                 while k < indx+loopStep:
-                    capturedItems[cnt] = 
+                    captured[cnt] = 
                         if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr)
                         else: newChar(char(jr))
                     jr += step
@@ -177,7 +177,7 @@ template iterateRangeWithParams(
 
         if argsLen > 0:
             when cap:
-                for capt in capturedItems:
+                for capt in captured:
                     Syms[prm[ip]] = capt
                     inc ip
             else:
@@ -222,12 +222,12 @@ template iterateBlockWithParams(
             loopStep -= 1
 
     when cap:
-        var capturedItems{.inject}: ValueArray
+        var captured{.inject}: ValueArray
 
     iteratorLoop(inf):
         when cap:
             if argsLen > 0:
-                capturedItems = blk[indx..indx+loopStep-1]
+                captured = blk[indx..indx+loopStep-1]
             
         var ip = 0
         if idx:
@@ -241,7 +241,7 @@ template iterateBlockWithParams(
 
         if argsLen > 0:
             when cap:
-                for capt in capturedItems:
+                for capt in captured:
                     Syms[prm[ip]] = capt
                     inc ip
             else:
@@ -448,7 +448,7 @@ proc defineSymbols*() =
                         currentSet = @[]
                     state = popped
 
-                currentSet.add(capturedItems)
+                currentSet.add(captured)
             do:
                 if len(currentSet)>0:
                     if showValue: res.add(newBlock(@[state, newBlock(currentSet)]))
@@ -503,7 +503,7 @@ proc defineSymbols*() =
                 let popped = move stack.pop()
 
                 discard sets.hasKeyOrPut(popped, @[])
-                sets[popped].add(capturedItems)
+                sets[popped].add(captured)
             do:
                 if showValue:
                     for k,v in sets.pairs:
@@ -630,13 +630,13 @@ proc defineSymbols*() =
                 iterateRange(withCap=true, withInf=false, withCounter=false, rolling=false):
                     let popped = move stack.pop()
                     if isFalse(popped):
-                        res.add(capturedItems)
+                        res.add(captured)
                     else:
                         if onlyFirst or onlyLast:
-                            when capturedItems is Value:
+                            when captured is Value:
                                 filteredItems += 1
                             else:
-                                filteredItems += capturedItems.len
+                                filteredItems += captured.len
 
                             if elemLimit == filteredItems:
                                 stoppedAt = indx+1
@@ -664,13 +664,13 @@ proc defineSymbols*() =
                 iterateBlock(withCap=true, withInf=false, withCounter=false, rolling=false):
                     let popped = move stack.pop()
                     if isFalse(popped):
-                        res.add(capturedItems)
+                        res.add(captured)
                     else:
                         if onlyFirst or onlyLast:
-                            when capturedItems is Value:
+                            when captured is Value:
                                 filteredItems += 1
                             else:
-                                filteredItems += capturedItems.len
+                                filteredItems += captured.len
 
                             if elemLimit == filteredItems:
                                 stoppedAt = indx+1
@@ -832,7 +832,7 @@ proc defineSymbols*() =
             do:
                 let popped = $(move stack.pop())
                 discard res.hasKeyOrPut(popped, newBlock())
-                res[popped].a.add(capturedItems)
+                res[popped].a.add(captured)
             do:
                 if unlikely(inPlace): RawInPlaced = newDictionary(res)
                 else: push(newDictionary(res))
@@ -1029,7 +1029,7 @@ proc defineSymbols*() =
                 var res: ValueArray
             do:
                 if isTrue(move stack.pop()):
-                    res.add(capturedItems)
+                    res.add(captured)
 
                     if onlyFirst:
                         if elemLimit == res.len:
