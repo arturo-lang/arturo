@@ -282,6 +282,9 @@ template prepareIteration(doesAcceptLiterals=true) {.dirty.} =
             ensureInPlace()
             iterable = InPlaced
 
+template fetchIterableRange() {.dirty.} =
+    var rang = iterable.rng
+
 template fetchIterableItems(doesAcceptLiterals=true, defaultReturn: untyped) {.dirty.} =
     var blo = 
         case iterable.kind:
@@ -315,13 +318,13 @@ template iterateRange(withCap:bool, withInf:bool, withCounter:bool, rolling:bool
                 
     if likely(y.kind==Literal):
         if likely(not hasIndex):
-            iterateRangeWithLiteral(iterable.rng, y.s, cap=withCap, inf=withInf):
+            iterateRangeWithLiteral(rang, y.s, cap=withCap, inf=withInf):
                 act
                 when withCounter:
                     cntr += 1
         else:
             let params = @[withIndex.s, y.s]
-            iterateRangeWithParams(iterable.rng, params, rolling, hasIndex, cap=withCap, inf=withInf):
+            iterateRangeWithParams(rang, params, rolling, hasIndex, cap=withCap, inf=withInf):
                 act
                 when withCounter:
                     cntr += 1
@@ -330,7 +333,7 @@ template iterateRange(withCap:bool, withInf:bool, withCounter:bool, rolling:bool
 
     else:
         fetchParamsBlock()
-        iterateRangeWithParams(iterable.rng, params, rolling, hasIndex, cap=withCap, inf=withInf):
+        iterateRangeWithParams(rang, params, rolling, hasIndex, cap=withCap, inf=withInf):
             act
             when withCounter:
                 cntr += 1
@@ -383,6 +386,8 @@ template doIterate(
     prepareIteration(doesAcceptLiterals=itLit)
 
     if iterable.kind==Range:
+        fetchIterableRange()
+
         itPre
         iterateRange(withCap=itCap, withInf=itInf, withCounter=itCounter, rolling=itRolling):
             itAct
@@ -624,10 +629,12 @@ proc defineSymbols*() =
             var filteredItems = 0
 
             if iterable.kind==Range:
+                fetchIterableRange()
+
                 var res: ValueArray
 
                 if onlyLast:
-                    iterable = newRange(iterable.rng.reversed())
+                    rang = rang.reversed()
                 
                 iterateRange(withCap=true, withInf=false, withCounter=false, rolling=false):
                     let popped = move stack.pop()
@@ -645,9 +652,8 @@ proc defineSymbols*() =
                                 keepGoing = false
                                 break
 
-                if (onlyFirst or onlyLast) and stoppedAt < iterable.rng.len:
-                    for k in stoppedAt..iterable.rng.len-1:
-                        res.add(iterable.rng[k])
+                if onlyFirst or onlyLast and stoppedAt < rang.len:
+                    res.add(rang[stoppedAt..rang.len-1])
                 
                 if onlyLast:
                     res.reverse()
@@ -752,13 +758,15 @@ proc defineSymbols*() =
             let rollingRight = hadAttr("right")
 
             if iterable.kind==Range:
+                fetchIterableRange()
+
                 var res: Value
                 var seed = I0
 
                 if rollingRight:
-                    iterable = newRange(iterable.rng.reversed())
+                    rang = rang.reversed()
 
-                let firstElem {.cursor.} = iterable.rng[0]
+                let firstElem {.cursor.} = rang[0]
 
                 if firstElem.kind == String:     seed = newString("")
                 elif firstElem.kind == Floating: seed = newFloating(0.0)
@@ -947,7 +955,9 @@ proc defineSymbols*() =
             prepareIteration()
 
             if iterable.kind==Range:
-                var res: ValueArray = newSeq[Value](iterable.rng.len)
+                fetchIterableRange()
+
+                var res: ValueArray = newSeq[Value](rang.len)
                 
                 iterateRange(withCap=false, withInf=false, withCounter=true, rolling=false):
                     res[cntr] = move stack.pop()
