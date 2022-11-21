@@ -258,9 +258,10 @@ template iterateBlockWithParams(
 template fetchParamsBlock() {.dirty.} =
     var params: seq[string]
     if hasIndex: params.add(withIndex.s)
-    for item in mitems(y.a):
-        if item.kind != Newline:
-            params.add(item.s)
+    if y.kind != Null:
+        for item in mitems(y.a):
+            if item.kind != Newline:
+                params.add(item.s)
 
 template prepareIteration(doesAcceptLiterals=true) {.dirty.} =
     let preevaled = evalOrGet(z)
@@ -286,7 +287,7 @@ template fetchIterableItems(doesAcceptLiterals=true, defaultReturn: untyped) {.d
             of Integer:
                 (toSeq(1..iterable.i)).map((w) => newInteger(w))
             else: # block or inline
-                cleanedBlockValuesCopy(iterable)#iterableItemsFromParam(iterable)
+                cleanedBlockValuesCopy(iterable)
 
     if blo.len == 0: 
         when doesAcceptLiterals:
@@ -299,6 +300,7 @@ template fetchIterableItems(doesAcceptLiterals=true, defaultReturn: untyped) {.d
         return
 
 template iterateRange(withCap:bool, withInf:bool, withCounter:bool, rolling:bool, act: untyped) {.dirty.} =
+    ## Main iteration helper for Range values
     when withCounter:
         var cntr = 0
                 
@@ -327,6 +329,7 @@ template iterateRange(withCap:bool, withInf:bool, withCounter:bool, rolling:bool
             res.setLen(cntr)
 
 template iterateBlock(withCap:bool, withInf:bool, withCounter:bool, rolling:bool, act: untyped) {.dirty.} =
+    ## Main iteration helper for Block values
     when withCounter:
         var cntr = 0
 
@@ -365,6 +368,9 @@ template doIterate(
     itAct:untyped,      # code to execute for each iteration
     itPost:untyped      # code to execute after the iteration
 ) {.dirty.} =
+    ## The main iterator helper for every method 
+    ## that doesn't require any special handling, 
+    ## e.g. for Range and Block values
     prepareIteration(doesAcceptLiterals=itLit)
 
     if iterable.kind==Range:
