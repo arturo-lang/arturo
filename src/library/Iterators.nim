@@ -74,17 +74,17 @@ template iterateRangeWithLiteral(
     let loopStep = 1
 
     when cap:
-        var capturedItems{.inject}: ValueArray
+        var capturedItems{.inject}: Value
 
     iteratorLoop(inf):
         when cap:
-            capturedItems = @[
+            capturedItems =
                 if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr)
                 else: newChar(char(jr))
-            ]
+
             jr += step
             
-            Syms[lit] = capturedItems[0]
+            Syms[lit] = capturedItems
         else:
             Syms[lit] = 
                 if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr)
@@ -109,13 +109,13 @@ template iterateBlockWithLiteral(
     let loopStep = 1
 
     when cap:
-        var capturedItems{.inject}: ValueArray
+        var capturedItems{.inject}: Value
 
     iteratorLoop(inf):
         when cap:
-            capturedItems = @[blk[indx]]
+            capturedItems = blk[indx]
             
-            Syms[lit] = capturedItems[0]
+            Syms[lit] = capturedItems
         else:
             Syms[lit] = blk[indx]
 
@@ -633,7 +633,11 @@ proc defineSymbols*() =
                         res.add(capturedItems)
                     else:
                         if onlyFirst or onlyLast:
-                            filteredItems += capturedItems.len
+                            when capturedItems is Value:
+                                filteredItems += 1
+                            else:
+                                filteredItems += capturedItems.len
+
                             if elemLimit == filteredItems:
                                 stoppedAt = indx+1
                                 keepGoing = false
@@ -663,7 +667,11 @@ proc defineSymbols*() =
                         res.add(capturedItems)
                     else:
                         if onlyFirst or onlyLast:
-                            filteredItems += capturedItems.len
+                            when capturedItems is Value:
+                                filteredItems += 1
+                            else:
+                                filteredItems += capturedItems.len
+
                             if elemLimit == filteredItems:
                                 stoppedAt = indx+1
                                 keepGoing = false
