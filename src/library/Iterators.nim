@@ -34,11 +34,11 @@ import vm/values/custom/vrange
 #=======================================
 
 template iteratorLoop(justLiteral: bool, forever: bool, before: untyped, body: untyped) {.dirty.} =
-    var keepGoing{.inject.}: bool = true
+    var keepGoing: bool = true
     while keepGoing:
         before
 
-        var indx{.inject.} = 0
+        var indx = 0
         var run = 0
         while indx+(when justLiteral: 1 else: loopStep)<=collectionLen:
             handleBranching:
@@ -72,7 +72,7 @@ template iterateRangeWithLiteral(
     prepareLeaklessOne(lit)
 
     when cap:
-        var captured{.inject}: Value
+        var captured: Value
 
     iteratorLoop(justLiteral=true, inf):
         var jr = rng.start
@@ -107,7 +107,7 @@ template iterateBlockWithLiteral(
     prepareLeaklessOne(lit)
 
     when cap:
-        var captured{.inject}: Value
+        var captured: Value
 
     iteratorLoop(justLiteral=true, inf):
         discard
@@ -149,7 +149,7 @@ template iterateRangeWithParams(
             loopStep -= 1
     
     when cap:
-        var captured{.inject}: ValueArray
+        var captured: ValueArray
 
     iteratorLoop(justLiteral=false, inf):
         var jr = rng.start
@@ -223,7 +223,7 @@ template iterateBlockWithParams(
             loopStep -= 1
 
     when cap:
-        var captured{.inject}: ValueArray
+        var captured: ValueArray
 
     iteratorLoop(justLiteral=false, inf):
         discard
