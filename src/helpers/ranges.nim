@@ -81,6 +81,10 @@ func `[]`*(rng: VRange, idx: int): Value =
 
     raise newException(ValueError, "Index out of range")
 
+func `[]`*(rng: VRange, idx: HSlice): ValueArray =
+    for (i, item) in pairs(rng):
+        if i in idx: result.add(item)
+
 proc contains*(rng: VRange, v: Value): bool {.inline,enforceNoRaises.} =
     rng.find(v) >= 0
 
