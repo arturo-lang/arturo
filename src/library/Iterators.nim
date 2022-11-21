@@ -283,6 +283,9 @@ template prepareIteration(doesAcceptLiterals=true) {.dirty.} =
 template fetchIterableItems(doesAcceptLiterals=true, defaultReturn: untyped) {.dirty.} =
     var blo = 
         case iterable.kind:
+            of Block,Inline:
+                {.linearScanEnd.}
+                cleanedBlockValuesCopy(iterable)
             of Dictionary:
                 iterable.d.flattenedDictionary()
             of Object:
@@ -292,7 +295,7 @@ template fetchIterableItems(doesAcceptLiterals=true, defaultReturn: untyped) {.d
             of Integer:
                 (toSeq(1..iterable.i)).map((w) => newInteger(w))
             else: # block or inline
-                cleanedBlockValuesCopy(iterable)
+                @[VNULL]
 
     if blo.len == 0: 
         when doesAcceptLiterals:
