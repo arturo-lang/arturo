@@ -542,6 +542,34 @@ template iterateBlock(withCap:bool, withInf:bool, withCounter:bool, rolling:bool
         when withCounter:
             res.setLen(cntr)
 
+template doIterate(
+    itLit:bool,         # does the iterator support in-place literals?
+    itCap:bool,         # do we need to actually capture iterated elements?
+    itInf:bool,         # is there a possibility that the iteration may be infinite?
+    itCounter:bool,     # do we need to keep track of the element counter? 
+    itRolling:bool,     # is it a fold-type rolling iteration?
+
+    itDefVal:untyped,   # default value to return if given block is empty
+    itPre:untyped,      # code to execute before the iteration
+    itAct:untyped,      # code to execute for each iteration
+    itPost:untyped      # code to execute after the iteration
+) {.dirty.} =
+    prepareIteration(doesAcceptLiterals=itLit)
+
+    if iterable.kind==Range:
+        itPre
+        iterateRange(withCap=itCap, withInf=itInf, withCounter=itCounter, rolling=itRolling):
+            itAct
+        itPost
+    else:
+        fetchIterableItems(doesAcceptLiterals=itLit):
+            itDefVal
+
+        itPre
+        iterateBlock(withCap=itCap, withInf=itInf, withCounter=itCounter, rolling=itRolling):
+            itAct
+        itPost
+
 #=======================================
 # Methods
 #=======================================
@@ -580,58 +608,83 @@ proc defineSymbols*() =
             ; => [[1 7] [5 4 3 6] [8 2]]
         """:
             #=======================================================
-            prepareIteration()
-            let showValue = hadAttr("value")
-
-            if iterable.kind==Range:
-                var res: ValueArray
-
-                var state: Value = VNULL # important
-                var currentSet: ValueArray = @[]
+            doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newBlock()):
+                let showValue = hadAttr("value")
                 
-                iterateRange(withCap=true, withInf=false, withCounter=false, rolling=false):
-                    let popped = move stack.pop()
-                    if popped != state:
-                        if len(currentSet)>0:
-                            if showValue: res.add(newBlock(@[state, newBlock(currentSet)]))
-                            else: res.add(newBlock(currentSet))
-                            currentSet = @[]
-                        state = popped
-
-                    currentSet.add(capturedItems)
-
-                if len(currentSet)>0:
-                    if showValue: res.add(newBlock(@[state, newBlock(currentSet)]))
-                    else: res.add(newBlock(currentSet))
-
-                if unlikely(inPlace): RawInPlaced = newBlock(res)
-                else: push(newBlock(res))
-            else: 
-                fetchIterableItems(doesAcceptLiterals=true):
-                    newBlock()
-
                 var res: ValueArray
 
                 var state: Value = VNULL # important
                 var currentSet: ValueArray = @[]
+            do:
+                let popped = move stack.pop()
+                if popped != state:
+                    if len(currentSet)>0:
+                        if showValue: res.add(newBlock(@[state, newBlock(currentSet)]))
+                        else: res.add(newBlock(currentSet))
+                        currentSet = @[]
+                    state = popped
 
-                iterateBlock(withCap=true, withInf=false, withCounter=false, rolling=false):
-                    let popped = move stack.pop()
-                    if popped != state:
-                        if len(currentSet)>0:
-                            if showValue: res.add(newBlock(@[state, newBlock(currentSet)]))
-                            else: res.add(newBlock(currentSet))
-                            currentSet = @[]
-                        state = popped
-
-                    currentSet.add(capturedItems)
-
+                currentSet.add(capturedItems)
+            do:
                 if len(currentSet)>0:
                     if showValue: res.add(newBlock(@[state, newBlock(currentSet)]))
                     else: res.add(newBlock(currentSet))
 
                 if unlikely(inPlace): RawInPlaced = newBlock(res)
                 else: push(newBlock(res))
+
+            # prepareIteration()
+            
+
+            # if iterable.kind==Range:
+            #     var res: ValueArray
+
+            #     var state: Value = VNULL # important
+            #     var currentSet: ValueArray = @[]
+                
+            #     iterateRange(withCap=true, withInf=false, withCounter=false, rolling=false):
+            #         let popped = move stack.pop()
+            #         if popped != state:
+            #             if len(currentSet)>0:
+            #                 if showValue: res.add(newBlock(@[state, newBlock(currentSet)]))
+            #                 else: res.add(newBlock(currentSet))
+            #                 currentSet = @[]
+            #             state = popped
+
+            #         currentSet.add(capturedItems)
+
+            #     if len(currentSet)>0:
+            #         if showValue: res.add(newBlock(@[state, newBlock(currentSet)]))
+            #         else: res.add(newBlock(currentSet))
+
+            #     if unlikely(inPlace): RawInPlaced = newBlock(res)
+            #     else: push(newBlock(res))
+            # else: 
+            #     fetchIterableItems(doesAcceptLiterals=true):
+            #         newBlock()
+
+            #     var res: ValueArray
+
+            #     var state: Value = VNULL # important
+            #     var currentSet: ValueArray = @[]
+
+            #     iterateBlock(withCap=true, withInf=false, withCounter=false, rolling=false):
+            #         let popped = move stack.pop()
+            #         if popped != state:
+            #             if len(currentSet)>0:
+            #                 if showValue: res.add(newBlock(@[state, newBlock(currentSet)]))
+            #                 else: res.add(newBlock(currentSet))
+            #                 currentSet = @[]
+            #             state = popped
+
+            #         currentSet.add(capturedItems)
+
+            #     if len(currentSet)>0:
+            #         if showValue: res.add(newBlock(@[state, newBlock(currentSet)]))
+            #         else: res.add(newBlock(currentSet))
+
+            #     if unlikely(inPlace): RawInPlaced = newBlock(res)
+            #     else: push(newBlock(res))
             #discard
             # let preevaled = evalOrGet(z)
             # let withIndex = popAttr("with")
@@ -707,52 +760,73 @@ proc defineSymbols*() =
             ; => [["one" "three" "five"] ["two" "four" "six"]]
         """:
             #=======================================================
-            prepareIteration()
-            let showValue = hadAttr("value")
+            doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newBlock()):
+                let showValue = hadAttr("value")
 
-            if iterable.kind==Range:
                 var res: ValueArray
-
                 var sets = initOrderedTable[Value,ValueArray]()
+            do:
+                let popped = move stack.pop()
+
+                discard sets.hasKeyOrPut(popped, @[])
+                sets[popped].add(capturedItems)
+            do:
+                if showValue:
+                    for k,v in sets.pairs:
+                        res.add(newBlock(@[k, newBlock(v)]))
+                else:
+                    for v in sets.values:
+                        res.add(newBlock(v))
+
+                if unlikely(inPlace): RawInPlaced = newBlock(res)
+                else: push(newBlock(res))
+
+            # prepareIteration()
+            # let showValue = hadAttr("value")
+
+            # if iterable.kind==Range:
+            #     var res: ValueArray
+
+            #     var sets = initOrderedTable[Value,ValueArray]()
                 
-                iterateRange(withCap=true, withInf=false, withCounter=false, rolling=false):
-                    let popped = move stack.pop()
+            #     iterateRange(withCap=true, withInf=false, withCounter=false, rolling=false):
+            #         let popped = move stack.pop()
 
-                    discard sets.hasKeyOrPut(popped, @[])
-                    sets[popped].add(capturedItems)
+            #         discard sets.hasKeyOrPut(popped, @[])
+            #         sets[popped].add(capturedItems)
 
-                if showValue:
-                    for k,v in sets.pairs:
-                        res.add(newBlock(@[k, newBlock(v)]))
-                else:
-                    for v in sets.values:
-                        res.add(newBlock(v))
+            #     if showValue:
+            #         for k,v in sets.pairs:
+            #             res.add(newBlock(@[k, newBlock(v)]))
+            #     else:
+            #         for v in sets.values:
+            #             res.add(newBlock(v))
 
-                if unlikely(inPlace): RawInPlaced = newBlock(res)
-                else: push(newBlock(res))
-            else: 
-                fetchIterableItems(doesAcceptLiterals=true):
-                    newBlock()
+            #     if unlikely(inPlace): RawInPlaced = newBlock(res)
+            #     else: push(newBlock(res))
+            # else: 
+            #     fetchIterableItems(doesAcceptLiterals=true):
+            #         newBlock()
 
-                var res: ValueArray
+            #     var res: ValueArray
 
-                var sets = initOrderedTable[Value,ValueArray]()
+            #     var sets = initOrderedTable[Value,ValueArray]()
 
-                iterateBlock(withCap=true, withInf=false, withCounter=false, rolling=false):
-                    let popped = move stack.pop()
+            #     iterateBlock(withCap=true, withInf=false, withCounter=false, rolling=false):
+            #         let popped = move stack.pop()
 
-                    discard sets.hasKeyOrPut(popped, @[])
-                    sets[popped].add(capturedItems)
+            #         discard sets.hasKeyOrPut(popped, @[])
+            #         sets[popped].add(capturedItems)
 
-                if showValue:
-                    for k,v in sets.pairs:
-                        res.add(newBlock(@[k, newBlock(v)]))
-                else:
-                    for v in sets.values:
-                        res.add(newBlock(v))
+            #     if showValue:
+            #         for k,v in sets.pairs:
+            #             res.add(newBlock(@[k, newBlock(v)]))
+            #     else:
+            #         for v in sets.values:
+            #             res.add(newBlock(v))
 
-                if unlikely(inPlace): RawInPlaced = newBlock(res)
-                else: push(newBlock(res))
+            #     if unlikely(inPlace): RawInPlaced = newBlock(res)
+            #     else: push(newBlock(res))
             #discard
             # let preevaled = evalOrGet(z)
             # let withIndex = popAttr("with")
@@ -815,22 +889,30 @@ proc defineSymbols*() =
             ; true
         """:
             #=======================================================
-            prepareIteration(doesAcceptLiterals=false)
+            doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=false, VFALSE):
+                discard
+            do:
+                if isFalse(move stack.pop()):
+                    push(VFALSE)
+                    return
+            do:
+                push(VTRUE)
+            # prepareIteration(doesAcceptLiterals=false)
 
-            if iterable.kind==Range:
-                iterateRange(withCap=false, withInf=false, withCounter=false, rolling=false):
-                    if isFalse(move stack.pop()):
-                        push(VFALSE)
-                        return
-            else: 
-                fetchIterableItems(doesAcceptLiterals=false):
-                    VFALSE
+            # if iterable.kind==Range:
+            #     iterateRange(withCap=false, withInf=false, withCounter=false, rolling=false):
+            #         if isFalse(move stack.pop()):
+            #             push(VFALSE)
+            #             return
+            # else: 
+            #     fetchIterableItems(doesAcceptLiterals=false):
+            #         VFALSE
 
-                iterateBlock(withCap=false, withInf=false, withCounter=false, rolling=false):
-                    if isFalse(move stack.pop()):
-                        push(VFALSE)
-                        return
-            push(VTRUE)
+            #     iterateBlock(withCap=false, withInf=false, withCounter=false, rolling=false):
+            #         if isFalse(move stack.pop()):
+            #             push(VFALSE)
+            #             return
+            # push(VTRUE)
             # let preevaled = evalOrGet(z)
             # let withIndex = popAttr("with")
             # let doForever = false
@@ -1221,31 +1303,40 @@ proc defineSymbols*() =
             ; [0:[one three] 1:[two four]]
         """:
             #=======================================================
-            prepareIteration()
-
-            if iterable.kind==Range:
+            doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newDictionary()):
                 var res = initOrderedTable[string,Value]()
+            do:
+                let popped = $(move stack.pop())
+                discard res.hasKeyOrPut(popped, newBlock())
+                res[popped].a.add(capturedItems)
+            do:
+                if unlikely(inPlace): RawInPlaced = newDictionary(res)
+                else: push(newDictionary(res))
+            # prepareIteration()
+
+            # if iterable.kind==Range:
+            #     var res = initOrderedTable[string,Value]()
                 
-                iterateRange(withCap=true, withInf=false, withCounter=false, rolling=false):
-                    let popped = $(move stack.pop())
-                    discard res.hasKeyOrPut(popped, newBlock())
-                    res[popped].a.add(capturedItems)
+            #     iterateRange(withCap=true, withInf=false, withCounter=false, rolling=false):
+            #         let popped = $(move stack.pop())
+            #         discard res.hasKeyOrPut(popped, newBlock())
+            #         res[popped].a.add(capturedItems)
 
-                if unlikely(inPlace): RawInPlaced = newDictionary(res)
-                else: push(newDictionary(res))
-            else: 
-                fetchIterableItems(doesAcceptLiterals=true):
-                    newDictionary()
+            #     if unlikely(inPlace): RawInPlaced = newDictionary(res)
+            #     else: push(newDictionary(res))
+            # else: 
+            #     fetchIterableItems(doesAcceptLiterals=true):
+            #         newDictionary()
 
-                var res = initOrderedTable[string,Value]()
+            #     var res = initOrderedTable[string,Value]()
 
-                iterateBlock(withCap=true, withInf=false, withCounter=false, rolling=false):
-                    let popped = $(move stack.pop())
-                    discard res.hasKeyOrPut(popped, newBlock())
-                    res[popped].a.add(capturedItems)
+            #     iterateBlock(withCap=true, withInf=false, withCounter=false, rolling=false):
+            #         let popped = $(move stack.pop())
+            #         discard res.hasKeyOrPut(popped, newBlock())
+            #         res[popped].a.add(capturedItems)
 
-                if unlikely(inPlace): RawInPlaced = newDictionary(res)
-                else: push(newDictionary(res))
+            #     if unlikely(inPlace): RawInPlaced = newDictionary(res)
+            #     else: push(newDictionary(res))
             #discard
             # let preevaled = evalOrGet(z)
             # let withIndex = popAttr("with")
@@ -1326,18 +1417,25 @@ proc defineSymbols*() =
             ; 1 2 3 1 2 3 1 2 3 ...
         """:
             #=======================================================
-            prepareIteration(doesAcceptLiterals=false)
             let doForever = hadAttr("forever")
+            doIterate(itLit=false, itCap=false, itInf=doForever, itCounter=false, itRolling=false, nil):
+                discard
+            do:
+                discard
+            do:
+                discard
+            # prepareIteration(doesAcceptLiterals=false)
+            # let doForever = hadAttr("forever")
 
-            if iterable.kind==Range:
-                iterateRange(withCap=false, withInf=doForever, withCounter=false, rolling=false):
-                    discard
-            else: 
-                fetchIterableItems(doesAcceptLiterals=false):
-                    nil
+            # if iterable.kind==Range:
+            #     iterateRange(withCap=false, withInf=doForever, withCounter=false, rolling=false):
+            #         discard
+            # else: 
+            #     fetchIterableItems(doesAcceptLiterals=false):
+            #         nil
 
-                iterateBlock(withCap=false, withInf=doForever, withCounter=false, rolling=false):
-                    discard
+            #     iterateBlock(withCap=false, withInf=doForever, withCounter=false, rolling=false):
+            #         discard
 
     builtin "map",
         alias       = unaliased,
@@ -1445,33 +1543,30 @@ proc defineSymbols*() =
             => [5 7 9]
         """:
             #=======================================================
-            prepareIteration()
+            doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newBlock()):
+                var onlyFirst = false
+                var onlyLast = false
+                var elemLimit = -1
+                if checkAttr("first"):
+                    onlyFirst = true
+                    if isTrue(aFirst): elemLimit = 1
+                    else: elemLimit = aFirst.i
 
-            var onlyFirst = false
-            var onlyLast = false
-            var elemLimit = -1
-            if checkAttr("first"):
-                onlyFirst = true
-                if isTrue(aFirst): elemLimit = 1
-                else: elemLimit = aFirst.i
+                if checkAttr("last"):
+                    onlyLast = true
+                    if isTrue(aLast): elemLimit = 1
+                    else: elemLimit = aLast.i
 
-            if checkAttr("last"):
-                onlyLast = true
-                if isTrue(aLast): elemLimit = 1
-                else: elemLimit = aLast.i
-
-            if iterable.kind==Range:
                 var res: ValueArray
-                
-                iterateRange(withCap=true, withInf=false, withCounter=false, rolling=false):
-                    if isTrue(move stack.pop()):
-                        res.add(capturedItems)
+            do:
+                if isTrue(move stack.pop()):
+                    res.add(capturedItems)
 
-                        if onlyFirst:
-                            if elemLimit == res.len:
-                                keepGoing = false
-                                break
-                
+                    if onlyFirst:
+                        if elemLimit == res.len:
+                            keepGoing = false
+                            break
+            do:
                 if onlyLast:
                     let rlen = res.len
                     var startFrom = 0
@@ -1481,30 +1576,53 @@ proc defineSymbols*() =
 
                 if unlikely(inPlace): RawInPlaced = newBlock(res)
                 else: push(newBlock(res))
-            else: 
-                fetchIterableItems(doesAcceptLiterals=true):
-                    newBlock()
 
-                var res: ValueArray
+            # prepareIteration()
 
-                iterateBlock(withCap=true, withInf=false, withCounter=false, rolling=false):
-                    if isTrue(move stack.pop()):
-                        res.add(capturedItems)
+            
+                
+            #     iterateRange(withCap=true, withInf=false, withCounter=false, rolling=false):
+            #         if isTrue(move stack.pop()):
+            #             res.add(capturedItems)
 
-                        if onlyFirst:
-                            if elemLimit == res.len:
-                                keepGoing = false
-                                break
+            #             if onlyFirst:
+            #                 if elemLimit == res.len:
+            #                     keepGoing = false
+            #                     break
+                
+            #     if onlyLast:
+            #         let rlen = res.len
+            #         var startFrom = 0
+            #         if rlen-elemLimit > 0:
+            #             startFrom = rlen-elemLimit
+            #         res = res[startFrom..rlen-1]
 
-                if onlyLast:
-                    let rlen = res.len
-                    var startFrom = 0
-                    if rlen-elemLimit > 0:
-                        startFrom = rlen-elemLimit
-                    res = res[startFrom..rlen-1]
+            #     if unlikely(inPlace): RawInPlaced = newBlock(res)
+            #     else: push(newBlock(res))
+            # else: 
+            #     fetchIterableItems(doesAcceptLiterals=true):
+            #         newBlock()
 
-                if unlikely(inPlace): RawInPlaced = newBlock(res)
-                else: push(newBlock(res))
+            #     var res: ValueArray
+
+            #     iterateBlock(withCap=true, withInf=false, withCounter=false, rolling=false):
+            #         if isTrue(move stack.pop()):
+            #             res.add(capturedItems)
+
+            #             if onlyFirst:
+            #                 if elemLimit == res.len:
+            #                     keepGoing = false
+            #                     break
+
+            #     if onlyLast:
+            #         let rlen = res.len
+            #         var startFrom = 0
+            #         if rlen-elemLimit > 0:
+            #             startFrom = rlen-elemLimit
+            #         res = res[startFrom..rlen-1]
+
+            #     if unlikely(inPlace): RawInPlaced = newBlock(res)
+            #     else: push(newBlock(res))
             # let preevaled = evalOrGet(z)
             # let withIndex = popAttr("with")
             # var onlyFirst = false
@@ -1582,22 +1700,30 @@ proc defineSymbols*() =
             ; true
         """:
             #=======================================================
-            prepareIteration(doesAcceptLiterals=false)
+            doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=false, VFALSE):
+                discard
+            do:
+                if isTrue(move stack.pop()):
+                    push(VTRUE)
+                    return
+            do:
+                push(VFALSE)
+            # prepareIteration(doesAcceptLiterals=false)
 
-            if iterable.kind==Range:
-                iterateRange(withCap=false, withInf=false, withCounter=false, rolling=false):
-                    if isTrue(move stack.pop()):
-                        push(VTRUE)
-                        return
-            else: 
-                fetchIterableItems(doesAcceptLiterals=false):
-                    VFALSE
+            # if iterable.kind==Range:
+            #     iterateRange(withCap=false, withInf=false, withCounter=false, rolling=false):
+            #         if isTrue(move stack.pop()):
+            #             push(VTRUE)
+            #             return
+            # else: 
+            #     fetchIterableItems(doesAcceptLiterals=false):
+            #         VFALSE
 
-                iterateBlock(withCap=false, withInf=false, withCounter=false, rolling=false):
-                    if isTrue(move stack.pop()):
-                        push(VTRUE)
-                        return
-            push(VFALSE)
+            #     iterateBlock(withCap=false, withInf=false, withCounter=false, rolling=false):
+            #         if isTrue(move stack.pop()):
+            #             push(VTRUE)
+            #             return
+            # push(VFALSE)
             #discard
             # let preevaled = evalOrGet(z)
             # let withIndex = popAttr("with")
