@@ -154,11 +154,16 @@ template iterateRangeWithParams(
     iteratorLoop(inf):
         when cap:
             if argsLen > 0:
-                capturedItems = collect:
-                    for i in indx..indx+loopStep-1:                        
-                        jr += step
-                        if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr-step)#newInteger(jr-step)
-                        else: newChar(char(jr-step))
+                capturedItems = newSeq[Value](loopStep)
+                var k = indx
+                var cnt = 0
+                while k < indx+loopStep:
+                    capturedItems[cnt] = 
+                        if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr)
+                        else: newChar(char(jr))
+                    jr += step
+                    k += 1
+                    cnt += 1
             
         var ip = 0
         if idx:
