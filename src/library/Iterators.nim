@@ -33,31 +33,6 @@ import vm/values/custom/vrange
 # Helpers
 #=======================================
 
-template iterableItemsFromLiteralParam(prm: untyped): ValueArray =
-    ensureInPlace()
-    if InPlaced.kind==Dictionary:
-        InPlaced.d.flattenedDictionary()
-    elif InPlaced.kind==Object:
-        InPlaced.o.flattenedDictionary()
-    elif InPlaced.kind==String:
-        toSeq(runes(InPlaced.s)).map((w) => newChar(w))
-    elif InPlaced.kind==Integer:
-        (toSeq(1..InPlaced.i)).map((w) => newInteger(w))
-    else: # block or inline
-        cleanedBlockValuesCopy(InPlaced())
-
-func iterableItemsFromParam(prm: Value): ValueArray {.inline,enforceNoRaises.} =
-    if prm.kind==Dictionary:
-        prm.d.flattenedDictionary()
-    elif prm.kind==Object:
-        prm.o.flattenedDictionary()
-    elif prm.kind==String:
-        toSeq(runes(prm.s)).map((w) => newChar(w))
-    elif prm.kind==Integer:
-        (toSeq(1..prm.i)).map((w) => newInteger(w))
-    else: # block or inline
-        cleanedBlockValuesCopy(prm)
-
 template iteratorLoop(forever: bool, body: untyped) {.dirty.} =
     var keepGoing{.inject.}: bool = true
     while keepGoing:
@@ -300,7 +275,18 @@ template prepareIteration(doesAcceptLiterals=true) {.dirty.} =
             iterable = InPlaced
 
 template fetchIterableItems(doesAcceptLiterals=true, defaultReturn: untyped) {.dirty.} =
-    var blo = iterableItemsFromParam(iterable)
+    var blo = 
+        case iterable.kind:
+            of Dictionary:
+                iterable.d.flattenedDictionary()
+            of Object:
+                iterable.o.flattenedDictionary()
+            of String:
+                toSeq(runes(iterable.s)).map((w) => newChar(w))
+            of Integer:
+                (toSeq(1..iterable.i)).map((w) => newInteger(w))
+            else: # block or inline
+                cleanedBlockValuesCopy(iterable)#iterableItemsFromParam(iterable)
 
     if blo.len == 0: 
         when doesAcceptLiterals:
