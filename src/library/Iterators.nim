@@ -295,7 +295,7 @@ template fetchIterableItems(doesAcceptLiterals=true, defaultReturn: untyped) {.d
                 toSeq(runes(iterable.s)).map((w) => newChar(w))
             of Integer:
                 (toSeq(1..iterable.i)).map((w) => newInteger(w))
-            else: # block or inline
+            else: # won't ever reach here
                 @[VNULL]
 
     if blo.len == 0: 
