@@ -33,19 +33,19 @@ import vm/values/custom/vrange
 # Helpers
 #=======================================
 
-template iteratorLoop(forever: bool, before: untyped, body: untyped) {.dirty.} =
+template iteratorLoop(justLiteral: bool, forever: bool, before: untyped, body: untyped) {.dirty.} =
     var keepGoing{.inject.}: bool = true
     while keepGoing:
+        before
+
         var indx{.inject.} = 0
         var run = 0
-        while indx+loopStep<=collectionLen:
-            before
-
+        while indx+(when justLiteral: 1 else: loopStep)<=collectionLen:
             handleBranching:
                 body
             do:
                 run += 1
-                indx += loopStep
+                indx += (when justLiteral: 1 else: loopStep)
 
         if not forever:
             keepGoing = false
@@ -71,12 +71,10 @@ template iterateRangeWithLiteral(
     prepareRange(rng)
     prepareLeaklessOne(lit)
 
-    let loopStep = 1
-
     when cap:
         var captured{.inject}: Value
 
-    iteratorLoop(inf):
+    iteratorLoop(justLiteral=true, inf):
         var jr = rng.start
     do:
         when cap:
@@ -108,12 +106,10 @@ template iterateBlockWithLiteral(
     prepareBlock(blk)
     prepareLeaklessOne(lit)
 
-    let loopStep = 1
-
     when cap:
         var captured{.inject}: Value
 
-    iteratorLoop(inf):
+    iteratorLoop(justLiteral=true, inf):
         discard
     do:
         when cap:
@@ -155,21 +151,20 @@ template iterateRangeWithParams(
     when cap:
         var captured{.inject}: ValueArray
 
-    iteratorLoop(inf):
+    iteratorLoop(justLiteral=false, inf):
         var jr = rng.start
     do:
         when cap:
-            if argsLen > 0:
-                captured = newSeq[Value](loopStep)
-                var k = indx
-                var cnt = 0
-                while k < indx+loopStep:
-                    captured[cnt] = 
-                        if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr)
-                        else: newChar(char(jr))
-                    jr += step
-                    k += 1
-                    cnt += 1
+            captured = newSeq[Value](loopStep)
+            var k = indx
+            var cnt = 0
+            while k < indx+loopStep:
+                captured[cnt] = 
+                    if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr)
+                    else: newChar(char(jr))
+                jr += step
+                k += 1
+                cnt += 1
             
         var ip = 0
         if idx:
@@ -230,12 +225,11 @@ template iterateBlockWithParams(
     when cap:
         var captured{.inject}: ValueArray
 
-    iteratorLoop(inf):
+    iteratorLoop(justLiteral=false, inf):
         discard
     do:
         when cap:
-            if argsLen > 0:
-                captured = blk[indx..indx+loopStep-1]
+            captured = blk[indx..indx+loopStep-1]
             
         var ip = 0
         if idx:
