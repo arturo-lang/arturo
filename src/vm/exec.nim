@@ -172,21 +172,23 @@ template finalizeLeakless*(): untyped =
 template prepareLeaklessOne*(protected: string | Value): untyped =
     ## Prepare for leak-less block execution
     ## with a single protected argument
+    
+    let toRestoreKey {.inject.} = 
+        when protected is Value: protected.s
+        else: protected
 
-    var toRestore{.inject.}: (string,Value) = 
-        when protected is Value:
-            (protected.s, Syms.getOrDefault(protected.s, nil))
-        else:
-            (protected, Syms.getOrDefault(protected, nil))
+    var toRestoreVal {.inject.} = 
+        when protected is Value: Syms.getOrDefault(protected.s, nil)
+        else: Syms.getOrDefault(protected, nil)
 
 template finalizeLeaklessOne*(): untyped =
     ## Finalize leak-less block execution
     ## with a single protected argument
     
-    if toRestore[1].isNil:
-        Syms.del(toRestore[0])
+    if toRestoreVal.isNil:
+        Syms.del(toRestoreKey)
     else:
-        Syms[toRestore[0]] = move toRestore[1]
+        Syms[toRestoreKey] = move toRestoreVal
 
 template handleBranching*(tryDoing, finalize: untyped): untyped =
     ## Wrapper for code that may throw *Break* or *Continue* signals, 
