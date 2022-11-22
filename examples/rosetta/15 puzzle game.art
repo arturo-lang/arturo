@@ -1,0 +1,232 @@
+;; by @RickBarretto
+
+;; |===>> Arturo's RC example for 15 Puzzle Game
+
+
+;; ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~
+;; ===>> ~~ Game's functions ~~ <<===
+;; --->> ~~ Init functions ~~ <<---
+
+;; This is a solved sample that is used to
+;; init and finish the game
+solvedTable: @[ "  1  " "  2  " "  3  " "  4  "
+                "  5  " "  6  " "  7  " "  8  "
+                "  9  " "  10 " "  11 " "  12 "
+                "  13 " "  14 " "  15 " "     " ]
+
+;; Use this once in :game's init, to get a player position
+;; Q: Why use it once?
+;; A: This algorithm is slower than just get a stored varible
+;; yet this searches for a string for every value from :game
+getPlayerPosition: $[table :block][
+    return index table "     "
+]
+
+;; This is the object that represents the game
+;; 'table » The sample table to generate the game
+define :game [
+    table :block
+][
+
+    init: [
+        ; checks if 'table has 16 elements
+        ensure [16 = size this\table]
+
+        ;; The game's table itself
+        this\table: (shuffle this\table) ; creates a random game
+        ;; The current movement. When less, better is your punctuation
+        this\movements: 0
+        ;; The current 'playerPosition in table
+        ;; Used to evaluate if certain movement is possible or not
+        this\playerPosition: getPlayerPosition this\table
+        ;; Defines it the gameLoop still running
+        this\running?: true
+    ]
+
+    ;; A builtin print function that simplifies the use
+    print: [
+        render {
+            Movements: |this\movements|, Position: |this\playerPosition|
+            *-----*-----*-----*-----*
+             |this\table\0| |this\table\1| |this\table\2| |this\table\3|
+            *-----*-----*-----*-----*
+             |this\table\4| |this\table\5| |this\table\6| |this\table\7|
+            *-----*-----*-----*-----*
+             |this\table\8| |this\table\9| |this\table\10| |this\table\11|
+            *-----*-----*-----*-----*
+             |this\table\12| |this\table\13| |this\table\14| |this\table\15|
+            *-----*-----*-----*-----*
+        }
+    ]
+
+    ;; Compares the internal's 'table with another :block
+    compare: [
+        if this\table = that
+            -> return true
+    ]
+
+]
+
+;; These are the commands used internally on game
+;; To avoid ambiguity, User's input'll to be translated to this
+gameActions: ['up, 'left, 'down, 'right, 'quit]
+
+
+;; ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~
+;; -->> Print funnctions <<---
+
+;; A template for print instructions
+printInstructions: [
+    color #cyan "Type (WASD) to move and (Q) to quit."
+]
+
+;; A template for print input warning
+;; 'input: the wrong input itself that will be printed
+printWrongInput: $[inp :string][
+    print color #red
+    ~"Wrong input: '|inp|'"
+]
+
+;; A template for print input warning
+;; 'action: could be 'up, 'down, 'left or 'right
+printWrongMovement: $[action :literal][
+    print color #red
+    ~"Wrong movement. Can't go |action|"
+]
+
+
+;; ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~
+;; --->> Validators/Checkers functions <<---
+
+;; Checks if a 'input is in 'gameActions
+;; Valids for: 'up, 'down, 'left, 'right and 'quit
+validInput?: $[inp :any][
+    return (in? inp gameActions)
+]
+
+;; Checks if the current movement tried is possible
+;; 'game » is the current game
+;; 'movement » must be in 'gameActions, but can't be 'quit
+validMovement?: $[
+    game     :game
+    movement :literal
+][
+    pos: game\playerPosition
+    case [movement]
+        when? [='up]
+            -> return (not? in? pos [0..3])
+        when? [='down]
+            -> return (not? in? pos [12..15])
+        when? [='left]
+            -> return (not? in? pos [0 4 8 12])
+        when? [='right]
+            -> return (not? in? pos [3 7 11 15])
+    else
+        -> return false
+]
+
+
+;; ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~
+;; --->> Action functions <<---
+
+;; Gets user input from terminal
+;; returning a :literal from 'gameActions
+;; Raises: In case of wrong input,
+;; will be returned the same input as a :string
+parseInput: $[inp :string][
+    lowerInp: lower inp
+    case [lowerInp]
+        when? [="w"] -> return 'up
+        when? [="a"] -> return 'left
+        when? [="s"] -> return 'down
+        when? [="d"] -> return 'right
+        when? [="q"] -> return 'quit
+    else -> return inp
+]
+
+;; Moves the player in Game's Table
+;; Note that this's a unsafe function,
+;; use 'validMovement? to check a 'movement given a game,
+;; and then use this
+movePlayer: $[
+    game     :game
+    movement :literal
+][
+
+    position: game\playerPosition
+
+    updateGame: $[
+        game             :game
+        playerPosition   :integer
+        relativePosition :integer
+    ][
+        try [
+
+            ; 'otherPosition is the real index of the 'relativePosition
+            otherPosition: + playerPosition relativePosition
+
+            ; -- Updates the table, swaping the positions
+            temp: game\table\[playerPosition]
+            game\table\[playerPosition]: game\table\[otherPosition]
+            game\table\[otherPosition]: temp
+
+            ; -- Updates player's status
+            game\playerPosition: otherPosition
+            game\movements: inc game\movements
+        ] else -> panic "'movement didn't checked."
+    ]
+
+    case [movement]
+    when? [='up]
+        -> (updateGame game position (neg 4))
+    when? [='down]
+        -> (updateGame game position (4))
+    when? [='left]
+        -> (updateGame game position (neg 1))
+    when? [='right]
+        -> (updateGame game position (1))
+    else -> panic "'movement didn't checked."
+
+]
+
+endGame: $[
+    message :string
+][
+    print message
+    exit
+]
+
+
+;; ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~ ~~
+;; --->> Run function <<---
+
+;; Inits ans runs the game
+;; 'sampleTable must be already solved
+runGame: $[sampleTable :block][
+    game: to :game [sampleTable]
+
+    while [game\running?] [
+        print game
+        print printInstructions
+        command: parseInput input ">> "
+
+        if command = 'quit
+            -> endGame "Exiting game..."
+
+        validInp: validInput? command
+        if? validInp [
+            validMov: validMovement? game command
+            (validMov)?
+                -> movePlayer game command
+                -> printWrongMovement command
+        ] else
+            -> printWrongInput command
+
+        if sampleTable = game
+            -> endGame "Congratulations! You won!"
+        print ""
+    ]
+]
+
+
+runGame solvedTable
