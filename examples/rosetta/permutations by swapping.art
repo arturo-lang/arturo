@@ -1,7 +1,7 @@
 permutations: function [arr][
     d: 1
     c: array.of: size arr 0
-    xs: new arr
+    xs: @ arr
     sign: 1
 
     ret: @[@[new xs, sign]]

@@ -28,12 +28,13 @@ import strutils, sugar, unicode
 
 import helpers/arrays
 import helpers/combinatorics
+import helpers/ranges
 import helpers/strings
 import helpers/unisort
 
 import vm/lib
 
-import vm/values/custom/[vbinary]
+import vm/values/custom/[vbinary, vrange]
 
 #=======================================
 # Methods
@@ -199,7 +200,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "check if collection contains given value",
         args        = {
-            "collection": {String, Block, Dictionary},
+            "collection": {String, Block, Range, Dictionary},
             "value"     : {Any}
         },
         attrs       = {
@@ -248,6 +249,8 @@ proc defineSymbols*() =
                     of Block:
                         ensureCleaned(x)
                         push(newLogical(cleanX[at] == y))
+                    of Range:
+                        push(newLogical(x.rng[at] == y))
                     of Dictionary:
                         let values = toSeq(x.d.values)
                         push(newLogical(values[at] == y))
@@ -265,6 +268,8 @@ proc defineSymbols*() =
                     of Block:
                         ensureCleaned(x)
                         push(newLogical(y in cleanX))
+                    of Range:
+                        push(newLogical(y in x.rng))
                     of Dictionary:
                         let values = toSeq(x.d.values)
                         push(newLogical(y in values))
@@ -427,7 +432,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "return the first item of the given collection",
         args        = {
-            "collection": {String, Block}
+            "collection": {String, Block, Range}
         },
         attrs       = {
             "n"     : ({Integer}, "get first *n* items")
@@ -444,6 +449,14 @@ proc defineSymbols*() =
                 if x.kind == String:
                     if x.s.len == 0: push(newString(""))
                     else: push(newString(x.s[0..aN.i-1]))
+                elif x.kind == Range:
+                    var res: ValueArray = newSeq[Value](aN.i)
+                    var i = 0
+                    for item in items(x.rng):
+                        res[i] = item
+                        i += 1
+                        if i == aN.i: break
+                    push(newBlock(res))
                 else:
                     ensureCleaned(x)
                     if cleanX.len == 0: push(newBlock())
@@ -452,6 +465,8 @@ proc defineSymbols*() =
                 if x.kind == String:
                     if x.s.len == 0: push(VNULL)
                     else: push(newChar(x.s.runeAt(0)))
+                elif x.kind == Range:
+                    push(x.rng[0])
                 else:
                     ensureCleaned(x)
                     if cleanX.len == 0: push(VNULL)
@@ -496,8 +511,7 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "get collection's item by given index",
         args        = {
-            "collection": {String, Block, Dictionary, Object, Date, Binary,
-                    Bytecode},
+            "collection": {String, Block, Range, Dictionary, Object, Date, Binary, Bytecode},
             "index"     : {Any}
         },
         attrs       = NoAttrs,
@@ -532,8 +546,28 @@ proc defineSymbols*() =
             #=======================================================
             case x.kind:
                 of Block:
-                    ensureCleaned(x)
-                    push(GetArrayIndex(cleanX, y.i))
+                    if likely(y.kind==Integer):
+                        ensureCleaned(x)
+                        push(GetArrayIndex(cleanX, y.i))
+                    else:
+                        let rLen = y.rng.len
+                        var res: ValueArray = newSeq[Value](rLen)
+                        var i = 0
+                        for item in items(y.rng):
+                            res[i] = GetArrayIndex(x.a, item.i)
+                            i += 1
+                        push(newBlock(res))
+                of Range:
+                    if likely(y.kind==Integer):
+                        push(x.rng[y.i])
+                    else:
+                        let rLen = y.rng.len
+                        var res: ValueArray = newSeq[Value](rLen)
+                        var i = 0
+                        for item in items(y.rng):
+                            res[i] = x.rng[item.i]
+                            i += 1
+                        push(newBlock(res))
                 of Binary:
                     push(newInteger(int(x.n[y.i])))
                 of Bytecode:
@@ -568,7 +602,7 @@ proc defineSymbols*() =
         description = "check if value exists in given collection",
         args        = {
             "value"     : {Any},
-            "collection": {String, Block, Dictionary}
+            "collection": {String, Block, Range, Dictionary}
         },
         attrs       = {
             "at"    : ({Integer}, "check at given location within collection")
@@ -616,6 +650,8 @@ proc defineSymbols*() =
                     of Block:
                         ensureCleaned(y)
                         push(newLogical(cleanY[at] == x))
+                    of Range:
+                        push(newLogical(y.rng[at] == x))
                     of Dictionary:
                         let values = toSeq(y.d.values)
                         push(newLogical(values[at] == x))
@@ -632,6 +668,8 @@ proc defineSymbols*() =
                             push(newLogical(x.s in y.s))
                     of Block:
                         push(newLogical(x in y.a))
+                    of Range:
+                        push(newLogical(x in y.rng))
                     of Dictionary:
                         let values = toSeq(y.d.values)
                         push(newLogical(x in values))
@@ -643,7 +681,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "return first index of value in given collection",
         args        = {
-            "collection": {String, Block, Dictionary},
+            "collection": {String, Block, Range, Dictionary},
             "value"     : {Any}
         },
         attrs       = NoAttrs,
@@ -666,6 +704,10 @@ proc defineSymbols*() =
                 of Block:
                     ensureCleaned(x)
                     let indx = cleanX.find(y)
+                    if indx != -1: push(newInteger(indx))
+                    else: push(VNULL)
+                of Range:
+                    let indx = x.rng.find(y)
                     if indx != -1: push(newInteger(indx))
                     else: push(VNULL)
                 of Dictionary:
@@ -794,7 +836,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "return the last item of the given collection",
         args        = {
-            "collection": {String, Block}
+            "collection": {String, Block, Range}
         },
         attrs       = {
             "n"     : ({Integer}, "get last *n* items")
@@ -811,6 +853,9 @@ proc defineSymbols*() =
                 if x.kind == String:
                     if x.s.len == 0: push(newString(""))
                     else: push(newString(x.s[x.s.len-aN.i..^1]))
+                elif x.kind == Range:
+                    let items = toSeq(x.rng.items)
+                    push(newBlock(items[x.rng.len-aN.i..^1]))
                 else:
                     ensureCleaned(x)
                     if cleanX.len == 0: push(newBlock())
@@ -819,6 +864,9 @@ proc defineSymbols*() =
                 if x.kind == String:
                     if x.s.len == 0: push(VNULL)
                     else: push(newChar(toRunes(x.s)[^1]))
+                elif x.kind == Range:
+                    let items = toSeq(x.rng.items)
+                    push(items[x.rng.len-1])
                 else:
                     ensureCleaned(x)
                     if cleanX.len == 0: push(VNULL)
@@ -829,7 +877,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get maximum element in given collection",
         args        = {
-            "collection": {Block}
+            "collection": {Block,Range}
         },
         attrs       = {
             "index" : ({Logical}, "retrieve index of maximum element"),
@@ -839,35 +887,42 @@ proc defineSymbols*() =
             print max [4 2 8 5 1 9]       ; 9
         """:
             #=======================================================
-            ensureCleaned(x)
-            if cleanX.len == 0: push(VNULL)
+            let withIndex = hadAttr("index")
+
+            if x.kind==Range:
+                let (maxIndex, maxElement) = max(x.rng)
+                if withIndex: push(newInteger(maxIndex))
+                else: push(maxElement)
             else:
-                var maxElement = cleanX[0]
-                if (hadAttr("index")):
-                    var maxIndex = 0
-                    var i = 1
-                    while i < cleanX.len:
-                        if (cleanX[i] > maxElement):
-                            maxElement = cleanX[i]
-                            maxIndex = i
-                        inc(i)
-
-                    push(newInteger(maxIndex))
+                ensureCleaned(x)
+                if cleanX.len == 0: push(VNULL)
                 else:
-                    var i = 1
-                    while i < cleanX.len:
-                        if (cleanX[i] > maxElement):
-                            maxElement = cleanX[i]
-                        inc(i)
+                    var maxElement = cleanX[0]
+                    if withIndex:
+                        var maxIndex = 0
+                        var i = 1
+                        while i < cleanX.len:
+                            if (cleanX[i] > maxElement):
+                                maxElement = cleanX[i]
+                                maxIndex = i
+                            inc(i)
 
-                    push(maxElement)
+                        push(newInteger(maxIndex))
+                    else:
+                        var i = 1
+                        while i < cleanX.len:
+                            if (cleanX[i] > maxElement):
+                                maxElement = cleanX[i]
+                            inc(i)
+
+                        push(maxElement)
 
     builtin "min",
         alias       = unaliased,
         rule        = PrefixPrecedence,
         description = "get minimum element in given collection",
         args        = {
-            "collection": {Block}
+            "collection": {Block,Range}
         },
         attrs       = {
             "index" : ({Logical}, "retrieve index of minimum element"),
@@ -877,28 +932,35 @@ proc defineSymbols*() =
             print min [4 2 8 5 1 9]       ; 1
         """:
             #=======================================================
-            ensureCleaned(x)
-            if cleanX.len == 0: push(VNULL)
+            let withIndex = hadAttr("index")
+
+            if x.kind==Range:
+                let (minIndex, minElement) = min(x.rng)
+                if withIndex: push(newInteger(minIndex))
+                else: push(minElement)
             else:
-                var minElement = cleanX[0]
-                var minIndex = 0
-                if (hadAttr("index")):
-                    var i = 1
-                    while i < cleanX.len:
-                        if (cleanX[i] < minElement):
-                            minElement = cleanX[i]
-                            minIndex = i
-                        inc(i)
-
-                    push(newInteger(minIndex))
+                ensureCleaned(x)
+                if cleanX.len == 0: push(VNULL)
                 else:
-                    var i = 1
-                    while i < cleanX.len:
-                        if (cleanX[i] < minElement):
-                            minElement = cleanX[i]
-                        inc(i)
+                    var minElement = cleanX[0]
+                    var minIndex = 0
+                    if withIndex:
+                        var i = 1
+                        while i < cleanX.len:
+                            if (cleanX[i] < minElement):
+                                minElement = cleanX[i]
+                                minIndex = i
+                            inc(i)
 
-                    push(minElement)
+                        push(newInteger(minIndex))
+                    else:
+                        var i = 1
+                        while i < cleanX.len:
+                            if (cleanX[i] < minElement):
+                                minElement = cleanX[i]
+                            inc(i)
+
+                        push(minElement)
 
     builtin "permutate",
         alias       = unaliased,
@@ -1083,7 +1145,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "reverse given collection",
         args        = {
-            "collection": {String, Block, Literal}
+            "collection": {String, Block, Range, Literal}
         },
         attrs       = NoAttrs,
         returns     = {String, Block, Nothing},
@@ -1109,13 +1171,70 @@ proc defineSymbols*() =
                 ensureInPlace()
                 if InPlaced.kind == String:
                     InPlaced.s.reverse()
+                elif InPlaced.kind == Range:
+                    InPlaced.rng = InPlaced.rng.reversed()
                 else:
                     InPlaced.a.reverse()
             else:
                 if x.kind == Block:
                     ensureCleaned(x)
                     push(newBlock(cleanX.reversed))
-                elif x.kind == String: push(newString(x.s.reversed))
+                elif x.kind == Range:
+                    push(newRange(x.rng.reversed()))
+                else:
+                    push(newString(reversed(x.s)))
+
+    builtin "range",
+        alias       = ellipsis, 
+        rule        = InfixPrecedence,
+        description = "get list of values in given range (inclusive)",
+        args        = {
+            "from"  : {Integer, Char},
+            "to"    : {Integer, Floating, Char}
+        },
+        attrs       = {
+            "step"  : ({Integer},"use step between range values")
+        },
+        returns     = {Block},
+        example     = """
+        """:
+            #=======================================================
+            var limX: int
+            var limY: int
+            var numeric = true
+            var infinite = false
+
+            if x.kind == Integer: limX = x.i
+            else:
+                numeric = false
+                limX = ord(x.c)
+
+            var forward: bool
+
+            if y.kind == Integer: limY = y.i
+            elif y.kind == Floating:
+                if y.f == Inf or y.f == NegInf: 
+                    infinite = true
+                    if y.f == Inf: forward = true
+                    else: forward = false
+                else:
+                    limY = int(y.f)
+            else:
+                limY = ord(y.c)
+
+            var step = 1
+            if checkAttr("step"):
+                step = aStep.i
+                if step < 0:
+                    step = -step
+                elif step == 0:
+                    step = 1
+                    # preferrably show error message?
+
+            if not infinite:
+                forward = limX < limY
+
+            push newRange(limX, limY, step, infinite, numeric, forward)
 
     builtin "rotate",
         alias       = unaliased,
@@ -1158,7 +1277,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get a random element from given collection",
         args        = {
-            "collection": {Block}
+            "collection": {Block,Range}
         },
         attrs       = NoAttrs,
         returns     = {Any, Null},
@@ -1168,9 +1287,13 @@ proc defineSymbols*() =
             ; apple
         """:
             #=======================================================
-            ensureCleaned(x)
-            if cleanX.len == 0: push(VNULL)
-            else: push(sample(cleanX))
+            if x.kind == Range:
+                let rnd = rand(0..int(x.rng.len-1))
+                push(x.rng[rnd])
+            else:
+                ensureCleaned(x)
+                if cleanX.len == 0: push(VNULL)
+                else: push(sample(cleanX))
 
     builtin "set",
         alias       = unaliased,
@@ -1279,10 +1402,10 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get size/length of given collection",
         args        = {
-            "collection": {String, Block, Dictionary, Object}
+            "collection": {String, Block, Range, Dictionary, Object}
         },
         attrs       = NoAttrs,
-        returns     = {Integer},
+        returns     = {Integer, Floating},
         example     = """
             arr: ["one" "two" "three"]
             print size arr                ; 3
@@ -1302,6 +1425,10 @@ proc defineSymbols*() =
                 push(newInteger(x.d.len))
             elif x.kind == Object:
                 push(newInteger(x.o.len))
+            elif x.kind == Range:
+                let sz = x.rng.len
+                if sz == InfiniteRange: push(newFloating(Inf))
+                else: push(newInteger(sz))
             else:
                 ensureCleaned(x)
                 push(newInteger(cleanX.len))
@@ -1684,7 +1811,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "keep first <number> of elements from given collection and return the remaining ones",
         args        = {
-            "collection": {String, Block, Literal},
+            "collection": {String, Block, Range, Literal},
             "number"    : {Integer}
         },
         attrs       = NoAttrs,
@@ -1710,6 +1837,14 @@ proc defineSymbols*() =
                         if upperLimit > InPlaced.a.len - 1:
                             upperLimit = InPlaced.a.len-1
                         InPlaced.a = InPlaced.a[0..upperLimit]
+                elif InPlaced.kind == Range:
+                    var res: ValueArray = newSeq[Value](upperLimit+1)
+                    var i = 0
+                    for item in items(InPlaced.rng):
+                        res[i] = item
+                        i += 1
+                        if i == upperLimit+1: break
+                    InPlaced = newBlock(res)
             else:
                 if x.kind == String:
                     if x.s.len == 0: push(newString(""))
@@ -1724,6 +1859,14 @@ proc defineSymbols*() =
                         if upperLimit > cleanX.len - 1:
                             upperLimit = cleanX.len-1
                         push(newBlock(cleanX[0..upperLimit]))
+                elif x.kind == Range:
+                    var res: ValueArray = newSeq[Value](upperLimit+1)
+                    var i = 0
+                    for item in items(x.rng):
+                        res[i] = item
+                        i += 1
+                        if i == upperLimit+1: break
+                    push(newBlock(res))
 
     builtin "unique",
         alias       = unaliased,
@@ -1763,7 +1906,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get list of values for given collection",
         args        = {
-            "dictionary": {Block, Dictionary, Object}
+            "dictionary": {Block, Range, Dictionary, Object}
         },
         attrs       = NoAttrs,
         returns     = {Block},
@@ -1779,6 +1922,9 @@ proc defineSymbols*() =
             #=======================================================
             if x.kind == Block:
                 push x
+            elif x.kind == Range:
+                let items = toSeq(x.rng.items)
+                push(newBlock(items))
             elif x.kind == Dictionary:
                 let s = toSeq(x.d.values)
                 push(newBlock(s))

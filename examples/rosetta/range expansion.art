@@ -1,7 +1,7 @@
 expandRange: function [rng][
     flatten @ to :block 
         join.with:" " map split.by:"," rng 'x -> 
-            replace replace replace x 
+            "@" ++ replace replace replace x 
                 {/^\-(\d+)/} "(neg $1)" {/\-\-(\d+)/} 
                 "-(neg $1)" "-" ".."
 ]

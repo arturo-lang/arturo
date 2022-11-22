@@ -29,6 +29,8 @@ import helpers/datasource
 when not defined(NOASCIIDECODE):
     import helpers/strings
 
+import helpers/ranges
+
 import vm/lib
 import vm/[bytecode, errors, eval, exec, opcodes, parse]
 
@@ -404,6 +406,12 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                     else:
                         discard
 
+            of Range:
+                if tp == Block:
+                    return newBlock(toSeq(y.rng.items))
+                else:
+                    throwCannotConvert()
+
             of Dictionary:
                 case tp:
                     of Object:
@@ -577,22 +585,30 @@ proc defineSymbols*() =
 
                     push newBlock(blk)
             else:
-                let stop = SP
+                if x.kind==Range:
+                    push(newBlock(toSeq(items(x.rng))))
+                else:
+                    if x.kind==Block:
+                        let stop = SP
+                        execUnscoped(x)
+                        let arr: ValueArray = sTopsFrom(stop)
+                        SP = stop
 
-                if x.kind==Block:
-                    execUnscoped(x)
-                elif x.kind==String:
-                    let (_{.inject.}, tp) = getSource(x.s)
+                        push(newBlock(arr))
+                    elif x.kind==String:
+                        let stop = SP
+                        let (_{.inject.}, tp) = getSource(x.s)
 
-                    if tp!=TextData:
-                        execUnscoped(doParse(x.s, isFile=false))
+                        if tp!=TextData:
+                            execUnscoped(doParse(x.s, isFile=false))
+                        else:
+                            echo "file does not exist"
+                        let arr: ValueArray = sTopsFrom(stop)
+                        SP = stop
+
+                        push(newBlock(arr))
                     else:
-                        echo "file does not exist"
-
-                let arr: ValueArray = sTopsFrom(stop)
-                SP = stop
-
-                push(newBlock(arr))
+                        push(newBlock(@[x]))
 
     builtin "as",
         alias       = unaliased, 
@@ -1217,9 +1233,13 @@ proc defineSymbols*() =
                     ret = toSeq(runes(y.s)).map((c) => newChar(c))
                 else:
                     let aFormat = popAttr("format")
-                    ensureCleaned(y)
-                    for item in cleanY:
-                        ret.add(convertedValueToType(cleanX[0], item, tp, aFormat))
+                    if y.kind == Block:
+                        ensureCleaned(y)
+                        for item in cleanY:
+                            ret.add(convertedValueToType(cleanX[0], item, tp, aFormat))
+                    else:
+                        for item in items(y.rng):
+                            ret.add(convertedValueToType(cleanX[0], item, tp, aFormat))
 
                 push newBlock(ret)
         

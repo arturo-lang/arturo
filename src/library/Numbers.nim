@@ -28,6 +28,7 @@ when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
 import helpers/maths
+import helpers/ranges
 
 import vm/lib
 
@@ -946,7 +947,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the product of all values in given list",
         args        = {
-            "collection"    : {Block}
+            "collection"    : {Block,Range}
         },
         attrs       = {
             "cartesian"  : ({Logical},"return the cartesian product of given sublists")
@@ -959,20 +960,26 @@ proc defineSymbols*() =
             print product 1..10       ; 3628800
         """:
             #=======================================================
-            ensureCleaned(x)
             if (hadAttr("cartesian")):
+                ensureCleaned(x)
                 let blk = cleanX.map((z)=>z.a)
                 push(newBlock(cartesianProduct(blk).map((z) => newBlock(z))))
             else:
-                var i = 0
                 var product = I1.copyValue
-                if cleanX.len==0: push(I0.copyValue)
-                else:
-                    while i<cleanX.len:
-                        product *= cleanX[i]
-                        i += 1
-
+                if x.kind==Range:
+                    for item in items(x.rng):
+                        product *= item
                     push(product)
+                else:
+                    ensureCleaned(x)
+                    if cleanX.len==0: push(I0.copyValue)
+                    else:
+                        var i = 0
+                        while i<cleanX.len:
+                            product *= cleanX[i]
+                            i += 1
+
+                        push(product)
 
     builtin "random",
         alias       = unaliased, 
@@ -993,60 +1000,60 @@ proc defineSymbols*() =
             else:
                 push(newFloating(rand(asFloat(x)..asFloat(y))))
 
-    builtin "range",
-        alias       = ellipsis, 
-        rule        = InfixPrecedence,
-        description = "get list of values in given range (inclusive)",
-        args        = {
-            "from"  : {Integer, Char},
-            "to"    : {Integer, Char}
-        },
-        attrs       = {
-            "step"  : ({Integer},"use step between range values")
-        },
-        returns     = {Block},
-        example     = """
-            print range 1 4       ; 1 2 3 4
-            1..10                 ; => [1 2 3 4 5 6 7 8 9 10]
-            ..........
-            print `a`..`f`        ; a b c d e f
-        """:
-            #=======================================================
-            var res: seq[int] = @[]
+    # builtin "range",
+    #     alias       = ellipsis, 
+    #     rule        = InfixPrecedence,
+    #     description = "get list of values in given range (inclusive)",
+    #     args        = {
+    #         "from"  : {Integer, Char},
+    #         "to"    : {Integer, Char}
+    #     },
+    #     attrs       = {
+    #         "step"  : ({Integer},"use step between range values")
+    #     },
+    #     returns     = {Block},
+    #     example     = """
+    #         print range 1 4       ; 1 2 3 4
+    #         1..10                 ; => [1 2 3 4 5 6 7 8 9 10]
+    #         ..........
+    #         print `a`..`f`        ; a b c d e f
+    #     """:
+    #         #=======================================================
+    #         var res: seq[int] = @[]
 
-            var limX: int
-            var limY: int
+    #         var limX: int
+    #         var limY: int
 
-            if x.kind==Integer: limX = x.i
-            else: limX = ord(x.c)
+    #         if x.kind==Integer: limX = x.i
+    #         else: limX = ord(x.c)
 
-            if y.kind==Integer: limY = y.i
-            else: limY = ord(y.c)
+    #         if y.kind==Integer: limY = y.i
+    #         else: limY = ord(y.c)
 
-            var step = 1
-            if checkAttr("step"):
-                step = aStep.i
-                if step < 0:
-                    step = -step
+    #         var step = 1
+    #         if checkAttr("step"):
+    #             step = aStep.i
+    #             if step < 0:
+    #                 step = -step
 
-            if step==0:
-                push newBlock()
-            else:
-                if limX < limY:
-                    var j = limX
-                    while j <= limY:
-                        res.add(j)
-                        j += step
-                else:
-                    var j = limX
-                    while j >= limY:
-                        res.add(j)
-                        j -= step
+    #         if step==0:
+    #             push newBlock()
+    #         else:
+    #             if limX < limY:
+    #                 var j = limX
+    #                 while j <= limY:
+    #                     res.add(j)
+    #                     j += step
+    #             else:
+    #                 var j = limX
+    #                 while j >= limY:
+    #                     res.add(j)
+    #                     j -= step
 
-                if x.kind==Char and y.kind==Char:
-                    push newBlock(res.map((x) => newChar(chr(x))))
-                else:
-                    push newBlock(res.map((x) => newInteger(x)))
+    #             if x.kind==Char and y.kind==Char:
+    #                 push newBlock(res.map((x) => newChar(chr(x))))
+    #             else:
+    #                 push newBlock(res.map((x) => newInteger(x)))
 
     builtin "reciprocal",
         alias       = unaliased, 
@@ -1218,7 +1225,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the sum of all values in given list",
         args        = {
-            "collection"    : {Block}
+            "collection"    : {Block,Range}
         },
         attrs       = NoAttrs,
         returns     = {Integer,Floating},
@@ -1229,12 +1236,16 @@ proc defineSymbols*() =
             print sum 1..10           ; 55
         """:
             #=======================================================
-            ensureCleaned(x)
-            var i = 0
             var sum = I0.copyValue
-            while i<cleanX.len:
-                sum += cleanX[i]
-                i += 1
+            if x.kind==Range:
+                for item in items(x.rng):
+                    sum += item
+            else:
+                ensureCleaned(x)
+                var i = 0
+                while i<cleanX.len:
+                    sum += cleanX[i]
+                    i += 1
 
             push(sum)
 

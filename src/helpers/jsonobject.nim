@@ -64,6 +64,10 @@ proc generateJsonNode*(n: Value): JsonNode =
            result = newJArray()
            for v in n.a:
                 result.add(generateJsonNode(v))
+        of Range        :
+            result = newJArray()
+            result.add(newJInt(n.rng.start))
+            result.add(newJInt(n.rng.stop))
         of Dictionary   :
             result = newJObject()
             for k,v in pairs(n.d):
@@ -138,6 +142,11 @@ when defined(WEB):
                 var ret: seq[JsObject] = @[]
                 for v in n.a:
                     ret.add(generateJsObject(v))
+                result = toJs(ret)
+            of Range        :
+                var ret: seq[JsObject] = @[]
+                ret.add(toJs(n.rng.start))
+                ret.add(toJs(n.rng.stop))
                 result = toJs(ret)
             of Dictionary   :
                 result = newJsObject()
