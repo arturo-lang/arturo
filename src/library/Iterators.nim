@@ -22,116 +22,384 @@
 import algorithm, sequtils, sugar, unicode
 
 import helpers/dictionaries
+import helpers/ranges
 
 import vm/lib
 import vm/[errors, eval, exec]
+
+import vm/values/custom/vrange
 
 #=======================================
 # Helpers
 #=======================================
 
-template iterableItemsFromLiteralParam(prm: untyped): ValueArray =
-    ensureInPlace()
-    if InPlaced.kind==Dictionary:
-        InPlaced.d.flattenedDictionary()
-    elif InPlaced.kind==Object:
-        InPlaced.o.flattenedDictionary()
-    elif InPlaced.kind==String:
-        toSeq(runes(InPlaced.s)).map((w) => newChar(w))
-    elif InPlaced.kind==Integer:
-        (toSeq(1..InPlaced.i)).map((w) => newInteger(w))
-    else: # block or inline
-        cleanedBlockValuesCopy(InPlaced())
+template iteratorLoop(justLiteral: bool, forever: bool, before: untyped, body: untyped) {.dirty.} =
+    var keepGoing: bool = true
+    while keepGoing:
+        before
 
-func iterableItemsFromParam(prm: Value): ValueArray {.inline,enforceNoRaises.} =
-    if prm.kind==Dictionary:
-        prm.d.flattenedDictionary()
-    elif prm.kind==Object:
-        prm.o.flattenedDictionary()
-    elif prm.kind==String:
-        toSeq(runes(prm.s)).map((w) => newChar(w))
-    elif prm.kind==Integer:
-        (toSeq(1..prm.i)).map((w) => newInteger(w))
-    else: # block or inline
-        cleanedBlockValuesCopy(prm)
+        var indx = 0
+        var run = 0
+        while indx+(when justLiteral: 1 else: loopStep)<=collectionLen:
+            handleBranching:
+                body
+            do:
+                run += 1
+                indx += (when justLiteral: 1 else: loopStep)
 
-template iterateThrough(
-    idx: Value,
-    params: Value,
-    collection: ValueArray,
-    forever: bool,
-    rolling: bool,
-    rollingRight: bool,
-    capturing: bool,
-    performAction: untyped
-): untyped =
-    let collectionLen = collection.len
+        if not forever:
+            keepGoing = false
 
-    if collectionLen > 0:
-        var args: ValueArray
-        if params.kind==Literal: args = @[params]
-        elif params.kind==Block: args = cleanedBlock(params.a)
+template prepareRange(rng: VRange) {.dirty.} =
+    let numeric = rng.numeric
+    
+    var step = rng.step
+    if not rng.forward: step *= -1
 
-        var argsLen = args.len
-        let hasArgs = argsLen > 0
-        if not hasArgs:
-            argsLen = 1
-        when rolling:
-            if hasArgs and argsLen>1:
-                argsLen -= 1
+    let collectionLen = rng.len
 
-        var withIndex = false
-        if not idx.isNil:
-            withIndex = true
-            args.insert(idx,0)
+template prepareBlock(blk: ValueArray) {.dirty.} =
+    let collectionLen = blk.len
 
-        when capturing:
-            var capturedItems{.inject}: ValueArray
+template iterateRangeWithLiteral(
+    rng: VRange,
+    lit: string,
+    cap: bool,
+    inf: bool,
+    doAction: untyped
+) {.dirty.} =
+    prepareRange(rng)
+    prepareLeaklessOne(lit)
 
-        prepareLeakless(args)
+    when cap:
+        var captured: Value
 
-        var keepGoing{.inject.}: bool = true
-        while keepGoing:
-            var indx{.inject.} = 0
-            var run = 0
-            while indx+argsLen<=collectionLen:
-                handleBranching:
-                    when capturing:
-                        capturedItems = collection[indx..indx+argsLen-1]
+    iteratorLoop(justLiteral=true, inf):
+        var jr = rng.start
+    do:
+        when cap:
+            captured =
+                if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr)
+                else: newChar(char(jr))
 
-                    var argi = 0
+            jr += step
+            
+            Syms[lit] = captured
+        else:
+            Syms[lit] = 
+                if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr)
+                else: newChar(char(jr))
+            jr += step
 
-                    if withIndex:
-                        Syms[args[argi].s] = newInteger(run)
-                        inc argi
+        execUnscoped(preevaled)
+        doAction
 
-                    if hasArgs:
-                        when rolling:
-                            if not rollingRight:
-                                Syms[args[argi].s] = res
-                                inc argi
+    finalizeLeaklessOne()
 
-                        var j = indx
-                        while j < indx+argsLen:
-                            Syms[args[argi].s] = collection[j]
-                            inc argi
-                            inc j
+template iterateBlockWithLiteral(
+    blk: ValueArray,
+    lit: string,
+    cap: bool,
+    inf: bool,
+    doAction: untyped
+) {.dirty.} =
+    prepareBlock(blk)
+    prepareLeaklessOne(lit)
 
-                        when rolling:
-                            if rollingRight:
-                                Syms[args[argi].s] = res
+    when cap:
+        var captured: Value
 
-                    execUnscoped(preevaled)
+    iteratorLoop(justLiteral=true, inf):
+        discard
+    do:
+        when cap:
+            captured = blk[indx]
+            
+            Syms[lit] = captured
+        else:
+            Syms[lit] = blk[indx]
 
-                    performAction
-                do:
-                    run += 1
-                    indx += argsLen
+        execUnscoped(preevaled)
+        doAction
 
-                    if not forever:
-                        keepGoing = false
+    finalizeLeaklessOne()
 
-        finalizeLeakless()
+template iterateRangeWithParams(
+    rng: VRange,
+    prm: seq[string],
+    rll: bool,
+    idx: bool,
+    cap: bool,
+    inf: bool,
+    doAction: untyped
+) {.dirty.} =
+    prepareRange(rng)
+    prepareLeakless(prm)
+
+    let argsLen = 
+        if idx: prm.len-1
+        else: prm.len
+
+    var loopStep = 
+        if argsLen == 0: 1
+        else: argsLen
+
+    when rll:
+        if loopStep > 1:
+            loopStep -= 1
+    
+    when cap:
+        var captured: ValueArray
+
+    iteratorLoop(justLiteral=false, inf):
+        var jr = rng.start
+    do:
+        when cap:
+            captured = newSeq[Value](loopStep)
+            var k = indx
+            var cnt = 0
+            while k < indx+loopStep:
+                captured[cnt] = 
+                    if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr)
+                    else: newChar(char(jr))
+                jr += step
+                k += 1
+                cnt += 1
+            
+        var ip = 0
+        if idx:
+            Syms[prm[ip]] = Value(kind: Integer, iKind: NormalInteger, i: run)
+            inc ip
+
+        when rll:
+            if not rollingRight:
+                Syms[prm[ip]] = res
+                inc ip
+
+        if argsLen > 0:
+            when cap:
+                for capt in captured:
+                    Syms[prm[ip]] = capt
+                    inc ip
+            else:
+                for i in indx..indx+loopStep-1:     
+                    Syms[prm[ip]] =                   
+                        if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr)
+                        else: newChar(char(jr))
+                    jr += step
+                    inc ip
+
+        when rll:
+            if rollingRight:
+                Syms[prm[ip]] = res
+
+        execUnscoped(preevaled)
+        doAction
+
+    finalizeLeakless()
+
+template iterateBlockWithParams(
+    blk: ValueArray,
+    prm: seq[string],
+    rll: bool,
+    idx: bool,
+    cap: bool,
+    inf: bool,
+    doAction: untyped
+) {.dirty.} =
+    prepareBlock(blk)
+    prepareLeakless(prm)
+
+    let argsLen = 
+        if idx: prm.len-1
+        else: prm.len
+
+    var loopStep = 
+        if argsLen == 0: 1
+        else: argsLen
+
+    when rll:
+        if loopStep > 1:
+            loopStep -= 1
+
+    when cap:
+        var captured: ValueArray
+
+    iteratorLoop(justLiteral=false, inf):
+        discard
+    do:
+        when cap:
+            captured = blk[indx..indx+loopStep-1]
+            
+        var ip = 0
+        if idx:
+            Syms[prm[ip]] = Value(kind: Integer, iKind: NormalInteger, i: run)
+            inc ip
+
+        when rll:
+            if not rollingRight:
+                Syms[prm[ip]] = res
+                inc ip
+
+        if argsLen > 0:
+            when cap:
+                for capt in captured:
+                    Syms[prm[ip]] = capt
+                    inc ip
+            else:
+                var j = indx
+                while j < indx+loopStep:
+                    Syms[prm[ip]] = blk[j]
+                    inc ip
+                    inc j
+
+        when rll:
+            if rollingRight:
+                Syms[prm[ip]] = res
+
+        execUnscoped(preevaled)
+        doAction
+
+    finalizeLeakless()
+
+template fetchParamsBlock() {.dirty.} =
+    var params: seq[string]
+    if hasIndex: params.add(withIndex.s)
+    if y.kind != Null:
+        for item in mitems(y.a):
+            if item.kind != Newline:
+                params.add(item.s)
+
+template prepareIteration(doesAcceptLiterals=true) {.dirty.} =
+    let preevaled = evalOrGet(z)
+    let withIndex = popAttr("with")
+    let hasIndex = not withIndex.isNil
+    var iterable{.cursor.} = x
+
+    when doesAcceptLiterals:
+        let inPlace = x.kind==Literal
+        if inPlace: 
+            ensureInPlace()
+            iterable = InPlaced
+
+template fetchIterableRange() {.dirty.} =
+    var rang = iterable.rng
+
+template fetchIterableItems(doesAcceptLiterals=true, defaultReturn: untyped) {.dirty.} =
+    var blo = 
+        case iterable.kind:
+            of Block,Inline:
+                cleanedBlockValuesCopy(iterable)
+            of Dictionary:
+                iterable.d.flattenedDictionary()
+            of Object:
+                iterable.o.flattenedDictionary()
+            of String:
+                toSeq(runes(iterable.s)).map((w) => newChar(w))
+            of Integer:
+                (toSeq(1..iterable.i)).map((w) => newInteger(w))
+            else: # won't ever reach here
+                @[VNULL]
+
+    if blo.len == 0: 
+        when doesAcceptLiterals:
+            when astToStr(defaultReturn) != "nil":
+                if unlikely(inPlace): RawInPlaced = defaultReturn
+                else: push(defaultReturn)
+        else:
+            when astToStr(defaultReturn) != "nil":
+                push(defaultReturn)
+        return
+
+template iterateRange(withCap:bool, withInf:bool, withCounter:bool, rolling:bool, act: untyped) {.dirty.} =
+    ## Main iteration helper for Range values
+    when withCounter:
+        var cntr = 0
+                
+    if likely(y.kind==Literal):
+        if likely(not hasIndex):
+            iterateRangeWithLiteral(rang, y.s, cap=withCap, inf=withInf):
+                act
+                when withCounter:
+                    cntr += 1
+        else:
+            let params = @[withIndex.s, y.s]
+            iterateRangeWithParams(rang, params, rolling, hasIndex, cap=withCap, inf=withInf):
+                act
+                when withCounter:
+                    cntr += 1
+            when withCounter:
+                res.setLen(cntr)
+
+    else:
+        fetchParamsBlock()
+        iterateRangeWithParams(rang, params, rolling, hasIndex, cap=withCap, inf=withInf):
+            act
+            when withCounter:
+                cntr += 1
+        when withCounter:
+            res.setLen(cntr)
+
+template iterateBlock(withCap:bool, withInf:bool, withCounter:bool, rolling:bool, act: untyped) {.dirty.} =
+    ## Main iteration helper for Block values
+    when withCounter:
+        var cntr = 0
+
+    if likely(y.kind==Literal):
+        if likely(not hasIndex):
+            iterateBlockWithLiteral(blo, y.s, cap=withCap, inf=withInf):
+                act
+                when withCounter:
+                    cntr += 1
+        else:
+            let params = @[withIndex.s, y.s]
+            iterateBlockWithParams(blo, params, rolling, hasIndex, cap=withCap, inf=withInf):
+                act
+                when withCounter:
+                    cntr += 1
+            when withCounter:
+                res.setLen(cntr)
+    else:
+        fetchParamsBlock()
+        iterateBlockWithParams(blo, params, rolling, hasIndex, cap=withCap, inf=withInf):
+            act
+            when withCounter:
+                cntr += 1
+        when withCounter:
+            res.setLen(cntr)
+
+template doIterate(
+    itLit:bool,         # does the iterator support in-place literals?
+    itCap:bool,         # do we need to actually capture iterated elements?
+    itInf:bool,         # is there a possibility that the iteration may be infinite?
+    itCounter:bool,     # do we need to keep track of the element counter? 
+    itRolling:bool,     # is it a fold-type rolling iteration?
+
+    itDefVal:untyped,   # default value to return if given block is empty
+    itPre:untyped,      # code to execute before the iteration
+    itAct:untyped,      # code to execute for each iteration
+    itPost:untyped      # code to execute after the iteration
+) {.dirty.} =
+    ## The main iterator helper for every method 
+    ## that doesn't require any special handling, 
+    ## e.g. for Range and Block values
+    prepareIteration(doesAcceptLiterals=itLit)
+
+    if iterable.kind==Range:
+        fetchIterableRange()
+
+        itPre
+        iterateRange(withCap=itCap, withInf=itInf, withCounter=itCounter, rolling=itRolling):
+            itAct
+        itPost
+    else:
+        fetchIterableItems(doesAcceptLiterals=itLit):
+            itDefVal
+
+        itPre
+        iterateBlock(withCap=itCap, withInf=itInf, withCounter=itCounter, rolling=itRolling):
+            itAct
+        itPost
 
 #=======================================
 # Methods
@@ -148,7 +416,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "chunk together consecutive items in collection that abide by given predicate",
         args        = {
-            "collection"    : {Integer,String,Block,Inline,Dictionary,Object,Literal},
+            "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
             "condition"     : {Block,Bytecode}
         },
@@ -171,49 +439,37 @@ proc defineSymbols*() =
             ; => [[1 7] [5 4 3 6] [8 2]]
         """:
             #=======================================================
-            let preevaled = evalOrGet(z)
-            let withIndex = popAttr("with")
-            let showValue = hadAttr("value")
-            let doForever = false
+            doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newBlock()):
+                let showValue = hadAttr("value")
+                
+                var res: ValueArray
 
-            var items: ValueArray
-
-            let withLiteral = x.kind==Literal
-            if withLiteral: items = iterableItemsFromLiteralParam(x)
-            else: items = iterableItemsFromParam(x)
-
-            var res: ValueArray = @[]
-            var state: Value = VNULL # important
-            var currentSet: ValueArray = @[]
-
-            iterateThrough(withIndex, y, items, doForever, false, false, capturing=true):
+                var state: Value = VNULL # important
+                var currentSet: ValueArray = @[]
+            do:
                 let popped = move stack.pop()
                 if popped != state:
                     if len(currentSet)>0:
-                        if showValue:
-                            res.add(newBlock(@[state, newBlock(currentSet)]))
-                        else:
-                            res.add(newBlock(currentSet))
+                        if showValue: res.add(newBlock(@[state, newBlock(currentSet)]))
+                        else: res.add(newBlock(currentSet))
                         currentSet = @[]
                     state = popped
 
-                currentSet.add(capturedItems)
+                currentSet.add(captured)
+            do:
+                if len(currentSet)>0:
+                    if showValue: res.add(newBlock(@[state, newBlock(currentSet)]))
+                    else: res.add(newBlock(currentSet))
 
-            if len(currentSet)>0:
-                if showValue:
-                    res.add(newBlock(@[state, newBlock(currentSet)]))
-                else:
-                    res.add(newBlock(currentSet))
-
-            if withLiteral: RawInPlaced = newBlock(move res)
-            else: push newBlock(res)
+                if unlikely(inPlace): RawInPlaced = newBlock(res)
+                else: push(newBlock(res))
 
     builtin "cluster",
         alias       = unaliased,
         rule        = PrefixPrecedence,
         description = "group together items in collection that abide by given predicate",
         args        = {
-            "collection"    : {Integer,String,Block,Inline,Dictionary,Object,Literal},
+            "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
             "condition"     : {Block,Bytecode}
         },
@@ -245,42 +501,33 @@ proc defineSymbols*() =
             ; => [["one" "three" "five"] ["two" "four" "six"]]
         """:
             #=======================================================
-            let preevaled = evalOrGet(z)
-            let withIndex = popAttr("with")
-            let showValue = hadAttr("value")
-            let doForever = false
+            doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newBlock()):
+                let showValue = hadAttr("value")
 
-            var items: ValueArray
-
-            let withLiteral = x.kind==Literal
-            if withLiteral: items = iterableItemsFromLiteralParam(x)
-            else: items = iterableItemsFromParam(x)
-
-            var res: ValueArray = @[]
-            var sets: OrderedTable[Value,ValueArray] = initOrderedTable[Value,ValueArray]()
-
-            iterateThrough(withIndex, y, items, doForever, false, false, capturing=true):
+                var res: ValueArray
+                var sets = initOrderedTable[Value,ValueArray]()
+            do:
                 let popped = move stack.pop()
 
                 discard sets.hasKeyOrPut(popped, @[])
-                sets[popped].add(capturedItems)
+                sets[popped].add(captured)
+            do:
+                if showValue:
+                    for k,v in sets.pairs:
+                        res.add(newBlock(@[k, newBlock(v)]))
+                else:
+                    for v in sets.values:
+                        res.add(newBlock(v))
 
-            if showValue:
-                for k,v in sets.pairs:
-                    res.add(newBlock(@[k, newBlock(v)]))
-            else:
-                for v in sets.values:
-                    res.add(newBlock(v))
-
-            if withLiteral: RawInPlaced = newBlock(move res)
-            else: push newBlock(res)
+                if unlikely(inPlace): RawInPlaced = newBlock(res)
+                else: push(newBlock(res))
 
     builtin "every?",
         alias       = unaliased,
         rule        = PrefixPrecedence,
         description = "check if every item in collection satisfies given condition",
         args        = {
-            "collection"    : {Integer,String,Block,Inline,Dictionary,Object},
+            "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object},
             "params"        : {Literal,Block,Null},
             "condition"     : {Block,Bytecode}
         },
@@ -306,31 +553,21 @@ proc defineSymbols*() =
             ; true
         """:
             #=======================================================
-            let preevaled = evalOrGet(z)
-            let withIndex = popAttr("with")
-            let doForever = false
-
-            var items: ValueArray
-            items = iterableItemsFromParam(x)
-
-            var all = true
-
-            iterateThrough(withIndex, y, items, doForever, false, false, capturing=false):
+            doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=false, VFALSE):
+                discard
+            do:
                 if isFalse(move stack.pop()):
-                    push(newLogical(false))
-                    all = false
-                    keepGoing = false
-                    break
-
-            if all:
-                push(newLogical(true))
+                    push(VFALSE)
+                    return
+            do:
+                push(VTRUE)
 
     builtin "filter",
         alias       = unaliased,
         rule        = PrefixPrecedence,
         description = "get collection's items by filtering those that do not fulfil given condition",
         args        = {
-            "collection"    : {Integer,String,Block,Inline,Dictionary,Object,Literal},
+            "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
             "condition"     : {Block,Bytecode}
         },
@@ -370,65 +607,103 @@ proc defineSymbols*() =
             => [1 2 3 4 6 8 10]
         """:
             #=======================================================
-            let preevaled = evalOrGet(z)
-            let withIndex = popAttr("with")
-            var onlyFirst = false
-            var onlyLast = false
+            prepareIteration()
+
             var elemLimit = -1
-            if checkAttr("first"):
-                onlyFirst = true
-                if isTrue(aFirst): elemLimit = 1
-                else: elemLimit = aFirst.i
+            
+            let onlyFirst = 
+                if checkAttr("first"):
+                    if isTrue(aFirst): elemLimit = 1
+                    else: elemLimit = aFirst.i
+                    true
+                else: false
 
-            if checkAttr("last"):
-                onlyLast = true
-                if isTrue(aLast): elemLimit = 1
-                else: elemLimit = aLast.i
-
-            let doForever = false
-
-            var items: ValueArray
-
-            let withLiteral = x.kind==Literal
-            if withLiteral: items = iterableItemsFromLiteralParam(x)
-            else: items = iterableItemsFromParam(x)
-
-            var res: ValueArray = @[]
+            let onlyLast = 
+                if checkAttr("last"):
+                    if isTrue(aLast): elemLimit = 1
+                    else: elemLimit = aLast.i
+                    true
+                else: false
+                
             var stoppedAt = -1
-
-            if onlyLast:
-                items.reverse()
-
             var filteredItems = 0
 
-            iterateThrough(withIndex, y, items, doForever, false, false, capturing=true):
-                let popped = move stack.pop()
-                if isFalse(popped):
-                    res.add(capturedItems)
-                else:
-                    if onlyFirst or onlyLast:
-                        filteredItems += capturedItems.len
-                        if elemLimit == filteredItems:
-                            stoppedAt = indx+1
-                            keepGoing = false
-                            break
+            if iterable.kind==Range:
+                fetchIterableRange()
 
-            if (onlyFirst or onlyLast) and stoppedAt < items.len:
-                res.add(items[stoppedAt..items.len-1])
+                var res: ValueArray
 
-            if onlyLast:
-                res.reverse()
+                if onlyLast:
+                    rang = rang.reversed()
+                
+                iterateRange(withCap=true, withInf=false, withCounter=false, rolling=false):
+                    let popped = move stack.pop()
+                    if isFalse(popped):
+                        res.add(captured)
+                    else:
+                        if onlyFirst or onlyLast:
+                            when captured is Value:
+                                filteredItems += 1
+                            else:
+                                filteredItems += captured.len
 
-            if withLiteral: RawInPlaced = newBlock(move res)
-            else: push newBlock(res)
+                            if elemLimit == filteredItems:
+                                stoppedAt = indx+1
+                                keepGoing = false
+                                break
+
+                if onlyFirst or onlyLast and stoppedAt < rang.len:
+                    # TODO(Iterators\filter): optimize implementation for Range values with `.last`
+                    #  this goes again through the whole range, which is not necessary
+                    #  labels: enhancement, performance, library
+                    res.add(rang[stoppedAt..rang.len-1])
+                
+                if onlyLast:
+                    res.reverse()
+
+                if unlikely(inPlace): RawInPlaced = newBlock(res)
+                else: push(newBlock(res))
+            else: 
+                fetchIterableItems(doesAcceptLiterals=true):
+                    newBlock()
+
+                if onlyLast:
+                    blo = blo.reversed()
+
+                var res: ValueArray
+
+                iterateBlock(withCap=true, withInf=false, withCounter=false, rolling=false):
+                    let popped = move stack.pop()
+                    if isFalse(popped):
+                        res.add(captured)
+                    else:
+                        if onlyFirst or onlyLast:
+                            when captured is Value:
+                                filteredItems += 1
+                            else:
+                                filteredItems += captured.len
+
+                            if elemLimit == filteredItems:
+                                stoppedAt = indx+1
+                                keepGoing = false
+                                break
+
+                if (onlyFirst or onlyLast) and stoppedAt < blo.len:
+                    res.add(blo[stoppedAt..^1])
+
+                if onlyLast:
+                    res.reverse()
+
+                if unlikely(inPlace): RawInPlaced = newBlock(res)
+                else: push(newBlock(res))
 
     builtin "fold",
         alias       = unaliased,
         rule        = PrefixPrecedence,
         description = "left-fold given collection returning accumulator",
         args        = {
-            "collection"    : {Integer,String,Block,Inline,Dictionary,Object},
-            "params"        : {Literal,Block,Null},
+            "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object},
+            "params"        : {Block,Null},
             "action"        : {Block,Bytecode}
         },
         attrs       = {
@@ -481,43 +756,68 @@ proc defineSymbols*() =
             ; => 188
         """:
             #=======================================================
-            let preevaled = evalOrGet(z)
-            let withIndex = popAttr("with")
-            let doRightFold = hadAttr("right")
-            let doForever = false
+            prepareIteration()
 
-            var items: ValueArray
+            let rollingRight = hadAttr("right")
 
-            let withLiteral = x.kind==Literal
-            if withLiteral: items = iterableItemsFromLiteralParam(x)
-            else: items = iterableItemsFromParam(x)
+            if iterable.kind==Range:
+                fetchIterableRange()
 
-            if doRightFold:
-                items.reverse
+                var res: Value
+                var seed = I0
 
-            var seed = I0
-            if items.len > 0:
-                if items[0].kind == String:     seed = newString("")
-                elif items[0].kind == Floating: seed = newFloating(0.0)
-                elif items[0].kind == Block:    seed = newBlock()
+                if rollingRight:
+                    rang = rang.reversed()
 
-            if checkAttr("seed"):
-                seed = aSeed
+                let firstElem {.cursor.} = rang[0]
 
-            var res: Value = seed
+                if firstElem.kind == String:     seed = newString("")
+                elif firstElem.kind == Floating: seed = newFloating(0.0)
+                elif firstElem.kind == Block:    seed = newBlock()
 
-            iterateThrough(withIndex, y, items, doForever, true, doRightFold, capturing=false):
-                res = move stack.pop()
+                if checkAttr("seed"):
+                    seed = aSeed
 
-            if withLiteral: RawInPlaced = res
-            else: push(res)
+                res = seed
+                
+                iterateRange(withCap=false, withInf=false, withCounter=false, rolling=true):
+                    res = move stack.pop()
+
+                if unlikely(inPlace): RawInPlaced = res
+                else: push(res)
+            else: 
+                fetchIterableItems(doesAcceptLiterals=true):
+                    newBlock()
+
+                var res: Value
+                var seed = I0
+
+                if rollingRight:
+                    blo = blo.reversed()
+
+                let firstElem {.cursor.} = blo[0]
+
+                if firstElem.kind == String:     seed = newString("")
+                elif firstElem.kind == Floating: seed = newFloating(0.0)
+                elif firstElem.kind == Block:    seed = newBlock()
+
+                if checkAttr("seed"):
+                    seed = aSeed
+
+                res = seed
+
+                iterateBlock(withCap=false, withInf=false, withCounter=false, rolling=true):
+                    res = move stack.pop()
+
+                if unlikely(inPlace): RawInPlaced = res
+                else: push(res)
 
     builtin "gather",
         alias       = unaliased,
         rule        = PrefixPrecedence,
         description = "group items in collection by block result and return as dictionary",
         args        = {
-            "collection"    : {Integer,String,Block,Inline,Dictionary,Object,Literal},
+            "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
             "condition"     : {Block,Bytecode}
         },
@@ -540,33 +840,22 @@ proc defineSymbols*() =
             ; [0:[one three] 1:[two four]]
         """:
             #=======================================================
-            let preevaled = evalOrGet(z)
-            let withIndex = popAttr("with")
-            let doForever = false
-
-            var items: ValueArray
-
-            let withLiteral = x.kind==Literal
-            if withLiteral: items = iterableItemsFromLiteralParam(x)
-            else: items = iterableItemsFromParam(x)
-
-            var res: ValueDict = initOrderedTable[string,Value]()
-
-            iterateThrough(withIndex, y, items, doForever, false, false, capturing=true):
+            doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newDictionary()):
+                var res = initOrderedTable[string,Value]()
+            do:
                 let popped = $(move stack.pop())
-
                 discard res.hasKeyOrPut(popped, newBlock())
-                res[popped].a.add(capturedItems)
-
-            if withLiteral: RawInPlaced = newDictionary(move res)
-            else: push newDictionary(res)
+                res[popped].a.add(captured)
+            do:
+                if unlikely(inPlace): RawInPlaced = newDictionary(res)
+                else: push(newDictionary(res))
 
     builtin "loop",
         alias       = unaliased,
         rule        = PrefixPrecedence,
         description = "loop through collection, using given iterator and block",
         args        = {
-            "collection"    : {Integer,String,Block,Inline,Dictionary,Object},
+            "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object},
             "params"        : {Literal,Block,Null},
             "action"        : {Block,Bytecode}
         },
@@ -619,14 +908,12 @@ proc defineSymbols*() =
             ; 1 2 3 1 2 3 1 2 3 ...
         """:
             #=======================================================
-            let preevaled = evalOrGet(z)
-            let withIndex = popAttr("with")
             let doForever = hadAttr("forever")
-
-            var items: ValueArray
-            items = iterableItemsFromParam(x)
-
-            iterateThrough(withIndex, y, items, doForever, false, false, capturing=false):
+            doIterate(itLit=false, itCap=false, itInf=doForever, itCounter=false, itRolling=false, nil):
+                discard
+            do:
+                discard
+            do:
                 discard
 
     builtin "map",
@@ -634,7 +921,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "map collection's items by applying given action",
         args        = {
-            "collection"    : {Integer,String,Block,Inline,Dictionary,Object,Literal},
+            "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
             "condition"     : {Block,Bytecode}
         },
@@ -668,30 +955,36 @@ proc defineSymbols*() =
             ; => ["ONE" "two" "THREE" "four"]
         """:
             #=======================================================
-            let preevaled = evalOrGet(z)
-            let withIndex = popAttr("with")
-            let doForever = false
+            prepareIteration()
 
-            var items: ValueArray
+            if iterable.kind==Range:
+                fetchIterableRange()
 
-            let withLiteral = x.kind==Literal
-            if withLiteral: items = iterableItemsFromLiteralParam(x)
-            else: items = iterableItemsFromParam(x)
+                var res: ValueArray = newSeq[Value](rang.len)
+                
+                iterateRange(withCap=false, withInf=false, withCounter=true, rolling=false):
+                    res[cntr] = move stack.pop()
 
-            var res: ValueArray = @[]
+                if unlikely(inPlace): RawInPlaced = newBlock(res)
+                else: push(newBlock(res))
+            else: 
+                fetchIterableItems(doesAcceptLiterals=true):
+                    newBlock()
 
-            iterateThrough(withIndex, y, items, doForever, false, false, capturing=false):
-                res.add(move stack.pop())
+                var res: ValueArray = newSeq[Value](blo.len)
 
-            if withLiteral: RawInPlaced = newBlock(move res)
-            else: push newBlock(res)
+                iterateBlock(withCap=false, withInf=false, withCounter=true, rolling=false):
+                    res[cntr] = move stack.pop()
+
+                if unlikely(inPlace): RawInPlaced = newBlock(res)
+                else: push(newBlock(res))
 
     builtin "select",
         alias       = unaliased,
         rule        = PrefixPrecedence,
         description = "get collection's items that fulfil given condition",
         args        = {
-            "collection"    : {Integer,String,Block,Inline,Dictionary,Object,Literal},
+            "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
             "condition"     : {Block,Bytecode}
         },
@@ -731,56 +1024,54 @@ proc defineSymbols*() =
             => [5 7 9]
         """:
             #=======================================================
-            let preevaled = evalOrGet(z)
-            let withIndex = popAttr("with")
-            var onlyFirst = false
-            var onlyLast = false
-            var elemLimit = -1
-            if checkAttr("first"):
-                onlyFirst = true
-                if isTrue(aFirst): elemLimit = 1
-                else: elemLimit = aFirst.i
+            doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newBlock()):
+                var elemLimit = -1
+                
+                let onlyFirst = 
+                    if checkAttr("first"):
+                        if isTrue(aFirst): elemLimit = 1
+                        else: elemLimit = aFirst.i
+                        true
+                    else: false
 
-            if checkAttr("last"):
-                onlyLast = true
-                if isTrue(aLast): elemLimit = 1
-                else: elemLimit = aLast.i
+                let onlyLast = 
+                    if checkAttr("last"):
+                        if isTrue(aLast): elemLimit = 1
+                        else: elemLimit = aLast.i
+                        true
+                    else: false
 
-            let doForever = false
-
-            var items: ValueArray
-
-            let withLiteral = x.kind==Literal
-            if withLiteral: items = iterableItemsFromLiteralParam(x)
-            else: items = iterableItemsFromParam(x)
-
-            var res: ValueArray = @[]
-
-            iterateThrough(withIndex, y, items, doForever, false, false, capturing=true):
+                var res: ValueArray
+            do:
                 if isTrue(move stack.pop()):
-                    res.add(capturedItems)
+                    res.add(captured)
 
                     if onlyFirst:
                         if elemLimit == res.len:
                             keepGoing = false
                             break
+            do:
+                # TODO(Iterators\select) not optimal implementation for `.last`
+                #  This requires adding all the elements (as usual) and selecting the ones we want afterwards - that's obviously not the best way
+                #  We could "copy" the idea from `filter` and reverse the range/block when necessary
+                #  labels: enhancement, performance, library
 
-            if onlyLast:
-                let rlen = res.len
-                var startFrom = 0
-                if rlen-elemLimit > 0:
-                    startFrom = rlen-elemLimit
-                res = res[startFrom..rlen-1]
+                if onlyLast:
+                    let rlen = res.len
+                    var startFrom = 0
+                    if rlen-elemLimit > 0:
+                        startFrom = rlen-elemLimit
+                    res = res[startFrom..rlen-1]
 
-            if withLiteral: RawInPlaced = newBlock(move res)
-            else: push newBlock(res)
+                if unlikely(inPlace): RawInPlaced = newBlock(res)
+                else: push(newBlock(res))
 
     builtin "some?",
         alias       = unaliased,
         rule        = PrefixPrecedence,
         description = "check if any of collection's items satisfy given condition",
         args        = {
-            "collection"    : {Integer,String,Block,Inline,Dictionary,Object},
+            "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object},
             "params"        : {Literal,Block,Null},
             "condition"     : {Block,Bytecode}
         },
@@ -809,24 +1100,14 @@ proc defineSymbols*() =
             ; true
         """:
             #=======================================================
-            let preevaled = evalOrGet(z)
-            let withIndex = popAttr("with")
-            let doForever = false
-
-            var items: ValueArray
-            items = iterableItemsFromParam(x)
-
-            var one = false
-
-            iterateThrough(withIndex, y, items, doForever, false, false, capturing=false):
+            doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=false, VFALSE):
+                discard
+            do:
                 if isTrue(move stack.pop()):
-                    push(newLogical(true))
-                    one = true
-                    keepGoing = false
-                    break
-
-            if not one:
-                push(newLogical(false))
+                    push(VTRUE)
+                    return
+            do:
+                push(VFALSE)
 
 #=======================================
 # Add Library

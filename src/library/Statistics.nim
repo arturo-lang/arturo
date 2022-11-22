@@ -21,7 +21,11 @@
 
 import sequtils, stats, sugar
 
+import helpers/ranges
+
 import vm/lib
+
+import vm/values/custom/[vrange]
 
 #=======================================
 # Methods
@@ -37,7 +41,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get average from given collection of numbers",
         args        = {
-            "collection"    : {Block}
+            "collection"    : {Block,Range}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
@@ -47,11 +51,17 @@ proc defineSymbols*() =
         """:
             #=======================================================
             var res = F0.copyValue
-            ensureCleaned(x)
-            for num in cleanX:
-                res += num
+            if x.kind == Block:
+                ensureCleaned(x)
+                for num in cleanX:
+                    res += num
 
-            res //= newFloating(cleanX.len)
+                res //= newFloating(cleanX.len)
+            else:
+                for item in items(x.rng):
+                    res += item
+
+                res //= newFloating(x.rng.len)
 
             push(res)
 

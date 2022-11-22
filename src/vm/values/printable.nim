@@ -27,7 +27,7 @@ import vm/opcodes
 import vm/values/value
 import vm/values/clean
 
-import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrational, vregex, vversion]
+import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vversion]
 
 #=======================================
 # Helpers
@@ -108,6 +108,9 @@ proc `$`*(v: Value): string {.inline.} =
 
             ensureCleaned(v)
             result = "[" & cleanV.map((child) => $(child)).join(" ") & "]"
+
+        of Range     : 
+            result = $(v.rng)
 
         of Dictionary   :
             var items: seq[string] = @[]
@@ -292,6 +295,8 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             stdout.write "\n"
 
             dumpBlockEnd()
+
+        of Range        : dumpPrimitive($(v.rng), v)
 
         of Dictionary   : 
             dumpBlockStart(v)

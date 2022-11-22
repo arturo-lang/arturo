@@ -20,7 +20,7 @@ when defined(WEB):
 when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
-import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrational, vversion]
+import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vversion]
 import vm/values/value
 import vm/values/clean
 
@@ -126,6 +126,9 @@ proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
                     if not (child==cleanY[i]): return false
 
                 return true
+
+            of Range:
+                return x.rng == y.rng
 
             of Dictionary:
                 if x.d.len != y.d.len: return false

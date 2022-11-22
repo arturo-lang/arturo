@@ -151,8 +151,6 @@ template callInternal*(fname: string, getValue: bool, args: varargs[Value]): unt
 
 template prepareLeakless*(protected: seq[string] | ValueArray): untyped =
     ## Prepare for leak-less block execution
-    ## 
-    ## **Hint:** To be used in the Iterators module
 
     var toRestore{.inject.}: seq[(string,Value)] = 
         collect:
@@ -164,14 +162,33 @@ template prepareLeakless*(protected: seq[string] | ValueArray): untyped =
 
 template finalizeLeakless*(): untyped =
     ## Finalize leak-less block execution
-    ## 
-    ## **Hint:** To be used in the Iterators module
 
     for (sym, val) in mitems(toRestore):
         if val.isNil:
             Syms.del(sym)
         else:
             Syms[sym] = move val
+
+template prepareLeaklessOne*(protected: string | Value): untyped =
+    ## Prepare for leak-less block execution
+    ## with a single protected argument
+    
+    let toRestoreKey {.inject.} = 
+        when protected is Value: protected.s
+        else: protected
+
+    var toRestoreVal {.inject.} = 
+        when protected is Value: Syms.getOrDefault(protected.s, nil)
+        else: Syms.getOrDefault(protected, nil)
+
+template finalizeLeaklessOne*(): untyped =
+    ## Finalize leak-less block execution
+    ## with a single protected argument
+    
+    if toRestoreVal.isNil:
+        Syms.del(toRestoreKey)
+    else:
+        Syms[toRestoreKey] = move toRestoreVal
 
 template handleBranching*(tryDoing, finalize: untyped): untyped =
     ## Wrapper for code that may throw *Break* or *Continue* signals, 

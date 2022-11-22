@@ -33,7 +33,7 @@ when not defined(NOGMP):
 when not defined(WEB):
     import vm/errors
 
-import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrational, vregex, vsymbol, vversion]
+import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vsymbol, vversion]
 
 import vm/values/clean
 import vm/values/types
@@ -592,6 +592,21 @@ proc newWordBlock*(a: sink seq[string]): Value {.inline, enforceNoRaises.} =
     ## create Block value from an array of strings
     newBlock(a.map(proc (x:string):Value = newWord(x)))
 
+proc newRange*(start: int, stop: int, step: int, infinite: bool, numeric: bool, forward: bool): Value {.inline,enforceNoRaises.} =
+    Value(kind: Range, rng: 
+        VRange(
+            start: start, 
+            stop: stop, 
+            step: step, 
+            infinite: infinite, 
+            numeric: numeric, 
+            forward: forward
+        )
+    )
+
+proc newRange*(rng: VRange): Value {.inline, enforceNoRaises.} =
+    Value(kind: Range, rng: rng)
+
 func newNewline*(l: int): Value {.inline, enforceNoRaises.} =
     ## create Newline value with given line number
     Value(kind: Newline, line: l)
@@ -663,6 +678,8 @@ proc copyValue*(v: Value): Value {.inline.} =
                 result = Value(kind: Block, a: newValues)
             else:
                 result = newBlock(v.a.map((vv)=>copyValue(vv)), copyValue(v.data))
+        of Range:
+            result = newRange(v.rng.start, v.rng.stop, v.rng.step, v.rng.infinite, v.rng.numeric, v.rng.forward)
 
         of Dictionary:  result = newDictionary(v.d)
         of Object:      result = newObject(v.o, v.proto)
@@ -2178,14 +2195,6 @@ proc `!!=`*(x: var Value) =
             when not defined(NOGMP):
                 x = newInteger(not x.bi)
 
-# proc `==`*[T](x,y:ref T){.error.}
-# proc `<`*[T](x,y:ref T){.error.}
-# proc `>`*[T](x,y:ref T){.error.}
-# proc `<=`*[T](x,y:ref T){.error.}
-# proc `>=`*[T](x,y:ref T){.error.}
-# proc `!=`*[T](x,y:ref T){.error.}
-# proc cmp*[T](x,y:ref T){.error.}
-
 proc factorial*(x: Value): Value =
     ## calculate factorial of given value
     if not (x.kind == Integer):
@@ -2276,6 +2285,7 @@ func consideredEqual*(x: Value, y: Value): bool {.inline,enforceNoRaises.} =
             for i in 0..x.a.high:
                 if not consideredEqual(x.a[i], y.a[i]): return false
             return true
+        of Range: return x.rng == y.rng
         of Dictionary:
             if x.d.len != y.d.len: return false
 
@@ -2378,6 +2388,9 @@ func hash*(v: Value): Hash {.inline.}=
             for i in v.a:
                 result = result !& hash(i)
             result = !$ result
+
+        of Range        :
+            result = hash(v.rng[])
 
         of Dictionary   : 
             result = 1
