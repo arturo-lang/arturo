@@ -16,6 +16,10 @@
 # Types
 #=======================================
 
+# TODO(VRange) Should we support BigNum bounds?
+#  so that somebody can e.g. select.first:3 167126537612537126536127..∞ => prime?
+# labels: enhancement, values, open discussion
+
 type
     GenericRange[T] = ref object
         start*      : T

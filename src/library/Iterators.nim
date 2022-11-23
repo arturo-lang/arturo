@@ -409,6 +409,12 @@ template doIterate(
 #  a nice name could be `arrange`
 #  labels: library, enhancement
 
+# TODO(Iterators) Add better unit-tests for entire module
+#  make sure to test everything: Range vs Block values, with or without a step
+#  odd- & even-sized ranges/blocks, non-block iterables (strings, dictionaries, etc),
+#  including `.first` and `.last`
+#  labels: benchmark, unit-test
+
 proc defineSymbols*() =
 
     builtin "chunk",
