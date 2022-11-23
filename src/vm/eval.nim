@@ -401,6 +401,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         foundElse = false
 
     proc optimizeSwitch(consts: var ValueArray, it: var VBinary) {.enforceNoRaises.} =
+        # TODO(eval/optimizeSwitch) `switch` not always processed correctly
+        #  see: https://rosettacode.org/wiki/Perlin_noise#Arturo
+        #  labels: bug, vm, evaluator, critical
         let (cnstId, shift) = getConstIdWithShift(currentCommand, 0)
 
         if cnstId != -1:
