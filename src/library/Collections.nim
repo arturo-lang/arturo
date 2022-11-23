@@ -1140,6 +1140,11 @@ proc defineSymbols*() =
                 else:
                     push(newBlock(safeRepeat(x, y.i)))
 
+    # TODO(Collections/reverse) Change behavior for Range values
+    #  What happens when we have an even-sized range with a `.step`?
+    #  e.g. 1..10 (2) => 1, 3, 5, 7, 9
+    #  but: reverse 1..10 (2) => 10, 8, 6, 4, 2
+    #  labels: open discussion
     builtin "reverse",
         alias       = unaliased,
         rule        = PrefixPrecedence,
@@ -1184,6 +1189,8 @@ proc defineSymbols*() =
                 else:
                     push(newString(reversed(x.s)))
 
+    # TODO(Collections/range) Move to Converters module?
+    #  labels: cleanup
     builtin "range",
         alias       = ellipsis, 
         rule        = InfixPrecedence,
