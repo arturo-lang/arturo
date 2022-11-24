@@ -62,13 +62,22 @@ runSet: function [title,location].export:[supersuccess,supertotal,superskipped][
     tests: sort select list relative location 'loc -> contains? loc ".res"
     success: 0
 
+    ;indiTimes: []
+
     loop tests 'test [
         script: replace test ".res" ".art"
         expected: split.lines strip read test
 
         prints pad.right ((color #magenta "\n- Running: ") ++ truncate.preserve extract.filename script 40) 70 
         if? canExecute? script [
-            result: split.lines strip execute ~{|sys\binary| --no-color "|script|"}
+
+            ;tim: benchmark.get [
+                result: split.lines strip execute ~{|sys\binary| --no-color "|script|"}
+            ;]
+            ; indiTimes: indiTimes ++ #[
+            ;     tst: test
+            ;     tim: tim
+            ; ]
 
             if? result=expected [
 
@@ -94,6 +103,8 @@ runSet: function [title,location].export:[supersuccess,supertotal,superskipped][
     print "\n"
     print pad.left render.template "<||= success ||> of <||= size tests ||> tasks succeeded ◀" 69
     print ""
+
+    ;inspect sort.by:'tim indiTimes
 
     ; supersuccess: supersuccess + success
     supertotal: supertotal + size tests
