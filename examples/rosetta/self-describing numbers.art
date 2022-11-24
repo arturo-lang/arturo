@@ -1,4 +1,4 @@
-selfDescribing?: function [x][
+selfDescribing?: function [x].inline [
     digs: digits x
     loop.with:'i digs 'd [
         if d <> size select digs 'z [z=i] 
