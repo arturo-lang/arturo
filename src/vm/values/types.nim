@@ -32,7 +32,9 @@ import vm/values/flags
 
 type
     ValueArray* = seq[Value]
-    ValueDict*  = OrderedTableRef[string, Value]
+
+    ValueDictObj*   = OrderedTable[string, Value]
+    ValueDict*      = OrderedTableRef[string, Value]
 
     SymTable*   = Table[string, Value]
 
