@@ -1,6 +1,6 @@
 words: read.lines relative "unixdict.txt"
 
-isABC?: function [w][
+isABC?: function [w].inline [
     a: index w "a"
     if null? a -> return false
     b: index w "b"
@@ -12,7 +12,4 @@ isABC?: function [w][
     return true 
 ]
 
-loop words 'word [
-    if isABC? word ->
-        print word
-]
+print.lines select words => isABC?
