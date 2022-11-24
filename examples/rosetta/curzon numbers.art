@@ -12,13 +12,7 @@ first50: function [b][
 ]
 
 oneThousandth: function [b][
-    cnt: 0
-    i: 1
-    while [cnt < 1000][
-        if curzon? i b -> cnt: cnt+1
-        i: i + 1
-    ]
-    return dec i
+    select.n:1000 1..∞ 'i -> curzon? i b
 ]
 
 loop select 2..10 => even? 'withBase [
