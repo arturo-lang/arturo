@@ -96,7 +96,7 @@ let
 
     VEMPTYSTR*      = makeConst Value(kind: String, s: "")                                    ## constant ""
     VEMPTYARR*      = makeConst Value(kind: Block, a: @[], data: nil)                         ## constant []
-    VEMPTYDICT*     = makeConst Value(kind: Dictionary, d: initOrderedTable[string,Value]())  ## constant #[]
+    VEMPTYDICT*     = makeConst Value(kind: Dictionary, d: newOrderedTable[string,Value]())  ## constant #[]
 
     VSTRINGT*       = makeConst Value(kind: Type, tpKind: BuiltinType, t: String)     ## constant ``:string``
     VINTEGERT*      = makeConst Value(kind: Type, tpKind: BuiltinType, t: Integer)    ## constant ``:integer``
@@ -129,7 +129,7 @@ var
 # Forward Declarations
 #=======================================
 
-func newDictionary*(d: sink ValueDict = initOrderedTable[string,Value]()): Value {.inline.}
+func newDictionary*(d: sink ValueDict = newOrderedTable[string,Value]()): Value {.inline.}
 func valueAsString*(v: Value): string {.inline,enforceNoRaises.}
 proc `+`*(x: Value, y: Value): Value
 proc `-`*(x: Value, y: Value): Value
@@ -469,15 +469,19 @@ func newBinary*(n: VBinary = @[]): Value {.inline, enforceNoRaises.} =
     ## create Binary value from VBinary
     Value(kind: Binary, n: n)
 
-func newDictionary*(d: sink ValueDict = initOrderedTable[string,Value]()): Value {.inline, enforceNoRaises.} =
+func newDictionary*(d: sink ValueDict = newOrderedTable[string,Value]()): Value {.inline, enforceNoRaises.} =
     ## create Dictionary value from ValueDict
     Value(kind: Dictionary, d: d)
+
+func newDictionary*(d: sink ValueDictObj): Value {.inline, enforceNoRaises.} =
+    ## create Dictionary value from ValueDict
+    Value(kind: Dictionary, d: d.toOrderedTableRef)
 
 func newDictionary*(d: sink SymTable): Value {.inline, enforceNoRaises.} =
     ## create Dictionary value from SymTable
     newDictionary(toSeq(d.pairs).toOrderedTable)
 
-func newObject*(o: sink ValueDict = initOrderedTable[string,Value](), proto: sink Prototype): Value {.inline, enforceNoRaises.} =
+func newObject*(o: sink ValueDict = newOrderedTable[string,Value](), proto: sink Prototype): Value {.inline, enforceNoRaises.} =
     ## create Object value from ValueDict with given prototype
     Value(kind: Object, o: o, proto: proto)
 
