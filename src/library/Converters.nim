@@ -34,7 +34,7 @@ import helpers/ranges
 import vm/lib
 import vm/[bytecode, errors, eval, exec, opcodes, parse]
 
-import vm/values/custom/[vbinary]
+import vm/values/custom/[vbinary, vrange]
 
 #=======================================
 # Helpers
@@ -1146,6 +1146,60 @@ proc defineSymbols*() =
                 push newQuantity(convertQuantityValue(y.nm, y.unit.name, qs.name), qs)
             else:
                 push newQuantity(y, qs)
+
+    # TODO(Collections/range) Move to Converters module?
+    #  labels: cleanup
+    builtin "range",
+        alias       = ellipsis, 
+        rule        = InfixPrecedence,
+        description = "get list of values in given range (inclusive)",
+        args        = {
+            "from"  : {Integer, Char},
+            "to"    : {Integer, Floating, Char}
+        },
+        attrs       = {
+            "step"  : ({Integer},"use step between range values")
+        },
+        returns     = {Block},
+        example     = """
+        """:
+            #=======================================================
+            var limX: int
+            var limY: int
+            var numeric = true
+            var infinite = false
+
+            if x.kind == Integer: limX = x.i
+            else:
+                numeric = false
+                limX = ord(x.c)
+
+            var forward: bool
+
+            if y.kind == Integer: limY = y.i
+            elif y.kind == Floating:
+                if y.f == Inf or y.f == NegInf: 
+                    infinite = true
+                    if y.f == Inf: forward = true
+                    else: forward = false
+                else:
+                    limY = int(y.f)
+            else:
+                limY = ord(y.c)
+
+            var step = 1
+            if checkAttr("step"):
+                step = aStep.i
+                if step < 0:
+                    step = -step
+                elif step == 0:
+                    step = 1
+                    # preferrably show error message?
+
+            if not infinite:
+                forward = limX < limY
+
+            push newRange(limX, limY, step, infinite, numeric, forward)
 
     builtin "to",
         alias       = unaliased, 
