@@ -528,6 +528,30 @@ proc defineSymbols*() =
                 if unlikely(inPlace): RawInPlaced = newBlock(res)
                 else: push(newBlock(res))
 
+    builtin "enumerate",
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
+        description = "calculate the number of given collection's items that satisfy condition",
+        args        = {
+            "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object},
+            "params"        : {Literal,Block,Null},
+            "condition"     : {Block,Bytecode}
+        },
+        attrs       = {
+            "with"      : ({Literal},"use given index")
+        },
+        returns     = {Logical},
+        example     = """
+        """:
+            #=======================================================
+            doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=false, VFALSE):
+                var cntr = 0
+            do:
+                if isTrue(move stack.pop()):
+                    cntr += 1
+            do:
+                push(newInteger(cntr))
+
     builtin "every?",
         alias       = unaliased,
         rule        = PrefixPrecedence,
