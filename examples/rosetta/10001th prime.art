@@ -1,2 +1,1 @@
-primes: select 2..110000 => prime?
-print primes\[10000]
+print select.n:10001 2..110000 => prime?
