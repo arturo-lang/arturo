@@ -611,7 +611,7 @@ proc defineSymbols*() =
             "first"     : ({Logical,Integer},"only filter first element/s"),
             "last"      : ({Logical,Integer},"only filter last element/s")
         },
-        returns     = {Block,Nothing},
+        returns     = {Block,Any,Nothing},
         example     = """
             print filter 1..10 [x][
                 even? x
@@ -1045,9 +1045,10 @@ proc defineSymbols*() =
         attrs       = {
             "with"      : ({Literal},"use given index"),
             "first"     : ({Logical,Integer},"only return first element/s"),
-            "last"      : ({Logical,Integer},"only return last element/s")
+            "last"      : ({Logical,Integer},"only return last element/s"),
+            "n"         : ({Integer},"only return n-th element")
         },
-        returns     = {Block,Nothing},
+        returns     = {Block,Any,Nothing},
         example     = """
             print select 1..10 [x][
                 even? x
@@ -1095,15 +1096,35 @@ proc defineSymbols*() =
                         true
                     else: false
 
+                var nth = -1
+                let onlyN = 
+                    if checkAttr("n"):
+                        nth = aN.i
+                        true
+                    else: false
+
+                var found: int = 0
                 var res: ValueArray
             do:
                 if isTrue(move stack.pop()):
-                    res.add(captured)
+                    if likely(not onlyN):
+                        res.add(captured)
 
-                    if onlyFirst:
-                        if elemLimit == res.len:
-                            keepGoing = false
-                            break
+                        if onlyFirst:
+                            if elemLimit == res.len:
+                                keepGoing = false
+                                break
+                    else:
+                        found += 1
+                        if found == nth:
+                            when captured is ValueArray:
+                                if captured.len == 1:
+                                    push(captured[0])
+                                else:
+                                    push(newBlock(captured))
+                            else:
+                                push(captured)
+                            return
             do:
                 # TODO(Iterators\select) not optimal implementation for `.last`
                 #  This requires adding all the elements (as usual) and selecting the ones we want afterwards - that's obviously not the best way
@@ -1116,9 +1137,11 @@ proc defineSymbols*() =
                     if rlen-elemLimit > 0:
                         startFrom = rlen-elemLimit
                     res = res[startFrom..rlen-1]
-
-                if unlikely(inPlace): RawInPlaced = newBlock(res)
-                else: push(newBlock(res))
+                
+                if unlikely(onlyN): push(VNULL)
+                else:
+                    if unlikely(inPlace): RawInPlaced = newBlock(res)
+                    else: push(newBlock(res))
 
     builtin "some?",
         alias       = unaliased,
