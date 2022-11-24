@@ -1,14 +1,8 @@
-curzon?: function [n,base]->
+curzon?: function [n,base] ->
     zero? (inc base^n) % inc base*n
 
 first50: function [b][
-    result: []
-    i: 1
-    while [50 > size result][
-        if curzon? i b -> 'result ++ i 
-        i: i + 1
-    ]
-    return result
+    select.first:50 1..∞ 'i -> curzon? i b
 ]
 
 oneThousandth: function [b][
