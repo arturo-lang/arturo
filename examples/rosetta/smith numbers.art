@@ -1,24 +1,8 @@
-digitSum: function [v][
-    n: new v
-    result: 0
-    while [n > 0][
-        'result + n % 10
-        'n / 10
-    ]
-    return result
+smith?: function [z][
+    (prime? z) ? -> false
+                 -> (sum digits z) = sum map factors.prime z 'num [sum digits num]
 ]
 
-smith?: function [z][
-    return
-        (prime? z) ? -> false
-                     -> (digitSum z) = sum map factors.prime z 'num [digitSum num]
+loop split.every:10 select 1..10000 => smith? 'row [
+    print map row 'r -> pad to :string r 6
 ]
-found: 0
-loop 1..10000 'x [
-    if smith? x [
-        found: found + 1
-        prints (pad to :string x 6) ++ " "
-        if 0 = found % 10 -> print ""
-    ]
-]
-print ""
