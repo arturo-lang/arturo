@@ -10,6 +10,7 @@ v0.9.82
 
 - Added new `:rational` type (along with all relevant operations)
 - Added new `:quantity` type (measurements + unit support, along with all relevant operations)
+- Added new `:range` types (with all relevant `..` operations returning a new Range value)
 - Added scientific notation support for number literals
 - Changed scoping rules (most blocks will now be completely scope-less, with the exception of iterators & functions)
 
@@ -20,7 +21,7 @@ v0.9.82
 - Collections: added new `combine`, `decouple` & `rotate` methods
 - Converters: added new `in` method
 - Files: added new `hidden?` predicate & `timestamp` method
-- Iterators: added new `chunk`, `cluster` & `gather` methods
+- Iterators: added new `chunk`, `cluster`, `enumerate` & `gather` methods
 - Numbers: added new `factorial` & `lcm` methods
 - Paths: added new `absolute?` method
 - Reflection: added new `bytecode?`, `color?`, `complex?`, `object?`, `quantity?`, `rational?` & `version?` predicates
@@ -50,7 +51,7 @@ v0.9.82
 - Iterators\select: added `.first` and `.last` options
 - Numbers: made all trigonometric function work with `:quantity` values
 - Numbers\product: added `.cartesian` option
-- Numbers\range: make function work even with .step =< 0
+- Numbers\range: make function work even with .step =< 0 + moved to Converters
 - Reflection\info: show origin module for built-in functions/constants
 - Strings\capitalize: added support for `:char` parameters
 
