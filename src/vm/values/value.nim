@@ -139,13 +139,17 @@ proc `//`*(x: Value, y: Value): Value
 func hash*(v: Value): Hash {.inline.}
 
 #=======================================
-# Helpers
+# Converters
 #=======================================
 
-converter toDateTime*(dt: ref DateTime): DateTime = dt[]
+converter toDateTimeRef*(dt: ref DateTime): DateTime = dt[]
 converter toOrderedTableRef*(valueDict: sink ValueDictObj): ValueDict =
     result = newOrderedTable[string, Value](0)
     result[] = valueDict
+
+#=======================================
+# Helpers
+#=======================================
 
 template isNull*(val: Value): bool  = val.kind == Null
 template isFalse*(val: Value): bool = IsFalse in val.flags
@@ -473,10 +477,6 @@ func newDictionary*(d: sink ValueDict = newOrderedTable[string,Value]()): Value 
     ## create Dictionary value from ValueDict
     Value(kind: Dictionary, d: d)
 
-func newDictionary*(d: sink ValueDictObj): Value {.inline, enforceNoRaises.} =
-    ## create Dictionary value from ValueDict
-    Value(kind: Dictionary, d: d.toOrderedTableRef)
-
 func newDictionary*(d: sink SymTable): Value {.inline, enforceNoRaises.} =
     ## create Dictionary value from SymTable
     newDictionary(toSeq(d.pairs).toOrderedTable)
@@ -485,7 +485,7 @@ func newObject*(o: sink ValueDict = newOrderedTable[string,Value](), proto: sink
     ## create Object value from ValueDict with given prototype
     Value(kind: Object, o: o, proto: proto)
 
-proc newObject*(args: ValueArray, prot: Prototype, initializer: proc (self: Value, prot: Prototype), o: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
+proc newObject*(args: ValueArray, prot: Prototype, initializer: proc (self: Value, prot: Prototype), o: ValueDict = newOrderedTable[string,Value]()): Value {.inline.} =
     ## create Object value from ValueArray with given prototype 
     ## and initializer function
     var fields = o
@@ -499,7 +499,7 @@ proc newObject*(args: ValueArray, prot: Prototype, initializer: proc (self: Valu
     
     initializer(result, prot)
 
-proc newObject*(args: ValueDict, prot: Prototype, initializer: proc (self: Value, prot: Prototype), o: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
+proc newObject*(args: ValueDict, prot: Prototype, initializer: proc (self: Value, prot: Prototype), o: ValueDict = newOrderedTable[string,Value]()): Value {.inline.} =
     ## create Object value from ValueDict with given prototype 
     ## and initializer function, using another object ``o`` as 
     ## a parent object
