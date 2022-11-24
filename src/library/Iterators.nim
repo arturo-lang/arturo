@@ -542,6 +542,11 @@ proc defineSymbols*() =
         },
         returns     = {Logical},
         example     = """
+            enumerate 1..10000000 => odd? 
+            ; => 5000000
+            ..........
+            enumerate.with:'i ["one" "two" "three" "four"] 'x -> i < 3
+            ; => 3
         """:
             #=======================================================
             doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=false, VFALSE):
