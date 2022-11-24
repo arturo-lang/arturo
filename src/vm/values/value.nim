@@ -688,8 +688,8 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Range:
             result = newRange(v.rng.start, v.rng.stop, v.rng.step, v.rng.infinite, v.rng.numeric, v.rng.forward)
 
-        of Dictionary:  result = newDictionary(v.d)
-        of Object:      result = newObject(v.o, v.proto)
+        of Dictionary:  result = newDictionary(v.d[])
+        of Object:      result = newObject(v.o[], v.proto)
 
         of Function:    result = newFunction(v.params, v.main, v.imports, v.exports, v.memoize, v.inline)
 
