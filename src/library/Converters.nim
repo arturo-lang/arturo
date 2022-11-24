@@ -1146,9 +1146,7 @@ proc defineSymbols*() =
                 push newQuantity(convertQuantityValue(y.nm, y.unit.name, qs.name), qs)
             else:
                 push newQuantity(y, qs)
-
-    # TODO(Collections/range) Move to Converters module?
-    #  labels: cleanup
+                
     builtin "range",
         alias       = ellipsis, 
         rule        = InfixPrecedence,
