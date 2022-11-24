@@ -31,7 +31,7 @@ import vm/values/flags
 #=======================================
 
 type
-    ValueArray* = seq[Value]]
+    ValueArray* = seq[Value]
     ValueDict*  = OrderedTableRef[string, Value]
 
     SymTable*   = Table[string, Value]
