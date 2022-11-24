@@ -143,6 +143,9 @@ func hash*(v: Value): Hash {.inline.}
 #=======================================
 
 converter toDateTime*(dt: ref DateTime): DateTime = dt[]
+converter toOrderedTableRef*(valueDict: sink ValueDictObj): ValueDict =
+    result = newOrderedTable[string, Value](0)
+    result[] = valueDict
 
 template isNull*(val: Value): bool  = val.kind == Null
 template isFalse*(val: Value): bool = IsFalse in val.flags
