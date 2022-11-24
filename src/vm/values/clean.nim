@@ -18,10 +18,6 @@ import vm/values/types
 # Helpers
 #=======================================
 
-# TODO(VM/values/clean) `cleanBlock` is too slow
-#  when built without NOERRORLINES - which is our normal setup - this specific piece of code could be slowing down the whole language by up to 20%
-#  labels: vm, values, performance, enhancement, benchmark, critical
-
 template cleanBlock*(v: Value) =
     ## remove all Newline values from a Block value, in-place 
     ## 
