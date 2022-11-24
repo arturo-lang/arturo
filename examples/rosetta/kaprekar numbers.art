@@ -1,4 +1,4 @@
-k?: function [n][
+kaprekar?: function [n].inline [
     n2: to :string n*n
     loop 0..dec size n2 'i [
         a: (i > 0)? -> to :integer slice n2 0 dec i -> 0
@@ -9,5 +9,5 @@ k?: function [n][
 ]
 
 loop 1..10000 'x [
-    if k? x -> print x
+    if kaprekar? x -> print x
 ]
