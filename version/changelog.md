@@ -48,7 +48,7 @@ v0.9.82
 - Core\case: made function work with null sets (ø)
 - Iterators: all iterator methods re-implemented and now work with a `.with` option and also with a `null` param block
 - Iterators\filter: added `.first` and `.last` options
-- Iterators\select: added `.first` and `.last` options
+- Iterators\select: added `.first`, `.last` and `.n` options
 - Numbers: made all trigonometric function work with `:quantity` values
 - Numbers\product: added `.cartesian` option
 - Numbers\range: make function work even with .step =< 0 + moved to Converters
