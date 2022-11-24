@@ -96,7 +96,7 @@ let
 
     VEMPTYSTR*      = makeConst Value(kind: String, s: "")                                    ## constant ""
     VEMPTYARR*      = makeConst Value(kind: Block, a: @[], data: nil)                         ## constant []
-    VEMPTYDICT*     = makeConst Value(kind: Dictionary, d: initOrderedTable[string,Value]())  ## constant #[]
+    VEMPTYDICT*     = makeConst Value(kind: Dictionary, d: newOrderedTable[string,Value]())  ## constant #[]
 
     VSTRINGT*       = makeConst Value(kind: Type, tpKind: BuiltinType, t: String)     ## constant ``:string``
     VINTEGERT*      = makeConst Value(kind: Type, tpKind: BuiltinType, t: Integer)    ## constant ``:integer``
@@ -129,7 +129,7 @@ var
 # Forward Declarations
 #=======================================
 
-func newDictionary*(d: sink ValueDict = initOrderedTable[string,Value]()): Value {.inline.}
+func newDictionary*(d: sink ValueDict = newOrderedTable[string,Value]()): Value {.inline.}
 func valueAsString*(v: Value): string {.inline,enforceNoRaises.}
 proc `+`*(x: Value, y: Value): Value
 proc `-`*(x: Value, y: Value): Value
@@ -139,10 +139,17 @@ proc `//`*(x: Value, y: Value): Value
 func hash*(v: Value): Hash {.inline.}
 
 #=======================================
-# Helpers
+# Converters
 #=======================================
 
-converter toDateTime*(dt: ref DateTime): DateTime = dt[]
+converter toDateTimeRef*(dt: ref DateTime): DateTime = dt[]
+converter toOrderedTableRef*(valueDict: sink ValueDictObj): ValueDict =
+    result = newOrderedTable[string, Value](0)
+    result[] = valueDict
+
+#=======================================
+# Helpers
+#=======================================
 
 template isNull*(val: Value): bool  = val.kind == Null
 template isFalse*(val: Value): bool = IsFalse in val.flags
@@ -466,7 +473,7 @@ func newBinary*(n: VBinary = @[]): Value {.inline, enforceNoRaises.} =
     ## create Binary value from VBinary
     Value(kind: Binary, n: n)
 
-func newDictionary*(d: sink ValueDict = initOrderedTable[string,Value]()): Value {.inline, enforceNoRaises.} =
+func newDictionary*(d: sink ValueDict = newOrderedTable[string,Value]()): Value {.inline, enforceNoRaises.} =
     ## create Dictionary value from ValueDict
     Value(kind: Dictionary, d: d)
 
@@ -474,11 +481,11 @@ func newDictionary*(d: sink SymTable): Value {.inline, enforceNoRaises.} =
     ## create Dictionary value from SymTable
     newDictionary(toSeq(d.pairs).toOrderedTable)
 
-func newObject*(o: sink ValueDict = initOrderedTable[string,Value](), proto: sink Prototype): Value {.inline, enforceNoRaises.} =
+func newObject*(o: sink ValueDict = newOrderedTable[string,Value](), proto: sink Prototype): Value {.inline, enforceNoRaises.} =
     ## create Object value from ValueDict with given prototype
     Value(kind: Object, o: o, proto: proto)
 
-proc newObject*(args: ValueArray, prot: Prototype, initializer: proc (self: Value, prot: Prototype), o: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
+proc newObject*(args: ValueArray, prot: Prototype, initializer: proc (self: Value, prot: Prototype), o: ValueDict = newOrderedTable[string,Value]()): Value {.inline.} =
     ## create Object value from ValueArray with given prototype 
     ## and initializer function
     var fields = o
@@ -492,7 +499,7 @@ proc newObject*(args: ValueArray, prot: Prototype, initializer: proc (self: Valu
     
     initializer(result, prot)
 
-proc newObject*(args: ValueDict, prot: Prototype, initializer: proc (self: Value, prot: Prototype), o: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
+proc newObject*(args: ValueDict, prot: Prototype, initializer: proc (self: Value, prot: Prototype), o: ValueDict = newOrderedTable[string,Value]()): Value {.inline.} =
     ## create Object value from ValueDict with given prototype 
     ## and initializer function, using another object ``o`` as 
     ## a parent object
@@ -681,8 +688,8 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Range:
             result = newRange(v.rng.start, v.rng.stop, v.rng.step, v.rng.infinite, v.rng.numeric, v.rng.forward)
 
-        of Dictionary:  result = newDictionary(v.d)
-        of Object:      result = newObject(v.o, v.proto)
+        of Dictionary:  result = newDictionary(v.d[])
+        of Object:      result = newObject(v.o[], v.proto)
 
         of Function:    result = newFunction(v.params, v.main, v.imports, v.exports, v.memoize, v.inline)
 
