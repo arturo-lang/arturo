@@ -1430,7 +1430,7 @@ proc defineSymbols*() =
             "descending": ({Logical}, "sort in ascending order"),
             "ascii"     : ({Logical}, "sort by ASCII transliterations"),
             "values"    : ({Logical}, "sort dictionary by values"),
-            "by"        : ({String, Literal}, "sort array of collections by given key")
+            "by"        : ({String, Literal}, "sort array of dictionaries by given key")
         },
         returns     = {Block, Nothing},
         example     = """
