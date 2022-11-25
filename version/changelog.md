@@ -18,7 +18,7 @@ v0.9.82
 
 **New**
 - Arithmetic: added new `divmod` method
-- Collections: added new `combine`, `decouple` & `rotate` methods
+- Collections: added new `combine`, `decouple`, `rotate` & `tally` methods
 - Converters: added new `in` method
 - Files: added new `hidden?` predicate & `timestamp` method
 - Iterators: added new `chunk`, `cluster`, `collect`, `enumerate`, `gather`, `maximum` & `minimum` methods
