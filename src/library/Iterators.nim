@@ -1130,7 +1130,7 @@ proc defineSymbols*() =
             ; 8 has the maximum number of 
             ; prime factors: 2, 2, 2 (3)
             ..........
-             maximum.value 1..10 'x -> size factors.prime x
+            maximum.value 1..10 'x -> size factors.prime x
             ; => [8 3]
         """:
             #=======================================================
@@ -1178,6 +1178,13 @@ proc defineSymbols*() =
         },
         returns     = {Block,Nothing},
         example     = """
+            minimum [4 17 20] 'x -> size factors.prime x
+            ; => 17
+            ; 17 has the minimum number of 
+            ; prime factors: 17 (1)
+            ..........
+            minimum.value [4 17 20] 'x -> size factors.prime x
+            ; => [17 1]
         """:
             #=======================================================
             let withValue = hadAttr("value")
