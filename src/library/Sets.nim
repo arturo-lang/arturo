@@ -31,10 +31,6 @@ import vm/lib
 
 proc defineSymbols*() =
 
-    # TODO(Sets) more potential built-in function candidates?
-    #  we could also have functions/constants returning pre-defined sets, e.g. what `alphabet` does
-    #  labels: library, enhancement, open discussion
-
     builtin "difference",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
