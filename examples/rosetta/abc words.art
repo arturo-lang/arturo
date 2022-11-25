@@ -12,7 +12,4 @@ isABC?: function [w][
     return true 
 ]
 
-loop words 'word [
-    if isABC? word ->
-        print word
-]
+print.lines select words => isABC?

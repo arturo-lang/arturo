@@ -997,7 +997,10 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 
                         # add the blocks
                         addTerminalValue(inBlock=false):
-                            addConst(newBlock(ab), opPush)
+                            if ab.len == 1:
+                                addConst(newLiteral(ab[0].s), opPush)
+                            else:
+                                addConst(newBlock(ab), opPush)
                         addTerminalValue(inBlock=false):
                             addConst(newBlock(sb), opPush)            
 
