@@ -1145,6 +1145,52 @@ proc defineSymbols*() =
                         if unlikely(inPlace): RawInPlaced = newBlock(selected)
                         else: push(newBlock(selected))
 
+    builtin "minimum",
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
+        description = "get minimum item from collection based on given predicate",
+        args        = {
+            "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
+            "params"        : {Literal,Block,Null},
+            "condition"     : {Block,Bytecode}
+        },
+        attrs       = {
+            "with"      : ({Literal},"use given index"),
+            "value"     : ({Logical},"also include predicate values")
+        },
+        returns     = {Block,Nothing},
+        example     = """
+        """:
+            #=======================================================
+            let withValue = hadAttr("value")
+
+            doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, VNULL):
+                var selected: ValueArray = @[]
+                var minVal: Value = VNULL
+            do:
+                let popped = move stack.pop()
+                if selected.len == 0 or popped < minVal:
+                    minVal = popped
+                    when captured is Value:
+                        selected = @[move captured]
+                    else:
+                        selected = move captured
+            do:
+                if selected.len == 1:
+                    if withValue:
+                        if unlikely(inPlace): RawInPlaced = newBlock(@[selected[0], minVal])
+                        else: push(newBlock(@[selected[0], minVal]))
+                    else:
+                        if unlikely(inPlace): RawInPlaced = selected[0]
+                        else: push(selected[0])
+                else:
+                    if withValue:
+                        if unlikely(inPlace): RawInPlaced = newBlock(@[newBlock(selected), minVal])
+                        else: push(newBlock(@[newBlock(selected), minVal]))
+                    else:
+                        if unlikely(inPlace): RawInPlaced = newBlock(selected)
+                        else: push(newBlock(selected))
+
     builtin "select",
         alias       = unaliased,
         rule        = PrefixPrecedence,
