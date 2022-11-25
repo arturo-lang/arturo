@@ -73,6 +73,21 @@ proc defineSymbols*() =
                 else:
                     push(newBlock(toSeq(difference(toHashSet(cleanedBlock(x.a)), toHashSet(cleanedBlock(y.a))))))
 
+    builtin "disjoint?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if given sets are disjoint (they have no common elements)",
+        args        = {
+            "setA"  : {Block},
+            "setB"  : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+        """:
+            #=======================================================
+            push(newLogical(disjoint(toHashSet(cleanedBlock(x.a)), toHashSet(cleanedBlock(y.a)))))
+
     builtin "intersection",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
