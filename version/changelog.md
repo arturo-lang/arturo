@@ -25,6 +25,7 @@ v0.9.82
 - Numbers: added new `factorial` & `lcm` methods
 - Paths: added new `absolute?` method
 - Reflection: added new `bytecode?`, `color?`, `complex?`, `object?`, `quantity?`, `rational?`, `range?` & `version?` predicates
+- Sets: added new `disjoint?` method
 - Strings: added new `alphabet` method
 - System: added new `superuser?` predicate
 
