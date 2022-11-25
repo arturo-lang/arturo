@@ -24,7 +24,7 @@ v0.9.82
 - Iterators: added new `chunk`, `cluster`, `collect`, `enumerate`, `gather`, `maximum` & `minimum` methods
 - Numbers: added new `factorial` & `lcm` methods
 - Paths: added new `absolute?` method
-- Reflection: added new `bytecode?`, `color?`, `complex?`, `object?`, `quantity?`, `rational?` & `version?` predicates
+- Reflection: added new `bytecode?`, `color?`, `complex?`, `object?`, `quantity?`, `rational?`, `range?` & `version?` predicates
 - Strings: added new `alphabet` method
 - System: added new `superuser?` predicate
 
