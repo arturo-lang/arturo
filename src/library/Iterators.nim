@@ -545,17 +545,54 @@ proc defineSymbols*() =
         example     = """
         """:
             #=======================================================
-            doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newBlock()):
+            if hadAttr("after"):
+                prepareIteration()
+
+                var stoppedAt = -1
                 var res: ValueArray
-            do:
-                if isTrue(move stack.pop()):
-                    res.add(captured)
+                
+                if iterable.kind==Range:
+                    fetchIterableRange()
+                
+                    iterateRange(withCap=false, withInf=false, withCounter=false, rolling=false):
+                        stoppedAt = indx+1
+                        if isTrue(move stack.pop()):
+                            keepGoing = false
+                            break
+
+                    if stoppedAt < rang.len:
+                        res = rang[stoppedAt..rang.len-1]
+
+                    if unlikely(inPlace): RawInPlaced = newBlock(res)
+                    else: push(newBlock(res))
                 else:
-                    keepGoing = false
-                    break
-            do: 
-                if unlikely(inPlace): RawInPlaced = newBlock(res)
-                else: push(newBlock(res))
+                    fetchIterableItems(doesAcceptLiterals=true):
+                        newBlock()
+                    
+                    iterateBlock(withCap=false, withInf=false, withCounter=false, rolling=false):
+                        stoppedAt = indx+1
+                        if isTrue(move stack.pop()):
+                            keepGoing = false
+                            break
+
+                    if stoppedAt < blo.len:
+                        res = blo[stoppedAt..^1]
+
+                    if unlikely(inPlace): RawInPlaced = newBlock(res)
+                    else: push(newBlock(res))
+
+            else:
+                doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newBlock()):
+                    var res: ValueArray
+                do:
+                    if isTrue(move stack.pop()):
+                        res.add(captured)
+                    else:
+                        keepGoing = false
+                        break
+                do: 
+                    if unlikely(inPlace): RawInPlaced = newBlock(res)
+                    else: push(newBlock(res))
 
     builtin "enumerate",
         alias       = unaliased,
