@@ -1186,6 +1186,34 @@ proc defineSymbols*() =
             do:
                 push(VFALSE)
 
+    builtin "take",
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
+        description = "collect collection's items while given condition is true",
+        args        = {
+            "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
+            "params"        : {Literal,Block,Null},
+            "condition"     : {Block,Bytecode}
+        },
+        attrs       = {
+            "with"      : ({Literal},"use given index")
+        },
+        returns     = {Block,Nothing},
+        example     = """
+        """:
+            #=======================================================
+            doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newBlock()):
+                var res: ValueArray
+            do:
+                if isTrue(move stack.pop()):
+                    res.add(captured)
+                else:
+                    keepGoing = false
+                    break
+            do: 
+                if unlikely(inPlace): RawInPlaced = newBlock(res)
+                else: push(newBlock(res))
+
 #=======================================
 # Add Library
 #=======================================
