@@ -1821,6 +1821,37 @@ proc defineSymbols*() =
                         if i == upperLimit+1: break
                     push(newBlock(res))
 
+    builtin "tally",
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
+        description = "find number of occurences of each value within given block and return as dictionary",
+        args        = {
+            "collection": {String, Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Dictionary},
+        example     = """
+        """:
+            #=======================================================
+            var occurences = initOrderedTable[string,Value]()
+
+            if x.kind == String:
+                for r in runes(x.s): 
+                    let str = $(r)
+                    if not occurences.hasKey(str):
+                        occurences[str] = newInteger(0)
+
+                    occurences[str].i += 1
+            else:
+                for item in x.a:
+                    let str = $(item)
+                    if not occurences.hasKey(str):
+                        occurences[str] = newInteger(0)
+                        
+                    occurences[str].i += 1
+            
+            push(newDictionary(occurences))
+
     builtin "unique",
         alias       = unaliased,
         rule        = PrefixPrecedence,
