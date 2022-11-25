@@ -543,6 +543,17 @@ proc defineSymbols*() =
         },
         returns     = {Block,Nothing},
         example     = """
+            collect [1 3 5 4 6 7] => odd?
+            ; => [1 3 4]
+
+            collect [1 2 3 4 3 2 1 2 3] 'x -> x < 4
+            ; => [1 2 3]
+            ..........
+            collect.after [4 6 3 5 2 0 1] => odd?
+            ; => [3 5 2 0 1]
+
+            collect.after 1..10 'x -> x > 4
+            ; => [5 6 7 8 9 10]
         """:
             #=======================================================
             if hadAttr("after"):
