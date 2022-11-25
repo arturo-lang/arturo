@@ -783,7 +783,7 @@ proc defineSymbols*() =
                                 keepGoing = false
                                 break
 
-                if onlyFirst or onlyLast and stoppedAt < rang.len:
+                if onlyFirst or onlyLast and stoppedAt < rang.len and stoppedAt != -1:
                     # TODO(Iterators\filter): optimize implementation for Range values with `.last`
                     #  this goes again through the whole range, which is not necessary
                     #  labels: enhancement, performance, library
@@ -819,7 +819,7 @@ proc defineSymbols*() =
                                 keepGoing = false
                                 break
 
-                if (onlyFirst or onlyLast) and stoppedAt < blo.len:
+                if (onlyFirst or onlyLast) and stoppedAt < blo.len and stoppedAt != -1:
                     res.add(blo[stoppedAt..^1])
 
                 if onlyLast:
