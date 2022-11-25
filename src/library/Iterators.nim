@@ -555,7 +555,7 @@ proc defineSymbols*() =
                     fetchIterableRange()
                 
                     iterateRange(withCap=false, withInf=false, withCounter=false, rolling=false):
-                        stoppedAt = indx+1
+                        stoppedAt = indx
                         if isTrue(move stack.pop()):
                             keepGoing = false
                             break
@@ -570,7 +570,7 @@ proc defineSymbols*() =
                         newBlock()
                     
                     iterateBlock(withCap=false, withInf=false, withCounter=false, rolling=false):
-                        stoppedAt = indx+1
+                        stoppedAt = indx
                         if isTrue(move stack.pop()):
                             keepGoing = false
                             break
