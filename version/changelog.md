@@ -21,7 +21,7 @@ v0.9.82
 - Collections: added new `combine`, `decouple` & `rotate` methods
 - Converters: added new `in` method
 - Files: added new `hidden?` predicate & `timestamp` method
-- Iterators: added new `chunk`, `cluster`, `enumerate` & `gather` methods
+- Iterators: added new `chunk`, `cluster`, `collect`, `enumerate`, `gather`, `maximum` & `minimum` methods
 - Numbers: added new `factorial` & `lcm` methods
 - Paths: added new `absolute?` method
 - Reflection: added new `bytecode?`, `color?`, `complex?`, `object?`, `quantity?`, `rational?` & `version?` predicates
