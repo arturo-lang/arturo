@@ -1831,6 +1831,11 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Dictionary},
         example     = """
+            tally "helloWorld"
+            ; => [h:1 e:1 l:3 o:2 W:1 r:1 d:1]
+            ..........
+            tally [1 2 4 1 3 5 6 2 6 3 5 7 2 4 2 4 5 6 2 1 1 1]
+            ; => [1:5 2:5 4:3 3:2 5:3 6:3 7:1]
         """:
             #=======================================================
             var occurences = initOrderedTable[string,Value]()
