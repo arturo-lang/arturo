@@ -84,6 +84,11 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
+            disjoint? [1 2 3 4] [3 4 5 6]
+            ; => false
+
+            disjoint? [1 2 3 4] [5 6 7 8]
+            ; => true
         """:
             #=======================================================
             push(newLogical(disjoint(toHashSet(cleanedBlock(x.a)), toHashSet(cleanedBlock(y.a)))))
