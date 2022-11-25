@@ -1,4 +1,4 @@
-swap: function [a,b].inline [ 
+swap: function [a,b][ 
     tmp: var b
     let b var a
     let a tmp 

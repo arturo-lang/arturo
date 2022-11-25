@@ -1,4 +1,4 @@
-kaprekar?: function [n].inline [
+kaprekar?: function [n][
     n2: to :string n*n
     loop 0..dec size n2 'i [
         a: (i > 0)? -> to :integer slice n2 0 dec i -> 0
