@@ -730,25 +730,6 @@ proc defineSymbols*() =
                     true
                 else: false
 
-            # TODO(Iterators/filter) `.last` not working correctly for Range values
-            #  The problem exists when nothing has been filtered:
-            #  e.g. `filter.last:2 range.step:3 1 20 => even?`
-            #  returns [1 3 5 7 9 1 3 5 7 9] instead of [1 3 5 7 9]
-            #  labels: library, bug
-
-            # TODO(Iterators/filter) `.last` not working for even-sized ranges with a step
-            #  Since the processing involves reversing the range, then let's say we have `1..10` with a step of 2.
-            #  Going forward, this looks like: [1 3 5 7 9] (5 elements), but going backwards it ends up being [10 8 6 4 2], which is a totally distinct range.
-            #  labels: library, bug
-
-            # TODO(Iterators/filter) `.last` not working at all for specific Block values
-            #  Perhaps, the problem exists when nothing has been filtered?
-            #  e.g. `filter.last: 3 range.step: 2 1 9 => even?`
-            #  returns [1 3 5 7 9 1 3 5 7 9] instead of [1 2 3 5 7 9]
-            # 
-            #  But this works fine: `filter.last:2 @range.step:3 1 20 => even?`
-            #  labels: library, bug
-
             let onlyLast = 
                 if checkAttr("last"):
                     if isTrue(aLast): elemLimit = 1
