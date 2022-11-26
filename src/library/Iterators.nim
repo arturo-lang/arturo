@@ -1243,64 +1243,101 @@ proc defineSymbols*() =
             => [5 7 9]
         """:
             #=======================================================
-            doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newBlock()):
-                var elemLimit = -1
+            prepareIteration()
+
+            var elemLimit = -1
                 
-                let onlyFirst = 
-                    if checkAttr("first"):
-                        if isTrue(aFirst): elemLimit = 1
-                        else: elemLimit = aFirst.i
-                        true
-                    else: false
+            let onlyFirst = 
+                if checkAttr("first"):
+                    if isTrue(aFirst): elemLimit = 1
+                    else: elemLimit = aFirst.i
+                    true
+                else: false
 
-                let onlyLast = 
-                    if checkAttr("last"):
-                        if isTrue(aLast): elemLimit = 1
-                        else: elemLimit = aLast.i
-                        true
-                    else: false
+            let onlyLast = 
+                if checkAttr("last"):
+                    if isTrue(aLast): elemLimit = 1
+                    else: elemLimit = aLast.i
+                    true
+                else: false
 
-                var nth = -1
-                let onlyN = 
-                    if checkAttr("n"):
-                        nth = aN.i
-                        true
-                    else: false
+            var nth = -1
+            let onlyN = 
+                if checkAttr("n"):
+                    nth = aN.i
+                    true
+                else: false
 
-                var found: int = 0
+            var found: int = 0
+
+            if iterable.kind==Range:
+                fetchIterableRange()
+
                 var res: ValueArray
-            do:
-                if isTrue(move stack.pop()):
-                    if likely(not onlyN):
-                        res.add(captured)
-
-                        if onlyFirst:
-                            if elemLimit == res.len:
-                                keepGoing = false
-                                break
-                    else:
-                        found += 1
-                        if found == nth:
-                            when captured is ValueArray:
-                                if captured.len == 1:
-                                    push(captured[0])
-                                else:
-                                    push(newBlock(captured))
-                            else:
-                                push(captured)
-                            return
-            do:
-                # TODO(Iterators\select) not optimal implementation for `.last`
-                #  This requires adding all the elements (as usual) and selecting the ones we want afterwards - that's obviously not the best way
-                #  We could "copy" the idea from `filter` and reverse the range/block when necessary
-                #  labels: enhancement, performance, library
 
                 if onlyLast:
-                    let rlen = res.len
-                    var startFrom = 0
-                    if rlen-elemLimit > 0:
-                        startFrom = rlen-elemLimit
-                    res = res[startFrom..rlen-1]
+                    rang = rang.reversed(safe=true)
+                
+                iterateRange(withCap=true, withInf=false, withCounter=false, rolling=false):
+                    if isTrue(move stack.pop()):
+                        if likely(not onlyN):
+                            res.add(captured)
+
+                            if onlyFirst or onlyLast:
+                                if elemLimit == res.len:
+                                    keepGoing = false
+                                    break
+                        else:
+                            found += 1
+                            if found == nth:
+                                when captured is ValueArray:
+                                    if captured.len == 1:
+                                        push(captured[0])
+                                    else:
+                                        push(newBlock(captured))
+                                else:
+                                    push(captured)
+                                return
+                
+                if onlyLast:
+                    res.reverse()
+                
+                if unlikely(onlyN): push(VNULL)
+                else:
+                    if unlikely(inPlace): RawInPlaced = newBlock(res)
+                    else: push(newBlock(res))
+            else: 
+                fetchIterableItems(doesAcceptLiterals=true):
+                    newBlock()
+
+                if onlyLast:
+                    blo = blo.reversed()
+
+                var res: ValueArray
+
+                iterateBlock(withCap=true, withInf=false, withCounter=false, rolling=false):
+                    if isTrue(move stack.pop()):
+                        if likely(not onlyN):
+                            res.add(captured)
+
+                            if onlyFirst or onlyLast:
+                                if elemLimit == res.len:
+                                    keepGoing = false
+                                    break
+                        else:
+                            found += 1
+                            if found == nth:
+                                when captured is ValueArray:
+                                    if captured.len == 1:
+                                        push(captured[0])
+                                    else:
+                                        push(newBlock(captured))
+                                else:
+                                    push(captured)
+                                return
+                
+                if onlyLast:
+                    res.reverse()
                 
                 if unlikely(onlyN): push(VNULL)
                 else:
