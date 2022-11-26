@@ -409,12 +409,6 @@ template doIterate(
 #  a nice name could be `arrange`
 #  labels: library, enhancement
 
-# TODO(Iterators) Add better unit-tests for entire module
-#  make sure to test everything: Range vs Block values, with or without a step
-#  odd- & even-sized ranges/blocks, non-block iterables (strings, dictionaries, etc),
-#  including `.first` and `.last`
-#  labels: benchmark, unit-test
-
 proc defineSymbols*() =
 
     builtin "chunk",
@@ -527,6 +521,83 @@ proc defineSymbols*() =
 
                 if unlikely(inPlace): RawInPlaced = newBlock(res)
                 else: push(newBlock(res))
+
+    builtin "collect",
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
+        description = "collect items from given collection condition is true",
+        args        = {
+            "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
+            "params"        : {Literal,Block,Null},
+            "condition"     : {Block,Bytecode}
+        },
+        attrs       = {
+            "with"      : ({Literal},"use given index"),
+            "after"     : ({Logical},"start collecting after given condition becomes true")
+        },
+        returns     = {Block,Nothing},
+        example     = """
+            collect [1 3 5 4 6 7] => odd?
+            ; => [1 3 4]
+
+            collect [1 2 3 4 3 2 1 2 3] 'x -> x < 4
+            ; => [1 2 3]
+            ..........
+            collect.after [4 6 3 5 2 0 1] => odd?
+            ; => [3 5 2 0 1]
+
+            collect.after 1..10 'x -> x > 4
+            ; => [5 6 7 8 9 10]
+        """:
+            #=======================================================
+            if hadAttr("after"):
+                prepareIteration()
+
+                var stoppedAt = -1
+                var res: ValueArray
+                
+                if iterable.kind==Range:
+                    fetchIterableRange()
+                
+                    iterateRange(withCap=false, withInf=false, withCounter=false, rolling=false):
+                        stoppedAt = indx
+                        if isTrue(move stack.pop()):
+                            keepGoing = false
+                            break
+
+                    if stoppedAt < rang.len:
+                        res = rang[stoppedAt..rang.len-1]
+
+                    if unlikely(inPlace): RawInPlaced = newBlock(res)
+                    else: push(newBlock(res))
+                else:
+                    fetchIterableItems(doesAcceptLiterals=true):
+                        newBlock()
+                    
+                    iterateBlock(withCap=false, withInf=false, withCounter=false, rolling=false):
+                        stoppedAt = indx
+                        if isTrue(move stack.pop()):
+                            keepGoing = false
+                            break
+
+                    if stoppedAt < blo.len:
+                        res = blo[stoppedAt..^1]
+
+                    if unlikely(inPlace): RawInPlaced = newBlock(res)
+                    else: push(newBlock(res))
+
+            else:
+                doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newBlock()):
+                    var res: ValueArray
+                do:
+                    if isTrue(move stack.pop()):
+                        res.add(captured)
+                    else:
+                        keepGoing = false
+                        break
+                do: 
+                    if unlikely(inPlace): RawInPlaced = newBlock(res)
+                    else: push(newBlock(res))
 
     builtin "enumerate",
         alias       = unaliased,
@@ -653,25 +724,6 @@ proc defineSymbols*() =
                     true
                 else: false
 
-            # TODO(Iterators/filter) `.last` not working correctly for Range values
-            #  The problem exists when nothing has been filtered:
-            #  e.g. `filter.last:2 range.step:3 1 20 => even?`
-            #  returns [1 3 5 7 9 1 3 5 7 9] instead of [1 3 5 7 9]
-            #  labels: library, bug
-
-            # TODO(Iterators/filter) `.last` not working for even-sized ranges with a step
-            #  Since the processing involves reversing the range, then let's say we have `1..10` with a step of 2.
-            #  Going forward, this looks like: [1 3 5 7 9] (5 elements), but going backwards it ends up being [10 8 6 4 2], which is a totally distinct range.
-            #  labels: library, bug
-
-            # TODO(Iterators/filter) `.last` not working at all for specific Block values
-            #  Perhaps, the problem exists when nothing has been filtered?
-            #  e.g. `filter.last: 3 range.step: 2 1 9 => even?`
-            #  returns [1 3 5 7 9 1 3 5 7 9] instead of [1 2 3 5 7 9]
-            # 
-            #  But this works fine: `filter.last:2 @range.step:3 1 20 => even?`
-            #  labels: library, bug
-
             let onlyLast = 
                 if checkAttr("last"):
                     if isTrue(aLast): elemLimit = 1
@@ -688,7 +740,7 @@ proc defineSymbols*() =
                 var res: ValueArray
 
                 if onlyLast:
-                    rang = rang.reversed()
+                    rang = rang.reversed(safe=true)
                 
                 iterateRange(withCap=true, withInf=false, withCounter=false, rolling=false):
                     let popped = move stack.pop()
@@ -706,10 +758,7 @@ proc defineSymbols*() =
                                 keepGoing = false
                                 break
 
-                if onlyFirst or onlyLast and stoppedAt < rang.len:
-                    # TODO(Iterators\filter): optimize implementation for Range values with `.last`
-                    #  this goes again through the whole range, which is not necessary
-                    #  labels: enhancement, performance, library
+                if (onlyFirst or onlyLast) and stoppedAt < rang.len and stoppedAt != -1:
                     res.add(rang[stoppedAt..rang.len-1])
                 
                 if onlyLast:
@@ -742,7 +791,7 @@ proc defineSymbols*() =
                                 keepGoing = false
                                 break
 
-                if (onlyFirst or onlyLast) and stoppedAt < blo.len:
+                if (onlyFirst or onlyLast) and stoppedAt < blo.len and stoppedAt != -1:
                     res.add(blo[stoppedAt..^1])
 
                 if onlyLast:
@@ -821,7 +870,7 @@ proc defineSymbols*() =
                 var seed = I0
 
                 if rollingRight:
-                    rang = rang.reversed()
+                    rang = rang.reversed(safe=true)
 
                 let firstElem {.cursor.} = rang[0]
 
@@ -1033,6 +1082,112 @@ proc defineSymbols*() =
                 if unlikely(inPlace): RawInPlaced = newBlock(res)
                 else: push(newBlock(res))
 
+    builtin "maximum",
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
+        description = "get maximum item from collection based on given predicate",
+        args        = {
+            "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
+            "params"        : {Literal,Block,Null},
+            "condition"     : {Block,Bytecode}
+        },
+        attrs       = {
+            "with"      : ({Literal},"use given index"),
+            "value"     : ({Logical},"also include predicate values")
+        },
+        returns     = {Block,Nothing},
+        example     = """
+            maximum 1..10 'x -> size factors.prime x
+            ; => 8
+            ; 8 has the maximum number of 
+            ; prime factors: 2, 2, 2 (3)
+            ..........
+            maximum.value 1..10 'x -> size factors.prime x
+            ; => [8 3]
+        """:
+            #=======================================================
+            let withValue = hadAttr("value")
+
+            doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, VNULL):
+                var selected: ValueArray = @[]
+                var maxVal: Value = VNULL
+            do:
+                let popped = move stack.pop()
+                if selected.len == 0 or popped > maxVal:
+                    maxVal = popped
+                    when captured is Value:
+                        selected = @[move captured]
+                    else:
+                        selected = move captured
+            do:
+                if selected.len == 1:
+                    if withValue:
+                        if unlikely(inPlace): RawInPlaced = newBlock(@[selected[0], maxVal])
+                        else: push(newBlock(@[selected[0], maxVal]))
+                    else:
+                        if unlikely(inPlace): RawInPlaced = selected[0]
+                        else: push(selected[0])
+                else:
+                    if withValue:
+                        if unlikely(inPlace): RawInPlaced = newBlock(@[newBlock(selected), maxVal])
+                        else: push(newBlock(@[newBlock(selected), maxVal]))
+                    else:
+                        if unlikely(inPlace): RawInPlaced = newBlock(selected)
+                        else: push(newBlock(selected))
+
+    builtin "minimum",
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
+        description = "get minimum item from collection based on given predicate",
+        args        = {
+            "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
+            "params"        : {Literal,Block,Null},
+            "condition"     : {Block,Bytecode}
+        },
+        attrs       = {
+            "with"      : ({Literal},"use given index"),
+            "value"     : ({Logical},"also include predicate values")
+        },
+        returns     = {Block,Nothing},
+        example     = """
+            minimum [4 17 20] 'x -> size factors.prime x
+            ; => 17
+            ; 17 has the minimum number of 
+            ; prime factors: 17 (1)
+            ..........
+            minimum.value [4 17 20] 'x -> size factors.prime x
+            ; => [17 1]
+        """:
+            #=======================================================
+            let withValue = hadAttr("value")
+
+            doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, VNULL):
+                var selected: ValueArray = @[]
+                var minVal: Value = VNULL
+            do:
+                let popped = move stack.pop()
+                if selected.len == 0 or popped < minVal:
+                    minVal = popped
+                    when captured is Value:
+                        selected = @[move captured]
+                    else:
+                        selected = move captured
+            do:
+                if selected.len == 1:
+                    if withValue:
+                        if unlikely(inPlace): RawInPlaced = newBlock(@[selected[0], minVal])
+                        else: push(newBlock(@[selected[0], minVal]))
+                    else:
+                        if unlikely(inPlace): RawInPlaced = selected[0]
+                        else: push(selected[0])
+                else:
+                    if withValue:
+                        if unlikely(inPlace): RawInPlaced = newBlock(@[newBlock(selected), minVal])
+                        else: push(newBlock(@[newBlock(selected), minVal]))
+                    else:
+                        if unlikely(inPlace): RawInPlaced = newBlock(selected)
+                        else: push(newBlock(selected))
+
     builtin "select",
         alias       = unaliased,
         rule        = PrefixPrecedence,
@@ -1079,64 +1234,101 @@ proc defineSymbols*() =
             => [5 7 9]
         """:
             #=======================================================
-            doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newBlock()):
-                var elemLimit = -1
+            prepareIteration()
+
+            var elemLimit = -1
                 
-                let onlyFirst = 
-                    if checkAttr("first"):
-                        if isTrue(aFirst): elemLimit = 1
-                        else: elemLimit = aFirst.i
-                        true
-                    else: false
+            let onlyFirst = 
+                if checkAttr("first"):
+                    if isTrue(aFirst): elemLimit = 1
+                    else: elemLimit = aFirst.i
+                    true
+                else: false
 
-                let onlyLast = 
-                    if checkAttr("last"):
-                        if isTrue(aLast): elemLimit = 1
-                        else: elemLimit = aLast.i
-                        true
-                    else: false
+            let onlyLast = 
+                if checkAttr("last"):
+                    if isTrue(aLast): elemLimit = 1
+                    else: elemLimit = aLast.i
+                    true
+                else: false
 
-                var nth = -1
-                let onlyN = 
-                    if checkAttr("n"):
-                        nth = aN.i
-                        true
-                    else: false
+            var nth = -1
+            let onlyN = 
+                if checkAttr("n"):
+                    nth = aN.i
+                    true
+                else: false
 
-                var found: int = 0
+            var found: int = 0
+
+            if iterable.kind==Range:
+                fetchIterableRange()
+
                 var res: ValueArray
-            do:
-                if isTrue(move stack.pop()):
-                    if likely(not onlyN):
-                        res.add(captured)
-
-                        if onlyFirst:
-                            if elemLimit == res.len:
-                                keepGoing = false
-                                break
-                    else:
-                        found += 1
-                        if found == nth:
-                            when captured is ValueArray:
-                                if captured.len == 1:
-                                    push(captured[0])
-                                else:
-                                    push(newBlock(captured))
-                            else:
-                                push(captured)
-                            return
-            do:
-                # TODO(Iterators\select) not optimal implementation for `.last`
-                #  This requires adding all the elements (as usual) and selecting the ones we want afterwards - that's obviously not the best way
-                #  We could "copy" the idea from `filter` and reverse the range/block when necessary
-                #  labels: enhancement, performance, library
 
                 if onlyLast:
-                    let rlen = res.len
-                    var startFrom = 0
-                    if rlen-elemLimit > 0:
-                        startFrom = rlen-elemLimit
-                    res = res[startFrom..rlen-1]
+                    rang = rang.reversed(safe=true)
+                
+                iterateRange(withCap=true, withInf=false, withCounter=false, rolling=false):
+                    if isTrue(move stack.pop()):
+                        if likely(not onlyN):
+                            res.add(captured)
+
+                            if onlyFirst or onlyLast:
+                                if elemLimit == res.len:
+                                    keepGoing = false
+                                    break
+                        else:
+                            found += 1
+                            if found == nth:
+                                when captured is ValueArray:
+                                    if captured.len == 1:
+                                        push(captured[0])
+                                    else:
+                                        push(newBlock(captured))
+                                else:
+                                    push(captured)
+                                return
+                
+                if onlyLast:
+                    res.reverse()
+                
+                if unlikely(onlyN): push(VNULL)
+                else:
+                    if unlikely(inPlace): RawInPlaced = newBlock(res)
+                    else: push(newBlock(res))
+            else: 
+                fetchIterableItems(doesAcceptLiterals=true):
+                    newBlock()
+
+                if onlyLast:
+                    blo = blo.reversed()
+
+                var res: ValueArray
+
+                iterateBlock(withCap=true, withInf=false, withCounter=false, rolling=false):
+                    if isTrue(move stack.pop()):
+                        if likely(not onlyN):
+                            res.add(captured)
+
+                            if onlyFirst or onlyLast:
+                                if elemLimit == res.len:
+                                    keepGoing = false
+                                    break
+                        else:
+                            found += 1
+                            if found == nth:
+                                when captured is ValueArray:
+                                    if captured.len == 1:
+                                        push(captured[0])
+                                    else:
+                                        push(newBlock(captured))
+                                else:
+                                    push(captured)
+                                return
+                
+                if onlyLast:
+                    res.reverse()
                 
                 if unlikely(onlyN): push(VNULL)
                 else:
@@ -1170,8 +1362,8 @@ proc defineSymbols*() =
             print some? 1..10 [x y]-> 15 < x+y
             ; true
             ..........
-            print every? [2 3 5 7 11 14] 'x [prime? x]
-            ; false
+            print some? [2 4 6 9] 'x [prime? x]
+            ; true
             ..........
             print some?.with:'i ["three" "two" "one" "four" "five"] 'x -> i >= size x
             ; true

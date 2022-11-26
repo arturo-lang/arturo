@@ -18,13 +18,14 @@ v0.9.82
 
 **New**
 - Arithmetic: added new `divmod` method
-- Collections: added new `combine`, `decouple` & `rotate` methods
+- Collections: added new `combine`, `decouple`, `rotate` & `tally` methods
 - Converters: added new `in` method
 - Files: added new `hidden?` predicate & `timestamp` method
-- Iterators: added new `chunk`, `cluster`, `enumerate` & `gather` methods
+- Iterators: added new `chunk`, `cluster`, `collect`, `enumerate`, `gather`, `maximum` & `minimum` methods
 - Numbers: added new `factorial` & `lcm` methods
 - Paths: added new `absolute?` method
-- Reflection: added new `bytecode?`, `color?`, `complex?`, `object?`, `quantity?`, `rational?` & `version?` predicates
+- Reflection: added new `bytecode?`, `color?`, `complex?`, `object?`, `quantity?`, `rational?`, `range?` & `version?` predicates
+- Sets: added new `disjoint?` method
 - Strings: added new `alphabet` method
 - System: added new `superuser?` predicate
 
@@ -41,6 +42,7 @@ v0.9.82
 - Collections\max: added `.index` option
 - Collections\min: added `.index` option
 - Collections\permutate: re-implemented and now works with a `.by` and `.repeated` option
+- Collections\reverse: added `.exact` option
 - Collections\sample: fixed to also work with empty blocks
 - Collections\sort: added `.ascii` option & fixed to also work with empty blocks
 - Collections\take: fixed to also work with empty blocks

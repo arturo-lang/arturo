@@ -726,6 +726,24 @@ proc defineSymbols*() =
             #=======================================================
             push(newLogical(x.kind==Quantity))
 
+    builtin "range?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "checks if given value is of type :range",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            r: 1..3                     ; r: [1 2 3]
+
+            print range? r              ; true
+            print range? [1 2 3]        ; false
+        """:
+            #=======================================================
+            push(newLogical(x.kind==Range))
+
     builtin "rational?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
