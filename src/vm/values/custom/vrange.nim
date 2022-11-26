@@ -48,15 +48,33 @@ func len*(self: VRange): int =
     else:
         return (abs(self.stop - self.start) div abs(self.step)) + 1
 
-func reversed*(self: VRange): VRange =
-    VRange(
-        start: self.stop,
-        stop: self.start,
-        step: self.step,
-        infinite: self.infinite,
-        numeric: self.numeric,
-        forward: not self.forward
-    )
+func reversed*(self: VRange, safe: bool = false): VRange =
+    if self.infinite or not safe:
+        result = VRange(
+            start: self.stop,
+            stop: self.start,
+            step: self.step,
+            infinite: self.infinite,
+            numeric: self.numeric,
+            forward: not self.forward
+        )
+    else:
+        var fromI, toI: int
+        
+        fromI = self.start
+        if self.forward:
+            toI = self.start + (self.len-1)*self.step
+        else:
+            toI = self.start - (self.len-1)*self.step
+
+        result = VRange(
+            start: toI,
+            stop: fromI,
+            step: self.step,
+            infinite: self.infinite,
+            numeric: self.numeric,
+            forward: not self.forward
+        )
 
 #=======================================
 # Overloads
