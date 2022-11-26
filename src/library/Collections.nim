@@ -1152,7 +1152,9 @@ proc defineSymbols*() =
         args        = {
             "collection": {String, Block, Range, Literal}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "exact" : ({Logical}, "make sure the reverse range contains the same elements")
+        },
         returns     = {String, Block, Nothing},
         example     = """
             print reverse [1 2 3 4]           ; 4 3 2 1
@@ -1172,12 +1174,14 @@ proc defineSymbols*() =
                 for i, c in s:
                     result[s.high - i] = c
 
+            let exact = hadAttr("exact")
+
             if x.kind == Literal:
                 ensureInPlace()
                 if InPlaced.kind == String:
                     InPlaced.s.reverse()
                 elif InPlaced.kind == Range:
-                    InPlaced.rng = InPlaced.rng.reversed()
+                    InPlaced.rng = InPlaced.rng.reversed(safe=exact)
                 else:
                     InPlaced.a.reverse()
             else:
@@ -1185,7 +1189,7 @@ proc defineSymbols*() =
                     ensureCleaned(x)
                     push(newBlock(cleanX.reversed))
                 elif x.kind == Range:
-                    push(newRange(x.rng.reversed()))
+                    push(newRange(x.rng.reversed(safe=exact)))
                 else:
                     push(newString(reversed(x.s)))
 
