@@ -31,10 +31,6 @@ import vm/lib
 
 proc defineSymbols*() =
 
-    # TODO(Sets) more potential built-in function candidates?
-    #  we could also have functions/constants returning pre-defined sets, e.g. what `alphabet` does
-    #  labels: library, enhancement, open discussion
-
     builtin "difference",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -72,6 +68,26 @@ proc defineSymbols*() =
                     SetInPlace(newBlock(toSeq(difference(toHashSet(cleanedBlock(InPlaced.a)), toHashSet(cleanedBlock(y.a))))))
                 else:
                     push(newBlock(toSeq(difference(toHashSet(cleanedBlock(x.a)), toHashSet(cleanedBlock(y.a))))))
+
+    builtin "disjoint?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if given sets are disjoint (they have no common elements)",
+        args        = {
+            "setA"  : {Block},
+            "setB"  : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            disjoint? [1 2 3 4] [3 4 5 6]
+            ; => false
+
+            disjoint? [1 2 3 4] [5 6 7 8]
+            ; => true
+        """:
+            #=======================================================
+            push(newLogical(disjoint(toHashSet(cleanedBlock(x.a)), toHashSet(cleanedBlock(y.a)))))
 
     builtin "intersection",
         alias       = unaliased, 

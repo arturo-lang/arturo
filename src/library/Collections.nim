@@ -1140,11 +1140,6 @@ proc defineSymbols*() =
                 else:
                     push(newBlock(safeRepeat(x, y.i)))
 
-    # TODO(Collections/reverse) Change behavior for Range values
-    #  What happens when we have an even-sized range with a `.step`?
-    #  e.g. 1..10 (2) => 1, 3, 5, 7, 9
-    #  but: reverse 1..10 (2) => 10, 8, 6, 4, 2
-    #  labels: open discussion
     builtin "reverse",
         alias       = unaliased,
         rule        = PrefixPrecedence,
@@ -1152,7 +1147,9 @@ proc defineSymbols*() =
         args        = {
             "collection": {String, Block, Range, Literal}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "exact" : ({Logical}, "make sure the reverse range contains the same elements")
+        },
         returns     = {String, Block, Nothing},
         example     = """
             print reverse [1 2 3 4]           ; 4 3 2 1
@@ -1172,12 +1169,14 @@ proc defineSymbols*() =
                 for i, c in s:
                     result[s.high - i] = c
 
+            let exact = hadAttr("exact")
+
             if x.kind == Literal:
                 ensureInPlace()
                 if InPlaced.kind == String:
                     InPlaced.s.reverse()
                 elif InPlaced.kind == Range:
-                    InPlaced.rng = InPlaced.rng.reversed()
+                    InPlaced.rng = InPlaced.rng.reversed(safe=exact)
                 else:
                     InPlaced.a.reverse()
             else:
@@ -1185,7 +1184,7 @@ proc defineSymbols*() =
                     ensureCleaned(x)
                     push(newBlock(cleanX.reversed))
                 elif x.kind == Range:
-                    push(newRange(x.rng.reversed()))
+                    push(newRange(x.rng.reversed(safe=exact)))
                 else:
                     push(newString(reversed(x.s)))
 
@@ -1820,6 +1819,42 @@ proc defineSymbols*() =
                         i += 1
                         if i == upperLimit+1: break
                     push(newBlock(res))
+
+    builtin "tally",
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
+        description = "find number of occurences of each value within given block and return as dictionary",
+        args        = {
+            "collection": {String, Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Dictionary},
+        example     = """
+            tally "helloWorld"
+            ; => [h:1 e:1 l:3 o:2 W:1 r:1 d:1]
+            ..........
+            tally [1 2 4 1 3 5 6 2 6 3 5 7 2 4 2 4 5 6 2 1 1 1]
+            ; => [1:5 2:5 4:3 3:2 5:3 6:3 7:1]
+        """:
+            #=======================================================
+            var occurences = initOrderedTable[string,Value]()
+
+            if x.kind == String:
+                for r in runes(x.s): 
+                    let str = $(r)
+                    if not occurences.hasKey(str):
+                        occurences[str] = newInteger(0)
+
+                    occurences[str].i += 1
+            else:
+                for item in x.a:
+                    let str = $(item)
+                    if not occurences.hasKey(str):
+                        occurences[str] = newInteger(0)
+                        
+                    occurences[str].i += 1
+            
+            push(newDictionary(occurences))
 
     builtin "unique",
         alias       = unaliased,
