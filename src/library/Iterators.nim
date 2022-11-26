@@ -765,7 +765,7 @@ proc defineSymbols*() =
                 var res: ValueArray
 
                 if onlyLast:
-                    rang = rang.reversed()
+                    rang = rang.reversed(safe=true)
                 
                 iterateRange(withCap=true, withInf=false, withCounter=false, rolling=false):
                     let popped = move stack.pop()
@@ -898,7 +898,7 @@ proc defineSymbols*() =
                 var seed = I0
 
                 if rollingRight:
-                    rang = rang.reversed()
+                    rang = rang.reversed(safe=true)
 
                 let firstElem {.cursor.} = rang[0]
 
