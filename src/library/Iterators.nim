@@ -1362,8 +1362,8 @@ proc defineSymbols*() =
             print some? 1..10 [x y]-> 15 < x+y
             ; true
             ..........
-            print every? [2 3 5 7 11 14] 'x [prime? x]
-            ; false
+            print some? [2 4 6 9] 'x [prime? x]
+            ; true
             ..........
             print some?.with:'i ["three" "two" "one" "four" "five"] 'x -> i >= size x
             ; true
