@@ -82,8 +82,22 @@ func `[]`*(rng: VRange, idx: int): Value =
     raise newException(ValueError, "Index out of range")
 
 func `[]`*(rng: VRange, idx: HSlice): ValueArray =
-    for (i, item) in pairs(rng):
-        if i in idx: result.add(item)
+    let rLen = rng.len
+    let numeric = rng.numeric
+
+    let step = 
+        if rng.forward: rng.step
+        else: -1 * rng.step
+
+    var start = rng.start + step*idx.a
+    var i = idx.a
+    while i <= idx.b:
+        result.add(
+            if numeric: newInteger(start)
+            else: newChar(char(start))
+        )
+        start += step
+        i += 1
 
 proc contains*(rng: VRange, v: Value): bool {.inline,enforceNoRaises.} =
     rng.find(v) >= 0
