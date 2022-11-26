@@ -42,6 +42,7 @@ v0.9.82
 - Collections\max: added `.index` option
 - Collections\min: added `.index` option
 - Collections\permutate: re-implemented and now works with a `.by` and `.repeated` option
+- Collections\reverse: added `.exact` option
 - Collections\sample: fixed to also work with empty blocks
 - Collections\sort: added `.ascii` option & fixed to also work with empty blocks
 - Collections\take: fixed to also work with empty blocks
