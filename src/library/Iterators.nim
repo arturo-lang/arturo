@@ -429,6 +429,7 @@ proc defineSymbols*() =
         """:
             #=======================================================
             var useOrder = SortOrder.Ascending
+            
             if hadAttr("descending"):
                 useOrder = SortOrder.Descending
 
