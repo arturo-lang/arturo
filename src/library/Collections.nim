@@ -1532,6 +1532,9 @@ proc defineSymbols*() =
                     else:
                         InPlaced.d.sort(system.cmp, order = sortOrdering)
 
+    # TODO(Collections/sorted?) doesn't work properly
+    #  it should work in an identical way as `sort`
+    #  labels: library, enhancement
     builtin "sorted?",
         alias       = unaliased,
         rule        = PrefixPrecedence,
