@@ -1426,7 +1426,7 @@ proc defineSymbols*() =
         attrs       = {
             "as"        : ({Literal}, "localized by ISO 639-1 language code"),
             "sensitive" : ({Logical}, "case-sensitive sorting"),
-            "descending": ({Logical}, "sort in ascending order"),
+            "descending": ({Logical}, "sort in descending order"),
             "ascii"     : ({Logical}, "sort by ASCII transliterations"),
             "values"    : ({Logical}, "sort dictionary by values"),
             "by"        : ({String, Literal}, "sort array of dictionaries by given key")
