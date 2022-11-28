@@ -422,6 +422,11 @@ proc defineSymbols*() =
         },
         returns     = {Block,Nothing},
         example     = """
+            arrange ["the" "brown" "fox" "jumped" "over" "the" "lazy" "dog"] => size
+            ; => ["the" "fox" "the" "dog" "over" "lazy" "brown" "jumped"]
+            ..........
+            arrange.descending 1..10 'x -> size factors.prime x
+            ; => [8 4 6 9 10 2 3 5 7 1]
         """:
             #=======================================================
             var useOrder = SortOrder.Ascending
