@@ -82,7 +82,6 @@ func `[]`*(rng: VRange, idx: int): Value =
     raise newException(ValueError, "Index out of range")
 
 func `[]`*(rng: VRange, idx: HSlice): ValueArray =
-    let rLen = rng.len
     let numeric = rng.numeric
 
     let step = 
