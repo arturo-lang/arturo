@@ -405,10 +405,6 @@ template doIterate(
 # Methods
 #=======================================
 
-# TODO(Iterators) Add Ruby's equivalent of `sort_by`
-#  a nice name could be `arrange`
-#  labels: library, enhancement
-
 proc defineSymbols*() =
 
     builtin "arrange",
