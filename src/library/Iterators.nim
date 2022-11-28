@@ -421,7 +421,7 @@ proc defineSymbols*() =
             "condition"     : {Block,Bytecode}
         },
         attrs       = {
-            "with"          : ({Literal},"use given index"),
+            "with"          : ({Literal}, "use given index"),
             "descending"    : ({Logical}, "sort in descending order")
         },
         returns     = {Block,Nothing},
@@ -429,7 +429,7 @@ proc defineSymbols*() =
         """:
             #=======================================================
             var useOrder = SortOrder.Ascending
-            
+
             if hadAttr("descending"):
                 useOrder = SortOrder.Descending
 
