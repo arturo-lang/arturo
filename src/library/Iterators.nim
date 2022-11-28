@@ -430,8 +430,6 @@ proc defineSymbols*() =
                 useOrder = SortOrder.Descending
 
             doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newBlock()):
-                var res: ValueArray
-
                 var unsorted: seq[(ValueArray,Value)]
             do:
                 let popped = move stack.pop()
