@@ -411,6 +411,59 @@ template doIterate(
 
 proc defineSymbols*() =
 
+    builtin "arrange",
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
+        description = "sort items in collection using given action, in ascending order",
+        args        = {
+            "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
+            "params"        : {Literal,Block,Null},
+            "condition"     : {Block,Bytecode}
+        },
+        attrs       = {
+            "with"          : ({Literal},"use given index"),
+            "descending"    : ({Logical}, "sort in descending order")
+        },
+        returns     = {Block,Nothing},
+        example     = """
+        """:
+            #=======================================================
+            var useOrder = SortOrder.Ascending
+            if hadAttr("descending"):
+                useOrder = SortOrder.Descending
+
+            doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newBlock()):
+                var res: ValueArray
+
+                var unsorted: seq[(ValueArray,Value)]
+            do:
+                let popped = move stack.pop()
+
+                when captured is ValueArray:
+                    unsorted.add((captured, popped))
+                else:
+                    unsorted.add((@[captured], popped))
+            do:
+                unsorted.sort(proc (a,b: (ValueArray,Value)): int =
+                    cmp(a[1], b[1])
+                , order=useOrder)
+
+                if unsorted[0][0].len == 1:
+                    let res = unsorted.map((w) => 
+                        w[0][0]
+                    )
+
+                    if unlikely(inPlace): RawInPlaced = newBlock(res)
+                    else: push(newBlock(res))
+
+                else:
+                    let res = unsorted.map((w) => 
+                        newBlock(w[0])
+                    )
+
+                    if unlikely(inPlace): RawInPlaced = newBlock(res)
+                    else: push(newBlock(res))
+
     builtin "chunk",
         alias       = unaliased,
         rule        = PrefixPrecedence,
