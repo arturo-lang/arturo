@@ -1,9 +1,9 @@
 longYear?: function [year][
     date: to :date .format: "dd/MM/yyyy" ~"01/01/|year|"
 
-    or? date\Day = "Thursday" 
+    or? thursday? date
         and? leap? year
-             date\Day = "Wednesday"
+             wednesday? date
 ]
 
 print "Years with 53 weeks between 2000 and 2100:"
