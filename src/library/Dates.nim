@@ -154,6 +154,21 @@ proc defineSymbols*() =
             else:
                 push(newDate(x.eobj - ti))
 
+    builtin "friday?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if given date is a Friday",
+        args        = {
+            "date"  : {Date}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            print friday? now       ; false
+        """:
+            #=======================================================
+            push(newLogical(x.eobj.weekday == dFri))
+
     builtin "leap?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -174,6 +189,21 @@ proc defineSymbols*() =
                 push(newLogical(isLeapYear(x.i)))
             else:
                 push(newLogical(isLeapYear(x.e["year"].i)))
+
+    builtin "monday?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if given date is a Monday",
+        args        = {
+            "date"  : {Date}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            print sunday? now       ; false
+        """:
+            #=======================================================
+            push(newLogical(x.eobj.weekday == dMon))
 
     builtin "now",
         alias       = unaliased, 
@@ -205,6 +235,81 @@ proc defineSymbols*() =
         """:
             #=======================================================
             push(newDate(now()))
+
+    builtin "saturday?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if given date is a Saturday",
+        args        = {
+            "date"  : {Date}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            print saturday? now     ; false
+        """:
+            #=======================================================
+            push(newLogical(x.eobj.weekday == dSat))
+
+    builtin "sunday?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if given date is a Sunday",
+        args        = {
+            "date"  : {Date}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            print sunday? now       ; false
+        """:
+            #=======================================================
+            push(newLogical(x.eobj.weekday == dSun))
+
+    builtin "thursday?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if given date is a Thursday",
+        args        = {
+            "date"  : {Date}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            print thursday? now     ; false
+        """:
+            #=======================================================
+            push(newLogical(x.eobj.weekday == dThu))
+
+    builtin "tuesday?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if given date is a Tuesday",
+        args        = {
+            "date"  : {Date}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            print tuesday? now      ; true
+        """:
+            #=======================================================
+            push(newLogical(x.eobj.weekday == dTue))
+
+    builtin "wednesday?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if given date is a Wednesday",
+        args        = {
+            "date"  : {Date}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            print wednesday? now    ; false
+        """:
+            #=======================================================
+            push(newLogical(x.eobj.weekday == dWed))
 
 #=======================================
 # Add Library
