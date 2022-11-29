@@ -20,7 +20,7 @@
 #=======================================
 
 when not defined(WEB):
-    import algorithm, asyncdispatch, httpclient
+    import algorithm, asyncdispatch, browsers, httpclient
     import httpcore, os, smtp, strformat
     import strutils, times, uri
 
@@ -43,6 +43,23 @@ when defined(SAFE):
 proc defineSymbols*() =
 
     when not defined(WEB):
+
+        builtin "browse",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "open given URL with default browser",
+            args        = {
+                "url"   : {String}
+            },
+            attrs       = NoAttrs,
+            returns     = {Nothing},
+            example     = """
+            browse "https://arturo-lang.io"
+            ; opens Arturo's official website in a new browser window
+            """:
+                #=======================================================
+                when defined(SAFE): RuntimeError_OperationNotPermitted("browse")
+                openDefaultBrowser(x.s)
         
         builtin "download",
             alias       = unaliased, 
