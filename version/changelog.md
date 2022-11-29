@@ -20,7 +20,8 @@ v0.9.82
 - Arithmetic: added new `divmod` method
 - Collections: added new `combine`, `decouple`, `rotate` & `tally` methods
 - Converters: added new `in` method
-- Files: added new `hidden?` predicate & `timestamp` method
+- Dates: added new `sunday?`, `monday?`, `tuesday?`, `wednesday?`, `thursday?`, `friday?` & `saturday` methods
+- Files: added new `hidden?` predicate & `timestamp` methods
 - Iterators: added new `arrange`, `chunk`, `cluster`, `collect`, `enumerate`, `gather`, `maximum` & `minimum` methods
 - Numbers: added new `factorial` & `lcm` methods
 - Paths: added new `absolute?` method
