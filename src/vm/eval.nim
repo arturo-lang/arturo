@@ -1023,8 +1023,12 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                                     addTerminalValue(inBlock=false):
                                         addConst(aliased.name, opCall)
                             else:
-                                addTerminalValue(inBlock=false):
-                                    addConst(aliased.name, opLoad)
+                                if aliased.name.s == "null":
+                                    addTerminalValue(inBlock=false):
+                                        addToCommand(opConstN)
+                                else:
+                                    addTerminalValue(inBlock=false):
+                                        addConst(aliased.name, opLoad)
                         else:
                             addTerminalValue(inBlock=false):
                                 addConst(node, opPush)
