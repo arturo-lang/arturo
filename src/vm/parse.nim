@@ -952,7 +952,6 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inl
                         AddToken newString(unicode.strip(p.value))
                 else:
                     inc(p.bufpos)
-
             of '\195':
                 if p.buf[p.bufpos+1]=='\184': # ø
                     AddToken newSymbol(slashedzero)
@@ -960,9 +959,16 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inl
                 else:
                     inc(p.bufpos)
             of '\226':
-                if p.buf[p.bufpos+1]=='\136': # ∞
-                    AddToken newSymbol(infinite)
-                    inc(p.bufpos, 2)
+                if p.buf[p.bufpos+1]=='\136': 
+                    case p.buf[p.bufpos+2]:
+                        of '\133': # ø
+                            AddToken newSymbol(slashedzero)
+                            inc(p.bufpos, 3)
+                        of '\158': # ∞
+                            AddToken newSymbol(infinite)
+                            inc(p.bufpos, 3)
+                        else:
+                            inc(p.bufpos, 2)
                 else:
                     inc(p.bufpos)
             else:
