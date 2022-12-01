@@ -157,6 +157,40 @@ proc defineSymbols*() =
         # TODO(Files) add `move` built-in function
         #  labels: library, enhancement
 
+        builtin "move",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "move file at path to given destination",
+            args        = {
+                "file"          : {String},
+                "destination"   : {String}
+            },
+            attrs       = {
+                "directory" : ({Logical},"path is a directory")
+            },
+            returns     = {Nothing},
+            example     = """
+            move "testscript.art" normalize.tilde "~/Desktop/testscript.art"
+            ; moved file
+            ..........
+            move "testfolder" normalize.tilde "~/Desktop/testfolder"
+            ; moved whole folder
+            """:
+                #=======================================================
+                when defined(SAFE): RuntimeError_OperationNotPermitted("move")
+
+                var target = y.s
+                if (hadAttr("directory")): 
+                    try:
+                        moveDir(x.s, move target)
+                    except OSError:
+                        discard
+                else: 
+                    try:
+                        moveFile(x.s, move target)
+                    except OSError:
+                        discard
+
         builtin "permissions",
             alias       = unaliased, 
             rule        = PrefixPrecedence,
