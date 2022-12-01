@@ -1092,42 +1092,6 @@ proc parseDataBlock*(blk: Value): Value =
     else:
         result = parseAsBlock(blk, i)
 
-when defined(PYTHONIC):
-    proc doProcessPythonic(s: string): string =
-        var level = 0
-        var lines = s.split("\n")
-        var i = 0
-        while i<lines.len:
-            var line = lines[i]
-            #echo "processing line: |" & line & "|"
-            if line.startsWith("    "):
-                #echo "-- it's indented"
-                let thisLevel = (line.len-strutils.strip(line, leading=true).len) div 4
-                #echo "-- this level: " & $(thisLevel)
-                if thisLevel>level:
-                    #echo "-- adding start block to previous"
-                    lines[i-1] &= "["
-                    level = thisLevel
-                elif level>thisLevel:
-                    #echo "-- adding end block to this"
-                    lines[i] = "]" & lines[i]
-                    level = thisLevel
-            else:
-                while level>0:
-                    lines[i-1] &= "]"
-                    level -= 1
-
-            i += 1
-
-        var last = ""
-        while level>0:
-            last &= "]"
-            level -= 1
-
-        lines.add(last)
-        
-        lines.join("\n")
-
 proc doParse*(input: string, isFile: bool = true): Value =
     ## Parse a string or file path
     ## and return the result as a Block of values
@@ -1144,10 +1108,7 @@ proc doParse*(input: string, isFile: bool = true): Value =
             var stream = newFileStream(filePath)
             lexbase.open(p, stream)
         else:
-            when defined(PYTHONIC):
-                var stream = newStringStream(doProcessPythonic(input))
-            else:
-                var stream = newStringStream(input)
+            var stream = newStringStream(input)
 
             lexbase.open(p, stream)
 
