@@ -473,10 +473,12 @@ template parseNumber(p: var Parser) =
         add(p.value, p.buf[pos])
         inc(pos)
 
+    var hasDot{.inject.} = false
+
     if p.buf[pos] == Dot:
-        if p.buf[pos+1] == Dot:
-            p.bufpos = pos
-        else:
+        if p.buf[pos+1] != Dot:
+            hasDot = true
+
             add(p.value, Dot)
             inc(pos)
     
@@ -497,9 +499,7 @@ template parseNumber(p: var Parser) =
                             add(p.value, p.buf[pos])
                             inc(pos)
 
-            p.bufpos = pos
-    else:
-        p.bufpos = pos
+    p.bufpos = pos
 
 template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
     var pos = p.bufpos
@@ -768,7 +768,7 @@ template parsePath(p: var Parser, root: Value, curLevel: int) =
             of PermittedNumbers_Start:
                 setLen(p.value, 0)
                 parseNumber(p)
-                if Dot in p.value: p.values[^1].add(newFloating(p.value))
+                if hasDot: p.values[^1].add(newFloating(p.value))
                 else: p.values[^1].add(newInteger(p.value))
             of LBracket:
                 inc(p.bufpos)
@@ -846,7 +846,7 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inl
                     AddToken newType(p.value)
             of PermittedNumbers_Start:
                 parseNumber(p)
-                if Dot in p.value: 
+                if hasDot: 
                     if p.value.count(Dot)>1:
                         AddToken newVersion(p.value)
                     else:
