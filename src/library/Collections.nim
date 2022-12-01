@@ -1354,7 +1354,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get size/length of given collection",
         args        = {
-            "collection": {String, Block, Range, Dictionary, Object}
+            "collection": {String, Block, Range, Dictionary, Object, Null}
         },
         attrs       = NoAttrs,
         returns     = {Integer, Floating},
@@ -1381,9 +1381,11 @@ proc defineSymbols*() =
                 let sz = x.rng.len
                 if sz == InfiniteRange: push(newFloating(Inf))
                 else: push(newInteger(sz))
-            else:
+            elif x.kind == Block:
                 ensureCleaned(x)
                 push(newInteger(cleanX.len))
+            else: # Null
+                push(newInteger(0))
 
     builtin "slice",
         alias       = unaliased,
