@@ -942,9 +942,9 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inl
                 parseCurlyString(p)
             of RCurly:
                 inc(p.bufpos)
-            of chr(194):
-                if p.buf[p.bufpos+1]==chr(171): # got «
-                    if p.buf[p.bufpos+2]==chr(194) and p.buf[p.bufpos+3]==chr(171):
+            of '\194':
+                if p.buf[p.bufpos+1]=='\171': # got «
+                    if p.buf[p.bufpos+2]=='\194' and p.buf[p.bufpos+3]=='\171':
                         parseSafeString(p)
                         AddToken newString(p.value)
                     else:
@@ -953,14 +953,14 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inl
                 else:
                     inc(p.bufpos)
 
-            of chr(195):
-                if p.buf[p.bufpos+1]==chr(184): # ø
+            of '\195':
+                if p.buf[p.bufpos+1]=='\184': # ø
                     AddToken newSymbol(slashedzero)
                     inc(p.bufpos, 2)
                 else:
                     inc(p.bufpos)
-            of chr(226):
-                if p.buf[p.bufpos+1]==chr(136): # ∞
+            of '\226':
+                if p.buf[p.bufpos+1]=='\136': # ∞
                     AddToken newSymbol(infinite)
                     inc(p.bufpos, 2)
                 else:
