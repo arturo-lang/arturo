@@ -943,7 +943,7 @@ proc defineSymbols*() =
                     push(newLogical(probablyPrime(x.bi,25)>0))
 
     builtin "product",
-        alias       = unaliased, 
+        alias       = product, 
         rule        = PrefixPrecedence,
         description = "calculate the product of all values in given list",
         args        = {
@@ -1166,7 +1166,7 @@ proc defineSymbols*() =
             else: push(newFloating(sqrt(asFloat(x))))
 
     builtin "sum",
-        alias       = unaliased, 
+        alias       = summation, 
         rule        = PrefixPrecedence,
         description = "calculate the sum of all values in given list",
         args        = {
