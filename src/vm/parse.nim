@@ -191,8 +191,6 @@ template skip(p: var Parser, scriptStr: var string) =
             pos = lexbase.handleLF(p, pos)
             when not defined(NOERRORLINES):
                 AddToken newNewline(p.lineNumber)
-            # if p.buf[pos] == Tab:
-            #     echo "next one is tab!"
         of '#':
             if p.buf[pos+1]=='!':
                 inc(pos)
@@ -1127,10 +1125,6 @@ when defined(PYTHONIC):
             level -= 1
 
         lines.add(last)
-
-        #echo "======"
-        #echo lines.join("\n")
-        #echo "======"
         
         lines.join("\n")
 
