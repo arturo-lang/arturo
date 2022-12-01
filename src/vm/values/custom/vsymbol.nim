@@ -102,7 +102,17 @@ type
         doublecolon              = "::"
         doublepipe               = "||"
 
-        slashedzero              = "ø"
+        slashedzero              = "∅"
         infinite                 = "∞"
-
+        summation                = "∑"
+        product                  = "∏"
+        intersection             = "∩"
+        union                    = "∪"
+        subset                   = "⊂"
+        superset                 = "⊃"
+        subsetorequal            = "⊆"
+        supersetorequal          = "⊇"
+        element                  = "∈"
+        notelement               = "∉"
+        
         unaliased
