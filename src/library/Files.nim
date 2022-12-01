@@ -154,9 +154,6 @@ proc defineSymbols*() =
 
                 push newLogical(isHidden(x.s))
 
-        # TODO(Files) add `move` built-in function
-        #  labels: library, enhancement
-
         builtin "move",
             alias       = unaliased, 
             rule        = PrefixPrecedence,
