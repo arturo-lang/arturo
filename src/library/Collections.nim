@@ -1348,7 +1348,7 @@ proc defineSymbols*() =
             else:
                 ensureCleaned(x)
                 push(newBlock(cleanX.dup(shuffle)))
-
+ 
     builtin "size",
         alias       = unaliased,
         rule        = PrefixPrecedence,
