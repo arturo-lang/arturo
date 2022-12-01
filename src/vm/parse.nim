@@ -440,9 +440,9 @@ template parseSafeString(p: var Parser) =
                     add(p.value, LF)
                 else:
                     add(p.value, LF)
-            of chr(194):
-                if p.buf[pos+1]==chr(187): # got »
-                    if p.buf[pos+2]==chr(194) and p.buf[pos+3]==chr(187):
+            of '\194':
+                if p.buf[pos+1]=='\187': # got »
+                    if p.buf[pos+2]=='\194' and p.buf[pos+3]=='\187':
                         inc(pos, 4)
                         break
                     else:
