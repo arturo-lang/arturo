@@ -979,6 +979,12 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inl
                         of '\158': # ∞
                             AddToken newSymbol(infinite)
                             inc(p.bufpos, 3)
+                        of '\169': # ∩
+                            AddToken newSymbol(intersection)
+                            inc(p.bufpos, 3)
+                        of '\170': # ∪
+                            AddToken newSymbol(union)
+                            inc(p.bufpos, 3)
                         else:
                             inc(p.bufpos, 2)
                 elif p.buf[p.bufpos+1]=='\138':
@@ -994,16 +1000,6 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inl
                             inc(p.bufpos, 3)
                         of '\135': # ⊇
                             AddToken newSymbol(supersetorequal)
-                            inc(p.bufpos, 3)
-                        else:
-                            inc(p.bufpos, 2)
-                elif p.buf[p.bufpos+1]=='\139':
-                    case p.buf[p.bufpos+2]:
-                        of '\130': # ∩
-                            AddToken newSymbol(intersection)
-                            inc(p.bufpos, 3)
-                        of '\131': # ∪
-                            AddToken newSymbol(union)
                             inc(p.bufpos, 3)
                         else:
                             inc(p.bufpos, 2)
