@@ -456,9 +456,10 @@ template parseSafeString(p: var Parser) =
 
     p.bufpos = pos
 
-template parseIdentifier(p: var Parser) =
+template parseIdentifier(p: var Parser, alsoAddCurrent: bool) =
     var pos = p.bufpos
-    add(p.value, p.buf[pos])
+    when alsoAddCurrent:
+        add(p.value, p.buf[pos])
     inc(pos)
     while p.buf[pos] in PermittedIdentifiers_In:
         add(p.value, p.buf[pos])
@@ -761,7 +762,7 @@ template parsePath(p: var Parser, root: Value, curLevel: int) =
         case p.buf[p.bufpos]:
             of PermittedIdentifiers_Start:
                 setLen(p.value, 0)
-                parseIdentifier(p)
+                parseIdentifier(p, alsoAddCurrent=true)
                 p.values[^1].add(newLiteral(p.value))
             of PermittedNumbers_Start:
                 setLen(p.value, 0)
@@ -775,14 +776,6 @@ template parsePath(p: var Parser, root: Value, curLevel: int) =
                 p.values[^1].add(subblock)
             else:
                 break
-
-template parseLiteral(p: var Parser) =
-    var pos = p.bufpos
-    inc(pos)
-    while p.buf[pos] in PermittedIdentifiers_In:
-        add(p.value, p.buf[pos])
-        inc(pos)
-    p.bufpos = pos
 
 template parseQuantity(p: var Parser) =
     setLen(p.value, 0)
@@ -833,7 +826,7 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inl
                 parseString(p, stopper=BackTick)
                 AddToken newChar(p.value)
             of Colon:
-                parseLiteral(p)
+                parseIdentifier(p, alsoAddCurrent=false)
                 if p.value == Empty: 
                     if p.buf[p.bufpos]==Colon:
                         inc(p.bufpos)
@@ -872,7 +865,7 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inl
             of Symbols:
                 parseAndAddSymbol(p,topBlock)
             of PermittedIdentifiers_Start:
-                parseIdentifier(p)
+                parseIdentifier(p, alsoAddCurrent=true)
                 if p.buf[p.bufpos] == Colon:
                     inc(p.bufpos)
                     AddToken newLabel(p.value)
@@ -894,7 +887,7 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inl
                     AddToken newWord(p.value)
             of Tick:
                 # first try parsing it as a normal :literal
-                parseLiteral(p)
+                parseIdentifier(p, alsoAddCurrent=false)
                 if p.value == Empty: 
                     # if it's empty, then try parsing it as :symbolLiteral
                     if likely(p.buf[p.bufpos] in Symbols):
@@ -916,7 +909,7 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inl
                     inc(p.bufpos, 2)
                     AddToken newSymbol(dotslash)
                 else:
-                    parseLiteral(p)
+                    parseIdentifier(p, alsoAddCurrent=false)
                     if p.buf[p.bufpos] == Colon:
                         inc(p.bufpos)
                         AddToken newAttributeLabel(p.value)
