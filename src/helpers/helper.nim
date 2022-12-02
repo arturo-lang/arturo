@@ -91,7 +91,7 @@ proc getUsageForFunction(n: string, v: Value): seq[string] =
     let args = toSeq(v.info.args.pairs)
 
     let lenBefore = n.len
-    var spaceBefore = ""
+    var spaceBefore: string
     var j=0
     while j<lenBefore:
         spaceBefore &= " "
@@ -121,7 +121,7 @@ proc getOptionsForFunction(v: Value): seq[string] =
 
     for attr in attrs:
         let ts = getTypeString(attr[1][0])
-        var leftSide = ""
+        var leftSide: string
         var myLen = maxLen
         if ts!=":logical":
             leftSide = fmt("{fg(cyanColor)}.{attr[0]} {fg(grayColor)}{ts}")
@@ -133,7 +133,7 @@ proc getOptionsForFunction(v: Value): seq[string] =
         result.add fmt("{alignLeft(leftSide,myLen)} {resetColor}-> {attr[1][1]}")
 
 proc splitExamples*(ex: string): seq[string] =
-    var currentEx = ""
+    var currentEx: string
     for line in splitLines(ex):
         if line.strip().findAll(re"\.{4,}").len > 0:
             result.add(currentEx)

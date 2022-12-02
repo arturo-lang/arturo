@@ -118,8 +118,6 @@ template stripTrailingNewlines(): untyped =
 # Error reporting
 
 func getContext(p: var Parser, curPos: int): string =
-    result = ""
-
     var i = curPos
 
     while i > 0 and p.buf[i] notin {CR,LF,'\n'}:
@@ -527,7 +525,7 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
             # labels: bug,parser,language
             if p.buf[pos+1] in PermittedColorChars:
                 inc pos
-                var colorCode = ""
+                var colorCode: string
                 while p.buf[pos] in PermittedColorChars:
                     colorCode &= p.buf[pos]
                     inc pos
@@ -803,7 +801,7 @@ template parseExponent(p: var Parser) =
 
 proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inline.} =
     var topBlock: Value
-    var scriptStr: string = ""
+    var scriptStr: string
     if isDeferred: topBlock = newBlock(dirty=true)
     else: topBlock = newInline(dirty=true)
     let initial = p.bufpos
@@ -1120,9 +1118,6 @@ proc doParse*(input: string, isFile: bool = true): Value =
             var stream = newStringStream(input)
 
             lexbase.open(p, stream)
-
-        # initialize
-        p.value = ""
 
         # do parse    
         let rootBlock = parseBlock(p, 0)

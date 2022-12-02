@@ -79,7 +79,7 @@ const
 
 iterator getNextSymbol*(str: string, ngraphset: seq[string]): string =
     var i = 0
-    var comb,combb,combc: string = ""
+    var comb,combb,combc: string
     let runes = toRunes(str)
     while i < runes.len:
         comb = $(runes[i])

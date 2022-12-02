@@ -110,7 +110,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                         if y.iKind==NormalInteger: 
                             if (not aFormat.isNil):
                                 try:
-                                    var ret = ""
+                                    var ret: string
                                     formatValue(ret, y.i, aFormat.s)
                                     return newString(ret)
                                 except:
@@ -146,7 +146,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                         #  labels: library, enhancement
                         if (not aFormat.isNil):
                             try:
-                                var ret = ""
+                                var ret: string
                                 formatValue(ret, y.f, aFormat.s)
                                 return newString(ret)
                             except:
@@ -167,9 +167,9 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                     of String: 
                         if (not aFormat.isNil):
                             try:
-                                var ret = ""
+                                var ret: string
                                 formatValue(ret, y.z.re, aFormat.s)
-                                var ret2 = ""
+                                var ret2: string
                                 formatValue(ret2, y.z.im, aFormat.s)
 
                                 return newString($(ret) & (if y.z.im >= 0: "+" else: "") & $(ret2) & "i")

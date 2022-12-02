@@ -108,7 +108,7 @@ proc defineSymbols*() =
                     let rgba = RGBfromColor(x.l)
                     color = rgb((rgba.r, rgba.g, rgba.b))
 
-            var finalColor = ""
+            var finalColor: string
 
             if (hadAttr("bold")):
                 finalColor = bold(color)
@@ -216,7 +216,7 @@ proc defineSymbols*() =
                     #     stdout.flushFile()
                     #     push(newString(stdin.readLine()))
                     # else:
-                    var historyPath: string = ""
+                    var historyPath: string
                     var completionsArray: ValueArray
                     var hintsTable: ValueDict = initOrderedTable[string,Value]()
 
