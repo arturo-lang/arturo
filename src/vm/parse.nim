@@ -948,6 +948,9 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inl
                     else:
                         parseFullLineString(p)
                         AddToken newString(unicode.strip(p.value))
+                elif p.buf[p.bufpos+1]=='\172': # ¬
+                    AddToken newSymbol(logicalnot)
+                    inc(p.bufpos, 2)
                 else:
                     inc(p.bufpos)
             of '\195':
@@ -977,6 +980,12 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inl
                         of '\158': # ∞
                             AddToken newSymbol(infinite)
                             inc(p.bufpos, 3)
+                        of '\167': # ∧
+                            AddToken newSymbol(logicaland)
+                            inc(p.bufpos, 3)
+                        of '\168': # ∨
+                            AddToken newSymbol(logicalor)
+                            inc(p.bufpos, 3)
                         of '\169': # ∩
                             AddToken newSymbol(intersection)
                             inc(p.bufpos, 3)
@@ -999,6 +1008,12 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inl
                         of '\135': # ⊇
                             AddToken newSymbol(supersetorequal)
                             inc(p.bufpos, 3)
+                        of '\187': # ⊻
+                            AddToken newSymbol(logicalxor)
+                            inc(p.bufpos, 3)
+                        of '\188': # ⊼
+                            AddToken newSymbol(logicalnand)
+                            inc(p.bufpos, 3)    
                         else:
                             inc(p.bufpos, 2)
                 else:
