@@ -80,8 +80,6 @@ const
     
     SemVerExtra                 = Letters + PermittedNumbers_Start + {'+', '-', '.'}
 
-    Empty                       = ""
-
 #=======================================
 # Forward declarations
 #=======================================
@@ -92,6 +90,9 @@ proc parseDataBlock*(blk: Value): Value
 #=======================================
 # Templates
 #=======================================
+
+template Empty(s: var string): bool =
+    s.len == 0
 
 template AddToken(token: untyped): untyped =
     topBlock.a.add(token)
@@ -827,7 +828,7 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inl
                 AddToken newChar(p.value)
             of Colon:
                 parseIdentifier(p, alsoAddCurrent=false)
-                if p.value == Empty: 
+                if Empty(p.value):
                     if p.buf[p.bufpos]==Colon:
                         inc(p.bufpos)
                         AddToken newSymbol(doublecolon)
@@ -888,7 +889,7 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inl
             of Tick:
                 # first try parsing it as a normal :literal
                 parseIdentifier(p, alsoAddCurrent=false)
-                if p.value == Empty: 
+                if Empty(p.value): 
                     # if it's empty, then try parsing it as :symbolLiteral
                     if likely(p.buf[p.bufpos] in Symbols):
                         parseAndAddSymbol(p,topBlock)
