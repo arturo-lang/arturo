@@ -119,8 +119,8 @@ Options:
 
 when isMainModule and not defined(WEB):
 
-    var code: string = ""
-    var arguments: seq[string] = @[]
+    var code: string
+    var arguments: seq[string]
 
     when not defined(PORTABLE):
         var token = initOptParser()

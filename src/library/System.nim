@@ -115,7 +115,7 @@ proc defineSymbols*() =
 
                 # get arguments & options
                 var cmd = x.s
-                var args: seq[string] = @[]
+                var args: seq[string]
                 if checkAttr("args"):
                     args = aArgs.a.map((x) => x.s)
                 let code = (hadAttr("code"))

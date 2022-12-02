@@ -118,8 +118,6 @@ template stripTrailingNewlines(): untyped =
 # Error reporting
 
 func getContext(p: var Parser, curPos: int): string =
-    result = ""
-
     var i = curPos
 
     while i > 0 and p.buf[i] notin {CR,LF,'\n'}:
@@ -527,7 +525,7 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
             # labels: bug,parser,language
             if p.buf[pos+1] in PermittedColorChars:
                 inc pos
-                var colorCode = ""
+                var colorCode: string
                 while p.buf[pos] in PermittedColorChars:
                     colorCode &= p.buf[pos]
                     inc pos
@@ -803,7 +801,7 @@ template parseExponent(p: var Parser) =
 
 proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inline.} =
     var topBlock: Value
-    var scriptStr: string = ""
+    var scriptStr: string
     if isDeferred: topBlock = newBlock(dirty=true)
     else: topBlock = newInline(dirty=true)
     let initial = p.bufpos
@@ -1027,7 +1025,7 @@ proc parseAsDictionary(blk: Value, start: int): Value =
             of Label: 
                 let lbl = blk.a[i].s
                 i += 1
-                var values: ValueArray = @[]
+                var values: ValueArray
                 while i < blk.a.len and blk.a[i].kind!=Newline and blk.a[i].kind!=Label:
                     case blk.a[i].kind:
                         of Block:
@@ -1052,7 +1050,7 @@ proc parseAsDictionary(blk: Value, start: int): Value =
 proc parseAsBlock(blk: Value, start: int): Value =
     result = newBlock()
     var i = start
-    var values: ValueArray = @[]
+    var values: ValueArray
     while i < blk.a.len:
         case blk.a[i].kind:
             of Block:
@@ -1062,10 +1060,10 @@ proc parseAsBlock(blk: Value, start: int): Value =
             of Newline:
                 if values.len > 1:
                     result.a.add(newBlock(values))
-                    values = @[]
+                    values.setLen(0)
                 elif values.len == 1:
                     result.a.add(values[0])
-                    values = @[]
+                    values.setLen(0)
                 else:
                     discard
             else:
@@ -1120,10 +1118,6 @@ proc doParse*(input: string, isFile: bool = true): Value =
             var stream = newStringStream(input)
 
             lexbase.open(p, stream)
-
-        # initialize
-        p.value = ""
-        p.values = @[]
 
         # do parse    
         let rootBlock = parseBlock(p, 0)

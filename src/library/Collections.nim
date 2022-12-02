@@ -1315,7 +1315,7 @@ proc defineSymbols*() =
                         else:
                             x.o[$(y)] = z
                 of String:
-                    var res: string = ""
+                    var res: string
                     var idx = 0
                     for r in x.s.runes:
                         if idx != y.i: res.add r
@@ -1624,7 +1624,7 @@ proc defineSymbols*() =
                         SetInPlace(newStringBlock(@[InPlaced.s[0..aAt.i-1],
                                 InPlaced.s[aAt.i..^1]]))
                     elif checkAttr("every"):
-                        var ret: seq[string] = @[]
+                        var ret: seq[string]
                         var length = InPlaced.s.len
                         var i = 0
 
@@ -1641,7 +1641,7 @@ proc defineSymbols*() =
                         SetInPlace(newBlock(@[newBlock(InPlaced.a[0..aAt.i]),
                                 newBlock(InPlaced.a[aAt.i..^1])]))
                     elif checkAttr("every"):
-                        var ret: ValueArray = @[]
+                        var ret: ValueArray
                         var length = InPlaced.a.len
                         var i = 0
 
@@ -1669,7 +1669,7 @@ proc defineSymbols*() =
                 elif checkAttr("at"):
                     push(newStringBlock(@[x.s[0..aAt.i-1], x.s[aAt.i..^1]]))
                 elif checkAttr("every"):
-                    var ret: seq[string] = @[]
+                    var ret: seq[string]
                     var length = x.s.len
                     var i = 0
 
@@ -1686,7 +1686,7 @@ proc defineSymbols*() =
                     push(newBlock(@[newBlock(cleanX[0..aAt.i-1]), newBlock(
                             cleanX[aAt.i..^1])]))
                 elif checkAttr("every"):
-                    var ret: ValueArray = @[]
+                    var ret: ValueArray
                     var length = cleanX.len
                     var i = 0
 
@@ -1725,7 +1725,7 @@ proc defineSymbols*() =
                 ensureInPlace()
                 if InPlaced.kind == String:
                     var i = 0
-                    var ret = ""
+                    var ret: string
                     while i < InPlaced.s.len:
                         ret &= $(InPlaced.s[i])
                         while (i+1 < InPlaced.s.len and InPlaced.s[i+1] == x.s[i]):
@@ -1734,7 +1734,7 @@ proc defineSymbols*() =
                     SetInPlace(newString(ret))
                 elif InPlaced.kind == Block:
                     var i = 0
-                    var ret: ValueArray = @[]
+                    var ret: ValueArray
                     while i < InPlaced.a.len:
                         ret.add(InPlaced.a[i])
                         while (i+1 < InPlaced.a.len and InPlaced.a[i+1] ==
@@ -1745,7 +1745,7 @@ proc defineSymbols*() =
             else:
                 if x.kind == String:
                     var i = 0
-                    var ret = ""
+                    var ret: string
                     while i < x.s.len:
                         ret &= $(x.s[i])
                         while (i+1 < x.s.len and x.s[i+1] == x.s[i]):
@@ -1754,7 +1754,7 @@ proc defineSymbols*() =
                     push(newString(ret))
                 elif x.kind == Block:
                     var i = 0
-                    var ret: ValueArray = @[]
+                    var ret: ValueArray
                     ensureCleaned(x)
                     while i < cleanX.len:
                         ret.add(cleanX[i])

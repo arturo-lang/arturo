@@ -94,7 +94,7 @@ proc defineSymbols*() =
             let upper = hadAttr("upper")
             let all = hadAttr("all")
 
-            var got: ValueArray = @[]
+            var got: ValueArray
 
             if upper:
                 if lower:
@@ -322,7 +322,7 @@ proc defineSymbols*() =
                     ensureCleaned(x)
                     push(newString(joinPath(cleanX.map(proc (v:Value):string = $(v)))))
             else:
-                var sep = ""
+                var sep: string
                 if checkAttr("with"):
                     sep = aWith.s
 
@@ -640,7 +640,7 @@ proc defineSymbols*() =
                 #=======================================================
                 let recursive = not (hadAttr("once"))
                 let templated = (hadAttr("template"))
-                var res = ""
+                var res: string
                 if x.kind == Literal:
                     ensureInPlace()
                     res = InPlaced.s

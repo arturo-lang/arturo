@@ -110,7 +110,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                         if y.iKind==NormalInteger: 
                             if (not aFormat.isNil):
                                 try:
-                                    var ret = ""
+                                    var ret: string
                                     formatValue(ret, y.i, aFormat.s)
                                     return newString(ret)
                                 except:
@@ -146,7 +146,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                         #  labels: library, enhancement
                         if (not aFormat.isNil):
                             try:
-                                var ret = ""
+                                var ret: string
                                 formatValue(ret, y.f, aFormat.s)
                                 return newString(ret)
                             except:
@@ -167,9 +167,9 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                     of String: 
                         if (not aFormat.isNil):
                             try:
-                                var ret = ""
+                                var ret: string
                                 formatValue(ret, y.z.re, aFormat.s)
-                                var ret2 = ""
+                                var ret2: string
                                 formatValue(ret2, y.z.im, aFormat.s)
 
                                 return newString($(ret) & (if y.z.im >= 0: "+" else: "") & $(ret2) & "i")
@@ -386,7 +386,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                                     return newColor((cleanY[0].i, cleanY[1].i, cleanY[2].i, cleanY[3].i))
 
                     of Binary:
-                        var res: VBinary = @[]
+                        var res: VBinary
                         ensureCleaned(y)
                         for item in cleanY:
                             if item.kind==Integer:
@@ -577,7 +577,7 @@ proc defineSymbols*() =
                     push newBlock(blk)
                 else:
                     var val: Value = copyValue(x)
-                    var blk: ValueArray = @[]
+                    var blk: ValueArray
 
                     for item in aOf.a.reversed:
                         blk = safeRepeat(val, item.i)
@@ -1035,8 +1035,8 @@ proc defineSymbols*() =
             var argTypes = initOrderedTable[string,ValueSpec]()
 
             if x.a.countIt(it.kind == Type) > 0:
-                var args: seq[string] = @[]
-                var body: ValueArray = @[]
+                var args: seq[string]
+                var body: ValueArray
                 
                 var i = 0
                 while i < x.a.len:
@@ -1044,7 +1044,7 @@ proc defineSymbols*() =
                     args.add(x.a[i].s)
                     argTypes[x.a[i].s] = {}
                     if i+1 < x.a.len and x.a[i+1].kind == Type:
-                        var typeArr: ValueArray = @[]
+                        var typeArr: ValueArray
 
                         while i+1 < x.a.len and x.a[i+1].kind == Type:
                             typeArr.add(newWord("is?"))
@@ -1277,7 +1277,7 @@ proc defineSymbols*() =
                 let tp = x.t
                 push convertedValueToType(x, y, tp, popAttr("format"))
             else:
-                var ret: ValueArray = @[]
+                var ret: ValueArray
                 ensureCleaned(x)
                 let tp = cleanX[0].t
                     

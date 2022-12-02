@@ -22,12 +22,12 @@ proc parseCsvInput*(input: string, withHeaders: bool = false): Value =
     var x: CsvParser
     var s = newStringStream(input)
 
-    var rows: ValueArray = @[]
+    var rows: ValueArray
 
     if not withHeaders:
         open(x, s, "")
         while readRow(x):
-            var row: ValueArray = @[]
+            var row: ValueArray
 
             for val in items(x.row):
                 row.add(newString(val))
