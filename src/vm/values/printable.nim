@@ -34,7 +34,7 @@ import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange,
 #=======================================
 
 when defined(WEB):
-    var stdout: string = ""
+    var stdout: string
 
     proc resetStdout*()=
         stdout = ""

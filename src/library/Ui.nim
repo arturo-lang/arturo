@@ -115,7 +115,7 @@ proc defineSymbols*() =
             ; same as above, only for folder selection
             """:
                 #=======================================================
-                var path = ""
+                var path: string
                 let selectFiles = not hadAttr("folder")
                 if checkAttr("path"): 
                     path = aPath.s
@@ -262,7 +262,7 @@ proc defineSymbols*() =
                 var borderless = (hadAttr("borderless"))
                 var topmost = (hadAttr("topmost"))
                 var withDebug = (hadAttr("debug"))
-                var inject = ""
+                var inject: string
                 var on: ValueDict
 
                 if checkAttr("title"): title = aTitle.s

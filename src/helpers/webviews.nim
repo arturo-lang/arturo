@@ -94,7 +94,7 @@ proc openChromeWindow*(port: int, flags: seq[string] = @[]) =
         args &= flag.strip
 
     var chromeBinaries: seq[string]
-    var chromePath = ""
+    var chromePath: string
 
     when hostOS == "macosx":
         chromeBinaries = @[

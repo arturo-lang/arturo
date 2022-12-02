@@ -149,7 +149,6 @@ template replaceAll*(original, match, replacement: string): string =
     original.replace(match, replacement)
 
 func replaceOnce*(s, sub: string, by = ""): string =
-    result = ""
     let subLen = sub.len
     if subLen == 0:
         result = s

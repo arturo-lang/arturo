@@ -221,7 +221,7 @@ proc defineSymbols*() =
                 if checkAttr("proxy"):
                     proxy = newProxy(aProxy.s)
 
-                var body: string = ""
+                var body: string
                 var multipart: MultipartData = nil
                 if meth != HttpGet:
                     if (hadAttr("json")):

@@ -1315,7 +1315,7 @@ proc defineSymbols*() =
                         else:
                             x.o[$(y)] = z
                 of String:
-                    var res: string = ""
+                    var res: string
                     var idx = 0
                     for r in x.s.runes:
                         if idx != y.i: res.add r
@@ -1725,7 +1725,7 @@ proc defineSymbols*() =
                 ensureInPlace()
                 if InPlaced.kind == String:
                     var i = 0
-                    var ret = ""
+                    var ret: string
                     while i < InPlaced.s.len:
                         ret &= $(InPlaced.s[i])
                         while (i+1 < InPlaced.s.len and InPlaced.s[i+1] == x.s[i]):
@@ -1745,7 +1745,7 @@ proc defineSymbols*() =
             else:
                 if x.kind == String:
                     var i = 0
-                    var ret = ""
+                    var ret: string
                     while i < x.s.len:
                         ret &= $(x.s[i])
                         while (i+1 < x.s.len and x.s[i+1] == x.s[i]):
