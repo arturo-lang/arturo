@@ -745,7 +745,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         # we'll want to create the two blocks, 
         # for functions like loop, map, select, filter
         # so let's get them ready
-        argblock = @[]
+        argblock.setLen(0)
         subblock = @[subnode]
 
         # if it's a word
