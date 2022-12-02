@@ -64,7 +64,7 @@ proc parseCmdlineArguments*(): ValueDict =
     ## parse command-line arguments and return 
     ## result as a Dictionary value
     result = initOrderedTable[string,Value]()
-    var values: ValueArray = @[]
+    var values: ValueArray
 
     when not defined(windows) and not defined(WEB):
         var p = initOptParser(Arguments.a.map((x)=>x.s))
