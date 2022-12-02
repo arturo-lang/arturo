@@ -1062,10 +1062,10 @@ proc parseAsBlock(blk: Value, start: int): Value =
             of Newline:
                 if values.len > 1:
                     result.a.add(newBlock(values))
-                    values = @[]
+                    values.setLen(0)
                 elif values.len == 1:
                     result.a.add(values[0])
-                    values = @[]
+                    values.setLen(0)
                 else:
                     discard
             else:

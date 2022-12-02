@@ -505,7 +505,7 @@ proc defineSymbols*() =
                     if len(currentSet)>0:
                         if showValue: res.add(newBlock(@[state, newBlock(currentSet)]))
                         else: res.add(newBlock(currentSet))
-                        currentSet = @[]
+                        currentSet.setLen(0)
                     state = popped
 
                 currentSet.add(captured)
