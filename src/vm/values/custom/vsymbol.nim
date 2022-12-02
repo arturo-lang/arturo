@@ -89,8 +89,6 @@ type
         doubleslash              = "//"
         backslash                = "\\"
         doublebackslash          = "\\\\"
-        logicaland               = "/\\"
-        logicalor                = "\\/"
         pipe                     = "|"
         turnstile                = "|-"
         doubleturnstile          = "|="
@@ -114,5 +112,10 @@ type
         supersetorequal          = "⊇"
         element                  = "∈"
         notelement               = "∉"
-        
+        logicaland               = "∧"
+        logicalor                = "∨"
+        logicalxor               = "⊻"
+        logicalnand              = "⊼"
+        logicalnot               = "¬"
+
         unaliased
