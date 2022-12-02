@@ -95,7 +95,7 @@ proc defineSymbols*() =
             print query db .with: ["johndoe"] {!sql SELECT * FROM users WHERE name = ?}
             """:
                 #=======================================================
-                var with: seq[string] = @[]
+                var with: seq[string]
                 if checkAttr("with"):
                     with = aWith.a.map((x) => $(x))
 

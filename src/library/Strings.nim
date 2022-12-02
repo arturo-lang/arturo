@@ -94,7 +94,7 @@ proc defineSymbols*() =
             let upper = hadAttr("upper")
             let all = hadAttr("all")
 
-            var got: ValueArray = @[]
+            var got: ValueArray
 
             if upper:
                 if lower:

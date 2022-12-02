@@ -24,7 +24,6 @@ import vm/values/value
 #=======================================
 
 proc fixTransformations(x: openArray[(Rune,string)]): seq[(Rune,Rune)] {.compileTime.} =
-    result = @[]
     for item in x:
         for rn in toRunes(item[1]):
             result &= ((rn, item[0]))
@@ -124,7 +123,7 @@ func unicmp(x,y: Value, charset: seq[Rune], transformable: HashSet[Rune], ngraph
             else:
                 return cmp(unidecode(toLower(x.s)), unidecode(toLower(y.s)))
         
-    if ngraphset == @[]:
+    if ngraphset.len == 0:
         # TODO(Helpers/unisort) Re-visit & test digraph/trigraph sorting
         #  The code below - apparently - works ok. The problem is: a) it hasn't been thoroughly tested, b) it looks obviously too repetitive, c) it must be the most inefficient code written on Earth
         #  labels: helpers, enhancement, cleanup

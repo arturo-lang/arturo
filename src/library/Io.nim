@@ -217,7 +217,7 @@ proc defineSymbols*() =
                     #     push(newString(stdin.readLine()))
                     # else:
                     var historyPath: string = ""
-                    var completionsArray: ValueArray = @[]
+                    var completionsArray: ValueArray
                     var hintsTable: ValueDict = initOrderedTable[string,Value]()
 
                     if checkAttr("history"):
@@ -260,7 +260,7 @@ proc defineSymbols*() =
                 let stop = SP
                 execUnscoped(xblock)
 
-                var res: ValueArray = @[]
+                var res: ValueArray
                 while SP>stop:
                     res.add(pop())
 
@@ -299,7 +299,7 @@ proc defineSymbols*() =
                 let stop = SP
                 execUnscoped(xblock)
 
-                var res: ValueArray = @[]
+                var res: ValueArray
                 while SP>stop:
                     res.add(pop())
 

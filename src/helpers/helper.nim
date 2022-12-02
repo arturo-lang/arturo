@@ -77,7 +77,7 @@ func getShortData(initial: string): seq[string] =
         ]
 
 func getTypeString(vs: ValueSpec):string =
-    var specs: seq[string] = @[]
+    var specs: seq[string]
 
     if vs == {}:
         return ":nothing"
@@ -89,7 +89,7 @@ func getTypeString(vs: ValueSpec):string =
 
 proc getUsageForFunction(n: string, v: Value): seq[string] =
     let args = toSeq(v.info.args.pairs)
-    result = @[]
+
     let lenBefore = n.len
     var spaceBefore = ""
     var j=0
@@ -133,7 +133,6 @@ proc getOptionsForFunction(v: Value): seq[string] =
         result.add fmt("{alignLeft(leftSide,myLen)} {resetColor}-> {attr[1][1]}")
 
 proc splitExamples*(ex: string): seq[string] =
-    result = @[]
     var currentEx = ""
     for line in splitLines(ex):
         if line.strip().findAll(re"\.{4,}").len > 0:
@@ -203,7 +202,7 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
             var args = initOrderedTable[string,Value]()
             if v.info.args.len > 0 and (toSeq(v.info.args.keys))[0]!="":
                 for k,spec in v.args:
-                    var specs:ValueArray = @[]
+                    var specs:ValueArray
                     for s in spec:
                         specs.add(newType(s))
 
@@ -218,7 +217,7 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
 
                     var ss = initOrderedTable[string,Value]()
 
-                    var specs:ValueArray = @[]
+                    var specs:ValueArray
                     for s in spec:
                         specs.add(newType(s))
 
@@ -228,7 +227,7 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
                     attrs[k] = newDictionary(ss)
             result["attrs"] = newDictionary(attrs)
 
-            var returns:ValueArray = @[]
+            var returns:ValueArray
             if v.info.returns.len > 0:
                 for ret in v.info.returns:
                     returns.add(newType(ret))

@@ -34,7 +34,6 @@ import vm/[
 #=======================================
 
 func getWordsInBlock*(bl: Value): seq[string] =
-    result = @[]
     for item in bl.a:
         case item.kind:
             of Block:

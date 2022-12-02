@@ -1027,7 +1027,7 @@ proc parseAsDictionary(blk: Value, start: int): Value =
             of Label: 
                 let lbl = blk.a[i].s
                 i += 1
-                var values: ValueArray = @[]
+                var values: ValueArray
                 while i < blk.a.len and blk.a[i].kind!=Newline and blk.a[i].kind!=Label:
                     case blk.a[i].kind:
                         of Block:
@@ -1052,7 +1052,7 @@ proc parseAsDictionary(blk: Value, start: int): Value =
 proc parseAsBlock(blk: Value, start: int): Value =
     result = newBlock()
     var i = start
-    var values: ValueArray = @[]
+    var values: ValueArray
     while i < blk.a.len:
         case blk.a[i].kind:
             of Block:
@@ -1123,7 +1123,6 @@ proc doParse*(input: string, isFile: bool = true): Value =
 
         # initialize
         p.value = ""
-        p.values = @[]
 
         # do parse    
         let rootBlock = parseBlock(p, 0)

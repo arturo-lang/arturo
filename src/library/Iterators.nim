@@ -498,7 +498,7 @@ proc defineSymbols*() =
                 var res: ValueArray
 
                 var state: Value = VNULL # important
-                var currentSet: ValueArray = @[]
+                var currentSet: ValueArray
             do:
                 let popped = move stack.pop()
                 if popped != state:
@@ -1162,7 +1162,7 @@ proc defineSymbols*() =
             let withValue = hadAttr("value")
 
             doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, VNULL):
-                var selected: ValueArray = @[]
+                var selected: ValueArray
                 var maxVal: Value = VNULL
             do:
                 let popped = move stack.pop()
@@ -1215,7 +1215,7 @@ proc defineSymbols*() =
             let withValue = hadAttr("value")
 
             doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, VNULL):
-                var selected: ValueArray = @[]
+                var selected: ValueArray
                 var minVal: Value = VNULL
             do:
                 let popped = move stack.pop()
