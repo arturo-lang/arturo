@@ -858,7 +858,7 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inl
                             AddToken newFloating(pv & "e" & p.value)
                         else:
                             AddToken newFloating(p.value)
-                else: 
+                else:
                     if p.buf[p.bufpos]==Colon:
                         let pv = newInteger(p.value, p.lineNumber)
                         parseQuantity(p)
