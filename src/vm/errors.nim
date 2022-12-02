@@ -71,7 +71,6 @@ proc showVMErrors*(e: ref Exception)
 #=======================================
 
 proc getLineError(): string =
-    result = ""
     if CurrentFile != "<repl>":
         if CurrentLine==0: CurrentLine = 1
         if ExecStack.len > 1:
@@ -123,7 +122,7 @@ proc showVMErrors*(e: ref Exception) =
     let indent = repeat(" ", header.len + marker.len + 2)
 
     when not defined(WEB):
-        var message = ""
+        var message: string
         
         if errorKind==ProgramError:
             let liner = e.msg.split("<:>")[0].split(";;")[0]

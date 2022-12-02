@@ -74,8 +74,8 @@ func hasBranching(blk: Value, continueW: string = "continue", breakW: string = "
     return false
 
 proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = false, isDictionary: bool = false) =
-    var argStack: seq[int] = @[]
-    var currentCommand: VBinary = @[]
+    var argStack: seq[int]
+    var currentCommand: VBinary
 
     let nLen = n.a.len
 
@@ -745,7 +745,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         # we'll want to create the two blocks, 
         # for functions like loop, map, select, filter
         # so let's get them ready
-        argblock = @[]
+        argblock.setLen(0)
         subblock = @[subnode]
 
         # if it's a word
@@ -970,7 +970,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 case node.m:
                     of doublecolon      :
                         inc(i)
-                        var subblock: ValueArray = @[]
+                        var subblock: ValueArray
                         while i < nLen:
                             let subnode {.cursor.} = n.a[i]
                             subblock.add(subnode)
@@ -979,9 +979,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                             addConst(newBlock(subblock), opPush)
                             
                     of arrowright       : 
-                        var subargStack: seq[int] = @[]
+                        var subargStack: seq[int]
                         var ended = false
-                        var ret: ValueArray = @[]
+                        var ret: ValueArray
 
                         let subblock = processArrowRight()
                         addTerminalValue(inBlock=false):
@@ -1074,8 +1074,8 @@ proc doEval*(root: Value, isDictionary=false, useStored: static bool = true): Tr
             if (let stEv = StoredEval.getOrDefault(vhash, nil); not stEv.isNil):
                 return stEv
 
-    var cnsts: ValueArray = @[]
-    var newit: VBinary = @[]
+    var cnsts: ValueArray
+    var newit: VBinary
 
     TmpArities = collect:
         for k,v in Syms.pairs:

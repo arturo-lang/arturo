@@ -402,7 +402,7 @@ proc defineSymbols*() =
             """:
                 #=======================================================
                 let showExamples = (hadAttr("examples"))
-                var searchable = ""
+                var searchable: string
                 var value: Value = nil
 
                 if x.kind == SymbolLiteral:

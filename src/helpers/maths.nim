@@ -145,8 +145,7 @@ when not defined(NOGMP):
 #     result = res
 
 func factors*(n: int): seq[int] =
-    var tail: seq[int] = @[]
-    result = @[]
+    var tail: seq[int]
 
     var i = 1
     let s = int(sqrt(float(n)))
@@ -163,7 +162,7 @@ func factors*(n: int): seq[int] =
 func primeFactorization*(n: int): seq[int] =
     var x = n
     if x==0: return
-    result = @[]
+
     while x mod 2 == 0:
         result.add(2)
         x = x div 2
@@ -244,8 +243,7 @@ when defined(WEB):
         let bigZero = big(0)
         let bigOne = big(1)
 
-        var tail: seq[JsBigInt] = @[]
-        result = @[]
+        var tail: seq[JsBigInt]
         
         var i = bigOne
         let s = isqrt(n)
@@ -273,7 +271,6 @@ elif not defined(NOGMP):
         result.reverse()
 
     func primeFactors*(num: Int): seq[Int] =
-        result = @[]
         var n = num
 
         if n.probablyPrime(10)!=0:
@@ -296,7 +293,6 @@ elif not defined(NOGMP):
     func primeFactorization*(n: Int): seq[Int] =
         var x = n
         if x==0: return
-        result = @[]
         #var d = newInt(1)
         #var m = newInt(1)
         while x mod 2 == 0:
@@ -321,8 +317,7 @@ elif not defined(NOGMP):
         sort(result)
 
     func factors*(n: Int): seq[Int] =
-        var tail: seq[Int] = @[]
-        result = @[]
+        var tail: seq[Int]
         var i = newInt(1)
         let s = sqrt(n)
         while i <= s:
