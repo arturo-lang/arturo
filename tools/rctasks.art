@@ -1,0 +1,53 @@
+; Rosetta Code
+; Unimplemented tasks finder in Arturo
+;
+; inspired by the awesome work by @RickBarretto:
+; https://github.com/RickBarretto/rc-tasks
+
+RC: "https://rosettacode.org"
+GreenLine: color #green repeat "=" 50
+
+sanitizeUrl: function [url]-> replace replace url "pagefrom=" "" "%27" "'"
+filterLines: function [lines, pattern]-> select lines 'line [contains? line pattern]
+
+getNextPageUrl: function [lines][
+    loop filterLines lines {next page</a>} 'line [
+        return sanitizeUrl first match line {/pagefrom=(.+)#mw-pages/}
+    ]
+    return ø
+]
+
+getEntries: function [lines][
+    map filterLines lines {<li><a href=} 'line ->
+        last split.by:">" first split.by:"</a>" line
+]
+
+parseCategory: function [startingPage][
+    result: []
+    root: RC ++ "/w/index.php?title=Category:" ++ startingPage ++ "&pagefrom="
+    next: root
+
+    while [true][
+        print color #gray "reading: " ++ next
+        src: split.lines read next
+        'result ++ getEntries src
+
+        if null? got: <= getNextPageUrl src -> break
+        next: root ++ got
+    ]
+    return result
+]
+
+lang: capitalize (empty? arg)? -> "Arturo" -> arg\0
+
+allTasks: parseCategory "Programming_Tasks"
+langTasks: parseCategory lang
+
+unimplemented: allTasks -- langTasks
+
+print GreenLine
+print color #green ~"Tasks not implemented in |lang|"
+print GreenLine
+
+loop unimplemented 'task -> print [color #cyan ">" task]
+print ["\n=" size unimplemented "unimplemented tasks in total 😉"]
