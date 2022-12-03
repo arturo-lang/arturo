@@ -204,7 +204,7 @@ proc defineSymbols*() =
 
                 var headers: HttpHeaders = newHttpHeaders()
                 if checkAttr("headers"):
-                    var headersArr: seq[(string,string)] = @[]
+                    var headersArr: seq[(string,string)]
                     for k,v in pairs(aHeaders.d):
                         headersArr.add((k, $(v)))
                     headers = newHttpHeaders(headersArr)
@@ -221,7 +221,7 @@ proc defineSymbols*() =
                 if checkAttr("proxy"):
                     proxy = newProxy(aProxy.s)
 
-                var body: string = ""
+                var body: string
                 var multipart: MultipartData = nil
                 if meth != HttpGet:
                     if (hadAttr("json")):
@@ -234,7 +234,7 @@ proc defineSymbols*() =
                             multipart[k] = $(v)
                 else:
                     if y != VNULL and (y.kind==Dictionary and y.d.len!=0):
-                        var parts: seq[string] = @[]
+                        var parts: seq[string]
                         for k,v in pairs(y.d):
                             parts.add(k & "=" & urlencode($(v)))
                         url &= "?" & parts.join("&")

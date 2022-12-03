@@ -40,7 +40,6 @@ func removeFirst*(str: string, what: string): string =
         result = str
 
 proc removeFirst*(arr: ValueArray, what: Value): ValueArray =
-    result = @[]
     var searching = true
     for v in arr:
         if searching and v==what:
@@ -49,7 +48,6 @@ proc removeFirst*(arr: ValueArray, what: Value): ValueArray =
             result.add(v)
 
 proc removeAll*(arr: ValueArray, what: Value): ValueArray =
-    result = @[]
     if what.kind==Block:
         for v in arr:
             if not (v in what.a):
@@ -60,7 +58,6 @@ proc removeAll*(arr: ValueArray, what: Value): ValueArray =
                 result.add(v)
 
 func removeByIndex*(arr: ValueArray, index: int): ValueArray =
-    result = @[]
     for i,v in arr:
         if i!=index:
             result.add(v)
@@ -142,7 +139,6 @@ proc isSorted*(s: ValueArray, ascending: bool = true): bool =
     return true
 
 proc deduplicated*[T](s: openArray[T], isSorted: bool = false): seq[T] =
-  result = @[]
   if s.len > 0:
     if isSorted:
       var prev = s[0]

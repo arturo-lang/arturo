@@ -34,7 +34,6 @@ import vm/[
 #=======================================
 
 func getWordsInBlock*(bl: Value): seq[string] =
-    result = @[]
     for item in bl.a:
         case item.kind:
             of Block:
@@ -47,7 +46,7 @@ func getWordsInBlock*(bl: Value): seq[string] =
 proc getUsedLibraryFunctions(code: Value): seq[string] =
     # make a test run
     # so that the Syms table is initialized
-    var cd = ""
+    var cd: string
     discard run(cd, @[""], isFile=false)
     let declaredSyms = toSeq(keys(Syms))
 
