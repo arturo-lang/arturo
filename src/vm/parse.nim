@@ -80,8 +80,6 @@ const
     
     SemVerExtra                 = Letters + PermittedNumbers_Start + {'+', '-', '.'}
 
-    Empty                       = ""
-
 #=======================================
 # Forward declarations
 #=======================================
@@ -92,6 +90,9 @@ proc parseDataBlock*(blk: Value): Value
 #=======================================
 # Templates
 #=======================================
+
+template Empty(s: var string): bool =
+    s.len == 0
 
 template AddToken(token: untyped): untyped =
     topBlock.a.add(token)
@@ -117,8 +118,6 @@ template stripTrailingNewlines(): untyped =
 # Error reporting
 
 func getContext(p: var Parser, curPos: int): string =
-    result = ""
-
     var i = curPos
 
     while i > 0 and p.buf[i] notin {CR,LF,'\n'}:
@@ -191,8 +190,6 @@ template skip(p: var Parser, scriptStr: var string) =
             pos = lexbase.handleLF(p, pos)
             when not defined(NOERRORLINES):
                 AddToken newNewline(p.lineNumber)
-            # if p.buf[pos] == Tab:
-            #     echo "next one is tab!"
         of '#':
             if p.buf[pos+1]=='!':
                 inc(pos)
@@ -440,9 +437,9 @@ template parseSafeString(p: var Parser) =
                     add(p.value, LF)
                 else:
                     add(p.value, LF)
-            of chr(194):
-                if p.buf[pos+1]==chr(187): # got »
-                    if p.buf[pos+2]==chr(194) and p.buf[pos+3]==chr(187):
+            of '\194':
+                if p.buf[pos+1]=='\187': # got »
+                    if p.buf[pos+2]=='\194' and p.buf[pos+3]=='\187':
                         inc(pos, 4)
                         break
                     else:
@@ -458,9 +455,10 @@ template parseSafeString(p: var Parser) =
 
     p.bufpos = pos
 
-template parseIdentifier(p: var Parser) =
+template parseIdentifier(p: var Parser, alsoAddCurrent: bool) =
     var pos = p.bufpos
-    add(p.value, p.buf[pos])
+    when alsoAddCurrent:
+        add(p.value, p.buf[pos])
     inc(pos)
     while p.buf[pos] in PermittedIdentifiers_In:
         add(p.value, p.buf[pos])
@@ -473,10 +471,12 @@ template parseNumber(p: var Parser) =
         add(p.value, p.buf[pos])
         inc(pos)
 
+    var hasDot{.inject.} = false
+
     if p.buf[pos] == Dot:
-        if p.buf[pos+1] == Dot:
-            p.bufpos = pos
-        else:
+        if p.buf[pos+1] != Dot:
+            hasDot = true
+
             add(p.value, Dot)
             inc(pos)
     
@@ -497,9 +497,7 @@ template parseNumber(p: var Parser) =
                             add(p.value, p.buf[pos])
                             inc(pos)
 
-            p.bufpos = pos
-    else:
-        p.bufpos = pos
+    p.bufpos = pos
 
 template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
     var pos = p.bufpos
@@ -527,7 +525,7 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
             # labels: bug,parser,language
             if p.buf[pos+1] in PermittedColorChars:
                 inc pos
-                var colorCode = ""
+                var colorCode: string
                 while p.buf[pos] in PermittedColorChars:
                     colorCode &= p.buf[pos]
                     inc pos
@@ -763,12 +761,12 @@ template parsePath(p: var Parser, root: Value, curLevel: int) =
         case p.buf[p.bufpos]:
             of PermittedIdentifiers_Start:
                 setLen(p.value, 0)
-                parseIdentifier(p)
+                parseIdentifier(p, alsoAddCurrent=true)
                 p.values[^1].add(newLiteral(p.value))
             of PermittedNumbers_Start:
                 setLen(p.value, 0)
                 parseNumber(p)
-                if Dot in p.value: p.values[^1].add(newFloating(p.value))
+                if hasDot: p.values[^1].add(newFloating(p.value))
                 else: p.values[^1].add(newInteger(p.value))
             of LBracket:
                 inc(p.bufpos)
@@ -777,14 +775,6 @@ template parsePath(p: var Parser, root: Value, curLevel: int) =
                 p.values[^1].add(subblock)
             else:
                 break
-
-template parseLiteral(p: var Parser) =
-    var pos = p.bufpos
-    inc(pos)
-    while p.buf[pos] in PermittedIdentifiers_In:
-        add(p.value, p.buf[pos])
-        inc(pos)
-    p.bufpos = pos
 
 template parseQuantity(p: var Parser) =
     setLen(p.value, 0)
@@ -811,7 +801,7 @@ template parseExponent(p: var Parser) =
 
 proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inline.} =
     var topBlock: Value
-    var scriptStr: string = ""
+    var scriptStr: string
     if isDeferred: topBlock = newBlock(dirty=true)
     else: topBlock = newInline(dirty=true)
     let initial = p.bufpos
@@ -835,8 +825,8 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inl
                 parseString(p, stopper=BackTick)
                 AddToken newChar(p.value)
             of Colon:
-                parseLiteral(p)
-                if p.value == Empty: 
+                parseIdentifier(p, alsoAddCurrent=false)
+                if Empty(p.value):
                     if p.buf[p.bufpos]==Colon:
                         inc(p.bufpos)
                         AddToken newSymbol(doublecolon)
@@ -846,7 +836,7 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inl
                     AddToken newType(p.value)
             of PermittedNumbers_Start:
                 parseNumber(p)
-                if Dot in p.value: 
+                if hasDot: 
                     if p.value.count(Dot)>1:
                         AddToken newVersion(p.value)
                     else:
@@ -860,7 +850,7 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inl
                             AddToken newFloating(pv & "e" & p.value)
                         else:
                             AddToken newFloating(p.value)
-                else: 
+                else:
                     if p.buf[p.bufpos]==Colon:
                         let pv = newInteger(p.value, p.lineNumber)
                         parseQuantity(p)
@@ -874,7 +864,7 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inl
             of Symbols:
                 parseAndAddSymbol(p,topBlock)
             of PermittedIdentifiers_Start:
-                parseIdentifier(p)
+                parseIdentifier(p, alsoAddCurrent=true)
                 if p.buf[p.bufpos] == Colon:
                     inc(p.bufpos)
                     AddToken newLabel(p.value)
@@ -896,8 +886,8 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inl
                     AddToken newWord(p.value)
             of Tick:
                 # first try parsing it as a normal :literal
-                parseLiteral(p)
-                if p.value == Empty: 
+                parseIdentifier(p, alsoAddCurrent=false)
+                if Empty(p.value): 
                     # if it's empty, then try parsing it as :symbolLiteral
                     if likely(p.buf[p.bufpos] in Symbols):
                         parseAndAddSymbol(p,topBlock)
@@ -918,7 +908,7 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inl
                     inc(p.bufpos, 2)
                     AddToken newSymbol(dotslash)
                 else:
-                    parseLiteral(p)
+                    parseIdentifier(p, alsoAddCurrent=false)
                     if p.buf[p.bufpos] == Colon:
                         inc(p.bufpos)
                         AddToken newAttributeLabel(p.value)
@@ -942,27 +932,82 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inl
                 parseCurlyString(p)
             of RCurly:
                 inc(p.bufpos)
-            of chr(194):
-                if p.buf[p.bufpos+1]==chr(171): # got «
-                    if p.buf[p.bufpos+2]==chr(194) and p.buf[p.bufpos+3]==chr(171):
+            of '\194':
+                if p.buf[p.bufpos+1]=='\171': # got «
+                    if p.buf[p.bufpos+2]=='\194' and p.buf[p.bufpos+3]=='\171':
                         parseSafeString(p)
                         AddToken newString(p.value)
                     else:
                         parseFullLineString(p)
                         AddToken newString(unicode.strip(p.value))
+                elif p.buf[p.bufpos+1]=='\172': # ¬
+                    AddToken newSymbol(logicalnot)
+                    inc(p.bufpos, 2)
                 else:
                     inc(p.bufpos)
-
-            of chr(195):
-                if p.buf[p.bufpos+1]==chr(184): # ø
+            of '\195':
+                if p.buf[p.bufpos+1]=='\184': # ø
                     AddToken newSymbol(slashedzero)
                     inc(p.bufpos, 2)
                 else:
                     inc(p.bufpos)
-            of chr(226):
-                if p.buf[p.bufpos+1]==chr(136): # ∞
-                    AddToken newSymbol(infinite)
-                    inc(p.bufpos, 2)
+            of '\226':
+                if p.buf[p.bufpos+1]=='\136': 
+                    case p.buf[p.bufpos+2]:
+                        of '\133': # ø
+                            AddToken newSymbol(slashedzero)
+                            inc(p.bufpos, 3)
+                        of '\136': # ∈
+                            AddToken newSymbol(element)
+                            inc(p.bufpos, 3)
+                        of '\137': # ∉
+                            AddToken newSymbol(notelement)
+                            inc(p.bufpos, 3)
+                        of '\143': # ∏
+                            AddToken newSymbol(product)
+                            inc(p.bufpos, 3)
+                        of '\145': # ∑
+                            AddToken newSymbol(summation)
+                            inc(p.bufpos, 3)
+                        of '\158': # ∞
+                            AddToken newSymbol(infinite)
+                            inc(p.bufpos, 3)
+                        of '\167': # ∧
+                            AddToken newSymbol(logicaland)
+                            inc(p.bufpos, 3)
+                        of '\168': # ∨
+                            AddToken newSymbol(logicalor)
+                            inc(p.bufpos, 3)
+                        of '\169': # ∩
+                            AddToken newSymbol(intersection)
+                            inc(p.bufpos, 3)
+                        of '\170': # ∪
+                            AddToken newSymbol(union)
+                            inc(p.bufpos, 3)
+                        else:
+                            inc(p.bufpos, 2)
+                elif p.buf[p.bufpos+1]=='\138':
+                    case p.buf[p.bufpos+2]:
+                        of '\130': # ⊂
+                            AddToken newSymbol(subset)
+                            inc(p.bufpos, 3)
+                        of '\131': # ⊃
+                            AddToken newSymbol(superset)
+                            inc(p.bufpos, 3)
+                        of '\134': # ⊆
+                            AddToken newSymbol(subsetorequal)
+                            inc(p.bufpos, 3)
+                        of '\135': # ⊇
+                            AddToken newSymbol(supersetorequal)
+                            inc(p.bufpos, 3)
+                        of '\187': # ⊻
+                            AddToken newSymbol(logicalxor)
+                            inc(p.bufpos, 3)
+                        of '\188': # ⊼
+                            AddToken newSymbol(logicalnand)
+                            inc(p.bufpos, 3)    
+                        else:
+                            inc(p.bufpos, 2)
                 else:
                     inc(p.bufpos)
             else:
@@ -980,7 +1025,7 @@ proc parseAsDictionary(blk: Value, start: int): Value =
             of Label: 
                 let lbl = blk.a[i].s
                 i += 1
-                var values: ValueArray = @[]
+                var values: ValueArray
                 while i < blk.a.len and blk.a[i].kind!=Newline and blk.a[i].kind!=Label:
                     case blk.a[i].kind:
                         of Block:
@@ -1005,7 +1050,7 @@ proc parseAsDictionary(blk: Value, start: int): Value =
 proc parseAsBlock(blk: Value, start: int): Value =
     result = newBlock()
     var i = start
-    var values: ValueArray = @[]
+    var values: ValueArray
     while i < blk.a.len:
         case blk.a[i].kind:
             of Block:
@@ -1015,10 +1060,10 @@ proc parseAsBlock(blk: Value, start: int): Value =
             of Newline:
                 if values.len > 1:
                     result.a.add(newBlock(values))
-                    values = @[]
+                    values.setLen(0)
                 elif values.len == 1:
                     result.a.add(values[0])
-                    values = @[]
+                    values.setLen(0)
                 else:
                     discard
             else:
@@ -1054,46 +1099,6 @@ proc parseDataBlock*(blk: Value): Value =
     else:
         result = parseAsBlock(blk, i)
 
-when defined(PYTHONIC):
-    proc doProcessPythonic(s: string): string =
-        var level = 0
-        var lines = s.split("\n")
-        var i = 0
-        while i<lines.len:
-            var line = lines[i]
-            #echo "processing line: |" & line & "|"
-            if line.startsWith("    "):
-                #echo "-- it's indented"
-                let thisLevel = (line.len-strutils.strip(line, leading=true).len) div 4
-                #echo "-- this level: " & $(thisLevel)
-                if thisLevel>level:
-                    #echo "-- adding start block to previous"
-                    lines[i-1] &= "["
-                    level = thisLevel
-                elif level>thisLevel:
-                    #echo "-- adding end block to this"
-                    lines[i] = "]" & lines[i]
-                    level = thisLevel
-            else:
-                while level>0:
-                    lines[i-1] &= "]"
-                    level -= 1
-
-            i += 1
-
-        var last = ""
-        while level>0:
-            last &= "]"
-            level -= 1
-
-        lines.add(last)
-
-        #echo "======"
-        #echo lines.join("\n")
-        #echo "======"
-        
-        lines.join("\n")
-
 proc doParse*(input: string, isFile: bool = true): Value =
     ## Parse a string or file path
     ## and return the result as a Block of values
@@ -1110,16 +1115,9 @@ proc doParse*(input: string, isFile: bool = true): Value =
             var stream = newFileStream(filePath)
             lexbase.open(p, stream)
         else:
-            when defined(PYTHONIC):
-                var stream = newStringStream(doProcessPythonic(input))
-            else:
-                var stream = newStringStream(input)
+            var stream = newStringStream(input)
 
             lexbase.open(p, stream)
-
-        # initialize
-        p.value = ""
-        p.values = @[]
 
         # do parse    
         let rootBlock = parseBlock(p, 0)

@@ -126,7 +126,7 @@ when defined(WEB):
                AttributeLabel   : result = toJs(n.s)
             of Path,
                PathLabel    : 
-                var ret: seq[JsObject] = @[]
+                var ret: seq[JsObject]
                 for v in n.p:
                     ret.add(generateJsObject(v))
                 result = toJs(ret)
@@ -139,12 +139,12 @@ when defined(WEB):
             of Binary       : discard
             of Inline,
                Block        : 
-                var ret: seq[JsObject] = @[]
+                var ret: seq[JsObject]
                 for v in n.a:
                     ret.add(generateJsObject(v))
                 result = toJs(ret)
             of Range        :
-                var ret: seq[JsObject] = @[]
+                var ret: seq[JsObject]
                 ret.add(toJs(n.rng.start))
                 ret.add(toJs(n.rng.stop))
                 result = toJs(ret)
@@ -181,7 +181,7 @@ when defined(WEB):
             of "string"     : result = newString($(jsonified(n)))
             of "object"     :
                 if isArray(n):
-                    var ret: ValueArray = @[]
+                    var ret: ValueArray
                     for item in items(n):
                         ret.add(parseJsObject(item))
                     result = newBlock(ret)

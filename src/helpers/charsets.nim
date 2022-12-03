@@ -124,7 +124,7 @@ proc getCharsetRunes*(locale: string, withExtras = false, doUppercase = false, f
         result = toSeq(runes(charsets[locale]))
 
     if withExtras:
-        var extra: seq[Rune] = @[]
+        var extra: seq[Rune]
         let extrasForLocale = extras.getOrDefault(locale, "")
         if extrasForLocale!="":
             if doUppercase:

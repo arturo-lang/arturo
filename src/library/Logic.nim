@@ -71,7 +71,7 @@ proc defineSymbols*() =
                 push(newLogical(true))
 
     builtin "and?",
-        alias       = unaliased, 
+        alias       = logicaland, 
         rule        = InfixPrecedence,
         description = "return the logical AND for the given values",
         args        = {
@@ -189,7 +189,7 @@ proc defineSymbols*() =
             VMAYBE
 
     builtin "nand?",
-        alias       = unaliased, 
+        alias       = logicalnand, 
         rule        = InfixPrecedence,
         description = "return the logical NAND for the given values",
         args        = {
@@ -289,8 +289,8 @@ proc defineSymbols*() =
                     push(newLogical(Not(pop().b)))
 
     builtin "not?",
-        alias       = unaliased, 
-        rule        = InfixPrecedence,
+        alias       = logicalnot, 
+        rule        = PrefixPrecedence,
         description = "return the logical complement of the given value",
         args        = {
             "value" : {Logical,Block}
@@ -313,7 +313,7 @@ proc defineSymbols*() =
                 push(newLogical(Not(pop().b)))
 
     builtin "or?",
-        alias       = unaliased, 
+        alias       = logicalor, 
         rule        = InfixPrecedence,
         description = "return the logical OR for the given values",
         args        = {
@@ -425,7 +425,7 @@ proc defineSymbols*() =
             push(newLogical(Xnor(a, b)))
 
     builtin "xor?",
-        alias       = unaliased, 
+        alias       = logicalxor, 
         rule        = InfixPrecedence,
         description = "return the logical XOR for the given values",
         args        = {

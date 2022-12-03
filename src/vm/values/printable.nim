@@ -34,7 +34,7 @@ import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange,
 #=======================================
 
 when defined(WEB):
-    var stdout: string = ""
+    var stdout: string
 
     proc resetStdout*()=
         stdout = ""
@@ -113,7 +113,7 @@ proc `$`*(v: Value): string {.inline.} =
             result = $(v.rng)
 
         of Dictionary   :
-            var items: seq[string] = @[]
+            var items: seq[string]
             for key,value in v.d:
                 items.add(key  & ":" & $(value))
 
@@ -123,7 +123,7 @@ proc `$`*(v: Value): string {.inline.} =
             if (let printMethod = v.proto.methods.getOrDefault("print", nil); not printMethod.isNil):
                 return v.proto.doPrint(v)
             else:
-                var items: seq[string] = @[]
+                var items: seq[string]
                 for key,value in v.o:
                     items.add(key  & ":" & $(value))
 
@@ -354,7 +354,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
         of Bytecode     : 
             dumpBlockStart(v)
 
-            var instrs: ValueArray = @[]
+            var instrs: ValueArray
             var j = 0
             while j < v.trans.instructions.len:
                 let op = OpCode(v.trans.instructions[j])
@@ -462,7 +462,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
             if pretty:
                 result &= "\n"
             
-            var parts: seq[string] = @[]
+            var parts: seq[string]
             ensureCleaned(v)
             for i,child in cleanV:
                 parts.add(codify(child,pretty,unwrapped,level+1, i==(cleanV.len-1), safeStrings=safeStrings))

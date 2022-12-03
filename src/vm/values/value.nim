@@ -271,8 +271,8 @@ func newRational*(num: Value, den: Value): Value {.inline, enforceNoRaises.} =
 
 func newVersion*(v: string): Value {.inline.} =
     ## create Version value from string
-    var numPart = ""
-    var extraPart = ""
+    var numPart: string
+    var extraPart: string
     var lastIndex : int
     for i, c in v:
         lastIndex = i

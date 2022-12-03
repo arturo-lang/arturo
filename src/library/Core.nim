@@ -512,7 +512,7 @@ proc defineSymbols*() =
                         discard pop()
                         i+=1
                 else:
-                    var res: ValueArray = @[]
+                    var res: ValueArray
                     var i = 0
                     while i<x.i:
                         res.add pop()
