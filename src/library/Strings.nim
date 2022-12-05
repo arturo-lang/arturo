@@ -505,7 +505,6 @@ proc defineSymbols*() =
                     "matches":  newBlock(fMatches),
                     "captures": newBlock(fCaptures)
                 }.toOrderedTable))
-
  
     builtin "numeric?",
         alias       = unaliased, 
