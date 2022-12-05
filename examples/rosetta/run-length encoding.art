@@ -5,7 +5,7 @@ runlengthEncode: function [s][
 
 runlengthDecode: function [s][
     result: new ""
-    loop (chunk split s 'x -> positive? size match x {/\d+/}) [a,b] ->
+    loop (chunk split s 'x -> match? x {/\d+/}) [a,b] ->
         'result ++ repeat first b to :integer join to [:string] a
     return result
 ]
