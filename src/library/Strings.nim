@@ -23,8 +23,8 @@ when not defined(WEB):
     import re except Regex
     import nre except Regex, toSeq
 
-import std/editdistance, json, os
-import sequtils, strutils
+import algorithm, std/editdistance, json, os
+import sequtils, strutils, sugar
 import unicode, std/wordwrap, xmltree
 
 import helpers/charsets
@@ -437,7 +437,7 @@ proc defineSymbols*() =
             "named"     : ({Logical},"get named capture groups as a dictionary"),
             "bounds"    : ({Logical},"get match bounds only"),
             "in"        : ({Range},"get matches within given range"),
-            "full"      : ({Logical},"get results as an array of matches results")
+            "full"      : ({Logical},"get results as an array of match results")
         },
         returns     = {Block, Dictionary},
         example     = """
@@ -446,7 +446,9 @@ proc defineSymbols*() =
             match "this is a string" "[0-9]+"       ; => []
         """:
             #=======================================================
-            var rgx : VRegex
+            let rgx : VRegex =
+                if y.kind==Regex: y.rx
+                else: newRegex(y.s).rx
 
             var iFrom = 0
             var iTo = int.high
@@ -460,14 +462,48 @@ proc defineSymbols*() =
             if checkAttr("in"):
                 iFrom = aIn.rng.start
                 iTo = aIn.rng.stop
-            
-            if y.kind==Regex: rgx = y.rx
-            else: rgx = newRegex(y.s).rx
 
-            if (hadAttr("capture")):
-                push(newStringDictionary(x.s.matchAllGroups(rgx)))
+            if likely(not doFull):
+                var res: ValueArray
+
+                for m in x.s.findIter(rgx, iFrom, iTo):
+                    if doCapture:
+                        if doNamed:
+                            res.add(newStringDictionary(m.captures.toTable))
+                        else:
+                            let captures = (m.captures.toSeq).map((w) => w.get)
+                            res.add(newStringBlock(captures))
+                    elif doBounds:
+                        let bounds = m.matchBounds
+                        res.add(newRange(bounds.a, bounds.b, 1, false, true, true))
+                    else:
+                        res.add(newString(m.match))
+                    
+                    if doOnce: break
+
+                push(newBlock(res))
             else:
-                push(newStringBlock(x.s.matchAll(rgx)))
+                var matches, matchesBounds: ValueArray
+                var captures, capturesBounds: ValueArray
+
+                for m in x.s.findIter(rgx, iFrom, iTo):
+                    matches.add(newString(m.match))
+                    let mBounds = m.matchBounds
+                    matchesBounds.add(newRange(mBounds.a, mBounds.b, 1, false, true, true))
+
+                    let capts = (m.captures.toSeq).map((w) => w.get)
+                    captures.add(newStringBlock(capts))
+                    let cBounds = (m.captureBounds.toSeq).map((w) => newRange(w.get.a, w.get.b, 1, false, true, true))
+                    capturesBounds.add(newBlock(cBounds))
+
+                let fMatches = (matches.zip(matchesBounds)).map((w) => newBlock(w))
+                let fCaptures = (captures.zip(capturesBounds)).map((w) => newBlock(w))
+
+                push(newDictionary({
+                    "matches":  fMatches,
+                    "captures": fCaptures
+                }.toOrderedTable))
+
  
     builtin "numeric?",
         alias       = unaliased, 
