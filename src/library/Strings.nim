@@ -430,7 +430,12 @@ proc defineSymbols*() =
             "regex" : {Regex, String}
         },
         attrs       = {
-            "capture"   : ({Logical},"capture named groups"),
+            "once"      : ({Logical},"get just the first match"),
+            "capture"   : ({Logical},"get capture groups only"),
+            "named"     : ({Logical},"get named capture groups as a dictionary"),
+            "bounds"    : ({Logical},"get match bounds only"),
+            "in"        : ({Range},"get matches within given range"),
+            "full"      : ({Logical},"get results as an array of matches results")
         },
         returns     = {Block, Dictionary},
         example     = """
