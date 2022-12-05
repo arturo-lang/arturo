@@ -3,7 +3,7 @@ cyclops?: function [n][
     all? @[
         -> odd? size digs
         -> zero? digs\[(size digs)/2]
-        -> 1 = size match to :string n "0"
+        -> 1 = match.count to :string n "0"
     ]
 ]
 
