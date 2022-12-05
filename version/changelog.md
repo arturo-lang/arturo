@@ -28,7 +28,7 @@ v0.9.82
 - Paths: added new `absolute?` method
 - Reflection: added new `bytecode?`, `color?`, `complex?`, `object?`, `quantity?`, `rational?`, `range?` & `version?` predicates
 - Sets: added new `disjoint?` method
-- Strings: added new `alphabet` method
+- Strings: added new `alphabet` & `match?` methods
 - System: added new `superuser?` predicate
 
 **Enhancements, Changes & Fixes**
@@ -58,6 +58,7 @@ v0.9.82
 - Numbers\range: make function work even with .step =< 0 + moved to Converters
 - Reflection\info: show origin module for built-in functions/constants
 - Strings\capitalize: added support for `:char` parameters
+- Strings\match: better implementation with more options (`once`, `capture`, `named`, `bounds`, `in`, `full`)
 
 ### Misc
 
