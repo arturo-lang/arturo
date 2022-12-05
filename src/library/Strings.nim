@@ -496,6 +496,8 @@ proc defineSymbols*() =
                     let cBounds = (m.captureBounds.toSeq).map((w) => newRange(w.get.a, w.get.b, 1, false, true, true))
                     capturesBounds.add(newBlock(cBounds))
 
+                    if doOnce: break
+
                 let fMatches = (matches.zip(matchesBounds)).map((w) => newBlock(w))
                 let fCaptures = (captures.zip(capturesBounds)).map((w) => newBlock(w))
 
