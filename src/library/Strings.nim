@@ -23,7 +23,7 @@ when not defined(WEB):
     import re except Regex
     import nre except Regex, toSeq
 
-import algorithm, std/editdistance, json, os
+import std/editdistance, json, os
 import sequtils, strutils, sugar
 import unicode, std/wordwrap, xmltree
 
