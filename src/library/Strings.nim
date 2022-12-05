@@ -433,13 +433,14 @@ proc defineSymbols*() =
         },
         attrs       = {
             "once"      : ({Logical},"get just the first match"),
+            "count"     : ({Logical},"just get number of matches"),
             "capture"   : ({Logical},"get capture groups only"),
             "named"     : ({Logical},"get named capture groups as a dictionary"),
             "bounds"    : ({Logical},"get match bounds only"),
             "in"        : ({Range},"get matches within given range"),
             "full"      : ({Logical},"get results as an array of match results")
         },
-        returns     = {Block, Dictionary},
+        returns     = {Block, Integer},
         example     = """
             print match "hello" "hello"             ; => ["hello"]
             match "x: 123, y: 456" "[0-9]+"         ; => [123 456]
@@ -454,6 +455,7 @@ proc defineSymbols*() =
             var iTo = int.high
 
             let doOnce = hadAttr("once")
+            let doCount = hadAttr("count")
             let doCapture = hadAttr("capture")
             let doNamed = hadAttr("named")
             let doBounds = hadAttr("bounds")
@@ -463,26 +465,13 @@ proc defineSymbols*() =
                 iFrom = aIn.rng.start
                 iTo = aIn.rng.stop
 
-            if likely(not doFull):
-                var res: ValueArray
-
+            if doCount:
+                var cnt = 0
                 for m in x.s.findIter(rgx, iFrom, iTo):
-                    if doCapture:
-                        if doNamed:
-                            res.add(newStringDictionary(m.captures.toTable))
-                        else:
-                            let captures = (m.captures.toSeq).map((w) => w.get)
-                            res.add(newStringBlock(captures))
-                    elif doBounds:
-                        let bounds = m.matchBounds
-                        res.add(newRange(bounds.a, bounds.b, 1, false, true, true))
-                    else:
-                        res.add(newString(m.match))
-                    
-                    if doOnce: break
+                    cnt += 1
+                push(newInteger(cnt))
 
-                push(newBlock(res))
-            else:
+            elif doFull:
                 var matches, matchesBounds: ValueArray
                 var captures, capturesBounds: ValueArray
 
@@ -505,6 +494,26 @@ proc defineSymbols*() =
                     "matches":  newBlock(fMatches),
                     "captures": newBlock(fCaptures)
                 }.toOrderedTable))
+                
+            else:
+                var res: ValueArray
+
+                for m in x.s.findIter(rgx, iFrom, iTo):
+                    if doCapture:
+                        if doNamed:
+                            res.add(newStringDictionary(m.captures.toTable))
+                        else:
+                            let captures = (m.captures.toSeq).map((w) => w.get)
+                            res.add(newStringBlock(captures))
+                    elif doBounds:
+                        let bounds = m.matchBounds
+                        res.add(newRange(bounds.a, bounds.b, 1, false, true, true))
+                    else:
+                        res.add(newString(m.match))
+                    
+                    if doOnce: break
+
+                push(newBlock(res))
  
     builtin "numeric?",
         alias       = unaliased, 
