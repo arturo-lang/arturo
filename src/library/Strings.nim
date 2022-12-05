@@ -507,7 +507,10 @@ proc defineSymbols*() =
                                 res.add(newStringDictionary(m.captures.toTable))
                             else:
                                 let captures = (m.captures.toSeq).map((w) => w.get)
-                                res.add(newStringBlock(captures))
+                                if captures.len > 1:
+                                    res.add(newStringBlock(captures))
+                                else:
+                                    res.add(newString(captures[0]))
                         elif doBounds:
                             let bounds = m.matchBounds
                             res.add(newRange(bounds.a, bounds.b, 1, false, true, true))
