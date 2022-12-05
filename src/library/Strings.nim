@@ -35,6 +35,8 @@ import vm/lib
 when not defined(WEB):
     import vm/[eval, exec, parse]
 
+import vm/values/custom/[vrange]
+
 #=======================================
 # Variables
 #=======================================
@@ -445,6 +447,19 @@ proc defineSymbols*() =
         """:
             #=======================================================
             var rgx : VRegex
+
+            var iFrom = 0
+            var iTo = int.high
+
+            let doOnce = hadAttr("once")
+            let doCapture = hadAttr("capture")
+            let doNamed = hadAttr("named")
+            let doBounds = hadAttr("bounds")
+            let doFull = hadAttr("full")
+
+            if checkAttr("in"):
+                iFrom = aIn.rng.start
+                iTo = aIn.rng.stop
             
             if y.kind==Regex: rgx = y.rx
             else: rgx = newRegex(y.s).rx
