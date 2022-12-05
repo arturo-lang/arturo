@@ -494,7 +494,7 @@ proc defineSymbols*() =
                     "matches":  newBlock(fMatches),
                     "captures": newBlock(fCaptures)
                 }.toOrderedTable))
-                
+
             else:
                 var res: ValueArray
 
@@ -514,6 +514,41 @@ proc defineSymbols*() =
                     if doOnce: break
 
                 push(newBlock(res))
+
+    builtin "match?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if string matches given regular expression",
+        args        = {
+            "string": {String},
+            "regex" : {Regex, String}
+        },
+        attrs       = {
+            "in"        : ({Range},"get matches within given range")
+        },
+        returns     = {Block, Integer},
+        # TODO(Strings/match?) add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            #=======================================================
+            let rgx : VRegex =
+                if y.kind==Regex: y.rx
+                else: newRegex(y.s).rx
+
+            var iFrom = 0
+            var iTo = int.high
+
+            if checkAttr("in"):
+                iFrom = aIn.rng.start
+                iTo = aIn.rng.stop
+
+            var matched = false
+            for m in x.s.findIter(rgx, iFrom, iTo):
+                matched = true
+                break
+
+            push newLogical(matched)
  
     builtin "numeric?",
         alias       = unaliased, 
