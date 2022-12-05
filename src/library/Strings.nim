@@ -423,132 +423,137 @@ proc defineSymbols*() =
                 if not broken:
                     push(VTRUE)
 
-    builtin "match",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "get matches within string, using given regular expression",
-        args        = {
-            "string": {String},
-            "regex" : {Regex, String}
-        },
-        attrs       = {
-            "once"      : ({Logical},"get just the first match"),
-            "count"     : ({Logical},"just get number of matches"),
-            "capture"   : ({Logical},"get capture groups only"),
-            "named"     : ({Logical},"get named capture groups as a dictionary"),
-            "bounds"    : ({Logical},"get match bounds only"),
-            "in"        : ({Range},"get matches within given range"),
-            "full"      : ({Logical},"get results as an array of match results")
-        },
-        returns     = {Block, Integer},
-        example     = """
+    # TODO(Strings/match) should work for Web builds as well
+    #  labels: library, web, bug
+    when not defined(WEB):
+        builtin "match",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "get matches within string, using given regular expression",
+            args        = {
+                "string": {String},
+                "regex" : {Regex, String}
+            },
+            attrs       = {
+                "once"      : ({Logical},"get just the first match"),
+                "count"     : ({Logical},"just get number of matches"),
+                "capture"   : ({Logical},"get capture groups only"),
+                "named"     : ({Logical},"get named capture groups as a dictionary"),
+                "bounds"    : ({Logical},"get match bounds only"),
+                "in"        : ({Range},"get matches within given range"),
+                "full"      : ({Logical},"get results as an array of match results")
+            },
+            returns     = {Block, Integer},
+            example     = """
             print match "hello" "hello"             ; => ["hello"]
             match "x: 123, y: 456" "[0-9]+"         ; => [123 456]
             match "this is a string" "[0-9]+"       ; => []
-        """:
-            #=======================================================
-            let rgx : VRegex =
-                if y.kind==Regex: y.rx
-                else: newRegex(y.s).rx
+            """:
+                #=======================================================
+                let rgx : VRegex =
+                    if y.kind==Regex: y.rx
+                    else: newRegex(y.s).rx
 
-            var iFrom = 0
-            var iTo = int.high
+                var iFrom = 0
+                var iTo = int.high
 
-            let doOnce = hadAttr("once")
-            let doCount = hadAttr("count")
-            let doCapture = hadAttr("capture")
-            let doNamed = hadAttr("named")
-            let doBounds = hadAttr("bounds")
-            let doFull = hadAttr("full")
+                let doOnce = hadAttr("once")
+                let doCount = hadAttr("count")
+                let doCapture = hadAttr("capture")
+                let doNamed = hadAttr("named")
+                let doBounds = hadAttr("bounds")
+                let doFull = hadAttr("full")
 
-            if checkAttr("in"):
-                iFrom = aIn.rng.start
-                iTo = aIn.rng.stop
+                if checkAttr("in"):
+                    iFrom = aIn.rng.start
+                    iTo = aIn.rng.stop
 
-            if doCount:
-                var cnt = 0
-                for m in x.s.findIter(rgx, iFrom, iTo):
-                    cnt += 1
-                push(newInteger(cnt))
+                if doCount:
+                    var cnt = 0
+                    for m in x.s.findIter(rgx, iFrom, iTo):
+                        cnt += 1
+                    push(newInteger(cnt))
 
-            elif doFull:
-                var matches, matchesBounds: ValueArray
-                var captures, capturesBounds: ValueArray
+                elif doFull:
+                    var matches, matchesBounds: ValueArray
+                    var captures, capturesBounds: ValueArray
 
-                for m in x.s.findIter(rgx, iFrom, iTo):
-                    matches.add(newString(m.match))
-                    let mBounds = m.matchBounds
-                    matchesBounds.add(newRange(mBounds.a, mBounds.b, 1, false, true, true))
+                    for m in x.s.findIter(rgx, iFrom, iTo):
+                        matches.add(newString(m.match))
+                        let mBounds = m.matchBounds
+                        matchesBounds.add(newRange(mBounds.a, mBounds.b, 1, false, true, true))
 
-                    let capts = (m.captures.toSeq).map((w) => w.get)
-                    captures.add(newStringBlock(capts))
-                    let cBounds = (m.captureBounds.toSeq).map((w) => newRange(w.get.a, w.get.b, 1, false, true, true))
-                    capturesBounds.add(newBlock(cBounds))
+                        let capts = (m.captures.toSeq).map((w) => w.get)
+                        captures.add(newStringBlock(capts))
+                        let cBounds = (m.captureBounds.toSeq).map((w) => newRange(w.get.a, w.get.b, 1, false, true, true))
+                        capturesBounds.add(newBlock(cBounds))
 
-                    if doOnce: break
+                        if doOnce: break
 
-                let fMatches = (matches.zip(matchesBounds)).map((w) => newBlock(w))
-                let fCaptures = (captures.zip(capturesBounds)).map((w) => newBlock(w))
+                    let fMatches = (matches.zip(matchesBounds)).map((w) => newBlock(w))
+                    let fCaptures = (captures.zip(capturesBounds)).map((w) => newBlock(w))
 
-                push(newDictionary({
-                    "matches":  newBlock(fMatches),
-                    "captures": newBlock(fCaptures)
-                }.toOrderedTable))
+                    push(newDictionary({
+                        "matches":  newBlock(fMatches),
+                        "captures": newBlock(fCaptures)
+                    }.toOrderedTable))
 
-            else:
-                var res: ValueArray
+                else:
+                    var res: ValueArray
 
-                for m in x.s.findIter(rgx, iFrom, iTo):
-                    if doCapture:
-                        if doNamed:
-                            res.add(newStringDictionary(m.captures.toTable))
+                    for m in x.s.findIter(rgx, iFrom, iTo):
+                        if doCapture:
+                            if doNamed:
+                                res.add(newStringDictionary(m.captures.toTable))
+                            else:
+                                let captures = (m.captures.toSeq).map((w) => w.get)
+                                res.add(newStringBlock(captures))
+                        elif doBounds:
+                            let bounds = m.matchBounds
+                            res.add(newRange(bounds.a, bounds.b, 1, false, true, true))
                         else:
-                            let captures = (m.captures.toSeq).map((w) => w.get)
-                            res.add(newStringBlock(captures))
-                    elif doBounds:
-                        let bounds = m.matchBounds
-                        res.add(newRange(bounds.a, bounds.b, 1, false, true, true))
-                    else:
-                        res.add(newString(m.match))
-                    
-                    if doOnce: break
+                            res.add(newString(m.match))
+                        
+                        if doOnce: break
 
-                push(newBlock(res))
+                    push(newBlock(res))
 
-    builtin "match?",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "check if string matches given regular expression",
-        args        = {
-            "string": {String},
-            "regex" : {Regex, String}
-        },
-        attrs       = {
-            "in"        : ({Range},"get matches within given range")
-        },
-        returns     = {Block, Integer},
-        # TODO(Strings/match?) add documentation example
-        #  labels: library, documentation, easy
-        example     = """
-        """:
-            #=======================================================
-            let rgx : VRegex =
-                if y.kind==Regex: y.rx
-                else: newRegex(y.s).rx
+        # TODO(Strings/match?) should work for Web builds as well
+        #  labels: library, web, bug
+        builtin "match?",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "check if string matches given regular expression",
+            args        = {
+                "string": {String},
+                "regex" : {Regex, String}
+            },
+            attrs       = {
+                "in"        : ({Range},"get matches within given range")
+            },
+            returns     = {Block, Integer},
+            # TODO(Strings/match?) add documentation example
+            #  labels: library, documentation, easy
+            example     = """
+            """:
+                #=======================================================
+                let rgx : VRegex =
+                    if y.kind==Regex: y.rx
+                    else: newRegex(y.s).rx
 
-            var iFrom = 0
-            var iTo = int.high
+                var iFrom = 0
+                var iTo = int.high
 
-            if checkAttr("in"):
-                iFrom = aIn.rng.start
-                iTo = aIn.rng.stop
+                if checkAttr("in"):
+                    iFrom = aIn.rng.start
+                    iTo = aIn.rng.stop
 
-            var matched = false
-            for m in x.s.findIter(rgx, iFrom, iTo):
-                matched = true
-                break
+                var matched = false
+                for m in x.s.findIter(rgx, iFrom, iTo):
+                    matched = true
+                    break
 
-            push newLogical(matched)
+                push newLogical(matched)
  
     builtin "numeric?",
         alias       = unaliased, 
