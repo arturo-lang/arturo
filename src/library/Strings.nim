@@ -500,8 +500,8 @@ proc defineSymbols*() =
                 let fCaptures = (captures.zip(capturesBounds)).map((w) => newBlock(w))
 
                 push(newDictionary({
-                    "matches":  fMatches,
-                    "captures": fCaptures
+                    "matches":  newBlock(fMatches),
+                    "captures": newBlock(fCaptures)
                 }.toOrderedTable))
 
  
