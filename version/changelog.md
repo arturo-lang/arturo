@@ -24,7 +24,7 @@ v0.9.82
 - Files: added new `hidden?`, `move` & `timestamp` methods
 - Iterators: added new `arrange`, `chunk`, `cluster`, `collect`, `enumerate`, `gather`, `maximum` & `minimum` methods
 - Net: added new `browse` method
-- Numbers: added new `factorial` & `lcm` methods
+- Numbers: added new `factorial`, `infinite?` & `lcm` methods
 - Paths: added new `absolute?` method
 - Reflection: added new `bytecode?`, `color?`, `complex?`, `object?`, `quantity?`, `rational?`, `range?` & `version?` predicates
 - Sets: added new `disjoint?` method
@@ -54,6 +54,8 @@ v0.9.82
 - Iterators\filter: added `.first` and `.last` options
 - Iterators\select: added `.first`, `.last` and `.n` options
 - Numbers: made all trigonometric function work with `:quantity` values
+- Numbers\e: renamed back to `epsilon`
+- Numbers\infinity: renamed to `infinite`
 - Numbers\product: added `.cartesian` option
 - Numbers\range: make function work even with .step =< 0 + moved to Converters
 - Reflection\info: show origin module for built-in functions/constants
