@@ -21,6 +21,7 @@ v0.9.82
 - Collections: added new `combine`, `decouple`, `one?`, `prepend`, `rotate` & `tally` methods
 - Comparison: added new `compare` method
 - Converters: added new `in` method
+- Core: added new `coalesce` method
 - Dates: added new `sunday?`, `monday?`, `tuesday?`, `wednesday?`, `thursday?`, `friday?` & `saturday` methods
 - Files: added new `hidden?`, `move` & `timestamp` methods
 - Iterators: added new `arrange`, `chunk`, `cluster`, `collect`, `enumerate`, `gather`, `maximum` & `minimum` methods
