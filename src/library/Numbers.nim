@@ -894,8 +894,6 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Integer},
-        # TODO(Numbers\numerator) add documentation example
-        #  labels: library, documentation, easy
         example     = """
             num: to :rational 12.4      ; num: 62/5
             print numerator num
