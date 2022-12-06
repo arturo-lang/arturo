@@ -966,6 +966,41 @@ proc defineSymbols*() =
 
                         push(minElement)
 
+    builtin "one?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if given number or collection size is one",
+        args        = {
+            "number"    : {Integer,Floating,Block,Range,Dictionary,Object,Null},
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+        """:
+            #=======================================================
+            case x.kind:
+                of Integer:
+                    if x.iKind == BigInteger:
+                        when defined(WEB):
+                            push(newLogical(x.bi==big(1)))
+                        elif not defined(NOGMP):
+                            push(newLogical(x.bi==newInt(1)))
+                    else:
+                        push(newLogical(x == I1))
+                of Floating:
+                    push(newLogical(x == F1))
+                of Block:
+                    ensureCleaned(x)
+                    push(newLogical(cleanX.len == 1))
+                of Range:
+                    push(newLogical(x.rng.len == 1))
+                of Dictionary:
+                    push(newLogical(x.d.len == 1))
+                of Object:
+                    push(newLogical(x.o.len == 1))
+                else:
+                    push(VFALSE)
+
     builtin "permutate",
         alias       = unaliased,
         rule        = PrefixPrecedence,
