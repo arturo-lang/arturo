@@ -107,6 +107,24 @@ proc defineSymbols*() =
             else:
                 push newColor(saturateColor(x.l, y.f * (-1)))
 
+    builtin "grayscale",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "convert color to grayscale",
+        args        = {
+            "color"     : {Color}
+        },
+        attrs       = NoAttrs,
+        returns     = {Color},
+        example     = """
+        """:
+            #=======================================================
+            if x.kind == Literal:
+                ensureInPlace()
+                SetInPlace(newColor(saturateColor(InPlaced.l, -1.0)))
+            else:
+                push newColor(saturateColor(x.l, -1.0))
+
     builtin "invert",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
