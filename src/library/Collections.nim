@@ -1981,8 +1981,16 @@ proc defineSymbols*() =
         #  examples missing for use with non-numbers
         #  labels: library, documentation, easy
         example     = """
-            zero? 5-5         ; => true
-            zero? 4           ; => false
+            zero? 5-5           ; => true
+            zero? 4             ; => false
+            ..........
+            items: [1 2 3]
+            zero? items         ; => false    
+
+            items: []
+            zero? items         ; => true
+            ..........
+            zero? ø             ; => true
         """:
             #=======================================================
             case x.kind:
