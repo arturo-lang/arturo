@@ -58,6 +58,8 @@ v0.9.82
 - Numbers: made all trigonometric function work with `:quantity` values
 - Numbers\e: renamed back to `epsilon`
 - Numbers\infinity: renamed to `infinite`
+- Numbers\negative?: added support for Floating, Complex & Rational values
+- Numbers\positive?: added support for Floating, Complex & Rational values
 - Numbers\product: added `.cartesian` option
 - Numbers\range: make function work even with .step =< 0 + moved to Converters
 - Reflection\info: show origin module for built-in functions/constants
