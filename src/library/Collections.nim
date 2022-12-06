@@ -1062,8 +1062,8 @@ proc defineSymbols*() =
                         z)=>newBlock(z))))
 
     builtin "prepend",
-        alias       = doubleplus,
-        rule        = InfixPrecedence,
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
         description = "prepend value to given collection",
         args        = {
             "collection": {String, Char, Block, Binary, Literal},
