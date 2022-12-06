@@ -2,7 +2,7 @@ brazilian?: function [n][
     if n < 7 -> return false
     if zero? and n 1 -> return true
     loop 2..n-2 'b [
-        if 1 = size unique digits.base:b n ->
+        if one? unique digits.base:b n ->
             return true
     ]
     return false

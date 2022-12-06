@@ -4,7 +4,7 @@ uniques: split first arr
 loop arr 'str [
     uniques: intersection uniques 
         select split str 'x -> 
-            1 = match.count str x 
+            one? match.count str x 
 ]
 
 print sort uniques
