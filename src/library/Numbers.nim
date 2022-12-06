@@ -507,6 +507,31 @@ proc defineSymbols*() =
             #=======================================================
             processTrigonometric(coth)
 
+    builtin "denominator",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "get the denominator of given number",
+        args        = {
+            "number"    : {Integer,Floating,Rational}
+        },
+        attrs       = NoAttrs,
+        returns     = {Integer},
+        # TODO(Numbers\denominator) add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            #=======================================================
+            var rat: VRational
+
+            if x.kind==Rational:
+                rat = x.rat
+            elif x.kind==Integer:
+                rat = toRational(x.i)
+            else:
+                rat = toRational(x.f)
+
+            push(newInteger(rat.den))
+
     builtin "digits",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
