@@ -73,9 +73,6 @@ proc defineSymbols*() =
             print b                   ; [1 2 3 4]
         """:
             #=======================================================
-            # TODO(Collections\append) Append for arrays vs strings seems to be much slower
-            #  https://github.com/arturo-lang/benchmarks/blob/main/results/17-8-2022/micro.md
-            #  labels: enhancement, library, performance
             if x.kind == Literal:
                 ensureInPlace()
                 if InPlaced.kind == String:
