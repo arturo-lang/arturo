@@ -868,7 +868,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "check if given number is negative",
         args        = {
-            "number"    : {Integer,Floating}
+            "number"    : {Integer,Floating,Complex,Rational}
         },
         attrs       = NoAttrs,
         returns     = {Logical},
@@ -877,13 +877,20 @@ proc defineSymbols*() =
             negative? 6-7     ; => true 
         """:
             #=======================================================
-            if x.kind==Integer and x.iKind==BigInteger:
-                when defined(WEB):
-                    push(newLogical(x.bi < big(0)))
-                elif not defined(NOGMP):
-                    push(newLogical(negative(x.bi)))
-            else:
-                push(newLogical(x < I0))
+            if x.kind==Integer:
+                if x.iKind==BigInteger:
+                    when defined(WEB):
+                        push(newLogical(x.bi < big(0)))
+                    elif not defined(NOGMP):
+                        push(newLogical(negative(x.bi)))
+                else:
+                    push(newLogical(x < I0))
+            elif x.kind==Floating:
+                push(newLogical(x.f < 0.0))
+            elif x.kind==Rational:
+                push(newLogical(x.rat.num < 0)):
+            elif x.kind==Complex:
+                push(newLogical(x.z.re < 0.0 or (x.z.re == 0.0 and x.z.im < 0.0)))
 
     builtin "numerator",
         alias       = unaliased, 
@@ -942,7 +949,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "check if given number is positive",
         args        = {
-            "number"    : {Integer}
+            "number"    : {Integer,Floating,Complex,Rational}
         },
         attrs       = NoAttrs,
         returns     = {Logical},
@@ -951,13 +958,20 @@ proc defineSymbols*() =
             positive? 6-7     ; => false
         """:
             #=======================================================
-            if x.kind==Integer and x.iKind==BigInteger:
-                when defined(WEB):
-                    push(newLogical(x.bi > big(0)))
-                elif not defined(NOGMP):
-                    push(newLogical(positive(x.bi)))
-            else:
-                push(newLogical(x > I0))
+            if x.kind==Integer:
+                if x.iKind==BigInteger:
+                    when defined(WEB):
+                        push(newLogical(x.bi > big(0)))
+                    elif not defined(NOGMP):
+                        push(newLogical(positive(x.bi)))
+                else:
+                    push(newLogical(x > I0))
+            elif x.kind==Floating:
+                push(newLogical(x.f > 0.0))
+            elif x.kind==Rational:
+                push(newLogical(x.rat.num > 0)):
+            elif x.kind==Complex:
+                push(newLogical(x.z.re > 0.0 or (x.z.re == 0.0 and x.z.im > 0.0)))
     
     when not defined(NOGMP):
         # TODO(Numbers\powmod) not working for Web builds
