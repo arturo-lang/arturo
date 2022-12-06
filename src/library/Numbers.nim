@@ -897,6 +897,12 @@ proc defineSymbols*() =
         # TODO(Numbers\numerator) add documentation example
         #  labels: library, documentation, easy
         example     = """
+            num: to :rational 12.4      ; num: 62/5
+            print numerator num
+            ; => 62
+            ..........
+            print numerator 10
+            ; => 10
         """:
             #=======================================================
             var rat: VRational
