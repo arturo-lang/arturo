@@ -856,6 +856,31 @@ proc defineSymbols*() =
             else:
                 push(newLogical(x < I0))
 
+    builtin "numerator",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "get the numerator of given number",
+        args        = {
+            "number"    : {Integer,Floating,Rational}
+        },
+        attrs       = NoAttrs,
+        returns     = {Integer},
+        # TODO(Numbers\numerator) add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            #=======================================================
+            var rat: VRational
+
+            if x.kind==Rational:
+                rat = x.rat
+            elif x.kind==Integer:
+                rat = toRational(x.i)
+            else:
+                rat = toRational(x.f)
+
+            push(newInteger(rat.num))
+
     builtin "odd?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
