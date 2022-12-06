@@ -1064,6 +1064,58 @@ proc defineSymbols*() =
                 push(newBlock(getPermutations(cleanX, sz, doRepeat).map((
                         z)=>newBlock(z))))
 
+    builtin "prepend",
+        alias       = doubleplus,
+        rule        = InfixPrecedence,
+        description = "prepend value to given collection",
+        args        = {
+            "collection": {String, Char, Block, Binary, Literal},
+            "value"     : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {String, Block, Nothing},
+        example     = """
+        """:
+            #=======================================================
+            if x.kind == Literal:
+                ensureInPlace()
+                if InPlaced.kind == String:
+                    if y.kind == String:
+                        InPlaced.s &= y.s
+                    elif y.kind == Char:
+                        InPlaced.s &= $(y.c)
+                elif InPlaced.kind == Char:
+                    if y.kind == String:
+                        SetInPlace(newString($(InPlaced.c) & y.s))
+                    elif y.kind == Char:
+                        SetInPlace(newString($(InPlaced.c) & $(y.c)))
+                else:
+                    if y.kind == Block:
+                        InPlaced.cleanAppendInPlace(y)
+                    else:
+                        InPlaced.a.add(y)
+            else:
+                if x.kind == String:
+                    if y.kind == String:
+                        push(newString(x.s & y.s))
+                    elif y.kind == Char:
+                        push(newString(x.s & $(y.c)))
+                elif x.kind == Char:
+                    if y.kind == String:
+                        push(newString($(x.c) & y.s))
+                    elif y.kind == Char:
+                        push(newString($(x.c) & $(y.c)))
+                elif x.kind == Binary:
+                    if y.kind == Binary:
+                        push(newBinary(x.n & y.n))
+                    elif y.kind == Integer:
+                        push(newBinary(x.n & numberToBinary(y.i)))
+                else:
+                    if y.kind==Block:
+                        push newBlock(cleanAppend(x, y))
+                    else:
+                        push newBlock(cleanAppend(x, y, singleValue=true))
+
     builtin "remove",
         alias       = doubleminus,
         rule        = InfixPrecedence,
