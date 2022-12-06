@@ -978,6 +978,19 @@ proc defineSymbols*() =
         # TODO(Collections/one?) add documentation example
         #  labels: library, documentation, easy
         example     = """
+            one? 5              ; => false
+            one? 4-3            ; => true
+            ..........
+            one? 1.0            ; => true
+            one? 0.0            ; => false
+            ..........
+            items: ["apple"]
+            one? items          ; => true
+
+            items: [1 2 3]
+            one? items          ; => false
+            ..........
+            one? ø              ; => false
         """:
             #=======================================================
             case x.kind:
