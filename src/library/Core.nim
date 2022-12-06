@@ -187,7 +187,7 @@ proc defineSymbols*() =
     builtin "coalesce",
         alias       = doublequestion, 
         rule        = InfixPrecedence,
-        description = "return first value if not null; otherwise return the second one",
+        description = "if first value is null or false, return second value; otherwise return the first one",
         args        = {
             "value"         : {Any},
             "alternative"   : {Any}
@@ -197,10 +197,11 @@ proc defineSymbols*() =
         example     = """
         """:
             #=======================================================
-            if x.kind == Null:
-                push(y)
-            else:
+            let condition = not (x.kind==Null or isFalse(x))
+            if condition:
                 push(x)
+            else:
+                push(y)
 
     builtin "continue",
         alias       = unaliased, 
