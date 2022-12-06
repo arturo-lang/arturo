@@ -975,8 +975,6 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Logical},
-        # TODO(Collections/one?) add documentation example
-        #  labels: library, documentation, easy
         example     = """
             one? 5              ; => false
             one? 4-3            ; => true
