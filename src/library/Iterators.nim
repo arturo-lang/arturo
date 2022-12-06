@@ -578,7 +578,7 @@ proc defineSymbols*() =
     builtin "collect",
         alias       = unaliased,
         rule        = PrefixPrecedence,
-        description = "collect items from given collection condition is true",
+        description = "collect items from given collection condition while is true",
         args        = {
             "collection"    : {Integer,String,Block,Range,Inline,Dictionary,Object,Literal},
             "params"        : {Literal,Block,Null},
