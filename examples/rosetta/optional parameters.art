@@ -1,8 +1,6 @@
 sortTable: function [tbl][
-    column: "0"
-    reversed?: false
-    unless null? c: <= attr 'column -> column: to :string c
-    unless null? attr 'reverse -> reversed?: true
+    reversed?: (attr 'reverse)?? false
+    column: to :string (attr 'column)?? 0
 
     result: sort.by: column map tbl 'r [
         to :dictionary flatten couple @ 0..dec size r r
