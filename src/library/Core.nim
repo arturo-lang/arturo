@@ -184,6 +184,24 @@ proc defineSymbols*() =
                 push(x)
             push(newLogical(false))
 
+    builtin "coalesce",
+        alias       = doublequestion, 
+        rule        = InfixPrecedence,
+        description = "return first value if not null; otherwise return the second one",
+        args        = {
+            "value"         : {Any},
+            "alternative"   : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Any},
+        example     = """
+        """:
+            #=======================================================
+            if x.kind == Null:
+                push(y)
+            else:
+                push(x)
+
     builtin "continue",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
