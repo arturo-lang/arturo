@@ -1981,6 +1981,9 @@ proc defineSymbols*() =
             zero? 5-5           ; => true
             zero? 4             ; => false
             ..........
+            zero? 1.0           ; => false
+            zero? 0.0           ; => true
+            ..........
             items: [1 2 3]
             zero? items         ; => false    
 
