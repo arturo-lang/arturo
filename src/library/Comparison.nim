@@ -32,6 +32,29 @@ proc defineSymbols*() =
     #  But: we'll obviously have to somehow "define" this... approximate equality.
     #  labels: library, enhancement, open discussion
 
+    builtin "compare",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "compare given values and return -1, 0, or 1 based on the result",
+        args        = {
+            "valueA": {Any},
+            "valueB": {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            compare 1 2           ; => -1
+            compare 3 3           ; => 0
+            compare 4 3           ; => 1
+        """:
+            #=======================================================
+            if x < y:
+                push(I1M)
+            elif x == y:
+                push(I0)
+            else:
+                push(I1)
+
     builtin "equal?",
         alias       = equal, 
         rule        = InfixPrecedence,
