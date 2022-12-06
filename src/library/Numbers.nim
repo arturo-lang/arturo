@@ -736,10 +736,27 @@ proc defineSymbols*() =
             #=======================================================
             push(newFloating(hypot(asFloat(x), asFloat(y))))
 
-    constant "infinity",
+    constant "infinite",
         alias       = infinite,
         description = "the IEEE floating point value of positive infinity":
             newFloating(Inf)
+
+    builtin "infinite?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check whether given value is an infinite one",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+        """:
+            #=======================================================
+            if x.kind == Floating and (x.f == Inf or x.f == NegInf):
+                push(VTRUE)
+            else:
+                push(VFALSE)
 
     builtin "lcm",
         alias       = unaliased, 
