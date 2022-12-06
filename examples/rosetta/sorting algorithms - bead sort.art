@@ -1,6 +1,6 @@
 beadSort: function [items][
     a: new items
-    m: neg infinity
+    m: neg infinite
     s: 0
 
     loop a 'x [
