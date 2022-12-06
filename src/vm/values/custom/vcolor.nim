@@ -1228,6 +1228,8 @@ func HSLtoRGB*(hsl: HSL): RGB =
         if T < 2/3.0: return (p+(q-p)*(2/3.0-T)*6)
         return p
 
+    debugEcho $(hsl)
+
     let h = hsl.h/360
     let s = hsl.s
     let l = hsl.l
@@ -1247,9 +1249,13 @@ func HSLtoRGB*(hsl: HSL): RGB =
         else:       q = l + s - l * s
 
         let p = 2*l - q
-        r = (hueToRGB(p, q, h + 1/3.0) * 255).round
-        g = (hueToRGB(p, q, h) * 255).round
-        b = (hueToRGB(p, q, h - 1/3.0) * 255).round
+        r = hueToRGB(p, q, h + 1/3.0)
+        g = hueToRGB(p, q, h)
+        b = hueToRGB(p, q, h - 1/3.0)
+
+    r = (r * 255).round
+    g = (g * 255).round
+    b = (b * 255).round
 
     return (int(r), int(g), int(b), int(a))
 
