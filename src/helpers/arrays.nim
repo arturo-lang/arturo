@@ -214,6 +214,37 @@ func cleanAppend*(s: Value, t: Value, singleValue: static bool = false): ValueAr
 
     setLen(result, cnt)
 
+func cleanPrepend*(s: Value, t: Value, singleValue: static bool = false): ValueArray {.inline,enforceNoRaises.} =
+    ## Prepends `t` to `s`, cleaning the blocks and returning a `ValueArray`
+    ##
+    ## Note:
+    ## - Use if `x.kind != Literal` in `builtin` functions
+    ## - `s` and `t` must be a Block value
+    ##
+    ## To understand more about cleaning blocks, read `vm/values/clean.nim`
+
+    let L1 = len(s.a)
+    when not singleValue:
+        let L2 = len(t.a)
+        result = newSeq[Value](L1 + L2)
+    else:
+        result = newSeq[Value](L1 + 1)
+
+    var cnt = 0
+    when not singleValue:
+        for i in cleanedBlockValues(t, L2):
+            result[cnt] = i
+            inc cnt
+    else:
+        result[cnt] = t
+        inc cnt
+
+    for i in cleanedBlockValues(s, L1):
+        result[cnt] = i
+        inc cnt
+
+    setLen(result, cnt)
+
 proc cleanAppendInPlace*(s: var Value, t: Value) {.inline,enforceNoRaises.} =
     ## Appends `t` to `s`, cleaning the blocks and changing `s` in-place
     ##
@@ -238,3 +269,23 @@ proc cleanAppendInPlace*(s: var Value, t: Value) {.inline,enforceNoRaises.} =
         cnt += 1
 
     setLen(s.a, cnt)
+
+proc cleanPrependInPlace*(s: var Value, t: Value) {.inline,enforceNoRaises.} =
+    ## Prepends `t` to `s`, cleaning the blocks and changing `s` in-place
+    ##
+    ## Note:
+    ## - Use if `x.kind == Literal`, in `builtin` functions
+    ##   - Else, use `cleanAppend`
+    ## - `s` and `t` values must be a Block value,
+    ## - It doesn't return a new value, it modifies `s`
+    ##
+    ## To understand more about cleaning blocks, read `vm/values/clean.nim`
+
+    cleanBlock(s)
+
+    let L2 = len(t.a)
+
+    var cnt = 0
+    for i in cleanedBlockValues(t, L2):
+        s.a.insert(i, cnt)
+        cnt += 1
