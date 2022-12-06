@@ -1251,28 +1251,6 @@ proc defineSymbols*() =
             #=======================================================
             processTrigonometric(tanh)
 
-    builtin "zero?",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "check if given number is zero",
-        args        = {
-            "number"    : {Integer,Floating}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            zero? 5-5         ; => true
-            zero? 4           ; => false
-        """:
-            #=======================================================
-            if x.kind==Integer and x.iKind==BigInteger:
-                when defined(WEB):
-                    push(newLogical(x.bi==big(0)))
-                elif not defined(NOGMP):
-                    push(newLogical(isZero(x.bi)))
-            else:
-                push(newLogical(x == I0))
-
 #=======================================
 # Add Library
 #=======================================
