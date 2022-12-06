@@ -971,7 +971,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "check if given number or collection size is one",
         args        = {
-            "number"    : {Integer,Floating,Block,Range,Dictionary,Object,Null},
+            "number"    : {Integer,Floating,String,Block,Range,Dictionary,Object,Null},
         },
         attrs       = NoAttrs,
         returns     = {Logical},
@@ -991,6 +991,8 @@ proc defineSymbols*() =
                         push(newLogical(x == I1))
                 of Floating:
                     push(newLogical(x == F1))
+                of String:
+                    push(newLogical(runeLen(x.s) == 1))
                 of Block:
                     ensureCleaned(x)
                     push(newLogical(cleanX.len == 1))
@@ -1971,7 +1973,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "check if given number or collection size is zero",
         args        = {
-            "number"    : {Integer,Floating,Block,Range,Dictionary,Object,Null},
+            "number"    : {Integer,Floating,String,Block,Range,Dictionary,Object,Null},
         },
         attrs       = NoAttrs,
         returns     = {Logical},
@@ -1994,6 +1996,8 @@ proc defineSymbols*() =
                         push(newLogical(x == I0))
                 of Floating:
                     push(newLogical(x == F0))
+                of String:
+                    push(newLogical(runeLen(x.s) == 0))
                 of Block:
                     ensureCleaned(x)
                     push(newLogical(cleanX.len == 0))
