@@ -19,6 +19,7 @@ v0.9.82
 **New**
 - Arithmetic: added new `divmod` method
 - Collections: added new `combine`, `decouple`, `one?`, `rotate` & `tally` methods
+- Comparison: added new `compare` method
 - Converters: added new `in` method
 - Dates: added new `sunday?`, `monday?`, `tuesday?`, `wednesday?`, `thursday?`, `friday?` & `saturday` methods
 - Files: added new `hidden?`, `move` & `timestamp` methods
