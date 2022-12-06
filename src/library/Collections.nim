@@ -21,10 +21,14 @@
 
 when not defined(WEB):
     import oids
+else:
+    import std/jsbigints
+
+when not defined(NOGMP):
+    import helpers/bignums as BignumsHelper
 
 import algorithm, os, random, sequtils
 import strutils, sugar, unicode
-
 
 import helpers/arrays
 import helpers/combinatorics
@@ -1924,6 +1928,43 @@ proc defineSymbols*() =
             else:
                 let s = toSeq(x.o.values)
                 push(newBlock(s))
+
+    builtin "zero?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if given number or collection size is zero",
+        args        = {
+            "number"    : {Integer,Floating,Block,Range,Dictionary,Object,Null},
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            zero? 5-5         ; => true
+            zero? 4           ; => false
+        """:
+            #=======================================================
+            case x.kind:
+                of Integer:
+                    if x.iKind == BigInteger:
+                        when defined(WEB):
+                            push(newLogical(x.bi==big(0)))
+                        elif not defined(NOGMP):
+                            push(newLogical(isZero(x.bi)))
+                    else:
+                        push(newLogical(x == I0))
+                of Floating:
+                    push(newLogical(x == F0))
+                of Block:
+                    ensureCleaned(x)
+                    push(newLogical(cleanX.len == 0))
+                of Range:
+                    push(newLogical(x.rng.len == 0))
+                of Dictionary:
+                    push(newLogical(x.d.len == 0))
+                of Object:
+                    push(newLogical(x.o.len == 0))
+                else:
+                    push(VTRUE)
 
 #=======================================
 # Add Library
