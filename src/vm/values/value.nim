@@ -679,6 +679,7 @@ proc copyValue*(v: Value): Value {.inline.} =
         of PathLabel:   result = newPathLabel(v.p)
 
         of Symbol:      result = newSymbol(v.m)
+        of Color:       result = newColor(v.l)
         of Date:        result = newDate(v.eobj[])
         of Binary:      result = newBinary(v.n)
 
