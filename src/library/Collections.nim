@@ -975,6 +975,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Logical},
+        # TODO(Collections/one?) add documentation example
+        #  labels: library, documentation, easy
         example     = """
         """:
             #=======================================================
@@ -1973,6 +1975,9 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Logical},
+        # TODO(Collections/zero?) add documentation examples
+        #  examples missing for use with non-numbers
+        #  labels: library, documentation, easy
         example     = """
             zero? 5-5         ; => true
             zero? 4           ; => false
