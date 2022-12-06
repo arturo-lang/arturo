@@ -26,7 +26,7 @@ v0.9.82
 - Files: added new `hidden?`, `move` & `timestamp` methods
 - Iterators: added new `arrange`, `chunk`, `cluster`, `collect`, `enumerate`, `gather`, `maximum` & `minimum` methods
 - Net: added new `browse` method
-- Numbers: added new `factorial`, `infinite?` & `lcm` methods
+- Numbers: added new `denominator`, `factorial`, `infinite?`, `lcm` & `numerator` methods
 - Paths: added new `absolute?` method
 - Reflection: added new `bytecode?`, `color?`, `complex?`, `object?`, `quantity?`, `rational?`, `range?` & `version?` predicates
 - Sets: added new `disjoint?` method
