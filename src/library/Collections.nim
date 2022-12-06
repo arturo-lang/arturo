@@ -1078,40 +1078,40 @@ proc defineSymbols*() =
                 ensureInPlace()
                 if InPlaced.kind == String:
                     if y.kind == String:
-                        InPlaced.s &= y.s
+                        InPlaced.s.insert(y.s, 0)
                     elif y.kind == Char:
-                        InPlaced.s &= $(y.c)
+                        InPlaced.s.insert($(y.c), 0)
                 elif InPlaced.kind == Char:
                     if y.kind == String:
-                        SetInPlace(newString($(InPlaced.c) & y.s))
+                        SetInPlace(newString(y.s & $(InPlaced.c)))
                     elif y.kind == Char:
-                        SetInPlace(newString($(InPlaced.c) & $(y.c)))
+                        SetInPlace(newString($(y.c) & $(InPlaced.c)))
                 else:
                     if y.kind == Block:
-                        InPlaced.cleanAppendInPlace(y)
+                        InPlaced.cleanPrependInPlace(y)
                     else:
-                        InPlaced.a.add(y)
+                        InPlaced.a.insert(y, 0)
             else:
                 if x.kind == String:
                     if y.kind == String:
-                        push(newString(x.s & y.s))
+                        push(newString(y.s & x.s))
                     elif y.kind == Char:
-                        push(newString(x.s & $(y.c)))
+                        push(newString($(y.c) & x.s))
                 elif x.kind == Char:
                     if y.kind == String:
-                        push(newString($(x.c) & y.s))
+                        push(newString(y.s & $(x.c)))
                     elif y.kind == Char:
-                        push(newString($(x.c) & $(y.c)))
+                        push(newString($(y.c) & $(x.c)))
                 elif x.kind == Binary:
                     if y.kind == Binary:
-                        push(newBinary(x.n & y.n))
+                        push(newBinary(y.n & x.n))
                     elif y.kind == Integer:
-                        push(newBinary(x.n & numberToBinary(y.i)))
+                        push(newBinary(numberToBinary(y.i) & x.n))
                 else:
                     if y.kind==Block:
-                        push newBlock(cleanAppend(x, y))
+                        push newBlock(cleanPrepend(x, y))
                     else:
-                        push newBlock(cleanAppend(x, y, singleValue=true))
+                        push newBlock(cleanPrepend(x, y, singleValue=true))
 
     builtin "remove",
         alias       = doubleminus,
