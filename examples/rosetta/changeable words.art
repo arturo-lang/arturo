@@ -5,7 +5,7 @@ results: []
 loop wordset 'a [
     loop select wordset 'word [equal? size a size word] 'b [
         if a <> b [
-            if 1 = levenshtein a b [
+            if one? levenshtein a b [
                 'results ++ @[sort @[a b]]
             ]
         ]

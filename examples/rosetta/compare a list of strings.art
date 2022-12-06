@@ -1,4 +1,4 @@
-allEqual?: function [lst] -> 1 = size unique lst
+allEqual?: function [lst] -> one? unique lst
 ascending?: function [lst] -> lst = sort lst
 
 lists: [
