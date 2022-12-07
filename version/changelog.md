@@ -19,7 +19,7 @@ v0.9.82
 **New**
 - Arithmetic: added new `divmod` method
 - Collections: added new `combine`, `decouple`, `one?`, `prepend`, `rotate` & `tally` methods
-- Comparison: added new `compare` method
+- Comparison: added new `between?` & `compare` methods
 - Converters: added new `in` method
 - Core: added new `coalesce` method
 - Dates: added new `sunday?`, `monday?`, `tuesday?`, `wednesday?`, `thursday?`, `friday?` & `saturday` methods
