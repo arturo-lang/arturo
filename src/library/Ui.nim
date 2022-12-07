@@ -56,7 +56,7 @@ proc defineSymbols*() =
                 "warning"   : ({Logical},"show notification as a warning"),
                 "error"     : ({Logical},"show notification as an error")
             },
-            returns     = {Logical},
+            returns     = {Nothing},
             example     = """
             alert "Hello!" "This is a notification..."
             ; show an OS notification without any styling
