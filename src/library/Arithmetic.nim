@@ -215,6 +215,8 @@ proc defineSymbols*() =
             if x.kind==Literal  : ensureInPlace(); InPlaced *= I1M
             else                : push(x * I1M)
 
+    # TODO(Arithmetic/pow) Should also support rational numbers
+    #  labels: library, enhancement, new feature
     builtin "pow",
         alias       = caret, 
         rule        = InfixPrecedence,
