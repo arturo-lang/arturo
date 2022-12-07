@@ -572,7 +572,7 @@ proc defineSymbols*() =
             "alternative"   : {Block}
         },
         attrs       = NoAttrs,
-        returns     = {Nothing},
+        returns     = {Any},
         example     = """
             x: 2
             
