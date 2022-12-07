@@ -46,7 +46,7 @@ buildNo: (~{b/|sys\build|}) ++ " "
 if 2>sys\build -> buildNo: ""
 
 Details: {
-    # version : v/|sys\version| |buildNo|@ |to :string .format: "yyyy-MM-dd" sys\buildDate|
+    # version : v/|sys\version| |buildNo|@ |sys\buildDate|
     # arch    : |sys\cpu|/|sys\os|
 }
 
