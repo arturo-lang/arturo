@@ -242,7 +242,7 @@ proc defineSymbols*() =
         attrs       = {
             "times" : ({Integer},"repeat block execution given number of times")
         },
-        returns     = {Any,Nothing},
+        returns     = {Any},
         example     = """
             do "print 123"                ; 123
             ..........
