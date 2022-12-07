@@ -299,7 +299,7 @@ proc defineSymbols*() =
             "value" : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Nothing},
+        returns     = {Any},
         example     = """
             ; a label normally consumes its inputs
             ; and returns nothing
