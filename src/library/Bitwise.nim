@@ -96,7 +96,7 @@ proc defineSymbols*() =
 
     builtin "not",
         alias       = unaliased, 
-        rule        = InfixPrecedence,
+        rule        = PrefixPrecedence,
         description = "calculate the binary complement the given value",
         args        = {
             "value" : {Integer,Binary,Literal}

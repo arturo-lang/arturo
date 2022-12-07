@@ -41,7 +41,7 @@ proc defineSymbols*() =
             "valueB": {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Logical},
+        returns     = {Integer},
         example     = """
             compare 1 2           ; => -1
             compare 3 3           ; => 0

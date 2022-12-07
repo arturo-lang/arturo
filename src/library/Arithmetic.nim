@@ -48,6 +48,8 @@ proc defineSymbols*() =
             if x.kind==Literal  : ensureInPlace(); InPlaced += y
             else                : push(x+y)
 
+    # TODO(Arithmetic/dec) Should also support complex numbers
+    #  labels: library, enhancement, new feature
     builtin "dec",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -97,7 +99,7 @@ proc defineSymbols*() =
             "valueB": {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Complex,Rational,Quantity,Nothing},
+        returns     = {Block,Nothing},
         example     = """
             print divmod 15 5       ; 3 0
             print 14 /% 3           ; 4 2
@@ -131,6 +133,8 @@ proc defineSymbols*() =
             if x.kind==Literal  : ensureInPlace(); InPlaced //= y
             else                : push(x//y)
 
+    # TODO(Arithmetic/inc) Should also support complex numbers
+    #  labels: library, enhancement, new feature
     builtin "inc",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -211,6 +215,8 @@ proc defineSymbols*() =
             if x.kind==Literal  : ensureInPlace(); InPlaced *= I1M
             else                : push(x * I1M)
 
+    # TODO(Arithmetic/pow) Should also support rational numbers
+    #  labels: library, enhancement, new feature
     builtin "pow",
         alias       = caret, 
         rule        = InfixPrecedence,

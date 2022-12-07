@@ -117,6 +117,10 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Color},
         example     = """
+            grayscale #red              ; => #808080
+            grayscale #green            ; => #404040
+
+            grayscale #FF44CC           ; => #A2A2A2
         """:
             #=======================================================
             if x.kind == Literal:

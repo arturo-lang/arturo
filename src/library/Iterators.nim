@@ -664,7 +664,7 @@ proc defineSymbols*() =
         attrs       = {
             "with"      : ({Literal},"use given index")
         },
-        returns     = {Logical},
+        returns     = {Integer},
         example     = """
             enumerate 1..10000000 => odd? 
             ; => 5000000

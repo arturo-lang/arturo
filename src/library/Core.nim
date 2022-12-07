@@ -88,7 +88,7 @@ proc defineSymbols*() =
         description = "break out of current block or loop",
         args        = NoArgs,
         attrs       = NoAttrs,
-        returns     = {Block},
+        returns     = {Nothing},
         example     = """
             loop 1..5 'x [
                 print ["x:" x]
@@ -209,7 +209,7 @@ proc defineSymbols*() =
         description = "immediately continue with next iteration",
         args        = NoArgs,
         attrs       = NoAttrs,
-        returns     = {Block},
+        returns     = {Nothing},
         example     = """
             loop 1..5 'x [
                 print ["x:" x]
@@ -242,7 +242,7 @@ proc defineSymbols*() =
         attrs       = {
             "times" : ({Integer},"repeat block execution given number of times")
         },
-        returns     = {Any,Nothing},
+        returns     = {Any},
         example     = """
             do "print 123"                ; 123
             ..........
@@ -299,7 +299,7 @@ proc defineSymbols*() =
             "value" : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Nothing},
+        returns     = {Any},
         example     = """
             ; a label normally consumes its inputs
             ; and returns nothing
@@ -572,7 +572,7 @@ proc defineSymbols*() =
             "alternative"   : {Block}
         },
         attrs       = NoAttrs,
-        returns     = {Nothing},
+        returns     = {Any},
         example     = """
             x: 2
             

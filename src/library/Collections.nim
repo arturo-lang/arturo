@@ -55,7 +55,7 @@ proc defineSymbols*() =
             "value"     : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {String, Block, Nothing},
+        returns     = {String, Block, Binary, Nothing},
         example     = """
             append "hell" "o"         ; => "hello"
             append [1 2 3] 4          ; => [1 2 3 4]
@@ -400,6 +400,8 @@ proc defineSymbols*() =
                 of Dictionary: push(newLogical(x.d.len == 0))
                 else: discard
 
+    # TODO(Collections/extend) Could also work with literal values
+    #  labels: library, enhancement, new feature
     builtin "extend",
         alias       = unaliased,
         rule        = PrefixPrecedence,
@@ -509,7 +511,7 @@ proc defineSymbols*() =
 
     builtin "get",
         alias       = unaliased,
-        rule        = InfixPrecedence,
+        rule        = PrefixPrecedence,
         description = "get collection's item by given index",
         args        = {
             "collection": {String, Block, Range, Dictionary, Object, Date, Binary, Bytecode},
@@ -1070,7 +1072,7 @@ proc defineSymbols*() =
             "value"     : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {String, Block, Nothing},
+        returns     = {String, Block, Binary, Nothing},
         example     = """
         """:
             #=======================================================
@@ -1355,8 +1357,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "set collection's item at index to given value",
         args        = {
-            "collection": {String, Block, Dictionary, Object, Binary,
-                    Bytecode},
+            "collection": {String, Block, Dictionary, Object, Binary, Bytecode},
             "index"     : {Any},
             "value"     : {Any}
         },
@@ -1490,6 +1491,8 @@ proc defineSymbols*() =
             else: # Null
                 push(newInteger(0))
 
+    # TODO(Collections/slice) could also work with literal values
+    #  labels: library, enhancement
     builtin "slice",
         alias       = unaliased,
         rule        = PrefixPrecedence,
@@ -1520,7 +1523,8 @@ proc defineSymbols*() =
                     push(newBlock(cleanX[y.i..z.i]))
                 else:
                     push(newBlock())
-
+    # TODO(Collections/sort) Could also work with string values
+    #  labels: library, new feature, open discussion
     builtin "sort",
         alias       = unaliased,
         rule        = PrefixPrecedence,
@@ -1967,7 +1971,7 @@ proc defineSymbols*() =
     builtin "unique",
         alias       = unaliased,
         rule        = PrefixPrecedence,
-        description = "get given block without duplicates",
+        description = "get given collection without duplicates",
         args        = {
             "collection": {String, Block, Literal}
         },
