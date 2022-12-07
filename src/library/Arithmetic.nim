@@ -97,7 +97,7 @@ proc defineSymbols*() =
             "valueB": {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Complex,Rational,Quantity,Nothing},
+        returns     = {Block,Nothing},
         example     = """
             print divmod 15 5       ; 3 0
             print 14 /% 3           ; 4 2
