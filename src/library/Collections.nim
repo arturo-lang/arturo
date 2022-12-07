@@ -511,7 +511,7 @@ proc defineSymbols*() =
 
     builtin "get",
         alias       = unaliased,
-        rule        = InfixPrecedence,
+        rule        = PrefixPrecedence,
         description = "get collection's item by given index",
         args        = {
             "collection": {String, Block, Range, Dictionary, Object, Date, Binary, Bytecode},
