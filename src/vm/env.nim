@@ -16,6 +16,12 @@ when not defined(WEB) and not defined(windows):
 
 when not defined(NOGMP):
     import extras/gmp
+    import extras/mpfr
+
+when not defined(NOSQLITE):
+    import sqlite3
+
+import pcre
 
 import os, strutils, tables, times
 
@@ -106,8 +112,19 @@ proc getSystemInfo*(): ValueDict =
                 newLiteral("full")
     }.toOrderedTable
 
-    when not defined(NOGMP):
-        result["deps"].d["gmp"] = newVersion(gmpVersion)
+    try:
+        when not defined(NOGMP):
+            result["deps"].d["gmp"] = newVersion($(gmpVersion))
+            result["deps"].d["mpfr"] = newVersion($(mpfr_get_version()))
+
+        when not defined(NOSQLITE):
+            result["deps"].d["sqlite"] = newVersion($(sqlite3.libversion()))
+
+        let pcreVersion = ($(pcre.version())).split(" ")[0] & ".0"
+        result["deps"].d["pcre"] = newVersion(pcreVersion)
+        
+    except:
+        discard
 
 proc getPathInfo*(): ValueDict =
     ## return path info as a Dictionary value
