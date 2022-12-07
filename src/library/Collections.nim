@@ -400,6 +400,8 @@ proc defineSymbols*() =
                 of Dictionary: push(newLogical(x.d.len == 0))
                 else: discard
 
+    # TODO(Collections/extend) Could also work with literal values
+    #  labels: library, enhancement, new feature
     builtin "extend",
         alias       = unaliased,
         rule        = PrefixPrecedence,
