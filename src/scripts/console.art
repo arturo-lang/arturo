@@ -46,7 +46,7 @@ buildNo: (~{b/|sys\build|}) ++ " "
 if 2>sys\build -> buildNo: ""
 
 Details: {
-    # v/|sys\version| |buildNo|@ |sys\buildDate| 
+    # v/|sys\version| |buildNo|@ |sys\buildDate\year|-|sys\buildDate\month|-|sys\buildDate\day|
     # arch: |sys\cpu|/|sys\os|
 }
 
