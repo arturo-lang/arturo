@@ -31,6 +31,30 @@ proc defineSymbols*() =
     #  This could serve in cases where we want to compare between weirdly-rounded floating-point numbers and integers, e.g.: 3.0000001 and 3.
     #  But: we'll obviously have to somehow "define" this... approximate equality.
     #  labels: library, enhancement, open discussion
+    builtin "between?",
+        alias       = thickarrowboth, 
+        rule        = InfixPrecedence,
+        description = "check if given value is between the given values (inclusive)",
+        args        = {
+            "value"     : {Any},
+            "rangeFrom" : {Any},
+            "rangeTo"   : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        # TODO(Comparison/between?) add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            #=======================================================
+            if x < y: 
+                push VFALSE
+                return
+            if x > z:
+                push VFALSE
+                return
+
+            push VTRUE
 
     builtin "compare",
         alias       = unaliased, 
