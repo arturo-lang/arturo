@@ -179,6 +179,10 @@ when not defined(WEB):
         ## Takes a string of Arturo code and executes it.
         handleVMErrors:
 
+            # TODO(VM/vm) Would it make sense to `GC_disableMarkAndSweep`?
+            #  will it even matter at all?
+            #  labels: vm, open discussion, benchmark, performance
+
             if isFile:
                 when defined(SAFE):
                     CurrentFile = "main.art"

@@ -1,6 +1,6 @@
 commonElements: function [subsets][
-    if zero? size subsets -> return []
-    if 1 = size subsets -> return first subsets
+    if zero? subsets -> return []
+    if one? subsets -> return first subsets
 
     result: first subsets
 

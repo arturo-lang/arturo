@@ -24,7 +24,7 @@ when not defined(WEB):
     import nre except Regex, toSeq
 
 import std/editdistance, json, os
-import sequtils, strutils
+import sequtils, strutils, sugar
 import unicode, std/wordwrap, xmltree
 
 import helpers/charsets
@@ -34,6 +34,8 @@ import vm/lib
 
 when not defined(WEB):
     import vm/[eval, exec, parse]
+
+import vm/values/custom/[vrange]
 
 #=======================================
 # Variables
@@ -421,33 +423,142 @@ proc defineSymbols*() =
                 if not broken:
                     push(VTRUE)
 
-    builtin "match",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "get matches within string, using given regular expression",
-        args        = {
-            "string": {String},
-            "regex" : {Regex, String}
-        },
-        attrs       = {
-            "capture"   : ({Logical},"capture named groups"),
-        },
-        returns     = {Block, Dictionary},
-        example     = """
+    # TODO(Strings/match) should work for Web builds as well
+    #  labels: library, web, bug
+    when not defined(WEB):
+        builtin "match",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "get matches within string, using given regular expression",
+            args        = {
+                "string": {String},
+                "regex" : {Regex, String}
+            },
+            attrs       = {
+                "once"      : ({Logical},"get just the first match"),
+                "count"     : ({Logical},"just get number of matches"),
+                "capture"   : ({Logical},"get capture groups only"),
+                "named"     : ({Logical},"get named capture groups as a dictionary"),
+                "bounds"    : ({Logical},"get match bounds only"),
+                "in"        : ({Range},"get matches within given range"),
+                "full"      : ({Logical},"get results as an array of match results")
+            },
+            returns     = {Integer,Block,Dictionary},
+            # TODO(Strings/match) add better documentation examples
+            #  labels: library, documentation, easy
+            example     = """
             print match "hello" "hello"             ; => ["hello"]
             match "x: 123, y: 456" "[0-9]+"         ; => [123 456]
             match "this is a string" "[0-9]+"       ; => []
-        """:
-            #=======================================================
-            var rgx : VRegex
-            
-            if y.kind==Regex: rgx = y.rx
-            else: rgx = newRegex(y.s).rx
+            """:
+                #=======================================================
+                let rgx : VRegex =
+                    if y.kind==Regex: y.rx
+                    else: newRegex(y.s).rx
 
-            if (hadAttr("capture")):
-                push(newStringDictionary(x.s.matchAllGroups(rgx)))
-            else:
-                push(newStringBlock(x.s.matchAll(rgx)))
+                var iFrom = 0
+                var iTo = int.high
+
+                let doOnce = hadAttr("once")
+                let doCount = hadAttr("count")
+                let doCapture = hadAttr("capture")
+                let doNamed = hadAttr("named")
+                let doBounds = hadAttr("bounds")
+                let doFull = hadAttr("full")
+
+                if checkAttr("in"):
+                    iFrom = aIn.rng.start
+                    iTo = aIn.rng.stop
+
+                if doCount:
+                    var cnt = 0
+                    for m in x.s.findIter(rgx, iFrom, iTo):
+                        cnt += 1
+                    push(newInteger(cnt))
+
+                elif doFull:
+                    var matches, matchesBounds: ValueArray
+                    var captures, capturesBounds: ValueArray
+
+                    for m in x.s.findIter(rgx, iFrom, iTo):
+                        matches.add(newString(m.match))
+                        let mBounds = m.matchBounds
+                        matchesBounds.add(newRange(mBounds.a, mBounds.b, 1, false, true, true))
+
+                        let capts = (m.captures.toSeq).map((w) => w.get)
+                        captures.add(newStringBlock(capts))
+                        let cBounds = (m.captureBounds.toSeq).map((w) => newRange(w.get.a, w.get.b, 1, false, true, true))
+                        capturesBounds.add(newBlock(cBounds))
+
+                        if doOnce: break
+
+                    let fMatches = (matches.zip(matchesBounds)).map((w) => newBlock(w))
+                    let fCaptures = (captures.zip(capturesBounds)).map((w) => newBlock(w))
+
+                    push(newDictionary({
+                        "matches":  newBlock(fMatches),
+                        "captures": newBlock(fCaptures)
+                    }.toOrderedTable))
+
+                else:
+                    var res: ValueArray
+
+                    for m in x.s.findIter(rgx, iFrom, iTo):
+                        if doCapture:
+                            if doNamed:
+                                res.add(newStringDictionary(m.captures.toTable))
+                            else:
+                                let captures = (m.captures.toSeq).map((w) => w.get)
+                                if captures.len > 1:
+                                    res.add(newStringBlock(captures))
+                                else:
+                                    res.add(newString(captures[0]))
+                        elif doBounds:
+                            let bounds = m.matchBounds
+                            res.add(newRange(bounds.a, bounds.b, 1, false, true, true))
+                        else:
+                            res.add(newString(m.match))
+                        
+                        if doOnce: break
+
+                    push(newBlock(res))
+
+        # TODO(Strings/match?) should work for Web builds as well
+        #  labels: library, web, bug
+        builtin "match?",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "check if string matches given regular expression",
+            args        = {
+                "string": {String},
+                "regex" : {Regex, String}
+            },
+            attrs       = {
+                "in"        : ({Range},"get matches within given range")
+            },
+            returns     = {Logical},
+            # TODO(Strings/match?) add documentation example
+            #  labels: library, documentation, easy
+            example     = """
+            """:
+                #=======================================================
+                let rgx : VRegex =
+                    if y.kind==Regex: y.rx
+                    else: newRegex(y.s).rx
+
+                var iFrom = 0
+                var iTo = int.high
+
+                if checkAttr("in"):
+                    iFrom = aIn.rng.start
+                    iTo = aIn.rng.stop
+
+                var matched = false
+                for m in x.s.findIter(rgx, iFrom, iTo):
+                    matched = true
+                    break
+
+                push newLogical(matched)
  
     builtin "numeric?",
         alias       = unaliased, 
@@ -574,6 +685,12 @@ proc defineSymbols*() =
                     ensureInPlace()
                     InPlaced.s = unicode.align(InPlaced.s, y.i, padding=padding)
 
+    # TODO(Strings/prefix) do we really need that?
+    #  it's literally the exact same as Collections/prepend
+    #  only, just for strings.
+    #  ONLY use in all of the Rosetta Code examples is `string prepend.art`,
+    #  where it could easily be replaced with `prepend`
+    #  labels: library, cleanup, open discussion, critical
     builtin "prefix",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -800,6 +917,11 @@ proc defineSymbols*() =
                 ensureInPlace()
                 InPlaced.s = strutils.strip(InPlaced.s, leading, trailing) 
 
+    # TODO(Strings/suffix) do we really need that?
+    #  it's literally the exact same as Collections/append
+    #  only, just for strings.
+    #  NO use at all in any of the Rosetta Code examples!
+    #  labels: library, cleanup, open discussion, critical
     builtin "suffix",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -955,7 +1077,7 @@ proc defineSymbols*() =
         attrs       = {
             "at"    : ({Integer},"use given max line width (default: 80)")
         },
-        returns     = {Logical},
+        returns     = {String},
         example     = """
             print wordwrap {Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget mauris non justo mattis dignissim. Cras in lobortis felis, id ultricies ligula. Curabitur egestas tortor sed purus vestibulum auctor. Cras dui metus, euismod sit amet suscipit et, cursus ullamcorper felis. Integer elementum condimentum neque, et sagittis arcu rhoncus sed. In luctus congue eros, viverra dapibus mi rhoncus non. Pellentesque nisl diam, auctor quis sapien nec, suscipit aliquam velit. Nam ac nisi justo.}
             ; Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget mauris non

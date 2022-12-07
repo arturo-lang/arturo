@@ -11,7 +11,7 @@ print "\n(1) Albert: I don't know when Cheryl's birthday is, but I know that Ber
 print "\t-> meaning: the month cannot have a unique day"
 dates: filter dates 'd [
     in? d\0 map select dates 'dd [
-        1 = size select dates 'pd -> pd\1=dd\1
+        one? select dates 'pd -> pd\1=dd\1
     ] 'dd -> dd\0
 ]
 print ["\t-> remaining:" dates]
@@ -19,14 +19,14 @@ print ["\t-> remaining:" dates]
 print "\n(2) Bernard: At first I don't know when Cheryl's birthday is, but I know now."
 print "\t-> meaning: the day must be unique"
 dates: select dates 'd [
-    1 = size select dates 'pd -> pd\1=d\1
+    one? size select dates 'pd -> pd\1=d\1
 ]
 print ["\t-> remaining:" dates]
 
 print "\n(3) Albert: Then I also know when Cheryl's birthday is."
 print "\t-> meaning: the month must be unique"
 dates: select dates 'd [
-    1 = size select dates 'pd -> pd\0=d\0
+    one? size select dates 'pd -> pd\0=d\0
 ]
 print ["\t-> remaining:" dates]
 

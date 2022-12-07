@@ -88,7 +88,7 @@ proc defineSymbols*() =
         description = "break out of current block or loop",
         args        = NoArgs,
         attrs       = NoAttrs,
-        returns     = {Block},
+        returns     = {Nothing},
         example     = """
             loop 1..5 'x [
                 print ["x:" x]
@@ -184,13 +184,32 @@ proc defineSymbols*() =
                 push(x)
             push(newLogical(false))
 
+    builtin "coalesce",
+        alias       = doublequestion, 
+        rule        = InfixPrecedence,
+        description = "if first value is null or false, return second value; otherwise return the first one",
+        args        = {
+            "value"         : {Any},
+            "alternative"   : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Any},
+        example     = """
+        """:
+            #=======================================================
+            let condition = not (x.kind==Null or isFalse(x))
+            if condition:
+                push(x)
+            else:
+                push(y)
+
     builtin "continue",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "immediately continue with next iteration",
         args        = NoArgs,
         attrs       = NoAttrs,
-        returns     = {Block},
+        returns     = {Nothing},
         example     = """
             loop 1..5 'x [
                 print ["x:" x]
@@ -223,7 +242,7 @@ proc defineSymbols*() =
         attrs       = {
             "times" : ({Integer},"repeat block execution given number of times")
         },
-        returns     = {Any,Nothing},
+        returns     = {Any},
         example     = """
             do "print 123"                ; 123
             ..........
@@ -280,7 +299,7 @@ proc defineSymbols*() =
             "value" : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Nothing},
+        returns     = {Any},
         example     = """
             ; a label normally consumes its inputs
             ; and returns nothing
@@ -553,7 +572,7 @@ proc defineSymbols*() =
             "alternative"   : {Block}
         },
         attrs       = NoAttrs,
-        returns     = {Nothing},
+        returns     = {Any},
         example     = """
             x: 2
             

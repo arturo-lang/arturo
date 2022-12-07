@@ -583,6 +583,10 @@ func newBlock*(a: sink ValueArray = @[], data: sink Value = nil, dirty = false):
             {}
     Value(kind: Block, a: a, data: data, flags: flags)
 
+func newBlock*(a: (Value, Value)): Value {.inline, enforceNoRaises.} =
+    ## create Block value from tuple of two values
+    newBlock(@[a[0], a[1]])
+
 func newIntegerBlock*[T](a: sink seq[T]): Value {.inline, enforceNoRaises.} =
     ## create Block value from an array of ints
     newBlock(a.map(proc (x:T):Value = newInteger(int(x))))
@@ -675,6 +679,7 @@ proc copyValue*(v: Value): Value {.inline.} =
         of PathLabel:   result = newPathLabel(v.p)
 
         of Symbol:      result = newSymbol(v.m)
+        of Color:       result = newColor(v.l)
         of Date:        result = newDate(v.eobj[])
         of Binary:      result = newBinary(v.n)
 

@@ -18,17 +18,19 @@ v0.9.82
 
 **New**
 - Arithmetic: added new `divmod` method
-- Collections: added new `combine`, `decouple`, `rotate` & `tally` methods
+- Collections: added new `combine`, `decouple`, `one?`, `prepend`, `rotate` & `tally` methods
+- Comparison: added new `between?` & `compare` methods
 - Converters: added new `in` method
+- Core: added new `coalesce` method
 - Dates: added new `sunday?`, `monday?`, `tuesday?`, `wednesday?`, `thursday?`, `friday?` & `saturday` methods
 - Files: added new `hidden?`, `move` & `timestamp` methods
 - Iterators: added new `arrange`, `chunk`, `cluster`, `collect`, `enumerate`, `gather`, `maximum` & `minimum` methods
 - Net: added new `browse` method
-- Numbers: added new `factorial` & `lcm` methods
+- Numbers: added new `clamp`, `denominator`, `factorial`, `infinite?`, `lcm` & `numerator` methods
 - Paths: added new `absolute?` method
 - Reflection: added new `bytecode?`, `color?`, `complex?`, `object?`, `quantity?`, `rational?`, `range?` & `version?` predicates
 - Sets: added new `disjoint?` method
-- Strings: added new `alphabet` method
+- Strings: added new `alphabet` & `match?` methods
 - System: added new `superuser?` predicate
 
 **Enhancements, Changes & Fixes**
@@ -54,10 +56,15 @@ v0.9.82
 - Iterators\filter: added `.first` and `.last` options
 - Iterators\select: added `.first`, `.last` and `.n` options
 - Numbers: made all trigonometric function work with `:quantity` values
+- Numbers\e: renamed back to `epsilon`
+- Numbers\infinity: renamed to `infinite`
+- Numbers\negative?: added support for Floating, Complex & Rational values
+- Numbers\positive?: added support for Floating, Complex & Rational values
 - Numbers\product: added `.cartesian` option
 - Numbers\range: make function work even with .step =< 0 + moved to Converters
 - Reflection\info: show origin module for built-in functions/constants
 - Strings\capitalize: added support for `:char` parameters
+- Strings\match: better implementation with more options (`once`, `capture`, `named`, `bounds`, `in`, `full`)
 
 ### Misc
 

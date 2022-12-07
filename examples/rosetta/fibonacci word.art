@@ -1,7 +1,7 @@
 entropy: function [s][
     if 1 >= size s -> return 0.0
     strlen: to :floating size s
-    count0: to :floating size match s "0"
+    count0: to :floating match.count s "0"
     count1: strlen - count0
     return neg add (count0/strlen) * log count0/strlen 2 (count1/strlen) * log count1/strlen 2
 ]

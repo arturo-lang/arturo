@@ -1,7 +1,7 @@
 sumd: function [n][
     s: sum digits n 
-    (1 = size digits s)? -> return s
-                         -> return sumd s
+    (one? digits s)? -> return s
+                     -> return sumd s
 ]
 
 nice?: function [x] -> and? prime? x

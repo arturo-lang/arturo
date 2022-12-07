@@ -8,7 +8,7 @@ spiralMatrix: function [n][
 
         [nx,ny]: @[x+dx, y+dy]
 
-        if? and? [and? [in? nx 0..n-1][in? ny 0..n-1]][
+        if? and? [and? [nx <=> 0 n-1][ny <=> 0 n-1]][
             null? m\[ny]\[nx]
         ][
             [x,y]: @[nx, ny]

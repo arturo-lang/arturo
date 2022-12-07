@@ -371,6 +371,30 @@ proc defineSymbols*() =
             #=======================================================
             push(newInteger(int(ceil(asFloat(x)))))
 
+    builtin "clamp",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "force value within given range",
+        args        = {
+            "number" : {Integer,Floating},
+            "min"    : {Integer,Floating},
+            "max"    : {Integer,Floating}
+        },
+        attrs       = NoAttrs,
+        returns     = {Integer,Floating},
+        example     = """
+            clamp 2 1 3             ; 2
+            clamp 0 1 3             ; 1
+            clamp 4 1 3             ; 3
+        """:
+            #=======================================================
+            if x < y:
+                push(y)
+            elif x > z:
+                push(z)
+            else:
+                push(x)
+
     builtin "conj",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -507,6 +531,35 @@ proc defineSymbols*() =
             #=======================================================
             processTrigonometric(coth)
 
+    builtin "denominator",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "get the denominator of given number",
+        args        = {
+            "number"    : {Integer,Floating,Rational}
+        },
+        attrs       = NoAttrs,
+        returns     = {Integer},
+        example     = """
+            num: to :rational 12.4      ; num: 62/5
+            print denominator num
+            ; => 5
+            ..........
+            print denominator 10
+            ; => 1
+        """:
+            #=======================================================
+            var rat: VRational
+
+            if x.kind==Rational:
+                rat = x.rat
+            elif x.kind==Integer:
+                rat = toRational(x.i)
+            else:
+                rat = toRational(x.f)
+
+            push(newInteger(rat.den))
+
     builtin "digits",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -542,7 +595,7 @@ proc defineSymbols*() =
                 when defined(WEB) or not defined(NOGMP):
                     push newBlock(getDigits(x.bi, base).map((z)=>newInteger(z)))
 
-    constant "e",
+    constant "epsilon",
         alias       = unaliased,
         description = "the constant e, Euler's number":
             newFloating(E)
@@ -736,10 +789,27 @@ proc defineSymbols*() =
             #=======================================================
             push(newFloating(hypot(asFloat(x), asFloat(y))))
 
-    constant "infinity",
+    constant "infinite",
         alias       = infinite,
         description = "the IEEE floating point value of positive infinity":
             newFloating(Inf)
+
+    builtin "infinite?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check whether given value is an infinite one",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+        """:
+            #=======================================================
+            if x.kind == Floating and (x.f == Inf or x.f == NegInf):
+                push(VTRUE)
+            else:
+                push(VFALSE)
 
     builtin "lcm",
         alias       = unaliased, 
@@ -822,7 +892,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "check if given number is negative",
         args        = {
-            "number"    : {Integer,Floating}
+            "number"    : {Integer,Floating,Complex,Rational}
         },
         attrs       = NoAttrs,
         returns     = {Logical},
@@ -831,13 +901,49 @@ proc defineSymbols*() =
             negative? 6-7     ; => true 
         """:
             #=======================================================
-            if x.kind==Integer and x.iKind==BigInteger:
-                when defined(WEB):
-                    push(newLogical(x.bi < big(0)))
-                elif not defined(NOGMP):
-                    push(newLogical(negative(x.bi)))
+            if x.kind==Integer:
+                if x.iKind==BigInteger:
+                    when defined(WEB):
+                        push(newLogical(x.bi < big(0)))
+                    elif not defined(NOGMP):
+                        push(newLogical(negative(x.bi)))
+                else:
+                    push(newLogical(x < I0))
+            elif x.kind==Floating:
+                push(newLogical(x.f < 0.0))
+            elif x.kind==Rational:
+                push(newLogical(x.rat.num < 0)):
+            elif x.kind==Complex:
+                push(newLogical(x.z.re < 0.0 or (x.z.re == 0.0 and x.z.im < 0.0)))
+
+    builtin "numerator",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "get the numerator of given number",
+        args        = {
+            "number"    : {Integer,Floating,Rational}
+        },
+        attrs       = NoAttrs,
+        returns     = {Integer},
+        example     = """
+            num: to :rational 12.4      ; num: 62/5
+            print numerator num
+            ; => 62
+            ..........
+            print numerator 10
+            ; => 10
+        """:
+            #=======================================================
+            var rat: VRational
+
+            if x.kind==Rational:
+                rat = x.rat
+            elif x.kind==Integer:
+                rat = toRational(x.i)
             else:
-                push(newLogical(x < I0))
+                rat = toRational(x.f)
+
+            push(newInteger(rat.num))
 
     builtin "odd?",
         alias       = unaliased, 
@@ -867,7 +973,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "check if given number is positive",
         args        = {
-            "number"    : {Integer}
+            "number"    : {Integer,Floating,Complex,Rational}
         },
         attrs       = NoAttrs,
         returns     = {Logical},
@@ -876,13 +982,20 @@ proc defineSymbols*() =
             positive? 6-7     ; => false
         """:
             #=======================================================
-            if x.kind==Integer and x.iKind==BigInteger:
-                when defined(WEB):
-                    push(newLogical(x.bi > big(0)))
-                elif not defined(NOGMP):
-                    push(newLogical(positive(x.bi)))
-            else:
-                push(newLogical(x > I0))
+            if x.kind==Integer:
+                if x.iKind==BigInteger:
+                    when defined(WEB):
+                        push(newLogical(x.bi > big(0)))
+                    elif not defined(NOGMP):
+                        push(newLogical(positive(x.bi)))
+                else:
+                    push(newLogical(x > I0))
+            elif x.kind==Floating:
+                push(newLogical(x.f > 0.0))
+            elif x.kind==Rational:
+                push(newLogical(x.rat.num > 0)):
+            elif x.kind==Complex:
+                push(newLogical(x.z.re > 0.0 or (x.z.re == 0.0 and x.z.im > 0.0)))
     
     when not defined(NOGMP):
         # TODO(Numbers\powmod) not working for Web builds
@@ -1233,28 +1346,6 @@ proc defineSymbols*() =
         """:
             #=======================================================
             processTrigonometric(tanh)
-
-    builtin "zero?",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "check if given number is zero",
-        args        = {
-            "number"    : {Integer,Floating}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            zero? 5-5         ; => true
-            zero? 4           ; => false
-        """:
-            #=======================================================
-            if x.kind==Integer and x.iKind==BigInteger:
-                when defined(WEB):
-                    push(newLogical(x.bi==big(0)))
-                elif not defined(NOGMP):
-                    push(newLogical(isZero(x.bi)))
-            else:
-                push(newLogical(x == I0))
 
 #=======================================
 # Add Library
