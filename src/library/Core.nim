@@ -88,7 +88,7 @@ proc defineSymbols*() =
         description = "break out of current block or loop",
         args        = NoArgs,
         attrs       = NoAttrs,
-        returns     = {Block},
+        returns     = {Nothing},
         example     = """
             loop 1..5 'x [
                 print ["x:" x]
