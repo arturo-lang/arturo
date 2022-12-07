@@ -371,6 +371,30 @@ proc defineSymbols*() =
             #=======================================================
             push(newInteger(int(ceil(asFloat(x)))))
 
+    builtin "clamp",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "force value within given range",
+        args        = {
+            "number" : {Integer,Floating},
+            "min"    : {Integer,Floating},
+            "max"    : {Integer,Floating}
+        },
+        attrs       = NoAttrs,
+        returns     = {Integer,Floating},
+        example     = """
+            clamp 2 1 3             ; 2
+            clamp 0 1 3             ; 1
+            clamp 4 1 3             ; 3
+        """:
+            #=======================================================
+            if x < y:
+                push(y)
+            elif x > z:
+                push(z)
+            else:
+                push(x)
+
     builtin "conj",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
