@@ -1357,8 +1357,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "set collection's item at index to given value",
         args        = {
-            "collection": {String, Block, Dictionary, Object, Binary,
-                    Bytecode},
+            "collection": {String, Block, Dictionary, Object, Binary, Bytecode},
             "index"     : {Any},
             "value"     : {Any}
         },
