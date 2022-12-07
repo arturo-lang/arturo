@@ -53,7 +53,17 @@ var
 #=======================================
 
 const
-    BuildDate = gorge("date +%F")
+    BuildDate = 
+        when defined(windows):
+            gorge("date /t").split(" ")[1]
+        else:
+            gorge("date +%F")
+
+when defined(windows):
+    static: 
+        echo "DEBUGGGGGGGGG"
+        echo gorge("date /t")
+        echo gorge("date +%F")
 
 #=======================================
 # Helpers
@@ -104,7 +114,12 @@ proc getSystemInfo*(): ValueDict =
             "copyright" : newString("(c) 2019-2022"),
             "version"   : newVersion(ArturoVersion),
             "build"     : newInteger(parseInt(ArturoBuild)),
-            "buildDate" : newDate(parse(BuildDate,"yyyy-MM-dd")),
+            "buildDate" : newDate(parse(BuildDate,
+                when defined(windows):
+                    "yyyy-MM-dd"
+                else:
+                    "dd-MM-yyyy"
+            )),
             "deps"      : newDictionary(),
             "binary"    : 
                 when defined(WEB):
