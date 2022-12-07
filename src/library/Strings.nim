@@ -443,7 +443,8 @@ proc defineSymbols*() =
                 "in"        : ({Range},"get matches within given range"),
                 "full"      : ({Logical},"get results as an array of match results")
             },
-            returns     = {Block, Integer},
+            # TODO(Strings/match) add better documentation examples
+            #  labels: library, documentation, easy
             example     = """
             print match "hello" "hello"             ; => ["hello"]
             match "x: 123, y: 456" "[0-9]+"         ; => [123 456]
