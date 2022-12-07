@@ -236,7 +236,7 @@ proc defineSymbols*() =
                 "on"        : ({Dictionary},"execute code on specific events"),
                 "inject"    : ({String},"inject JS code on webview initialization")
             },
-            returns     = {String,Nothing},
+            returns     = {Nothing},
             example     = """
             webview "Hello world!"
             ; (opens a webview windows with "Hello world!")
