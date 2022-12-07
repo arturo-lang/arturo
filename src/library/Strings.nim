@@ -686,7 +686,9 @@ proc defineSymbols*() =
 
     # TODO(Strings/prefix) do we really need that?
     #  it's literally the exact same as Collections/prepend
-    #  only, just for strings
+    #  only, just for strings.
+    #  ONLY use in all of the Rosetta Code examples is `string prepend.art`,
+    #  where it could easily be replaced with `prepend`
     #  labels: library, cleanup, open discussion, critical
     builtin "prefix",
         alias       = unaliased, 
@@ -916,7 +918,8 @@ proc defineSymbols*() =
 
     # TODO(Strings/suffix) do we really need that?
     #  it's literally the exact same as Collections/append
-    #  only, just for strings
+    #  only, just for strings.
+    #  NO use at all in any of the Rosetta Code examples!
     #  labels: library, cleanup, open discussion, critical
     builtin "suffix",
         alias       = unaliased, 
