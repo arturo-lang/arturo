@@ -42,9 +42,14 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Logical},
-        # TODO(Comparison/between?) add documentation example
-        #  labels: library, documentation, easy
         example     = """
+            between? 1 2 3      ; => false
+            between? 2 0 3      ; => true
+            between? 3 2 3      ; => true
+
+            1 <=> 2 3           ; => false
+            2 <=> 0 3           ; => true
+            3 <=> 2 3           ; => true  
         """:
             #=======================================================
             if x < y: 
