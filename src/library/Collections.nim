@@ -21,10 +21,14 @@
 
 when not defined(WEB):
     import oids
+else:
+    import std/jsbigints
+
+when not defined(NOGMP):
+    import helpers/bignums as BignumsHelper
 
 import algorithm, os, random, sequtils
 import strutils, sugar, unicode
-
 
 import helpers/arrays
 import helpers/combinatorics
@@ -51,7 +55,7 @@ proc defineSymbols*() =
             "value"     : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {String, Block, Nothing},
+        returns     = {String, Block, Binary, Nothing},
         example     = """
             append "hell" "o"         ; => "hello"
             append [1 2 3] 4          ; => [1 2 3 4]
@@ -69,9 +73,6 @@ proc defineSymbols*() =
             print b                   ; [1 2 3 4]
         """:
             #=======================================================
-            # TODO(Collections\append) Append for arrays vs strings seems to be much slower
-            #  https://github.com/arturo-lang/benchmarks/blob/main/results/17-8-2022/micro.md
-            #  labels: enhancement, library, performance
             if x.kind == Literal:
                 ensureInPlace()
                 if InPlaced.kind == String:
@@ -399,6 +400,8 @@ proc defineSymbols*() =
                 of Dictionary: push(newLogical(x.d.len == 0))
                 else: discard
 
+    # TODO(Collections/extend) Could also work with literal values
+    #  labels: library, enhancement, new feature
     builtin "extend",
         alias       = unaliased,
         rule        = PrefixPrecedence,
@@ -508,7 +511,7 @@ proc defineSymbols*() =
 
     builtin "get",
         alias       = unaliased,
-        rule        = InfixPrecedence,
+        rule        = PrefixPrecedence,
         description = "get collection's item by given index",
         args        = {
             "collection": {String, Block, Range, Dictionary, Object, Date, Binary, Bytecode},
@@ -962,6 +965,56 @@ proc defineSymbols*() =
 
                         push(minElement)
 
+    builtin "one?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if given number or collection size is one",
+        args        = {
+            "number"    : {Integer,Floating,String,Block,Range,Dictionary,Object,Null},
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            one? 5              ; => false
+            one? 4-3            ; => true
+            ..........
+            one? 1.0            ; => true
+            one? 0.0            ; => false
+            ..........
+            items: ["apple"]
+            one? items          ; => true
+
+            items: [1 2 3]
+            one? items          ; => false
+            ..........
+            one? ø              ; => false
+        """:
+            #=======================================================
+            case x.kind:
+                of Integer:
+                    if x.iKind == BigInteger:
+                        when defined(WEB):
+                            push(newLogical(x.bi==big(1)))
+                        elif not defined(NOGMP):
+                            push(newLogical(x.bi==newInt(1)))
+                    else:
+                        push(newLogical(x == I1))
+                of Floating:
+                    push(newLogical(x == F1))
+                of String:
+                    push(newLogical(runeLen(x.s) == 1))
+                of Block:
+                    ensureCleaned(x)
+                    push(newLogical(cleanX.len == 1))
+                of Range:
+                    push(newLogical(x.rng.len == 1))
+                of Dictionary:
+                    push(newLogical(x.d.len == 1))
+                of Object:
+                    push(newLogical(x.o.len == 1))
+                else:
+                    push(VFALSE)
+
     builtin "permutate",
         alias       = unaliased,
         rule        = PrefixPrecedence,
@@ -1009,6 +1062,58 @@ proc defineSymbols*() =
             else:
                 push(newBlock(getPermutations(cleanX, sz, doRepeat).map((
                         z)=>newBlock(z))))
+
+    builtin "prepend",
+        alias       = unaliased,
+        rule        = PrefixPrecedence,
+        description = "prepend value to given collection",
+        args        = {
+            "collection": {String, Char, Block, Binary, Literal},
+            "value"     : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {String, Block, Binary, Nothing},
+        example     = """
+        """:
+            #=======================================================
+            if x.kind == Literal:
+                ensureInPlace()
+                if InPlaced.kind == String:
+                    if y.kind == String:
+                        InPlaced.s.insert(y.s, 0)
+                    elif y.kind == Char:
+                        InPlaced.s.insert($(y.c), 0)
+                elif InPlaced.kind == Char:
+                    if y.kind == String:
+                        SetInPlace(newString(y.s & $(InPlaced.c)))
+                    elif y.kind == Char:
+                        SetInPlace(newString($(y.c) & $(InPlaced.c)))
+                else:
+                    if y.kind == Block:
+                        InPlaced.cleanPrependInPlace(y)
+                    else:
+                        InPlaced.a.insert(y, 0)
+            else:
+                if x.kind == String:
+                    if y.kind == String:
+                        push(newString(y.s & x.s))
+                    elif y.kind == Char:
+                        push(newString($(y.c) & x.s))
+                elif x.kind == Char:
+                    if y.kind == String:
+                        push(newString(y.s & $(x.c)))
+                    elif y.kind == Char:
+                        push(newString($(y.c) & $(x.c)))
+                elif x.kind == Binary:
+                    if y.kind == Binary:
+                        push(newBinary(y.n & x.n))
+                    elif y.kind == Integer:
+                        push(newBinary(numberToBinary(y.i) & x.n))
+                else:
+                    if y.kind==Block:
+                        push newBlock(cleanPrepend(x, y))
+                    else:
+                        push newBlock(cleanPrepend(x, y, singleValue=true))
 
     builtin "remove",
         alias       = doubleminus,
@@ -1252,8 +1357,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "set collection's item at index to given value",
         args        = {
-            "collection": {String, Block, Dictionary, Object, Binary,
-                    Bytecode},
+            "collection": {String, Block, Dictionary, Object, Binary, Bytecode},
             "index"     : {Any},
             "value"     : {Any}
         },
@@ -1387,6 +1491,8 @@ proc defineSymbols*() =
             else: # Null
                 push(newInteger(0))
 
+    # TODO(Collections/slice) could also work with literal values
+    #  labels: library, enhancement
     builtin "slice",
         alias       = unaliased,
         rule        = PrefixPrecedence,
@@ -1417,7 +1523,8 @@ proc defineSymbols*() =
                     push(newBlock(cleanX[y.i..z.i]))
                 else:
                     push(newBlock())
-
+    # TODO(Collections/sort) Could also work with string values
+    #  labels: library, new feature, open discussion
     builtin "sort",
         alias       = unaliased,
         rule        = PrefixPrecedence,
@@ -1864,7 +1971,7 @@ proc defineSymbols*() =
     builtin "unique",
         alias       = unaliased,
         rule        = PrefixPrecedence,
-        description = "get given block without duplicates",
+        description = "get given collection without duplicates",
         args        = {
             "collection": {String, Block, Literal}
         },
@@ -1924,6 +2031,56 @@ proc defineSymbols*() =
             else:
                 let s = toSeq(x.o.values)
                 push(newBlock(s))
+
+    builtin "zero?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if given number or collection size is zero",
+        args        = {
+            "number"    : {Integer,Floating,String,Block,Range,Dictionary,Object,Null},
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            zero? 5-5           ; => true
+            zero? 4             ; => false
+            ..........
+            zero? 1.0           ; => false
+            zero? 0.0           ; => true
+            ..........
+            items: [1 2 3]
+            zero? items         ; => false    
+
+            items: []
+            zero? items         ; => true
+            ..........
+            zero? ø             ; => true
+        """:
+            #=======================================================
+            case x.kind:
+                of Integer:
+                    if x.iKind == BigInteger:
+                        when defined(WEB):
+                            push(newLogical(x.bi==big(0)))
+                        elif not defined(NOGMP):
+                            push(newLogical(isZero(x.bi)))
+                    else:
+                        push(newLogical(x == I0))
+                of Floating:
+                    push(newLogical(x == F0))
+                of String:
+                    push(newLogical(runeLen(x.s) == 0))
+                of Block:
+                    ensureCleaned(x)
+                    push(newLogical(cleanX.len == 0))
+                of Range:
+                    push(newLogical(x.rng.len == 0))
+                of Dictionary:
+                    push(newLogical(x.d.len == 0))
+                of Object:
+                    push(newLogical(x.o.len == 0))
+                else:
+                    push(VTRUE)
 
 #=======================================
 # Add Library

@@ -1,7 +1,7 @@
 words: read.lines relative "unixdict.txt"
 
 containsMoreThan3Es?: function [w][
-    not? or? [4 > size match w "e"]
+    not? or? [4 > match.count w "e"]
              [some? ["a" "i" "o" "u"] 'v -> contains? w v]
 ]
 

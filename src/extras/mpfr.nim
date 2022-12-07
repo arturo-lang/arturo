@@ -57,6 +57,8 @@ const
 # Function prototypes
 #=======================================
 
+func mpfr_get_version*(): cstring {.importc.}
+
 func mpfr_clear*(a: var mpfr) {.importc.}
 func mpfr_init*(a: var mpfr) {.importc.}
 func mpfr_set_d*(a: var mpfr, b: cdouble, c: mpfr_rnd_t) {.importc.}

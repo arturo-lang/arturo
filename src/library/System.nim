@@ -306,10 +306,47 @@ proc defineSymbols*() =
                 #=======================================================
                 push newLogical(isAdmin())
 
-    constant "sys",
-        alias       = unaliased,
-        description = "information about the current system":
-            newDictionary(getSystemInfo())
+    builtin "sys",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "get current system information",
+            args        = NoArgs,
+            attrs       = NoAttrs,
+            returns     = {Dictionary},
+            example     = """
+                inspect sys
+                ;[ :dictionary
+                ;	author     :	Yanis Zafirópulos :string
+                ;	copyright  :	(c) 2019-2022 :string
+                ;	version    :	0.9.80 :version
+                ;	build      :	3246 :integer
+                ;	buildDate  :	[ :date
+                ;		hour        :		11 :integer
+                ;		minute      :		27 :integer
+                ;		second      :		54 :integer
+                ;		nanosecond  :		389131000 :integer
+                ;		day         :		7 :integer
+                ;		Day         :		Wednesday :string
+                ;		days        :		340 :integer
+                ;		month       :		12 :integer
+                ;		Month       :		December :string
+                ;		year        :		2022 :integer
+                ;		utc         :		-3600 :integer
+                ;	]
+                ;	deps       :	[ :dictionary
+                ;		gmp     :		6.2.1 :version
+                ;		mpfr    :		4.1.0 :version
+                ;		sqlite  :		3.37.0 :version
+                ;		pcre    :		8.45.0 :version
+                ;	] 
+                ;	binary     :	/Users/drkameleon/OpenSource/arturo-lang/arturo/bin/arturo :string
+                ;	cpu        :	amd64 :string
+                ; 	os         :	macosx :string
+                ;  	release    :	full :literal
+                ;]
+            """:
+                #=======================================================
+                push newDictionary(getSystemInfo())
 
     when not defined(WEB):
         builtin "terminate",

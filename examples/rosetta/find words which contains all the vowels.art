@@ -3,7 +3,7 @@ vowels: ["a" "e" "i" "o" "u"]
 containsAllVowels?: function [w][
     loop vowels 'v [
         if not? contains? w v -> return false
-        if 1 < size match w v -> return false
+        if 1 < match.count w v -> return false
     ]
     return true
 ]

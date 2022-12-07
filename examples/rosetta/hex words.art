@@ -23,7 +23,7 @@ loop words 'word [
     if 4 > size word ->
         continue
 
-    if not? empty? match word {/^[a-f]+$/} [
+    if match? word {/^[a-f]+$/} [
         base10: from.hex word
         droot: digRoot base10
         'hexWords ++ #[

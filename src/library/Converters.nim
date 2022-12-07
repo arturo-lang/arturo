@@ -1158,7 +1158,7 @@ proc defineSymbols*() =
         attrs       = {
             "step"  : ({Integer},"use step between range values")
         },
-        returns     = {Block},
+        returns     = {Range},
         example     = """
         """:
             #=======================================================

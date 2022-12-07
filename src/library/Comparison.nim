@@ -31,6 +31,58 @@ proc defineSymbols*() =
     #  This could serve in cases where we want to compare between weirdly-rounded floating-point numbers and integers, e.g.: 3.0000001 and 3.
     #  But: we'll obviously have to somehow "define" this... approximate equality.
     #  labels: library, enhancement, open discussion
+    builtin "between?",
+        alias       = thickarrowboth, 
+        rule        = InfixPrecedence,
+        description = "check if given value is between the given values (inclusive)",
+        args        = {
+            "value"     : {Any},
+            "rangeFrom" : {Any},
+            "rangeTo"   : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            between? 1 2 3      ; => false
+            between? 2 0 3      ; => true
+            between? 3 2 3      ; => true
+
+            1 <=> 2 3           ; => false
+            2 <=> 0 3           ; => true
+            3 <=> 2 3           ; => true  
+        """:
+            #=======================================================
+            if x < y: 
+                push VFALSE
+                return
+            if x > z:
+                push VFALSE
+                return
+
+            push VTRUE
+
+    builtin "compare",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "compare given values and return -1, 0, or 1 based on the result",
+        args        = {
+            "valueA": {Any},
+            "valueB": {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Integer},
+        example     = """
+            compare 1 2           ; => -1
+            compare 3 3           ; => 0
+            compare 4 3           ; => 1
+        """:
+            #=======================================================
+            if x < y:
+                push(I1M)
+            elif x == y:
+                push(I0)
+            else:
+                push(I1)
 
     builtin "equal?",
         alias       = equal, 

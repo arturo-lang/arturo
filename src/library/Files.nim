@@ -144,7 +144,7 @@ proc defineSymbols*() =
                 "file"      : {String}
             },
             attrs       = NoAttrs,
-            returns     = {Quantity},
+            returns     = {Logical},
             example     = """
             hidden? "README.md"     ; => false
             hidden? ".git"          ; => true
