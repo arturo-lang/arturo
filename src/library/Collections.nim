@@ -55,7 +55,7 @@ proc defineSymbols*() =
             "value"     : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {String, Block, Nothing},
+        returns     = {String, Block, Binary, Nothing},
         example     = """
             append "hell" "o"         ; => "hello"
             append [1 2 3] 4          ; => [1 2 3 4]
