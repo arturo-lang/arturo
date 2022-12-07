@@ -209,7 +209,7 @@ proc defineSymbols*() =
         description = "immediately continue with next iteration",
         args        = NoArgs,
         attrs       = NoAttrs,
-        returns     = {Block},
+        returns     = {Nothing},
         example     = """
             loop 1..5 'x [
                 print ["x:" x]
