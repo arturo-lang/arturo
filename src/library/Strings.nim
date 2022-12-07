@@ -443,7 +443,9 @@ proc defineSymbols*() =
                 "in"        : ({Range},"get matches within given range"),
                 "full"      : ({Logical},"get results as an array of match results")
             },
-            returns     = {Block, Integer},
+            returns     = {Integer,Block,Dictionary},
+            # TODO(Strings/match) add better documentation examples
+            #  labels: library, documentation, easy
             example     = """
             print match "hello" "hello"             ; => ["hello"]
             match "x: 123, y: 456" "[0-9]+"         ; => [123 456]
@@ -534,7 +536,7 @@ proc defineSymbols*() =
             attrs       = {
                 "in"        : ({Range},"get matches within given range")
             },
-            returns     = {Block, Integer},
+            returns     = {Logical},
             # TODO(Strings/match?) add documentation example
             #  labels: library, documentation, easy
             example     = """
@@ -683,6 +685,12 @@ proc defineSymbols*() =
                     ensureInPlace()
                     InPlaced.s = unicode.align(InPlaced.s, y.i, padding=padding)
 
+    # TODO(Strings/prefix) do we really need that?
+    #  it's literally the exact same as Collections/prepend
+    #  only, just for strings.
+    #  ONLY use in all of the Rosetta Code examples is `string prepend.art`,
+    #  where it could easily be replaced with `prepend`
+    #  labels: library, cleanup, open discussion, critical
     builtin "prefix",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -909,6 +917,11 @@ proc defineSymbols*() =
                 ensureInPlace()
                 InPlaced.s = strutils.strip(InPlaced.s, leading, trailing) 
 
+    # TODO(Strings/suffix) do we really need that?
+    #  it's literally the exact same as Collections/append
+    #  only, just for strings.
+    #  NO use at all in any of the Rosetta Code examples!
+    #  labels: library, cleanup, open discussion, critical
     builtin "suffix",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -1064,7 +1077,7 @@ proc defineSymbols*() =
         attrs       = {
             "at"    : ({Integer},"use given max line width (default: 80)")
         },
-        returns     = {Logical},
+        returns     = {String},
         example     = """
             print wordwrap {Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget mauris non justo mattis dignissim. Cras in lobortis felis, id ultricies ligula. Curabitur egestas tortor sed purus vestibulum auctor. Cras dui metus, euismod sit amet suscipit et, cursus ullamcorper felis. Integer elementum condimentum neque, et sagittis arcu rhoncus sed. In luctus congue eros, viverra dapibus mi rhoncus non. Pellentesque nisl diam, auctor quis sapien nec, suscipit aliquam velit. Nam ac nisi justo.}
             ; Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget mauris non

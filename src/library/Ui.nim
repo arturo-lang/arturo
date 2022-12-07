@@ -56,7 +56,7 @@ proc defineSymbols*() =
                 "warning"   : ({Logical},"show notification as a warning"),
                 "error"     : ({Logical},"show notification as an error")
             },
-            returns     = {Logical},
+            returns     = {Nothing},
             example     = """
             alert "Hello!" "This is a notification..."
             ; show an OS notification without any styling
@@ -236,7 +236,7 @@ proc defineSymbols*() =
                 "on"        : ({Dictionary},"execute code on specific events"),
                 "inject"    : ({String},"inject JS code on webview initialization")
             },
-            returns     = {String,Nothing},
+            returns     = {Nothing},
             example     = """
             webview "Hello world!"
             ; (opens a webview windows with "Hello world!")
