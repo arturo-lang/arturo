@@ -1971,7 +1971,7 @@ proc defineSymbols*() =
     builtin "unique",
         alias       = unaliased,
         rule        = PrefixPrecedence,
-        description = "get given block without duplicates",
+        description = "get given collection without duplicates",
         args        = {
             "collection": {String, Block, Literal}
         },
