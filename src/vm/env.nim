@@ -14,6 +14,9 @@
 when not defined(WEB) and not defined(windows):
     import parseopt, sequtils, sugar
 
+when not defined(NOGMP):
+    import extras/gmp
+
 import os, strutils, tables, times
 
 import helpers/terminal
@@ -82,12 +85,13 @@ proc parseCmdlineArguments*(): ValueDict =
 
 proc getSystemInfo*(): ValueDict =
     ## return system info as a Dictionary value
-    {
+    result = {
         "author"    : newString("Yanis Zafirópulos"),
         "copyright" : newString("(c) 2019-2022"),
         "version"   : newVersion(ArturoVersion),
         "build"     : newInteger(parseInt(ArturoBuild)),
         "buildDate" : newDate(now()),
+        "deps"      : newDictionary(),
         "binary"    : 
             when defined(WEB):
                 newString("arturo.js")
@@ -101,6 +105,9 @@ proc getSystemInfo*(): ValueDict =
             else:
                 newLiteral("full")
     }.toOrderedTable
+
+    when not defined(NOGMP):
+        result["deps"].d["gmp"] = newVersion(gmpVersion)
 
 proc getPathInfo*(): ValueDict =
     ## return path info as a Dictionary value
