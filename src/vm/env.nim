@@ -49,6 +49,13 @@ var
     ScriptInfo      : Value
 
 #=======================================
+# Constants
+#=======================================
+
+const
+    BuildDate = gorge("date +%F")
+
+#=======================================
 # Helpers
 #=======================================
 
@@ -91,28 +98,28 @@ proc parseCmdlineArguments*(): ValueDict =
 
 proc getSystemInfo*(): ValueDict =
     ## return system info as a Dictionary value
-    result = {
-        "author"    : newString("Yanis Zafirópulos"),
-        "copyright" : newString("(c) 2019-2022"),
-        "version"   : newVersion(ArturoVersion),
-        "build"     : newInteger(parseInt(ArturoBuild)),
-        "buildDate" : newDate(now()),
-        "deps"      : newDictionary(),
-        "binary"    : 
-            when defined(WEB):
-                newString("arturo.js")
-            else:
-                newString(getAppFilename()),
-        "cpu"       : newString(hostCPU),
-        "os"        : newString(hostOS),
-        "release"   : 
-            when defined(MINI):
-                newLiteral("mini")
-            else:
-                newLiteral("full")
-    }.toOrderedTable
-
     try:
+        result = {
+            "author"    : newString("Yanis Zafirópulos"),
+            "copyright" : newString("(c) 2019-2022"),
+            "version"   : newVersion(ArturoVersion),
+            "build"     : newInteger(parseInt(ArturoBuild)),
+            "buildDate" : newDate(parse(BuildDate,"yyyy-MM-dd")),
+            "deps"      : newDictionary(),
+            "binary"    : 
+                when defined(WEB):
+                    newString("arturo.js")
+                else:
+                    newString(getAppFilename()),
+            "cpu"       : newString(hostCPU),
+            "os"        : newString(hostOS),
+            "release"   : 
+                when defined(MINI):
+                    newLiteral("mini")
+                else:
+                    newLiteral("full")
+        }.toOrderedTable
+
         when not defined(NOGMP):
             result["deps"].d["gmp"] = newVersion($(gmpVersion))
             result["deps"].d["mpfr"] = newVersion($(mpfr_get_version()))
