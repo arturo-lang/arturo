@@ -684,6 +684,10 @@ proc defineSymbols*() =
                     ensureInPlace()
                     InPlaced.s = unicode.align(InPlaced.s, y.i, padding=padding)
 
+    # TODO(Strings/prefix) do we really need that?
+    #  it's literally the exact same as Collections/prepend
+    #  only, just for strings
+    #  labels: library, cleanup, open discussion, critical
     builtin "prefix",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
