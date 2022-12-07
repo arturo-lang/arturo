@@ -1070,7 +1070,7 @@ proc defineSymbols*() =
             "value"     : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {String, Block, Nothing},
+        returns     = {String, Block, Binary, Nothing},
         example     = """
         """:
             #=======================================================
