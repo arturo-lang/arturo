@@ -443,6 +443,7 @@ proc defineSymbols*() =
                 "in"        : ({Range},"get matches within given range"),
                 "full"      : ({Logical},"get results as an array of match results")
             },
+            returns     = {Integer,Block,Dictionary},
             # TODO(Strings/match) add better documentation examples
             #  labels: library, documentation, easy
             example     = """
