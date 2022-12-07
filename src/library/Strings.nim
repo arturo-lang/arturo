@@ -534,7 +534,7 @@ proc defineSymbols*() =
             attrs       = {
                 "in"        : ({Range},"get matches within given range")
             },
-            returns     = {Block, Integer},
+            returns     = {Logical},
             # TODO(Strings/match?) add documentation example
             #  labels: library, documentation, easy
             example     = """
