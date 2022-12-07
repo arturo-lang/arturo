@@ -324,7 +324,7 @@ proc defineSymbols*() =
             "otherwise" : {Block,Bytecode}
         },
         attrs       = NoAttrs,
-        returns     = {Nothing},
+        returns     = {Any},
         example     = """
             x: 2
             z: 3
