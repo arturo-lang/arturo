@@ -556,7 +556,12 @@ proc defineSymbols*() =
 
                 if checkAttr("in"):
                     iFrom = aIn.rng.start
+                    if iFrom < 0: 
+                        iFrom = 0
+                        
                     iTo = aIn.rng.stop
+                    if iTo >= x.s.len: 
+                        iTo = x.s.len-1
 
                 var matched = false
                 for m in x.s.findIter(rgx, iFrom, iTo):
