@@ -385,7 +385,7 @@ func newSymbolLiteral*(m: string): Value {.inline.} =
     newSymbolLiteral(parseEnum[VSymbol](m))
 
 func newQuantity*(nm: Value, unit: VQuantity): Value {.inline, enforceNoRaises.} =
-    ## create Quantity value from numerica value ``nm`` (Value) + ``unit`` (VQuantity)
+    ## create Quantity value from a numerical value ``nm`` (Value) + ``unit`` (VQuantity)
     Value(kind: Quantity, nm: nm, unit: unit)
 
 proc newQuantity*(nm: Value, name: UnitName): Value {.inline.} =
