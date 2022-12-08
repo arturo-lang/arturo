@@ -52,6 +52,9 @@ repl:
   - src/helpers/repl.nim
   - src/extras/linenoise.nim
 
+rosetta code:
+  - examples/rosetta/*
+
 ui:
   - src/extras/libclipboard/*
   - src/extras/menubar/*
