@@ -7,8 +7,8 @@ b: append "Hello" b
 print a
 
 c: "World"
-prefix 'c "Hello"
+prepend 'c "Hello"
 print c
 
 d: "World"
-print prefix d "Hello"
+print prepend d "Hello"
