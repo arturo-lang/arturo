@@ -894,27 +894,6 @@ proc defineSymbols*() =
     #  only, just for strings.
     #  NO use at all in any of the Rosetta Code examples!
     #  labels: library, cleanup, open discussion, critical
-    builtin "suffix",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "add given suffix to string",
-        args        = {
-            "string": {String,Literal},
-            "suffix": {String}
-        },
-        attrs       = NoAttrs,
-        returns     = {String,Nothing},
-        example     = """
-            suffix "hell" "o"                  ; => "hello"
-            ..........
-            str: "hell"
-            suffix 'str                        ; str: "hello"
-        """:
-            #=======================================================
-            if x.kind==String: push(newString(x.s & y.s))
-            else: 
-                ensureInPlace()
-                SetInPlace(newString(InPlaced.s & y.s))
 
     builtin "suffix?",
         alias       = unaliased, 
