@@ -366,8 +366,7 @@ proc defineSymbols*() =
                 "symbol": {String,Literal,SymbolLiteral}
             },
             attrs       = {
-                "get"       : ({Logical},"get information as dictionary"),
-                "examples"  : ({Logical},"show examples for given function, if any")
+                "get"       : ({Logical},"get information as dictionary")
             },
             returns     = {Dictionary,Nothing},
             example     = """
@@ -401,7 +400,6 @@ proc defineSymbols*() =
             ; [name:print address:0x1028B3410 type::function module:Io args:[value:[:any]] attrs:[] returns:[:nothing] description:print given value to screen with newline example:print "Hello world!"          ; Hello world!]
             """:
                 #=======================================================
-                let showExamples = (hadAttr("examples"))
                 var searchable: string
                 var value: Value = nil
 
@@ -422,7 +420,7 @@ proc defineSymbols*() =
                 if (hadAttr("get")):
                     push(newDictionary(getInfo(searchable, value, Aliases)))
                 else:
-                    printInfo(searchable, value, Aliases, withExamples = showExamples)
+                    printInfo(searchable, value, Aliases)
 
     builtin "inline?",
         alias       = unaliased, 
