@@ -14,8 +14,11 @@
 # Libraries
 #=======================================
 
-import re, sequtils, sets, strformat
-import strutils, sugar, tables
+import sequtils, sets, strformat
+import strutils, tables
+
+when defined(DOCGEN):
+    import re, sugar
 
 import helpers/terminal
 
