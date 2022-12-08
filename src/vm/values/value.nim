@@ -663,6 +663,7 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Floating:    result = newFloating(v.f)
         of Complex:     result = newComplex(v.z)
         of Rational:    result = newRational(v.rat)
+        of Version:     result = newVersion(v.version)
         of Type:        
             if likely(v.tpKind==BuiltinType):
                 result = newType(v.t)
