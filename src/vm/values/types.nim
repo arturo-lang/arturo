@@ -292,7 +292,8 @@ makeAccessor(info, module)
 makeAccessor(info, args)
 makeAccessor(info, attrs)
 makeAccessor(info, returns)
-makeAccessor(info, example)
+when defined(DOCGEN):
+    makeAccessor(info, example)
 
 # Version
 
