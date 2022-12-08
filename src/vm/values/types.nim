@@ -148,7 +148,8 @@ type
                 args*       : OrderedTable[string,ValueSpec]
                 attrs*      : OrderedTable[string,(ValueSpec,string)]
                 returns*    : ValueSpec
-                example*    : string
+                when defined(DOCGEN):
+                    example*    : string
             else:
                 discard
 
