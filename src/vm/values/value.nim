@@ -711,9 +711,6 @@ proc copyValue*(v: Value): Value {.inline.} =
 
         of Newline:
             echo "found NEWLINE when copying value!"
-        else: 
-            echo "found UNSUPPORTED value when copying value!: " & $(v.kind)
-            discard
 
 #=======================================
 # Helpers
