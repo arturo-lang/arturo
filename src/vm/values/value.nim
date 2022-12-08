@@ -708,7 +708,10 @@ proc copyValue*(v: Value): Value {.inline.} =
             if v.fnKind == UserFunction:
                 result = newFunction(v.params, v.main, v.imports, v.exports, v.memoize, v.inline)
             else:
-                result = newBuiltin(v.info.descr, v.info.module, 0, v.arity, v.info.args, v.info.attrs, v.info.returns, v.info.example, v.action)
+                when defined(DOCGEN):
+                    result = newBuiltin(v.info.descr, v.info.module, v.info.line, v.arity, v.info.args, v.info.attrs, v.info.returns, v.info.example, v.action)
+                else:
+                    result = newBuiltin(v.info.descr, v.info.module, 0, v.arity, v.info.args, v.info.attrs, v.info.returns, "", v.action)
 
         of Database:    
             when not defined(NOSQLITE):
