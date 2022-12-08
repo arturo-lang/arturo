@@ -239,7 +239,6 @@ proc miniBuild*() =
         "noasciidecode", 
         "noclipboard",
         "nodialogs",
-        "noexamples", 
         "nogmp", 
         "noparsers", 
         "nosqlite", 
