@@ -889,12 +889,6 @@ proc defineSymbols*() =
                 ensureInPlace()
                 InPlaced.s = strutils.strip(InPlaced.s, leading, trailing) 
 
-    # TODO(Strings/suffix) do we really need that?
-    #  it's literally the exact same as Collections/append
-    #  only, just for strings.
-    #  NO use at all in any of the Rosetta Code examples!
-    #  labels: library, cleanup, open discussion, critical
-
     builtin "suffix?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
