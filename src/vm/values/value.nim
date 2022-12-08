@@ -715,6 +715,9 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Regex:
             result = newRegex(v.rx)
 
+        of Quantity:
+            result = newQuantity(copyValue(v.nm), v.unit)
+
         of Newline:
             echo "found NEWLINE when copying value!"
 
