@@ -716,8 +716,8 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Bytecode:
             result = newBytecode(v.trans)
 
-        of Newline:
-            echo "found NEWLINE when copying value!"
+        of Newline, Nothing, Any:
+            discard
 
 #=======================================
 # Helpers
