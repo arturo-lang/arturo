@@ -241,13 +241,14 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
                 result["alias"] = newString(alias[0])
                 result["infix?"] = newLogical(alias[1]==InfixPrecedence)
 
-            result["example"] = newStringBlock(splitExamples(v.info.example))
+            when defined(DOCGEN):
+                result["example"] = newStringBlock(splitExamples(v.info.example))
 
 # TODO(Helpers/helper) embed "see also" functions in info screens
 #  related: https://github.com/arturo-lang/arturo/issues/466#issuecomment-1065274429
 #  labels: helpers, library, repl, enhancement
 
-proc printInfo*(n: string, v: Value, aliases: SymbolDict, withExamples = false) =
+proc printInfo*(n: string, v: Value, aliases: SymbolDict) =
     # Get type + possible module (if it's a builtin)
     var typeStr = ":" & ($(v.kind)).toLowerAscii
     # if v.kind==Function and v.fnKind==BuiltinFunction:
@@ -299,16 +300,16 @@ proc printInfo*(n: string, v: Value, aliases: SymbolDict, withExamples = false) 
             printOneData("returns",getTypeString(v.info.returns),bold(greenColor),fg(grayColor))
             printLine()
 
-            if v.info.example.strip()!="" and withExamples:
-                echo initialSep & repeat(' ', 36) & "EXAMPLES" & repeat(' ', 36) 
-                printLine()
-                printEmptyLine()
-                let examples = splitExamples(v.info.example)
-                for i, example in examples:
-                    syntaxHighlight(example)
-                    if i!=examples.len - 1:
-                        printEmptyLine()
-                        printLine('.')
-                        printEmptyLine()
-                printEmptyLine()
-                printLine()
+            # if v.info.example.strip()!="" and withExamples:
+            #     echo initialSep & repeat(' ', 36) & "EXAMPLES" & repeat(' ', 36) 
+            #     printLine()
+            #     printEmptyLine()
+            #     let examples = splitExamples(v.info.example)
+            #     for i, example in examples:
+            #         syntaxHighlight(example)
+            #         if i!=examples.len - 1:
+            #             printEmptyLine()
+            #             printLine('.')
+            #             printEmptyLine()
+            #     printEmptyLine()
+            #     printLine()
