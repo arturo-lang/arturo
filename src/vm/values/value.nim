@@ -545,8 +545,7 @@ func newBuiltin*(desc: sink string, modl: sink string, line: int, ar: int8, ag: 
             kind: Function,
             args: ag,
             attrs: at,
-            returns: ret,
-            example: exa
+            returns: ret
         ),
         funcType: VFunction(
             fnKind: BuiltinFunction,
@@ -555,6 +554,7 @@ func newBuiltin*(desc: sink string, modl: sink string, line: int, ar: int8, ag: 
         )
     )
     when defined(DOCGEN):
+        result.info.example = exa
         result.info.line = line
 
 when not defined(NOSQLITE):
