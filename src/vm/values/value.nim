@@ -652,9 +652,7 @@ proc copyValue*(v: Value): Value {.inline.} =
     ## 
     ## **Hint**: extensively use for pointer disambiguation, 
     ## ``new`` and value copying, in general (when needed)
-    
-    # TODO(VM/values/value) add Version support for `copyValue` 
-    #  labels: vm, values, critical, bug
+
     case v.kind:
         of Null:        result = VNULL
         of Logical:     result = newLogical(v.b)
