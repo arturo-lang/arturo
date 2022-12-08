@@ -685,34 +685,6 @@ proc defineSymbols*() =
                     ensureInPlace()
                     InPlaced.s = unicode.align(InPlaced.s, y.i, padding=padding)
 
-    # TODO(Strings/prefix) do we really need that?
-    #  it's literally the exact same as Collections/prepend
-    #  only, just for strings.
-    #  ONLY use in all of the Rosetta Code examples is `string prepend.art`,
-    #  where it could easily be replaced with `prepend`
-    #  labels: library, cleanup, open discussion, critical
-    builtin "prefix",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "add given prefix to string",
-        args        = {
-            "string": {String,Literal},
-            "prefix": {String}
-        },
-        attrs       = NoAttrs,
-        returns     = {String,Nothing},
-        example     = """
-            prefix "ello" "h"                  ; => "hello"
-            ..........
-            str: "ello"
-            prefix 'str                        ; str: "hello"
-        """:
-            #=======================================================
-            if x.kind==String: push(newString(y.s & x.s))
-            else: 
-                ensureInPlace()
-                SetInPlace(newString(y.s & InPlaced.s))
-
     builtin "prefix?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -916,33 +888,6 @@ proc defineSymbols*() =
             else: 
                 ensureInPlace()
                 InPlaced.s = strutils.strip(InPlaced.s, leading, trailing) 
-
-    # TODO(Strings/suffix) do we really need that?
-    #  it's literally the exact same as Collections/append
-    #  only, just for strings.
-    #  NO use at all in any of the Rosetta Code examples!
-    #  labels: library, cleanup, open discussion, critical
-    builtin "suffix",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "add given suffix to string",
-        args        = {
-            "string": {String,Literal},
-            "suffix": {String}
-        },
-        attrs       = NoAttrs,
-        returns     = {String,Nothing},
-        example     = """
-            suffix "hell" "o"                  ; => "hello"
-            ..........
-            str: "hell"
-            suffix 'str                        ; str: "hello"
-        """:
-            #=======================================================
-            if x.kind==String: push(newString(x.s & y.s))
-            else: 
-                ensureInPlace()
-                SetInPlace(newString(InPlaced.s & y.s))
 
     builtin "suffix?",
         alias       = unaliased, 
