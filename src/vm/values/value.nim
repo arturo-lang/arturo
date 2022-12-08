@@ -718,6 +718,9 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Quantity:
             result = newQuantity(copyValue(v.nm), v.unit)
 
+        of Bytecode:
+            result = newBytecode(v.trans)
+
         of Newline:
             echo "found NEWLINE when copying value!"
 
