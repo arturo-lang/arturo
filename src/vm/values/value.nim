@@ -294,6 +294,10 @@ func newVersion*(v: string): Value {.inline.} =
         )
     )
 
+func newVersion*(v: VVersion): Value {.inline, enforceNoRaises.} =
+    ## create Version value from VVersion
+    Value(kind: Version, version: v)
+
 func newType*(t: ValueKind): Value {.inline, enforceNoRaises.} =
     ## create Type (BuiltinType) value from ValueKind
     Value(kind: Type, tpKind: BuiltinType, t: t)
