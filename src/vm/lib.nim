@@ -69,10 +69,10 @@ template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: 
         else:                               
             const argsLen = static args.len
 
-        when defined(NOEXAMPLES):
-            const cleanExample = ""
-        else:
+        when defined(DOCGEN):
             const cleanExample = replace(strutils.strip(example),"\n            ","\n")
+        else:
+            const cleanExample = ""
             
         template moduleName():untyped = static instantiationInfo().filename.replace(".nim")
 
