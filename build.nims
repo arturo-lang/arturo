@@ -67,7 +67,6 @@ let
         "nodev"             : "",
         "nodialogs"         : "-d:NODIALOGS",
         "noerrorlines"      : "-d:NOERRORLINES",
-        "noexamples"        : "-d:NOEXAMPLES",
         "nogmp"             : "-d:NOGMP",
         "noparsers"         : "-d:NOPARSERS",
         "nosqlite"          : "-d:NOSQLITE",
@@ -390,7 +389,7 @@ proc buildPackage*() =
     echo "{GRAY}".fmt
         
     BINARY="{package}".fmt
-    FLAGS="{FLAGS} --forceBuild:on --opt:size -d:NOEXAMPLES -d:NOERRORLINES -d:PORTABLE".fmt
+    FLAGS="{FLAGS} --forceBuild:on --opt:size -d:NOERRORLINES -d:PORTABLE".fmt
     echo r"{GRAY}FLAGS: {FLAGS}".fmt
     echo r""
 
