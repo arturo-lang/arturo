@@ -686,12 +686,13 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Path:        result = newPath(v.p)
         of PathLabel:   result = newPathLabel(v.p)
 
-        of Symbol:      result = newSymbol(v.m)
-        of Color:       result = newColor(v.l)
-        of Date:        result = newDate(v.eobj[])
-        of Binary:      result = newBinary(v.n)
+        of Symbol:          result = newSymbol(v.m)
+        of SymbolLiteral:   result = newSymbolLiteral(v.m)
+        of Color:           result = newColor(v.l)
+        of Date:            result = newDate(v.eobj[])
+        of Binary:          result = newBinary(v.n)
 
-        of Inline:      result = newInline(v.a)
+        of Inline:          result = newInline(v.a)
         of Block:       
             if v.data.isNil: 
                 let newValues = cleanedBlockValuesCopy(v)
