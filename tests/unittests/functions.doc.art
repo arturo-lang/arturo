@@ -38,4 +38,3 @@ print hInf\args
 print hInf\description
 print hInf\attrs
 print hInf\returns
-print hInf\example
