@@ -1116,8 +1116,9 @@ proc defineSymbols*() =
                                 returns.incl(tp.t)
                             ret.info.returns = returns
 
-                    if (let exampleData = y.data.d.getOrDefault("example", nil); not exampleData.isNil):
-                        ret.info.example = exampleData.s
+                    when defined(DOCGEN):
+                        if (let exampleData = y.data.d.getOrDefault("example", nil); not exampleData.isNil):
+                            ret.info.example = exampleData.s
     
             ret.info.args = argTypes
             
