@@ -704,7 +704,11 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Dictionary:  result = newDictionary(v.d[])
         of Object:      result = newObject(v.o[], v.proto)
 
-        of Function:    result = newFunction(v.params, v.main, v.imports, v.exports, v.memoize, v.inline)
+        of Function:    
+            if v.fnKind == UserFunction:
+                result = newFunction(v.params, v.main, v.imports, v.exports, v.memoize, v.inline)
+            else:
+                result = newBuiltin(v.info.descr, v.info.module, 0, v.arity, v.info.args, v.info.attrs, v.info.returns, v.info.example, v.action)
 
         of Database:    
             when not defined(NOSQLITE):
