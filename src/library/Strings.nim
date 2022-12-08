@@ -447,9 +447,37 @@ proc defineSymbols*() =
             # TODO(Strings/match) add better documentation examples
             #  labels: library, documentation, easy
             example     = """
-            print match "hello" "hello"             ; => ["hello"]
-            match "x: 123, y: 456" "[0-9]+"         ; => [123 456]
-            match "this is a string" "[0-9]+"       ; => []
+            match "hello" "hello"                   ; => ["hello"]
+            match "x: 123, y: 456" {/[0-9]+/}       ; => ["123" "456"]
+            match "this is a string" {/[0-9]+/}     ; => []
+            ..........
+            match.once "x: 123, y: 456" {/[0-9]+/}      ; => ["123"]
+            ..........
+            match.count "some words" {/\w+/}        ; => 2
+            ..........
+            match.capture "abc" {/(.)/}             ; => ["a" "b" "c"]
+
+            match.capture "x: 123, y: 456 - z: 789, w: 012" 
+                          {/\w: (\d+), \w: (\d+)/}
+            ; => [["123" "456"] ["789" "012"]]
+            ..........
+            inspect match.capture.named "x: 123, y: 456 - z: 789, w: 012" 
+                                        {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
+            ;[ :block
+            ;    [ :dictionary
+            ;        numA  :		123 :string
+            ;        numB  :		456 :string
+            ;    ]
+            ;    [ :dictionary
+            ;        numA  :		789 :string
+            ;        numB  :		012 :string
+            ;    ]
+            ;]
+            ..........
+            match.bounds "hELlo wORLd" {/[A-Z]+/} 
+            ; => [1..2 7..9]
+            ..........
+            match.in:0..2 "hello" {/l/}             ; => ["l"]
             """:
                 #=======================================================
                 let rgx : VRegex =
