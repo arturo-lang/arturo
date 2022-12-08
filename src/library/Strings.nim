@@ -540,6 +540,13 @@ proc defineSymbols*() =
             # TODO(Strings/match?) add documentation example
             #  labels: library, documentation, easy
             example     = """
+            match? "hello" {/l/}            ; => true
+            match? "hello" {/x/}            ; => false
+
+            match? "hello" "l"              ; => true
+            ..........
+            match?.in:0..1 "hello" {/l/}        ; => false
+            match?.in:2..4 "hello" {/l/}        ; => true
             """:
                 #=======================================================
                 let rgx : VRegex =
