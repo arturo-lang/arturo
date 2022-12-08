@@ -691,27 +691,6 @@ proc defineSymbols*() =
     #  ONLY use in all of the Rosetta Code examples is `string prepend.art`,
     #  where it could easily be replaced with `prepend`
     #  labels: library, cleanup, open discussion, critical
-    builtin "prefix",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "add given prefix to string",
-        args        = {
-            "string": {String,Literal},
-            "prefix": {String}
-        },
-        attrs       = NoAttrs,
-        returns     = {String,Nothing},
-        example     = """
-            prefix "ello" "h"                  ; => "hello"
-            ..........
-            str: "ello"
-            prefix 'str                        ; str: "hello"
-        """:
-            #=======================================================
-            if x.kind==String: push(newString(y.s & x.s))
-            else: 
-                ensureInPlace()
-                SetInPlace(newString(y.s & InPlaced.s))
 
     builtin "prefix?",
         alias       = unaliased, 
