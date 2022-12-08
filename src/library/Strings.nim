@@ -444,8 +444,6 @@ proc defineSymbols*() =
                 "full"      : ({Logical},"get results as an array of match results")
             },
             returns     = {Integer,Block,Dictionary},
-            # TODO(Strings/match) add better documentation examples
-            #  labels: library, documentation, easy
             example     = """
             match "hello" "hello"                   ; => ["hello"]
             match "x: 123, y: 456" {/[0-9]+/}       ; => ["123" "456"]
