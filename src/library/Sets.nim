@@ -89,6 +89,33 @@ proc defineSymbols*() =
             #=======================================================
             push(newLogical(disjoint(toHashSet(cleanedBlock(x.a)), toHashSet(cleanedBlock(y.a)))))
 
+    builtin "intersect?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if given sets intersect (they have at least one common element)",
+        args        = {
+            "setA"  : {Block},
+            "setB"  : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            intersect? @1..10 @8..12
+            ; => true
+
+            intersect? ["one" "two" "three"] ["three" "four" "five"]
+            ; => true
+
+            intersect? ["one" "two" "three"] ["four" "five" "six"]
+            ; => false
+        """:
+            #=======================================================
+            let res = intersection(toHashSet(cleanedBlock(x.a)), toHashSet(cleanedBlock(y.a)))
+            if len(res) >= 0:
+                push(VTRUE)
+            else:
+                push(VFALSE)
+
     builtin "intersection",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
