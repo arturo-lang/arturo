@@ -688,10 +688,11 @@ proc copyValue*(v: Value): Value {.inline.} =
 
         of Symbol:          result = newSymbol(v.m)
         of SymbolLiteral:   result = newSymbolLiteral(v.m)
+        of Regex:           result = newRegex(v.rx)
+        of Quantity:        result = newQuantity(copyValue(v.nm), v.unit)
         of Color:           result = newColor(v.l)
         of Date:            result = newDate(v.eobj[])
         of Binary:          result = newBinary(v.n)
-
         of Inline:          result = newInline(v.a)
         of Block:       
             if v.data.isNil: 
@@ -711,12 +712,6 @@ proc copyValue*(v: Value): Value {.inline.} =
             when not defined(NOSQLITE):
                 if v.dbKind == SqliteDatabase: result = newDatabase(v.sqlitedb)
                 #elif v.dbKind == MysqlDatabase: result = newDatabase(v.mysqldb)
-
-        of Regex:
-            result = newRegex(v.rx)
-
-        of Quantity:
-            result = newQuantity(copyValue(v.nm), v.unit)
 
         of Bytecode:
             result = newBytecode(v.trans)
