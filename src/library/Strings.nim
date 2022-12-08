@@ -537,8 +537,6 @@ proc defineSymbols*() =
                 "in"        : ({Range},"get matches within given range")
             },
             returns     = {Logical},
-            # TODO(Strings/match?) add documentation example
-            #  labels: library, documentation, easy
             example     = """
             match? "hello" {/l/}            ; => true
             match? "hello" {/x/}            ; => false
