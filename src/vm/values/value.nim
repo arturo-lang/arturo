@@ -294,6 +294,10 @@ func newVersion*(v: string): Value {.inline.} =
         )
     )
 
+func newVersion*(v: VVersion): Value {.inline, enforceNoRaises.} =
+    ## create Version value from VVersion
+    Value(kind: Version, version: v)
+
 func newType*(t: ValueKind): Value {.inline, enforceNoRaises.} =
     ## create Type (BuiltinType) value from ValueKind
     Value(kind: Type, tpKind: BuiltinType, t: t)
@@ -381,7 +385,7 @@ func newSymbolLiteral*(m: string): Value {.inline.} =
     newSymbolLiteral(parseEnum[VSymbol](m))
 
 func newQuantity*(nm: Value, unit: VQuantity): Value {.inline, enforceNoRaises.} =
-    ## create Quantity value from numerica value ``nm`` (Value) + ``unit`` (VQuantity)
+    ## create Quantity value from a numerical value ``nm`` (Value) + ``unit`` (VQuantity)
     Value(kind: Quantity, nm: nm, unit: unit)
 
 proc newQuantity*(nm: Value, name: UnitName): Value {.inline.} =
@@ -648,9 +652,7 @@ proc copyValue*(v: Value): Value {.inline.} =
     ## 
     ## **Hint**: extensively use for pointer disambiguation, 
     ## ``new`` and value copying, in general (when needed)
-    
-    # TODO(VM/values/value) add Version support for `copyValue` 
-    #  labels: vm, values, critical, bug
+
     case v.kind:
         of Null:        result = VNULL
         of Logical:     result = newLogical(v.b)
@@ -663,6 +665,7 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Floating:    result = newFloating(v.f)
         of Complex:     result = newComplex(v.z)
         of Rational:    result = newRational(v.rat)
+        of Version:     result = newVersion(v.version)
         of Type:        
             if likely(v.tpKind==BuiltinType):
                 result = newType(v.t)
@@ -681,12 +684,14 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Path:        result = newPath(v.p)
         of PathLabel:   result = newPathLabel(v.p)
 
-        of Symbol:      result = newSymbol(v.m)
-        of Color:       result = newColor(v.l)
-        of Date:        result = newDate(v.eobj[])
-        of Binary:      result = newBinary(v.n)
-
-        of Inline:      result = newInline(v.a)
+        of Symbol:          result = newSymbol(v.m)
+        of SymbolLiteral:   result = newSymbolLiteral(v.m)
+        of Regex:           result = newRegex(v.rx)
+        of Quantity:        result = newQuantity(copyValue(v.nm), v.unit)
+        of Color:           result = newColor(v.l)
+        of Date:            result = newDate(v.eobj[])
+        of Binary:          result = newBinary(v.n)
+        of Inline:          result = newInline(v.a)
         of Block:       
             if v.data.isNil: 
                 let newValues = cleanedBlockValuesCopy(v)
@@ -699,20 +704,21 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Dictionary:  result = newDictionary(v.d[])
         of Object:      result = newObject(v.o[], v.proto)
 
-        of Function:    result = newFunction(v.params, v.main, v.imports, v.exports, v.memoize, v.inline)
+        of Function:    
+            if v.fnKind == UserFunction:
+                result = newFunction(v.params, v.main, v.imports, v.exports, v.memoize, v.inline)
+            else:
+                result = newBuiltin(v.info.descr, v.info.module, 0, v.arity, v.info.args, v.info.attrs, v.info.returns, v.info.example, v.action)
 
         of Database:    
             when not defined(NOSQLITE):
                 if v.dbKind == SqliteDatabase: result = newDatabase(v.sqlitedb)
                 #elif v.dbKind == MysqlDatabase: result = newDatabase(v.mysqldb)
 
-        of Regex:
-            result = newRegex(v.rx)
+        of Bytecode:
+            result = newBytecode(v.trans)
 
-        of Newline:
-            echo "found NEWLINE when copying value!"
-        else: 
-            echo "found UNSUPPORTED value when copying value!: " & $(v.kind)
+        of Newline, Nothing, Any:
             discard
 
 #=======================================
