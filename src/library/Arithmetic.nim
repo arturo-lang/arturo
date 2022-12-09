@@ -55,10 +55,10 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "decrease given value by 1",
         args        = {
-            "value" : {Integer,Floating,Rational,Quantity,Literal}
+            "value" : {Integer,Floating,Complex,Rational,Quantity,Literal}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Rational,Quantity,Nothing},
+        returns     = {Integer,Floating,Complex,Rational,Quantity,Nothing},
         example     = """
             print dec 5        ; 4
             ..........
