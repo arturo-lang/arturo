@@ -48,8 +48,6 @@ proc defineSymbols*() =
             if x.kind==Literal  : ensureInPlace(); InPlaced += y
             else                : push(x+y)
 
-    # TODO(Arithmetic/dec) Should also support complex numbers
-    #  labels: library, enhancement, new feature
     builtin "dec",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -133,8 +131,6 @@ proc defineSymbols*() =
             if x.kind==Literal  : ensureInPlace(); InPlaced //= y
             else                : push(x//y)
 
-    # TODO(Arithmetic/inc) Should also support complex numbers
-    #  labels: library, enhancement, new feature
     builtin "inc",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
