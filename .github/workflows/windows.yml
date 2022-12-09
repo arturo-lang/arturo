@@ -87,7 +87,6 @@ jobs:
         shell: msys2 {0}
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
-          ldd bin/arturo|grep -iv system32|grep -vi windows|grep -v :$  | cut -f2 -d\> | cut -f1 -d\( | tr \\ / |while read a; do ! [ -e "bin/`basename $a`" ] && cp -v "$a" bin/; done
           ./bin/arturo tools/tester.art
 
       - name: Run unit tests (mini)
@@ -95,7 +94,6 @@ jobs:
         shell: msys2 {0}
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
-          ldd bin/arturo|grep -iv system32|grep -vi windows|grep -v :$  | cut -f2 -d\> | cut -f1 -d\( | tr \\ / |while read a; do ! [ -e "bin/`basename $a`" ] && cp -v "$a" bin/; done
           ./bin/arturo tools/tester.art
 
       - name: Create artifact (full)
