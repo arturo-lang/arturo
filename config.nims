@@ -10,7 +10,7 @@ switch("hints","off")
 
 if hostOS=="windows":
     switch("gcc.path", normalizedPath(
-        staticExec("pkg-config --libs-only-L gmp").strip()
+        staticExec("/usr/bin/pkg-config --libs-only-L gmp").strip()
                                                   .replace("-L","")
                                                   .replace("/lib","/bin")
         )
