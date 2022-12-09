@@ -301,7 +301,7 @@ proc compile*(footer=false): int =
     #     FLAGS = """{FLAGS} --passL:"-static """.fmt & staticExec("pkg-config --libs-only-L libcrypto").strip() & """ -lcrypto -Bdynamic" """.fmt
     #     echo FLAGS
     when defined(windows):
-        FLAGS = """{FLAGS}  --passL:"-static-libstdc++ -static-libgcc -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic" --gcc.linkerexe="g++"""".fmt
+        FLAGS = """{FLAGS}  --passL:"-static-libstdc++ -static-libgcc -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic" --gcc.linkerexe="g++"""".fmt
     else:
         FLAGS = """{FLAGS} --passL:"-lpthread -lm"""".fmt
     # let's go for it
