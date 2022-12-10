@@ -38,6 +38,7 @@ v0.9.82
 - Arithmetic\dec: added support for Complex numbers
 - Arithmetic\inc: added support for Complex numbers
 - Arithmetic\mod: added support for floating number modulo operations
+- Arithmetic\pow: added support for Rational numbers
 - Collections\chop: fixed to also work with empty blocks
 - Collections\combine: renamed to `couple`
 - Collections\contains?: added `.at:` option & `:char` support for string searches
