@@ -1830,6 +1830,12 @@ proc `^`*(x: Value, y: Value): Value =
                     else: return VNULL
                 elif y.kind==Floating: return newComplex(pow(x.z,y.f))
                 else: return newComplex(pow(x.z,y.z))
+            elif x.kind==Rational:
+                if y.kind==Integer:
+                    if likely(y.iKind==NormalInteger): return newRational(safePow(x.num,y.i),safePow(x.den,y.i))
+                    else: return VNULL
+                elif y.kind==Floating: return newRational(pow(float(x.num), y.f) / pow(float(x.den), y.f))
+                else: return VNULL
             else:
                 if y.kind==Floating: 
                     if likely(x.iKind==NormalInteger):
@@ -1885,6 +1891,12 @@ proc `^=`*(x: var Value, y: Value) =
                     else: discard
                 elif y.kind==Floating: x = newComplex(pow(x.z,y.f))
                 else: x = newComplex(pow(x.z,y.z))
+            elif x.kind==Rational:
+                if y.kind==Integer:
+                    if likely(y.iKind==NormalInteger): x = newRational(safePow(x.num,y.i),safePow(x.den,y.i))
+                    else: discard
+                elif y.kind==Floating: x = newRational(pow(float(x.num), y.f) / pow(float(x.den), y.f))
+                else: discard
             else:
                 if y.kind==Floating:
                     if likely(x.iKind==NormalInteger):
