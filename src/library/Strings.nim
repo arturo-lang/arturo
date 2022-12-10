@@ -950,6 +950,33 @@ proc defineSymbols*() =
             else:
                 push(newLogical(x.s.endsWith(y.s)))
 
+    builtin "translate",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "takes a dictionary of translations and replaces each instance sequentially",
+        args        = {
+            "string"        : {String, Literal},
+            "translations"  : {Dictionary}
+        },
+        attrs       = NoAttrs,
+        returns     = {String,Nothing},
+        example     = """
+            print translate "the brown fox jumped over the lazy dog" #[
+                brown: "green" 
+                fox: "wolf" 
+                jumped:"flew" 
+                dog:"cat"
+            ]
+            ; the green wolf flew over the lazy cat
+        """:
+            #=======================================================
+            let replacements = (toSeq(y.d.pairs)).map((w) => (w[0], w[1].s))
+
+            if x.kind==String:
+                push(newString(x.s.multiReplace(replacements)))
+            else:
+                ensureInPlace()
+                InPlaced.s = InPlaced.s.multiReplace(replacements)
 
     builtin "truncate",
         alias       = unaliased, 
