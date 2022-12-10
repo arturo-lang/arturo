@@ -30,7 +30,7 @@ v0.9.82
 - Paths: added new `absolute?` method
 - Reflection: added new `bytecode?`, `color?`, `complex?`, `object?`, `quantity?`, `rational?`, `range?` & `version?` predicates
 - Sets: added new `disjoint?` method
-- Strings: added new `alphabet` & `match?` methods
+- Strings: added new `alphabet`, `match?` & `translate` methods
 - System: added new `superuser?` predicate
 
 **Enhancements, Changes & Fixes**
