@@ -1760,8 +1760,7 @@ proc `/%=`*(x: var Value, y: Value) =
 
 proc `^`*(x: Value, y: Value): Value =
     ## perform the power operation between given values
-    ## 
-    if not (x.kind in {Integer, Floating}) or not (y.kind in {Integer, Floating}):
+    if not (x.kind in {Integer, Floating, Complex, Rational}) or not (y.kind in {Integer, Floating}):
         if x.kind == Quantity:
             if y.kind==Integer and (y.i > 0 and y.i < 4):
                 if y.i == 1: return x
@@ -1850,7 +1849,7 @@ proc `^=`*(x: var Value, y: Value) =
     ## and store the result in the first value
     ## 
     ## **Hint:** In-place, mutation operation
-    if not (x.kind in {Integer, Floating}) or not (y.kind in {Integer, Floating}):
+    if not (x.kind in {Integer, Floating, Complex, Rational}) or not (y.kind in {Integer, Floating}):
         if x.kind == Quantity:
             if y.kind==Integer and (y.i > 0 and y.i < 4):
                 if y.i == 1: discard
