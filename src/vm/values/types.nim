@@ -23,7 +23,7 @@ when defined(WEB):
 when not defined(NOGMP):
     import helpers/bignums
 
-import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vsymbol, vversion]
+import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vsocket, vsymbol, vversion]
 import vm/values/flags
 
 #=======================================
@@ -92,11 +92,12 @@ type
         Block           = 28
         Range           = 29
         Database        = 30
-        Bytecode        = 31
+        Socket          = 31    
+        Bytecode        = 32
 
-        Newline         = 32
-        Nothing         = 33
-        Any             = 34
+        Newline         = 33
+        Nothing         = 34
+        Any             = 35
 
     ValueSpec* = set[ValueKind]
 
@@ -243,6 +244,8 @@ type
                             sqlitedb*: sqlite.DbConn
                     of MysqlDatabase: discard
                     #mysqldb*: mysql.DbConn
+            of Socket:
+                sock: VSocket
             of Bytecode:
                 trans*: Translation
 
