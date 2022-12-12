@@ -145,7 +145,8 @@ proc `$`*(v: Value): string {.inline.} =
         of Socket:
             # TODO(VM/values/printable) added proper `$` overload support for Socket values
             #  labels: enhancement, value
-            result = "<socket>()"
+            when not defined(WEB):
+                result = "<socket>()"
 
         of Bytecode:
             result = "<bytecode>" & "(" & fmt("{cast[ByteAddress](v):#X}") & ")"
@@ -359,7 +360,8 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
         of Socket       : 
             # TODO(VM/values/printable) added proper `dump` support for Socket values
             #  labels: enhancement, value
-            stdout.write fmt("[socket] {cast[ByteAddress](v.sock):#X}")
+            when not defined(WEB):
+                stdout.write fmt("[socket] {cast[ByteAddress](v.sock):#X}")
 
         of Bytecode     : 
             dumpBlockStart(v)
