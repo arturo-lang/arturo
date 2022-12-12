@@ -361,7 +361,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             # TODO(VM/values/printable) added proper `dump` support for Socket values
             #  labels: enhancement, value
             when not defined(WEB):
-                stdout.write fmt("[socket] {cast[ByteAddress](v.sock):#X}")
+                dumpPrimitive($(v.sock), v)
 
         of Bytecode     : 
             dumpBlockStart(v)
