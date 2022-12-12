@@ -245,7 +245,7 @@ type
                     of MysqlDatabase: discard
                     #mysqldb*: mysql.DbConn
             of Socket:
-                sock: VSocket
+                sock*: VSocket
             of Bytecode:
                 trans*: Translation
 
