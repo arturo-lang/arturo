@@ -20,7 +20,7 @@
 #=======================================
 
 when not defined(WEB):
-    import std/net as netSockets
+    import std/net as netsock except Socket
     import nativesockets
 
     import vm/lib
@@ -41,7 +41,7 @@ proc defineSymbols*() =
         attrs       = {
             "blocking"  : ({String},"set blocking mode (default: false)")
         },
-        returns     = {Nothing},
+        returns     = {Socket},
         example     = """
         """:
             #=======================================================
@@ -49,7 +49,7 @@ proc defineSymbols*() =
 
             let blocking = hadAttr("blocking")
 
-            var socket: Socket = netSockets.newSocket()
+            var socket: netsock.Socket = netsock.newSocket()
             socket.setSockOpt(OptReuseAddr, true)
             
             socket.getFd().setBlocking(blocking)
