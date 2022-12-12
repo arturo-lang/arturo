@@ -141,6 +141,11 @@ proc `$`*(v: Value): string {.inline.} =
             when not defined(NOSQLITE):
                 if v.dbKind==SqliteDatabase: result = fmt("<database>({cast[ByteAddress](v.sqlitedb):#X})")
                 #elif v.dbKind==MysqlDatabase: result = fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
+        
+        of Socket:
+            # TODO(VM/values/printable) added proper `$` overload support for Socket values
+            #  labels: enhancement, value
+            result = "<socket>()"
 
         of Bytecode:
             result = "<bytecode>" & "(" & fmt("{cast[ByteAddress](v):#X}") & ")"
@@ -350,7 +355,12 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             when not defined(NOSQLITE):
                 if v.dbKind==SqliteDatabase: stdout.write fmt("[sqlite db] {cast[ByteAddress](v.sqlitedb):#X}")
                 #elif v.dbKind==MysqlDatabase: stdout.write fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
-        
+
+        of Socket       : 
+            # TODO(VM/values/printable) added proper `dump` support for Socket values
+            #  labels: enhancement, value
+            stdout.write fmt("[socket] {cast[ByteAddress](v.sock):#X}")
+
         of Bytecode     : 
             dumpBlockStart(v)
 
