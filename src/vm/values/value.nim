@@ -16,9 +16,12 @@
 # Libraries
 #=======================================
 
-import hashes, lenientops
-import macros, math, sequtils, strutils
+import hashes, lenientops, macros
+import math, sequtils, strutils
 import sugar, tables, times, unicode
+
+when not defined(WEB):
+    import net except Socket
 
 when not defined(NOSQLITE):
     import db_sqlite as sqlite
@@ -561,6 +564,11 @@ when not defined(NOSQLITE):
     proc newDatabase*(db: sqlite.DbConn): Value {.inline.} =
         ## create Database value from DbConn
         Value(kind: Database, dbKind: SqliteDatabase, sqlitedb: db)
+
+when not defined(WEB):
+    proc newSocket*(sock: net.Socket): Value {.inline.} =
+        ## create Socket value from Socket
+        Value(kind: Socket, sock: initSocket(sock))
 
 # proc newDatabase*(db: mysql.DbConn): Value {.inline.} =
 #     Value(kind: Database, dbKind: MysqlDatabase, mysqldb: db)
