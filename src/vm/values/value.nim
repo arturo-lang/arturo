@@ -33,7 +33,7 @@ when not defined(NOGMP):
 when not defined(WEB):
     import vm/errors
 
-import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vsymbol, vversion]
+import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vsocket, vsymbol, vversion]
 
 import vm/values/clean
 import vm/values/types
@@ -2467,7 +2467,7 @@ func hash*(v: Value): Hash {.inline.}=
                 #elif v.dbKind==MysqlDatabase: result = cast[Hash](cast[ByteAddress](v.mysqldb))
 
         of Socket:
-            result = hash(v.sock[])
+            result = hash(v.sock)
 
         of Bytecode:
             result = cast[Hash](unsafeAddr v)
