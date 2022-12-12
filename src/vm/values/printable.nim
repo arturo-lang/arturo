@@ -27,7 +27,7 @@ import vm/opcodes
 import vm/values/value
 import vm/values/clean
 
-import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vversion]
+import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vsocket, vversion]
 
 #=======================================
 # Helpers
@@ -146,7 +146,7 @@ proc `$`*(v: Value): string {.inline.} =
             # TODO(VM/values/printable) added proper `$` overload support for Socket values
             #  labels: enhancement, value
             when not defined(WEB):
-                result = "<socket>()"
+                result = "<socket>(" & $(v.sock) & ")"
 
         of Bytecode:
             result = "<bytecode>" & "(" & fmt("{cast[ByteAddress](v):#X}") & ")"
