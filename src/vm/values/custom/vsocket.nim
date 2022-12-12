@@ -45,7 +45,12 @@ when not defined(WEB):
         result = !$ result
 
     func `$`*(b: VSocket): string  {.enforceNoRaises.} =
-        ""
+        if b.protocol == TCP:
+            result = "tcp://"
+        else:
+            result = "udp://"
+
+        result &= b.address & ":" & $b.port
 
     #=======================================
     # Methods
