@@ -718,6 +718,11 @@ proc copyValue*(v: Value): Value {.inline.} =
                 if v.dbKind == SqliteDatabase: result = newDatabase(v.sqlitedb)
                 #elif v.dbKind == MysqlDatabase: result = newDatabase(v.mysqldb)
 
+        of Socket:
+            # TODO(VM/values/value) missing Socket support for `copyValue`
+            #  labels: bug, values
+            discard
+
         of Bytecode:
             result = newBytecode(v.trans)
 
