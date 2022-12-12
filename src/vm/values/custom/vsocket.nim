@@ -20,7 +20,14 @@ when not defined(WEB):
     #=======================================
 
     type 
-        VSocket* = Socket
+        SocketProtocol* = enum
+            TCP, UDP
+
+        VSocket* = ref object
+            socket*: Socket
+            address*: string
+            protocol*: SocketProtocol
+            port*: int
 
     #=======================================
     # Constants
@@ -31,8 +38,11 @@ when not defined(WEB):
     #=======================================
 
     proc hash*(a: VSocket): Hash {.inline.} = 
-        hash(a.getFD())
-
+        result = 1
+        result = result !& hash(a.address)
+        result = result !& hash(a.protocol)
+        result = result !& hash(a.port)
+        result = !$ result
 
     func `$`*(b: VSocket): string  {.enforceNoRaises.} =
         ""
@@ -40,3 +50,11 @@ when not defined(WEB):
     #=======================================
     # Methods
     #=======================================
+
+    proc initSocket*(sock: Socket): VSocket {.inline.} =
+        result = VSocket(
+            socket: sock,
+            address: "",
+            protocol: TCP,
+            port: 0
+        )
