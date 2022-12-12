@@ -56,7 +56,7 @@ proc defineSymbols*() =
             socket.bindAddr(Port(x.i))
             socket.listen()
 
-            discard
+            push newSocket(socket)
 
 #=======================================
 # Add Library
