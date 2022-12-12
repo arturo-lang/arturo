@@ -161,6 +161,7 @@ when defined(WEB):
                Rational,
                Function,
                Database,
+               Socket,
                Bytecode,
                Nothing,
                Newline,
