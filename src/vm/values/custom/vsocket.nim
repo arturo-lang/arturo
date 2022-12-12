@@ -12,14 +12,14 @@
 # Libraries
 #=======================================
 
-import net
+import hashes, net
 
 #=======================================
 # Types
 #=======================================
 
 type 
-    VSocket* = distinct Socket
+    VSocket* = Socket
 
 #=======================================
 # Constants
@@ -29,12 +29,13 @@ type
 # Overloads
 #=======================================
 
-proc `==`*(a, b: VSocket): bool {.borrow.}
-
-#=======================================
-# Methods
-#=======================================
+proc hash*(a: VSocket): Hash {.inline.} = 
+    hash(a.getFD())
 
 
 func `$`*(b: VSocket): string  {.enforceNoRaises.} =
     ""
+
+#=======================================
+# Methods
+#=======================================
