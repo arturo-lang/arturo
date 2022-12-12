@@ -19,9 +19,11 @@
 # Libraries
 #=======================================
 
-import net
+when not defined(WEB):
+    import std/net as netSockets
+    import nativesockets
 
-import vm/lib
+    import vm/lib
 
 #=======================================
 # Methods
@@ -29,21 +31,31 @@ import vm/lib
 
 proc defineSymbols*() =
         
-    builtin "download",
+    builtin "listen",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "download file from url to disk",
+        description = "Start listening on given port and return corresponding socket",
         args        = {
-            "url"   : {String}
+            "port"  : {Integer}
         },
         attrs       = {
-            "as"    : ({String},"set target file")
+            "blocking"  : ({String},"set blocking mode (default: false)")
         },
         returns     = {Nothing},
         example     = """
         """:
             #=======================================================
             when defined(SAFE): RuntimeError_OperationNotPermitted("")
+
+            let blocking = hadAttr("blocking")
+
+            var socket: Socket = netSockets.newSocket()
+            socket.setSockOpt(OptReuseAddr, true)
+            
+            socket.getFd().setBlocking(blocking)
+            socket.bindAddr(Port(x.i))
+            socket.listen()
+
             discard
 
 #=======================================
