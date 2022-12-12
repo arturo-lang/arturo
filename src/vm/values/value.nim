@@ -2466,6 +2466,9 @@ func hash*(v: Value): Hash {.inline.}=
                 if v.dbKind==SqliteDatabase: result = cast[Hash](cast[ByteAddress](v.sqlitedb))
                 #elif v.dbKind==MysqlDatabase: result = cast[Hash](cast[ByteAddress](v.mysqldb))
 
+        of Socket:
+            result = hash(v.sock[])
+
         of Bytecode:
             result = cast[Hash](unsafeAddr v)
 
