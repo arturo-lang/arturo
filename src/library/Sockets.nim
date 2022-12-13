@@ -37,7 +37,7 @@ when not defined(WEB):
 proc defineSymbols*() =
     
     when not defined(WEB):
-        
+
         builtin "accept",
             alias       = unaliased, 
             rule        = PrefixPrecedence,
@@ -134,6 +134,24 @@ proc defineSymbols*() =
                 let socket = initSocket(sock, proto=protocol, address=address, port=port)
 
                 push newSocket(socket)
+
+        builtin "send",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "send given message to selected socket",
+            args        = {
+                "destination"   : {Socket},
+                "message"       : {String}    
+            },
+            attrs       = NoAttrs,
+            returns     = {Nothing},
+            example     = """
+            """:
+                #=======================================================
+                when defined(SAFE): RuntimeError_OperationNotPermitted("send")
+
+                x.sock.socket.send(y.s)
+                
     else:
         discard
 
