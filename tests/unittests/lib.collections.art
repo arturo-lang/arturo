@@ -172,7 +172,7 @@ do [
 
 print ""
 
-; -- empty
+; -- 'empty
 do [
 
     a: ["Arturo" "C" "Python" "Ruby"]
