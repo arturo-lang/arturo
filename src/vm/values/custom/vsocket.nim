@@ -22,7 +22,6 @@ when not defined(WEB):
     type 
         VSocket* = ref object
             socket*: Socket
-            local*: bool
             address*: string
             protocol*: Protocol
             port*: int
@@ -59,13 +58,7 @@ when not defined(WEB):
     # Methods
     #=======================================
 
-    proc initSocket*(sock: Socket, proto: Protocol, local: bool): VSocket {.inline.} =
-        var address: string
-        var port: Port 
-
-        if local: (address,port) = getLocalAddr(sock)
-        else: (address,port) = getPeerAddr(sock)
-
+    proc initSocket*(sock: Socket, proto: Protocol, address: string, port: Port): VSocket {.inline.} =
         result = VSocket(
             socket: sock,
             address: address,
