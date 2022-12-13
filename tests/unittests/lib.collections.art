@@ -503,3 +503,25 @@ do [
     print in? fruit table
 
 ]
+
+print ""
+
+; -- 'set
+do [
+
+    myDict: #[
+        name: "John"
+        age: 34
+    ]
+
+    ; Is not working
+    ; set myDict 'name "Michael"
+    ; debug name
+
+    myDict\"name": "Christian"
+    debug name
+
+    arr: [1 2 3 4]
+    set arr 0 "one", debug arr
+
+]
