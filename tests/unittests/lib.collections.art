@@ -358,3 +358,13 @@ do [
     debug min ["Granada" "Manchester" "Boston"]
 
 ]
+
+print ""
+
+; -- 'permutate
+do [
+
+    debug permutate [A B C]
+    debug permutate [[1 2 3] [4 5 6]]
+
+]
