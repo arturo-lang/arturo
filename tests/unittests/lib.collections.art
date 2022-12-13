@@ -556,7 +556,7 @@ do [
 
 print ""
 
-; -- slice
+; -- 'slice
 do [
 
     debug slice "Arturo" 0 2
