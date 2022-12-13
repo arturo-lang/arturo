@@ -267,4 +267,11 @@ do [
     debug get d 'day
     debug get d 'Month
 
+    name: "John Doe"
+    namesInitial: get name 0
+    surnamesInitial: get name 5
+
+    debug namesInitial
+    debug surnamesInitial
+
 ]
