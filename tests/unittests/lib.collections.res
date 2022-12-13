@@ -82,3 +82,9 @@ zero :string
 January :string
 J :char
 D :char
+
+1 :integer
+2 :integer
+null :null
+name :string
+surname :string
