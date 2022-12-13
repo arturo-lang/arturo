@@ -169,3 +169,28 @@ do [
     drop 'b 3, debug b
 
 ]
+
+print ""
+
+; -- empty
+do [
+
+    a: ["Arturo" "C" "Python" "Ruby"]
+    b: [1 2 3 4 5 6 7 8 9 10]
+    c: ['north 'south 'east 'west]
+
+    print "before empty"
+    debug a
+    debug b
+    debug c
+
+    empty 'a
+    empty 'b
+    empty 'c
+
+    print "after empty"
+    debug a
+    debug b
+    debug c
+
+]

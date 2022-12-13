@@ -46,3 +46,12 @@ turo :string
 turo :string
 [1 2 3 4 5] :block
 [1 2 3 4 5] :block
+
+before empty
+[Arturo C Python Ruby] :block
+[1 2 3 4 5 6 7 8 9 10] :block
+[north south east west] :block
+after empty
+[] :block
+[] :block
+[] :block
