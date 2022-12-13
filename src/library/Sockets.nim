@@ -23,6 +23,8 @@ when not defined(WEB):
     import std/net as netsock except Socket
     import nativesockets
 
+import vm/values/custom/[vsocket]
+
 import vm/lib
 
 #=======================================
@@ -35,12 +37,13 @@ proc defineSymbols*() =
         builtin "listen",
             alias       = unaliased, 
             rule        = PrefixPrecedence,
-            description = "Start listening on given port and return corresponding socket",
+            description = "Start listening on given port and return corresponding TCP socket",
             args        = {
                 "port"  : {Integer}
             },
             attrs       = {
-                "blocking"  : ({String},"set blocking mode (default: false)")
+                "blocking"  : ({String},"set blocking mode (default: false)"),
+                "udp"       : ({Logical},"use UDP instead of TCP")
             },
             returns     = {Socket},
             example     = """
@@ -49,13 +52,18 @@ proc defineSymbols*() =
                 when defined(SAFE): RuntimeError_OperationNotPermitted("")
 
                 let blocking = hadAttr("blocking")
+                let protocol = 
+                    if hadAttr("udp"): IPPROTO_UDP
+                    else: IPPROTO_TCP
 
-                var socket: netsock.Socket = netsock.newSocket()
-                socket.setSockOpt(OptReuseAddr, true)
+                var sock: netsock.Socket = netsock.newSocket(protocol=protocol)
+                sock.setSockOpt(OptReuseAddr, true)
                 
-                socket.getFd().setBlocking(blocking)
-                socket.bindAddr(Port(x.i))
-                socket.listen()
+                sock.getFd().setBlocking(blocking)
+                sock.bindAddr(Port(x.i))
+                sock.listen()
+
+                let socket = initSocket(sock, proto=protocol, local=true)
 
                 push newSocket(socket)
     else:
