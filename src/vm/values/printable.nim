@@ -146,7 +146,7 @@ proc `$`*(v: Value): string {.inline.} =
             # TODO(VM/values/printable) added proper `$` overload support for Socket values
             #  labels: enhancement, value
             when not defined(WEB):
-                result = "<socket>(" & $(v.sock) & ")"
+                result = $(v.sock)
 
         of Bytecode:
             result = "<bytecode>" & "(" & fmt("{cast[ByteAddress](v):#X}") & ")"
