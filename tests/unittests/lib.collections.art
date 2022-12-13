@@ -194,3 +194,14 @@ do [
     debug c
 
 ]
+
+print ""
+
+; -- 'extend
+do [
+
+    person: #[ name: "john" surname: "doe" ]
+    debug person
+    debug extend person #[ age: 35 ]
+
+]
