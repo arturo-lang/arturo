@@ -49,12 +49,53 @@ proc defineSymbols*() =
             example     = """
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("")
+                when defined(SAFE): RuntimeError_OperationNotPermitted("accept")
 
                 var client: netsock.Socket
                 x.sock.socket.accept(client)
 
-                let socket = initSocket(client, proto=x.sock.protocol, local=false)
+                let (address,port) = getPeerAddr(client)
+
+                let socket = initSocket(client, proto=x.sock.protocol, address=address, port=port)
+
+                push newSocket(socket)
+
+        builtin "connect",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "create new socket connection to given server port",
+            args        = {
+                "port"  : {Integer}
+            },
+            attrs       = {
+                "to"        : ({String},"set socket address"),
+                "udp"       : ({Logical},"use UDP instead of TCP")
+            },
+            returns     = {Socket},
+            example     = """
+            """:
+                #=======================================================
+                when defined(SAFE): RuntimeError_OperationNotPermitted("connect")
+
+                let isUDP = hadAttr("udp")
+
+                let protocol = 
+                    if isUDP: IPPROTO_UDP
+                    else: IPPROTO_TCP
+
+                var toAddress: string  
+                if checkAttr("to"):
+                    toAddress = aTo.s
+                else:
+                    toAddress = "0.0.0.0"
+
+                var port = Port(x.i)
+
+                var sock: netsock.Socket = netsock.newSocket(protocol=protocol)
+                if not isUDP:
+                    sock.connect(toAddress, port)
+
+                let socket = initSocket(sock, proto=protocol, address=toAddress, port=port)
 
                 push newSocket(socket)
 
@@ -73,7 +114,7 @@ proc defineSymbols*() =
             example     = """
             """:
                 #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("")
+                when defined(SAFE): RuntimeError_OperationNotPermitted("listen")
 
                 let blocking = hadAttr("blocking")
                 let protocol = 
@@ -87,7 +128,9 @@ proc defineSymbols*() =
                 sock.bindAddr(Port(x.i))
                 sock.listen()
 
-                let socket = initSocket(sock, proto=protocol, local=true)
+                let (address,port) = getLocalAddr(sock)
+
+                let socket = initSocket(sock, proto=protocol, address=address, port=port)
 
                 push newSocket(socket)
     else:
