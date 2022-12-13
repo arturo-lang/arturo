@@ -348,3 +348,13 @@ do [
     debug max ["Granada" "Manchester" "Boston"]
 
 ]
+
+print ""
+
+; -- 'min
+do [
+
+    debug min [4 2 8 5 1 9]
+    debug min ["Granada" "Manchester" "Boston"]
+
+]
