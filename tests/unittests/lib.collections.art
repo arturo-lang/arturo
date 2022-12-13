@@ -137,3 +137,20 @@ do [
     chop 'd, debug d
 
 ]
+
+print ""
+
+; -- 'combine
+do [
+
+    ; With the same amount
+    debug combine ["one" "two" "three"] [1 2 3]
+
+    ; With different amounts
+    bigger: ["one" "two" "three" "I'm out"]
+    smaller: [1 2 3]
+
+    debug combine bigger smaller
+    debug combine smaller bigger
+
+]
