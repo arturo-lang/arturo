@@ -55,3 +55,6 @@ after empty
 [] :block
 [] :block
 [] :block
+
+[name:john surname:doe] :dictionary
+[name:john surname:doe age:35] :dictionary
