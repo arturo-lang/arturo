@@ -21,7 +21,7 @@
 
 when not defined(WEB):
     import algorithm, asyncdispatch, browsers, httpclient
-    import httpcore, os, smtp, strformat
+    import httpcore, std/net, os, smtp, strformat
     import strutils, times, uri
 
     import helpers/jsonobject
@@ -144,17 +144,18 @@ proc defineSymbols*() =
                 "data"  : {Dictionary, Null}
             },
             attrs       = {
-                "get"       : ({Logical},"perform a GET request (default)"),
-                "post"      : ({Logical},"perform a POST request"),
-                "patch"     : ({Logical},"perform a PATCH request"),
-                "put"       : ({Logical},"perform a PUT request"),
-                "delete"    : ({Logical},"perform a DELETE request"),
-                "json"      : ({Logical},"send data as Json"),
-                "headers"   : ({Dictionary},"send custom HTTP headers"),
-                "agent"     : ({String},"use given user agent"),
-                "timeout"   : ({Integer},"set a timeout"),
-                "proxy"     : ({String},"use given proxy url"),
-                "raw"       : ({Logical},"return raw response without processing")
+                "get"           : ({Logical},"perform a GET request (default)"),
+                "post"          : ({Logical},"perform a POST request"),
+                "patch"         : ({Logical},"perform a PATCH request"),
+                "put"           : ({Logical},"perform a PUT request"),
+                "delete"        : ({Logical},"perform a DELETE request"),
+                "json"          : ({Logical},"send data as Json"),
+                "headers"       : ({Dictionary},"send custom HTTP headers"),
+                "agent"         : ({String},"use given user agent"),
+                "timeout"       : ({Integer},"set a timeout"),
+                "proxy"         : ({String},"use given proxy url"),
+                "certificate"   : ({String},"use SSL certificate at given path"),
+                "raw"           : ({Logical},"return raw response without processing")
             },
             returns     = {Dictionary},
             example     = """
@@ -239,10 +240,24 @@ proc defineSymbols*() =
                             parts.add(k & "=" & urlencode($(v)))
                         url &= "?" & parts.join("&")
 
-                let client = newHttpClient(userAgent = agent,
-                                        proxy = proxy, 
-                                        timeout = timeout,
-                                        headers = headers)
+                var client: HttpClient
+
+                if checkAttr("certificate"):
+                    let certificate = aCertificate.s
+                    client = newHttpClient(
+                        userAgent = agent,
+                        sslContext = newContext(certFile=certificate),
+                        proxy = proxy, 
+                        timeout = timeout,
+                        headers = headers
+                    )
+                else:
+                    client = newHttpClient(
+                        userAgent = agent,
+                        proxy = proxy, 
+                        timeout = timeout,
+                        headers = headers
+                    )
 
                 let response = client.request(url = url,
                                             httpMethod = meth,
