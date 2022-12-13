@@ -37,6 +37,7 @@ when not defined(WEB):
 proc defineSymbols*() =
     
     when not defined(WEB):
+        
         builtin "accept",
             alias       = unaliased, 
             rule        = PrefixPrecedence,
