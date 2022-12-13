@@ -135,6 +135,33 @@ proc defineSymbols*() =
 
                 push newSocket(socket)
 
+        builtin "receive",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "receive line of data from selected socket",
+            args        = {
+                "origin"    : {Socket}  
+            },
+            attrs       = {
+                "size"      : ({Integer},"set maximum size of received data"),
+                "timeout"   : ({Integer},"set timeout (in milliseconds)")
+            },
+            returns     = {String},
+            example     = """
+            """:
+                #=======================================================
+                when defined(SAFE): RuntimeError_OperationNotPermitted("receive")
+
+                var size = MaxLineLength
+                if checkAttr("size"):
+                    size = aSize.i
+
+                var timeout = -1
+                if checkAttr("timeout"):
+                    timeout = aTimeout.i
+
+                push newString(x.sock.socket.recvLine(timeout=timeout, maxLength=size))
+
         builtin "send",
             alias       = unaliased, 
             rule        = PrefixPrecedence,
