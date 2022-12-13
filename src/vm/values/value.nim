@@ -566,9 +566,9 @@ when not defined(NOSQLITE):
         Value(kind: Database, dbKind: SqliteDatabase, sqlitedb: db)
 
 when not defined(WEB):
-    proc newSocket*(sock: net.Socket): Value {.inline.} =
+    proc newSocket*(sock: VSocket): Value {.inline.} =
         ## create Socket value from Socket
-        Value(kind: Socket, sock: initSocket(sock))
+        Value(kind: Socket, sock: sock)
 
 # proc newDatabase*(db: mysql.DbConn): Value {.inline.} =
 #     Value(kind: Database, dbKind: MysqlDatabase, mysqldb: db)
