@@ -324,3 +324,17 @@ do [
 
     debug keys user
 ]
+
+
+print ""
+
+; -- 'last
+do [
+
+    debug last "Arturo"
+    debug last.n: 3 "Arturo"
+
+    debug last ["one" "two" "three"]
+    debug last.n: 2 ["one" "two" "three"]
+
+]
