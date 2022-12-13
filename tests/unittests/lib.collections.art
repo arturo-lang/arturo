@@ -154,3 +154,18 @@ do [
     debug combine smaller bigger
 
 ]
+
+print ""
+
+; -- 'drop
+do [
+
+    a: "Arturo"
+    debug drop "Arturo" 2
+    drop 'a 2, debug a
+
+    b: [ 4 3 2 1 2 3 4 5 ]
+    debug drop [ 4 3 2 1 2 3 4 5 ] 3
+    drop 'b 3, debug b
+
+]
