@@ -27,6 +27,9 @@ import vm/values/custom/[vsocket]
 
 import vm/lib
 
+when not defined(WEB):
+    import vm/errors
+
 #=======================================
 # Methods
 #=======================================
