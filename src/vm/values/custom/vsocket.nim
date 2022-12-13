@@ -20,14 +20,11 @@ when not defined(WEB):
     #=======================================
 
     type 
-        SocketProtocol* = enum
-            TCP, UDP
-
         VSocket* = ref object
             socket*: Socket
             local*: bool
             address*: string
-            protocol*: SocketProtocol
+            protocol*: Protocol
             port*: int
 
     #=======================================
@@ -46,7 +43,7 @@ when not defined(WEB):
         result = !$ result
 
     func `$`*(b: VSocket): string  {.enforceNoRaises.} =
-        if b.protocol == TCP:
+        if b.protocol == IPPROTO_TCP:
             result = "tcp://"
         else:
             result = "udp://"
@@ -64,14 +61,7 @@ when not defined(WEB):
 
     proc initSocket*(sock: Socket, proto: Protocol, local: bool): VSocket {.inline.} =
         var address: string
-        var port: Port
-        var protocol: SocketProtocol
-
-        case proto:
-            of IPPROTO_TCP: protocol = TCP
-            of IPPROTO_UDP: protocol = UDP
-            else:
-                discard     
+        var port: Port 
 
         if local: (address,port) = getLocalAddr(sock)
         else: (address,port) = getPeerAddr(sock)
@@ -79,6 +69,6 @@ when not defined(WEB):
         result = VSocket(
             socket: sock,
             address: address,
-            protocol: protocol,
+            protocol: proto,
             port: int(port)
         )
