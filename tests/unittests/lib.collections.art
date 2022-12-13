@@ -338,3 +338,13 @@ do [
     debug last.n: 2 ["one" "two" "three"]
 
 ]
+
+print ""
+
+; -- 'max
+do [
+
+    debug max [4 2 8 5 1 9]
+    debug max ["Granada" "Manchester" "Boston"]
+
+]
