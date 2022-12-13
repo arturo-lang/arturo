@@ -236,3 +236,35 @@ do [
     debug flatten.once [1 [2 3] [4 [5 6]]]
 
 ]
+
+print ""
+
+; -- 'get
+do [
+
+    user: #[
+        name: "John"
+        surname: "Doe"
+    ]
+
+    debug user\name
+    debug user\["name"]
+    debug get user 'name
+    debug get user 'surname
+    debug user\["surname"]
+
+    user\name: "Jane"
+    debug get user 'name
+
+    arr: ["zero" "one" "two"]
+    debug arr\0
+    debug get arr 0
+
+    arr\[0]: "first"
+    debug arr
+
+    d: to :date .format: "MMM dd" "Jan 15"
+    debug get d 'day
+    debug get d 'Month
+
+]

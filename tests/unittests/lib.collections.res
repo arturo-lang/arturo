@@ -68,3 +68,15 @@ one :string
 [[1 2 3] [4 5 6]] :block
 [1 2 3 4 5 6] :block
 [1 2 3 4 [5 6]] :block
+
+John :string
+John :string
+John :string
+Doe :string
+Doe :string
+Jane :string
+zero :string
+zero :string
+[first one two] :block
+15 :integer
+January :string
