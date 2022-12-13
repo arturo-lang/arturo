@@ -95,38 +95,38 @@ proc defineSymbols*() =
                 var client = newHttpClient()
                 client.downloadFile(path,target)
 
+        # TODO(Net/mail) could we somehow globally stored the configuration?
+        #  labels: enhancement,library
         builtin "mail",
             alias       = unaliased, 
             rule        = PrefixPrecedence,
-            description = "send mail using given message and configuration",
+            description = "send mail using given title and message to selected recipient",
             args        = {
                 "recipient" : {String},
-                "message"   : {Dictionary},
-                "config"    : {Dictionary}
+                "title"     : {String},
+                "message"   : {String}
             },
-            attrs       = NoAttrs,
+            attrs       = {
+                "using"     : ({Dictionary},"use given configuration")
+            },
             returns     = {Nothing},
             example     = """
-            mail "recipient@somemail.com"
-                #[
-                    title: "Hello from Arturo"
-                    content: "Arturo rocks!"
-                ]
-                #[
+            mail .using: #[
                     server: "mymailserver.com"
                     username: "myusername"
                     password: "mypass123"
                 ]
+                "recipient@somemail.com" "Hello from Arturo" "Arturo rocks!"                
             """:
                 #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("mail")
                 let recipient = x.s
-                let message = y.d
-                let config = z.d
+                let title = y.s
+                let message = z.s
 
-                var mesg = createMessage(message["title"].s,
-                                    message["content"].s,
-                                    @[recipient])
+                let config = getAttr("using").d
+
+                var mesg = createMessage(title, message, @[recipient])
                 let smtpConn = newSmtp(useSsl = true, debug=true)
                 smtpConn.connect(config["server"].s, Port 465)
                 smtpConn.auth(config["username"].s, config["password"].s)
