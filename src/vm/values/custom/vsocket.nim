@@ -13,7 +13,7 @@ when not defined(WEB):
     # Libraries
     #=======================================
 
-    import hashes, net
+    import hashes, nativesockets, net
 
     #=======================================
     # Types
@@ -25,6 +25,7 @@ when not defined(WEB):
 
         VSocket* = ref object
             socket*: Socket
+            local*: bool
             address*: string
             protocol*: SocketProtocol
             port*: int
@@ -50,16 +51,34 @@ when not defined(WEB):
         else:
             result = "udp://"
 
-        result &= b.address & ":" & $b.port
+        if b.address == "0.0.0.0" or b.address == "127.0.0.1":
+            result &= "localhost"
+        else:
+            result &= b.address
+
+        result &= ":" & $b.port
 
     #=======================================
     # Methods
     #=======================================
 
-    proc initSocket*(sock: Socket): VSocket {.inline.} =
+    proc initSocket*(sock: Socket, proto: Protocol, local: bool): VSocket {.inline.} =
+        var address: string
+        var port: Port
+        var protocol: SocketProtocol
+
+        case proto:
+            of IPPROTO_TCP: protocol = TCP
+            of IPPROTO_UDP: protocol = UDP
+            else:
+                discard     
+
+        if local: (address,port) = getLocalAddr(sock)
+        else: (address,port) = getPeerAddr(sock)
+
         result = VSocket(
             socket: sock,
-            address: "",
-            protocol: TCP,
-            port: 0
+            address: address,
+            protocol: protocol,
+            port: int(port)
         )
