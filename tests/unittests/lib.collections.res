@@ -63,3 +63,8 @@ A :char
 Art :string
 one :string
 [one two] :block
+
+[1 2 3 4 5 6] :block
+[[1 2 3] [4 5 6]] :block
+[1 2 3 4 5 6] :block
+[1 2 3 4 [5 6]] :block
