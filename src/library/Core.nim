@@ -129,23 +129,22 @@ proc defineSymbols*() =
             ..........
             call $[x][x+2] [5]            ; 7
             ..........
-            // Let's say you want to call external functions:
-            //
-            // mylib.c
-            // compile with:
-            // clang -c -w mylib.c
-            // clang -shared -o libmylib.dylib mylib.o
+            ; Calling external (C code) functions
+            
+            ; compile with:
+            ; clang -c -w mylib.c
+            ; clang -shared -o libmylib.dylib mylib.o
+            
+            ; #include <stdio.h>
+            ;
+            ; void sayHello(char* name){
+            ;    printf("Hello %s!\n", name);
+            ; }
+            ;
+            ; int doubleNum(int num){
+            ;    return num * 2;
+            ;}
 
-            #include <stdio.h>
-
-            void sayHello(char* name){
-                printf("Hello %s!\n", name);
-            }
-
-            int doubleNum(int num){
-                return num * 2;
-            }
-            ..........
             ; call an external function directly
             call.external: "mylib" 'sayHello ["John"]
 
