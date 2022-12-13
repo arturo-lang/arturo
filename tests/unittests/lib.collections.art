@@ -490,3 +490,16 @@ do [
     reverse 'str, debug str
 
 ]
+
+print ""
+
+; -- 'sample
+do [
+
+    table: ["apple" "appricot" "banana"]
+    fruit: sample table
+
+    print type fruit
+    print in? fruit table
+
+]
