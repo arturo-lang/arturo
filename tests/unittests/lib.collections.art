@@ -525,3 +525,18 @@ do [
     set arr 0 "one", debug arr
 
 ]
+
+print ""
+
+; -- shuffle
+do [
+
+    a: shuffle [1 2 3 4 5 6]
+    print size a
+    print every? a 'item [ type? item :integer ]
+
+    a: shuffle ["Manchester" "Granada" "Boston" "Davos"]
+    print size a
+    print every? a 'item [ type? item :string ]
+
+]
