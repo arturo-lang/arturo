@@ -368,3 +368,96 @@ do [
     debug permutate [[1 2 3] [4 5 6]]
 
 ]
+
+print ""
+
+; -- 'remove
+; default
+do [
+
+    a: "Arturo"
+    debug remove "Arturo" "uro"
+    remove 'a "uro", debug a
+
+    b: "Language"
+    debug "Language" -- "uage"
+    'b -- "uage", debug b
+
+    debug remove [1 2 3 4] 4
+    debug remove [1 2 3 4] [2 4]
+
+    c: [1 2 3 5 6 4]
+    debug [1 2 3 4] -- 4
+    debug [1 2 3 4] -- [2 4]
+    remove 'c [5 6], debug c
+
+    ; try with block
+    debug remove [1 6 2 5 3 4 5 6] [5 2]
+    debug remove [1 [6 2] 5 3 [6 2] 4 5 6] [6 2]
+
+    ; try with char
+    debug remove "hello" `l`
+
+]
+
+; .index
+do[
+
+    a: "Arturo"
+    ; TODO(COllections/remove) is .index broken?
+    ; labels: bug, library
+    ; remove.index 3 'a, debug a
+
+]
+
+; .prefix
+do [
+
+    a: "test_function.art"
+    debug remove.prefix "test_function.art" "test_"
+    remove.prefix 'a "test_", debug a
+
+]
+
+; .suffix
+do [
+
+    a: "test_function.art"
+    debug remove.suffix "test_function.art" ".art"
+    remove.suffix 'a ".art", debug a
+
+]
+
+; .key
+do [
+
+    user: #[
+        name: "John"
+        surname: "Doe"
+    ]
+
+    remove.key 'user "surname"
+    debug user
+
+]
+
+; .once
+do [
+
+    a: "hello"
+    b: [1 2 5 3 4 5]
+
+    debug remove.once "hello" "l"
+    debug remove.once [1 2 5 3 4 5] 5
+
+    remove.once 'a "l", debug a
+    remove.once 'b 5, debug b
+
+    ; try with block
+    debug remove.once [1 6 2 5 3 4 5 6] [5 2]
+    debug remove.once [1 [6 2] 5 3 4 5 6] [6 2]
+
+    ; try with char
+    debug remove.once "hello" `l`
+
+]
