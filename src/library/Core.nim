@@ -313,9 +313,9 @@ proc defineSymbols*() =
             ]
     
             ; Note: always use imported functions inside a 'do block
-            ; since they needs to be evaluated.
-            ; On the other hands, simple variables can be used without
-            ; without problems, as 'pi in this example
+            ; since they need to be evaluated beforehand.
+            ; On the other hand, simple variables can be used without
+            ; issues, as 'pi in this example
         """:
             #=======================================================
             var times = 1
