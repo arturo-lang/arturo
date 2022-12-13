@@ -151,7 +151,23 @@ proc defineSymbols*() =
                 when defined(SAFE): RuntimeError_OperationNotPermitted("send")
 
                 x.sock.socket.send(y.s)
-                
+
+        builtin "send?",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "send given message to selected socket and return true if successful",
+            args        = {
+                "destination"   : {Socket},
+                "message"       : {String}    
+            },
+            attrs       = NoAttrs,
+            returns     = {Logical},
+            example     = """
+            """:
+                #=======================================================
+                when defined(SAFE): RuntimeError_OperationNotPermitted("send?")
+
+                push newLogical(x.sock.socket.trySend(y.s))
     else:
         discard
 
