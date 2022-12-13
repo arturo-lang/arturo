@@ -292,7 +292,7 @@ proc defineSymbols*() =
             ; Hello!
             ; Hello!
             ..........
-            ; importing modules
+            ; Importing modules
 
             ; let's say you have a 'module.art' with  this code:
             ;
@@ -302,7 +302,7 @@ proc defineSymbols*() =
             ;    print ["Hello" name]
             ;]
 
-            do.import relative "module.art"
+            do relative "module.art"
 
             print pi
             ; 3.14
@@ -313,10 +313,9 @@ proc defineSymbols*() =
             ]
     
             ; Note: always use imported functions inside a 'do block
-            ; It's because functions needs to be evaluated.
-            ; But also, you can use external variables without problems,
-            ; as 'pi in this example
-
+            ; since they needs to be evaluated.
+            ; On the other hands, simple variables can be used without
+            ; without problems, as 'pi in this example
         """:
             #=======================================================
             var times = 1
