@@ -540,3 +540,16 @@ do [
     print every? a 'item [ type? item :string ]
 
 ]
+
+print ""
+
+; -- 'size
+do [
+
+    print size ["one" "two" "three"]
+    print size #[name: "John", surname: "Doe"]
+    print size "Good morning!"
+    print size "Konnichiwa!"
+    print size "こんいちわ！"
+
+]
