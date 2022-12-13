@@ -34,10 +34,31 @@ import vm/lib
 proc defineSymbols*() =
     
     when not defined(WEB):
+        builtin "accept",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "accept incoming connection and return corresponding socket",
+            args        = {
+                "server"    : {Socket}
+            },
+            attrs       = NoAttrs,
+            returns     = {Socket},
+            example     = """
+            """:
+                #=======================================================
+                when defined(SAFE): RuntimeError_OperationNotPermitted("")
+
+                var client: netsock.Socket
+                x.sock.socket.accept(client)
+
+                let socket = initSocket(sock, proto=x.sock.proto, local=false)
+
+                push newSocket(socket)
+
         builtin "listen",
             alias       = unaliased, 
             rule        = PrefixPrecedence,
-            description = "Start listening on given port and return corresponding TCP socket",
+            description = "start listening on given port and return new socket",
             args        = {
                 "port"  : {Integer}
             },
