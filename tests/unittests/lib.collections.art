@@ -275,3 +275,21 @@ do [
     debug surnamesInitial
 
 ]
+
+print ""
+
+; -- 'index
+do [
+
+    user: #[
+        name: "John"
+        surname: "Doe"
+    ]
+
+    debug index "hello" "e"
+    debug index [1 2 3] 3
+    debug index "hello" "x" ; returns null
+    debug index user "John"
+    debug index user "Doe"
+
+]
