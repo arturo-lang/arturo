@@ -54,7 +54,7 @@ proc defineSymbols*() =
                 var client: netsock.Socket
                 x.sock.socket.accept(client)
 
-                let socket = initSocket(sock, proto=x.sock.proto, local=false)
+                let socket = initSocket(client, proto=x.sock.protocol, local=false)
 
                 push newSocket(socket)
 
