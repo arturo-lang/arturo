@@ -205,3 +205,16 @@ do [
     debug extend person #[ age: 35 ]
 
 ]
+
+print ""
+
+; -- 'first
+do [
+
+    debug first "Arturo"
+    debug first.n: 3 "Arturo"
+
+    debug first ["one" "two" "three"]
+    debug first.n: 2 ["one" "two" "three"]
+
+]

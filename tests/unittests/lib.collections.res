@@ -58,3 +58,8 @@ after empty
 
 [name:john surname:doe] :dictionary
 [name:john surname:doe age:35] :dictionary
+
+A :char
+Art :string
+one :string
+[one two] :block
