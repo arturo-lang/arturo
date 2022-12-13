@@ -553,3 +553,15 @@ do [
     print size "こんいちわ！"
 
 ]
+
+print ""
+
+; -- slice
+do [
+
+    debug slice "Arturo" 0 2
+
+    compiled: slice ["Arturo" "Python" "Ruby" "C" "C++" "Nim" "Wren"] 3 5
+    debug compiled
+
+]
