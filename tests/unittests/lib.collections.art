@@ -293,3 +293,21 @@ do [
     debug index user "Doe"
 
 ]
+
+print ""
+
+; -- 'insert
+do [
+
+    dict: #[
+        name: John
+    ]
+
+    debug insert [1 2 3 4] 0 "zero"
+    debug insert "heo" 2 "ll"
+
+    insert 'dict "name" "Joe, Again", debug dict
+
+    debug insert [1 2 6 7 8 9 10] 2 [3 4 5]
+
+]
