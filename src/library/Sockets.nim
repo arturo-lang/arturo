@@ -53,16 +53,11 @@ proc defineSymbols*() =
                 when defined(SAFE): RuntimeError_OperationNotPermitted("accept")
 
                 var client: netsock.Socket
-                echo "pre-accept"
                 x.sock.socket.accept(client)
-                echo "post-accept"
 
-                let address = ""
-                let port = Port(0)
-                #let (address,port) = getPeerAddr(client)
+                let (address,port) = getPeerAddr(client)
 
                 let socket = initSocket(client, proto=x.sock.protocol, address=address, port=port)
-                echo "after initSocket"
                 push newSocket(socket)
 
         builtin "connect",
