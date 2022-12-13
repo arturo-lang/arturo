@@ -201,21 +201,21 @@ proc recompressJS*(jsFile: string) =
     )
 
     # replace other more-verbose identifiers
-    js = js.multiReplace(
-        ("Stack_1660944389", "STA"),
-        ("finalizer", "FIN"),
-        # ("counter", "COU"),
-        # ("tpKindValue", "TKDV"),
-        # ("tpKind", "TKD"),
-        # ("iKindValue", "IKDV"),
-        # ("iKind", "IKD"),
-        # ("fnKindValue", "FKDV"),
-        # ("fnKind", "FKD"),
-        # ("dbKindValue", "DKDV"),
-        # ("dbKind", "DKD"),
-        # ("offsetBase", "OFFB"),
-        # ("offset", "OFF")
-    )
+    # js = js.multiReplace(
+    #     ("Stack_1660944389", "STA"),
+    #     #("finalizer", "FIN"),
+    #     # ("counter", "COU"),
+    #     # ("tpKindValue", "TKDV"),
+    #     # ("tpKind", "TKD"),
+    #     # ("iKindValue", "IKDV"),
+    #     # ("iKind", "IKD"),
+    #     # ("fnKindValue", "FKDV"),
+    #     # ("fnKind", "FKD"),
+    #     # ("dbKindValue", "DKDV"),
+    #     # ("dbKind", "DKD"),
+    #     # ("offsetBase", "OFFB"),
+    #     # ("offset", "OFF")
+    # )
 
     writeFile(outputFile, js)
 
