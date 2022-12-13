@@ -195,6 +195,22 @@ proc defineSymbols*() =
                 when defined(SAFE): RuntimeError_OperationNotPermitted("send?")
 
                 push newLogical(x.sock.socket.trySend(y.s))
+
+        builtin "unplug",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "close given socket",
+            args        = {
+                "socket"    : {Socket} 
+            },
+            attrs       = NoAttrs,
+            returns     = {Nothing},
+            example     = """
+            """:
+                #=======================================================
+                when defined(SAFE): RuntimeError_OperationNotPermitted("unplug")
+
+                x.sock.socket.close()
     else:
         discard
 
