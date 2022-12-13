@@ -291,6 +291,31 @@ proc defineSymbols*() =
             ; Hello!
             ; Hello!
             ; Hello!
+            ..........
+            ; Importing modules
+
+            ; let's say you have a 'module.art' with  this code:
+            ;
+            ; pi: 3.14
+            ;
+            ; hello: $[name :string] [
+            ;    print ["Hello" name]
+            ;]
+
+            do relative "module.art"
+
+            print pi
+            ; 3.14
+
+            do [
+                hello "John Doe"
+                ; Hello John Doe
+            ]
+    
+            ; Note: always use imported functions inside a 'do block
+            ; since they need to be evaluated beforehand.
+            ; On the other hand, simple variables can be used without
+            ; issues, as 'pi in this example
         """:
             #=======================================================
             var times = 1
