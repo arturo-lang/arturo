@@ -169,14 +169,22 @@ proc defineSymbols*() =
                 "destination"   : {Socket},
                 "message"       : {String}    
             },
-            attrs       = NoAttrs,
+            attrs       = {
+                "chunk"     : ({Logical},"don't send data as a line of data")
+            },
             returns     = {Nothing},
             example     = """
             """:
                 #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("send")
 
-                x.sock.socket.send(y.s)
+                let asChunk = hadAttr("chunk")
+
+                let message = 
+                    if asChunk: y.s
+                    else: y.s & "\r\L"
+
+                x.sock.socket.send(message)
 
         builtin "send?",
             alias       = unaliased, 
