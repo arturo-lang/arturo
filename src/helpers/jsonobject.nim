@@ -77,6 +77,10 @@ proc generateJsonNode*(n: Value): JsonNode =
             result = newJObject()
             for k,v in pairs(n.o):
                 result.add(k, generateJsonNode(v))
+        of Dictionary   :
+            result = newJObject()
+            for k,v in pairs(n.sto.data):
+                result.add(k, generateJsonNode(v))
 
         of Complex,
            Rational,
@@ -156,6 +160,10 @@ when defined(WEB):
             of Object       :
                 result = newJsObject()
                 for k,v in pairs(n.o):
+                    result[cstring(k)] = generateJsObject(v)
+            of Store        :
+                result = newJsObject()
+                for k,v in pairs(n.sto.data):
                     result[cstring(k)] = generateJsObject(v)
             of Complex,
                Rational,
