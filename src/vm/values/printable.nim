@@ -327,6 +327,23 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                     dump(value, level+1, false, muted=muted)
 
             dumpBlockEnd()
+
+        of Store        :
+            dumpBlockStart(v)
+
+            let keys = toSeq(v.sto.data.keys)
+
+            if keys.len > 0:
+                let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
+
+                for key,value in v.sto.data:
+                    for i in 0..level: stdout.write "\t"
+
+                    stdout.write unicode.alignLeft(key & " ", maxLen) & ":"
+
+                    dump(value, level+1, false, muted=muted)
+
+            dumpBlockEnd()
         
         of Object   : 
             dumpBlockStart(v)
