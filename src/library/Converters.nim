@@ -1243,6 +1243,7 @@ proc defineSymbols*() =
             let store = initStore(
                 x.s,
                 doLoad = true,
+                forceExtension = true,
                 global = isGlobal,
                 autosave = isAutosave,
                 kind = storeKind
