@@ -25,6 +25,7 @@ import vm/[exec, parse]
 
 proc checkStorePath*(
     path: string, 
+    forceExtension: bool = false,
     global: bool = false, 
     kind: StoreKind = UndefinedStore
 ): (bool, string, StoreKind) =
@@ -34,11 +35,9 @@ proc checkStorePath*(
     if global:
         actualPath = getHomeDir().joinPath(".arturo").joinPath("stores").joinPath(actualPath)
 
-    let existing = actualPath.fileExists()
+    var (_, _, ext) = splitFile(actualPath)
 
     if actualKind == UndefinedStore:
-        var (_, _, ext) = splitFile(actualPath)
-
         case ext:
             of ".art", ".store":
                 actualKind = NativeStore
@@ -48,7 +47,23 @@ proc checkStorePath*(
                 actualKind = SqliteStore
             else:
                 actualKind = NativeStore
+    else:
+        if forceExtension:
+            case actualKind:
+                of NativeStore:
+                    if ext notin [".art", ".store"]:
+                        actualPath = actualPath.changeFileExt(".art")
+                of JsonStore:
+                    if ext != ".json":
+                        actualPath = actualPath.changeFileExt(".json")
+                of SqliteStore:
+                    if ext notin [".db", ".sqlite", ".sqlite3"]:
+                        actualPath = actualPath.changeFileExt(".db")
+                else:
+                    discard
 
+    let existing = actualPath.fileExists()
+    
     return (existing, actualPath, actualKind)
 
 #=======================================
@@ -58,13 +73,14 @@ proc checkStorePath*(
 proc initStore*(
     path: string, 
     doLoad: bool,
+    forceExtension: bool = false,
     createIfNotExists: bool = true,
     forceCreate: bool = false,
     global: bool = false, 
     autosave: bool = false, 
     kind: StoreKind = UndefinedStore
 ): VStore =
-    let (storeExists, storePath, storeKind) = checkStorePath(path, global, kind)
+    let (storeExists, storePath, storeKind) = checkStorePath(path, forceExtension, global, kind)
 
     result = VStore(
         path        : storePath,
