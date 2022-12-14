@@ -576,86 +576,88 @@ do [
 print ""
 
 ; -- 'sort
-; default
 do [
+    ; default
+    do [
 
-    debug sort [5 4 3 2 1]
-    debug sort ["Ruby" "Arturo" "Python"]
+        debug sort [5 4 3 2 1]
+        debug sort ["Ruby" "Arturo" "Python"]
 
-    a: [5 4 3 2 1]
-    b: ["Ruby" "Arturo" "Python"]
-    sort 'a, debug a
-    sort 'b, debug b
+        a: [5 4 3 2 1]
+        b: ["Ruby" "Arturo" "Python"]
+        sort 'a, debug a
+        sort 'b, debug b
 
-]
-
-; .values
-do [
-
-    user: #[
-        name: "John"
-        surname: "Doe"
-        id: "012568"
-        city: "Manchester"
-        age: 45
     ]
 
-    sort.values 'user, debug user
+    ; .values
+    do [
 
-]
+        user: #[
+            name: "John"
+            surname: "Doe"
+            id: "012568"
+            city: "Manchester"
+            age: 45
+        ]
 
-; .as
-do [
+        sort.values 'user, debug user
 
-    ; How to use it?
+    ]
 
-    ; debug sort.as 'ja [
-    ;     "ありがとう" "犬" "こんにちわ" "ねこ" "なまえ" "わたし" "私"
-    ;     "いぬ"
-    ; ]
+    ; .as
+    do [
 
-]
+        ; How to use it?
 
-; .sensitive
-do [
+        ; debug sort.as 'ja [
+        ;     "ありがとう" "犬" "こんにちわ" "ねこ" "なまえ" "わたし" "私"
+        ;     "いぬ"
+        ; ]
 
-    debug sort.sensitive
-        ["Ruby" "python" "Arturo" "ruby" "arturo" "Python"]
+    ]
 
-    a: ["Ruby" "python" "Arturo" "ruby" "arturo" "Python"]
-    sort.sensitive 'a, debug a
+    ; .sensitive
+    do [
 
-]
+        debug sort.sensitive
+            ["Ruby" "python" "Arturo" "ruby" "arturo" "Python"]
 
-; descending
-do [
+        a: ["Ruby" "python" "Arturo" "ruby" "arturo" "Python"]
+        sort.sensitive 'a, debug a
 
-    debug sort.descending [5 3 2 1 4]
-    debug sort.descending ["Ruby" "Arturo" "Python"]
+    ]
 
-    a: [5 4 3 2 1]
-    b: ["Ruby" "Arturo" "Python"]
-    sort.descending 'a, debug a
-    sort.descending 'b, debug b
+    ; descending
+    do [
 
-]
+        debug sort.descending [5 3 2 1 4]
+        debug sort.descending ["Ruby" "Arturo" "Python"]
 
-; .by
-do [
+        a: [5 4 3 2 1]
+        b: ["Ruby" "Arturo" "Python"]
+        sort.descending 'a, debug a
+        sort.descending 'b, debug b
 
-    ; Note: It isn't working,
-    ; use by without `:` returns an error: `cannot perform sort -> :string`
-    ; and using with `:`, the function runs infinitely
+    ]
 
-    user1: #[ name: "John" surname: "Doe" ]
-    user2: #[ name: "Jane" surname: "Doe" ]
-    user3: #[ name: "John" surname: "Wick" ]
-    user4: #[ name: "Arnold" surname: "Schwarzenegger" ]
+    ; .by
+    do [
 
-    arr: [user1 user2 user3 user4]
-    ; debug sort.by: "surname" arr
-    ; debug sort.by: 'surname arr
+        ; Note: It isn't working,
+        ; use by without `:` returns an error: `cannot perform sort -> :string`
+        ; and using with `:`, the function runs infinitely
 
+        user1: #[ name: "John" surname: "Doe" ]
+        user2: #[ name: "Jane" surname: "Doe" ]
+        user3: #[ name: "John" surname: "Wick" ]
+        user4: #[ name: "Arnold" surname: "Schwarzenegger" ]
+
+        arr: [user1 user2 user3 user4]
+        ; debug sort.by: "surname" arr
+        ; debug sort.by: 'surname arr
+
+    ]
 ]
 
 print ""
