@@ -520,6 +520,10 @@ proc newObject*(args: ValueDict, prot: Prototype, initializer: proc (self: Value
     
     initializer(result, prot)
 
+proc newStore*(sto: VStore): Value {.inline, enforceNoRaises.} =
+    ## create Store value from VStore
+    Value(kind: Store, sto: sto)
+
 func newFunction*(params: seq[string], main: Value, imports: Value = nil, exports: Value = nil, memoize: bool = false, inline: bool = false): Value {.inline, enforceNoRaises.} =
     ## create Function (UserFunction) value with given parameters, ``main`` body, etc
     Value(
