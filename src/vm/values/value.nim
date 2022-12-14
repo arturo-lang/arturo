@@ -2447,23 +2447,23 @@ func hash*(v: Value): Hash {.inline.}=
 
         of Dictionary   : 
             result = 1
-            for k,v in pairs(v.d):
+            for k,val in pairs(v.d):
                 result = result !& hash(k)
-                result = result !& hash(v)
+                result = result !& hash(val)
 
         of Object       :
             result = 1
-            for k,v in pairs(v.o):
+            for k,val in pairs(v.o):
                 result = result !& hash(k)
-                result = result !& hash(v)
+                result = result !& hash(val)
 
         of Store        :
             result = 1 
-            for k,v in pairs(v.data):
+            for k,val in pairs(v.sto.data):
                 result = result !& hash(k)
-                result = result !& hash(v)
-            result = result !& hash(v.path)
-            result = result !& hash(v.kind)
+                result = result !& hash(val)
+            result = result !& hash(v.sto.path)
+            result = result !& hash(v.sto.kind)
             result = !$ result
         
         of Function     : 
