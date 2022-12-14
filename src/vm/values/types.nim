@@ -109,6 +109,11 @@ type
         UserFunction
         BuiltinFunction
 
+    StoreKind* = enum
+        NativeStore
+        SqliteStore
+        JsonStore
+
     TypeKind* = enum
         UserType
         BuiltinType
@@ -168,6 +173,20 @@ type
                 bcode*      : Value
             of BuiltinFunction:
                 action*     : BuiltinAction
+
+    VStore* = ref object
+        data*       : ValueDict
+        path*       : string
+        loaded*     : bool
+        autosave*   : bool
+        case kind*: StoreKind:
+            of NativeStore:
+                discard
+            of SqliteStore:
+                when not defined(NOSQLITE):
+                    db* : sqlite.DbConn
+            of JsonStore:
+                discard
 
     Value* {.final,acyclic.} = ref object
         when not defined(PORTABLE):
