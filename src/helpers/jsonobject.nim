@@ -214,3 +214,10 @@ proc jsonFromValue*(val: Value, pretty: bool = true): string =
     let node = generateJsonNode(val)
     if pretty: json.pretty(node, indent=4)
     else: $(node)
+
+proc jsonFromValueDict*(dict: ValueDict, pretty: bool = true): string =
+    let node = newJObject()
+    for k,v in pairs(dict):
+        node.add(k, generateJsonNode(v))
+    if pretty: json.pretty(node, indent=4)
+    else: $(node)
