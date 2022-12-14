@@ -508,7 +508,8 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                     else:
                         throwCannotConvert()
 
-            of Function,
+            of Store,
+               Function,
                Database,
                Socket,
                Newline,
