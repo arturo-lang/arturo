@@ -77,7 +77,7 @@ proc generateJsonNode*(n: Value): JsonNode =
             result = newJObject()
             for k,v in pairs(n.o):
                 result.add(k, generateJsonNode(v))
-        of Dictionary   :
+        of Store        :
             result = newJObject()
             for k,v in pairs(n.sto.data):
                 result.add(k, generateJsonNode(v))
