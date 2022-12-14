@@ -129,6 +129,13 @@ proc `$`*(v: Value): string {.inline.} =
 
                 result = "[" & items.join(" ") & "]"
 
+        of Store:
+            var items: seq[string]
+            for key,value in v.sto.data:
+                items.add(key  & ":" & $(value))
+
+            result = "[" & items.join(" ") & "]"
+
         of Function     : 
             result = ""
             if v.fnKind==UserFunction:
