@@ -10,14 +10,14 @@
 # Libraries
 #=======================================
 
-import os
+import os, tables
 
 import helpers/database
 import helpers/io
 import helpers/jsonobject
 
 import vm/values/value
-import vm/[exec, parse]
+import vm/[exec, globals, parse]
 
 #=======================================
 # Helpers
@@ -70,11 +70,17 @@ proc checkStorePath*(
 # Methods
 #=======================================
 
+proc saveStore*(store: VStore) =
+    discard
+
 proc getStoreKey*(store: VStore, key: string): Value =
-    VNULL
+    GetKey(store.data, key)
 
 proc setStoreKey*(store: VStore, key: string, value: Value) =
-    discard
+    store.data[key] = value
+    
+    if store.autosave:
+        saveStore(store)
 
 proc initStore*(
     path: string, 
