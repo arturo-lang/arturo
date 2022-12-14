@@ -717,3 +717,16 @@ do [
     squeeze 'arr, debug arr
 
 ]
+
+print ""
+
+; -- take
+do [
+
+    debug take "some text" 7
+    debug take ["Arnold" "Andreas" "Paul"] 2
+
+    arr: 1..10
+    take 'arr 3, debug arr
+
+]
