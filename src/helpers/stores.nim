@@ -85,6 +85,7 @@ proc initStore*(
     result = VStore(
         path        : storePath,
         global      : global,
+        loaded      : doLoad,
         autosave    : autosave,
         kind        : storeKind
     )
