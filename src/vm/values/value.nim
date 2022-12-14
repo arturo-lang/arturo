@@ -715,6 +715,7 @@ proc copyValue*(v: Value): Value {.inline.} =
 
         of Dictionary:  result = newDictionary(v.d[])
         of Object:      result = newObject(v.o[], v.proto)
+        of Store:       result = newStore(v.sto)
 
         of Function:    
             if v.fnKind == UserFunction:
@@ -2455,6 +2456,15 @@ func hash*(v: Value): Hash {.inline.}=
             for k,v in pairs(v.o):
                 result = result !& hash(k)
                 result = result !& hash(v)
+
+        of Store        :
+            result = 1 
+            for k,v in pairs(v.data):
+                result = result !& hash(k)
+                result = result !& hash(v)
+            result = result !& hash(v.path)
+            result = result !& hash(v.kind)
+            result = !$ result
         
         of Function     : 
             if v.fnKind==UserFunction:
