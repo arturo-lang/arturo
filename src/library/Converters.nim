@@ -435,6 +435,9 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                     else:
                         throwCannotConvert()
 
+            # TODO(Converters) Add support for Store values
+            #  labels: library, enhancement
+
             of Bytecode:
                 case tp:
                     of Dictionary:
