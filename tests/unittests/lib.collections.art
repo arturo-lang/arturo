@@ -4,103 +4,108 @@ debug: $[variable][
 ]
 
 ; -- 'append
-; :string < :string ++ :string
 do [
+    ; :string < :string ++ :string
+    do [
 
-    a: "Art"
-    debug append "Art" "uro"
-    append 'a "uro", debug a
+        a: "Art"
+        debug append "Art" "uro"
+        append 'a "uro", debug a
 
-    b: "Lang"
-    debug "Lang" ++ "uage"
-    'b ++ "uage", debug b
+        b: "Lang"
+        debug "Lang" ++ "uage"
+        'b ++ "uage", debug b
 
-]
+    ]
 
-; :string < :string ++ :char
-do [
+    ; :string < :string ++ :char
+    do [
 
-    a: "Artur"
-    debug append "Artur" `o`
-    append 'a `o`, debug a
+        a: "Artur"
+        debug append "Artur" `o`
+        append 'a `o`, debug a
 
-    b: "Languag"
-    debug "Languag" ++ `e`
-    'b ++ `e`, debug b
+        b: "Languag"
+        debug "Languag" ++ `e`
+        'b ++ `e`, debug b
 
-]
+    ]
 
-; :string < :char ++ :char
-do [
+    ; :string < :char ++ :char
+    print "append - 4"
+    do [
 
-    a: `a`
-    debug append `a` `b`
-    append 'a `b`, debug a
+        a: `a`
+        debug append `a` `b`
+        append 'a `b`, debug a
 
-    b: `c`
-    debug `c` ++ `d`
-    'b ++ `d`, debug b
+        b: `c`
+        debug `c` ++ `d`
+        'b ++ `d`, debug b
 
-]
+    ]
 
-; :string < :char ++ :string
-do [
+    ; :string < :char ++ :string
+    print "append - 4"
+    do [
 
-    a: `a`
-    debug append `a` "rt"
-    append 'a "rt", debug a
+        a: `a`
+        debug append `a` "rt"
+        append 'a "rt", debug a
 
-    b: `l`
-    debug `l` ++ "ang"
-    'b ++ "ang", debug b
+        b: `l`
+        debug `l` ++ "ang"
+        'b ++ "ang", debug b
 
-]
+    ]
 
-; [:string] < [:string] ++ :string
-do [
+    ; [:string] < [:string] ++ :string
+    print "append - testing with strings"
+    do [
 
-    a: ["A" "r" "t" "u" "r"]
-    debug append ["A" "r" "t" "u" "r"]    "o"
-    append 'a "o", debug a
+        a: ["A" "r" "t" "u" "r"]
+        debug append ["A" "r" "t" "u" "r"]    "o"
+        append 'a "o", debug a
 
-    b: ["L" "a" "n" "g" "u" "a" "g"]
-    debug ["L" "a" "n" "g" "u" "a" "g"] ++ "e"
-    'b ++ "e", debug b
+        b: ["L" "a" "n" "g" "u" "a" "g"]
+        debug ["L" "a" "n" "g" "u" "a" "g"] ++ "e"
+        'b ++ "e", debug b
 
-    ; Testing precedence
-    c: ["A" "r" "t"]
-    debug append ["A" "r" "t"] append "u" append "r"    "o"
-    append 'c append "u" append "r" "o", debug c
+        ; Testing precedence
+        c: ["A" "r" "t"]
+        debug append ["A" "r" "t"] append "u" append "r"    "o"
+        append 'c append "u" append "r" "o", debug c
 
-    d: ["L" "a" "n" "g"]
-    debug ["L" "a" "n" "g"] ++ "u" ++ "a" ++ "g" ++ "e"
-    'd ++ "u" ++ "a" ++ "g" ++ "e", debug d
+        d: ["L" "a" "n" "g"]
+        debug ["L" "a" "n" "g"] ++ "u" ++ "a" ++ "g" ++ "e"
+        'd ++ "u" ++ "a" ++ "g" ++ "e", debug d
 
-]
+    ]
 
-; [:string] < [:string] ++ [:string]
-do [
+    ; [:string] < [:string] ++ [:string]
+    do [
 
-    a: ["A" "r" "t"]
-    debug append ["A" "r" "t"] ["u" "r" "o"]
-    append 'a ["u" "r" "o"], debug a
+        a: ["A" "r" "t"]
+        debug append ["A" "r" "t"] ["u" "r" "o"]
+        append 'a ["u" "r" "o"], debug a
 
-    b: ["L" "a" "n" "g"]
-    debug ["L" "a" "n" "g"] ++ ["u" "a" "g" "e"]
-    'b ++ ["u" "a" "g" "e"], debug b
+        b: ["L" "a" "n" "g"]
+        debug ["L" "a" "n" "g"] ++ ["u" "a" "g" "e"]
+        'b ++ ["u" "a" "g" "e"], debug b
 
-]
+    ]
 
-; [:integer] < [:integer] ++ [:integer] | :integer
-do [
+    ; [:integer] < [:integer] ++ [:integer] | :integer
+    do [
 
-    a: [1 2 3]
-    debug append [1 2 3] [4 5 6]
-    'a ++ [4 5 6], debug a
+        a: [1 2 3]
+        debug append [1 2 3] [4 5 6]
+        'a ++ [4 5 6], debug a
 
-    debug append [1 2 3 4 5 6] 7
-    'a ++ 7, debug a
+        debug append [1 2 3 4 5 6] 7
+        'a ++ 7, debug a
 
+    ]
 ]
 
 print ""
