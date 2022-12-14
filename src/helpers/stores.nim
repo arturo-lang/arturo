@@ -70,6 +70,12 @@ proc checkStorePath*(
 # Methods
 #=======================================
 
+proc getStoreKey*(store: VStore, key: string): Value =
+    VNULL
+
+proc setStoreKey*(store: VStore, key: string, value: Value) =
+    discard
+
 proc initStore*(
     path: string, 
     doLoad: bool,
