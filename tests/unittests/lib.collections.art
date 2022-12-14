@@ -3,9 +3,19 @@ debug: $[variable][
     print[variable type variable]
 ]
 
+topic: $[topic :string] [
+    print ""
+    print ~">> |topic|"
+    print ""
+]
+
+; ==> Tests
+
 ; -- 'append
+topic "append"
 do [
     ; :string < :string ++ :string
+    topic "append - :string < :string + :string"
     do [
 
         a: "Art"
@@ -19,6 +29,7 @@ do [
     ]
 
     ; :string < :string ++ :char
+    topic "append - :string < :string + :char"
     do [
 
         a: "Artur"
@@ -32,7 +43,7 @@ do [
     ]
 
     ; :string < :char ++ :char
-    print "append - 4"
+    topic "append - :string < :char + :char"
     do [
 
         a: `a`
@@ -46,7 +57,7 @@ do [
     ]
 
     ; :string < :char ++ :string
-    print "append - 4"
+    topic "append - :string < :char + :char"
     do [
 
         a: `a`
@@ -60,7 +71,7 @@ do [
     ]
 
     ; [:string] < [:string] ++ :string
-    print "append - testing with strings"
+    topic "append - [:string] < [:string] + :string"
     do [
 
         a: ["A" "r" "t" "u" "r"]
@@ -83,6 +94,7 @@ do [
     ]
 
     ; [:string] < [:string] ++ [:string]
+    topic "append - [:string] < [:string] + [:string]"
     do [
 
         a: ["A" "r" "t"]
@@ -96,6 +108,7 @@ do [
     ]
 
     ; [:integer] < [:integer] ++ [:integer] | :integer
+    topic "append - [:integer] < [:integer] + [:integer]|:integer"
     do [
 
         a: [1 2 3]
@@ -108,9 +121,9 @@ do [
     ]
 ]
 
-print ""
 
 ; -- 'chop
+topic "chop"
 do [
 
     a: "Arturo"
@@ -143,9 +156,9 @@ do [
 
 ]
 
-print ""
 
 ; -- 'combine
+topic "combine"
 do [
 
     ; With the same amount
@@ -160,9 +173,9 @@ do [
 
 ]
 
-print ""
 
 ; -- 'drop
+topic "drop"
 do [
 
     a: "Arturo"
@@ -175,9 +188,9 @@ do [
 
 ]
 
-print ""
 
 ; -- 'empty
+topic "empty"
 do [
 
     a: ["Arturo" "C" "Python" "Ruby"]
@@ -200,9 +213,9 @@ do [
 
 ]
 
-print ""
 
 ; -- 'extend
+topic "extend"
 do [
 
     person: #[ name: "john" surname: "doe" ]
@@ -211,9 +224,9 @@ do [
 
 ]
 
-print ""
 
 ; -- 'first
+topic "first"
 do [
 
     debug first "Arturo"
@@ -224,9 +237,9 @@ do [
 
 ]
 
-print ""
 
 ; -- 'flatten
+topic "flatten"
 do [
 
     arr: [[1 2 3] [4 5 6]]
@@ -242,9 +255,9 @@ do [
 
 ]
 
-print ""
 
 ; -- 'get
+topic "get"
 do [
 
     user: #[
@@ -281,9 +294,9 @@ do [
 
 ]
 
-print ""
 
 ; -- 'index
+topic "index"
 do [
 
     user: #[
@@ -299,9 +312,9 @@ do [
 
 ]
 
-print ""
 
 ; -- 'insert
+topic "insert"
 do [
 
     dict: #[
@@ -317,9 +330,9 @@ do [
 
 ]
 
-print ""
 
 ; -- 'keys
+topic "keys"
 do [
 
     user: #[
@@ -331,9 +344,8 @@ do [
 ]
 
 
-print ""
-
 ; -- 'last
+topic "last"
 do [
 
     debug last "Arturo"
@@ -344,9 +356,9 @@ do [
 
 ]
 
-print ""
 
 ; -- 'max
+topic "max"
 do [
 
     debug max [4 2 8 5 1 9]
@@ -354,9 +366,9 @@ do [
 
 ]
 
-print ""
 
 ; -- 'min
+topic "min"
 do [
 
     debug min [4 2 8 5 1 9]
@@ -364,9 +376,9 @@ do [
 
 ]
 
-print ""
 
 ; -- 'permutate
+topic "permutate"
 do [
 
     debug permutate [A B C]
@@ -374,11 +386,12 @@ do [
 
 ]
 
-print ""
 
 ; -- 'remove
+topic "remove"
 do [
     ; default
+    topic "remove - default"
     do [
 
         a: "Arturo"
@@ -407,6 +420,7 @@ do [
     ]
 
     ; .index
+    topic "remove - .index"
     do[
 
         a: "Arturo"
@@ -417,6 +431,7 @@ do [
     ]
 
     ; .prefix
+    topic "remove - .prefix"
     do [
 
         a: "test_function.art"
@@ -426,6 +441,7 @@ do [
     ]
 
     ; .suffix
+    topic "remove - .suffix"
     do [
 
         a: "test_function.art"
@@ -435,6 +451,7 @@ do [
     ]
 
     ; .key
+    topic "remove - .key"
     do [
 
         user: #[
@@ -448,6 +465,7 @@ do [
     ]
 
     ; .once
+    topic "remove - .once"
     do [
 
         a: "hello"
@@ -469,9 +487,9 @@ do [
     ]
 ]
 
-print ""
 
 ; -- 'repeat
+topic "repeat"
 do [
 
     debug repeat "hello" 3
@@ -484,9 +502,9 @@ do [
 
 ]
 
-print ""
 
 ; -- 'reverse
+topic "reverse"
 do [
 
     debug reverse [1 2 3 4 5]
@@ -498,9 +516,9 @@ do [
 
 ]
 
-print ""
 
 ; -- 'sample
+topic "sample"
 do [
 
     table: ["apple" "appricot" "banana"]
@@ -511,9 +529,9 @@ do [
 
 ]
 
-print ""
 
 ; -- 'set
+topic "set"
 do [
 
     myDict: #[
@@ -533,9 +551,9 @@ do [
 
 ]
 
-print ""
 
 ; -- 'shuffle
+topic "shuffle"
 do [
 
     a: shuffle [1 2 3 4 5 6]
@@ -548,9 +566,9 @@ do [
 
 ]
 
-print ""
 
 ; -- 'size
+topic "size"
 do [
 
     print size ["one" "two" "three"]
@@ -561,9 +579,9 @@ do [
 
 ]
 
-print ""
 
 ; -- 'slice
+topic "slice"
 do [
 
     debug slice "Arturo" 0 2
@@ -573,11 +591,13 @@ do [
 
 ]
 
-print ""
 
 ; -- 'sort
+topic "sort"
 do [
+
     ; default
+    topic "sort - default"
     do [
 
         debug sort [5 4 3 2 1]
@@ -591,6 +611,7 @@ do [
     ]
 
     ; .values
+    topic "sort - .values"
     do [
 
         user: #[
@@ -606,6 +627,7 @@ do [
     ]
 
     ; .as
+    topic "sort - .as"
     do [
 
         ; How to use it?
@@ -618,6 +640,7 @@ do [
     ]
 
     ; .sensitive
+    topic "sort - .sensitive"
     do [
 
         debug sort.sensitive
@@ -629,6 +652,7 @@ do [
     ]
 
     ; descending
+    topic "sort - .descending"
     do [
 
         debug sort.descending [5 3 2 1 4]
@@ -642,6 +666,7 @@ do [
     ]
 
     ; .by
+    topic "sort - .by"
     do [
 
         ; Note: It isn't working,
@@ -660,9 +685,9 @@ do [
     ]
 ]
 
-print ""
 
 ; -- 'split
+topic "split"
 do [
 
     ; default
@@ -711,9 +736,9 @@ do [
 
 ]
 
-print ""
 
 ; -- squeeze
+topic "squeeze"
 do [
 
     debug squeeze [1 1 2 3 4 2 3 4 4 5 5 6 7]
@@ -727,9 +752,8 @@ do [
 
 ]
 
-print ""
-
 ; -- take
+topic "take"
 do [
 
     debug take "some text" 7
@@ -740,9 +764,9 @@ do [
 
 ]
 
-print ""
 
 ; -- unique
+topic "unique"
 do [
     debug unique [1 2 4 1 3 2]
 
@@ -756,9 +780,9 @@ do [
 
 ]
 
-print ""
 
 ; -- values
+topic "values"
 do [
 
     user: #[
