@@ -300,7 +300,7 @@ print ""
 do [
 
     dict: #[
-        name: John
+        name: "John"
     ]
 
     debug insert [1 2 3 4] 0 "zero"
