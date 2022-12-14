@@ -1363,7 +1363,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "set collection's item at index to given value",
         args        = {
-            "collection": {String, Block, Dictionary, Object, Binary, Bytecode},
+            "collection": {String, Block, Dictionary, Object, Store, Binary, Bytecode},
             "index"     : {Any},
             "value"     : {Any}
         },
@@ -1424,6 +1424,13 @@ proc defineSymbols*() =
                             x.o[y.s] = z
                         else:
                             x.o[$(y)] = z
+                of Store:
+                    case y.kind:
+                        of String, Word, Literal, Label:
+                            setStoreKey(x.sto, y.s, z)
+                        else:
+                            setStoreKey(x.sto, $(y), z)
+                
                 of String:
                     var res: string
                     var idx = 0
