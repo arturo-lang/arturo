@@ -255,6 +255,8 @@ type
             of Object:
                 o*: ValueDict   # fields
                 proto*: Prototype # custom type pointer
+            of Store:
+                sto*: VStore
             of Function:
                 funcType*: VFunction
             of Database:
