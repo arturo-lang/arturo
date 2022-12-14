@@ -44,10 +44,11 @@ let
     BOLD*       = bold()
 
     # paths
-    ROOT_DIR    = r"{getHomeDir()}.arturo".fmt
-    TARGET_DIR  = r"{ROOT_DIR}/bin".fmt
-    TARGET_LIB  = r"{ROOT_DIR}/lib".fmt
-    MAIN        = r"src/arturo.nim"
+    ROOT_DIR        = r"{getHomeDir()}.arturo".fmt
+    TARGET_DIR      = r"{ROOT_DIR}/bin".fmt
+    TARGET_LIB      = r"{ROOT_DIR}/lib".fmt
+    TARGET_STORES   = r"{ROOT_DIR}/stores".fmt
+    MAIN            = r"src/arturo.nim"
 
     # configuration options
     OPTIONS = {
@@ -280,6 +281,7 @@ proc verifyDirectories*() =
     # create target dirs recursively, if they don't exist
     mkdir TARGET_DIR
     mkdir TARGET_LIB
+    mkdir TARGET_STORES
 
 proc updateBuild*() =
     # will only be called in DEV mode -
