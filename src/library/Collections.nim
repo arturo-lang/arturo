@@ -514,7 +514,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get collection's item by given index",
         args        = {
-            "collection": {String, Block, Range, Dictionary, Object, Date, Binary, Bytecode},
+            "collection": {String, Block, Range, Dictionary, Object, Store, Date, Binary, Bytecode},
             "index"     : {Any}
         },
         attrs       = NoAttrs,
@@ -593,6 +593,12 @@ proc defineSymbols*() =
                             push(GetKey(x.o, y.s))
                         else:
                             push(GetKey(x.o, $(y)))
+                of Store:
+                    case y.kind:
+                        of String, Word, Literal, Label:
+                            push(getStoreKey(x.sto, y.s))
+                        else:
+                            push(getStoreKey(x.sto, $(y)))
                 of String:
                     push(newChar(x.s.runeAtPos(y.i)))
                 of Date:
