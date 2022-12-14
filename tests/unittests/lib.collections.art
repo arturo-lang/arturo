@@ -701,3 +701,19 @@ do [
     ; Is it working properly?
 
 ]
+
+print ""
+
+; -- squeeze
+do [
+
+    debug squeeze [1 1 2 3 4 2 3 4 4 5 5 6 7]
+    debug squeeze [1 [4 2 3] 1 2 3 [4 2 3] 4 4 5 5 [6 7] [6 7]]
+    ; It doesn't squeeze the repeated blocks
+
+    debug squeeze "hello world"
+
+    arr: [4 2 1 1 3 6 6]
+    squeeze 'arr, debug arr
+
+]
