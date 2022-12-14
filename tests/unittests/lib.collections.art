@@ -730,3 +730,19 @@ do [
     take 'arr 3, debug arr
 
 ]
+
+print ""
+
+; -- unique
+do [
+    debug unique [1 2 4 1 3 2]
+
+    a: [1 2 4 1 3 2 5 6 5 7 4]
+    unique 'a, a, debug a
+
+    id1: unique.id [1 2 4 1 3 2]
+    id2: unique.id [1 2 4 1 3 2 5 6 5 7 4]
+
+    print id1 <> id2
+
+]
