@@ -601,7 +601,7 @@ do [
 do [
 
     ; How to use it?
-    
+
     ; debug sort.as 'ja [
     ;     "ありがとう" "犬" "こんにちわ" "ねこ" "なまえ" "わたし" "私"
     ;     "いぬ"
@@ -648,5 +648,56 @@ do [
     arr: [user1 user2 user3 user4]
     ; debug sort.by: "surname" arr
     ; debug sort.by: 'surname arr
+
+]
+
+print ""
+
+; -- 'split
+do [
+
+    ; default
+    a: "Arturo"
+    debug split "Arturo"
+
+    debug split [[1 2 3] [4 5 6] [7 8]]
+
+    ;path
+    ; Is it working properly?
+    ; debug split.path "directory/wofilerld"
+    ; returns `[directory/file] :block` instead of `[directory file] :block`
+
+    ; Testing Attributes
+    debug split.words "Hello World!"
+
+    debug split.lines "Hi\nmy\nname\nis..."
+
+    debug split.by: "/" "directory/file.ext"
+
+    debug split.at: 5 "Hello, World"
+    debug split.at: 4 [
+        "Arnold" "Andreas" "Paul" "Ricard" "Linus"
+        "Yanis" "Helena" "Eva" "Blanca"
+    ]
+
+    debug split.every: 3 "split collection to components"
+    debug split.every: 3 [
+        "Arnold" "Andreas" "Paul" "Ricard" "Linus"
+        "Yanis" "Helena" "Eva" "Blanca"
+    ]
+
+    a: [
+        "Arnold" "Andreas" "Paul" "Ricard" "Linus"
+        "Yanis" "Helena" "Eva" "Blanca"
+    ]
+    split.at: 4 'a, debug a
+
+    b: [
+        "Arnold" "Andreas" "Paul" "Ricard" "Linus"
+        "Yanis" "Helena" "Eva" "Blanca"
+    ]
+    ; split.every: 3 'b, debug b
+    ; It's returning a flatten block
+    ; Is it working properly?
 
 ]
