@@ -63,7 +63,7 @@ proc checkStorePath*(
                     discard
 
     let existing = actualPath.fileExists()
-    
+
     return (existing, actualPath, actualKind)
 
 #=======================================
@@ -109,7 +109,7 @@ proc initStore*(
     if doLoad:
         case storeKind:
             of NativeStore:
-                result.data = execDictionary(doParse(storePath, isFile=false))
+                result.data = execDictionary(doParse(storePath, isFile=true))
             of JsonStore:
                 result.data = valueFromJson(readFile(storePath)).d
             of SqliteStore:
