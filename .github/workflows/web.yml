@@ -23,11 +23,9 @@ defaults:
 jobs:  
   build:
     name: "Build & Test"
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        os:
-          - ubuntu-latest
         version:
           - web
     steps:
@@ -52,16 +50,14 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.choosenim
-          key: ${{ matrix.os }}-choosenim-${{ steps.get-date.outputs.date }}
-        if: runner.os != 'Windows'
+          key: web-choosenim-${{ steps.get-date.outputs.date }}
 
       - name: Cache Nimble
         id: cache-nimble
         uses: actions/cache@v3
         with:
           path: ~/.nimble
-          key: ${{ matrix.os }}-nimble-${{ hashFiles('*.nimble') }}
-        if: runner.os != 'Windows'
+          key: web-nimble-${{ hashFiles('*.nimble') }}
 
       - name: Setup nim
         uses: jiro4989/setup-nim-action@v1
@@ -80,5 +76,5 @@ jobs:
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
         with:
-          name: "arturo-${{matrix.version}}-${{matrix.os}}"
+          name: "arturo-${{matrix.version}}"
           path: bin/arturo.js
