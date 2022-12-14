@@ -746,3 +746,20 @@ do [
     print id1 <> id2
 
 ]
+
+print ""
+
+; -- values
+do [
+
+    user: #[
+        name: "John"
+        surname: "Doe"
+        id: "012568"
+        city: "Manchester"
+        age: 45
+    ]
+
+    debug values user
+
+]
