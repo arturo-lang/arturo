@@ -10,13 +10,13 @@
 # Libraries
 #=======================================
 
-import os, tables
+import os, strutils, tables
 
 import helpers/database
 import helpers/io
 import helpers/jsonobject
 
-import vm/values/value
+import vm/values/[printable, value]
 import vm/[exec, globals, parse]
 
 #=======================================
@@ -71,7 +71,19 @@ proc checkStorePath*(
 #=======================================
 
 proc saveStore*(store: VStore) =
-    discard
+    case store.kind:
+        of NativeStore:
+            var nativeData = codify(newDictionary(store.data),pretty = true)
+            nativeData.delete(0..0)
+            writeToFile(store.path, nativeData)
+        of JsonStore:
+            writeToFile(store.path, jsonFromValueDict(store.data, pretty=true))
+        of SqliteStore:
+            # TODO(Helpers/stores) should add support for auto-saving SQLite stores
+            #  labels: bug, values
+            discard
+        else:
+            discard
 
 proc getStoreKey*(store: VStore, key: string): Value =
     GetKey(store.data, key)
