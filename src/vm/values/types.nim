@@ -112,8 +112,9 @@ type
 
     StoreKind* = enum
         NativeStore
-        SqliteStore
         JsonStore
+        SqliteStore
+        UndefinedStore
 
     TypeKind* = enum
         UserType
@@ -178,15 +179,14 @@ type
     VStore* = ref object
         data*       : ValueDict
         path*       : string
+        global*     : bool
         loaded*     : bool
         autosave*   : bool
         case kind*: StoreKind:
-            of NativeStore:
-                discard
             of SqliteStore:
                 when not defined(NOSQLITE):
                     db* : sqlite.DbConn
-            of JsonStore:
+            else:
                 discard
 
     Value* {.final,acyclic.} = ref object
