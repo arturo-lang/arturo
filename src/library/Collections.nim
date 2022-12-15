@@ -494,8 +494,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "flatten given collection by eliminating nested blocks",
         args        = {
-            "collection": {Block},
-
+            "collection": {Block, Literal},
         },
         attrs       = {
             "once"  : ({Logical}, "do not perform recursive flattening")
