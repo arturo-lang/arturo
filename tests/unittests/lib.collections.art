@@ -57,7 +57,7 @@ do [
     ]
 
     ; :string < :char ++ :string
-    topic "append - :string < :char + :char"
+    topic "append - :string < :char + :string"
     do [
 
         a: `a`
@@ -157,19 +157,19 @@ do [
 ]
 
 
-; -- 'combine
-topic "combine"
+; -- 'couple
+topic "couple"
 do [
 
     ; With the same amount
-    debug combine ["one" "two" "three"] [1 2 3]
+    debug couple ["one" "two" "three"] [1 2 3]
 
     ; With different amounts
     bigger: ["one" "two" "three" "I'm out"]
     smaller: [1 2 3]
 
-    debug combine bigger smaller
-    debug combine smaller bigger
+    debug couple bigger smaller
+    debug couple smaller bigger
 
 ]
 
