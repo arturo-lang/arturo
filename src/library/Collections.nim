@@ -1132,13 +1132,6 @@ proc defineSymbols*() =
     # TODO(Collections/remove) is `.index` broken?
     #  Example: `remove.index 3 'a, debug a`
     #  labels: library, bug
-
-    # TODO(Collections/remove) should we add a `.value` option?
-    #  For example: ```
-    #   debug remove [1 [6 2] 5 3 [6 2] 4 5 6] [6 2]
-    #  ```
-    #  This removes "6" & "2", but what if we want to actually remove all [6 2] *instances*?
-    #  labels: library, enhancement, open discussion
     builtin "remove",
         alias       = doubleminus,
         rule        = InfixPrecedence,
