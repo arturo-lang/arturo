@@ -114,6 +114,10 @@ proc defineSymbols*() =
                     else:
                         push newBlock(cleanAppend(x, y, singleValue=true))
 
+    # TODO(Collections/chop) add `.times` option to remove multiple items
+    #  Also, times should accepts literals too
+    #  labels: library, new feature
+    
     builtin "chop",
         alias       = unaliased,
         rule        = PrefixPrecedence,
@@ -475,6 +479,9 @@ proc defineSymbols*() =
                     if cleanX.len == 0: push(VNULL)
                     else: push(cleanX[0])
 
+    # TODO(Collections/flatten) Does not work with Literal values
+    #  This has to be tested out!
+    #  labels: library, bug
     builtin "flatten",
         alias       = unaliased,
         rule        = PrefixPrecedence,
@@ -1115,6 +1122,16 @@ proc defineSymbols*() =
                     else:
                         push newBlock(cleanPrepend(x, y, singleValue=true))
 
+    # TODO(Collections/remove) is `.index` broken?
+    #  Example: `remove.index 3 'a, debug a`
+    #  labels: library, bug
+
+    # TODO(Collections/remove) should we add a `.value` option?
+    #  For example: ```
+    #   debug remove [1 [6 2] 5 3 [6 2] 4 5 6] [6 2]
+    #  ```
+    #  This removes "6" & "2", but what if we want to actually remove all [6 2] *instances*?
+    #  labels: library, enhancement, open discussion
     builtin "remove",
         alias       = doubleminus,
         rule        = InfixPrecedence,
@@ -1676,6 +1693,18 @@ proc defineSymbols*() =
     # TODO(Collections\split) Add better support for unicode strings
     #  Currently, simple split works fine - but using different attributes (at, every, by, etc) doesn't
     #  labels: library,bug
+
+    # TODO(Collections/split) `.by` not working properly with Literal values?
+    #  example: ```
+    #   b: ["Arnold" "Andreas" "Paul" "Ricard" "Linus" "Yanis" "Helena" "Eva" "Blanca"]
+    #   split.every: 3 'b, debug b
+    #  ```
+    #  labels: library, bug
+
+    # TODO(Collections/split) Is `.path` working correctly?
+    #  example: `debug split.path "directory/wofilerld"`
+    #  This should return an array containing `directory` and `wofilerld`, which exactly how it works for me (on macOS), but there could be issues with other OSes?
+    #  labels: library, bug, open discussion
     builtin "split",
         alias       = unaliased,
         rule        = PrefixPrecedence,
