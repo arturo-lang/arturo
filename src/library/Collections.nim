@@ -1152,7 +1152,8 @@ proc defineSymbols*() =
             "once"  : ({Logical}, "remove only first occurence"),
             "index" : ({Logical}, "remove specific index"),
             "prefix": ({Logical}, "remove first matching prefix from string"),
-            "suffix": ({Logical}, "remove first matching suffix from string")
+            "suffix": ({Logical}, "remove first matching suffix from string"),
+            "instance"  : ({Logical}, "remove an instance of a block, instead of its elements.")
         },
         returns     = {String, Block, Dictionary, Nothing},
         example     = """
@@ -1181,7 +1182,10 @@ proc defineSymbols*() =
                     else:
                         SetInPlace(newString(InPlaced.s.removeAll(y)))
                 elif InPlaced.kind == Block:
-                    if (hadAttr("once")):
+                    if y.kind == Block and hadAttr("instance"):
+                        InPlaced.kind = Block
+                        InPlaced.a = Inplaced.a.removeAllInstances(y)
+                    elif (hadAttr("once")):
                         SetInPlace(newBlock(InPlaced.a.removeFirst(y)))
                     elif (hadAttr("index")):
                         # TODO(General) All `SetInPlace` or `InPlace=` that change the type of object should be changed
@@ -1215,7 +1219,9 @@ proc defineSymbols*() =
                         push(newString(x.s.removeAll(y)))
                 elif x.kind == Block:
                     ensureCleaned(x)
-                    if (hadAttr("once")):
+                    if y.kind == Block and hadAttr("instance"):
+                        push(newBlock(cleanX.removeAllInstances(y)))
+                    elif (hadAttr("once")):
                         push(newBlock(cleanX.removeFirst(y)))
                     elif (hadAttr("index")):
                         push(newBlock(cleanX.removeByIndex(y.i)))
