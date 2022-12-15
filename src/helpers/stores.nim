@@ -74,7 +74,7 @@ proc saveStore*(store: VStore) =
     case store.kind:
         of NativeStore:
             var nativeData = codify(newDictionary(store.data),pretty = true)
-            nativeData.delete(0..0)
+            nativeData = strip(nativeData)[2..^2]
             writeToFile(store.path, nativeData)
         of JsonStore:
             writeToFile(store.path, jsonFromValueDict(store.data, pretty=true))
