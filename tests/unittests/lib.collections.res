@@ -229,7 +229,9 @@ true
 
 >> set
 
-Christian :string 
+[name:Michael age:34] :dictionary 
+[name:Jane age:34] :dictionary 
+[name:Christian age:34] :dictionary 
 [one 2 3 4] :block 
 
 >> shuffle
@@ -268,6 +270,7 @@ Art :string
 
 >> sort - .as
 
+[ábaco aberración abismo dos Dos pero pértiga perversión tres Tres uno Uno] :block 
 
 >> sort - .sensitive
 
@@ -283,11 +286,14 @@ Art :string
 
 >> sort - .by
 
+[[name:John surname:Doe] [name:Jane surname:Doe] [name:Arnold surname:Schwarzenegger] [name:John surname:Wick]] :block 
+[[name:Arnold surname:Schwarzenegger] [name:Jane surname:Doe] [name:John surname:Doe] [name:John surname:Wick]] :block 
 
 >> split
 
 [A r t u r o] :block 
 [[1 2 3] [4 5 6] [7 8]] :block 
+[directory wofilerld] :block 
 [Hello World!] :block 
 [Hi my name is...] :block 
 [directory file.ext] :block 
