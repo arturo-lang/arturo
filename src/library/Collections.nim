@@ -114,10 +114,7 @@ proc defineSymbols*() =
                     else:
                         push newBlock(cleanAppend(x, y, singleValue=true))
 
-    # TODO(Collections/chop) add `.times` option to remove multiple items
-    #  Also, times should accepts literals too
-    #  labels: library, new feature
-    
+
     builtin "chop",
         alias       = unaliased,
         rule        = PrefixPrecedence,
@@ -125,7 +122,9 @@ proc defineSymbols*() =
         args        = {
             "collection": {String, Block, Literal}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "times"     : ({Integer}, "remove multiple items")
+        },
         returns     = {String, Block, Nothing},
         example     = """
             print chop "books"          ; book
@@ -135,22 +134,30 @@ proc defineSymbols*() =
             chop 'str                   ; str: "book"
             ..........
             chop [1 2 3 4]              ; => [1 2 3]
+            ..........
+            chop.times: 3 "Arturo"      ; Art
         """:
             #=======================================================
+            var times = 1
+
+            if checkAttr("times"):
+                times = aTimes.i
+
             if x.kind == Literal:
                 ensureInPlace()
                 if InPlaced.kind == String:
-                    InPlaced.s = InPlaced.s[0..^2]
+                    InPlaced.s = InPlaced.s[0..^(times + 1)]
                 elif InPlaced.kind == Block:
                     if InPlaced.a.len > 0:
-                        InPlaced.a = InPlaced.a[0..^2]
+                        InPlaced.a = InPlaced.a[0..^(times + 1)]
             else:
                 if x.kind == String:
-                    push(newString(x.s[0..^2]))
+                    push(newString(x.s[0..^(times + 1)]))
                 elif x.kind == Block:
                     ensureCleaned(x)
                     if cleanX.len == 0: push(newBlock())
-                    else: push(newBlock(cleanX[0..^2]))
+                    else: push(newBlock(cleanX[0..^(times + 1)]))
+
 
     builtin "combine",
         alias       = unaliased,
