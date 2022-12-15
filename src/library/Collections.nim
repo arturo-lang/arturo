@@ -134,6 +134,8 @@ proc defineSymbols*() =
             chop 'str                   ; str: "book"
             ..........
             chop [1 2 3 4]              ; => [1 2 3]
+            ..........
+            chop.times: 3 "Arturo"      ; Art
         """:
             #=======================================================
             var times = 1
