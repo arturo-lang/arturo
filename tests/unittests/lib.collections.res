@@ -1,4 +1,3 @@
-
 >> append
 
 
@@ -23,7 +22,7 @@ ab :string
 cd :string 
 cd :string 
 
->> append - :string < :char + :char
+>> append - :string < :char + :string
 
 art :string 
 art :string 
@@ -64,7 +63,7 @@ Art :string
 Art :string 
 [1 2 3] :block 
 
->> combine
+>> couple
 
 [[one 1] [two 2] [three 3]] :block 
 [[one 1] [two 2] [three 3]] :block 
@@ -146,7 +145,7 @@ hello :string
 
 o :char 
 uro :string 
-[one two three] :block 
+three :string 
 [two three] :block 
 
 >> max
@@ -161,7 +160,7 @@ Boston :string
 
 >> permutate
 
-[[A B C] [A C B] [C A B] [B A C] [B C A] [C B A]] :block 
+[[A B C] [A C B] [B A C] [B C A] [C A B] [C B A]] :block 
 [[[1 2 3] [4 5 6]] [[4 5 6] [1 2 3]]] :block 
 
 >> remove
@@ -296,7 +295,7 @@ Art :string
 [[Arnold Andreas Paul Ricard] [Linus Yanis Helena Eva Blanca]] :block 
 [spl it  col lec tio n t o c omp one nts] :block 
 [[Arnold Andreas Paul] [Ricard Linus Yanis] [Helena Eva Blanca]] :block 
-[[Arnold Andreas Paul Ricard] [Ricard Linus Yanis Helena Eva Blanca]] :block 
+[[Arnold Andreas Paul Ricard Linus] [Linus Yanis Helena Eva Blanca]] :block 
 
 >> squeeze
 
@@ -319,4 +318,4 @@ true
 
 >> values
 
-[John Doe 012568 Manchester 45] :block 
+[John Doe 012568 Manchester 45] :block
