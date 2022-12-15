@@ -129,25 +129,16 @@ do [
     a: "Arturo"
     debug chop "Artu"
     debug chop chop chop "Arturo"
-    ; -- remove me on future
-    ; chop chop chop 'a, debug a
-    ; I can't do it, but:
 
-    ; TODO(Collections/chop) add times Attribute to remove multiple items
-    ; labels: library
-    ; Also, times should accepts literals too
-
-    ; -- uncomment me on future
-    ; debug chop.times 3 "Arturo" ; returns Art :string
-    ; chop.times 3 'a, debug a ; returns Art :string
+    debug chop.times: 3 "Arturo" ; returns Art :string
+    chop.times: 3 'a, debug a ; returns Art :string
 
     b: [1 2 3 4 5]
     debug chop [1 2 3 4]
     debug chop chop [1 2 3 4 5]
 
-    ; -- uncomment me on future
-    ; debug chop.times 2 "[1 2 3 4 5] ; returns [1 2 3] :block
-    ; chop.times 2 'b, debug b ; returns [1 2 3] :block
+    debug chop.times: 2 [1 2 3 4 5] ; returns [1 2 3] :block
+    chop.times: 2 'b, debug b ; returns [1 2 3] :block
 
     c: "Artu"
     d: [1 2 3 4]
