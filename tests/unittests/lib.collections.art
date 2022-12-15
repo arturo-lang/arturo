@@ -1,0 +1,798 @@
+; helper function
+debug: $[variable][
+    print[variable type variable]
+]
+
+topic: $[topic :string] [
+    print ""
+    print ~">> |topic|"
+    print ""
+]
+
+; ==> Tests
+
+; -- 'append
+topic "append"
+do [
+    ; :string < :string ++ :string
+    topic "append - :string < :string + :string"
+    do [
+
+        a: "Art"
+        debug append "Art" "uro"
+        append 'a "uro", debug a
+
+        b: "Lang"
+        debug "Lang" ++ "uage"
+        'b ++ "uage", debug b
+
+    ]
+
+    ; :string < :string ++ :char
+    topic "append - :string < :string + :char"
+    do [
+
+        a: "Artur"
+        debug append "Artur" `o`
+        append 'a `o`, debug a
+
+        b: "Languag"
+        debug "Languag" ++ `e`
+        'b ++ `e`, debug b
+
+    ]
+
+    ; :string < :char ++ :char
+    topic "append - :string < :char + :char"
+    do [
+
+        a: `a`
+        debug append `a` `b`
+        append 'a `b`, debug a
+
+        b: `c`
+        debug `c` ++ `d`
+        'b ++ `d`, debug b
+
+    ]
+
+    ; :string < :char ++ :string
+    topic "append - :string < :char + :string"
+    do [
+
+        a: `a`
+        debug append `a` "rt"
+        append 'a "rt", debug a
+
+        b: `l`
+        debug `l` ++ "ang"
+        'b ++ "ang", debug b
+
+    ]
+
+    ; [:string] < [:string] ++ :string
+    topic "append - [:string] < [:string] + :string"
+    do [
+
+        a: ["A" "r" "t" "u" "r"]
+        debug append ["A" "r" "t" "u" "r"]    "o"
+        append 'a "o", debug a
+
+        b: ["L" "a" "n" "g" "u" "a" "g"]
+        debug ["L" "a" "n" "g" "u" "a" "g"] ++ "e"
+        'b ++ "e", debug b
+
+        ; Testing precedence
+        c: ["A" "r" "t"]
+        debug append ["A" "r" "t"] append "u" append "r"    "o"
+        append 'c append "u" append "r" "o", debug c
+
+        d: ["L" "a" "n" "g"]
+        debug ["L" "a" "n" "g"] ++ "u" ++ "a" ++ "g" ++ "e"
+        'd ++ "u" ++ "a" ++ "g" ++ "e", debug d
+
+    ]
+
+    ; [:string] < [:string] ++ [:string]
+    topic "append - [:string] < [:string] + [:string]"
+    do [
+
+        a: ["A" "r" "t"]
+        debug append ["A" "r" "t"] ["u" "r" "o"]
+        append 'a ["u" "r" "o"], debug a
+
+        b: ["L" "a" "n" "g"]
+        debug ["L" "a" "n" "g"] ++ ["u" "a" "g" "e"]
+        'b ++ ["u" "a" "g" "e"], debug b
+
+    ]
+
+    ; [:integer] < [:integer] ++ [:integer] | :integer
+    topic "append - [:integer] < [:integer] + [:integer]|:integer"
+    do [
+
+        a: [1 2 3]
+        debug append [1 2 3] [4 5 6]
+        'a ++ [4 5 6], debug a
+
+        debug append [1 2 3 4 5 6] 7
+        'a ++ 7, debug a
+
+    ]
+]
+
+
+; -- 'chop
+topic "chop"
+do [
+
+    a: "Arturo"
+    debug chop "Artu"
+    debug chop chop chop "Arturo"
+    ; -- remove me on future
+    ; chop chop chop 'a, debug a
+    ; I can't do it, but:
+
+    ; TODO(Collections/chop) add times Attribute to remove multiple items
+    ; labels: library
+    ; Also, times should accepts literals too
+
+    ; -- uncomment me on future
+    ; debug chop.times 3 "Arturo" ; returns Art :string
+    ; chop.times 3 'a, debug a ; returns Art :string
+
+    b: [1 2 3 4 5]
+    debug chop [1 2 3 4]
+    debug chop chop [1 2 3 4 5]
+
+    ; -- uncomment me on future
+    ; debug chop.times 2 "[1 2 3 4 5] ; returns [1 2 3] :block
+    ; chop.times 2 'b, debug b ; returns [1 2 3] :block
+
+    c: "Artu"
+    d: [1 2 3 4]
+    chop 'c, debug c
+    chop 'd, debug d
+
+]
+
+
+; -- 'couple
+topic "couple"
+do [
+
+    ; With the same amount
+    debug couple ["one" "two" "three"] [1 2 3]
+
+    ; With different amounts
+    bigger: ["one" "two" "three" "I'm out"]
+    smaller: [1 2 3]
+
+    debug couple bigger smaller
+    debug couple smaller bigger
+
+]
+
+
+; -- 'drop
+topic "drop"
+do [
+
+    a: "Arturo"
+    debug drop "Arturo" 2
+    drop 'a 2, debug a
+
+    b: [ 4 3 2 1 2 3 4 5 ]
+    debug drop [ 4 3 2 1 2 3 4 5 ] 3
+    drop 'b 3, debug b
+
+]
+
+
+; -- 'empty
+topic "empty"
+do [
+
+    a: ["Arturo" "C" "Python" "Ruby"]
+    b: [1 2 3 4 5 6 7 8 9 10]
+    c: ['north 'south 'east 'west]
+
+    print "before empty"
+    debug a
+    debug b
+    debug c
+
+    empty 'a
+    empty 'b
+    empty 'c
+
+    print "after empty"
+    debug a
+    debug b
+    debug c
+
+]
+
+
+; -- 'extend
+topic "extend"
+do [
+
+    person: #[ name: "john" surname: "doe" ]
+    debug person
+    debug extend person #[ age: 35 ]
+
+]
+
+
+; -- 'first
+topic "first"
+do [
+
+    debug first "Arturo"
+    debug first.n: 3 "Arturo"
+
+    debug first ["one" "two" "three"]
+    debug first.n: 2 ["one" "two" "three"]
+
+]
+
+
+; -- 'flatten
+topic "flatten"
+do [
+
+    arr: [[1 2 3] [4 5 6]]
+
+    debug flatten arr
+    debug arr
+    ; flatten 'arr, debug arr
+    ; note: it's on documentation, but cannot perform in-place
+    ; TODO(Collections/flatten) should flatten got an :literal as parameter?
+    ; labels: library, open discussion
+    debug flatten [1 [2 3] [4 [5 6]]]
+    debug flatten.once [1 [2 3] [4 [5 6]]]
+
+]
+
+
+; -- 'get
+topic "get"
+do [
+
+    user: #[
+        name: "John"
+        surname: "Doe"
+    ]
+
+    debug user\name
+    debug user\["name"]
+    debug get user 'name
+    debug get user 'surname
+    debug user\["surname"]
+
+    user\name: "Jane"
+    debug get user 'name
+
+    arr: ["zero" "one" "two"]
+    debug arr\0
+    debug get arr 0
+
+    arr\[0]: "first"
+    debug arr
+
+    d: to :date .format: "MMM dd" "Jan 15"
+    debug get d 'day
+    debug get d 'Month
+
+    name: "John Doe"
+    namesInitial: get name 0
+    surnamesInitial: get name 5
+
+    debug namesInitial
+    debug surnamesInitial
+
+]
+
+
+; -- 'index
+topic "index"
+do [
+
+    user: #[
+        name: "John"
+        surname: "Doe"
+    ]
+
+    debug index "hello" "e"
+    debug index [1 2 3] 3
+    debug index "hello" "x" ; returns null
+    debug index user "John"
+    debug index user "Doe"
+
+]
+
+
+; -- 'insert
+topic "insert"
+do [
+
+    dict: #[
+        name: "John"
+    ]
+
+    debug insert [1 2 3 4] 0 "zero"
+    debug insert "heo" 2 "ll"
+
+    insert 'dict "name" "Joe, Again", debug dict
+
+    debug insert [1 2 6 7 8 9 10] 2 [3 4 5]
+
+]
+
+
+; -- 'keys
+topic "keys"
+do [
+
+    user: #[
+        name: "John"
+        surname: "Doe"
+    ]
+
+    debug keys user
+]
+
+
+; -- 'last
+topic "last"
+do [
+
+    debug last "Arturo"
+    debug last.n: 3 "Arturo"
+
+    debug last ["one" "two" "three"]
+    debug last.n: 2 ["one" "two" "three"]
+
+]
+
+
+; -- 'max
+topic "max"
+do [
+
+    debug max [4 2 8 5 1 9]
+    debug max ["Granada" "Manchester" "Boston"]
+
+]
+
+
+; -- 'min
+topic "min"
+do [
+
+    debug min [4 2 8 5 1 9]
+    debug min ["Granada" "Manchester" "Boston"]
+
+]
+
+
+; -- 'permutate
+topic "permutate"
+do [
+
+    debug permutate [A B C]
+    debug permutate [[1 2 3] [4 5 6]]
+
+]
+
+
+; -- 'remove
+topic "remove"
+do [
+    ; default
+    topic "remove - default"
+    do [
+
+        a: "Arturo"
+        debug remove "Arturo" "uro"
+        remove 'a "uro", debug a
+
+        b: "Language"
+        debug "Language" -- "uage"
+        'b -- "uage", debug b
+
+        debug remove [1 2 3 4] 4
+        debug remove [1 2 3 4] [2 4]
+
+        c: [1 2 3 5 6 4]
+        debug [1 2 3 4] -- 4
+        debug [1 2 3 4] -- [2 4]
+        remove 'c [5 6], debug c
+
+        ; try with block
+        debug remove [1 6 2 5 3 4 5 6] [5 2]
+        debug remove [1 [6 2] 5 3 [6 2] 4 5 6] [6 2]
+
+        ; try with char
+        debug remove "hello" `l`
+
+    ]
+
+    ; .index
+    topic "remove - .index"
+    do[
+
+        a: "Arturo"
+        ; TODO(COllections/remove) is .index broken?
+        ; labels: bug, library
+        ; remove.index 3 'a, debug a
+
+    ]
+
+    ; .prefix
+    topic "remove - .prefix"
+    do [
+
+        a: "test_function.art"
+        debug remove.prefix "test_function.art" "test_"
+        remove.prefix 'a "test_", debug a
+
+    ]
+
+    ; .suffix
+    topic "remove - .suffix"
+    do [
+
+        a: "test_function.art"
+        debug remove.suffix "test_function.art" ".art"
+        remove.suffix 'a ".art", debug a
+
+    ]
+
+    ; .key
+    topic "remove - .key"
+    do [
+
+        user: #[
+            name: "John"
+            surname: "Doe"
+        ]
+
+        remove.key 'user "surname"
+        debug user
+
+    ]
+
+    ; .once
+    topic "remove - .once"
+    do [
+
+        a: "hello"
+        b: [1 2 5 3 4 5]
+
+        debug remove.once "hello" "l"
+        debug remove.once [1 2 5 3 4 5] 5
+
+        remove.once 'a "l", debug a
+        remove.once 'b 5, debug b
+
+        ; try with block
+        debug remove.once [1 6 2 5 3 4 5 6] [5 2]
+        debug remove.once [1 [6 2] 5 3 4 5 6] [6 2]
+
+        ; try with char
+        debug remove.once "hello" `l`
+
+    ]
+]
+
+
+; -- 'repeat
+topic "repeat"
+do [
+
+    debug repeat "hello" 3
+
+    a: "Arturo"
+    repeat 'a 3, debug a
+
+    debug repeat [1 2 3] 3
+    debug repeat [[1 2 3]] 3
+
+]
+
+
+; -- 'reverse
+topic "reverse"
+do [
+
+    debug reverse [1 2 3 4 5]
+    debug reverse [[1 2 3] [4 5 6] [7 8 9]]
+    debug reverse "Manchester"
+
+    str: "Arturo"
+    reverse 'str, debug str
+
+]
+
+
+; -- 'sample
+topic "sample"
+do [
+
+    table: ["apple" "appricot" "banana"]
+    fruit: sample table
+
+    print type fruit
+    print in? fruit table
+
+]
+
+
+; -- 'set
+topic "set"
+do [
+
+    myDict: #[
+        name: "John"
+        age: 34
+    ]
+
+    ; Is not working
+    ; set myDict 'name "Michael"
+    ; debug name
+
+    myDict\"name": "Christian"
+    debug name
+
+    arr: [1 2 3 4]
+    set arr 0 "one", debug arr
+
+]
+
+
+; -- 'shuffle
+topic "shuffle"
+do [
+
+    a: shuffle [1 2 3 4 5 6]
+    print size a
+    print every? a 'item [ type? item :integer ]
+
+    a: shuffle ["Manchester" "Granada" "Boston" "Davos"]
+    print size a
+    print every? a 'item [ type? item :string ]
+
+]
+
+
+; -- 'size
+topic "size"
+do [
+
+    print size ["one" "two" "three"]
+    print size #[name: "John", surname: "Doe"]
+    print size "Good morning!"
+    print size "Konnichiwa!"
+    print size "こんいちわ！"
+
+]
+
+
+; -- 'slice
+topic "slice"
+do [
+
+    debug slice "Arturo" 0 2
+
+    compiled: slice ["Arturo" "Python" "Ruby" "C" "C++" "Nim" "Wren"] 3 5
+    debug compiled
+
+]
+
+
+; -- 'sort
+topic "sort"
+do [
+
+    ; default
+    topic "sort - default"
+    do [
+
+        debug sort [5 4 3 2 1]
+        debug sort ["Ruby" "Arturo" "Python"]
+
+        a: [5 4 3 2 1]
+        b: ["Ruby" "Arturo" "Python"]
+        sort 'a, debug a
+        sort 'b, debug b
+
+    ]
+
+    ; .values
+    topic "sort - .values"
+    do [
+
+        user: #[
+            name: "John"
+            surname: "Doe"
+            id: "012568"
+            city: "Manchester"
+            age: 45
+        ]
+
+        sort.values 'user, debug user
+
+    ]
+
+    ; .as
+    topic "sort - .as"
+    do [
+
+        ; How to use it?
+
+        ; debug sort.as 'ja [
+        ;     "ありがとう" "犬" "こんにちわ" "ねこ" "なまえ" "わたし" "私"
+        ;     "いぬ"
+        ; ]
+
+    ]
+
+    ; .sensitive
+    topic "sort - .sensitive"
+    do [
+
+        debug sort.sensitive
+            ["Ruby" "python" "Arturo" "ruby" "arturo" "Python"]
+
+        a: ["Ruby" "python" "Arturo" "ruby" "arturo" "Python"]
+        sort.sensitive 'a, debug a
+
+    ]
+
+    ; descending
+    topic "sort - .descending"
+    do [
+
+        debug sort.descending [5 3 2 1 4]
+        debug sort.descending ["Ruby" "Arturo" "Python"]
+
+        a: [5 4 3 2 1]
+        b: ["Ruby" "Arturo" "Python"]
+        sort.descending 'a, debug a
+        sort.descending 'b, debug b
+
+    ]
+
+    ; .by
+    topic "sort - .by"
+    do [
+
+        ; Note: It isn't working,
+        ; use by without `:` returns an error: `cannot perform sort -> :string`
+        ; and using with `:`, the function runs infinitely
+
+        user1: #[ name: "John" surname: "Doe" ]
+        user2: #[ name: "Jane" surname: "Doe" ]
+        user3: #[ name: "John" surname: "Wick" ]
+        user4: #[ name: "Arnold" surname: "Schwarzenegger" ]
+
+        arr: [user1 user2 user3 user4]
+        ; debug sort.by: "surname" arr
+        ; debug sort.by: 'surname arr
+
+    ]
+]
+
+
+; -- 'split
+topic "split"
+do [
+
+    ; default
+    a: "Arturo"
+    debug split "Arturo"
+
+    debug split [[1 2 3] [4 5 6] [7 8]]
+
+    ;path
+    ; Is it working properly?
+    ; debug split.path "directory/wofilerld"
+    ; returns `[directory/file] :block` instead of `[directory file] :block`
+
+    ; Testing Attributes
+    debug split.words "Hello World!"
+
+    debug split.lines "Hi\nmy\nname\nis..."
+
+    debug split.by: "/" "directory/file.ext"
+
+    debug split.at: 5 "Hello, World"
+    debug split.at: 4 [
+        "Arnold" "Andreas" "Paul" "Ricard" "Linus"
+        "Yanis" "Helena" "Eva" "Blanca"
+    ]
+
+    debug split.every: 3 "split collection to components"
+    debug split.every: 3 [
+        "Arnold" "Andreas" "Paul" "Ricard" "Linus"
+        "Yanis" "Helena" "Eva" "Blanca"
+    ]
+
+    a: [
+        "Arnold" "Andreas" "Paul" "Ricard" "Linus"
+        "Yanis" "Helena" "Eva" "Blanca"
+    ]
+    split.at: 4 'a, debug a
+
+    b: [
+        "Arnold" "Andreas" "Paul" "Ricard" "Linus"
+        "Yanis" "Helena" "Eva" "Blanca"
+    ]
+    ; split.every: 3 'b, debug b
+    ; It's returning a flatten block
+    ; Is it working properly?
+
+]
+
+
+; -- squeeze
+topic "squeeze"
+do [
+
+    debug squeeze [1 1 2 3 4 2 3 4 4 5 5 6 7]
+    debug squeeze [1 [4 2 3] 1 2 3 [4 2 3] 4 4 5 5 [6 7] [6 7]]
+    ; It doesn't squeeze the repeated blocks
+
+    debug squeeze "hello world"
+
+    arr: [4 2 1 1 3 6 6]
+    squeeze 'arr, debug arr
+
+]
+
+; -- take
+topic "take"
+do [
+
+    debug take "some text" 7
+    debug take ["Arnold" "Andreas" "Paul"] 2
+
+    arr: 1..10
+    take 'arr 3, debug arr
+
+]
+
+
+; -- unique
+topic "unique"
+do [
+    debug unique [1 2 4 1 3 2]
+
+    a: [1 2 4 1 3 2 5 6 5 7 4]
+    unique 'a, a, debug a
+
+    id1: unique.id [1 2 4 1 3 2]
+    id2: unique.id [1 2 4 1 3 2 5 6 5 7 4]
+
+    print id1 <> id2
+
+]
+
+
+; -- values
+topic "values"
+do [
+
+    user: #[
+        name: "John"
+        surname: "Doe"
+        id: "012568"
+        city: "Manchester"
+        age: 45
+    ]
+
+    debug values user
+
+]
