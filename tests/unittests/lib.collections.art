@@ -539,12 +539,14 @@ do [
         age: 34
     ]
 
-    ; Is not working
-    ; set myDict 'name "Michael"
-    ; debug name
+    set myDict 'name "Michael"
+    debug myDict
 
-    myDict\"name": "Christian"
-    debug name
+    myDict\name: "Jane"
+    debug myDict
+
+    myDict\["name"]: "Christian"
+    debug myDict
 
     arr: [1 2 3 4]
     set arr 0 "one", debug arr
@@ -632,10 +634,7 @@ do [
 
         ; How to use it?
 
-        ; debug sort.as 'ja [
-        ;     "ありがとう" "犬" "こんにちわ" "ねこ" "なまえ" "わたし" "私"
-        ;     "いぬ"
-        ; ]
+        debug sort.as: 'es ["uno","dos","tres","Uno","Dos","Tres","pero","pértiga","perversión","ábaco","abismo","aberración"]
 
     ]
 
@@ -669,18 +668,14 @@ do [
     topic "sort - .by"
     do [
 
-        ; Note: It isn't working,
-        ; use by without `:` returns an error: `cannot perform sort -> :string`
-        ; and using with `:`, the function runs infinitely
-
         user1: #[ name: "John" surname: "Doe" ]
         user2: #[ name: "Jane" surname: "Doe" ]
         user3: #[ name: "John" surname: "Wick" ]
         user4: #[ name: "Arnold" surname: "Schwarzenegger" ]
 
-        arr: [user1 user2 user3 user4]
-        ; debug sort.by: "surname" arr
-        ; debug sort.by: 'surname arr
+        arr: @[user1 user2 user3 user4]
+        debug sort.by: "surname" arr
+        debug sort.by: 'name arr
 
     ]
 ]
@@ -697,9 +692,7 @@ do [
     debug split [[1 2 3] [4 5 6] [7 8]]
 
     ;path
-    ; Is it working properly?
-    ; debug split.path "directory/wofilerld"
-    ; returns `[directory/file] :block` instead of `[directory file] :block`
+    debug split.path "directory/wofilerld"
 
     ; Testing Attributes
     debug split.words "Hello World!"
@@ -726,10 +719,7 @@ do [
     ]
     split.at: 4 'a, debug a
 
-    b: [
-        "Arnold" "Andreas" "Paul" "Ricard" "Linus"
-        "Yanis" "Helena" "Eva" "Blanca"
-    ]
+    b: ["Arnold" "Andreas" "Paul" "Ricard" "Linus" "Yanis" "Helena" "Eva" "Blanca"]
     ; split.every: 3 'b, debug b
     ; It's returning a flatten block
     ; Is it working properly?
