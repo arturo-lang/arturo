@@ -2459,9 +2459,6 @@ func hash*(v: Value): Hash {.inline.}=
 
         of Store        :
             result = 1 
-            for k,val in pairs(v.sto.data):
-                result = result !& hash(k)
-                result = result !& hash(val)
             result = result !& hash(v.sto.path)
             result = result !& hash(v.sto.kind)
             result = !$ result
