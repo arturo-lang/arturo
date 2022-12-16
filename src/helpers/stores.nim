@@ -69,6 +69,16 @@ proc checkStorePath*(
     return (existing, actualPath, actualKind)
 
 #=======================================
+# Templates
+#=======================================
+
+template savePendingStores*(): untyped =
+    if Stores.len > 0:
+        for store in Stores:
+            if store.pending:
+                store.saveStore()
+
+#=======================================
 # Methods
 #=======================================
 
@@ -141,6 +151,8 @@ proc setStoreKey*(store: VStore, key: string, value: Value) =
     
     if store.autosave:
         saveStore(store, one=true, key=key)
+    else:
+        store.pending = true
 
 proc initStore*(
     path: string, 
@@ -159,6 +171,7 @@ proc initStore*(
         global      : global,
         loaded      : doLoad,
         autosave    : autosave,
+        pending     : false,
         kind        : storeKind
     )
 
