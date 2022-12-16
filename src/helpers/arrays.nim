@@ -47,6 +47,14 @@ proc removeFirst*(arr: ValueArray, what: Value): ValueArray =
         else:
             result.add(v)
 
+proc removeFirstInstance*(arr: ValueArray, what: Value): ValueArray =
+    var searching = true
+    for v in arr:
+        if searching and v==what:
+            searching = false
+        else:
+            result.add(v)
+
 proc removeAll*(arr: ValueArray, what: Value): ValueArray =
     if what.kind==Block:
         for v in arr:
