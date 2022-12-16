@@ -28,25 +28,28 @@ import vm/[errors, values/value]
 
 var
     # symbols
-    Syms* {.global.}      : SymTable            ## The symbol table: all the variables 
+    Syms* {.global.}        : SymTable          ## The symbol table: all the variables 
                                                 ## with their associated values
 
     # symbol aliases
-    Aliases* {.global.}   : SymbolDict          ## The symbol aliases: all the symbols
+    Aliases* {.global.}     : SymbolDict        ## The symbol aliases: all the symbols
                                                 ## with all their associated variables
                                                 ## they point to
 
     # libraries 
-    Libraries* {.global.} : seq[BuiltinAction]  ## The list of all builtin libraries
-                                                ## to be imported at startup
+    Libraries* {.global.}   : seq[BuiltinAction]    ## The list of all builtin libraries
+                                                    ## to be imported at startup
     
     # dictionary symbols stack
-    DictSyms* {.global.}  : seq[ValueDict]      ## The stack of dictionaries to be filled
-                                                ## when using `execDictionary`
+    DictSyms* {.global.}    : seq[ValueDict]        ## The stack of dictionaries to be filled
+                                                    ## when using `execDictionary`
     
     # active stores
-    Stores* {.global.}    : seq[VStore]         ## The list of active stores to be stored
-                                                ## before app termination
+    Stores* {.global.}      : seq[VStore]           ## The list of active stores to be stored
+                                                    ## before app termination
+
+    # global configuration
+    Config* {.global.}      : VStore                ## The global configuration store
 
 #=======================================
 # Helpers
