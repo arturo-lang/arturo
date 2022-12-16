@@ -92,7 +92,7 @@ proc saveStore*(store: VStore, one = false, key: string = "") =
         of NativeStore:
             writeToFile(
                 store.path, 
-                codify(newDictionary(store.data),pretty=true, unwrapped=true)
+                codify(newDictionary(store.data),pretty=true, unwrapped=true).strip()
             )
         of JsonStore:
             writeToFile(store.path, jsonFromValueDict(store.data, pretty=true))
