@@ -78,6 +78,11 @@ template savePendingStores*(): untyped =
             if store.pending:
                 store.saveStore()
 
+template ensureLoaded*(store: VStore): untyped =
+    if not store.loaded:
+        store.loadStore()
+        store.loaded = true
+
 #=======================================
 # Methods
 #=======================================
@@ -139,9 +144,7 @@ proc createEmptyStoreOnDisk*(store: VStore) =
             discard
 
 proc getStoreKey*(store: VStore, key: string): Value =
-    if not store.loaded:
-        store.loadStore()
-        store.loaded = true
+    ensureLoaded(store)
 
     GetKey(store.data, key)
 
@@ -154,9 +157,7 @@ proc setStoreKey*(store: VStore, key: string, value: Value) =
     if unlikely(not canStoreKey(store.kind, value.kind)):
         RuntimeError_CannotStoreKey(key, ":" & ($(value.kind)).toLowerAscii(), ($(store.kind)).replace("Store",""))
 
-    if not store.loaded:
-        store.loadStore()
-        store.loaded = true
+    ensureLoaded(store)
     
     store.data[key] = value
     
