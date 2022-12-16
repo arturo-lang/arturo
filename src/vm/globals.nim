@@ -49,7 +49,7 @@ var
                                                     ## before app termination
 
     # global configuration
-    Config* {.global.}      : VStore                ## The global configuration store
+    Config* {.global.}      : Value                 ## The global configuration store
 
 #=======================================
 # Helpers
