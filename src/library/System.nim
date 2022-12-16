@@ -57,6 +57,33 @@ proc defineSymbols*() =
         description = "a dictionary with all command-line arguments parsed":
             newDictionary(parseCmdlineArguments())
 
+    builtin "config",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "get global configuration",
+        args        = NoArgs,
+        attrs       = {
+            "args"      : ({Integer},"use given error code"),
+        },
+        returns     = {Store},
+        # TODO(System/config) add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            #=======================================================
+            if Config.isNil:
+                echo "config was nil"
+                Config = initStore(
+                    "config",
+                    doLoad=true,
+                    createIfNotExists=true,
+                    global=true,
+                    autosave=true,
+                    kind=NativeStore
+                )
+            
+            push newStore(Config)
+
     when not defined(WEB):
         # TODO(System\env) could it be used for Web/JS builds too?
         #  and what type of environment variables could be served or would be useful serve?
