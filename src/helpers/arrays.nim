@@ -40,12 +40,20 @@ func removeFirst*(str: string, what: string): string =
         result = str
 
 proc removeFirst*(arr: ValueArray, what: Value): ValueArray =
-    var searching = true
-    for v in arr:
-        if searching and v==what:
-            searching = false
-        else:
-            result.add(v)
+    if what.kind==Block:
+        var to_remove = toHashSet(what.a)
+        for v in arr:
+            if to_remove.contains(v):
+                to_remove.excl(v)
+            else:
+                result.add(v)
+    else:
+        var searching = true
+        for v in arr:
+            if searching and v==what:
+                searching = false
+            else:
+                result.add(v)
 
 proc removeAll*(arr: ValueArray, what: Value): ValueArray =
     if what.kind==Block:
