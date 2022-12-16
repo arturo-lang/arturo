@@ -27,6 +27,8 @@ when not defined(WEB):
     else:
         import std/posix_utils
 
+import helpers/stores
+
 import vm/lib
 import vm/[env, errors]
 
@@ -178,6 +180,10 @@ proc defineSymbols*() =
             if checkAttr("with"):
                 errCode = aWith.i
 
+            if Stores.len > 0:
+                for store in Stores:
+                    store.saveStore()
+
             quit(errCode)
 
     builtin "panic",
@@ -205,6 +211,10 @@ proc defineSymbols*() =
             var code = 0
             if checkAttr("code"):
                 code = aCode.i
+
+            if Stores.len > 0:
+                for store in Stores:
+                    store.saveStore()
 
             if (hadAttr("unstyled")):
                 echo $(x)
