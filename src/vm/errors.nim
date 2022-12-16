@@ -257,6 +257,12 @@ proc RuntimeError_KeyNotFound*(sym: string, alter: seq[string]) =
           "dictionary key not found: " & sym & ";" & 
           "perhaps you meant... " & alter.map((x) => "_" & x & "_ ?").join(sep)
 
+proc RuntimeError_CannotStoreKey*(key: string, valueKind: string, storeKind: string) =
+    panic RuntimeError,
+          "unsupported value type: " & valueKind & ";" &
+          "for store of type: " & storeKind & ";" &
+          "when storing key: " & key
+
 proc RuntimeError_NotEnoughArguments*(functionName:string, functionArity: int) =
     panic RuntimeError,
           "cannot perform _" & (functionName) & "_;" & 
