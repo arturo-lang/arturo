@@ -1181,8 +1181,12 @@ proc defineSymbols*() =
                         SetInPlace(newString(InPlaced.s.removeAll(y)))
                 elif InPlaced.kind == Block:
                     if y.kind == Block and hadAttr("instance"):
-                        InPlaced.kind = Block
-                        InPlaced.a = Inplaced.a.removeAllInstances(y)
+                        if hadAttr("once"):
+                            InPlaced.kind = Block
+                            InPlaced.a = InPlaced.a.removeFirstInstance(y)
+                        else:
+                            InPlaced.kind = Block
+                            InPlaced.a = Inplaced.a.removeAllInstances(y)
                     elif (hadAttr("once")):
                         SetInPlace(newBlock(InPlaced.a.removeFirst(y)))
                     elif (hadAttr("index")):
@@ -1218,7 +1222,10 @@ proc defineSymbols*() =
                 elif x.kind == Block:
                     ensureCleaned(x)
                     if y.kind == Block and hadAttr("instance"):
-                        push(newBlock(cleanX.removeAllInstances(y)))
+                        if hadAttr("once"):
+                            push(newBlock(cleanX.removeFirstInstance(y)))
+                        else:
+                            push(newBlock(cleanX.removeAllInstances(y)))
                     elif (hadAttr("once")):
                         push(newBlock(cleanX.removeFirst(y)))
                     elif (hadAttr("index")):
