@@ -68,6 +68,11 @@ proc checkStorePath*(
 
     return (existing, actualPath, actualKind)
 
+func canStoreKey*(storeKind: StoreKind, valueKind: ValueKind): bool {.inline,enforceNoRaises.} =
+    if storeKind == NativeStore: return true
+
+    return valueKind in {Integer, Floating, String, Logical, Block, Dictionary, Null}
+
 #=======================================
 # Templates
 #=======================================
@@ -148,11 +153,6 @@ proc getStoreKey*(store: VStore, key: string): Value =
 
     GetKey(store.data, key)
 
-func canStoreKey*(storeKind: StoreKind, valueKind: ValueKind): bool {.inline,enforceNoRaises.} =
-    if storeKind == NativeStore: return true
-
-    return valueKind in {Integer, Floating, String, Logical, Block, Dictionary, Null}
-
 proc setStoreKey*(store: VStore, key: string, value: Value) =
     if unlikely(not canStoreKey(store.kind, value.kind)):
         RuntimeError_CannotStoreKey(key, ":" & ($(value.kind)).toLowerAscii(), ($(store.kind)).replace("Store",""))
@@ -165,6 +165,10 @@ proc setStoreKey*(store: VStore, key: string, value: Value) =
         saveStore(store, one=true, key=key)
     else:
         store.pending = true
+
+#=======================================
+# Initialization
+#=======================================
 
 proc initStore*(
     path: string, 
