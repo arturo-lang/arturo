@@ -479,19 +479,25 @@ do [
     topic "remove - .instance"
     do [
 
+        a1: [1 2 [1 2] 1 2 3 [1 2]]
+        debug remove.instance [1 2 [1 2] 1 2 3 [1 2]] [1 2]
+        remove.instance 'a1 [1 2], debug a1
+
+    ]
+
+    topic "remove - .instance.once"
+    do [
         a1: [1 2 3 4 5]
         a2: [1 2 3 4 [1 2] 5 6]
         a3: [1 2 [1 2] 3 4 [1 2] 5 6]
 
-        debug remove [1 2 3 4 5 6] [1 2]
-        debug remove [1 2 3 4 [1 2] 5 6] [1 2]
-        debug remove [1 2 [1 2] 3 4 [1 2] 5 6] [1 2]
+        debug remove.instance.once [1 2 3 4 5 6] [1 2]
+        debug remove.instance.once [1 2 3 4 [1 2] 5 6] [1 2]
+        debug remove.instance.once [1 2 [1 2] 3 4 [1 2] 5 6] [1 2]
 
-
-        debug a1, remove.instance 'a1 [1 2], debug a1
-        debug a2, remove.instance 'a2 [1 2], debug a2
-        debug a3, remove.instance 'a3 [1 2], debug a3
-
+        debug a1, remove.instance.once 'a1 [1 2], debug a1
+        debug a2, remove.instance.once 'a2 [1 2], debug a2
+        debug a3, remove.instance.once 'a3 [1 2], debug a3
     ]
 ]
 
