@@ -135,6 +135,19 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
         script = scriptData
     )
 
+    # configuration
+    Config = newStore(
+        initStore(
+            "config",
+            doLoad=false,
+            forceExtension=true,
+            createIfNotExists=true,
+            global=true,
+            autosave=true,
+            kind=NativeStore
+        )
+    )
+
     when not defined(WEB):
         # paths
         if isFile: env.addPath(filename)
