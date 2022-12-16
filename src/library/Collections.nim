@@ -1132,9 +1132,6 @@ proc defineSymbols*() =
     # TODO(Collections/remove) once behavior is broken
     #  read this: https://github.com/arturo-lang/arturo/pull/874#issuecomment-1355004405
     #  labels: library, bug
-
-    # TODO(Collections/remove) add `.instance.once` feature
-    #  lables: library, new feature
     builtin "remove",
         alias       = doubleminus,
         rule        = InfixPrecedence,
