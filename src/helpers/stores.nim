@@ -170,3 +170,6 @@ proc initStore*(
     
     if doLoad:
         result.loadStore()
+
+    if not autosave:
+        Stores.add(result)
