@@ -1128,10 +1128,6 @@ proc defineSymbols*() =
     # TODO(Collections/remove) is `.index` broken?
     #  Example: `remove.index 3 'a, debug a`
     #  labels: library, bug
-
-    # TODO(Collections/remove) once behavior is broken
-    #  read this: https://github.com/arturo-lang/arturo/pull/874#issuecomment-1355004405
-    #  labels: library, bug
     builtin "remove",
         alias       = doubleminus,
         rule        = InfixPrecedence,
