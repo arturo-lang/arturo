@@ -43,6 +43,10 @@ var
     # dictionary symbols stack
     DictSyms* {.global.}  : seq[ValueDict]      ## The stack of dictionaries to be filled
                                                 ## when using `execDictionary`
+    
+    # active stores
+    Stores* {.global.}    : seq[VStore]         ## The list of active stores to be stored
+                                                ## before app termination
 
 #=======================================
 # Helpers
