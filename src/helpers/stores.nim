@@ -12,6 +12,8 @@
 
 import os, strutils, tables
 
+import db_sqlite as sqlite
+
 import helpers/database
 import helpers/io
 import helpers/jsonobject
@@ -70,7 +72,7 @@ proc checkStorePath*(
 # Methods
 #=======================================
 
-proc saveStore*(store: VStore) =
+proc saveStore*(store: VStore, one = false, key: string) =
     case store.kind:
         of NativeStore:
             var nativeData = codify(newDictionary(store.data),pretty = true)
@@ -79,9 +81,46 @@ proc saveStore*(store: VStore) =
         of JsonStore:
             writeToFile(store.path, jsonFromValueDict(store.data, pretty=true))
         of SqliteStore:
-            # TODO(Helpers/stores) should add support for auto-saving SQLite stores
-            #  labels: bug, values
+            if one:
+                let value = store.data[key]
+                let kind = $(value.kind)
+                let json = jsonFromValue(value)
+                let sql = "INSERT OR REPLACE INTO store (key, kind, value) VALUES (?, ?, ?);"
+                discard store.db.execSqliteDb(sql, @[key, kind, json])
+            else:
+                # TODO(Helpers/stores) should add support for auto-saving entire SQLite stores
+                #  labels: bug, values
+                discard
             discard
+        else:
+            discard
+
+proc loadStore*(store: var VStore) = 
+    case store.kind:
+        of NativeStore:
+            store.data = execDictionary(doParse(store.path, isFile=true))
+        of JsonStore:
+            store.data = valueFromJson(readFile(store.path)).d
+        of SqliteStore:
+            store.data = newOrderedTable[string, Value]()
+            for row in store.db.rows(sql("SELECT * FROM store;"), @[]):
+                store.data[row[0]] = valueFromJson(row[2])
+        else:
+            discard
+
+proc createEmptyStoreOnDisk*(store: VStore) =
+    case store.kind:
+        of NativeStore:
+            writeToFile(store.path, "")
+        of JsonStore:
+            writeToFile(store.path, "{}")
+        of SqliteStore:
+            discard store.db.execManySqliteDb(@[
+                "DROP TABLE IF EXISTS store;",
+                "CREATE TABLE store (key TEXT, kind TEXT, value JSON NOT NULL);",
+                "CREATE UNIQUE INDEX IF NOT EXISTS store_index ON store(key);",
+                "CREATE INDEX IF NOT EXISTS store_kind_index ON store(kind);"
+            ])
         else:
             discard
 
@@ -92,7 +131,7 @@ proc setStoreKey*(store: VStore, key: string, value: Value) =
     store.data[key] = value
     
     if store.autosave:
-        saveStore(store)
+        saveStore(store, one=true, key=key)
 
 proc initStore*(
     path: string, 
@@ -114,32 +153,11 @@ proc initStore*(
         kind        : storeKind
     )
 
+    if storeKind == SqliteStore:
+        result.db = openSqliteDb(storePath)
+
     if forceCreate or (createIfNotExists and (not storeExists)):
-        case storeKind:
-            of NativeStore:
-                writeToFile(storePath, "")
-            of JsonStore:
-                writeToFile(storePath, "{}")
-            of SqliteStore:
-                result.db = openSqliteDb(storePath)
-                discard result.db.execManySqliteDb(@[
-                    "DROP TABLE IF EXISTS store;",
-                    "CREATE TABLE store (id INTEGER PRIMARY KEY, key TEXT, kind TEXT, value JSON NOT NULL);",
-                    "CREATE INDEX IF NOT EXISTS store_index ON store(id);",
-                    "CREATE INDEX IF NOT EXISTS store_kind_index ON store(kind);"
-                ])
-            else:
-                discard
+        result.createEmptyStoreOnDisk()
     
     if doLoad:
-        case storeKind:
-            of NativeStore:
-                result.data = execDictionary(doParse(storePath, isFile=true))
-            of JsonStore:
-                result.data = valueFromJson(readFile(storePath)).d
-            of SqliteStore:
-                # TODO(Helpers/stores) should add support for auto-loading SQLite stores
-                #  labels: bug, values
-                discard
-            else:
-                discard
+        result.loadStore()
