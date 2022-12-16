@@ -811,6 +811,12 @@ func valueAsString*(v: Value): string {.inline,enforceNoRaises.} =
         else:
             result = ""
 
+template ensureStoreIsLoaded*(sto: VStore) =
+    when compiles(ensureLoaded(sto)):
+        ensureLoaded(sto)
+    else:
+        sto.forceLoad(sto)
+
 #=======================================
 # Methods
 #=======================================

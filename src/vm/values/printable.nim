@@ -130,7 +130,7 @@ proc `$`*(v: Value): string {.inline.} =
                 result = "[" & items.join(" ") & "]"
 
         of Store:
-            v.sto.forceLoad(v.sto)
+            ensureStoreIsLoaded(v.sto)
 
             var items: seq[string]
             for key,value in v.sto.data:
@@ -334,7 +334,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             dumpBlockEnd()
 
         of Store        :
-            v.sto.forceLoad(v.sto)
+            ensureStoreIsLoaded(v.sto)
 
             dumpBlockStart(v)
 

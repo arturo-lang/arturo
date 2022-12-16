@@ -144,7 +144,7 @@ proc createEmptyStoreOnDisk*(store: VStore) =
             discard
 
 proc getStoreKey*(store: VStore, key: string): Value =
-    ensureLoaded(store)
+    ensureStoreIsLoaded(store)
 
     GetKey(store.data, key)
 
@@ -157,7 +157,7 @@ proc setStoreKey*(store: VStore, key: string, value: Value) =
     if unlikely(not canStoreKey(store.kind, value.kind)):
         RuntimeError_CannotStoreKey(key, ":" & ($(value.kind)).toLowerAscii(), ($(store.kind)).replace("Store",""))
 
-    ensureLoaded(store)
+    ensureStoreIsLoaded(store)
     
     store.data[key] = value
     
