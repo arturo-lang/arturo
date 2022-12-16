@@ -174,11 +174,13 @@ type
     VStore* = ref object
         data*       : ValueDict     # the actual data
         path*       : string        # the path to the store
-        
+
         global*     : bool          # whether the store is global (saved in the main ~/.arturo/stores folder) or not
         loaded*     : bool          # has the store been loaded (=read from disk) yet?
         autosave*   : bool          # should the store be saved automatically after every change?
         pending*    : bool          # are there pending changes to be saved?
+        
+        forceLoad*  : proc(store:VStore)    # ensureLoaded wrapped as a field proc
 
         case kind*: StoreKind:
             of SqliteStore:
