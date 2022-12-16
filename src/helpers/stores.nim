@@ -106,7 +106,7 @@ proc saveStore*(store: VStore, one = false, key: string = "") =
         else:
             discard
 
-proc loadStore*(store: var VStore, justCreated=false) = 
+proc loadStore*(store: VStore, justCreated=false) = 
     if justCreated:
         store.data = newOrderedTable[string, Value]()
     else:
@@ -139,6 +139,10 @@ proc createEmptyStoreOnDisk*(store: VStore) =
             discard
 
 proc getStoreKey*(store: VStore, key: string): Value =
+    if not store.loaded:
+        store.loadStore()
+        store.loaded = true
+
     GetKey(store.data, key)
 
 func canStoreKey*(storeKind: StoreKind, valueKind: ValueKind): bool {.inline,enforceNoRaises.} =
@@ -149,6 +153,10 @@ func canStoreKey*(storeKind: StoreKind, valueKind: ValueKind): bool {.inline,enf
 proc setStoreKey*(store: VStore, key: string, value: Value) =
     if unlikely(not canStoreKey(store.kind, value.kind)):
         RuntimeError_CannotStoreKey(key, ":" & ($(value.kind)).toLowerAscii(), ($(store.kind)).replace("Store",""))
+
+    if not store.loaded:
+        store.loadStore()
+        store.loaded = true
     
     store.data[key] = value
     
