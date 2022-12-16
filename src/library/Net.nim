@@ -26,6 +26,7 @@ when not defined(WEB):
 
     import helpers/jsonobject
     import helpers/servers
+    import helpers/stores
     import helpers/terminal
     import helpers/url
     import helpers/webviews
@@ -124,7 +125,15 @@ proc defineSymbols*() =
                 let title = y.s
                 let message = z.s
 
-                let config = getAttr("using").d
+                var config: ValueDict
+
+                let globalConfig = Config.sto.getStoreKey("mail", unsafe=true)
+                if not globalConfig.isNil:
+                    config = globalConfig.d
+                
+                let userConfig = getAttr("using")
+                if userConfig != VNULL:
+                    config = userConfig.d
 
                 var mesg = createMessage(title, message, @[recipient])
                 let smtpConn = newSmtp(useSsl = true, debug=true)
