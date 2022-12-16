@@ -68,6 +68,34 @@ proc defineSymbols*() =
                 # elif x.dbKind == MysqlDatabase:
                 #     closeMysqlDb(x.mysqldb)
 
+        builtin "open",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "opens a new database connection and returns database",
+            args        = {
+                "name"  : {String}
+            },
+            attrs       = {
+                "sqlite": ({Logical},"support for SQLite databases"),
+                "mysql" : ({Logical},"support for MySQL databases")
+            },
+            returns     = {Database},
+            example     = """
+            db: open "my.db"    ; opens an SQLite database named 'my.db'
+            """:
+                #=======================================================
+                var dbKind = SqliteDatabase
+
+                if (hadAttr("mysql")):
+                    dbKind = MysqlDatabase
+
+                let dbName = x.s
+
+                if dbKind == SqliteDatabase:
+                    push(newDatabase(openSqliteDb(dbName)))
+                # elif dbKind == MysqlDatabase:
+                #     push(newDatabase(openMysqlDb(dbName)))
+
         builtin "query",
             alias       = unaliased, 
             rule        = PrefixPrecedence,
@@ -112,34 +140,6 @@ proc defineSymbols*() =
 
                 # elif x.dbKind == MysqlDatabase:
                 #     execMysqlDb(x.mysqldb, y.s)
-
-        builtin "open",
-            alias       = unaliased, 
-            rule        = PrefixPrecedence,
-            description = "opens a new database connection and returns database",
-            args        = {
-                "name"  : {String}
-            },
-            attrs       = {
-                "sqlite": ({Logical},"support for SQLite databases"),
-                "mysql" : ({Logical},"support for MySQL databases")
-            },
-            returns     = {Database},
-            example     = """
-            db: open "my.db"    ; opens an SQLite database named 'my.db'
-            """:
-                #=======================================================
-                var dbKind = SqliteDatabase
-
-                if (hadAttr("mysql")):
-                    dbKind = MysqlDatabase
-
-                let dbName = x.s
-
-                if dbKind == SqliteDatabase:
-                    push(newDatabase(openSqliteDb(dbName)))
-                # elif dbKind == MysqlDatabase:
-                #     push(newDatabase(openMysqlDb(dbName)))
 
 #=======================================
 # Add Library
