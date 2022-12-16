@@ -180,9 +180,7 @@ proc defineSymbols*() =
             if checkAttr("with"):
                 errCode = aWith.i
 
-            if Stores.len > 0:
-                for store in Stores:
-                    store.saveStore()
+            savePendingStores()
 
             quit(errCode)
 
@@ -212,9 +210,7 @@ proc defineSymbols*() =
             if checkAttr("code"):
                 code = aCode.i
 
-            if Stores.len > 0:
-                for store in Stores:
-                    store.saveStore()
+            savePendingStores()
 
             if (hadAttr("unstyled")):
                 echo $(x)

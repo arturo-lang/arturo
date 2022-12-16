@@ -158,9 +158,7 @@ template handleVMErrors(blk: untyped): untyped =
         let e = getCurrentException()        
         showVMErrors(e)
 
-        if Stores.len > 0:
-            for store in Stores:
-                store.saveStore()
+        savePendingStores()
 
         if e.name == $(ProgramError):
             let code = parseInt(e.msg.split(";;")[1].split("<:>")[0])
@@ -216,9 +214,7 @@ when not defined(WEB):
 
             showProfilerData()
 
-            if Stores.len > 0:
-                for store in Stores:
-                    store.saveStore()
+            savePendingStores()
 
             return evaled
 
