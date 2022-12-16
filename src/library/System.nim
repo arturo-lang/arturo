@@ -72,10 +72,10 @@ proc defineSymbols*() =
         """:
             #=======================================================
             if Config.isNil:
-                echo "config was nil"
                 Config = initStore(
                     "config",
                     doLoad=true,
+                    forceExtension=true,
                     createIfNotExists=true,
                     global=true,
                     autosave=true,
