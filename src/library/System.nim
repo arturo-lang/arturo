@@ -57,30 +57,10 @@ proc defineSymbols*() =
         description = "a dictionary with all command-line arguments parsed":
             newDictionary(parseCmdlineArguments())
 
-    builtin "config",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "get global configuration",
-        args        = NoArgs,
-        attrs       = NoAttrs,
-        returns     = {Store},
-        # TODO(System/config) add documentation example
-        #  labels: library, documentation, easy
-        example     = """
-        """:
-            #=======================================================
-            if Config.isNil:
-                Config = initStore(
-                    "config",
-                    doLoad=true,
-                    forceExtension=true,
-                    createIfNotExists=true,
-                    global=true,
-                    autosave=true,
-                    kind=NativeStore
-                )
-            
-            push newStore(Config)
+    constant "config",
+        alias       = unaliased,
+        description = "access global configuration":
+            Config
 
     when not defined(WEB):
         # TODO(System\env) could it be used for Web/JS builds too?
