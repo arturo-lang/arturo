@@ -1161,6 +1161,10 @@ proc defineSymbols*() =
             ..........
             print remove.once "hello" "l"
             ; helo
+            
+            ; Use remove.once to remove just once each element from value
+            remove.once  [1 2 [1 2] 3 4 1 2 [1 2] 3 4]  [1 2]
+            ; [[1 2] 3 4 1 2 [1 2] 3 4]
             ..........
             remove [1 2 3 4] 4        ; => [1 2 3]
         """:
