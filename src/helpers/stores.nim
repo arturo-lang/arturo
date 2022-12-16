@@ -148,10 +148,15 @@ proc createEmptyStoreOnDisk*(store: VStore) =
         else:
             discard
 
-proc getStoreKey*(store: VStore, key: string): Value =
+proc getStoreKey*(store: VStore, key: string, unsafe: static bool=false): Value =
     ensureStoreIsLoaded(store)
-
-    GetKey(store.data, key)
+    
+    when unsafe:
+        # don't throw an error in case the key doesn't exist
+        # return nil instead
+        store.data.getOrDefault(key, nil)
+    else:
+        GetKey(store.data, key)
 
 proc setStoreKey*(store: VStore, key: string, value: Value) =
     if unlikely(not canStoreKey(store.kind, value.kind)):
