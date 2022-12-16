@@ -184,7 +184,13 @@ proc initStore*(
         loaded      : doLoad,
         autosave    : autosave,
         pending     : false,
-        kind        : storeKind
+        kind        : storeKind,
+        forceLoad   : proc(store:VStore) =
+            echo "in forceLoad"
+            if not store.loaded:
+                echo "was not loaded, loading now"
+                store.loadStore()
+                store.loaded = true
     )
 
     if storeKind == SqliteStore:
