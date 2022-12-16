@@ -21,7 +21,6 @@ when defined(WEB):
 when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
-import helpers/stores
 import helpers/terminal as TerminalHelper
 
 import vm/opcodes
@@ -131,7 +130,7 @@ proc `$`*(v: Value): string {.inline.} =
                 result = "[" & items.join(" ") & "]"
 
         of Store:
-            ensureLoaded(v.sto)
+            v.sto.forceLoad(v.sto)
 
             var items: seq[string]
             for key,value in v.sto.data:
@@ -335,7 +334,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             dumpBlockEnd()
 
         of Store        :
-            ensureLoaded(v.sto)
+            v.sto.forceLoad(v.sto)
 
             dumpBlockStart(v)
 
