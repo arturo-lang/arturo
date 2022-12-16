@@ -216,15 +216,13 @@ hello :string
 
 >> remove - .instance
 
-[3 4 5 6] :block 
-[3 4 [1 2] 5 6] :block 
-[[1 2] 3 4 [1 2] 5 6] :block 
-[1 2 3 4 5] :block 
-[1 2 3 4 5] :block 
-[1 2 3 4 [1 2] 5 6] :block 
-[1 2 3 4 5 6] :block 
-[1 2 [1 2] 3 4 [1 2] 5 6] :block 
-[1 2 3 4 5 6] :block 
+[1 2 1 2 3] :block 
+[1 2 1 2 3] :block 
+
+>> remove - .instance.once
+
+[1 2 1 2 3 [1 2]] :block 
+[1 2 1 2 3 [1 2]] :block 
 
 >> repeat
 
