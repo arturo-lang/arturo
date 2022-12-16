@@ -23,6 +23,7 @@ when defined(WEB):
     import jsffi, json
 
 import helpers/jsonobject
+import helpers/stores
 
 import vm/[
     env, 
@@ -157,6 +158,10 @@ template handleVMErrors(blk: untyped): untyped =
         let e = getCurrentException()        
         showVMErrors(e)
 
+        if Stores.len > 0:
+            for store in Stores:
+                store.saveStore()
+
         if e.name == $(ProgramError):
             let code = parseInt(e.msg.split(";;")[1].split("<:>")[0])
             quit(code)
@@ -210,6 +215,10 @@ when not defined(WEB):
                 execUnscoped(evaled)
 
             showProfilerData()
+
+            if Stores.len > 0:
+                for store in Stores:
+                    store.saveStore()
 
             return evaled
 
