@@ -62,9 +62,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get global configuration",
         args        = NoArgs,
-        attrs       = {
-            "args"      : ({Integer},"use given error code"),
-        },
+        attrs       = NoAttrs,
         returns     = {Store},
         # TODO(System/config) add documentation example
         #  labels: library, documentation, easy
