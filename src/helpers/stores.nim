@@ -106,18 +106,21 @@ proc saveStore*(store: VStore, one = false, key: string = "") =
         else:
             discard
 
-proc loadStore*(store: var VStore) = 
-    case store.kind:
-        of NativeStore:
-            store.data = execDictionary(doParse(store.path, isFile=true))
-        of JsonStore:
-            store.data = valueFromJson(readFile(store.path)).d
-        of SqliteStore:
-            store.data = newOrderedTable[string, Value]()
-            for row in store.db.rows(sql("SELECT * FROM store;"), @[]):
-                store.data[row[0]] = valueFromJson(row[2])
-        else:
-            discard
+proc loadStore*(store: var VStore, justCreated=false) = 
+    if justCreated:
+        store.data = newOrderedTable[string, Value]()
+    else:
+        case store.kind:
+            of NativeStore:
+                store.data = execDictionary(doParse(store.path, isFile=true))
+            of JsonStore:
+                store.data = valueFromJson(readFile(store.path)).d
+            of SqliteStore:
+                store.data = newOrderedTable[string, Value]()
+                for row in store.db.rows(sql("SELECT * FROM store;"), @[]):
+                    store.data[row[0]] = valueFromJson(row[2])
+            else:
+                discard
 
 proc createEmptyStoreOnDisk*(store: VStore) =
     case store.kind:
@@ -182,7 +185,7 @@ proc initStore*(
         result.createEmptyStoreOnDisk()
     
     if doLoad:
-        result.loadStore()
+        result.loadStore(justCreated=not storeExists)
 
     if not autosave:
         Stores.add(result)
