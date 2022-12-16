@@ -486,9 +486,6 @@ proc defineSymbols*() =
                     if cleanX.len == 0: push(VNULL)
                     else: push(cleanX[0])
 
-    # TODO(Collections/flatten) Does not work with Literal values
-    #  This has to be tested out!
-    #  labels: library, bug
     builtin "flatten",
         alias       = unaliased,
         rule        = PrefixPrecedence,
