@@ -72,7 +72,7 @@ proc checkStorePath*(
 # Methods
 #=======================================
 
-proc saveStore*(store: VStore, one = false, key: string) =
+proc saveStore*(store: VStore, one = false, key: string = "") =
     case store.kind:
         of NativeStore:
             writeToFile(
