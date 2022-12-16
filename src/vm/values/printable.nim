@@ -162,6 +162,9 @@ proc `$`*(v: Value): string {.inline.} =
         of Nothing: discard
         of ANY: discard
 
+# TODO(VM/values/printable/dump) use space-indentation instead of tabs
+#  labels: enhancement, values
+
 proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepend="") {.exportc.} = 
     proc dumpPrimitive(str: string, v: Value) =
         if not muted:   stdout.write fmt("{bold(greenColor)}{str}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
@@ -443,6 +446,9 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
 #  Indentation is not working right for inner dictionaries and blocks
 #  Check: `print as.pretty.code.unwrapped info.get 'get`
 #  labels: values,enhancement,library
+
+# TODO(VM/values/printable/codify) use space-indentation instead of tabs
+#  labels: enhancement, values
 proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: bool=false, isKeyVal: bool=false, safeStrings: bool = false): string {.inline.} =
     result = ""
 
