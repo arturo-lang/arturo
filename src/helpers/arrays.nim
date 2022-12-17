@@ -55,6 +55,14 @@ proc removeFirst*(arr: ValueArray, what: Value): ValueArray =
             else:
                 result.add(v)
 
+proc removeFirstInstance*(arr: ValueArray, what: Value): ValueArray =
+    var searching = true
+    for v in arr:
+        if searching and v==what:
+            searching = false
+        else:
+            result.add(v)
+
 proc removeAll*(arr: ValueArray, what: Value): ValueArray =
     if what.kind==Block:
         for v in arr:
@@ -108,6 +116,19 @@ func removeAll*(str: string, what: Value): string =
                 result = result.replace(item.s)
             elif item.kind == Char:
                 result = result.replace($(item.c))
+
+## Remove all instances of some `instance` in `arr`
+##
+## Instead of removing items in A from every item in B,
+## it removes blocks in A that are equal to B
+## Pseudo-code example: `[1 2 3 [1 2] 4], [1 2]` -> `[1 2 3 4]`
+## 
+## Empowers `Collections/remove.instance` default behavior
+proc removeAllInstances*(arr: ValueArray, instance: Value): ValueArray =
+    if instance.kind == Block:
+        for v in arr:
+            if v != instance:
+                result.add(v)
 
 proc powerset*(s: HashSet[Value]): HashSet[HashSet[Value]] =
     result.incl(initHashSet[Value]())  # Initialized with empty set.

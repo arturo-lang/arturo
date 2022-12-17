@@ -215,6 +215,16 @@ helo :string
 [[1 2] 3 4 1 2 [1 2] 3 4] :block 
 hello :string 
 
+>> remove - .instance
+
+[1 2 1 2 3] :block 
+[1 2 1 2 3] :block 
+
+>> remove - .instance.once
+
+[1 2 1 2 3 [1 2]] :block 
+[1 2 1 2 3 [1 2]] :block 
+
 >> repeat
 
 hellohellohello :string 

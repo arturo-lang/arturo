@@ -1128,13 +1128,6 @@ proc defineSymbols*() =
     # TODO(Collections/remove) is `.index` broken?
     #  Example: `remove.index 3 'a, debug a`
     #  labels: library, bug
-
-    # TODO(Collections/remove) should we add a `.value` option?
-    #  For example: ```
-    #   debug remove [1 [6 2] 5 3 [6 2] 4 5 6] [6 2]
-    #  ```
-    #  This removes "6" & "2", but what if we want to actually remove all [6 2] *instances*?
-    #  labels: library, enhancement, open discussion
     builtin "remove",
         alias       = doubleminus,
         rule        = InfixPrecedence,
@@ -1144,11 +1137,12 @@ proc defineSymbols*() =
             "value"     : {Any}
         },
         attrs       = {
-            "key"   : ({Logical}, "remove dictionary key"),
-            "once"  : ({Logical}, "remove only first occurence"),
-            "index" : ({Logical}, "remove specific index"),
-            "prefix": ({Logical}, "remove first matching prefix from string"),
-            "suffix": ({Logical}, "remove first matching suffix from string")
+            "key"       : ({Logical}, "remove dictionary key"),
+            "once"      : ({Logical}, "remove only first occurence"),
+            "index"     : ({Logical}, "remove specific index"),
+            "prefix"    : ({Logical}, "remove first matching prefix from string"),
+            "suffix"    : ({Logical}, "remove first matching suffix from string"),
+            "instance"  : ({Logical}, "remove an instance of a block, instead of its elements.")
         },
         returns     = {String, Block, Dictionary, Nothing},
         example     = """
@@ -1167,6 +1161,9 @@ proc defineSymbols*() =
             ; [[1 2] 3 4 1 2 [1 2] 3 4]
             ..........
             remove [1 2 3 4] 4        ; => [1 2 3]
+            ..........
+            remove.instance [1 [6 2] 5 3 [6 2] 4 5 6] [6 2]  ; => [1 5 3 4 5 6]
+            remove.instance.once [1 [6 2] 5 3 [6 2] 4 5 6] [6 2]  ; => [1 5 3 [6 2] 4 5 6]
         """:
             #=======================================================
             if x.kind == Literal:
@@ -1181,14 +1178,18 @@ proc defineSymbols*() =
                     else:
                         SetInPlace(newString(InPlaced.s.removeAll(y)))
                 elif InPlaced.kind == Block:
-                    if (hadAttr("once")):
+                    if y.kind == Block and hadAttr("instance"):
+                        if hadAttr("once"):
+                            InPlaced.a = InPlaced.a.removeFirstInstance(y)
+                        else:
+                            InPlaced.a = Inplaced.a.removeAllInstances(y)
+                    elif (hadAttr("once")):
                         SetInPlace(newBlock(InPlaced.a.removeFirst(y)))
                     elif (hadAttr("index")):
                         # TODO(General) All `SetInPlace` or `InPlace=` that change the type of object should be changed
                         #  It doesn't work when in-place changing passed parameters to a function
                         #  The above is mostly a hack to get around this
                         #  labels: bug, critical, vm
-                        InPlaced.kind = Block
                         InPlaced.a = InPlaced.a.removeByIndex(y.i)
                         #SetInPlace(newBlock(InPlaced.a.removeByIndex(y.i)))
                     else:
@@ -1215,7 +1216,12 @@ proc defineSymbols*() =
                         push(newString(x.s.removeAll(y)))
                 elif x.kind == Block:
                     ensureCleaned(x)
-                    if (hadAttr("once")):
+                    if y.kind == Block and hadAttr("instance"):
+                        if hadAttr("once"):
+                            push(newBlock(cleanX.removeFirstInstance(y)))
+                        else:
+                            push(newBlock(cleanX.removeAllInstances(y)))
+                    elif (hadAttr("once")):
                         push(newBlock(cleanX.removeFirst(y)))
                     elif (hadAttr("index")):
                         push(newBlock(cleanX.removeByIndex(y.i)))
