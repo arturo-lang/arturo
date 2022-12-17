@@ -1807,7 +1807,7 @@ proc defineSymbols*() =
                 elif (hadAttr("lines")):
                     push(newStringBlock(x.s.splitLines()))
                 elif (hadAttr("path")):
-                    push(newStringBlock(x.s.split(DirSep)))
+                    push(newStringBlock(x.s.split({DirSep, AltSep})))
                 elif checkAttr("by"):
                     if aBy.kind == String:
                         push(newStringBlock(x.s.split(aBy.s)))
