@@ -136,18 +136,19 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
         script = scriptData
     )
 
-    # configuration
-    Config = newStore(
-        initStore(
-            "config",
-            doLoad=false,
-            forceExtension=true,
-            createIfNotExists=true,
-            global=true,
-            autosave=true,
-            kind=NativeStore
+    when not defined(WEB):
+        # configuration
+        Config = newStore(
+            initStore(
+                "config",
+                doLoad=false,
+                forceExtension=true,
+                createIfNotExists=true,
+                global=true,
+                autosave=true,
+                kind=NativeStore
+            )
         )
-    )
 
     when not defined(WEB):
         # paths
@@ -173,7 +174,7 @@ template handleVMErrors(blk: untyped): untyped =
         showVMErrors(e)
 
         when not defined(WEB):
-        savePendingStores()
+            savePendingStores()
 
         if e.name == $(ProgramError):
             let code = parseInt(e.msg.split(";;")[1].split("<:>")[0])
