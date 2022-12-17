@@ -111,9 +111,9 @@ func removeAll*(str: string, what: Value): string =
 
 ## Remove all instances of some `instance` in `arr`
 ##
-## Instead of remove items in A from every item in B,
+## Instead of removing items in A from every item in B,
 ## it removes blocks in A that are equal to B
-## Pseudo-code example: [1 2 3 [1 2] 4], [1 2] -> [1 2 3 4]
+## Pseudo-code example: `[1 2 3 [1 2] 4], [1 2]` -> `[1 2 3 4]`
 ## 
 ## Empowers `Collections/remove.instance` default behavior
 proc removeAllInstances*(arr: ValueArray, instance: Value): ValueArray =
