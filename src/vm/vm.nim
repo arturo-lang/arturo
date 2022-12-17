@@ -172,6 +172,7 @@ template handleVMErrors(blk: untyped): untyped =
         let e = getCurrentException()        
         showVMErrors(e)
 
+        when not defined(WEB):
         savePendingStores()
 
         if e.name == $(ProgramError):
