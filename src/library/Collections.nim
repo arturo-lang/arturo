@@ -1521,8 +1521,6 @@ proc defineSymbols*() =
             else: # Null
                 push(newInteger(0))
 
-    # TODO(Collections/slice) could also work with literal values
-    #  labels: library, enhancement
     builtin "slice",
         alias       = unaliased,
         rule        = PrefixPrecedence,
