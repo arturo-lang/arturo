@@ -16,7 +16,7 @@ import db_sqlite as sqlite
 
 when not defined(NOSQLITE):
     import helpers/database
-    
+
 import helpers/io
 import helpers/jsonobject
 
@@ -84,6 +84,9 @@ template savePendingStores*(): untyped =
         for store in Stores:
             if store.pending:
                 store.saveStore()
+
+                if store.kind == SqliteStore:
+                    closeSqliteDb(store.db)
 
 template ensureLoaded*(store: VStore): untyped =
     if not store.loaded:
