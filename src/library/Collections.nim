@@ -1137,11 +1137,11 @@ proc defineSymbols*() =
             "value"     : {Any}
         },
         attrs       = {
-            "key"   : ({Logical}, "remove dictionary key"),
-            "once"  : ({Logical}, "remove only first occurence"),
-            "index" : ({Logical}, "remove specific index"),
-            "prefix": ({Logical}, "remove first matching prefix from string"),
-            "suffix": ({Logical}, "remove first matching suffix from string"),
+            "key"       : ({Logical}, "remove dictionary key"),
+            "once"      : ({Logical}, "remove only first occurence"),
+            "index"     : ({Logical}, "remove specific index"),
+            "prefix"    : ({Logical}, "remove first matching prefix from string"),
+            "suffix"    : ({Logical}, "remove first matching suffix from string"),
             "instance"  : ({Logical}, "remove an instance of a block, instead of its elements.")
         },
         returns     = {String, Block, Dictionary, Nothing},
@@ -1176,10 +1176,8 @@ proc defineSymbols*() =
                 elif InPlaced.kind == Block:
                     if y.kind == Block and hadAttr("instance"):
                         if hadAttr("once"):
-                            InPlaced.kind = Block
                             InPlaced.a = InPlaced.a.removeFirstInstance(y)
                         else:
-                            InPlaced.kind = Block
                             InPlaced.a = Inplaced.a.removeAllInstances(y)
                     elif (hadAttr("once")):
                         SetInPlace(newBlock(InPlaced.a.removeFirst(y)))
@@ -1188,7 +1186,6 @@ proc defineSymbols*() =
                         #  It doesn't work when in-place changing passed parameters to a function
                         #  The above is mostly a hack to get around this
                         #  labels: bug, critical, vm
-                        InPlaced.kind = Block
                         InPlaced.a = InPlaced.a.removeByIndex(y.i)
                         #SetInPlace(newBlock(InPlaced.a.removeByIndex(y.i)))
                     else:
