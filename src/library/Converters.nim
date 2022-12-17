@@ -1206,50 +1206,53 @@ proc defineSymbols*() =
 
             push newRange(limX, limY, step, infinite, numeric, forward)
 
-    builtin "store",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "create or load a persistent store on disk",
-        args        = {
-            "path"  : {Literal,String}
-        },
-        attrs       = {
-            "auto"      : ({Logical},"automatically save to disk on every change"),
-            "global"    : ({Logical},"save as global store"),
-            "native"    : ({Logical},"force native/Arturo format"),
-            "json"      : ({Logical},"force Json format"),
-            "db"        : ({Logical},"force database/SQlite format")
-        },
-        returns     = {Range},
-        example     = """
-        """:
-            #=======================================================
-            let isGlobal = hadAttr("global")
-            let isAutosave = hadAttr("auto")
+    when not defined(WEB):
+        builtin "store",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "create or load a persistent store on disk",
+            args        = {
+                "path"  : {Literal,String}
+            },
+            attrs       = {
+                "auto"      : ({Logical},"automatically save to disk on every change"),
+                "global"    : ({Logical},"save as global store"),
+                "native"    : ({Logical},"force native/Arturo format"),
+                "json"      : ({Logical},"force Json format"),
+                "db"        : ({Logical},"force database/SQlite format")
+            },
+            returns     = {Range},
+            # TODO(Converters/store) add documentation example
+            #  labels: library, documentation, easy
+            example     = """
+            """:
+                #=======================================================
+                let isGlobal = hadAttr("global")
+                let isAutosave = hadAttr("auto")
 
-            var storeKind = UndefinedStore
+                var storeKind = UndefinedStore
 
-            let isNative = hadAttr("native")
-            let isJson = hadAttr("json")
-            let isSqlite = hadAttr("db")
+                let isNative = hadAttr("native")
+                let isJson = hadAttr("json")
+                let isSqlite = hadAttr("db")
 
-            if isNative:
-                storeKind = NativeStore
-            elif isJson:
-                storeKind = JsonStore
-            elif isSqlite:
-                storeKind = SqliteStore
+                if isNative:
+                    storeKind = NativeStore
+                elif isJson:
+                    storeKind = JsonStore
+                elif isSqlite:
+                    storeKind = SqliteStore
 
-            let store = initStore(
-                x.s,
-                doLoad = true,
-                forceExtension = true,
-                global = isGlobal,
-                autosave = isAutosave,
-                kind = storeKind
-            )
-            
-            push newStore(store)
+                let store = initStore(
+                    x.s,
+                    doLoad = true,
+                    forceExtension = true,
+                    global = isGlobal,
+                    autosave = isAutosave,
+                    kind = storeKind
+                )
+                
+                push newStore(store)
 
     builtin "to",
         alias       = unaliased, 
