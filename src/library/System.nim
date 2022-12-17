@@ -186,7 +186,8 @@ proc defineSymbols*() =
             if checkAttr("with"):
                 errCode = aWith.i
 
-            savePendingStores()
+            when not defined(WEB):
+                savePendingStores()
 
             quit(errCode)
 
@@ -216,7 +217,8 @@ proc defineSymbols*() =
             if checkAttr("code"):
                 code = aCode.i
 
-            savePendingStores()
+            when not defined(WEB):
+                savePendingStores()
 
             if (hadAttr("unstyled")):
                 echo $(x)
