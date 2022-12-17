@@ -86,7 +86,10 @@ template savePendingStores*(): untyped =
                 store.saveStore()
 
                 if store.kind == SqliteStore:
-                    closeSqliteDb(store.db)
+                    when not defined(NOSQLITE):
+                        closeSqliteDb(store.db)
+                    else:
+                        RuntimeError_SqliteDisabled()
 
 template ensureLoaded*(store: VStore): untyped =
     if not store.loaded:
