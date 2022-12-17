@@ -27,7 +27,8 @@ when not defined(WEB):
     else:
         import std/posix_utils
 
-import helpers/stores
+when not defined(WEB):
+    import helpers/stores
 
 import vm/lib
 import vm/[env, errors]
