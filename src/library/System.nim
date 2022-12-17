@@ -58,12 +58,13 @@ proc defineSymbols*() =
         description = "a dictionary with all command-line arguments parsed":
             newDictionary(parseCmdlineArguments())
 
-    constant "config",
-        alias       = unaliased,
-        description = "access global configuration":
-            Config
-
     when not defined(WEB):
+        
+        constant "config",
+            alias       = unaliased,
+            description = "access global configuration":
+                Config
+
         # TODO(System\env) could it be used for Web/JS builds too?
         #  and what type of environment variables could be served or would be useful serve?
         #  labels: library,enhancement,open discussion,web
