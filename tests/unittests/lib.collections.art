@@ -715,7 +715,7 @@ do [
 
     ] else [
 
-        debug split.path "directory\\wofilerld"
+        debug split.path "directory/wofilerld"
 
         p1: "User/user/.arturo"
         p2: "/usr/bin"
