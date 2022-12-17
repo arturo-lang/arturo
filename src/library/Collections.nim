@@ -116,6 +116,7 @@ proc defineSymbols*() =
                     else:
                         push newBlock(cleanAppend(x, y, singleValue=true))
 
+
     builtin "chop",
         alias       = unaliased,
         rule        = PrefixPrecedence,
@@ -123,7 +124,9 @@ proc defineSymbols*() =
         args        = {
             "collection": {String, Block, Literal}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "times"     : ({Integer}, "remove multiple items")
+        },
         returns     = {String, Block, Nothing},
         example     = """
             print chop "books"          ; book
@@ -133,22 +136,30 @@ proc defineSymbols*() =
             chop 'str                   ; str: "book"
             ..........
             chop [1 2 3 4]              ; => [1 2 3]
+            ..........
+            chop.times: 3 "Arturo"      ; Art
         """:
             #=======================================================
+            var times = 1
+
+            if checkAttr("times"):
+                times = aTimes.i
+
             if x.kind == Literal:
                 ensureInPlace()
                 if InPlaced.kind == String:
-                    InPlaced.s = InPlaced.s[0..^2]
+                    InPlaced.s = InPlaced.s[0..^(times + 1)]
                 elif InPlaced.kind == Block:
                     if InPlaced.a.len > 0:
-                        InPlaced.a = InPlaced.a[0..^2]
+                        InPlaced.a = InPlaced.a[0..^(times + 1)]
             else:
                 if x.kind == String:
-                    push(newString(x.s[0..^2]))
+                    push(newString(x.s[0..^(times + 1)]))
                 elif x.kind == Block:
                     ensureCleaned(x)
                     if cleanX.len == 0: push(newBlock())
-                    else: push(newBlock(cleanX[0..^2]))
+                    else: push(newBlock(cleanX[0..^(times + 1)]))
+
 
     builtin "combine",
         alias       = unaliased,
@@ -482,8 +493,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "flatten given collection by eliminating nested blocks",
         args        = {
-            "collection": {Block},
-
+            "collection": {Block, Literal},
         },
         attrs       = {
             "once"  : ({Logical}, "do not perform recursive flattening")
@@ -1124,6 +1134,9 @@ proc defineSymbols*() =
                     else:
                         push newBlock(cleanPrepend(x, y, singleValue=true))
 
+    # TODO(Collections/remove) is `.index` broken?
+    #  Example: `remove.index 3 'a, debug a`
+    #  labels: library, bug
     builtin "remove",
         alias       = doubleminus,
         rule        = InfixPrecedence,
@@ -1133,11 +1146,12 @@ proc defineSymbols*() =
             "value"     : {Any}
         },
         attrs       = {
-            "key"   : ({Logical}, "remove dictionary key"),
-            "once"  : ({Logical}, "remove only first occurence"),
-            "index" : ({Logical}, "remove specific index"),
-            "prefix": ({Logical}, "remove first matching prefix from string"),
-            "suffix": ({Logical}, "remove first matching suffix from string")
+            "key"       : ({Logical}, "remove dictionary key"),
+            "once"      : ({Logical}, "remove only first occurence"),
+            "index"     : ({Logical}, "remove specific index"),
+            "prefix"    : ({Logical}, "remove first matching prefix from string"),
+            "suffix"    : ({Logical}, "remove first matching suffix from string"),
+            "instance"  : ({Logical}, "remove an instance of a block, instead of its elements.")
         },
         returns     = {String, Block, Dictionary, Nothing},
         example     = """
@@ -1150,8 +1164,15 @@ proc defineSymbols*() =
             ..........
             print remove.once "hello" "l"
             ; helo
+            
+            ; Remove each element of given block from collection once
+            remove.once  [1 2 [1 2] 3 4 1 2 [1 2] 3 4]  [1 2]
+            ; [[1 2] 3 4 1 2 [1 2] 3 4]
             ..........
             remove [1 2 3 4] 4        ; => [1 2 3]
+            ..........
+            remove.instance [1 [6 2] 5 3 [6 2] 4 5 6] [6 2]  ; => [1 5 3 4 5 6]
+            remove.instance.once [1 [6 2] 5 3 [6 2] 4 5 6] [6 2]  ; => [1 5 3 [6 2] 4 5 6]
         """:
             #=======================================================
             if x.kind == Literal:
@@ -1166,14 +1187,18 @@ proc defineSymbols*() =
                     else:
                         SetInPlace(newString(InPlaced.s.removeAll(y)))
                 elif InPlaced.kind == Block:
-                    if (hadAttr("once")):
+                    if y.kind == Block and hadAttr("instance"):
+                        if hadAttr("once"):
+                            InPlaced.a = InPlaced.a.removeFirstInstance(y)
+                        else:
+                            InPlaced.a = Inplaced.a.removeAllInstances(y)
+                    elif (hadAttr("once")):
                         SetInPlace(newBlock(InPlaced.a.removeFirst(y)))
                     elif (hadAttr("index")):
                         # TODO(General) All `SetInPlace` or `InPlace=` that change the type of object should be changed
                         #  It doesn't work when in-place changing passed parameters to a function
                         #  The above is mostly a hack to get around this
                         #  labels: bug, critical, vm
-                        InPlaced.kind = Block
                         InPlaced.a = InPlaced.a.removeByIndex(y.i)
                         #SetInPlace(newBlock(InPlaced.a.removeByIndex(y.i)))
                     else:
@@ -1200,7 +1225,12 @@ proc defineSymbols*() =
                         push(newString(x.s.removeAll(y)))
                 elif x.kind == Block:
                     ensureCleaned(x)
-                    if (hadAttr("once")):
+                    if y.kind == Block and hadAttr("instance"):
+                        if hadAttr("once"):
+                            push(newBlock(cleanX.removeFirstInstance(y)))
+                        else:
+                            push(newBlock(cleanX.removeAllInstances(y)))
+                    elif (hadAttr("once")):
                         push(newBlock(cleanX.removeFirst(y)))
                     elif (hadAttr("index")):
                         push(newBlock(cleanX.removeByIndex(y.i)))
@@ -1693,6 +1723,18 @@ proc defineSymbols*() =
     # TODO(Collections\split) Add better support for unicode strings
     #  Currently, simple split works fine - but using different attributes (at, every, by, etc) doesn't
     #  labels: library,bug
+
+    # TODO(Collections/split) `.by` not working properly with Literal values?
+    #  example: ```
+    #   b: ["Arnold" "Andreas" "Paul" "Ricard" "Linus" "Yanis" "Helena" "Eva" "Blanca"]
+    #   split.every: 3 'b, debug b
+    #  ```
+    #  labels: library, bug
+
+    # TODO(Collections/split) Is `.path` working correctly?
+    #  example: `debug split.path "directory/wofilerld"`
+    #  This should return an array containing `directory` and `wofilerld`, which exactly how it works for me (on macOS), but there could be issues with other OSes?
+    #  labels: library, bug, open discussion
     builtin "split",
         alias       = unaliased,
         rule        = PrefixPrecedence,

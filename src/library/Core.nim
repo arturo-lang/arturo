@@ -128,6 +128,37 @@ proc defineSymbols*() =
             call 'multiply [3 5]          ; => 15
             ..........
             call $[x][x+2] [5]            ; 7
+            ..........
+            ; Calling external (C code) functions
+            
+            ; compile with:
+            ; clang -c -w mylib.c
+            ; clang -shared -o libmylib.dylib mylib.o
+            
+            ; #include <stdio.h>
+            ;
+            ; void sayHello(char* name){
+            ;    printf("Hello %s!\n", name);
+            ; }
+            ;
+            ; int doubleNum(int num){
+            ;    return num * 2;
+            ;}
+
+            ; call an external function directly
+            call.external: "mylib" 'sayHello ["John"]
+
+            ; map an external function to a native one
+            doubleNum: function [num][
+                ensure -> integer? num
+                call .external: "mylib"
+                    .expect:   :integer
+                    'doubleNum @[num]
+            ]
+
+            loop 1..3 'x [
+                print ["The double of" x "is" doubleNum x]
+            ]
         """:
             #=======================================================
             if checkAttr("external"):
@@ -260,6 +291,31 @@ proc defineSymbols*() =
             ; Hello!
             ; Hello!
             ; Hello!
+            ..........
+            ; Importing modules
+
+            ; let's say you have a 'module.art' with  this code:
+            ;
+            ; pi: 3.14
+            ;
+            ; hello: $[name :string] [
+            ;    print ["Hello" name]
+            ;]
+
+            do relative "module.art"
+
+            print pi
+            ; 3.14
+
+            do [
+                hello "John Doe"
+                ; Hello John Doe
+            ]
+    
+            ; Note: always use imported functions inside a 'do block
+            ; since they need to be evaluated beforehand.
+            ; On the other hand, simple variables can be used without
+            ; issues, as 'pi in this example
         """:
             #=======================================================
             var times = 1
