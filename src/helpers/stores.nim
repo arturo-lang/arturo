@@ -102,17 +102,20 @@ proc saveStore*(store: VStore, one = false, key: string = "") =
         of JsonStore:
             writeToFile(store.path, jsonFromValueDict(store.data, pretty=true))
         of SqliteStore:
-            if one:
-                let value = store.data[key]
-                let kind = $(value.kind)
-                let json = jsonFromValue(value)
-                let sql = "INSERT OR REPLACE INTO store (key, kind, value) VALUES (?, ?, ?);"
-                discard store.db.execSqliteDb(sql, @[key, kind, json])
-            else:
-                # TODO(Helpers/stores) should add support for auto-saving entire SQLite stores
-                #  labels: bug, values
+            when not defined(NOSQLITE):
+                if one:
+                    let value = store.data[key]
+                    let kind = $(value.kind)
+                    let json = jsonFromValue(value)
+                    let sql = "INSERT OR REPLACE INTO store (key, kind, value) VALUES (?, ?, ?);"
+                    discard store.db.execSqliteDb(sql, @[key, kind, json])
+                else:
+                    # TODO(Helpers/stores) should add support for auto-saving entire SQLite stores
+                    #  labels: bug, values
+                    discard
                 discard
-            discard
+            else:
+                RuntimeError_SqliteDisabled()
         else:
             discard
 
@@ -126,9 +129,12 @@ proc loadStore*(store: VStore, justCreated=false) =
             of JsonStore:
                 store.data = valueFromJson(readFile(store.path)).d
             of SqliteStore:
-                store.data = newOrderedTable[string, Value]()
-                for row in store.db.rows(sql("SELECT * FROM store;"), @[]):
-                    store.data[row[0]] = valueFromJson(row[2])
+                when not defined(NOSQLITE):
+                    store.data = newOrderedTable[string, Value]()
+                    for row in store.db.rows(sql("SELECT * FROM store;"), @[]):
+                        store.data[row[0]] = valueFromJson(row[2])
+                else:
+                    RuntimeError_SqliteDisabled()
             else:
                 discard
 
@@ -139,12 +145,15 @@ proc createEmptyStoreOnDisk*(store: VStore) =
         of JsonStore:
             writeToFile(store.path, "{}")
         of SqliteStore:
-            discard store.db.execManySqliteDb(@[
-                "DROP TABLE IF EXISTS store;",
-                "CREATE TABLE store (key TEXT, kind TEXT, value JSON NOT NULL);",
-                "CREATE UNIQUE INDEX IF NOT EXISTS store_index ON store(key);",
-                "CREATE INDEX IF NOT EXISTS store_kind_index ON store(kind);"
-            ])
+            when not defined(NOSQLITE):
+                discard store.db.execManySqliteDb(@[
+                    "DROP TABLE IF EXISTS store;",
+                    "CREATE TABLE store (key TEXT, kind TEXT, value JSON NOT NULL);",
+                    "CREATE UNIQUE INDEX IF NOT EXISTS store_index ON store(key);",
+                    "CREATE INDEX IF NOT EXISTS store_kind_index ON store(kind);"
+                ])
+            else:
+                RuntimeError_SqliteDisabled()
         else:
             discard
 
@@ -201,7 +210,10 @@ proc initStore*(
     )
 
     if storeKind == SqliteStore:
-        result.db = openSqliteDb(storePath)
+        when not defined(NOSQLITE):
+            result.db = openSqliteDb(storePath)
+        else:
+            RuntimeError_SqliteDisabled()
 
     if forceCreate or (createIfNotExists and (not storeExists)):
         result.createEmptyStoreOnDisk()
