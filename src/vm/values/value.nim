@@ -520,6 +520,10 @@ proc newObject*(args: ValueDict, prot: Prototype, initializer: proc (self: Value
     
     initializer(result, prot)
 
+proc newStore*(sto: VStore): Value {.inline, enforceNoRaises.} =
+    ## create Store value from VStore
+    Value(kind: Store, sto: sto)
+
 func newFunction*(params: seq[string], main: Value, imports: Value = nil, exports: Value = nil, memoize: bool = false, inline: bool = false): Value {.inline, enforceNoRaises.} =
     ## create Function (UserFunction) value with given parameters, ``main`` body, etc
     Value(
@@ -711,6 +715,7 @@ proc copyValue*(v: Value): Value {.inline.} =
 
         of Dictionary:  result = newDictionary(v.d[])
         of Object:      result = newObject(v.o[], v.proto)
+        of Store:       result = newStore(v.sto)
 
         of Function:    
             if v.fnKind == UserFunction:
@@ -805,6 +810,12 @@ func valueAsString*(v: Value): string {.inline,enforceNoRaises.} =
             result = $v.z
         else:
             result = ""
+
+template ensureStoreIsLoaded*(sto: VStore) =
+    when compiles(ensureLoaded(sto)):
+        ensureLoaded(sto)
+    else:
+        sto.forceLoad(sto)
 
 #=======================================
 # Methods
@@ -2442,15 +2453,21 @@ func hash*(v: Value): Hash {.inline.}=
 
         of Dictionary   : 
             result = 1
-            for k,v in pairs(v.d):
+            for k,val in pairs(v.d):
                 result = result !& hash(k)
-                result = result !& hash(v)
+                result = result !& hash(val)
 
         of Object       :
             result = 1
-            for k,v in pairs(v.o):
+            for k,val in pairs(v.o):
                 result = result !& hash(k)
-                result = result !& hash(v)
+                result = result !& hash(val)
+
+        of Store        :
+            result = 1 
+            result = result !& hash(v.sto.path)
+            result = result !& hash(v.sto.kind)
+            result = !$ result
         
         of Function     : 
             if v.fnKind==UserFunction:

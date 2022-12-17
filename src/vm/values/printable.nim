@@ -129,6 +129,15 @@ proc `$`*(v: Value): string {.inline.} =
 
                 result = "[" & items.join(" ") & "]"
 
+        of Store:
+            ensureStoreIsLoaded(v.sto)
+
+            var items: seq[string]
+            for key,value in v.sto.data:
+                items.add(key  & ":" & $(value))
+
+            result = "[" & items.join(" ") & "]"
+
         of Function     : 
             result = ""
             if v.fnKind==UserFunction:
@@ -154,6 +163,9 @@ proc `$`*(v: Value): string {.inline.} =
         of Newline: discard
         of Nothing: discard
         of ANY: discard
+
+# TODO(VM/values/printable/dump) use space-indentation instead of tabs
+#  labels: enhancement, values
 
 proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepend="") {.exportc.} = 
     proc dumpPrimitive(str: string, v: Value) =
@@ -320,6 +332,25 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                     dump(value, level+1, false, muted=muted)
 
             dumpBlockEnd()
+
+        of Store        :
+            ensureStoreIsLoaded(v.sto)
+
+            dumpBlockStart(v)
+
+            let keys = toSeq(v.sto.data.keys)
+
+            if keys.len > 0:
+                let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
+
+                for key,value in v.sto.data:
+                    for i in 0..level: stdout.write "\t"
+
+                    stdout.write unicode.alignLeft(key & " ", maxLen) & ":"
+
+                    dump(value, level+1, false, muted=muted)
+
+            dumpBlockEnd()
         
         of Object   : 
             dumpBlockStart(v)
@@ -419,6 +450,9 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
 #  Indentation is not working right for inner dictionaries and blocks
 #  Check: `print as.pretty.code.unwrapped info.get 'get`
 #  labels: values,enhancement,library
+
+# TODO(VM/values/printable/codify) use space-indentation instead of tabs
+#  labels: enhancement, values
 proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: bool=false, isKeyVal: bool=false, safeStrings: bool = false): string {.inline.} =
     result = ""
 

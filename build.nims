@@ -44,17 +44,18 @@ let
     BOLD*       = bold()
 
     # paths
-    ROOT_DIR    = r"{getHomeDir()}.arturo".fmt
-    TARGET_DIR  = r"{ROOT_DIR}/bin".fmt
-    TARGET_LIB  = r"{ROOT_DIR}/lib".fmt
-    MAIN        = r"src/arturo.nim"
+    ROOT_DIR        = r"{getHomeDir()}.arturo".fmt
+    TARGET_DIR      = r"{ROOT_DIR}/bin".fmt
+    TARGET_LIB      = r"{ROOT_DIR}/lib".fmt
+    TARGET_STORES   = r"{ROOT_DIR}/stores".fmt
+    MAIN            = r"src/arturo.nim"
 
     # configuration options
     OPTIONS = {
         "arm"               : "--cpu:arm",
         "arm64"             : "--cpu:arm64 --gcc.path:/usr/bin --gcc.exe:aarch64-linux-gnu-gcc --gcc.linkerexe:aarch64-linux-gnu-gcc",
         "debug"             : "-d:DEBUG --debugger:on --debuginfo --linedir:on",
-        "dev"               : "--embedsrc:on -d:DEV --listCmd --verbosity:1 --hints:on --hint:ProcessingStmt:off --warning:GcUnsafe:off --warning:ProveInit:off --warning:ProveField:off --warning:Uninit:off",
+        "dev"               : "--embedsrc:on -d:DEV --listCmd --verbosity:1 --hints:on --hint:ProcessingStmt:off --hint:XCannotRaiseY:off --warning:GcUnsafe:off --warning:ProveInit:off --warning:ProveField:off --warning:Uninit:off",
         "docgen"            : "-d:DOCGEN",
         "dontcompress"      : "",
         "dontinstall"       : "",
@@ -280,6 +281,7 @@ proc verifyDirectories*() =
     # create target dirs recursively, if they don't exist
     mkdir TARGET_DIR
     mkdir TARGET_LIB
+    mkdir TARGET_STORES
 
 proc updateBuild*() =
     # will only be called in DEV mode -
