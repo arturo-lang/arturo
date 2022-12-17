@@ -12,9 +12,8 @@
 
 import os, strutils, tables
 
-import db_sqlite as sqlite
-
 when not defined(NOSQLITE):
+    import db_sqlite as sqlite
     import helpers/database
 
 import helpers/io
