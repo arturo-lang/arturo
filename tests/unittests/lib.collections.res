@@ -96,6 +96,8 @@ after empty
 
 [name:john surname:doe] :dictionary 
 [name:john surname:doe age:35] :dictionary 
+[name:jane surname:doe] :dictionary 
+[name:jane surname:doe age:35] :dictionary 
 
 >> first
 
