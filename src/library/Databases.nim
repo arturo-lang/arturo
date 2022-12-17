@@ -19,6 +19,9 @@
 # Libraries
 #=======================================
 
+# TODO(Databases) include SQLite support by default in MINI builds?
+#  this should be possible, provided that we can static-link SQLite
+#  labels: library,enhancement,open discussion
 when not defined(NOSQLITE):
     import sequtils, sugar
     
