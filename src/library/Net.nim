@@ -135,6 +135,10 @@ proc defineSymbols*() =
                 if userConfig != VNULL:
                     config = userConfig.d
 
+                # TODO(Net/mail) raise error, if there is no configuration provided whatsoever
+                #  perhaps, this could be also done in a more "templated" way; at least, for Config values
+                #  labels: library, bug
+
                 var mesg = createMessage(title, message, @[recipient])
                 let smtpConn = newSmtp(useSsl = true, debug=true)
                 smtpConn.connect(config["server"].s, Port 465)
