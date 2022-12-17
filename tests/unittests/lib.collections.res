@@ -311,6 +311,8 @@ Art :string
 [A r t u r o] :block 
 [[1 2 3] [4 5 6] [7 8]] :block 
 [directory wofilerld] :block 
+[User user .arturo] :block 
+[ usr bin] :block 
 [Hello World!] :block 
 [Hi my name is...] :block 
 [directory file.ext] :block 
