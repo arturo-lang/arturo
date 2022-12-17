@@ -14,7 +14,9 @@ import os, strutils, tables
 
 import db_sqlite as sqlite
 
-import helpers/database
+when not defined(NOSQLITE):
+    import helpers/database
+    
 import helpers/io
 import helpers/jsonobject
 
