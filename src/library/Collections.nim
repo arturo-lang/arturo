@@ -1162,7 +1162,7 @@ proc defineSymbols*() =
             print remove.once "hello" "l"
             ; helo
             
-            ; Use remove.once to remove just once each element from value
+            ; Remove each element of given block from collection once
             remove.once  [1 2 [1 2] 3 4 1 2 [1 2] 3 4]  [1 2]
             ; [[1 2] 3 4 1 2 [1 2] 3 4]
             ..........
