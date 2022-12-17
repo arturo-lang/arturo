@@ -418,7 +418,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get new dictionary by merging given ones",
         args        = {
-            "parent"    : {Dictionary},
+            "parent"    : {Dictionary, Literal},
             "additional": {Dictionary}
         },
         attrs       = NoAttrs,
