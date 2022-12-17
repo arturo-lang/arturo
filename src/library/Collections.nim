@@ -33,7 +33,8 @@ import strutils, sugar, unicode
 import helpers/arrays
 import helpers/combinatorics
 import helpers/ranges
-import helpers/stores
+when not defined(WEB):
+    import helpers/stores
 import helpers/strings
 import helpers/unisort
 
