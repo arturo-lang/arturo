@@ -263,6 +263,12 @@ proc RuntimeError_CannotStoreKey*(key: string, valueKind: string, storeKind: str
           "for store of type: " & storeKind & ";" &
           "when storing key: " & key
 
+proc RuntimeError_SqliteDisabled*() =
+    panic RuntimeError,
+          "SQLite not available in MINI builds;" &
+          "if you want to have access to SQLite-related functionality,;" &
+          "please, install Arturo's full version"
+
 proc RuntimeError_NotEnoughArguments*(functionName:string, functionArity: int) =
     panic RuntimeError,
           "cannot perform _" & (functionName) & "_;" & 
