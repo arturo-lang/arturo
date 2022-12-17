@@ -73,12 +73,10 @@ template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: 
             const cleanExample = replace(strutils.strip(example),"\n            ","\n")
         else:
             const cleanExample = ""
-            
-        template moduleName():untyped = static instantiationInfo().filename.replace(".nim")
 
         let b = newBuiltin(
             when not defined(WEB): description else: "",
-            when not defined(WEB): moduleName() else: "",
+            when not defined(WEB): static (instantiationInfo().filename.replace(".nim")) else: "",
             when not defined(WEB): static (instantiationInfo().line) else: 0,
             static argsLen, 
             when not defined(WEB): args.toOrderedTable else: initOrderedTable[string,ValueSpec](),
@@ -89,12 +87,12 @@ template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: 
                 hookProcProfiler("lib/require"):
                     require(n, args)
 
-                {.emit: "////implementation: " & moduleName() & "/" & n .}
+                {.emit: "////implementation: " & (static (instantiationInfo().filename.replace(".nim"))) & "/" & n .}
 
                 hookFunctionProfiler(n):
                     act
 
-                {.emit: "////end: " & moduleName() & "/" & n .}
+                {.emit: "////end: " & (static (instantiationInfo().filename.replace(".nim"))) & "/" & n .}
         )
 
         SetSym(n, b)
