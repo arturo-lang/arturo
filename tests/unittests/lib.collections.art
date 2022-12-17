@@ -702,28 +702,21 @@ do [
 
     debug split [[1 2 3] [4 5 6] [7 8]]
 
-    currentOS: sys\["os"]
-    if? "windows" = currentOS [
 
-        debug split.path "directory\\wofilerld"
+    debug split.path "directory\\wofilerld"
+    debug split.path "D:\\User\\user\\.arturo"
+    debug split.path "/usr/bin"
 
-        p1: "User/user/.arturo"
-        p2: "\\usr\\bin" 
+    p1: "directory\\wofilerld"
+    p2: "D:\\User\\user\\.arturo"
+    p3: "/usr/bin"
 
-        debug split.path p1
-        split.path 'p2, debug p2
-
-    ] else [
-
-        debug split.path "directory/wofilerld"
-
-        p1: "User/user/.arturo"
-        p2: "/usr/bin"
-
-        debug split.path p1
-        split.path 'p2, debug p2
-
-    ]
+    debug split.path p1
+    debug split.path p2
+    debug split.path p3
+    split.path 'p1, debug p1
+    split.path 'p2, debug p2
+    split.path 'p3, debug p3
 
     ; Testing Attributes
     debug split.words "Hello World!"
