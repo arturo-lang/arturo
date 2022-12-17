@@ -30,7 +30,8 @@ when not defined(NOASCIIDECODE):
     import helpers/strings
 
 import helpers/ranges
-import helpers/stores
+when not defined(WEB):
+    import helpers/stores
 
 import vm/lib
 import vm/[bytecode, errors, eval, exec, opcodes, parse]

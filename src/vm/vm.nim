@@ -23,7 +23,8 @@ when defined(WEB):
     import jsffi, json
 
 import helpers/jsonobject
-import helpers/stores
+when not defined(WEB):
+    import helpers/stores
 
 import vm/[
     env, 
