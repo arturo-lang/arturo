@@ -596,11 +596,12 @@ proc defineSymbols*() =
                         else:
                             push(GetKey(x.o, $(y)))
                 of Store:
-                    case y.kind:
-                        of String, Word, Literal, Label:
-                            push(getStoreKey(x.sto, y.s))
-                        else:
-                            push(getStoreKey(x.sto, $(y)))
+                    when not defined(WEB):
+                        case y.kind:
+                            of String, Word, Literal, Label:
+                                push(getStoreKey(x.sto, y.s))
+                            else:
+                                push(getStoreKey(x.sto, $(y)))
                 of String:
                     push(newChar(x.s.runeAtPos(y.i)))
                 of Date:
@@ -1427,11 +1428,12 @@ proc defineSymbols*() =
                         else:
                             x.o[$(y)] = z
                 of Store:
-                    case y.kind:
-                        of String, Word, Literal, Label:
-                            setStoreKey(x.sto, y.s, z)
-                        else:
-                            setStoreKey(x.sto, $(y), z)
+                    when not defined(WEB):
+                        case y.kind:
+                            of String, Word, Literal, Label:
+                                setStoreKey(x.sto, y.s, z)
+                            else:
+                                setStoreKey(x.sto, $(y), z)
                 
                 of String:
                     var res: string
