@@ -1760,10 +1760,7 @@ proc defineSymbols*() =
                     elif (hadAttr("lines")):
                         SetInPlace(newStringBlock(InPlaced.s.splitLines()))
                     elif (hadAttr("path")):
-                        when defined(windows):
-                            SetInPlace(newStringBlock(InPlaced.s.split({'/', '\\'})))
-                        else:
-                            SetInPlace(newStringBlock(InPlaced.s.split(DirSep)))
+                        SetInPlace(newStringBlock(InPlaced.s.split({DirSep, AltSep})))
                     elif checkAttr("by"):
                         if aBy.kind == String:
                             SetInPlace(newStringBlock(InPlaced.s.split(aBy.s)))
