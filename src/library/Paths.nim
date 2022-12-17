@@ -258,7 +258,10 @@ proc defineSymbols*() =
             do module 'html    ; (imports given module)
             """:
                 #=======================================================
-                push(newString(HomeDir & ".arturo/lib/" & x.s & ".art"))
+                when defined(windows):
+                    push(newString(HomeDir & ".arturo\\lib\\" & x.s & ".art"))
+                else:
+                    push(newString(HomeDir & ".arturo/lib/" & x.s & ".art"))
         
         builtin "normalize",
             alias       = dotslash, 
