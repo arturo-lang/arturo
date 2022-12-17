@@ -477,6 +477,25 @@ do [
         debug remove.once "hello" `l`
 
     ]
+
+    ; .instance
+    topic "remove - .instance"
+    do [
+
+        a1: [1 2 [1 2] 1 2 3 [1 2]]
+        debug remove.instance [1 2 [1 2] 1 2 3 [1 2]] [1 2]
+        remove.instance 'a1 [1 2], debug a1
+
+    ]
+
+    topic "remove - .instance.once"
+    do [
+
+        a1: [1 2 [1 2] 1 2 3 [1 2]]
+        debug remove.instance.once [1 2 [1 2] 1 2 3 [1 2]] [1 2]
+        remove.instance.once 'a1 [1 2], debug a1
+
+    ]
 ]
 
 
