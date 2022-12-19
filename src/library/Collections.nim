@@ -1785,11 +1785,16 @@ proc defineSymbols*() =
                         var length = InPlaced.s.len
                         var i = 0
 
-                        while i < length:
-                            ret.add(InPlaced.s[i..i+aEvery.i-1])
-                            i += aEvery.i
+                        while i <= length:
+                            if i + aEvery.i <= length:
+                                ret.add(InPlaced.s[i..i+aEvery.i-1])
+                                i += aEvery.i
+                            else:
+                                ret.add(InPlaced.s[i..^1])
+                                i += aEvery.i
 
                         SetInPlace(newStringBlock(ret))
+
                     else:
                         SetInPlace(newStringBlock(toSeq(runes(x.s)).map((x) =>
                                 $(x))))
@@ -1837,10 +1842,15 @@ proc defineSymbols*() =
                     var i = 0
 
                     while i < length:
-                        ret.add(x.s[i..i+aEvery.i-1])
-                        i += aEvery.i
+                        if i + aEvery.i <= length:
+                            ret.add(x.s[i..i+aEvery.i-1])
+                            i += aEvery.i
+                        else:
+                            ret.add(x.s[i..^1])
+                            i += aEvery.i
 
                     push(newStringBlock(ret))
+                
                 else:
                     push(newStringBlock(toSeq(runes(x.s)).map((x) => $(x))))
             else:
