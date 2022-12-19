@@ -765,6 +765,10 @@ do [
 
     b: ["Arnold" "Andreas" "Paul" "Ricard" "Linus" "Yanis" "Helena" "Eva" "Blanca"]
     split.every: 3 'b, debug b
+
+    debug split.every: 3 "Manchester"
+    city: "Manchester"
+    split.every: 3 'city, debug city
     ; It's returning a flatten block
     ; Is it working properly?
 
