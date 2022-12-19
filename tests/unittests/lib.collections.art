@@ -722,6 +722,11 @@ do [
     split.path 'p1, debug p1
     split.path 'p2, debug p2
 
+    ; tests the Unix's default path and Windows' alternative
+    ; Since, you can use it on Msys, for instance
+    ; it gives the same result in both
+    debug split.path "/usr/bin"
+
     ; Testing Attributes
     debug split.words "Hello World!"
 
