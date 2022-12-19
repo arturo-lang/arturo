@@ -703,13 +703,19 @@ do [
     debug split [[1 2 3] [4 5 6] [7 8]]
 
 
-    debug split.path "directory\\wofilerld"
-    debug split.path "D:\\User\\user\\.arturo"
-    debug split.path "/usr/bin"
+    (sys\os = "windows")? [
+        debug split.path "directory\\wofilerld"
+        debug split.path "\\usr\\bin"
 
-    p1: "directory\\wofilerld"
-    p2: "D:\\User\\user\\.arturo"
-    p3: "/usr/bin"
+        p1: "directory\\wofilerld"
+        p2: "\\usr\\bin"
+    ][
+        debug split.path "directory/wofilerld"
+        debug split.path "/usr/bin"
+
+        p1: "directory/wofilerld"
+        p2: "/usr/bin"
+    ]
 
     debug split.path p1
     debug split.path p2
