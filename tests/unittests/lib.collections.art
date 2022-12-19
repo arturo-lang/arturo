@@ -768,6 +768,19 @@ do [
     ; It's returning a flatten block
     ; Is it working properly?
 
+    city: split.every: 3 "Manchester"
+    print [city, size city\0, size city\1, size city\2, size city\3]
+
+    lang: split.every: 4 "Arturo"
+    print [lang, size lang\0, size lang\1]
+
+    city2: "Manchester"
+    lang2: "Arturo"
+    split.every: 3 'city2
+    split.every: 4 'lang2
+    print [city2, size city2\0, size city2\1, size city2\2, size city2\3]
+    print [lang2, size lang2\0 size, lang2\1]
+
 ]
 
 
