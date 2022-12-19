@@ -2,7 +2,7 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2022 Yanis Zafirópulos
+# (c) 2019-2023 Yanis Zafirópulos
 #
 # @file: build.nims
 ######################################################
@@ -125,7 +125,7 @@ proc showLogo*() =
     echo r"                    \__,_|_|   \__|\__,_|_|  \___/                   "
     echo r"{CLEAR}{BOLD}                                                        ".fmt
     echo r"                     Arturo Programming Language{CLEAR}              ".fmt
-    echo r"                      (c)2022 Yanis Zafirópulos                      "
+    echo r"                      (c)2023 Yanis Zafirópulos                      "
     echo r"                                                                     "
 
 proc showHeader*(title: string) = 
