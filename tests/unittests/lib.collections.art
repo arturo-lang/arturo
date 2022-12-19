@@ -719,10 +719,8 @@ do [
 
     debug split.path p1
     debug split.path p2
-    debug split.path p3
     split.path 'p1, debug p1
     split.path 'p2, debug p2
-    split.path 'p3, debug p3
 
     ; Testing Attributes
     debug split.words "Hello World!"
