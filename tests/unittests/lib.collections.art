@@ -213,6 +213,11 @@ do [
     debug person
     debug extend person #[ age: 35 ]
 
+    jane: #[ name: "jane" surname: "doe" ]
+    debug jane
+    extend 'jane #[ age: 35 ]
+    debug jane
+
 ]
 
 
