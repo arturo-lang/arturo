@@ -711,10 +711,32 @@ do [
 
     debug split [[1 2 3] [4 5 6] [7 8]]
 
-    ;path
-    ; temporarily disable
-    ; see issue: #872
-    ; debug split.path "directory/wofilerld"
+
+    (sys\os = "windows")? [
+        debug split.path "directory\\wofilerld"
+        debug split.path "\\usr\\bin"
+
+        p1: "directory\\wofilerld\\"
+        p2: "\\usr\\bin"
+    ][
+        debug split.path "directory/wofilerld"
+        debug split.path "/usr/bin"
+
+        p1: "directory/wofilerld/"
+        p2: "/usr/bin"
+    ]
+
+    debug split.path p1
+    debug split.path p2
+    split.path 'p1, debug p1
+    split.path 'p2, debug p2
+
+    ; tests the Unix's default path and Windows' alternative
+    ; Since, you can use it on Msys, for instance
+    ; it gives the same result in both
+    debug split.path "/usr/bin/"
+    debug split.path "/usr/bin"
+    debug split.path "usr/bin/"
 
     ; Testing Attributes
     debug split.words "Hello World!"
