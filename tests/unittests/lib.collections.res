@@ -96,6 +96,8 @@ after empty
 
 [name:john surname:doe] :dictionary 
 [name:john surname:doe age:35] :dictionary 
+[name:jane surname:doe] :dictionary 
+[name:jane surname:doe age:35] :dictionary 
 
 >> first
 
@@ -270,6 +272,8 @@ true
 
 Art :string 
 [C C++ Nim] :block 
+[C C++ Nim] :block 
+Art :string 
 
 >> sort
 
@@ -310,6 +314,15 @@ Art :string
 
 [A r t u r o] :block 
 [[1 2 3] [4 5 6] [7 8]] :block 
+[directory wofilerld] :block 
+[usr bin] :block 
+[directory wofilerld] :block 
+[usr bin] :block 
+[directory wofilerld] :block 
+[usr bin] :block 
+[usr bin] :block 
+[usr bin] :block 
+[usr bin] :block 
 [Hello World!] :block 
 [Hi my name is...] :block 
 [directory file.ext] :block 
