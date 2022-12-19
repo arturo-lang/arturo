@@ -3,7 +3,7 @@
 # MPFR BigNum library wrapper
 # for Nim
 #
-# (c) 2022 Yanis Zafirópulos
+# (c) 2023 Yanis Zafirópulos
 # 
 # @license: see LICENSE file
 # @file: extras/mpfr.nim
