@@ -3,7 +3,7 @@
 # New-style Zaitsev's webview wrapper
 # for Nim
 #
-# (c) 2022 Yanis Zafirópulos
+# (c) 2023 Yanis Zafirópulos
 # 
 # @license: see LICENSE file
 # @file: extras/webview.nim
