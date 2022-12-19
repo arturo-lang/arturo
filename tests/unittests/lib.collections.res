@@ -272,6 +272,8 @@ true
 
 Art :string 
 [C C++ Nim] :block 
+[C C++ Nim] :block 
+Art :string 
 
 >> sort
 
