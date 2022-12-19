@@ -764,7 +764,7 @@ do [
     split.at: 4 'a, debug a
 
     b: ["Arnold" "Andreas" "Paul" "Ricard" "Linus" "Yanis" "Helena" "Eva" "Blanca"]
-    ; split.every: 3 'b, debug b
+    split.every: 3 'b, debug b
     ; It's returning a flatten block
     ; Is it working properly?
 
