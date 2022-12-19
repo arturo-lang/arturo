@@ -413,14 +413,12 @@ proc defineSymbols*() =
                 of Dictionary: push(newLogical(x.d.len == 0))
                 else: discard
 
-    # TODO(Collections/extend) Could also work with literal values
-    #  labels: library, enhancement, new feature
     builtin "extend",
         alias       = unaliased,
         rule        = PrefixPrecedence,
         description = "get new dictionary by merging given ones",
         args        = {
-            "parent"    : {Dictionary},
+            "parent"    : {Dictionary, Literal},
             "additional": {Dictionary}
         },
         attrs       = NoAttrs,
@@ -1538,14 +1536,12 @@ proc defineSymbols*() =
             else: # Null
                 push(newInteger(0))
 
-    # TODO(Collections/slice) could also work with literal values
-    #  labels: library, enhancement
     builtin "slice",
         alias       = unaliased,
         rule        = PrefixPrecedence,
         description = "get a slice of collection between given indices",
         args        = {
-            "collection": {String, Block},
+            "collection": {String, Block, Literal},
             "from"      : {Integer},
             "to"        : {Integer}
         },
@@ -1557,7 +1553,18 @@ proc defineSymbols*() =
             print slice 1..10 3 4         ; 4 5
         """:
             #=======================================================
-            if x.kind == String:
+            if x.kind == Literal:
+                ensureInPlace()
+                if InPlaced.kind == String:
+                    if InPlaced.s.len == 0:
+                        SetInPlace newString("")
+                    else:
+                        if y.i >= 0 and z.i <= InPlaced.s.runeLen:
+                            SetInPlace newString Inplaced.s.runeSubStr(y.i, z.i - y.i + 1)
+                else:
+                    if y.i >= 0 and z.i <= InPlaced.a.len-1:
+                        InPlaced.a = InPlaced.a[y.i..z.i]
+            elif x.kind == String:
                 if x.s.len == 0: push(newString(""))
                 else:
                     if y.i >= 0 and z.i <= x.s.runeLen:
@@ -1730,11 +1737,6 @@ proc defineSymbols*() =
     #   split.every: 3 'b, debug b
     #  ```
     #  labels: library, bug
-
-    # TODO(Collections/split) Is `.path` working correctly?
-    #  example: `debug split.path "directory/wofilerld"`
-    #  This should return an array containing `directory` and `wofilerld`, which exactly how it works for me (on macOS), but there could be issues with other OSes?
-    #  labels: library, bug, open discussion
     builtin "split",
         alias       = unaliased,
         rule        = PrefixPrecedence,
@@ -1777,7 +1779,13 @@ proc defineSymbols*() =
                     elif (hadAttr("lines")):
                         SetInPlace(newStringBlock(InPlaced.s.splitLines()))
                     elif (hadAttr("path")):
-                        SetInPlace(newStringBlock(InPlaced.s.split(DirSep)))
+                        var strStart = 0
+                        var strEnd = 1
+                        if InPlaced.s.startsWith(DirSep) or InPlaced.s.startsWith(AltSep):
+                            strStart = 1
+                        if InPlaced.s.endsWith(DirSep) or InPlaced.s.endsWith(AltSep):
+                            strEnd = 2
+                        SetInPlace(newStringBlock(InPlaced.s[strStart..^strEnd].split({DirSep,AltSep})))
                     elif checkAttr("by"):
                         if aBy.kind == String:
                             SetInPlace(newStringBlock(InPlaced.s.split(aBy.s)))
@@ -1824,7 +1832,13 @@ proc defineSymbols*() =
                 elif (hadAttr("lines")):
                     push(newStringBlock(x.s.splitLines()))
                 elif (hadAttr("path")):
-                    push(newStringBlock(x.s.split(DirSep)))
+                    var strStart = 0
+                    var strEnd = 1
+                    if x.s.startsWith(DirSep) or x.s.startsWith(AltSep):
+                        strStart = 1
+                    if x.s.endsWith(DirSep) or x.s.endsWith(AltSep):
+                        strEnd = 2
+                    push(newStringBlock(x.s[strStart..^strEnd].split({DirSep,AltSep})))
                 elif checkAttr("by"):
                     if aBy.kind == String:
                         push(newStringBlock(x.s.split(aBy.s)))
