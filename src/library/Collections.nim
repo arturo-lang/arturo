@@ -1720,11 +1720,6 @@ proc defineSymbols*() =
     #   split.every: 3 'b, debug b
     #  ```
     #  labels: library, bug
-
-    # TODO(Collections/split) Is `.path` working correctly?
-    #  example: `debug split.path "directory/wofilerld"`
-    #  This should return an array containing `directory` and `wofilerld`, which exactly how it works for me (on macOS), but there could be issues with other OSes?
-    #  labels: library, bug, open discussion
     builtin "split",
         alias       = unaliased,
         rule        = PrefixPrecedence,
