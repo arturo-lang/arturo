@@ -1519,14 +1519,12 @@ proc defineSymbols*() =
             else: # Null
                 push(newInteger(0))
 
-    # TODO(Collections/slice) could also work with literal values
-    #  labels: library, enhancement
     builtin "slice",
         alias       = unaliased,
         rule        = PrefixPrecedence,
         description = "get a slice of collection between given indices",
         args        = {
-            "collection": {String, Block},
+            "collection": {String, Block, Literal},
             "from"      : {Integer},
             "to"        : {Integer}
         },
@@ -1538,7 +1536,18 @@ proc defineSymbols*() =
             print slice 1..10 3 4         ; 4 5
         """:
             #=======================================================
-            if x.kind == String:
+            if x.kind == Literal:
+                ensureInPlace()
+                if InPlaced.kind == String:
+                    if InPlaced.s.len == 0:
+                        SetInPlace newString("")
+                    else:
+                        if y.i >= 0 and z.i <= InPlaced.s.runeLen:
+                            SetInPlace newString Inplaced.s.runeSubStr(y.i, z.i - y.i + 1)
+                else:
+                    if y.i >= 0 and z.i <= InPlaced.a.len-1:
+                        InPlaced.a = InPlaced.a[y.i..z.i]
+            elif x.kind == String:
                 if x.s.len == 0: push(newString(""))
                 else:
                     if y.i >= 0 and z.i <= x.s.runeLen:
