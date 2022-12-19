@@ -1760,7 +1760,13 @@ proc defineSymbols*() =
                     elif (hadAttr("lines")):
                         SetInPlace(newStringBlock(InPlaced.s.splitLines()))
                     elif (hadAttr("path")):
-                        SetInPlace(newStringBlock(InPlaced.s.split({DirSep, AltSep})))
+                        var strStart = 0
+                        var strEnd = 1
+                        if InPlaced.s.startsWith(DirSep) or InPlaced.s.startsWith(AltSep):
+                            strStart = 1
+                        if InPlaced.s.endsWith(DirSep) or InPlaced.s.endsWith(AltSep):
+                            strEnd = 2
+                        SetInPlace(newStringBlock(InPlaced.s[strStart..^strEnd].split({DirSep,AltSep})))
                     elif checkAttr("by"):
                         if aBy.kind == String:
                             SetInPlace(newStringBlock(InPlaced.s.split(aBy.s)))
@@ -1807,7 +1813,13 @@ proc defineSymbols*() =
                 elif (hadAttr("lines")):
                     push(newStringBlock(x.s.splitLines()))
                 elif (hadAttr("path")):
-                    push(newStringBlock(x.s.split({DirSep, AltSep})))
+                    var strStart = 0
+                    var strEnd = 1
+                    if x.s.startsWith(DirSep) or x.s.startsWith(AltSep):
+                        strStart = 1
+                    if x.s.endsWith(DirSep) or x.s.endsWith(AltSep):
+                        strEnd = 2
+                    push(newStringBlock(x.s[strStart..^strEnd].split({DirSep,AltSep})))
                 elif checkAttr("by"):
                     if aBy.kind == String:
                         push(newStringBlock(x.s.split(aBy.s)))
