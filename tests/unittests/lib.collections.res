@@ -522,11 +522,12 @@ true
 
 >> size
 
-3
-2
-13
-11
-6
+Good morning! 13 
+Konnichiwa! 11 
+こんいちわ！ 6 
+[one two three] 3 
+[name:John surname:Doe] 2 
+null 0 
 
 >> slice
 

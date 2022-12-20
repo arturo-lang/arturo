@@ -1044,11 +1044,27 @@ do [
 topic "size"
 do [
 
-    print size ["one" "two" "three"]
-    print size #[name: "John", surname: "Doe"]
-    print size "Good morning!"
-    print size "Konnichiwa!"
-    print size "こんいちわ！"
+    ; :string
+    print ["Good morning!" size "Good morning!"]
+    print ["Konnichiwa!" size "Konnichiwa!"]
+    print ["こんいちわ！" size "こんいちわ！"]
+    ; :block
+    print [["one" "two" "three"] 
+        size ["one" "two" "three"]]
+    
+    ; :range
+    ; It's printing "0..10" 10 0 10
+    ; print ["0..10" size range 0 10]
+
+    ; Isn't working with this notation
+    ; print size 0..10
+
+    ; :dictionary
+    print [#[name: "John", surname: "Doe"] 
+        size #[name: "John", surname: "Doe"]]
+    ; TODO :object
+    ; :null
+    print [null size null]
 
 ]
 
