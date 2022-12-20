@@ -556,6 +556,7 @@ Art :string
 >> sort - .as
 
 [ábaco aberración abismo dos Dos pero pértiga perversión tres Tres uno Uno] :block 
+[ábaco aberración abismo dos Dos pero pértiga perversión tres Tres uno Uno] :block 
 
 >> sort - .sensitive
 
