@@ -14,7 +14,7 @@ topic: $[topic :string] [
 topic "append"
 do [
 
-    ; Arturo doesn't supports in-place for :binary
+    ; [Collections/append] is not working for binary-literals #911
     topic "append - :binary < :binary :binary"
     do [
         bin0: to :binary 0
@@ -22,7 +22,7 @@ do [
         debug append bin0 bin1
     ]
 
-    ; Arturo doesn't supports in-place for :binary
+    ; [Collections/append] is not working for binary-literals #911
     topic "append - :binary < :binary :integer"
     do [
         bin0: to :binary 0
