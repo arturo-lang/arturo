@@ -515,12 +515,8 @@ do [
 ; -- 'keys
 topic "keys"
 do [
-
-    user: #[
-        name: "John"
-        surname: "Doe"
-    ]
-
+    ; TODO: test with :object
+    user: #[ name: "John" surname: "Doe" ]
     debug keys user
 ]
 
