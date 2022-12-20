@@ -531,6 +531,11 @@ do [
     debug last ["one" "two" "three"]
     debug last.n: 2 ["one" "two" "three"]
 
+    ; This code is recorginized as an :integer
+    ; instead of :range
+    ; debug last 0..10
+    ; debug last.n: 6 0..10
+
 ]
 
 
