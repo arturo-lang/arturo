@@ -661,10 +661,41 @@ true
 
 >> values
 
-[1;31m>> Runtime |[0m [1;90mFile: [0m[0;90mlib.collections.art
-[1;31m     error |[0m [1;90mLine: [0m[0;90m1468[0m
-           [1;31m|[0m 
-           [1;31m|[0m symbol not found: value
-           [1;31m|[0m perhaps you meant... [1mvalues[0m ?
-           [1;31m|[0m                or... [1mvolume[0m ?
-           [1;31m|[0m                or... [1mabsolute?[0m ?
+[Arturo Ruby Python Nim] :block 
+[1 2 3 4 5 6 7 8 9 10] :block 
+[John Doe 012568 Manchester 45] :block 
+
+>> zero?
+
+
+>> zero? - with :integer
+
+true :logical 
+false :logical 
+
+>> zero? - with :floating
+
+true :logical 
+false :logical 
+
+>> zero? - with :string
+
+true :logical 
+false :logical 
+
+>> zero? - with :block
+
+true :logical 
+false :logical 
+
+>> zero? - with :range
+
+
+>> zero? - with :dictionary
+
+true :logical 
+false :logical 
+
+>> zero? - with :null
+
+true :logical 
