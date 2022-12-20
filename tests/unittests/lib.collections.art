@@ -731,28 +731,53 @@ do [
     topic "remove - default"
     do [
 
-        a: "Arturo"
+        ; :string
+        s1: "Arturo"
         debug remove "Arturo" "uro"
-        remove 'a "uro", debug a
+        remove 's1 "uro", debug s1
 
-        b: "Language"
+        s2: "Language"
         debug "Language" -- "uage"
-        'b -- "uage", debug b
+        's2 -- "uage", debug s2
 
+        ; :string -- :char
+        s3: "hello"
+        debug remove "hello" `l`
+        remove 's3 `l`, debug s3
+
+        s4: "hello"
+        debug "hello" -- `l`
+        's4 -- `l`, debug s4
+
+
+        ; :block
         debug remove [1 2 3 4] 4
         debug remove [1 2 3 4] [2 4]
 
-        c: [1 2 3 5 6 4]
+        b1: [1 2 3 5 6 4]
         debug [1 2 3 4] -- 4
         debug [1 2 3 4] -- [2 4]
-        remove 'c [5 6], debug c
+        remove 'b1 [5 6], debug b1
 
-        ; try with block
         debug remove [1 6 2 5 3 4 5 6] [5 2]
         debug remove [1 [6 2] 5 3 [6 2] 4 5 6] [6 2]
+        
+        b2: [1 6 2 5 3 4 5 6]
+        b3: [1 [6 2] 5 3 [6 2] 4 5 6]
+        remove 'b2 [5 2], debug b2
+        remove 'b3 [6 2], debug b3
 
-        ; try with char
-        debug remove "hello" `l`
+
+        ; :dictionary
+        debug remove #[name: "John" surname: "Doe"] "John"
+        ; Returns SIGSEGV: Illegal storage access. (Attempt to read from nil?)
+        ; print #[name: "John" surname: "Doe"] -- "John"
+        
+        user: #[name: "John" surname: "Doe"]
+        user2: #[name: "John" surname: "Wick"]
+        remove 'user "John", debug user
+        'user2 -- "John", debug user2
+
 
     ]
 
@@ -817,6 +842,9 @@ do [
         ; try with block
         debug remove.once [1 6 2 5 3 4 5 6] [5 2]
         debug remove.once [1 [6 2] 5 3 4 5 6] [6 2]
+        
+        c: [1 [6 2] 5 3 4 5 6]
+        remove.once 'c [6 2], debug c
 
         ; Testing new behavior from PR #877
         debug remove.once [1 2 [1 2] 3 4 1 2 [1 2] 3 4]  [1 2]
