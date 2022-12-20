@@ -1206,6 +1206,19 @@ do [
         sort.descending 'a, debug a
         sort.descending 'b, debug b
 
+        ; Is not sorting for dictionaries
+
+        ; debug sort.descending [
+        ;     rb:"Ruby" art:"Arturo" py:"Python"]
+        ; debug sort.values.descending [
+        ;     a:"Ruby" b:"Arturo" c:"Python"]
+        
+        ; dict1: [rb:"Ruby" art:"Arturo" py:"Python"]
+        ; dict2: [a:"Ruby" b:"Arturo" c:"Python"]
+
+        ; sort.descending 'dict1, debug dict1
+        ; sort.values.descending 'dict2, debug dict2
+
     ]
 
     ; .by
