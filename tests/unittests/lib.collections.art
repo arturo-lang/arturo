@@ -143,24 +143,28 @@ do [
 topic "chop"
 do [
 
-    a: "Arturo"
+    ; with :string
     debug chop "Artu"
     debug chop chop chop "Arturo"
 
     debug chop.times: 3 "Arturo" ; returns Art :string
-    chop.times: 3 'a, debug a ; returns Art :string
+    
+    s1: "Arturo"
+    chop.times: 3 's1, debug s1 ; returns Art :string
+    s2: "Artu"
+    chop 's2, debug s2
+    
 
-    b: [1 2 3 4 5]
+    ; with :block
     debug chop [1 2 3 4]
     debug chop chop [1 2 3 4 5]
 
+    b1: [1 2 3 4 5]
+    chop.times: 2 'b1, debug b1 ; returns [1 2 3] :block
     debug chop.times: 2 [1 2 3 4 5] ; returns [1 2 3] :block
-    chop.times: 2 'b, debug b ; returns [1 2 3] :block
 
-    c: "Artu"
-    d: [1 2 3 4]
-    chop 'c, debug c
-    chop 'd, debug d
+    b2: [1 2 3 4]
+    chop 'b2, debug b2
 
 ]
 
