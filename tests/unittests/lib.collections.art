@@ -14,6 +14,23 @@ topic: $[topic :string] [
 ; -- 'append
 topic "append"
 do [
+
+    ; Arturo doesn't supports in-place for :binary
+    topic "append - :binary < :binary :binary"
+    do [
+        bin0: to :binary 0
+        bin1: to :binary 1
+        debug append bin0 bin1
+    ]
+
+    ; Arturo doesn't supports in-place for :binary
+    topic "append - :binary < :binary :integer"
+    do [
+        bin0: to :binary 0
+        int1: to 1
+        debug append bin0 int1
+    ]
+
     ; :string < :string ++ :string
     topic "append - :string < :string + :string"
     do [
