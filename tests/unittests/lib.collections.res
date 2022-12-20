@@ -643,8 +643,9 @@ helo world :string
 >> take
 
 some te :string 
+some te :string 
 [Arnold Andreas] :block 
-1 :integer 
+[Arnold Andreas] :block 
 
 >> unique
 

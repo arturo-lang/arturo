@@ -1408,10 +1408,17 @@ topic "take"
 do [
 
     debug take "some text" 7
+    s: "some text"
+    take 's 7, debug s
     debug take ["Arnold" "Andreas" "Paul"] 2
+    b: ["Arnold" "Andreas" "Paul"]
+    take 'b 2, debug b
 
-    arr: 1..10
-    take 'arr 3, debug arr
+    ; Does not works for ranges, because range is broken
+    ; If I'm taking 3, why it's returning 1?
+    ; arr: 1..10
+    ; debug arr
+    ; take 'arr 3, debug arr
 
 ]
 
