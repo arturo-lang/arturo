@@ -947,6 +947,36 @@ do [
 ]
 
 
+topic "rotate"
+do [
+
+    ; :block
+    debug rotate [2 3 4 5 1] 1 
+    b1: [3 4 5 1 2]
+    rotate 'b1 2, debug b1
+
+    ; :string
+    debug rotate "turoAr" 2
+    ; Not working for String literals
+    ; s1: "turoAr"
+    ; rotate 's1 2, debug s1
+
+    ; -- left
+    ; :block
+    debug rotate.left [4 5 1 2 3] 2
+    b2: [3 4 5 1 2]
+    rotate.left 'b2 3
+    debug b2
+
+    ; :string
+    debug rotate.left "roArtu" 2
+    ; Not working for String literals
+    ; s2: "oArtur"
+    ; rotate.left 's2 1, debug s2
+
+]
+
+
 ; -- 'sample
 topic "sample"
 do [
