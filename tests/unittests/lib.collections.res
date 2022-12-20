@@ -291,7 +291,9 @@ Manchester :string
 >> min
 
 1 :integer 
+4 :integer 
 Boston :string 
+2 :integer 
 
 >> permutate
 
