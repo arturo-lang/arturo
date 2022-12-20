@@ -768,9 +768,12 @@ do [
     split.at: 4 'a, debug a
 
     b: ["Arnold" "Andreas" "Paul" "Ricard" "Linus" "Yanis" "Helena" "Eva" "Blanca"]
-    ; split.every: 3 'b, debug b
-    ; It's returning a flatten block
-    ; Is it working properly?
+    split.every: 3 'b, debug b
+
+    ; This test is returning strange character filling the last inner block
+    ; debug split.every: 3 "Manchesterr"
+    ; city: "Manchester"
+    ; split.every: 3 'city, debug city
 
 ]
 
