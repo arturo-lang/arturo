@@ -1001,6 +1001,10 @@ do [
 topic "set"
 do [
 
+    ; TODO: test with
+    ; :string, :block, :dictionary, 
+    ; :object, :store, :binary, :bytecode
+
     myDict: #[
         name: "John"
         age: 34
