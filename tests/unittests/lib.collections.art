@@ -1112,6 +1112,14 @@ do [
     topic "sort - .values"
     do [
 
+        debug sort.values #[
+            name: "John"
+            surname: "Doe"
+            id: "012568"
+            city: "Manchester"
+            age: 45
+        ]
+
         user: #[
             name: "John"
             surname: "Doe"
