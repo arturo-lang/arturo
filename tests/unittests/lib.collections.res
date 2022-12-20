@@ -436,15 +436,27 @@ test_function :string
 
 >> remove - .once
 
+
+>> remove - .once :string
+
 helo :string 
-[1 2 3 4 5] :block 
 helo :string 
+
+>> remove - .once :block
+
 [1 2 3 4 5] :block 
-[1 6 3 4 5 6] :block 
-[1 [6 2] 5 3 4 5] :block 
+[1 2 3 4 5] :block 
+[1 5 3 4 5 6] :block 
 [1 [6 2] 5 3 4 5] :block 
 [[1 2] 3 4 1 2 [1 2] 3 4] :block 
-hello :string 
+[1 5 3 4 5 6] :block 
+[1 [6 2] 5 3 [6 2] 4 5] :block 
+[[1 2] 3 4 1 2 [1 2] 3 4] :block 
+
+>> remove - .once :dictionary
+
+[surname:Doe father:John] :dictionary 
+[surname:Doe father:John] :dictionary 
 
 >> remove - .instance
 
