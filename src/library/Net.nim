@@ -21,11 +21,12 @@
 
 when not defined(WEB):
     import algorithm, asyncdispatch, browsers, httpclient
-    import httpcore, os, smtp, strformat
+    import httpcore, std/net, os, smtp, strformat
     import strutils, times, uri
 
     import helpers/jsonobject
     import helpers/servers
+    import helpers/stores
     import helpers/terminal
     import helpers/url
     import helpers/webviews
@@ -95,38 +96,50 @@ proc defineSymbols*() =
                 var client = newHttpClient()
                 client.downloadFile(path,target)
 
+        # TODO(Net/mail) could we somehow globally stored the configuration?
+        #  labels: enhancement,library
         builtin "mail",
             alias       = unaliased, 
             rule        = PrefixPrecedence,
-            description = "send mail using given message and configuration",
+            description = "send mail using given title and message to selected recipient",
             args        = {
                 "recipient" : {String},
-                "message"   : {Dictionary},
-                "config"    : {Dictionary}
+                "title"     : {String},
+                "message"   : {String}
             },
-            attrs       = NoAttrs,
+            attrs       = {
+                "using"     : ({Dictionary},"use given configuration")
+            },
             returns     = {Nothing},
             example     = """
-            mail "recipient@somemail.com"
-                #[
-                    title: "Hello from Arturo"
-                    content: "Arturo rocks!"
-                ]
-                #[
+            mail .using: #[
                     server: "mymailserver.com"
                     username: "myusername"
                     password: "mypass123"
                 ]
+                "recipient@somemail.com" "Hello from Arturo" "Arturo rocks!"                
             """:
                 #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("mail")
                 let recipient = x.s
-                let message = y.d
-                let config = z.d
+                let title = y.s
+                let message = z.s
 
-                var mesg = createMessage(message["title"].s,
-                                    message["content"].s,
-                                    @[recipient])
+                var config: ValueDict
+
+                let globalConfig = Config.sto.getStoreKey("mail", unsafe=true)
+                if not globalConfig.isNil:
+                    config = globalConfig.d
+                
+                let userConfig = getAttr("using")
+                if userConfig != VNULL:
+                    config = userConfig.d
+
+                # TODO(Net/mail) raise error, if there is no configuration provided whatsoever
+                #  perhaps, this could be also done in a more "templated" way; at least, for Config values
+                #  labels: library, bug
+
+                var mesg = createMessage(title, message, @[recipient])
                 let smtpConn = newSmtp(useSsl = true, debug=true)
                 smtpConn.connect(config["server"].s, Port 465)
                 smtpConn.auth(config["username"].s, config["password"].s)
@@ -144,17 +157,18 @@ proc defineSymbols*() =
                 "data"  : {Dictionary, Null}
             },
             attrs       = {
-                "get"       : ({Logical},"perform a GET request (default)"),
-                "post"      : ({Logical},"perform a POST request"),
-                "patch"     : ({Logical},"perform a PATCH request"),
-                "put"       : ({Logical},"perform a PUT request"),
-                "delete"    : ({Logical},"perform a DELETE request"),
-                "json"      : ({Logical},"send data as Json"),
-                "headers"   : ({Dictionary},"send custom HTTP headers"),
-                "agent"     : ({String},"use given user agent"),
-                "timeout"   : ({Integer},"set a timeout"),
-                "proxy"     : ({String},"use given proxy url"),
-                "raw"       : ({Logical},"return raw response without processing")
+                "get"           : ({Logical},"perform a GET request (default)"),
+                "post"          : ({Logical},"perform a POST request"),
+                "patch"         : ({Logical},"perform a PATCH request"),
+                "put"           : ({Logical},"perform a PUT request"),
+                "delete"        : ({Logical},"perform a DELETE request"),
+                "json"          : ({Logical},"send data as Json"),
+                "headers"       : ({Dictionary},"send custom HTTP headers"),
+                "agent"         : ({String},"use given user agent"),
+                "timeout"       : ({Integer},"set a timeout"),
+                "proxy"         : ({String},"use given proxy url"),
+                "certificate"   : ({String},"use SSL certificate at given path"),
+                "raw"           : ({Logical},"return raw response without processing")
             },
             returns     = {Dictionary},
             example     = """
@@ -239,10 +253,24 @@ proc defineSymbols*() =
                             parts.add(k & "=" & urlencode($(v)))
                         url &= "?" & parts.join("&")
 
-                let client = newHttpClient(userAgent = agent,
-                                        proxy = proxy, 
-                                        timeout = timeout,
-                                        headers = headers)
+                var client: HttpClient
+
+                if checkAttr("certificate"):
+                    let certificate = aCertificate.s
+                    client = newHttpClient(
+                        userAgent = agent,
+                        sslContext = newContext(certFile=certificate),
+                        proxy = proxy, 
+                        timeout = timeout,
+                        headers = headers
+                    )
+                else:
+                    client = newHttpClient(
+                        userAgent = agent,
+                        proxy = proxy, 
+                        timeout = timeout,
+                        headers = headers
+                    )
 
                 let response = client.request(url = url,
                                             httpMethod = meth,
