@@ -11,7 +11,6 @@ topic: $[topic :string] [
 
 ; ==> Tests
 
-; -- 'append
 topic "append"
 do [
 
@@ -31,7 +30,6 @@ do [
         debug append bin0 int1
     ]
 
-    ; :string < :string ++ :string
     topic "append - :string < :string + :string"
     do [
 
@@ -45,7 +43,6 @@ do [
 
     ]
 
-    ; :string < :string ++ :char
     topic "append - :string < :string + :char"
     do [
 
@@ -59,7 +56,6 @@ do [
 
     ]
 
-    ; :string < :char ++ :char
     topic "append - :string < :char + :char"
     do [
 
@@ -73,7 +69,6 @@ do [
 
     ]
 
-    ; :string < :char ++ :string
     topic "append - :string < :char + :string"
     do [
 
@@ -87,7 +82,6 @@ do [
 
     ]
 
-    ; [:string] < [:string] ++ :string
     topic "append - [:string] < [:string] + :string"
     do [
 
@@ -110,7 +104,6 @@ do [
 
     ]
 
-    ; [:string] < [:string] ++ [:string]
     topic "append - [:string] < [:string] + [:string]"
     do [
 
@@ -124,7 +117,6 @@ do [
 
     ]
 
-    ; [:integer] < [:integer] ++ [:integer] | :integer
     topic "append - [:integer] < [:integer] + [:integer]|:integer"
     do [
 
@@ -139,7 +131,6 @@ do [
 ]
 
 
-; -- 'chop
 topic "chop"
 do [
 
@@ -160,7 +151,7 @@ do [
     debug chop chop [1 2 3 4 5]
 
     b1: [1 2 3 4 5]
-    chop.times: 2 'b1, debug b1 ; returns [1 2 3] :block
+    chop.times: 2 'b1, debug b1     ; returns [1 2 3] :block
     debug chop.times: 2 [1 2 3 4 5] ; returns [1 2 3] :block
 
     b2: [1 2 3 4]
@@ -168,7 +159,7 @@ do [
 
 ]
 
-; -- combine
+
 ; does not work with literal types
 topic "combine"
 do [
@@ -233,7 +224,6 @@ do [
 ]
 
 
-; -- 'couple
 topic "couple"
 do [
 
@@ -259,7 +249,6 @@ do [
 ]
 
 
-; -- 'drop
 topic "drop"
 do [
 
@@ -274,7 +263,6 @@ do [
 ]
 
 
-; -- 'empty
 topic "empty"
 do [
 
@@ -310,7 +298,6 @@ do [
 ]
 
 
-; -- 'extend
 topic "extend"
 do [
 
@@ -326,7 +313,6 @@ do [
 ]
 
 
-; -- 'first
 topic "first"
 do [
 
@@ -344,7 +330,6 @@ do [
 ]
 
 
-; -- 'flatten
 topic "flatten"
 do [
 
@@ -363,7 +348,6 @@ do [
 ]
 
 
-; -- 'get
 topic "get"
 do [
 
@@ -453,7 +437,6 @@ do [
 ]
 
 
-; -- 'index
 topic "index"
 do [
 
@@ -473,7 +456,6 @@ do [
 ]
 
 
-; -- 'insert
 topic "insert"
 do [
 
@@ -512,7 +494,6 @@ do [
 ]
 
 
-; -- 'keys
 topic "keys"
 do [
     ; TODO: test with :object
@@ -521,7 +502,6 @@ do [
 ]
 
 
-; -- 'last
 topic "last"
 do [
 
@@ -539,7 +519,6 @@ do [
 ]
 
 
-; -- 'max
 topic "max"
 do [
 
@@ -555,7 +534,6 @@ do [
 ]
 
 
-; -- 'min
 topic "min"
 do [
 
@@ -609,7 +587,6 @@ do [
 ]
 
 
-; -- 'permutate
 topic "permutate"
 do [
 
@@ -645,7 +622,6 @@ do [
         debug prepend bin0 int1
     ]
 
-    ; :string < :string ++ :string
     topic "prepend - :string < :string + :string"
     do [
 
@@ -655,7 +631,6 @@ do [
 
     ]
 
-    ; :string < :string ++ :char
     topic "prepend - :string < :string + :char"
     do [
 
@@ -665,7 +640,6 @@ do [
 
     ]
 
-    ; :string < :char ++ :char
     topic "prepend - :string < :char + :char"
     do [
 
@@ -675,7 +649,6 @@ do [
 
     ]
 
-    ; :string < :char ++ :string
     topic "prepend - :string < :char + :string"
     do [
 
@@ -685,7 +658,6 @@ do [
 
     ]
 
-    ; [:string] < [:string] ++ :string
     topic "prepend - [:string] < [:string] + :string"
     do [
 
@@ -700,7 +672,6 @@ do [
 
     ]
 
-    ; [:string] < [:string] ++ [:string]
     topic "prepend - [:string] < [:string] + [:string]"
     do [
 
@@ -710,7 +681,6 @@ do [
 
     ]
 
-    ; [:integer] < [:integer] ++ [:integer] | :integer
     topic "prepend - [:integer] < [:integer] + [:integer]|:integer"
     do [
 
@@ -724,7 +694,6 @@ do [
 ]
 
 
-; -- 'remove
 topic "remove"
 do [
     ; default
@@ -781,7 +750,6 @@ do [
 
     ]
 
-    ; .index
     topic "remove - .index"
     do[
 
@@ -792,7 +760,6 @@ do [
 
     ]
 
-    ; .prefix
     topic "remove - .prefix"
     do [
 
@@ -802,7 +769,6 @@ do [
 
     ]
 
-    ; .suffix
     topic "remove - .suffix"
     do [
 
@@ -812,7 +778,6 @@ do [
 
     ]
 
-    ; .key
     topic "remove - .key"
     do [
 
@@ -826,7 +791,6 @@ do [
 
     ]
 
-    ; .once
     topic "remove - .once"
     do [
 
@@ -868,7 +832,6 @@ do [
 
     ]
 
-    ; .instance
     topic "remove - .instance"
     do [
 
@@ -889,7 +852,6 @@ do [
 ]
 
 
-; -- 'repeat
 topic "repeat"
 do [
 
@@ -907,7 +869,6 @@ do [
 ]
 
 
-; -- 'reverse
 topic "reverse"
 do [
 
@@ -977,7 +938,6 @@ do [
 ]
 
 
-; -- 'sample
 topic "sample"
 do [
 
@@ -997,7 +957,6 @@ do [
 ]
 
 
-; -- 'set
 topic "set"
 do [
 
@@ -1025,7 +984,6 @@ do [
 ]
 
 
-; -- 'shuffle
 topic "shuffle"
 do [
 
@@ -1040,7 +998,6 @@ do [
 ]
 
 
-; -- 'size
 topic "size"
 do [
 
@@ -1069,7 +1026,6 @@ do [
 ]
 
 
-; -- 'slice
 topic "slice"
 do [
 
@@ -1085,7 +1041,6 @@ do [
 ]
 
 
-; -- 'sort
 topic "sort"
 do [
 
@@ -1108,7 +1063,6 @@ do [
 
     ]
 
-    ; .values
     topic "sort - .values"
     do [
 
@@ -1132,11 +1086,8 @@ do [
 
     ]
 
-    ; .as
     topic "sort - .as"
     do [
-
-        ; How to use it?
 
         debug sort.as: 'es [
             "uno","dos","tres","Uno","Dos","Tres",
@@ -1168,7 +1119,6 @@ do [
 
     ]
 
-    ; .sensitive
     topic "sort - .sensitive"
     do [
 
@@ -1194,7 +1144,6 @@ do [
 
     ]
 
-    ; descending
     topic "sort - .descending"
     do [
 
@@ -1221,7 +1170,6 @@ do [
 
     ]
 
-    ; .by
     topic "sort - .by"
     do [
 
@@ -1253,7 +1201,6 @@ do [
 ]
 
 
-; -- 'split
 topic "split"
 do [
 
@@ -1384,7 +1331,6 @@ do [
 ]
 
 
-; -- squeeze
 topic "squeeze"
 do [
 
@@ -1403,7 +1349,7 @@ do [
 
 ]
 
-; -- take
+
 topic "take"
 do [
 
@@ -1433,7 +1379,6 @@ do [
 ]
 
 
-; -- unique
 topic "unique"
 do [
     
@@ -1460,7 +1405,6 @@ do [
 ]
 
 
-; -- values
 topic "values"
 do [
 
