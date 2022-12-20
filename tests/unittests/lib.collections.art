@@ -626,6 +626,103 @@ do [
 
 ]
 
+topic "prepend"
+do [
+
+    ; Arturo doesn't supports in-place for :binary
+    topic "prepend - :binary < :binary :binary"
+    do [
+        bin0: to :binary 0
+        bin1: to :binary 1
+        debug prepend bin0 bin1
+    ]
+
+    ; Arturo doesn't supports in-place for :binary
+    topic "prepend - :binary < :binary :integer"
+    do [
+        bin0: to :binary 0
+        int1: 1
+        debug prepend bin0 int1
+    ]
+
+    ; :string < :string ++ :string
+    topic "prepend - :string < :string + :string"
+    do [
+
+        a: "uro"
+        debug prepend "uro" "Art"
+        prepend 'a "Art", debug a
+
+    ]
+
+    ; :string < :string ++ :char
+    topic "prepend - :string < :string + :char"
+    do [
+
+        a: "rturo"
+        debug prepend "rturo" `A`
+        prepend 'a `A`, debug a
+
+    ]
+
+    ; :string < :char ++ :char
+    topic "prepend - :string < :char + :char"
+    do [
+
+        a: `b`
+        debug prepend `b` `a`
+        prepend 'a `a`, debug a
+
+    ]
+
+    ; :string < :char ++ :string
+    topic "prepend - :string < :char + :string"
+    do [
+
+        a: `t`
+        debug prepend `t` "ar"
+        prepend 'a "ar", debug a
+
+    ]
+
+    ; [:string] < [:string] ++ :string
+    topic "prepend - [:string] < [:string] + :string"
+    do [
+
+        a: ["r" "t" "u" "r" "o"]
+        debug prepend ["r" "t" "u" "r" "o"] "A"
+        prepend 'a "A", debug a
+
+        ; Testing precedence
+        c: ["u" "r" "o"]
+        debug prepend ["u" "r" "o"] prepend "t" prepend "r" "A"
+        prepend 'c prepend "t" prepend "r" "A", debug c
+
+    ]
+
+    ; [:string] < [:string] ++ [:string]
+    topic "prepend - [:string] < [:string] + [:string]"
+    do [
+
+        a: ["u" "r" "o"]
+        debug prepend ["u" "r" "o"] ["A" "r" "t"]
+        prepend 'a ["A" "r" "t"], debug a
+
+    ]
+
+    ; [:integer] < [:integer] ++ [:integer] | :integer
+    topic "prepend - [:integer] < [:integer] + [:integer]|:integer"
+    do [
+
+        a: [1 2 3]
+        debug prepend [4 5 6] [1 2 3]
+        debug prepend [1 2 3 4 5 6] 0
+        prepend 'a 0, debug a
+
+    ]
+
+]
+
 
 ; -- 'remove
 topic "remove"

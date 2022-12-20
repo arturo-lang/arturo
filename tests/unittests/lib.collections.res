@@ -342,6 +342,55 @@ false :logical
 6 :integer 
 9 :integer 
 
+>> prepend
+
+
+>> prepend - :binary < :binary :binary
+
+01 00 :binary 
+
+>> prepend - :binary < :binary :integer
+
+01 00 :binary 
+
+>> prepend - :string < :string + :string
+
+Arturo :string 
+Arturo :string 
+
+>> prepend - :string < :string + :char
+
+Arturo :string 
+Arturo :string 
+
+>> prepend - :string < :char + :char
+
+ab :string 
+ab :string 
+
+>> prepend - :string < :char + :string
+
+art :string 
+art :string 
+
+>> prepend - [:string] < [:string] + :string
+
+[A r t u r o] :block 
+[A r t u r o] :block 
+[Art u r o] :block 
+[Art u r o] :block 
+
+>> prepend - [:string] < [:string] + [:string]
+
+[A r t u r o] :block 
+[A r t u r o] :block 
+
+>> prepend - [:integer] < [:integer] + [:integer]|:integer
+
+[1 2 3 4 5 6] :block 
+[0 1 2 3 4 5 6] :block 
+[0 1 2 3] :block 
+
 >> remove
 
 
