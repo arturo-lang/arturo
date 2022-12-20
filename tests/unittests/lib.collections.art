@@ -1464,6 +1464,14 @@ do [
 topic "values"
 do [
 
+    ; Do nothing?
+    debug values ["Arturo" "Ruby" "Python" "Nim"]
+
+    ; Range type is broken
+    ; debug values 1..10
+    ; It's working:
+    debug values range 1 10
+
     user: #[
         name: "John"
         surname: "Doe"
@@ -1473,5 +1481,7 @@ do [
     ]
 
     debug values user
+
+    ; TODO: test with :object
 
 ]
