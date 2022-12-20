@@ -190,6 +190,7 @@ one :string
 [1 2 3 4 5 6] :block 
 [1 2 3 4 5 6] :block 
 [1 2 3 4 [5 6]] :block 
+[4 5 6 1 2 3] :block 
 
 >> get
 
