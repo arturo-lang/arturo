@@ -544,10 +544,13 @@ topic "max"
 do [
 
     debug max [4 2 8 5 1 9]
+    debug max.index [4 2 8 5 1 9]
     debug max ["Granada" "Manchester" "Boston"]
+    debug max.index ["Granada" "Manchester" "Boston"]
     ; This code is recorginized as an :integer
     ; instead of :range
     ; debug max 0..10
+    ; debug max.index 0..10
 
 ]
 
