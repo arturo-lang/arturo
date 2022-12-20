@@ -588,6 +588,9 @@ false
 
 [A r t u r o] :block 
 [[1 2 3] [4 5 6] [7 8]] :block 
+[[1 2 3] [4 5 6] [7 8]] :block 
+[1 2 3 4 5 6] :block 
+[1 2 3 4 5 6] :block 
 
 >> split - .path
 
@@ -604,6 +607,8 @@ false
 >> split - .words & .lines
 
 [Hello World!] :block 
+[Hello World!] :block 
+[Hi my name is...] :block 
 [Hi my name is...] :block 
 
 >> split - .by
@@ -613,6 +618,7 @@ false
 
 >> split - .at
 
+[Hello , World] :block 
 [Hello , World] :block 
 [[Arnold Andreas Paul Ricard] [Linus Yanis Helena Eva Blanca]] :block 
 [[Arnold Andreas Paul Ricard Linus] [Linus Yanis Helena Eva Blanca]] :block 
