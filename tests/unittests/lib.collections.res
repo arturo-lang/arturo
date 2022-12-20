@@ -160,6 +160,15 @@ after empty
  :string 
 [] :dictionary 
 
+>> empty?
+
+true :logical 
+false :logical 
+true :logical 
+false :logical 
+true :logical 
+false :logical 
+
 >> extend
 
 [name:john surname:doe] :dictionary 

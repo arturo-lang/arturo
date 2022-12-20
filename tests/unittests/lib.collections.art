@@ -297,6 +297,18 @@ do [
 
 ]
 
+topic "empty?"
+do [
+
+    debug empty? "" 
+    debug empty? "Arturo" 
+    debug empty? [] 
+    debug empty? ['north 'south 'east 'west]
+    debug empty? #[]
+    debug empty? #[ name: "John" surname: "Doe"]
+
+]
+
 
 ; -- 'extend
 topic "extend"
