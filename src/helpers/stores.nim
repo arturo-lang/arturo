@@ -6,7 +6,7 @@
 # @file: helpers/stores.nim
 #=======================================================
 
-# TODO(Helpers/stores) Add support for RocksDB or LMDB (or both)
+# TODO(Helpers/stores) Add support for RocksDB or LMDB - or both?
 #  this could also work for normal Database values
 #  labels: new feature, values, open discussion
 
