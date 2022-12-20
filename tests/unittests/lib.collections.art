@@ -570,6 +570,44 @@ do [
 
 ]
 
+topic "one?"
+do [
+
+    topic "one? - with :integer"
+    debug one? 4-3
+    debug one? 5  
+
+    topic "one? - with :floating"
+    debug one? 1.0
+    debug one? 0.0
+
+    topic "one? - with :string"
+    debug one? "A"
+    debug one? "Arturo"
+
+    topic "one? - with :block"
+    debug one? ["apple"] 
+    debug one? ["apple" "pear"] 
+
+    topic "one? - with :range"
+    ; returns false, is it right?
+    debug one? 0..1
+    debug one? 0..10
+
+    topic "one? - with :dictionary"
+    ; returns false, is it right?
+    debug one? [ name: "John" ]
+    debug one? [ name: "John" surname: "Doe" ]
+
+    ; TODO
+    ; topic "one? - with :object"
+
+    topic "one? - with :null"
+    ; returns false, is it right?
+    debug one? null
+
+]
+
 
 ; -- 'permutate
 topic "permutate"

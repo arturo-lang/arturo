@@ -295,6 +295,43 @@ Manchester :string
 Boston :string 
 2 :integer 
 
+>> one?
+
+
+>> one? - with :integer
+
+true :logical 
+false :logical 
+
+>> one? - with :floating
+
+true :logical 
+false :logical 
+
+>> one? - with :string
+
+true :logical 
+false :logical 
+
+>> one? - with :block
+
+true :logical 
+false :logical 
+
+>> one? - with :range
+
+false :logical 
+false :logical 
+
+>> one? - with :dictionary
+
+false :logical 
+false :logical 
+
+>> one? - with :null
+
+false :logical 
+
 >> permutate
 
 [[A B C] [A C B] [B A C] [B C A] [C A B] [C B A]] :block 
