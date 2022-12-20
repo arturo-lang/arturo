@@ -151,10 +151,14 @@ before empty
 [Arturo C Python Ruby] :block 
 [1 2 3 4 5 6 7 8 9 10] :block 
 [north south east west] :block 
+Arturo :string 
+[name:John surname:Doe] :dictionary 
 after empty
 [] :block 
 [] :block 
 [] :block 
+ :string 
+[] :dictionary 
 
 >> extend
 
