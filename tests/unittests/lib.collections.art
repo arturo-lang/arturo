@@ -168,6 +168,23 @@ do [
 
 ]
 
+; -- combine
+; does not work with literal types
+topic "combine"
+do [
+
+    debug combine [A B C]
+    debug combine [[A B] [C D]]
+
+    debug combine.by:2 [A B C] 
+    debug combine.repeated [A B C]
+    debug combine.repeated.by:2 [A B C]
+
+    debug combine.count [A B C]
+    debug combine.count.repeated.by:2 [A B C]
+
+]
+
 
 ; -- 'couple
 topic "couple"
