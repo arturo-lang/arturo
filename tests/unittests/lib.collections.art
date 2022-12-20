@@ -711,82 +711,110 @@ do [
 
     debug split [[1 2 3] [4 5 6] [7 8]]
 
+    topic "split - .path"
+    do [
 
-    (sys\os = "windows")? [
-        debug split.path "directory\\wofilerld"
-        debug split.path "\\usr\\bin"
+        ; They should return the same result
+        (sys\os = "windows")? [
+            ; Accepts \\ and / paths
+            debug split.path "directory\\wofilerld"
+            debug split.path "\\usr\\bin"
 
-        p1: "directory\\wofilerld\\"
-        p2: "\\usr\\bin"
-    ][
-        debug split.path "directory/wofilerld"
+            p1: "directory\\wofilerld\\"
+            p2: "\\usr\\bin"
+        ][
+            ; Accepts / paths
+            debug split.path "directory/wofilerld"
+            debug split.path "/usr/bin"
+
+            p1: "directory/wofilerld/"
+            p2: "/usr/bin"
+        ]
+
+        debug split.path p1
+        debug split.path p2
+        split.path 'p1, debug p1
+        split.path 'p2, debug p2
+
+        ; tests the Unix's default path and Windows' alternative
+        ; Since, you can use it on Msys, for instance
+        ; it gives the same result in both
+        debug split.path "/usr/bin/"
         debug split.path "/usr/bin"
+        debug split.path "usr/bin/"
 
-        p1: "directory/wofilerld/"
-        p2: "/usr/bin"
     ]
 
-    debug split.path p1
-    debug split.path p2
-    split.path 'p1, debug p1
-    split.path 'p2, debug p2
+    topic "split - .words & .lines"
+    do [
 
-    ; tests the Unix's default path and Windows' alternative
-    ; Since, you can use it on Msys, for instance
-    ; it gives the same result in both
-    debug split.path "/usr/bin/"
-    debug split.path "/usr/bin"
-    debug split.path "usr/bin/"
+        debug split.words "Hello World!"
+        debug split.lines "Hi\nmy\nname\nis..."
 
-    ; Testing Attributes
-    debug split.words "Hello World!"
-
-    debug split.lines "Hi\nmy\nname\nis..."
-
-    debug split.by: "/" "directory/file.ext"
-
-    csv: "id;nickname;name;age"
-    split.by: ";" 'csv
-    debug csv
-
-    debug split.at: 5 "Hello, World"
-    debug split.at: 4 [
-        "Arnold" "Andreas" "Paul" "Ricard" "Linus"
-        "Yanis" "Helena" "Eva" "Blanca"
     ]
 
-    debug split.every: 3 "split collection to components"
-    debug split.every: 3 [
-        "Arnold" "Andreas" "Paul" "Ricard" "Linus"
-        "Yanis" "Helena" "Eva" "Blanca"
+    topic "split - .by"
+    do [
+
+        debug split.by: "/" "directory/file.ext"
+
+        csv: "id;nickname;name;age"
+        split.by: ";" 'csv, debug csv
+
     ]
 
-    a: [
-        "Arnold" "Andreas" "Paul" "Ricard" "Linus"
-        "Yanis" "Helena" "Eva" "Blanca"
+    topic "split - .at"
+    do [
+
+        debug split.at: 5 "Hello, World"
+        debug split.at: 4 [
+            "Arnold" "Andreas" "Paul" "Ricard" "Linus"
+            "Yanis" "Helena" "Eva" "Blanca"
+        ]
+
+        a: [
+            "Arnold" "Andreas" "Paul" "Ricard" "Linus"
+            "Yanis" "Helena" "Eva" "Blanca"
+        ]
+        split.at: 4 'a, debug a
+
     ]
-    split.at: 4 'a, debug a
 
-    b: ["Arnold" "Andreas" "Paul" "Ricard" "Linus" "Yanis" "Helena" "Eva" "Blanca"]
-    split.every: 3 'b, debug b
+    topic "split - .every"
+    do [
 
-    ; This test is returning strange character filling the last inner block
-    ; debug split.every: 3 "Manchesterr"
-    ; city: "Manchester"
-    ; split.every: 3 'city, debug city
+        debug split.every: 3 "split collection to components"
+        debug split.every: 3 [
+            "Arnold" "Andreas" "Paul" "Ricard" "Linus"
+            "Yanis" "Helena" "Eva" "Blanca"
+        ]
 
-    city: split.every: 3 "Manchester"
-    print [city, size city\0, size city\1, size city\2, size city\3]
 
-    lang: split.every: 4 "Arturo"
-    print [lang, size lang\0, size lang\1]
+        b: ["Arnold" "Andreas" "Paul" 
+            "Ricard" "Linus" "Yanis" 
+            "Helena" "Eva" "Blanca"
+        ]
+        split.every: 3 'b, debug b
 
-    city2: "Manchester"
-    lang2: "Arturo"
-    split.every: 3 'city2
-    split.every: 4 'lang2
-    print [city2, size city2\0, size city2\1, size city2\2, size city2\3]
-    print [lang2, size lang2\0 size, lang2\1]
+        ; This test is returning strange character filling the last inner block
+        ; debug split.every: 3 "Manchesterr"
+        ; city: "Manchester"
+        ; split.every: 3 'city, debug city
+
+        city: split.every: 3 "Manchester"
+        print [city, size city\0, size city\1, size city\2, size city\3]
+
+        lang: split.every: 4 "Arturo"
+        print [lang, size lang\0, size lang\1]
+
+        city2: "Manchester"
+        lang2: "Arturo"
+        split.every: 3 'city2
+        split.every: 4 'lang2
+        print [city2, size city2\0, size city2\1, size city2\2, size city2\3]
+        print [lang2, size lang2\0 size, lang2\1]
+
+    ]
 
 ]
 
