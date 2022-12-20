@@ -208,6 +208,43 @@ January :string
 J :char 
 D :char 
 
+>> in?
+
+
+>> in? - with :string
+
+true :logical 
+true :logical 
+true :logical 
+false :logical 
+true :logical 
+false :logical 
+
+>> in? - with :block
+
+true :logical 
+false :logical 
+true :logical 
+false :logical 
+
+>> in? - with nested :block
+
+false :logical 
+true :logical 
+false :logical 
+false :logical 
+
+>> in? - with :dictionary
+
+true :logical 
+true :logical 
+false :logical 
+false :logical 
+true :logical 
+true :logical 
+false :logical 
+false :logical 
+
 >> index
 
 1 :integer 

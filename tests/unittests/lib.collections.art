@@ -404,6 +404,54 @@ do [
 
 ]
 
+topic "in?"
+do [
+
+    topic "in? - with :string"
+    str: "Arturo"
+    debug in? "Art"      str ; :string
+    debug in? `t`        str ; :char
+    debug in? {/[Art]/}  str ; :regex
+    debug in? "Football" str
+    debug in?.at:0 "Art" str
+    debug in?.at:2 "Art" str
+
+
+    topic "in? - with :block"
+    block: ["Arturo" "Python" "Ruby"]
+    debug in? "Arturo"       block
+    debug in? "F#"           block
+    debug in?.at: 0 "Arturo" block
+    debug in?.at: 2 "Python" block
+
+    topic "in? - with nested :block"
+    nested: [
+        ["Arturo" "Python" "Ruby"] 
+        ["C" "C++" "Nim"]]
+    debug in? "Arturo"                nested
+    debug in? ["C" "C++" "Nim"]       nested
+    debug in?.at: 0 ["C" "C++" "Nim"] nested
+    debug in?.at: 1 "Python"          nested
+
+    ; range is returning an integer
+    ; topic "in? - with :range"
+    ; range: 1..10
+    ; debug in? 5 range
+    ; debug in? 0 range
+
+    topic "in? - with :dictionary"
+    dict: #[ name: "John" surname: "Doe"]
+    debug in?"name"       keys dict
+    debug in?.at:0 "name" keys dict
+    debug in?.at:1 "name" keys dict
+    debug in? "id"        keys dict
+    debug in? "John"      dict
+    debug in?.at:0 "John" dict
+    debug in?.at:1 "John" dict
+    debug in? dict "Jane" dict
+
+]
+
 
 ; -- 'index
 topic "index"
