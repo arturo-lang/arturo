@@ -647,6 +647,11 @@ some te :string
 [Arnold Andreas] :block 
 [Arnold Andreas] :block 
 
+>> tally
+
+[h:1 e:1 l:3 o:2 W:1 r:1 d:1] :dictionary 
+[1:5 2:5 4:3 3:2 5:3 6:3 7:1] :dictionary 
+
 >> unique
 
 [1 2 4 3] :block 
