@@ -745,6 +745,10 @@ do [
 
     debug split.by: "/" "directory/file.ext"
 
+    csv: "id;nickname;name;age"
+    split.by: ";" 'csv
+    debug csv
+
     debug split.at: 5 "Hello, World"
     debug split.at: 4 [
         "Arnold" "Andreas" "Paul" "Ricard" "Linus"

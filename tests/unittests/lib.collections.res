@@ -326,6 +326,7 @@ Art :string
 [Hello World!] :block 
 [Hi my name is...] :block 
 [directory file.ext] :block 
+[id nickname name age] :block 
 [Hello , World] :block 
 [[Arnold Andreas Paul Ricard] [Linus Yanis Helena Eva Blanca]] :block 
 [spl it  col lec tio n t o c omp one nts] :block 
