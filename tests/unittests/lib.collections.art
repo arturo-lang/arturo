@@ -1095,11 +1095,16 @@ do [
 
         debug sort [5 4 3 2 1]
         debug sort ["Ruby" "Arturo" "Python"]
+        debug sort #[ c: "C" art: "Arturo"
+            nim: "Nim" coffee: "CoffeeScript" ]
 
         a: [5 4 3 2 1]
         b: ["Ruby" "Arturo" "Python"]
+        c: #[ c: "C" art: "Arturo" 
+            nim: "Nim" coffee: "CoffeeScript"]
         sort 'a, debug a
         sort 'b, debug b
+        sort 'c, debug c
 
     ]
 

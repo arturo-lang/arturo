@@ -543,8 +543,10 @@ Art :string
 
 [1 2 3 4 5] :block 
 [Arturo Python Ruby] :block 
+[art:Arturo c:C coffee:CoffeeScript nim:Nim] :dictionary 
 [1 2 3 4 5] :block 
 [Arturo Python Ruby] :block 
+[art:Arturo c:C coffee:CoffeeScript nim:Nim] :dictionary 
 
 >> sort - .values
 
