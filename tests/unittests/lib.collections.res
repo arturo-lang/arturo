@@ -492,6 +492,15 @@ retsehcnaM :string
 [[7 8 9] [4 5 6] [1 2 3]] :block 
 orutrA :string 
 
+>> rotate
+
+[1 2 3 4 5] :block 
+[1 2 3 4 5] :block 
+Arturo :string 
+[1 2 3 4 5] :block 
+[1 2 3 4 5] :block 
+Arturo :string 
+
 >> sample
 
 :string
