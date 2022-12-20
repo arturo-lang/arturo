@@ -34,6 +34,12 @@ when not defined(WEB):
 # Methods
 #=======================================
 
+# TODO(Sockets) Verify the whole module & check for missing functionality
+#  obviously this cannot be done with unit-tests as easily as with other modules, but
+#  we'd still have to verify it works as expected and track down possibly-missing
+#  features
+#  labels: open discussion
+
 proc defineSymbols*() =
     
     when not defined(WEB):
@@ -47,6 +53,8 @@ proc defineSymbols*() =
             },
             attrs       = NoAttrs,
             returns     = {Socket},
+            # TODO(Sockets/accept) add documentation example
+            #  labels: library, documentation, easy
             example     = """
             """:
                 #=======================================================
@@ -72,6 +80,8 @@ proc defineSymbols*() =
                 "udp"       : ({Logical},"use UDP instead of TCP")
             },
             returns     = {Socket},
+            # TODO(Sockets/connect) add documentation example
+            #  labels: library, documentation, easy
             example     = """
             """:
                 #=======================================================
@@ -111,6 +121,8 @@ proc defineSymbols*() =
                 "udp"       : ({Logical},"use UDP instead of TCP")
             },
             returns     = {Socket},
+            # TODO(Sockets/listen) add documentation example
+            #  labels: library, documentation, easy
             example     = """
             """:
                 #=======================================================
@@ -146,6 +158,8 @@ proc defineSymbols*() =
                 "timeout"   : ({Integer},"set timeout (in milliseconds)")
             },
             returns     = {String},
+            # TODO(Sockets/receive) add documentation example
+            #  labels: library, documentation, easy
             example     = """
             """:
                 #=======================================================
@@ -173,6 +187,8 @@ proc defineSymbols*() =
                 "chunk"     : ({Logical},"don't send data as a line of data")
             },
             returns     = {Nothing},
+            # TODO(Sockets/send) add documentation example
+            #  labels: library, documentation, easy
             example     = """
             """:
                 #=======================================================
@@ -196,6 +212,8 @@ proc defineSymbols*() =
             },
             attrs       = NoAttrs,
             returns     = {Logical},
+            # TODO(Sockets/send?) add documentation example
+            #  labels: library, documentation, easy
             example     = """
             """:
                 #=======================================================
@@ -212,6 +230,8 @@ proc defineSymbols*() =
             },
             attrs       = NoAttrs,
             returns     = {Nothing},
+            # TODO(Sockets/unplug) add documentation example
+            #  labels: library, documentation, easy
             example     = """
             """:
                 #=======================================================
