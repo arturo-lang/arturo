@@ -1138,7 +1138,33 @@ do [
 
         ; How to use it?
 
-        debug sort.as: 'es ["uno","dos","tres","Uno","Dos","Tres","pero","pértiga","perversión","ábaco","abismo","aberración"]
+        debug sort.as: 'es [
+            "uno","dos","tres","Uno","Dos","Tres",
+            "pero","pértiga","perversión","ábaco",
+            "abismo", "aberración"]
+
+        arr: [
+            "uno","dos","tres","Uno","Dos","Tres",
+            "pero","pértiga","perversión","ábaco",
+            "abismo","aberración"]
+        sort.as: 'es 'arr, debug arr
+
+        ; Isn't working well for dictionaries
+        ; It's case sensitive
+        ; And isn't using `.as`, as well
+
+        ; debug sort.values.as: 'es #[
+        ;     a: "uno" b: "dos" c: "tres" d: "Uno",
+        ;     e: "Dos" f: "Tres" g: "pero" h: "pértiga"
+        ;     i: "perversión" j: "ábaco" k: "abismo"
+        ;     l: "aberración"]
+
+        ; dict: #[
+        ;     a: "uno" b: "dos" c: "tres" d: "Uno",
+        ;     e: "Dos" f: "Tres" g: "pero" h: "pértiga"
+        ;     i: "perversión" j: "ábaco" k: "abismo"
+        ;     l: "aberración"]
+        ; sort.values.as: 'es 'dict, debug dict
 
     ]
 
