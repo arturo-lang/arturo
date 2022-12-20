@@ -367,6 +367,9 @@ do [
 topic "get"
 do [
 
+    ; TODO:
+    ; add for :range, :object, :store, :date, :binary, :bytecode
+
     user: #[
         name: "John"
         surname: "Doe"
