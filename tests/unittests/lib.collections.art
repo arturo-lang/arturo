@@ -545,6 +545,9 @@ do [
 
     debug max [4 2 8 5 1 9]
     debug max ["Granada" "Manchester" "Boston"]
+    ; This code is recorginized as an :integer
+    ; instead of :range
+    ; debug max 0..10
 
 ]
 
