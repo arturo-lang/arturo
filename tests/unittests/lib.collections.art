@@ -477,16 +477,27 @@ do [
 topic "insert"
 do [
 
-    dict: #[
-        name: "John"
-    ]
-
-    debug insert [1 2 3 4] 0 "zero"
-    debug insert "heo" 2 "ll"
-
+    ; with :dictionary
+    debug insert #[ name: "John" ] "age" 32
+    dict: #[ name: "John" ]
     insert 'dict "name" "Joe, Again", debug dict
 
+    ; with :block
+    debug insert [1 2 3 4] 0 "zero"
     debug insert [1 2 6 7 8 9 10] 2 [3 4 5]
+    arr: [1 2 3 4]
+    insert 'arr 0 0, debug arr
+
+    ; with :string
+    debug insert "heo" 2 "ll"
+    str1: "Auro"
+    insert 'str1 1 "rt", debug str1
+    
+    ; with :string & :char
+    ; Can't insert :char
+    ; debug insert "helo" 2 `l`
+    ; str2: "uby"
+    ; insert 'str2 0 `R`, debug str2
 
 ]
 

@@ -255,10 +255,13 @@ surname :string
 
 >> insert
 
-[zero 1 2 3 4] :block 
-hello :string 
+[name:John age:32] :dictionary 
 [name:Joe, Again] :dictionary 
+[zero 1 2 3 4] :block 
 [1 2 [3 4 5] 6 7 8 9 10] :block 
+[0 1 2 3 4] :block 
+hello :string 
+Arturo :string 
 
 >> keys
 
