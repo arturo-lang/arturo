@@ -1485,3 +1485,40 @@ do [
     ; TODO: test with :object
 
 ]
+
+topic "zero?"
+do [
+    topic "zero? - with :integer"
+    debug zero? 5-5
+    debug zero? 4-3
+
+    topic "zero? - with :floating"
+    debug zero? 0.0
+    debug zero? 1.0
+
+    topic "zero? - with :string"
+    debug zero? ""
+    debug zero? "Arturo"
+
+    topic "zero? - with :block"
+    debug zero? [] 
+    debug zero? ["apple" "pear"] 
+
+    topic "zero? - with :range"
+    ; debug zero? 0..0
+    ; debug zero? range 0 0
+    ; debug zero? 0..10
+    ; debug zero? range 0 10
+
+    topic "zero? - with :dictionary"
+    ; returns false, is it right?
+    debug zero? #[]
+    debug zero? #[ name: "John" ]
+
+    ; TODO
+    ; topic "zero? - with :object"
+
+    topic "zero? - with :null"
+    debug zero? null
+
+]
