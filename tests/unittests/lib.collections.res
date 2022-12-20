@@ -551,6 +551,7 @@ Art :string
 >> sort - .values
 
 [id:012568 surname:Doe name:John city:Manchester age:45] :dictionary 
+[id:012568 surname:Doe name:John city:Manchester age:45] :dictionary 
 
 >> sort - .as
 
