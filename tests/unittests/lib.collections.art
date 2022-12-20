@@ -336,6 +336,11 @@ do [
     debug first ["one" "two" "three"]
     debug first.n: 2 ["one" "two" "three"]
 
+    ; This code is recorginized as an :integer
+    ; instead of :range
+    ; debug first 0..10
+    ; debug first.n: 6 0..10
+
 ]
 
 
