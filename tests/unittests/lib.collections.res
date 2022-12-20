@@ -661,4 +661,10 @@ true
 
 >> values
 
-[John Doe 012568 Manchester 45] :block 
+[1;31m>> Runtime |[0m [1;90mFile: [0m[0;90mlib.collections.art
+[1;31m     error |[0m [1;90mLine: [0m[0;90m1468[0m
+           [1;31m|[0m 
+           [1;31m|[0m symbol not found: value
+           [1;31m|[0m perhaps you meant... [1mvalues[0m ?
+           [1;31m|[0m                or... [1mvolume[0m ?
+           [1;31m|[0m                or... [1mabsolute?[0m ?
