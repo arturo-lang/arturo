@@ -2,6 +2,14 @@
 >> append
 
 
+>> append - :binary < :binary :binary
+
+00 01 :binary 
+
+>> append - :binary < :binary :integer
+
+00 01 :binary 
+
 >> append - :string < :string + :string
 
 Arturo :string 
@@ -61,12 +69,22 @@ Art :string
 Art :string 
 Art :string 
 Art :string 
-[1 2 3] :block 
-[1 2 3] :block 
-[1 2 3] :block 
-[1 2 3] :block 
 Art :string 
 [1 2 3] :block 
+[1 2 3] :block 
+[1 2 3] :block 
+[1 2 3] :block 
+[1 2 3] :block 
+
+>> combine
+
+[[A B C]] :block 
+[[[A B] [C D]]] :block 
+[[A B] [A C] [B C]] :block 
+[[A A A] [A A B] [A A C] [A B B] [A B C] [A C C] [B B B] [B B C] [B C C] [C C C]] :block 
+[[A A] [A B] [A C] [B B] [B C] [C C]] :block 
+1 :integer 
+6 :integer 
 
 >> couple
 
@@ -314,6 +332,9 @@ Art :string
 
 [A r t u r o] :block 
 [[1 2 3] [4 5 6] [7 8]] :block 
+
+>> split - .path
+
 [directory wofilerld] :block 
 [usr bin] :block 
 [directory wofilerld] :block 
@@ -323,20 +344,32 @@ Art :string
 [usr bin] :block 
 [usr bin] :block 
 [usr bin] :block 
+
+>> split - .words & .lines
+
 [Hello World!] :block 
 [Hi my name is...] :block 
+
+>> split - .by
+
 [directory file.ext] :block 
 [id nickname name age] :block 
+
+>> split - .at
+
 [Hello , World] :block 
 [[Arnold Andreas Paul Ricard] [Linus Yanis Helena Eva Blanca]] :block 
+[[Arnold Andreas Paul Ricard Linus] [Linus Yanis Helena Eva Blanca]] :block 
+
+>> split - .every
+
 [spl it  col lec tio n t o c omp one nts] :block 
 [[Arnold Andreas Paul] [Ricard Linus Yanis] [Helena Eva Blanca]] :block 
-[[Arnold Andreas Paul Ricard Linus] [Linus Yanis Helena Eva Blanca]] :block 
 [[Arnold Andreas Paul] [Ricard Linus Yanis] [Helena Eva Blanca]] :block 
-[Man che ste r] 3 3 3 1 
-[Artu ro] 4 2 
-[Man che ste r] 3 3 3 1 
-[Artu ro] 4 2 
+[Man che ste r] 3 3 3 3 
+[Artu ro] 4 4 
+[Man che ste r] 3 3 3 3 
+[Artu ro] 4 4 
 
 >> squeeze
 
