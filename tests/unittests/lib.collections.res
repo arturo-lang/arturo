@@ -134,6 +134,10 @@ false :logical
 [[one 1] [two 2] [three 3]] :block 
 [[1 one] [2 two] [3 three]] :block 
 
+>> decouple
+
+[[1 2 3] [one two three]] :block 
+
 >> drop
 
 turo :string 
