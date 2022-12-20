@@ -467,6 +467,8 @@ do [
     debug index "hello" "x" ; returns null
     debug index user "John"
     debug index user "Doe"
+    ; range is returning an integer
+    ; debug index 2 0..10
 
 ]
 
