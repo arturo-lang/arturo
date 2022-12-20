@@ -249,6 +249,15 @@ do [
 
 ]
 
+; Does not work with literals
+topic "decouple"
+do [
+
+    c: [[1 "one"] [2 "two"] [3 "three"]]
+    debug decouple c
+
+]
+
 
 ; -- 'drop
 topic "drop"
