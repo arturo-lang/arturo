@@ -284,7 +284,9 @@ three :string
 >> max
 
 9 :integer 
+5 :integer 
 Manchester :string 
+1 :integer 
 
 >> min
 
