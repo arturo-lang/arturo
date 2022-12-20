@@ -1428,7 +1428,7 @@ do [
 
     debug tally "helloWorld"
     debug tally [1 2 4 1 3 5 6 2 6 3 5 7 2 4 2 4 5 6 2 1 1 1]
-    
+
 
 ]
 
@@ -1436,15 +1436,26 @@ do [
 ; -- unique
 topic "unique"
 do [
+    
+    ; :block
     debug unique [1 2 4 1 3 2]
-
-    a: [1 2 4 1 3 2 5 6 5 7 4]
-    unique 'a, a, debug a
+    b: [1 2 4 1 3 2]
+    unique 'b, debug b
 
     id1: unique.id [1 2 4 1 3 2]
     id2: unique.id [1 2 4 1 3 2 5 6 5 7 4]
-
     print id1 <> id2
+
+    ; :string
+
+    ; Should it be used for strings?
+    ; debug unique "Arturo"
+    ; s: "Arturo"
+    ; unique 's, debug s
+
+    sid1: unique.id "Arturo"
+    sid2: unique.id "Python"
+    print sid1 <> sid2
 
 ]
 

@@ -655,7 +655,8 @@ some te :string
 >> unique
 
 [1 2 4 3] :block 
-[1 2 4 3 5 6 7] :block 
+[1 2 4 3] :block 
+true
 true
 
 >> values
