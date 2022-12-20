@@ -830,27 +830,41 @@ do [
     topic "remove - .once"
     do [
 
-        a: "hello"
-        b: [1 2 5 3 4 5]
-
+        topic "remove - .once :string"
         debug remove.once "hello" "l"
-        debug remove.once [1 2 5 3 4 5] 5
-
-        remove.once 'a "l", debug a
-        remove.once 'b 5, debug b
-
-        ; try with block
-        debug remove.once [1 6 2 5 3 4 5 6] [5 2]
-        debug remove.once [1 [6 2] 5 3 4 5 6] [6 2]
+        ; Is not removing with :char
+        ;debug remove.once "hello" `l`
+        s1: "hello"
+        remove.once 's1 "l", debug s1
+        ; Is not removing with :char
+        ; s2: "hello"
+        ; remove.once 's2 `l`, debug s2
         
-        c: [1 [6 2] 5 3 4 5 6]
-        remove.once 'c [6 2], debug c
+        ; :block
+        topic "remove - .once :block"
+        debug remove.once [1 2 5 3 4 5] 5
+        b1: [1 2 5 3 4 5]
+        remove.once 'b1 5, debug b1
 
         ; Testing new behavior from PR #877
+        debug remove.once [1 6 2 5 3 4 5 6] [6 2]
+        debug remove.once [1 2 [6 2] 5 3 4 5 6] [6 2]
         debug remove.once [1 2 [1 2] 3 4 1 2 [1 2] 3 4]  [1 2]
 
-        ; try with char
-        debug remove.once "hello" `l`
+        b2: [1 6 2 5 3 4 5 6]
+        b3: [1 2 [6 2] 5 3 [6 2] 4 5 6]
+        b4: [1 2 [1 2] 3 4 1 2 [1 2] 3 4]
+        remove.once 'b2 [6 2], debug b2
+        remove.once 'b3 [6 2], debug b3
+        remove.once 'b4 [1 2], debug b4
+
+        ; :dictionary
+        topic "remove - .once :dictionary"
+        debug remove.once #[name: "John" surname: "Doe" father: "John"] 
+            "John"
+        
+        user: #[name: "John" surname: "Doe" father: "John"]
+        remove.once 'user "John", debug user
 
     ]
 
