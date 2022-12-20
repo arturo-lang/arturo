@@ -96,8 +96,6 @@ proc defineSymbols*() =
                 var client = newHttpClient()
                 client.downloadFile(path,target)
 
-        # TODO(Net/mail) could we somehow globally stored the configuration?
-        #  labels: enhancement,library
         builtin "mail",
             alias       = unaliased, 
             rule        = PrefixPrecedence,
