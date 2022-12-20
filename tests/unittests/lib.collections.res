@@ -86,6 +86,48 @@ Art :string
 1 :integer 
 6 :integer 
 
+>> contains?
+
+
+>> contains? - with :string
+
+true :logical 
+true :logical 
+true :logical 
+false :logical 
+true :logical 
+false :logical 
+
+>> contains? - with :block
+
+true :logical 
+false :logical 
+true :logical 
+false :logical 
+
+>> contains? - with nested :block
+
+false :logical 
+true :logical 
+false :logical 
+false :logical 
+
+>> contains? - with :range
+
+true :logical 
+false :logical 
+
+>> contains? - with :dictionary
+
+true :logical 
+true :logical 
+false :logical 
+false :logical 
+true :logical 
+true :logical 
+false :logical 
+false :logical 
+
 >> couple
 
 [[one 1] [two 2] [three 3]] :block 
@@ -366,10 +408,10 @@ Art :string
 [spl it  col lec tio n t o c omp one nts] :block 
 [[Arnold Andreas Paul] [Ricard Linus Yanis] [Helena Eva Blanca]] :block 
 [[Arnold Andreas Paul] [Ricard Linus Yanis] [Helena Eva Blanca]] :block 
-[Man che ste r] 3 3 3 3 
-[Artu ro] 4 4 
-[Man che ste r] 3 3 3 3 
-[Artu ro] 4 4 
+[Man che ste r] 3 3 3 1 
+[Artu ro] 4 2 
+[Man che ste r] 3 3 3 1 
+[Artu ro] 4 2 
 
 >> squeeze
 
@@ -382,7 +424,7 @@ helo world :string
 
 some te :string 
 [Arnold Andreas] :block 
-[1 2 3] :block 
+1 :integer 
 
 >> unique
 

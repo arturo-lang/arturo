@@ -185,6 +185,53 @@ do [
 
 ]
 
+topic "contains?"
+do [
+
+    topic "contains? - with :string"
+    str: "Arturo"
+    debug contains? str "Art"         ; :string
+    debug contains? str `t`           ; :char
+    debug contains? str {/[Art]/}     ; :regex
+    debug contains? str "Football"
+    debug contains?.at:0 str "Art"
+    debug contains?.at:2 str "Art"
+
+
+    topic "contains? - with :block"
+    block: ["Arturo" "Python" "Ruby"]
+    debug contains? block "Arturo"
+    debug contains? block "F#"
+    debug contains?.at: 0 block "Arturo"
+    debug contains?.at: 2 block "Python"
+
+    topic "contains? - with nested :block"
+    nested: [
+        ["Arturo" "Python" "Ruby"] 
+        ["C" "C++" "Nim"]]
+    debug contains? nested "Arturo"
+    debug contains? nested ["C" "C++" "Nim"]
+    debug contains?.at: 0 nested ["C" "C++" "Nim"]
+    debug contains?.at: 1 nested "Python"
+
+    topic "contains? - with :range"
+    range: 1..10
+    debug contains? range 5
+    debug contains? range 0
+
+    topic "contains? - with :dictionary"
+    dict: #[ name: "John" surname: "Doe"]
+    debug contains? keys dict "name"
+    debug contains?.at:0 keys dict "name"
+    debug contains?.at:1 keys dict "name"
+    debug contains? keys dict "id"
+    debug contains? dict "John"
+    debug contains?.at:0 dict "John"
+    debug contains?.at:1 dict "John"
+    debug contains? dict "Jane"
+
+]
+
 
 ; -- 'couple
 topic "couple"
