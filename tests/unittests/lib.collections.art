@@ -858,6 +858,9 @@ do [
 
     debug repeat [1 2 3] 3
     debug repeat [[1 2 3]] 3
+    
+    b: [4 5 6]
+    repeat 'b 3, debug b
 
 ]
 
