@@ -575,6 +575,15 @@ Art :string
 [[name:John surname:Doe] [name:Jane surname:Doe] [name:Arnold surname:Schwarzenegger] [name:John surname:Wick]] :block 
 [[name:Arnold surname:Schwarzenegger] [name:Jane surname:Doe] [name:John surname:Doe] [name:John surname:Wick]] :block 
 
+>> sorted?
+
+true
+false
+false
+true
+false
+false
+
 >> split
 
 [A r t u r o] :block 
