@@ -33,6 +33,8 @@ import strutils, sugar, unicode
 import helpers/arrays
 import helpers/combinatorics
 import helpers/ranges
+when not defined(WEB):
+    import helpers/stores
 import helpers/strings
 import helpers/unisort
 
@@ -522,7 +524,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get collection's item by given index",
         args        = {
-            "collection": {String, Block, Range, Dictionary, Object, Date, Binary, Bytecode},
+            "collection": {String, Block, Range, Dictionary, Object, Store, Date, Binary, Bytecode},
             "index"     : {Any}
         },
         attrs       = NoAttrs,
@@ -601,6 +603,13 @@ proc defineSymbols*() =
                             push(GetKey(x.o, y.s))
                         else:
                             push(GetKey(x.o, $(y)))
+                of Store:
+                    when not defined(WEB):
+                        case y.kind:
+                            of String, Word, Literal, Label:
+                                push(getStoreKey(x.sto, y.s))
+                            else:
+                                push(getStoreKey(x.sto, $(y)))
                 of String:
                     push(newChar(x.s.runeAtPos(y.i)))
                 of Date:
@@ -1385,7 +1394,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "set collection's item at index to given value",
         args        = {
-            "collection": {String, Block, Dictionary, Object, Binary, Bytecode},
+            "collection": {String, Block, Dictionary, Object, Store, Binary, Bytecode},
             "index"     : {Any},
             "value"     : {Any}
         },
@@ -1446,6 +1455,14 @@ proc defineSymbols*() =
                             x.o[y.s] = z
                         else:
                             x.o[$(y)] = z
+                of Store:
+                    when not defined(WEB):
+                        case y.kind:
+                            of String, Word, Literal, Label:
+                                setStoreKey(x.sto, y.s, z)
+                            else:
+                                setStoreKey(x.sto, $(y), z)
+                
                 of String:
                     var res: string
                     var idx = 0

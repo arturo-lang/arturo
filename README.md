@@ -166,7 +166,7 @@ So, the name is a subtle hommage to him; and also a hint as to what this program
 License
 ------------------------------
 
-MIT License
+MIT License 
 
 Copyright (c) 2019-2022 Yanis Zafirópulos (aka Dr.Kameleon)
 

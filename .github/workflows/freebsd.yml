@@ -22,7 +22,7 @@ defaults:
 
 jobs:  
   freebsd:
-    runs-on: macos-12
+    runs-on: macos-latest
     strategy:
       matrix:
         os:

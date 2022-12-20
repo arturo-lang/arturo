@@ -23,11 +23,9 @@ defaults:
 jobs:  
   build:
     name: "Build & Test"
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: 
-          - linux
         arch:
           - arm
           - arm64
@@ -55,16 +53,14 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.choosenim
-          key: ${{ matrix.os }}-choosenim-${{ steps.get-date.outputs.date }}
-        if: runner.os != 'Windows'
+          key: raspberry-choosenim-${{ steps.get-date.outputs.date }}
 
       - name: Cache Nimble
         id: cache-nimble
         uses: actions/cache@v3
         with:
           path: ~/.nimble
-          key: ${{ matrix.os }}-nimble-${{ hashFiles('*.nimble') }}
-        if: runner.os != 'Windows'
+          key: raspberry-nimble-${{ hashFiles('*.nimble') }}
 
       - name: Setup nim
         uses: jiro4989/setup-nim-action@v1
@@ -89,5 +85,5 @@ jobs:
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
         with:
-          name: "arturo-${{matrix.version}}-${{matrix.os}}-${{matrix.arch}}"
+          name: "arturo-${{matrix.version}}-${{matrix.arch}}"
           path: bin/arturo
