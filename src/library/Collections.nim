@@ -1808,7 +1808,10 @@ proc defineSymbols*() =
                         var i = 0
 
                         while i < length:
-                            ret.add(InPlaced.a[i..i+aEvery.i-1])
+                            if i + aEvery.i > length:
+                                ret.add(newBlock(InPlaced.a[i..^1]))
+                            else:
+                                ret.add(newBlock(InPlaced.a[i..i+aEvery.i-1]))
                             i += aEvery.i
 
                         SetInPlace(newBlock(ret))
