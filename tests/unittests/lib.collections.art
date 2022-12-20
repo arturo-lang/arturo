@@ -796,11 +796,6 @@ do [
         ]
         split.every: 3 'b, debug b
 
-        ; This test is returning strange character filling the last inner block
-        ; debug split.every: 3 "Manchesterr"
-        ; city: "Manchester"
-        ; split.every: 3 'city, debug city
-
         city: split.every: 3 "Manchester"
         print [city, size city\0, size city\1, size city\2, size city\3]
 
