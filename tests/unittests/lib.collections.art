@@ -1258,10 +1258,20 @@ topic "split"
 do [
 
     ; default
-    a: "Arturo"
     debug split "Arturo"
+    
+    ; Broken for literal values
+    ; It's returning [a]??
+    ; a: "Arturo"
+    ; split 'a, debug a
 
     debug split [[1 2 3] [4 5 6] [7 8]]
+    b: [[1 2 3] [4 5 6] [7 8]]
+    split 'b, debug b
+
+    debug split [1 2 3 4 5 6]
+    c: [1 2 3 4 5 6]
+    split 'c, debug c
 
     topic "split - .path"
     do [
@@ -1301,7 +1311,12 @@ do [
     do [
 
         debug split.words "Hello World!"
+        s1: "Hello World!"
+        split.words 's1, debug s1
+
         debug split.lines "Hi\nmy\nname\nis..."
+        s2: "Hi\nmy\nname\nis..."
+        split.lines 's2, debug s2
 
     ]
 
@@ -1319,16 +1334,19 @@ do [
     do [
 
         debug split.at: 5 "Hello, World"
+        s: "Hello, World"
+        split.at: 5 's, debug s
+
         debug split.at: 4 [
             "Arnold" "Andreas" "Paul" "Ricard" "Linus"
             "Yanis" "Helena" "Eva" "Blanca"
         ]
 
-        a: [
+        b: [
             "Arnold" "Andreas" "Paul" "Ricard" "Linus"
             "Yanis" "Helena" "Eva" "Blanca"
         ]
-        split.at: 4 'a, debug a
+        split.at: 4 'b, debug b
 
     ]
 
