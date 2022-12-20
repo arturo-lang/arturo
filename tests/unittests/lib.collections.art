@@ -1178,6 +1178,20 @@ do [
         a: ["Ruby" "python" "Arturo" "ruby" "arturo" "Python"]
         sort.sensitive 'a, debug a
 
+        ; A really strange output here:
+        ; It's sorting values and keys
+
+        ; debug sort.values.sensitive [
+        ;     a: "Ruby" b: "python" c: "Arturo" 
+        ;     d: "ruby" e: "arturo" f: "Python"]
+
+        ; dict1: [a: "Ruby" b: "python" c: "Arturo" 
+        ;     d: "ruby" e: "arturo" f: "Python"]
+        ; dict2: [a: "Ruby" b: "python" c: "Arturo" 
+        ;     d: "ruby" e: "arturo" f: "Python"]
+        ; sort.values 'dict1, debug dict1
+        ; sort.values.sensitive 'dict2, debug dict2
+
     ]
 
     ; descending
