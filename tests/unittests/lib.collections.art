@@ -1393,6 +1393,10 @@ do [
     ; It doesn't squeeze the repeated blocks
 
     debug squeeze "hello world"
+    
+    ; It isn't working for string-literals
+    ; str: "hello world"
+    ; squeeze 'str, debug str
 
     arr: [4 2 1 1 3 6 6]
     squeeze 'arr, debug arr
