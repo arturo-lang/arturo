@@ -484,6 +484,14 @@ retsehcnaM :string
 [[7 8 9] [4 5 6] [1 2 3]] :block 
 orutrA :string 
 
+>> reverse - .exact
+
+[5 4 3 2 1] :block 
+[[7 8 9] [4 5 6] [1 2 3]] :block 
+retsehcnaM :string 
+[[7 8 9] [4 5 6] [1 2 3]] :block 
+orutrA :string 
+
 >> sample
 
 :string

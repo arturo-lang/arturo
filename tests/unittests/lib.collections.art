@@ -925,6 +925,25 @@ do [
     reverse 's, debug s
     ;reverse 'r, debug r
 
+    topic "reverse - .exact"
+    do [
+
+        ; range is returning an integer
+
+        debug reverse.exact [1 2 3 4 5]
+        debug reverse.exact [[1 2 3] [4 5 6] [7 8 9]]
+        debug reverse.exact "Manchester"
+        ; debug reverse.exact 1..10
+
+        b: [[1 2 3] [4 5 6] [7 8 9]]
+        s: "Arturo"
+        ; r: 1..10
+        reverse.exact 'b, debug b
+        reverse.exact 's, debug s
+        ; reverse.exact 'r, debug r
+
+    ]
+
 ]
 
 
