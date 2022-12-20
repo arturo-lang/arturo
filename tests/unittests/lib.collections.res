@@ -453,6 +453,7 @@ hellohellohello :string
 ArturoArturoArturo :string 
 [1 2 3 1 2 3 1 2 3] :block 
 [[1 2 3] [1 2 3] [1 2 3]] :block 
+[4 5 6 4 5 6 4 5 6] :block 
 
 >> reverse
 
