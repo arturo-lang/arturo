@@ -616,6 +616,14 @@ do [
     debug permutate [A B C]
     debug permutate [[1 2 3] [4 5 6]]
 
+    debug permutate.by: 2 [A B C]
+    debug permutate.repeated [A B C]
+    debug permutate.repeated.by: 2 [A B C]
+
+    debug permutate.count [A B C]
+    debug permutate.count.repeated.by: 2 
+        [A B C]
+
 ]
 
 

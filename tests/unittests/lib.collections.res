@@ -336,6 +336,11 @@ false :logical
 
 [[A B C] [A C B] [B A C] [B C A] [C A B] [C B A]] :block 
 [[[1 2 3] [4 5 6]] [[4 5 6] [1 2 3]]] :block 
+[[A B] [A C] [B A] [B C] [C A] [C B]] :block 
+[[A A A] [A A B] [A A C] [A B A] [A B B] [A B C] [A C A] [A C B] [A C C] [B A A] [B A B] [B A C] [B B A] [B B B] [B B C] [B C A] [B C B] [B C C] [C A A] [C A B] [C A C] [C B A] [C B B] [C B C] [C C A] [C C B] [C C C]] :block 
+[[A A] [A B] [A C] [B A] [B B] [B C] [C A] [C B] [C C]] :block 
+6 :integer 
+9 :integer 
 
 >> remove
 
