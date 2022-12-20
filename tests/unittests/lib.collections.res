@@ -263,6 +263,13 @@ surname :string
 hello :string 
 Arturo :string 
 
+>> key?
+
+true :logical 
+true :logical 
+false :logical 
+false :logical 
+
 >> keys
 
 [name surname] :block 

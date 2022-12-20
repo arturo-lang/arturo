@@ -501,6 +501,16 @@ do [
 
 ]
 
+topic "key?"
+do [
+    ; TODO: test with :object
+    user: #[ name: "John" surname: "Doe" ]
+    debug key? user 'name
+    debug key? user "name"
+    debug key? user 'age
+    debug key? user "age"
+]
+
 
 ; -- 'keys
 topic "keys"
