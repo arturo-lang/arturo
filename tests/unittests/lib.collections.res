@@ -717,6 +717,12 @@ false
 
 >> split - .path
 
+[directory wofilerld] :block 
+[usr bin] :block 
+[directory wofilerld] :block 
+[usr bin] :block 
+[directory wofilerld] :block 
+[usr bin] :block 
 [usr bin] :block 
 [usr bin] :block 
 [usr bin] :block 
