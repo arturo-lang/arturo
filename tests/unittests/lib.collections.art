@@ -1493,10 +1493,9 @@ do [
 
     debug squeeze [1 1 2 3 4 2 3 4 4 5 5 6 7]
 
-    ; [Collections/squeeze] isn't working properly #929
-    ; debug squeeze [1 [4 2 3] 1 2 3 [4 2 3] 4 4 5 5 [6 7] [6 7]]
-    ; a1: [1 [4 2 3] 1 2 3 [4 2 3] 4 4 5 5 [6 7] [6 7]]
-    ; squeeze 'a1, debug a1
+    debug squeeze [1 [4 2 3] 1 2 3 [4 2 3] 4 4 5 5 [6 7] [6 7]]
+    a1: [1 [4 2 3] 1 2 3 [4 2 3] 4 4 5 5 [6 7] [6 7]]
+    squeeze 'a1, debug a1
     debug squeeze "hello world"
     
     ; [Collections/squeeze] is not working for string-literals #928
