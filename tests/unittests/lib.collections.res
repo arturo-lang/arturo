@@ -575,8 +575,10 @@ orutrA :string
 [1 2 3 4 5] :block 
 [1 2 3 4 5] :block 
 Arturo :string 
+Arturo :string 
 [1 2 3 4 5] :block 
 [1 2 3 4 5] :block 
+Arturo :string 
 Arturo :string 
 
 >> sample
