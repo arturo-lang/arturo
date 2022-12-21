@@ -998,7 +998,7 @@ do [
 ]
 
 ; [Numbers/range] is not working properly? #913
-; This code should be inside topic `one?`
+; This code should be inside topic `reverse`
     topic "reverse - with :range"
     debug reverse 1..10
     r1: 10..0
