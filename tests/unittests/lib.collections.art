@@ -322,12 +322,27 @@ do [
     debug first ["one" "two" "three"]
     debug first.n: 2 ["one" "two" "three"]
 
-    ; This code is recorginized as an :integer
-    ; instead of :range
-    ; debug first 0..10
-    ; debug first.n: 6 0..10
+    ;; space for range types :)
 
 ]
+
+; [Numbers/range] is not working properly? #913
+; This code should be inside topic `first`
+    print first 1..10
+    print first 5..0
+    print first 0..40
+    first.n: 6 0..10
+    ; storing into a variable
+    r1: 1..10
+    print first r1
+    print first.n: 6 r1
+    ; using range function
+    print first range 0 10
+    print first.n: 6 range 0 10
+    r2: range 0 10
+    print first range 0 10
+    print first.n: 6 range 0 10
+;; end
 
 
 topic "flatten"
