@@ -1589,7 +1589,18 @@ do [
 
     debug values user
 
-    ; TODO: test with :object
+    ; test with :object
+    define :person [name, surname][
+        init: ->
+            this\name: capitalize this\name
+        
+        print: ->
+            ~"NAME: |this\name|, SURNAME: |this\surname|"
+    ]
+
+    personA: to :person ["John" "Doe"]
+    debug personA
+    debug values personA
 
 ]
 
