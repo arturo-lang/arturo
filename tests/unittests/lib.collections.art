@@ -239,7 +239,7 @@ do [
 
 ]
 
-; Does not work with literals
+; [Collections/decouple] is not working with literals #912
 topic "decouple"
 do [
 
