@@ -889,11 +889,14 @@ do [
 
         topic "remove - .once :string"
         debug remove.once "hello" "l"
-        ; Is not removing with :char
+
+        ; [Collections/remove] .once is not removing using :char #919
         ;debug remove.once "hello" `l`
+
         s1: "hello"
         remove.once 's1 "l", debug s1
-        ; Is not removing with :char
+
+        ; [Collections/remove] .once is not removing using :char #919
         ; s2: "hello"
         ; remove.once 's2 `l`, debug s2
         
