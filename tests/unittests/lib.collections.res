@@ -300,6 +300,12 @@ true :logical
 true :logical 
 false :logical 
 false :logical 
+true :logical 
+true :logical 
+true :logical 
+true :logical 
+false :logical 
+false :logical 
 
 >> keys
 

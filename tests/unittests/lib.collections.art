@@ -549,12 +549,30 @@ do [
 
 topic "key?"
 do [
-    ; TODO: test with :object
+
+    ; :dictionary
     user: #[ name: "John" surname: "Doe" ]
     debug key? user 'name
     debug key? user "name"
     debug key? user 'age
     debug key? user "age"
+
+    define :person [name, surname][
+        init: ->
+            this\name: capitalize this\name
+        
+        print: ->
+            ~"NAME: |this\name|, SURNAME: |this\surname|"
+    ]
+
+    ; :object
+    personA: to :person ["John" "Doe"]
+    debug key? personA 'name
+    debug key? personA "name"
+    debug key? personA 'surname
+    debug key? personA "surname"
+    debug key? personA 'age
+    debug key? personA "age"
 ]
 
 
