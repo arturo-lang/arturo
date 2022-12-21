@@ -522,6 +522,16 @@ retsehcnaM :string
 [[7 8 9] [4 5 6] [1 2 3]] :block 
 orutrA :string 
 
+>> reverse - with :range
+
+10..1 :range 
+0..10 :range 
+
+>> reverse - .exact with :range
+
+10..1 :range 
+0..10 :range 
+
 >> rotate
 
 [1 2 3 4 5] :block 
