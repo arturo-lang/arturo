@@ -367,7 +367,7 @@ topic "get"
 do [
 
     ; TODO:
-    ; add for :range, :object, :store, :binary, :bytecode
+    ; add for :range, :object, :store, :bytecode
 
     ; :binary
     bi: to :binary 65000
@@ -408,7 +408,15 @@ do [
     debug namesInitial
     debug surnamesInitial
 
+    ;; space for range types :)
+
 ]
+
+; [Numbers/range] is not working properly? #913
+; This code should be inside topic `first`
+    print get range 0 10 1
+    print get 5..10 0
+;; end
 
 topic "in?"
 do [

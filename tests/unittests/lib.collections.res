@@ -218,6 +218,8 @@ zero :string
 [first one two] :block 
 J :char 
 D :char 
+1
+5
 
 >> in?
 
