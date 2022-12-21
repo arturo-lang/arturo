@@ -675,7 +675,6 @@ do [
     ; topic "one? - with :object"
 
     topic "one? - with :null"
-    ; returns false, is it right?
     debug one? null
 
 ]
