@@ -1381,7 +1381,7 @@ do [
     topic "split - .path"
     do [
 
-        ; They should return the same result
+        ; They would return the same result
         (sys\os = "windows")? [
             ; Accepts \\ and / paths
             debug split.path "directory\\wofilerld"
