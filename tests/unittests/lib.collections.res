@@ -182,6 +182,15 @@ A :char
 Art :string 
 one :string 
 [one two] :block 
+1
+5
+0
+1
+1 2 3 4 5 6 
+0
+0 1 2 3 4 5 
+0
+0 1 2 3 4 5 
 
 >> flatten
 
