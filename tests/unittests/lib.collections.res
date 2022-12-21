@@ -203,6 +203,8 @@ one :string
 
 >> get
 
+FD E8 :binary 
+E8 :binary 
 15 :integer 
 January :string 
 John :string 

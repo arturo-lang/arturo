@@ -367,7 +367,12 @@ topic "get"
 do [
 
     ; TODO:
-    ; add for :range, :object, :store, :date, :binary, :bytecode
+    ; add for :range, :object, :store, :binary, :bytecode
+
+    ; :binary
+    bi: to :binary 65000
+    debug bi
+    debug to :binary get bi 1
 
     ; :date
     d: to :date .format: "MMM dd" "Jan 15"
