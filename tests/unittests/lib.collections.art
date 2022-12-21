@@ -613,12 +613,34 @@ do [
     debug min.index [4 2 8 5 1 9]
     debug min ["Granada" "Manchester" "Boston"]
     debug min.index ["Granada" "Manchester" "Boston"]
-    ; This code is recorginized as an :integer
-    ; instead of :range
-    ; debug max 0..10
-    ; debug max.index 0..10
+    
+    ;; space for range types :)
 
 ]
+
+; [Numbers/range] is not working properly? #913
+; [Collections/min] is not working well for range values #916
+; This code should be inside topic `min`
+    ; print min 1..10
+    ; print min 5..0
+    ; print min.index 1..10
+    ; print min.index 5..0
+    ; ; storing into a variable
+    ; r1: 1..10
+    ; print min r1
+    ; print min.index r1
+    ; ; using range function
+    ; print min range 1 10
+    ; print min range 5 0
+    ; print min.index range 1 10
+    ; print min.index range 5 0
+    ; r2: range 0 10
+    ; r3: range 5 0
+    ; print min r2
+    ; print min r3
+    ; print min.index r2
+    ; print min.index r3
+;; end
 
 topic "one?"
 do [
