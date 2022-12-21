@@ -725,8 +725,20 @@ do [
     debug one? #[ name: "John" ]
     debug one? #[ name: "John" surname: "Doe" ]
 
-    ; TODO
+
     ; topic "one? - with :object"
+    define :person [name, surname][
+        init: ->
+            this\name: capitalize this\name
+        
+        print: ->
+            ~"NAME: |this\name|, SURNAME: |this\surname|"
+    ]
+
+    personA: to :person ["John"]
+    personB: to :person ["John" "Doe"]
+    debug one? personA
+    debug one? personB
 
     topic "one? - with :null"
     debug one? null

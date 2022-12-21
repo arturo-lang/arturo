@@ -397,6 +397,8 @@ false :logical
 
 true :logical 
 false :logical 
+true :logical 
+false :logical 
 
 >> one? - with :null
 
