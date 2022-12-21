@@ -369,7 +369,7 @@ topic "get"
 do [
 
     ; TODO:
-    ; add for :object, :store, :bytecode
+    ; add for :store, :bytecode
 
     ; :binary
     bi: to :binary 65000
@@ -409,6 +409,19 @@ do [
 
     debug namesInitial
     debug surnamesInitial
+
+    ; :object
+    define :person [name, surname][
+        init: ->
+            this\name: capitalize this\name
+        
+        print: ->
+            ~"NAME: |this\name|, SURNAME: |this\surname|"
+    ]
+
+    personA: to :person ["John" "Doe"]
+    debug personA
+    debug get person 'name
 
     ;; space for range types :)
 

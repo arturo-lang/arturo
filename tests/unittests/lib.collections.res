@@ -220,6 +220,8 @@ zero :string
 [first one two] :block 
 J :char 
 D :char 
+NAME: John, SURNAME: Doe :person 
+john :string 
 1
 5
 
