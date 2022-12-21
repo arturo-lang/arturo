@@ -1221,9 +1221,7 @@ do [
             "abismo","aberración"]
         sort.as: 'es 'arr, debug arr
 
-        ; Isn't working well for dictionaries
-        ; It's case sensitive
-        ; And isn't using `.as`, as well
+        ; [Collections/sort] .values.as is not working well #922
 
         ; debug sort.values.as: 'es #[
         ;     a: "uno" b: "dos" c: "tres" d: "Uno",
