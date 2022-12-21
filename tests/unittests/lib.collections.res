@@ -803,6 +803,8 @@ false :logical
 
 true :logical 
 false :logical 
+[] :person 
+true :logical 
 
 >> zero? - with :null
 
