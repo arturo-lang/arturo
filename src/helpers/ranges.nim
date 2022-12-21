@@ -16,6 +16,14 @@ import vm/values/comparison
 import vm/values/value
 
 #=======================================
+# Templates
+#=======================================
+
+template getValueForRangeItem(rng: VRange, item: int): Value =
+    if rng.numeric: newInteger(item)
+    else: newChar(char(item))
+
+#=======================================
 # Iterators
 #=======================================
 
@@ -103,18 +111,20 @@ proc contains*(rng: VRange, v: Value): bool {.inline,enforceNoRaises.} =
 
 func min*(rng: VRange): (int,Value) {.inline,enforceNoRaises.} =
     if rng.forward: 
-        return (0, rng[0])
+        return (0, getValueForRangeItem(rng, rng.start))
     else:
         if rng.infinite: return (0, newFloating(NegInf))
 
-        let rHigh = int(rng.len-1)
-        return (rHigh, rng[rHigh - 1])
+        let rHigh = int(rng.len - 1)
+        let lastItem = rng.start - rng.step * rHigh
+        return (rHigh, getValueForRangeItem(rng, lastItem))
 
 func max*(rng: VRange): (int,Value) {.inline,enforceNoRaises.} =
     if rng.forward: 
         if rng.infinite: return (0, newFloating(Inf))
 
-        let rHigh = int(rng.len-1)
-        return (rHigh, rng[rHigh - 1])
+        let rHigh = int(rng.len - 1)
+        let lastItem = rng.start + rng.step * rHigh
+        return (rHigh, getValueForRangeItem(rng, lastItem))
     else:
-        return (0, rng[0])
+        return (0, getValueForRangeItem(rng, rng.start))
