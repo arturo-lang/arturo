@@ -772,5 +772,4 @@ false :logical
 false :logical 
 false :logical 
 false :logical 
-null :null 
 true :logical 
