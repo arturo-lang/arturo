@@ -702,7 +702,7 @@ do [
 topic "prepend"
 do [
 
-    ; Arturo doesn't supports in-place for :binary
+    ; [Collections/prepend] is not working for binary-literals #917
     topic "prepend - :binary < :binary :binary"
     do [
         bin0: to :binary 0
@@ -710,7 +710,7 @@ do [
         debug prepend bin0 bin1
     ]
 
-    ; Arturo doesn't supports in-place for :binary
+    ; [Collections/prepend] is not working for binary-literals #917
     topic "prepend - :binary < :binary :integer"
     do [
         bin0: to :binary 0
