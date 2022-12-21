@@ -511,8 +511,7 @@ do [
     str1: "Auro"
     insert 'str1 1 "rt", debug str1
     
-    ; with :string & :char
-    ; Can't insert :char
+    ; [Collections/insert] can't insert chars into a string #914
     ; debug insert "helo" 2 `l`
     ; str2: "uby"
     ; insert 'str2 0 `R`, debug str2
