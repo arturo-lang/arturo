@@ -108,7 +108,7 @@ func min*(rng: VRange): (int,Value) {.inline,enforceNoRaises.} =
         if rng.infinite: return (0, newFloating(NegInf))
 
         let rHigh = int(rng.len-1)
-        return (rHigh, rng[rHigh - 1])
+        return (rHigh, rng[rHigh])
 
 func max*(rng: VRange): (int,Value) {.inline,enforceNoRaises.} =
     if rng.forward: 
