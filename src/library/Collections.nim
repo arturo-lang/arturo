@@ -1177,7 +1177,10 @@ proc defineSymbols*() =
                 ensureInPlace()
                 if InPlaced.kind == String:
                     if (hadAttr("once")):
-                        SetInPlace(newString(InPlaced.s.removeFirst(y.s)))
+                        if y.kind == String:
+                            SetInPlace(newString(InPlaced.s.removeFirst(y.s)))
+                        else:
+                            SetInPlace(newString(InPlaced.s.removeFirst($(y.c))))
                     elif (hadAttr("prefix")):
                         InPlaced.s.removePrefix(y.s)
                     elif (hadAttr("suffix")):
@@ -1210,7 +1213,10 @@ proc defineSymbols*() =
             else:
                 if x.kind == String:
                     if (hadAttr("once")):
-                        push(newString(x.s.removeFirst(y.s)))
+                        if y.kind == String:
+                            push(newString(x.s.removeFirst(y.s)))
+                        else:
+                            push(newString(x.s.removeFirst($(y.c))))
                     elif (hadAttr("prefix")):
                         var ret = x.s
                         ret.removePrefix(y.s)
