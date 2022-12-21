@@ -115,6 +115,6 @@ func max*(rng: VRange): (int,Value) {.inline,enforceNoRaises.} =
         if rng.infinite: return (0, newFloating(Inf))
 
         let rHigh = int(rng.len-1)
-        return (rHigh, rng[rHigh - 1])
+        return (rHigh, rng[rHigh])
     else:
         return (0, rng[0])
