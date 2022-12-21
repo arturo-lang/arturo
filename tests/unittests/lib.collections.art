@@ -667,9 +667,8 @@ do [
     debug one? 0..10
 
     topic "one? - with :dictionary"
-    ; returns false, is it right?
-    debug one? [ name: "John" ]
-    debug one? [ name: "John" surname: "Doe" ]
+    debug one? #[ name: "John" ]
+    debug one? #[ name: "John" surname: "Doe" ]
 
     ; TODO
     ; topic "one? - with :object"
