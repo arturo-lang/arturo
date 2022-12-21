@@ -546,12 +546,27 @@ do [
     debug last ["one" "two" "three"]
     debug last.n: 2 ["one" "two" "three"]
 
-    ; This code is recorginized as an :integer
-    ; instead of :range
-    ; debug last 0..10
-    ; debug last.n: 6 0..10
+    ;; space for range types :)
 
 ]
+
+; [Numbers/range] is not working properly? #913
+; This code should be inside topic `last`
+    print last 1..10
+    print last 5..0
+    print last 0..40
+    last.n: 6 0..10
+    ; storing into a variable
+    r1: 1..10
+    print last r1
+    print last.n: 6 r1
+    ; using range function
+    print last range 0 10
+    print last.n: 6 range 0 10
+    r2: range 0 10
+    print last range 0 10
+    print last.n: 6 range 0 10
+;; end
 
 
 topic "max"

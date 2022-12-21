@@ -301,6 +301,15 @@ o :char
 uro :string 
 three :string 
 [two three] :block 
+10
+0
+40
+10
+5 6 7 8 9 10 
+10
+5 6 7 8 9 10 
+10
+5 6 7 8 9 10 
 
 >> max
 
