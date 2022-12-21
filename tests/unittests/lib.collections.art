@@ -1624,7 +1624,6 @@ do [
     ; debug zero? range 0 10
 
     topic "zero? - with :dictionary"
-    ; returns false, is it right?
     debug zero? #[]
     debug zero? #[ name: "John" ]
 
