@@ -1921,7 +1921,7 @@ proc defineSymbols*() =
                     var ret: string
                     while i < InPlaced.s.len:
                         ret &= $(InPlaced.s[i])
-                        while (i+1 < InPlaced.s.len and InPlaced.s[i+1] == x.s[i]):
+                        while (i+1 < InPlaced.s.len and InPlaced.s[i+1] == InPlaced.s[i]):
                             i += 1
                         i += 1
                     SetInPlace(newString(ret))
