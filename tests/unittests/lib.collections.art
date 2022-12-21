@@ -1391,27 +1391,27 @@ do [
     topic "split - .path"
     do [
 
-        ; They would return the same result
-        (sys\os = "windows")? [
-            ; Accepts \\ and / paths
-            debug split.path "directory\\wofilerld"
-            debug split.path "\\usr\\bin"
+        ; ; They would return the same result
+        ; (sys\os = "windows")? [
+        ;     ; Accepts \\ and / paths
+        ;     debug split.path "directory\\wofilerld"
+        ;     debug split.path "\\usr\\bin"
 
-            p1: "directory\\wofilerld\\"
-            p2: "\\usr\\bin"
-        ][
-            ; Accepts / paths
-            debug split.path "directory/wofilerld"
-            debug split.path "/usr/bin"
+        ;     p1: "directory\\wofilerld\\"
+        ;     p2: "\\usr\\bin"
+        ; ][
+        ;     ; Accepts / paths
+        ;     debug split.path "directory/wofilerld"
+        ;     debug split.path "/usr/bin"
 
-            p1: "directory/wofilerld/"
-            p2: "/usr/bin"
-        ]
+        ;     p1: "directory/wofilerld/"
+        ;     p2: "/usr/bin"
+        ; ]
 
-        debug split.path p1
-        debug split.path p2
-        split.path 'p1, debug p1
-        split.path 'p2, debug p2
+        ; debug split.path p1
+        ; debug split.path p2
+        ; split.path 'p1, debug p1
+        ; split.path 'p2, debug p2
 
         ; tests the Unix's default path and Windows' alternative
         ; Since, you can use it on Msys, for instance
