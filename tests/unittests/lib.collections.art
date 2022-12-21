@@ -1365,8 +1365,7 @@ do [
     ; default
     debug split "Arturo"
     
-    ; Broken for literal values
-    ; It's returning [a]??
+    ; [Collections/split] is not working with string-literals #927
     ; a: "Arturo"
     ; split 'a, debug a
 
