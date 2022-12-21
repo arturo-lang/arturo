@@ -1497,7 +1497,7 @@ do [
 
     debug squeeze "hello world"
     
-    ; It isn't working for string-literals
+    ; [Collections/squeeze] is not working for string-literals #928
     ; str: "hello world"
     ; squeeze 'str, debug str
 
