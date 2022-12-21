@@ -5,9 +5,11 @@
 >> append - :binary < :binary :binary
 
 00 01 :binary 
+00 01 :binary 
 
 >> append - :binary < :binary :integer
 
+00 01 :binary 
 00 01 :binary 
 
 >> append - :string < :string + :string
@@ -662,119 +664,3 @@ false
 
 >> split - .path
 
-[directory wofilerld] :block 
-[usr bin] :block 
-[directory wofilerld] :block 
-[usr bin] :block 
-[directory wofilerld] :block 
-[usr bin] :block 
-[usr bin] :block 
-[usr bin] :block 
-[usr bin] :block 
-
->> split - .words & .lines
-
-[Hello World!] :block 
-[Hello World!] :block 
-[Hi my name is...] :block 
-[Hi my name is...] :block 
-
->> split - .by
-
-[directory file.ext] :block 
-[id nickname name age] :block 
-
->> split - .at
-
-[Hello , World] :block 
-[Hello , World] :block 
-[[Arnold Andreas Paul Ricard] [Linus Yanis Helena Eva Blanca]] :block 
-[[Arnold Andreas Paul Ricard Linus] [Linus Yanis Helena Eva Blanca]] :block 
-
->> split - .every
-
-[spl it  col lec tio n t o c omp one nts] :block 
-[[Arnold Andreas Paul] [Ricard Linus Yanis] [Helena Eva Blanca]] :block 
-[[Arnold Andreas Paul] [Ricard Linus Yanis] [Helena Eva Blanca]] :block 
-[Man che ste r] 3 3 3 1 
-[Artu ro] 4 2 
-[Man che ste r] 3 3 3 1 
-[Artu ro] 4 2 
-
->> squeeze
-
-[1 2 3 4 2 3 4 5 6 7] :block 
-[1 [4 2 3] 1 2 3 [4 2 3] 4 5 [6 7]] :block 
-[1 [4 2 3] 1 2 3 [4 2 3] 4 5 [6 7]] :block 
-helo world :string 
-[4 2 1 3 6] :block 
-
->> take
-
-some te :string 
-some te :string 
-[Arnold Andreas] :block 
-[Arnold Andreas] :block 
-[1 2 3] :block 
-[1 2 3] :block 
-
->> tally
-
-[h:1 e:1 l:3 o:2 W:1 r:1 d:1] :dictionary 
-[1:5 2:5 4:3 3:2 5:3 6:3 7:1] :dictionary 
-
->> unique
-
-[1 2 4 3] :block 
-[1 2 4 3] :block 
-true
-true
-
->> values
-
-[Arturo Ruby Python Nim] :block 
-[John Doe 012568 Manchester 45] :block 
-[1 2 3 4 5 6 7 8 9 10] :block 
-[1 2 3 4 5 6 7 8 9 10] :block 
-[1 2 3 4 5 6 7 8 9 10] :block 
-[1 2 3 4 5 6 7 8 9 10] :block 
-
->> zero?
-
-
->> zero? - with :integer
-
-true :logical 
-false :logical 
-
->> zero? - with :floating
-
-true :logical 
-false :logical 
-
->> zero? - with :string
-
-true :logical 
-false :logical 
-
->> zero? - with :block
-
-true :logical 
-false :logical 
-
->> zero? - with :range
-
-
->> zero? - with :dictionary
-
-true :logical 
-false :logical 
-
->> zero? - with :null
-
-true :logical 
-false :logical 
-false :logical 
-false :logical 
-false :logical 
-true :logical 
