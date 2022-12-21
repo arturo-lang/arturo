@@ -476,10 +476,20 @@ do [
     debug index "hello" "x" ; returns null
     debug index user "John"
     debug index user "Doe"
-    ; range is returning an integer
-    ; debug index 2 0..10
+    
+    ;; space for range types :)
 
 ]
+
+; [Numbers/range] is not working properly? #913
+; This code should be inside topic `index`
+    print index 5..10 5
+    print index 5..10 6
+    ; storing into a variable
+    r1: 1..10
+    print index r1 5
+    print index r1 6
+;; end
 
 
 topic "insert"

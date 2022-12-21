@@ -269,6 +269,10 @@ false
 null :null 
 name :string 
 surname :string 
+0
+1
+4
+5
 
 >> insert
 
