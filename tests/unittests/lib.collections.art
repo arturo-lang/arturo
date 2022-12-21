@@ -1142,7 +1142,7 @@ do [
 
     ; TODO: test with
     ; :string,
-    ; :object, :store, :bytecode, :binary
+    ; :store, :bytecode, :binary
 
     ; :block
     arr: [1 2 3 4]
@@ -1162,6 +1162,20 @@ do [
 
     myDict\["name"]: "Christian"
     debug myDict
+
+    ; :object
+    define :person [name, surname][
+        init: ->
+            this\name: capitalize this\name
+        
+        print: ->
+            ~"NAME: |this\name|, SURNAME: |this\surname|"
+    ]
+
+    personA: to :person ["John" "Doe"]
+    set personA 'surname "Wick"
+    debug personA
+
 
 ]
 
