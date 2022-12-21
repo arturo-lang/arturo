@@ -625,6 +625,8 @@ Konnichiwa! 11
 こんいちわ！ 6 
 [one two three] 3 
 [name:John surname:Doe] 2 
+1 :integer 
+2 :integer 
 null 0 
 11
 11
