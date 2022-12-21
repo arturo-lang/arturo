@@ -710,6 +710,8 @@ some te :string
 some te :string 
 [Arnold Andreas] :block 
 [Arnold Andreas] :block 
+[1 2 3] :block 
+[1 2 3] :block 
 
 >> tally
 
