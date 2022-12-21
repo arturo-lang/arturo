@@ -851,7 +851,10 @@ do [
         ; :dictionary
         debug remove #[name: "John" surname: "Doe"] "John"
         
+        ; Note: It's not a bug, but it's important to be here.
+        ; Read the solved: 
         ; [Collections/remove] -- is not working with :dictionary #918
+        ; explanation: https://github.com/arturo-lang/arturo/issues/918#issuecomment-1361466787
         ; print #[name: "John" surname: "Doe"] -- "John"
         
         user: #[name: "John" surname: "Doe"]
