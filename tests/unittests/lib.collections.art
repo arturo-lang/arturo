@@ -847,13 +847,9 @@ do [
 
     ]
 
+    ; [Collections/remove] is .index broken? #869
     topic "remove - .index"
     do[
-
-        a: "Arturo"
-        ; TODO(COllections/remove) is .index broken?
-        ; labels: bug, library
-        ; remove.index 3 'a, debug a
 
     ]
 
