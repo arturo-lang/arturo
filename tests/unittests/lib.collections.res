@@ -600,20 +600,38 @@ Art :string
 
 >> sort - .as
 
-[ábaco aberración abismo dos Dos pero pértiga perversión tres Tres uno Uno] :block 
-[ábaco aberración abismo dos Dos pero pértiga perversión tres Tres uno Uno] :block 
 
 >> sort - .sensitive
 
-[Arturo Python Ruby arturo python ruby] :block 
-[Arturo Python Ruby arturo python ruby] :block 
+
+>> sort - .sensitive .as with :block
+
+aberración abismo dos perversión tres uno Uno ábaco 
+aberración abismo dos perversión tres uno Uno ábaco 
+ábaco aberración abismo dos perversión tres uno Uno 
+ábaco aberración abismo dos perversión tres uno Uno 
+Uno aberración abismo dos perversión tres uno ábaco 
+Uno aberración abismo dos perversión tres uno ábaco 
+Uno ábaco aberración abismo dos perversión tres uno 
+Uno ábaco aberración abismo dos perversión tres uno 
+0 1 2 3 4 5 6 7 8 9 10 
+0 1 2 3 4 5 6 7 8 9 10 
+
+>> sort - .descending .sensitive .as with :block
+
+ábaco uno Uno tres perversión dos abismo aberración 
+ábaco uno Uno tres perversión dos abismo aberración 
+uno Uno tres perversión dos abismo aberración ábaco 
+uno Uno tres perversión dos abismo aberración ábaco 
+ábaco uno tres perversión dos abismo aberración Uno 
+ábaco uno tres perversión dos abismo aberración Uno 
+uno tres perversión dos abismo aberración ábaco Uno 
+uno tres perversión dos abismo aberración ábaco Uno 
+10 9 8 7 6 5 4 3 2 1 0 
+10 9 8 7 6 5 4 3 2 1 0 
 
 >> sort - .descending
 
-[5 4 3 2 1] :block 
-[Ruby Python Arturo] :block 
-[5 4 3 2 1] :block 
-[Ruby Python Arturo] :block 
 
 >> sort - .by
 
