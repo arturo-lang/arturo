@@ -835,7 +835,8 @@ do [
 
         ; :dictionary
         debug remove #[name: "John" surname: "Doe"] "John"
-        ; Returns SIGSEGV: Illegal storage access. (Attempt to read from nil?)
+        
+        ; [Collections/remove] -- is not working with :dictionary #918
         ; print #[name: "John" surname: "Doe"] -- "John"
         
         user: #[name: "John" surname: "Doe"]
