@@ -1177,8 +1177,7 @@ do [
 
     ; :string
 
-    ; todo
-    ; It's broken for string + string
+    ; [Collections/set] is not setting with :string, just with :char #934
     ; s1: "Arruro"
     ; set s1 2 "t"
     ; debug s1
