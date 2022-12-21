@@ -205,9 +205,6 @@ one :string
 
 FD E8 :binary 
 E8 :binary 
-null :null 
-null :null 
-null :null 
 15 :integer 
 January :string 
 John :string 

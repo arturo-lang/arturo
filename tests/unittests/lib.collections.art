@@ -367,22 +367,12 @@ topic "get"
 do [
 
     ; TODO:
-    ; add for :object, :store
+    ; add for :object, :store, :bytecode
 
     ; :binary
     bi: to :binary 65000
     debug bi
     debug to :binary get bi 1
-
-    ; :bytecode
-    ; Am I doing something wrong?
-    bc: to :bytecode [
-        ["print"]
-        [1 112 155]
-    ]
-    debug get bc 1      ; null
-    debug get.data bc 0 ; null
-    debug get.code bc 0 ; null
 
     ; :date
     d: to :date .format: "MMM dd" "Jan 15"
