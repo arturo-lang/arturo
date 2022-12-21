@@ -1210,17 +1210,6 @@ do [
     topic "sort - .as"
     do [
 
-        debug sort.as: 'es [
-            "uno","dos","tres","Uno","Dos","Tres",
-            "pero","pértiga","perversión","ábaco",
-            "abismo", "aberración"]
-
-        arr: [
-            "uno","dos","tres","Uno","Dos","Tres",
-            "pero","pértiga","perversión","ábaco",
-            "abismo","aberración"]
-        sort.as: 'es 'arr, debug arr
-
         ; [Collections/sort] .values.as is not working well #922
 
         ; debug sort.values.as: 'es #[
@@ -1241,12 +1230,6 @@ do [
     topic "sort - .sensitive"
     do [
 
-        debug sort.sensitive
-            ["Ruby" "python" "Arturo" "ruby" "arturo" "Python"]
-
-        a: ["Ruby" "python" "Arturo" "ruby" "arturo" "Python"]
-        sort.sensitive 'a, debug a
-
         ; A really strange output here:
         ; It's sorting values and keys
 
@@ -1263,16 +1246,68 @@ do [
 
     ]
 
-    topic "sort - .descending"
+    topic "sort - .sensitive .as with :block"
     do [
 
-        debug sort.descending [5 3 2 1 4]
-        debug sort.descending ["Ruby" "Arturo" "Python"]
+        a1: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+        print sort ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+        sort 'a1, print a1
+        ; => [aberración abismo dos perversión tres uno Uno ábaco]
 
-        a: [5 4 3 2 1]
-        b: ["Ruby" "Arturo" "Python"]
-        sort.descending 'a, debug a
-        sort.descending 'b, debug b
+        a2: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+        print sort.as: 'es ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+        sort.as: 'es 'a2, print a2
+        ; => [ábaco aberración abismo dos perversión tres uno Uno]
+
+        a3: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+        print sort.sensitive ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+        sort.sensitive 'a3, print a3
+        ; => [Uno aberración abismo dos perversión tres uno ábaco]
+
+        a4: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+        print sort.sensitive.as: 'es ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+        sort.sensitive.as: 'es 'a4, print a4
+        ; => [Uno ábaco aberración abismo dos perversión tres uno]
+
+        a5: [10 9 8 7 6 5 4 3 2 1 0]
+        print sort [10 9 8 7 6 5 4 3 2 1 0]
+        sort 'a5, print a5
+        ; => [0 1 2 3 4 5 6 7 8 9 10]
+
+    ]
+
+    topic "sort - .descending .sensitive .as with :block"
+    do [
+
+        a1: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+        print sort.descending ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+        sort.descending 'a1, print a1
+        ; => [ábaco uno Uno tres perversión dos abismo aberración]
+
+        a2: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+        print sort.descending.as: 'es ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+        sort.descending.as: 'es 'a2, print a2
+        ; => [uno Uno tres perversión dos abismo aberración ábaco]
+
+        a3: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+        print sort.descending.sensitive ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+        sort.descending.sensitive 'a3, print a3
+        ; => [ábaco uno tres perversión dos abismo aberración Uno]
+
+        a4: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+        print sort.descending.sensitive.as: 'es ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+        sort.descending.sensitive.as: 'es 'a4, print a4
+        ; => [uno tres perversión dos abismo aberración ábaco Uno]
+
+        a5: [0 1 2 3 4 5 6 7 8 9 10]
+        print sort.descending [0 1 2 3 4 5 6 7 8 9 10]
+        sort.descending 'a5, print a5
+        ; => [10 9 8 7 6 5 4 3 2 1 0]
+
+    ]
+
+    topic "sort - .descending"
+    do [
 
         ; Is not sorting for dictionaries
 
