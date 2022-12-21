@@ -726,7 +726,7 @@ do [
     debug one? #[ name: "John" surname: "Doe" ]
 
 
-    ; topic "one? - with :object"
+    topic "one? - with :object"
     define :person [name, surname][
         init: ->
             this\name: capitalize this\name
