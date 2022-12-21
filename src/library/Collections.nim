@@ -1813,8 +1813,8 @@ proc defineSymbols*() =
                         SetInPlace(newStringBlock(ret))
 
                     else:
-                        SetInPlace(newStringBlock(toSeq(runes(x.s)).map((x) =>
-                                $(x))))
+                        SetInPlace(newStringBlock(toSeq(runes(InPlaced.s)).map((w) =>
+                                $(w))))
                 else:
                     if checkAttr("at"):
                         SetInPlace(newBlock(@[newBlock(InPlaced.a[0..aAt.i]),
