@@ -1094,16 +1094,7 @@ do [
 
     ; TODO: test with
     ; :string,
-    ; :object, :store, :, :bytecode
-
-    ; :binary
-    ; Is it working well?
-    bin: to :binary 0
-    bin2: to :binary 1
-    append 'bin bin2
-    debug bin
-    set bin 0 to :binary 1
-    debug bin
+    ; :object, :store, :bytecode, :binary
 
     ; :block
     arr: [1 2 3 4]
