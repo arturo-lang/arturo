@@ -968,40 +968,46 @@ do [
 topic "reverse"
 do [
 
-    ; range is returning an integer
-
     debug reverse [1 2 3 4 5]
     debug reverse [[1 2 3] [4 5 6] [7 8 9]]
     debug reverse "Manchester"
-    ;debug reverse 1..10
 
     b: [[1 2 3] [4 5 6] [7 8 9]]
     s: "Arturo"
-    ; r: 1..10
     reverse 'b, debug b
     reverse 's, debug s
-    ;reverse 'r, debug r
+
+    ;; space for range types :)
 
     topic "reverse - .exact"
     do [
 
-        ; range is returning an integer
-
         debug reverse.exact [1 2 3 4 5]
         debug reverse.exact [[1 2 3] [4 5 6] [7 8 9]]
         debug reverse.exact "Manchester"
-        ; debug reverse.exact 1..10
 
         b: [[1 2 3] [4 5 6] [7 8 9]]
         s: "Arturo"
-        ; r: 1..10
         reverse.exact 'b, debug b
         reverse.exact 's, debug s
-        ; reverse.exact 'r, debug r
+
+        ;; space for range types :)
 
     ]
 
 ]
+
+; [Numbers/range] is not working properly? #913
+; This code should be inside topic `one?`
+    topic "reverse - with :range"
+    debug reverse 1..10
+    r1: 10..0
+    reverse 'r1, debug r1
+    topic "reverse - .exact with :range"
+    debug reverse.exact 1..10
+    r2: 10..0
+    reverse.exact 'r2, debug r2
+;; end
 
 
 topic "rotate"
