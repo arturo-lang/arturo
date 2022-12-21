@@ -1178,6 +1178,7 @@ do [
 
     ; :string
 
+    ; todo
     ; It's broken for string + string
     ; s1: "Arruro"
     ; set s1 2 "t"
