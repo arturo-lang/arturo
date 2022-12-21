@@ -1093,9 +1093,14 @@ topic "set"
 do [
 
     ; TODO: test with
-    ; :string, :block, :dictionary, 
+    ; :string,
     ; :object, :store, :binary, :bytecode
 
+    ; :block
+    arr: [1 2 3 4]
+    set arr 0 "one", debug arr
+
+    ; :dictionary
     myDict: #[
         name: "John"
         age: 34
@@ -1109,9 +1114,6 @@ do [
 
     myDict\["name"]: "Christian"
     debug myDict
-
-    arr: [1 2 3 4]
-    set arr 0 "one", debug arr
 
 ]
 

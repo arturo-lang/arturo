@@ -557,10 +557,10 @@ true
 
 >> set
 
+[one 2 3 4] :block 
 [name:Michael age:34] :dictionary 
 [name:Jane age:34] :dictionary 
 [name:Christian age:34] :dictionary 
-[one 2 3 4] :block 
 
 >> shuffle
 
