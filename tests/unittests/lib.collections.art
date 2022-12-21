@@ -1618,10 +1618,7 @@ do [
     debug zero? ["apple" "pear"] 
 
     topic "zero? - with :range"
-    ; debug zero? 0..0
-    ; debug zero? range 0 0
-    ; debug zero? 0..10
-    ; debug zero? range 0 10
+    ;; space for range types :)
 
     topic "zero? - with :dictionary"
     debug zero? #[]
@@ -1634,3 +1631,12 @@ do [
     debug zero? null
 
 ]
+
+; [Numbers/range] is not working properly? #913
+; This code should be inside topic `zero?`
+    debug zero? 0..0
+    debug zero? range 0 0
+    debug zero? 0..10
+    debug zero? range 0 10
+    debug zero? ø
+;; end
