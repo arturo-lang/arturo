@@ -1141,7 +1141,6 @@ topic "set"
 do [
 
     ; TODO: test with
-    ; :string,
     ; :store, :bytecode, :binary
 
     ; :block
