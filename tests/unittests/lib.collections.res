@@ -397,6 +397,9 @@ false :logical
 
 true :logical 
 false :logical 
+
+>> one? - with :object
+
 true :logical 
 false :logical 
 
