@@ -369,6 +369,12 @@ do [
     ; TODO:
     ; add for :range, :object, :store, :date, :binary, :bytecode
 
+    ; :date
+    d: to :date .format: "MMM dd" "Jan 15"
+    debug get d 'day
+    debug get d 'Month
+
+    ; :dictionary
     user: #[
         name: "John"
         surname: "Doe"
@@ -389,10 +395,6 @@ do [
 
     arr\[0]: "first"
     debug arr
-
-    d: to :date .format: "MMM dd" "Jan 15"
-    debug get d 'day
-    debug get d 'Month
 
     name: "John Doe"
     namesInitial: get name 0

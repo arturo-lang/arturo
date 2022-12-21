@@ -203,6 +203,8 @@ one :string
 
 >> get
 
+15 :integer 
+January :string 
 John :string 
 John :string 
 John :string 
@@ -212,8 +214,6 @@ Jane :string
 zero :string 
 zero :string 
 [first one two] :block 
-15 :integer 
-January :string 
 J :char 
 D :char 
 
