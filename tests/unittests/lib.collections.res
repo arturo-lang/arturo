@@ -355,7 +355,7 @@ false :logical
 
 >> one? - with :dictionary
 
-false :logical 
+true :logical 
 false :logical 
 
 >> one? - with :null
