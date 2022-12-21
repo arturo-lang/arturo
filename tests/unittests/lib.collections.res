@@ -545,6 +545,8 @@ Arturo :string
 
 :string
 true
+:char
+true
 
 >> set
 

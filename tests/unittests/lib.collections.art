@@ -1051,14 +1051,17 @@ do [
     print type fruit
     print in? fruit table
 
-    ; Broken for ranges
-    ; error: cannot perform sample -> :char
-    ; alphabet: `a`..`z`
-    ; letter: sample alphabet
-    ; print type letter
-    ; print in? letter alphabet
+    ;; space for range types :)
 
 ]
+
+; [Numbers/range] is not working properly? #913
+; This code should be inside topic `sample`
+    alphabet: `a`..`z`
+    letter: sample alphabet
+    print type letter
+    print in? letter alphabet
+;; end
 
 
 topic "set"
