@@ -1518,13 +1518,16 @@ do [
     b: ["Arnold" "Andreas" "Paul"]
     take 'b 2, debug b
 
-    ; Does not works for ranges, because range is broken
-    ; If I'm taking 3, why it's returning 1?
-    ; arr: 1..10
-    ; debug arr
-    ; take 'arr 3, debug arr
+    ;; space for range types :)
 
 ]
+
+; [Numbers/range] is not working properly? #913
+; This code should be inside topic `take`
+    debug take 1..10 3
+    arr: 1..10
+    take 'arr 3, debug arr
+;; end
 
 
 topic "tally"
