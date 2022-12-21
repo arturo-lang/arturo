@@ -1375,9 +1375,8 @@ do [
     ; default
     debug split "Arturo"
     
-    ; [Collections/split] is not working with string-literals #927
-    ; a: "Arturo"
-    ; split 'a, debug a
+    a: "Arturo"
+    split 'a, debug a
 
     debug split [[1 2 3] [4 5 6] [7 8]]
     b: [[1 2 3] [4 5 6] [7 8]]
