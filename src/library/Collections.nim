@@ -87,6 +87,11 @@ proc defineSymbols*() =
                         SetInPlace(newString($(InPlaced.c) & y.s))
                     elif y.kind == Char:
                         SetInPlace(newString($(InPlaced.c) & $(y.c)))
+                elif InPlaced.kind == Binary:
+                    if y.kind == Binary:
+                        InPlaced.n &= y.n
+                    elif y.kind == Integer:
+                        InPlaced.n &= numberToBinary(y.i)
                 else:
                     if y.kind == Block:
                         # TODO(Collections\append) In-place appending should actually work in-place
@@ -1112,6 +1117,11 @@ proc defineSymbols*() =
                         SetInPlace(newString(y.s & $(InPlaced.c)))
                     elif y.kind == Char:
                         SetInPlace(newString($(y.c) & $(InPlaced.c)))
+                elif InPlaced.kind == Binary:
+                    if y.kind == Binary:
+                        InPlaced.n.insert(y.n, 0)
+                    elif y.kind == Integer:
+                        InPlaced.n.insert(numberToBinary(y.i), 0)
                 else:
                     if y.kind == Block:
                         InPlaced.cleanPrependInPlace(y)
@@ -1361,14 +1371,14 @@ proc defineSymbols*() =
             if x.kind == Literal:
                 ensureInPlace()
                 if InPlaced.kind == String:
-                    SetInPlace(newString(toSeq(runes(x.s)).map((x) => $(
-                            x)).rotatedLeft(distance).join("")))
+                    InPlaced.s = toSeq(runes(InPlaced.s)).map((w) => $(w))
+                                 .rotatedLeft(distance).join("")
                 elif InPlaced.kind == Block:
                     InPlaced.a.rotateLeft(distance)
             else:
                 if x.kind == String:
-                    push(newString(toSeq(runes(x.s)).map((x) => $(
-                            x)).rotatedLeft(distance).join("")))
+                    push(newString(toSeq(runes(x.s)).map((w) => $(w))
+                                 .rotatedLeft(distance).join("")))
                 elif x.kind == Block:
                     ensureCleaned(x)
                     push(newBlock(cleanX.rotatedLeft(distance)))
