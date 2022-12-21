@@ -1507,9 +1507,8 @@ do [
     squeeze 'a1, debug a1
     debug squeeze "hello world"
     
-    ; [Collections/squeeze] is not working for string-literals #928
-    ; str: "hello world"
-    ; squeeze 'str, debug str
+    str: "hello world"
+    squeeze 'str, debug str
 
     arr: [4 2 1 1 3 6 6]
     squeeze 'arr, debug arr
