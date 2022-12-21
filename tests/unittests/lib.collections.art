@@ -14,20 +14,22 @@ topic: $[topic :string] [
 topic "append"
 do [
 
-    ; [Collections/append] is not working for binary-literals #911
     topic "append - :binary < :binary :binary"
     do [
         bin0: to :binary 0
         bin1: to :binary 1
         debug append bin0 bin1
+
+        append 'bin0 bin1, debug bin0
     ]
 
-    ; [Collections/append] is not working for binary-literals #911
     topic "append - :binary < :binary :integer"
     do [
         bin0: to :binary 0
         int1: 1
         debug append bin0 int1
+        
+        append 'bin0 int1, debug bin0
     ]
 
     topic "append - :string < :string + :string"
