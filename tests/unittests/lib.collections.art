@@ -576,12 +576,34 @@ do [
     debug max.index [4 2 8 5 1 9]
     debug max ["Granada" "Manchester" "Boston"]
     debug max.index ["Granada" "Manchester" "Boston"]
-    ; This code is recorginized as an :integer
-    ; instead of :range
-    ; debug max 0..10
-    ; debug max.index 0..10
+    
+    ;; space for range types :)
 
 ]
+
+; [Numbers/range] is not working properly? #913
+; [Collections/max] is not working well for range values #915
+; This code should be inside topic `max`
+    ; print max 1..10
+    ; print max 5..0
+    ; print max.index 1..10
+    ; print max.index 5..0
+    ; ; storing into a variable
+    ; r1: 1..10
+    ; print max r1
+    ; print max.index r1
+    ; ; using range function
+    ; print max range 1 10
+    ; print max range 5 0
+    ; print max.index range 1 10
+    ; print max.index range 5 0
+    ; r2: range 0 10
+    ; r3: range 5 0
+    ; print max r2
+    ; print max r3
+    ; print max.index r2
+    ; print max.index r3
+;; end
 
 
 topic "min"
