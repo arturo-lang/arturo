@@ -1555,7 +1555,7 @@ do [
 
     ; :string
 
-    ; Should it be used for strings?
+    ; [Collections/unique] should it work with :string? #930
     ; debug unique "Arturo"
     ; s: "Arturo"
     ; unique 's, debug s
