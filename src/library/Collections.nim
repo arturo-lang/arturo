@@ -771,7 +771,11 @@ proc defineSymbols*() =
             if x.kind == Literal:
                 ensureInPlace()
                 case InPlaced.kind:
-                    of String: InPlaced.s.insert(z.s, y.i)
+                    of String: 
+                        if z.kind==String: 
+                            InPlaced.s.insert(z.s, y.i)
+                        else:
+                            InPlaced.s.insert($(z.c), y.i)
                     of Block: InPlaced.a.insert(z, y.i)
                     of Dictionary:
                         InPlaced.d[y.s] = z
@@ -780,7 +784,10 @@ proc defineSymbols*() =
                 case x.kind:
                     of String:
                         var copied = x.s
-                        copied.insert(z.s, y.i)
+                        if z.kind==String:
+                            copied.insert(z.s, y.i)
+                        else:
+                            copied.insert($(z.c), y.i)
                         push(newString(copied))
                     of Block:
                         var copied = cleanedBlock(x.a)
