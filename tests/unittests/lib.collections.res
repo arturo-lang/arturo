@@ -310,6 +310,7 @@ false :logical
 >> keys
 
 [name surname] :block 
+[name surname] :block 
 
 >> last
 

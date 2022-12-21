@@ -565,7 +565,7 @@ do [
         print: ->
             ~"NAME: |this\name|, SURNAME: |this\surname|"
     ]
-    
+
     personA: to :person ["John" "Doe"]
     debug key? personA 'name
     debug key? personA "name"
@@ -578,9 +578,22 @@ do [
 
 topic "keys"
 do [
-    ; TODO: test with :object
+
+    ; :dictionary
     user: #[ name: "John" surname: "Doe" ]
     debug keys user
+
+    define :person [name, surname][
+        init: ->
+            this\name: capitalize this\name
+        
+        print: ->
+            ~"NAME: |this\name|, SURNAME: |this\surname|"
+    ]
+    
+    ; :object
+    personA: to :person ["John" "Doe"]
+    debug keys personA
 ]
 
 
