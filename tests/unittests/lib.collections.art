@@ -1342,11 +1342,19 @@ do [
     print sorted? [1 2 3 4 5]
     print sorted? [4 3 2 1 5]
     print sorted? [5 4 3 2 1] 
+    print sorted? ["Arturo" "Python" "Ruby"]
+    print sorted? ["Python" "Ruby" "Arturo"]
+    print sorted? ["Ruby" "Python" "Arturo"] 
+    
+    
 
     ; .descending
     print sorted?.descending [5 4 3 2 1]
     print sorted?.descending [4 3 2 1 5]
     print sorted?.descending [1 2 3 4 5]
+    print sorted?.descending ["Ruby" "Python" "Arturo"] 
+    print sorted?.descending ["Python" "Ruby" "Arturo"]
+    print sorted?.descending ["Arturo" "Python" "Ruby"]
 
 ]
 
