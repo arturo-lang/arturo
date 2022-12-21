@@ -598,13 +598,7 @@ Art :string
 [id:012568 surname:Doe name:John city:Manchester age:45] :dictionary 
 [id:012568 surname:Doe name:John city:Manchester age:45] :dictionary 
 
->> sort - .as
-
-
->> sort - .sensitive
-
-
->> sort - .sensitive .as with :block
+>> sort - .sensitive .as with :block and :dictionary
 
 aberración abismo dos perversión tres uno Uno ábaco 
 aberración abismo dos perversión tres uno Uno ábaco 
@@ -616,8 +610,10 @@ Uno ábaco aberración abismo dos perversión tres uno
 Uno ábaco aberración abismo dos perversión tres uno 
 0 1 2 3 4 5 6 7 8 9 10 
 0 1 2 3 4 5 6 7 8 9 10 
+[k:0 j:1 i:2 h:3 g:4 f:5 e:6 d:7 c:8 b:9 a:10]
+[k:0 j:1 i:2 h:3 g:4 f:5 e:6 d:7 c:8 b:9 a:10]
 
->> sort - .descending .sensitive .as with :block
+>> sort - .descending .sensitive .as with :block and :dictionary
 
 ábaco uno Uno tres perversión dos abismo aberración 
 ábaco uno Uno tres perversión dos abismo aberración 
@@ -629,9 +625,8 @@ uno tres perversión dos abismo aberración ábaco Uno
 uno tres perversión dos abismo aberración ábaco Uno 
 10 9 8 7 6 5 4 3 2 1 0 
 10 9 8 7 6 5 4 3 2 1 0 
-
->> sort - .descending
-
+[k:10 j:9 i:8 h:7 g:6 f:5 e:4 d:3 c:2 b:1 a:0]
+[k:10 j:9 i:8 h:7 g:6 f:5 e:4 d:3 c:2 b:1 a:0]
 
 >> sort - .by
 

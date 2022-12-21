@@ -1207,46 +1207,8 @@ do [
 
     ]
 
-    topic "sort - .as"
-    do [
-
-        ; [Collections/sort] .values.as is not working well #922
-
-        ; debug sort.values.as: 'es #[
-        ;     a: "uno" b: "dos" c: "tres" d: "Uno",
-        ;     e: "Dos" f: "Tres" g: "pero" h: "pértiga"
-        ;     i: "perversión" j: "ábaco" k: "abismo"
-        ;     l: "aberración"]
-
-        ; dict: #[
-        ;     a: "uno" b: "dos" c: "tres" d: "Uno",
-        ;     e: "Dos" f: "Tres" g: "pero" h: "pértiga"
-        ;     i: "perversión" j: "ábaco" k: "abismo"
-        ;     l: "aberración"]
-        ; sort.values.as: 'es 'dict, debug dict
-
-    ]
-
-    topic "sort - .sensitive"
-    do [
-
-        ; A really strange output here:
-        ; It's sorting values and keys
-
-        ; debug sort.values.sensitive [
-        ;     a: "Ruby" b: "python" c: "Arturo" 
-        ;     d: "ruby" e: "arturo" f: "Python"]
-
-        ; dict1: [a: "Ruby" b: "python" c: "Arturo" 
-        ;     d: "ruby" e: "arturo" f: "Python"]
-        ; dict2: [a: "Ruby" b: "python" c: "Arturo" 
-        ;     d: "ruby" e: "arturo" f: "Python"]
-        ; sort.values 'dict1, debug dict1
-        ; sort.values.sensitive 'dict2, debug dict2
-
-    ]
-
-    topic "sort - .sensitive .as with :block"
+    ; [Collections/sort] attributes missing for :dictionary #922
+    topic "sort - .sensitive .as with :block and :dictionary"
     do [
 
         a1: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
@@ -1254,29 +1216,55 @@ do [
         sort 'a1, print a1
         ; => [aberración abismo dos perversión tres uno Uno ábaco]
 
+        ; d1: #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        ; print sort.values #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        ; sort.values 'd1, print d1
+        ; ; => [h:aberración g:abismo b:dos e:perversión c:tres a:uno d:Uno f:ábaco]
+
         a2: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
         print sort.as: 'es ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
         sort.as: 'es 'a2, print a2
         ; => [ábaco aberración abismo dos perversión tres uno Uno]
+
+        ; d2: #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        ; print sort.values.as: 'es #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        ; sort.values.as: 'es 'd2, print d2
+        ; ; => [f:ábaco h:aberración g:abismo b:dos e:perversión c:tres a:uno d:Uno]
 
         a3: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
         print sort.sensitive ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
         sort.sensitive 'a3, print a3
         ; => [Uno aberración abismo dos perversión tres uno ábaco]
 
+        ; d3: #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        ; print sort.values.sensitive #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        ; sort.values.sensitive 'd3, print d3
+        ; ; => [d:Uno h:aberración g:abismo b:dos e:perversión c:tres a:uno f:ábaco]
+
         a4: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
         print sort.sensitive.as: 'es ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
         sort.sensitive.as: 'es 'a4, print a4
         ; => [Uno ábaco aberración abismo dos perversión tres uno]
+
+        ; d4: #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        ; print sort.values.sensitive.as: 'es #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        ; sort.values.sensitive.as: 'es 'd4, print d4
+        ; ; => [d:Uno f:ábaco h:aberración g:abismo b:dos e:perversión c:tres a:uno]
 
         a5: [10 9 8 7 6 5 4 3 2 1 0]
         print sort [10 9 8 7 6 5 4 3 2 1 0]
         sort 'a5, print a5
         ; => [0 1 2 3 4 5 6 7 8 9 10]
 
+        d5: #[a:10 b:9 c:8 d:7 e:6 f:5 g:4 h:3 i:2 j:1 k:0]
+        print sort.values #[a:10 b:9 c:8 d:7 e:6 f:5 g:4 h:3 i:2 j:1 k:0]
+        sort.values 'd5, print d5
+        ; => [k:0 j:1 i:2 h:3 g:4 f:5 e:6 d:7 c:8 b:9 a:10]
+
     ]
 
-    topic "sort - .descending .sensitive .as with :block"
+    ; [Collections/sort] attributes missing for :dictionary #922
+    topic "sort - .descending .sensitive .as with :block and :dictionary"
     do [
 
         a1: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
@@ -1284,45 +1272,53 @@ do [
         sort.descending 'a1, print a1
         ; => [ábaco uno Uno tres perversión dos abismo aberración]
 
+        ; d1: #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        ; print sort.descending.values #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        ; sort.descending.values 'd1, print d1
+        ; ; => [f:ábaco a:uno d:Uno c:tres e:perversión b:dos g:abismo h:aberración ]
+
         a2: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
         print sort.descending.as: 'es ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
         sort.descending.as: 'es 'a2, print a2
         ; => [uno Uno tres perversión dos abismo aberración ábaco]
+
+        ; d2: #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        ; print sort.descending.values.as: 'es #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        ; sort.descending.values.as: 'es 'd2, print d2
+        ; ; => [a:uno d:Uno c:tres e:perversión b:dos g:abismo h:aberración f:ábaco]
 
         a3: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
         print sort.descending.sensitive ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
         sort.descending.sensitive 'a3, print a3
         ; => [ábaco uno tres perversión dos abismo aberración Uno]
 
+        ; d3: #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        ; print sort.descending.values.sensitive #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        ; sort.descending.values.sensitive 'd3, print d3
+        ; ; => [f:ábaco a:uno c:tres e:perversión b:dos g:abismo h:aberración d:Uno]
+
         a4: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
         print sort.descending.sensitive.as: 'es ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
         sort.descending.sensitive.as: 'es 'a4, print a4
         ; => [uno tres perversión dos abismo aberración ábaco Uno]
+
+        ; d4: #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        ; print sort.descending.values.sensitive.as: 'es #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        ; sort.descending.values.sensitive.as: 'es 'd4, print d4
+        ; ; => [a:uno c:tres e:perversión b:dos g:abismo h:aberración f:ábaco d:Uno]
 
         a5: [0 1 2 3 4 5 6 7 8 9 10]
         print sort.descending [0 1 2 3 4 5 6 7 8 9 10]
         sort.descending 'a5, print a5
         ; => [10 9 8 7 6 5 4 3 2 1 0]
 
-    ]
-
-    topic "sort - .descending"
-    do [
-
-        ; Is not sorting for dictionaries
-
-        ; debug sort.descending [
-        ;     rb:"Ruby" art:"Arturo" py:"Python"]
-        ; debug sort.values.descending [
-        ;     a:"Ruby" b:"Arturo" c:"Python"]
-        
-        ; dict1: [rb:"Ruby" art:"Arturo" py:"Python"]
-        ; dict2: [a:"Ruby" b:"Arturo" c:"Python"]
-
-        ; sort.descending 'dict1, debug dict1
-        ; sort.values.descending 'dict2, debug dict2
+        d5: #[a:0 b:1 c:2 d:3 e:4 f:5 g:6 h:7 i:8 j:9 k:10]
+        print sort.descending.values #[a:0 b:1 c:2 d:3 e:4 f:5 g:6 h:7 i:8 j:9 k:10]
+        sort.descending.values 'd5, print d5
+        ; => [k:10 j:9 i:8 h:7 g:6 f:5 e:4 d:3 c:2 b:1 a:0]
 
     ]
+
 
     topic "sort - .by"
     do [
