@@ -325,6 +325,20 @@ three :string
 5 :integer 
 Manchester :string 
 1 :integer 
+10
+5
+9
+0
+10
+9
+10
+5
+9
+0
+10
+5
+10
+0
 
 >> min
 
