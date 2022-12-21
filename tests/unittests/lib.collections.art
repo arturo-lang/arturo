@@ -1176,6 +1176,16 @@ do [
     set personA 'surname "Wick"
     debug personA
 
+    ; :string
+
+    ; It's broken for string + string
+    ; s1: "Arruro"
+    ; set s1 2 "t"
+    ; debug s1
+
+    s1: "Arruro"
+    set s1 2 `t`
+    debug s1
 
 ]
 
