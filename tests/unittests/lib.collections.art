@@ -1020,7 +1020,8 @@ do [
 
     ; :string
     debug rotate "turoAr" 2
-    ; Not working for String literals
+
+    ; [Collections/rotate] is not working for string-literals #920
     ; s1: "turoAr"
     ; rotate 's1 2, debug s1
 
@@ -1033,7 +1034,8 @@ do [
 
     ; :string
     debug rotate.left "roArtu" 2
-    ; Not working for String literals
+
+    ; [Collections/rotate] is not working for string-literals #920
     ; s2: "oArtur"
     ; rotate.left 's2 1, debug s2
 
