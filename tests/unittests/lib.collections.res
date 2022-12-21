@@ -414,9 +414,11 @@ false
 >> prepend - :binary < :binary :binary
 
 01 00 :binary 
+01 00 :binary 
 
 >> prepend - :binary < :binary :integer
 
+01 00 :binary 
 01 00 :binary 
 
 >> prepend - :string < :string + :string
