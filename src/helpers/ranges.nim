@@ -16,6 +16,14 @@ import vm/values/comparison
 import vm/values/value
 
 #=======================================
+# Templates
+#=======================================
+
+template getValueForRangeItem(rng: VRange, item: int): Value =
+    if rng.numeric: newInteger(item)
+    else: newChar(char(item))
+
+#=======================================
 # Iterators
 #=======================================
 
