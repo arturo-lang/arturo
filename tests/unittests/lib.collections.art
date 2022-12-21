@@ -557,6 +557,7 @@ do [
     debug key? user 'age
     debug key? user "age"
 
+    ; :object
     define :person [name, surname][
         init: ->
             this\name: capitalize this\name
@@ -564,8 +565,7 @@ do [
         print: ->
             ~"NAME: |this\name|, SURNAME: |this\surname|"
     ]
-
-    ; :object
+    
     personA: to :person ["John" "Doe"]
     debug key? personA 'name
     debug key? personA "name"
