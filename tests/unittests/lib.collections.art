@@ -432,11 +432,7 @@ do [
     debug in?.at: 0 ["C" "C++" "Nim"] nested
     debug in?.at: 1 "Python"          nested
 
-    ; range is returning an integer
-    ; topic "in? - with :range"
-    ; range: 1..10
-    ; debug in? 5 range
-    ; debug in? 0 range
+    ;; space for range types :)
 
     topic "in? - with :dictionary"
     dict: #[ name: "John" surname: "Doe"]
@@ -450,6 +446,21 @@ do [
     debug in? dict "Jane" dict
 
 ]
+
+; [Numbers/range] is not working properly? #913
+; This code should be inside topic `in?`
+    print in? 1 1..10
+    print in? 0 1..10
+    print in? 1 range 1 10
+    print in? 0 range 1 10
+    ; storing into a variable
+    r1: 1..10
+    print in? 1 r1
+    print in? 0 r1
+    r2: range 1 10
+    print in? 1 r2
+    print in? 0 r2
+;; end
 
 
 topic "index"
