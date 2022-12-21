@@ -111,7 +111,7 @@ proc contains*(rng: VRange, v: Value): bool {.inline,enforceNoRaises.} =
 
 func min*(rng: VRange): (int,Value) {.inline,enforceNoRaises.} =
     if rng.forward: 
-        return (0, rng[0])
+        return (0, getValueForRangeItem(rng, rng.start))
     else:
         if rng.infinite: return (0, newFloating(NegInf))
 
@@ -125,4 +125,4 @@ func max*(rng: VRange): (int,Value) {.inline,enforceNoRaises.} =
         let rHigh = int(rng.len-1)
         return (rHigh, rng[rHigh])
     else:
-        return (0, rng[0])
+        return (0, getValueForRangeItem(rng, rng.start))
