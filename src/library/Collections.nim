@@ -87,6 +87,11 @@ proc defineSymbols*() =
                         SetInPlace(newString($(InPlaced.c) & y.s))
                     elif y.kind == Char:
                         SetInPlace(newString($(InPlaced.c) & $(y.c)))
+                elif InPlaced.kind == Binary:
+                    if y.kind == Binary:
+                        InPlaced.n &= y.n
+                    elif y.kind == Integer:
+                        InPlaced.n &= numberToBinary(y.i)
                 else:
                     if y.kind == Block:
                         # TODO(Collections\append) In-place appending should actually work in-place
@@ -771,7 +776,11 @@ proc defineSymbols*() =
             if x.kind == Literal:
                 ensureInPlace()
                 case InPlaced.kind:
-                    of String: InPlaced.s.insert(z.s, y.i)
+                    of String: 
+                        if z.kind==String: 
+                            InPlaced.s.insert(z.s, y.i)
+                        else:
+                            InPlaced.s.insert($(z.c), y.i)
                     of Block: InPlaced.a.insert(z, y.i)
                     of Dictionary:
                         InPlaced.d[y.s] = z
@@ -780,7 +789,10 @@ proc defineSymbols*() =
                 case x.kind:
                     of String:
                         var copied = x.s
-                        copied.insert(z.s, y.i)
+                        if z.kind==String:
+                            copied.insert(z.s, y.i)
+                        else:
+                            copied.insert($(z.c), y.i)
                         push(newString(copied))
                     of Block:
                         var copied = cleanedBlock(x.a)
@@ -1105,6 +1117,11 @@ proc defineSymbols*() =
                         SetInPlace(newString(y.s & $(InPlaced.c)))
                     elif y.kind == Char:
                         SetInPlace(newString($(y.c) & $(InPlaced.c)))
+                elif InPlaced.kind == Binary:
+                    if y.kind == Binary:
+                        InPlaced.n.insert(y.n, 0)
+                    elif y.kind == Integer:
+                        InPlaced.n.insert(numberToBinary(y.i), 0)
                 else:
                     if y.kind == Block:
                         InPlaced.cleanPrependInPlace(y)
@@ -1354,14 +1371,14 @@ proc defineSymbols*() =
             if x.kind == Literal:
                 ensureInPlace()
                 if InPlaced.kind == String:
-                    SetInPlace(newString(toSeq(runes(x.s)).map((x) => $(
-                            x)).rotatedLeft(distance).join("")))
+                    InPlaced.s = toSeq(runes(InPlaced.s)).map((w) => $(w))
+                                 .rotatedLeft(distance).join("")
                 elif InPlaced.kind == Block:
                     InPlaced.a.rotateLeft(distance)
             else:
                 if x.kind == String:
-                    push(newString(toSeq(runes(x.s)).map((x) => $(
-                            x)).rotatedLeft(distance).join("")))
+                    push(newString(toSeq(runes(x.s)).map((w) => $(w))
+                                 .rotatedLeft(distance).join("")))
                 elif x.kind == Block:
                     ensureCleaned(x)
                     push(newBlock(cleanX.rotatedLeft(distance)))
