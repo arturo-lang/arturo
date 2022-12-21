@@ -253,6 +253,14 @@ true :logical
 true :logical 
 false :logical 
 false :logical 
+true
+false
+true
+false
+true
+false
+true
+false
 
 >> index
 
