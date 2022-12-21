@@ -1115,6 +1115,8 @@ do [
     ; :block
     print [["one" "two" "three"] 
         size ["one" "two" "three"]]
+
+    ;; space for range types :)
     
     ; :range
     ; It's printing "0..10" 10 0 10
@@ -1126,11 +1128,23 @@ do [
     ; :dictionary
     print [#[name: "John", surname: "Doe"] 
         size #[name: "John", surname: "Doe"]]
+
     ; TODO :object
+
     ; :null
     print [null size null]
 
 ]
+
+; [Numbers/range] is not working properly? #913
+; This code should be inside topic `size`
+    ; Does not works inside block, is it a bug?
+    ; try => print [size range 0 10]
+    print size range 0 10
+    print size 0..10
+    r1: 0..20
+    print size r1
+;; end
 
 
 topic "slice"
