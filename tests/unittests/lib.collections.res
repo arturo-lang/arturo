@@ -768,3 +768,9 @@ false :logical
 >> zero? - with :null
 
 true :logical 
+false :logical 
+false :logical 
+false :logical 
+false :logical 
+null :null 
+true :logical 
