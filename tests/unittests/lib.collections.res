@@ -691,6 +691,7 @@ false
 >> split
 
 [A r t u r o] :block 
+[A r t u r o] :block 
 [[1 2 3] [4 5 6] [7 8]] :block 
 [[1 2 3] [4 5 6] [7 8]] :block 
 [1 2 3 4 5 6] :block 
