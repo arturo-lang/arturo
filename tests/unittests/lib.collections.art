@@ -1141,7 +1141,12 @@ topic "set"
 do [
 
     ; TODO: test with
-    ; :store, :bytecode, :binary
+    ; :store, :bytecode
+
+    ; :binary
+    bin0: to :binary 0
+    debug bin0
+    set bin0 0 1, debug bin0
 
     ; :block
     arr: [1 2 3 4]

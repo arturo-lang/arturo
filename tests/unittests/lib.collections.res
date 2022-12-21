@@ -604,6 +604,8 @@ true
 
 >> set
 
+00 :binary 
+01 :binary 
 [one 2 3 4] :block 
 [name:Michael age:34] :dictionary 
 [name:Jane age:34] :dictionary 
