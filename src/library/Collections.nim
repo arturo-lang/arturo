@@ -1354,14 +1354,14 @@ proc defineSymbols*() =
             if x.kind == Literal:
                 ensureInPlace()
                 if InPlaced.kind == String:
-                    InPlaced.s = toSeq(runes(InPlaced.s)).map((x) => $(
-                            InPlaced)).rotatedLeft(distance).join("")
+                    InPlaced.s = toSeq(runes(InPlaced.s)).map((w) => $(w))
+                                 .rotatedLeft(distance).join("")
                 elif InPlaced.kind == Block:
                     InPlaced.a.rotateLeft(distance)
             else:
                 if x.kind == String:
-                    push(newString(toSeq(runes(x.s)).map((x) => $(
-                            x)).rotatedLeft(distance).join("")))
+                    push(newString(toSeq(runes(x.s)).map((w) => $(w))
+                                 .rotatedLeft(distance).join("")))
                 elif x.kind == Block:
                     ensureCleaned(x)
                     push(newBlock(cleanX.rotatedLeft(distance)))
