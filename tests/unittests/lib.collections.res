@@ -570,6 +570,9 @@ Konnichiwa! 11
 [one two three] 3 
 [name:John surname:Doe] 2 
 null 0 
+11
+11
+21
 
 >> slice
 
