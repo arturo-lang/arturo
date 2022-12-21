@@ -348,11 +348,6 @@ false :logical
 true :logical 
 false :logical 
 
->> one? - with :range
-
-false :logical 
-false :logical 
-
 >> one? - with :dictionary
 
 true :logical 
@@ -361,6 +356,11 @@ false :logical
 >> one? - with :null
 
 false :logical 
+
+>> one? - with :range
+
+true
+false
 
 >> permutate
 

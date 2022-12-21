@@ -661,10 +661,7 @@ do [
     debug one? ["apple"] 
     debug one? ["apple" "pear"] 
 
-    topic "one? - with :range"
-    ; returns false, is it right?
-    debug one? 0..1
-    debug one? 0..10
+    ;; space for range types :)
 
     topic "one? - with :dictionary"
     debug one? #[ name: "John" ]
@@ -677,6 +674,13 @@ do [
     debug one? null
 
 ]
+
+topic "one? - with :range"
+; [Numbers/range] is not working properly? #913
+; This code should be inside topic `one?`
+    print one? 0..0 ; Yet not
+    print one? 0..10
+;; end
 
 
 topic "permutate"
