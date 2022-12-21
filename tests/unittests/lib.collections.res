@@ -608,6 +608,7 @@ true
 [name:Michael age:34] :dictionary 
 [name:Jane age:34] :dictionary 
 [name:Christian age:34] :dictionary 
+NAME: John, SURNAME: Wick :person 
 
 >> shuffle
 
