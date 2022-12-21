@@ -1572,10 +1572,7 @@ do [
     ; Do nothing?
     debug values ["Arturo" "Ruby" "Python" "Nim"]
 
-    ; Range type is broken
-    ; debug values 1..10
-    ; It's working:
-    debug values range 1 10
+    ;; space for range types :)
 
     user: #[
         name: "John"
@@ -1590,6 +1587,17 @@ do [
     ; TODO: test with :object
 
 ]
+
+; [Numbers/range] is not working properly? #913
+; This code should be inside topic `values`
+    r1: 1..10
+    r2: range 1 10
+    debug values 1..10
+    debug values range 1 10
+    debug values r1
+    debug values r2
+;; end
+
 
 topic "zero?"
 do [

@@ -728,8 +728,11 @@ true
 >> values
 
 [Arturo Ruby Python Nim] :block 
-[1 2 3 4 5 6 7 8 9 10] :block 
 [John Doe 012568 Manchester 45] :block 
+[1 2 3 4 5 6 7 8 9 10] :block 
+[1 2 3 4 5 6 7 8 9 10] :block 
+[1 2 3 4 5 6 7 8 9 10] :block 
+[1 2 3 4 5 6 7 8 9 10] :block 
 
 >> zero?
 
