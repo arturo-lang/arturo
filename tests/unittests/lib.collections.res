@@ -786,6 +786,8 @@ some te :string
 [1 2 4 3] :block 
 [1 2 4 3] :block 
 true
+Artuo :string 
+Artuo :string 
 true
 
 >> values
