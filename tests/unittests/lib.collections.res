@@ -612,6 +612,7 @@ true
 [name:Christian age:34] :dictionary 
 NAME: John, SURNAME: Wick :person 
 Arturo :string 
+Arturo :string 
 
 >> shuffle
 
