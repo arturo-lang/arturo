@@ -164,8 +164,6 @@ proc `$`*(v: Value): string {.inline.} =
         of Nothing: discard
         of ANY: discard
 
-# TODO(VM/values/printable/dump) use space-indentation instead of tabs
-#  labels: enhancement, values
 
 proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepend="") {.exportc.} = 
     proc dumpPrimitive(str: string, v: Value) =
