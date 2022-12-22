@@ -215,7 +215,7 @@ helo :string
 [1 6 3 4 5 6] :block 
 [1 [6 2] 5 3 4 5] :block 
 [[1 2] 3 4 1 2 [1 2] 3 4] :block 
-hello :string 
+helo :string 
 
 >> remove - .instance
 
