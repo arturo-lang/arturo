@@ -458,7 +458,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         if isKeyVal:
             result &= " "
         else:
-            for i in 0..level-1: result &= "\t"
+            for i in 0..level-1: result &= "    "
 
     case v.kind:
         of Null         : result &= "null"
@@ -483,8 +483,8 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 result &= "««" & v.s & "»»"
             else:
                 if countLines(v.s)>1 or v.s.contains("\""):
-                    var splitl = join(toSeq(splitLines(v.s)),"\n" & repeat("\t",level+1))
-                    result &= "{\n" & repeat("\t",level+1) & splitl & "\n" & repeat("\t",level) & "}"
+                    var splitl = join(toSeq(splitLines(v.s)),"\n" & repeat("    ",level+1))
+                    result &= "{\n" & repeat("    ",level+1) & splitl & "\n" & repeat("    ",level) & "}"
                 else:
                     result &= escape(v.s)
         of Word         : result &= v.s
@@ -515,7 +515,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
 
             if pretty:
                 result &= "\n"
-                for i in 0..level-1: result &= "\t"
+                for i in 0..level-1: result &= "    "
 
             if not (pretty and unwrapped and level==0):
                 if v.kind==Inline: result &= ")"
@@ -535,9 +535,9 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 for k,v in pairs(v.d):
                     if pretty:
                         if not (unwrapped):
-                            for i in 0..level: result &= "\t"
+                            for i in 0..level: result &= "    "
                         else:
-                            for i in 0..level-1: result &= "\t"
+                            for i in 0..level-1: result &= "    "
                         result &= k & ":"
                     else:
                         result &= k & ": "
@@ -548,7 +548,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                         result &= " "
 
             if pretty:
-                for i in 0..level-1: result &= "\t"
+                for i in 0..level-1: result &= "    "
             
             if not (pretty and unwrapped and level==0):
                 result &= "]"
