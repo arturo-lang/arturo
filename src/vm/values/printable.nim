@@ -449,8 +449,6 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
 #  Check: `print as.pretty.code.unwrapped info.get 'get`
 #  labels: values,enhancement,library
 
-# TODO(VM/values/printable/codify) use space-indentation instead of tabs
-#  labels: enhancement, values
 proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: bool=false, isKeyVal: bool=false, safeStrings: bool = false): string {.inline.} =
     result = ""
 
