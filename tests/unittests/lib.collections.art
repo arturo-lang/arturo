@@ -922,10 +922,16 @@ do [
 
     ]
 
-    ; [Collections/remove] is .index broken? #869
     topic "remove - .index"
     do[
+        debug remove.index [0 1 2 3 4 5] 3
+        debug remove.index [0 1 2 3 4 5] 4
+        debug remove.index [0 1 2 3 4 5] 0
 
+        a: [5 4 3 2 1 0]
+        remove.index 'a 2, debug a
+        remove.index 'a 0, debug a
+        remove.index 'a 3, debug a
     ]
 
     topic "remove - .prefix"

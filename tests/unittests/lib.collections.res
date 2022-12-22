@@ -501,6 +501,12 @@ heo :string
 
 >> remove - .index
 
+[0 1 2 4 5] :block 
+[0 1 2 3 5] :block 
+[1 2 3 4 5] :block 
+[5 4 2 1 0] :block 
+[4 2 1 0] :block 
+[4 2 1] :block 
 
 >> remove - .prefix
 
