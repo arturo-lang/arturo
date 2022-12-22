@@ -1654,11 +1654,9 @@ do [
     print id1 <> id2
 
     ; :string
-
-    ; [Collections/unique] should it work with :string? #930
-    ; debug unique "Arturo"
-    ; s: "Arturo"
-    ; unique 's, debug s
+    debug unique "Arturo"
+    s: "Arturo"
+    unique 's, debug s
 
     sid1: unique.id "Arturo"
     sid2: unique.id "Python"
