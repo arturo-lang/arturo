@@ -1485,7 +1485,9 @@ proc defineSymbols*() =
                     var idx = 0
                     for r in x.s.runes:
                         if idx != y.i: res.add r
-                        else: res.add z.c
+                        else: 
+                            if z.kind == String: res.add $(z.s[0])
+                            else: res.add z.c
                         idx += 1
 
                     x.s = res
