@@ -2102,9 +2102,14 @@ proc defineSymbols*() =
                 if x.kind == Block:
                     ensureCleaned(x)
                     push(newBlock(cleanX.deduplicated()))
+                elif x.kind == String:
+                    push newString(toSeq(runes(x.s)).deduplicate.map((w) => $(w)).join(""))
                 else: 
                     ensureInPlace()
-                    InPlaced.a = InPlaced.a.deduplicated()
+                    if InPlaced.kind == Block:
+                        InPlaced.a = InPlaced.a.deduplicated()
+                    else:
+                        InPlaced.s = toSeq(runes(InPlaced.s)).deduplicate.map((w) => $(w)).join("")
 
     builtin "values",
         alias       = unaliased,
