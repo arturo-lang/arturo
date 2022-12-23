@@ -733,7 +733,7 @@ proc copyValue*(v: Value): Value {.inline.} =
 
         of Socket:
             when not defined(WEB):
-                result = newSocket(initSocket(v.sock.socket, v.sock.address, v.sock.protocol, v.sock.port))
+                result = newSocket(initSocket(v.sock.socket, v.sock.protocol, v.sock.address, v.sock.port))
             # TODO(VM/values/value) missing Socket support for `copyValue`
             #  labels: bug, values
             discard
