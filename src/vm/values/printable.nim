@@ -193,22 +193,22 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
         else:           stdout.write fmt("[ :{tp}\n")
 
     proc dumpBlockEnd() =
-        for i in 0..level-1: stdout.write "    "
+        for i in 0..level-1: stdout.write "        "
         if not muted:   stdout.write fmt("{bold(magentaColor)}]{resetColor}")
         else:           stdout.write fmt("]")
 
     proc dumpHeader(str: string) =
         if not muted: stdout.write fmt("{resetColor}{fg(cyanColor)}")
         let lln = "================================\n"
-        for i in 0..level: stdout.write "    "
+        for i in 0..level: stdout.write "        "
         stdout.write lln
-        for i in 0..level: stdout.write "    "
+        for i in 0..level: stdout.write "        "
         stdout.write " " & str & "\n"
-        for i in 0..level: stdout.write "    "
+        for i in 0..level: stdout.write "        "
         stdout.write lln
         if not muted: stdout.write fmt("{resetColor}")
 
-    for i in 0..level-1: stdout.write "    "
+    for i in 0..level-1: stdout.write "        "
 
     if prepend!="":
         stdout.write prepend
@@ -276,7 +276,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
 
                 for key,value in v.e:
-                    for i in 0..level: stdout.write "    "
+                    for i in 0..level: stdout.write "        "
 
                     stdout.write unicode.alignLeft(key & " ", maxLen) & ":"
 
@@ -287,12 +287,12 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
         of Binary       : 
             dumpBlockStart(v)
 
-            for i in 0..level: stdout.write "    "
+            for i in 0..level: stdout.write "        "
             for i,child in v.n:
                 dumpBinary(child)
                 if (i+1) mod 20 == 0:
                     stdout.write "\n"
-                    for i in 0..level: stdout.write "    "
+                    for i in 0..level: stdout.write "        "
             
             stdout.write "\n"
 
@@ -323,7 +323,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
 
                 for key,value in v.d:
-                    for i in 0..level: stdout.write "    "
+                    for i in 0..level: stdout.write "        "
 
                     stdout.write unicode.alignLeft(key & " ", maxLen) & ":"
 
@@ -342,7 +342,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
 
                 for key,value in v.sto.data:
-                    for i in 0..level: stdout.write "    "
+                    for i in 0..level: stdout.write "        "
 
                     stdout.write unicode.alignLeft(key & " ", maxLen) & ":"
 
@@ -359,7 +359,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
 
                 for key,value in v.o:
-                    for i in 0..level: stdout.write "    "
+                    for i in 0..level: stdout.write "        "
 
                     stdout.write unicode.alignLeft(key & " ", maxLen) & ":"
 
@@ -374,7 +374,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 dump(newWordBlock(v.params), level+1, false, muted=muted)
                 dump(v.main, level+1, true, muted=muted)
             else:
-                for i in 0..level: stdout.write "    "
+                for i in 0..level: stdout.write "        "
                 stdout.write "(builtin)"
 
             stdout.write "\n"
@@ -424,11 +424,11 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
 
             var i = 0
             while i < instrs.len:
-                for i in 0..level: stdout.write "    "
+                for i in 0..level: stdout.write "        "
                 stdout.write instrs[i].s
                 i += 1
                 if i < instrs.len and instrs[i].kind==Integer:
-                    stdout.write "        "
+                    stdout.write "                "
                     while i < instrs.len and instrs[i].kind==Integer:
                         if not muted: stdout.write fmt("{resetColor}{fg(grayColor)} #{instrs[i].i}{resetColor}")
                         else: stdout.write " #" & $(instrs[i].i)
