@@ -735,8 +735,6 @@ proc copyValue*(v: Value): Value {.inline.} =
             when not defined(WEB):
                 result = newSocket(initSocket(v.sock.socket, v.sock.protocol, v.sock.address, Port(v.sock.port)))
 
-            discard
-
         of Bytecode:
             result = newBytecode(v.trans)
 
