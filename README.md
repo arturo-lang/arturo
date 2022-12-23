@@ -100,7 +100,7 @@ Although it won't cut it, if what you need is the real-deal compiler for everyda
 Just use the existing docker image:
 
 	docker run -it arturolang/arturo
-
+ 
 or (to run a specific local script):
 
 	docker run -it -v $(pwd):/home arturolang/arturo <yourscript.art>
