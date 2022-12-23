@@ -319,7 +319,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get tuple of collections from a coupled collection of tuples",
         args        = {
-            "collection": {Block}
+            "collection": {Block, Literal}
         },
         attrs       = NoAttrs,
         returns     = {Block},
@@ -331,9 +331,14 @@ proc defineSymbols*() =
             ; => ["one" "two" "three"] [1 2 3]
         """:
             #=======================================================
-            ensureCleaned(x)
-            let res = unzip(cleanX.map((z)=>(z.a[0], z.a[1])))
-            push(newBlock(@[newBlock(res[0]), newBlock(res[1])]))
+            if x.kind == Literal:
+                ensureInPlace()
+                let res = unzip(InPlaced.a.map((w)=>(w.a[0], w.a[1])))
+                InPlaced.a = @[newBlock(res[0]), newBlock(res[1])]
+            else:
+                ensureCleaned(x)
+                let res = unzip(cleanX.map((z)=>(z.a[0], z.a[1])))
+                push(newBlock(@[newBlock(res[0]), newBlock(res[1])]))
 
     builtin "drop",
         alias       = unaliased,
