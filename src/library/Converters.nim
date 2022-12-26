@@ -1227,8 +1227,6 @@ proc defineSymbols*() =
                 "db"        : ({Logical},"force database/SQlite format")
             },
             returns     = {Range},
-            # TODO(Converters/store) add documentation example
-            #  labels: library, documentation, easy
             example     = """
             ; create a new store with the name `mystore`
             ; it will be automatically live-stored in a file in the same folder
