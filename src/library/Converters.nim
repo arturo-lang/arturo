@@ -1244,6 +1244,12 @@ proc defineSymbols*() =
             data
             ; => [name:"John" surname:"Doe" age:36]
             ..........
+            ; create a new "global" configuration store
+            ; that will be saved automatically in ~/.arturo/stores
+            globalStore: store.global "configuration"
+
+            ; we are now ready to add or retrieve some persistent data!
+            ..........
             ; create a new JSON store with the name `mystore`
             ; it will be automatically live-stored in a file in the same folder
             ; with the name `mystore.json`
@@ -1258,6 +1264,7 @@ proc defineSymbols*() =
             ; check some specific store value 
             da\people\0\name
             ; => "John" 
+            
             """:
                 #=======================================================
                 let isGlobal = hadAttr("global")
