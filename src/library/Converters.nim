@@ -437,8 +437,13 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                     else:
                         throwCannotConvert()
 
-            # TODO(Converters) Add support for Store values
-            #  labels: library, enhancement
+            of Store:
+                case tp:
+                    of Dictionary:
+                        ensureStoreIsLoaded(y.sto)
+                        return newDictionary(y.sto.data)
+                    else:
+                        throwCannotConvert()
 
             of Bytecode:
                 case tp:
@@ -513,8 +518,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                     else:
                         throwCannotConvert()
 
-            of Store,
-               Function,
+            of Function,
                Database,
                Socket,
                Newline,
@@ -1216,20 +1220,70 @@ proc defineSymbols*() =
                 "path"  : {Literal,String}
             },
             attrs       = {
-                "auto"      : ({Logical},"automatically save to disk on every change"),
+                "deferred"  : ({Logical},"save to disk only on program termination"),
                 "global"    : ({Logical},"save as global store"),
                 "native"    : ({Logical},"force native/Arturo format"),
                 "json"      : ({Logical},"force Json format"),
                 "db"        : ({Logical},"force database/SQlite format")
             },
             returns     = {Range},
-            # TODO(Converters/store) add documentation example
-            #  labels: library, documentation, easy
             example     = """
+            ; create a new store with the name `mystore`
+            ; it will be automatically live-stored in a file in the same folder
+            ; using the native Arturo format
+            data: store "mystore"
+
+            ; store some data
+            data\name: "John"
+            data\surname: "Doe"
+            data\age: 36
+
+            ; and let's retrieve our data
+            data
+            ; => [name:"John" surname:"Doe" age:36]
+            ..........
+            ; create a new "global" configuration store
+            ; that will be saved automatically in ~/.arturo/stores
+            globalStore: store.global "configuration"
+
+            ; we are now ready to add or retrieve some persistent data!
+            ..........
+            ; create a new JSON store with the name `mystore`
+            ; it will be automatically live-stored in a file in the same folder
+            ; with the name `mystore.json`
+            data: store.json "mystore"
+
+            ; store some data
+            da\people: []
+
+            ; data can be as complicated as in any normal dictionary
+            da\people: da\people ++ #[name: "John" surname: "Doe"]
+
+            ; check some specific store value 
+            da\people\0\name
+            ; => "John" 
+            ..........
+            ; create a new deferred store with the name `mystore`
+            ; it will be automatically saved in a file in the same folder
+            ; using the native Arturo format
+            defStore: store.deferred "mystore"
+
+            ; let's save some data
+            defStore\name: "John"
+            defStore\surname: "Doe"
+
+            ; and print it
+            print defStore
+            ; [name:John surname:Doe]
+
+            ; in this case, all data is available at any given moment
+            ; but will not be saved to disk for each and every operation;
+            ; instead, it will be saved in its totality just before
+            ; the program terminates!
             """:
                 #=======================================================
                 let isGlobal = hadAttr("global")
-                let isAutosave = hadAttr("auto")
+                let isAutosave = not hadAttr("deferred")
 
                 var storeKind = UndefinedStore
 
