@@ -1220,7 +1220,7 @@ proc defineSymbols*() =
                 "path"  : {Literal,String}
             },
             attrs       = {
-                "auto"      : ({Logical},"automatically save to disk on every change"),
+                "deferred"  : ({Logical},"save to disk only on program termination"),
                 "global"    : ({Logical},"save as global store"),
                 "native"    : ({Logical},"force native/Arturo format"),
                 "json"      : ({Logical},"force Json format"),
@@ -1233,7 +1233,7 @@ proc defineSymbols*() =
             """:
                 #=======================================================
                 let isGlobal = hadAttr("global")
-                let isAutosave = hadAttr("auto")
+                let isAutosave = not hadAttr("deferred")
 
                 var storeKind = UndefinedStore
 
