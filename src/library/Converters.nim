@@ -1231,6 +1231,8 @@ proc defineSymbols*() =
             #  labels: library, documentation, easy
             example     = """
             ; create a new store with the name `mystore`
+            ; it will be automatically live-stored in a file in the same folder
+            ; using the native Arturo format
             data: store "mystore"
 
             ; store some data
@@ -1239,8 +1241,23 @@ proc defineSymbols*() =
             data\age: 36
 
             ; and let's retrieve our data
-            print data
-            ; [name:John surname:Doe age:36]
+            data
+            ; => [name:"John" surname:"Doe" age:36]
+            ..........
+            ; create a new JSON store with the name `mystore`
+            ; it will be automatically live-stored in a file in the same folder
+            ; with the name `mystore.json`
+            data: store.json "mystore"
+
+            ; store some data
+            da\people: []
+
+            ; data can be as complicated as in any normal dictionary
+            da\people: da\people ++ #[name: "John" surname: "Doe"]
+
+            ; check some specific store value 
+            da\people\0\name
+            ; => "John" 
             """:
                 #=======================================================
                 let isGlobal = hadAttr("global")
