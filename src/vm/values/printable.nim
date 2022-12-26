@@ -387,8 +387,6 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 #elif v.dbKind==MysqlDatabase: stdout.write fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
 
         of Socket       : 
-            # TODO(VM/values/printable) added proper `dump` support for Socket values
-            #  labels: enhancement, value
             when not defined(WEB):
                 dumpPrimitive($(v.sock), v)
 
