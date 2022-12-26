@@ -1264,7 +1264,24 @@ proc defineSymbols*() =
             ; check some specific store value 
             da\people\0\name
             ; => "John" 
-            
+            ..........
+            ; create a new deferred store with the name `mystore`
+            ; it will be automatically saved in a file in the same folder
+            ; using the native Arturo format
+            defStore: store.deferred "mystore"
+
+            ; let's save some data
+            defStore\name: "John"
+            defStore\surname: "Doe"
+
+            ; and print it
+            print defStore
+            ; [name:John surname:Doe]
+
+            ; in this case, all data is available at any given moment
+            ; but will not be saved to disk for each and every operation;
+            ; instead, it will be saved in its totality just before
+            ; the program terminates!
             """:
                 #=======================================================
                 let isGlobal = hadAttr("global")
