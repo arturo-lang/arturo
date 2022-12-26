@@ -1230,6 +1230,17 @@ proc defineSymbols*() =
             # TODO(Converters/store) add documentation example
             #  labels: library, documentation, easy
             example     = """
+            ; create a new store with the name `mystore`
+            data: store "mystore"
+
+            ; store some data
+            data\name: "John"
+            data\surname: "Doe"
+            data\age: 36
+
+            ; and let's retrieve our data
+            print data
+            ; [name:John surname:Doe age:36]
             """:
                 #=======================================================
                 let isGlobal = hadAttr("global")
