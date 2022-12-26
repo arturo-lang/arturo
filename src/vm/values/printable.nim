@@ -152,8 +152,6 @@ proc `$`*(v: Value): string {.inline.} =
                 #elif v.dbKind==MysqlDatabase: result = fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
         
         of Socket:
-            # TODO(VM/values/printable) added proper `$` overload support for Socket values
-            #  labels: enhancement, value
             when not defined(WEB):
                 result = $(v.sock)
 
