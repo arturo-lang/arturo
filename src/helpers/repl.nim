@@ -98,12 +98,14 @@ when not defined(WEB):
         historyPath: string = ReplHistoryPath, 
         completionsArray: ValueArray = @[],
         hintsTable: ValueDict = initOrderedTable[string,Value]()
-    ): string =
+    ): (string, bool) =
         initRepl(historyPath, completionsArray, hintsTable)
 
         let got = linenoiseReadLine(prompt.cstring)
         linenoiseHistoryAdd(got)
         discard linenoiseHistorySave(historyPath)
-        result = $(got)
+        result = ($(got),false)
+        if got.isNil:
+            result = ($(got),true)
 
         free(got)
