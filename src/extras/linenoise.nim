@@ -47,8 +47,8 @@ type
 when defined(windows):
     {.push header: "linenoise/linenoise.h", cdecl.}
 
-proc linenoiseSetCompletionCallback*(cback: ptr LinenoiseCompletionCallback) {.importc: "linenoiseSetCompletionCallback".}
-proc linenoiseSetHintsCallback*(cback: ptr LinenoiseHintsCallback) {.importc: "linenoiseSetHintsCallback".}
+proc linenoiseSetCompletionCallback*(cback: ptr LinenoiseCompletionCallback, userdata: cstring) {.importc: "linenoiseSetCompletionCallback".}
+proc linenoiseSetHintsCallback*(cback: ptr LinenoiseHintsCallback, userdata: cstring) {.importc: "linenoiseSetHintsCallback".}
 proc linenoiseAddCompletion*(a2: ptr LinenoiseCompletions; a3: cstring) {.importc: "linenoiseAddCompletion".}
 proc linenoiseReadLine*(prompt: cstring): cstring {.importc: "linenoise".}
 proc linenoiseHistoryAdd*(line: cstring): cint {.importc: "linenoiseHistoryAdd", discardable.}
