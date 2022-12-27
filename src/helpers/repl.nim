@@ -102,10 +102,11 @@ when not defined(WEB):
         initRepl(historyPath, completionsArray, hintsTable)
 
         let got = linenoiseReadLine(prompt.cstring)
+        if got.isNil:
+            return ("", true)
+
         linenoiseHistoryAdd(got)
         discard linenoiseHistorySave(historyPath)
         result = ($(got),false)
-        if got.isNil:
-            result = ($(got),true)
 
         free(got)
