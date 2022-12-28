@@ -2384,57 +2384,54 @@ func consideredEqual*(x: Value, y: Value): bool {.inline,enforceNoRaises.} =
 #  labels: vm,unit-test
 func hash*(v: Value): Hash {.inline.}=
     ## calculate the hash for given value
+    result = hash(v.kind)
     case v.kind:
-        of Null         : result = 0
-        of Logical      : result = cast[Hash](v.b)
+        of Null         : discard
+        of Logical      : result = result !& cast[Hash](v.b)
         of Integer      : 
-            if likely(v.iKind==NormalInteger): result = cast[Hash](v.i)
+            if likely(v.iKind==NormalInteger): result = result !& cast[Hash](v.i)
             else: 
                 when defined(WEB) or not defined(NOGMP):
-                    result = cast[Hash](v.bi)
-        of Floating     : result = cast[Hash](v.f)
+                    result = result !& cast[Hash](v.bi)
+        of Floating     : result = result !& cast[Hash](v.f)
         of Complex      : 
             result = 1
             result = result !& cast[Hash](v.z.re)
             result = result !& cast[Hash](v.z.im)
-            result = !$ result
-        of Rational     : result = hash(v.rat)
+        of Rational     : result = result !& hash(v.rat)
         of Version      : 
             result = 1
             result = result !& cast[Hash](v.major)
             result = result !& cast[Hash](v.minor)
             result = result !& cast[Hash](v.patch)
             result = result !& hash(v.extra)
-            result = !$ result
-        of Type         : result = cast[Hash](ord(v.t))
-        of Char         : result = cast[Hash](ord(v.c))
-        of String       : result = hash(v.s)
+        of Type         : result = result !& cast[Hash](ord(v.t))
+        of Char         : result = result !& cast[Hash](ord(v.c))
+        of String       : result = result !& hash(v.s)
         
         of Word,
            Literal,
            Label,
            Attribute,
-           AttributeLabel        : result = hash(v.s)
+           AttributeLabel        : result = result !& hash(v.s)
 
         of Path,
            PathLabel    : 
             result = 1
             for i in v.p:
                 result = result !& hash(i)
-            result = !$ result
 
         of Symbol,
-           SymbolLiteral: result = cast[Hash](ord(v.m))
+           SymbolLiteral: result = result !& cast[Hash](ord(v.m))
 
         of Quantity:
             result = 1
             result = result !& hash(v.nm)
             result = result !& hash(v.unit)
-            result = !$ result
 
-        of Regex: result = hash(v.rx)
+        of Regex: result = result !& hash(v.rx)
 
-        of Color        : result = cast[Hash](v.l)
+        of Color        : result = result !& cast[Hash](v.l)
 
         of Date         : discard
 
@@ -2445,10 +2442,9 @@ func hash*(v: Value): Hash {.inline.}=
             result = 1
             for i in v.a:
                 result = result !& hash(i)
-            result = !$ result
 
         of Range        :
-            result = hash(v.rng[])
+            result = result !& hash(v.rng[])
 
         of Dictionary   : 
             result = 1
@@ -2466,7 +2462,6 @@ func hash*(v: Value): Hash {.inline.}=
             result = 1 
             result = result !& hash(v.sto.path)
             result = result !& hash(v.sto.kind)
-            result = !$ result
         
         of Function     : 
             if v.fnKind==UserFunction:
@@ -2481,24 +2476,25 @@ func hash*(v: Value): Hash {.inline.}=
 
                 result = result !& hash(v.memoize)
                 result = result !& hash(v.inline)
-                result = !$ result
             else:
-                result = cast[Hash](unsafeAddr v)
+                result = result !& cast[Hash](unsafeAddr v)
 
         of Database:
             when not defined(NOSQLITE):
-                if v.dbKind==SqliteDatabase: result = cast[Hash](cast[ByteAddress](v.sqlitedb))
+                if v.dbKind==SqliteDatabase: result = result !& cast[Hash](cast[ByteAddress](v.sqlitedb))
                 #elif v.dbKind==MysqlDatabase: result = cast[Hash](cast[ByteAddress](v.mysqldb))
 
         of Socket:
             when not defined(WEB):
-                result = hash(v.sock)
+                result = result !& hash(v.sock)
 
         of Bytecode:
-            result = cast[Hash](unsafeAddr v)
+            result = result !& cast[Hash](unsafeAddr v)
 
-        of Newline      : result = 0
-        of Nothing      : result = 0
-        of ANY          : result = 0
+        of Newline      : discard
+        of Nothing      : discard
+        of ANY          : discard
+
+    result = !$ result
 
 {.pop.}
