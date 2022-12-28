@@ -2395,12 +2395,10 @@ func hash*(v: Value): Hash {.inline.}=
                     result = result !& cast[Hash](v.bi)
         of Floating     : result = result !& cast[Hash](v.f)
         of Complex      : 
-            result = 1
             result = result !& cast[Hash](v.z.re)
             result = result !& cast[Hash](v.z.im)
         of Rational     : result = result !& hash(v.rat)
         of Version      : 
-            result = 1
             result = result !& cast[Hash](v.major)
             result = result !& cast[Hash](v.minor)
             result = result !& cast[Hash](v.patch)
@@ -2417,7 +2415,6 @@ func hash*(v: Value): Hash {.inline.}=
 
         of Path,
            PathLabel    : 
-            result = 1
             for i in v.p:
                 result = result !& hash(i)
 
@@ -2425,7 +2422,6 @@ func hash*(v: Value): Hash {.inline.}=
            SymbolLiteral: result = result !& cast[Hash](ord(v.m))
 
         of Quantity:
-            result = 1
             result = result !& hash(v.nm)
             result = result !& hash(v.unit)
 
@@ -2447,25 +2443,21 @@ func hash*(v: Value): Hash {.inline.}=
             result = result !& hash(v.rng[])
 
         of Dictionary   : 
-            result = 1
             for k,val in pairs(v.d):
                 result = result !& hash(k)
                 result = result !& hash(val)
 
         of Object       :
-            result = 1
             for k,val in pairs(v.o):
                 result = result !& hash(k)
                 result = result !& hash(val)
 
         of Store        :
-            result = 1 
             result = result !& hash(v.sto.path)
             result = result !& hash(v.sto.kind)
         
         of Function     : 
             if v.fnKind==UserFunction:
-                result = 1
                 result = result !& hash(v.params)
                 result = result !& hash(v.main)
                 if not v.imports.isNil:
