@@ -162,7 +162,7 @@ proc defineSymbols*() =
             #=======================================================
             if x.kind==Literal:
                 ensureInPlace()
-                SetInPlace(newBlock(toSeq(items(intersection(toOrderedSet(cleanedBlock(InPlaced.a)), toOrderedSet(cleanedBlock(y.a)))))))
+                SetInPlace(newBlock(toSeq(intersection(toOrderedSet(cleanedBlock(InPlaced.a)), toOrderedSet(cleanedBlock(y.a))))))
             else:
                 push(newBlock(toSeq(intersection(toOrderedSet(cleanedBlock(x.a)), toOrderedSet(cleanedBlock(y.a))))))
 
