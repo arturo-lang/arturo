@@ -193,6 +193,10 @@ proc map*[A, B](data: HashSet[A], op: proc (x: A): B {.closure.}): HashSet[B] =
     result = initHashSet[B]()
     for item in items(data): result.incl(op(item))
 
+proc map*[A, B](data: OrderedSet[A], op: proc (x: A): B {.closure.}): OrderedSet[B] =
+    result = initOrderedSet[B]()
+    for item in items(data): result.incl(op(item))
+
 proc pop*[A](s: var HashSet[A]): A =
     for h in 0 .. high(s.data):
         if isFilled(s.data[h].hcode):
