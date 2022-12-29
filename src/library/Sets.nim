@@ -84,15 +84,15 @@ proc defineSymbols*() =
             if (hadAttr("symmetric")):
                 if x.kind==Literal:
                     ensureInPlace()
-                    SetInPlace(newBlock(toSeq(symmetricDifference(toHashSet(cleanedBlock(InPlaced.a)), toHashSet(cleanedBlock(y.a))))))
+                    SetInPlace(newBlock(toSeq(symmetricDifference(toOrderedSet(cleanedBlock(InPlaced.a)), toOrderedSet(cleanedBlock(y.a))))))
                 else:
-                    push(newBlock(toSeq(symmetricDifference(toHashSet(cleanedBlock(x.a)), toHashSet(cleanedBlock(y.a))))))
+                    push(newBlock(toSeq(symmetricDifference(toOrderedSet(cleanedBlock(x.a)), toOrderedSet(cleanedBlock(y.a))))))
             else:
                 if x.kind==Literal:
                     ensureInPlace()
-                    SetInPlace(newBlock(toSeq(difference(toHashSet(cleanedBlock(InPlaced.a)), toHashSet(cleanedBlock(y.a))))))
+                    SetInPlace(newBlock(toSeq(difference(toOrderedSet(cleanedBlock(InPlaced.a)), toOrderedSet(cleanedBlock(y.a))))))
                 else:
-                    push(newBlock(toSeq(difference(toHashSet(cleanedBlock(x.a)), toHashSet(cleanedBlock(y.a))))))
+                    push(newBlock(toSeq(difference(toOrderedSet(cleanedBlock(x.a)), toOrderedSet(cleanedBlock(y.a))))))
 
     builtin "disjoint?",
         alias       = unaliased, 
@@ -112,7 +112,7 @@ proc defineSymbols*() =
             ; => true
         """:
             #=======================================================
-            push(newLogical(disjoint(toHashSet(cleanedBlock(x.a)), toHashSet(cleanedBlock(y.a)))))
+            push(newLogical(disjoint(toOrderedSet(cleanedBlock(x.a)), toOrderedSet(cleanedBlock(y.a)))))
 
     builtin "intersect?",
         alias       = unaliased, 
@@ -135,7 +135,7 @@ proc defineSymbols*() =
             ; => false
         """:
             #=======================================================
-            let res = intersection(toHashSet(cleanedBlock(x.a)), toHashSet(cleanedBlock(y.a)))
+            let res = intersection(toOrderedSet(cleanedBlock(x.a)), toOrderedSet(cleanedBlock(y.a)))
             if len(res) >= 0:
                 push(VTRUE)
             else:
@@ -183,9 +183,9 @@ proc defineSymbols*() =
             #=======================================================
             if x.kind==Literal:
                 ensureInPlace()
-                SetInPlace(newBlock(toSeq(powerset(toHashSet(cleanedBlock(InPlaced.a)))).map((hs) => newBlock(toSeq(hs)))))
+                SetInPlace(newBlock(toSeq(powerset(toOrderedSet(cleanedBlock(InPlaced.a)))).map((hs) => newBlock(toSeq(hs)))))
             else:
-                push(newBlock(toSeq(powerset(toHashSet(cleanedBlock(x.a))).map((hs) => newBlock(toSeq(hs))))))
+                push(newBlock(toSeq(powerset(toOrderedSet(cleanedBlock(x.a))).map((hs) => newBlock(toSeq(hs))))))
 
     builtin "subset?",
         alias       = unaliased, 
@@ -321,9 +321,9 @@ proc defineSymbols*() =
             #=======================================================
             if x.kind==Literal:
                 ensureInPlace()
-                SetInPlace(newBlock(toSeq(union(toHashSet(cleanedBlock(InPlaced.a)), toHashSet(cleanedBlock(y.a))))))
+                SetInPlace(newBlock(toSeq(union(toOrderedSet(cleanedBlock(InPlaced.a)), toOrderedSet(cleanedBlock(y.a))))))
             else:
-                push(newBlock(toSeq(union(toHashSet(cleanedBlock(x.a)), toHashSet(cleanedBlock(y.a))))))
+                push(newBlock(toSeq(union(toOrderedSet(cleanedBlock(x.a)), toOrderedSet(cleanedBlock(y.a))))))
 
 #=======================================
 # Add Library
