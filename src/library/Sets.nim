@@ -19,9 +19,10 @@
 # Libraries
 #=======================================
 
-import sequtils, std/sets, sugar
+import sequtils, sugar
 
 import helpers/arrays
+import helpers/sets
 
 import vm/lib
 
