@@ -10,7 +10,9 @@
 # Libraries
 #=======================================
 
-import hashes, sequtils, std/sets, strutils, tables, unicode
+import hashes, sequtils, strutils, tables, unicode
+
+import helpers/sets
 
 import vm/values/comparison
 import vm/values/value

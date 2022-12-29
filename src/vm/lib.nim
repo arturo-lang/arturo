@@ -12,7 +12,7 @@
 # Libraries
 #=======================================
 
-import sequtils, sets, strutils, tables
+import sequtils, strutils, tables
 export strutils, tables
 
 import vm/[globals, errors, stack, values/comparison, values/clean, values/printable, values/value]
