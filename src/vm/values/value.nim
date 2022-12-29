@@ -2380,8 +2380,6 @@ func consideredEqual*(x: Value, y: Value): bool {.inline,enforceNoRaises.} =
         else:
             return false
 
-# TODO(Value\hash) Verify hashing is done right
-#  labels: vm,unit-test
 func hash*(v: Value): Hash {.inline.}=
     ## calculate the hash for given value
     result = hash(v.kind)
