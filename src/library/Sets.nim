@@ -21,7 +21,6 @@
 
 import sequtils, sugar
 
-import helpers/arrays
 import helpers/sets
 
 import vm/lib
