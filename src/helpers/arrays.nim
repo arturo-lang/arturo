@@ -130,15 +130,6 @@ proc removeAllInstances*(arr: ValueArray, instance: Value): ValueArray =
             if v != instance:
                 result.add(v)
 
-proc powerset*(s: HashSet[Value]): HashSet[HashSet[Value]] =
-    result.incl(initHashSet[Value]())  # Initialized with empty set.
-    for val in s:
-        let previous = result
-        for aSet in previous:
-            var newSet = aSet
-            newSet.incl(val)
-            result.incl(newSet)
-
 proc safeRepeat*(v: Value, times: int): ValueArray =
     result = newSeq[Value](times)
     for i in 0 ..< times:

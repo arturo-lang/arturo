@@ -30,7 +30,6 @@ type
         data: KeyValuePairSeq[A]
         counter: int
 
-type
     OrderedKeyValuePair[A] = tuple[
         hcode: Hash,
         next: int,
@@ -163,7 +162,6 @@ proc card*[A](s: HashSet[A]): int =
 proc card*[A](s: OrderedSet[A]): int =
     result = s.counter
 
-
 #=======================================
 # Iterators
 #=======================================
@@ -225,11 +223,11 @@ proc intersection*[A](s1, s2: OrderedSet[A]): OrderedSet[A] =
     result = initOrderedSet[A](max(min(s1.data.len, s2.data.len), 2))
   
     if s1.data.len < s2.data.len:
-        for item in items(s1):
-            if item in items(s2): incl(result, item)
+        for item in s1:
+            if item in s2: incl(result, item)
     else:
-        for item in items(s2):
-            if item in items(s1): incl(result, item)
+        for item in s2:
+            if item in s1: incl(result, item)
   
 proc difference*[A](s1, s2: HashSet[A]): HashSet[A] =
     result = initHashSet[A]()
@@ -239,7 +237,7 @@ proc difference*[A](s1, s2: HashSet[A]): HashSet[A] =
 
 proc difference*[A](s1, s2: OrderedSet[A]): OrderedSet[A] =
     result = initOrderedSet[A]()
-    for item in items(s1):
+    for item in s1:
         if not contains(s2, item):
             incl(result, item)
 
@@ -250,7 +248,7 @@ proc symmetricDifference*[A](s1, s2: HashSet[A]): HashSet[A] =
 
 proc symmetricDifference*[A](s1, s2: OrderedSet[A]): OrderedSet[A] =
     result = s1
-    for item in items(s2):
+    for item in s2:
         if containsOrIncl(result, item): excl(result, item)
 
 proc disjoint*[A](s1, s2: HashSet[A]): bool =
@@ -259,9 +257,28 @@ proc disjoint*[A](s1, s2: HashSet[A]): bool =
     return true
 
 proc disjoint*[A](s1, s2: OrderedSet[A]): bool =
-    for item in items(s1):
-        if item in items(s2): return false
+    for item in s1:
+        if item in s2: 
+            return false
     return true
+
+proc powerset*[A](s: HashSet[A]): HashSet[HashSet[A]] =
+    result.incl(initHashSet[A]())
+    for val in s:
+        let previous = result
+        for aSet in previous:
+            var newSet = aSet
+            newSet.incl(val)
+            result.incl(newSet)
+
+proc powerset*[A](s: OrderedSet[A]): OrderedSet[OrderedSet[A]] =
+    result.incl(initOrderedSet[A]())
+    for val in s:
+        let previous = result
+        for aSet in previous:
+            var newSet = aSet
+            newSet.incl(val)
+            result.incl(newSet)
 
 #=======================================
 # Overloads
@@ -350,7 +367,7 @@ proc `<=`*[A](s, t: OrderedSet[A]): bool =
     result = false
     if s.counter > t.counter: return
     result = true
-    for item in items(s):
+    for item in s:
         if not(t.contains(item)):
             result = false
             return
