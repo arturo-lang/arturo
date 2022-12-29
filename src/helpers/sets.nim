@@ -104,6 +104,9 @@ proc incl*[A](s: var HashSet[A], other: HashSet[A]) =
 proc incl*[A](s: var HashSet[A], other: OrderedSet[A]) =
     for item in items(other): incl(s, item)
 
+proc incl*[A](s: var OrderedSet[A], other: OrderedSet[A]) =
+    for item in items(other): incl(s, item)
+
 proc excl*[A](s: var HashSet[A], key: A) =
     discard exclImpl(s, key)
 
