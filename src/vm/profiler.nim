@@ -23,7 +23,7 @@ when defined(PROFILER):
     # Libraries
     #=======================================
 
-    import algorithm, hashes, std/monotimes, sets
+    import algorithm, hashes, std/monotimes
     import strformat, strutils, sugar, tables, times
 
     import helpers/terminal
