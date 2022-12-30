@@ -11,7 +11,7 @@
 #=======================================
 
 when not defined(windows) and not defined(WEB):
-    import linenoise
+    import extras/linenoise
 
 when defined(WEB):
     import jsconsole
