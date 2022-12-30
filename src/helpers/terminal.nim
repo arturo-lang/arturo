@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-when not defined(windows) and not defined(WEB):
+when not defined(WEB):
     import extras/linenoise
 
 when defined(WEB):
@@ -73,10 +73,7 @@ template rgb*(color: tuple[r, g, b: int]):string =
     else: ";38;2;" & $(color[0]) & ";" & $(color[1]) & ";" & $(color[2])
 
 proc clearTerminal*() = 
-    when not defined(windows):
-        when defined(WEB):
-            console.clear()
-        else:
-            clearScreen()
+    when defined(WEB):
+        console.clear()
     else:
-        discard
+        clearScreen()
