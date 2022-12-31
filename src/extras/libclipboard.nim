@@ -3,7 +3,7 @@
 # Jeremy Tan's libclipboard wrapper
 # for Nim
 #
-# (c) 2022 Yanis Zafirópulos
+# (c) 2023 Yanis Zafirópulos
 # 
 # @license: see LICENSE file
 # @file: extras/libclipboard.nim
