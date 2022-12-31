@@ -27,6 +27,9 @@ when not defined(WEB):
     else:
         import std/posix_utils
 
+when not defined(WEB):
+    import helpers/stores
+
 import vm/lib
 import vm/[env, errors]
 
@@ -56,6 +59,12 @@ proc defineSymbols*() =
             newDictionary(parseCmdlineArguments())
 
     when not defined(WEB):
+        
+        constant "config",
+            alias       = unaliased,
+            description = "access global configuration":
+                Config
+
         # TODO(System\env) could it be used for Web/JS builds too?
         #  and what type of environment variables could be served or would be useful serve?
         #  labels: library,enhancement,open discussion,web
@@ -178,6 +187,9 @@ proc defineSymbols*() =
             if checkAttr("with"):
                 errCode = aWith.i
 
+            when not defined(WEB):
+                savePendingStores()
+
             quit(errCode)
 
     builtin "panic",
@@ -205,6 +217,9 @@ proc defineSymbols*() =
             var code = 0
             if checkAttr("code"):
                 code = aCode.i
+
+            when not defined(WEB):
+                savePendingStores()
 
             if (hadAttr("unstyled")):
                 echo $(x)

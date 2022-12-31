@@ -13,19 +13,17 @@
 # Libraries
 #=======================================
 
-when defined(windows):
-    import os
+import os
 
 #=======================================
 # Compilation & Linking
 #=======================================
 
-when defined(windows):
-    {.passC: "-I" & parentDir(currentSourcePath()) .}
+{.passC: "-I" & parentDir(currentSourcePath()) .}
 
-    {.compile("linenoise/linenoise.c", "-I" & parentDir(currentSourcePath())).}
-    {.compile("linenoise/stringbuf.c", "-I" & parentDir(currentSourcePath())).}
-    {.compile("linenoise/utf8.c", "-I" & parentDir(currentSourcePath())).}
+{.compile("linenoise/linenoise.c", "-DUSE_UTF8 -I" & parentDir(currentSourcePath())).}
+{.compile("linenoise/stringbuf.c", "-DUSE_UTF8 -I" & parentDir(currentSourcePath())).}
+{.compile("linenoise/utf8.c", "-DUSE_UTF8 -I" & parentDir(currentSourcePath())).}
 
 #=======================================
 # Types
@@ -44,11 +42,10 @@ type
 # Function prototypes
 #=======================================
 
-when defined(windows):
-    {.push header: "linenoise/linenoise.h", cdecl.}
+{.push header: "linenoise/linenoise.h", cdecl.}
 
-proc linenoiseSetCompletionCallback*(cback: ptr LinenoiseCompletionCallback) {.importc: "linenoiseSetCompletionCallback".}
-proc linenoiseSetHintsCallback*(cback: ptr LinenoiseHintsCallback) {.importc: "linenoiseSetHintsCallback".}
+proc linenoiseSetCompletionCallback*(cback: ptr LinenoiseCompletionCallback, userdata: cstring) {.importc: "linenoiseSetCompletionCallback".}
+proc linenoiseSetHintsCallback*(cback: ptr LinenoiseHintsCallback, userdata: cstring) {.importc: "linenoiseSetHintsCallback".}
 proc linenoiseAddCompletion*(a2: ptr LinenoiseCompletions; a3: cstring) {.importc: "linenoiseAddCompletion".}
 proc linenoiseReadLine*(prompt: cstring): cstring {.importc: "linenoise".}
 proc linenoiseHistoryAdd*(line: cstring): cint {.importc: "linenoiseHistoryAdd", discardable.}
@@ -59,7 +56,13 @@ proc linenoiseClearScreen*() {.importc: "linenoiseClearScreen".}
 proc linenoiseSetMultiLine*(ml: cint) {.importc: "linenoiseSetMultiLine".}
 proc linenoisePrintKeyCodes*() {.importc: "linenoisePrintKeyCodes".}
 
-when defined(windows):
-    {.pop.}
+{.pop.}
 
 proc free*(s: cstring) {.importc: "free", header: "<stdlib.h>".}
+
+#=======================================
+# Methods
+#=======================================
+
+proc clearScreen*() = 
+    linenoiseClearScreen()

@@ -77,11 +77,16 @@ proc generateJsonNode*(n: Value): JsonNode =
             result = newJObject()
             for k,v in pairs(n.o):
                 result.add(k, generateJsonNode(v))
+        of Store        :
+            result = newJObject()
+            for k,v in pairs(n.sto.data):
+                result.add(k, generateJsonNode(v))
 
         of Complex,
            Rational,
            Function,
            Database,
+           Socket,
            Bytecode,
            Newline,
            Nothing,
@@ -156,10 +161,15 @@ when defined(WEB):
                 result = newJsObject()
                 for k,v in pairs(n.o):
                     result[cstring(k)] = generateJsObject(v)
+            of Store        :
+                result = newJsObject()
+                for k,v in pairs(n.sto.data):
+                    result[cstring(k)] = generateJsObject(v)
             of Complex,
                Rational,
                Function,
                Database,
+               Socket,
                Bytecode,
                Nothing,
                Newline,
@@ -202,5 +212,12 @@ proc valueFromJson*(src: string): Value =
 
 proc jsonFromValue*(val: Value, pretty: bool = true): string =
     let node = generateJsonNode(val)
+    if pretty: json.pretty(node, indent=4)
+    else: $(node)
+
+proc jsonFromValueDict*(dict: ValueDict, pretty: bool = true): string =
+    let node = newJObject()
+    for k,v in pairs(dict):
+        node.add(k, generateJsonNode(v))
     if pretty: json.pretty(node, indent=4)
     else: $(node)

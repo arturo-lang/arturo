@@ -16,9 +16,12 @@
 # Libraries
 #=======================================
 
-import hashes, lenientops
-import macros, math, sequtils, strutils
+import hashes, lenientops, macros
+import math, sequtils, strutils
 import sugar, tables, times, unicode
+
+when not defined(WEB):
+    import net except Socket
 
 when not defined(NOSQLITE):
     import db_sqlite as sqlite
@@ -33,7 +36,7 @@ when not defined(NOGMP):
 when not defined(WEB):
     import vm/errors
 
-import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vsymbol, vversion]
+import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vsocket, vsymbol, vversion]
 
 import vm/values/clean
 import vm/values/types
@@ -517,6 +520,10 @@ proc newObject*(args: ValueDict, prot: Prototype, initializer: proc (self: Value
     
     initializer(result, prot)
 
+proc newStore*(sto: VStore): Value {.inline, enforceNoRaises.} =
+    ## create Store value from VStore
+    Value(kind: Store, sto: sto)
+
 func newFunction*(params: seq[string], main: Value, imports: Value = nil, exports: Value = nil, memoize: bool = false, inline: bool = false): Value {.inline, enforceNoRaises.} =
     ## create Function (UserFunction) value with given parameters, ``main`` body, etc
     Value(
@@ -561,6 +568,11 @@ when not defined(NOSQLITE):
     proc newDatabase*(db: sqlite.DbConn): Value {.inline.} =
         ## create Database value from DbConn
         Value(kind: Database, dbKind: SqliteDatabase, sqlitedb: db)
+
+when not defined(WEB):
+    proc newSocket*(sock: VSocket): Value {.inline.} =
+        ## create Socket value from Socket
+        Value(kind: Socket, sock: sock)
 
 # proc newDatabase*(db: mysql.DbConn): Value {.inline.} =
 #     Value(kind: Database, dbKind: MysqlDatabase, mysqldb: db)
@@ -703,6 +715,7 @@ proc copyValue*(v: Value): Value {.inline.} =
 
         of Dictionary:  result = newDictionary(v.d[])
         of Object:      result = newObject(v.o[], v.proto)
+        of Store:       result = newStore(v.sto)
 
         of Function:    
             if v.fnKind == UserFunction:
@@ -717,6 +730,10 @@ proc copyValue*(v: Value): Value {.inline.} =
             when not defined(NOSQLITE):
                 if v.dbKind == SqliteDatabase: result = newDatabase(v.sqlitedb)
                 #elif v.dbKind == MysqlDatabase: result = newDatabase(v.mysqldb)
+
+        of Socket:
+            when not defined(WEB):
+                result = newSocket(initSocket(v.sock.socket, v.sock.protocol, v.sock.address, Port(v.sock.port)))
 
         of Bytecode:
             result = newBytecode(v.trans)
@@ -792,6 +809,12 @@ func valueAsString*(v: Value): string {.inline,enforceNoRaises.} =
             result = $v.z
         else:
             result = ""
+
+template ensureStoreIsLoaded*(sto: VStore) =
+    when compiles(ensureLoaded(sto)):
+        ensureLoaded(sto)
+    else:
+        sto.forceLoad(sto)
 
 #=======================================
 # Methods
@@ -2357,61 +2380,52 @@ func consideredEqual*(x: Value, y: Value): bool {.inline,enforceNoRaises.} =
         else:
             return false
 
-# TODO(Value\hash) Verify hashing is done right
-#  labels: vm,unit-test
 func hash*(v: Value): Hash {.inline.}=
     ## calculate the hash for given value
+    result = hash(v.kind)
     case v.kind:
-        of Null         : result = 0
-        of Logical      : result = cast[Hash](v.b)
+        of Null         : discard
+        of Logical      : result = result !& cast[Hash](v.b)
         of Integer      : 
-            if likely(v.iKind==NormalInteger): result = cast[Hash](v.i)
+            if likely(v.iKind==NormalInteger): result = result !& cast[Hash](v.i)
             else: 
                 when defined(WEB) or not defined(NOGMP):
-                    result = cast[Hash](v.bi)
-        of Floating     : result = cast[Hash](v.f)
+                    result = result !& cast[Hash](v.bi)
+        of Floating     : result = result !& cast[Hash](v.f)
         of Complex      : 
-            result = 1
             result = result !& cast[Hash](v.z.re)
             result = result !& cast[Hash](v.z.im)
-            result = !$ result
-        of Rational     : result = hash(v.rat)
+        of Rational     : result = result !& hash(v.rat)
         of Version      : 
-            result = 1
             result = result !& cast[Hash](v.major)
             result = result !& cast[Hash](v.minor)
             result = result !& cast[Hash](v.patch)
             result = result !& hash(v.extra)
-            result = !$ result
-        of Type         : result = cast[Hash](ord(v.t))
-        of Char         : result = cast[Hash](ord(v.c))
-        of String       : result = hash(v.s)
+        of Type         : result = result !& cast[Hash](ord(v.t))
+        of Char         : result = result !& cast[Hash](ord(v.c))
+        of String       : result = result !& hash(v.s)
         
         of Word,
            Literal,
            Label,
            Attribute,
-           AttributeLabel        : result = hash(v.s)
+           AttributeLabel        : result = result !& hash(v.s)
 
         of Path,
            PathLabel    : 
-            result = 1
             for i in v.p:
                 result = result !& hash(i)
-            result = !$ result
 
         of Symbol,
-           SymbolLiteral: result = cast[Hash](ord(v.m))
+           SymbolLiteral: result = result !& cast[Hash](ord(v.m))
 
         of Quantity:
-            result = 1
             result = result !& hash(v.nm)
             result = result !& hash(v.unit)
-            result = !$ result
 
-        of Regex: result = hash(v.rx)
+        of Regex: result = result !& hash(v.rx)
 
-        of Color        : result = cast[Hash](v.l)
+        of Color        : result = result !& cast[Hash](v.l)
 
         of Date         : discard
 
@@ -2422,26 +2436,26 @@ func hash*(v: Value): Hash {.inline.}=
             result = 1
             for i in v.a:
                 result = result !& hash(i)
-            result = !$ result
 
         of Range        :
-            result = hash(v.rng[])
+            result = result !& hash(v.rng[])
 
         of Dictionary   : 
-            result = 1
-            for k,v in pairs(v.d):
+            for k,val in pairs(v.d):
                 result = result !& hash(k)
-                result = result !& hash(v)
+                result = result !& hash(val)
 
         of Object       :
-            result = 1
-            for k,v in pairs(v.o):
+            for k,val in pairs(v.o):
                 result = result !& hash(k)
-                result = result !& hash(v)
+                result = result !& hash(val)
+
+        of Store        :
+            result = result !& hash(v.sto.path)
+            result = result !& hash(v.sto.kind)
         
         of Function     : 
             if v.fnKind==UserFunction:
-                result = 1
                 result = result !& hash(v.params)
                 result = result !& hash(v.main)
                 if not v.imports.isNil:
@@ -2452,20 +2466,25 @@ func hash*(v: Value): Hash {.inline.}=
 
                 result = result !& hash(v.memoize)
                 result = result !& hash(v.inline)
-                result = !$ result
             else:
-                result = cast[Hash](unsafeAddr v)
+                result = result !& cast[Hash](unsafeAddr v)
 
         of Database:
             when not defined(NOSQLITE):
-                if v.dbKind==SqliteDatabase: result = cast[Hash](cast[ByteAddress](v.sqlitedb))
+                if v.dbKind==SqliteDatabase: result = result !& cast[Hash](cast[ByteAddress](v.sqlitedb))
                 #elif v.dbKind==MysqlDatabase: result = cast[Hash](cast[ByteAddress](v.mysqldb))
 
-        of Bytecode:
-            result = cast[Hash](unsafeAddr v)
+        of Socket:
+            when not defined(WEB):
+                result = result !& hash(v.sock)
 
-        of Newline      : result = 0
-        of Nothing      : result = 0
-        of ANY          : result = 0
+        of Bytecode:
+            result = result !& cast[Hash](unsafeAddr v)
+
+        of Newline      : discard
+        of Nothing      : discard
+        of ANY          : discard
+
+    result = !$ result
 
 {.pop.}

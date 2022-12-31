@@ -1,8 +1,8 @@
 as a block of words:
 [ :block
-	apple :word
-	banana :word
-	cherry :word
+        apple :word
+        banana :word
+        cherry :word
 ]
 
 as a block of literals:

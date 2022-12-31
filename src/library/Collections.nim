@@ -33,6 +33,8 @@ import strutils, sugar, unicode
 import helpers/arrays
 import helpers/combinatorics
 import helpers/ranges
+when not defined(WEB):
+    import helpers/stores
 import helpers/strings
 import helpers/unisort
 
@@ -85,6 +87,11 @@ proc defineSymbols*() =
                         SetInPlace(newString($(InPlaced.c) & y.s))
                     elif y.kind == Char:
                         SetInPlace(newString($(InPlaced.c) & $(y.c)))
+                elif InPlaced.kind == Binary:
+                    if y.kind == Binary:
+                        InPlaced.n &= y.n
+                    elif y.kind == Integer:
+                        InPlaced.n &= numberToBinary(y.i)
                 else:
                     if y.kind == Block:
                         # TODO(Collections\append) In-place appending should actually work in-place
@@ -312,7 +319,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get tuple of collections from a coupled collection of tuples",
         args        = {
-            "collection": {Block}
+            "collection": {Block, Literal}
         },
         attrs       = NoAttrs,
         returns     = {Block},
@@ -324,9 +331,14 @@ proc defineSymbols*() =
             ; => ["one" "two" "three"] [1 2 3]
         """:
             #=======================================================
-            ensureCleaned(x)
-            let res = unzip(cleanX.map((z)=>(z.a[0], z.a[1])))
-            push(newBlock(@[newBlock(res[0]), newBlock(res[1])]))
+            if x.kind == Literal:
+                ensureInPlace()
+                let res = unzip(InPlaced.a.map((w)=>(w.a[0], w.a[1])))
+                InPlaced.a = @[newBlock(res[0]), newBlock(res[1])]
+            else:
+                ensureCleaned(x)
+                let res = unzip(cleanX.map((z)=>(z.a[0], z.a[1])))
+                push(newBlock(@[newBlock(res[0]), newBlock(res[1])]))
 
     builtin "drop",
         alias       = unaliased,
@@ -522,7 +534,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get collection's item by given index",
         args        = {
-            "collection": {String, Block, Range, Dictionary, Object, Date, Binary, Bytecode},
+            "collection": {String, Block, Range, Dictionary, Object, Store, Date, Binary, Bytecode},
             "index"     : {Any}
         },
         attrs       = NoAttrs,
@@ -601,6 +613,13 @@ proc defineSymbols*() =
                             push(GetKey(x.o, y.s))
                         else:
                             push(GetKey(x.o, $(y)))
+                of Store:
+                    when not defined(WEB):
+                        case y.kind:
+                            of String, Word, Literal, Label:
+                                push(getStoreKey(x.sto, y.s))
+                            else:
+                                push(getStoreKey(x.sto, $(y)))
                 of String:
                     push(newChar(x.s.runeAtPos(y.i)))
                 of Date:
@@ -762,7 +781,11 @@ proc defineSymbols*() =
             if x.kind == Literal:
                 ensureInPlace()
                 case InPlaced.kind:
-                    of String: InPlaced.s.insert(z.s, y.i)
+                    of String: 
+                        if z.kind==String: 
+                            InPlaced.s.insert(z.s, y.i)
+                        else:
+                            InPlaced.s.insert($(z.c), y.i)
                     of Block: InPlaced.a.insert(z, y.i)
                     of Dictionary:
                         InPlaced.d[y.s] = z
@@ -771,7 +794,10 @@ proc defineSymbols*() =
                 case x.kind:
                     of String:
                         var copied = x.s
-                        copied.insert(z.s, y.i)
+                        if z.kind==String:
+                            copied.insert(z.s, y.i)
+                        else:
+                            copied.insert($(z.c), y.i)
                         push(newString(copied))
                     of Block:
                         var copied = cleanedBlock(x.a)
@@ -1096,6 +1122,11 @@ proc defineSymbols*() =
                         SetInPlace(newString(y.s & $(InPlaced.c)))
                     elif y.kind == Char:
                         SetInPlace(newString($(y.c) & $(InPlaced.c)))
+                elif InPlaced.kind == Binary:
+                    if y.kind == Binary:
+                        InPlaced.n.insert(y.n, 0)
+                    elif y.kind == Integer:
+                        InPlaced.n.insert(numberToBinary(y.i), 0)
                 else:
                     if y.kind == Block:
                         InPlaced.cleanPrependInPlace(y)
@@ -1168,7 +1199,10 @@ proc defineSymbols*() =
                 ensureInPlace()
                 if InPlaced.kind == String:
                     if (hadAttr("once")):
-                        SetInPlace(newString(InPlaced.s.removeFirst(y.s)))
+                        if y.kind == String:
+                            SetInPlace(newString(InPlaced.s.removeFirst(y.s)))
+                        else:
+                            SetInPlace(newString(InPlaced.s.removeFirst($(y.c))))
                     elif (hadAttr("prefix")):
                         InPlaced.s.removePrefix(y.s)
                     elif (hadAttr("suffix")):
@@ -1201,7 +1235,10 @@ proc defineSymbols*() =
             else:
                 if x.kind == String:
                     if (hadAttr("once")):
-                        push(newString(x.s.removeFirst(y.s)))
+                        if y.kind == String:
+                            push(newString(x.s.removeFirst(y.s)))
+                        else:
+                            push(newString(x.s.removeFirst($(y.c))))
                     elif (hadAttr("prefix")):
                         var ret = x.s
                         ret.removePrefix(y.s)
@@ -1345,14 +1382,14 @@ proc defineSymbols*() =
             if x.kind == Literal:
                 ensureInPlace()
                 if InPlaced.kind == String:
-                    SetInPlace(newString(toSeq(runes(x.s)).map((x) => $(
-                            x)).rotatedLeft(distance).join("")))
+                    InPlaced.s = toSeq(runes(InPlaced.s)).map((w) => $(w))
+                                 .rotatedLeft(distance).join("")
                 elif InPlaced.kind == Block:
                     InPlaced.a.rotateLeft(distance)
             else:
                 if x.kind == String:
-                    push(newString(toSeq(runes(x.s)).map((x) => $(
-                            x)).rotatedLeft(distance).join("")))
+                    push(newString(toSeq(runes(x.s)).map((w) => $(w))
+                                 .rotatedLeft(distance).join("")))
                 elif x.kind == Block:
                     ensureCleaned(x)
                     push(newBlock(cleanX.rotatedLeft(distance)))
@@ -1385,7 +1422,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "set collection's item at index to given value",
         args        = {
-            "collection": {String, Block, Dictionary, Object, Binary, Bytecode},
+            "collection": {String, Block, Dictionary, Object, Store, Binary, Bytecode},
             "index"     : {Any},
             "value"     : {Any}
         },
@@ -1446,12 +1483,22 @@ proc defineSymbols*() =
                             x.o[y.s] = z
                         else:
                             x.o[$(y)] = z
+                of Store:
+                    when not defined(WEB):
+                        case y.kind:
+                            of String, Word, Literal, Label:
+                                setStoreKey(x.sto, y.s, z)
+                            else:
+                                setStoreKey(x.sto, $(y), z)
+                
                 of String:
                     var res: string
                     var idx = 0
                     for r in x.s.runes:
                         if idx != y.i: res.add r
-                        else: res.add z.c
+                        else: 
+                            if z.kind == String: res.add $(z.s[0])
+                            else: res.add z.c
                         idx += 1
 
                     x.s = res
@@ -1785,14 +1832,19 @@ proc defineSymbols*() =
                         var length = InPlaced.s.len
                         var i = 0
 
-                        while i < length:
-                            ret.add(InPlaced.s[i..i+aEvery.i-1])
-                            i += aEvery.i
+                        while i <= length:
+                            if i + aEvery.i <= length:
+                                ret.add(InPlaced.s[i..i+aEvery.i-1])
+                                i += aEvery.i
+                            else:
+                                ret.add(InPlaced.s[i..^1])
+                                i += aEvery.i
 
                         SetInPlace(newStringBlock(ret))
+
                     else:
-                        SetInPlace(newStringBlock(toSeq(runes(x.s)).map((x) =>
-                                $(x))))
+                        SetInPlace(newStringBlock(toSeq(runes(InPlaced.s)).map((w) =>
+                                $(w))))
                 else:
                     if checkAttr("at"):
                         SetInPlace(newBlock(@[newBlock(InPlaced.a[0..aAt.i]),
@@ -1803,7 +1855,10 @@ proc defineSymbols*() =
                         var i = 0
 
                         while i < length:
-                            ret.add(InPlaced.a[i..i+aEvery.i-1])
+                            if i + aEvery.i > length:
+                                ret.add(newBlock(InPlaced.a[i..^1]))
+                            else:
+                                ret.add(newBlock(InPlaced.a[i..i+aEvery.i-1]))
                             i += aEvery.i
 
                         SetInPlace(newBlock(ret))
@@ -1837,10 +1892,15 @@ proc defineSymbols*() =
                     var i = 0
 
                     while i < length:
-                        ret.add(x.s[i..i+aEvery.i-1])
-                        i += aEvery.i
+                        if i + aEvery.i <= length:
+                            ret.add(x.s[i..i+aEvery.i-1])
+                            i += aEvery.i
+                        else:
+                            ret.add(x.s[i..^1])
+                            i += aEvery.i
 
                     push(newStringBlock(ret))
+                
                 else:
                     push(newStringBlock(toSeq(runes(x.s)).map((x) => $(x))))
             else:
@@ -1891,7 +1951,7 @@ proc defineSymbols*() =
                     var ret: string
                     while i < InPlaced.s.len:
                         ret &= $(InPlaced.s[i])
-                        while (i+1 < InPlaced.s.len and InPlaced.s[i+1] == x.s[i]):
+                        while (i+1 < InPlaced.s.len and InPlaced.s[i+1] == InPlaced.s[i]):
                             i += 1
                         i += 1
                     SetInPlace(newString(ret))
@@ -2053,9 +2113,14 @@ proc defineSymbols*() =
                 if x.kind == Block:
                     ensureCleaned(x)
                     push(newBlock(cleanX.deduplicated()))
+                elif x.kind == String:
+                    push newString(toSeq(runes(x.s)).deduplicate.map((w) => $(w)).join(""))
                 else: 
                     ensureInPlace()
-                    InPlaced.a = InPlaced.a.deduplicated()
+                    if InPlaced.kind == Block:
+                        InPlaced.a = InPlaced.a.deduplicated()
+                    else:
+                        InPlaced.s = toSeq(runes(InPlaced.s)).deduplicate.map((w) => $(w)).join("")
 
     builtin "values",
         alias       = unaliased,

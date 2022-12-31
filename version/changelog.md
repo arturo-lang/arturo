@@ -11,6 +11,8 @@ v0.9.82
 - Added new `:rational` type (along with all relevant operations)
 - Added new `:quantity` type (measurements + unit support, along with all relevant operations)
 - Added new `:range` types (with all relevant `..` operations returning a new Range value)
+- Added new `:store` type (persistent dictionary-like storage on disk)
+- Added new `:socket` type
 - Added scientific notation support for number literals
 - Changed scoping rules (most blocks will now be completely scope-less, with the exception of iterators & functions)
 
@@ -20,7 +22,7 @@ v0.9.82
 - Arithmetic: added new `divmod` method
 - Collections: added new `combine`, `decouple`, `one?`, `prepend`, `rotate` & `tally` methods
 - Comparison: added new `between?` & `compare` methods
-- Converters: added new `in` method
+- Converters: added new `in` & `store` methods
 - Core: added new `coalesce` method
 - Dates: added new `sunday?`, `monday?`, `tuesday?`, `wednesday?`, `thursday?`, `friday?` & `saturday` methods
 - Files: added new `hidden?`, `move` & `timestamp` methods
@@ -30,6 +32,7 @@ v0.9.82
 - Paths: added new `absolute?` method
 - Reflection: added new `bytecode?`, `color?`, `complex?`, `object?`, `quantity?`, `rational?`, `range?` & `version?` predicates
 - Sets: added new `disjoint?` method
+- Sockets: added `accept`, `connect`, `listen`, `receive`, `send`, `send?` & `unplug` methods
 - Strings: added new `alphabet`, `match?` & `translate` methods
 - System: added new `superuser?` predicate
 
@@ -39,16 +42,18 @@ v0.9.82
 - Arithmetic\inc: added support for Complex numbers
 - Arithmetic\mod: added support for floating number modulo operations
 - Arithmetic\pow: added support for Rational numbers
-- Collections\chop: fixed to also work with empty blocks
+- Collections\chop: added `.times:` option & fixed to also work with empty blocks
 - Collections\combine: renamed to `couple`
 - Collections\contains?: added `.at:` option & `:char` support for string searches
 - Collections\drop: fixed to also work with empty blocks
 - Collections\first: fixed to also work with empty blocks
+- Collections\flatten: added support for Literal values
 - Collections\in?: added `.at:` option & `:char` support for string searches
 - Collections\last: fixed to also work with empty blocks
 - Collections\max: added `.index` option
 - Collections\min: added `.index` option
 - Collections\permutate: re-implemented and now works with a `.by` and `.repeated` option
+- Collections\remove: fixed `.once` & added new `.instance` option
 - Collections\reverse: added `.exact` option
 - Collections\sample: fixed to also work with empty blocks
 - Collections\sort: added `.ascii` option & fixed to also work with empty blocks

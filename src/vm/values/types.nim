@@ -23,7 +23,7 @@ when defined(WEB):
 when not defined(NOGMP):
     import helpers/bignums
 
-import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vsymbol, vversion]
+import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vsocket, vsymbol, vversion]
 import vm/values/flags
 
 #=======================================
@@ -54,11 +54,6 @@ type
     #  or... could this be encapsulated in our existing `:type` values?
     #  labels: vm, values, enhancement, open discussion
 
-    # TODO(VM/values/types) add new lazy-sequence/range type?
-    #  Right now, declaring a block or a range - e.g. `1..10` - actually pushes all required elements into a new block.
-    #  If their number is quite high, then there are some obvious performance-related drawbacks.
-    #  It would be great if we could define some special sequences, only by their limits - including infinity - and have our regular functions, especially iterators, operate on them!
-    #  labels: vm, values, library, enhancement, open discussion
     ValueKind* = enum
         Null            = 0
         Logical         = 1
@@ -87,16 +82,18 @@ type
         Binary          = 23
         Dictionary      = 24
         Object          = 25
-        Function        = 26
-        Inline          = 27
-        Block           = 28
-        Range           = 29
-        Database        = 30
-        Bytecode        = 31
+        Store           = 26
+        Function        = 27
+        Inline          = 28
+        Block           = 29
+        Range           = 30
+        Database        = 31
+        Socket          = 32    
+        Bytecode        = 33
 
-        Newline         = 32
-        Nothing         = 33
-        Any             = 34
+        Newline         = 34
+        Nothing         = 35
+        Any             = 36
 
     ValueSpec* = set[ValueKind]
 
@@ -107,6 +104,12 @@ type
     FunctionKind* = enum
         UserFunction
         BuiltinFunction
+
+    StoreKind* = enum
+        NativeStore
+        JsonStore
+        SqliteStore
+        UndefinedStore
 
     TypeKind* = enum
         UserType
@@ -167,6 +170,24 @@ type
                 bcode*      : Value
             of BuiltinFunction:
                 action*     : BuiltinAction
+
+    VStore* = ref object
+        data*       : ValueDict     # the actual data
+        path*       : string        # the path to the store
+
+        global*     : bool          # whether the store is global (saved in the main ~/.arturo/stores folder) or not
+        loaded*     : bool          # has the store been loaded (=read from disk) yet?
+        autosave*   : bool          # should the store be saved automatically after every change?
+        pending*    : bool          # are there pending changes to be saved?
+        
+        forceLoad*  : proc(store:VStore)    # ensureLoaded wrapped as a field proc
+
+        case kind*: StoreKind:
+            of SqliteStore:
+                when not defined(NOSQLITE):
+                    db* : sqlite.DbConn
+            else:
+                discard
 
     Value* {.final,acyclic.} = ref object
         when not defined(PORTABLE):
@@ -234,6 +255,8 @@ type
             of Object:
                 o*: ValueDict   # fields
                 proto*: Prototype # custom type pointer
+            of Store:
+                sto*: VStore
             of Function:
                 funcType*: VFunction
             of Database:
@@ -243,6 +266,9 @@ type
                             sqlitedb*: sqlite.DbConn
                     of MysqlDatabase: discard
                     #mysqldb*: mysql.DbConn
+            of Socket:
+                when not defined(WEB):
+                    sock*: VSocket
             of Bytecode:
                 trans*: Translation
 
