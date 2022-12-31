@@ -10,7 +10,9 @@
 # Libraries
 #=======================================
 
-import hashes, sequtils, sets, strutils, tables, unicode
+import hashes, sequtils, strutils, tables, unicode
+
+import helpers/sets
 
 import vm/values/comparison
 import vm/values/value
@@ -129,15 +131,6 @@ proc removeAllInstances*(arr: ValueArray, instance: Value): ValueArray =
         for v in arr:
             if v != instance:
                 result.add(v)
-
-proc powerset*(s: HashSet[Value]): HashSet[HashSet[Value]] =
-    result.incl(initHashSet[Value]())  # Initialized with empty set.
-    for val in s:
-        let previous = result
-        for aSet in previous:
-            var newSet = aSet
-            newSet.incl(val)
-            result.incl(newSet)
 
 proc safeRepeat*(v: Value, times: int): ValueArray =
     result = newSeq[Value](times)
