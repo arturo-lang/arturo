@@ -115,10 +115,6 @@
 #define USE_WINCONSOLE
 #ifdef __MINGW32__
 #define HAVE_UNISTD_H
-#else
-/* Microsoft headers don't like old POSIX names */
-#define strdup _strdup
-#define snprintf _snprintf
 #endif
 #else
 #include <termios.h>
@@ -141,6 +137,12 @@
 #include <stdlib.h>
 #include <sys/types.h>
 
+#if defined(_WIN32) && !defined(__MINGW32__)
+/* Microsoft headers don't like old POSIX names */
+#define strdup _strdup
+#define snprintf _snprintf
+#endif
+
 #include "linenoise.h"
 #ifndef STRINGBUF_H
 #include "stringbuf.h"
@@ -151,7 +153,10 @@
 
 #define LINENOISE_DEFAULT_HISTORY_MAX_LEN 100
 
+/* ctrl('A') -> 0x01 */
 #define ctrl(C) ((C) - '@')
+/* meta('a') ->  0xe1 */
+#define meta(C) ((C) | 0x80)
 
 /* Use -ve numbers here to co-exist with normal unicode chars */
 enum {
@@ -216,6 +221,16 @@ static void refreshLineAlt(struct current *current, const char *prompt, const ch
 static void setCursorPos(struct current *current, int x);
 static void setOutputHighlight(struct current *current, const int *props, int nprops);
 static void set_current(struct current *current, const char *str);
+
+static int fd_isatty(struct current *current)
+{
+#ifdef USE_TERMIOS
+    return isatty(current->fd);
+#else
+    (void)current;
+    return 0;
+#endif
+}
 
 void linenoiseHistoryFree(void) {
     if (history) {
@@ -683,6 +698,10 @@ static int check_special(int fd)
     if (c < 0) {
         return CHAR_ESCAPE;
     }
+    else if (c >= 'a' && c <= 'z') {
+        /* esc-a => meta-a */
+        return meta(c);
+    }
 
     c2 = fd_read_char(fd, 50);
     if (c2 < 0) {
@@ -813,7 +832,7 @@ static int completeLine(struct current *current) {
     linenoiseCompletions lc = { 0, NULL };
     int c = 0;
 
-    completionCallback(sb_str(current->buf),&lc);//REMOVED:,completionUserdata);
+    completionCallback(sb_str(current->buf),&lc,completionUserdata);
     if (lc.len == 0) {
         beep();
     } else {
@@ -863,11 +882,10 @@ static int completeLine(struct current *current) {
 /* Register a callback function to be called for tab-completion.
    Returns the prior callback so that the caller may (if needed)
    restore it when done. */
-linenoiseCompletionCallback * linenoiseSetCompletionCallback(linenoiseCompletionCallback *fn)//REMOVED:, void *userdata) {
-{
+linenoiseCompletionCallback * linenoiseSetCompletionCallback(linenoiseCompletionCallback *fn, void *userdata) {
     linenoiseCompletionCallback * old = completionCallback;
     completionCallback = fn;
-    //REMOVED:completionUserdata = userdata;
+    completionUserdata = userdata;
     return old;
 }
 
@@ -876,10 +894,10 @@ void linenoiseAddCompletion(linenoiseCompletions *lc, const char *str) {
     lc->cvec[lc->len++] = strdup(str);
 }
 
-void linenoiseSetHintsCallback(linenoiseHintsCallback *callback) //REMOVED:, void *userdata)
+void linenoiseSetHintsCallback(linenoiseHintsCallback *callback, void *userdata)
 {
     hintsCallback = callback;
-    //REMOVED:hintsUserdata = userdata;
+    hintsUserdata = userdata;
 }
 
 void linenoiseSetFreeHintsCallback(linenoiseFreeHintsCallback *callback)
@@ -965,7 +983,7 @@ static int refreshShowHints(struct current *current, const char *buf, int availc
     if (showhints && hintsCallback && availcols > 0) {
         int bold = 0;
         int color = -1;
-        char *hint = hintsCallback(buf, &color, &bold);//REMOVED:, hintsUserdata);
+        char *hint = hintsCallback(buf, &color, &bold, hintsUserdata);
         if (hint) {
             rc = 1;
             if (display) {
@@ -996,7 +1014,7 @@ static int refreshShowHints(struct current *current, const char *buf, int availc
                     clearOutputHighlight(current);
                 }
                 /* Call the function to free the hint returned. */
-                if (freeHintsCallback) freeHintsCallback(hint);//REMOVED:, hintsUserdata);
+                if (freeHintsCallback) freeHintsCallback(hint, hintsUserdata);
             }
         }
     }
@@ -1445,6 +1463,28 @@ static int insert_chars(struct current *current, int pos, const char *chars)
     return inserted;
 }
 
+static int skip_space_nonspace(struct current *current, int dir, int check_is_space)
+{
+    int moved = 0;
+    int checkoffset = (dir < 0) ? -1 : 0;
+    int limit = (dir < 0) ? 0 : sb_chars(current->buf);
+    while (current->pos != limit && (get_char(current, current->pos + checkoffset) == ' ') == check_is_space) {
+        current->pos += dir;
+        moved++;
+    }
+    return moved;
+}
+
+static int skip_space(struct current *current, int dir)
+{
+    return skip_space_nonspace(current, dir, 1);
+}
+
+static int skip_nonspace(struct current *current, int dir)
+{
+    return skip_space_nonspace(current, dir, 0);
+}
+
 /**
  * Returns the keycode to process, or 0 if none.
  */
@@ -1496,7 +1536,7 @@ static int reverseIncrementalSearch(struct current *current)
             searchdir = 1;
             skipsame = 1;
         }
-        else if (c >= ' ') {
+        else if (c >= ' ' && c <= '~') {
             /* >= here to allow for null terminator */
             if (rlen >= (int)sizeof(rbuf) - MAX_UTF8_LEN) {
                 continue;
@@ -1555,11 +1595,6 @@ static int reverseIncrementalSearch(struct current *current)
 static int linenoiseEdit(struct current *current) {
     int history_index = 0;
 
-    /* The latest history entry is always our current buffer, that
-     * initially is just an empty string. */
-    linenoiseHistoryAdd("");
-
-    set_current(current, "");
     refreshLine(current);
 
     while(1) {
@@ -1631,6 +1666,7 @@ static int linenoiseEdit(struct current *current) {
                 return -1;
             }
             /* Otherwise fall through to delete char to right of cursor */
+            /* fall-thru */
         case SPECIAL_DELETE:
             if (remove_char(current, current->pos) == 1) {
                 refreshLine(current);
@@ -1640,6 +1676,24 @@ static int linenoiseEdit(struct current *current) {
             /* Ignore. Expansion Hook.
              * Future possibility: Toggle Insert/Overwrite Modes
              */
+            break;
+        case meta('b'):    /* meta-b, move word left */
+            if (skip_nonspace(current, -1)) {
+                refreshLine(current);
+            }
+            else if (skip_space(current, -1)) {
+                skip_nonspace(current, -1);
+                refreshLine(current);
+            }
+            break;
+        case meta('f'):    /* meta-f, move word right */
+            if (skip_space(current, 1)) {
+                refreshLine(current);
+            }
+            else if (skip_nonspace(current, 1)) {
+                skip_space(current, 1);
+                refreshLine(current);
+            }
             break;
         case ctrl('W'):    /* ctrl-w, delete word at left. save deleted chars */
             /* eat any spaces on the left */
@@ -1763,6 +1817,10 @@ history_navigation:
             refreshLine(current);
             break;
         default:
+            if (c >= meta('a') && c <= meta('z')) {
+                /* Don't insert meta chars that are not bound */
+                break;
+            }
             /* Only tab is allowed without ^V */
             if (c == '\t' || c >= ' ') {
                 if (insert_char(current, current->pos, c) == 1) {
@@ -1813,14 +1871,14 @@ static stringbuf *sb_getline(FILE *fh)
         /* ignore the effect of character count for partial utf8 sequences */
         sb_append_len(sb, &ch, 1);
     }
-    if (n == 0) {
+    if (n == 0 || sb->data == NULL) {
         sb_free(sb);
         return NULL;
     }
     return sb;
 }
 
-char *linenoise(const char *prompt)
+char *linenoiseWithInitial(const char *prompt, const char *initial)
 {
     int count;
     struct current current;
@@ -1832,12 +1890,20 @@ char *linenoise(const char *prompt)
         printf("%s", prompt);
         fflush(stdout);
         sb = sb_getline(stdin);
+        if (sb && !fd_isatty(&current)) {
+            printf("%s\n", sb_str(sb));
+            fflush(stdout);
+        }
     }
     else {
         current.buf = sb_alloc();
         current.pos = 0;
         current.nrows = 1;
         current.prompt = prompt;
+
+        /* The latest history entry is always our current buffer */
+        linenoiseHistoryAdd(initial);
+        set_current(&current, initial);
 
         count = linenoiseEdit(&current);
 
@@ -1854,8 +1920,13 @@ char *linenoise(const char *prompt)
     return sb ? sb_to_string(sb) : NULL;
 }
 
+char *linenoise(const char *prompt)
+{
+    return linenoiseWithInitial(prompt, "");
+}
+
 /* Using a circular buffer is smarter, but a bit more complex to handle. */
-int linenoiseHistoryAddAllocated(char *line) {
+static int linenoiseHistoryAddAllocated(char *line) {
 
     if (history_max_len == 0) {
 notinserted:

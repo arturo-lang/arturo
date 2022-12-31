@@ -14,12 +14,13 @@
 # Libraries
 #=======================================
 
-import sequtils, sets, strformat
+import sequtils, strformat
 import strutils, tables
 
 when defined(DOCGEN):
     import re, sugar
 
+import helpers/sets
 import helpers/terminal
 
 import vm/values/[printable, value]
