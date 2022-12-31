@@ -23,6 +23,8 @@ when defined(WEB):
     import jsffi, json
 
 import helpers/jsonobject
+when not defined(WEB):
+    import helpers/stores
 
 import vm/[
     env, 
@@ -95,6 +97,7 @@ importLib "Numbers"
 importLib "Paths"
 importLib "Reflection"
 importLib "Sets"
+importLib "Sockets"
 importLib "Statistics"
 importLib "Strings"
 importLib "System"
@@ -134,6 +137,20 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
     )
 
     when not defined(WEB):
+        # configuration
+        Config = newStore(
+            initStore(
+                "config",
+                doLoad=false,
+                forceExtension=true,
+                createIfNotExists=true,
+                global=true,
+                autosave=true,
+                kind=NativeStore
+            )
+        )
+
+    when not defined(WEB):
         # paths
         if isFile: env.addPath(filename)
         else: env.addPath(getCurrentDir())
@@ -155,6 +172,9 @@ template handleVMErrors(blk: untyped): untyped =
     except:
         let e = getCurrentException()        
         showVMErrors(e)
+
+        when not defined(WEB):
+            savePendingStores()
 
         if e.name == $(ProgramError):
             let code = parseInt(e.msg.split(";;")[1].split("<:>")[0])
@@ -209,6 +229,8 @@ when not defined(WEB):
                 execUnscoped(evaled)
 
             showProfilerData()
+
+            savePendingStores()
 
             return evaled
 

@@ -150,6 +150,8 @@ proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
                         if not (v==y.o[k]): return false
 
                     return true
+            of Store:
+                return x.sto.path == y.sto.path and x.sto.kind == y.sto.kind
             of Color:
                 return x.l == y.l
             of Function:

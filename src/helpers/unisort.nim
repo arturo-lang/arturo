@@ -10,11 +10,12 @@
 # Libraries
 #=======================================
 
-import algorithm, sequtils, sets, tables, unicode
+import algorithm, sequtils, tables, unicode
 
 when not defined(NOASCIIDECODE):
     import unidecode
 
+import helpers/sets
 import helpers/charsets as CharsetsHelper
 
 import vm/values/value

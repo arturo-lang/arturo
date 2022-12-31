@@ -43,7 +43,7 @@ void sb_free(stringbuf *sb)
 	free(sb);
 }
 
-void sb_realloc(stringbuf *sb, int newlen)
+static void sb_realloc(stringbuf *sb, int newlen)
 {
 	sb->data = (char *)realloc(sb->data, newlen);
 	sb->remaining = newlen - sb->last;

@@ -1,0 +1,6 @@
+user: "admin"
+pass: "admin"
+
+inspect request.headers:#[
+    Authorization: "Basic " ++ encode user ++ ":" ++ pass
+] "https://httpbin.org/basic-auth/admin/admin" ø

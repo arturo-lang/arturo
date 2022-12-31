@@ -215,7 +215,7 @@ helo :string
 [1 6 3 4 5 6] :block 
 [1 [6 2] 5 3 4 5] :block 
 [[1 2] 3 4 1 2 [1 2] 3 4] :block 
-hello :string 
+helo :string 
 
 >> remove - .instance
 
@@ -326,11 +326,17 @@ Art :string
 [Hello World!] :block 
 [Hi my name is...] :block 
 [directory file.ext] :block 
+[id nickname name age] :block 
 [Hello , World] :block 
 [[Arnold Andreas Paul Ricard] [Linus Yanis Helena Eva Blanca]] :block 
 [spl it  col lec tio n t o c omp one nts] :block 
 [[Arnold Andreas Paul] [Ricard Linus Yanis] [Helena Eva Blanca]] :block 
 [[Arnold Andreas Paul Ricard Linus] [Linus Yanis Helena Eva Blanca]] :block 
+[[Arnold Andreas Paul] [Ricard Linus Yanis] [Helena Eva Blanca]] :block 
+[Man che ste r] 3 3 3 1 
+[Artu ro] 4 2 
+[Man che ste r] 3 3 3 1 
+[Artu ro] 4 2 
 
 >> squeeze
 
