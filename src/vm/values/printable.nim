@@ -554,6 +554,16 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
             if v.fnKind==UserFunction:
                 result &= "function "
                 result &= codify(newWordBlock(v.params),pretty,unwrapped,level+1, false, safeStrings=safeStrings)
+                if v.inline:
+                    result &= ".inline"
+                if v.memoize:
+                    result &= ".memoize"
+                if not v.imports.isNil:
+                    result &= ".imports:"
+                    result &= codify(newWordBlock(toSeq(keys(v.imports.d))),pretty,unwrapped,level+1, false, safeStrings=safeStrings)
+                if not v.exports.isNil:
+                    result &= ".exports:"
+                    result &= codify(newWordBlock(toSeq(keys(v.exports.d))),pretty,unwrapped,level+1, false, safeStrings=safeStrings)
                 result &= " "
                 result &= codify(v.main,pretty,unwrapped,level+1, true, safeStrings=safeStrings)
             else:
