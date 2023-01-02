@@ -23,6 +23,7 @@ when not defined(NOGMP):
 
 import helpers/terminal as TerminalHelper
 
+import vm/globals
 import vm/opcodes
 import vm/values/value
 import vm/values/clean
@@ -567,7 +568,10 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 result &= " "
                 result &= codify(v.main,pretty,unwrapped,level+1, true, safeStrings=safeStrings)
             else:
-                discard
+                for sym,val in pairs(Syms):
+                    if val==v:
+                        result &= "var'" & sym
+                        break
 
         else:
             result &= ""
