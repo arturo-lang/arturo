@@ -478,7 +478,19 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                     of Integer, Floating:
                         return convertedValueToType(x, y.nm, tp, aFormat)
                     of String:
-                        return newString($(y))
+                        if (not aFormat.isNil):
+                            try:
+                                var ret: string
+                                if y.nm.kind==Floating:
+                                    formatValue(ret, y.nm.f, aFormat.s)
+                                else:
+                                    formatValue(ret, y.nm.i, aFormat.s)
+
+                                return newString(ret & stringify(y.unit.name))
+                            except:
+                                throwConversionFailed()
+                        else:
+                            return newString($(y))
                     of Quantity:
                         if checkAttr("unit"):
                             let target = parseQuantitySpec(aUnit.s).name
