@@ -23,6 +23,7 @@ when not defined(NOGMP):
 
 import helpers/terminal as TerminalHelper
 
+import vm/globals
 import vm/opcodes
 import vm/values/value
 import vm/values/clean
@@ -547,14 +548,27 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
             if not (pretty and unwrapped and level==0):
                 result &= "]"
 
-        # TODO(VM/values/printable) `codify` not working properly for Function values
-        #  what if the Function is a memoized one? no attributes are currently being taken into account
-        #  labels: vm, values, bug
         of Function:
-            result &= "function "
-            result &= codify(newWordBlock(v.params),pretty,unwrapped,level+1, false, safeStrings=safeStrings)
-            result &= " "
-            result &= codify(v.main,pretty,unwrapped,level+1, true, safeStrings=safeStrings)
+            if v.fnKind==UserFunction:
+                result &= "function "
+                result &= codify(newWordBlock(v.params),pretty,unwrapped,level+1, false, safeStrings=safeStrings)
+                if v.inline:
+                    result &= ".inline"
+                if v.memoize:
+                    result &= ".memoize"
+                if not v.imports.isNil:
+                    result &= ".import:"
+                    result &= codify(newWordBlock(toSeq(keys(v.imports.d))),pretty,unwrapped,level+1, false, safeStrings=safeStrings)
+                if not v.exports.isNil:
+                    result &= ".export:"
+                    result &= codify(newWordBlock(v.exports.a.map((w)=>w.s)),pretty,unwrapped,level+1, false, safeStrings=safeStrings)
+                result &= " "
+                result &= codify(v.main,pretty,unwrapped,level+1, true, safeStrings=safeStrings)
+            else:
+                for sym,val in pairs(Syms):
+                    if val==v:
+                        result &= "var'" & sym
+                        break
 
         else:
             result &= ""
