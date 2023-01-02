@@ -143,9 +143,6 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                     of Rational: return newRational(y.f)
                     of Char: return newChar(chr(int(y.f)))
                     of String: 
-                        # TODO(Converters\to) add `.format` support for Quantity to String conversions
-                        #  It should be working pretty much like Floating to String conversions work
-                        #  labels: library, enhancement
                         if (not aFormat.isNil):
                             try:
                                 var ret: string
