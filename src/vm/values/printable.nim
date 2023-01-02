@@ -551,10 +551,13 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         #  what if the Function is a memoized one? no attributes are currently being taken into account
         #  labels: vm, values, bug
         of Function:
-            result &= "function "
-            result &= codify(newWordBlock(v.params),pretty,unwrapped,level+1, false, safeStrings=safeStrings)
-            result &= " "
-            result &= codify(v.main,pretty,unwrapped,level+1, true, safeStrings=safeStrings)
+            if v.fnKind==UserFunction:
+                result &= "function "
+                result &= codify(newWordBlock(v.params),pretty,unwrapped,level+1, false, safeStrings=safeStrings)
+                result &= " "
+                result &= codify(v.main,pretty,unwrapped,level+1, true, safeStrings=safeStrings)
+            else:
+                discard
 
         else:
             result &= ""
