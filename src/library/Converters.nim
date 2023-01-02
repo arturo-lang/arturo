@@ -143,9 +143,6 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                     of Rational: return newRational(y.f)
                     of Char: return newChar(chr(int(y.f)))
                     of String: 
-                        # TODO(Converters\to) add `.format` support for Quantity to String conversions
-                        #  It should be working pretty much like Floating to String conversions work
-                        #  labels: library, enhancement
                         if (not aFormat.isNil):
                             try:
                                 var ret: string
@@ -478,7 +475,19 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                     of Integer, Floating:
                         return convertedValueToType(x, y.nm, tp, aFormat)
                     of String:
-                        return newString($(y))
+                        if (not aFormat.isNil):
+                            try:
+                                var ret: string
+                                if y.nm.kind==Floating:
+                                    formatValue(ret, y.nm.f, aFormat.s)
+                                else:
+                                    formatValue(ret, float(y.nm.i), aFormat.s)
+
+                                return newString(ret & stringify(y.unit.name))
+                            except:
+                                throwConversionFailed()
+                        else:
+                            return newString($(y))
                     of Quantity:
                         if checkAttr("unit"):
                             let target = parseQuantitySpec(aUnit.s).name
