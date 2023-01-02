@@ -484,7 +484,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                                 if y.nm.kind==Floating:
                                     formatValue(ret, y.nm.f, aFormat.s)
                                 else:
-                                    formatValue(ret, y.nm.i, aFormat.s)
+                                    formatValue(ret, float(y.nm.i), aFormat.s)
 
                                 return newString(ret & stringify(y.unit.name))
                             except:
