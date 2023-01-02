@@ -563,7 +563,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                     result &= codify(newWordBlock(toSeq(keys(v.imports.d))),pretty,unwrapped,level+1, false, safeStrings=safeStrings)
                 if not v.exports.isNil:
                     result &= ".export:"
-                    result &= codify(newWordBlock(toSeq(keys(v.exports.d))),pretty,unwrapped,level+1, false, safeStrings=safeStrings)
+                    result &= codify(newWordBlock(v.exports.a.map((w)=>w.s)),pretty,unwrapped,level+1, false, safeStrings=safeStrings)
                 result &= " "
                 result &= codify(v.main,pretty,unwrapped,level+1, true, safeStrings=safeStrings)
             else:
