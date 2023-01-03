@@ -248,6 +248,14 @@ proc defineSymbols*() =
             # TODO(Sockets/unplug) add documentation example
             #  labels: library, documentation, easy
             example     = """
+            ; connect to a local server on port 256
+            socket: connect.to:"localhost" 256
+
+            ; send a message to the server
+            send socket "Hello Socket World"
+
+            ; disconnect from the server
+            unplug socket
             """:
                 #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("unplug")
