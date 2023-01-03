@@ -167,8 +167,6 @@ proc defineSymbols*() =
                 "timeout"   : ({Integer},"set timeout (in milliseconds)")
             },
             returns     = {String},
-            # TODO(Sockets/receive) add documentation example
-            #  labels: library, documentation, easy
             example     = """
             server: listen.blocking 18966
             print "started server connection..."
