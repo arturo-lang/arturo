@@ -312,6 +312,12 @@ proc RuntimeError_OperationNotPermitted*(operation: string) =
           "unsafe operation: " & operation & ";" &
           "not permitted in online playground"
 
+proc RuntimeError_ConfigNotFound*(gkey: string, akey: string) =
+    panic RuntimeError,
+          "configuration not found for: " & gkey & ";" &
+          "you can either supply it globally via `config`;" &
+          "or using the option: " & akey
+
 # Program errors
 
 proc ProgramError_panic*(message: string, code: int) =
