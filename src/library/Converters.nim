@@ -702,6 +702,8 @@ proc defineSymbols*() =
                 else:
                     push(x)
 
+    # TODO(Converters/define) not defined inheritance behavior when using `.as` 
+    #  labels: library, enhancement
     builtin "define",
         alias       = dollar, 
         rule        = PrefixPrecedence,
@@ -715,8 +717,6 @@ proc defineSymbols*() =
             "as"    : ({Type}, "inherit given type")
         },
         returns     = {Nothing},
-        # TODO(Converters\define) add documentation example for `.as`
-        #  labels: library, documentation, easy
         example     = """
             define :person [name surname age][  
 
@@ -891,6 +891,9 @@ proc defineSymbols*() =
     #  We can definitely support hex/binary literals, but how would we support string to number conversion? Perhaps, with `.to` and option?
     #  It's basically rather confusing...
     #  labels: library, cleanup, enhancement, open discussion
+
+    # TODO(Converters/from) revise use of `.opcode`
+    #  labels: library, enhancement, open discussion
     builtin "from",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -905,12 +908,13 @@ proc defineSymbols*() =
             "opcode"    : ({Logical},"get opcode by from opcode literal")
         },
         returns     = {Any},
-        # TODO(Converters\from) add documentation example for `.opcode`
-        #  labels: library, documentation, easy
         example     = """
             print from.binary "1011"        ; 11
             print from.octal "1011"         ; 521
             print from.hex "0xDEADBEEF"     ; 3735928559
+            ..........
+            from.opcode 'push1
+            => 33
         """:
             #=======================================================
             if (hadAttr("binary")):
