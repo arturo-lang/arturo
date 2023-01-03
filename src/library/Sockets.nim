@@ -83,6 +83,14 @@ proc defineSymbols*() =
             # TODO(Sockets/connect) add documentation example
             #  labels: library, documentation, easy
             example     = """
+            ; connect to local server on port 18966
+            server: connect 18966
+            ..........
+            ; "connect" to a udp server on port 12345
+            server: connect.udp 12345
+            ..........
+            ; connect to a remote server on port 18966
+            server: connect.to:"123.456.789.123" 18966
             """:
                 #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("connect")
