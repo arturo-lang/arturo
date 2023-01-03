@@ -717,8 +717,6 @@ proc defineSymbols*() =
             "as"    : ({Type}, "inherit given type")
         },
         returns     = {Nothing},
-        # TODO(Converters\define) add documentation example for `.as`
-        #  labels: library, documentation, easy
         example     = """
             define :person [name surname age][  
 
