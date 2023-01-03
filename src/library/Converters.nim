@@ -702,6 +702,8 @@ proc defineSymbols*() =
                 else:
                     push(x)
 
+    # TODO(Converters/define) not defined inheritance behavior when using `.as` 
+    #  labels: library, enhancement
     builtin "define",
         alias       = dollar, 
         rule        = PrefixPrecedence,
