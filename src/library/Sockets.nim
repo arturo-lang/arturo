@@ -127,8 +127,6 @@ proc defineSymbols*() =
                 "udp"       : ({Logical},"use UDP instead of TCP")
             },
             returns     = {Socket},
-            # TODO(Sockets/listen) add documentation example
-            #  labels: library, documentation, easy
             example     = """
             ; start a server listening on port 18966
             server: listen 18966
