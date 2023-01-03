@@ -221,8 +221,6 @@ proc defineSymbols*() =
             },
             attrs       = NoAttrs,
             returns     = {Logical},
-            # TODO(Sockets/send?) add documentation example
-            #  labels: library, documentation, easy
             example     = """
             ; connect to a local server on port 256
             socket: connect.to:"localhost" 256
