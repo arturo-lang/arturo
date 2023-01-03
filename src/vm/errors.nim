@@ -316,7 +316,7 @@ proc RuntimeError_ConfigNotFound*(gkey: string, akey: string) =
     panic RuntimeError,
           "configuration not found for: " & gkey & ";" &
           "you can either supply it globally via `config`;" &
-          "or using the option: " & akey
+          "or using the option: ." & akey
 
 # Program errors
 
