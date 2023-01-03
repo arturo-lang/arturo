@@ -80,8 +80,6 @@ proc defineSymbols*() =
                 "udp"       : ({Logical},"use UDP instead of TCP")
             },
             returns     = {Socket},
-            # TODO(Sockets/connect) add documentation example
-            #  labels: library, documentation, easy
             example     = """
             ; connect to local server on port 18966
             server: connect 18966
