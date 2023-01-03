@@ -1,4 +1,4 @@
-; By @Krenium
+; by @Krenium
 
 halve: function [x]-> shr x 1
 double: function [x]-> shl x 1
