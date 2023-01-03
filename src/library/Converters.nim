@@ -905,12 +905,13 @@ proc defineSymbols*() =
             "opcode"    : ({Logical},"get opcode by from opcode literal")
         },
         returns     = {Any},
-        # TODO(Converters\from) add documentation example for `.opcode`
-        #  labels: library, documentation, easy
         example     = """
             print from.binary "1011"        ; 11
             print from.octal "1011"         ; 521
             print from.hex "0xDEADBEEF"     ; 3735928559
+            ..........
+            from.opcode 'push1
+            => 33
         """:
             #=======================================================
             if (hadAttr("binary")):
