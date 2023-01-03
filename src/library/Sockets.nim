@@ -224,6 +224,14 @@ proc defineSymbols*() =
             # TODO(Sockets/send?) add documentation example
             #  labels: library, documentation, easy
             example     = """
+            ; connect to a local server on port 256
+            socket: connect.to:"localhost" 256
+
+            ; send a message to the server
+            ; and check if it was successful
+            sent?: send? socket "Hello Socket World"
+
+            print ["Message was sent successfully:" sent?]
             """:
                 #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("send?")
