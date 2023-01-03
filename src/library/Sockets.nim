@@ -170,6 +170,24 @@ proc defineSymbols*() =
             # TODO(Sockets/receive) add documentation example
             #  labels: library, documentation, easy
             example     = """
+            server: listen.blocking 18966
+            print "started server connection..."
+
+            client: accept server
+            print ["accepted incoming connection from:" client]
+
+            keepGoing: true
+            while [keepGoing][
+                message: receive client
+                print ["received message:" message]
+
+                if message = "exit" [
+                    unplug client
+                    keepGoing: false
+                ]
+            ]
+
+            unplug server
             """:
                 #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("receive")
