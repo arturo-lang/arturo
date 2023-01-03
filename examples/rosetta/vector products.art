@@ -1,4 +1,4 @@
-; By @Krenium
+; by @Krenium
 
 ; dot product
 dot: function [a b][
