@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2022 Yanis Zafirópulos
+# (c) 2019-2023 Yanis Zafirópulos
 #
 # @file: vm/globals.nim
 #=======================================================
@@ -191,3 +191,22 @@ template ensureInPlace*(): untyped =
 template SetInPlace*(v: Value, safe: static bool = false): untyped =
     ## Sets InPlace symbol to given value in the symbol table
     SetSym(x.s, v, safe)
+
+#---------------------
+# Global config
+#---------------------
+
+template retrieveConfig*(globalKey: string, attrKey: string): untyped =
+    var config {.inject.}: ValueDict
+    var configFound = false
+
+    if (let globalConfig = Config.sto.getStoreKey(globalKey, unsafe=true); not globalConfig.isNil):
+        configFound = true
+        config = globalConfig.d
+    
+    if (let attrConfig = getAttr(attrKey); attrConfig != VNULL):
+        configFound = true
+        config = attrConfig.d
+
+    if not configFound:
+        RuntimeError_ConfigNotFound(globalKey, attrKey)

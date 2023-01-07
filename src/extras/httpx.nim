@@ -27,7 +27,7 @@ import extras/ioselectors
 
 
 when defined(windows):
-    import sets
+    import helpers/sets
 else:
     import posix
     when compileOption("threads"):

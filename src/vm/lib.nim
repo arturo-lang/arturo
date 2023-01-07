@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2022 Yanis Zafirópulos
+# (c) 2019-2023 Yanis Zafirópulos
 #
 # @file: vm/common.nim
 #=======================================================
@@ -12,7 +12,7 @@
 # Libraries
 #=======================================
 
-import sequtils, sets, strutils, tables
+import sequtils, strutils, tables
 export strutils, tables
 
 import vm/[globals, errors, stack, values/comparison, values/clean, values/printable, values/value]

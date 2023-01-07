@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2022 Yanis Zafirópulos
+# (c) 2019-2023 Yanis Zafirópulos
 #
 # @file: helpers/datasource.nim
 #=======================================================
@@ -14,12 +14,13 @@
 # Libraries
 #=======================================
 
-import sequtils, sets, strformat
+import sequtils, strformat
 import strutils, tables
 
 when defined(DOCGEN):
     import re, sugar
 
+import helpers/sets
 import helpers/terminal
 
 import vm/values/[printable, value]

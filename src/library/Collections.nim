@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2022 Yanis Zafirópulos
+# (c) 2019-2023 Yanis Zafirópulos
 #
 # @file: library/Collections.nim
 #=======================================================
@@ -319,7 +319,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get tuple of collections from a coupled collection of tuples",
         args        = {
-            "collection": {Block}
+            "collection": {Block, Literal}
         },
         attrs       = NoAttrs,
         returns     = {Block},
@@ -331,9 +331,14 @@ proc defineSymbols*() =
             ; => ["one" "two" "three"] [1 2 3]
         """:
             #=======================================================
-            ensureCleaned(x)
-            let res = unzip(cleanX.map((z)=>(z.a[0], z.a[1])))
-            push(newBlock(@[newBlock(res[0]), newBlock(res[1])]))
+            if x.kind == Literal:
+                ensureInPlace()
+                let res = unzip(InPlaced.a.map((w)=>(w.a[0], w.a[1])))
+                InPlaced.a = @[newBlock(res[0]), newBlock(res[1])]
+            else:
+                ensureCleaned(x)
+                let res = unzip(cleanX.map((z)=>(z.a[0], z.a[1])))
+                push(newBlock(@[newBlock(res[0]), newBlock(res[1])]))
 
     builtin "drop",
         alias       = unaliased,
@@ -1194,7 +1199,10 @@ proc defineSymbols*() =
                 ensureInPlace()
                 if InPlaced.kind == String:
                     if (hadAttr("once")):
-                        SetInPlace(newString(InPlaced.s.removeFirst(y.s)))
+                        if y.kind == String:
+                            SetInPlace(newString(InPlaced.s.removeFirst(y.s)))
+                        else:
+                            SetInPlace(newString(InPlaced.s.removeFirst($(y.c))))
                     elif (hadAttr("prefix")):
                         InPlaced.s.removePrefix(y.s)
                     elif (hadAttr("suffix")):
@@ -1227,7 +1235,10 @@ proc defineSymbols*() =
             else:
                 if x.kind == String:
                     if (hadAttr("once")):
-                        push(newString(x.s.removeFirst(y.s)))
+                        if y.kind == String:
+                            push(newString(x.s.removeFirst(y.s)))
+                        else:
+                            push(newString(x.s.removeFirst($(y.c))))
                     elif (hadAttr("prefix")):
                         var ret = x.s
                         ret.removePrefix(y.s)

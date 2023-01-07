@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2022 Yanis Zafirópulos
+# (c) 2019-2023 Yanis Zafirópulos
 #
 # @file: vm/errors.nim
 #=======================================================
@@ -311,6 +311,12 @@ proc RuntimeError_OperationNotPermitted*(operation: string) =
     panic RuntimeError,
           "unsafe operation: " & operation & ";" &
           "not permitted in online playground"
+
+proc RuntimeError_ConfigNotFound*(gkey: string, akey: string) =
+    panic RuntimeError,
+          "configuration not found for: " & gkey & ";" &
+          "you can either supply it globally via `config`;" &
+          "or using the option: ." & akey
 
 # Program errors
 

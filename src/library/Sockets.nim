@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2022 Yanis Zafirópulos
+# (c) 2019-2023 Yanis Zafirópulos
 #
 # @file: library/Sockets.nim
 #=======================================================
@@ -53,9 +53,12 @@ proc defineSymbols*() =
             },
             attrs       = NoAttrs,
             returns     = {Socket},
-            # TODO(Sockets/accept) add documentation example
-            #  labels: library, documentation, easy
             example     = """
+            server: listen.blocking 18966
+            print "started server connection..."
+
+            client: accept server
+            print ["accepted incoming connection from:" client]
             """:
                 #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("accept")
@@ -80,9 +83,15 @@ proc defineSymbols*() =
                 "udp"       : ({Logical},"use UDP instead of TCP")
             },
             returns     = {Socket},
-            # TODO(Sockets/connect) add documentation example
-            #  labels: library, documentation, easy
             example     = """
+            ; connect to local server on port 18966
+            server: connect 18966
+            ..........
+            ; "connect" to a udp server on port 12345
+            server: connect.udp 12345
+            ..........
+            ; connect to a remote server on port 18966
+            server: connect.to:"123.456.789.123" 18966
             """:
                 #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("connect")
@@ -121,9 +130,9 @@ proc defineSymbols*() =
                 "udp"       : ({Logical},"use UDP instead of TCP")
             },
             returns     = {Socket},
-            # TODO(Sockets/listen) add documentation example
-            #  labels: library, documentation, easy
             example     = """
+            ; start a server listening on port 18966
+            server: listen 18966
             """:
                 #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("listen")
@@ -158,9 +167,25 @@ proc defineSymbols*() =
                 "timeout"   : ({Integer},"set timeout (in milliseconds)")
             },
             returns     = {String},
-            # TODO(Sockets/receive) add documentation example
-            #  labels: library, documentation, easy
             example     = """
+            server: listen.blocking 18966
+            print "started server connection..."
+
+            client: accept server
+            print ["accepted incoming connection from:" client]
+
+            keepGoing: true
+            while [keepGoing][
+                message: receive client
+                print ["received message:" message]
+
+                if message = "exit" [
+                    unplug client
+                    keepGoing: false
+                ]
+            ]
+
+            unplug server
             """:
                 #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("receive")
@@ -187,9 +212,12 @@ proc defineSymbols*() =
                 "chunk"     : ({Logical},"don't send data as a line of data")
             },
             returns     = {Nothing},
-            # TODO(Sockets/send) add documentation example
-            #  labels: library, documentation, easy
             example     = """
+            ; connect to a local server on port 256
+            socket: connect.to:"localhost" 256
+
+            ; send a message to the server
+            send socket "Hello Socket World"
             """:
                 #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("send")
@@ -212,9 +240,15 @@ proc defineSymbols*() =
             },
             attrs       = NoAttrs,
             returns     = {Logical},
-            # TODO(Sockets/send?) add documentation example
-            #  labels: library, documentation, easy
             example     = """
+            ; connect to a local server on port 256
+            socket: connect.to:"localhost" 256
+
+            ; send a message to the server
+            ; and check if it was successful
+            sent?: send? socket "Hello Socket World"
+
+            print ["Message was sent successfully:" sent?]
             """:
                 #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("send?")
@@ -230,9 +264,15 @@ proc defineSymbols*() =
             },
             attrs       = NoAttrs,
             returns     = {Nothing},
-            # TODO(Sockets/unplug) add documentation example
-            #  labels: library, documentation, easy
             example     = """
+            ; connect to a local server on port 256
+            socket: connect.to:"localhost" 256
+
+            ; send a message to the server
+            send socket "Hello Socket World"
+
+            ; disconnect from the server
+            unplug socket
             """:
                 #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("unplug")

@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2022 Yanis Zafirópulos
+# (c) 2019-2023 Yanis Zafirópulos
 #
 # @file: vm/values/printable.nim
 #=======================================================
@@ -23,6 +23,7 @@ when not defined(NOGMP):
 
 import helpers/terminal as TerminalHelper
 
+import vm/globals
 import vm/opcodes
 import vm/values/value
 import vm/values/clean
@@ -152,8 +153,6 @@ proc `$`*(v: Value): string {.inline.} =
                 #elif v.dbKind==MysqlDatabase: result = fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
         
         of Socket:
-            # TODO(VM/values/printable) added proper `$` overload support for Socket values
-            #  labels: enhancement, value
             when not defined(WEB):
                 result = $(v.sock)
 
@@ -164,8 +163,6 @@ proc `$`*(v: Value): string {.inline.} =
         of Nothing: discard
         of ANY: discard
 
-# TODO(VM/values/printable/dump) use space-indentation instead of tabs
-#  labels: enhancement, values
 
 proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepend="") {.exportc.} = 
     proc dumpPrimitive(str: string, v: Value) =
@@ -195,22 +192,22 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
         else:           stdout.write fmt("[ :{tp}\n")
 
     proc dumpBlockEnd() =
-        for i in 0..level-1: stdout.write "\t"
+        for i in 0..level-1: stdout.write "        "
         if not muted:   stdout.write fmt("{bold(magentaColor)}]{resetColor}")
         else:           stdout.write fmt("]")
 
     proc dumpHeader(str: string) =
         if not muted: stdout.write fmt("{resetColor}{fg(cyanColor)}")
         let lln = "================================\n"
-        for i in 0..level: stdout.write "\t"
+        for i in 0..level: stdout.write "        "
         stdout.write lln
-        for i in 0..level: stdout.write "\t"
+        for i in 0..level: stdout.write "        "
         stdout.write " " & str & "\n"
-        for i in 0..level: stdout.write "\t"
+        for i in 0..level: stdout.write "        "
         stdout.write lln
         if not muted: stdout.write fmt("{resetColor}")
 
-    for i in 0..level-1: stdout.write "\t"
+    for i in 0..level-1: stdout.write "        "
 
     if prepend!="":
         stdout.write prepend
@@ -278,7 +275,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
 
                 for key,value in v.e:
-                    for i in 0..level: stdout.write "\t"
+                    for i in 0..level: stdout.write "        "
 
                     stdout.write unicode.alignLeft(key & " ", maxLen) & ":"
 
@@ -289,12 +286,12 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
         of Binary       : 
             dumpBlockStart(v)
 
-            for i in 0..level: stdout.write "\t"
+            for i in 0..level: stdout.write "        "
             for i,child in v.n:
                 dumpBinary(child)
                 if (i+1) mod 20 == 0:
                     stdout.write "\n"
-                    for i in 0..level: stdout.write "\t"
+                    for i in 0..level: stdout.write "        "
             
             stdout.write "\n"
 
@@ -325,7 +322,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
 
                 for key,value in v.d:
-                    for i in 0..level: stdout.write "\t"
+                    for i in 0..level: stdout.write "        "
 
                     stdout.write unicode.alignLeft(key & " ", maxLen) & ":"
 
@@ -344,7 +341,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
 
                 for key,value in v.sto.data:
-                    for i in 0..level: stdout.write "\t"
+                    for i in 0..level: stdout.write "        "
 
                     stdout.write unicode.alignLeft(key & " ", maxLen) & ":"
 
@@ -361,7 +358,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
 
                 for key,value in v.o:
-                    for i in 0..level: stdout.write "\t"
+                    for i in 0..level: stdout.write "        "
 
                     stdout.write unicode.alignLeft(key & " ", maxLen) & ":"
 
@@ -376,7 +373,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 dump(newWordBlock(v.params), level+1, false, muted=muted)
                 dump(v.main, level+1, true, muted=muted)
             else:
-                for i in 0..level: stdout.write "\t"
+                for i in 0..level: stdout.write "        "
                 stdout.write "(builtin)"
 
             stdout.write "\n"
@@ -389,8 +386,6 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 #elif v.dbKind==MysqlDatabase: stdout.write fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
 
         of Socket       : 
-            # TODO(VM/values/printable) added proper `dump` support for Socket values
-            #  labels: enhancement, value
             when not defined(WEB):
                 dumpPrimitive($(v.sock), v)
 
@@ -426,11 +421,11 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
 
             var i = 0
             while i < instrs.len:
-                for i in 0..level: stdout.write "\t"
+                for i in 0..level: stdout.write "        "
                 stdout.write instrs[i].s
                 i += 1
                 if i < instrs.len and instrs[i].kind==Integer:
-                    stdout.write "\t\t"
+                    stdout.write "                "
                     while i < instrs.len and instrs[i].kind==Integer:
                         if not muted: stdout.write fmt("{resetColor}{fg(grayColor)} #{instrs[i].i}{resetColor}")
                         else: stdout.write " #" & $(instrs[i].i)
@@ -451,8 +446,6 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
 #  Check: `print as.pretty.code.unwrapped info.get 'get`
 #  labels: values,enhancement,library
 
-# TODO(VM/values/printable/codify) use space-indentation instead of tabs
-#  labels: enhancement, values
 proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: bool=false, isKeyVal: bool=false, safeStrings: bool = false): string {.inline.} =
     result = ""
 
@@ -460,7 +453,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         if isKeyVal:
             result &= " "
         else:
-            for i in 0..level-1: result &= "\t"
+            for i in 0..level-1: result &= "        "
 
     case v.kind:
         of Null         : result &= "null"
@@ -485,8 +478,8 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 result &= "««" & v.s & "»»"
             else:
                 if countLines(v.s)>1 or v.s.contains("\""):
-                    var splitl = join(toSeq(splitLines(v.s)),"\n" & repeat("\t",level+1))
-                    result &= "{\n" & repeat("\t",level+1) & splitl & "\n" & repeat("\t",level) & "}"
+                    var splitl = join(toSeq(splitLines(v.s)),"\n" & repeat("        ",level+1))
+                    result &= "{\n" & repeat("        ",level+1) & splitl & "\n" & repeat("        ",level) & "}"
                 else:
                     result &= escape(v.s)
         of Word         : result &= v.s
@@ -517,7 +510,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
 
             if pretty:
                 result &= "\n"
-                for i in 0..level-1: result &= "\t"
+                for i in 0..level-1: result &= "        "
 
             if not (pretty and unwrapped and level==0):
                 if v.kind==Inline: result &= ")"
@@ -537,9 +530,9 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 for k,v in pairs(v.d):
                     if pretty:
                         if not (unwrapped):
-                            for i in 0..level: result &= "\t"
+                            for i in 0..level: result &= "        "
                         else:
-                            for i in 0..level-1: result &= "\t"
+                            for i in 0..level-1: result &= "        "
                         result &= k & ":"
                     else:
                         result &= k & ": "
@@ -550,19 +543,32 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                         result &= " "
 
             if pretty:
-                for i in 0..level-1: result &= "\t"
+                for i in 0..level-1: result &= "        "
             
             if not (pretty and unwrapped and level==0):
                 result &= "]"
 
-        # TODO(VM/values/printable) `codify` not working properly for Function values
-        #  what if the Function is a memoized one? no attributes are currently being taken into account
-        #  labels: vm, values, bug
         of Function:
-            result &= "function "
-            result &= codify(newWordBlock(v.params),pretty,unwrapped,level+1, false, safeStrings=safeStrings)
-            result &= " "
-            result &= codify(v.main,pretty,unwrapped,level+1, true, safeStrings=safeStrings)
+            if v.fnKind==UserFunction:
+                result &= "function "
+                result &= codify(newWordBlock(v.params),pretty,unwrapped,level+1, false, safeStrings=safeStrings)
+                if v.inline:
+                    result &= ".inline"
+                if v.memoize:
+                    result &= ".memoize"
+                if not v.imports.isNil:
+                    result &= ".import:"
+                    result &= codify(newWordBlock(toSeq(keys(v.imports.d))),pretty,unwrapped,level+1, false, safeStrings=safeStrings)
+                if not v.exports.isNil:
+                    result &= ".export:"
+                    result &= codify(newWordBlock(v.exports.a.map((w)=>w.s)),pretty,unwrapped,level+1, false, safeStrings=safeStrings)
+                result &= " "
+                result &= codify(v.main,pretty,unwrapped,level+1, true, safeStrings=safeStrings)
+            else:
+                for sym,val in pairs(Syms):
+                    if val==v:
+                        result &= "var'" & sym
+                        break
 
         else:
             result &= ""

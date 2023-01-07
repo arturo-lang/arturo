@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2022 Yanis Zafirópulos
+# (c) 2019-2023 Yanis Zafirópulos
 #
 # @file: library/Net.nim
 #=======================================================
@@ -123,15 +123,7 @@ proc defineSymbols*() =
                 let title = y.s
                 let message = z.s
 
-                var config: ValueDict
-
-                let globalConfig = Config.sto.getStoreKey("mail", unsafe=true)
-                if not globalConfig.isNil:
-                    config = globalConfig.d
-                
-                let userConfig = getAttr("using")
-                if userConfig != VNULL:
-                    config = userConfig.d
+                retrieveConfig("mail", "using")
 
                 # TODO(Net/mail) raise error, if there is no configuration provided whatsoever
                 #  perhaps, this could be also done in a more "templated" way; at least, for Config values
