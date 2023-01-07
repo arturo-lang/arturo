@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2022 Yanis Zafirópulos
+# (c) 2019-2023 Yanis Zafirópulos
 #
 # @file: vm/values/value.nim
 #=======================================================
@@ -732,9 +732,8 @@ proc copyValue*(v: Value): Value {.inline.} =
                 #elif v.dbKind == MysqlDatabase: result = newDatabase(v.mysqldb)
 
         of Socket:
-            # TODO(VM/values/value) missing Socket support for `copyValue`
-            #  labels: bug, values
-            discard
+            when not defined(WEB):
+                result = newSocket(initSocket(v.sock.socket, v.sock.protocol, v.sock.address, Port(v.sock.port)))
 
         of Bytecode:
             result = newBytecode(v.trans)
@@ -2381,61 +2380,52 @@ func consideredEqual*(x: Value, y: Value): bool {.inline,enforceNoRaises.} =
         else:
             return false
 
-# TODO(Value\hash) Verify hashing is done right
-#  labels: vm,unit-test
 func hash*(v: Value): Hash {.inline.}=
     ## calculate the hash for given value
+    result = hash(v.kind)
     case v.kind:
-        of Null         : result = 0
-        of Logical      : result = cast[Hash](v.b)
+        of Null         : discard
+        of Logical      : result = result !& cast[Hash](v.b)
         of Integer      : 
-            if likely(v.iKind==NormalInteger): result = cast[Hash](v.i)
+            if likely(v.iKind==NormalInteger): result = result !& cast[Hash](v.i)
             else: 
                 when defined(WEB) or not defined(NOGMP):
-                    result = cast[Hash](v.bi)
-        of Floating     : result = cast[Hash](v.f)
+                    result = result !& cast[Hash](v.bi)
+        of Floating     : result = result !& cast[Hash](v.f)
         of Complex      : 
-            result = 1
             result = result !& cast[Hash](v.z.re)
             result = result !& cast[Hash](v.z.im)
-            result = !$ result
-        of Rational     : result = hash(v.rat)
+        of Rational     : result = result !& hash(v.rat)
         of Version      : 
-            result = 1
             result = result !& cast[Hash](v.major)
             result = result !& cast[Hash](v.minor)
             result = result !& cast[Hash](v.patch)
             result = result !& hash(v.extra)
-            result = !$ result
-        of Type         : result = cast[Hash](ord(v.t))
-        of Char         : result = cast[Hash](ord(v.c))
-        of String       : result = hash(v.s)
+        of Type         : result = result !& cast[Hash](ord(v.t))
+        of Char         : result = result !& cast[Hash](ord(v.c))
+        of String       : result = result !& hash(v.s)
         
         of Word,
            Literal,
            Label,
            Attribute,
-           AttributeLabel        : result = hash(v.s)
+           AttributeLabel        : result = result !& hash(v.s)
 
         of Path,
            PathLabel    : 
-            result = 1
             for i in v.p:
                 result = result !& hash(i)
-            result = !$ result
 
         of Symbol,
-           SymbolLiteral: result = cast[Hash](ord(v.m))
+           SymbolLiteral: result = result !& cast[Hash](ord(v.m))
 
         of Quantity:
-            result = 1
             result = result !& hash(v.nm)
             result = result !& hash(v.unit)
-            result = !$ result
 
-        of Regex: result = hash(v.rx)
+        of Regex: result = result !& hash(v.rx)
 
-        of Color        : result = cast[Hash](v.l)
+        of Color        : result = result !& cast[Hash](v.l)
 
         of Date         : discard
 
@@ -2446,32 +2436,26 @@ func hash*(v: Value): Hash {.inline.}=
             result = 1
             for i in v.a:
                 result = result !& hash(i)
-            result = !$ result
 
         of Range        :
-            result = hash(v.rng[])
+            result = result !& hash(v.rng[])
 
         of Dictionary   : 
-            result = 1
             for k,val in pairs(v.d):
                 result = result !& hash(k)
                 result = result !& hash(val)
 
         of Object       :
-            result = 1
             for k,val in pairs(v.o):
                 result = result !& hash(k)
                 result = result !& hash(val)
 
         of Store        :
-            result = 1 
             result = result !& hash(v.sto.path)
             result = result !& hash(v.sto.kind)
-            result = !$ result
         
         of Function     : 
             if v.fnKind==UserFunction:
-                result = 1
                 result = result !& hash(v.params)
                 result = result !& hash(v.main)
                 if not v.imports.isNil:
@@ -2482,24 +2466,25 @@ func hash*(v: Value): Hash {.inline.}=
 
                 result = result !& hash(v.memoize)
                 result = result !& hash(v.inline)
-                result = !$ result
             else:
-                result = cast[Hash](unsafeAddr v)
+                result = result !& cast[Hash](unsafeAddr v)
 
         of Database:
             when not defined(NOSQLITE):
-                if v.dbKind==SqliteDatabase: result = cast[Hash](cast[ByteAddress](v.sqlitedb))
+                if v.dbKind==SqliteDatabase: result = result !& cast[Hash](cast[ByteAddress](v.sqlitedb))
                 #elif v.dbKind==MysqlDatabase: result = cast[Hash](cast[ByteAddress](v.mysqldb))
 
         of Socket:
             when not defined(WEB):
-                result = hash(v.sock)
+                result = result !& hash(v.sock)
 
         of Bytecode:
-            result = cast[Hash](unsafeAddr v)
+            result = result !& cast[Hash](unsafeAddr v)
 
-        of Newline      : result = 0
-        of Nothing      : result = 0
-        of ANY          : result = 0
+        of Newline      : discard
+        of Nothing      : discard
+        of ANY          : discard
+
+    result = !$ result
 
 {.pop.}

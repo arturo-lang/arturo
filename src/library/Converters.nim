@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2022 Yanis Zafirópulos
+# (c) 2019-2023 Yanis Zafirópulos
 #
 # @file: library/Converters.nim
 #=======================================================
@@ -143,9 +143,6 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                     of Rational: return newRational(y.f)
                     of Char: return newChar(chr(int(y.f)))
                     of String: 
-                        # TODO(Converters\to) add `.format` support for Quantity to String conversions
-                        #  It should be working pretty much like Floating to String conversions work
-                        #  labels: library, enhancement
                         if (not aFormat.isNil):
                             try:
                                 var ret: string
@@ -437,8 +434,13 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                     else:
                         throwCannotConvert()
 
-            # TODO(Converters) Add support for Store values
-            #  labels: library, enhancement
+            of Store:
+                case tp:
+                    of Dictionary:
+                        ensureStoreIsLoaded(y.sto)
+                        return newDictionary(y.sto.data)
+                    else:
+                        throwCannotConvert()
 
             of Bytecode:
                 case tp:
@@ -473,7 +475,19 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                     of Integer, Floating:
                         return convertedValueToType(x, y.nm, tp, aFormat)
                     of String:
-                        return newString($(y))
+                        if (not aFormat.isNil):
+                            try:
+                                var ret: string
+                                if y.nm.kind==Floating:
+                                    formatValue(ret, y.nm.f, aFormat.s)
+                                else:
+                                    formatValue(ret, float(y.nm.i), aFormat.s)
+
+                                return newString(ret & stringify(y.unit.name))
+                            except:
+                                throwConversionFailed()
+                        else:
+                            return newString($(y))
                     of Quantity:
                         if checkAttr("unit"):
                             let target = parseQuantitySpec(aUnit.s).name
@@ -513,8 +527,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                     else:
                         throwCannotConvert()
 
-            of Store,
-               Function,
+            of Function,
                Database,
                Socket,
                Newline,
@@ -689,6 +702,8 @@ proc defineSymbols*() =
                 else:
                     push(x)
 
+    # TODO(Converters/define) not defined inheritance behavior when using `.as` 
+    #  labels: library, enhancement
     builtin "define",
         alias       = dollar, 
         rule        = PrefixPrecedence,
@@ -702,8 +717,6 @@ proc defineSymbols*() =
             "as"    : ({Type}, "inherit given type")
         },
         returns     = {Nothing},
-        # TODO(Converters\define) add documentation example for `.as`
-        #  labels: library, documentation, easy
         example     = """
             define :person [name surname age][  
 
@@ -878,6 +891,9 @@ proc defineSymbols*() =
     #  We can definitely support hex/binary literals, but how would we support string to number conversion? Perhaps, with `.to` and option?
     #  It's basically rather confusing...
     #  labels: library, cleanup, enhancement, open discussion
+
+    # TODO(Converters/from) revise use of `.opcode`
+    #  labels: library, enhancement, open discussion
     builtin "from",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -892,12 +908,13 @@ proc defineSymbols*() =
             "opcode"    : ({Logical},"get opcode by from opcode literal")
         },
         returns     = {Any},
-        # TODO(Converters\from) add documentation example for `.opcode`
-        #  labels: library, documentation, easy
         example     = """
             print from.binary "1011"        ; 11
             print from.octal "1011"         ; 521
             print from.hex "0xDEADBEEF"     ; 3735928559
+            ..........
+            from.opcode 'push1
+            => 33
         """:
             #=======================================================
             if (hadAttr("binary")):
@@ -1216,20 +1233,70 @@ proc defineSymbols*() =
                 "path"  : {Literal,String}
             },
             attrs       = {
-                "auto"      : ({Logical},"automatically save to disk on every change"),
+                "deferred"  : ({Logical},"save to disk only on program termination"),
                 "global"    : ({Logical},"save as global store"),
                 "native"    : ({Logical},"force native/Arturo format"),
                 "json"      : ({Logical},"force Json format"),
                 "db"        : ({Logical},"force database/SQlite format")
             },
             returns     = {Range},
-            # TODO(Converters/store) add documentation example
-            #  labels: library, documentation, easy
             example     = """
+            ; create a new store with the name `mystore`
+            ; it will be automatically live-stored in a file in the same folder
+            ; using the native Arturo format
+            data: store "mystore"
+
+            ; store some data
+            data\name: "John"
+            data\surname: "Doe"
+            data\age: 36
+
+            ; and let's retrieve our data
+            data
+            ; => [name:"John" surname:"Doe" age:36]
+            ..........
+            ; create a new "global" configuration store
+            ; that will be saved automatically in ~/.arturo/stores
+            globalStore: store.global "configuration"
+
+            ; we are now ready to add or retrieve some persistent data!
+            ..........
+            ; create a new JSON store with the name `mystore`
+            ; it will be automatically live-stored in a file in the same folder
+            ; with the name `mystore.json`
+            data: store.json "mystore"
+
+            ; store some data
+            da\people: []
+
+            ; data can be as complicated as in any normal dictionary
+            da\people: da\people ++ #[name: "John" surname: "Doe"]
+
+            ; check some specific store value 
+            da\people\0\name
+            ; => "John" 
+            ..........
+            ; create a new deferred store with the name `mystore`
+            ; it will be automatically saved in a file in the same folder
+            ; using the native Arturo format
+            defStore: store.deferred "mystore"
+
+            ; let's save some data
+            defStore\name: "John"
+            defStore\surname: "Doe"
+
+            ; and print it
+            print defStore
+            ; [name:John surname:Doe]
+
+            ; in this case, all data is available at any given moment
+            ; but will not be saved to disk for each and every operation;
+            ; instead, it will be saved in its totality just before
+            ; the program terminates!
             """:
                 #=======================================================
                 let isGlobal = hadAttr("global")
-                let isAutosave = hadAttr("auto")
+                let isAutosave = not hadAttr("deferred")
 
                 var storeKind = UndefinedStore
 

@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2022 Yanis Zafirópulos
+# (c) 2019-2023 Yanis Zafirópulos
 #
 # @file: helpers/unisort.nim
 #=======================================================
@@ -10,11 +10,12 @@
 # Libraries
 #=======================================
 
-import algorithm, sequtils, sets, tables, unicode
+import algorithm, sequtils, tables, unicode
 
 when not defined(NOASCIIDECODE):
     import unidecode
 
+import helpers/sets
 import helpers/charsets as CharsetsHelper
 
 import vm/values/value

@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2022 Yanis Zafirópulos
+# (c) 2019-2023 Yanis Zafirópulos
 #
 # @file: library/Sets.nim
 #=======================================================
@@ -19,11 +19,35 @@
 # Libraries
 #=======================================
 
-import sequtils, std/sets, sugar
+import sequtils, sugar
 
-import helpers/arrays
+import helpers/sets
 
 import vm/lib
+
+# proc intersection*[A](s1, s2: OrderedSet[A]): OrderedSet[A] =
+#   ## Returns the intersection of the sets `s1` and `s2`.
+#   ##
+#   ## The same as `s1 * s2 <#*,HashSet[A],HashSet[A]>`_.
+#   ##
+#   ## The intersection of two sets is represented mathematically as *A ∩ B* and
+#   ## is the set of all objects that are members of `s1` and `s2` at the same
+#   ## time.
+#   ##
+#   ## See also:
+#   ## * `union proc <#union,HashSet[A],HashSet[A]>`_
+#   ## * `difference proc <#difference,HashSet[A],HashSet[A]>`_
+#   ## * `symmetricDifference proc <#symmetricDifference,HashSet[A],HashSet[A]>`_
+
+#   result = initOrderedSet[A](max(min(s1.len, s2.len), 2))
+  
+#   # iterate over the elements of the smaller set
+#   if s1.len < s2.len:
+#     for item in s1:
+#       if item in s2: incl(result, item)
+#   else:
+#     for item in s2:
+#       if item in s1: incl(result, item)
 
 #=======================================
 # Methods
@@ -59,15 +83,15 @@ proc defineSymbols*() =
             if (hadAttr("symmetric")):
                 if x.kind==Literal:
                     ensureInPlace()
-                    SetInPlace(newBlock(toSeq(symmetricDifference(toHashSet(cleanedBlock(InPlaced.a)), toHashSet(cleanedBlock(y.a))))))
+                    SetInPlace(newBlock(toSeq(symmetricDifference(toOrderedSet(cleanedBlock(InPlaced.a)), toOrderedSet(cleanedBlock(y.a))))))
                 else:
-                    push(newBlock(toSeq(symmetricDifference(toHashSet(cleanedBlock(x.a)), toHashSet(cleanedBlock(y.a))))))
+                    push(newBlock(toSeq(symmetricDifference(toOrderedSet(cleanedBlock(x.a)), toOrderedSet(cleanedBlock(y.a))))))
             else:
                 if x.kind==Literal:
                     ensureInPlace()
-                    SetInPlace(newBlock(toSeq(difference(toHashSet(cleanedBlock(InPlaced.a)), toHashSet(cleanedBlock(y.a))))))
+                    SetInPlace(newBlock(toSeq(difference(toOrderedSet(cleanedBlock(InPlaced.a)), toOrderedSet(cleanedBlock(y.a))))))
                 else:
-                    push(newBlock(toSeq(difference(toHashSet(cleanedBlock(x.a)), toHashSet(cleanedBlock(y.a))))))
+                    push(newBlock(toSeq(difference(toOrderedSet(cleanedBlock(x.a)), toOrderedSet(cleanedBlock(y.a))))))
 
     builtin "disjoint?",
         alias       = unaliased, 
@@ -87,7 +111,7 @@ proc defineSymbols*() =
             ; => true
         """:
             #=======================================================
-            push(newLogical(disjoint(toHashSet(cleanedBlock(x.a)), toHashSet(cleanedBlock(y.a)))))
+            push(newLogical(disjoint(toOrderedSet(cleanedBlock(x.a)), toOrderedSet(cleanedBlock(y.a)))))
 
     builtin "intersect?",
         alias       = unaliased, 
@@ -110,7 +134,7 @@ proc defineSymbols*() =
             ; => false
         """:
             #=======================================================
-            let res = intersection(toHashSet(cleanedBlock(x.a)), toHashSet(cleanedBlock(y.a)))
+            let res = intersection(toOrderedSet(cleanedBlock(x.a)), toOrderedSet(cleanedBlock(y.a)))
             if len(res) >= 0:
                 push(VTRUE)
             else:
@@ -138,9 +162,9 @@ proc defineSymbols*() =
             #=======================================================
             if x.kind==Literal:
                 ensureInPlace()
-                SetInPlace(newBlock(toSeq(intersection(toHashSet(cleanedBlock(InPlaced.a)), toHashSet(cleanedBlock(y.a))))))
+                SetInPlace(newBlock(toSeq(intersection(toOrderedSet(cleanedBlock(InPlaced.a)), toOrderedSet(cleanedBlock(y.a))))))
             else:
-                push(newBlock(toSeq(intersection(toHashSet(cleanedBlock(x.a)), toHashSet(cleanedBlock(y.a))))))
+                push(newBlock(toSeq(intersection(toOrderedSet(cleanedBlock(x.a)), toOrderedSet(cleanedBlock(y.a))))))
 
     builtin "powerset",
         alias       = unaliased, 
@@ -158,9 +182,9 @@ proc defineSymbols*() =
             #=======================================================
             if x.kind==Literal:
                 ensureInPlace()
-                SetInPlace(newBlock(toSeq(powerset(toHashSet(cleanedBlock(InPlaced.a)))).map((hs) => newBlock(toSeq(hs)))))
+                SetInPlace(newBlock(toSeq(powerset(toOrderedSet(cleanedBlock(InPlaced.a)))).map((hs) => newBlock(toSeq(hs)))))
             else:
-                push(newBlock(toSeq(powerset(toHashSet(cleanedBlock(x.a))).map((hs) => newBlock(toSeq(hs))))))
+                push(newBlock(toSeq(powerset(toOrderedSet(cleanedBlock(x.a))).map((hs) => newBlock(toSeq(hs))))))
 
     builtin "subset?",
         alias       = unaliased, 
@@ -296,9 +320,9 @@ proc defineSymbols*() =
             #=======================================================
             if x.kind==Literal:
                 ensureInPlace()
-                SetInPlace(newBlock(toSeq(union(toHashSet(cleanedBlock(InPlaced.a)), toHashSet(cleanedBlock(y.a))))))
+                SetInPlace(newBlock(toSeq(union(toOrderedSet(cleanedBlock(InPlaced.a)), toOrderedSet(cleanedBlock(y.a))))))
             else:
-                push(newBlock(toSeq(union(toHashSet(cleanedBlock(x.a)), toHashSet(cleanedBlock(y.a))))))
+                push(newBlock(toSeq(union(toOrderedSet(cleanedBlock(x.a)), toOrderedSet(cleanedBlock(y.a))))))
 
 #=======================================
 # Add Library

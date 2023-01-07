@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2022 Yanis Zafirópulos
+# (c) 2019-2023 Yanis Zafirópulos
 #
 # @file: helpers/repl.nim
 #=======================================================
@@ -84,8 +84,8 @@ when not defined(WEB):
                 createDir(parentDir(path))
             discard linenoiseHistoryLoad(path)
 
-            linenoiseSetCompletionCallback(cast[ptr LinenoiseCompletionCallback](completionsCback))
-            linenoiseSetHintsCallback(cast[ptr LinenoiseHintsCallback](hintsCback))
+            linenoiseSetCompletionCallback(cast[ptr LinenoiseCompletionCallback](completionsCback), nil)
+            linenoiseSetHintsCallback(cast[ptr LinenoiseHintsCallback](hintsCback), nil)
 
             ReplInitialized = true
 
@@ -98,12 +98,15 @@ when not defined(WEB):
         historyPath: string = ReplHistoryPath, 
         completionsArray: ValueArray = @[],
         hintsTable: ValueDict = initOrderedTable[string,Value]()
-    ): string =
+    ): (string, bool) =
         initRepl(historyPath, completionsArray, hintsTable)
 
         let got = linenoiseReadLine(prompt.cstring)
+        if got.isNil:
+            return ("", true)
+
         linenoiseHistoryAdd(got)
         discard linenoiseHistorySave(historyPath)
-        result = $(got)
+        result = ($(got),false)
 
         free(got)

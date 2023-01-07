@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2022 Yanis Zafirópulos
+# (c) 2019-2023 Yanis Zafirópulos
 #
 # @file: library/Io.nim
 #=======================================================
@@ -26,6 +26,7 @@ import algorithm, tables
 
 when not defined(WEB):
     import helpers/repl
+    import helpers/stores
 
 import helpers/terminal as terminalHelper
 
@@ -229,7 +230,14 @@ proc defineSymbols*() =
                     if checkAttr("hint"):
                         hintsTable = aHint.d
 
-                    push(newString(replInput(x.s, historyPath, completionsArray, hintsTable)))
+                    let (str, hasToKill) = replInput(x.s, historyPath, completionsArray, hintsTable)
+                    if hasToKill:
+                        when not defined(WEB):
+                            savePendingStores()
+
+                        quit(0)
+                    else:
+                        push(newString(str))
                 else:
                     stdout.write(x.s)
                     stdout.flushFile()

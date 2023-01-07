@@ -1,7 +1,7 @@
 #=======================================================
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2022 Yanis Zafirópulos
+# (c) 2019-2023 Yanis Zafirópulos
 #
 # @file: vm/profiler.nim
 #=======================================================
@@ -23,7 +23,7 @@ when defined(PROFILER):
     # Libraries
     #=======================================
 
-    import algorithm, hashes, std/monotimes, sets
+    import algorithm, hashes, std/monotimes
     import strformat, strutils, sugar, tables, times
 
     import helpers/terminal

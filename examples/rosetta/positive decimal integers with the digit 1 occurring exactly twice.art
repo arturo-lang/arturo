@@ -1,0 +1,4 @@
+; by @Krenium
+
+prints [11 101 110]
+loop 2..9 'd -> prints ~"|d|11 1|d|1 11|d| "
