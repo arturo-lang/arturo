@@ -424,7 +424,7 @@ do [
     print get 5..10 0
 
     ; :store
-    st: store "mystore"
+    st: store "teststore"
     st\name: "John"
     st\surname: "Doe"
 
@@ -1155,7 +1155,7 @@ do [
     debug s1
 
     ; :store
-    st: store "mystore"
+    st: store "teststore"
     st\name: "John"
     st\surname: "Doe"
 
