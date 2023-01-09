@@ -363,13 +363,15 @@ do [
 topic "get"
 do [
 
-    ; TODO:
-    ; add for :store, :bytecode
-
     ; :binary
     bi: to :binary 65000
     debug bi
     debug to :binary get bi 1
+
+    ; :bytecode
+    bt: to :bytecode [print "hello"]
+    debug bt\data
+    debug bt\code
 
     ; :date
     d: to :date .format: "MMM dd" "Jan 15"
@@ -420,6 +422,14 @@ do [
 
     print get range 0 10 1
     print get 5..10 0
+
+    ; :store
+    st: store "mystore"
+    st\name: "John"
+    st\surname: "Doe"
+
+    debug get st 'name
+    debug st\surname
 
 ]
 
