@@ -22,8 +22,6 @@ import vm/values/clean
 # Methods
 #=======================================
 
-# TODO(Helpers\arrays) verify/debug implementation for flattened
-#  labels: library, helpers, bug
 proc flattened*(v: Value,once = false,level = 0): Value =
     result = newBlock()
 
