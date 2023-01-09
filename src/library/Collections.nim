@@ -643,7 +643,7 @@ proc defineSymbols*() =
     #  same as with `contains?`
     #  labels: library, enhancement, open discussion
 
-    # TODO(Collections/in) add new `.key` option?
+    # TODO(Collections/in?) add new `.key` option?
     #  same as with `contains?`
     #  labels: library, enhancement, open discussion
     builtin "in?",
