@@ -324,12 +324,6 @@ do [
     debug first ["one" "two" "three"]
     debug first.n: 2 ["one" "two" "three"]
 
-    ;; space for range types :)
-
-]
-
-; [Numbers/range] is not working properly? #913
-; This code should be inside topic `first`
     print first 1..10
     print first 5..0
     print first 0..40
@@ -344,8 +338,8 @@ do [
     r2: range 0 10
     print first range 0 10
     print first.n: 6 range 0 10
-;; end
 
+]
 
 topic "flatten"
 do [
@@ -423,15 +417,11 @@ do [
     debug personA
     debug get person 'name
 
-    ;; space for range types :)
+    print get range 0 10 1
+    print get 5..10 0
 
 ]
 
-; [Numbers/range] is not working properly? #913
-; This code should be inside topic `first`
-    print get range 0 10 1
-    print get 5..10 0
-;; end
 
 topic "in?"
 do [
@@ -462,7 +452,17 @@ do [
     debug in?.at: 0 ["C" "C++" "Nim"] nested
     debug in?.at: 1 "Python"          nested
 
-    ;; space for range types :)
+    print in? 1 1..10
+    print in? 0 1..10
+    print in? 1 range 1 10
+    print in? 0 range 1 10
+    ; storing into a variable
+    r1: 1..10
+    print in? 1 r1
+    print in? 0 r1
+    r2: range 1 10
+    print in? 1 r2
+    print in? 0 r2
 
     topic "in? - with :dictionary"
     dict: #[ name: "John" surname: "Doe"]
@@ -476,21 +476,6 @@ do [
     debug in? dict "Jane" dict
 
 ]
-
-; [Numbers/range] is not working properly? #913
-; This code should be inside topic `in?`
-    print in? 1 1..10
-    print in? 0 1..10
-    print in? 1 range 1 10
-    print in? 0 range 1 10
-    ; storing into a variable
-    r1: 1..10
-    print in? 1 r1
-    print in? 0 r1
-    r2: range 1 10
-    print in? 1 r2
-    print in? 0 r2
-;; end
 
 
 topic "index"
@@ -507,19 +492,14 @@ do [
     debug index user "John"
     debug index user "Doe"
     
-    ;; space for range types :)
-
-]
-
-; [Numbers/range] is not working properly? #913
-; This code should be inside topic `index`
     print index 5..10 5
     print index 5..10 6
     ; storing into a variable
     r1: 1..10
     print index r1 5
     print index r1 6
-;; end
+
+]
 
 
 topic "insert"
@@ -606,12 +586,6 @@ do [
     debug last ["one" "two" "three"]
     debug last.n: 2 ["one" "two" "three"]
 
-    ;; space for range types :)
-
-]
-
-; [Numbers/range] is not working properly? #913
-; This code should be inside topic `last`
     print last 1..10
     print last 5..0
     print last 0..40
@@ -626,7 +600,8 @@ do [
     r2: range 0 10
     print last range 0 10
     print last.n: 6 range 0 10
-;; end
+
+]
 
 
 topic "max"
@@ -637,12 +612,6 @@ do [
     debug max ["Granada" "Manchester" "Boston"]
     debug max.index ["Granada" "Manchester" "Boston"]
     
-    ;; space for range types :)
-
-]
-
-; [Numbers/range] is not working properly? #913
-; This code should be inside topic `max`
     print max 1..10
     print max 5..0
     print max.index 1..10
@@ -662,7 +631,8 @@ do [
     print max r3
     print max.index r2
     print max.index r3
-;; end
+
+]
 
 
 topic "min"
@@ -673,12 +643,6 @@ do [
     debug min ["Granada" "Manchester" "Boston"]
     debug min.index ["Granada" "Manchester" "Boston"]
     
-    ;; space for range types :)
-
-]
-
-; [Numbers/range] is not working properly? #913
-; This code should be inside topic `min`
     print min 1..10
     print min 5..0
     print min.index 1..10
@@ -698,7 +662,9 @@ do [
     print min r3
     print min.index r2
     print min.index r3
-;; end
+
+]
+
 
 topic "one?"
 do [
@@ -719,7 +685,9 @@ do [
     debug one? ["apple"] 
     debug one? ["apple" "pear"] 
 
-    ;; space for range types :)
+    topic "one? - with :range"
+    print one? 0..0 ; Yet not
+    print one? 0..10
 
     topic "one? - with :dictionary"
     debug one? #[ name: "John" ]
@@ -744,13 +712,6 @@ do [
     debug one? null
 
 ]
-
-topic "one? - with :range"
-; [Numbers/range] is not working properly? #913
-; This code should be inside topic `one?`
-    print one? 0..0 ; Yet not
-    print one? 0..10
-;; end
 
 
 topic "permutate"
@@ -1072,23 +1033,18 @@ do [
         reverse.exact 'b, debug b
         reverse.exact 's, debug s
 
-        ;; space for range types :)
+        topic "reverse - with :range"
+        debug reverse 1..10
+        r1: 10..0
+        reverse 'r1, debug r1
+        topic "reverse - .exact with :range"
+        debug reverse.exact 1..10
+        r2: 10..0
+        reverse.exact 'r2, debug r2
 
     ]
 
 ]
-
-; [Numbers/range] is not working properly? #913
-; This code should be inside topic `reverse`
-    topic "reverse - with :range"
-    debug reverse 1..10
-    r1: 10..0
-    reverse 'r1, debug r1
-    topic "reverse - .exact with :range"
-    debug reverse.exact 1..10
-    r2: 10..0
-    reverse.exact 'r2, debug r2
-;; end
 
 
 topic "rotate"
@@ -1130,17 +1086,12 @@ do [
     print type fruit
     print in? fruit table
 
-    ;; space for range types :)
-
-]
-
-; [Numbers/range] is not working properly? #913
-; This code should be inside topic `sample`
     alphabet: `a`..`z`
     letter: sample alphabet
     print type letter
     print in? letter alphabet
-;; end
+
+]
 
 
 topic "set"
@@ -1223,7 +1174,10 @@ do [
     print [["one" "two" "three"] 
         size ["one" "two" "three"]]
 
-    ;; space for range types :)
+    print size range 0 10
+    print size 0..10
+    r1: 0..20
+    print size r1
 
     ; :dictionary
     print [#[name: "John", surname: "Doe"] 
@@ -1247,16 +1201,6 @@ do [
     print [null size null]
 
 ]
-
-; [Numbers/range] is not working properly? #913
-; This code should be inside topic `size`
-    ; Does not works inside block, is it a bug?
-    ; try => print [size range 0 10]
-    print size range 0 10
-    print size 0..10
-    r1: 0..20
-    print size r1
-;; end
 
 
 topic "slice"
@@ -1626,16 +1570,11 @@ do [
     b: ["Arnold" "Andreas" "Paul"]
     take 'b 2, debug b
 
-    ;; space for range types :)
-
-]
-
-; [Numbers/range] is not working properly? #913
-; This code should be inside topic `take`
     debug take 1..10 3
     arr: 1..10
     take 'arr 3, debug arr
-;; end
+
+]
 
 
 topic "tally"
@@ -1675,7 +1614,12 @@ do [
     ; Do nothing?
     debug values ["Arturo" "Ruby" "Python" "Nim"]
 
-    ;; space for range types :)
+    r1: 1..10
+    r2: range 1 10
+    debug values 1..10
+    debug values range 1 10
+    debug values r1
+    debug values r2
 
     user: #[
         name: "John"
@@ -1702,16 +1646,6 @@ do [
 
 ]
 
-; [Numbers/range] is not working properly? #913
-; This code should be inside topic `values`
-    r1: 1..10
-    r2: range 1 10
-    debug values 1..10
-    debug values range 1 10
-    debug values r1
-    debug values r2
-;; end
-
 
 topic "zero?"
 do [
@@ -1732,7 +1666,11 @@ do [
     debug zero? ["apple" "pear"] 
 
     topic "zero? - with :range"
-    ;; space for range types :)
+    debug zero? 0..0
+    debug zero? range 0 0
+    debug zero? 0..10
+    debug zero? range 0 10
+    debug zero? ø
 
     topic "zero? - with :dictionary"
     debug zero? #[]
@@ -1751,11 +1689,3 @@ do [
 
 ]
 
-; [Numbers/range] is not working properly? #913
-; This code should be inside topic `zero?`
-    debug zero? 0..0
-    debug zero? range 0 0
-    debug zero? 0..10
-    debug zero? range 0 10
-    debug zero? ø
-;; end
