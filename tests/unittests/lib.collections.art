@@ -11,10 +11,27 @@ topic: $[topic :string] [
 
 ; ==> Tests
 
-; -- 'append
 topic "append"
 do [
-    ; :string < :string ++ :string
+
+    topic "append - :binary < :binary :binary"
+    do [
+        bin0: to :binary 0
+        bin1: to :binary 1
+        debug append bin0 bin1
+
+        append 'bin0 bin1, debug bin0
+    ]
+
+    topic "append - :binary < :binary :integer"
+    do [
+        bin0: to :binary 0
+        int1: 1
+        debug append bin0 int1
+        
+        append 'bin0 int1, debug bin0
+    ]
+
     topic "append - :string < :string + :string"
     do [
 
@@ -28,7 +45,6 @@ do [
 
     ]
 
-    ; :string < :string ++ :char
     topic "append - :string < :string + :char"
     do [
 
@@ -42,7 +58,6 @@ do [
 
     ]
 
-    ; :string < :char ++ :char
     topic "append - :string < :char + :char"
     do [
 
@@ -56,7 +71,6 @@ do [
 
     ]
 
-    ; :string < :char ++ :string
     topic "append - :string < :char + :string"
     do [
 
@@ -70,7 +84,6 @@ do [
 
     ]
 
-    ; [:string] < [:string] ++ :string
     topic "append - [:string] < [:string] + :string"
     do [
 
@@ -93,7 +106,6 @@ do [
 
     ]
 
-    ; [:string] < [:string] ++ [:string]
     topic "append - [:string] < [:string] + [:string]"
     do [
 
@@ -107,7 +119,6 @@ do [
 
     ]
 
-    ; [:integer] < [:integer] ++ [:integer] | :integer
     topic "append - [:integer] < [:integer] + [:integer]|:integer"
     do [
 
@@ -122,33 +133,99 @@ do [
 ]
 
 
-; -- 'chop
 topic "chop"
 do [
 
-    a: "Arturo"
+    ; with :string
     debug chop "Artu"
     debug chop chop chop "Arturo"
 
     debug chop.times: 3 "Arturo" ; returns Art :string
-    chop.times: 3 'a, debug a ; returns Art :string
+    
+    s1: "Arturo"
+    chop.times: 3 's1, debug s1 ; returns Art :string
+    s2: "Artu"
+    chop 's2, debug s2
+    
 
-    b: [1 2 3 4 5]
+    ; with :block
     debug chop [1 2 3 4]
     debug chop chop [1 2 3 4 5]
 
+    b1: [1 2 3 4 5]
+    chop.times: 2 'b1, debug b1     ; returns [1 2 3] :block
     debug chop.times: 2 [1 2 3 4 5] ; returns [1 2 3] :block
-    chop.times: 2 'b, debug b ; returns [1 2 3] :block
 
-    c: "Artu"
-    d: [1 2 3 4]
-    chop 'c, debug c
-    chop 'd, debug d
+    b2: [1 2 3 4]
+    chop 'b2, debug b2
 
 ]
 
 
-; -- 'couple
+; does not work with literal types
+topic "combine"
+do [
+
+    debug combine [A B C]
+    debug combine [[A B] [C D]]
+
+    debug combine.by:2 [A B C] 
+    debug combine.repeated [A B C]
+    debug combine.repeated.by:2 [A B C]
+
+    debug combine.count [A B C]
+    debug combine.count.repeated.by:2 [A B C]
+
+]
+
+topic "contains?"
+do [
+
+    topic "contains? - with :string"
+    str: "Arturo"
+    debug contains? str "Art"         ; :string
+    debug contains? str `t`           ; :char
+    debug contains? str {/[Art]/}     ; :regex
+    debug contains? str "Football"
+    debug contains?.at:0 str "Art"
+    debug contains?.at:2 str "Art"
+
+
+    topic "contains? - with :block"
+    block: ["Arturo" "Python" "Ruby"]
+    debug contains? block "Arturo"
+    debug contains? block "F#"
+    debug contains?.at: 0 block "Arturo"
+    debug contains?.at: 2 block "Python"
+
+    topic "contains? - with nested :block"
+    nested: [
+        ["Arturo" "Python" "Ruby"] 
+        ["C" "C++" "Nim"]]
+    debug contains? nested "Arturo"
+    debug contains? nested ["C" "C++" "Nim"]
+    debug contains?.at: 0 nested ["C" "C++" "Nim"]
+    debug contains?.at: 1 nested "Python"
+
+    topic "contains? - with :range"
+    rng: 1..10
+    debug contains? rng 5
+    debug contains? rng 0
+
+    topic "contains? - with :dictionary"
+    dict: #[ name: "John" surname: "Doe"]
+    debug contains? keys dict "name"
+    debug contains?.at:0 keys dict "name"
+    debug contains?.at:1 keys dict "name"
+    debug contains? keys dict "id"
+    debug contains? dict "John"
+    debug contains?.at:0 dict "John"
+    debug contains?.at:1 dict "John"
+    debug contains? dict "Jane"
+
+]
+
+
 topic "couple"
 do [
 
@@ -164,8 +241,17 @@ do [
 
 ]
 
+topic "decouple"
+do [
 
-; -- 'drop
+    c: [[1 "one"] [2 "two"] [3 "three"]]
+    debug decouple c
+
+    decouple 'c, debug c
+
+]
+
+
 topic "drop"
 do [
 
@@ -180,32 +266,41 @@ do [
 ]
 
 
-; -- 'empty
 topic "empty"
 do [
 
-    a: ["Arturo" "C" "Python" "Ruby"]
-    b: [1 2 3 4 5 6 7 8 9 10]
-    c: ['north 'south 'east 'west]
+    b1: ["Arturo" "C" "Python" "Ruby"]
+    b2: [1 2 3 4 5 6 7 8 9 10]
+    b3: ['north 'south 'east 'west]
+    s: "Arturo"
+    d: #[ name: "John" surname: "Doe"]
 
     print "before empty"
-    debug a
-    debug b
-    debug c
+    debug b1, debug b2, debug b3
+    debug s,  debug d
 
-    empty 'a
-    empty 'b
-    empty 'c
+    empty 'b1, empty 'b2, empty 'b3
+    empty 's,  empty 'd
 
     print "after empty"
-    debug a
-    debug b
-    debug c
+    debug b1, debug b2, debug b3
+    debug s,  debug d
+
+]
+
+topic "empty?"
+do [
+
+    debug empty? "" 
+    debug empty? "Arturo" 
+    debug empty? [] 
+    debug empty? ['north 'south 'east 'west]
+    debug empty? #[]
+    debug empty? #[ name: "John" surname: "Doe"]
 
 ]
 
 
-; -- 'extend
 topic "extend"
 do [
 
@@ -221,7 +316,6 @@ do [
 ]
 
 
-; -- 'first
 topic "first"
 do [
 
@@ -231,10 +325,23 @@ do [
     debug first ["one" "two" "three"]
     debug first.n: 2 ["one" "two" "three"]
 
+    print first 1..10
+    print first 5..0
+    print first 0..40
+    first.n: 6 0..10
+    ; storing into a variable
+    r1: 1..10
+    print first r1
+    print first.n: 6 r1
+    ; using range function
+    print first range 0 10
+    print first.n: 6 range 0 10
+    r2: range 0 10
+    print first range 0 10
+    print first.n: 6 range 0 10
+
 ]
 
-
-; -- 'flatten
 topic "flatten"
 do [
 
@@ -244,16 +351,34 @@ do [
     debug arr
     flatten 'arr, debug arr
 
+    arr2: [[4 5 6] [1 2 3]]
+
     debug flatten [1 [2 3] [4 [5 6]]]
     debug flatten.once [1 [2 3] [4 [5 6]]]
+    flatten.once 'arr2, debug arr2
 
 ]
 
 
-; -- 'get
 topic "get"
 do [
 
+    ; :binary
+    bi: to :binary 65000
+    debug bi
+    debug to :binary get bi 1
+
+    ; :bytecode
+    bt: to :bytecode [print "hello"]
+    debug bt\data
+    debug bt\code
+
+    ; :date
+    d: to :date .format: "MMM dd" "Jan 15"
+    debug get d 'day
+    debug get d 'Month
+
+    ; :dictionary
     user: #[
         name: "John"
         surname: "Doe"
@@ -275,10 +400,6 @@ do [
     arr\[0]: "first"
     debug arr
 
-    d: to :date .format: "MMM dd" "Jan 15"
-    debug get d 'day
-    debug get d 'Month
-
     name: "John Doe"
     namesInitial: get name 0
     surnamesInitial: get name 5
@@ -286,10 +407,88 @@ do [
     debug namesInitial
     debug surnamesInitial
 
+    ; :object
+    define :person [name, surname][
+        init: ->
+            this\name: capitalize this\name
+        
+        print: ->
+            ~"NAME: |this\name|, SURNAME: |this\surname|"
+    ]
+
+    personA: to :person ["John" "Doe"]
+    debug personA
+    debug get person 'name
+
+    print get range 0 10 1
+    print get 5..10 0
+
+    ; :store
+    st: store "teststore"
+    st\name: "John"
+    st\surname: "Doe"
+
+    debug get st 'name
+    debug st\surname
+
 ]
 
 
-; -- 'index
+topic "in?"
+do [
+
+    topic "in? - with :string"
+    str: "Arturo"
+    debug in? "Art"      str ; :string
+    debug in? `t`        str ; :char
+    debug in? {/[Art]/}  str ; :regex
+    debug in? "Football" str
+    debug in?.at:0 "Art" str
+    debug in?.at:2 "Art" str
+
+
+    topic "in? - with :block"
+    block: ["Arturo" "Python" "Ruby"]
+    debug in? "Arturo"       block
+    debug in? "F#"           block
+    debug in?.at: 0 "Arturo" block
+    debug in?.at: 2 "Python" block
+
+    topic "in? - with nested :block"
+    nested: [
+        ["Arturo" "Python" "Ruby"] 
+        ["C" "C++" "Nim"]]
+    debug in? "Arturo"                nested
+    debug in? ["C" "C++" "Nim"]       nested
+    debug in?.at: 0 ["C" "C++" "Nim"] nested
+    debug in?.at: 1 "Python"          nested
+
+    print in? 1 1..10
+    print in? 0 1..10
+    print in? 1 range 1 10
+    print in? 0 range 1 10
+    ; storing into a variable
+    r1: 1..10
+    print in? 1 r1
+    print in? 0 r1
+    r2: range 1 10
+    print in? 1 r2
+    print in? 0 r2
+
+    topic "in? - with :dictionary"
+    dict: #[ name: "John" surname: "Doe"]
+    debug in?"name"       keys dict
+    debug in?.at:0 "name" keys dict
+    debug in?.at:1 "name" keys dict
+    debug in? "id"        keys dict
+    debug in? "John"      dict
+    debug in?.at:0 "John" dict
+    debug in?.at:1 "John" dict
+    debug in? dict "Jane" dict
+
+]
+
+
 topic "index"
 do [
 
@@ -303,42 +502,92 @@ do [
     debug index "hello" "x" ; returns null
     debug index user "John"
     debug index user "Doe"
+    
+    print index 5..10 5
+    print index 5..10 6
+    ; storing into a variable
+    r1: 1..10
+    print index r1 5
+    print index r1 6
 
 ]
 
 
-; -- 'insert
 topic "insert"
 do [
 
-    dict: #[
-        name: "John"
-    ]
-
-    debug insert [1 2 3 4] 0 "zero"
-    debug insert "heo" 2 "ll"
-
+    ; with :dictionary
+    debug insert #[ name: "John" ] "age" 32
+    dict: #[ name: "John" ]
     insert 'dict "name" "Joe, Again", debug dict
 
+    ; with :block
+    debug insert [1 2 3 4] 0 "zero"
     debug insert [1 2 6 7 8 9 10] 2 [3 4 5]
+    arr: [1 2 3 4]
+    insert 'arr 0 0, debug arr
+
+    ; with :string
+    debug insert "heo" 2 "ll"
+    str1: "Auro"
+    insert 'str1 1 "rt", debug str1
+    
+    debug insert "helo" 2 `l`
+    str2: "uby"
+    insert 'str2 0 `R`, debug str2
 
 ]
 
+topic "key?"
+do [
 
-; -- 'keys
+    ; :dictionary
+    user: #[ name: "John" surname: "Doe" ]
+    debug key? user 'name
+    debug key? user "name"
+    debug key? user 'age
+    debug key? user "age"
+
+    ; :object
+    define :person [name, surname][
+        init: ->
+            this\name: capitalize this\name
+        
+        print: ->
+            ~"NAME: |this\name|, SURNAME: |this\surname|"
+    ]
+
+    personA: to :person ["John" "Doe"]
+    debug key? personA 'name
+    debug key? personA "name"
+    debug key? personA 'surname
+    debug key? personA "surname"
+    debug key? personA 'age
+    debug key? personA "age"
+]
+
+
 topic "keys"
 do [
 
-    user: #[
-        name: "John"
-        surname: "Doe"
-    ]
-
+    ; :dictionary
+    user: #[ name: "John" surname: "Doe" ]
     debug keys user
+
+    ; :object
+    define :person [name, surname][
+        init: ->
+            this\name: capitalize this\name
+        
+        print: ->
+            ~"NAME: |this\name|, SURNAME: |this\surname|"
+    ]
+    
+    personA: to :person ["John" "Doe"]
+    debug keys personA
 ]
 
 
-; -- 'last
 topic "last"
 do [
 
@@ -348,83 +597,315 @@ do [
     debug last ["one" "two" "three"]
     debug last.n: 2 ["one" "two" "three"]
 
+    print last 1..10
+    print last 5..0
+    print last 0..40
+    last.n: 6 0..10
+    ; storing into a variable
+    r1: 1..10
+    print last r1
+    print last.n: 6 r1
+    ; using range function
+    print last range 0 10
+    print last.n: 6 range 0 10
+    r2: range 0 10
+    print last range 0 10
+    print last.n: 6 range 0 10
+
 ]
 
 
-; -- 'max
 topic "max"
 do [
 
     debug max [4 2 8 5 1 9]
+    debug max.index [4 2 8 5 1 9]
     debug max ["Granada" "Manchester" "Boston"]
+    debug max.index ["Granada" "Manchester" "Boston"]
+    
+    print max 1..10
+    print max 5..0
+    print max.index 1..10
+    print max.index 5..0
+    ; storing into a variable
+    r1: 1..10
+    print max r1
+    print max.index r1
+    ; using range function
+    print max range 1 10
+    print max range 5 0
+    print max.index range 1 10
+    print max.index range 5 0
+    r2: range 0 10
+    r3: range 5 0
+    print max r2
+    print max r3
+    print max.index r2
+    print max.index r3
 
 ]
 
 
-; -- 'min
 topic "min"
 do [
 
     debug min [4 2 8 5 1 9]
+    debug min.index [4 2 8 5 1 9]
     debug min ["Granada" "Manchester" "Boston"]
+    debug min.index ["Granada" "Manchester" "Boston"]
+    
+    print min 1..10
+    print min 5..0
+    print min.index 1..10
+    print min.index 5..0
+    ; storing into a variable
+    r1: 1..10
+    print min r1
+    print min.index r1
+    ; using range function
+    print min range 1 10
+    print min range 5 0
+    print min.index range 1 10
+    print min.index range 5 0
+    r2: range 0 10
+    r3: range 5 0
+    print min r2
+    print min r3
+    print min.index r2
+    print min.index r3
 
 ]
 
 
-; -- 'permutate
+topic "one?"
+do [
+
+    topic "one? - with :integer"
+    debug one? 4-3
+    debug one? 5  
+
+    topic "one? - with :floating"
+    debug one? 1.0
+    debug one? 0.0
+
+    topic "one? - with :string"
+    debug one? "A"
+    debug one? "Arturo"
+
+    topic "one? - with :block"
+    debug one? ["apple"] 
+    debug one? ["apple" "pear"] 
+
+    topic "one? - with :range"
+    print one? 0..0 ; Yet not
+    print one? 0..10
+
+    topic "one? - with :dictionary"
+    debug one? #[ name: "John" ]
+    debug one? #[ name: "John" surname: "Doe" ]
+
+
+    topic "one? - with :object"
+    define :person [name, surname][
+        init: ->
+            this\name: capitalize this\name
+        
+        print: ->
+            ~"NAME: |this\name|, SURNAME: |this\surname|"
+    ]
+
+    personA: to :person ["John"]
+    personB: to :person ["John" "Doe"]
+    debug one? personA
+    debug one? personB
+
+    topic "one? - with :null"
+    debug one? null
+
+]
+
+
 topic "permutate"
 do [
 
     debug permutate [A B C]
     debug permutate [[1 2 3] [4 5 6]]
 
+    debug permutate.by: 2 [A B C]
+    debug permutate.repeated [A B C]
+    debug permutate.repeated.by: 2 [A B C]
+
+    debug permutate.count [A B C]
+    debug permutate.count.repeated.by: 2 
+        [A B C]
+
+]
+
+topic "prepend"
+do [
+
+    topic "prepend - :binary < :binary :binary"
+    do [
+        bin0: to :binary 0
+        bin1: to :binary 1
+        debug prepend bin0 bin1
+
+        prepend 'bin0 bin1, debug bin0
+    ]
+
+    topic "prepend - :binary < :binary :integer"
+    do [
+        bin0: to :binary 0
+        int1: 1
+        debug prepend bin0 int1
+
+        prepend 'bin0 int1, debug bin0
+    ]
+
+    topic "prepend - :string < :string + :string"
+    do [
+
+        a: "uro"
+        debug prepend "uro" "Art"
+        prepend 'a "Art", debug a
+
+    ]
+
+    topic "prepend - :string < :string + :char"
+    do [
+
+        a: "rturo"
+        debug prepend "rturo" `A`
+        prepend 'a `A`, debug a
+
+    ]
+
+    topic "prepend - :string < :char + :char"
+    do [
+
+        a: `b`
+        debug prepend `b` `a`
+        prepend 'a `a`, debug a
+
+    ]
+
+    topic "prepend - :string < :char + :string"
+    do [
+
+        a: `t`
+        debug prepend `t` "ar"
+        prepend 'a "ar", debug a
+
+    ]
+
+    topic "prepend - [:string] < [:string] + :string"
+    do [
+
+        a: ["r" "t" "u" "r" "o"]
+        debug prepend ["r" "t" "u" "r" "o"] "A"
+        prepend 'a "A", debug a
+
+        ; Testing precedence
+        c: ["u" "r" "o"]
+        debug prepend ["u" "r" "o"] prepend "t" prepend "r" "A"
+        prepend 'c prepend "t" prepend "r" "A", debug c
+
+    ]
+
+    topic "prepend - [:string] < [:string] + [:string]"
+    do [
+
+        a: ["u" "r" "o"]
+        debug prepend ["u" "r" "o"] ["A" "r" "t"]
+        prepend 'a ["A" "r" "t"], debug a
+
+    ]
+
+    topic "prepend - [:integer] < [:integer] + [:integer]|:integer"
+    do [
+
+        a: [1 2 3]
+        debug prepend [4 5 6] [1 2 3]
+        debug prepend [1 2 3 4 5 6] 0
+        prepend 'a 0, debug a
+
+    ]
+
 ]
 
 
-; -- 'remove
 topic "remove"
 do [
     ; default
     topic "remove - default"
     do [
 
-        a: "Arturo"
+        ; :string
+        s1: "Arturo"
         debug remove "Arturo" "uro"
-        remove 'a "uro", debug a
+        remove 's1 "uro", debug s1
 
-        b: "Language"
+        s2: "Language"
         debug "Language" -- "uage"
-        'b -- "uage", debug b
+        's2 -- "uage", debug s2
 
+        ; :string -- :char
+        s3: "hello"
+        debug remove "hello" `l`
+        remove 's3 `l`, debug s3
+
+        s4: "hello"
+        debug "hello" -- `l`
+        's4 -- `l`, debug s4
+
+
+        ; :block
         debug remove [1 2 3 4] 4
         debug remove [1 2 3 4] [2 4]
 
-        c: [1 2 3 5 6 4]
+        b1: [1 2 3 5 6 4]
         debug [1 2 3 4] -- 4
         debug [1 2 3 4] -- [2 4]
-        remove 'c [5 6], debug c
+        remove 'b1 [5 6], debug b1
 
-        ; try with block
         debug remove [1 6 2 5 3 4 5 6] [5 2]
         debug remove [1 [6 2] 5 3 [6 2] 4 5 6] [6 2]
+        
+        b2: [1 6 2 5 3 4 5 6]
+        b3: [1 [6 2] 5 3 [6 2] 4 5 6]
+        remove 'b2 [5 2], debug b2
+        remove 'b3 [6 2], debug b3
 
-        ; try with char
-        debug remove "hello" `l`
+
+        ; :dictionary
+        debug remove #[name: "John" surname: "Doe"] "John"
+        
+        ; Note: It's not a bug, but it's important to be here.
+        ; Read the solved: 
+        ; [Collections/remove] -- is not working with :dictionary #918
+        ; explanation: https://github.com/arturo-lang/arturo/issues/918#issuecomment-1361466787
+        ; print #[name: "John" surname: "Doe"] -- "John"
+        
+        user: #[name: "John" surname: "Doe"]
+        user2: #[name: "John" surname: "Wick"]
+        remove 'user "John", debug user
+        'user2 -- "John", debug user2
+
 
     ]
 
-    ; .index
     topic "remove - .index"
     do[
+        debug remove.index [0 1 2 3 4 5] 3
+        debug remove.index [0 1 2 3 4 5] 4
+        debug remove.index [0 1 2 3 4 5] 0
 
-        a: "Arturo"
-        ; TODO(COllections/remove) is .index broken?
-        ; labels: bug, library
-        ; remove.index 3 'a, debug a
-
+        a: [5 4 3 2 1 0]
+        remove.index 'a 2, debug a
+        remove.index 'a 0, debug a
+        remove.index 'a 3, debug a
     ]
 
-    ; .prefix
     topic "remove - .prefix"
     do [
 
@@ -434,7 +915,6 @@ do [
 
     ]
 
-    ; .suffix
     topic "remove - .suffix"
     do [
 
@@ -444,7 +924,6 @@ do [
 
     ]
 
-    ; .key
     topic "remove - .key"
     do [
 
@@ -458,32 +937,48 @@ do [
 
     ]
 
-    ; .once
     topic "remove - .once"
     do [
 
-        a: "hello"
-        b: [1 2 5 3 4 5]
-
+        topic "remove - .once :string"
         debug remove.once "hello" "l"
+
+        debug remove.once "hello" `l`
+
+        s1: "hello"
+        remove.once 's1 "l", debug s1
+
+        s2: "hello"
+        remove.once 's2 `l`, debug s2
+        
+        ; :block
+        topic "remove - .once :block"
         debug remove.once [1 2 5 3 4 5] 5
-
-        remove.once 'a "l", debug a
-        remove.once 'b 5, debug b
-
-        ; try with block
-        debug remove.once [1 6 2 5 3 4 5 6] [5 2]
-        debug remove.once [1 [6 2] 5 3 4 5 6] [6 2]
+        b1: [1 2 5 3 4 5]
+        remove.once 'b1 5, debug b1
 
         ; Testing new behavior from PR #877
+        debug remove.once [1 6 2 5 3 4 5 6] [6 2]
+        debug remove.once [1 2 [6 2] 5 3 4 5 6] [6 2]
         debug remove.once [1 2 [1 2] 3 4 1 2 [1 2] 3 4]  [1 2]
 
-        ; try with char
-        debug remove.once "hello" `l`
+        b2: [1 6 2 5 3 4 5 6]
+        b3: [1 2 [6 2] 5 3 [6 2] 4 5 6]
+        b4: [1 2 [1 2] 3 4 1 2 [1 2] 3 4]
+        remove.once 'b2 [6 2], debug b2
+        remove.once 'b3 [6 2], debug b3
+        remove.once 'b4 [1 2], debug b4
+
+        ; :dictionary
+        topic "remove - .once :dictionary"
+        debug remove.once #[name: "John" surname: "Doe" father: "John"] 
+            "John"
+        
+        user: #[name: "John" surname: "Doe" father: "John"]
+        remove.once 'user "John", debug user
 
     ]
 
-    ; .instance
     topic "remove - .instance"
     do [
 
@@ -504,7 +999,6 @@ do [
 ]
 
 
-; -- 'repeat
 topic "repeat"
 do [
 
@@ -515,11 +1009,13 @@ do [
 
     debug repeat [1 2 3] 3
     debug repeat [[1 2 3]] 3
+    
+    b: [4 5 6]
+    repeat 'b 3, debug b
 
 ]
 
 
-; -- 'reverse
 topic "reverse"
 do [
 
@@ -527,13 +1023,68 @@ do [
     debug reverse [[1 2 3] [4 5 6] [7 8 9]]
     debug reverse "Manchester"
 
-    str: "Arturo"
-    reverse 'str, debug str
+    b: [[1 2 3] [4 5 6] [7 8 9]]
+    s: "Arturo"
+    reverse 'b, debug b
+    reverse 's, debug s
+
+    topic "reverse - with :range"
+    debug reverse 1..10
+    r1: 10..0
+    reverse 'r1, debug r1
+
+    topic "reverse - .exact"
+    do [
+
+        debug reverse.exact [1 2 3 4 5]
+        debug reverse.exact [[1 2 3] [4 5 6] [7 8 9]]
+        debug reverse.exact "Manchester"
+
+        b: [[1 2 3] [4 5 6] [7 8 9]]
+        s: "Arturo"
+        reverse.exact 'b, debug b
+        reverse.exact 's, debug s
+
+        topic "reverse - .exact with :range"
+        debug reverse.exact 1..10
+        r2: 10..0
+        reverse.exact 'r2, debug r2
+
+    ]
 
 ]
 
 
-; -- 'sample
+topic "rotate"
+do [
+
+    ; :block
+    debug rotate [2 3 4 5 1] 1 
+    b1: [3 4 5 1 2]
+    rotate 'b1 2, debug b1
+
+    ; :string
+    debug rotate "turoAr" 2
+
+    s1: "turoAr"
+    rotate 's1 2, debug s1
+
+    ; -- left
+    ; :block
+    debug rotate.left [4 5 1 2 3] 2
+    b2: [3 4 5 1 2]
+    rotate.left 'b2 3
+    debug b2
+
+    ; :string
+    debug rotate.left "roArtu" 2
+
+    s2: "oArtur"
+    rotate.left 's2 1, debug s2
+
+]
+
+
 topic "sample"
 do [
 
@@ -543,13 +1094,30 @@ do [
     print type fruit
     print in? fruit table
 
+    alphabet: `a`..`z`
+    letter: sample alphabet
+    print type letter
+    print in? letter alphabet
+
 ]
 
 
-; -- 'set
 topic "set"
 do [
 
+    ; TODO: test with
+    ; :bytecode
+
+    ; :binary
+    bin0: to :binary 0
+    debug bin0
+    set bin0 0 1, debug bin0
+
+    ; :block
+    arr: [1 2 3 4]
+    set arr 0 "one", debug arr
+
+    ; :dictionary
     myDict: #[
         name: "John"
         age: 34
@@ -564,13 +1132,39 @@ do [
     myDict\["name"]: "Christian"
     debug myDict
 
-    arr: [1 2 3 4]
-    set arr 0 "one", debug arr
+    ; :object
+    define :person [name, surname][
+        init: ->
+            this\name: capitalize this\name
+        
+        print: ->
+            ~"NAME: |this\name|, SURNAME: |this\surname|"
+    ]
+
+    personA: to :person ["John" "Doe"]
+    set personA 'surname "Wick"
+    debug personA
+
+    ; :string
+    s1: "Arruro"
+    set s1 2 "t"
+    debug s1
+
+    s1: "Arruro"
+    set s1 2 `t`
+    debug s1
+
+    ; :store
+    st: store "teststore"
+    st\name: "John"
+    st\surname: "Doe"
+
+    debug get st 'name
+    debug st\surname
 
 ]
 
 
-; -- 'shuffle
 topic "shuffle"
 do [
 
@@ -585,20 +1179,46 @@ do [
 ]
 
 
-; -- 'size
 topic "size"
 do [
 
-    print size ["one" "two" "three"]
-    print size #[name: "John", surname: "Doe"]
-    print size "Good morning!"
-    print size "Konnichiwa!"
-    print size "こんいちわ！"
+    ; :string
+    print ["Good morning!" size "Good morning!"]
+    print ["Konnichiwa!" size "Konnichiwa!"]
+    print ["こんいちわ！" size "こんいちわ！"]
+    ; :block
+    print [["one" "two" "three"] 
+        size ["one" "two" "three"]]
+
+    print size range 0 10
+    print size 0..10
+    r1: 0..20
+    print size r1
+
+    ; :dictionary
+    print [#[name: "John", surname: "Doe"] 
+        size #[name: "John", surname: "Doe"]]
+
+    ; :object
+    define :person [name, surname][
+        init: ->
+            this\name: capitalize this\name
+        
+        print: ->
+            ~"NAME: |this\name|, SURNAME: |this\surname|"
+    ]
+
+    p1: to :person ["Joe"]
+    debug size p1
+    p2: to :person ["Joe" "Doe"]
+    debug size p2
+
+    ; :null
+    print [null size null]
 
 ]
 
 
-; -- 'slice
 topic "slice"
 do [
 
@@ -614,7 +1234,6 @@ do [
 ]
 
 
-; -- 'sort
 topic "sort"
 do [
 
@@ -624,17 +1243,29 @@ do [
 
         debug sort [5 4 3 2 1]
         debug sort ["Ruby" "Arturo" "Python"]
+        debug sort #[ c: "C" art: "Arturo"
+            nim: "Nim" coffee: "CoffeeScript" ]
 
         a: [5 4 3 2 1]
         b: ["Ruby" "Arturo" "Python"]
+        c: #[ c: "C" art: "Arturo" 
+            nim: "Nim" coffee: "CoffeeScript"]
         sort 'a, debug a
         sort 'b, debug b
+        sort 'c, debug c
 
     ]
 
-    ; .values
     topic "sort - .values"
     do [
+
+        debug sort.values #[
+            name: "John"
+            surname: "Doe"
+            id: "012568"
+            city: "Manchester"
+            age: 45
+        ]
 
         user: #[
             name: "John"
@@ -648,43 +1279,119 @@ do [
 
     ]
 
-    ; .as
-    topic "sort - .as"
+    ; [Collections/sort] attributes missing for :dictionary #922
+    topic "sort - .sensitive .as with :block and :dictionary"
     do [
 
-        ; How to use it?
+        a1: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+        print sort ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+        sort 'a1, print a1
+        ; => [aberración abismo dos perversión tres uno Uno ábaco]
 
-        debug sort.as: 'es ["uno","dos","tres","Uno","Dos","Tres","pero","pértiga","perversión","ábaco","abismo","aberración"]
+        ; d1: #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        ; print sort.values #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        ; sort.values 'd1, print d1
+        ; ; => [h:aberración g:abismo b:dos e:perversión c:tres a:uno d:Uno f:ábaco]
+
+        a2: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+        print sort.as: 'es ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+        sort.as: 'es 'a2, print a2
+        ; => [ábaco aberración abismo dos perversión tres uno Uno]
+
+        ; d2: #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        ; print sort.values.as: 'es #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        ; sort.values.as: 'es 'd2, print d2
+        ; ; => [f:ábaco h:aberración g:abismo b:dos e:perversión c:tres a:uno d:Uno]
+
+        a3: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+        print sort.sensitive ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+        sort.sensitive 'a3, print a3
+        ; => [Uno aberración abismo dos perversión tres uno ábaco]
+
+        ; d3: #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        ; print sort.values.sensitive #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        ; sort.values.sensitive 'd3, print d3
+        ; ; => [d:Uno h:aberración g:abismo b:dos e:perversión c:tres a:uno f:ábaco]
+
+        a4: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+        print sort.sensitive.as: 'es ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+        sort.sensitive.as: 'es 'a4, print a4
+        ; => [Uno ábaco aberración abismo dos perversión tres uno]
+
+        ; d4: #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        ; print sort.values.sensitive.as: 'es #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        ; sort.values.sensitive.as: 'es 'd4, print d4
+        ; ; => [d:Uno f:ábaco h:aberración g:abismo b:dos e:perversión c:tres a:uno]
+
+        a5: [10 9 8 7 6 5 4 3 2 1 0]
+        print sort [10 9 8 7 6 5 4 3 2 1 0]
+        sort 'a5, print a5
+        ; => [0 1 2 3 4 5 6 7 8 9 10]
+
+        d5: #[a:10 b:9 c:8 d:7 e:6 f:5 g:4 h:3 i:2 j:1 k:0]
+        print sort.values #[a:10 b:9 c:8 d:7 e:6 f:5 g:4 h:3 i:2 j:1 k:0]
+        sort.values 'd5, print d5
+        ; => [k:0 j:1 i:2 h:3 g:4 f:5 e:6 d:7 c:8 b:9 a:10]
 
     ]
 
-    ; .sensitive
-    topic "sort - .sensitive"
+    ; [Collections/sort] attributes missing for :dictionary #922
+    topic "sort - .descending .sensitive .as with :block and :dictionary"
     do [
 
-        debug sort.sensitive
-            ["Ruby" "python" "Arturo" "ruby" "arturo" "Python"]
+        a1: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+        print sort.descending ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+        sort.descending 'a1, print a1
+        ; => [ábaco uno Uno tres perversión dos abismo aberración]
 
-        a: ["Ruby" "python" "Arturo" "ruby" "arturo" "Python"]
-        sort.sensitive 'a, debug a
+        ; d1: #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        ; print sort.descending.values #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        ; sort.descending.values 'd1, print d1
+        ; ; => [f:ábaco a:uno d:Uno c:tres e:perversión b:dos g:abismo h:aberración ]
+
+        a2: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+        print sort.descending.as: 'es ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+        sort.descending.as: 'es 'a2, print a2
+        ; => [uno Uno tres perversión dos abismo aberración ábaco]
+
+        ; d2: #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        ; print sort.descending.values.as: 'es #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        ; sort.descending.values.as: 'es 'd2, print d2
+        ; ; => [a:uno d:Uno c:tres e:perversión b:dos g:abismo h:aberración f:ábaco]
+
+        a3: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+        print sort.descending.sensitive ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+        sort.descending.sensitive 'a3, print a3
+        ; => [ábaco uno tres perversión dos abismo aberración Uno]
+
+        ; d3: #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        ; print sort.descending.values.sensitive #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        ; sort.descending.values.sensitive 'd3, print d3
+        ; ; => [f:ábaco a:uno c:tres e:perversión b:dos g:abismo h:aberración d:Uno]
+
+        a4: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+        print sort.descending.sensitive.as: 'es ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+        sort.descending.sensitive.as: 'es 'a4, print a4
+        ; => [uno tres perversión dos abismo aberración ábaco Uno]
+
+        ; d4: #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        ; print sort.descending.values.sensitive.as: 'es #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        ; sort.descending.values.sensitive.as: 'es 'd4, print d4
+        ; ; => [a:uno c:tres e:perversión b:dos g:abismo h:aberración f:ábaco d:Uno]
+
+        a5: [0 1 2 3 4 5 6 7 8 9 10]
+        print sort.descending [0 1 2 3 4 5 6 7 8 9 10]
+        sort.descending 'a5, print a5
+        ; => [10 9 8 7 6 5 4 3 2 1 0]
+
+        d5: #[a:0 b:1 c:2 d:3 e:4 f:5 g:6 h:7 i:8 j:9 k:10]
+        print sort.descending.values #[a:0 b:1 c:2 d:3 e:4 f:5 g:6 h:7 i:8 j:9 k:10]
+        sort.descending.values 'd5, print d5
+        ; => [k:10 j:9 i:8 h:7 g:6 f:5 e:4 d:3 c:2 b:1 a:0]
 
     ]
 
-    ; descending
-    topic "sort - .descending"
-    do [
 
-        debug sort.descending [5 3 2 1 4]
-        debug sort.descending ["Ruby" "Arturo" "Python"]
-
-        a: [5 4 3 2 1]
-        b: ["Ruby" "Arturo" "Python"]
-        sort.descending 'a, debug a
-        sort.descending 'b, debug b
-
-    ]
-
-    ; .by
     topic "sort - .by"
     do [
 
@@ -701,143 +1408,234 @@ do [
 ]
 
 
-; -- 'split
-topic "split"
+topic "sorted?"
 do [
 
-    ; default
-    a: "Arturo"
-    debug split "Arturo"
-
-    debug split [[1 2 3] [4 5 6] [7 8]]
-
-
-    (sys\os = "windows")? [
-        debug split.path "directory\\wofilerld"
-        debug split.path "\\usr\\bin"
-
-        p1: "directory\\wofilerld\\"
-        p2: "\\usr\\bin"
-    ][
-        debug split.path "directory/wofilerld"
-        debug split.path "/usr/bin"
-
-        p1: "directory/wofilerld/"
-        p2: "/usr/bin"
-    ]
-
-    debug split.path p1
-    debug split.path p2
-    split.path 'p1, debug p1
-    split.path 'p2, debug p2
-
-    ; tests the Unix's default path and Windows' alternative
-    ; Since, you can use it on Msys, for instance
-    ; it gives the same result in both
-    debug split.path "/usr/bin/"
-    debug split.path "/usr/bin"
-    debug split.path "usr/bin/"
-
-    ; Testing Attributes
-    debug split.words "Hello World!"
-
-    debug split.lines "Hi\nmy\nname\nis..."
-
-    debug split.by: "/" "directory/file.ext"
-
-    csv: "id;nickname;name;age"
-    split.by: ";" 'csv
-    debug csv
-
-    debug split.at: 5 "Hello, World"
-    debug split.at: 4 [
-        "Arnold" "Andreas" "Paul" "Ricard" "Linus"
-        "Yanis" "Helena" "Eva" "Blanca"
-    ]
-
-    debug split.every: 3 "split collection to components"
-    debug split.every: 3 [
-        "Arnold" "Andreas" "Paul" "Ricard" "Linus"
-        "Yanis" "Helena" "Eva" "Blanca"
-    ]
-
-    a: [
-        "Arnold" "Andreas" "Paul" "Ricard" "Linus"
-        "Yanis" "Helena" "Eva" "Blanca"
-    ]
-    split.at: 4 'a, debug a
-
-    b: ["Arnold" "Andreas" "Paul" "Ricard" "Linus" "Yanis" "Helena" "Eva" "Blanca"]
-    split.every: 3 'b, debug b
-
-    ; This test is returning strange character filling the last inner block
-    ; debug split.every: 3 "Manchesterr"
-    ; city: "Manchester"
-    ; split.every: 3 'city, debug city
-
-    city: split.every: 3 "Manchester"
-    print [city, size city\0, size city\1, size city\2, size city\3]
-
-    lang: split.every: 4 "Arturo"
-    print [lang, size lang\0, size lang\1]
-
-    city2: "Manchester"
-    lang2: "Arturo"
-    split.every: 3 'city2
-    split.every: 4 'lang2
-    print [city2, size city2\0, size city2\1, size city2\2, size city2\3]
-    print [lang2, size lang2\0 size, lang2\1]
+    print sorted? [1 2 3 4 5]
+    print sorted? [4 3 2 1 5]
+    print sorted? [5 4 3 2 1] 
+    print sorted? ["Arturo" "Python" "Ruby"]
+    print sorted? ["Python" "Ruby" "Arturo"]
+    print sorted? ["Ruby" "Python" "Arturo"] 
+    
+    ; .descending
+    print sorted?.descending [5 4 3 2 1]
+    print sorted?.descending [4 3 2 1 5]
+    print sorted?.descending [1 2 3 4 5]
+    print sorted?.descending ["Ruby" "Python" "Arturo"] 
+    print sorted?.descending ["Python" "Ruby" "Arturo"]
+    print sorted?.descending ["Arturo" "Python" "Ruby"]
 
 ]
 
 
-; -- squeeze
+topic "split"
+do [
+
+    ; default
+    debug split "Arturo"
+    
+    a: "Arturo"
+    split 'a, debug a
+
+    debug split [[1 2 3] [4 5 6] [7 8]]
+    b: [[1 2 3] [4 5 6] [7 8]]
+    split 'b, debug b
+
+    debug split [1 2 3 4 5 6]
+    c: [1 2 3 4 5 6]
+    split 'c, debug c
+
+    topic "split - .path"
+    do [
+
+        ; They would return the same result
+        (sys\os = "windows")? [
+            ; Accepts \\ and / paths
+            debug split.path "directory\\wofilerld"
+            debug split.path "\\usr\\bin"
+
+            p1: "directory\\wofilerld\\"
+            p2: "\\usr\\bin"
+        ][
+            ; Accepts / paths
+            debug split.path "directory/wofilerld"
+            debug split.path "/usr/bin"
+
+            p1: "directory/wofilerld/"
+            p2: "/usr/bin"
+        ]
+
+        debug split.path p1
+        debug split.path p2
+        split.path 'p1, debug p1
+        split.path 'p2, debug p2
+
+        ; tests the Unix's default path and Windows' alternative
+        ; Since, you can use it on Msys, for instance
+        ; it gives the same result in both
+        debug split.path "/usr/bin/"
+        debug split.path "/usr/bin"
+        debug split.path "usr/bin/"
+
+    ]
+
+    topic "split - .words & .lines"
+    do [
+
+        debug split.words "Hello World!"
+        s1: "Hello World!"
+        split.words 's1, debug s1
+
+        debug split.lines "Hi\nmy\nname\nis..."
+        s2: "Hi\nmy\nname\nis..."
+        split.lines 's2, debug s2
+
+    ]
+
+    topic "split - .by"
+    do [
+
+        debug split.by: "/" "directory/file.ext"
+
+        csv: "id;nickname;name;age"
+        split.by: ";" 'csv, debug csv
+
+    ]
+
+    topic "split - .at"
+    do [
+
+        debug split.at: 5 "Hello, World"
+        s: "Hello, World"
+        split.at: 5 's, debug s
+
+        debug split.at: 4 [
+            "Arnold" "Andreas" "Paul" "Ricard" "Linus"
+            "Yanis" "Helena" "Eva" "Blanca"
+        ]
+
+        b: [
+            "Arnold" "Andreas" "Paul" "Ricard" "Linus"
+            "Yanis" "Helena" "Eva" "Blanca"
+        ]
+        split.at: 4 'b, debug b
+
+    ]
+
+    topic "split - .every"
+    do [
+
+        debug split.every: 3 "split collection to components"
+        debug split.every: 3 [
+            "Arnold" "Andreas" "Paul" "Ricard" "Linus"
+            "Yanis" "Helena" "Eva" "Blanca"
+        ]
+
+
+        b: ["Arnold" "Andreas" "Paul" 
+            "Ricard" "Linus" "Yanis" 
+            "Helena" "Eva" "Blanca"
+        ]
+        split.every: 3 'b, debug b
+
+        city: split.every: 3 "Manchester"
+        print [city, size city\0, size city\1, size city\2, size city\3]
+
+        lang: split.every: 4 "Arturo"
+        print [lang, size lang\0, size lang\1]
+
+        city2: "Manchester"
+        lang2: "Arturo"
+        split.every: 3 'city2
+        split.every: 4 'lang2
+        print [city2, size city2\0, size city2\1, size city2\2, size city2\3]
+        print [lang2, size lang2\0 size, lang2\1]
+
+    ]
+
+]
+
+
 topic "squeeze"
 do [
 
     debug squeeze [1 1 2 3 4 2 3 4 4 5 5 6 7]
-    debug squeeze [1 [4 2 3] 1 2 3 [4 2 3] 4 4 5 5 [6 7] [6 7]]
-    ; It doesn't squeeze the repeated blocks
 
+    debug squeeze [1 [4 2 3] 1 2 3 [4 2 3] 4 4 5 5 [6 7] [6 7]]
+    a1: [1 [4 2 3] 1 2 3 [4 2 3] 4 4 5 5 [6 7] [6 7]]
+    squeeze 'a1, debug a1
     debug squeeze "hello world"
+    
+    str: "hello world"
+    squeeze 'str, debug str
 
     arr: [4 2 1 1 3 6 6]
     squeeze 'arr, debug arr
 
 ]
 
-; -- take
+
 topic "take"
 do [
 
     debug take "some text" 7
+    s: "some text"
+    take 's 7, debug s
     debug take ["Arnold" "Andreas" "Paul"] 2
+    b: ["Arnold" "Andreas" "Paul"]
+    take 'b 2, debug b
 
+    debug take 1..10 3
     arr: 1..10
     take 'arr 3, debug arr
 
 ]
 
 
-; -- unique
+topic "tally"
+do [
+    debug tally "helloWorld"
+    debug tally [1 2 4 1 3 5 6 2 6 3 5 7 2 4 2 4 5 6 2 1 1 1]
+]
+
+
 topic "unique"
 do [
+    
+    ; :block
     debug unique [1 2 4 1 3 2]
-
-    a: [1 2 4 1 3 2 5 6 5 7 4]
-    unique 'a, a, debug a
+    b: [1 2 4 1 3 2]
+    unique 'b, debug b
 
     id1: unique.id [1 2 4 1 3 2]
     id2: unique.id [1 2 4 1 3 2 5 6 5 7 4]
-
     print id1 <> id2
+
+    ; :string
+    debug unique "Arturo"
+    s: "Arturo"
+    unique 's, debug s
+
+    sid1: unique.id "Arturo"
+    sid2: unique.id "Python"
+    print sid1 <> sid2
 
 ]
 
 
-; -- values
 topic "values"
 do [
+
+    ; Do nothing?
+    debug values ["Arturo" "Ruby" "Python" "Nim"]
+
+    r1: 1..10
+    r2: range 1 10
+    debug values 1..10
+    debug values range 1 10
+    debug values r1
+    debug values r2
 
     user: #[
         name: "John"
@@ -849,4 +1647,61 @@ do [
 
     debug values user
 
+    ; test with :object
+    define :person [name, surname][
+        init: ->
+            this\name: capitalize this\name
+        
+        print: ->
+            ~"NAME: |this\name|, SURNAME: |this\surname|"
+    ]
+
+    personA: to :person ["John" "Doe"]
+    debug personA
+    debug values personA
+
 ]
+
+
+topic "zero?"
+do [
+    topic "zero? - with :integer"
+    debug zero? 5-5
+    debug zero? 4-3
+
+    topic "zero? - with :floating"
+    debug zero? 0.0
+    debug zero? 1.0
+
+    topic "zero? - with :string"
+    debug zero? ""
+    debug zero? "Arturo"
+
+    topic "zero? - with :block"
+    debug zero? [] 
+    debug zero? ["apple" "pear"] 
+
+    topic "zero? - with :range"
+    debug zero? 0..0
+    debug zero? range 0 0
+    debug zero? 0..10
+    debug zero? range 0 10
+    debug zero? ø
+
+    topic "zero? - with :dictionary"
+    debug zero? #[]
+    debug zero? #[ name: "John" ]
+
+    ; topic "zero? - with :object"
+    define :person [][
+    ]
+
+    personA: to :person []
+    debug personA
+    debug zero? personA
+
+    topic "zero? - with :null"
+    debug zero? null
+
+]
+
