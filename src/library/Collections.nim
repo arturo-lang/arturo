@@ -166,6 +166,8 @@ proc defineSymbols*() =
                     else: push(newBlock(cleanX[0..^(times + 1)]))
 
 
+    # TODO(Collections/combine) should also work with in-place Literals?
+    #  labels: library, enhancement, open discussion
     builtin "combine",
         alias       = unaliased,
         rule        = PrefixPrecedence,
@@ -214,6 +216,15 @@ proc defineSymbols*() =
                 push(newBlock(getCombinations(cleanX, sz, doRepeat).map((
                         z)=>newBlock(z))))
 
+    # TODO(Collections/contains?) add new `.deep` option?
+    #  this would allow us to check whether a nested block contains a specific value
+    #  e.g. `contains?.deep [[1 2 3] [4 5 6]] 2` would return *true*
+    #  labels: library, enhancement, open discussion
+
+    # TODO(Collections/contains?) add new `.key` option?
+    #  this would allow us to check whether the given dictionary contains a specific key
+    #  instead of a value, which is the default way `contains?` works right now with dictionaries
+    #  labels: library, enhancement, open discussion
     builtin "contains?",
         alias       = unaliased,
         rule        = PrefixPrecedence,
@@ -295,6 +306,8 @@ proc defineSymbols*() =
                     else:
                         discard
 
+    # TODO(Collections/couple) should work with in-place Literals
+    #  labels: library, enhancement
     builtin "couple",
         alias       = unaliased,
         rule        = PrefixPrecedence,
@@ -626,6 +639,13 @@ proc defineSymbols*() =
                     push(GetKey(x.e, y.s))
                 else: discard
 
+    # TODO(Collections/in?) add new `.deep` option?
+    #  same as with `contains?`
+    #  labels: library, enhancement, open discussion
+
+    # TODO(Collections/in) add new `.key` option?
+    #  same as with `contains?`
+    #  labels: library, enhancement, open discussion
     builtin "in?",
         alias       = unaliased,
         rule        = PrefixPrecedence,
@@ -752,6 +772,11 @@ proc defineSymbols*() =
                         push(VNULL)
                 else: discard
 
+    # TODO(Collections/insert) add new `.many` option?
+    #  or something similar - the name doesn't have to be this one
+    #  basically, the idea would allow us to do something like:
+    #  `insert.many [1 4 5 6] 1 [2 3]` and get back `[1 2 3 4 5 6]`
+    #  labels: library, enhancement, open discussion 
     builtin "insert",
         alias       = unaliased,
         rule        = PrefixPrecedence,
