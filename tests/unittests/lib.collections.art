@@ -241,12 +241,13 @@ do [
 
 ]
 
-; [Collections/decouple] is not working with literals #912
 topic "decouple"
 do [
 
     c: [[1 "one"] [2 "two"] [3 "three"]]
     debug decouple c
+
+    decouple 'c, debug c
 
 ]
 
