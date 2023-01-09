@@ -1106,7 +1106,7 @@ topic "set"
 do [
 
     ; TODO: test with
-    ; :store, :bytecode
+    ; :bytecode
 
     ; :binary
     bin0: to :binary 0
@@ -1153,6 +1153,14 @@ do [
     s1: "Arruro"
     set s1 2 `t`
     debug s1
+
+    ; :store
+    st: store "mystore"
+    st\name: "John"
+    st\surname: "Doe"
+
+    debug get st 'name
+    debug st\surname
 
 ]
 
