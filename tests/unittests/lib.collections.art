@@ -208,9 +208,9 @@ do [
     debug contains?.at: 1 nested "Python"
 
     topic "contains? - with :range"
-    range: 1..10
-    debug contains? range 5
-    debug contains? range 0
+    rng: 1..10
+    debug contains? rng 5
+    debug contains? rng 0
 
     topic "contains? - with :dictionary"
     dict: #[ name: "John" surname: "Doe"]
