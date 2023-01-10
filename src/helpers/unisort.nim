@@ -285,11 +285,11 @@ proc unisort*(a: var ValueDict, lang: string, sensitive:bool = false, order = So
 
     if byValue:
         a.sort(proc (x, y: (string, Value)): int = 
-            unicmp(x[1], y[1], charset, transformable, ngraphset)
+            unicmp(x[1], y[1], charset, transformable, ngraphset, sensitive, ascii)
         , order = order)
     else:
         a.sort(proc (x, y: (string, Value)): int = 
-            unicmp(newString(x[0]), newString(y[0]), charset, transformable, ngraphset)
+            unicmp(newString(x[0]), newString(y[0]), charset, transformable, ngraphset, sensitive, ascii)
         , order = order)
 
 proc unisorted*(a: openArray[Value], lang: string, cmp: CompProc,
