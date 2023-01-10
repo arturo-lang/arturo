@@ -1721,10 +1721,10 @@ proc defineSymbols*() =
                 else:
                     if (hadAttr("sensitive")):
                         push(newDictionary(sorted.unisorted("en", 
-                        sensitive = true,
-                        order = sortOrdering, 
-                        ascii = sortAscii,
-                        byValue = hadAttr("values"))))
+                            sensitive = true,
+                            order = sortOrdering, 
+                            ascii = sortAscii,
+                            byValue = hadAttr("values"))))
                     else:
                         var isString = false
                         for v in values(sorted):
