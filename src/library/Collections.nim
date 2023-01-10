@@ -31,8 +31,10 @@ import algorithm, os, random, sequtils
 import strutils, sugar, unicode
 
 import helpers/arrays
+import helpers/charsets as CharsetsHelper
 import helpers/combinatorics
 import helpers/ranges
+import helpers/sets
 when not defined(WEB):
     import helpers/stores
 import helpers/strings
@@ -1632,6 +1634,7 @@ proc defineSymbols*() =
                     push(newBlock(cleanX[y.i..z.i]))
                 else:
                     push(newBlock())
+
     # TODO(Collections/sort) Could also work with string values
     #  labels: library, new feature, open discussion
     builtin "sort",
@@ -1711,13 +1714,48 @@ proc defineSymbols*() =
 
             elif x.kind == Dictionary:
                 var sorted = x.d
-                if (hadAttr("values")):
-                    sorted.sort(proc (x, y: (string, Value)): int = cmp(x[1],
-                            y[1]), order = sortOrdering)
-                else:
-                    sorted.sort(system.cmp, order = sortOrdering)
+                var sortAscii = (hadAttr("ascii"))
 
-                push(newDictionary(sorted))
+                if checkAttr("as"):
+                    push(newDictionary(sorted.unisorted(aAs.s, 
+                        sensitive = hadAttr("sensitive"),
+                        order = sortOrdering, 
+                        ascii = sortAscii,
+                        byValue = hadAttr("values"))))
+                else:
+                    if (hadAttr("sensitive")):
+                        push(newDictionary(sorted.unisorted("en", 
+                        sensitive = true,
+                        order = sortOrdering, 
+                        ascii = sortAscii,
+                        byValue = hadAttr("values"))))
+                    else:
+                        var isString = false
+                        for v in values(sorted):
+                            if v.kind == String:
+                                isString = true
+                            break
+
+                        if isString:
+                            push(newDictionary(sorted.unisorted("en",
+                                order = sortOrdering,
+                                ascii = sortAscii,
+                                byValue = hadAttr("values"))))
+                        else:
+                            var res = newOrderedTable[string, Value]()
+                            for k, v in sorted.pairs:
+                                res[k] = v
+
+                            if hadAttr("values"):
+                                res.sort(proc (x, y: (string, Value)): int = 
+                                    cmp(x[1], y[1])
+                                , order = sortOrdering)
+                            else:
+                                res.sort(proc (x, y: (string, Value)): int = 
+                                    cmp(x[0], y[0])
+                                , order = sortOrdering)
+
+                            push(newDictionary(res))
 
             else:
                 ensureInPlace()
@@ -1743,12 +1781,42 @@ proc defineSymbols*() =
                                     else:
                                         InPlaced.a.sort(order = sortOrdering)
                 else:
-                    if (hadAttr("values")):
-                        InPlaced.d.sort(proc (x, y: (string,
-                                Value)): int = cmp(x[1], y[1]),
-                                order = sortOrdering)
+                    var sortAscii = (hadAttr("ascii"))
+
+                    if checkAttr("as"):
+                        InPlaced.d.unisort(aAs.s, 
+                            sensitive = hadAttr("sensitive"),
+                            order = sortOrdering, 
+                            ascii = sortAscii,
+                            byValue = hadAttr("values"))
                     else:
-                        InPlaced.d.sort(system.cmp, order = sortOrdering)
+                        if (hadAttr("sensitive")):
+                            InPlaced.d.unisort("en", 
+                                sensitive = true,
+                                order = sortOrdering, 
+                                ascii = sortAscii,
+                                byValue = hadAttr("values"))
+                        else:
+                            var isString = false
+                            for v in values(InPlaced.d):
+                                if v.kind == String:
+                                    isString = true
+                                break
+
+                            if isString:
+                                InPlaced.d.unisort("en",
+                                    order = sortOrdering,
+                                    ascii = sortAscii,
+                                    byValue = hadAttr("values"))
+                            else:
+                                if hadAttr("values"):
+                                    InPlaced.d.sort(proc (x, y: (string, Value)): int = 
+                                        cmp(x[1], y[1])
+                                    , order = sortOrdering)
+                                else:
+                                    InPlaced.d.sort(proc (x, y: (string, Value)): int = 
+                                        cmp(x[0], y[0])
+                                    , order = sortOrdering)
 
     # TODO(Collections/sorted?) doesn't work properly
     #  it should work in an identical way as `sort`
