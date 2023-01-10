@@ -31,10 +31,8 @@ import algorithm, os, random, sequtils
 import strutils, sugar, unicode
 
 import helpers/arrays
-import helpers/charsets as CharsetsHelper
 import helpers/combinatorics
 import helpers/ranges
-import helpers/sets
 when not defined(WEB):
     import helpers/stores
 import helpers/strings
