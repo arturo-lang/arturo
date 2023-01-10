@@ -263,6 +263,8 @@ proc defineSymbols*() =
             #=======================================================
             raise ContinueTriggered()
 
+    # TODO(Core/do) not working well with Bytecode?
+    #  labels: bug, critical, library, values
     builtin "do",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
