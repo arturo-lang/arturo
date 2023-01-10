@@ -61,7 +61,7 @@ const
     simpleO     = static ("o".runeAt(0))
     simpleU     = static ("u".runeAt(0))
 
-    transformations* = {
+    transformations = {
         simpleA_cap: "ÁÀÂÃÄ",
         simpleE_cap: "ÉÈÊË",
         simpleI_cap: "ÍÌÎÏ",
@@ -109,7 +109,7 @@ iterator getNextSymbol*(str: string, ngraphset: seq[string]): string =
 
         i += 1
 
-func unicmp*(x,y: Value, charset: seq[Rune], transformable: HashSet[Rune], ngraphset: seq[string], sensitive:bool = false, ascii:bool = false):int =
+func unicmp(x,y: Value, charset: seq[Rune], transformable: HashSet[Rune], ngraphset: seq[string], sensitive:bool = false, ascii:bool = false):int =
     func transformRune(ru: var Rune) =
         if transformable.contains(ru):
             ru = transformations[ru]
