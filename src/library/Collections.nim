@@ -1633,8 +1633,6 @@ proc defineSymbols*() =
                 else:
                     push(newBlock())
 
-    # TODO(Collections/sort) Could also work with string values
-    #  labels: library, new feature, open discussion
     builtin "sort",
         alias       = unaliased,
         rule        = PrefixPrecedence,
