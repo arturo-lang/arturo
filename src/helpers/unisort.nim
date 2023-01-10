@@ -275,6 +275,23 @@ proc unisort*(a: var openArray[Value], lang: string,
 proc unisort*(a: var openArray[Value], lang: string, sensitive:bool = false, order = SortOrder.Ascending, ascii:bool = false) = 
     unisort(a, lang, unicmp, sensitive, order, ascii)
 
+proc unisort*(a: var ValueDict, lang: string, sensitive:bool = false, order = SortOrder.Ascending, ascii:bool = false, byValue:bool = false) =
+    let charset = getCharsetForSorting(lang)
+    let extraCharset = getExtraCharsetForSorting(lang)
+    let transformable = intersection(toHashSet(toSeq(keys(transformations))),toHashSet(extraCharset))
+    var ngraphset: seq[string]
+    if hasNgraphs(lang):
+        ngraphset = getCharsetWithNgraphs(lang)
+
+    if byValue:
+        a.sort(proc (x, y: (string, Value)): int = 
+            unicmp(x[1], y[1], charset, transformable, ngraphset, sensitive, ascii)
+        , order = order)
+    else:
+        a.sort(proc (x, y: (string, Value)): int = 
+            unicmp(newString(x[0]), newString(y[0]), charset, transformable, ngraphset, sensitive, ascii)
+        , order = order)
+
 proc unisorted*(a: openArray[Value], lang: string, cmp: CompProc,
                 sensitive:bool = false,
                 order = SortOrder.Ascending,
@@ -286,3 +303,9 @@ proc unisorted*(a: openArray[Value], lang: string, cmp: CompProc,
 
 proc unisorted*(a: openArray[Value], lang: string, sensitive:bool = false, order = SortOrder.Ascending, ascii:bool = false): ValueArray =
     unisorted(a, lang, unicmp, sensitive, order, ascii)
+
+proc unisorted*(a: ValueDict, lang: string, sensitive:bool = false, order = SortOrder.Ascending, ascii:bool = false, byValue:bool = false): ValueDict =
+    result = newOrderedTable[string, Value]()
+    for k, v in a.pairs:
+        result[k] = v
+    unisort(result, lang, sensitive, order, ascii, byValue)

@@ -670,19 +670,27 @@ Art :string
 
 >> sort - .values
 
-[id:012568 surname:Doe name:John city:Manchester age:45] :dictionary 
-[id:012568 surname:Doe name:John city:Manchester age:45] :dictionary 
+[age:45 id:012568 surname:Doe name:John city:Manchester] :dictionary 
+[age:45 id:012568 surname:Doe name:John city:Manchester] :dictionary 
 
 >> sort - .sensitive .as with :block and :dictionary
 
 aberración abismo dos perversión tres uno Uno ábaco 
 aberración abismo dos perversión tres uno Uno ábaco 
+[h:aberración g:abismo b:dos e:perversión c:tres a:uno d:Uno f:ábaco]
+[h:aberración g:abismo b:dos e:perversión c:tres a:uno d:Uno f:ábaco]
 ábaco aberración abismo dos perversión tres uno Uno 
 ábaco aberración abismo dos perversión tres uno Uno 
+[f:ábaco h:aberración g:abismo b:dos e:perversión c:tres a:uno d:Uno]
+[f:ábaco h:aberración g:abismo b:dos e:perversión c:tres a:uno d:Uno]
 Uno aberración abismo dos perversión tres uno ábaco 
 Uno aberración abismo dos perversión tres uno ábaco 
+[d:Uno h:aberración g:abismo b:dos e:perversión c:tres a:uno f:ábaco]
+[d:Uno h:aberración g:abismo b:dos e:perversión c:tres a:uno f:ábaco]
 Uno ábaco aberración abismo dos perversión tres uno 
 Uno ábaco aberración abismo dos perversión tres uno 
+[d:Uno f:ábaco h:aberración g:abismo b:dos e:perversión c:tres a:uno]
+[d:Uno f:ábaco h:aberración g:abismo b:dos e:perversión c:tres a:uno]
 0 1 2 3 4 5 6 7 8 9 10 
 0 1 2 3 4 5 6 7 8 9 10 
 [k:0 j:1 i:2 h:3 g:4 f:5 e:6 d:7 c:8 b:9 a:10]
@@ -692,12 +700,20 @@ Uno ábaco aberración abismo dos perversión tres uno
 
 ábaco uno Uno tres perversión dos abismo aberración 
 ábaco uno Uno tres perversión dos abismo aberración 
+[f:ábaco a:uno d:Uno c:tres e:perversión b:dos g:abismo h:aberración]
+[f:ábaco a:uno d:Uno c:tres e:perversión b:dos g:abismo h:aberración]
 uno Uno tres perversión dos abismo aberración ábaco 
 uno Uno tres perversión dos abismo aberración ábaco 
+[a:uno d:Uno c:tres e:perversión b:dos g:abismo h:aberración f:ábaco]
+[a:uno d:Uno c:tres e:perversión b:dos g:abismo h:aberración f:ábaco]
 ábaco uno tres perversión dos abismo aberración Uno 
 ábaco uno tres perversión dos abismo aberración Uno 
+[f:ábaco a:uno c:tres e:perversión b:dos g:abismo h:aberración d:Uno]
+[f:ábaco a:uno c:tres e:perversión b:dos g:abismo h:aberración d:Uno]
 uno tres perversión dos abismo aberración ábaco Uno 
 uno tres perversión dos abismo aberración ábaco Uno 
+[a:uno c:tres e:perversión b:dos g:abismo h:aberración f:ábaco d:Uno]
+[a:uno c:tres e:perversión b:dos g:abismo h:aberración f:ábaco d:Uno]
 10 9 8 7 6 5 4 3 2 1 0 
 10 9 8 7 6 5 4 3 2 1 0 
 [k:10 j:9 i:8 h:7 g:6 f:5 e:4 d:3 c:2 b:1 a:0]

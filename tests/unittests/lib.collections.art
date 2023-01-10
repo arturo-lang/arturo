@@ -1279,7 +1279,6 @@ do [
 
     ]
 
-    ; [Collections/sort] attributes missing for :dictionary #922
     topic "sort - .sensitive .as with :block and :dictionary"
     do [
 
@@ -1288,19 +1287,18 @@ do [
         sort 'a1, print a1
         ; => [aberración abismo dos perversión tres uno Uno ábaco]
 
-        ; d1: #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
-        ; print sort.values #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
-        ; sort.values 'd1, print d1
-        ; ; => [h:aberración g:abismo b:dos e:perversión c:tres a:uno d:Uno f:ábaco]
+        d1: #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        print sort.values #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        sort.values 'd1, print d1
 
         a2: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
         print sort.as: 'es ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
         sort.as: 'es 'a2, print a2
         ; => [ábaco aberración abismo dos perversión tres uno Uno]
 
-        ; d2: #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
-        ; print sort.values.as: 'es #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
-        ; sort.values.as: 'es 'd2, print d2
+        d2: #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        print sort.values.as: 'es #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        sort.values.as: 'es 'd2, print d2
         ; ; => [f:ábaco h:aberración g:abismo b:dos e:perversión c:tres a:uno d:Uno]
 
         a3: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
@@ -1308,9 +1306,9 @@ do [
         sort.sensitive 'a3, print a3
         ; => [Uno aberración abismo dos perversión tres uno ábaco]
 
-        ; d3: #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
-        ; print sort.values.sensitive #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
-        ; sort.values.sensitive 'd3, print d3
+        d3: #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        print sort.values.sensitive #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        sort.values.sensitive 'd3, print d3
         ; ; => [d:Uno h:aberración g:abismo b:dos e:perversión c:tres a:uno f:ábaco]
 
         a4: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
@@ -1318,9 +1316,9 @@ do [
         sort.sensitive.as: 'es 'a4, print a4
         ; => [Uno ábaco aberración abismo dos perversión tres uno]
 
-        ; d4: #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
-        ; print sort.values.sensitive.as: 'es #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
-        ; sort.values.sensitive.as: 'es 'd4, print d4
+        d4: #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        print sort.values.sensitive.as: 'es #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        sort.values.sensitive.as: 'es 'd4, print d4
         ; ; => [d:Uno f:ábaco h:aberración g:abismo b:dos e:perversión c:tres a:uno]
 
         a5: [10 9 8 7 6 5 4 3 2 1 0]
@@ -1342,21 +1340,19 @@ do [
         a1: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
         print sort.descending ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
         sort.descending 'a1, print a1
-        ; => [ábaco uno Uno tres perversión dos abismo aberración]
 
-        ; d1: #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
-        ; print sort.descending.values #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
-        ; sort.descending.values 'd1, print d1
-        ; ; => [f:ábaco a:uno d:Uno c:tres e:perversión b:dos g:abismo h:aberración ]
+        d1: #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        print sort.descending.values #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        sort.descending.values 'd1, print d1
 
         a2: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
         print sort.descending.as: 'es ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
         sort.descending.as: 'es 'a2, print a2
         ; => [uno Uno tres perversión dos abismo aberración ábaco]
 
-        ; d2: #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
-        ; print sort.descending.values.as: 'es #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
-        ; sort.descending.values.as: 'es 'd2, print d2
+        d2: #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        print sort.descending.values.as: 'es #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        sort.descending.values.as: 'es 'd2, print d2
         ; ; => [a:uno d:Uno c:tres e:perversión b:dos g:abismo h:aberración f:ábaco]
 
         a3: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
@@ -1364,9 +1360,9 @@ do [
         sort.descending.sensitive 'a3, print a3
         ; => [ábaco uno tres perversión dos abismo aberración Uno]
 
-        ; d3: #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
-        ; print sort.descending.values.sensitive #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
-        ; sort.descending.values.sensitive 'd3, print d3
+        d3: #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        print sort.descending.values.sensitive #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        sort.descending.values.sensitive 'd3, print d3
         ; ; => [f:ábaco a:uno c:tres e:perversión b:dos g:abismo h:aberración d:Uno]
 
         a4: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
@@ -1374,9 +1370,9 @@ do [
         sort.descending.sensitive.as: 'es 'a4, print a4
         ; => [uno tres perversión dos abismo aberración ábaco Uno]
 
-        ; d4: #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
-        ; print sort.descending.values.sensitive.as: 'es #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
-        ; sort.descending.values.sensitive.as: 'es 'd4, print d4
+        d4: #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        print sort.descending.values.sensitive.as: 'es #[a:"uno" b:"dos" c:"tres" d:"Uno" e:"perversión" f:"ábaco" g:"abismo" h:"aberración"]
+        sort.descending.values.sensitive.as: 'es 'd4, print d4
         ; ; => [a:uno c:tres e:perversión b:dos g:abismo h:aberración f:ábaco d:Uno]
 
         a5: [0 1 2 3 4 5 6 7 8 9 10]
