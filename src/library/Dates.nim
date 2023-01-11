@@ -250,6 +250,21 @@ proc defineSymbols*() =
             #=======================================================
             push(newDate(now()))
 
+    
+    builtin "past?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if given date is in the past",
+        args        = {
+            "date"  : {Date}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+        """:
+            #=======================================================
+            push(newLogical(now() > x.eobj))
+
     builtin "saturday?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
