@@ -169,6 +169,24 @@ proc defineSymbols*() =
             #=======================================================
             push(newLogical(x.eobj.weekday == dFri))
 
+    builtin "future?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if given date is in the future",
+        args        = {
+            "date"  : {Date}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            futureDate: after.weeks:2 now
+
+            print future? now           ; false
+            print future? futureDate    ; true
+        """:
+            #=======================================================
+            push(newLogical(x.eobj > now()))
+
     builtin "leap?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -236,6 +254,28 @@ proc defineSymbols*() =
             #=======================================================
             push(newDate(now()))
 
+    
+    builtin "past?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if given date is in the past",
+        args        = {
+            "date"  : {Date}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            pastDate: before.weeks:2 now
+            futureDate: after.weeks:1 now
+
+            print past? futureDate      ; false
+            print past? pastDate        ; true
+
+            print past? now             ; true ("now" has already become past...)
+        """:
+            #=======================================================
+            push(newLogical(now() > x.eobj))
+
     builtin "saturday?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -280,6 +320,26 @@ proc defineSymbols*() =
         """:
             #=======================================================
             push(newLogical(x.eobj.weekday == dThu))
+
+    builtin "today?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if given date is today",
+        args        = {
+            "date"  : {Date}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            print today? now                    ; true
+            
+            print today? after.hours: 24 now    ; false
+        """:
+            #=======================================================
+            let rightNow = now()
+
+            push(newLogical(x.eobj.year == rightNow.year and
+                            x.eobj.yearday == rightNow.yearday))
 
     builtin "tuesday?",
         alias       = unaliased, 
