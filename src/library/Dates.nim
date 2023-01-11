@@ -331,6 +331,9 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
+            print today? now                    ; true
+            
+            print today? after.hours: 24 now    ; false
         """:
             #=======================================================
             let rightNow = now()
