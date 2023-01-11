@@ -326,7 +326,9 @@ proc defineSymbols*() =
             if checkAttr("times"):
                 times = aTimes.i
 
-            let evaled = evalOrGet(x)
+            var evaled: Translation
+            if x.kind != String:
+                evaled = evalOrGet(x)
 
             while currentTime < times:
                 if x.kind in {Block,Bytecode}:
