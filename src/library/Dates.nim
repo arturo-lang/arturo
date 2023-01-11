@@ -321,6 +321,23 @@ proc defineSymbols*() =
             #=======================================================
             push(newLogical(x.eobj.weekday == dThu))
 
+    builtin "today?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if given date is today",
+        args        = {
+            "date"  : {Date}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+        """:
+            #=======================================================
+            let rightNow = now()
+
+            push(newLogical(x.eobj.year == rightNow.year and
+                            x.eobj.yearday == rightNow.yearday))
+
     builtin "tuesday?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
