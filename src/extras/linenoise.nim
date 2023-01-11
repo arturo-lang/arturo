@@ -21,9 +21,15 @@ import os
 
 {.passC: "-I" & parentDir(currentSourcePath()) .}
 
-{.compile("linenoise/linenoise.c", "-DUSE_UTF8 -I" & parentDir(currentSourcePath())).}
-{.compile("linenoise/stringbuf.c", "-DUSE_UTF8 -I" & parentDir(currentSourcePath())).}
-{.compile("linenoise/utf8.c", "-DUSE_UTF8 -I" & parentDir(currentSourcePath())).}
+# TODO(extras/linenoise) UTF-8 support not working properly
+#  should add -DUSE_UTF8 for UTF-8 support
+#  to all following lines
+#  the problem is that - although it "works" - different characters are not shown at all:
+#  e.g. accented characters, or ø - our symbol for null
+#  labels: bug, 3rd-party, repl
+{.compile("linenoise/linenoise.c", "-I" & parentDir(currentSourcePath())).}
+{.compile("linenoise/stringbuf.c", "-I" & parentDir(currentSourcePath())).}
+{.compile("linenoise/utf8.c", "-I" & parentDir(currentSourcePath())).}
 
 #=======================================
 # Types
