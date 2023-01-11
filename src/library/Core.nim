@@ -327,7 +327,7 @@ proc defineSymbols*() =
                 times = aTimes.i
 
             var evaled: Translation
-            if x.kind==Block:
+            if x.kind != String:
                 evaled = evalOrGet(x)
 
             while currentTime < times:
