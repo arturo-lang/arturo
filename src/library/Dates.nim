@@ -169,6 +169,20 @@ proc defineSymbols*() =
             #=======================================================
             push(newLogical(x.eobj.weekday == dFri))
 
+    builtin "future?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if given date is in the future",
+        args        = {
+            "date"  : {Date}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+        """:
+            #=======================================================
+            push(newLogical(x.eobj > now()))
+
     builtin "leap?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
