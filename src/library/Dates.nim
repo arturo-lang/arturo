@@ -179,6 +179,10 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
+            futureDate: after.weeks:2 now
+
+            print future? now           ; false
+            print future? futureDate    ; true
         """:
             #=======================================================
             push(newLogical(x.eobj > now()))
