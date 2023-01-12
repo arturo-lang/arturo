@@ -476,6 +476,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         foundSwitch = false
 
     proc optimizeWhile(consts: var ValueArray, it: var VBinary) {.enforceNoRaises.} =
+        # TODO(VM/eval) `optimizeWhile` does not correctly process `null` condition
+        #  in a few words: when it's an infinite while loop
+        #  labels: vm, evaluator, enhancement
         if OpCode(currentCommand[^1]) == opWhile:
 
             let (cnstId, shift) = getConstIdWithShift(currentCommand, 0)
