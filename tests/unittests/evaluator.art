@@ -5,31 +5,35 @@ spacer: "        "
 supersection: function [title][
     cl: #magenta
     print ""
-    print color cl repeat "*" 30
+    print color cl repeat "*" 50
+    print color cl "*"
     print color cl "* " ++ title
-    print color cl repeat "*" 30
+    print color cl "*"
+    print color cl repeat "*" 50
 ]
 
 topic: function [title][
     print ""
-    print spacer ++ repeat "*" 30
-    print spacer ++ "* " ++ title
-    print spacer ++ repeat "*" 30
+    print spacer ++ ">" ++ repeat "-" 50
+    print spacer ++ "> " ++ color.bold #white title
+    print spacer ++ ">" ++ repeat "-" 50
     print ""
-    print spacer ++ repeat "-" 50
 ]
 
 byteCode: function [blk][
     btc: to :bytecode blk ++ [] ; this little hack is needed to remove newlines from our block
                                 ; thus, avoiding all opEol/opEolX bytecode being produced
-    inspect btc
+                                
+    inspect btc    ; uncomment this line to see the bytecode
+                    ; in a more readable format
     prints spacer
     print ["input:" as.code blk]
     prints spacer
     print ["data:" get btc 'data]
     prints spacer
-    print ["code:" get btc 'code]
-    print spacer ++ repeat "-" 50
+    cd: get btc 'code
+    print ["code:" cd "(" ++ (to :string size cd) ++ " bytes)"]
+    print ""
 ]
 
 ; Main unit-tests
