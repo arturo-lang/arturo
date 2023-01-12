@@ -385,7 +385,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         
         foundUnless = false
 
-    proc optimizeLess(consts: var ValueArray, it: var VBinary) {.enforceNoRaises.} =
+    proc optimizeElse(consts: var ValueArray, it: var VBinary) {.enforceNoRaises.} =
         let (cnstId, shift) = getConstIdWithShift(currentCommand, 0)
 
         if cnstId != -1:
@@ -563,7 +563,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
             optimizeUnless(consts, it)
         
         elif foundElse and it[^1] == byte(opNop):
-            optimizeLess(consts, it)
+            optimizeElse(consts, it)
 
         elif foundSwitch:
             optimizeSwitch(consts, it)
