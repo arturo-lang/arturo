@@ -117,6 +117,11 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         else:
             currentCommand.insert(b, at)
 
+    # TODO(VM/eval) remove constants that have been optimized away
+    #  For example, if/unless/else/switch/while usually optimize away their blocks;
+    #  so, IF they are not used by anything else in our code, we could optimize them away.
+    #  In that case, we could obviously use a CountTable to resolve the times each constant is used.
+    #  labels: vm, evaluator, performance, enhancement
     proc addConst(currentCommand: var VBinary, consts: var ValueArray, v: Value, op: OpCode) {.inline,enforceNoRaises.} =
         var indx = consts.indexOfValue(v)
         if indx == -1:
