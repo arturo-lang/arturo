@@ -1654,3 +1654,180 @@ supersection "OPTIMIZATIONS"
         ; push4
         ; print
         ; end
+
+    ;*****************************************************************
+    topic "unless"
+    ;*****************************************************************
+
+        byteCode [
+            print "before"
+            unless x [print "here", return false]
+            print "after"
+        ]
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: before :string
+        ; 1: x :word
+        ; 2: [ :block
+        ;         print :word
+        ;         here :string
+        ;         return :word
+        ;         false :word
+        ; ]
+        ; 3: here :string
+        ; 4: after :string
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; push0
+        ; print
+        ; load1
+        ; jmpif                 #4
+        ; push3
+        ; print
+        ; constbf
+        ; return
+        ; push4
+        ; print
+        ; end
+
+        byteCode [
+            print "before"
+            unless not? x [print "here", return true]
+            print "after"
+        ]
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: before :string
+        ; 1: x :word
+        ; 2: [ :block
+        ;         print :word
+        ;         here :string
+        ;         return :word
+        ;         true :word
+        ; ]
+        ; 3: here :string
+        ; 4: after :string
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; push0
+        ; print
+        ; load1
+        ; jmpifnot                 #4
+        ; push3
+        ; print
+        ; constbt
+        ; return
+        ; push4
+        ; print
+        ; end
+
+        byteCode [
+            print "before"
+            unless x=2 [print "here", return false]
+            print "after"
+        ]
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: before :string
+        ; 1: x :word
+        ; 2: [ :block
+        ;         print :word
+        ;         here :string
+        ;         return :word
+        ;         false :word
+        ; ]
+        ; 3: here :string
+        ; 4: after :string
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; push0
+        ; print
+        ; consti2
+        ; load1
+        ; jmpifeq                 #4
+        ; push3
+        ; print
+        ; constbf
+        ; return
+        ; push4
+        ; print
+        ; end
+
+        byteCode [
+            print "before"
+            unless x>2 [print "here", return false]
+            print "after"
+        ]
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: before :string
+        ; 1: x :word
+        ; 2: [ :block
+        ;         print :word
+        ;         here :string
+        ;         return :word
+        ;         false :word
+        ; ]
+        ; 3: here :string
+        ; 4: after :string
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; push0
+        ; print
+        ; consti2
+        ; load1
+        ; jmpifgt                 #4
+        ; push3
+        ; print
+        ; constbf
+        ; return
+        ; push4
+        ; print
+        ; end
+
+        byteCode [
+            print "before"
+            unless x=<2 [print "here", return false]
+            print "after"
+        ]
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: before :string
+        ; 1: x :word
+        ; 2: [ :block
+        ;         print :word
+        ;         here :string
+        ;         return :word
+        ;         false :word
+        ; ]
+        ; 3: here :string
+        ; 4: after :string
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; push0
+        ; print
+        ; consti2
+        ; load1
+        ; jmpifle                 #4
+        ; push3
+        ; print
+        ; constbf
+        ; return
+        ; push4
+        ; print
+        ; end
