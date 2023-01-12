@@ -1914,3 +1914,175 @@ supersection "OPTIMIZATIONS"
         ; push6
         ; print
         ; end
+
+    ;*****************************************************************
+    topic "switch (`?`)"
+    ;*****************************************************************
+
+        byteCode [
+            print "before"
+            switch a [1][2]
+            print "after"
+        ]
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: before :string
+        ; 1: a :word
+        ; 2: [ :block
+        ;         1 :integer
+        ; ]
+        ; 3: [ :block
+        ;         2 :integer
+        ; ]
+        ; 4: after :string
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; push0
+        ; print
+        ; load1
+        ; jmpifnot                 #4
+        ; consti1
+        ; goto                 #1
+        ; consti2
+        ; push4
+        ; print
+        ; end
+
+        byteCode [(x = 1)? -> 1 -> 2]
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: x :word
+        ; 1: [ :block
+        ;         1 :integer
+        ; ]
+        ; 2: [ :block
+        ;         2 :integer
+        ; ]
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; consti1
+        ; load0
+        ; jmpifne                 #4
+        ; consti1
+        ; goto                 #1
+        ; consti2
+        ; end
+
+        byteCode [
+            print "before"
+            return (x<1)? -> true -> false
+            print "after"
+        ]
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: before :string
+        ; 1: x :word
+        ; 2: [ :block
+        ;         true :word
+        ; ]
+        ; 3: [ :block
+        ;         false :word
+        ; ]
+        ; 4: after :string
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; push0
+        ; print
+        ; consti1
+        ; load1
+        ; jmpifge                 #4
+        ; constbt
+        ; goto                 #1
+        ; constbf
+        ; return
+        ; push4
+        ; print
+        ; end
+
+        byteCode [
+            print "before"
+            z: (x<1)? -> true -> false
+            print "after"
+        ]
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: before :string
+        ; 1: z :label
+        ; 2: x :word
+        ; 3: [ :block
+        ;         true :word
+        ; ]
+        ; 4: [ :block
+        ;         false :word
+        ; ]
+        ; 5: after :string
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; push0
+        ; print
+        ; consti1
+        ; load2
+        ; jmpifge                 #4
+        ; constbt
+        ; goto                 #1
+        ; constbf
+        ; store1
+        ; push5
+        ; print
+        ; end
+
+        byteCode [
+            print "before"
+            z: 3 + (x>=1)? -> 1 -> 2
+            print "after"
+        ]
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: before :string
+        ; 1: z :label
+        ; 2: x :word
+        ; 3: [ :block
+        ;         1 :integer
+        ; ]
+        ; 4: [ :block
+        ;         2 :integer
+        ; ]
+        ; 5: after :string
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; push0
+        ; print
+        ; consti1
+        ; load2
+        ; jmpiflt                 #4
+        ; consti1
+        ; goto                 #1
+        ; consti2
+        ; consti3
+        ; add
+        ; store1
+        ; push5
+        ; print
+        ; end
+
+        ; TODO: this is not working!!! (see #817)
+        ; byteCode [
+        ;     print "before"
+        ;     return ((x>1)? -> 2 -> 3) + (y<4)? -> 5 -> 6
+        ;     print "after"
+        ; ]
