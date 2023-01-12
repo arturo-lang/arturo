@@ -601,3 +601,60 @@ supersection "COMPOSITE CONSTRUCTS"
         ; consti1
         ; band
         ; end
+
+    ;*****************************************************************
+    topic "Function calls with attributes"
+    ;*****************************************************************
+
+        byteCode [split.words "hello world"]
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: words :attribute
+        ; 1: hello world :string
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; push1
+        ; constbt
+        ; attr0
+        ; split
+        ; end
+
+        byteCode [split.by:"X" "helloXworld"]
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: by :attributelabel
+        ; 1: X :string
+        ; 2: helloXworld :string
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; push2
+        ; push1
+        ; attr0
+        ; split
+        ; end
+
+        byteCode [join.with:"-" ["hello" "world"]]
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: with :attributelabel
+        ; 1: - :string
+        ; 2: [ :block
+        ;         hello :string
+        ;         world :string
+        ; ]
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; push2
+        ; push1
+        ; attr0
+        ; join
+        ; end
