@@ -266,6 +266,23 @@
 
 
         >--------------------------------------------------
+        > Composite opcoded built-in function calls
+        >--------------------------------------------------
+
+        input: [to :floating 1] 
+        data: [:floating] 
+        code: [1 32 157 211] (4 bytes) 
+
+        input: [to :integer "10"] 
+        data: [10] 
+        code: [32 159 211] (3 bytes) 
+
+        input: [to :string 5] 
+        data: [] 
+        code: [5 158 211] (3 bytes) 
+
+
+        >--------------------------------------------------
         > Function calls with attributes
         >--------------------------------------------------
 
@@ -432,4 +449,157 @@
 
         input: [2 | print] 
         data: [print] 
-        code: [2 96 211] (3 bytes)
+        code: [2 96 211] (3 bytes) 
+
+
+**************************************************
+*
+* OPTIMIZATIONS
+*
+**************************************************
+
+        >--------------------------------------------------
+        > add (`+`)
+        >--------------------------------------------------
+
+        input: [add 2 3] 
+        data: [] 
+        code: [3 2 128 211] (4 bytes) 
+
+        input: [2 + 3] 
+        data: [] 
+        code: [3 2 128 211] (4 bytes) 
+
+        input: [add 1 2] 
+        data: [] 
+        code: [2 174 211] (3 bytes) 
+
+        input: [1 + 2] 
+        data: [] 
+        code: [2 174 211] (3 bytes) 
+
+        input: [add 2 1] 
+        data: [] 
+        code: [2 174 211] (3 bytes) 
+
+        input: [2 + 1] 
+        data: [] 
+        code: [2 174 211] (3 bytes) 
+
+
+        >--------------------------------------------------
+        > sub (`-`)
+        >--------------------------------------------------
+
+        input: [sub 3 2] 
+        data: [] 
+        code: [2 3 129 211] (4 bytes) 
+
+        input: [3 - 2] 
+        data: [] 
+        code: [2 3 129 211] (4 bytes) 
+
+        input: [sub 2 1] 
+        data: [] 
+        code: [2 175 211] (3 bytes) 
+
+        input: [2 - 1] 
+        data: [] 
+        code: [2 175 211] (3 bytes) 
+
+
+        >--------------------------------------------------
+        > if
+        >--------------------------------------------------
+
+        input: [print "before" if x [print "here" return true] print "after"] 
+        data: [before x [print here return true] here after] 
+        code: [32 176 65 198 0 4 35 176 21 156 36 176 211] (13 bytes) 
+
+        input: [print "before" if not? x [print "here" return false] print "after"] 
+        data: [before x [print here return false] here after] 
+        code: [32 176 65 197 0 4 35 176 22 156 36 176 211] (13 bytes) 
+
+        input: [print "before" if x = 2 [print "here" return true] print "after"] 
+        data: [before x [print here return true] here after] 
+        code: [32 176 2 65 200 0 4 35 176 21 156 36 176 211] (14 bytes) 
+
+        input: [print "before" if x > 2 [print "here" return true] print "after"] 
+        data: [before x [print here return true] here after] 
+        code: [32 176 2 65 204 0 4 35 176 21 156 36 176 211] (14 bytes) 
+
+        input: [print "before" if x =< 2 [print "here" return true] print "after"] 
+        data: [before x [print here return true] here after] 
+        code: [32 176 2 65 201 0 4 35 176 21 156 36 176 211] (14 bytes) 
+
+
+        >--------------------------------------------------
+        > unless
+        >--------------------------------------------------
+
+        input: [print "before" unless x [print "here" return false] print "after"] 
+        data: [before x [print here return false] here after] 
+        code: [32 176 65 197 0 4 35 176 22 156 36 176 211] (13 bytes) 
+
+        input: [print "before" unless not? x [print "here" return true] print "after"] 
+        data: [before x [print here return true] here after] 
+        code: [32 176 65 198 0 4 35 176 21 156 36 176 211] (13 bytes) 
+
+        input: [print "before" unless x = 2 [print "here" return false] print "after"] 
+        data: [before x [print here return false] here after] 
+        code: [32 176 2 65 199 0 4 35 176 22 156 36 176 211] (14 bytes) 
+
+        input: [print "before" unless x > 2 [print "here" return false] print "after"] 
+        data: [before x [print here return false] here after] 
+        code: [32 176 2 65 201 0 4 35 176 22 156 36 176 211] (14 bytes) 
+
+        input: [print "before" unless x =< 2 [print "here" return false] print "after"] 
+        data: [before x [print here return false] here after] 
+        code: [32 176 2 65 204 0 4 35 176 22 156 36 176 211] (14 bytes) 
+
+
+        >--------------------------------------------------
+        > if-else
+        >--------------------------------------------------
+
+        input: [if? x [return true] else [return false]] 
+        data: [x [return true] [return false]] 
+        code: [64 198 0 5 21 156 208 0 2 22 156 211] (12 bytes) 
+
+        input: [print "before" if? a <> 1 + 2 [print "here" return true] else [print "there" return false] print "after"] 
+        data: [before a [print here return true] here [print there return false] there after] 
+        code: [32 176 2 1 128 65 199 0 7 35 176 21 156 208 0 4 37 176 22 156 38 176 211] (23 bytes) 
+
+
+        >--------------------------------------------------
+        > switch (`?`)
+        >--------------------------------------------------
+
+        input: [print "before" switch a [1] [2] print "after"] 
+        data: [before a [1] [2] after] 
+        code: [32 176 65 198 0 4 1 208 0 1 2 36 176 211] (14 bytes) 
+
+        input: [(x = 1) ? -> 1 -> 2] 
+        data: [x [1] [2]] 
+        code: [1 64 200 0 4 1 208 0 1 2 211] (11 bytes) 
+
+        input: [print "before" return (x < 1) ? -> true -> false print "after"] 
+        data: [before x [true] [false] after] 
+        code: [32 176 1 65 202 0 4 21 208 0 1 22 156 36 176 211] (16 bytes) 
+
+        input: [print "before" z: (x < 1) ? -> true -> false print "after"] 
+        data: [before z x [true] [false] after] 
+        code: [32 176 1 66 202 0 4 21 208 0 1 22 49 37 176 211] (16 bytes) 
+
+        input: [print "before" z: 3 + (x >= 1) ? -> 1 -> 2 print "after"] 
+        data: [before z x [1] [2] after] 
+        code: [32 176 1 66 203 0 4 1 208 0 1 2 3 128 49 37 176 211] (18 bytes) 
+
+
+        >--------------------------------------------------
+        > while
+        >--------------------------------------------------
+
+        input: [while [x = 1] [print "hello"]] 
+        data: [[x = 1] [print hello] x hello] 
+        code: [1 66 200 0 5 35 176 209 0 10 211] (11 bytes)
