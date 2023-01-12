@@ -20,7 +20,8 @@ topic: function [title][
 ]
 
 byteCode: function [blk][
-    btc: to :bytecode blk
+    btc: to :bytecode blk ++ [] ; this little hack is needed to remove newlines from our block
+                                ; thus, avoiding all opEol/opEolX bytecode being produced
     inspect btc
     prints spacer
     print ["input:" as.code blk]
@@ -459,4 +460,46 @@ supersection "SIMPLE VALUES"
     ;  CODE
     ; ================================
     ; load0
+    ; end
+
+;/////////////////////////////////////////////////////////
+supersection "COMPOSITE CONSTRUCTS"
+;/////////////////////////////////////////////////////////
+
+    ;*****************************************************************
+    topic "Setting and getting variables"
+    ;*****************************************************************
+
+    byteCode [
+        a: 1
+    ]
+    ; ================================
+    ;  DATA
+    ; ================================
+    ; 0: a :label
+
+    ; ================================
+    ;  CODE
+    ; ================================
+    ; consti1
+    ; store0
+    ; end
+
+    byteCode [
+        b: 2
+        c: b
+    ]
+    ; ================================
+    ;  DATA
+    ; ================================
+    ; 0: b :label
+    ; 1: c :label
+
+    ; ================================
+    ;  CODE
+    ; ================================
+    ; consti2
+    ; store0
+    ; load0
+    ; store1
     ; end
