@@ -2086,3 +2086,41 @@ supersection "OPTIMIZATIONS"
         ;     return ((x>1)? -> 2 -> 3) + (y<4)? -> 5 -> 6
         ;     print "after"
         ; ]
+
+    ;*****************************************************************
+    topic "while"
+    ;*****************************************************************
+
+        byteCode [
+            while [x=1][print "hello"]
+        ]
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: [ :block
+        ;         x :word
+        ;         = :symbol
+        ;         1 :integer
+        ; ]
+        ; 1: [ :block
+        ;         print :word
+        ;         hello :string
+        ; ]
+        ; 2: x :word
+        ; 3: hello :string
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; consti1
+        ; load2
+        ; jmpifne                 #5
+        ; push3
+        ; print
+        ; goup                 #10
+        ; end
+
+        ; TODO: this is not working!!!
+        ; byteCode [
+        ;     while ø [print "hello"]
+        ; ]
