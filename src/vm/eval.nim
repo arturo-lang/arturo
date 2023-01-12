@@ -188,6 +188,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 ], atPos)
 
     proc evalFunctionCall(currentCommand: var VBinary, fun: var Value, toHead: bool, checkAhead: bool, i: var int, funcArity: var int8): bool {.enforceNoRaises.} =
+        # TODO(VM/eval) `do` should also correspond to a distinct opCode
+        #  labels: vm, bytecode, evaluator, enhancement, performance
         var bt: OpCode = opNop
         var doElse = true
 
