@@ -528,6 +528,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         foundWhile = false
 
     proc optimizeAdd(consts: var ValueArray, it: var VBinary) {.enforceNoRaises.} =
+        # TODO(VM/eval) `optimizeAdd` not correctly handling stores
+        #  e.g. [a: b + 1]
+        #  labels: vm, evaluator, enhancement, bug
         if OpCode(currentCommand[^1]) == opAdd:
             if currentCommand.len == 3 and OpCode(currentCommand[0])==opConstI1:
                 currentCommand = @[currentCommand[1], byte(opInc)]
@@ -544,6 +547,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         foundAdd = false
 
     proc optimizeSub(consts: var ValueArray, it: var VBinary) {.enforceNoRaises.} =
+        # TODO(VM/eval) `optimizeSub` not correctly handling stores
+        #  e.g. [a: b - 1]
+        #  labels: vm, evaluator, enhancement, bug
         if OpCode(currentCommand[^1]) == opSub:
             if currentCommand.len == 3 and OpCode(currentCommand[0])==opConstI1:
                 currentCommand = @[currentCommand[1], byte(opDec)]
