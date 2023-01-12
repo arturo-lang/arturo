@@ -630,6 +630,8 @@ proc defineSymbols*() =
                     else:
                         push(newBlock(@[x]))
 
+    # TODO(Converters/as) is `.unwrapped` working as expected?
+    #  labels: library, bug
     builtin "as",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
