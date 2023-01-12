@@ -10,6 +10,7 @@ topic: function [title][
 byteCode: function [blk][
     btc: to :bytecode blk
     ;inspect btc
+    print ["input:" as.code blk]
     print ["data:" get btc 'data]
     print ["code:" get btc 'code]
     print repeat "-" 50
