@@ -713,3 +713,121 @@ supersection "COMPOSITE CONSTRUCTS"
         ; consti1
         ; range
         ; end
+
+    ;*****************************************************************
+    topic "User function definition & calling"
+    ;*****************************************************************
+
+        byteCode [
+            h: function [][print "function called"]
+
+            print "before"
+            h
+            print "after"
+        ]
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: h :label
+        ; 1: [ :block
+        ;         print :word
+        ;         function called :string
+        ; ]
+        ; 2: before :string
+        ; 3: after :string
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; push1
+        ; consta
+        ; func
+        ; store0
+        ; push2
+        ; print
+        ; call0
+        ; push3
+        ; print
+        ; end
+
+        byteCode [
+            f: function [x][x + 1]
+
+            print "before"
+            print f 10
+            print "after"
+        ]
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: f :label
+        ; 1: [ :block
+        ;         x :word
+        ; ]
+        ; 2: [ :block
+        ;         x :word
+        ;         + :symbol
+        ;         1 :integer
+        ; ]
+        ; 3: before :string
+        ; 4: after :string
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; push2
+        ; push1
+        ; func
+        ; store0
+        ; push3
+        ; print
+        ; consti10
+        ; call0
+        ; print
+        ; push4
+        ; print
+        ; end
+
+        byteCode [
+            g: $[z w][2 * z * w]
+
+            print "before"
+            print g 10 20
+            print "after"
+        ]
+
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: g :label
+        ; 1: [ :block
+        ;         z :word
+        ;         w :word
+        ; ]
+        ; 2: [ :block
+        ;         2 :integer
+        ;         * :symbol
+        ;         z :word
+        ;         * :symbol
+        ;         w :word
+        ; ]
+        ; 3: before :string
+        ; 4: 20 :integer
+        ; 5: after :string
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; push2
+        ; push1
+        ; func
+        ; store0
+        ; push3
+        ; print
+        ; push4
+        ; consti10
+        ; call0
+        ; print
+        ; push5
+        ; print
+        ; end
