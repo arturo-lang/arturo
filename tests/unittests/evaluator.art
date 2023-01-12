@@ -24,7 +24,7 @@ byteCode: function [blk][
     btc: to :bytecode blk ++ [] ; this little hack is needed to remove newlines from our block
                                 ; thus, avoiding all opEol/opEolX bytecode being produced
 
-    ;inspect btc    ; uncomment this line to see the bytecode
+    inspect btc    ; uncomment this line to see the bytecode
                     ; in a more readable format
     prints spacer
     print ["input:" as.code blk]
@@ -636,6 +636,49 @@ supersection "FUNCTION CALLS"
         ; push0
         ; consti1
         ; band
+        ; end
+
+    ;*****************************************************************
+    topic "Composite opcoded built-in function calls"
+    ;*****************************************************************
+
+        byteCode [to :floating 1]
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: floating :type
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; consti1
+        ; push0
+        ; to
+        ; end
+
+        byteCode [to :integer "10"]
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: 10 :string
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; push0
+        ; toi
+        ; end
+
+        byteCode [to :string 5]
+        ; ================================
+        ;  DATA
+        ; ================================
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; consti5
+        ; tos
         ; end
 
     ;*****************************************************************
