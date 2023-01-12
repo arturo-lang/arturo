@@ -168,6 +168,19 @@
 
 
         >--------------------------------------------------
+        > Version
+        >--------------------------------------------------
+
+        input: [0.9.82] 
+        data: [0.9.82] 
+        code: [32 211] (2 bytes) 
+
+        input: [2.0.0-rc1] 
+        data: [2.0.0-rc1] 
+        code: [32 211] (2 bytes) 
+
+
+        >--------------------------------------------------
         > Block
         >--------------------------------------------------
 
@@ -349,3 +362,74 @@
         input: [ "USA"] 
         data: [user address country USA] 
         code: [35 34 33 64 160 161 211] (7 bytes) 
+
+
+**************************************************
+*
+* BLOCKS & SYNTACTIC SUGAR
+*
+**************************************************
+
+        >--------------------------------------------------
+        > Inline blocks
+        >--------------------------------------------------
+
+        input: [(print 2)] 
+        data: [] 
+        code: [2 176 211] (3 bytes) 
+
+        input: [(print 2) (print 3)] 
+        data: [] 
+        code: [2 176 3 176 211] (5 bytes) 
+
+
+        >--------------------------------------------------
+        > doublecolon syntactic sugar (`::`)
+        >--------------------------------------------------
+
+        input: [print 2 do :: print 3] 
+        data: [do [print 3]] 
+        code: [2 176 33 96 211] (5 bytes) 
+
+
+        >--------------------------------------------------
+        > arrowright syntactic sugar (`->`)
+        >--------------------------------------------------
+
+        input: [-> "hello"] 
+        data: [[hello]] 
+        code: [32 211] (2 bytes) 
+
+        input: [do -> print "hello" print "done"] 
+        data: [do [print hello] done] 
+        code: [33 96 34 176 211] (5 bytes) 
+
+        input: [a: -> upper "hello" b: -> "hello " ++ world] 
+        data: [a [upper hello] b [hello  ++ world]] 
+        code: [33 48 35 50 211] (5 bytes) 
+
+
+        >--------------------------------------------------
+        > thickarrowright syntactic sugar (`=>`)
+        >--------------------------------------------------
+
+        input: [=> "hello"] 
+        data: [[] [hello]] 
+        code: [32 33 211] (3 bytes) 
+
+        input: [f: function => print] 
+        data: [f function [_0] [print _0]] 
+        code: [35 34 97 48 211] (5 bytes) 
+
+        input: [adder: $ => add] 
+        data: [adder function [_0 _1] [add _0 _1]] 
+        code: [35 34 97 48 211] (5 bytes) 
+
+
+        >--------------------------------------------------
+        > pipe operator (`|`)
+        >--------------------------------------------------
+
+        input: [2 | print] 
+        data: [print] 
+        code: [2 96 211] (3 bytes)
