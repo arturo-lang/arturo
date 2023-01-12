@@ -21,7 +21,7 @@ topic: function [title][
 
 byteCode: function [blk][
     btc: to :bytecode blk
-    ;inspect btc
+    inspect btc
     prints spacer
     print ["input:" as.code blk]
     prints spacer
@@ -395,6 +395,38 @@ supersection "SIMPLE VALUES"
     ;  DATA
     ; ================================
     ; 0: 12:m :quantity
+
+    ; ================================
+    ;  CODE
+    ; ================================
+    ; push0
+    ; end
+
+    ;*****************************************************************
+    topic "Block"
+    ;*****************************************************************
+
+    byteCode [[]]
+    ; ================================
+    ;  DATA
+    ; ================================
+
+    ; ================================
+    ;  CODE
+    ; ================================
+    ; consta
+    ; end
+
+    byteCode [[1 "hello" 3.14 true]]
+    ; ================================
+    ;  DATA
+    ; ================================
+    ; 0: [ :block
+    ;         1 :integer
+    ;         hello :string
+    ;         3.14 :floating
+    ;         true :word
+    ; ]
 
     ; ================================
     ;  CODE
