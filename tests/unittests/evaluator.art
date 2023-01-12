@@ -1831,3 +1831,86 @@ supersection "OPTIMIZATIONS"
         ; push4
         ; print
         ; end
+
+    ;*****************************************************************
+    topic "if-else"
+    ;*****************************************************************
+
+        byteCode [
+            if? x [return true]
+            else [return false]
+        ]
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: x :word
+        ; 1: [ :block
+        ;         return :word
+        ;         true :word
+        ; ]
+        ; 2: [ :block
+        ;         return :word
+        ;         false :word
+        ; ]
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; load0
+        ; jmpifnot                 #5
+        ; constbt
+        ; return
+        ; goto                 #2
+        ; constbf
+        ; return
+        ; end
+
+        byteCode [
+            print "before"
+            if? a <> 1 + 2 [print "here", return true]
+            else [print "there", return false]
+            print "after"
+        ]
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: before :string
+        ; 1: a :word
+        ; 2: [ :block
+        ;         print :word
+        ;         here :string
+        ;         return :word
+        ;         true :word
+        ; ]
+        ; 3: here :string
+        ; 4: [ :block
+        ;         print :word
+        ;         there :string
+        ;         return :word
+        ;         false :word
+        ; ]
+        ; 5: there :string
+        ; 6: after :string
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; push0
+        ; print
+        ; consti2
+        ; consti1
+        ; add
+        ; load1
+        ; jmpifeq                 #7
+        ; push3
+        ; print
+        ; constbt
+        ; return
+        ; goto                 #4
+        ; push5
+        ; print
+        ; constbf
+        ; return
+        ; push6
+        ; print
+        ; end
