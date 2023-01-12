@@ -23,7 +23,7 @@ topic: function [title][
 byteCode: function [blk][
     btc: to :bytecode blk ++ [] ; this little hack is needed to remove newlines from our block
                                 ; thus, avoiding all opEol/opEolX bytecode being produced
-                                
+
     inspect btc    ; uncomment this line to see the bytecode
                     ; in a more readable format
     prints spacer
@@ -661,4 +661,55 @@ supersection "COMPOSITE CONSTRUCTS"
         ; push1
         ; attr0
         ; join
+        ; end
+
+    ;*****************************************************************
+    topic "Function calls via symbol aliases"
+    ;*****************************************************************
+
+        byteCode [@[1 2 3]]
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: [ :block
+        ;         1 :integer
+        ;         2 :integer
+        ;         3 :integer
+        ; ]
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; push0
+        ; array
+        ; end
+
+        byteCode ["hello " ++ "world"]
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: append :word
+        ; 1: hello  :string
+        ; 2: world :string
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; push2
+        ; push1
+        ; call0
+        ; end
+
+        byteCode [1..25]
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: 25 :integer
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; push0
+        ; consti1
+        ; range
         ; end
