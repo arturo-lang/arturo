@@ -487,6 +487,11 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         of Label        : result &= v.s & ":"
         of Attribute         : result &= "." & v.s
         of AttributeLabel    : result &= "." & v.s & ":"
+        of Path,
+           PathLabel    :
+            result = v.p.map((x) => $(x)).join("\\")
+            if v.kind==PathLabel:
+                result &= ":"
         of Symbol       :  result &= $(v.m)
         of SymbolLiteral: result &= "'" & $(v.m)
         of Quantity     : result &= $(v.nm) & ":" & toLowerAscii($(v.unit.name))
