@@ -963,7 +963,14 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                             if node.p[i].kind==Block:
                                 evalOne(node.p[i], consts, currentCommand, inBlock=true, isDictionary=isDictionary)
                             else:
-                                addConst(node.p[i], opPush)
+                                if node.p[i].kind == Integer:
+                                    if likely(node.p[i].iKind==NormalInteger):
+                                        if node.p[i].i>=0 and node.p[i].i<=15: addToCommand(byte(opConstI0) + byte(node.p[i].i))
+                                        else: addConst(node.p[i], opPush)
+                                    else:
+                                        addConst(node.p[i], opPush)
+                                else:
+                                    addConst(node.p[i], opPush)
                             i += 1
 
             of PathLabel:
