@@ -1,35 +1,47 @@
-import algorithm, hashes, sequtils
+import algorithm, hashes, sequtils, strutils
 import sugar, tables, unicode
 
 import vm/[bytecode, globals, values/value]
+import vm/values/clean
+import vm/values/printable
+import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vsocket, vversion]
 
 type
     # abstract syntax tree definition
     NodeKind* = enum
         RootNode,
-        IdentifierNode,
-        ConstantNode,
         CallNode,
-        BuiltinNode
-
-    CallNodeKind* = enum
-        AddCall,
-        SubCall,
-        OtherCall
+        TerminalNode
 
     NodeArray* = seq[Node]
+
+    NodeFlag* = enum
+        Variable,
+
+        StoreSymbol,
+        AddCall
+
+    NodeFlags* = set[NodeFlag]
 
     Node* = ref object
         case kind*: NodeKind:
             of CallNode:
-                name*: string
                 arity*: int8
-                cKind*: CallNodeKind
             else:
                 discard
+
+        value*: Value
+        flags*: NodeFlags
         parent*: Node
         children*: NodeArray
-        value*: Value
+
+    NodeObj = typeof(Node()[])
+
+# Benchmarking
+{.hints: on.} # Apparently we cannot disable just `Name` hints?
+{.hint: "Node's inner type is currently " & $sizeof(NodeObj) & ".".}
+{.hints: off.}
+        
 
 var
     TmpArities : Table[string,int8]
@@ -42,84 +54,112 @@ func addChildren*(node: Node, children: NodeArray) =
     for child in children:
         node.addChild(child)
 
-func addTerminalValue*(target: var Node, val: Node) =
-    while target.kind==CallNode and target.children.len == target.arity:
-        target = target.parent
-
-    target.addChild(val)
-
-    while target.kind==CallNode and target.children.len == target.arity:
-        target = target.parent
-
-func addFunctionCall*(target: var Node, name: string, arity: int8) =
-    target.addChild(Node(kind: CallNode, name: name, arity: arity))
-    target = target.children[^1]
-
 proc processBlock*(root: Node, blok: Value) =
     var i: int = 0
     var nLen: int = blok.a.len
 
-    var currentNode: Node = root
+    var current = root
+
+    proc addCall(target: var Node, val: Value, arity: int8, flags: NodeFlags = {}) =
+        target.addChild(
+            Node(
+                kind: CallNode, 
+                value: val,
+                arity: arity,
+                flags: flags
+            )
+        )
+        target = target.children[^1]
+
+    proc addTerminal(target: var Node, val: Value, flags: NodeFlags = {}) =
+        while target.kind==CallNode and target.children.len == target.arity:
+            target = target.parent
+
+        if i < nLen - 1:
+            let nextNode {.cursor.} = blok.a[i+1]
+            if nextNode.kind == Symbol:
+
+                if (let aliased = Aliases.getOrDefault(nextNode.m, NoAliasBinding); aliased != NoAliasBinding):
+                    var symfunc {.cursor.} = GetSym(aliased.name.s)
+
+                    if symfunc.kind==Function and aliased.precedence==InfixPrecedence:
+                        i += 1
+                        target.addCall(newString(aliased.name.s), symfunc.arity)
+
+        if val.kind==Inline:
+            var subNode = Node(kind: RootNode)
+            subNode.processBlock(val)
+            target.addChildren(subNode.children)
+        else:
+            target.addChild(
+                Node(
+                    kind: TerminalNode, 
+                    value: val, 
+                    flags: flags
+                )
+            )
+
+        while target.kind==CallNode and target.children.len == target.arity:
+            target = target.parent
 
     while i < nLen:
-        let node {.cursor.} = blok.a[i]
+        let item = blok.a[i]
 
-        case node.kind:
-
-            of Integer, Floating, String:
-                currentNode.addTerminalValue(Node(kind: ConstantNode, value: node))
+        case item.kind:
 
             of Word:
-                var funcArity = TmpArities.getOrDefault(node.s, -1)
+                var funcArity = TmpArities.getOrDefault(item.s, -1)
                 if funcArity != -1:
-                    currentNode.addFunctionCall(node.s, funcArity)
+                    current.addCall(item, funcArity)
                 else:
-                    if node.s == "true":
-                        currentNode.addTerminalValue(Node(kind: ConstantNode, value: VTRUE))
-                    elif node.s == "false":
-                        currentNode.addTerminalValue(Node(kind: ConstantNode, value: VFALSE))
+                    if item.s == "true":
+                        current.addTerminal(VTRUE)
+                    elif item.s == "false":
+                        current.addTerminal(VFALSE)
                     else:
-                        currentNode.addTerminalValue(Node(kind: IdentifierNode, value: node))
+                        current.addTerminal(item, flags={Variable})
+
+            of Label, PathLabel:
+                current.addCall(item, 1, flags={StoreSymbol})
+
+            # of Inline:
+            #     var subNode = Node(kind: RootNode)
+            #     subNode.processBlock(item)
+            #     current.addChildren(subNode.children)
+
+            of Newline:
+                discard
 
             else:
-                discard
+                current.addTerminal(item)
 
         i += 1
 
 proc dumpNode*(node: Node, level = 0): string =
-    echo "in dumpNode"
+    template indentNode(): untyped =
+        var j = 0
+        while j < level:
+            result &= "     "
+            j += 1
+
     let sep = "     "
     case node.kind:
         of RootNode:
-            var j = 0
-            while j < level:
-                result &= sep
-                j += 1
+            indentNode()
             result &= "ROOT\n"
             for child in node.children:
                 result &= dumpNode(child, level+1)
-        of IdentifierNode:
-            var j = 0
-            while j < level:
-                result &= sep
-                j += 1
-            result &= "IdentifierNode: " & node.value.s
-        of ConstantNode:
-            var j = 0
-            while j < level:
-                result &= sep
-                j += 1
-            result &= "Constant: " & $(node.value.kind)
+        of TerminalNode:
+            indentNode()
+            result &= "Constant: " & $(node.value)
         of CallNode:
-            var j = 0
-            while j < level:
-                result &= sep
-                j += 1
-            result &= "Call: " & node.name & " (" & $node.arity & ")\n"
+            indentNode()
+            if StoreSymbol in node.flags:
+                result &= "Store: " & $(node.value) & "\n"
+            else:
+                result &= "Call: " & node.value.s & " <" & $node.arity & ">\n"
             for child in node.children:
                 result &= dumpNode(child, level+1)
-        of BuiltinNode:
-            result &= "BuiltinNode: " & node.name
 
     result &= "\n"
 
