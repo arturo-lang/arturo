@@ -344,16 +344,16 @@
         >--------------------------------------------------
 
         input: [] 
-        data: [a 0] 
-        code: [33 64 160 211] (4 bytes) 
+        data: [a] 
+        code: [0 64 160 211] (4 bytes) 
 
         input: [] 
         data: [user name] 
         code: [33 64 160 211] (4 bytes) 
 
         input: [] 
-        data: [user grades 0] 
-        code: [34 33 64 160 160 211] (6 bytes) 
+        data: [user grades] 
+        code: [0 33 64 160 160 211] (6 bytes) 
 
         input: [] 
         data: [user address country] 
@@ -365,16 +365,16 @@
         >--------------------------------------------------
 
         input: [ 10] 
-        data: [a 0] 
-        code: [10 33 64 161 211] (5 bytes) 
+        data: [a] 
+        code: [10 0 64 161 211] (5 bytes) 
 
         input: [ "John"] 
         data: [user name John] 
         code: [34 33 64 161 211] (5 bytes) 
 
         input: [ 6] 
-        data: [user grades 0] 
-        code: [6 34 33 64 160 161 211] (7 bytes) 
+        data: [user grades] 
+        code: [6 0 33 64 160 161 211] (7 bytes) 
 
         input: [ "USA"] 
         data: [user address country USA] 
