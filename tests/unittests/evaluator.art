@@ -24,7 +24,7 @@ byteCode: function [blk][
     btc: to :bytecode blk ++ [] ; this little hack is needed to remove newlines from our block
                                 ; thus, avoiding all opEol/opEolX bytecode being produced
 
-    ;inspect btc    ; uncomment this line to see the bytecode
+    inspect btc    ; uncomment this line to see the bytecode
                     ; in a more readable format
     prints spacer
     print ["input:" as.code blk]
@@ -920,12 +920,11 @@ supersection "PATHS"
         ;  DATA
         ; ================================
         ; 0: a :word
-        ; 1: 0 :integer
 
         ; ================================
         ;  CODE
         ; ================================
-        ; push1
+        ; consti0
         ; load0
         ; get
         ; end
@@ -951,12 +950,11 @@ supersection "PATHS"
         ; ================================
         ; 0: user :word
         ; 1: grades :literal
-        ; 2: 0 :integer
 
         ; ================================
         ;  CODE
         ; ================================
-        ; push2
+        ; consti0
         ; push1
         ; load0
         ; get
@@ -990,13 +988,12 @@ supersection "PATHS"
         ;  DATA
         ; ================================
         ; 0: a :word
-        ; 1: 0 :integer
 
         ; ================================
         ;  CODE
         ; ================================
         ; consti10
-        ; push1
+        ; consti0
         ; load0
         ; set
         ; end
@@ -1024,13 +1021,12 @@ supersection "PATHS"
         ; ================================
         ; 0: user :word
         ; 1: grades :literal
-        ; 2: 0 :integer
 
         ; ================================
         ;  CODE
         ; ================================
         ; consti6
-        ; push2
+        ; consti0
         ; push1
         ; load0
         ; get
