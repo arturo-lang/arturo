@@ -927,9 +927,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                 argStack[argStack.len-1] += 1
 
             of Path:
-                # TODO(VM/eval) Path values containing fixed constants not processed correctly
-                #  `a\0` should actually produce an `opConstI0` and not a LOAD
-                #  labels: evaluator, enhancement
                 var pathCallV: Value = nil
 
                 if (let curr = Syms.getOrDefault(node.p[0].s, nil); not curr.isNil):
