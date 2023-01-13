@@ -971,10 +971,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                             i += 1
 
             of PathLabel:
-                # TODO(VM/eval) PathLabels values containing fixed constants not processed correctly
-                #  `a\0: 10` should actually produce an `opConstI0` and not a LOAD
-                #  (same situation as with Path values)
-                #  labels: evaluator, enhancement
                 addToCommand(opSet)
                     
                 var i=1
