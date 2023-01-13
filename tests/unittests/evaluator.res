@@ -343,19 +343,19 @@
         > Path values
         >--------------------------------------------------
 
-        input: [] 
+        input: [a\0] 
         data: [a] 
         code: [0 64 160 211] (4 bytes) 
 
-        input: [] 
+        input: [user\name] 
         data: [user name] 
         code: [33 64 160 211] (4 bytes) 
 
-        input: [] 
+        input: [user\grades\0] 
         data: [user grades] 
         code: [0 33 64 160 160 211] (6 bytes) 
 
-        input: [] 
+        input: [user\address\country] 
         data: [user address country] 
         code: [34 33 64 160 160 211] (6 bytes) 
 
@@ -364,19 +364,19 @@
         > PathLabel values
         >--------------------------------------------------
 
-        input: [ 10] 
+        input: [a\0: 10] 
         data: [a] 
         code: [10 0 64 161 211] (5 bytes) 
 
-        input: [ "John"] 
+        input: [user\name: "John"] 
         data: [user name John] 
         code: [34 33 64 161 211] (5 bytes) 
 
-        input: [ 6] 
+        input: [user\grades\0: 6] 
         data: [user grades] 
         code: [6 0 33 64 160 161 211] (7 bytes) 
 
-        input: [ "USA"] 
+        input: [user\address\country: "USA"] 
         data: [user address country USA] 
         code: [35 34 33 64 160 161 211] (7 bytes) 
 
