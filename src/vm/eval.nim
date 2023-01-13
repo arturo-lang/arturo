@@ -27,6 +27,8 @@ import vm/profiler
 
 import vm/values/custom/[vbinary, vsymbol]
 
+import vm/ast
+
 #=======================================
 # Variables
 #=======================================
@@ -1117,6 +1119,8 @@ proc doEval*(root: Value, isDictionary=false, useStored: static bool = true): Tr
 
     # when defined(OPTIMIZED):
     #     newit = optimizeBytecode(newit)
+
+    discard generateAst(root)
 
     result = Translation(constants: cnsts, instructions: newit)
 
