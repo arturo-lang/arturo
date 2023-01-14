@@ -45,6 +45,10 @@ type
 var
     TmpArities : Table[string,int8]
     ArrowBlock : ValueArray
+    OldChild  : Node
+    OldParent : Node
+
+proc dumpNode*(node: Node, level = 0): string
 
 func addChild*(node: Node, child: Node) =
     node.children.add(child)
@@ -71,6 +75,9 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
         )
         target = target.children[^1]
 
+    template isSymbol(val: Value, sym: VSymbol): bool =
+        val.kind == Symbol and val.m == sym
+ 
     template rewindCallBranches(target: var Node): untyped =
         while target.kind==CallNode and target.children.len == target.arity:
             target = target.parent
@@ -102,7 +109,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
                     flags: flags
                 )
             )
-            
+
             rewindCallBranches()
 
     proc addInline(target: var Node, val: Value, flags: NodeFlags = {}) =
@@ -152,7 +159,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
             var idx = 0
             var fnd: int8 = 0
             while idx<subnode.a.len:
-                if subnode.a[idx].kind==Symbol and subnode.a[idx].m==ampersand:
+                if (subnode.a[idx]).isSymbol(ampersand):
                     let arg = newWord("_" & $(fnd))
                     argblock.add(arg)
                     subblock.add(arg)
@@ -166,6 +173,25 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
             target.addTerminal(newBlock(argblock))
 
         target.addTerminal(newBlock(subblock))
+
+    template addPotentialTrailingPipe(target: var Node): untyped =
+        var added = false
+        if i < nLen - 1:
+            var nextNode {.cursor.} = blok.a[i+1]
+            if nextNode.kind == Word and GetSym(nextNode.s).kind == Function:
+                if (let funcArity = TmpArities.getOrDefault(nextNode.s, -1); funcArity != -1):
+                    i += 1
+
+                    var lastChild = target.children[^1]
+                    target.children.delete(target.children.len-1)
+
+                    target.addCall(nextNode, funcArity)
+                    target.addChild(lastChild)
+
+                    target.rewindCallBranches()
+
+        if not added:
+            target.addTerminal(newSymbol(pipe))
 
     while i < nLen:
         let item = blok.a[i]
@@ -210,24 +236,10 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
                     of thickarrowright  :
                         current.addThickArrowBlocks()
 
-                    # of thickarrowright  : 
-                    #     # TODO(Eval\addTerminalValue) Thick arrow-right not working with pipes
-                    #     # labels: vm,evaluator,enhancement,bug
-                    #     var ab: ValueArray
-                    #     var sb: ValueArray
-                    #     var funcArity: int8 = 0
-                    #     processThickArrowRight(ab, sb, it, n, i, funcArity)          
+                    of pipe             :
+                        echo "found pipe!"
+                        current.addPotentialTrailingPipe()
 
-                    #     # add the blocks
-                    #     addTerminalValue(inBlock=false):
-                    #         if ab.len == 1:
-                    #             addConst(newLiteral(ab[0].s), opPush)
-                    #         else:
-                    #             addConst(newBlock(ab), opPush)
-                    #     addTerminalValue(inBlock=false):
-                    #         addConst(newBlock(sb), opPush)            
-
-                    #     i += 1
                     else:
                         let symalias = item.m
                         let aliased = Aliases.getOrDefault(symalias, NoAliasBinding)
