@@ -126,6 +126,47 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
 
         ArrowBlock.setLen(0)
 
+    proc addThickArrowBlocks(target: var Node) =
+        # get next node
+        let subnode {.cursor.} = blok.a[i+1]
+
+        # we'll want to create the two blocks, 
+        # for functions like loop, map, select, filter
+        # so let's get them ready
+        var argblock, subblock: ValueArray
+
+        # if it's a word
+        if subnode.kind==Word:
+            subblock = @[subnode]
+            # check if it's a function
+            if (let funcArity = TmpArities.getOrDefault(subnode.s, -1); funcArity != -1):
+                # automatically "push" all its required arguments
+                for j in 0..(funcArity-1):
+                    let arg = newWord("_" & $(j))
+                    argblock.add(arg)
+                    subblock.add(arg)
+
+        elif subnode.kind==Block:
+            # replace ampersand symbols, 
+            # sequentially, with arguments
+            var idx = 0
+            var fnd: int8 = 0
+            while idx<subnode.a.len:
+                if subnode.a[idx].kind==Symbol and subnode.a[idx].m==ampersand:
+                    let arg = newWord("_" & $(fnd))
+                    argblock.add(arg)
+                    subblock.add(arg)
+                else:
+                    subblock.add(subnode.a[idx])
+                idx += 1
+
+        if argblock.len == 1:
+            target.addTerminal(newLiteral(argblock[0].s))
+        else:
+            target.addTerminal(newBlock(argblock))
+
+        target.addTerminal(newBlock(subblock))
+
     while i < nLen:
         let item = blok.a[i]
 
@@ -154,7 +195,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
 
             of Symbol:
                 case item.m:
-                    of doublecolon:
+                    of doublecolon      :
                         inc(i)
                         var subblock: ValueArray
                         while i < nLen:
@@ -165,6 +206,9 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
                             
                     of arrowright       : 
                         current.addArrowBlock(blok)
+
+                    of thickarrowright  :
+                        current.addThickArrowBlocks()
 
                     # of thickarrowright  : 
                     #     # TODO(Eval\addTerminalValue) Thick arrow-right not working with pipes
