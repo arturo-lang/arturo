@@ -3,7 +3,7 @@ import unicode, std/with
 
 import vm/[globals, values/value]
 import vm/values/printable
-import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vrational, vversion]
+import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vrational, vsymbol, vversion]
 
 type
     # abstract syntax tree definition
@@ -44,6 +44,7 @@ type
 
 var
     TmpArities : Table[string,int8]
+    ArrowBlock : ValueArray
 
 func addChild*(node: Node, child: Node) =
     node.children.add(child)
@@ -53,8 +54,8 @@ func addChildren*(node: Node, children: NodeArray) =
     for child in children:
         node.addChild(child)
 
-proc processBlock*(root: Node, blok: Value) =
-    var i: int = 0
+proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static bool = false): int =
+    var i: int = start
     var nLen: int = blok.a.len
 
     var current = root
@@ -83,6 +84,8 @@ proc processBlock*(root: Node, blok: Value) =
                     var symfunc {.cursor.} = GetSym(aliased.name.s)
 
                     if symfunc.kind==Function and aliased.precedence==InfixPrecedence:
+                        when processingArrow:
+                            ArrowBlock.add(nextNode)
                         i += 1
                         target.addCall(newString(aliased.name.s), symfunc.arity)
 
@@ -104,7 +107,7 @@ proc processBlock*(root: Node, blok: Value) =
 
     proc addInline(target: var Node, val: Value, flags: NodeFlags = {}) =
         var subNode = Node(kind: RootNode)
-        subNode.processBlock(val)
+        discard subNode.processBlock(val)
 
         with target:
             rewindCallBranches()
@@ -115,8 +118,19 @@ proc processBlock*(root: Node, blok: Value) =
             
             rewindCallBranches()
 
+    proc addArrowBlock(target: var Node, val: Value, flags: NodeFlags = {}) =
+        var subNode = Node(kind: RootNode)
+        i = subNode.processBlock(val, start=i+1, processingArrow=true)
+
+        target.addTerminal(newBlock(ArrowBlock))
+
+        ArrowBlock.setLen(0)
+
     while i < nLen:
         let item = blok.a[i]
+
+        when processingArrow:
+            ArrowBlock.add(item)
 
         case item.kind:
 
@@ -138,6 +152,53 @@ proc processBlock*(root: Node, blok: Value) =
             of Inline:
                 current.addInline(item)
 
+            of Symbol:
+                case item.m:
+                    of doublecolon:
+                        inc(i)
+                        var subblock: ValueArray
+                        while i < nLen:
+                            subblock.add(blok.a[i])
+                            inc(i)
+                        
+                        current.addTerminal(newBlock(subblock))
+                            
+                    of arrowright       : 
+                        current.addArrowBlock(blok)
+
+                    # of thickarrowright  : 
+                    #     # TODO(Eval\addTerminalValue) Thick arrow-right not working with pipes
+                    #     # labels: vm,evaluator,enhancement,bug
+                    #     var ab: ValueArray
+                    #     var sb: ValueArray
+                    #     var funcArity: int8 = 0
+                    #     processThickArrowRight(ab, sb, it, n, i, funcArity)          
+
+                    #     # add the blocks
+                    #     addTerminalValue(inBlock=false):
+                    #         if ab.len == 1:
+                    #             addConst(newLiteral(ab[0].s), opPush)
+                    #         else:
+                    #             addConst(newBlock(ab), opPush)
+                    #     addTerminalValue(inBlock=false):
+                    #         addConst(newBlock(sb), opPush)            
+
+                    #     i += 1
+                    else:
+                        let symalias = item.m
+                        let aliased = Aliases.getOrDefault(symalias, NoAliasBinding)
+                        if likely(aliased != NoAliasBinding):
+                            var symfunc {.cursor.} = GetSym(aliased.name.s)
+                            if symfunc.kind==Function:
+                                current.addCall(newString(aliased.name.s), symfunc.arity)
+                            else: 
+                                if aliased.name.s == "null":
+                                    current.addTerminal(VNULL)
+                                else:
+                                    current.addTerminal(newString(aliased.name.s), flags={Variable})
+                        else:
+                            current.addTerminal(item)
+
             of Newline:
                 discard
 
@@ -145,6 +206,12 @@ proc processBlock*(root: Node, blok: Value) =
                 current.addTerminal(item)
 
         i += 1
+
+        when processingArrow:
+            if current.kind == RootNode:
+                break
+
+    return i-1
 
 proc dumpNode*(node: Node, level = 0): string =
     template indentNode(): untyped =
@@ -182,6 +249,6 @@ proc generateAst*(parsed: Value): Node =
             if v.kind == Function:
                 {k: v.arity}
 
-    result.processBlock(parsed)
+    discard result.processBlock(parsed)
 
     echo dumpNode(result)
