@@ -77,9 +77,9 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
 
     template isSymbol(val: Value, sym: VSymbol): bool =
         val.kind == Symbol and val.m == sym
- 
-    template rewindCallBranches(target: var Node): untyped =
-        while target.kind==CallNode and target.children.len == target.arity:
+
+    template rewindCallBranches(target: var Node, uptostore=false): untyped =
+        while target.kind==CallNode and target.children.len == target.arity and (when uptostore: StoreSymbol notin target.flags else: true):
             target = target.parent
 
     template addPotentialInfixCall(target: var Node): untyped =
@@ -111,6 +111,32 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
             )
 
             rewindCallBranches()
+
+    template addPotentialTrailingPipe(target: var Node): untyped =
+        var added = false
+        if i < nLen - 1:
+            var nextNode {.cursor.} = blok.a[i+1]
+            if nextNode.kind == Word and GetSym(nextNode.s).kind == Function:
+                if (let funcArity = TmpArities.getOrDefault(nextNode.s, -1); funcArity != -1):
+                    i += 1
+                    target.rewindCallBranches()
+
+                    var lastChild = target.children[^1]
+                    if StoreSymbol in lastChild.flags:
+                        lastChild = lastChild.children[^1]
+                        target = lastChild.parent   
+                    
+                    target.children.delete(target.children.len-1)
+
+                    target.addCall(nextNode, funcArity)
+                    target.addChild(lastChild)
+
+                    target.rewindCallBranches()
+                    
+                    added = true
+
+        if not added:
+            target.addTerminal(newSymbol(pipe))
 
     proc addInline(target: var Node, val: Value, flags: NodeFlags = {}) =
         var subNode = Node(kind: RootNode)
@@ -173,25 +199,6 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
             target.addTerminal(newBlock(argblock))
 
         target.addTerminal(newBlock(subblock))
-
-    template addPotentialTrailingPipe(target: var Node): untyped =
-        var added = false
-        if i < nLen - 1:
-            var nextNode {.cursor.} = blok.a[i+1]
-            if nextNode.kind == Word and GetSym(nextNode.s).kind == Function:
-                if (let funcArity = TmpArities.getOrDefault(nextNode.s, -1); funcArity != -1):
-                    i += 1
-
-                    var lastChild = target.children[^1]
-                    target.children.delete(target.children.len-1)
-
-                    target.addCall(nextNode, funcArity)
-                    target.addChild(lastChild)
-
-                    target.rewindCallBranches()
-
-        if not added:
-            target.addTerminal(newSymbol(pipe))
 
     while i < nLen:
         let item = blok.a[i]
