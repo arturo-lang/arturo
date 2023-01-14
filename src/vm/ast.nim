@@ -1,5 +1,5 @@
 import algorithm, hashes, sequtils, strutils
-import sugar, tables, unicode
+import sugar, tables, unicode, std/with
 
 import vm/[bytecode, globals, values/value]
 import vm/values/clean
@@ -71,10 +71,11 @@ proc processBlock*(root: Node, blok: Value) =
         )
         target = target.children[^1]
 
-    proc addTerminal(target: var Node, val: Value, flags: NodeFlags = {}) =
+    template rewindCallBranches(target: var Node): untyped =
         while target.kind==CallNode and target.children.len == target.arity:
             target = target.parent
 
+    template addPotentialInfixCall(target: var Node): untyped =
         if i < nLen - 1:
             let nextNode {.cursor.} = blok.a[i+1]
             if nextNode.kind == Symbol:
@@ -86,21 +87,34 @@ proc processBlock*(root: Node, blok: Value) =
                         i += 1
                         target.addCall(newString(aliased.name.s), symfunc.arity)
 
-        if val.kind==Inline:
-            var subNode = Node(kind: RootNode)
-            subNode.processBlock(val)
-            target.addChildren(subNode.children)
-        else:
-            target.addChild(
+    proc addTerminal(target: var Node, val: Value, flags: NodeFlags = {}) =
+        with target:
+            rewindCallBranches()
+
+            addPotentialInfixCall()
+
+            addChild(
                 Node(
                     kind: TerminalNode, 
                     value: val, 
                     flags: flags
                 )
             )
+            
+            rewindCallBranches()
 
-        while target.kind==CallNode and target.children.len == target.arity:
-            target = target.parent
+    proc addInline(target: var Node, val: Value, flags: NodeFlags = {}) =
+        var subNode = Node(kind: RootNode)
+        subNode.processBlock(val)
+
+        with target:
+            rewindCallBranches()
+
+            addPotentialInfixCall()
+
+            addChildren(subNode.children)
+            
+            rewindCallBranches()
 
     while i < nLen:
         let item = blok.a[i]
@@ -122,10 +136,8 @@ proc processBlock*(root: Node, blok: Value) =
             of Label, PathLabel:
                 current.addCall(item, 1, flags={StoreSymbol})
 
-            # of Inline:
-            #     var subNode = Node(kind: RootNode)
-            #     subNode.processBlock(item)
-            #     current.addChildren(subNode.children)
+            of Inline:
+                current.addInline(item)
 
             of Newline:
                 discard
