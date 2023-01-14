@@ -1098,6 +1098,8 @@ proc doEval*(root: Value, isDictionary=false, useStored: static bool = true): Tr
     ## Take a parsed Block of values and return its Translation - 
     ## that is: the constants found + the list of bytecode instructions
     
+    discard generateAst(root)
+    
     var vhash {.used.}: Hash = -1
     
     when useStored:
@@ -1119,8 +1121,6 @@ proc doEval*(root: Value, isDictionary=false, useStored: static bool = true): Tr
 
     # when defined(OPTIMIZED):
     #     newit = optimizeBytecode(newit)
-
-    discard generateAst(root)
 
     result = Translation(constants: cnsts, instructions: newit)
 
