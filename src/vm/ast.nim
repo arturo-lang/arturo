@@ -1,10 +1,9 @@
-import algorithm, hashes, sequtils, strutils
-import sugar, tables, unicode, std/with
+import hashes, sugar, tables
+import unicode, std/with
 
-import vm/[bytecode, globals, values/value]
-import vm/values/clean
+import vm/[globals, values/value]
 import vm/values/printable
-import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vsocket, vversion]
+import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vrational, vversion]
 
 type
     # abstract syntax tree definition
