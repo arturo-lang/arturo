@@ -125,6 +125,7 @@ template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: 
         elif n=="if"                : IfF = b
         elif n=="if?"               : IfEF = b
         elif n=="unless"            : UnlessF = b
+        elif n=="unless?"           : UnlessEF = b
         elif n=="else"              : ElseF = b
         elif n=="switch"            : SwitchF = b
         elif n=="while"             : WhileF = b
