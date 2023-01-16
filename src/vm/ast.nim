@@ -22,7 +22,7 @@
 import hashes, strutils, sugar
 import tables, unicode, std/with
 
-import vm/[globals, values/value, values/types]
+import vm/[globals, values/value, values/comparison, values/types]
 import vm/values/printable
 import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vrational, vsymbol, vversion]
 
@@ -95,6 +95,8 @@ type
     NodeArray* = seq[Node]
 
     Node* = ref object
+        idx: int
+
         case kind*: NodeKind:
             of RootNode, ConstantValue, VariableLoad:
                 discard
@@ -131,12 +133,29 @@ const
     CallNode        : set[NodeKind] = {VariableStore..OtherCall}
 
 #=======================================
+# Forward declarations
+#=======================================
+
+proc dumpNode*(node: Node, level = 0): string 
+
+#=======================================
 # Helpers
 #=======================================
 
 func addChild*(node: Node, child: Node) =
     node.children.add(child)
+    child.idx = node.children.len - 1
     child.parent = node
+
+func setOnlyChild*(node: Node, child: Node) =
+    node.children.setLen(1)
+    node.addChild(child)
+
+func replace*(node: var Node, newNode: Node) =
+    newNode.parent = node.parent
+    newNode.idx = node.idx
+    node = newNode
+    node.parent.children[node.idx] = newNode
 
 template addChildren*(node: Node, children: NodeArray) =
     for child in children:
@@ -144,6 +163,28 @@ template addChildren*(node: Node, children: NodeArray) =
 
 template isSymbol(val: Value, sym: VSymbol): bool =
     val.kind == Symbol and val.m == sym
+
+#=======================================
+# Constructors
+#=======================================
+
+template newRootNode(): Node =
+    Node(
+        kind: RootNode
+    )
+
+template newTerminalNode(kn: NodeKind, va: Value): Node =
+    Node(
+        kind: kn,
+        value: va
+    )
+
+template newCallNode(kn: NodeKind, ar: int8, va: Value): Node =
+    Node(
+        kind: kn,
+        arity: ar,
+        value: va
+    )
 
 #=======================================
 # Methods
@@ -156,11 +197,89 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
     var current = root
 
     #------------------------
+    # Optimization
+    #------------------------
+
+    proc optimizeAdd(target: var Node) {.enforceNoRaises.} =
+        var left = target.children[0]
+        var right = target.children[1]
+
+        if left.kind == ConstantValue:
+            if right.kind == ConstantValue:
+                target.replace(newTerminalNode(ConstantValue, left.value + right.value))
+            elif left.value == I1:
+                target.kind = IncCall
+                target.arity = 1
+                target.setOnlyChild(right)
+        elif right.kind == ConstantValue and right.value == I1:
+                target.kind = IncCall
+                target.arity = 1
+                target.setOnlyChild(left)
+
+    proc optimizeSub(target: var Node) {.enforceNoRaises.} =
+        var left = target.children[0]
+        var right = target.children[1]
+
+        if left.kind == ConstantValue and right.kind == ConstantValue:
+                target.replace(newTerminalNode(ConstantValue, left.value - right.value))
+        elif right.kind == ConstantValue and right.value == I1:
+                target.kind = DecCall
+                target.arity = 1
+                target.setOnlyChild(left)
+
+    proc optimizeMul(target: var Node) {.enforceNoRaises.} =
+        var left = target.children[0]
+        var right = target.children[1]
+
+        if left.kind == ConstantValue and right.kind == ConstantValue:
+            target.replace(newTerminalNode(ConstantValue, left.value * right.value))
+
+    proc optimizeDiv(target: var Node) {.enforceNoRaises.} =
+        var left = target.children[0]
+        var right = target.children[1]
+
+        if left.kind == ConstantValue and right.kind == ConstantValue:
+            target.replace(newTerminalNode(ConstantValue, left.value / right.value))
+
+    proc optimizeFdiv(target: var Node) {.enforceNoRaises.} =
+        var left = target.children[0]
+        var right = target.children[1]
+
+        if left.kind == ConstantValue and right.kind == ConstantValue:
+            target.replace(newTerminalNode(ConstantValue, left.value // right.value))
+
+    proc optimizeMod(target: var Node) {.enforceNoRaises.} =
+        var left = target.children[0]
+        var right = target.children[1]
+
+        if left.kind == ConstantValue and right.kind == ConstantValue:
+            target.replace(newTerminalNode(ConstantValue, left.value % right.value))
+
+    proc optimizePow(target: var Node) {.enforceNoRaises.} =
+        var left = target.children[0]
+        var right = target.children[1]
+
+        if left.kind == ConstantValue and right.kind == ConstantValue:
+            target.replace(newTerminalNode(ConstantValue, left.value ^ right.value))
+
+    #------------------------
     # Helper Functions
     #------------------------
 
-    template rewindCallBranches(target: var Node): untyped =
+    template rewindCallBranches(target: var Node, optimize: bool = false): untyped =
         while target.kind in CallNode and target.children.len == target.arity:
+            when optimize:
+                case target.kind:
+                    of AddCall  : target.optimizeAdd()
+                    of SubCall  : target.optimizeSub()
+                    of MulCall  : target.optimizeMul()
+                    of DivCall  : target.optimizeDiv()
+                    of FdivCall : target.optimizeFdiv()
+                    of ModCall  : target.optimizeMod()
+                    of PowCall  : target.optimizePow()
+                    else:
+                        discard
+
             target = target.parent
 
     #------------------------
@@ -236,24 +355,13 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
             else:
                 nil
 
-        target.addChild(
-            Node(
-                kind: callType, 
-                value: v,
-                arity: ar
-            )
-        )
+        target.addChild(newCallNode(callType, ar, v))
         
         target = target.children[^1]
 
     func addStore(target: var Node, val: Value) {.enforceNoRaises.} =
-        target.addChild(
-            Node(
-                kind: VariableStore, 
-                value: val,
-                arity: 1
-            )
-        )
+        target.addChild(newCallNode(VariableStore, 1, val))
+
         target = target.children[^1]
 
     template addPotentialInfixCall(target: var Node): untyped =
@@ -276,14 +384,9 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
 
             addPotentialInfixCall()
 
-            addChild(
-                Node(
-                    kind: ofType, 
-                    value: val
-                )
-            )
+            addChild(newTerminalNode(ofType, val))
 
-            rewindCallBranches()
+            rewindCallBranches(optimize=true)
 
     template addPotentialTrailingPipe(target: var Node): untyped =
         var added = false
@@ -312,7 +415,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
             target.addTerminal(newSymbol(pipe))
 
     proc addInline(target: var Node, val: Value) =
-        var subNode = Node(kind: RootNode)
+        var subNode = newRootNode()
         discard subNode.processBlock(val)
 
         with target:
@@ -325,7 +428,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
             rewindCallBranches()
 
     proc addArrowBlock(target: var Node, val: Value) =
-        var subNode = Node(kind: RootNode)
+        var subNode = newRootNode()
         i = subNode.processBlock(val, start=i+1, processingArrow=true)
 
         target.addTerminal(newBlock(ArrowBlock))
@@ -489,7 +592,7 @@ proc dumpNode*(node: Node, level = 0): string =
 #=======================================
 
 proc generateAst*(parsed: Value): Node =
-    result = Node(kind: RootNode)
+    result = newRootNode()
 
     TmpArities = collect:
         for k,v in Syms.pairs:
