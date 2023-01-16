@@ -70,6 +70,7 @@ type
         IfCall
         IfECall
         UnlessCall
+        UnlessECall
         ElseCall
         SwitchCall
         WhileCall
@@ -276,6 +277,35 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
         if left.kind == ConstantValue and right.kind == ConstantValue:
             target.replace(newTerminalNode(ConstantValue, op(left.value,right.value)))
 
+    proc optimizeUnless(target: var Node) {.enforceNoRaises.} =
+        target.kind = 
+            if target.kind == UnlessCall:
+                IfCall
+            else:
+                IfECall
+
+        var left = target.children[0]
+
+        case left.kind:
+            of EqCall   : left.kind = NeCall
+            of NeCall   : left.kind = EqCall
+            of LtCall   : left.kind = GeCall
+            of LeCall   : left.kind = GtCall
+            of GtCall   : left.kind = LeCall
+            of GeCall   : left.kind = LtCall
+            of NotCall  :
+                let newNode = left.children[0]
+                newNode.parent = target
+                target.children[0] = newNode
+            else:
+                let newNode = newCallNode(NotCall, 1, nil)
+                newNode.children = @[left]
+                target.children[0] = newNode
+                for child in newNode.children:
+                    child.parent = newNode
+
+                newNode.parent = target
+
     #------------------------
     # Helper Functions
     #------------------------
@@ -284,13 +314,16 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
         while target.kind in CallNode and target.children.len == target.arity:
             when optimize:
                 case target.kind:
-                    of AddCall  : target.optimizeAdd()
-                    of SubCall  : target.optimizeSub()
-                    of MulCall  : target.optimizeArithmeticOp(`*`)
-                    of DivCall  : target.optimizeArithmeticOp(`/`)
-                    of FdivCall : target.optimizeArithmeticOp(`//`)
-                    of ModCall  : target.optimizeArithmeticOp(`%`)
-                    of PowCall  : target.optimizeArithmeticOp(`^`)
+                    of AddCall      : target.optimizeAdd()
+                    of SubCall      : target.optimizeSub()
+                    of MulCall      : target.optimizeArithmeticOp(`*`)
+                    of DivCall      : target.optimizeArithmeticOp(`/`)
+                    of FdivCall     : target.optimizeArithmeticOp(`//`)
+                    of ModCall      : target.optimizeArithmeticOp(`%`)
+                    of PowCall      : target.optimizeArithmeticOp(`^`)
+                    of UnlessCall,
+                       UnlessECall  : target.optimizeUnless()
+                        
                     else:
                         discard
 
@@ -343,6 +376,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
         elif fn == IfF      : callType = IfCall
         elif fn == IfEF     : callType = IfECall
         elif fn == UnlessF  : callType = UnlessCall
+        elif fn == UnlessEF : callType = UnlessECall
         elif fn == ElseF    : callType = ElseCall
         elif fn == SwitchF  : callType = SwitchCall
         elif fn == WhileF   : callType = WhileCall
