@@ -204,63 +204,77 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
         var left = target.children[0]
         var right = target.children[1]
 
-        if left.kind == ConstantValue:
-            if right.kind == ConstantValue:
+        if left.kind == ConstantValue and left.value.kind in {Integer, Floating}:
+            # Constant folding
+            if right.kind == ConstantValue and right.value.kind in {Integer, Floating}:
                 target.replace(newTerminalNode(ConstantValue, left.value + right.value))
+            # Convert 1 + X -> inc X
             elif left.value == I1:
                 target.kind = IncCall
                 target.arity = 1
                 target.setOnlyChild(right)
+        
+        # Convert X + 1 -> inc X
         elif right.kind == ConstantValue and right.value == I1:
-                target.kind = IncCall
-                target.arity = 1
-                target.setOnlyChild(left)
+            target.kind = IncCall
+            target.arity = 1
+            target.setOnlyChild(left)
+        
+        # Convert X + X * Y -> X * (1 + Y) and
+        #         X + Y * X -> X * (Y + 1)
+        elif left.kind == VariableLoad and right.kind == MulCall:
+            if right.children[0].kind == VariableLoad and right.children[0].value == left.value:
+                target.kind = MulCall
+                if right.children[1].kind == ConstantValue and right.children[1].value.kind in {Integer, Floating}:
+                    right.replace(newTerminalNode(ConstantValue, right.children[1].value + I1))
+                else:
+                    right.kind = AddCall
+                    right.children[0].value = newInteger(1)
+            elif right.children[1].kind == VariableLoad and right.children[1].value == left.value:
+                target.kind = MulCall
+                if right.children[0].kind == ConstantValue and right.children[0].value.kind in {Integer, Floating}:
+                    right.replace(newTerminalNode(ConstantValue, right.children[0].value + I1))
+                else:
+                    right.kind = AddCall
+                    right.children[1].value = newInteger(1)
+        
+        # Convert (X * Y) + X -> (1 + Y) * X and
+        #         (Y * X) + X -> (Y + 1) * X
+        elif right.kind == VariableLoad and left.kind == MulCall:
+            if left.children[0].kind == VariableLoad and left.children[0].value == right.value:
+                target.kind = MulCall
+                if left.children[1].kind == ConstantValue and left.children[1].value.kind in {Integer, Floating}:
+                    left.replace(newTerminalNode(ConstantValue, left.children[1].value + I1))
+                else:
+                    left.kind = AddCall
+                    left.children[0].value = newInteger(1)
+            elif left.children[1].kind == VariableLoad and left.children[1].value == right.value:
+                target.kind = MulCall
+                if left.children[0].kind == ConstantValue and left.children[0].value.kind in {Integer, Floating}:
+                    left.replace(newTerminalNode(ConstantValue, left.children[0].value + I1))
+                else:
+                    left.kind = AddCall
+                    left.children[1].value = newInteger(1)
 
     proc optimizeSub(target: var Node) {.enforceNoRaises.} =
         var left = target.children[0]
         var right = target.children[1]
 
         if left.kind == ConstantValue and right.kind == ConstantValue:
-                target.replace(newTerminalNode(ConstantValue, left.value - right.value))
+            # Constant folding
+            target.replace(newTerminalNode(ConstantValue, left.value - right.value))
         elif right.kind == ConstantValue and right.value == I1:
-                target.kind = DecCall
-                target.arity = 1
-                target.setOnlyChild(left)
+            # Convert X - 1 -> dec X
+            target.kind = DecCall
+            target.arity = 1
+            target.setOnlyChild(left)
 
-    proc optimizeMul(target: var Node) {.enforceNoRaises.} =
+    template optimizeArithmeticOp(target: var Node, op: untyped) =
         var left = target.children[0]
         var right = target.children[1]
 
         if left.kind == ConstantValue and right.kind == ConstantValue:
-            target.replace(newTerminalNode(ConstantValue, left.value * right.value))
-
-    proc optimizeDiv(target: var Node) {.enforceNoRaises.} =
-        var left = target.children[0]
-        var right = target.children[1]
-
-        if left.kind == ConstantValue and right.kind == ConstantValue:
-            target.replace(newTerminalNode(ConstantValue, left.value / right.value))
-
-    proc optimizeFdiv(target: var Node) {.enforceNoRaises.} =
-        var left = target.children[0]
-        var right = target.children[1]
-
-        if left.kind == ConstantValue and right.kind == ConstantValue:
-            target.replace(newTerminalNode(ConstantValue, left.value // right.value))
-
-    proc optimizeMod(target: var Node) {.enforceNoRaises.} =
-        var left = target.children[0]
-        var right = target.children[1]
-
-        if left.kind == ConstantValue and right.kind == ConstantValue:
-            target.replace(newTerminalNode(ConstantValue, left.value % right.value))
-
-    proc optimizePow(target: var Node) {.enforceNoRaises.} =
-        var left = target.children[0]
-        var right = target.children[1]
-
-        if left.kind == ConstantValue and right.kind == ConstantValue:
-            target.replace(newTerminalNode(ConstantValue, left.value ^ right.value))
+            target.replace(newTerminalNode(ConstantValue, op(left.value,right.value)))
 
     #------------------------
     # Helper Functions
@@ -272,11 +286,11 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
                 case target.kind:
                     of AddCall  : target.optimizeAdd()
                     of SubCall  : target.optimizeSub()
-                    of MulCall  : target.optimizeMul()
-                    of DivCall  : target.optimizeDiv()
-                    of FdivCall : target.optimizeFdiv()
-                    of ModCall  : target.optimizeMod()
-                    of PowCall  : target.optimizePow()
+                    of MulCall  : target.optimizeArithmeticOp(`*`)
+                    of DivCall  : target.optimizeArithmeticOp(`/`)
+                    of FdivCall : target.optimizeArithmeticOp(`//`)
+                    of ModCall  : target.optimizeArithmeticOp(`%`)
+                    of PowCall  : target.optimizeArithmeticOp(`^`)
                     else:
                         discard
 
