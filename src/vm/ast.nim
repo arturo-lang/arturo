@@ -1,9 +1,34 @@
+#=======================================================
+# Arturo
+# Programming Language + Bytecode VM compiler
+# (c) 2019-2023 Yanis Zafirópulos
+#
+# @file: vm/ast.nim
+#=======================================================
+
+## This module contains the AST implementation for the VM.
+## 
+## In a few words, it:
+## - takes a Block of values coming from the parser
+## - transforms it into an AST tree with semantics
+##   ready for the evaluator
+## 
+## The main entry point is ``generateAst``.
+
+#=======================================
+# Libraries
+#=======================================
+
 import hashes, strutils, sugar
 import tables, unicode, std/with
 
 import vm/[globals, values/value, values/types]
 import vm/values/printable
 import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vrational, vsymbol, vversion]
+
+#=======================================
+# Types
+#=======================================
 
 type
     # abstract syntax tree definition
@@ -83,9 +108,13 @@ type
     NodeObj = typeof(Node()[])
 
 # Benchmarking
-{.hints: on.} # Apparently we cannot disable just `Name` hints?
+{.hints: on.}
 {.hint: "Node's inner type is currently " & $sizeof(NodeObj) & ".".}
 {.hints: off.}
+
+#=======================================
+# Variables
+#=======================================
         
 var
     TmpArities : Table[string,int8]
@@ -93,25 +122,50 @@ var
     OldChild  : Node
     OldParent : Node
 
+#=======================================
+# Constants
+#=======================================
+
 const
     TerminalNode    : set[NodeKind] = {ConstantValue, VariableLoad}
     CallNode        : set[NodeKind] = {VariableStore..OtherCall}
 
-proc dumpNode*(node: Node, level = 0): string
+#=======================================
+# Helpers
+#=======================================
 
 func addChild*(node: Node, child: Node) =
     node.children.add(child)
     child.parent = node
 
-func addChildren*(node: Node, children: NodeArray) =
+template addChildren*(node: Node, children: NodeArray) =
     for child in children:
         node.addChild(child)
+
+template isSymbol(val: Value, sym: VSymbol): bool =
+    val.kind == Symbol and val.m == sym
+
+#=======================================
+# Methods
+#=======================================
 
 proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static bool = false): int =
     var i: int = start
     var nLen: int = blok.a.len
 
     var current = root
+
+    #------------------------
+    # Helper Functions
+    #------------------------
+
+    template rewindCallBranches(target: var Node): untyped =
+        while target.kind in CallNode and target.children.len == target.arity:
+            target = target.parent
+
+    #------------------------
+    # AST Generation
+    #------------------------
 
     proc addCall(target: var Node, name: string, arity: int8 = -1, fun: Value = nil) =
         var callType: ArrayCall..OtherCall = OtherCall
@@ -192,7 +246,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
         
         target = target.children[^1]
 
-    proc addStore(target: var Node, val: Value) =
+    func addStore(target: var Node, val: Value) {.enforceNoRaises.} =
         target.addChild(
             Node(
                 kind: VariableStore, 
@@ -201,13 +255,6 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
             )
         )
         target = target.children[^1]
-
-    template isSymbol(val: Value, sym: VSymbol): bool =
-        val.kind == Symbol and val.m == sym
-
-    template rewindCallBranches(target: var Node): untyped =
-        while target.kind in CallNode and target.children.len == target.arity:
-            target = target.parent
 
     template addPotentialInfixCall(target: var Node): untyped =
         if i < nLen - 1:
@@ -326,6 +373,10 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
 
         target.addTerminal(newBlock(subblock))
 
+    #------------------------
+    # The Main Loop
+    #------------------------
+
     while i < nLen:
         let item = blok.a[i]
 
@@ -400,18 +451,18 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
 
     return i-1
 
+#=======================================
+# Output
+#=======================================
+
 proc dumpNode*(node: Node, level = 0): string =
     template indentNode(): untyped =
-        var j = 0
-        while j < level:
-            result &= "     "
-            j += 1
+        result &= "     ".repeat(level)
 
-    let sep = "     "
     case node.kind:
         of RootNode:
             indentNode()
-            result &= "ROOT\n"
+            result &= "ROOT: \n"
             for child in node.children:
                 result &= dumpNode(child, level+1)
         of TerminalNode:
@@ -423,15 +474,19 @@ proc dumpNode*(node: Node, level = 0): string =
             if node.kind == VariableStore:
                 result &= "Store: " & $(node.value) & "\n"
             else:
+                result &= "Call: "
                 if node.value.isNil:
-                    result &= "Call: " & ($node.kind).replace("Call","").toLowerAscii() & " <" & $node.arity & ">\n"
+                    result &= ($node.kind).replace("Call","").toLowerAscii() & " <" & $node.arity & ">\n"
                 else:
-                    result &= "Call: " & node.value.s & " <" & $node.arity & ">\n"
+                    result &= node.value.s & " <" & $node.arity & ">\n"
             for child in node.children:
                 result &= dumpNode(child, level+1)
-            
 
     result &= "\n"
+
+#=======================================
+# Main
+#=======================================
 
 proc generateAst*(parsed: Value): Node =
     result = Node(kind: RootNode)
