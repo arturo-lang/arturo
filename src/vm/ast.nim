@@ -96,8 +96,6 @@ type
     NodeArray* = seq[Node]
 
     Node* = ref object
-        idx: int
-
         case kind*: NodeKind:
             of RootNode, ConstantValue, VariableLoad:
                 discard
@@ -143,24 +141,35 @@ proc dumpNode*(node: Node, level = 0): string
 # Helpers
 #=======================================
 
-func addChild*(node: Node, child: Node) =
-    node.children.add(child)
-    child.idx = node.children.len - 1
+#------------------------
+# Tree manipulation
+#------------------------
+
+func setOnlyChild(node: Node, child: Node) {.enforceNoRaises.} =
     child.parent = node
-
-func setOnlyChild*(node: Node, child: Node) =
     node.children.setLen(1)
-    node.addChild(child)
+    node.children[0] = child
 
-func replace*(node: var Node, newNode: Node) =
-    newNode.parent = node.parent
-    newNode.idx = node.idx
-    node = newNode
-    node.parent.children[node.idx] = newNode
+func addChild*(node: Node, child: Node) {.enforceNoRaises.} =
+    child.parent = node
+    node.children.add(child)
 
-template addChildren*(node: Node, children: NodeArray) =
+func addChildren*(node: Node, children: NodeArray) {.enforceNoRaises.} =
     for child in children:
         node.addChild(child)
+
+func deleteNode(node: Node) =
+    if not node.parent.isNil:
+        node.parent.children.delete(node.parent.children.find(node))
+        node.parent = nil
+
+proc replaceNode(node: Node, newNode: Node) =
+    newNode.parent = node.parent
+    node.parent.children[node.parent.children.find(node)] = newNode
+
+#------------------------
+# Misc
+#------------------------
 
 template isSymbol(val: Value, sym: VSymbol): bool =
     val.kind == Symbol and val.m == sym
@@ -208,7 +217,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
         if left.kind == ConstantValue and left.value.kind in {Integer, Floating}:
             # Constant folding
             if right.kind == ConstantValue and right.value.kind in {Integer, Floating}:
-                target.replace(newTerminalNode(ConstantValue, left.value + right.value))
+                target.replaceNode(newTerminalNode(ConstantValue, left.value + right.value))
             # Convert 1 + X -> inc X
             elif left.value == I1:
                 target.kind = IncCall
@@ -227,14 +236,14 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
             if right.children[0].kind == VariableLoad and right.children[0].value == left.value:
                 target.kind = MulCall
                 if right.children[1].kind == ConstantValue and right.children[1].value.kind in {Integer, Floating}:
-                    right.replace(newTerminalNode(ConstantValue, right.children[1].value + I1))
+                    right.replaceNode(newTerminalNode(ConstantValue, right.children[1].value + I1))
                 else:
                     right.kind = AddCall
                     right.children[0].value = newInteger(1)
             elif right.children[1].kind == VariableLoad and right.children[1].value == left.value:
                 target.kind = MulCall
                 if right.children[0].kind == ConstantValue and right.children[0].value.kind in {Integer, Floating}:
-                    right.replace(newTerminalNode(ConstantValue, right.children[0].value + I1))
+                    right.replaceNode(newTerminalNode(ConstantValue, right.children[0].value + I1))
                 else:
                     right.kind = AddCall
                     right.children[1].value = newInteger(1)
@@ -245,14 +254,14 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
             if left.children[0].kind == VariableLoad and left.children[0].value == right.value:
                 target.kind = MulCall
                 if left.children[1].kind == ConstantValue and left.children[1].value.kind in {Integer, Floating}:
-                    left.replace(newTerminalNode(ConstantValue, left.children[1].value + I1))
+                    left.replaceNode(newTerminalNode(ConstantValue, left.children[1].value + I1))
                 else:
                     left.kind = AddCall
                     left.children[0].value = newInteger(1)
             elif left.children[1].kind == VariableLoad and left.children[1].value == right.value:
                 target.kind = MulCall
                 if left.children[0].kind == ConstantValue and left.children[0].value.kind in {Integer, Floating}:
-                    left.replace(newTerminalNode(ConstantValue, left.children[0].value + I1))
+                    left.replaceNode(newTerminalNode(ConstantValue, left.children[0].value + I1))
                 else:
                     left.kind = AddCall
                     left.children[1].value = newInteger(1)
@@ -263,7 +272,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
 
         if left.kind == ConstantValue and right.kind == ConstantValue:
             # Constant folding
-            target.replace(newTerminalNode(ConstantValue, left.value - right.value))
+            target.replaceNode(newTerminalNode(ConstantValue, left.value - right.value))
         elif right.kind == ConstantValue and right.value == I1:
             # Convert X - 1 -> dec X
             target.kind = DecCall
@@ -275,7 +284,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
         var right = target.children[1]
 
         if left.kind == ConstantValue and right.kind == ConstantValue:
-            target.replace(newTerminalNode(ConstantValue, op(left.value,right.value)))
+            target.replaceNode(newTerminalNode(ConstantValue, op(left.value,right.value)))
 
     proc optimizeUnless(target: var Node) {.enforceNoRaises.} =
         target.kind = 
@@ -335,6 +344,8 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
 
     proc addCall(target: var Node, name: string, arity: int8 = -1, fun: Value = nil) =
         var callType: ArrayCall..OtherCall = OtherCall
+
+        echo "adding call: " & name & " with arity: " & $(arity)
 
         var fn {.cursor.}: Value =
             if fun.isNil:
