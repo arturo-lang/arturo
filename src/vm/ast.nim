@@ -135,7 +135,7 @@ const
 # Forward declarations
 #=======================================
 
-proc dumpNode*(node: Node, level = 0): string 
+proc dumpNode*(node: Node, level = 0, single: static bool=false): string 
 
 #=======================================
 # Helpers
@@ -424,8 +424,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
     template addPotentialInfixCall(target: var Node): untyped =
         if i < nLen - 1:
             let nextNode {.cursor.} = blok.a[i+1]
-            if nextNode.kind == Symbol:
-
+            if nextNode.kind == Symbol and nextNode.m notin {arrowright, thickarrowright, pipe}:
                 if (let aliased = Aliases.getOrDefault(nextNode.m, NoAliasBinding); aliased != NoAliasBinding):
                     var symfunc {.cursor.} = GetSym(aliased.name.s)
 
@@ -574,9 +573,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
                         current.addTerminal(newBlock(subblock))
                             
                     of arrowright       : 
-                        echo "found arrow right"
                         current.addArrowBlock(blok)
-                        echo "after"
 
                     of thickarrowright  :
                         current.addThickArrowBlocks()
@@ -613,11 +610,49 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
 
     return i-1
 
+iterator traverse*(node: Node): Node =
+    var preStack = @[node]
+    var postStack: seq[Node]
+    while preStack.len > 0:
+        var subnode = preStack.pop() 
+        postStack.add(subnode)
+        preStack.add(subnode.children)
+    while postStack.len > 0:
+        var subnode = postStack.pop()
+        yield subnode
+
+iterator traverseTree*(node: Node): Node = 
+    for child in node.children:
+        for subchild in traverse(child):
+            yield subchild
+
+# iterator traverse*(node: Node): Node =
+#     var preStack = @[node]
+#     var postStack: seq[Node]
+#     while preStack.len > 0:
+#         var subnode = preStack.pop() 
+#         postStack.add(subnode)
+#         var i = subnode.children.len-1
+#         while i >= 0:
+#             preStack.add(subnode.children[i])
+#             dec(i)
+#         #preStack.add(subnode.children.reversed)
+#     while postStack.len > 0:
+#         var subnode = postStack.pop()
+#         yield subnode
+
+# iterator traverseTree*(node: Node): Node =
+#     for child in node.children:
+#         if child.kind in CallNode:
+#             for subchild in traverse(child):
+#                 yield subchild
+#         #yield child
+    
 #=======================================
 # Output
 #=======================================
 
-proc dumpNode*(node: Node, level = 0): string =
+proc dumpNode*(node: Node, level = 0, single: static bool = false): string =
     template indentNode(): untyped =
         result &= "     ".repeat(level)
 
@@ -641,8 +676,10 @@ proc dumpNode*(node: Node, level = 0): string =
                     result &= ($node.kind).replace("Call","").toLowerAscii() & " <" & $node.arity & ">\n"
                 else:
                     result &= node.value.s & " <" & $node.arity & ">\n"
-            for child in node.children:
-                result &= dumpNode(child, level+1)
+
+            when not single:
+                for child in node.children:
+                    result &= dumpNode(child, level+1)
 
     result &= "\n"
 
@@ -661,3 +698,10 @@ proc generateAst*(parsed: Value): Node =
     discard result.processBlock(parsed)
 
     echo dumpNode(result)
+
+    # echo "TRAVERSING"
+
+    # for node in traverseTree(result):
+    #     echo dumpNode(node, single=true)
+
+    # echo "FINISHED"
