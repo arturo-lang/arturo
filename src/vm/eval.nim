@@ -22,6 +22,7 @@
 import hashes, tables
 
 import vm/[ast, bytecode, values/value]
+import vm/values/custom/[vbinary]
 
 #=======================================
 # Variables
@@ -39,7 +40,10 @@ var
 #=======================================
 
 proc evaluateBlock*(blok: Node, isDictionary=false): Translation =
-    discard
+    var consts: ValueArray
+    var it: VBinary
+
+    result = Translation(constants: consts, instructions: it)
 
 #=======================================
 # Main
