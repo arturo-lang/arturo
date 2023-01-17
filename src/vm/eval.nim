@@ -118,103 +118,10 @@ proc evaluateBlock*(blok: Node, isDictionary=false): Translation =
                     addConst(instruction.value, opStore)
                 of OtherCall:
                     addConst(instruction.value, opCall)
-
-                of ArrayCall:
-                    addBuiltinCall(opArray)
-                of DictCall:
-                    addBuiltinCall(opDict)
-                of FuncCall:
-                    addBuiltinCall(opFunc)
-                of AddCall:
-                    addBuiltinCall(opAdd)
-                of SubCall:
-                    addBuiltinCall(opSub)
-                of MulCall:
-                    addBuiltinCall(opMul)
-                of DivCall:
-                    addBuiltinCall(opDiv)
-                of FdivCall:
-                    addBuiltinCall(opFdiv)
-                of ModCall:
-                    addBuiltinCall(opMod)
-                of PowCall:
-                    addBuiltinCall(opPow)
-                of NegCall:
-                    addBuiltinCall(opNeg)
-                of BNotCall:
-                    addBuiltinCall(opBNot)
-                of BAndCall:
-                    addBuiltinCall(opBAnd)
-                of BOrCall:
-                    addBuiltinCall(opBOr)
-                of ShlCall:
-                    addBuiltinCall(opShl)
-                of ShrCall:
-                    addBuiltinCall(opShr)
-                of NotCall:
-                    addBuiltinCall(opNot)
-                of AndCall:
-                    addBuiltinCall(opAnd)
-                of OrCall:
-                    addBuiltinCall(opOr)
-                of EqCall:
-                    addBuiltinCall(opEq)
-                of NeCall:
-                    addBuiltinCall(opNe)
-                of GtCall:
-                    addBuiltinCall(opGt)
-                of GeCall:
-                    addBuiltinCall(opGe)
-                of LtCall:
-                    addBuiltinCall(opLt)
-                of LeCall:
-                    addBuiltinCall(opLe)
-                of IfCall:
-                    addBuiltinCall(opIf)
-                of IfECall:
-                    addBuiltinCall(opIfE)
-                of UnlessCall:
-                    addBuiltinCall(opUnless)
-                of UnlessECall:
-                    addBuiltinCall(opUnless) # TO FIX
-                of ElseCall:
-                    addBuiltinCall(opElse)
-                of SwitchCall:
-                    addBuiltinCall(opSwitch)
-                of WhileCall:
-                    addBuiltinCall(opWhile)
-                of ReturnCall:
-                    addBuiltinCall(opReturn)
-                of ToCall:
-                    addBuiltinCall(opTo)
-                of PrintCall:
-                    addBuiltinCall(opPrint)
-                of GetCall:
-                    addBuiltinCall(opGet)
-                of SetCall:
-                    addBuiltinCall(opSet)
-                of RangeCall:
-                    addBuiltinCall(opRange)
-                of LoopCall:
-                    addBuiltinCall(opLoop)
-                of MapCall:
-                    addBuiltinCall(opMap)
-                of SelectCall:
-                    addBuiltinCall(opSelect)
-                of SizeCall:
-                    addBuiltinCall(opSize)
-                of ReplaceCall:
-                    addBuiltinCall(opReplace)
-                of SplitCall:
-                    addBuiltinCall(opSplit)
-                of JoinCall:
-                    addBuiltinCall(opJoin)
-                of ReverseCall:
-                    addBuiltinCall(opReverse)
-                of IncCall:
-                    addBuiltinCall(opInc)
-                of DecCall:
-                    addBuiltinCall(opDec)
+                of BuiltinCall:
+                    addBuiltinCall(instruction.op)
+                of SpecialCall:
+                    discard # TOFIX!
 
         i += 1
 
