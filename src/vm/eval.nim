@@ -601,7 +601,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
         result = -1
         if i >= nLen - 1: return
         let nextNode {.cursor.} = n.a[i+1]
-        if nextNode.kind == Symbol:
+        if nextNode.kind == Symbol and nextNode.m notin {pipe, arrowright, thickarrowright}:
 
             if (let aliased = Aliases.getOrDefault(nextNode.m, NoAliasBinding); aliased != NoAliasBinding):
                 var symfunc {.cursor.} = GetSym(aliased.name.s)
@@ -1016,6 +1016,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
                         var ret: ValueArray
 
                         let subblock = processArrowRight()
+
                         addTerminalValue(inBlock=false):
                             addConst(newBlock(subblock), opPush)
 
@@ -1097,7 +1098,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var VBinary, inBlock: bool = 
 proc doEval*(root: Value, isDictionary=false, useStored: static bool = true): Translation {.inline.} = 
     ## Take a parsed Block of values and return its Translation - 
     ## that is: the constants found + the list of bytecode instructions
-    
     discard generateAst(root)
     
     var vhash {.used.}: Hash = -1
