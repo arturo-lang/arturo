@@ -42,6 +42,8 @@ type
         # CallNode
         VariableStore       # Store a variable
 
+        OtherCall           # Call to a function that is not a builtin
+
         ArrayCall           # Opcode'd built-ins     
         DictCall
         FuncCall
@@ -91,8 +93,6 @@ type
         IncCall
         DecCall
 
-        OtherCall           # Call to a function that is not a builtin
-
     NodeArray* = seq[Node]
 
     Node* = ref object
@@ -129,7 +129,7 @@ var
 
 const
     TerminalNode    : set[NodeKind] = {ConstantValue, VariableLoad}
-    CallNode        : set[NodeKind] = {VariableStore..OtherCall}
+    CallNode        : set[NodeKind] = {VariableStore..DecCall}
 
 #=======================================
 # Forward declarations
@@ -343,7 +343,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
     #------------------------
 
     proc addCall(target: var Node, name: string, arity: int8 = -1, fun: Value = nil) =
-        var callType: ArrayCall..OtherCall = OtherCall
+        var callType: OtherCall..DecCall = OtherCall
 
         var fn {.cursor.}: Value =
             if fun.isNil:
