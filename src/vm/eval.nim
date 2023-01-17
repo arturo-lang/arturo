@@ -24,6 +24,8 @@ import hashes, tables
 import vm/[ast, bytecode, values/value]
 import vm/values/custom/[vbinary]
 
+import vm/values/printable
+
 #=======================================
 # Variables
 #=======================================
@@ -42,6 +44,35 @@ func indexOfValue(a: ValueArray, item: Value): int {.inline,enforceNoRaises.}=
         inc(result)
     result = -1
 
+template addToInstructions(b: untyped):untyped {.dirty.} =
+    when b is OpCode:
+        instructions.add(byte(b))
+    else:
+        instructions.add(b)
+
+proc addConst(consts: var ValueArray, instructions: var VBinary, v: Value, op: OpCode) {.inline,enforceNoRaises.} =
+    var indx = consts.indexOfValue(v)
+    if indx == -1:
+        let newv = v
+        newv.readonly = true
+        consts.add(newv)
+        indx = consts.len-1
+
+    if indx <= 13:
+        addToInstructions((byte(op)-0x0E) + byte(indx))
+    else:
+        if indx>255:
+            addToInstructions([
+                byte(indx),
+                byte(indx shr 8),
+                byte(op)+1
+            ])
+        else:
+            addToInstructions([
+                byte(indx),
+                byte(op)
+            ])
+
 #=======================================
 # Methods
 #=======================================
@@ -49,6 +80,39 @@ func indexOfValue(a: ValueArray, item: Value): int {.inline,enforceNoRaises.}=
 proc evaluateBlock*(blok: Node, isDictionary=false): Translation =
     var consts: ValueArray
     var it: VBinary
+
+    let nLen = blok.children.len
+    var i {.register.} = 0
+
+    #------------------------
+    # Shortcuts
+    #------------------------
+
+    template addConst(v: Value, op: OpCode): untyped =
+        addConst(consts, it, v, op)
+
+    #------------------------
+    # MainLoop
+    #------------------------
+
+    while i < nLen:
+        let item = blok.children[i]
+
+        echo "current item:"
+        echo dumpNode(item)
+
+        for instruction in traverse(item):
+            case item.kind:
+                of ConstantValue:
+                    addConst(item.value, opPush)
+                of VariableLoad:
+                    addConst(item.value, opLoad)
+                of VariableStore:
+                    addConst(item.value, opStore)
+                else:
+                    discard
+
+        i += 1
 
     result = Translation(constants: consts, instructions: it)
 
@@ -70,6 +134,8 @@ proc doEval*(root: Value, isDictionary=false, useStored: static bool = true): Tr
 
     result = evaluateBlock(generateAst(root), isDictionary=isDictionary)
     result.instructions.add(byte(opEnd))
+
+    dump(newBytecode(result))
 
     when useStored:
         if vhash != -1:
