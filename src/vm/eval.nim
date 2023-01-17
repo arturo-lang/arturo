@@ -35,6 +35,13 @@ var
 # Helpers
 #=======================================
 
+func indexOfValue(a: ValueArray, item: Value): int {.inline,enforceNoRaises.}=
+    result = 0
+    for i in items(a):
+        if consideredEqual(item, i): return
+        inc(result)
+    result = -1
+
 #=======================================
 # Methods
 #=======================================
