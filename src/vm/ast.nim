@@ -345,8 +345,6 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
     proc addCall(target: var Node, name: string, arity: int8 = -1, fun: Value = nil) =
         var callType: ArrayCall..OtherCall = OtherCall
 
-        echo "adding call: " & name & " with arity: " & $(arity)
-
         var fn {.cursor.}: Value =
             if fun.isNil:
                 GetSym(name)
@@ -576,7 +574,9 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
                         current.addTerminal(newBlock(subblock))
                             
                     of arrowright       : 
+                        echo "found arrow right"
                         current.addArrowBlock(blok)
+                        echo "after"
 
                     of thickarrowright  :
                         current.addThickArrowBlocks()
