@@ -26,6 +26,7 @@ import vm/[globals, values/value, values/comparison, values/types]
 import vm/values/printable
 import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vrational, vsymbol, vversion]
 
+import vm/bytecode
 #=======================================
 # Types
 #=======================================
@@ -43,55 +44,8 @@ type
         VariableStore       # Store a variable
 
         OtherCall           # Call to a function that is not a builtin
-
-        ArrayCall           # Opcode'd built-ins     
-        DictCall
-        FuncCall
-        AddCall
-        SubCall
-        MulCall
-        DivCall
-        FdivCall
-        ModCall
-        PowCall
-        NegCall
-        BNotCall
-        BAndCall
-        BOrCall
-        ShlCall
-        ShrCall
-        NotCall
-        AndCall
-        OrCall
-        EqCall
-        NeCall
-        GtCall
-        GeCall
-        LtCall
-        LeCall
-        IfCall
-        IfECall
-        UnlessCall
-        UnlessECall
-        ElseCall
-        SwitchCall
-        WhileCall
-        ReturnCall
-        ToCall
-        PrintCall
-        GetCall
-        SetCall
-        RangeCall
-        LoopCall
-        MapCall
-        SelectCall
-        SizeCall
-        ReplaceCall
-        SplitCall
-        JoinCall
-        ReverseCall
-        IncCall
-        DecCall
+        BuiltinCall         # Call to a builtin function
+        SpecialCall         # Call to a special function
 
     NodeArray* = seq[Node]
 
@@ -100,6 +54,7 @@ type
             of RootNode, ConstantValue, VariableLoad:
                 discard
             else:
+                op*: OpCode
                 arity*: int8
                 
         value*: Value
@@ -129,7 +84,7 @@ var
 
 const
     TerminalNode    : set[NodeKind] = {ConstantValue, VariableLoad}
-    CallNode        : set[NodeKind] = {VariableStore..DecCall}
+    CallNode        : set[NodeKind] = {VariableStore..SpecialCall}
 
 #=======================================
 # Forward declarations
@@ -189,10 +144,11 @@ template newTerminalNode(kn: NodeKind, va: Value): Node =
         value: va
     )
 
-template newCallNode(kn: NodeKind, ar: int8, va: Value): Node =
+template newCallNode(kn: NodeKind, ar: int8, va: Value, oper: OpCode = opNop): Node =
     Node(
         kind: kn,
         arity: ar,
+        op: oper,
         value: va
     )
 
@@ -220,50 +176,50 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
                 target.replaceNode(newTerminalNode(ConstantValue, left.value + right.value))
             # Convert 1 + X -> inc X
             elif left.value == I1:
-                target.kind = IncCall
+                target.op = opInc
                 target.arity = 1
                 target.setOnlyChild(right)
         
         # Convert X + 1 -> inc X
         elif right.kind == ConstantValue and right.value == I1:
-            target.kind = IncCall
+            target.op = opInc
             target.arity = 1
             target.setOnlyChild(left)
         
         # Convert X + X * Y -> X * (1 + Y) and
         #         X + Y * X -> X * (Y + 1)
-        elif left.kind == VariableLoad and right.kind == MulCall:
+        elif left.kind == VariableLoad and right.op == opMul:
             if right.children[0].kind == VariableLoad and right.children[0].value == left.value:
-                target.kind = MulCall
+                target.op = opMul
                 if right.children[1].kind == ConstantValue and right.children[1].value.kind in {Integer, Floating}:
                     right.replaceNode(newTerminalNode(ConstantValue, right.children[1].value + I1))
                 else:
-                    right.kind = AddCall
+                    right.op = opAdd
                     right.children[0].value = newInteger(1)
             elif right.children[1].kind == VariableLoad and right.children[1].value == left.value:
-                target.kind = MulCall
+                target.op = opMul
                 if right.children[0].kind == ConstantValue and right.children[0].value.kind in {Integer, Floating}:
                     right.replaceNode(newTerminalNode(ConstantValue, right.children[0].value + I1))
                 else:
-                    right.kind = AddCall
+                    right.op = opAdd
                     right.children[1].value = newInteger(1)
         
         # Convert (X * Y) + X -> (1 + Y) * X and
         #         (Y * X) + X -> (Y + 1) * X
-        elif right.kind == VariableLoad and left.kind == MulCall:
+        elif right.kind == VariableLoad and left.op == opMul:
             if left.children[0].kind == VariableLoad and left.children[0].value == right.value:
-                target.kind = MulCall
+                target.op = opMul
                 if left.children[1].kind == ConstantValue and left.children[1].value.kind in {Integer, Floating}:
                     left.replaceNode(newTerminalNode(ConstantValue, left.children[1].value + I1))
                 else:
-                    left.kind = AddCall
+                    left.op = opAdd
                     left.children[0].value = newInteger(1)
             elif left.children[1].kind == VariableLoad and left.children[1].value == right.value:
-                target.kind = MulCall
+                target.op = opMul
                 if left.children[0].kind == ConstantValue and left.children[0].value.kind in {Integer, Floating}:
                     left.replaceNode(newTerminalNode(ConstantValue, left.children[0].value + I1))
                 else:
-                    left.kind = AddCall
+                    left.op = opAdd
                     left.children[1].value = newInteger(1)
 
     proc optimizeSub(target: var Node) {.enforceNoRaises.} =
@@ -275,7 +231,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
             target.replaceNode(newTerminalNode(ConstantValue, left.value - right.value))
         elif right.kind == ConstantValue and right.value == I1:
             # Convert X - 1 -> dec X
-            target.kind = DecCall
+            target.op = opDec
             target.arity = 1
             target.setOnlyChild(left)
 
@@ -287,27 +243,27 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
             target.replaceNode(newTerminalNode(ConstantValue, op(left.value,right.value)))
 
     proc optimizeUnless(target: var Node) {.enforceNoRaises.} =
-        target.kind = 
-            if target.kind == UnlessCall:
-                IfCall
+        target.op = 
+            if target.op == opUnless:
+                opIf
             else:
-                IfECall
+                opIfE
 
         var left = target.children[0]
 
-        case left.kind:
-            of EqCall   : left.kind = NeCall
-            of NeCall   : left.kind = EqCall
-            of LtCall   : left.kind = GeCall
-            of LeCall   : left.kind = GtCall
-            of GtCall   : left.kind = LeCall
-            of GeCall   : left.kind = LtCall
-            of NotCall  :
+        case left.op:
+            of opEq   : left.op = opNe
+            of opNe   : left.op = opEq
+            of opLt   : left.op = opGe
+            of opLe   : left.op = opGt
+            of opGt   : left.op = opLe
+            of opGe   : left.op = opLt
+            of opNot  :
                 let newNode = left.children[0]
                 newNode.parent = target
                 target.children[0] = newNode
             else:
-                let newNode = newCallNode(NotCall, 1, nil)
+                let newNode = newCallNode(BuiltinCall, 1, nil, opNot)
                 newNode.children = @[left]
                 target.children[0] = newNode
                 for child in newNode.children:
@@ -322,16 +278,15 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
     template rewindCallBranches(target: var Node, optimize: bool = false): untyped =
         while target.kind in CallNode and target.children.len == target.arity:
             when optimize:
-                case target.kind:
-                    of AddCall      : target.optimizeAdd()
-                    of SubCall      : target.optimizeSub()
-                    of MulCall      : target.optimizeArithmeticOp(`*`)
-                    of DivCall      : target.optimizeArithmeticOp(`/`)
-                    of FdivCall     : target.optimizeArithmeticOp(`//`)
-                    of ModCall      : target.optimizeArithmeticOp(`%`)
-                    of PowCall      : target.optimizeArithmeticOp(`^`)
-                    of UnlessCall,
-                       UnlessECall  : target.optimizeUnless()
+                case target.op:
+                    of opAdd      : target.optimizeAdd()
+                    of opSub      : target.optimizeSub()
+                    of opMul      : target.optimizeArithmeticOp(`*`)
+                    of opDiv      : target.optimizeArithmeticOp(`/`)
+                    of opFDiv     : target.optimizeArithmeticOp(`//`)
+                    of opMod      : target.optimizeArithmeticOp(`%`)
+                    of opPow      : target.optimizeArithmeticOp(`^`)
+                    of opUnless   : target.optimizeUnless()
                         
                     else:
                         discard
@@ -343,7 +298,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
     #------------------------
 
     proc addCall(target: var Node, name: string, arity: int8 = -1, fun: Value = nil) =
-        var callType: OtherCall..DecCall = OtherCall
+        var callType: OtherCall..SpecialCall = OtherCall
 
         var fn {.cursor.}: Value =
             if fun.isNil:
@@ -357,54 +312,59 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
             else:
                 arity
 
-        if fn == ArrayF     : callType = ArrayCall
-        elif fn == DictF    : callType = DictCall 
-        elif fn == FuncF    : callType = FuncCall
-        elif fn == AddF     : callType = AddCall
-        elif fn == SubF     : callType = SubCall
-        elif fn == MulF     : callType = MulCall
-        elif fn == DivF     : callType = DivCall
-        elif fn == FdivF    : callType = FdivCall
-        elif fn == ModF     : callType = ModCall
-        elif fn == PowF     : callType = PowCall
-        elif fn == NegF     : callType = NegCall
-        elif fn == BNotF    : callType = BNotCall
-        elif fn == BAndF    : callType = BAndCall
-        elif fn == BOrF     : callType = BOrCall
-        elif fn == ShlF     : callType = ShlCall
-        elif fn == ShrF     : callType = ShrCall
-        elif fn == NotF     : callType = NotCall
-        elif fn == AndF     : callType = AndCall
-        elif fn == OrF      : callType = OrCall
-        elif fn == EqF      : callType = EqCall
-        elif fn == NeF      : callType = NeCall
-        elif fn == GtF      : callType = GtCall
-        elif fn == GeF      : callType = GeCall
-        elif fn == LtF      : callType = LtCall
-        elif fn == LeF      : callType = LeCall
-        elif fn == IfF      : callType = IfCall
-        elif fn == IfEF     : callType = IfECall
-        elif fn == UnlessF  : callType = UnlessCall
-        elif fn == UnlessEF : callType = UnlessECall
-        elif fn == ElseF    : callType = ElseCall
-        elif fn == SwitchF  : callType = SwitchCall
-        elif fn == WhileF   : callType = WhileCall
-        elif fn == ReturnF  : callType = ReturnCall
-        elif fn == ToF      : callType = ToCall
-        elif fn == PrintF   : callType = PrintCall
-        elif fn == GetF     : callType = GetCall
-        elif fn == SetF     : callType = SetCall
-        elif fn == RangeF   : callType = RangeCall
-        elif fn == LoopF    : callType = LoopCall
-        elif fn == MapF     : callType = MapCall
-        elif fn == SelectF  : callType = SelectCall
-        elif fn == SizeF    : callType = SizeCall
-        elif fn == ReplaceF : callType = ReplaceCall
-        elif fn == SplitF   : callType = SplitCall
-        elif fn == JoinF    : callType = JoinCall
-        elif fn == ReverseF : callType = ReverseCall
-        elif fn == IncF     : callType = IncCall
-        elif fn == DecF     : callType = DecCall
+        var op: OpCode = opNop
+
+        if fn == ArrayF     : op = opArray
+        elif fn == DictF    : op = opDict
+        elif fn == FuncF    : op = opFunc
+        elif fn == AddF     : op = opAdd
+        elif fn == SubF     : op = opSub
+        elif fn == MulF     : op = opMul
+        elif fn == DivF     : op = opDiv
+        elif fn == FdivF    : op = opFDiv
+        elif fn == ModF     : op = opMod
+        elif fn == PowF     : op = opPow
+        elif fn == NegF     : op = opNeg
+        elif fn == BNotF    : op = opBNot
+        elif fn == BAndF    : op = opBAnd
+        elif fn == BOrF     : op = opBOr
+        elif fn == ShlF     : op = opShl
+        elif fn == ShrF     : op = opShr
+        elif fn == NotF     : op = opNot
+        elif fn == AndF     : op = opAnd
+        elif fn == OrF      : op = opOr
+        elif fn == EqF      : op = opEq
+        elif fn == NeF      : op = opNe
+        elif fn == GtF      : op = opGt
+        elif fn == GeF      : op = opGe
+        elif fn == LtF      : op = opLt
+        elif fn == LeF      : op = opLe
+        elif fn == IfF      : callType = SpecialCall; op = opIf
+        elif fn == IfEF     : callType = SpecialCall; op = opIfE
+        elif fn == UnlessF  : callType = SpecialCall; op = opUnless
+        elif fn == UnlessEF : callType = SpecialCall; op = opUnless
+        elif fn == ElseF    : callType = SpecialCall; op = opElse
+        elif fn == SwitchF  : callType = SpecialCall; op = opSwitch
+        elif fn == WhileF   : callType = SpecialCall; op = opWhile
+        elif fn == ReturnF  : op = opReturn
+        elif fn == ToF      : op = opTo
+        elif fn == PrintF   : op = opPrint
+        elif fn == GetF     : op = opGet
+        elif fn == SetF     : op = opSet
+        elif fn == RangeF   : op = opRange
+        elif fn == LoopF    : op = opLoop
+        elif fn == MapF     : op = opMap
+        elif fn == SelectF  : op = opSelect
+        elif fn == SizeF    : op = opSize
+        elif fn == ReplaceF : op = opReplace
+        elif fn == SplitF   : op = opSplit
+        elif fn == JoinF    : op = opJoin
+        elif fn == ReverseF : op = opReverse
+        elif fn == IncF     : op = opInc
+        elif fn == DecF     : op = opDec
+
+        if callType == OtherCall and op != opNop:
+            callType = BuiltinCall
 
         var v: Value =
             if callType == OtherCall: 
@@ -412,7 +372,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
             else:
                 nil
 
-        target.addChild(newCallNode(callType, ar, v))
+        target.addChild(newCallNode(callType, ar, v, op))
         
         target = target.children[^1]
 
