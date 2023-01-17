@@ -19,9 +19,16 @@
 # Libraries
 #=======================================
 
+import hashes, tables
+
+import vm/[ast, bytecode, values/value]
+
 #=======================================
 # Variables
 #=======================================
+
+var
+    StoredTranslations : Table[Hash, Translation]
 
 #=======================================
 # Helpers
@@ -31,6 +38,32 @@
 # Methods
 #=======================================
 
+proc evaluateBlock*(blok: Node, isDictionary=false): Translation =
+    discard
+
 #=======================================
 # Main
 #=======================================
+
+proc doEval*(root: Value, isDictionary=false, useStored: static bool = true): Translation {.inline.} = 
+    ## Take a parsed Block of values and return its Translation - 
+    ## that is: the constants found + the list of bytecode instructions
+    
+    var vhash {.used.}: Hash = -1
+    
+    when useStored:
+        if not root.dynamic:
+            vhash = hash(root)
+            if (let storedTranslation = StoredTranslations.getOrDefault(vhash, nil); not storedTranslation.isNil):
+                return storedTranslation
+
+    result = evaluateBlock(generateAst(root), isDictionary=isDictionary)
+    result.instructions.add(byte(opEnd))
+
+    when useStored:
+        if vhash != -1:
+            StoredTranslations[vhash] = result
+
+template evalOrGet*(item: Value): untyped =
+    if item.kind==Bytecode: item.trans
+    else: doEval(item)
