@@ -39,6 +39,7 @@ proc defineSymbols*() =
 
     builtin "alias",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "assign symbol to given function",
         args        = {
@@ -84,6 +85,7 @@ proc defineSymbols*() =
 
     builtin "break",
         alias       = unaliased, 
+        op          = opBreak,
         rule        = PrefixPrecedence,
         description = "break out of current block or loop",
         args        = NoArgs,
@@ -109,6 +111,7 @@ proc defineSymbols*() =
 
     builtin "call",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "call function with given list of parameters",
         args        = {
@@ -193,7 +196,8 @@ proc defineSymbols*() =
                     fun.action()()
         
     builtin "case",
-        alias       = unaliased, 
+        alias       = unaliased,
+        op          = opNop, 
         rule        = PrefixPrecedence,
         description = "initiate a case block to check for different cases",
         args        = {
@@ -217,6 +221,7 @@ proc defineSymbols*() =
 
     builtin "coalesce",
         alias       = doublequestion, 
+        op          = opNop,
         rule        = InfixPrecedence,
         description = "if first value is null or false, return second value; otherwise return the first one",
         args        = {
@@ -236,6 +241,7 @@ proc defineSymbols*() =
 
     builtin "continue",
         alias       = unaliased, 
+        op          = opContinue,
         rule        = PrefixPrecedence,
         description = "immediately continue with next iteration",
         args        = NoArgs,
@@ -267,6 +273,7 @@ proc defineSymbols*() =
     #  labels: bug, critical, library, values
     builtin "do",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "evaluate and execute given code",
         args        = {
@@ -351,6 +358,7 @@ proc defineSymbols*() =
 
     builtin "dup",
         alias       = thickarrowleft, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "duplicate the top of the stack and convert non-returning call to a do-return call",
         args        = {
@@ -376,6 +384,7 @@ proc defineSymbols*() =
 
     builtin "else",
         alias       = unaliased, 
+        op          = opElse,
         rule        = PrefixPrecedence,
         description = "perform action, if last condition was not true",
         args        = {
@@ -401,6 +410,7 @@ proc defineSymbols*() =
             
     builtin "ensure",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "assert given condition is true, or exit",
         args        = {
@@ -422,6 +432,7 @@ proc defineSymbols*() =
 
     builtin "if",
         alias       = unaliased, 
+        op          = opIf,
         rule        = PrefixPrecedence,
         description = "perform action, if given condition is not false or null",
         args        = {
@@ -443,6 +454,7 @@ proc defineSymbols*() =
 
     builtin "if?",
         alias       = unaliased, 
+        op          = opIfE,
         rule        = PrefixPrecedence,
         description = "perform action, if given condition is not false or null and return condition result",
         args        = {
@@ -479,6 +491,7 @@ proc defineSymbols*() =
 
     builtin "let",
         alias       = colon, 
+        op          = opNop,
         rule        = InfixPrecedence,
         description = "set symbol to given value",
         args        = {
@@ -529,6 +542,7 @@ proc defineSymbols*() =
 
     builtin "new",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "create new value by cloning given one",
         args        = {
@@ -557,6 +571,7 @@ proc defineSymbols*() =
 
     builtin "pop",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "pop top <number> values from stack",
         args        = {
@@ -598,6 +613,7 @@ proc defineSymbols*() =
 
     builtin "return",
         alias       = unaliased, 
+        op          = opReturn,
         rule        = PrefixPrecedence,
         description = "return given value from current function",
         args        = {
@@ -622,6 +638,7 @@ proc defineSymbols*() =
 
     builtin "switch",
         alias       = question, 
+        op          = opSwitch,
         rule        = InfixPrecedence,
         description = "if condition is not false or null perform given action, otherwise perform alternative action",
         args        = {
@@ -647,6 +664,7 @@ proc defineSymbols*() =
 
     builtin "try",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "perform action and catch possible errors",
         args        = {
@@ -675,6 +693,7 @@ proc defineSymbols*() =
 
     builtin "try?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "perform action, catch possible errors and return status",
         args        = {
@@ -709,6 +728,7 @@ proc defineSymbols*() =
 
     builtin "unless",
         alias       = unaliased, 
+        op          = opUnless,
         rule        = PrefixPrecedence,
         description = "perform action, if given condition is false or null",
         args        = {
@@ -730,6 +750,7 @@ proc defineSymbols*() =
 
     builtin "unless?",
         alias       = unaliased, 
+        op          = opUnlessE,
         rule        = PrefixPrecedence,
         description = "perform action, if given condition is false or null and return condition result",
         args        = {
@@ -766,6 +787,7 @@ proc defineSymbols*() =
 
     builtin "until",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "execute action until the given condition is not false or null",
         args        = {
@@ -810,6 +832,7 @@ proc defineSymbols*() =
 
     builtin "var",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get symbol value by given name",
         args        = {
@@ -832,6 +855,7 @@ proc defineSymbols*() =
 
     builtin "when?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if a specific condition is fulfilled and, if so, execute given action",
         args        = {
@@ -872,6 +896,7 @@ proc defineSymbols*() =
 
     builtin "while",
         alias       = unaliased, 
+        op          = opWhile,
         rule        = PrefixPrecedence,
         description = "execute action while the given condition is is not false or null",
         args        = {
