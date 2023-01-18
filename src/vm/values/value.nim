@@ -116,18 +116,19 @@ var
     TypeLookup = initOrderedTable[string,Value]()
 
     # global implementation references
-    AddF*, SubF*, MulF*, DivF*, FdivF*, ModF*, PowF*            : Value
-    NegF*, BNotF*, BAndF*, BOrF*, ShlF*, ShrF*                  : Value
-    NotF*, AndF*, OrF*                                          : Value 
-    EqF*, NeF*, GtF*, GeF*, LtF*, LeF*                          : Value
-    IfF*, IfEF*, UnlessF*, UnlessEF*, ElseF*, SwitchF*          : Value
-    WhileF*, ReturnF*                                           : Value
-    ToF*, PrintF*                                               : Value
-    GetF*, SetF*                                                : Value
-    ArrayF*, DictF*, FuncF*                                     : Value
-    RangeF*, LoopF*, MapF*, SelectF*                            : Value
-    SizeF*, ReplaceF*, SplitF*, JoinF*, ReverseF*               : Value 
-    IncF*, DecF*                                                : Value
+    AddF*, SubF*, MulF*, DivF*, FdivF*, ModF*, PowF*                : Value
+    NegF*, IncF*, DecF*                                             : Value   
+    BNotF*, BAndF*, BOrF*, ShlF*, ShrF*                             : Value
+    NotF*, AndF*, OrF*                                              : Value 
+    EqF*, NeF*, GtF*, GeF*, LtF*, LeF*                              : Value
+    GetF*, SetF*                                                    : Value
+    IfF*, IfEF*, UnlessF*, UnlessEF*, ElseF*, SwitchF*, WhileF*     : Value
+    ReturnF*, BreakF*, ContinueF*                                   : Value
+    ToF*                                                            : Value
+    ArrayF*, DictF*, FuncF*                                         : Value
+    RangeF*, LoopF*, MapF*, SelectF*                                : Value
+    SizeF*, ReplaceF*, SplitF*, JoinF*, ReverseF*, AppendF*         : Value
+    PrintF*                                                         : Value
 
 #=======================================
 # Forward Declarations
