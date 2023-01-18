@@ -31,30 +31,28 @@ type
 
         # [0x00-0x1F]
         # push constants 
-        opConstI0       = 0x00      # ()                #                   # 0 
-        opConstI1       = 0x01      # ()                #                   # 1
-        opConstI2       = 0x02      # ()                #                   # 2
-        opConstI3       = 0x03      # ()                #                   # 3
-        opConstI4       = 0x04      # ()                #                   # 4
-        opConstI5       = 0x05      # ()                #                   # 5
-        opConstI6       = 0x06      # ()                #                   # 6
-        opConstI7       = 0x07      # ()                #                   # 7
-        opConstI8       = 0x08      # ()                #                   # 8
-        opConstI9       = 0x09      # ()                #                   # 9
-        opConstI10      = 0x0A      # ()                #                   # 10
-        opConstI11      = 0x0B      # ()                #                   # 11
-        opConstI12      = 0x0C      # ()                #                   # 12
-        opConstI13      = 0x0D      # ()                #                   # 13
-        opConstI14      = 0x0E      # ()                #                   # 14
-        opConstI15      = 0x0F      # ()                #                   # 15
+        opConstI1M      = 0x00      # ()                #                   # -1
+        opConstI0       = 0x01      # ()                #                   # 0 
+        opConstI1       = 0x02      # ()                #                   # 1
+        opConstI2       = 0x03      # ()                #                   # 2
+        opConstI3       = 0x04      # ()                #                   # 3
+        opConstI4       = 0x05      # ()                #                   # 4
+        opConstI5       = 0x06      # ()                #                   # 5
+        opConstI6       = 0x07      # ()                #                   # 6
+        opConstI7       = 0x08      # ()                #                   # 7
+        opConstI8       = 0x09      # ()                #                   # 8
+        opConstI9       = 0x0A      # ()                #                   # 9
+        opConstI10      = 0x0B      # ()                #                   # 10
+        opConstI11      = 0x0C      # ()                #                   # 11
+        opConstI12      = 0x0D      # ()                #                   # 12
+        opConstI13      = 0x0E      # ()                #                   # 13
+        opConstI14      = 0x0F      # ()                #                   # 14
+        opConstI15      = 0x10      # ()                #                   # 15
 
-        opConstI1M      = 0x10      # ()                #                   # -1
-
-        opConstF0       = 0x11      # ()                #                   # 0.0
-        opConstF1       = 0x12      # ()                #                   # 1.0
-        opConstF2       = 0x13      # ()                #                   # 2.0
-
-        opConstF1M      = 0x14      # ()                #                   # -1.0
+        opConstF1M      = 0x11      # ()                #                   # -1.0
+        opConstF0       = 0x12      # ()                #                   # 0.0
+        opConstF1       = 0x13      # ()                #                   # 1.0
+        opConstF2       = 0x14      # ()                #                   # 2.0
 
         opConstBT       = 0x15      # ()                #                   # true
         opConstBF       = 0x16      # ()                #                   # false
