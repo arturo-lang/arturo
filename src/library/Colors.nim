@@ -34,6 +34,7 @@ proc defineSymbols*() =
 
     builtin "blend",
         alias       = at, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "blend given colors and get result",
         args        = {
@@ -63,6 +64,7 @@ proc defineSymbols*() =
 
     builtin "darken",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "darken color by given percentage (0.0-1.0)",
         args        = {
@@ -86,6 +88,7 @@ proc defineSymbols*() =
 
     builtin "desaturate",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "desaturate color by given percentage (0.0-1.0)",
         args        = {
@@ -109,6 +112,7 @@ proc defineSymbols*() =
 
     builtin "grayscale",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "convert color to grayscale",
         args        = {
@@ -131,6 +135,7 @@ proc defineSymbols*() =
 
     builtin "invert",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get complement for given color",
         args        = {
@@ -152,6 +157,7 @@ proc defineSymbols*() =
 
     builtin "lighten",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "lighten color by given percentage (0.0-1.0)",
         args        = {
@@ -177,6 +183,7 @@ proc defineSymbols*() =
 
     builtin "palette",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "create palette using given base color",
         args        = {
@@ -241,6 +248,7 @@ proc defineSymbols*() =
 
     builtin "saturate",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "saturate color by given percentage (0.0-1.0)",
         args        = {
@@ -266,6 +274,7 @@ proc defineSymbols*() =
 
     builtin "spin",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "spin color around the hue wheel by given amount",
         args        = {
