@@ -117,20 +117,20 @@ let
 var 
     TypeLookup = initOrderedTable[string,Value]()
 
-    # global implementation references
-    AddF*, SubF*, MulF*, DivF*, FdivF*, ModF*, PowF*                : Value
-    NegF*, IncF*, DecF*                                             : Value   
-    BNotF*, BAndF*, BOrF*, ShlF*, ShrF*                             : Value
-    NotF*, AndF*, OrF*                                              : Value 
-    EqF*, NeF*, GtF*, GeF*, LtF*, LeF*                              : Value
-    GetF*, SetF*                                                    : Value
-    IfF*, IfEF*, UnlessF*, UnlessEF*, ElseF*, SwitchF*, WhileF*     : Value
-    ReturnF*, BreakF*, ContinueF*                                   : Value
-    ToF*                                                            : Value
-    ArrayF*, DictF*, FuncF*, RangeF*                                : Value
-    LoopF*, MapF*, SelectF*                                         : Value
-    SizeF*, ReplaceF*, SplitF*, JoinF*, ReverseF*, AppendF*         : Value
-    PrintF*                                                         : Value
+    # global action references
+    DoAdd*, DoSub*, DoMul*, DoDiv*, DoFdiv*, DoMod*, DoPow*                 : BuiltinAction
+    DoNeg*, DoInc*, DoDec*                                                  : BuiltinAction
+    DoBNot*, DoBAnd*, DoBOr*, DoShl*, DoShr*                                : BuiltinAction
+    DoNot*, DoAnd*, DoOr*                                                   : BuiltinAction
+    DoEq*, DoNe*, DoGt*, DoGe*, DoLt*, DoLe*                                : BuiltinAction
+    DoGet*, DoSet*                                                          : BuiltinAction
+    DoIf*, DoIfE*, DoUnless*, DoUnlessE*, DoElse*, DoSwitch*, DoWhile*      : BuiltinAction
+    DoReturn*, DoBreak*, DoContinue*                                        : BuiltinAction
+    DoTo*                                                                   : BuiltinAction
+    DoArray*, DoDict*, DoFunc*, DoRange*                                    : BuiltinAction
+    DoLoop*, DoMap*, DoSelect*                                              : BuiltinAction
+    DoSize*, DoReplace*, DoSplit*, DoJoin*, DoReverse*, DoAppend*           : BuiltinAction
+    DoPrint*                                                                : BuiltinAction
 
 #=======================================
 # Forward Declarations
