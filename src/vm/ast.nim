@@ -658,9 +658,6 @@ proc dumpNode*(node: Node, level = 0, single: static bool = false): string =
                 for child in node.children:
                     result &= dumpNode(child, level+1)
 
-        else:
-            discard
-
     result &= "\n"
 
 #=======================================
