@@ -471,15 +471,16 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
 
             rewindCallBranches(optimize=true)
 
-    proc addPath(target: var Node, val: Value) =
+    proc addPath(target: var Node, val: Value, isLabel: static bool=false) =
         var pathCallV: Value = nil
 
-        if (let curr = Syms.getOrDefault(val.p[0].s, nil); not curr.isNil):
-            let next {.cursor.} = val.p[1]
-            if curr.kind==Dictionary and (next.kind==Literal or next.kind==Word):
-                if (let item = curr.d.getOrDefault(next.s, nil); not item.isNil):
-                    if item.kind == Function:
-                        pathCallV = item
+        when not isLabel:
+            if (let curr = Syms.getOrDefault(val.p[0].s, nil); not curr.isNil):
+                let next {.cursor.} = val.p[1]
+                if curr.kind==Dictionary and (next.kind==Literal or next.kind==Word):
+                    if (let item = curr.d.getOrDefault(next.s, nil); not item.isNil):
+                        if item.kind == Function:
+                            pathCallV = item
 
         if not pathCallV.isNil:
             target.addChild(Node(kind: OtherCall, arity: pathCallV.arity, op: opNop, value: pathCallV))
@@ -487,16 +488,26 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
         else:
             let basePath {.cursor.} = val.p[0]
 
-            var baseNode = 
-                if TmpArities.getOrDefault(basePath.s, -1) == 0:
-                    newCallNode(OtherCall, 0, basePath)
-                else:
-                    newVariable(basePath)
+            when isLabel:
+                var baseNode = newVariable(basePath)
+            else:
+                var baseNode = 
+                    if TmpArities.getOrDefault(basePath.s, -1) == 0:
+                        newCallNode(OtherCall, 0, basePath)
+                    else:
+                        newVariable(basePath)
 
             var i = 1
 
             while i < val.p.len:
-                let newNode = newCallNode(BuiltinCall, 2, nil, opGet)
+                when isLabel:
+                    let newNode = 
+                        if i == val.p.len - 1:
+                            newCallNode(BuiltinCall, 2, nil, opSet)
+                        else:
+                            newCallNode(BuiltinCall, 2, nil, opGet)
+                else:
+                    let newNode = newCallNode(BuiltinCall, 2, nil, opGet)
                 
                 newNode.addChild(baseNode)
                 
@@ -510,7 +521,11 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
                 baseNode = newNode
                 i += 1
 
-            target.addTerminal(baseNode)
+            when isLabel:
+                target.addChild(baseNode)
+                target.rollThrough()
+            else:
+                target.addTerminal(baseNode)
 
     template addPotentialTrailingPipe(target: var Node): untyped =
         var added = false
@@ -623,7 +638,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
                     else:
                         current.addTerminal(newVariable(item))
 
-            of Label, PathLabel:
+            of Label:
                 current.addStore(item)
 
             of Attribute:
@@ -634,6 +649,9 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
 
             of Path:
                 current.addPath(item)
+
+            of PathLabel:
+                current.addPath(item, isLabel=true)
 
             of Inline:
                 current.addInline(item)
