@@ -47,6 +47,7 @@ proc defineSymbols*() =
 
         builtin "browse",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "open given URL with default browser",
             args        = {
@@ -64,6 +65,7 @@ proc defineSymbols*() =
         
         builtin "download",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "download file from url to disk",
             args        = {
@@ -98,6 +100,7 @@ proc defineSymbols*() =
 
         builtin "mail",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "send mail using given title and message to selected recipient",
             args        = {
@@ -140,6 +143,7 @@ proc defineSymbols*() =
         #  labels: library,enhancement,open discussion,web
         builtin "request",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "perform HTTP request to url with given data and get response",
             args        = {
@@ -315,6 +319,7 @@ proc defineSymbols*() =
 
         builtin "serve",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "start web server using given routes",
             args        = {
