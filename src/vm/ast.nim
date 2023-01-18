@@ -40,6 +40,9 @@ type
         ConstantValue       # Terminal node of the AST containing a value
         VariableLoad        # Load a variable
 
+        # Attributes
+        AttributeNode       # Either an Attribute or an AttributeLabel
+
         # CallNode
         VariableStore       # Store a variable
 
@@ -552,6 +555,19 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
             of Label, PathLabel:
                 current.addStore(item)
 
+            of Attribute:
+                let attrNode = Node(
+                    kind: AttributeNode,
+                    arity: 1,
+                    value: item
+                )
+                attrNode.addChild(newTerminalNode(ConstantValue, VTRUE))
+
+                current.addChild(attrNode)
+
+            # of AttributeLabel:
+            #     current.addAttributeLabel(item)
+
             of Inline:
                 current.addInline(item)
 
@@ -636,6 +652,9 @@ proc dumpNode*(node: Node, level = 0, single: static bool = false): string =
             when not single:
                 for child in node.children:
                     result &= dumpNode(child, level+1)
+
+        else:
+            discard
 
     result &= "\n"
 
