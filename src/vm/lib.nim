@@ -15,10 +15,8 @@
 import sequtils, strutils, tables
 export strutils, tables
 
-import vm/[globals, errors, stack, values/comparison, values/clean, values/printable, values/value]
-export clean, comparison, globals, printable, stack, value
-
-import vm/opcodes
+import vm/[globals, errors, opcodes, stack, values/comparison, values/clean, values/printable, values/value]
+export clean, comparison, globals, printable, opcodes, stack, value
 
 import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrational, vregex, vsymbol]
 export vcolor, vcomplex, vlogical, vquantity, vrational, vregex, vsymbol
