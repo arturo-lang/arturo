@@ -123,6 +123,9 @@ proc evaluateBlock*(blok: Node, isDictionary=false): Translation =
                     var alreadyPut = false
                     let iv {.cursor.} = instruction.value
                     case instruction.value.kind:
+                        of Null:
+                            addByte(opConstN)
+                            alreadyPut = true
                         of Logical:
                             if iv.b == True:
                                 addByte(opConstBT)
