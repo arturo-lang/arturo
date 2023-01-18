@@ -329,6 +329,15 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
 
                 newNode.parent = target
 
+    proc optimizeAppend(target: var Node) {.enforceNoRaises.} =
+        var left = target.children[0]
+        var right = target.children[1]
+
+        if left.kind == ConstantValue and left.value.kind == String:
+            # Constant folding
+            if right.kind == ConstantValue and right.value.kind == String:
+                target.replaceNode(newConstant(newString(left.value.s & right.value.s)))
+
     #------------------------
     # Helper Functions
     #------------------------
@@ -337,15 +346,16 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
         while target.kind in CallNode and target.params == target.arity:
             when optimize:
                 case target.op:
-                    of opAdd      : target.optimizeAdd()
-                    of opSub      : target.optimizeSub()
-                    of opMul      : target.optimizeArithmeticOp(`*`)
-                    of opDiv      : target.optimizeArithmeticOp(`/`)
-                    of opFDiv     : target.optimizeArithmeticOp(`//`)
-                    of opMod      : target.optimizeArithmeticOp(`%`)
-                    of opPow      : target.optimizeArithmeticOp(`^`)
+                    of opAdd        : target.optimizeAdd()
+                    of opSub        : target.optimizeSub()
+                    of opMul        : target.optimizeArithmeticOp(`*`)
+                    of opDiv        : target.optimizeArithmeticOp(`/`)
+                    of opFDiv       : target.optimizeArithmeticOp(`//`)
+                    of opMod        : target.optimizeArithmeticOp(`%`)
+                    of opPow        : target.optimizeArithmeticOp(`^`)
                     of opUnless,
-                       opUnlessE  : target.optimizeUnless()
+                       opUnlessE    : target.optimizeUnless()
+                    of opAppend     : target.optimizeAppend()
                         
                     else:
                         discard
