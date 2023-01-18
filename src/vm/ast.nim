@@ -419,6 +419,17 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
 
         target = target.children[^1]
 
+    proc addAttribute(target: var Node, val: Value, isLabel: static bool = false) {.enforceNoRaises.} =
+        let attrNode = newCallNode(AttributeNode, 1, val)
+
+        when not isLabel:
+            attrNode.addChild(newTerminalNode(ConstantValue, VTRUE))
+
+        target.addChild(attrNode)
+
+        when isLabel:
+            target = target.children[^1]
+
     template addPotentialInfixCall(target: var Node): untyped =
         if i < nLen - 1:
             let nextNode {.cursor.} = blok.a[i+1]
@@ -557,18 +568,10 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
                 current.addStore(item)
 
             of Attribute:
-                let attrNode = Node(
-                    kind: AttributeNode,
-                    arity: 1,
-                    value: item
-                )
-                attrNode.addChild(newTerminalNode(ConstantValue, VTRUE))
-
-                current.addChild(attrNode)
+                current.addAttribute(item)
 
             of AttributeLabel:
-                current.addChild(newCallNode(AttributeNode, 1, item))
-                current = current.children[^1]
+                current.addAttribute(item, isLabel=true)
 
             of Inline:
                 current.addInline(item)
