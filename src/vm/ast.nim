@@ -344,7 +344,8 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
                     of opFDiv     : target.optimizeArithmeticOp(`//`)
                     of opMod      : target.optimizeArithmeticOp(`%`)
                     of opPow      : target.optimizeArithmeticOp(`^`)
-                    of opUnless   : target.optimizeUnless()
+                    of opUnless,
+                       opUnlessE  : target.optimizeUnless()
                         
                     else:
                         discard
