@@ -191,6 +191,12 @@ template newTerminalNode(kn: NodeKind, va: Value): Node =
         value: va
     )
 
+template newConstant(v: Value): Node =
+    newTerminalNode(ConstantValue, v)
+
+template newVariable(v: Value): Node =
+    newTerminalNode(VariableLoad, v)
+
 template newCallNode(kn: NodeKind, ar: int8, va: Value, oper: OpCode = opNop): Node =
     Node(
         kind: kn,
@@ -539,36 +545,6 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
                 addChild(baseNode)
 
                 rewindCallBranches(optimize=true)
-            
-            # addTerminalValue(inBlock=false):
-            #     addToCommand(opGet)
-                
-            #     var i=1
-            #     while i<node.p.len-1:
-            #         addToCommand(opGet)
-            #         i += 1
-
-            #     let baseNode {.cursor.} = node.p[0]
-
-            #     if TmpArities.getOrDefault(baseNode.s, -1) == 0:
-            #         addConst(baseNode, opCall)
-            #     else:
-            #         addConst(baseNode, opLoad)
-
-            #     i = 1
-            #     while i<node.p.len:
-            #         if node.p[i].kind==Block:
-            #             evalOne(node.p[i], consts, currentCommand, inBlock=true, isDictionary=isDictionary)
-            #         else:
-            #             if node.p[i].kind == Integer:
-            #                 if likely(node.p[i].iKind==NormalInteger):
-            #                     if node.p[i].i>=0 and node.p[i].i<=15: addToCommand(byte(opConstI0) + byte(node.p[i].i))
-            #                     else: addConst(node.p[i], opPush)
-            #                 else:
-            #                     addConst(node.p[i], opPush)
-            #             else:
-            #                 addConst(node.p[i], opPush)
-            #         i += 1
 
     template addPotentialTrailingPipe(target: var Node): untyped =
         var added = false
