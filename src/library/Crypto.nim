@@ -45,6 +45,7 @@ proc defineSymbols*() =
 
     builtin "crc",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the CRC32 polynomial of given string",
         args        = {
@@ -65,6 +66,7 @@ proc defineSymbols*() =
 
     builtin "decode",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "encode given value (default: base-64)",
         args        = {
@@ -100,6 +102,7 @@ proc defineSymbols*() =
     #  labels: library, open discussion
     builtin "encode",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "decode given value (default: base-64)",
         args        = {
@@ -173,6 +176,7 @@ proc defineSymbols*() =
         #  labels: library,enhancement,open discussion,web
         builtin "digest",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "get digest for given value (default: MD5)",
             args        = {
@@ -205,6 +209,7 @@ proc defineSymbols*() =
 
     builtin "hash",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get hash for given value",
         args        = {
