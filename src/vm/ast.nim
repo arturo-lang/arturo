@@ -96,6 +96,11 @@ var
 # Constants
 #=======================================
 
+let
+    LookupFunc      = {
+        AddF.action : opAdd
+    }.toTable
+
 const
     TerminalNode    : set[NodeKind] = {ConstantValue, VariableLoad}
     CallNode        : set[NodeKind] = {AttributeNode..SpecialCall}
