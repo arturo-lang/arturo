@@ -286,7 +286,6 @@ type
         opReverse       = 0xB8      # ()                # blk               # result
         opAppend        = 0xB9      # ()                # x,y               # result
 
-        # [0xB0-0xBF]
         # i/o operations
         opPrint         = 0xBA      # ()                # value             #
 
@@ -300,7 +299,7 @@ type
         # LOW-LEVEL OPERATIONS
         #---------------------------------
 
-        # [0xB0-0xCF]
+        # [0xC0-0xDF]
         # no operation
         opNop           = 0xC0      # ()                #                   # 
 
