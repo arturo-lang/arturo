@@ -569,6 +569,10 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
 
                 of opNeg                : NegF.action()()
 
+                # increment/decrement
+                of opInc                : IncF.action()()
+                of opDec                : DecF.action()()
+
                 # binary operators
                 of opBNot               : BNotF.action()()
                 of opBAnd               : BAndF.action()()
@@ -577,12 +581,14 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opShl                : ShlF.action()()
                 of opShr                : ShrF.action()()
 
+                of RSRV1                : discard
+
+                # [0x90-0x9F]
                 # logical operators
                 of opNot                : NotF.action()()
                 of opAnd                : AndF.action()()
                 of opOr                 : OrF.action()()
 
-                # [0x90-0x9F]
                 # comparison operators
                 of opEq                 : EqF.action()()
                 of opNe                 : NeF.action()()
@@ -591,6 +597,17 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opLt                 : LtF.action()()
                 of opLe                 : LeF.action()()
 
+                # getters/setters
+                of opGet                : GetF.action()()
+                of opSet                : SetF.action()()
+
+                of RSRV2                : discard
+                of RSRV3                : discard   
+                of RSRV4                : discard
+                of RSRV5                : discard
+                of RSRV6                : discard
+
+                # [0xA0-0xAF]
                 # branching
                 of opIf                 : IfF.action()()
                 of opIfE                : IfEF.action()()
@@ -598,7 +615,10 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opElse               : ElseF.action()()
                 of opSwitch             : SwitchF.action()()
                 of opWhile              : WhileF.action()()
+
                 of opReturn             : ReturnF.action()()
+                of opBreak              : BreakF.action()()
+                of opContinue           : ContinueF.action()()
 
                 # converters
                 of opTo                 : ToF.action()()
@@ -609,16 +629,12 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                     stack.push(VINTEGERT)
                     ToF.action()()
 
-                # [0xA0-0xAF]
-                # getters/setters
-                of opGet                : GetF.action()()
-                of opSet                : SetF.action()()
-
                 # generators          
                 of opArray              : ArrayF.action()()
                 of opDict               : DictF.action()()
                 of opFunc               : FuncF.action()()
 
+                # [0xB0-0xBF]
                 # ranges & iterators
                 of opRange              : RangeF.action()()
                 of opLoop               : LoopF.action()()
@@ -631,30 +647,16 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opSplit              : SplitF.action()()
                 of opJoin               : JoinF.action()()
                 of opReverse            : ReverseF.action()()
+                of opAppend             : AppendF.action()()
 
-                # increment/decrement
-                of opInc                : IncF.action()()
-                of opDec                : DecF.action()()
-
-                # [0xB0-0xBF]
                 # i/o operations
                 of opPrint              : PrintF.action()()
 
-                of RSRV1                : discard
-                of RSRV2                : discard
-                of RSRV3                : discard
-                of RSRV4                : discard
-                of RSRV5                : discard
-                of RSRV6                : discard
                 of RSRV7                : discard
                 of RSRV8                : discard
                 of RSRV9                : discard
                 of RSRV10               : discard
                 of RSRV11               : discard
-                of RSRV12               : discard
-                of RSRV13               : discard
-                of RSRV14               : discard
-                of RSRV15               : discard
 
                 #---------------------------------
                 # LOW-LEVEL OPERATIONS
@@ -690,9 +692,9 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opJmpIfLt            : performConditionalJump(`<`)
                 of opJmpIfLe            : performConditionalJump(`<=`)
 
-                of RSRV16               : discard
-                of RSRV17               : discard
-                of RSRV18               : discard
+                of RSRV12               : discard
+                of RSRV13               : discard
+                of RSRV14               : discard
 
                 # flow control
                 of opGoto               :
