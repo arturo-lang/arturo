@@ -550,6 +550,7 @@ proc defineSymbols*() =
 
     builtin "array",
         alias       = at, 
+        op          = opArray,
         rule        = PrefixPrecedence,
         description = "create array from given block, by reducing/calculating all internal values",
         args        = {
@@ -634,6 +635,7 @@ proc defineSymbols*() =
     #  labels: library, bug
     builtin "as",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "format given value as implied type",
         args        = {
@@ -708,6 +710,7 @@ proc defineSymbols*() =
     #  labels: library, enhancement
     builtin "define",
         alias       = dollar, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "define new type with given prototype",
         args        = {
@@ -820,6 +823,7 @@ proc defineSymbols*() =
 
     builtin "dictionary",
         alias       = sharp, 
+        op          = opDict,
         rule        = PrefixPrecedence,
         description = "create dictionary from given block or file, by getting all internal symbols",
         args        = {
@@ -898,6 +902,7 @@ proc defineSymbols*() =
     #  labels: library, enhancement, open discussion
     builtin "from",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get value from string, using given representation",
         args        = {
@@ -941,6 +946,7 @@ proc defineSymbols*() =
 
     builtin "function",
         alias       = dollar, 
+        op          = opFunc,
         rule        = PrefixPrecedence,
         description = "create function with given arguments and body",
         args        = {
@@ -1152,6 +1158,7 @@ proc defineSymbols*() =
 
     builtin "in",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "convert quantity to given unit",
         args        = {
@@ -1176,6 +1183,7 @@ proc defineSymbols*() =
                 
     builtin "range",
         alias       = ellipsis, 
+        op          = opRange,
         rule        = InfixPrecedence,
         description = "get list of values in given range (inclusive)",
         args        = {
@@ -1229,6 +1237,7 @@ proc defineSymbols*() =
     when not defined(WEB):
         builtin "store",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "create or load a persistent store on disk",
             args        = {
@@ -1326,6 +1335,7 @@ proc defineSymbols*() =
 
     builtin "to",
         alias       = unaliased, 
+        op          = opTo,
         rule        = PrefixPrecedence,
         description = "convert value to given type",
         args        = {
@@ -1423,6 +1433,7 @@ proc defineSymbols*() =
 
     builtin "with",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "create closure-style block by embedding given words",
         args        = {

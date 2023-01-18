@@ -45,7 +45,8 @@ proc defineSymbols*() =
     when not defined(WEB):
 
         builtin "accept",
-            alias       = unaliased, 
+            alias       = unaliased,
+            op          = opNop, 
             rule        = PrefixPrecedence,
             description = "accept incoming connection and return corresponding socket",
             args        = {
@@ -73,6 +74,7 @@ proc defineSymbols*() =
 
         builtin "connect",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "create new socket connection to given server port",
             args        = {
@@ -120,6 +122,7 @@ proc defineSymbols*() =
 
         builtin "listen",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "start listening on given port and return new socket",
             args        = {
@@ -157,6 +160,7 @@ proc defineSymbols*() =
 
         builtin "receive",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "receive line of data from selected socket",
             args        = {
@@ -202,6 +206,7 @@ proc defineSymbols*() =
 
         builtin "send",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "send given message to selected socket",
             args        = {
@@ -232,6 +237,7 @@ proc defineSymbols*() =
 
         builtin "send?",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "send given message to selected socket and return true if successful",
             args        = {
@@ -257,6 +263,7 @@ proc defineSymbols*() =
 
         builtin "unplug",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "close given socket",
             args        = {

@@ -36,6 +36,8 @@ when not defined(NOGMP):
 when not defined(WEB):
     import vm/errors
 
+import vm/opcodes
+
 import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vsocket, vsymbol, vversion]
 
 import vm/values/clean
@@ -115,20 +117,20 @@ let
 var 
     TypeLookup = initOrderedTable[string,Value]()
 
-    # global implementation references
-    AddF*, SubF*, MulF*, DivF*, FdivF*, ModF*, PowF*                : Value
-    NegF*, IncF*, DecF*                                             : Value   
-    BNotF*, BAndF*, BOrF*, ShlF*, ShrF*                             : Value
-    NotF*, AndF*, OrF*                                              : Value 
-    EqF*, NeF*, GtF*, GeF*, LtF*, LeF*                              : Value
-    GetF*, SetF*                                                    : Value
-    IfF*, IfEF*, UnlessF*, UnlessEF*, ElseF*, SwitchF*, WhileF*     : Value
-    ReturnF*, BreakF*, ContinueF*                                   : Value
-    ToF*                                                            : Value
-    ArrayF*, DictF*, FuncF*                                         : Value
-    RangeF*, LoopF*, MapF*, SelectF*                                : Value
-    SizeF*, ReplaceF*, SplitF*, JoinF*, ReverseF*, AppendF*         : Value
-    PrintF*                                                         : Value
+    # global action references
+    DoAdd*, DoSub*, DoMul*, DoDiv*, DoFdiv*, DoMod*, DoPow*                 : BuiltinAction
+    DoNeg*, DoInc*, DoDec*                                                  : BuiltinAction
+    DoBNot*, DoBAnd*, DoBOr*, DoShl*, DoShr*                                : BuiltinAction
+    DoNot*, DoAnd*, DoOr*                                                   : BuiltinAction
+    DoEq*, DoNe*, DoGt*, DoGe*, DoLt*, DoLe*                                : BuiltinAction
+    DoGet*, DoSet*                                                          : BuiltinAction
+    DoIf*, DoIfE*, DoUnless*, DoUnlessE*, DoElse*, DoSwitch*, DoWhile*      : BuiltinAction
+    DoReturn*, DoBreak*, DoContinue*                                        : BuiltinAction
+    DoTo*                                                                   : BuiltinAction
+    DoArray*, DoDict*, DoFunc*, DoRange*                                    : BuiltinAction
+    DoLoop*, DoMap*, DoSelect*                                              : BuiltinAction
+    DoSize*, DoReplace*, DoSplit*, DoJoin*, DoReverse*, DoAppend*           : BuiltinAction
+    DoPrint*                                                                : BuiltinAction
 
 #=======================================
 # Forward Declarations
@@ -544,7 +546,7 @@ func newFunction*(params: seq[string], main: Value, imports: Value = nil, export
         )
     )
 
-func newBuiltin*(desc: sink string, modl: sink string, line: int, ar: int8, ag: sink OrderedTable[string,ValueSpec], at: sink OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: sink string, act: BuiltinAction): Value {.inline, enforceNoRaises.} =
+func newBuiltin*(desc: sink string, modl: sink string, line: int, ar: int8, ag: sink OrderedTable[string,ValueSpec], at: sink OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: sink string, opc: OpCode, act: BuiltinAction): Value {.inline, enforceNoRaises.} =
     ## create Function (BuiltinFunction) value with given details
     result = Value(
         kind: Function,
@@ -559,6 +561,7 @@ func newBuiltin*(desc: sink string, modl: sink string, line: int, ar: int8, ag: 
         funcType: VFunction(
             fnKind: BuiltinFunction,
             arity: ar,
+            op: opc,
             action: act
         )
     )
@@ -724,9 +727,9 @@ proc copyValue*(v: Value): Value {.inline.} =
                 result = newFunction(v.params, v.main, v.imports, v.exports, v.memoize, v.inline)
             else:
                 when defined(DOCGEN):
-                    result = newBuiltin(v.info.descr, v.info.module, v.info.line, v.arity, v.info.args, v.info.attrs, v.info.returns, v.info.example, v.action)
+                    result = newBuiltin(v.info.descr, v.info.module, v.info.line, v.arity, v.info.args, v.info.attrs, v.info.returns, v.info.example, v.op, v.action)
                 else:
-                    result = newBuiltin(v.info.descr, v.info.module, 0, v.arity, v.info.args, v.info.attrs, v.info.returns, "", v.action)
+                    result = newBuiltin(v.info.descr, v.info.module, 0, v.arity, v.info.args, v.info.attrs, v.info.returns, "", v.op, v.action)
 
         of Database:    
             when not defined(NOSQLITE):

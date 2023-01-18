@@ -33,6 +33,7 @@ proc defineSymbols*() =
     #  labels: library, enhancement, open discussion
     builtin "between?",
         alias       = thickarrowboth, 
+        op          = opNop,
         rule        = InfixPrecedence,
         description = "check if given value is between the given values (inclusive)",
         args        = {
@@ -63,6 +64,7 @@ proc defineSymbols*() =
 
     builtin "compare",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "compare given values and return -1, 0, or 1 based on the result",
         args        = {
@@ -86,6 +88,7 @@ proc defineSymbols*() =
 
     builtin "equal?",
         alias       = equal, 
+        op          = opEq,
         rule        = InfixPrecedence,
         description = "check if valueA = valueB (equality)",
         args        = {
@@ -105,6 +108,7 @@ proc defineSymbols*() =
 
     builtin "greater?",
         alias       = greaterthan, 
+        op          = opGt,
         rule        = InfixPrecedence,
         description = "check if valueA > valueB (greater than)",
         args        = {
@@ -124,6 +128,7 @@ proc defineSymbols*() =
 
     builtin "greaterOrEqual?",
         alias       = greaterequal, 
+        op          = opGe,
         rule        = InfixPrecedence,
         description = "check if valueA >= valueB (greater than or equal)",
         args        = {
@@ -143,6 +148,7 @@ proc defineSymbols*() =
 
     builtin "less?",
         alias       = lessthan, 
+        op          = opLt,
         rule        = InfixPrecedence,
         description = "check if valueA < valueB (less than)",
         args        = {
@@ -162,6 +168,7 @@ proc defineSymbols*() =
 
     builtin "lessOrEqual?",
         alias       = equalless, 
+        op          = opLe,
         rule        = InfixPrecedence,
         description = "check if valueA =< valueB (less than or equal)",
         args        = {
@@ -181,6 +188,7 @@ proc defineSymbols*() =
                 
     builtin "notEqual?",
         alias       = lessgreater, 
+        op          = opNe,
         rule        = InfixPrecedence,
         description = "check if valueA <> valueB (not equal)",
         args        = {
@@ -200,6 +208,7 @@ proc defineSymbols*() =
 
     builtin "same?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if given values are exactly the same (identity)",
         args        = {

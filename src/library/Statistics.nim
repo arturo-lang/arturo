@@ -38,6 +38,7 @@ proc defineSymbols*() =
 
     builtin "average",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get average from given collection of numbers",
         args        = {
@@ -67,6 +68,7 @@ proc defineSymbols*() =
 
     builtin "deviation",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get population standard deviation of given collection of numbers",
         args        = {
@@ -95,6 +97,7 @@ proc defineSymbols*() =
 
     builtin "kurtosis",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get population kurtosis of given collection of numbers",
         args        = {
@@ -123,6 +126,7 @@ proc defineSymbols*() =
 
     builtin "median",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get median from given collection of numbers",
         args        = {
@@ -152,6 +156,7 @@ proc defineSymbols*() =
 
     builtin "skewness",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get population skewness of given collection of numbers",
         args        = {
@@ -180,6 +185,7 @@ proc defineSymbols*() =
     
     builtin "variance",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get population variance of given collection of numbers",
         args        = {
