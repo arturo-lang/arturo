@@ -266,32 +266,34 @@ type
         opToS           = 0xAB      # ()                # value             # result
         opToI           = 0xAC      # ()                # value             # result
 
-        # generators
-        opArray         = 0xAD      # ()                # blk               # result
-        opDict          = 0xAE      # ()                # blk               # result
-        opFunc          = 0xAF      # ()                # params,blk        # result
+        RSRV7           = 0xAD      #    
+        RSRV8           = 0xAE      #
+        RSRV9           = 0xAF      #
 
         # [0xB0-0xBF]
+        # generators
+        opArray         = 0xB0      # ()                # blk               # result
+        opDict          = 0xB1      # ()                # blk               # result
+        opFunc          = 0xB2      # ()                # params,blk        # result
+        opRange         = 0xB3      # ()                # start,stop        # result
+
         # ranges & iterators
-        opRange         = 0xB0      # ()                # start,stop        # result
-        opLoop          = 0xB1      # ()                # range,param,blk   # X
-        opMap           = 0xB2      # ()                # range,param,blk   # result
-        opSelect        = 0xB3      # ()                # range,param,blk   # result
+        
+        opLoop          = 0xB4      # ()                # range,param,blk   # X
+        opMap           = 0xB5      # ()                # range,param,blk   # result
+        opSelect        = 0xB6      # ()                # range,param,blk   # result
 
         # collections
-        opSize          = 0xB4      # ()                # obj               # result
-        opReplace       = 0xB5      # ()                # obj,what,with     # result
-        opSplit         = 0xB6      # ()                # obj,what          # result
-        opJoin          = 0xB7      # ()                # obj               # result
-        opReverse       = 0xB8      # ()                # blk               # result
-        opAppend        = 0xB9      # ()                # x,y               # result
+        opSize          = 0xB7      # ()                # obj               # result
+        opReplace       = 0xB8      # ()                # obj,what,with     # result
+        opSplit         = 0xB9      # ()                # obj,what          # result
+        opJoin          = 0xBA      # ()                # obj               # result
+        opReverse       = 0xBB      # ()                # blk               # result
+        opAppend        = 0xBC      # ()                # x,y               # result
 
         # i/o operations
-        opPrint         = 0xBA      # ()                # value             #
+        opPrint         = 0xBD      # ()                # value             #
 
-        RSRV7           = 0xBB      #
-        RSRV8           = 0xBC      #
-        RSRV9           = 0xBD      #
         RSRV10          = 0xBE      #
         RSRV11          = 0xBF      #
 
