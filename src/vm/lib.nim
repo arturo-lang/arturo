@@ -56,7 +56,7 @@ else:
 #     else:
 #         args
 
-template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: string, args: untyped, attrs: untyped, returns: ValueSpec, example: string, opc: OpCode, act: untyped):untyped =
+template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: string, args: untyped, attrs: untyped, returns: ValueSpec, example: string, op: OpCode, act: untyped):untyped =
     ## add new builtin, function with given name, alias, 
     ## rule, etc - followed by the code block to be 
     ## executed when the function is called
@@ -85,7 +85,7 @@ template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: 
             when not defined(WEB): attrs.toOrderedTable else: initOrderedTable[string,(ValueSpec,string)](),
             returns, 
             cleanExample, 
-            opc,
+            op,
             proc () =
                 hookProcProfiler("lib/require"):
                     require(n, args)
