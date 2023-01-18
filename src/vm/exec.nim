@@ -612,6 +612,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opIf                 : IfF.action()()
                 of opIfE                : IfEF.action()()
                 of opUnless             : UnlessF.action()()
+                of opUnlessE            : UnlessEF.action()()
                 of opElse               : ElseF.action()()
                 of opSwitch             : SwitchF.action()()
                 of opWhile              : WhileF.action()()
