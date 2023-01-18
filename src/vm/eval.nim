@@ -152,6 +152,10 @@ proc evaluateBlock*(blok: Node, isDictionary=false): Translation =
                             if iv.a.len == 0:
                                 addByte(opConstA)
                                 alreadyPut = true
+                        of Dictionary:
+                            if iv.d.len == 0:
+                                addByte(opConstD)
+                                alreadyPut = true
                         else:
                             discard
 
