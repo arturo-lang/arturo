@@ -57,6 +57,7 @@ proc defineSymbols*() =
 
     builtin "difference",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "return the difference of given sets",
         args        = {
@@ -95,6 +96,7 @@ proc defineSymbols*() =
 
     builtin "disjoint?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if given sets are disjoint (they have no common elements)",
         args        = {
@@ -115,6 +117,7 @@ proc defineSymbols*() =
 
     builtin "intersect?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if given sets intersect (they have at least one common element)",
         args        = {
@@ -142,6 +145,7 @@ proc defineSymbols*() =
 
     builtin "intersection",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "return the intersection of given sets",
         args        = {
@@ -168,6 +172,7 @@ proc defineSymbols*() =
 
     builtin "powerset",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "return the powerset of given set",
         args        = {
@@ -188,6 +193,7 @@ proc defineSymbols*() =
 
     builtin "subset?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if given set is a subset of second set",
         args        = {
@@ -244,6 +250,7 @@ proc defineSymbols*() =
 
     builtin "superset?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if given set is a superset of second set",
         args        = {
@@ -300,6 +307,7 @@ proc defineSymbols*() =
 
     builtin "union",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "return the union of given sets",
         args        = {
