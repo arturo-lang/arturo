@@ -50,7 +50,7 @@ template addToInstructions(b: untyped):untyped {.dirty.} =
     else:
         instructions.add(b)
 
-proc addConst(consts: var ValueArray, instructions: var VBinary, v: Value, op: OpCode) {.inline,enforceNoRaises.} =
+proc addConst(consts: var ValueArray, instructions: var VBinary, v: Value, op: OpCode, withShortcut: static bool=true) {.inline,enforceNoRaises.} =
     var indx = consts.indexOfValue(v)
     if indx == -1:
         let newv = v
@@ -58,15 +58,21 @@ proc addConst(consts: var ValueArray, instructions: var VBinary, v: Value, op: O
         consts.add(newv)
         indx = consts.len-1
 
-    if indx <= 13:
-        addToInstructions((byte(op)-0x0E) + byte(indx))
+    if indx > 255:
+        addToInstructions([
+            byte(indx),
+            byte(indx shr 8),
+            byte(op)+1
+        ])
     else:
-        if indx>255:
-            addToInstructions([
-                byte(indx),
-                byte(indx shr 8),
-                byte(op)+1
-            ])
+        when withShortcut:
+            if indx <= 13:
+                addToInstructions((byte(op)-0x0E) + byte(indx))
+            else:
+                addToInstructions([
+                    byte(indx),
+                    byte(op)
+                ])
         else:
             addToInstructions([
                 byte(indx),
@@ -88,8 +94,8 @@ proc evaluateBlock*(blok: Node, isDictionary=false): Translation =
     # Shortcuts
     #------------------------
 
-    template addConst(v: Value, op: OpCode): untyped =
-        addConst(consts, it, v, op)
+    template addConst(v: Value, op: OpCode, withShortcut: static bool=true): untyped =
+        addConst(consts, it, v, op, withShortcut)
 
     template addByte(b: untyped): untyped = 
         when b is OpCode:
@@ -165,7 +171,7 @@ proc evaluateBlock*(blok: Node, isDictionary=false): Translation =
                     addConst(instruction.value, opLoad)
                 of VariableStore:
                     if unlikely(isDictionary):
-                        addConst(instruction.value, opDStore)
+                        addConst(instruction.value, opDStore, withShortcut=false)
                     else:
                         addConst(instruction.value, opStore)
                 of OtherCall:
