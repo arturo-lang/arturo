@@ -127,8 +127,8 @@ var
     IfF*, IfEF*, UnlessF*, UnlessEF*, ElseF*, SwitchF*, WhileF*     : Value
     ReturnF*, BreakF*, ContinueF*                                   : Value
     ToF*                                                            : Value
-    ArrayF*, DictF*, FuncF*                                         : Value
-    RangeF*, LoopF*, MapF*, SelectF*                                : Value
+    ArrayF*, DictF*, FuncF*, RangeF*                                : Value
+    LoopF*, MapF*, SelectF*                                         : Value
     SizeF*, ReplaceF*, SplitF*, JoinF*, ReverseF*, AppendF*         : Value
     PrintF*                                                         : Value
 

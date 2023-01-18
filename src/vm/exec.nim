@@ -630,14 +630,18 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                     stack.push(VINTEGERT)
                     ToF.action()()
 
+                of RSRV7                : discard
+                of RSRV8                : discard
+                of RSRV9                : discard
+
+                # [0xB0-0xBF]
                 # generators          
                 of opArray              : ArrayF.action()()
                 of opDict               : DictF.action()()
                 of opFunc               : FuncF.action()()
-
-                # [0xB0-0xBF]
-                # ranges & iterators
                 of opRange              : RangeF.action()()
+                
+                # iterators
                 of opLoop               : LoopF.action()()
                 of opMap                : MapF.action()()
                 of opSelect             : SelectF.action()()
@@ -653,9 +657,6 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 # i/o operations
                 of opPrint              : PrintF.action()()
 
-                of RSRV7                : discard
-                of RSRV8                : discard
-                of RSRV9                : discard
                 of RSRV10               : discard
                 of RSRV11               : discard
 
