@@ -56,7 +56,7 @@ else:
 #     else:
 #         args
 
-template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: string, args: untyped, attrs: untyped, returns: ValueSpec, example: string, act: untyped):untyped =
+template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: string, args: untyped, attrs: untyped, returns: ValueSpec, example: string, opc: OpCode, act: untyped):untyped =
     ## add new builtin, function with given name, alias, 
     ## rule, etc - followed by the code block to be 
     ## executed when the function is called
@@ -85,6 +85,7 @@ template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: 
             when not defined(WEB): attrs.toOrderedTable else: initOrderedTable[string,(ValueSpec,string)](),
             returns, 
             cleanExample, 
+            opc,
             proc () =
                 hookProcProfiler("lib/require"):
                     require(n, args)
@@ -99,57 +100,57 @@ template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: 
 
         SetSym(n, b)
 
-        when n=="add"               : AddF = b
-        elif n=="sub"               : SubF = b
-        elif n=="mul"               : MulF = b
-        elif n=="div"               : DivF = b
-        elif n=="fdiv"              : FdivF = b
-        elif n=="mod"               : ModF = b
-        elif n=="pow"               : PowF = b
-        elif n=="neg"               : NegF = b
-        elif n=="inc"               : IncF = b
-        elif n=="dec"               : DecF = b
-        elif n=="not"               : BNotF = b
-        elif n=="and"               : BAndF = b
-        elif n=="or"                : BOrF = b
-        elif n=="shl"               : ShlF = b
-        elif n=="shr"               : ShrF = b
-        elif n=="not?"              : NotF = b
-        elif n=="and?"              : AndF = b
-        elif n=="or?"               : OrF = b
-        elif n=="equal?"            : EqF = b
-        elif n=="notEqual?"         : NeF = b
-        elif n=="greater?"          : GtF = b
-        elif n=="greaterOrEqual?"   : GeF = b
-        elif n=="less?"             : LtF = b
-        elif n=="lessOrEqual?"      : LeF = b
-        elif n=="get"               : GetF = b
-        elif n=="set"               : SetF = b
-        elif n=="if"                : IfF = b
-        elif n=="if?"               : IfEF = b
-        elif n=="unless"            : UnlessF = b
-        elif n=="unless?"           : UnlessEF = b
-        elif n=="else"              : ElseF = b
-        elif n=="switch"            : SwitchF = b
-        elif n=="while"             : WhileF = b
-        elif n=="return"            : ReturnF = b
-        elif n=="break"             : BreakF = b
-        elif n=="continue"          : ContinueF = b
-        elif n=="to"                : ToF = b
-        elif n=="array"             : ArrayF = b
-        elif n=="dictionary"        : DictF = b
-        elif n=="function"          : FuncF = b  
-        elif n=="range"             : RangeF = b
-        elif n=="loop"              : LoopF = b
-        elif n=="map"               : MapF = b 
-        elif n=="select"            : SelectF = b
-        elif n=="size"              : SizeF = b
-        elif n=="replace"           : ReplaceF = b
-        elif n=="split"             : SplitF = b
-        elif n=="join"              : JoinF = b
-        elif n=="reverse"           : ReverseF = b
-        elif n=="append"            : AppendF = b
-        elif n=="print"             : PrintF = b
+        # when n=="add"               : AddF = b
+        # elif n=="sub"               : SubF = b
+        # elif n=="mul"               : MulF = b
+        # elif n=="div"               : DivF = b
+        # elif n=="fdiv"              : FdivF = b
+        # elif n=="mod"               : ModF = b
+        # elif n=="pow"               : PowF = b
+        # elif n=="neg"               : NegF = b
+        # elif n=="inc"               : IncF = b
+        # elif n=="dec"               : DecF = b
+        # elif n=="not"               : BNotF = b
+        # elif n=="and"               : BAndF = b
+        # elif n=="or"                : BOrF = b
+        # elif n=="shl"               : ShlF = b
+        # elif n=="shr"               : ShrF = b
+        # elif n=="not?"              : NotF = b
+        # elif n=="and?"              : AndF = b
+        # elif n=="or?"               : OrF = b
+        # elif n=="equal?"            : EqF = b
+        # elif n=="notEqual?"         : NeF = b
+        # elif n=="greater?"          : GtF = b
+        # elif n=="greaterOrEqual?"   : GeF = b
+        # elif n=="less?"             : LtF = b
+        # elif n=="lessOrEqual?"      : LeF = b
+        # elif n=="get"               : GetF = b
+        # elif n=="set"               : SetF = b
+        # elif n=="if"                : IfF = b
+        # elif n=="if?"               : IfEF = b
+        # elif n=="unless"            : UnlessF = b
+        # elif n=="unless?"           : UnlessEF = b
+        # elif n=="else"              : ElseF = b
+        # elif n=="switch"            : SwitchF = b
+        # elif n=="while"             : WhileF = b
+        # elif n=="return"            : ReturnF = b
+        # elif n=="break"             : BreakF = b
+        # elif n=="continue"          : ContinueF = b
+        # elif n=="to"                : ToF = b
+        # elif n=="array"             : ArrayF = b
+        # elif n=="dictionary"        : DictF = b
+        # elif n=="function"          : FuncF = b  
+        # elif n=="range"             : RangeF = b
+        # elif n=="loop"              : LoopF = b
+        # elif n=="map"               : MapF = b 
+        # elif n=="select"            : SelectF = b
+        # elif n=="size"              : SizeF = b
+        # elif n=="replace"           : ReplaceF = b
+        # elif n=="split"             : SplitF = b
+        # elif n=="join"              : JoinF = b
+        # elif n=="reverse"           : ReverseF = b
+        # elif n=="append"            : AppendF = b
+        # elif n=="print"             : PrintF = b
 
         when alias != unaliased:
             Aliases[alias] = AliasBinding(
