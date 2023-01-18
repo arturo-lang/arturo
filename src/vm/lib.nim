@@ -97,6 +97,10 @@ template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: 
 
         SetSym(n, b)
 
+        static:
+            case n:
+                of "array": ArrayF = b
+
         when n=="array"             : ArrayF = b
         elif n=="dictionary"        : DictF = b
         elif n=="function"          : FuncF = b               
