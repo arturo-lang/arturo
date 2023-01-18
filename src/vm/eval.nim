@@ -104,12 +104,12 @@ proc evaluateBlock*(blok: Node, isDictionary=false): Translation =
     while i < nLen:
         let item = blok.children[i]
 
-        echo "current item:"
-        echo dumpNode(item)
+        # echo "current item:"
+        # echo dumpNode(item)
 
         for instruction in traverse(item):
-            echo "processing: "
-            echo dumpNode(instruction)
+            # echo "processing: "
+            # echo dumpNode(instruction)
             case instruction.kind:
                 of RootNode:
                     discard
@@ -118,19 +118,34 @@ proc evaluateBlock*(blok: Node, isDictionary=false): Translation =
                     let iv {.cursor.} = instruction.value
                     case instruction.value.kind:
                         of Integer:
-                            if likely(iv.iKind==NormalInteger) and iv.i>=0 and iv.i<=15: 
+                            if likely(iv.iKind==NormalInteger) and iv.i >= -1 and iv.i <= 15: 
                                 addByte(byte(opConstI0) + byte(iv.i))
                                 alreadyPut = true
                         of Floating:
-                            if iv.f == 0.0:
-                                addByte(opConstF0)
-                                alreadyPut = true
-                            elif iv.f == 1.0:
-                                addByte(opConstF1)
-                                alreadyPut = true
-                            elif iv.f == 2.0:
-                                addByte(opConstF2)
-                                alreadyPut = true
+                            case iv.f:
+                                of -1.0:
+                                    addByte(opConstF1M)
+                                    alreadyPut = true
+                                of 0.0:
+                                    addByte(opConstF0)
+                                    alreadyPut = true
+                                of 1.0:
+                                    addByte(opConstF1)
+                                    alreadyPut = true
+                                of 2.0:
+                                    addByte(opConstF2)
+                                    alreadyPut = true
+                                else:
+                                    discard
+                            # if iv.f == 0.0:
+                            #     addByte(opConstF0)
+                            #     alreadyPut = true
+                            # elif iv.f == 1.0:
+                            #     addByte(opConstF1)
+                            #     alreadyPut = true
+                            # elif iv.f == 2.0:
+                            #     addByte(opConstF2)
+                            #     alreadyPut = true
                         of String:
                             if iv.s == "":
                                 addByte(opConstS)
