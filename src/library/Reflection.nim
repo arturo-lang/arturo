@@ -36,6 +36,7 @@ proc defineSymbols*() =
     
     builtin "arity",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get index of function arities",
         args        = NoArgs,
@@ -54,6 +55,7 @@ proc defineSymbols*() =
             
     builtin "attr",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get given attribute, if it exists",
         args        = {
@@ -86,6 +88,7 @@ proc defineSymbols*() =
 
     builtin "attr?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if given attribute exists",
         args        = {
@@ -115,6 +118,7 @@ proc defineSymbols*() =
 
     builtin "attribute?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "checks if given value is of type :attribute",
         args        = {
@@ -131,6 +135,7 @@ proc defineSymbols*() =
 
     builtin "attributeLabel?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "checks if given value is of type :attributeLabel",
         args        = {
@@ -147,6 +152,7 @@ proc defineSymbols*() =
 
     builtin "attrs",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get dictionary of set attributes",
         args        = NoArgs,
@@ -170,6 +176,7 @@ proc defineSymbols*() =
 
     builtin "benchmark",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "benchmark given code",
         args        = {
@@ -205,6 +212,7 @@ proc defineSymbols*() =
 
     builtin "binary?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "checks if given value is of type :binary",
         args        = {
@@ -221,6 +229,7 @@ proc defineSymbols*() =
 
     builtin "block?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "checks if given value is of type :block",
         args        = {
@@ -239,6 +248,7 @@ proc defineSymbols*() =
 
     builtin "bytecode?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "checks if given value is of type :bytecode",
         args        = {
@@ -257,7 +267,8 @@ proc defineSymbols*() =
             push(newLogical(x.kind==Bytecode))
 
     builtin "char?",
-        alias       = unaliased, 
+        alias       = unaliased,
+        op          = opNop, 
         rule        = PrefixPrecedence,
         description = "checks if given value is of type :char",
         args        = {
@@ -274,6 +285,7 @@ proc defineSymbols*() =
 
     builtin "color?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "checks if given value is of type :color",
         args        = {
@@ -292,6 +304,7 @@ proc defineSymbols*() =
 
     builtin "complex?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "checks if given value is of type :complex",
         args        = {
@@ -310,6 +323,7 @@ proc defineSymbols*() =
 
     builtin "database?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "checks if given value is of type :database",
         args        = {
@@ -326,6 +340,7 @@ proc defineSymbols*() =
 
     builtin "date?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "checks if given value is of type :date",
         args        = {
@@ -342,6 +357,7 @@ proc defineSymbols*() =
 
     builtin "dictionary?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "checks if given value is of type :dictionary",
         args        = {
@@ -360,6 +376,7 @@ proc defineSymbols*() =
 
         builtin "info",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "print info for given symbol",
             args        = {
@@ -424,6 +441,7 @@ proc defineSymbols*() =
 
     builtin "inline?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "checks if given value is of type :inline",
         args        = {
@@ -440,6 +458,7 @@ proc defineSymbols*() =
 
     builtin "inspect",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "print full dump of given value to screen",
         args        = {
@@ -463,6 +482,7 @@ proc defineSymbols*() =
 
     builtin "integer?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "checks if given value is of type :integer",
         args        = {
@@ -487,6 +507,7 @@ proc defineSymbols*() =
 
     builtin "is?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check whether value is of given type",
         args        = {
@@ -538,6 +559,7 @@ proc defineSymbols*() =
 
     builtin "floating?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "checks if given value is of type :floating",
         args        = {
@@ -555,6 +577,7 @@ proc defineSymbols*() =
 
     builtin "function?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "checks if given value is of type :function",
         args        = {
@@ -585,6 +608,7 @@ proc defineSymbols*() =
 
     builtin "label?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "checks if given value is of type :label",
         args        = {
@@ -601,6 +625,7 @@ proc defineSymbols*() =
 
     builtin "literal?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "checks if given value is of type :literal",
         args        = {
@@ -618,6 +643,7 @@ proc defineSymbols*() =
 
     builtin "logical?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "checks if given value is of type :logical",
         args        = {
@@ -638,6 +664,7 @@ proc defineSymbols*() =
 
     builtin "null?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "checks if given value is of type :null",
         args        = {
@@ -656,6 +683,7 @@ proc defineSymbols*() =
 
     builtin "object?",
         alias       = unaliased, 
+        op          = opNop, 
         rule        = PrefixPrecedence,
         description = "checks if given value is a custom-type object",
         args        = {
@@ -676,6 +704,7 @@ proc defineSymbols*() =
 
     builtin "path?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "checks if given value is of type :path",
         args        = {
@@ -692,6 +721,7 @@ proc defineSymbols*() =
 
     builtin "pathLabel?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "checks if given value is of type :pathLabel",
         args        = {
@@ -708,6 +738,7 @@ proc defineSymbols*() =
 
     builtin "quantity?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "checks if given value is of type :quantity",
         args        = {
@@ -726,6 +757,7 @@ proc defineSymbols*() =
 
     builtin "range?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "checks if given value is of type :range",
         args        = {
@@ -744,6 +776,7 @@ proc defineSymbols*() =
 
     builtin "rational?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "checks if given value is of type :rational",
         args        = {
@@ -762,6 +795,7 @@ proc defineSymbols*() =
 
     builtin "regex?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "checks if given value is of type :regex",
         args        = {
@@ -779,6 +813,7 @@ proc defineSymbols*() =
 
     builtin "set?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if given variable is defined",
         args        = {
@@ -797,6 +832,7 @@ proc defineSymbols*() =
 
     builtin "stack",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get current stack",
         args        = NoArgs,
@@ -813,6 +849,7 @@ proc defineSymbols*() =
 
     builtin "standalone?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "checks if current script runs from the command-line",
         args        = NoArgs,
@@ -833,6 +870,7 @@ proc defineSymbols*() =
 
     builtin "string?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "checks if given value is of type :string",
         args        = {
@@ -850,6 +888,7 @@ proc defineSymbols*() =
 
     builtin "symbol?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "checks if given value is of type :symbol",
         args        = {
@@ -866,6 +905,7 @@ proc defineSymbols*() =
 
     builtin "symbolLiteral?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "checks if given value is of type :symbolLiteral",
         args        = {
@@ -882,6 +922,7 @@ proc defineSymbols*() =
 
     builtin "symbols",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get currently defined symbols",
         args        = NoArgs,
@@ -907,6 +948,7 @@ proc defineSymbols*() =
 
     builtin "type",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get type of given value",
         args        = {
@@ -926,6 +968,7 @@ proc defineSymbols*() =
 
     builtin "type?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "checks if given value is of type :type",
         args        = {
@@ -943,6 +986,7 @@ proc defineSymbols*() =
 
     builtin "version?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "checks if given value is of type :version",
         args        = {
@@ -959,6 +1003,7 @@ proc defineSymbols*() =
 
     builtin "word?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "checks if given value is of type :word",
         args        = {
