@@ -381,58 +381,6 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
                 else:
                     BuiltinCall
 
-        # if fn == ArrayF     : op = opArray
-        # elif fn == DictF    : op = opDict
-        # elif fn == FuncF    : op = opFunc
-        # elif fn == AddF     : op = opAdd
-        # elif fn == SubF     : op = opSub
-        # elif fn == MulF     : op = opMul
-        # elif fn == DivF     : op = opDiv
-        # elif fn == FdivF    : op = opFDiv
-        # elif fn == ModF     : op = opMod
-        # elif fn == PowF     : op = opPow
-        # elif fn == NegF     : op = opNeg
-        # elif fn == BNotF    : op = opBNot
-        # elif fn == BAndF    : op = opBAnd
-        # elif fn == BOrF     : op = opBOr
-        # elif fn == ShlF     : op = opShl
-        # elif fn == ShrF     : op = opShr
-        # elif fn == NotF     : op = opNot
-        # elif fn == AndF     : op = opAnd
-        # elif fn == OrF      : op = opOr
-        # elif fn == EqF      : op = opEq
-        # elif fn == NeF      : op = opNe
-        # elif fn == GtF      : op = opGt
-        # elif fn == GeF      : op = opGe
-        # elif fn == LtF      : op = opLt
-        # elif fn == LeF      : op = opLe
-        # elif fn == IfF      : callType = SpecialCall; op = opIf
-        # elif fn == IfEF     : callType = SpecialCall; op = opIfE
-        # elif fn == UnlessF  : callType = SpecialCall; op = opUnless
-        # elif fn == UnlessEF : callType = SpecialCall; op = opUnless
-        # elif fn == ElseF    : callType = SpecialCall; op = opElse
-        # elif fn == SwitchF  : callType = SpecialCall; op = opSwitch
-        # elif fn == WhileF   : callType = SpecialCall; op = opWhile
-        # elif fn == ReturnF  : op = opReturn
-        # elif fn == ToF      : op = opTo
-        # elif fn == PrintF   : op = opPrint
-        # elif fn == GetF     : op = opGet
-        # elif fn == SetF     : op = opSet
-        # elif fn == RangeF   : op = opRange
-        # elif fn == LoopF    : op = opLoop
-        # elif fn == MapF     : op = opMap
-        # elif fn == SelectF  : op = opSelect
-        # elif fn == SizeF    : op = opSize
-        # elif fn == ReplaceF : op = opReplace
-        # elif fn == SplitF   : op = opSplit
-        # elif fn == JoinF    : op = opJoin
-        # elif fn == ReverseF : op = opReverse
-        # elif fn == IncF     : op = opInc
-        # elif fn == DecF     : op = opDec
-
-        # if callType == OtherCall and op != opNop:
-        #     callType = BuiltinCall
-
         var v: Value =
             if callType == OtherCall: 
                 newWord(name)
