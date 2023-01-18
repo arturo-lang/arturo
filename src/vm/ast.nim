@@ -506,7 +506,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
                 when isLabel:
                     let newNode = 
                         if i == val.p.len - 1:
-                            newCallNode(BuiltinCall, 2, nil, opSet)
+                            newCallNode(BuiltinCall, 3, nil, opSet)
                         else:
                             newCallNode(BuiltinCall, 2, nil, opGet)
                 else:
