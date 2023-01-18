@@ -123,6 +123,40 @@ proc replaceNode(node: Node, newNode: Node) =
     node.parent.children[node.parent.children.find(node)] = newNode
 
 #------------------------
+# Iterators
+#------------------------
+
+iterator traverse*(node: Node): Node =
+    # reverse post-order traversal (RLN)
+    var preStack = @[node]
+    var postStack: seq[Node]
+
+    while preStack.len > 0:
+        var subnode = preStack.pop() 
+        postStack.add(subnode)
+        var j = subnode.children.len-1
+        while j >= 0:
+            preStack.add(subnode.children[j])
+            j -= 1
+
+    while postStack.len > 0:
+        var subnode = postStack.pop()
+        yield subnode
+
+iterator traverseLRN*(node: Node): Node =
+    # post-order traversal (LRN)
+    var preStack = @[node]
+    var postStack: seq[Node]
+
+    while preStack.len > 0:
+        var subnode = preStack.pop() 
+        postStack.add(subnode)
+        preStack.add(subnode.children)
+    while postStack.len > 0:
+        var subnode = postStack.pop()
+        yield subnode
+
+#------------------------
 # Misc
 #------------------------
 
@@ -569,44 +603,6 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
                 break
 
     return i-1
-
-iterator traverse*(node: Node): Node =
-    var preStack = @[node]
-    var postStack: seq[Node]
-    while preStack.len > 0:
-        var subnode = preStack.pop() 
-        postStack.add(subnode)
-        preStack.add(subnode.children)
-    while postStack.len > 0:
-        var subnode = postStack.pop()
-        yield subnode
-
-iterator traverseTree*(node: Node): Node = 
-    for child in node.children:
-        for subchild in traverse(child):
-            yield subchild
-
-# iterator traverse*(node: Node): Node =
-#     var preStack = @[node]
-#     var postStack: seq[Node]
-#     while preStack.len > 0:
-#         var subnode = preStack.pop() 
-#         postStack.add(subnode)
-#         var i = subnode.children.len-1
-#         while i >= 0:
-#             preStack.add(subnode.children[i])
-#             dec(i)
-#         #preStack.add(subnode.children.reversed)
-#     while postStack.len > 0:
-#         var subnode = postStack.pop()
-#         yield subnode
-
-# iterator traverseTree*(node: Node): Node =
-#     for child in node.children:
-#         if child.kind in CallNode:
-#             for subchild in traverse(child):
-#                 yield subchild
-#         #yield child
     
 #=======================================
 # Output
