@@ -226,7 +226,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
         if left.kind == ConstantValue and left.value.kind in {Integer, Floating}:
             # Constant folding
             if right.kind == ConstantValue and right.value.kind in {Integer, Floating}:
-                target.replaceNode(newTerminalNode(ConstantValue, left.value + right.value))
+                target.replaceNode(newConstant(left.value + right.value))
             # Convert 1 + X -> inc X
             elif left.value == I1:
                 target.op = opInc
@@ -245,14 +245,14 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
             if right.children[0].kind == VariableLoad and right.children[0].value == left.value:
                 target.op = opMul
                 if right.children[1].kind == ConstantValue and right.children[1].value.kind in {Integer, Floating}:
-                    right.replaceNode(newTerminalNode(ConstantValue, right.children[1].value + I1))
+                    right.replaceNode(newConstant(right.children[1].value + I1))
                 else:
                     right.op = opAdd
                     right.children[0].value = newInteger(1)
             elif right.children[1].kind == VariableLoad and right.children[1].value == left.value:
                 target.op = opMul
                 if right.children[0].kind == ConstantValue and right.children[0].value.kind in {Integer, Floating}:
-                    right.replaceNode(newTerminalNode(ConstantValue, right.children[0].value + I1))
+                    right.replaceNode(newConstant(right.children[0].value + I1))
                 else:
                     right.op = opAdd
                     right.children[1].value = newInteger(1)
@@ -263,14 +263,14 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
             if left.children[0].kind == VariableLoad and left.children[0].value == right.value:
                 target.op = opMul
                 if left.children[1].kind == ConstantValue and left.children[1].value.kind in {Integer, Floating}:
-                    left.replaceNode(newTerminalNode(ConstantValue, left.children[1].value + I1))
+                    left.replaceNode(newConstant(left.children[1].value + I1))
                 else:
                     left.op = opAdd
                     left.children[0].value = newInteger(1)
             elif left.children[1].kind == VariableLoad and left.children[1].value == right.value:
                 target.op = opMul
                 if left.children[0].kind == ConstantValue and left.children[0].value.kind in {Integer, Floating}:
-                    left.replaceNode(newTerminalNode(ConstantValue, left.children[0].value + I1))
+                    left.replaceNode(newConstant(left.children[0].value + I1))
                 else:
                     left.op = opAdd
                     left.children[1].value = newInteger(1)
@@ -281,7 +281,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
 
         if left.kind == ConstantValue and right.kind == ConstantValue:
             # Constant folding
-            target.replaceNode(newTerminalNode(ConstantValue, left.value - right.value))
+            target.replaceNode(newConstant(left.value - right.value))
         elif right.kind == ConstantValue and right.value == I1:
             # Convert X - 1 -> dec X
             target.op = opDec
@@ -293,7 +293,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
         var right = target.children[1]
 
         if left.kind == ConstantValue and right.kind == ConstantValue:
-            target.replaceNode(newTerminalNode(ConstantValue, op(left.value,right.value)))
+            target.replaceNode(newConstant(op(left.value,right.value)))
 
     proc optimizeUnless(target: var Node) {.enforceNoRaises.} =
         target.op = 
@@ -345,6 +345,9 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
                         discard
 
             target = target.parent
+
+    template rollThrough(target: var Node): untyped =
+        target = target.children[^1]
 
     #------------------------
     # AST Generation
@@ -427,23 +430,23 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
 
         target.addChild(newCallNode(callType, ar, v, op))
         
-        target = target.children[^1]
+        target.rollThrough()
 
     func addStore(target: var Node, val: Value) {.enforceNoRaises.} =
         target.addChild(newCallNode(VariableStore, 1, val))
 
-        target = target.children[^1]
+        target.rollThrough()
 
     proc addAttribute(target: var Node, val: Value, isLabel: static bool = false) {.enforceNoRaises.} =
         let attrNode = newCallNode(AttributeNode, 1, val)
 
         when not isLabel:
-            attrNode.addChild(newTerminalNode(ConstantValue, VTRUE))
+            attrNode.addChild(newConstant(VTRUE))
 
         target.addChild(attrNode)
 
         when isLabel:
-            target = target.children[^1]
+            target.rollThrough()
 
     template addPotentialInfixCall(target: var Node): untyped =
         if i < nLen - 1:
@@ -458,13 +461,13 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
                         i += 1
                         target.addCall(aliased.name.s, fun=symfunc)
 
-    proc addTerminal(target: var Node, val: Value, ofType: NodeKind = ConstantValue) =
+    proc addTerminal(target: var Node, node: Node) =
         with target:
             rewindCallBranches()
 
             addPotentialInfixCall()
 
-            addChild(newTerminalNode(ofType, val))
+            addChild(node)
 
             rewindCallBranches(optimize=true)
 
@@ -479,72 +482,35 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
                         pathCallV = item
 
         if not pathCallV.isNil:
-            target.addChild(
-                Node(
-                    kind: OtherCall,
-                    arity: pathCallV.arity,
-                    op: opNop,
-                    value: pathCallV
-                )
-            )
-            target = target.children[^1]
-            # addConst(pathCallV, opCall)
-            # argStack.add(pathCallV.arity)
+            target.addChild(Node(kind: OtherCall, arity: pathCallV.arity, op: opNop, value: pathCallV))
+            target.rollThrough()
         else:
-
-            # get a/b/c
-
-            # get 
-            #     get 
-            #         load a
-            #         b            
-            #     c
-            var baseNode: Node
-
             let basePath {.cursor.} = val.p[0]
 
-            if TmpArities.getOrDefault(basePath.s, -1) == 0:
-                baseNode = newCallNode(
-                    OtherCall, 
-                    0, 
-                    basePath
-                )
-            else:
-                baseNode = newTerminalNode(
-                    VariableLoad, 
-                    basePath
-                )
+            var baseNode = 
+                if TmpArities.getOrDefault(basePath.s, -1) == 0:
+                    newCallNode(OtherCall, 0, basePath)
+                else:
+                    newVariable(basePath)
 
             var i = 1
 
             while i < val.p.len:
-                let newNode = newCallNode(
-                    BuiltinCall,
-                    2,
-                    nil,
-                    opGet
-                )
+                let newNode = newCallNode(BuiltinCall, 2, nil, opGet)
+                
                 newNode.addChild(baseNode)
+                
                 if val.p[i].kind==Block:
                     var subNode = newRootNode()
                     discard subNode.processBlock(val.p[i])
                     newNode.addChildren(subNode.children)
                 else:
-                    newNode.addChild(newTerminalNode(
-                        ConstantValue,
-                        val.p[i]
-                    ))
+                    newNode.addChild(newConstant(val.p[i]))
+                
                 baseNode = newNode
                 i += 1
 
-            with target:
-                rewindCallBranches()
-
-                addPotentialInfixCall()
-
-                addChild(baseNode)
-
-                rewindCallBranches(optimize=true)
+            target.addTerminal(baseNode)
 
     template addPotentialTrailingPipe(target: var Node): untyped =
         var added = false
@@ -570,7 +536,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
                     added = true
 
         if not added:
-            target.addTerminal(newSymbol(pipe))
+            target.addTerminal(newConstant(newSymbol(pipe)))
 
     proc addInline(target: var Node, val: Value) =
         var subNode = newRootNode()
@@ -589,7 +555,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
         var subNode = newRootNode()
         i = subNode.processBlock(val, start=i+1, processingArrow=true)
 
-        target.addTerminal(newBlock(ArrowBlock))
+        target.addTerminal(newConstant(newBlock(ArrowBlock)))
 
         ArrowBlock.setLen(0)
 
@@ -628,11 +594,11 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
                 idx += 1
 
         if argblock.len == 1:
-            target.addTerminal(newLiteral(argblock[0].s))
+            target.addTerminal(newConstant(newLiteral(argblock[0].s)))
         else:
-            target.addTerminal(newBlock(argblock))
+            target.addTerminal(newConstant(newBlock(argblock)))
 
-        target.addTerminal(newBlock(subblock))
+        target.addTerminal(newConstant(newBlock(subblock)))
 
     #------------------------
     # The Main Loop
@@ -651,11 +617,11 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
                     current.addCall(item.s, funcArity)
                 else:
                     if item.s == "true":
-                        current.addTerminal(VTRUE)
+                        current.addTerminal(newConstant(VTRUE))
                     elif item.s == "false":
-                        current.addTerminal(VFALSE)
+                        current.addTerminal(newConstant(VFALSE))
                     else:
-                        current.addTerminal(item, ofType=VariableLoad)
+                        current.addTerminal(newVariable(item))
 
             of Label, PathLabel:
                 current.addStore(item)
@@ -681,7 +647,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
                             subblock.add(blok.a[i])
                             inc(i)
                         
-                        current.addTerminal(newBlock(subblock))
+                        current.addTerminal(newConstant(newBlock(subblock)))
                             
                     of arrowright       : 
                         current.addArrowBlock(blok)
@@ -701,17 +667,17 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
                                 current.addCall(aliased.name.s, fun=symfunc)
                             else: 
                                 if aliased.name.s == "null":
-                                    current.addTerminal(VNULL)
+                                    current.addTerminal(newConstant(VNULL))
                                 else:
-                                    current.addTerminal(newString(aliased.name.s), ofType=VariableLoad)
+                                    current.addTerminal(newVariable(newString(aliased.name.s)))
                         else:
-                            current.addTerminal(item)
+                            current.addTerminal(newConstant(item))
 
             of Newline:
                 discard
 
             else:
-                current.addTerminal(item)
+                current.addTerminal(newConstant(item))
 
         i += 1
 
