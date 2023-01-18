@@ -22,9 +22,9 @@
 # - [x] make Path's work
 # - [x] make PathLabel's work
 # - [ ] make Newline values work
-# - [X] create new opCode for append
-# - [X] clean up opCode's
-# - [X] attach opCode's to built-in function (for faster lookups)
+# - [x] create new opCode for append
+# - [x] clean up opCode's
+# - [x] attach opCode's to built-in function (for faster lookups)
 # - [ ] optimize appends
 # - [ ] make labels store new functions in TmpArities
 # - [ ] make if/if?/else/while/switch work
