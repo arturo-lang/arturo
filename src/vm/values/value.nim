@@ -36,6 +36,8 @@ when not defined(NOGMP):
 when not defined(WEB):
     import vm/errors
 
+import vm/opcodes
+
 import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vsocket, vsymbol, vversion]
 
 import vm/values/clean
@@ -544,7 +546,7 @@ func newFunction*(params: seq[string], main: Value, imports: Value = nil, export
         )
     )
 
-func newBuiltin*(desc: sink string, modl: sink string, line: int, ar: int8, ag: sink OrderedTable[string,ValueSpec], at: sink OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: sink string, act: BuiltinAction): Value {.inline, enforceNoRaises.} =
+func newBuiltin*(desc: sink string, modl: sink string, line: int, ar: int8, ag: sink OrderedTable[string,ValueSpec], at: sink OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: sink string, opc: OpCode, act: BuiltinAction): Value {.inline, enforceNoRaises.} =
     ## create Function (BuiltinFunction) value with given details
     result = Value(
         kind: Function,
@@ -559,6 +561,7 @@ func newBuiltin*(desc: sink string, modl: sink string, line: int, ar: int8, ag: 
         funcType: VFunction(
             fnKind: BuiltinFunction,
             arity: ar,
+            op: opc,
             action: act
         )
     )
@@ -724,9 +727,9 @@ proc copyValue*(v: Value): Value {.inline.} =
                 result = newFunction(v.params, v.main, v.imports, v.exports, v.memoize, v.inline)
             else:
                 when defined(DOCGEN):
-                    result = newBuiltin(v.info.descr, v.info.module, v.info.line, v.arity, v.info.args, v.info.attrs, v.info.returns, v.info.example, v.action)
+                    result = newBuiltin(v.info.descr, v.info.module, v.info.line, v.arity, v.info.args, v.info.attrs, v.info.returns, v.info.example, v.op, v.action)
                 else:
-                    result = newBuiltin(v.info.descr, v.info.module, 0, v.arity, v.info.args, v.info.attrs, v.info.returns, "", v.action)
+                    result = newBuiltin(v.info.descr, v.info.module, 0, v.arity, v.info.args, v.info.attrs, v.info.returns, "", v.op, v.action)
 
         of Database:    
             when not defined(NOSQLITE):
