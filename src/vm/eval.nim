@@ -117,6 +117,13 @@ proc evaluateBlock*(blok: Node, isDictionary=false): Translation =
                     var alreadyPut = false
                     let iv {.cursor.} = instruction.value
                     case instruction.value.kind:
+                        of Logical:
+                            if iv.b == True:
+                                addByte(opConstBT)
+                                alreadyPut = true
+                            elif iv.b == False:
+                                addByte(opConstBF)
+                                alreadyPut = true
                         of Integer:
                             if likely(iv.iKind==NormalInteger) and iv.i >= -1 and iv.i <= 15: 
                                 addByte(byte(opConstI0) + byte(iv.i))
@@ -137,15 +144,6 @@ proc evaluateBlock*(blok: Node, isDictionary=false): Translation =
                                     alreadyPut = true
                                 else:
                                     discard
-                            # if iv.f == 0.0:
-                            #     addByte(opConstF0)
-                            #     alreadyPut = true
-                            # elif iv.f == 1.0:
-                            #     addByte(opConstF1)
-                            #     alreadyPut = true
-                            # elif iv.f == 2.0:
-                            #     addByte(opConstF2)
-                            #     alreadyPut = true
                         of String:
                             if iv.s == "":
                                 addByte(opConstS)
@@ -153,13 +151,6 @@ proc evaluateBlock*(blok: Node, isDictionary=false): Translation =
                         of Block:
                             if iv.a.len == 0:
                                 addByte(opConstA)
-                                alreadyPut = true
-                        of Logical:
-                            if iv.b == True:
-                                addByte(opConstBT)
-                                alreadyPut = true
-                            elif iv.b == False:
-                                addByte(opConstBF)
                                 alreadyPut = true
                         else:
                             discard
