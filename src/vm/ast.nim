@@ -435,8 +435,8 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
         # elif fn == IncF     : op = opInc
         # elif fn == DecF     : op = opDec
 
-        if callType == OtherCall and op != opNop:
-            callType = BuiltinCall
+        # if callType == OtherCall and op != opNop:
+        #     callType = BuiltinCall
 
         var v: Value =
             if callType == OtherCall: 
