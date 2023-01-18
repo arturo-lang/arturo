@@ -433,16 +433,13 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
                         i += 1
                         target.addCall(aliased.name.s, fun=symfunc)
 
-    proc addTerminal(target: var Node, node: Node | seq[Node]) =
+    proc addTerminal(target: var Node, node: Node) =
         with target:
             rewindCallBranches()
 
             addPotentialInfixCall()
 
-            when node is Node:
-                addChild(node)
-            else:
-                addChildren(node)
+            addChild(node)
 
             rewindCallBranches(optimize=true)
 
@@ -532,7 +529,14 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
         var subNode = newRootNode()
         discard subNode.processBlock(val)
 
-        target.addTerminal(subNode.children)
+        with target:
+            rewindCallBranches()
+
+            addPotentialInfixCall()
+
+            addChildren(subNode.children)
+            
+            rewindCallBranches()
 
     proc addArrowBlock(target: var Node, val: Value) =
         var subNode = newRootNode()
