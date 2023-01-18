@@ -25,7 +25,7 @@
 # - [x] create new opCode for append
 # - [x] clean up opCode's
 # - [x] attach opCode's to built-in function (for faster lookups)
-# - [ ] optimize appends
+# - [x] optimize appends
 # - [ ] make labels store new functions in TmpArities
 # - [ ] make if/if?/else/while/switch work
 
