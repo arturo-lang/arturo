@@ -97,14 +97,7 @@ template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: 
 
         SetSym(n, b)
 
-        static:
-            case n:
-                of "array": ArrayF = b
-
-        when n=="array"             : ArrayF = b
-        elif n=="dictionary"        : DictF = b
-        elif n=="function"          : FuncF = b               
-        elif n=="add"               : AddF = b
+        when n=="add"               : AddF = b
         elif n=="sub"               : SubF = b
         elif n=="mul"               : MulF = b
         elif n=="div"               : DivF = b
@@ -112,6 +105,8 @@ template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: 
         elif n=="mod"               : ModF = b
         elif n=="pow"               : PowF = b
         elif n=="neg"               : NegF = b
+        elif n=="inc"               : IncF = b
+        elif n=="dec"               : DecF = b
         elif n=="not"               : BNotF = b
         elif n=="and"               : BAndF = b
         elif n=="or"                : BOrF = b
@@ -126,6 +121,8 @@ template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: 
         elif n=="greaterOrEqual?"   : GeF = b
         elif n=="less?"             : LtF = b
         elif n=="lessOrEqual?"      : LeF = b
+        elif n=="get"               : GetF = b
+        elif n=="set"               : SetF = b
         elif n=="if"                : IfF = b
         elif n=="if?"               : IfEF = b
         elif n=="unless"            : UnlessF = b
@@ -134,10 +131,12 @@ template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: 
         elif n=="switch"            : SwitchF = b
         elif n=="while"             : WhileF = b
         elif n=="return"            : ReturnF = b
+        elif n=="break"             : BreakF = b
+        elif n=="continue"          : ContinueF = b
         elif n=="to"                : ToF = b
-        elif n=="print"             : PrintF = b
-        elif n=="get"               : GetF = b 
-        elif n=="set"               : SetF = b
+        elif n=="array"             : ArrayF = b
+        elif n=="dictionary"        : DictF = b
+        elif n=="function"          : FuncF = b  
         elif n=="range"             : RangeF = b
         elif n=="loop"              : LoopF = b
         elif n=="map"               : MapF = b 
@@ -147,8 +146,8 @@ template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: 
         elif n=="split"             : SplitF = b
         elif n=="join"              : JoinF = b
         elif n=="reverse"           : ReverseF = b
-        elif n=="inc"               : IncF = b
-        elif n=="dec"               : DecF = b
+        elif n=="append"            : AppendF = b
+        elif n=="print"             : PrintF = b
 
         when alias != unaliased:
             Aliases[alias] = AliasBinding(
