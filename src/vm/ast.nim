@@ -17,12 +17,15 @@
 
 
 # TODO:
-# - make Path's & PathLabel's work
-# - make Newline values work
-# - create new opCode for append
-# - optimize appends
-# - make labels store new functions in TmpArities
-# - make if/if?/else/while/switch work
+# - [x] make Attribute's work
+# - [x] make AttributeLabel's work
+# - [x] make Path's work
+# - [x] make PathLabel's work
+# - [ ] make Newline values work
+# - [ ] create new opCode for append
+# - [ ] optimize appends
+# - [ ] make labels store new functions in TmpArities
+# - [ ] make if/if?/else/while/switch work
 
 #=======================================
 # Libraries
