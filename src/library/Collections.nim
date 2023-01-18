@@ -50,6 +50,7 @@ proc defineSymbols*() =
 
     builtin "append",
         alias       = doubleplus,
+        op          = opAppend,
         rule        = InfixPrecedence,
         description = "append value to given collection",
         args        = {
@@ -124,6 +125,7 @@ proc defineSymbols*() =
 
     builtin "chop",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "remove last item from given collection",
         args        = {
@@ -170,6 +172,7 @@ proc defineSymbols*() =
     #  labels: library, enhancement, open discussion
     builtin "combine",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get all possible combinations of the elements in given collection",
         args        = {
@@ -227,6 +230,7 @@ proc defineSymbols*() =
     #  labels: library, enhancement, open discussion
     builtin "contains?",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if collection contains given value",
         args        = {
@@ -310,6 +314,7 @@ proc defineSymbols*() =
     #  labels: library, enhancement
     builtin "couple",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get combination of elements in given collections as array of tuples",
         args        = {
@@ -329,6 +334,7 @@ proc defineSymbols*() =
 
     builtin "decouple",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get tuple of collections from a coupled collection of tuples",
         args        = {
@@ -355,6 +361,7 @@ proc defineSymbols*() =
 
     builtin "drop",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "drop first *number* of elements from given collection and return the remaining ones",
         args        = {
@@ -388,6 +395,7 @@ proc defineSymbols*() =
 
     builtin "empty",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "empty given collection",
         args        = {
@@ -412,6 +420,7 @@ proc defineSymbols*() =
 
     builtin "empty?",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if given collection is empty",
         args        = {
@@ -438,6 +447,7 @@ proc defineSymbols*() =
 
     builtin "extend",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get new dictionary by merging given ones",
         args        = {
@@ -466,6 +476,7 @@ proc defineSymbols*() =
 
     builtin "first",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "return the first item of the given collection",
         args        = {
@@ -511,6 +522,7 @@ proc defineSymbols*() =
 
     builtin "flatten",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "flatten given collection by eliminating nested blocks",
         args        = {
@@ -544,6 +556,7 @@ proc defineSymbols*() =
 
     builtin "get",
         alias       = unaliased,
+        op          = opGet,
         rule        = PrefixPrecedence,
         description = "get collection's item by given index",
         args        = {
@@ -648,6 +661,7 @@ proc defineSymbols*() =
     #  labels: library, enhancement, open discussion
     builtin "in?",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if value exists in given collection",
         args        = {
@@ -728,6 +742,7 @@ proc defineSymbols*() =
 
     builtin "index",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "return first index of value in given collection",
         args        = {
@@ -779,6 +794,7 @@ proc defineSymbols*() =
     #  labels: library, enhancement, open discussion 
     builtin "insert",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "insert value in collection at given index",
         args        = {
@@ -836,6 +852,7 @@ proc defineSymbols*() =
 
     builtin "key?",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if collection contains given key",
         args        = {
@@ -868,6 +885,7 @@ proc defineSymbols*() =
 
     builtin "keys",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get list of keys for given collection",
         args        = {
@@ -895,6 +913,7 @@ proc defineSymbols*() =
 
     builtin "last",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "return the last item of the given collection",
         args        = {
@@ -936,6 +955,7 @@ proc defineSymbols*() =
 
     builtin "max",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get maximum element in given collection",
         args        = {
@@ -981,6 +1001,7 @@ proc defineSymbols*() =
 
     builtin "min",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get minimum element in given collection",
         args        = {
@@ -1026,6 +1047,7 @@ proc defineSymbols*() =
 
     builtin "one?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if given number or collection size is one",
         args        = {
@@ -1076,6 +1098,7 @@ proc defineSymbols*() =
 
     builtin "permutate",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get all possible permutations of the elements in given collection",
         args        = {
@@ -1124,6 +1147,7 @@ proc defineSymbols*() =
 
     builtin "prepend",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "prepend value to given collection",
         args        = {
@@ -1184,6 +1208,7 @@ proc defineSymbols*() =
     #  labels: library, bug
     builtin "remove",
         alias       = doubleminus,
+        op          = opNop,
         rule        = InfixPrecedence,
         description = "remove value from given collection",
         args        = {
@@ -1296,6 +1321,7 @@ proc defineSymbols*() =
 
     builtin "repeat",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "repeat value the given number of times and return new one",
         args        = {
@@ -1337,6 +1363,7 @@ proc defineSymbols*() =
 
     builtin "reverse",
         alias       = unaliased,
+        op          = opReverse,
         rule        = PrefixPrecedence,
         description = "reverse given collection",
         args        = {
@@ -1385,6 +1412,7 @@ proc defineSymbols*() =
 
     builtin "rotate",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "right-rotate collection by given distance",
         args        = {
@@ -1421,6 +1449,7 @@ proc defineSymbols*() =
 
     builtin "sample",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get a random element from given collection",
         args        = {
@@ -1451,6 +1480,7 @@ proc defineSymbols*() =
     #  labels: library, bug
     builtin "set",
         alias       = unaliased,
+        op          = opSet,
         rule        = PrefixPrecedence,
         description = "set collection's item at index to given value",
         args        = {
@@ -1538,6 +1568,7 @@ proc defineSymbols*() =
 
     builtin "shuffle",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get given collection shuffled",
         args        = {
@@ -1562,6 +1593,7 @@ proc defineSymbols*() =
  
     builtin "size",
         alias       = unaliased,
+        op          = opSize,
         rule        = PrefixPrecedence,
         description = "get size/length of given collection",
         args        = {
@@ -1600,6 +1632,7 @@ proc defineSymbols*() =
 
     builtin "slice",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get a slice of collection between given indices",
         args        = {
@@ -1642,6 +1675,7 @@ proc defineSymbols*() =
 
     builtin "sort",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "sort given block in ascending order",
         args        = {
@@ -1826,6 +1860,7 @@ proc defineSymbols*() =
     #  labels: library, enhancement
     builtin "sorted?",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if given collection is already sorted",
         args        = {
@@ -1865,6 +1900,7 @@ proc defineSymbols*() =
     #  labels: library, bug
     builtin "split",
         alias       = unaliased,
+        op          = opSplit,
         rule        = PrefixPrecedence,
         description = "split collection to components",
         args        = {
@@ -2022,6 +2058,7 @@ proc defineSymbols*() =
 
     builtin "squeeze",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "reduce adjacent elements in given collection",
         args        = {
@@ -2084,6 +2121,7 @@ proc defineSymbols*() =
 
     builtin "take",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "keep first <number> of elements from given collection and return the remaining ones",
         args        = {
@@ -2146,6 +2184,7 @@ proc defineSymbols*() =
 
     builtin "tally",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "find number of occurences of each value within given block and return as dictionary",
         args        = {
@@ -2182,6 +2221,7 @@ proc defineSymbols*() =
 
     builtin "unique",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get given collection without duplicates",
         args        = {
@@ -2220,6 +2260,7 @@ proc defineSymbols*() =
 
     builtin "values",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get list of values for given collection",
         args        = {
@@ -2251,6 +2292,7 @@ proc defineSymbols*() =
 
     builtin "zero?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if given number or collection size is zero",
         args        = {

@@ -51,6 +51,7 @@ proc defineSymbols*() =
 
         builtin "close",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "close given database",
             args        = {
@@ -73,6 +74,7 @@ proc defineSymbols*() =
 
         builtin "open",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "opens a new database connection and returns database",
             args        = {
@@ -101,6 +103,7 @@ proc defineSymbols*() =
 
         builtin "query",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "execute command or block of commands in given database and get returned rows",
             args        = {

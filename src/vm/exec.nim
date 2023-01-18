@@ -559,47 +559,47 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
 
                 # [0x80-0x8F]
                 # arithmetic operators
-                of opAdd                : AddF.action()()
-                of opSub                : SubF.action()()
-                of opMul                : MulF.action()()
-                of opDiv                : DivF.action()()
-                of opFdiv               : FdivF.action()()
-                of opMod                : ModF.action()()
-                of opPow                : PowF.action()()
+                of opAdd                : DoAdd()
+                of opSub                : DoSub()
+                of opMul                : DoMul()
+                of opDiv                : DoDiv()
+                of opFdiv               : DoFdiv()
+                of opMod                : DoMod()
+                of opPow                : DoPow()
 
-                of opNeg                : NegF.action()()
+                of opNeg                : DoNeg()
 
                 # increment/decrement
-                of opInc                : IncF.action()()
-                of opDec                : DecF.action()()
+                of opInc                : DoInc()
+                of opDec                : DoDec()
 
                 # binary operators
-                of opBNot               : BNotF.action()()
-                of opBAnd               : BAndF.action()()
-                of opBOr                : BOrF.action()()
+                of opBNot               : DoBNot()
+                of opBAnd               : DoBAnd()
+                of opBOr                : DoBOr()
 
-                of opShl                : ShlF.action()()
-                of opShr                : ShrF.action()()
+                of opShl                : DoShl()
+                of opShr                : DoShr()
 
                 of RSRV1                : discard
 
                 # [0x90-0x9F]
                 # logical operators
-                of opNot                : NotF.action()()
-                of opAnd                : AndF.action()()
-                of opOr                 : OrF.action()()
+                of opNot                : DoNot()
+                of opAnd                : DoAnd()
+                of opOr                 : DoOr()
 
                 # comparison operators
-                of opEq                 : EqF.action()()
-                of opNe                 : NeF.action()()
-                of opGt                 : GtF.action()()
-                of opGe                 : GeF.action()()
-                of opLt                 : LtF.action()()
-                of opLe                 : LeF.action()()
+                of opEq                 : DoEq()
+                of opNe                 : DoNe()
+                of opGt                 : DoGt()
+                of opGe                 : DoGe()
+                of opLt                 : DoLt()
+                of opLe                 : DoLe()
 
                 # getters/setters
-                of opGet                : GetF.action()()
-                of opSet                : SetF.action()()
+                of opGet                : DoGet()
+                of opSet                : DoSet()
 
                 of RSRV2                : discard
                 of RSRV3                : discard   
@@ -609,53 +609,54 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
 
                 # [0xA0-0xAF]
                 # branching
-                of opIf                 : IfF.action()()
-                of opIfE                : IfEF.action()()
-                of opUnless             : UnlessF.action()()
-                of opUnlessE            : UnlessEF.action()()
-                of opElse               : ElseF.action()()
-                of opSwitch             : SwitchF.action()()
-                of opWhile              : WhileF.action()()
+                of opIf                 : DoIf()
+                of opIfE                : DoIfE()
+                of opUnless             : DoUnless()
+                of opUnlessE            : DoUnlessE()
+                of opElse               : DoElse()
+                of opSwitch             : DoSwitch()
+                of opWhile              : DoWhile()
 
-                of opReturn             : ReturnF.action()()
-                of opBreak              : BreakF.action()()
-                of opContinue           : ContinueF.action()()
+                of opReturn             : DoReturn()
+                of opBreak              : DoBreak()
+                of opContinue           : DoContinue()
 
                 # converters
-                of opTo                 : ToF.action()()
+                of opTo                 : DoTo()
                 of opToS                : 
                     stack.push(VSTRINGT)
-                    ToF.action()()
+                    DoTo()
                 of opToI                : 
                     stack.push(VINTEGERT)
-                    ToF.action()()
-
-                # generators          
-                of opArray              : ArrayF.action()()
-                of opDict               : DictF.action()()
-                of opFunc               : FuncF.action()()
-
-                # [0xB0-0xBF]
-                # ranges & iterators
-                of opRange              : RangeF.action()()
-                of opLoop               : LoopF.action()()
-                of opMap                : MapF.action()()
-                of opSelect             : SelectF.action()()
-
-                # collections
-                of opSize               : SizeF.action()()
-                of opReplace            : ReplaceF.action()()
-                of opSplit              : SplitF.action()()
-                of opJoin               : JoinF.action()()
-                of opReverse            : ReverseF.action()()
-                of opAppend             : AppendF.action()()
-
-                # i/o operations
-                of opPrint              : PrintF.action()()
+                    DoTo()
 
                 of RSRV7                : discard
                 of RSRV8                : discard
                 of RSRV9                : discard
+
+                # [0xB0-0xBF]
+                # generators          
+                of opArray              : DoArray()
+                of opDict               : DoDict()
+                of opFunc               : DoFunc()
+                of opRange              : DoRange()
+                
+                # iterators
+                of opLoop               : DoLoop()
+                of opMap                : DoMap()
+                of opSelect             : DoSelect()
+
+                # collections
+                of opSize               : DoSize()
+                of opReplace            : DoReplace()
+                of opSplit              : DoSplit()
+                of opJoin               : DoJoin()
+                of opReverse            : DoReverse()
+                of opAppend             : DoAppend()
+
+                # i/o operations
+                of opPrint              : DoPrint()
+
                 of RSRV10               : discard
                 of RSRV11               : discard
 

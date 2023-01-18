@@ -409,6 +409,7 @@ proc defineSymbols*() =
 
     builtin "arrange",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "sort items in collection using given action, in ascending order",
         args        = {
@@ -466,6 +467,7 @@ proc defineSymbols*() =
 
     builtin "chunk",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "chunk together consecutive items in collection that abide by given predicate",
         args        = {
@@ -519,6 +521,7 @@ proc defineSymbols*() =
 
     builtin "cluster",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "group together items in collection that abide by given predicate",
         args        = {
@@ -577,6 +580,7 @@ proc defineSymbols*() =
 
     builtin "collect",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "collect items from given collection condition while is true",
         args        = {
@@ -654,6 +658,7 @@ proc defineSymbols*() =
 
     builtin "enumerate",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the number of given collection's items that satisfy condition",
         args        = {
@@ -683,6 +688,7 @@ proc defineSymbols*() =
 
     builtin "every?",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if every item in collection satisfies given condition",
         args        = {
@@ -723,6 +729,7 @@ proc defineSymbols*() =
 
     builtin "filter",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get collection's items by filtering those that do not fulfil given condition",
         args        = {
@@ -855,6 +862,7 @@ proc defineSymbols*() =
 
     builtin "fold",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "left-fold given collection returning accumulator",
         args        = {
@@ -970,6 +978,7 @@ proc defineSymbols*() =
 
     builtin "gather",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "group items in collection by block result and return as dictionary",
         args        = {
@@ -1008,6 +1017,7 @@ proc defineSymbols*() =
 
     builtin "loop",
         alias       = unaliased,
+        op          = opLoop,
         rule        = PrefixPrecedence,
         description = "loop through collection, using given iterator and block",
         args        = {
@@ -1074,6 +1084,7 @@ proc defineSymbols*() =
 
     builtin "map",
         alias       = unaliased,
+        op          = opMap,
         rule        = PrefixPrecedence,
         description = "map collection's items by applying given action",
         args        = {
@@ -1137,6 +1148,7 @@ proc defineSymbols*() =
 
     builtin "maximum",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get maximum item from collection based on given predicate",
         args        = {
@@ -1190,6 +1202,7 @@ proc defineSymbols*() =
 
     builtin "minimum",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get minimum item from collection based on given predicate",
         args        = {
@@ -1243,6 +1256,7 @@ proc defineSymbols*() =
 
     builtin "select",
         alias       = unaliased,
+        op          = opSelect,
         rule        = PrefixPrecedence,
         description = "get collection's items that fulfil given condition",
         args        = {
@@ -1390,6 +1404,7 @@ proc defineSymbols*() =
 
     builtin "some?",
         alias       = unaliased,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if any of collection's items satisfy given condition",
         args        = {
