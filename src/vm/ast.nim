@@ -427,7 +427,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
 
         var v: Value =
             if callType == OtherCall: 
-                newString(name)
+                newWord(name)
             else:
                 nil
 
@@ -690,7 +690,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
                                 if aliased.name.s == "null":
                                     current.addTerminal(newConstant(VNULL))
                                 else:
-                                    current.addTerminal(newVariable(newString(aliased.name.s)))
+                                    current.addTerminal(newVariable(newWord(aliased.name.s)))
                         else:
                             current.addTerminal(newConstant(item))
 
