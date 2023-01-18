@@ -22,7 +22,7 @@
 import hashes, tables
 
 import vm/[ast, bytecode, values/value]
-import vm/values/custom/[vbinary]
+import vm/values/custom/[vbinary, vlogical]
 
 import vm/values/printable
 
@@ -91,8 +91,11 @@ proc evaluateBlock*(blok: Node, isDictionary=false): Translation =
     template addConst(v: Value, op: OpCode): untyped =
         addConst(consts, it, v, op)
 
-    template addBuiltinCall(op: OpCode): untyped =
-        it.add(byte(op))
+    template addByte(b: untyped): untyped = 
+        when b is OpCode:
+            it.add(byte(b))
+        else:
+            it.add(b)
 
     #------------------------
     # MainLoop
@@ -111,7 +114,43 @@ proc evaluateBlock*(blok: Node, isDictionary=false): Translation =
                 of RootNode:
                     discard
                 of ConstantValue:
-                    addConst(instruction.value, opPush)
+                    var alreadyPut = false
+                    let iv {.cursor.} = instruction.value
+                    case instruction.value.kind:
+                        of Integer:
+                            if likely(iv.iKind==NormalInteger) and iv.i>=0 and iv.i<=15: 
+                                addByte(byte(opConstI0) + byte(iv.i))
+                                alreadyPut = true
+                        of Floating:
+                            if iv.f == 0.0:
+                                addByte(opConstF0)
+                                alreadyPut = true
+                            elif iv.f == 1.0:
+                                addByte(opConstF1)
+                                alreadyPut = true
+                            elif iv.f == 2.0:
+                                addByte(opConstF2)
+                                alreadyPut = true
+                        of String:
+                            if iv.s == "":
+                                addByte(opConstS)
+                                alreadyPut = true
+                        of Block:
+                            if iv.a.len == 0:
+                                addByte(opConstA)
+                                alreadyPut = true
+                        of Logical:
+                            if iv.b == True:
+                                addByte(opConstBT)
+                                alreadyPut = true
+                            elif iv.b == False:
+                                addByte(opConstBF)
+                                alreadyPut = true
+                        else:
+                            discard
+
+                    if not alreadyPut:
+                        addConst(instruction.value, opPush)
                 of VariableLoad:
                     addConst(instruction.value, opLoad)
                 of VariableStore:
@@ -119,7 +158,7 @@ proc evaluateBlock*(blok: Node, isDictionary=false): Translation =
                 of OtherCall:
                     addConst(instruction.value, opCall)
                 of BuiltinCall:
-                    addBuiltinCall(instruction.op)
+                    addByte(instruction.op)
                 of SpecialCall:
                     discard # TOFIX!
 
