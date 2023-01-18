@@ -519,10 +519,15 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
                     opGet
                 )
                 newNode.addChild(baseNode)
-                newNode.addChild(newTerminalNode(
-                    ConstantValue,
-                    val.p[i]
-                ))
+                if val.p[i].kind==Block:
+                    var subNode = newRootNode()
+                    discard subNode.processBlock(val.p[i])
+                    newNode.addChildren(subNode.children)
+                else:
+                    newNode.addChild(newTerminalNode(
+                        ConstantValue,
+                        val.p[i]
+                    ))
                 baseNode = newNode
                 i += 1
 
