@@ -40,10 +40,8 @@ type
         ConstantValue       # Terminal node of the AST containing a value
         VariableLoad        # Load a variable
 
-        # Attributes
-        AttributeNode       # Either an Attribute or an AttributeLabel
-
         # CallNode
+        AttributeNode       # Either an Attribute or an AttributeLabel
         VariableStore       # Store a variable
 
         OtherCall           # Call to a function that is not a builtin
@@ -59,6 +57,7 @@ type
             else:
                 op*: OpCode
                 arity*: int8
+                params*: int8
                 
         value*: Value
         parent*: Node
@@ -87,7 +86,7 @@ var
 
 const
     TerminalNode    : set[NodeKind] = {ConstantValue, VariableLoad}
-    CallNode        : set[NodeKind] = {VariableStore..SpecialCall}
+    CallNode        : set[NodeKind] = {AttributeNode..SpecialCall}
 
 #=======================================
 # Forward declarations
@@ -111,6 +110,8 @@ func setOnlyChild(node: Node, child: Node) {.enforceNoRaises.} =
 func addChild*(node: Node, child: Node) {.enforceNoRaises.} =
     child.parent = node
     node.children.add(child)
+    if node.kind in CallNode and child.kind != AttributeNode:
+        node.params += 1
 
 func addChildren*(node: Node, children: NodeArray) {.enforceNoRaises.} =
     for child in children:
@@ -313,7 +314,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
     #------------------------
 
     template rewindCallBranches(target: var Node, optimize: bool = false): untyped =
-        while target.kind in CallNode and target.children.len == target.arity:
+        while target.kind in CallNode and target.params == target.arity:
             when optimize:
                 case target.op:
                     of opAdd      : target.optimizeAdd()
@@ -565,8 +566,9 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
 
                 current.addChild(attrNode)
 
-            # of AttributeLabel:
-            #     current.addAttributeLabel(item)
+            of AttributeLabel:
+                current.addChild(newCallNode(AttributeNode, 1, item))
+                current = current.children[^1]
 
             of Inline:
                 current.addInline(item)
