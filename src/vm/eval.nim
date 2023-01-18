@@ -60,9 +60,9 @@ proc addConst(consts: var ValueArray, instructions: var VBinary, v: Value, op: O
 
     if indx > 255:
         addToInstructions([
-            byte(indx),
+            byte(op)+1,
             byte(indx shr 8),
-            byte(op)+1
+            byte(indx)
         ])
     else:
         when withShortcut:
@@ -70,13 +70,13 @@ proc addConst(consts: var ValueArray, instructions: var VBinary, v: Value, op: O
                 addToInstructions((byte(op)-0x0E) + byte(indx))
             else:
                 addToInstructions([
-                    byte(indx),
-                    byte(op)
+                    byte(op),
+                    byte(indx)
                 ])
         else:
             addToInstructions([
-                byte(indx),
-                byte(op)
+                byte(op),
+                byte(indx)
             ])
 
 #=======================================
