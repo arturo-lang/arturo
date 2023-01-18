@@ -56,7 +56,7 @@ else:
 #     else:
 #         args
 
-template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: string, args: untyped, attrs: untyped, returns: ValueSpec, example: string, op: OpCode, act: untyped):untyped =
+template builtin*(n: string, alias: VSymbol, op: OpCode, rule: PrecedenceKind, description: string, args: untyped, attrs: untyped, returns: ValueSpec, example: string, act: untyped):untyped =
     ## add new builtin, function with given name, alias, 
     ## rule, etc - followed by the code block to be 
     ## executed when the function is called
