@@ -15,6 +15,15 @@
 ## 
 ## The main entry point is ``generateAst``.
 
+
+# TODO:
+# - make Path's & PathLabel's work
+# - make Newline values work
+# - create new opCode for append
+# - optimize appends
+# - make labels store new functions in TmpArities
+# - make if/if?/else/while/switch work
+
 #=======================================
 # Libraries
 #=======================================
@@ -453,6 +462,109 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
 
             rewindCallBranches(optimize=true)
 
+    proc addPath(target: var Node, val: Value) =
+        var pathCallV: Value = nil
+
+        if (let curr = Syms.getOrDefault(val.p[0].s, nil); not curr.isNil):
+            let next {.cursor.} = val.p[1]
+            if curr.kind==Dictionary and (next.kind==Literal or next.kind==Word):
+                if (let item = curr.d.getOrDefault(next.s, nil); not item.isNil):
+                    if item.kind == Function:
+                        pathCallV = item
+
+        if not pathCallV.isNil:
+            target.addChild(
+                Node(
+                    kind: OtherCall,
+                    arity: pathCallV.arity,
+                    op: opNop,
+                    value: pathCallV
+                )
+            )
+            target = target.children[^1]
+            # addConst(pathCallV, opCall)
+            # argStack.add(pathCallV.arity)
+        else:
+
+            # get a/b/c
+
+            # get 
+            #     get 
+            #         load a
+            #         b            
+            #     c
+            var baseNode: Node
+
+            let basePath {.cursor.} = val.p[0]
+
+            if TmpArities.getOrDefault(basePath.s, -1) == 0:
+                baseNode = newCallNode(
+                    OtherCall, 
+                    0, 
+                    basePath
+                )
+            else:
+                baseNode = newTerminalNode(
+                    VariableLoad, 
+                    basePath
+                )
+
+            var i = 1
+
+            while i < val.p.len:
+                let newNode = newCallNode(
+                    BuiltinCall,
+                    2,
+                    nil,
+                    opGet
+                )
+                newNode.addChild(baseNode)
+                newNode.addChild(newTerminalNode(
+                    ConstantValue,
+                    val.p[i]
+                ))
+                baseNode = newNode
+                i += 1
+
+            with target:
+                rewindCallBranches()
+
+                addPotentialInfixCall()
+
+                addChild(baseNode)
+
+                rewindCallBranches(optimize=true)
+            
+            # addTerminalValue(inBlock=false):
+            #     addToCommand(opGet)
+                
+            #     var i=1
+            #     while i<node.p.len-1:
+            #         addToCommand(opGet)
+            #         i += 1
+
+            #     let baseNode {.cursor.} = node.p[0]
+
+            #     if TmpArities.getOrDefault(baseNode.s, -1) == 0:
+            #         addConst(baseNode, opCall)
+            #     else:
+            #         addConst(baseNode, opLoad)
+
+            #     i = 1
+            #     while i<node.p.len:
+            #         if node.p[i].kind==Block:
+            #             evalOne(node.p[i], consts, currentCommand, inBlock=true, isDictionary=isDictionary)
+            #         else:
+            #             if node.p[i].kind == Integer:
+            #                 if likely(node.p[i].iKind==NormalInteger):
+            #                     if node.p[i].i>=0 and node.p[i].i<=15: addToCommand(byte(opConstI0) + byte(node.p[i].i))
+            #                     else: addConst(node.p[i], opPush)
+            #                 else:
+            #                     addConst(node.p[i], opPush)
+            #             else:
+            #                 addConst(node.p[i], opPush)
+            #         i += 1
+
     template addPotentialTrailingPipe(target: var Node): untyped =
         var added = false
         if i < nLen - 1:
@@ -572,6 +684,9 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
 
             of AttributeLabel:
                 current.addAttribute(item, isLabel=true)
+
+            of Path:
+                current.addPath(item)
 
             of Inline:
                 current.addInline(item)
