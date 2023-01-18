@@ -376,12 +376,12 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
         var op: OpCode = opNop
 
         if fn.fnKind == BuiltinFunction:
-            op = fn.op
-            callType = 
-                if op in {opIf, opIfE, opUnless, opUnlessE, opElse, opSwitch, opWhile}:
-                    SpecialCall
-                else:
-                    BuiltinCall
+            if (op = fn.op; op != opNop):
+                callType = 
+                    if op in {opIf, opIfE, opUnless, opUnlessE, opElse, opSwitch, opWhile}:
+                        SpecialCall
+                    else:
+                        BuiltinCall
 
         var v: Value =
             if callType == OtherCall: 
