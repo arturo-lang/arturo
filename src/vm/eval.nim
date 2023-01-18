@@ -172,6 +172,8 @@ proc evaluateBlock*(blok: Node, isDictionary=false): Translation =
                         addConst(instruction.value, opPush)
                 of VariableLoad:
                     addConst(instruction.value, opLoad)
+                of AttributeNode:
+                    addConst(instruction.value, opAttr)
                 of VariableStore:
                     if unlikely(isDictionary):
                         addConst(instruction.value, opDStore, withShortcut=false)
