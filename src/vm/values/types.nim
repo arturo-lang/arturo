@@ -23,6 +23,7 @@ when defined(WEB):
 when not defined(NOGMP):
     import helpers/bignums
 
+import vm/opcodes
 import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vsocket, vsymbol, vversion]
 import vm/values/flags
 
@@ -169,6 +170,7 @@ type
                 inline*     : bool
                 bcode*      : Value
             of BuiltinFunction:
+                op*         : OpCode
                 action*     : BuiltinAction
 
     VStore* = ref object
