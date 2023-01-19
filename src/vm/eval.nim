@@ -117,7 +117,7 @@ proc evaluateBlock*(blok: Node, isDictionary=false): Translation =
             # echo "processing: "
             # echo dumpNode(instruction)
             case instruction.kind:
-                of RootNode:
+                of RootNode, NewlineNode:
                     discard
                 of ConstantValue:
                     var alreadyPut = false
