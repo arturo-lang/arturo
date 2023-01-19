@@ -1485,7 +1485,6 @@ proc defineSymbols*() =
             #=======================================================
             case x.kind:
                 of Block:
-                    cleanBlock(x)
                     SetArrayIndex(x.a, y.i, z)
                 of Binary:
                     let bn = numberToBinary(z.i)
