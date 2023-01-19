@@ -95,9 +95,7 @@ proc defineSymbols*() =
                         InPlaced.n &= numberToBinary(y.i)
                 else:
                     if y.kind == Block:
-                        # TODO(Collections\append) In-place appending should actually work in-place
-                        #  labels: enhancement, library
-                        InPlaced.cleanAppendInPlace(y)
+                        InPlaced.a.add(y.a)
                     else:
                         InPlaced.a.add(y)
             else:
@@ -118,9 +116,9 @@ proc defineSymbols*() =
                         push(newBinary(x.n & numberToBinary(y.i)))
                 else:
                     if y.kind==Block:
-                        push newBlock(cleanAppend(x, y))
+                        push newBlock(x.a & y.a)
                     else:
-                        push newBlock(cleanAppend(x, y, singleValue=true))
+                        push newBlock(x.a & y)
 
 
     builtin "chop",
@@ -1156,7 +1154,7 @@ proc defineSymbols*() =
                         InPlaced.n.insert(numberToBinary(y.i), 0)
                 else:
                     if y.kind == Block:
-                        InPlaced.cleanPrependInPlace(y)
+                        InPlaced.prependInPlace(y)
                     else:
                         InPlaced.a.insert(y, 0)
             else:
@@ -1177,9 +1175,9 @@ proc defineSymbols*() =
                         push(newBinary(numberToBinary(y.i) & x.n))
                 else:
                     if y.kind==Block:
-                        push newBlock(cleanPrepend(x, y))
+                        push newBlock(prepend(x, y))
                     else:
-                        push newBlock(cleanPrepend(x, y, singleValue=true))
+                        push newBlock(prepend(x, y, singleValue=true))
 
     # TODO(Collections/remove) is `.index` broken?
     #  Example: `remove.index 3 'a, debug a`
