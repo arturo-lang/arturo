@@ -49,6 +49,8 @@ type
     # abstract syntax tree definition
     NodeKind* = enum
         RootNode            # Root node of the AST
+
+        NewlineNode         # Newline node
         
         # TerminalNode
         ConstantValue       # Terminal node of the AST containing a value
@@ -68,6 +70,8 @@ type
         case kind*: NodeKind:
             of RootNode, ConstantValue, VariableLoad:
                 discard
+            of NewlineNode:
+                line*: uint32
             else:
                 op*: OpCode
                 arity*: int8
@@ -124,7 +128,7 @@ func setOnlyChild(node: Node, child: Node) {.enforceNoRaises.} =
 func addChild*(node: Node, child: Node) {.enforceNoRaises.} =
     child.parent = node
     node.children.add(child)
-    if node.kind in CallNode and child.kind != AttributeNode:
+    if node.kind in CallNode and child.kind notin {NewlineNode, AttributeNode}:
         node.params += 1
 
 func addChildren*(node: Node, children: NodeArray) {.enforceNoRaises.} =
@@ -214,9 +218,11 @@ template newCallNode(kn: NodeKind, ar: int8, va: Value, oper: OpCode = opNop): N
 # Methods
 #=======================================
 
-proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static bool = false): int =
+proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0, processingArrow: static bool = false): int =
     var i: int = start
     var nLen: int = blok.a.len
+
+    var currentLine: uint32 = startingLine
 
     var current = root
 
@@ -420,6 +426,9 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
         when isLabel:
             target.rollThrough()
 
+    proc addNewline(target: var Node) =
+        target.addChild(Node(kind: NewlineNode, line: currentLine))
+
     template addPotentialInfixCall(target: var Node): untyped =
         if i < nLen - 1:
             let nextNode {.cursor.} = blok.a[i+1]
@@ -485,7 +494,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
                 
                 if val.p[i].kind==Block:
                     var subNode = newRootNode()
-                    discard subNode.processBlock(val.p[i])
+                    discard subNode.processBlock(val.p[i], startingLine=currentLine)
                     newNode.addChildren(subNode.children)
                 else:
                     newNode.addChild(newConstant(val.p[i]))
@@ -527,7 +536,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
 
     proc addInline(target: var Node, val: Value) =
         var subNode = newRootNode()
-        discard subNode.processBlock(val)
+        discard subNode.processBlock(val, startingLine=currentLine)
 
         with target:
             rewindCallBranches()
@@ -540,7 +549,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
 
     proc addArrowBlock(target: var Node, val: Value) =
         var subNode = newRootNode()
-        i = subNode.processBlock(val, start=i+1, processingArrow=true)
+        i = subNode.processBlock(val, start=i+1, startingLine=currentLine, processingArrow=true)
 
         target.addTerminal(newConstant(newBlock(ArrowBlock)))
 
@@ -593,6 +602,10 @@ proc processBlock*(root: Node, blok: Value, start = 0, processingArrow: static b
 
     while i < nLen:
         let item = blok.a[i]
+
+        if item.ln != currentLine:
+            currentLine = item.ln
+            current.addNewline()
 
         when processingArrow:
             ArrowBlock.add(item)
@@ -691,6 +704,9 @@ proc dumpNode*(node: Node, level = 0, single: static bool = false): string =
             result &= "ROOT: \n"
             for child in node.children:
                 result &= dumpNode(child, level+1)
+        of NewlineNode:
+            indentNode()
+            result &= "NEWLINE: " & $(node.line) & "\n"
         of TerminalNode:
             indentNode()
             result &= "Constant: " & $(node.value)
