@@ -275,8 +275,6 @@ type
             of Bytecode:
                 trans*: Translation
 
-            of Newline:
-                line*: int
     ValueObj = typeof(Value()[])
     FuncObj = typeof(VFunction()[])
 
