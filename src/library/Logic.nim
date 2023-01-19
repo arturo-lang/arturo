@@ -30,7 +30,7 @@ proc defineSymbols*() =
 
     builtin "all?",
         alias       = unaliased, 
-        op          = opNot,
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if all values in given block are true",
         args        = {
