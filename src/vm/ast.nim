@@ -691,7 +691,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
 # Output
 #=======================================
 
-proc dumpNode*(node: Node, level = 0, single: static bool = false): string =
+proc dumpNode*(node: Node, level = 0, single: static bool = false, showNewlines: static bool = true): string =
     template indentNode(): untyped =
         result &= "     ".repeat(level)
 
@@ -702,8 +702,9 @@ proc dumpNode*(node: Node, level = 0, single: static bool = false): string =
             for child in node.children:
                 result &= dumpNode(child, level+1)
         of NewlineNode:
-            indentNode()
-            result &= "NEWLINE: " & $(node.line) & "\n"
+            when showNewlines:
+                indentNode()
+                result &= "NEWLINE: " & $(node.line) & "\n"
         of TerminalNode:
             indentNode()
             result &= "Constant: " & $(node.value)
