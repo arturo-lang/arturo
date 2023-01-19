@@ -138,7 +138,7 @@ proc defineSymbols*() =
                         if (let got = execSqliteDb(x.sqlitedb, y.s, with); got[0]==ValidQueryResult):
                             push(newBlock(got[1]))
                     else:
-                        if (let got = execManySqliteDb(x.sqlitedb, cleanedBlock(y.a).map(proc (v:Value):string = v.s), with); got[0]==ValidQueryResult):
+                        if (let got = execManySqliteDb(x.sqlitedb, y.a.map(proc (v:Value):string = v.s), with); got[0]==ValidQueryResult):
                             push(newBlock(got[1]))
                     
                     if (hadAttr("id")):

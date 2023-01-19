@@ -765,7 +765,7 @@ proc defineSymbols*() =
             ; NAME: Jane, SURNAME: Doe, AGE: 33
         """:
             #=======================================================
-            x.ts.fields = cleanedBlock(y.a)
+            x.ts.fields = y.a
 
             if checkAttr("as"):
                 x.ts.inherits = aAs.ts
@@ -1443,7 +1443,7 @@ proc defineSymbols*() =
             ; the multiple of 10 is 20 
         """:
             #=======================================================
-            var blk: ValueArray = cleanedBlock(y.a)
+            var blk: ValueArray = y.a
             if x.kind == Literal:
                 blk.insert(FetchSym(x.s))
                 blk.insert(newLabel(x.s))
