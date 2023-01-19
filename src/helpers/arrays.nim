@@ -207,8 +207,6 @@ proc prependInPlace*(s: var Value, t: Value) {.inline,enforceNoRaises.} =
     ## - `s` and `t` values must be a Block value,
     ## - It doesn't return a new value, it modifies `s`
 
-    let L2 = len(t.a)
-
     var cnt = 0
     for i in t.a:
         s.a.insert(i, cnt)
