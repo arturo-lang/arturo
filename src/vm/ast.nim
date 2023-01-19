@@ -388,19 +388,19 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
 
         var fn {.cursor.}: Value =
             if fun.isNil:
-                GetSym(name)
+                Syms.getOrDefault(name, nil)
             else:
                 fun
 
         var ar: int8 =
-            if arity == -1:
+            if arity == -1 and not fn.isNil:
                 fn.arity
             else:
                 arity
 
         var op: OpCode = opNop
 
-        if fn.fnKind == BuiltinFunction:
+        if (not fn.isNil) and fn.fnKind == BuiltinFunction:
             if (op = fn.op; op != opNop):
                 callType = 
                     if op in {opIf, opIfE, opUnless, opUnlessE, opElse, opSwitch, opWhile}:
