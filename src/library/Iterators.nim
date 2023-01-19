@@ -289,7 +289,8 @@ template fetchIterableItems(doesAcceptLiterals=true, defaultReturn: untyped) {.d
     var blo = 
         case iterable.kind:
             of Block,Inline:
-                cleanedBlockValuesCopy(iterable)
+                #cleanedBlockValuesCopy(iterable)
+                iterable.a
             of Dictionary:
                 iterable.d.flattenedDictionary()
             of Object:

@@ -163,9 +163,8 @@ proc defineSymbols*() =
                 if x.kind == String:
                     push(newString(x.s[0..^(times + 1)]))
                 elif x.kind == Block:
-                    ensureCleaned(x)
-                    if cleanX.len == 0: push(newBlock())
-                    else: push(newBlock(cleanX[0..^(times + 1)]))
+                    if x.a.len == 0: push(newBlock())
+                    else: push(newBlock(x.a[0..^(times + 1)]))
 
 
     # TODO(Collections/combine) should also work with in-place Literals?
@@ -206,17 +205,15 @@ proc defineSymbols*() =
             #=======================================================
             let doRepeat = hadAttr("repeated")
 
-            ensureCleaned(x)
-
-            var sz = cleanX.len
+            var sz = x.a.len
             if checkAttr("by"):
                 if aBy.i > 0 and aBy.i < sz:
                     sz = aBy.i
 
             if hadAttr("count"):
-                push(countCombinations(cleanX, sz, doRepeat))
+                push(countCombinations(x.a, sz, doRepeat))
             else:
-                push(newBlock(getCombinations(cleanX, sz, doRepeat).map((
+                push(newBlock(getCombinations(x.a, sz, doRepeat).map((
                         z)=>newBlock(z))))
 
     # TODO(Collections/contains?) add new `.deep` option?
@@ -281,8 +278,7 @@ proc defineSymbols*() =
                         else:
                             push(newLogical(x.s.continuesWith(y.s, at)))
                     of Block:
-                        ensureCleaned(x)
-                        push(newLogical(cleanX[at] == y))
+                        push(newLogical(x.a[at] == y))
                     of Range:
                         push(newLogical(x.rng[at] == y))
                     of Dictionary:
@@ -300,8 +296,7 @@ proc defineSymbols*() =
                         else:
                             push(newLogical(y.s in x.s))
                     of Block:
-                        ensureCleaned(x)
-                        push(newLogical(y in cleanX))
+                        push(newLogical(y in x.a))
                     of Range:
                         push(newLogical(y in x.rng))
                     of Dictionary:
@@ -328,9 +323,7 @@ proc defineSymbols*() =
             ; => [[1 "one"] [2 "two"] [3 "three"]]
         """:
             #=======================================================
-            ensureCleaned(x)
-            ensureCleaned(y)
-            push(newBlock(zip(cleanX, cleanY).map((z)=>newBlock(@[z[0], z[1]]))))
+            push(newBlock(zip(x.a, y.a).map((z)=>newBlock(@[z[0], z[1]]))))
 
     builtin "decouple",
         alias       = unaliased,
@@ -355,8 +348,7 @@ proc defineSymbols*() =
                 let res = unzip(InPlaced.a.map((w)=>(w.a[0], w.a[1])))
                 InPlaced.a = @[newBlock(res[0]), newBlock(res[1])]
             else:
-                ensureCleaned(x)
-                let res = unzip(cleanX.map((z)=>(z.a[0], z.a[1])))
+                let res = unzip(x.a.map((z)=>(z.a[0], z.a[1])))
                 push(newBlock(@[newBlock(res[0]), newBlock(res[1])]))
 
     builtin "drop",
@@ -389,9 +381,8 @@ proc defineSymbols*() =
                 if x.kind == String:
                     push(newString(x.s[y.i..^1]))
                 elif x.kind == Block:
-                    ensureCleaned(x)
-                    if cleanX.len == 0: push(newBlock())
-                    else: push(newBlock(cleanX[y.i..^1]))
+                    if x.a.len == 0: push(newBlock())
+                    else: push(newBlock(x.a[y.i..^1]))
 
     builtin "empty",
         alias       = unaliased,
@@ -440,8 +431,7 @@ proc defineSymbols*() =
                 of Null: push(VTRUE)
                 of String: push(newLogical(x.s == ""))
                 of Block:
-                    ensureCleaned(x)
-                    push(newLogical(cleanX.len == 0))
+                    push(newLogical(x.a.len == 0))
                 of Dictionary: push(newLogical(x.d.len == 0))
                 else: discard
 
@@ -506,9 +496,8 @@ proc defineSymbols*() =
                         if i == aN.i: break
                     push(newBlock(res))
                 else:
-                    ensureCleaned(x)
-                    if cleanX.len == 0: push(newBlock())
-                    else: push(newBlock(cleanX[0..aN.i-1]))
+                    if x.a.len == 0: push(newBlock())
+                    else: push(newBlock(x.a[0..aN.i-1]))
             else:
                 if x.kind == String:
                     if x.s.len == 0: push(VNULL)
@@ -516,9 +505,8 @@ proc defineSymbols*() =
                 elif x.kind == Range:
                     push(x.rng[0])
                 else:
-                    ensureCleaned(x)
-                    if cleanX.len == 0: push(VNULL)
-                    else: push(cleanX[0])
+                    if x.a.len == 0: push(VNULL)
+                    else: push(x.a[0])
 
     builtin "flatten",
         alias       = unaliased,
@@ -596,8 +584,7 @@ proc defineSymbols*() =
             case x.kind:
                 of Block:
                     if likely(y.kind==Integer):
-                        ensureCleaned(x)
-                        push(GetArrayIndex(cleanX, y.i))
+                        push(GetArrayIndex(x.a, y.i))
                     else:
                         let rLen = y.rng.len
                         var res: ValueArray = newSeq[Value](rLen)
@@ -712,8 +699,7 @@ proc defineSymbols*() =
                         else:
                             push(newLogical(y.s.continuesWith(x.s, at)))
                     of Block:
-                        ensureCleaned(y)
-                        push(newLogical(cleanY[at] == x))
+                        push(newLogical(y.a[at] == x))
                     of Range:
                         push(newLogical(y.rng[at] == x))
                     of Dictionary:
@@ -767,8 +753,7 @@ proc defineSymbols*() =
                     if indx != -1: push(newInteger(indx))
                     else: push(VNULL)
                 of Block:
-                    ensureCleaned(x)
-                    let indx = cleanX.find(y)
+                    let indx = x.a.find(y)
                     if indx != -1: push(newInteger(indx))
                     else: push(VNULL)
                 of Range:
@@ -938,9 +923,8 @@ proc defineSymbols*() =
                     let items = toSeq(x.rng.items)
                     push(newBlock(items[x.rng.len-aN.i..^1]))
                 else:
-                    ensureCleaned(x)
-                    if cleanX.len == 0: push(newBlock())
-                    else: push(newBlock(cleanX[cleanX.len-aN.i..^1]))
+                    if x.a.len == 0: push(newBlock())
+                    else: push(newBlock(x.a[x.a.len-aN.i..^1]))
             else:
                 if x.kind == String:
                     if x.s.len == 0: push(VNULL)
@@ -949,9 +933,8 @@ proc defineSymbols*() =
                     let items = toSeq(x.rng.items)
                     push(items[x.rng.len-1])
                 else:
-                    ensureCleaned(x)
-                    if cleanX.len == 0: push(VNULL)
-                    else: push(cleanX[cleanX.len-1])
+                    if x.a.len == 0: push(VNULL)
+                    else: push(x.a[x.a.len-1])
 
     builtin "max",
         alias       = unaliased,
@@ -976,25 +959,24 @@ proc defineSymbols*() =
                 if withIndex: push(newInteger(maxIndex))
                 else: push(maxElement)
             else:
-                ensureCleaned(x)
-                if cleanX.len == 0: push(VNULL)
+                if x.a.len == 0: push(VNULL)
                 else:
-                    var maxElement = cleanX[0]
+                    var maxElement = x.a[0]
                     if withIndex:
                         var maxIndex = 0
                         var i = 1
-                        while i < cleanX.len:
-                            if (cleanX[i] > maxElement):
-                                maxElement = cleanX[i]
+                        while i < x.a.len:
+                            if (x.a[i] > maxElement):
+                                maxElement = x.a[i]
                                 maxIndex = i
                             inc(i)
 
                         push(newInteger(maxIndex))
                     else:
                         var i = 1
-                        while i < cleanX.len:
-                            if (cleanX[i] > maxElement):
-                                maxElement = cleanX[i]
+                        while i < x.a.len:
+                            if (x.a[i] > maxElement):
+                                maxElement = x.a[i]
                             inc(i)
 
                         push(maxElement)
@@ -1022,25 +1004,24 @@ proc defineSymbols*() =
                 if withIndex: push(newInteger(minIndex))
                 else: push(minElement)
             else:
-                ensureCleaned(x)
-                if cleanX.len == 0: push(VNULL)
+                if x.a.len == 0: push(VNULL)
                 else:
-                    var minElement = cleanX[0]
+                    var minElement = x.a[0]
                     var minIndex = 0
                     if withIndex:
                         var i = 1
-                        while i < cleanX.len:
-                            if (cleanX[i] < minElement):
-                                minElement = cleanX[i]
+                        while i < x.a.len:
+                            if (x.a[i] < minElement):
+                                minElement = x.a[i]
                                 minIndex = i
                             inc(i)
 
                         push(newInteger(minIndex))
                     else:
                         var i = 1
-                        while i < cleanX.len:
-                            if (cleanX[i] < minElement):
-                                minElement = cleanX[i]
+                        while i < x.a.len:
+                            if (x.a[i] < minElement):
+                                minElement = x.a[i]
                             inc(i)
 
                         push(minElement)
@@ -1085,8 +1066,7 @@ proc defineSymbols*() =
                 of String:
                     push(newLogical(runeLen(x.s) == 1))
                 of Block:
-                    ensureCleaned(x)
-                    push(newLogical(cleanX.len == 1))
+                    push(newLogical(x.a.len == 1))
                 of Range:
                     push(newLogical(x.rng.len == 1))
                 of Dictionary:
@@ -1132,17 +1112,15 @@ proc defineSymbols*() =
             #=======================================================
             let doRepeat = hadAttr("repeated")
 
-            ensureCleaned(x)
-
-            var sz = cleanX.len
+            var sz = x.a.len
             if checkAttr("by"):
                 if aBy.i > 0 and aBy.i < sz:
                     sz = aBy.i
 
             if hadAttr("count"):
-                push(countPermutations(cleanX, sz, doRepeat))
+                push(countPermutations(x.a, sz, doRepeat))
             else:
-                push(newBlock(getPermutations(cleanX, sz, doRepeat).map((
+                push(newBlock(getPermutations(x.a, sz, doRepeat).map((
                         z)=>newBlock(z))))
 
     builtin "prepend",
@@ -1300,18 +1278,17 @@ proc defineSymbols*() =
                     else:
                         push(newString(x.s.removeAll(y)))
                 elif x.kind == Block:
-                    ensureCleaned(x)
                     if y.kind == Block and hadAttr("instance"):
                         if hadAttr("once"):
-                            push(newBlock(cleanX.removeFirstInstance(y)))
+                            push(newBlock(x.a.removeFirstInstance(y)))
                         else:
-                            push(newBlock(cleanX.removeAllInstances(y)))
+                            push(newBlock(x.a.removeAllInstances(y)))
                     elif (hadAttr("once")):
-                        push(newBlock(cleanX.removeFirst(y)))
+                        push(newBlock(x.a.removeFirst(y)))
                     elif (hadAttr("index")):
-                        push(newBlock(cleanX.removeByIndex(y.i)))
+                        push(newBlock(x.a.removeByIndex(y.i)))
                     else:
-                        push(newBlock(cleanX.removeAll(y)))
+                        push(newBlock(x.a.removeAll(y)))
                 elif x.kind == Dictionary:
                     let key = (hadAttr("key"))
                     if (hadAttr("once")):
@@ -1356,8 +1333,7 @@ proc defineSymbols*() =
                 if x.kind == String:
                     push(newString(x.s.repeat(y.i)))
                 elif x.kind == Block:
-                    ensureCleaned(x)
-                    push(newBlock(safeCycle(cleanX, y.i)))
+                    push(newBlock(safeCycle(x.a, y.i)))
                 else:
                     push(newBlock(safeRepeat(x, y.i)))
 
@@ -1403,8 +1379,7 @@ proc defineSymbols*() =
                     InPlaced.a.reverse()
             else:
                 if x.kind == Block:
-                    ensureCleaned(x)
-                    push(newBlock(cleanX.reversed))
+                    push(newBlock(x.a.reversed))
                 elif x.kind == Range:
                     push(newRange(x.rng.reversed(safe=exact)))
                 else:
@@ -1444,8 +1419,7 @@ proc defineSymbols*() =
                     push(newString(toSeq(runes(x.s)).map((w) => $(w))
                                  .rotatedLeft(distance).join("")))
                 elif x.kind == Block:
-                    ensureCleaned(x)
-                    push(newBlock(cleanX.rotatedLeft(distance)))
+                    push(newBlock(x.a.rotatedLeft(distance)))
 
     builtin "sample",
         alias       = unaliased,
@@ -1467,9 +1441,8 @@ proc defineSymbols*() =
                 let rnd = rand(0..int(x.rng.len-1))
                 push(x.rng[rnd])
             else:
-                ensureCleaned(x)
-                if cleanX.len == 0: push(VNULL)
-                else: push(sample(cleanX))
+                if x.a.len == 0: push(VNULL)
+                else: push(sample(x.a))
 
     # TODO(Collections/set) not working with Bytecode values
     #  example:
@@ -1588,8 +1561,7 @@ proc defineSymbols*() =
                 ensureInPlace()
                 InPlaced.a.shuffle()
             else:
-                ensureCleaned(x)
-                push(newBlock(cleanX.dup(shuffle)))
+                push(newBlock(x.a.dup(shuffle)))
  
     builtin "size",
         alias       = unaliased,
@@ -1625,8 +1597,7 @@ proc defineSymbols*() =
                 if sz == InfiniteRange: push(newFloating(Inf))
                 else: push(newInteger(sz))
             elif x.kind == Block:
-                ensureCleaned(x)
-                push(newInteger(cleanX.len))
+                push(newInteger(x.a.len))
             else: # Null
                 push(newInteger(0))
 
@@ -1667,9 +1638,8 @@ proc defineSymbols*() =
                     else:
                         push(newString(""))
             else:
-                ensureCleaned(x)
-                if y.i >= 0 and z.i <= cleanX.len-1:
-                    push(newBlock(cleanX[y.i..z.i]))
+                if y.i >= 0 and z.i <= x.a.len-1:
+                    push(newBlock(x.a[y.i..z.i]))
                 else:
                     push(newBlock())
 
@@ -1707,20 +1677,19 @@ proc defineSymbols*() =
                 sortOrdering = SortOrder.Descending
 
             if x.kind == Block:
-                ensureCleaned(x)
-                if cleanX.len == 0: push(newBlock())
+                if x.a.len == 0: push(newBlock())
                 else:
                     if checkAttr("by"):
-                        if cleanX.len > 0:
+                        if x.a.len > 0:
                             var sorted: ValueArray
 
-                            if cleanX[0].kind == Dictionary:
-                                sorted = cleanX.sorted(
+                            if x.a[0].kind == Dictionary:
+                                sorted = x.a.sorted(
                                     proc (v1, v2: Value): int =
                                     cmp(v1.d[aBy.s], v2.d[aBy.s]),
                                             order = sortOrdering)
                             else:
-                                sorted = cleanX.sorted(
+                                sorted = x.a.sorted(
                                     proc (v1, v2: Value): int =
                                     cmp(v1.o[aBy.s], v2.o[aBy.s]),
                                             order = sortOrdering)
@@ -1732,21 +1701,21 @@ proc defineSymbols*() =
                         var sortAscii = (hadAttr("ascii"))
 
                         if checkAttr("as"):
-                            push(newBlock(cleanX.unisorted(aAs.s,
+                            push(newBlock(x.a.unisorted(aAs.s,
                                     sensitive = hadAttr("sensitive"),
                                     order = sortOrdering, ascii = sortAscii)))
                         else:
                             if (hadAttr("sensitive")):
-                                push(newBlock(cleanX.unisorted("en",
+                                push(newBlock(x.a.unisorted("en",
                                         sensitive = true, order = sortOrdering,
                                         ascii = sortAscii)))
                             else:
-                                if cleanX[0].kind == String:
-                                    push(newBlock(cleanX.unisorted("en",
+                                if x.a[0].kind == String:
+                                    push(newBlock(x.a.unisorted("en",
                                             order = sortOrdering,
                                             ascii = sortAscii)))
                                 else:
-                                    push(newBlock(cleanX.sorted(
+                                    push(newBlock(x.a.sorted(
                                             order = sortOrdering)))
 
             elif x.kind == Dictionary:
@@ -2036,20 +2005,19 @@ proc defineSymbols*() =
                 else:
                     push(newStringBlock(toSeq(runes(x.s)).map((x) => $(x))))
             else:
-                ensureCleaned(x)
                 if checkAttr("at"):
-                    push(newBlock(@[newBlock(cleanX[0..aAt.i-1]), newBlock(
-                            cleanX[aAt.i..^1])]))
+                    push(newBlock(@[newBlock(x.a[0..aAt.i-1]), newBlock(
+                            x.a[aAt.i..^1])]))
                 elif checkAttr("every"):
                     var ret: ValueArray
-                    var length = cleanX.len
+                    var length = x.a.len
                     var i = 0
 
                     while i < length:
                         if i+aEvery.i > length:
-                            ret.add(newBlock(cleanX[i..^1]))
+                            ret.add(newBlock(x.a[i..^1]))
                         else:
-                            ret.add(newBlock(cleanX[i..i+aEvery.i-1]))
+                            ret.add(newBlock(x.a[i..i+aEvery.i-1]))
 
                         i += aEvery.i
 
@@ -2111,10 +2079,9 @@ proc defineSymbols*() =
                 elif x.kind == Block:
                     var i = 0
                     var ret: ValueArray
-                    ensureCleaned(x)
-                    while i < cleanX.len:
-                        ret.add(cleanX[i])
-                        while (i+1 < cleanX.len and cleanX[i+1] == cleanX[i]):
+                    while i < x.a.len:
+                        ret.add(x.a[i])
+                        while (i+1 < x.a.len and x.a[i+1] == x.a[i]):
                             i += 1
                         i += 1
                     push(newBlock(ret))
@@ -2167,12 +2134,11 @@ proc defineSymbols*() =
                             upperLimit = x.s.len-1
                         push(newString(x.s[0..upperLimit]))
                 elif x.kind == Block:
-                    ensureCleaned(x)
-                    if cleanX.len == 0: push(newBlock())
+                    if x.a.len == 0: push(newBlock())
                     else:
-                        if upperLimit > cleanX.len - 1:
-                            upperLimit = cleanX.len-1
-                        push(newBlock(cleanX[0..upperLimit]))
+                        if upperLimit > x.a.len - 1:
+                            upperLimit = x.a.len-1
+                        push(newBlock(x.a[0..upperLimit]))
                 elif x.kind == Range:
                     var res: ValueArray = newSeq[Value](upperLimit+1)
                     var i = 0
@@ -2247,8 +2213,7 @@ proc defineSymbols*() =
                     push newString(x.s & $(genOid()))
             else:
                 if x.kind == Block:
-                    ensureCleaned(x)
-                    push(newBlock(cleanX.deduplicated()))
+                    push(newBlock(x.a.deduplicated()))
                 elif x.kind == String:
                     push newString(toSeq(runes(x.s)).deduplicate.map((w) => $(w)).join(""))
                 else: 
@@ -2330,8 +2295,7 @@ proc defineSymbols*() =
                 of String:
                     push(newLogical(runeLen(x.s) == 0))
                 of Block:
-                    ensureCleaned(x)
-                    push(newLogical(cleanX.len == 0))
+                    push(newLogical(x.a.len == 0))
                 of Range:
                     push(newLogical(x.rng.len == 0))
                 of Dictionary:
