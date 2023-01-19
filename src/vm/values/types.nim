@@ -92,9 +92,8 @@ type
         Socket          = 32    
         Bytecode        = 33
 
-        Newline         = 34
-        Nothing         = 35
-        Any             = 36
+        Nothing         = 34
+        Any             = 35
 
     ValueSpec* = set[ValueKind]
 
