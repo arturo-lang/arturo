@@ -184,7 +184,7 @@ proc evaluateBlock*(blok: Node, isDictionary=false): Translation =
                 of BuiltinCall:
                     addByte(instruction.op)
                 of SpecialCall:
-                    discard # TOFIX!
+                    addByte(instruction.op)
 
         i += 1
 
