@@ -1,2 +1,3 @@
-try? -> 3/0 
+a: 0
+try? -> 3 / a
 else -> print "division by zero" 
