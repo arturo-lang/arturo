@@ -110,7 +110,7 @@ const
 # Forward declarations
 #=======================================
 
-proc dumpNode*(node: Node, level = 0, single: static bool=false): string 
+proc dumpNode*(node: Node, level = 0, single: static bool=false, showNewlines: static bool=false): string 
 
 #=======================================
 # Helpers
