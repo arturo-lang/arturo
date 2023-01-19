@@ -315,22 +315,18 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
             of Inline:
                 case tp:
                     of Block:
-                        ensureCleaned(y)
-                        return newBlock(cleanY)
+                        return newBlock(y.a)
                     else:
                         throwCannotConvert()
 
             of Block:
                 case tp:
                     of Complex:
-                        ensureCleaned(y)
-                        return newComplex(cleanY[0], cleanY[1])
+                        return newComplex(y.a[0], y.a[1])
                     of Rational:
-                        ensureCleaned(y)
-                        return newRational(cleanY[0], cleanY[1])
+                        return newRational(y.a[0], y.a[1])
                     of Inline:
-                        ensureCleaned(y)
-                        return newInline(cleanY)
+                        return newInline(y.a)
                     of Dictionary:
                         let stop = SP
                         execUnscoped(y)
@@ -360,34 +356,31 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                             throwCannotConvert()
 
                     of Quantity:
-                        ensureCleaned(y)
-                        return newQuantity(cleanY[0], parseQuantitySpec(cleanY[1].s))
+                        return newQuantity(y.a[0], parseQuantitySpec(y.a[1].s))
 
                     of Color:
-                        ensureCleaned(y)
-                        if cleanY.len < 3 or cleanY.len > 4:
+                        if y.a.len < 3 or y.a.len > 4:
                             echo "wrong number of attributes"
                         else:
                             if (hadAttr("hsl")):
-                                if cleanY.len==3:
-                                    return newColor(HSLtoRGB((cleanY[0].i, cleanY[1].f, cleanY[2].f, 1.0)))
-                                elif cleanY.len==4:
-                                    return newColor(HSLtoRGB((cleanY[0].i, cleanY[1].f, cleanY[2].f, cleanY[3].f)))
+                                if y.a.len==3:
+                                    return newColor(HSLtoRGB((y.a[0].i, y.a[1].f, y.a[2].f, 1.0)))
+                                elif y.a.len==4:
+                                    return newColor(HSLtoRGB((y.a[0].i, y.a[1].f, y.a[2].f, y.a[3].f)))
                             elif (hadAttr("hsv")):
-                                if cleanY.len==3:
-                                    return newColor(HSVtoRGB((cleanY[0].i, cleanY[1].f, cleanY[2].f, 1.0)))
-                                elif cleanY.len==4:
-                                    return newColor(HSVtoRGB((cleanY[0].i, cleanY[1].f, cleanY[2].f, cleanY[3].f)))
+                                if y.a.len==3:
+                                    return newColor(HSVtoRGB((y.a[0].i, y.a[1].f, y.a[2].f, 1.0)))
+                                elif y.a.len==4:
+                                    return newColor(HSVtoRGB((y.a[0].i, y.a[1].f, y.a[2].f, y.a[3].f)))
                             else:
-                                if cleanY.len==3:
-                                    return newColor((cleanY[0].i, cleanY[1].i, cleanY[2].i, 255))
-                                elif cleanY.len==4:
-                                    return newColor((cleanY[0].i, cleanY[1].i, cleanY[2].i, cleanY[3].i))
+                                if y.a.len==3:
+                                    return newColor((y.a[0].i, y.a[1].i, y.a[2].i, 255))
+                                elif y.a.len==4:
+                                    return newColor((y.a[0].i, y.a[1].i, y.a[2].i, y.a[3].i))
 
                     of Binary:
                         var res: VBinary
-                        ensureCleaned(y)
-                        for item in cleanY:
+                        for item in y.a:
                             if item.kind==Integer:
                                 res &= numberToBinary(item.i)
                             else:
@@ -530,7 +523,6 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
             of Function,
                Database,
                Socket,
-               Newline,
                Nothing,
                Any,
                Path,
@@ -683,8 +675,7 @@ proc defineSymbols*() =
             elif (hadAttr("octal")):
                 push(newString(fmt"{x.i:o}"))
             elif (hadAttr("agnostic")):
-                ensureCleaned(x)
-                let res = cleanX.map(proc(v:Value):Value =
+                let res = x.a.map(proc(v:Value):Value =
                     if v.kind == Word and not SymExists(v.s): newLiteral(v.s)
                     else: v
                 )
@@ -774,7 +765,7 @@ proc defineSymbols*() =
             ; NAME: Jane, SURNAME: Doe, AGE: 33
         """:
             #=======================================================
-            x.ts.fields = cleanedBlock(y.a)
+            x.ts.fields = y.a
 
             if checkAttr("as"):
                 x.ts.inherits = aAs.ts
@@ -867,9 +858,8 @@ proc defineSymbols*() =
                 if (hadAttr("raw")):
                     dict = initOrderedTable[string,Value]()
                     var idx = 0
-                    ensureCleaned(x)
-                    while idx < cleanX.len:
-                        dict[cleanX[idx].s] = cleanX[idx+1]
+                    while idx < x.a.len:
+                        dict[x.a[idx].s] = x.a[idx+1]
                         idx += 2
                 else:
                     dict = execDictionary(x)
@@ -1060,8 +1050,6 @@ proc defineSymbols*() =
             if not inline:
                 if canBeInlined(y):
                     inline = true
-            
-            cleanBlock(x)
 
             var ret: Value
             var argTypes = initOrderedTable[string,ValueSpec]()
@@ -1413,20 +1401,18 @@ proc defineSymbols*() =
                 push convertedValueToType(x, y, tp, popAttr("format"))
             else:
                 var ret: ValueArray
-                ensureCleaned(x)
-                let tp = cleanX[0].t
+                let tp = x.a[0].t
                     
                 if y.kind==String:
                     ret = toSeq(runes(y.s)).map((c) => newChar(c))
                 else:
                     let aFormat = popAttr("format")
                     if y.kind == Block:
-                        ensureCleaned(y)
-                        for item in cleanY:
-                            ret.add(convertedValueToType(cleanX[0], item, tp, aFormat))
+                        for item in y.a:
+                            ret.add(convertedValueToType(x.a[0], item, tp, aFormat))
                     else:
                         for item in items(y.rng):
-                            ret.add(convertedValueToType(cleanX[0], item, tp, aFormat))
+                            ret.add(convertedValueToType(x.a[0], item, tp, aFormat))
 
                 push newBlock(ret)
         
@@ -1455,13 +1441,12 @@ proc defineSymbols*() =
             ; the multiple of 10 is 20 
         """:
             #=======================================================
-            var blk: ValueArray = cleanedBlock(y.a)
+            var blk: ValueArray = y.a
             if x.kind == Literal:
                 blk.insert(FetchSym(x.s))
                 blk.insert(newLabel(x.s))
             else:
-                ensureCleaned(x)
-                for item in cleanX:
+                for item in x.a:
                     blk.insert(FetchSym(item.s))
                     blk.insert(newLabel(item.s))
 

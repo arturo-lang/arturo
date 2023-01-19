@@ -92,9 +92,8 @@ type
         Socket          = 32    
         Bytecode        = 33
 
-        Newline         = 34
-        Nothing         = 35
-        Any             = 36
+        Nothing         = 34
+        Any             = 35
 
     ValueSpec* = set[ValueKind]
 
@@ -195,6 +194,7 @@ type
         when not defined(PORTABLE):
             info*   : ValueInfo
 
+        ln*     : uint32
         flags*  : ValueFlags
 
         case kind*: ValueKind:
@@ -274,8 +274,6 @@ type
             of Bytecode:
                 trans*: Translation
 
-            of Newline:
-                line*: int
     ValueObj = typeof(Value()[])
     FuncObj = typeof(VFunction()[])
 
@@ -296,9 +294,6 @@ when sizeof(ValueObj) > 72: # At time of writing it was '72', 8 - 64 bit integer
 
 template readonly*(val: Value): bool = IsReadOnly in val.flags
 template `readonly=`*(val: Value, newVal: bool) = val.flags[IsReadOnly] = newVal
-
-template dirty*(val: Value): bool = IsDirty in val.flags
-template `dirty=`*(val: Value, newVal: bool) = val.flags[IsDirty] = newVal
 
 template dynamic*(val: Value): bool = IsDynamic in val.flags
 template `dynamic=`*(val: Value, newVal: bool) = val.flags[IsDynamic] = newVal

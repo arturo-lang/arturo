@@ -47,15 +47,14 @@ proc defineSymbols*() =
             ; false
         """:
             #=======================================================
-            ensureCleaned(x)
             # check if empty
-            if cleanX.len==0: 
+            if x.a.len==0: 
                 push(newLogical(false))
                 return
 
             var allOK = true
 
-            for item in cleanX:
+            for item in x.a:
                 var val {.cursor.}: Value
                 if item.kind == Block: 
                     execUnscoped(item)
@@ -138,14 +137,13 @@ proc defineSymbols*() =
             ; false
         """:
             #=======================================================
-            ensureCleaned(x)
             # check if empty
-            if cleanX.len==0: 
+            if x.a.len==0: 
                 push(newLogical(false))
                 return
             
             var anyOK = false
-            for item in cleanX:
+            for item in x.a:
                 var val: Value
                 if item.kind == Block: 
                     execUnscoped(item)

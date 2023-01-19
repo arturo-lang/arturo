@@ -328,8 +328,7 @@ proc defineSymbols*() =
                     ensureInPlace()
                     SetInPlace(newString(joinPath(InPlaced.a.map(proc (v:Value):string = $(v)))))
                 else:
-                    ensureCleaned(x)
-                    push(newString(joinPath(cleanX.map(proc (v:Value):string = $(v)))))
+                    push(newString(joinPath(x.a.map(proc (v:Value):string = $(v)))))
             else:
                 var sep: string
                 if checkAttr("with"):
@@ -339,8 +338,7 @@ proc defineSymbols*() =
                     ensureInPlace()
                     SetInPlace(newString(InPlaced.a.map(proc (v:Value):string = $(v)).join(sep)))
                 else:
-                    ensureCleaned(x)
-                    push(newString(cleanX.map(proc (v:Value):string = $(v)).join(sep)))
+                    push(newString(x.a.map(proc (v:Value):string = $(v)).join(sep)))
 
     builtin "levenshtein",
         alias       = unaliased, 
