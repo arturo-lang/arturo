@@ -1050,8 +1050,6 @@ proc defineSymbols*() =
             if not inline:
                 if canBeInlined(y):
                     inline = true
-            
-            cleanBlock(x)
 
             var ret: Value
             var argTypes = initOrderedTable[string,ValueSpec]()
