@@ -131,7 +131,7 @@ func addChild*(node: Node, child: Node) {.enforceNoRaises.} =
     if node.kind in CallNode and child.kind notin {NewlineNode, AttributeNode}:
         node.params += 1
 
-func addChildren*(node: Node, children: NodeArray) {.enforceNoRaises.} =
+func addChildren*(node: Node, children: openArray[Node]) {.enforceNoRaises.} =
     for child in children:
         node.addChild(child)
 
@@ -455,6 +455,16 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
 
             rewindCallBranches(optimize=true)
 
+    proc addTerminals(target: var Node, nodes: openArray[Node]) =
+        with target:
+            rewindCallBranches()
+
+            addPotentialInfixCall()
+
+            addChildren(nodes)
+
+            rewindCallBranches(optimize=true)
+
     proc addPath(target: var Node, val: Value, isLabel: static bool=false) =
         var pathCallV: Value = nil
 
@@ -541,14 +551,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
         var subNode = newRootNode()
         discard subNode.processBlock(val, startingLine=currentLine)
 
-        with target:
-            rewindCallBranches()
-
-            addPotentialInfixCall()
-
-            addChildren(subNode.children)
-            
-            rewindCallBranches()
+        target.addTerminals(subNode.children)
 
     proc addArrowBlock(target: var Node, val: Value) =
         var subNode = newRootNode()
@@ -597,15 +600,23 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
         if argblock.len == 1:
             when processingArrow:
                 ArrowBlock[^1].add(newLiteral(argblock[0].s))
-            target.addTerminal(newConstant(newLiteral(argblock[0].s)))
+                ArrowBlock[^1].add(newBlock(subblock))
+
+            target.addTerminals([
+                newConstant(newLiteral(argblock[0].s)),
+                newConstant(newBlock(subblock))
+            ])
         else:
             when processingArrow:
                 ArrowBlock[^1].add(newBlock(argblock))
-            target.addTerminal(newConstant(newBlock(argblock)))
+                ArrowBlock[^1].add(newBlock(subblock))
 
-        when processingArrow:
-            ArrowBlock[^1].add(newBlock(subblock))
-        target.addTerminal(newConstant(newBlock(subblock)))
+            target.addTerminals([
+                newConstant(newBlock(argblock)),
+                newConstant(newBlock(subblock))
+            ])
+
+        i += 1
 
     #------------------------
     # The Main Loop
