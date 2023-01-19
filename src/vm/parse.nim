@@ -151,14 +151,14 @@ template skip(p: var Parser, scriptStr: var string) =
                             break
                         of CR:
                             pos = lexbase.handleCR(p, pos)
-                            when not defined(NOERRORLINES):
-                                AddToken newNewline(p.lineNumber)
+                            # when not defined(NOERRORLINES):
+                            #     AddToken newNewline(p.lineNumber)
                             scriptStr &= "\n"
                             break
                         of LF:
                             pos = lexbase.handleLF(p, pos)
-                            when not defined(NOERRORLINES):
-                                AddToken newNewline(p.lineNumber)
+                            # when not defined(NOERRORLINES):
+                            #     AddToken newNewline(p.lineNumber)
                             scriptStr &= "\n"
                             break
                         else:
@@ -170,13 +170,13 @@ template skip(p: var Parser, scriptStr: var string) =
                             break
                         of CR:
                             pos = lexbase.handleCR(p, pos)
-                            when not defined(NOERRORLINES):
-                                AddToken newNewline(p.lineNumber)
+                            # when not defined(NOERRORLINES):
+                            #     AddToken newNewline(p.lineNumber)
                             break
                         of LF:
                             pos = lexbase.handleLF(p, pos)
-                            when not defined(NOERRORLINES):
-                                AddToken newNewline(p.lineNumber)
+                            # when not defined(NOERRORLINES):
+                            #     AddToken newNewline(p.lineNumber)
                             break
                         else:
                             inc(pos)
@@ -184,12 +184,12 @@ template skip(p: var Parser, scriptStr: var string) =
             inc(pos)
         of CR:
             pos = lexbase.handleCR(p, pos)
-            when not defined(NOERRORLINES):
-                AddToken newNewline(p.lineNumber)
+            # when not defined(NOERRORLINES):
+            #     AddToken newNewline(p.lineNumber)
         of LF:
             pos = lexbase.handleLF(p, pos)
-            when not defined(NOERRORLINES):
-                AddToken newNewline(p.lineNumber)
+            # when not defined(NOERRORLINES):
+            #     AddToken newNewline(p.lineNumber)
         of '#':
             if p.buf[pos+1]=='!':
                 inc(pos)
