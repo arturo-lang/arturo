@@ -628,10 +628,6 @@ proc newRange*(start: int, stop: int, step: int, infinite: bool, numeric: bool, 
 proc newRange*(rng: VRange): Value {.inline, enforceNoRaises.} =
     Value(kind: Range, rng: rng)
 
-func newNewline*(l: int): Value {.inline, enforceNoRaises.} =
-    ## create Newline value with given line number
-    Value(kind: Newline, line: l)
-
 proc newStringDictionary*(a: Table[string, string]): Value =
     ## create Dictionary value from a string-string Table
     result = newDictionary()
@@ -732,7 +728,7 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Bytecode:
             result = newBytecode(v.trans)
 
-        of Newline, Nothing, Any:
+        of Nothing, Any:
             discard
 
 #=======================================
@@ -2475,7 +2471,6 @@ func hash*(v: Value): Hash {.inline.}=
         of Bytecode:
             result = result !& cast[Hash](unsafeAddr v)
 
-        of Newline      : discard
         of Nothing      : discard
         of ANY          : discard
 
