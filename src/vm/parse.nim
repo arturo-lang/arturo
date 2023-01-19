@@ -107,14 +107,6 @@ template LastToken(): untyped =
 template ReplaceLastToken(with: untyped): untyped =
     topBlock.a[^1] = with
 
-template stripTrailingNewlines(): untyped =
-    if topBlock.a[^1].kind == Newline:
-        let lastN = topBlock.a.len-1
-        var firstN = lastN
-        while firstN-1 >= 0 and topBlock.a[firstN-1].kind == Newline:
-            firstN -= 1
-        topBlock.a.delete(firstN..lastN)
-
 #=======================================
 # Helpers
 #=======================================
@@ -579,7 +571,6 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
                 inc(pos)
                 p.symbol = triangleright
             else: 
-                stripTrailingNewlines()
                 p.symbol = pipe
         of '/'  : 
             if p.buf[pos+1]=='/': 
@@ -1030,7 +1021,7 @@ proc parseAsDictionary(blk: Value, start: int): Value =
                 let lbl = blk.a[i].s
                 i += 1
                 var values: ValueArray
-                while i < blk.a.len and blk.a[i].kind!=Newline and blk.a[i].kind!=Label:
+                while i < blk.a.len and blk.a[i].kind!=Label:
                     case blk.a[i].kind:
                         of Block:
                             values.add(parseDataBlock(blk.a[i]))
@@ -1061,15 +1052,15 @@ proc parseAsBlock(blk: Value, start: int): Value =
                 values.add(parseDataBlock(blk.a[i]))
             of String, Literal, Word, Label:
                 values.add(newString(blk.a[i].s))
-            of Newline:
-                if values.len > 1:
-                    result.a.add(newBlock(values))
-                    values.setLen(0)
-                elif values.len == 1:
-                    result.a.add(values[0])
-                    values.setLen(0)
-                else:
-                    discard
+            # of Newline:
+            #     if values.len > 1:
+            #         result.a.add(newBlock(values))
+            #         values.setLen(0)
+            #     elif values.len == 1:
+            #         result.a.add(values[0])
+            #         values.setLen(0)
+            #     else:
+            #         discard
             else:
                 values.add(blk.a[i])
         
@@ -1092,8 +1083,8 @@ proc parseDataBlock*(blk: Value): Value =
         return VNULL
 
     var i = 0
-    while i < blk.a.len and blk.a[i].kind==Newline:
-        i += 1
+    # while i < blk.a.len and blk.a[i].kind==Newline:
+    #     i += 1
 
     if i==blk.a.len:
         return VNULL
