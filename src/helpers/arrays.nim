@@ -16,7 +16,6 @@ import helpers/sets
 
 import vm/values/comparison
 import vm/values/value
-import vm/values/clean
 
 #=======================================
 # Methods

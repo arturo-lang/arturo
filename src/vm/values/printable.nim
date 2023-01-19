@@ -26,7 +26,6 @@ import helpers/terminal as TerminalHelper
 import vm/globals
 import vm/opcodes
 import vm/values/value
-import vm/values/clean
 
 import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vsocket, vversion]
 

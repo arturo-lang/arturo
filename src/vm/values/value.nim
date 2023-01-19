@@ -40,7 +40,6 @@ import vm/opcodes
 
 import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vsocket, vsymbol, vversion]
 
-import vm/values/clean
 import vm/values/types
 import vm/values/flags
 export types
