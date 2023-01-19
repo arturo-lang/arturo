@@ -530,7 +530,6 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
             of Function,
                Database,
                Socket,
-               Newline,
                Nothing,
                Any,
                Path,
