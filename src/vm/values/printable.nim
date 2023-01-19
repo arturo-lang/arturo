@@ -158,7 +158,6 @@ proc `$`*(v: Value): string {.inline.} =
         of Bytecode:
             result = "<bytecode>" & "(" & fmt("{cast[ByteAddress](v):#X}") & ")"
             
-        of Newline: discard
         of Nothing: discard
         of ANY: discard
 
@@ -433,7 +432,6 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
 
             dumpBlockEnd()
 
-        of Newline      : discard
         of Nothing      : discard
         of ANY          : discard
 
