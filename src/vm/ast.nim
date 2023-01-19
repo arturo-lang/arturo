@@ -411,7 +411,10 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
 
         target.addChild(newCallNode(callType, ar, v, op))
         
-        target.rollThrough()
+        if ar != 0:
+            target.rollThrough()
+        else:
+            target.rewindCallBranches()
 
     func addStore(target: var Node, val: Value) {.enforceNoRaises.} =
         target.addChild(newCallNode(VariableStore, 1, val))
