@@ -105,7 +105,7 @@ proc `$`*(v: Value): string {.inline.} =
             # for i,child in v.a:
             #     result &= $(child) & " "
             # result &= "]"
-            result = "[" & cleanV.map((child) => $(child)).join(" ") & "]"
+            result = "[" & v.a.map((child) => $(child)).join(" ") & "]"
 
         of Range     : 
             result = $(v.rng)
@@ -299,8 +299,8 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
         of Inline,
             Block        :
             dumpBlockStart(v)
-            for i,child in cleanV:
-                dump(child, level+1, i==(cleanV.len-1), muted=muted)
+            for i,child in v.a:
+                dump(child, level+1, i==(v.a.len-1), muted=muted)
 
             stdout.write "\n"
 
@@ -501,8 +501,8 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 result &= "\n"
             
             var parts: seq[string]
-            for i,child in cleanV:
-                parts.add(codify(child,pretty,unwrapped,level+1, i==(cleanV.len-1), safeStrings=safeStrings))
+            for i,child in v.a:
+                parts.add(codify(child,pretty,unwrapped,level+1, i==(v.a.len-1), safeStrings=safeStrings))
 
             result &= parts.join(" ")
 
