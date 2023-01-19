@@ -691,7 +691,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
 # Output
 #=======================================
 
-proc dumpNode*(node: Node, level = 0, single: static bool = false, showNewlines: static bool = true): string =
+proc dumpNode*(node: Node, level = 0, single: static bool = false, showNewlines: static bool = false): string =
     template indentNode(): untyped =
         result &= "     ".repeat(level)
 
