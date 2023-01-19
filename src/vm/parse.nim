@@ -797,8 +797,8 @@ template parseExponent(p: var Parser) =
 proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inline.} =
     var topBlock: Value
     var scriptStr: string
-    if isDeferred: topBlock = newBlock(dirty=true)
-    else: topBlock = newInline(dirty=true)
+    if isDeferred: topBlock = newBlock()
+    else: topBlock = newInline()
     let initial = p.bufpos
     let initialLine = p.lineNumber
     while true:
