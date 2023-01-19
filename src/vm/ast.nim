@@ -347,6 +347,10 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
             if right.kind == ConstantValue and right.value.kind == String:
                 target.replaceNode(newConstant(newString(left.value.s & right.value.s)))
 
+    proc optimizeFunction(target: var Node) {.enforceNoRaises.} =
+        if target.parent.kind == VariableStore:
+            TmpArities[target.parent.value.s] = int8(target.children[0].value.a.len)
+
     #------------------------
     # Helper Functions
     #------------------------
@@ -365,6 +369,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
                     of opUnless,
                        opUnlessE    : target.optimizeUnless()
                     of opAppend     : target.optimizeAppend()
+                    of opFunc       : target.optimizeFunction()
                         
                     else:
                         discard
