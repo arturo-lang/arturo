@@ -94,7 +94,7 @@ type
         
 var
     TmpArities : Table[string,int8]
-    ArrowBlock : ValueArray
+    ArrowBlock : seq[ValueArray]
     OldChild  : Node
     OldParent : Node
 
@@ -225,6 +225,9 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
     var currentLine: uint32 = startingLine
 
     var current = root
+
+    when processingArrow:
+        ArrowBlock.add(@[])
 
     #------------------------
     # Optimization
@@ -438,7 +441,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
 
                     if symfunc.kind==Function and aliased.precedence==InfixPrecedence:
                         when processingArrow:
-                            ArrowBlock.add(nextNode)
+                            ArrowBlock[^1].add(nextNode)
                         i += 1
                         target.addCall(aliased.name.s, fun=symfunc)
 
@@ -551,9 +554,11 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
         var subNode = newRootNode()
         i = subNode.processBlock(val, start=i+1, startingLine=currentLine, processingArrow=true)
 
-        target.addTerminal(newConstant(newBlock(ArrowBlock)))
-
-        ArrowBlock.setLen(0)
+        let poppedArrowBlock = newBlock(ArrowBlock.pop())
+        when processingArrow:
+            ArrowBlock[^1].add(poppedArrowBlock)
+    
+        target.addTerminal(newConstant(poppedArrowBlock))
 
     proc addThickArrowBlocks(target: var Node) =
         # get next node
@@ -590,10 +595,16 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
                 idx += 1
 
         if argblock.len == 1:
+            when processingArrow:
+                ArrowBlock[^1].add(newLiteral(argblock[0].s))
             target.addTerminal(newConstant(newLiteral(argblock[0].s)))
         else:
+            when processingArrow:
+                ArrowBlock[^1].add(newBlock(argblock))
             target.addTerminal(newConstant(newBlock(argblock)))
 
+        when processingArrow:
+            ArrowBlock[^1].add(newBlock(subblock))
         target.addTerminal(newConstant(newBlock(subblock)))
 
     #------------------------
@@ -607,11 +618,10 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
             currentLine = item.ln
             current.addNewline()
 
-        when processingArrow:
-            ArrowBlock.add(item)
-
         case item.kind:
             of Word:
+                when processingArrow: ArrowBlock[^1].add(item)
+                
                 var funcArity = TmpArities.getOrDefault(item.s, -1)
                 if funcArity != -1:
                     current.addCall(item.s, funcArity)
@@ -624,21 +634,33 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
                         current.addTerminal(newVariable(item))
 
             of Label:
+                when processingArrow: ArrowBlock[^1].add(item)
+
                 current.addStore(item)
 
             of Attribute:
+                when processingArrow: ArrowBlock[^1].add(item)
+
                 current.addAttribute(item)
 
             of AttributeLabel:
+                when processingArrow: ArrowBlock[^1].add(item)
+
                 current.addAttribute(item, isLabel=true)
 
             of Path:
+                when processingArrow: ArrowBlock[^1].add(item)
+
                 current.addPath(item)
 
             of PathLabel:
+                when processingArrow: ArrowBlock[^1].add(item)
+
                 current.addPath(item, isLabel=true)
 
             of Inline:
+                when processingArrow: ArrowBlock[^1].add(item)
+
                 current.addInline(item)
 
             of Symbol:
@@ -662,6 +684,8 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
                         current.addPotentialTrailingPipe()
 
                     else:
+                        when processingArrow: ArrowBlock[^1].add(item)
+
                         let symalias = item.m
                         let aliased = Aliases.getOrDefault(symalias, NoAliasBinding)
                         if likely(aliased != NoAliasBinding):
@@ -677,6 +701,8 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
                             current.addTerminal(newConstant(item))
 
             else:
+                when processingArrow: ArrowBlock[^1].add(item)
+
                 current.addTerminal(newConstant(item))
 
         i += 1
