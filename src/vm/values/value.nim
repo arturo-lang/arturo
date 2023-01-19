@@ -585,23 +585,13 @@ func newBytecode*(t: sink Translation): Value {.inline, enforceNoRaises.} =
     ## create Bytecode value from Translation
     Value(kind: Bytecode, trans: t)
 
-func newInline*(a: sink ValueArray = @[], dirty = false): Value {.inline, enforceNoRaises.} =
+func newInline*(a: sink ValueArray = @[]): Value {.inline, enforceNoRaises.} =
     ## create Inline value from ValueArray
-    let flags =
-        if dirty:
-            {IsDirty}
-        else:
-            {}
-    Value(kind: Inline, a: a, flags: flags)
+    Value(kind: Inline, a: a)
 
-func newBlock*(a: sink ValueArray = @[], data: sink Value = nil, dirty = false): Value {.inline, enforceNoRaises.} =
+func newBlock*(a: sink ValueArray = @[], data: sink Value = nil): Value {.inline, enforceNoRaises.} =
     ## create Block value from ValueArray
-    let flags =
-        if dirty:
-            {IsDirty}
-        else:
-            {}
-    Value(kind: Block, a: a, data: data, flags: flags)
+    Value(kind: Block, a: a, data: data)
 
 func newBlock*(a: (Value, Value)): Value {.inline, enforceNoRaises.} =
     ## create Block value from tuple of two values
