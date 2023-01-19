@@ -40,7 +40,6 @@ import vm/opcodes
 
 import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vsocket, vsymbol, vversion]
 
-import vm/values/clean
 import vm/values/types
 import vm/values/flags
 export types
@@ -586,23 +585,13 @@ func newBytecode*(t: sink Translation): Value {.inline, enforceNoRaises.} =
     ## create Bytecode value from Translation
     Value(kind: Bytecode, trans: t)
 
-func newInline*(a: sink ValueArray = @[], dirty = false): Value {.inline, enforceNoRaises.} =
+func newInline*(a: sink ValueArray = @[]): Value {.inline, enforceNoRaises.} =
     ## create Inline value from ValueArray
-    let flags =
-        if dirty:
-            {IsDirty}
-        else:
-            {}
-    Value(kind: Inline, a: a, flags: flags)
+    Value(kind: Inline, a: a)
 
-func newBlock*(a: sink ValueArray = @[], data: sink Value = nil, dirty = false): Value {.inline, enforceNoRaises.} =
+func newBlock*(a: sink ValueArray = @[], data: sink Value = nil): Value {.inline, enforceNoRaises.} =
     ## create Block value from ValueArray
-    let flags =
-        if dirty:
-            {IsDirty}
-        else:
-            {}
-    Value(kind: Block, a: a, data: data, flags: flags)
+    Value(kind: Block, a: a, data: data)
 
 func newBlock*(a: (Value, Value)): Value {.inline, enforceNoRaises.} =
     ## create Block value from tuple of two values
@@ -638,10 +627,6 @@ proc newRange*(start: int, stop: int, step: int, infinite: bool, numeric: bool, 
 
 proc newRange*(rng: VRange): Value {.inline, enforceNoRaises.} =
     Value(kind: Range, rng: rng)
-
-func newNewline*(l: int): Value {.inline, enforceNoRaises.} =
-    ## create Newline value with given line number
-    Value(kind: Newline, line: l)
 
 proc newStringDictionary*(a: Table[string, string]): Value =
     ## create Dictionary value from a string-string Table
@@ -711,8 +696,7 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Inline:          result = newInline(v.a)
         of Block:       
             if v.data.isNil: 
-                let newValues = cleanedBlockValuesCopy(v)
-                result = Value(kind: Block, a: newValues)
+                result = Value(kind: Block, a: v.a)
             else:
                 result = newBlock(v.a.map((vv)=>copyValue(vv)), copyValue(v.data))
         of Range:
@@ -743,7 +727,7 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Bytecode:
             result = newBytecode(v.trans)
 
-        of Newline, Nothing, Any:
+        of Nothing, Any:
             discard
 
 #=======================================
@@ -2486,7 +2470,6 @@ func hash*(v: Value): Hash {.inline.}=
         of Bytecode:
             result = result !& cast[Hash](unsafeAddr v)
 
-        of Newline      : discard
         of Nothing      : discard
         of ANY          : discard
 
