@@ -293,7 +293,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
         var left = target.children[0]
         var right = target.children[1]
 
-        if left.kind == ConstantValue and right.kind == ConstantValue:
+        if left.kind == ConstantValue and left.value.kind in {Integer,Floating} and right.kind == ConstantValue and right.value.kind in {Integer,Floating}:
             # Constant folding
             target.replaceNode(newConstant(left.value - right.value))
         elif right.kind == ConstantValue and right.value == I1:
@@ -306,7 +306,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
         var left = target.children[0]
         var right = target.children[1]
 
-        if left.kind == ConstantValue and right.kind == ConstantValue:
+        if left.kind == ConstantValue and left.value.kind in {Integer,Floating} and right.kind == ConstantValue and right.value.kind in {Integer,Floating}:
             target.replaceNode(newConstant(op(left.value,right.value)))
 
     proc optimizeUnless(target: var Node) {.enforceNoRaises.} =
@@ -361,7 +361,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
                 case target.op:
                     of opAdd        : target.optimizeAdd()
                     of opSub        : target.optimizeSub()
-                    of opMul        : target.optimizeArithmeticOp(`*`)
+                    #of opMul        : target.optimizeArithmeticOp(`*`)
                     of opDiv        : target.optimizeArithmeticOp(`/`)
                     of opFDiv       : target.optimizeArithmeticOp(`//`)
                     of opMod        : target.optimizeArithmeticOp(`%`)
@@ -790,7 +790,7 @@ proc generateAst*(parsed: Value): Node =
 
     discard result.processBlock(parsed)
 
-    #echo dumpNode(result)
+    echo dumpNode(result)
 
     # echo "TRAVERSING"
 
