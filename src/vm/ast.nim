@@ -740,7 +740,10 @@ proc dumpNode*(node: Node, level = 0, single: static bool = false, showNewlines:
             if node.kind == VariableStore:
                 result &= "Store: " & $(node.value) & "\n"
             else:
-                result &= "Call: "
+                if node.kind == AttributeNode:
+                    result &= "Attribute: "
+                else:
+                    result &= "Call: "
                 if node.value.isNil:
                     var callName = ($node.op).toLowerAscii()
                     callName.removePrefix("op")
