@@ -94,10 +94,9 @@ proc parseDataBlock*(blk: Value): Value
 template Empty(s: var string): bool =
     s.len == 0
 
-func addAnnotatedTokenToBlock(blok: var Value, token: Value, p: var Parser) =
-    let newToken = token
-    newToken.ln = uint32(p.lineNumber)
-    blok.a.add(newToken)
+func addAnnotatedTokenToBlock(blok: var Value, token: Value, p: var Parser) {.enforceNoRaises.} =
+    token.ln = uint32(p.lineNumber)
+    blok.a.add(token)
 
 template AddToken(token: untyped): untyped =
     topBlock.addAnnotatedTokenToBlock(token, p)
