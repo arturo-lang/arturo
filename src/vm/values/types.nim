@@ -195,6 +195,7 @@ type
         when not defined(PORTABLE):
             info*   : ValueInfo
 
+        ln*     : uint32
         flags*  : ValueFlags
 
         case kind*: ValueKind:
