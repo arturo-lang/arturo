@@ -88,7 +88,6 @@ proc generateJsonNode*(n: Value): JsonNode =
            Database,
            Socket,
            Bytecode,
-           Newline,
            Nothing,
            Any          : discard
 
@@ -172,7 +171,6 @@ when defined(WEB):
                Socket,
                Bytecode,
                Nothing,
-               Newline,
                Any          : discard
 
     func isArray(x: JsObject): bool {.importcpp: "(Array.isArray(#))".}
