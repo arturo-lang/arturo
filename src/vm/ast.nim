@@ -702,7 +702,9 @@ proc dumpNode*(node: Node, level = 0, single: static bool = false): string =
             else:
                 result &= "Call: "
                 if node.value.isNil:
-                    result &= ($node.op).replace("op","").toLowerAscii() & " <" & $node.arity & ">\n"
+                    var callName = ($node.op).toLowerAscii()
+                    callName.removePrefix("op")
+                    result &= callName & " <" & $node.arity & ">\n"
                 else:
                     result &= node.value.s & " <" & $node.arity & ">\n"
 
