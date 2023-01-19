@@ -676,9 +676,6 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
                         else:
                             current.addTerminal(newConstant(item))
 
-            of Newline:
-                discard
-
             else:
                 current.addTerminal(newConstant(item))
 
