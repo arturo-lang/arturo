@@ -538,7 +538,7 @@ proc defineSymbols*() =
                 ensureInPlace()
                 SetInPlace(InPlaced.flattened(once = hadAttr("once")))
             else:
-                push(newBlock(cleanedBlock(x.a)).flattened(once = hadAttr("once")))
+                push(newBlock(x.a).flattened(once = hadAttr("once")))
 
     builtin "get",
         alias       = unaliased,
@@ -824,7 +824,7 @@ proc defineSymbols*() =
                             copied.insert($(z.c), y.i)
                         push(newString(copied))
                     of Block:
-                        var copied = cleanedBlock(x.a)
+                        var copied = x.a
                         copied.insert(z, y.i)
                         push(newBlock(copied))
                     of Dictionary:

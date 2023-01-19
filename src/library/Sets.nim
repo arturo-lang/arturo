@@ -84,15 +84,15 @@ proc defineSymbols*() =
             if (hadAttr("symmetric")):
                 if x.kind==Literal:
                     ensureInPlace()
-                    SetInPlace(newBlock(toSeq(symmetricDifference(toOrderedSet(cleanedBlock(InPlaced.a)), toOrderedSet(cleanedBlock(y.a))))))
+                    SetInPlace(newBlock(toSeq(symmetricDifference(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
                 else:
-                    push(newBlock(toSeq(symmetricDifference(toOrderedSet(cleanedBlock(x.a)), toOrderedSet(cleanedBlock(y.a))))))
+                    push(newBlock(toSeq(symmetricDifference(toOrderedSet(x.a), toOrderedSet(y.a)))))
             else:
                 if x.kind==Literal:
                     ensureInPlace()
-                    SetInPlace(newBlock(toSeq(difference(toOrderedSet(cleanedBlock(InPlaced.a)), toOrderedSet(cleanedBlock(y.a))))))
+                    SetInPlace(newBlock(toSeq(difference(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
                 else:
-                    push(newBlock(toSeq(difference(toOrderedSet(cleanedBlock(x.a)), toOrderedSet(cleanedBlock(y.a))))))
+                    push(newBlock(toSeq(difference(toOrderedSet(x.a), toOrderedSet(y.a)))))
 
     builtin "disjoint?",
         alias       = unaliased, 
@@ -113,7 +113,7 @@ proc defineSymbols*() =
             ; => true
         """:
             #=======================================================
-            push(newLogical(disjoint(toOrderedSet(cleanedBlock(x.a)), toOrderedSet(cleanedBlock(y.a)))))
+            push(newLogical(disjoint(toOrderedSet(x.a), toOrderedSet(y.a))))
 
     builtin "intersect?",
         alias       = unaliased, 
@@ -137,7 +137,7 @@ proc defineSymbols*() =
             ; => false
         """:
             #=======================================================
-            let res = intersection(toOrderedSet(cleanedBlock(x.a)), toOrderedSet(cleanedBlock(y.a)))
+            let res = intersection(toOrderedSet(x.a), toOrderedSet(y.a))
             if len(res) >= 0:
                 push(VTRUE)
             else:
@@ -166,9 +166,9 @@ proc defineSymbols*() =
             #=======================================================
             if x.kind==Literal:
                 ensureInPlace()
-                SetInPlace(newBlock(toSeq(intersection(toOrderedSet(cleanedBlock(InPlaced.a)), toOrderedSet(cleanedBlock(y.a))))))
+                SetInPlace(newBlock(toSeq(intersection(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
             else:
-                push(newBlock(toSeq(intersection(toOrderedSet(cleanedBlock(x.a)), toOrderedSet(cleanedBlock(y.a))))))
+                push(newBlock(toSeq(intersection(toOrderedSet(x.a), toOrderedSet(y.a)))))
 
     builtin "powerset",
         alias       = unaliased, 
@@ -187,9 +187,9 @@ proc defineSymbols*() =
             #=======================================================
             if x.kind==Literal:
                 ensureInPlace()
-                SetInPlace(newBlock(toSeq(powerset(toOrderedSet(cleanedBlock(InPlaced.a)))).map((hs) => newBlock(toSeq(hs)))))
+                SetInPlace(newBlock(toSeq(powerset(toOrderedSet(InPlaced.a))).map((hs) => newBlock(toSeq(hs)))))
             else:
-                push(newBlock(toSeq(powerset(toOrderedSet(cleanedBlock(x.a))).map((hs) => newBlock(toSeq(hs))))))
+                push(newBlock(toSeq(powerset(toOrderedSet(x.a)).map((hs) => newBlock(toSeq(hs))))))
 
     builtin "subset?",
         alias       = unaliased, 
@@ -226,8 +226,8 @@ proc defineSymbols*() =
                     push(newLogical(false))
                 else:
                     var contains = true
-                    let xblk = cleanedBlock(x.a)
-                    let yblk = cleanedBlock(y.a)
+                    let xblk = x.a
+                    let yblk = y.a
                     for item in xblk:
                         if item notin yblk:
                             contains = false
@@ -239,8 +239,8 @@ proc defineSymbols*() =
                     push(newLogical(true))
                 else:
                     var contains = true
-                    let xblk = cleanedBlock(x.a)
-                    let yblk = cleanedBlock(y.a)
+                    let xblk = x.a
+                    let yblk = y.a
                     for item in xblk:
                         if item notin yblk:
                             contains = false
@@ -283,8 +283,8 @@ proc defineSymbols*() =
                     push(newLogical(false))
                 else:
                     var contains = true
-                    let xblk = cleanedBlock(x.a)
-                    let yblk = cleanedBlock(y.a)
+                    let xblk = x.a
+                    let yblk = y.a
                     for item in yblk:
                         if item notin xblk:
                             contains = false
@@ -296,8 +296,8 @@ proc defineSymbols*() =
                     push(newLogical(true))
                 else:
                     var contains = true
-                    let xblk = cleanedBlock(x.a)
-                    let yblk = cleanedBlock(y.a)
+                    let xblk = x.a
+                    let yblk = y.a
                     for item in yblk:
                         if item notin xblk:
                             contains = false
@@ -328,9 +328,9 @@ proc defineSymbols*() =
             #=======================================================
             if x.kind==Literal:
                 ensureInPlace()
-                SetInPlace(newBlock(toSeq(union(toOrderedSet(cleanedBlock(InPlaced.a)), toOrderedSet(cleanedBlock(y.a))))))
+                SetInPlace(newBlock(toSeq(union(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
             else:
-                push(newBlock(toSeq(union(toOrderedSet(cleanedBlock(x.a)), toOrderedSet(cleanedBlock(y.a))))))
+                push(newBlock(toSeq(union(toOrderedSet(x.a), toOrderedSet(y.a)))))
 
 #=======================================
 # Add Library
