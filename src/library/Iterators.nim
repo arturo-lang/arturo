@@ -267,8 +267,7 @@ template fetchParamsBlock() {.dirty.} =
     if hasIndex: params.add(withIndex.s)
     if y.kind != Null:
         for item in mitems(y.a):
-            if item.kind != Newline:
-                params.add(item.s)
+            params.add(item.s)
 
 template prepareIteration(doesAcceptLiterals=true) {.dirty.} =
     let preevaled = evalOrGet(z)
