@@ -785,7 +785,7 @@ proc generateAst*(parsed: Value): Node =
 
     discard result.processBlock(parsed)
 
-    echo dumpNode(result)
+    #echo dumpNode(result)
 
     # echo "TRAVERSING"
 
