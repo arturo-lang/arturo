@@ -358,10 +358,6 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
         else:
             TmpArities.del(target.value.s)
 
-    proc optimizeFunction(target: var Node) {.enforceNoRaises.} =
-        if target.parent.kind == VariableStore:
-            TmpArities[target.parent.value.s] = int8(target.children[0].value.a.len)
-
     #------------------------
     # Helper Functions
     #------------------------
@@ -806,10 +802,3 @@ proc generateAst*(parsed: Value, asDictionary=false): Node =
     discard result.processBlock(parsed, asDictionary=asDictionary)
 
     #echo dumpNode(result)
-
-    # echo "TRAVERSING"
-
-    # for node in traverseTree(result):
-    #     echo dumpNode(node, single=true)
-
-    # echo "FINISHED"
