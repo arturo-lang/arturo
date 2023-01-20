@@ -516,7 +516,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
                 
                 if val.p[i].kind==Block:
                     var subNode = newRootNode()
-                    discard subNode.processBlock(val.p[i], startingLine=currentLine)
+                    discard subNode.processBlock(val.p[i], startingLine=currentLine, asDictionary=false)
                     newNode.addChildren(subNode.children)
                 else:
                     newNode.addChild(newConstant(val.p[i]))
@@ -558,13 +558,13 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
 
     proc addInline(target: var Node, val: Value) =
         var subNode = newRootNode()
-        discard subNode.processBlock(val, startingLine=currentLine)
+        discard subNode.processBlock(val, startingLine=currentLine, asDictionary=false)
 
         target.addTerminals(subNode.children)
 
     proc addArrowBlock(target: var Node, val: Value) =
         var subNode = newRootNode()
-        i = subNode.processBlock(val, start=i+1, startingLine=currentLine, processingArrow=true)
+        i = subNode.processBlock(val, start=i+1, startingLine=currentLine, asDictionary=false, processingArrow=true)
 
         let poppedArrowBlock = newBlock(ArrowBlock.pop())
         when processingArrow:
@@ -781,7 +781,7 @@ proc dumpNode*(node: Node, level = 0, single: static bool = false, showNewlines:
 # Main
 #=======================================
 
-proc generateAst*(parsed: Value): Node =
+proc generateAst*(parsed: Value, asDictionary=false): Node =
     result = newRootNode()
 
     TmpArities = collect:
@@ -789,7 +789,7 @@ proc generateAst*(parsed: Value): Node =
             if v.kind == Function:
                 {k: v.arity}
 
-    discard result.processBlock(parsed)
+    discard result.processBlock(parsed, asDictionary=asDictionary)
 
     #echo dumpNode(result)
 
