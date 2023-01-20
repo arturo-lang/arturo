@@ -44,13 +44,35 @@ func indexOfValue(a: ValueArray, item: Value): int {.inline,enforceNoRaises.}=
         inc(result)
     result = -1
 
-template addToInstructions(b: untyped):untyped {.dirty.} =
+template addByte(instructions: var VBinary, b: untyped): untyped = 
     when b is OpCode:
         instructions.add(byte(b))
     else:
         instructions.add(b)
 
-proc addConst(consts: var ValueArray, instructions: var VBinary, v: Value, op: OpCode, withShortcut: static bool=true) {.inline,enforceNoRaises.} =
+template addOpWithNumber(instructions: var VBinary, oper: OpCode, num: untyped, hasShortcut = true): untyped =
+    if num > 255:
+        instructions.addByte([
+            byte(oper)+1,
+            byte(num shr 8),
+            byte(num)
+        ])
+    else:
+        when hasShortcut:
+            if num <= 13:
+                instructions.addByte((byte(oper)-0x0E) + byte(num))
+            else:
+                instructions.addByte([
+                    byte(oper),
+                    byte(num)
+                ])
+        else:
+            instructions.addByte([
+                byte(oper),
+                byte(num)
+            ])
+
+proc addConst(consts: var ValueArray, instructions: var VBinary, v: Value, op: OpCode, hasShortcut: static bool=true) {.inline,enforceNoRaises.} =
     var indx = consts.indexOfValue(v)
     if indx == -1:
         let newv = v
@@ -58,26 +80,7 @@ proc addConst(consts: var ValueArray, instructions: var VBinary, v: Value, op: O
         consts.add(newv)
         indx = consts.len-1
 
-    if indx > 255:
-        addToInstructions([
-            byte(op)+1,
-            byte(indx shr 8),
-            byte(indx)
-        ])
-    else:
-        when withShortcut:
-            if indx <= 13:
-                addToInstructions((byte(op)-0x0E) + byte(indx))
-            else:
-                addToInstructions([
-                    byte(op),
-                    byte(indx)
-                ])
-        else:
-            addToInstructions([
-                byte(op),
-                byte(indx)
-            ])
+    instructions.addOpWithNumber(op, indx, hasShortcut)
 
 #=======================================
 # Methods
@@ -94,14 +97,14 @@ proc evaluateBlock*(blok: Node, isDictionary=false): Translation =
     # Shortcuts
     #------------------------
 
-    template addConst(v: Value, op: OpCode, withShortcut: static bool=true): untyped =
-        addConst(consts, it, v, op, withShortcut)
+    template addConst(v: Value, op: OpCode, hasShortcut: static bool=true): untyped =
+        addConst(consts, it, v, op, hasShortcut)
 
-    template addByte(b: untyped): untyped = 
-        when b is OpCode:
-            it.add(byte(b))
-        else:
-            it.add(b)
+    template addSingleCommand(op: untyped): untyped =
+        it.addByte(op)
+
+    template addEol(n: untyped): untyped =
+        it.addOpWithNumber(opEol, n, hasShortcut=false)
 
     #------------------------
     # MainLoop
@@ -117,53 +120,55 @@ proc evaluateBlock*(blok: Node, isDictionary=false): Translation =
             # echo "processing: "
             # echo dumpNode(instruction)
             case instruction.kind:
-                of RootNode, NewlineNode:
+                of RootNode:
                     discard
+                of NewlineNode:
+                    addEol(instruction.line)
                 of ConstantValue:
                     var alreadyPut = false
                     let iv {.cursor.} = instruction.value
                     case instruction.value.kind:
                         of Null:
-                            addByte(opConstN)
+                            addSingleCommand(opConstN)
                             alreadyPut = true
                         of Logical:
                             if iv.b == True:
-                                addByte(opConstBT)
+                                addSingleCommand(opConstBT)
                                 alreadyPut = true
                             elif iv.b == False:
-                                addByte(opConstBF)
+                                addSingleCommand(opConstBF)
                                 alreadyPut = true
                         of Integer:
                             if likely(iv.iKind==NormalInteger) and iv.i >= -1 and iv.i <= 15: 
-                                addByte(byte(opConstI0) + byte(iv.i))
+                                addSingleCommand(byte(opConstI0) + byte(iv.i))
                                 alreadyPut = true
                         of Floating:
                             case iv.f:
                                 of -1.0:
-                                    addByte(opConstF1M)
+                                    addSingleCommand(opConstF1M)
                                     alreadyPut = true
                                 of 0.0:
-                                    addByte(opConstF0)
+                                    addSingleCommand(opConstF0)
                                     alreadyPut = true
                                 of 1.0:
-                                    addByte(opConstF1)
+                                    addSingleCommand(opConstF1)
                                     alreadyPut = true
                                 of 2.0:
-                                    addByte(opConstF2)
+                                    addSingleCommand(opConstF2)
                                     alreadyPut = true
                                 else:
                                     discard
                         of String:
                             if iv.s == "":
-                                addByte(opConstS)
+                                addSingleCommand(opConstS)
                                 alreadyPut = true
                         of Block:
                             if iv.a.len == 0:
-                                addByte(opConstA)
+                                addSingleCommand(opConstA)
                                 alreadyPut = true
                         of Dictionary:
                             if iv.d.len == 0:
-                                addByte(opConstD)
+                                addSingleCommand(opConstD)
                                 alreadyPut = true
                         else:
                             discard
@@ -176,15 +181,15 @@ proc evaluateBlock*(blok: Node, isDictionary=false): Translation =
                     addConst(instruction.value, opAttr)
                 of VariableStore:
                     if unlikely(isDictionary):
-                        addConst(instruction.value, opDStore, withShortcut=false)
+                        addConst(instruction.value, opDStore, hasShortcut=false)
                     else:
                         addConst(instruction.value, opStore)
                 of OtherCall:
                     addConst(instruction.value, opCall)
                 of BuiltinCall:
-                    addByte(instruction.op)
+                    addSingleCommand(instruction.op)
                 of SpecialCall:
-                    addByte(instruction.op)
+                    addSingleCommand(instruction.op)
 
         i += 1
 
