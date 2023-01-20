@@ -26,7 +26,8 @@
 # - [x] clean up opCode's
 # - [x] attach opCode's to built-in function (for faster lookups)
 # - [x] optimize appends
-# - [ ] make labels store new functions in TmpArities
+# - [x] make labels store new functions in TmpArities
+# - [x] make labels unstore overwritten functions in TmpArities
 # - [ ] make if/if?/else/while/switch work
 
 #=======================================
@@ -218,7 +219,7 @@ template newCallNode(kn: NodeKind, ar: int8, va: Value, oper: OpCode = opNop): N
 # Methods
 #=======================================
 
-proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0, processingArrow: static bool = false): int =
+proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0, asDictionary: bool = false, processingArrow: static bool = false): int =
     var i: int = start
     var nLen: int = blok.a.len
 
