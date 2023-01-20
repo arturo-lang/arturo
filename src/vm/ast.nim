@@ -475,15 +475,12 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
 
             rewindCallBranches(optimize=true)
 
-    proc addTerminals(target: var Node, nodes: openArray[Node]) =
+    proc addTerminals(target: var Node, nodes: openArray[Node], dontOptimize:static bool =false) =
         with target:
             rewindCallBranches()
-
             addPotentialInfixCall()
-
             addChildren(nodes)
-
-            rewindCallBranches(optimize=true)
+            rewindCallBranches(optimize=not dontOptimize)
 
     proc addPath(target: var Node, val: Value, isLabel: static bool=false) =
         var pathCallV: Value = nil
@@ -620,11 +617,10 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
             when processingArrow:
                 ArrowBlock[^1].add(newLiteral(argblock[0].s))
                 ArrowBlock[^1].add(newBlock(subblock))
-
             target.addTerminals([
                 newConstant(newLiteral(argblock[0].s)),
                 newConstant(newBlock(subblock))
-            ])
+            ], dontOptimize=true)
         else:
             when processingArrow:
                 ArrowBlock[^1].add(newBlock(argblock))
@@ -801,4 +797,4 @@ proc generateAst*(parsed: Value, asDictionary=false): Node =
 
     discard result.processBlock(parsed, asDictionary=asDictionary)
 
-    #echo dumpNode(result)
+    echo dumpNode(result)
