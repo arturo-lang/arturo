@@ -230,6 +230,8 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
     when processingArrow:
         ArrowBlock.add(@[])
 
+    proc addCall(target: var Node, name: string, arity: int8 = -1, fun: Value = nil)
+
     #------------------------
     # Optimization
     #------------------------
@@ -351,7 +353,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
     proc optimizeStores(target: var Node) {.enforceNoRaises.} =
         var child = target.children[0]
 
-        if child.kind in CallNode and child.op == opFunc:
+        if child.op == opFunc:
             TmpArities[target.value.s] = int8(child.children[0].value.a.countIt(it.kind != Type))
         else:
             TmpArities.del(target.value.s)
@@ -394,6 +396,19 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
     # AST Generation
     #------------------------
 
+    template addPotentialInfixCall(target: var Node): untyped =
+        if i < nLen - 1:
+            let nextNode {.cursor.} = blok.a[i+1]
+            if nextNode.kind == Symbol and nextNode.m notin {arrowright, thickarrowright, pipe}:
+                if (let aliased = Aliases.getOrDefault(nextNode.m, NoAliasBinding); aliased != NoAliasBinding):
+                    var symfunc {.cursor.} = GetSym(aliased.name.s)
+
+                    if symfunc.kind==Function and aliased.precedence==InfixPrecedence:
+                        when processingArrow:
+                            ArrowBlock[^1].add(nextNode)
+                        i += 1
+                        target.addCall(aliased.name.s, fun=symfunc)
+
     proc addCall(target: var Node, name: string, arity: int8 = -1, fun: Value = nil) =
         var callType: OtherCall..SpecialCall = OtherCall
 
@@ -424,13 +439,16 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
                 newWord(name)
             else:
                 nil
-
-        target.addChild(newCallNode(callType, ar, v, op))
         
         if ar != 0:
-            target.rollThrough()
+            with target:
+                addChild(newCallNode(callType, ar, v, op))
+                rollThrough()
         else:
-            target.rewindCallBranches()
+            with target:
+                addPotentialInfixCall()
+                addChild(newCallNode(callType, ar, v, op))
+                rewindCallBranches(optimize=true)
 
     func addStore(target: var Node, val: Value) {.enforceNoRaises.} =
         target.addChild(newCallNode(VariableStore, 1, val))
@@ -450,19 +468,6 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
 
     proc addNewline(target: var Node) =
         target.addChild(Node(kind: NewlineNode, line: currentLine))
-
-    template addPotentialInfixCall(target: var Node): untyped =
-        if i < nLen - 1:
-            let nextNode {.cursor.} = blok.a[i+1]
-            if nextNode.kind == Symbol and nextNode.m notin {arrowright, thickarrowright, pipe}:
-                if (let aliased = Aliases.getOrDefault(nextNode.m, NoAliasBinding); aliased != NoAliasBinding):
-                    var symfunc {.cursor.} = GetSym(aliased.name.s)
-
-                    if symfunc.kind==Function and aliased.precedence==InfixPrecedence:
-                        when processingArrow:
-                            ArrowBlock[^1].add(nextNode)
-                        i += 1
-                        target.addCall(aliased.name.s, fun=symfunc)
 
     proc addTerminal(target: var Node, node: Node) =
         with target:
