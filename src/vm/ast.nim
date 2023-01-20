@@ -596,18 +596,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
         # so let's get them ready
         var argblock, subblock: ValueArray
 
-        # if it's a word
-        if subnode.kind==Word:
-            subblock = @[subnode]
-            # check if it's a function
-            if (let funcArity = TmpArities.getOrDefault(subnode.s, -1); funcArity != -1):
-                # automatically "push" all its required arguments
-                for j in 0..(funcArity-1):
-                    let arg = newWord("_" & $(j))
-                    argblock.add(arg)
-                    subblock.add(arg)
-
-        elif subnode.kind==Block:
+        if subnode.kind==Block:
             # replace ampersand symbols, 
             # sequentially, with arguments
             var idx = 0
@@ -620,6 +609,16 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
                 else:
                     subblock.add(subnode.a[idx])
                 idx += 1
+        else:
+            subblock = @[subnode]
+            if subnode.kind==Word:
+                # check if it's a function
+                if (let funcArity = TmpArities.getOrDefault(subnode.s, -1); funcArity != -1):
+                    # automatically "push" all its required arguments
+                    for j in 0..(funcArity-1):
+                        let arg = newWord("_" & $(j))
+                        argblock.add(arg)
+                        subblock.add(arg)
 
         if argblock.len == 1:
             when processingArrow:
@@ -806,7 +805,7 @@ proc generateAst*(parsed: Value, asDictionary=false): Node =
 
     discard result.processBlock(parsed, asDictionary=asDictionary)
 
-    #echo dumpNode(result)
+    echo dumpNode(result)
 
     # echo "TRAVERSING"
 
