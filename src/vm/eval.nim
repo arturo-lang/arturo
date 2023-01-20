@@ -206,7 +206,7 @@ proc doEval*(root: Value, isDictionary=false, useStored: static bool = true): Tr
             if (let storedTranslation = StoredTranslations.getOrDefault(vhash, nil); not storedTranslation.isNil):
                 return storedTranslation
 
-    result = evaluateBlock(generateAst(root), isDictionary=isDictionary)
+    result = evaluateBlock(generateAst(root, asDictionary=isDictionary), isDictionary=isDictionary)
     result.instructions.add(byte(opEnd))
 
     #dump(newBytecode(result))
