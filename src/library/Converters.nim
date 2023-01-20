@@ -940,7 +940,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "create function with given arguments and body",
         args        = {
-            "arguments" : {Block},
+            "arguments" : {Literal, Block},
             "body"      : {Block}
         },
         attrs       = {
@@ -1045,6 +1045,10 @@ proc defineSymbols*() =
             var memoize = (hadAttr("memoize"))
             var inline = (hadAttr("inline"))
 
+            let argBlock {.cursor.} =
+                if x.kind == Block: x.a
+                else: @[x]
+
             # TODO(Converters\function) Verify safety of implicit `.inline`s
             #  labels: library, benchmark, open discussion
             if not inline:
@@ -1054,22 +1058,22 @@ proc defineSymbols*() =
             var ret: Value
             var argTypes = initOrderedTable[string,ValueSpec]()
 
-            if x.a.countIt(it.kind == Type) > 0:
+            if argBlock.countIt(it.kind == Type) > 0:
                 var args: seq[string]
                 var body: ValueArray
                 
                 var i = 0
-                while i < x.a.len:
-                    let varName = x.a[i]
-                    args.add(x.a[i].s)
-                    argTypes[x.a[i].s] = {}
-                    if i+1 < x.a.len and x.a[i+1].kind == Type:
+                while i < argBlock.len:
+                    let varName = argBlock[i]
+                    args.add(argBlock[i].s)
+                    argTypes[argBlock[i].s] = {}
+                    if i+1 < argBlock.len and argBlock[i+1].kind == Type:
                         var typeArr: ValueArray
 
-                        while i+1 < x.a.len and x.a[i+1].kind == Type:
+                        while i+1 < argBlock.len and argBlock[i+1].kind == Type:
                             typeArr.add(newWord("is?"))
-                            typeArr.add(x.a[i+1])
-                            argTypes[varName.s].incl(x.a[i+1].t)
+                            typeArr.add(argBlock[i+1])
+                            argTypes[varName.s].incl(argBlock[i+1].t)
                             typeArr.add(varName)
                             i += 1
 
@@ -1091,12 +1095,12 @@ proc defineSymbols*() =
 
                 ret = newFunction(args,newBlock(mainBody),imports,exports,memoize,inline)
             else:
-                if x.a.len > 0:
-                    for arg in x.a:
+                if argBlock.len > 0:
+                    for arg in argBlock:
                         argTypes[arg.s] = {Any}
                 else:
                     argTypes[""] = {Nothing}
-                ret = newFunction(x.a.map((w)=>w.s),y,imports,exports,memoize,inline)
+                ret = newFunction(argBlock.map((w)=>w.s),y,imports,exports,memoize,inline)
 
             ret.info = ValueInfo(kind: Function)
             
