@@ -555,12 +555,22 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
                     i += 1
                     target.rewindCallBranches()
 
-                    var lastChild = target.children[^1]
+                    var toSpot = target.children.len - 1
+
+                    var lastChild: Node = target.children[toSpot]
+                    while lastChild.kind==NewlineNode:
+                        toSpot -= 1
+                        lastChild = target.children[toSpot]
+
                     if lastChild.kind == VariableStore:
-                        lastChild = lastChild.children[^1]
+                        toSpot = lastChild.children.len - 1
+                        lastChild = lastChild.children[toSpot]
+                        while lastChild.kind == NewlineNode:
+                            toSpot -= 1
+                            lastChild = lastChild.children[toSpot]
                         target = lastChild.parent   
                     
-                    target.children.delete(target.children.len-1)
+                    target.children.delete(toSpot)
 
                     target.addCall(nextNode.s, funcArity)
                     target.addChild(lastChild)
