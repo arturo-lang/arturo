@@ -21,7 +21,7 @@
 # - [x] make AttributeLabel's work
 # - [x] make Path's work
 # - [x] make PathLabel's work
-# - [ ] make Newline values work
+# - [x] make Newline values work
 # - [x] create new opCode for append
 # - [x] clean up opCode's
 # - [x] attach opCode's to built-in function (for faster lookups)
