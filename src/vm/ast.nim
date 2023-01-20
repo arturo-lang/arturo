@@ -475,12 +475,16 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
 
             rewindCallBranches(optimize=true)
 
-    proc addTerminals(target: var Node, nodes: openArray[Node], dontOptimize:static bool =false) =
+    proc addTerminals(target: var Node, nodes: openArray[Node], dontOptimize: bool =false) =
         with target:
             rewindCallBranches()
             addPotentialInfixCall()
             addChildren(nodes)
-            rewindCallBranches(optimize=not dontOptimize)
+        
+        if dontOptimize:
+            target.rewindCallBranches(optimize=false)
+        else:
+            target.rewindCallBranches(optimize=true)
 
     proc addPath(target: var Node, val: Value, isLabel: static bool=false) =
         var pathCallV: Value = nil
