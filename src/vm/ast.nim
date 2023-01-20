@@ -34,8 +34,8 @@
 # Libraries
 #=======================================
 
-import hashes, strutils, sugar
-import tables, unicode, std/with
+import hashes, sequtils, strutils
+import sugar, tables, unicode, std/with
 
 import vm/[globals, values/value, values/comparison, values/types]
 import vm/values/printable
@@ -348,6 +348,14 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
             if right.kind == ConstantValue and right.value.kind == String:
                 target.replaceNode(newConstant(newString(left.value.s & right.value.s)))
 
+    proc optimizeStores(target: var Node) {.enforceNoRaises.} =
+        var child = target.children[0]
+
+        if child.kind in CallNode and child.op == opFunc:
+            TmpArities[target.value.s] = int8(child.children[0].value.a.countIt(it.kind != Type))
+        else:
+            TmpArities.del(target.value.s)
+
     proc optimizeFunction(target: var Node) {.enforceNoRaises.} =
         if target.parent.kind == VariableStore:
             TmpArities[target.parent.value.s] = int8(target.children[0].value.a.len)
@@ -359,21 +367,23 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
     template rewindCallBranches(target: var Node, optimize: bool = false): untyped =
         while target.kind in CallNode and target.params == target.arity:
             when optimize:
-                case target.op:
-                    of opAdd        : target.optimizeAdd()
-                    of opSub        : target.optimizeSub()
-                    #of opMul        : target.optimizeArithmeticOp(`*`)
-                    of opDiv        : target.optimizeArithmeticOp(`/`)
-                    of opFDiv       : target.optimizeArithmeticOp(`//`)
-                    of opMod        : target.optimizeArithmeticOp(`%`)
-                    of opPow        : target.optimizeArithmeticOp(`^`)
-                    of opUnless,
-                       opUnlessE    : target.optimizeUnless()
-                    of opAppend     : target.optimizeAppend()
-                    of opFunc       : target.optimizeFunction()
-                        
-                    else:
-                        discard
+                if target.kind == VariableStore:
+                    target.optimizeStores()
+                else:
+                    case target.op:
+                        of opAdd        : target.optimizeAdd()
+                        of opSub        : target.optimizeSub()
+                        #of opMul        : target.optimizeArithmeticOp(`*`)
+                        of opDiv        : target.optimizeArithmeticOp(`/`)
+                        of opFDiv       : target.optimizeArithmeticOp(`//`)
+                        of opMod        : target.optimizeArithmeticOp(`%`)
+                        of opPow        : target.optimizeArithmeticOp(`^`)
+                        of opUnless,
+                           opUnlessE    : target.optimizeUnless()
+                        of opAppend     : target.optimizeAppend()
+                            
+                        else:
+                            discard
 
             target = target.parent
 
