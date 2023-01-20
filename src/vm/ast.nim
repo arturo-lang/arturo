@@ -369,20 +369,23 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
                 if target.kind == VariableStore:
                     target.optimizeStores()
                 else:
-                    case target.op:
-                        of opAdd        : target.optimizeAdd()
-                        of opSub        : target.optimizeSub()
-                        #of opMul        : target.optimizeArithmeticOp(`*`)
-                        of opDiv        : target.optimizeArithmeticOp(`/`)
-                        of opFDiv       : target.optimizeArithmeticOp(`//`)
-                        of opMod        : target.optimizeArithmeticOp(`%`)
-                        of opPow        : target.optimizeArithmeticOp(`^`)
-                        of opUnless,
-                           opUnlessE    : target.optimizeUnless()
-                        of opAppend     : target.optimizeAppend()
-                            
-                        else:
-                            discard
+                    try:
+                        case target.op:
+                            of opAdd        : target.optimizeAdd()
+                            of opSub        : target.optimizeSub()
+                            #of opMul        : target.optimizeArithmeticOp(`*`)
+                            of opDiv        : target.optimizeArithmeticOp(`/`)
+                            of opFDiv       : target.optimizeArithmeticOp(`//`)
+                            of opMod        : target.optimizeArithmeticOp(`%`)
+                            of opPow        : target.optimizeArithmeticOp(`^`)
+                            of opUnless,
+                               opUnlessE    : target.optimizeUnless()
+                            of opAppend     : target.optimizeAppend()
+                                
+                            else:
+                                discard
+                    except:
+                        discard
 
             target = target.parent
 
