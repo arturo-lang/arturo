@@ -245,13 +245,13 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
             if right.kind == ConstantValue and right.value.kind in {Integer, Floating}:
                 target.replaceNode(newConstant(left.value + right.value))
             # Convert 1 + X -> inc X
-            elif left.value == I1:
+            elif right.kind in TerminalNode and left.value == I1:
                 target.op = opInc
                 target.arity = 1
                 target.setOnlyChild(right)
         
         # Convert X + 1 -> inc X
-        elif right.kind == ConstantValue and right.value == I1:
+        elif right.kind in TerminalNode and right.value == I1:
             target.op = opInc
             target.arity = 1
             target.setOnlyChild(left)
@@ -299,7 +299,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
         if left.kind == ConstantValue and left.value.kind in {Integer,Floating} and right.kind == ConstantValue and right.value.kind in {Integer,Floating}:
             # Constant folding
             target.replaceNode(newConstant(left.value - right.value))
-        elif right.kind == ConstantValue and right.value == I1:
+        elif left.kind in TerminalNode and right.value == I1:
             # Convert X - 1 -> dec X
             target.op = opDec
             target.arity = 1
@@ -309,7 +309,8 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
         var left = target.children[0]
         var right = target.children[1]
 
-        if left.kind == ConstantValue and left.value.kind in {Integer,Floating} and right.kind == ConstantValue and right.value.kind in {Integer,Floating}:
+        if left.kind == ConstantValue and left.value.kind in {Integer,Floating} and 
+           right.kind == ConstantValue and right.value.kind in {Integer,Floating}:
             target.replaceNode(newConstant(op(left.value,right.value)))
 
     proc optimizeUnless(target: var Node) {.enforceNoRaises.} =
