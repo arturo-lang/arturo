@@ -648,6 +648,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
                     let arg = newWord("_" & $(fnd))
                     argblock.add(arg)
                     subblock.add(arg)
+                    fnd += 1
                 else:
                     subblock.add(subnode.a[idx])
                 idx += 1
