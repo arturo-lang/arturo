@@ -29,7 +29,8 @@
 # - [x] make labels store new functions in TmpArities
 # - [x] make labels unstore overwritten functions in TmpArities
 # - [ ] make if/if?/else/while/switch work
-# - [ ] correctly process to :string/:integer
+# - [x] correctly process to :string/:integer
+# - [ ] make sure all this left/right (when checking for optimization) are not Newline's
 
 #=======================================
 # Libraries
@@ -378,8 +379,6 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = No
     proc optimizeTo(target: var Node) {.enforceNoRaises.} =
         var left = target.children[0]
 
-        echo dumpNode(target)
-
         if left.kind == ConstantValue and left.value.kind==Type:
             if left.value.t == Integer:
                 # convert `to :integer` -> opToI
@@ -391,8 +390,6 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = No
                 target.op = opToS
                 target.arity = 1
                 target.children.delete(0)
-        
-        echo dumpNode(target)
 
     proc optimizeStores(target: var Node) {.enforceNoRaises.} =
         var child = target.children[0]
