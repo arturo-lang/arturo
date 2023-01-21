@@ -22,7 +22,6 @@ when not defined(NOGMP):
 
 import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vversion]
 import vm/values/value
-import vm/values/clean
 
 #=======================================
 # Methods
@@ -117,13 +116,11 @@ proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
             of Bytecode: return x.trans == y.trans
             of Inline,
                Block:
-                ensureCleaned(x)
-                ensureCleaned(y)
 
-                if cleanX.len != cleanY.len: return false
+                if x.a.len != y.a.len: return false
 
-                for i,child in cleanX:
-                    if not (child==cleanY[i]): return false
+                for i,child in x.a:
+                    if not (child==y.a[i]): return false
 
                 return true
 
@@ -244,9 +241,7 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
             of Symbol: return false
             of Inline,
                Block:
-                ensureCleaned(x)
-                ensureCleaned(y)
-                return cleanX.len < cleanY.len
+                return x.a.len < y.a.len
             of Dictionary:
                 return false
             of Object:

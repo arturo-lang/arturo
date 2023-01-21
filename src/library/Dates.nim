@@ -35,6 +35,7 @@ proc defineSymbols*() =
 
     builtin "after",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get date after given one using interval",
         args        = {
@@ -94,6 +95,7 @@ proc defineSymbols*() =
 
     builtin "before",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get date before given one using interval",
         args        = {
@@ -156,6 +158,7 @@ proc defineSymbols*() =
 
     builtin "friday?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if given date is a Friday",
         args        = {
@@ -171,6 +174,7 @@ proc defineSymbols*() =
 
     builtin "future?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if given date is in the future",
         args        = {
@@ -189,6 +193,7 @@ proc defineSymbols*() =
 
     builtin "leap?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if given year is a leap year",
         args        = {
@@ -210,6 +215,7 @@ proc defineSymbols*() =
 
     builtin "monday?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if given date is a Monday",
         args        = {
@@ -225,6 +231,7 @@ proc defineSymbols*() =
 
     builtin "now",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get date/time now",
         args        = NoArgs,
@@ -257,6 +264,7 @@ proc defineSymbols*() =
     
     builtin "past?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if given date is in the past",
         args        = {
@@ -278,6 +286,7 @@ proc defineSymbols*() =
 
     builtin "saturday?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if given date is a Saturday",
         args        = {
@@ -292,7 +301,8 @@ proc defineSymbols*() =
             push(newLogical(x.eobj.weekday == dSat))
 
     builtin "sunday?",
-        alias       = unaliased, 
+        alias       = unaliased,
+        op          = opNop, 
         rule        = PrefixPrecedence,
         description = "check if given date is a Sunday",
         args        = {
@@ -308,6 +318,7 @@ proc defineSymbols*() =
 
     builtin "thursday?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if given date is a Thursday",
         args        = {
@@ -322,7 +333,8 @@ proc defineSymbols*() =
             push(newLogical(x.eobj.weekday == dThu))
 
     builtin "today?",
-        alias       = unaliased, 
+        alias       = unaliased,
+        op          = opNop, 
         rule        = PrefixPrecedence,
         description = "check if given date is today",
         args        = {
@@ -343,6 +355,7 @@ proc defineSymbols*() =
 
     builtin "tuesday?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if given date is a Tuesday",
         args        = {
@@ -358,6 +371,7 @@ proc defineSymbols*() =
 
     builtin "wednesday?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if given date is a Wednesday",
         args        = {

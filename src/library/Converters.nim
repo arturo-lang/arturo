@@ -315,22 +315,18 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
             of Inline:
                 case tp:
                     of Block:
-                        ensureCleaned(y)
-                        return newBlock(cleanY)
+                        return newBlock(y.a)
                     else:
                         throwCannotConvert()
 
             of Block:
                 case tp:
                     of Complex:
-                        ensureCleaned(y)
-                        return newComplex(cleanY[0], cleanY[1])
+                        return newComplex(y.a[0], y.a[1])
                     of Rational:
-                        ensureCleaned(y)
-                        return newRational(cleanY[0], cleanY[1])
+                        return newRational(y.a[0], y.a[1])
                     of Inline:
-                        ensureCleaned(y)
-                        return newInline(cleanY)
+                        return newInline(y.a)
                     of Dictionary:
                         let stop = SP
                         execUnscoped(y)
@@ -360,34 +356,31 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                             throwCannotConvert()
 
                     of Quantity:
-                        ensureCleaned(y)
-                        return newQuantity(cleanY[0], parseQuantitySpec(cleanY[1].s))
+                        return newQuantity(y.a[0], parseQuantitySpec(y.a[1].s))
 
                     of Color:
-                        ensureCleaned(y)
-                        if cleanY.len < 3 or cleanY.len > 4:
+                        if y.a.len < 3 or y.a.len > 4:
                             echo "wrong number of attributes"
                         else:
                             if (hadAttr("hsl")):
-                                if cleanY.len==3:
-                                    return newColor(HSLtoRGB((cleanY[0].i, cleanY[1].f, cleanY[2].f, 1.0)))
-                                elif cleanY.len==4:
-                                    return newColor(HSLtoRGB((cleanY[0].i, cleanY[1].f, cleanY[2].f, cleanY[3].f)))
+                                if y.a.len==3:
+                                    return newColor(HSLtoRGB((y.a[0].i, y.a[1].f, y.a[2].f, 1.0)))
+                                elif y.a.len==4:
+                                    return newColor(HSLtoRGB((y.a[0].i, y.a[1].f, y.a[2].f, y.a[3].f)))
                             elif (hadAttr("hsv")):
-                                if cleanY.len==3:
-                                    return newColor(HSVtoRGB((cleanY[0].i, cleanY[1].f, cleanY[2].f, 1.0)))
-                                elif cleanY.len==4:
-                                    return newColor(HSVtoRGB((cleanY[0].i, cleanY[1].f, cleanY[2].f, cleanY[3].f)))
+                                if y.a.len==3:
+                                    return newColor(HSVtoRGB((y.a[0].i, y.a[1].f, y.a[2].f, 1.0)))
+                                elif y.a.len==4:
+                                    return newColor(HSVtoRGB((y.a[0].i, y.a[1].f, y.a[2].f, y.a[3].f)))
                             else:
-                                if cleanY.len==3:
-                                    return newColor((cleanY[0].i, cleanY[1].i, cleanY[2].i, 255))
-                                elif cleanY.len==4:
-                                    return newColor((cleanY[0].i, cleanY[1].i, cleanY[2].i, cleanY[3].i))
+                                if y.a.len==3:
+                                    return newColor((y.a[0].i, y.a[1].i, y.a[2].i, 255))
+                                elif y.a.len==4:
+                                    return newColor((y.a[0].i, y.a[1].i, y.a[2].i, y.a[3].i))
 
                     of Binary:
                         var res: VBinary
-                        ensureCleaned(y)
-                        for item in cleanY:
+                        for item in y.a:
                             if item.kind==Integer:
                                 res &= numberToBinary(item.i)
                             else:
@@ -530,7 +523,6 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
             of Function,
                Database,
                Socket,
-               Newline,
                Nothing,
                Any,
                Path,
@@ -550,6 +542,7 @@ proc defineSymbols*() =
 
     builtin "array",
         alias       = at, 
+        op          = opArray,
         rule        = PrefixPrecedence,
         description = "create array from given block, by reducing/calculating all internal values",
         args        = {
@@ -634,6 +627,7 @@ proc defineSymbols*() =
     #  labels: library, bug
     builtin "as",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "format given value as implied type",
         args        = {
@@ -681,8 +675,7 @@ proc defineSymbols*() =
             elif (hadAttr("octal")):
                 push(newString(fmt"{x.i:o}"))
             elif (hadAttr("agnostic")):
-                ensureCleaned(x)
-                let res = cleanX.map(proc(v:Value):Value =
+                let res = x.a.map(proc(v:Value):Value =
                     if v.kind == Word and not SymExists(v.s): newLiteral(v.s)
                     else: v
                 )
@@ -708,6 +701,7 @@ proc defineSymbols*() =
     #  labels: library, enhancement
     builtin "define",
         alias       = dollar, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "define new type with given prototype",
         args        = {
@@ -771,7 +765,7 @@ proc defineSymbols*() =
             ; NAME: Jane, SURNAME: Doe, AGE: 33
         """:
             #=======================================================
-            x.ts.fields = cleanedBlock(y.a)
+            x.ts.fields = y.a
 
             if checkAttr("as"):
                 x.ts.inherits = aAs.ts
@@ -820,6 +814,7 @@ proc defineSymbols*() =
 
     builtin "dictionary",
         alias       = sharp, 
+        op          = opDict,
         rule        = PrefixPrecedence,
         description = "create dictionary from given block or file, by getting all internal symbols",
         args        = {
@@ -863,9 +858,8 @@ proc defineSymbols*() =
                 if (hadAttr("raw")):
                     dict = initOrderedTable[string,Value]()
                     var idx = 0
-                    ensureCleaned(x)
-                    while idx < cleanX.len:
-                        dict[cleanX[idx].s] = cleanX[idx+1]
+                    while idx < x.a.len:
+                        dict[x.a[idx].s] = x.a[idx+1]
                         idx += 2
                 else:
                     dict = execDictionary(x)
@@ -898,6 +892,7 @@ proc defineSymbols*() =
     #  labels: library, enhancement, open discussion
     builtin "from",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get value from string, using given representation",
         args        = {
@@ -941,10 +936,11 @@ proc defineSymbols*() =
 
     builtin "function",
         alias       = dollar, 
+        op          = opFunc,
         rule        = PrefixPrecedence,
         description = "create function with given arguments and body",
         args        = {
-            "arguments" : {Block},
+            "arguments" : {Literal, Block},
             "body"      : {Block}
         },
         attrs       = {
@@ -1049,33 +1045,35 @@ proc defineSymbols*() =
             var memoize = (hadAttr("memoize"))
             var inline = (hadAttr("inline"))
 
+            let argBlock {.cursor.} =
+                if x.kind == Block: x.a
+                else: @[x]
+
             # TODO(Converters\function) Verify safety of implicit `.inline`s
             #  labels: library, benchmark, open discussion
             if not inline:
                 if canBeInlined(y):
                     inline = true
-            
-            cleanBlock(x)
 
             var ret: Value
             var argTypes = initOrderedTable[string,ValueSpec]()
 
-            if x.a.countIt(it.kind == Type) > 0:
+            if argBlock.countIt(it.kind == Type) > 0:
                 var args: seq[string]
                 var body: ValueArray
                 
                 var i = 0
-                while i < x.a.len:
-                    let varName = x.a[i]
-                    args.add(x.a[i].s)
-                    argTypes[x.a[i].s] = {}
-                    if i+1 < x.a.len and x.a[i+1].kind == Type:
+                while i < argBlock.len:
+                    let varName = argBlock[i]
+                    args.add(argBlock[i].s)
+                    argTypes[argBlock[i].s] = {}
+                    if i+1 < argBlock.len and argBlock[i+1].kind == Type:
                         var typeArr: ValueArray
 
-                        while i+1 < x.a.len and x.a[i+1].kind == Type:
+                        while i+1 < argBlock.len and argBlock[i+1].kind == Type:
                             typeArr.add(newWord("is?"))
-                            typeArr.add(x.a[i+1])
-                            argTypes[varName.s].incl(x.a[i+1].t)
+                            typeArr.add(argBlock[i+1])
+                            argTypes[varName.s].incl(argBlock[i+1].t)
                             typeArr.add(varName)
                             i += 1
 
@@ -1097,12 +1095,12 @@ proc defineSymbols*() =
 
                 ret = newFunction(args,newBlock(mainBody),imports,exports,memoize,inline)
             else:
-                if x.a.len > 0:
-                    for arg in x.a:
+                if argBlock.len > 0:
+                    for arg in argBlock:
                         argTypes[arg.s] = {Any}
                 else:
                     argTypes[""] = {Nothing}
-                ret = newFunction(x.a.map((w)=>w.s),y,imports,exports,memoize,inline)
+                ret = newFunction(argBlock.map((w)=>w.s),y,imports,exports,memoize,inline)
 
             ret.info = ValueInfo(kind: Function)
             
@@ -1152,6 +1150,7 @@ proc defineSymbols*() =
 
     builtin "in",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "convert quantity to given unit",
         args        = {
@@ -1176,6 +1175,7 @@ proc defineSymbols*() =
                 
     builtin "range",
         alias       = ellipsis, 
+        op          = opRange,
         rule        = InfixPrecedence,
         description = "get list of values in given range (inclusive)",
         args        = {
@@ -1229,6 +1229,7 @@ proc defineSymbols*() =
     when not defined(WEB):
         builtin "store",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "create or load a persistent store on disk",
             args        = {
@@ -1326,6 +1327,7 @@ proc defineSymbols*() =
 
     builtin "to",
         alias       = unaliased, 
+        op          = opTo,
         rule        = PrefixPrecedence,
         description = "convert value to given type",
         args        = {
@@ -1403,26 +1405,25 @@ proc defineSymbols*() =
                 push convertedValueToType(x, y, tp, popAttr("format"))
             else:
                 var ret: ValueArray
-                ensureCleaned(x)
-                let tp = cleanX[0].t
+                let tp = x.a[0].t
                     
                 if y.kind==String:
                     ret = toSeq(runes(y.s)).map((c) => newChar(c))
                 else:
                     let aFormat = popAttr("format")
                     if y.kind == Block:
-                        ensureCleaned(y)
-                        for item in cleanY:
-                            ret.add(convertedValueToType(cleanX[0], item, tp, aFormat))
+                        for item in y.a:
+                            ret.add(convertedValueToType(x.a[0], item, tp, aFormat))
                     else:
                         for item in items(y.rng):
-                            ret.add(convertedValueToType(cleanX[0], item, tp, aFormat))
+                            ret.add(convertedValueToType(x.a[0], item, tp, aFormat))
 
                 push newBlock(ret)
         
 
     builtin "with",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "create closure-style block by embedding given words",
         args        = {
@@ -1444,13 +1445,12 @@ proc defineSymbols*() =
             ; the multiple of 10 is 20 
         """:
             #=======================================================
-            var blk: ValueArray = cleanedBlock(y.a)
+            var blk: ValueArray = y.a
             if x.kind == Literal:
                 blk.insert(FetchSym(x.s))
                 blk.insert(newLabel(x.s))
             else:
-                ensureCleaned(x)
-                for item in cleanX:
+                for item in x.a:
                     blk.insert(FetchSym(item.s))
                     blk.insert(newLabel(item.s))
 
