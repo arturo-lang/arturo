@@ -24,7 +24,7 @@
 # Libraries
 #=======================================
 
-import lexbase, os, sequtils, streams
+import lexbase, os, streams
 import strutils, tables, unicode
 
 import vm/[errors, profiler, values/value]
@@ -94,22 +94,18 @@ proc parseDataBlock*(blk: Value): Value
 template Empty(s: var string): bool =
     s.len == 0
 
+func addAnnotatedTokenToBlock(blok: var Value, token: Value, p: var Parser) {.enforceNoRaises.} =
+    token.ln = uint32(p.lineNumber)
+    blok.a.add(token)
+
 template AddToken(token: untyped): untyped =
-    topBlock.a.add(token)
+    topBlock.addAnnotatedTokenToBlock(token, p)
 
 template LastToken(): untyped = 
     topBlock.a[^1]
 
 template ReplaceLastToken(with: untyped): untyped =
     topBlock.a[^1] = with
-
-template stripTrailingNewlines(): untyped =
-    if topBlock.a[^1].kind == Newline:
-        let lastN = topBlock.a.len-1
-        var firstN = lastN
-        while firstN-1 >= 0 and topBlock.a[firstN-1].kind == Newline:
-            firstN -= 1
-        topBlock.a.delete(firstN..lastN)
 
 #=======================================
 # Helpers
@@ -151,14 +147,14 @@ template skip(p: var Parser, scriptStr: var string) =
                             break
                         of CR:
                             pos = lexbase.handleCR(p, pos)
-                            when not defined(NOERRORLINES):
-                                AddToken newNewline(p.lineNumber)
+                            # when not defined(NOERRORLINES):
+                            #     AddToken newNewline(p.lineNumber)
                             scriptStr &= "\n"
                             break
                         of LF:
                             pos = lexbase.handleLF(p, pos)
-                            when not defined(NOERRORLINES):
-                                AddToken newNewline(p.lineNumber)
+                            # when not defined(NOERRORLINES):
+                            #     AddToken newNewline(p.lineNumber)
                             scriptStr &= "\n"
                             break
                         else:
@@ -170,13 +166,13 @@ template skip(p: var Parser, scriptStr: var string) =
                             break
                         of CR:
                             pos = lexbase.handleCR(p, pos)
-                            when not defined(NOERRORLINES):
-                                AddToken newNewline(p.lineNumber)
+                            # when not defined(NOERRORLINES):
+                            #     AddToken newNewline(p.lineNumber)
                             break
                         of LF:
                             pos = lexbase.handleLF(p, pos)
-                            when not defined(NOERRORLINES):
-                                AddToken newNewline(p.lineNumber)
+                            # when not defined(NOERRORLINES):
+                            #     AddToken newNewline(p.lineNumber)
                             break
                         else:
                             inc(pos)
@@ -184,12 +180,12 @@ template skip(p: var Parser, scriptStr: var string) =
             inc(pos)
         of CR:
             pos = lexbase.handleCR(p, pos)
-            when not defined(NOERRORLINES):
-                AddToken newNewline(p.lineNumber)
+            # when not defined(NOERRORLINES):
+            #     AddToken newNewline(p.lineNumber)
         of LF:
             pos = lexbase.handleLF(p, pos)
-            when not defined(NOERRORLINES):
-                AddToken newNewline(p.lineNumber)
+            # when not defined(NOERRORLINES):
+            #     AddToken newNewline(p.lineNumber)
         of '#':
             if p.buf[pos+1]=='!':
                 inc(pos)
@@ -575,7 +571,6 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
                 inc(pos)
                 p.symbol = triangleright
             else: 
-                stripTrailingNewlines()
                 p.symbol = pipe
         of '/'  : 
             if p.buf[pos+1]=='/': 
@@ -802,8 +797,8 @@ template parseExponent(p: var Parser) =
 proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inline.} =
     var topBlock: Value
     var scriptStr: string
-    if isDeferred: topBlock = newBlock(dirty=true)
-    else: topBlock = newInline(dirty=true)
+    if isDeferred: topBlock = newBlock()
+    else: topBlock = newInline()
     let initial = p.bufpos
     let initialLine = p.lineNumber
     while true:
@@ -1026,7 +1021,7 @@ proc parseAsDictionary(blk: Value, start: int): Value =
                 let lbl = blk.a[i].s
                 i += 1
                 var values: ValueArray
-                while i < blk.a.len and blk.a[i].kind!=Newline and blk.a[i].kind!=Label:
+                while i < blk.a.len and blk.a[i].kind!=Label:
                     case blk.a[i].kind:
                         of Block:
                             values.add(parseDataBlock(blk.a[i]))
@@ -1057,15 +1052,15 @@ proc parseAsBlock(blk: Value, start: int): Value =
                 values.add(parseDataBlock(blk.a[i]))
             of String, Literal, Word, Label:
                 values.add(newString(blk.a[i].s))
-            of Newline:
-                if values.len > 1:
-                    result.a.add(newBlock(values))
-                    values.setLen(0)
-                elif values.len == 1:
-                    result.a.add(values[0])
-                    values.setLen(0)
-                else:
-                    discard
+            # of Newline:
+            #     if values.len > 1:
+            #         result.a.add(newBlock(values))
+            #         values.setLen(0)
+            #     elif values.len == 1:
+            #         result.a.add(values[0])
+            #         values.setLen(0)
+            #     else:
+            #         discard
             else:
                 values.add(blk.a[i])
         
@@ -1088,8 +1083,8 @@ proc parseDataBlock*(blk: Value): Value =
         return VNULL
 
     var i = 0
-    while i < blk.a.len and blk.a[i].kind==Newline:
-        i += 1
+    # while i < blk.a.len and blk.a[i].kind==Newline:
+    #     i += 1
 
     if i==blk.a.len:
         return VNULL
