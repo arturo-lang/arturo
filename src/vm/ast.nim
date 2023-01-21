@@ -170,19 +170,6 @@ iterator traverse*(node: Node): Node =
         var subnode = postStack.pop()
         yield subnode
 
-iterator traverseLRN*(node: Node): Node =
-    # post-order traversal (LRN)
-    var preStack = @[node]
-    var postStack: seq[Node]
-
-    while preStack.len > 0:
-        var subnode = preStack.pop() 
-        postStack.add(subnode)
-        preStack.add(subnode.children)
-    while postStack.len > 0:
-        var subnode = postStack.pop()
-        yield subnode
-
 #------------------------
 # Misc
 #------------------------
