@@ -215,6 +215,20 @@ template newCallNode(kn: NodeKind, ar: int8, va: Value, oper: OpCode = opNop): N
         value: va
     )
 
+func copyNode(node: Node): Node =
+    result = Node(kind: node.kind)
+    case node.kind:
+        of NewlineNode:
+            result.line = node.line
+        of ConstantValue, VariableLoad:
+            result.value = node.value
+        else:
+            result.op = node.op
+            result.arity = node.arity
+            result.params = node.params
+            result.value = node.value
+            result.addChildren(node.children)        
+
 #=======================================
 # Methods
 #=======================================
@@ -409,7 +423,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
                         i += 1
                         target.addCall(aliased.name.s, fun=symfunc)
 
-    proc addCall(target: var Node, name: string, arity: int8 = -1, fun: Value = nil) =
+    proc getCallNode(name: string, arity: int8 = -1, fun: Value = nil): Node =
         var callType: OtherCall..SpecialCall = OtherCall
 
         var fn {.cursor.}: Value =
@@ -439,15 +453,20 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
                 newWord(name)
             else:
                 nil
+
+        result = newCallNode(callType, ar, v, op)
+
+    proc addCall(target: var Node, name: string, arity: int8 = -1, fun: Value = nil) =
+        let newCall = getCallNode(name, arity, fun)
         
-        if ar != 0:
+        if newCall.arity != 0:
             with target:
-                addChild(newCallNode(callType, ar, v, op))
+                addChild(newCall)
                 rollThrough()
         else:
             with target:
                 addPotentialInfixCall()
-                addChild(newCallNode(callType, ar, v, op))
+                addChild(newCall)
                 rewindCallBranches(optimize=true)
 
     func addStore(target: var Node, val: Value) {.enforceNoRaises.} =
@@ -556,24 +575,31 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
                     target.rewindCallBranches()
 
                     var toSpot = target.children.len - 1
+                    var toWrap: Node
 
                     var lastChild: Node = target.children[toSpot]
                     while lastChild.kind==NewlineNode:
                         toSpot -= 1
                         lastChild = target.children[toSpot]
+                    
+                    toWrap = lastChild
 
                     if lastChild.kind == VariableStore:
-                        toSpot = lastChild.children.len - 1
-                        lastChild = lastChild.children[toSpot]
-                        while lastChild.kind == NewlineNode:
-                            toSpot -= 1
-                            lastChild = lastChild.children[toSpot]
-                        target = lastChild.parent   
-                    
-                    target.children.delete(toSpot)
+                        toSpot = 0
+                        toWrap = copyNode(lastChild.children[0])
 
-                    target.addCall(nextNode.s, funcArity)
-                    target.addChild(lastChild)
+                        let newCall = getCallNode(nextNode.s, funcArity)
+                        newCall.addChild(toWrap)
+
+                        lastChild.children[0].replaceNode(newCall)
+                        target = lastChild
+                        target.rollThrough()
+                    else:
+                    
+                        target.children.delete(toSpot)
+
+                        target.addCall(nextNode.s, funcArity)
+                        target.addChild(toWrap)
 
                     target.rewindCallBranches()
                     
@@ -782,7 +808,7 @@ proc dumpNode*(node: Node, level = 0, single: static bool = false, showNewlines:
         of CallNode:
             indentNode()
             if node.kind == VariableStore:
-                result &= "Store: " & $(node.value) & "\n"
+                result &= "Store: " & $(node.value) & " <" & $node.arity & ">\n"
             else:
                 if node.kind == AttributeNode:
                     result &= "Attribute: "
