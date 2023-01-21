@@ -26,7 +26,6 @@ import helpers/terminal as TerminalHelper
 import vm/globals
 import vm/opcodes
 import vm/values/value
-import vm/values/clean
 
 import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vsocket, vversion]
 
@@ -106,9 +105,7 @@ proc `$`*(v: Value): string {.inline.} =
             # for i,child in v.a:
             #     result &= $(child) & " "
             # result &= "]"
-
-            ensureCleaned(v)
-            result = "[" & cleanV.map((child) => $(child)).join(" ") & "]"
+            result = "[" & v.a.map((child) => $(child)).join(" ") & "]"
 
         of Range     : 
             result = $(v.rng)
@@ -159,7 +156,6 @@ proc `$`*(v: Value): string {.inline.} =
         of Bytecode:
             result = "<bytecode>" & "(" & fmt("{cast[ByteAddress](v):#X}") & ")"
             
-        of Newline: discard
         of Nothing: discard
         of ANY: discard
 
@@ -303,9 +299,8 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
         of Inline,
             Block        :
             dumpBlockStart(v)
-            ensureCleaned(v)
-            for i,child in cleanV:
-                dump(child, level+1, i==(cleanV.len-1), muted=muted)
+            for i,child in v.a:
+                dump(child, level+1, i==(v.a.len-1), muted=muted)
 
             stdout.write "\n"
 
@@ -397,10 +392,10 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             while j < v.trans.instructions.len:
                 let op = OpCode(v.trans.instructions[j])
                 instrs.add(newWord(stringify((OpCode(op)))))
-                if op in {opPush, opStore, opCall, opLoad, opStorl, opAttr, opEol}:
+                if op in {opPush, opStore, opDStore, opCall, opLoad, opStorl, opAttr, opEol}:
                     j += 1
                     instrs.add(newInteger(int(v.trans.instructions[j])))
-                elif op in {opPushX, opStoreX, opCallX, opLoadX, opStorlX, opEolX, opJmpIf, opJmpIfNot, opJmpIfEq, opJmpIfNe, opJmpIfGt, opJmpIfGe, opJmpIfLt, opJmpIfLe, opGoto, opGoup}:
+                elif op in {opPushX, opStoreX, opDStore, opCallX, opLoadX, opStorlX, opEolX, opJmpIf, opJmpIfNot, opJmpIfEq, opJmpIfNe, opJmpIfGt, opJmpIfGe, opJmpIfLt, opJmpIfLe, opGoto, opGoup}:
                     j += 2
                     instrs.add(newInteger(int(uint16(v.trans.instructions[j-1]) shl 8 + byte(v.trans.instructions[j]))))
 
@@ -434,7 +429,6 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
 
             dumpBlockEnd()
 
-        of Newline      : discard
         of Nothing      : discard
         of ANY          : discard
 
@@ -507,9 +501,8 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 result &= "\n"
             
             var parts: seq[string]
-            ensureCleaned(v)
-            for i,child in cleanV:
-                parts.add(codify(child,pretty,unwrapped,level+1, i==(cleanV.len-1), safeStrings=safeStrings))
+            for i,child in v.a:
+                parts.add(codify(child,pretty,unwrapped,level+1, i==(v.a.len-1), safeStrings=safeStrings))
 
             result &= parts.join(" ")
 

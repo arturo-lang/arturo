@@ -67,6 +67,7 @@ proc defineSymbols*() =
     #  labels: library, enhancement, cleanup, open discussion
     builtin "alphabet",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get dictionary-index charset for given locale",
         args        = {
@@ -110,6 +111,7 @@ proc defineSymbols*() =
 
     builtin "ascii?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if given character/string is in ASCII",
         args        = {
@@ -142,6 +144,7 @@ proc defineSymbols*() =
 
     builtin "capitalize",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "convert given string to capitalized",
         args        = {
@@ -167,6 +170,7 @@ proc defineSymbols*() =
 
     builtin "escape",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "escape given string",
         args        = {
@@ -226,6 +230,7 @@ proc defineSymbols*() =
 
     builtin "indent",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "indent each line of given text",
         args        = {
@@ -267,6 +272,7 @@ proc defineSymbols*() =
 
     builtin "jaro",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate Jaro distance/similarity between given strings",
         args        = {
@@ -288,6 +294,7 @@ proc defineSymbols*() =
 
     builtin "join",
         alias       = unaliased, 
+        op          = opJoin,
         rule        = PrefixPrecedence,
         description = "join collection of values into string",
         args        = {
@@ -321,8 +328,7 @@ proc defineSymbols*() =
                     ensureInPlace()
                     SetInPlace(newString(joinPath(InPlaced.a.map(proc (v:Value):string = $(v)))))
                 else:
-                    ensureCleaned(x)
-                    push(newString(joinPath(cleanX.map(proc (v:Value):string = $(v)))))
+                    push(newString(joinPath(x.a.map(proc (v:Value):string = $(v)))))
             else:
                 var sep: string
                 if checkAttr("with"):
@@ -332,11 +338,11 @@ proc defineSymbols*() =
                     ensureInPlace()
                     SetInPlace(newString(InPlaced.a.map(proc (v:Value):string = $(v)).join(sep)))
                 else:
-                    ensureCleaned(x)
-                    push(newString(cleanX.map(proc (v:Value):string = $(v)).join(sep)))
+                    push(newString(x.a.map(proc (v:Value):string = $(v)).join(sep)))
 
     builtin "levenshtein",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate Levenshtein distance/similarity between given strings",
         args        = {
@@ -367,6 +373,7 @@ proc defineSymbols*() =
 
     builtin "lower",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "convert given string to lowercase",
         args        = {
@@ -396,6 +403,7 @@ proc defineSymbols*() =
 
     builtin "lower?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if given string is lowercase",
         args        = {
@@ -428,6 +436,7 @@ proc defineSymbols*() =
     when not defined(WEB):
         builtin "match",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "get matches within string, using given regular expression",
             args        = {
@@ -558,6 +567,7 @@ proc defineSymbols*() =
         #  labels: library, web, bug
         builtin "match?",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "check if string matches given regular expression",
             args        = {
@@ -603,6 +613,7 @@ proc defineSymbols*() =
  
     builtin "numeric?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if given string is numeric",
         args        = {
@@ -628,6 +639,7 @@ proc defineSymbols*() =
 
     builtin "outdent",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "outdent each line of given text, by using minimum shared indentation",
         args        = {
@@ -682,6 +694,7 @@ proc defineSymbols*() =
 
     builtin "pad",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "align string by adding given padding",
         args        = {
@@ -728,6 +741,7 @@ proc defineSymbols*() =
 
     builtin "prefix?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if string starts with given prefix",
         args        = {
@@ -752,6 +766,7 @@ proc defineSymbols*() =
         #  labels: enhancement,library,web
         builtin "render",
             alias       = tilde, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "render template with |string| interpolation",
             args        = {
@@ -841,6 +856,7 @@ proc defineSymbols*() =
 
     builtin "replace",
         alias       = unaliased, 
+        op          = opReplace,
         rule        = PrefixPrecedence,
         description = "replace every matched substring/s by given replacement string and return result",
         args        = {
@@ -896,6 +912,7 @@ proc defineSymbols*() =
 
     builtin "strip",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "strip whitespace from given string",
         args        = {
@@ -932,6 +949,7 @@ proc defineSymbols*() =
 
     builtin "suffix?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if string ends with given suffix",
         args        = {
@@ -952,6 +970,7 @@ proc defineSymbols*() =
 
     builtin "translate",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "takes a dictionary of translations and replaces each instance sequentially",
         args        = {
@@ -980,6 +999,7 @@ proc defineSymbols*() =
 
     builtin "truncate",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "truncate string at given length",
         args        = {
@@ -1024,6 +1044,7 @@ proc defineSymbols*() =
 
     builtin "upper",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "convert given string to uppercase",
         args        = {
@@ -1053,6 +1074,7 @@ proc defineSymbols*() =
 
     builtin "upper?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if given string is uppercase",
         args        = {
@@ -1082,6 +1104,7 @@ proc defineSymbols*() =
 
     builtin "wordwrap",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "word wrap a given string",
         args        = {
@@ -1122,6 +1145,7 @@ proc defineSymbols*() =
 
     builtin "whitespace?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if given string consists only of whitespace",
         args        = {

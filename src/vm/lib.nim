@@ -15,8 +15,8 @@
 import sequtils, strutils, tables
 export strutils, tables
 
-import vm/[globals, errors, stack, values/comparison, values/clean, values/printable, values/value]
-export clean, comparison, globals, printable, stack, value
+import vm/[globals, errors, opcodes, stack, values/comparison, values/printable, values/value]
+export comparison, globals, printable, opcodes, stack, value
 
 import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrational, vregex, vsymbol]
 export vcolor, vcomplex, vlogical, vquantity, vrational, vregex, vsymbol
@@ -54,7 +54,7 @@ else:
 #     else:
 #         args
 
-template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: string, args: untyped, attrs: untyped, returns: ValueSpec, example: string, act: untyped):untyped =
+template builtin*(n: string, alias: VSymbol, op: OpCode, rule: PrecedenceKind, description: string, args: untyped, attrs: untyped, returns: ValueSpec, example: string, act: untyped):untyped =
     ## add new builtin, function with given name, alias, 
     ## rule, etc - followed by the code block to be 
     ## executed when the function is called
@@ -83,6 +83,7 @@ template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: 
             when not defined(WEB): attrs.toOrderedTable else: initOrderedTable[string,(ValueSpec,string)](),
             returns, 
             cleanExample, 
+            op,
             proc () =
                 hookProcProfiler("lib/require"):
                     require(n, args)
@@ -97,54 +98,57 @@ template builtin*(n: string, alias: VSymbol, rule: PrecedenceKind, description: 
 
         SetSym(n, b)
 
-        when n=="array"             : ArrayF = b
-        elif n=="dictionary"        : DictF = b
-        elif n=="function"          : FuncF = b               
-        elif n=="add"               : AddF = b
-        elif n=="sub"               : SubF = b
-        elif n=="mul"               : MulF = b
-        elif n=="div"               : DivF = b
-        elif n=="fdiv"              : FdivF = b
-        elif n=="mod"               : ModF = b
-        elif n=="pow"               : PowF = b
-        elif n=="neg"               : NegF = b
-        elif n=="not"               : BNotF = b
-        elif n=="and"               : BAndF = b
-        elif n=="or"                : BOrF = b
-        elif n=="shl"               : ShlF = b
-        elif n=="shr"               : ShrF = b
-        elif n=="not?"              : NotF = b
-        elif n=="and?"              : AndF = b
-        elif n=="or?"               : OrF = b
-        elif n=="equal?"            : EqF = b
-        elif n=="notEqual?"         : NeF = b
-        elif n=="greater?"          : GtF = b
-        elif n=="greaterOrEqual?"   : GeF = b
-        elif n=="less?"             : LtF = b
-        elif n=="lessOrEqual?"      : LeF = b
-        elif n=="if"                : IfF = b
-        elif n=="if?"               : IfEF = b
-        elif n=="unless"            : UnlessF = b
-        elif n=="unless?"           : UnlessEF = b
-        elif n=="else"              : ElseF = b
-        elif n=="switch"            : SwitchF = b
-        elif n=="while"             : WhileF = b
-        elif n=="return"            : ReturnF = b
-        elif n=="to"                : ToF = b
-        elif n=="print"             : PrintF = b
-        elif n=="get"               : GetF = b 
-        elif n=="set"               : SetF = b
-        elif n=="range"             : RangeF = b
-        elif n=="loop"              : LoopF = b
-        elif n=="map"               : MapF = b 
-        elif n=="select"            : SelectF = b
-        elif n=="size"              : SizeF = b
-        elif n=="replace"           : ReplaceF = b
-        elif n=="split"             : SplitF = b
-        elif n=="join"              : JoinF = b
-        elif n=="reverse"           : ReverseF = b
-        elif n=="inc"               : IncF = b
-        elif n=="dec"               : DecF = b
+        when n=="add"               : DoAdd = b.action()
+        elif n=="sub"               : DoSub = b.action()
+        elif n=="mul"               : DoMul = b.action()
+        elif n=="div"               : DoDiv = b.action()
+        elif n=="fdiv"              : DoFdiv = b.action()
+        elif n=="mod"               : DoMod = b.action()
+        elif n=="pow"               : DoPow = b.action()
+        elif n=="neg"               : DoNeg = b.action()
+        elif n=="inc"               : DoInc = b.action()
+        elif n=="dec"               : DoDec = b.action()
+        elif n=="not"               : DoBNot = b.action()
+        elif n=="and"               : DoBAnd = b.action()
+        elif n=="or"                : DoBOr = b.action()
+        elif n=="shl"               : DoShl = b.action()
+        elif n=="shr"               : DoShr = b.action()
+        elif n=="not?"              : DoNot = b.action()
+        elif n=="and?"              : DoAnd = b.action()
+        elif n=="or?"               : DoOr = b.action()
+        elif n=="equal?"            : DoEq = b.action()
+        elif n=="notEqual?"         : DoNe = b.action()
+        elif n=="greater?"          : DoGt = b.action()
+        elif n=="greaterOrEqual?"   : DoGe = b.action()
+        elif n=="less?"             : DoLt = b.action()
+        elif n=="lessOrEqual?"      : DoLe = b.action()
+        elif n=="get"               : DoGet = b.action()
+        elif n=="set"               : DoSet = b.action()
+        elif n=="if"                : DoIf = b.action()
+        elif n=="if?"               : DoIfE = b.action()
+        elif n=="unless"            : DoUnless = b.action()
+        elif n=="unless?"           : DoUnlessE = b.action()
+        elif n=="else"              : DoElse = b.action()
+        elif n=="switch"            : DoSwitch = b.action()
+        elif n=="while"             : DoWhile = b.action()
+        elif n=="return"            : DoReturn = b.action()
+        elif n=="break"             : DoBreak = b.action()
+        elif n=="continue"          : DoContinue = b.action()
+        elif n=="to"                : DoTo = b.action()
+        elif n=="array"             : DoArray = b.action()
+        elif n=="dictionary"        : DoDict = b.action()
+        elif n=="function"          : DoFunc = b.action()  
+        elif n=="range"             : DoRange = b.action()
+        elif n=="loop"              : DoLoop = b.action()
+        elif n=="map"               : DoMap = b.action() 
+        elif n=="select"            : DoSelect = b.action()
+        elif n=="size"              : DoSize = b.action()
+        elif n=="replace"           : DoReplace = b.action()
+        elif n=="split"             : DoSplit = b.action()
+        elif n=="join"              : DoJoin = b.action()
+        elif n=="reverse"           : DoReverse = b.action()
+        elif n=="append"            : DoAppend = b.action()
+        elif n=="print"             : DoPrint = b.action()
 
         when alias != unaliased:
             Aliases[alias] = AliasBinding(

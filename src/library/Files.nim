@@ -54,6 +54,7 @@ proc defineSymbols*() =
 
         builtin "copy",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "copy file at path to given destination",
             args        = {
@@ -88,6 +89,7 @@ proc defineSymbols*() =
 
         builtin "delete",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "delete file at given path",
             args        = {
@@ -114,6 +116,7 @@ proc defineSymbols*() =
 
         builtin "exists?",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "check if given file exists",
             args        = {
@@ -138,6 +141,7 @@ proc defineSymbols*() =
 
         builtin "hidden?",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "check if file/folder at given path is hidden",
             args        = {
@@ -156,6 +160,7 @@ proc defineSymbols*() =
 
         builtin "move",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "move file at path to given destination",
             args        = {
@@ -190,6 +195,7 @@ proc defineSymbols*() =
 
         builtin "permissions",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "check permissions of given file",
             args        = {
@@ -270,6 +276,7 @@ proc defineSymbols*() =
 
         builtin "read",
             alias       = doublearrowleft, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "read file from given path",
             args        = {
@@ -360,6 +367,7 @@ proc defineSymbols*() =
 
         builtin "rename",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "rename file at path using given new path name",
             args        = {
@@ -391,7 +399,8 @@ proc defineSymbols*() =
                         discard
 
         builtin "symlink",
-            alias       = unaliased, 
+            alias       = unaliased,
+            op          = opNop, 
             rule        = PrefixPrecedence,
             description = "create symbolic link of file to given destination",
             args        = {
@@ -428,6 +437,7 @@ proc defineSymbols*() =
         
         builtin "timestamp",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "get file timestamps",
             args        = {
@@ -454,6 +464,7 @@ proc defineSymbols*() =
                         
         builtin "unzip",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "unzip given archive to destination",
             args        = {
@@ -472,6 +483,7 @@ proc defineSymbols*() =
 
         builtin "volume",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "get file size for given path",
             args        = {
@@ -491,6 +503,7 @@ proc defineSymbols*() =
 
         builtin "write",
             alias       = doublearrowright, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "write content to file at given path",
             args        = {
@@ -540,6 +553,7 @@ proc defineSymbols*() =
 
         builtin "zip",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "zip given files to file at destination",
             args        = {
@@ -554,9 +568,7 @@ proc defineSymbols*() =
                 #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("zip")
 
-                ensureCleaned(y)
-
-                let files: seq[string] = cleanY.map((z)=>z.s)
+                let files: seq[string] = y.a.map((z)=>z.s)
                 miniz.zip(files, x.s)
 
 #=======================================

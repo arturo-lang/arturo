@@ -36,9 +36,10 @@ when not defined(NOGMP):
 when not defined(WEB):
     import vm/errors
 
+import vm/opcodes
+
 import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vsocket, vsymbol, vversion]
 
-import vm/values/clean
 import vm/values/types
 import vm/values/flags
 export types
@@ -115,19 +116,20 @@ let
 var 
     TypeLookup = initOrderedTable[string,Value]()
 
-    # global implementation references
-    AddF*, SubF*, MulF*, DivF*, FdivF*, ModF*, PowF*            : Value
-    NegF*, BNotF*, BAndF*, BOrF*, ShlF*, ShrF*                  : Value
-    NotF*, AndF*, OrF*                                          : Value 
-    EqF*, NeF*, GtF*, GeF*, LtF*, LeF*                          : Value
-    IfF*, IfEF*, UnlessF*, UnlessEF*, ElseF*, SwitchF*          : Value
-    WhileF*, ReturnF*                                           : Value
-    ToF*, PrintF*                                               : Value
-    GetF*, SetF*                                                : Value
-    ArrayF*, DictF*, FuncF*                                     : Value
-    RangeF*, LoopF*, MapF*, SelectF*                            : Value
-    SizeF*, ReplaceF*, SplitF*, JoinF*, ReverseF*               : Value 
-    IncF*, DecF*                                                : Value
+    # global action references
+    DoAdd*, DoSub*, DoMul*, DoDiv*, DoFdiv*, DoMod*, DoPow*                 : BuiltinAction
+    DoNeg*, DoInc*, DoDec*                                                  : BuiltinAction
+    DoBNot*, DoBAnd*, DoBOr*, DoShl*, DoShr*                                : BuiltinAction
+    DoNot*, DoAnd*, DoOr*                                                   : BuiltinAction
+    DoEq*, DoNe*, DoGt*, DoGe*, DoLt*, DoLe*                                : BuiltinAction
+    DoGet*, DoSet*                                                          : BuiltinAction
+    DoIf*, DoIfE*, DoUnless*, DoUnlessE*, DoElse*, DoSwitch*, DoWhile*      : BuiltinAction
+    DoReturn*, DoBreak*, DoContinue*                                        : BuiltinAction
+    DoTo*                                                                   : BuiltinAction
+    DoArray*, DoDict*, DoFunc*, DoRange*                                    : BuiltinAction
+    DoLoop*, DoMap*, DoSelect*                                              : BuiltinAction
+    DoSize*, DoReplace*, DoSplit*, DoJoin*, DoReverse*, DoAppend*           : BuiltinAction
+    DoPrint*                                                                : BuiltinAction
 
 #=======================================
 # Forward Declarations
@@ -543,7 +545,7 @@ func newFunction*(params: seq[string], main: Value, imports: Value = nil, export
         )
     )
 
-func newBuiltin*(desc: sink string, modl: sink string, line: int, ar: int8, ag: sink OrderedTable[string,ValueSpec], at: sink OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: sink string, act: BuiltinAction): Value {.inline, enforceNoRaises.} =
+func newBuiltin*(desc: sink string, modl: sink string, line: int, ar: int8, ag: sink OrderedTable[string,ValueSpec], at: sink OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: sink string, opc: OpCode, act: BuiltinAction): Value {.inline, enforceNoRaises.} =
     ## create Function (BuiltinFunction) value with given details
     result = Value(
         kind: Function,
@@ -558,6 +560,7 @@ func newBuiltin*(desc: sink string, modl: sink string, line: int, ar: int8, ag: 
         funcType: VFunction(
             fnKind: BuiltinFunction,
             arity: ar,
+            op: opc,
             action: act
         )
     )
@@ -582,23 +585,13 @@ func newBytecode*(t: sink Translation): Value {.inline, enforceNoRaises.} =
     ## create Bytecode value from Translation
     Value(kind: Bytecode, trans: t)
 
-func newInline*(a: sink ValueArray = @[], dirty = false): Value {.inline, enforceNoRaises.} =
+func newInline*(a: sink ValueArray = @[]): Value {.inline, enforceNoRaises.} =
     ## create Inline value from ValueArray
-    let flags =
-        if dirty:
-            {IsDirty}
-        else:
-            {}
-    Value(kind: Inline, a: a, flags: flags)
+    Value(kind: Inline, a: a)
 
-func newBlock*(a: sink ValueArray = @[], data: sink Value = nil, dirty = false): Value {.inline, enforceNoRaises.} =
+func newBlock*(a: sink ValueArray = @[], data: sink Value = nil): Value {.inline, enforceNoRaises.} =
     ## create Block value from ValueArray
-    let flags =
-        if dirty:
-            {IsDirty}
-        else:
-            {}
-    Value(kind: Block, a: a, data: data, flags: flags)
+    Value(kind: Block, a: a, data: data)
 
 func newBlock*(a: (Value, Value)): Value {.inline, enforceNoRaises.} =
     ## create Block value from tuple of two values
@@ -634,10 +627,6 @@ proc newRange*(start: int, stop: int, step: int, infinite: bool, numeric: bool, 
 
 proc newRange*(rng: VRange): Value {.inline, enforceNoRaises.} =
     Value(kind: Range, rng: rng)
-
-func newNewline*(l: int): Value {.inline, enforceNoRaises.} =
-    ## create Newline value with given line number
-    Value(kind: Newline, line: l)
 
 proc newStringDictionary*(a: Table[string, string]): Value =
     ## create Dictionary value from a string-string Table
@@ -707,8 +696,7 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Inline:          result = newInline(v.a)
         of Block:       
             if v.data.isNil: 
-                let newValues = cleanedBlockValuesCopy(v)
-                result = Value(kind: Block, a: newValues)
+                result = Value(kind: Block, a: v.a)
             else:
                 result = newBlock(v.a.map((vv)=>copyValue(vv)), copyValue(v.data))
         of Range:
@@ -723,9 +711,9 @@ proc copyValue*(v: Value): Value {.inline.} =
                 result = newFunction(v.params, v.main, v.imports, v.exports, v.memoize, v.inline)
             else:
                 when defined(DOCGEN):
-                    result = newBuiltin(v.info.descr, v.info.module, v.info.line, v.arity, v.info.args, v.info.attrs, v.info.returns, v.info.example, v.action)
+                    result = newBuiltin(v.info.descr, v.info.module, v.info.line, v.arity, v.info.args, v.info.attrs, v.info.returns, v.info.example, v.op, v.action)
                 else:
-                    result = newBuiltin(v.info.descr, v.info.module, 0, v.arity, v.info.args, v.info.attrs, v.info.returns, "", v.action)
+                    result = newBuiltin(v.info.descr, v.info.module, 0, v.arity, v.info.args, v.info.attrs, v.info.returns, "", v.op, v.action)
 
         of Database:    
             when not defined(NOSQLITE):
@@ -739,7 +727,7 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Bytecode:
             result = newBytecode(v.trans)
 
-        of Newline, Nothing, Any:
+        of Nothing, Any:
             discard
 
 #=======================================
@@ -2482,7 +2470,6 @@ func hash*(v: Value): Hash {.inline.}=
         of Bytecode:
             result = result !& cast[Hash](unsafeAddr v)
 
-        of Newline      : discard
         of Nothing      : discard
         of ANY          : discard
 
