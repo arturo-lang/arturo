@@ -369,7 +369,12 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
         var child = target.children[0]
 
         if child.op == opFunc:
-            TmpArities[target.value.s] = int8(child.children[0].value.a.countIt(it.kind != Type))
+            let params {.cursor.} = child.children[0]
+
+            if params.value.kind == Literal:
+                TmpArities[target.value.s] = 1
+            else:
+                TmpArities[target.value.s] = int8(params.value.a.countIt(it.kind != Type))
         else:
             TmpArities.del(target.value.s)
 
@@ -393,7 +398,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
                             of opMod        : target.optimizeArithmeticOp(`%`)
                             of opPow        : target.optimizeArithmeticOp(`^`)
                             of opUnless,
-                               opUnlessE    : target.optimizeUnless()
+                                opUnlessE    : target.optimizeUnless()
                             of opAppend     : target.optimizeAppend()
                                 
                             else:
@@ -664,7 +669,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0,
             target.addTerminals([
                 newConstant(newLiteral(argblock[0].s)),
                 newConstant(newBlock(subblock))
-            ], dontOptimize=true)
+            ])
         else:
             when processingArrow:
                 ArrowBlock[^1].add(newBlock(argblock))
