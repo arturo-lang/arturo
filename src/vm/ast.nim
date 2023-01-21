@@ -29,6 +29,7 @@
 # - [x] make labels store new functions in TmpArities
 # - [x] make labels unstore overwritten functions in TmpArities
 # - [ ] make if/if?/else/while/switch work
+# - [ ] correctly process to :string/:integer
 
 #=======================================
 # Libraries
@@ -241,7 +242,10 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = No
 
     var currentLine: uint32 = 
         if startingLine == NoStartingLine:
-            blok.a[i].ln
+            if i < nLen:
+                blok.a[i].ln
+            else:
+                0
         else:
             startingLine
 
@@ -371,6 +375,25 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = No
             if right.kind == ConstantValue and right.value.kind == String:
                 target.replaceNode(newConstant(newString(left.value.s & right.value.s)))
 
+    proc optimizeTo(target: var Node) {.enforceNoRaises.} =
+        var left = target.children[0]
+
+        echo dumpNode(target)
+
+        if left.kind == ConstantValue and left.value.kind==Type:
+            if left.value.t == Integer:
+                # convert `to :integer` -> opToI
+                target.op = opToI
+                target.arity = 1
+                target.children.delete(0)
+            elif left.value.t == String:
+                # convert `to :string` -> opToS
+                target.op = opToS
+                target.arity = 1
+                target.children.delete(0)
+        
+        echo dumpNode(target)
+
     proc optimizeStores(target: var Node) {.enforceNoRaises.} =
         var child = target.children[0]
 
@@ -398,7 +421,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = No
                         case target.op:
                             of opAdd        : target.optimizeAdd()
                             of opSub        : target.optimizeSub()
-                            #of opMul        : target.optimizeArithmeticOp(`*`)
+                            of opMul        : target.optimizeArithmeticOp(`*`)
                             of opDiv        : target.optimizeArithmeticOp(`/`)
                             of opFDiv       : target.optimizeArithmeticOp(`//`)
                             of opMod        : target.optimizeArithmeticOp(`%`)
@@ -406,6 +429,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = No
                             of opUnless,
                                 opUnlessE    : target.optimizeUnless()
                             of opAppend     : target.optimizeAppend()
+                            of opTo         : target.optimizeTo()
                                 
                             else:
                                 discard
@@ -853,4 +877,4 @@ proc generateAst*(parsed: Value, asDictionary=false): Node =
 
     discard result.processBlock(parsed, asDictionary=asDictionary)
 
-    #echo dumpNode(result)
+    echo dumpNode(result)
