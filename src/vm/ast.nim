@@ -104,6 +104,8 @@ var
 #=======================================
 
 const
+    NoStartingLine  = 1896618966'u32
+
     TerminalNode    : set[NodeKind] = {ConstantValue, VariableLoad}
     CallNode        : set[NodeKind] = {AttributeNode..SpecialCall}
 
@@ -233,11 +235,15 @@ func copyNode(node: Node): Node =
 # Methods
 #=======================================
 
-proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = 0, asDictionary: bool = false, processingArrow: static bool = false): int =
+proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = NoStartingLine, asDictionary: bool = false, processingArrow: static bool = false): int =
     var i: int = start
     var nLen: int = blok.a.len
 
-    var currentLine: uint32 = startingLine
+    var currentLine: uint32 = 
+        if startingLine == NoStartingLine:
+            blok.a[i].ln
+        else:
+            startingLine
 
     var current = root
 
