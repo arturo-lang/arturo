@@ -84,21 +84,21 @@ proc addConst(consts: var ValueArray, instructions: var VBinary, v: Value, op: O
 
 proc getOperand*(op: OpCode, inverted: static bool=false): OpCode =
     case op:
-        of opEq   : 
+        of opEq: 
             when inverted: opJmpIfNe    else: opJmpIfEq
-        of opNe   : 
+        of opNe: 
             when inverted: opJmpIfEq    else: opJmpIfNe
-        of opLt   : 
+        of opLt: 
             when inverted: opJmpIfGe    else: opJmpIfLt
-        of opLe   : 
+        of opLe: 
             when inverted: opJmpIfGt    else: opJmpIfLe
-        of opGt   : 
+        of opGt: 
             when inverted: opJmpIfLe    else: opJmpIfGt
-        of opGe   : 
+        of opGe: 
             when inverted: opJmpIfLt    else: opJmpIfGe
-        of opNot  : 
+        of opNot: 
             when inverted: opJmpIf      else: opJmpIfNot
-        else      : 
+        else: 
             when inverted: opJmpIfNot   else: opJmpIf
 
 #=======================================
