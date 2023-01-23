@@ -189,6 +189,23 @@ proc evaluateBlock*(blok: Node, isDictionary=false): Translation =
                 of BuiltinCall:
                     addSingleCommand(instruction.op)
                 of SpecialCall:
+                    case instruction.op:
+                        of opIf:
+                            discard
+                        of opIfE:
+                            discard
+                        of opUnless:
+                            discard
+                        of opUnlessE:
+                            discard
+                        of opElse:
+                            discard
+                        of opSwitch:
+                            discard
+                        of opWhile:
+                            discard
+                        else:
+                            discard # won't reach here
                     addSingleCommand(instruction.op)
 
         i += 1
