@@ -108,8 +108,8 @@ var
 const
     NoStartingLine  = 1896618966'u32
 
-    TerminalNode    : set[NodeKind] = {ConstantValue, VariableLoad}
-    CallNode        : set[NodeKind] = {AttributeNode..SpecialCall}
+    TerminalNode*   : set[NodeKind] = {ConstantValue, VariableLoad}
+    CallNode*       : set[NodeKind] = {AttributeNode..SpecialCall}
 
 #=======================================
 # Forward declarations
