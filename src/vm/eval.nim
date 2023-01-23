@@ -72,18 +72,16 @@ template addOpWithNumber(instructions: var VBinary, oper: OpCode, num: untyped, 
                 byte(num)
             ])
 
-template injectOpWithIndex(instructions: var VBinary, oper: OpCode, num: untyped, at: int): untyped =
+template addReplaceOpWithIndex(instructions: var VBinary, oper: OpCode, num: untyped): untyped =
     if num > 255:
-        instructions.insert([
-            byte(oper)+1,
+        instructions[^1] = byte(oper)+1
+        instructions.addByte([
             byte(num shr 8),
             byte(num)
-        ], at)
+        ])
     else:
-        instructions.insert([
-            byte(oper),
-            byte(num)
-        ], at)
+        instructions[^1] = byte(oper)
+        instructions.addByte(byte(num))
 
 proc addConst(consts: var ValueArray, instructions: var VBinary, v: Value, op: OpCode, hasShortcut: static bool=true) {.inline,enforceNoRaises.} =
     var indx = consts.indexOfValue(v)
@@ -95,24 +93,27 @@ proc addConst(consts: var ValueArray, instructions: var VBinary, v: Value, op: O
 
     instructions.addOpWithNumber(op, indx, hasShortcut)
 
-proc getOperand*(op: OpCode, inverted: static bool=false): OpCode =
-    case op:
-        of opEq: 
-            when inverted: opJmpIfNe    else: opJmpIfEq
-        of opNe: 
-            when inverted: opJmpIfEq    else: opJmpIfNe
-        of opLt: 
-            when inverted: opJmpIfGe    else: opJmpIfLt
-        of opLe: 
-            when inverted: opJmpIfGt    else: opJmpIfLe
-        of opGt: 
-            when inverted: opJmpIfLe    else: opJmpIfGt
-        of opGe: 
-            when inverted: opJmpIfLt    else: opJmpIfGe
-        of opNot: 
-            when inverted: opJmpIf      else: opJmpIfNot
-        else: 
-            when inverted: opJmpIfNot   else: opJmpIf
+proc getOperand*(node: Node, inverted: static bool=false): OpCode =
+    if node.kind notin CallNode:
+        when inverted: opJmpIfNot   else: opJmpIf
+    else:
+        case node.op:
+            of opEq: 
+                when inverted: opJmpIfNe    else: opJmpIfEq
+            of opNe: 
+                when inverted: opJmpIfEq    else: opJmpIfNe
+            of opLt: 
+                when inverted: opJmpIfGe    else: opJmpIfLt
+            of opLe: 
+                when inverted: opJmpIfGt    else: opJmpIfLe
+            of opGt: 
+                when inverted: opJmpIfLe    else: opJmpIfGt
+            of opGe: 
+                when inverted: opJmpIfLt    else: opJmpIfGe
+            of opNot: 
+                when inverted: opJmpIf      else: opJmpIfNot
+            else: 
+                when inverted: opJmpIfNot   else: opJmpIf
 
 #=======================================
 # Methods
@@ -136,6 +137,35 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
         it.addOpWithNumber(opEol, n, hasShortcut=false)
 
     #------------------------
+    # Optimization
+    #------------------------
+
+    template optimizeIf(special: untyped): untyped =
+        # let's keep some references
+        # to the children
+        let left {.cursor.} = special.children[0]
+        let right {.cursor.} = special.children[1]
+
+        # inline-evaluate left child
+        evaluateBlock(Node(kind:RootNode, children: @[left]), consts, it)
+
+        # separately ast+evaluate right child block     
+        var rightIt: VBinary = @[]
+        evaluateBlock(generateAst(right.value), consts, rightIt)
+
+        # get operand & added to the instructions
+        let newOp = getOperand(left, inverted=true)
+
+        # add operand to our instructions
+        if newOp in {opJmpIf, opJmpIfNot}:
+            it.addOpWithNumber(newOp, rightIt.len, hasShortcut=false)
+        else:
+            it.addReplaceOpWithIndex(newOp, rightIt.len)
+
+        # finally add the evaluated right block            
+        it.add(rightIt)
+
+    #------------------------
     # MainLoop
     #------------------------
 
@@ -147,18 +177,7 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
 
         if item.kind == SpecialCall:
             case item.op:
-                of opIf:
-                    evaluateBlock(Node(kind:RootNode, children: @[item.children[0]]), consts, it)
-                    var blockIt: VBinary = @[]
-                    echo "processing block"
-                    evaluateBlock(generateAst(item.children[1].value), consts, blockIt)
-                    echo "got block of len: " & $blockIt.len
-                    it.injectOpWithIndex(getOperand(item.children[0].op, inverted=true), blockIt.len, it.len-1)
-                    # it.addOpWithNumber(getOperand(item.children[0].op, inverted=true), blockIt.len, hasShortcut=false)
-                    it.add(blockIt)
-                    echo dumpNode(item.children[0])
-                    echo dumpNode(item.children[1])
-                    discard
+                of opIf:        optimizeIf(item)
                 of opIfE:
                     discard
                 of opUnless:
