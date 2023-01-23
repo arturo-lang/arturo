@@ -135,97 +135,103 @@ proc evaluateBlock*(blok: Node, isDictionary=false): Translation =
         # echo "current item:"
         # echo dumpNode(item)
 
-        for instruction in traverse(item):
-            # echo "processing: "
-            # echo dumpNode(instruction)
-            case instruction.kind:
-                of RootNode:
+        if item.kind == SpecialNode:
+            case item.op:
+                of opIf:
                     discard
-                of NewlineNode:
-                    addEol(instruction.line)
-                of ConstantValue:
-                    var alreadyPut = false
-                    let iv {.cursor.} = instruction.value
-                    case instruction.value.kind:
-                        of Null:
-                            addSingleCommand(opConstN)
-                            alreadyPut = true
-                        of Logical:
-                            if iv.b == True:
-                                addSingleCommand(opConstBT)
-                                alreadyPut = true
-                            elif iv.b == False:
-                                addSingleCommand(opConstBF)
-                                alreadyPut = true
-                        of Integer:
-                            if likely(iv.iKind==NormalInteger) and iv.i >= -1 and iv.i <= 15: 
-                                addSingleCommand(byte(opConstI0) + byte(iv.i))
-                                alreadyPut = true
-                        of Floating:
-                            case iv.f:
-                                of -1.0:
-                                    addSingleCommand(opConstF1M)
-                                    alreadyPut = true
-                                of 0.0:
-                                    addSingleCommand(opConstF0)
-                                    alreadyPut = true
-                                of 1.0:
-                                    addSingleCommand(opConstF1)
-                                    alreadyPut = true
-                                of 2.0:
-                                    addSingleCommand(opConstF2)
-                                    alreadyPut = true
-                                else:
-                                    discard
-                        of String:
-                            if iv.s == "":
-                                addSingleCommand(opConstS)
-                                alreadyPut = true
-                        of Block:
-                            if iv.a.len == 0:
-                                addSingleCommand(opConstA)
-                                alreadyPut = true
-                        of Dictionary:
-                            if iv.d.len == 0:
-                                addSingleCommand(opConstD)
-                                alreadyPut = true
-                        else:
-                            discard
+                of opIfE:
+                    discard
+                of opUnless:
+                    discard
+                of opUnlessE:
+                    discard
+                of opElse:
+                    discard
+                of opSwitch:
+                    discard
+                of opWhile:
+                    discard
+                else:
+                    discard # won't reach here
+        else:
 
-                    if not alreadyPut:
-                        addConst(instruction.value, opPush)
-                of VariableLoad:
-                    addConst(instruction.value, opLoad)
-                of AttributeNode:
-                    addConst(instruction.value, opAttr)
-                of VariableStore:
-                    if unlikely(isDictionary):
-                        addConst(instruction.value, opDStore, hasShortcut=false)
-                    else:
-                        addConst(instruction.value, opStore)
-                of OtherCall:
-                    addConst(instruction.value, opCall)
-                of BuiltinCall:
-                    addSingleCommand(instruction.op)
-                of SpecialCall:
-                    case instruction.op:
-                        of opIf:
-                            discard
-                        of opIfE:
-                            discard
-                        of opUnless:
-                            discard
-                        of opUnlessE:
-                            discard
-                        of opElse:
-                            discard
-                        of opSwitch:
-                            discard
-                        of opWhile:
-                            discard
+            for instruction in traverse(item):
+                # echo "processing: "
+                # echo dumpNode(instruction)
+                case instruction.kind:
+                    of RootNode:
+                        discard
+                    of NewlineNode:
+                        addEol(instruction.line)
+                    of ConstantValue:
+                        var alreadyPut = false
+                        let iv {.cursor.} = instruction.value
+                        case instruction.value.kind:
+                            of Null:
+                                addSingleCommand(opConstN)
+                                alreadyPut = true
+                            of Logical:
+                                if iv.b == True:
+                                    addSingleCommand(opConstBT)
+                                    alreadyPut = true
+                                elif iv.b == False:
+                                    addSingleCommand(opConstBF)
+                                    alreadyPut = true
+                            of Integer:
+                                if likely(iv.iKind==NormalInteger) and iv.i >= -1 and iv.i <= 15: 
+                                    addSingleCommand(byte(opConstI0) + byte(iv.i))
+                                    alreadyPut = true
+                            of Floating:
+                                case iv.f:
+                                    of -1.0:
+                                        addSingleCommand(opConstF1M)
+                                        alreadyPut = true
+                                    of 0.0:
+                                        addSingleCommand(opConstF0)
+                                        alreadyPut = true
+                                    of 1.0:
+                                        addSingleCommand(opConstF1)
+                                        alreadyPut = true
+                                    of 2.0:
+                                        addSingleCommand(opConstF2)
+                                        alreadyPut = true
+                                    else:
+                                        discard
+                            of String:
+                                if iv.s == "":
+                                    addSingleCommand(opConstS)
+                                    alreadyPut = true
+                            of Block:
+                                if iv.a.len == 0:
+                                    addSingleCommand(opConstA)
+                                    alreadyPut = true
+                            of Dictionary:
+                                if iv.d.len == 0:
+                                    addSingleCommand(opConstD)
+                                    alreadyPut = true
+                            else:
+                                discard
+
+                        if not alreadyPut:
+                            addConst(instruction.value, opPush)
+                    of VariableLoad:
+                        addConst(instruction.value, opLoad)
+                    of AttributeNode:
+                        addConst(instruction.value, opAttr)
+                    of VariableStore:
+                        if unlikely(isDictionary):
+                            addConst(instruction.value, opDStore, hasShortcut=false)
                         else:
-                            discard # won't reach here
-                    addSingleCommand(instruction.op)
+                            addConst(instruction.value, opStore)
+                    of OtherCall:
+                        addConst(instruction.value, opCall)
+                    of BuiltinCall:
+                        addSingleCommand(instruction.op)
+                    else:
+                        discard
+                    # of SpecialCall:
+                        
+                    #     addSingleCommand(instruction.op)
 
         i += 1
 
