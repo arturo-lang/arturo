@@ -82,6 +82,25 @@ proc addConst(consts: var ValueArray, instructions: var VBinary, v: Value, op: O
 
     instructions.addOpWithNumber(op, indx, hasShortcut)
 
+proc getOperand*(op: OpCode, inverted: static bool=false): OpCode =
+    case op:
+        of opEq   : 
+            when inverted: opJmpIfNe    else: opJmpIfEq
+        of opNe   : 
+            when inverted: opJmpIfEq    else: opJmpIfNe
+        of opLt   : 
+            when inverted: opJmpIfGe    else: opJmpIfLt
+        of opLe   : 
+            when inverted: opJmpIfGt    else: opJmpIfLe
+        of opGt   : 
+            when inverted: opJmpIfLe    else: opJmpIfGt
+        of opGe   : 
+            when inverted: opJmpIfLt    else: opJmpIfGe
+        of opNot  : 
+            when inverted: opJmpIf      else: opJmpIfNot
+        else      : 
+            when inverted: opJmpIfNot   else: opJmpIf
+
 #=======================================
 # Methods
 #=======================================
