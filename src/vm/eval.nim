@@ -138,6 +138,8 @@ proc evaluateBlock*(blok: Node, isDictionary=false): Translation =
         if item.kind == SpecialCall:
             case item.op:
                 of opIf:
+                    echo dumpNode(item.children[0])
+                    echo dumpNode(item.children[1])
                     discard
                 of opIfE:
                     discard
@@ -256,7 +258,7 @@ proc doEval*(root: Value, isDictionary=false, useStored: static bool = true): Tr
     result = evaluateBlock(generateAst(root, asDictionary=isDictionary), isDictionary=isDictionary)
     result.instructions.add(byte(opEnd))
 
-    #dump(newBytecode(result))
+    dump(newBytecode(result))
 
     when useStored:
         if vhash != -1:
