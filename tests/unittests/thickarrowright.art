@@ -37,14 +37,14 @@ print l "hello"
 
 ; AS A FUNCTION WITH BLOCK
 
-m: function => [& + 3]
+m: function => [& - 3]
 print m 10
 
 n: $ => [& + 3]
 print n 10
 
 ; AS A FUNCTION WITH MULTIPLE PARAMS
-p: function => [& * &]
+p: function => [& + &]
 print p 3 6
 
 q: function => [& * &]
