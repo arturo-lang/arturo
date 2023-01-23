@@ -172,9 +172,6 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
     while i < nLen:
         let item = blok.children[i]
 
-        # echo "current item:"
-        # echo dumpNode(item)
-
         if item.kind == SpecialCall:
             case item.op:
                 of opIf:        optimizeIf(consts, it, item, withInversion=true)
@@ -194,8 +191,7 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
         else:
 
             for instruction in traverse(item):
-                # echo "processing: "
-                # echo dumpNode(instruction)
+
                 case instruction.kind:
                     of RootNode:
                         discard
