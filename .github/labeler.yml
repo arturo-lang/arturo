@@ -1,6 +1,9 @@
 3rd-party:
   - src/extras/*
 
+ast:
+  - src/vm/ast.nim
+
 bytecode:
   - src/vm/bytecode.nim
   - src/vm/opcodes.nim
