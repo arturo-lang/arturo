@@ -119,7 +119,7 @@ proc getOperand*(node: Node, inverted: static bool=false): OpCode =
 # Optimization
 #------------------------
 
-template optimizeIf(consts: var ValueArray, it: var VBinary, special: untyped): untyped =
+template optimizeIf(consts: var ValueArray, it: var VBinary, special: untyped, withInversion=false): untyped =
     # let's keep some references
     # to the children
     let left {.cursor.} = special.children[0]
@@ -133,7 +133,7 @@ template optimizeIf(consts: var ValueArray, it: var VBinary, special: untyped): 
     evaluateBlock(generateAst(right.value), consts, rightIt)
 
     # get operand & added to the instructions
-    let newOp = getOperand(left, inverted=true)
+    let newOp = getOperand(left, inverted=withInversion)
 
     # add operand to our instructions
     if newOp in {opJmpIf, opJmpIfNot}:
@@ -177,11 +177,10 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
 
         if item.kind == SpecialCall:
             case item.op:
-                of opIf:        optimizeIf(consts, it, item)
+                of opIf:        optimizeIf(consts, it, item, withInversion=true)
                 of opIfE:
                     discard
-                of opUnless:
-                    discard
+                of opUnless:    optimizeIf(consts, it, item)
                 of opUnlessE:
                     discard
                 of opElse:
