@@ -135,6 +135,11 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
         if item.kind == SpecialCall:
             case item.op:
                 of opIf:
+                    evaluateBlock(item.children[0], consts, it)
+                    var blockIt: VBinary
+                    evaluateBlock(generateAst(item.children[1].value), consts, blockIt)
+                    it.addOpWithNumber(getOperand(item.children[0].op, inverted=true), blockIt.len, hasShortcut=false)
+                    it.add(blockIt)
                     echo dumpNode(item.children[0])
                     echo dumpNode(item.children[1])
                     discard
@@ -253,7 +258,7 @@ proc doEval*(root: Value, isDictionary=false, useStored: static bool = true): Tr
     var consts: ValueArray
     var it: VBinary
 
-    evaluateBlock(generateAst(root, consts, it, asDictionary=isDictionary), isDictionary=isDictionary)
+    evaluateBlock(generateAst(root, asDictionary=isDictionary), consts, it, isDictionary=isDictionary)
     it.add(byte(opEnd))
 
     result = Translation(constants: consts, instructions: it)
