@@ -325,35 +325,6 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = No
            right.kind == ConstantValue and right.value.kind in {Integer,Floating}:
             target.replaceNode(newConstant(op(left.value,right.value)))
 
-    proc optimizeUnless(target: var Node) {.enforceNoRaises.} =
-        target.op = 
-            if target.op == opUnless:
-                opIf
-            else:
-                opIfE
-
-        var left = target.children[0]
-
-        case left.op:
-            of opEq   : left.op = opNe
-            of opNe   : left.op = opEq
-            of opLt   : left.op = opGe
-            of opLe   : left.op = opGt
-            of opGt   : left.op = opLe
-            of opGe   : left.op = opLt
-            of opNot  :
-                let newNode = left.children[0]
-                newNode.parent = target
-                target.children[0] = newNode
-            else:
-                let newNode = newCallNode(BuiltinCall, 1, nil, opNot)
-                newNode.children = @[left]
-                target.children[0] = newNode
-                for child in newNode.children:
-                    child.parent = newNode
-
-                newNode.parent = target
-
     proc optimizeAppend(target: var Node) {.enforceNoRaises.} =
         var left = target.children[0]
         var right = target.children[1]
@@ -410,8 +381,6 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = No
                             of opFDiv       : target.optimizeArithmeticOp(`//`)
                             of opMod        : target.optimizeArithmeticOp(`%`)
                             of opPow        : target.optimizeArithmeticOp(`^`)
-                            of opUnless,
-                                opUnlessE    : target.optimizeUnless()
                             of opAppend     : target.optimizeAppend()
                             of opTo         : target.optimizeTo()
                                 
