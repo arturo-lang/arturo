@@ -265,11 +265,8 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
                         addConst(instruction.value, opCall)
                     of BuiltinCall:
                         addSingleCommand(instruction.op)
-                    else:
-                        discard
-                    # of SpecialCall:
-                        
-                    #     addSingleCommand(instruction.op)
+                    of SpecialCall:
+                        addSingleCommand(instruction.op)
 
         i += 1
 
