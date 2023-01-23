@@ -19,7 +19,7 @@
 # Libraries
 #=======================================
 
-import hashes, tables
+import hashes, sequtils, tables
 
 import vm/[ast, bytecode, values/value]
 import vm/values/custom/[vbinary, vlogical]
@@ -71,6 +71,19 @@ template addOpWithNumber(instructions: var VBinary, oper: OpCode, num: untyped, 
                 byte(oper),
                 byte(num)
             ])
+
+template injectOpWithIndex(instructions: var VBinary, oper: OpCode, num: untyped, at: int): untyped =
+    if num > 255:
+        instructions.insert([
+            byte(oper)+1,
+            byte(num shr 8),
+            byte(num)
+        ], at)
+    else:
+        instructions.insert([
+            byte(oper),
+            byte(num)
+        ], at)
 
 proc addConst(consts: var ValueArray, instructions: var VBinary, v: Value, op: OpCode, hasShortcut: static bool=true) {.inline,enforceNoRaises.} =
     var indx = consts.indexOfValue(v)
@@ -135,10 +148,13 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
         if item.kind == SpecialCall:
             case item.op:
                 of opIf:
-                    evaluateBlock(item.children[0], consts, it)
-                    var blockIt: VBinary
+                    evaluateBlock(Node(kind:RootNode, children: @[item.children[0]]), consts, it)
+                    var blockIt: VBinary = @[]
+                    echo "processing block"
                     evaluateBlock(generateAst(item.children[1].value), consts, blockIt)
-                    it.addOpWithNumber(getOperand(item.children[0].op, inverted=true), blockIt.len, hasShortcut=false)
+                    echo "got block of len: " & $blockIt.len
+                    it.injectOpWithIndex(getOperand(item.children[0].op, inverted=true), blockIt.len, it.len-1)
+                    # it.addOpWithNumber(getOperand(item.children[0].op, inverted=true), blockIt.len, hasShortcut=false)
                     it.add(blockIt)
                     echo dumpNode(item.children[0])
                     echo dumpNode(item.children[1])
