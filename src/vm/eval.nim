@@ -19,7 +19,7 @@
 # Libraries
 #=======================================
 
-import hashes, sequtils, tables
+import hashes, tables
 
 import vm/[ast, bytecode, values/value]
 import vm/values/custom/[vbinary, vlogical]
