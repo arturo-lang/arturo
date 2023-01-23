@@ -115,6 +115,35 @@ proc getOperand*(node: Node, inverted: static bool=false): OpCode =
             else: 
                 when inverted: opJmpIfNot   else: opJmpIf
 
+#------------------------
+# Optimization
+#------------------------
+
+template optimizeIf(consts: var ValueArray, it: var VBinary, special: untyped): untyped =
+    # let's keep some references
+    # to the children
+    let left {.cursor.} = special.children[0]
+    let right {.cursor.} = special.children[1]
+
+    # inline-evaluate left child
+    evaluateBlock(Node(kind:RootNode, children: @[left]), consts, it)
+
+    # separately ast+evaluate right child block     
+    var rightIt: VBinary = @[]
+    evaluateBlock(generateAst(right.value), consts, rightIt)
+
+    # get operand & added to the instructions
+    let newOp = getOperand(left, inverted=true)
+
+    # add operand to our instructions
+    if newOp in {opJmpIf, opJmpIfNot}:
+        it.addOpWithNumber(newOp, rightIt.len, hasShortcut=false)
+    else:
+        it.addReplaceOpWithIndex(newOp, rightIt.len)
+
+    # finally add the evaluated right block            
+    it.add(rightIt)
+
 #=======================================
 # Methods
 #=======================================
@@ -137,35 +166,6 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
         it.addOpWithNumber(opEol, n, hasShortcut=false)
 
     #------------------------
-    # Optimization
-    #------------------------
-
-    template optimizeIf(special: untyped): untyped =
-        # let's keep some references
-        # to the children
-        let left {.cursor.} = special.children[0]
-        let right {.cursor.} = special.children[1]
-
-        # inline-evaluate left child
-        evaluateBlock(Node(kind:RootNode, children: @[left]), consts, it)
-
-        # separately ast+evaluate right child block     
-        var rightIt: VBinary = @[]
-        evaluateBlock(generateAst(right.value), consts, rightIt)
-
-        # get operand & added to the instructions
-        let newOp = getOperand(left, inverted=true)
-
-        # add operand to our instructions
-        if newOp in {opJmpIf, opJmpIfNot}:
-            it.addOpWithNumber(newOp, rightIt.len, hasShortcut=false)
-        else:
-            it.addReplaceOpWithIndex(newOp, rightIt.len)
-
-        # finally add the evaluated right block            
-        it.add(rightIt)
-
-    #------------------------
     # MainLoop
     #------------------------
 
@@ -177,7 +177,7 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
 
         if item.kind == SpecialCall:
             case item.op:
-                of opIf:        optimizeIf(item)
+                of opIf:        optimizeIf(consts, it, item)
                 of opIfE:
                     discard
                 of opUnless:
