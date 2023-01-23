@@ -135,7 +135,7 @@ proc evaluateBlock*(blok: Node, isDictionary=false): Translation =
         # echo "current item:"
         # echo dumpNode(item)
 
-        if item.kind == SpecialNode:
+        if item.kind == SpecialCall:
             case item.op:
                 of opIf:
                     discard
