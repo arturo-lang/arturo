@@ -208,7 +208,7 @@ one :string
 FD E8 :binary 
 E8 :binary 
 [hello] :block 
-[32 176 211] :block 
+[32 189 211] :block 
 15 :integer 
 January :string 
 John :string 
