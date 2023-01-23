@@ -105,10 +105,7 @@ proc getOperand*(op: OpCode, inverted: static bool=false): OpCode =
 # Methods
 #=======================================
 
-proc evaluateBlock*(blok: Node, isDictionary=false): Translation =
-    var consts: ValueArray
-    var it: VBinary
-
+proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDictionary=false) =
     let nLen = blok.children.len
     var i {.register.} = 0
 
@@ -237,8 +234,6 @@ proc evaluateBlock*(blok: Node, isDictionary=false): Translation =
 
         i += 1
 
-    result = Translation(constants: consts, instructions: it)
-
 #=======================================
 # Main
 #=======================================
@@ -255,8 +250,13 @@ proc doEval*(root: Value, isDictionary=false, useStored: static bool = true): Tr
             if (let storedTranslation = StoredTranslations.getOrDefault(vhash, nil); not storedTranslation.isNil):
                 return storedTranslation
 
-    result = evaluateBlock(generateAst(root, asDictionary=isDictionary), isDictionary=isDictionary)
-    result.instructions.add(byte(opEnd))
+    var consts: ValueArray
+    var it: VBinary
+
+    evaluateBlock(generateAst(root, consts, it, asDictionary=isDictionary), isDictionary=isDictionary)
+    it.add(byte(opEnd))
+
+    result = Translation(constants: consts, instructions: it)
 
     dump(newBytecode(result))
 
