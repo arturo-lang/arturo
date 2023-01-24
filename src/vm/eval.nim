@@ -136,6 +136,9 @@ proc getOperand*(node: Node, inverted: static bool=false): (OpCode, bool) =
             else: 
                 when inverted: (opJmpIfNot, false)  else: (opJmpIf, false)
 
+# TODO(VM/eval) better `while` optimization?
+#  what if the user has actually re-defined `continue` or `break`?
+#  labels: vm, evaluator, enhancement
 func doesNotContainBranching(blok: Value): bool {.enforceNoRaises.} =
     for subvalue in blok.a:
         if subvalue.kind == Word and subvalue.s in ["continue", "break"]:
@@ -311,8 +314,7 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
 
     while i < nLen:
         let item = blok.children[i]
-        # echo "evaluating: " & $(item.kind) & " at " & $(i)
-        # echo dumpNode(item)
+
         var alreadyProcessed = false
         
         if item.kind == SpecialCall:
