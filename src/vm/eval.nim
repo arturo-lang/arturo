@@ -205,9 +205,13 @@ template optimizeConditional(
     if canWeOptimize:
         let rightNode = generateAst(right.value)
 
+        when withLoop:
+            var leftIt: VBinary
+            let leftNode = generateAst(left.value)
+
         let stillProceed =
             when withLoop:
-                doesNotContainBranching(rightNode)
+                leftNode.children.len > 0 and doesNotContainBranching(rightNode)
             else:
                 true
 
@@ -215,8 +219,6 @@ template optimizeConditional(
 
             when withLoop:
                 # separately ast+evaluate right child block     
-                var leftIt: VBinary
-                let leftNode = generateAst(left.value)
                 evaluateBlock(leftNode, consts, leftIt)
                 it.add(leftIt)
             else:
@@ -235,12 +237,12 @@ template optimizeConditional(
             # get operand & added to the instructions
             let newOp = 
                 when withLoop:
-                    getOperand(leftNode, inverted=withInversion)
+                    getOperand(leftNode.children[0], inverted=withInversion)
                 else:
                     getOperand(left, inverted=withInversion)
 
             # get jump distance
-            let jumpDistance =
+            var jumpDistance =
                 when withPotentialElse:
                     if elseIt.len > 255:
                         rightIt.len + 3
@@ -259,6 +261,7 @@ template optimizeConditional(
                 it.addOpWithNumber(newOp, jumpDistance, hasShortcut=false)
             else:
                 it.addReplaceOpWithIndex(newOp, jumpDistance)
+                jumpDistance -= 1
 
             # add the evaluated right block            
             it.add(rightIt)
@@ -271,7 +274,8 @@ template optimizeConditional(
                 # add the else block
                 it.add(elseIt)
             elif withLoop:
-                it.addOpWithNumber(opGoup, leftIt.len + rightIt.len, hasShortcut=false)
+                let upDistance = leftIt.len + jumpDistance
+                it.addOpWithNumber(opGoup, upDistance, hasShortcut=false)
 
             # processing finished
             alreadyProcessed = true
