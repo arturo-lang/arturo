@@ -322,7 +322,7 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
                 of opUnless:    optimizeConditional(consts, it, item)
                 of opUnlessE:   optimizeConditional(consts, it, item, withPotentialElse=true)
                 of opSwitch:    optimizeConditional(consts, it, item, withPotentialElse=true, isSwitch=true, withInversion=true)
-                of opWhile:     discard#optimizeConditional(consts, it, item, withLoop=true, withInversion=true)
+                of opWhile:     optimizeConditional(consts, it, item, withLoop=true, withInversion=true)
                 of opElse:
                     # `else` is not handled separately
                     # if it's a try?/else block for example, 
