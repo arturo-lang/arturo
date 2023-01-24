@@ -417,13 +417,19 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             var i = 0
             while i < instrs.len:
                 for i in 0..level: stdout.write "        "
-                stdout.write instrs[i].s
+                let preop = instrs[i].s
+                stdout.write preop
                 i += 1
                 if i < instrs.len and instrs[i].kind==Integer:
-                    stdout.write " ".repeat(20 - instrs[i-1].s.len)
+                    stdout.write " ".repeat(20 - preop.len)
                     while i < instrs.len and instrs[i].kind==Integer:
-                        if not muted: stdout.write fmt("{resetColor}{fg(grayColor)} #{instrs[i].i}{resetColor}")
-                        else: stdout.write " #" & $(instrs[i].i)
+                        var numstr = $(instrs[i].i)
+                        if preop.contains("jmp") or preop.contains("go"):
+                            numstr = "@" & numstr
+                        else:
+                            numstr = "#" & numstr
+                        if not muted: stdout.write fmt("{resetColor}{fg(grayColor)} {numstr}{resetColor}")
+                        else: stdout.write numstr
                         i += 1
                 stdout.write "\n"
 
