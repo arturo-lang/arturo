@@ -139,6 +139,7 @@ template optimizeConditional(
     it: var VBinary, 
     special: untyped, 
     withPotentialElse=false,
+    isSwitch=false,
     withInversion=false
 ): untyped =
     # let's keep some references
@@ -151,16 +152,20 @@ template optimizeConditional(
 
     when withPotentialElse:
         var elseChild {.cursor.}: Node
-
-        let previousI = i
-        var elseNode = getNextNonNewlineNode(blok, i, nLen)
-
-        if (not elseNode.isNil) and elseNode.kind == SpecialCall and elseNode.op == opElse:
-            elseChild = elseNode.children[0]
+        when isSwitch:
+            elseChild = special.children[2]
             canWeOptimize = right.kind == ConstantValue and right.value.kind == Block and
                             elseChild.kind == ConstantValue and elseChild.value.kind == Block
         else:
-            i = previousI
+            let previousI = i
+            let elseNode = getNextNonNewlineNode(blok, i, nLen)
+
+            if (not elseNode.isNil) and elseNode.kind == SpecialCall and elseNode.op == opElse:
+                elseChild = elseNode.children[0]
+                canWeOptimize = right.kind == ConstantValue and right.value.kind == Block and
+                                elseChild.kind == ConstantValue and elseChild.value.kind == Block
+            else:
+                i = previousI
     else:
         canWeOptimize = right.kind == ConstantValue and right.value.kind == Block
 
@@ -246,11 +251,14 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
                 of opIfE:       optimizeConditional(consts, it, item, withPotentialElse=true, withInversion=true)
                 of opUnless:    optimizeConditional(consts, it, item)
                 of opUnlessE:   optimizeConditional(consts, it, item, withPotentialElse=true)
+                of opSwitch:    optimizeConditional(consts, it, item, withPotentialElse=true, isSwitch=true, withInversion=true)
+                of opWhile:     discard
                 of opElse:
-                    discard
-                of opSwitch:
-                    discard
-                of opWhile:
+                    # `else` is not handled separately
+                    # if it's a try?/else block for example, 
+                    # it's to be handled as a normal op below
+                    # if it's an if?/else or unless?/else construct, 
+                    # it has already been above ^
                     discard
                 else:
                     discard # won't reach here
