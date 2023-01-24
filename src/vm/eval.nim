@@ -190,7 +190,8 @@ template optimizeConditional(
             let elseNode = getNextNonNewlineNode(blok, i, nLen)
 
             if (not elseNode.isNil) and elseNode.kind == SpecialCall and elseNode.op == opElse:
-                elseChild = elseNode.children[0]
+                var j = 0
+                elseChild = getNextNonNewlineNode(elseNode, j, elseNode.children.len)
                 canWeOptimize = right.kind == ConstantValue and right.value.kind == Block and
                                 elseChild.kind == ConstantValue and elseChild.value.kind == Block
             else:
