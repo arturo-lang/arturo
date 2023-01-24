@@ -437,7 +437,7 @@ proc doEval*(root: Value, isDictionary=false, useStored: static bool = true): Tr
 
     result = Translation(constants: consts, instructions: it)
 
-    dump(newBytecode(result))
+    #dump(newBytecode(result))
 
     when useStored:
         if vhash != -1:
