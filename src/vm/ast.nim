@@ -15,7 +15,6 @@
 ## 
 ## The main entry point is ``generateAst``.
 
-
 # TODO:
 # - [x] make Attribute's work
 # - [x] make AttributeLabel's work
@@ -28,7 +27,7 @@
 # - [x] optimize appends
 # - [x] make labels store new functions in TmpArities
 # - [x] make labels unstore overwritten functions in TmpArities
-# - [ ] make if/if?/else/while/switch work
+# - [x] make if/if?/else/while/switch work
 # - [x] correctly process to :string/:integer
 # - [ ] make sure all this left/right (when checking for optimization) are not Newline's
 
@@ -36,7 +35,7 @@
 # Libraries
 #=======================================
 
-import hashes, sequtils, strutils
+import sequtils, strutils
 import sugar, tables, unicode, std/with
 
 import vm/[globals, values/value, values/comparison, values/types]
