@@ -180,7 +180,7 @@ template optimizeConditional(
     var canWeOptimize = false
 
     when withPotentialElse:
-        var elseChild {.cursor.}: Node
+        var elseChild: Node
         when isSwitch:
             elseChild = cleanedChildren[2]
             canWeOptimize = right.kind == ConstantValue and right.value.kind == Block and
@@ -190,10 +190,13 @@ template optimizeConditional(
             let elseNode = getNextNonNewlineNode(blok, i, nLen)
 
             if (not elseNode.isNil) and elseNode.kind == SpecialCall and elseNode.op == opElse:
-                var j = 0
+                var j = -1
                 elseChild = getNextNonNewlineNode(elseNode, j, elseNode.children.len)
-                canWeOptimize = right.kind == ConstantValue and right.value.kind == Block and
-                                elseChild.kind == ConstantValue and elseChild.value.kind == Block
+                if not elseChild.isNil:
+                    canWeOptimize = right.kind == ConstantValue and right.value.kind == Block and
+                                    elseChild.kind == ConstantValue and elseChild.value.kind == Block
+                else:
+                    i = previousI
             else:
                 i = previousI
     else:
@@ -308,7 +311,8 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
 
     while i < nLen:
         let item = blok.children[i]
-
+        # echo "evaluating: " & $(item.kind) & " at " & $(i)
+        # echo dumpNode(item)
         var alreadyProcessed = false
         
         if item.kind == SpecialCall:
