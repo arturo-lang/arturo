@@ -114,27 +114,27 @@ proc addConst(consts: var ValueArray, instructions: var VBinary, v: Value, op: O
 
     instructions.addOpWithNumber(op, indx, hasShortcut)
 
-proc getOperand*(node: Node, inverted: static bool=false): OpCode =
+proc getOperand*(node: Node, inverted: static bool=false): (OpCode, bool) =
     if node.kind notin CallNode:
-        when inverted: opJmpIfNot   else: opJmpIf
+        when inverted: (opJmpIfNot, false)   else: (opJmpIf, false)
     else:
         case node.op:
             of opEq: 
-                when inverted: opJmpIfNe    else: opJmpIfEq
+                when inverted: (opJmpIfNe, true)    else: (opJmpIfEq, true) 
             of opNe: 
-                when inverted: opJmpIfEq    else: opJmpIfNe
+                when inverted: (opJmpIfEq, true)    else: (opJmpIfNe, true) 
             of opLt: 
-                when inverted: opJmpIfGe    else: opJmpIfLt
+                when inverted: (opJmpIfGe, true)    else: (opJmpIfLt, true) 
             of opLe: 
-                when inverted: opJmpIfGt    else: opJmpIfLe
+                when inverted: (opJmpIfGt, true)    else: (opJmpIfLe, true) 
             of opGt: 
-                when inverted: opJmpIfLe    else: opJmpIfGt
+                when inverted: (opJmpIfLe, true)    else: (opJmpIfGt, true) 
             of opGe: 
-                when inverted: opJmpIfLt    else: opJmpIfGe
+                when inverted: (opJmpIfLt, true)    else: (opJmpIfGe, true) 
             of opNot: 
-                when inverted: opJmpIf      else: opJmpIfNot
+                when inverted: (opJmpIf, true)      else: (opJmpIfNot, true) 
             else: 
-                when inverted: opJmpIfNot   else: opJmpIf
+                when inverted: (opJmpIfNot, false)  else: (opJmpIf, false)
 
 func doesNotContainBranching(blok: Value): bool {.enforceNoRaises.} =
     for subvalue in blok.a:
@@ -239,7 +239,7 @@ template optimizeConditional(
                 evaluateBlock(generateAst(elseChild.value), consts, elseIt)
 
             # get operand & added to the instructions
-            let newOp = 
+            let (newOp, replaceOp) = 
                 when withLoop:
                     getOperand(leftNode.children[0], inverted=withInversion)
                 else:
@@ -261,11 +261,11 @@ template optimizeConditional(
                     rightIt.len
 
             # add operand to our instructions
-            if newOp in {opJmpIf, opJmpIfNot}:
-                it.addOpWithNumber(newOp, jumpDistance, hasShortcut=false)
-            else:
+            if replaceOp:
                 it.addReplaceOpWithIndex(newOp, jumpDistance)
                 jumpDistance -= 1
+            else:
+                it.addOpWithNumber(newOp, jumpDistance, hasShortcut=false)
 
             # add the evaluated right block            
             it.add(rightIt)
@@ -437,7 +437,7 @@ proc doEval*(root: Value, isDictionary=false, useStored: static bool = true): Tr
 
     result = Translation(constants: consts, instructions: it)
 
-    #dump(newBytecode(result))
+    dump(newBytecode(result))
 
     when useStored:
         if vhash != -1:
