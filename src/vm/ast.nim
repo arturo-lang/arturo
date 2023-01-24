@@ -824,13 +824,14 @@ proc dumpNode*(node: Node, level = 0, single: static bool = false, showNewlines:
 # Main
 #=======================================
 
-proc generateAst*(parsed: Value, asDictionary=false): Node =
+proc generateAst*(parsed: Value, asDictionary=false, reuseArities: static bool=false): Node =
     result = newRootNode()
 
-    TmpArities = collect:
-        for k,v in Syms.pairs:
-            if v.kind == Function:
-                {k: v.arity}
+    when not reuseArities:
+        TmpArities = collect:
+            for k,v in Syms.pairs:
+                if v.kind == Function:
+                    {k: v.arity}
 
     discard result.processBlock(parsed, asDictionary=asDictionary)
 

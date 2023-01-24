@@ -207,11 +207,11 @@ template optimizeConditional(
             canWeOptimize = right.kind == ConstantValue and right.value.kind == Block
 
     if canWeOptimize:
-        let rightNode = generateAst(right.value)
+        let rightNode = generateAst(right.value, reuseArities=true)
 
         when withLoop:
             var leftIt: VBinary
-            let leftNode = generateAst(left.value)
+            let leftNode = generateAst(left.value, reuseArities=true)
 
         let stillProceed =
             when withLoop:
@@ -236,7 +236,7 @@ template optimizeConditional(
             when withPotentialElse:
                 # separately ast+evaluate else child block     
                 var elseIt: VBinary
-                evaluateBlock(generateAst(elseChild.value), consts, elseIt)
+                evaluateBlock(generateAst(elseChild.value, reuseArities=true), consts, elseIt)
 
             # get operand & added to the instructions
             let (newOp, replaceOp) = 
@@ -322,7 +322,7 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
                 of opUnless:    optimizeConditional(consts, it, item)
                 of opUnlessE:   optimizeConditional(consts, it, item, withPotentialElse=true)
                 of opSwitch:    optimizeConditional(consts, it, item, withPotentialElse=true, isSwitch=true, withInversion=true)
-                of opWhile:     optimizeConditional(consts, it, item, withLoop=true, withInversion=true)
+                of opWhile:     discard#optimizeConditional(consts, it, item, withLoop=true, withInversion=true)
                 of opElse:
                     # `else` is not handled separately
                     # if it's a try?/else block for example, 
