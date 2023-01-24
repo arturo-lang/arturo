@@ -149,6 +149,10 @@ proc replaceNode(node: Node, newNode: Node) =
     newNode.parent = node.parent
     node.parent.children[node.parent.children.find(node)] = newNode
 
+proc addSibling(node: Node, newNode: Node) =
+    newNode.parent = node.parent
+    node.parent.children.insert(newNode, node.parent.children.find(node)+1)
+
 #------------------------
 # Iterators
 #------------------------
