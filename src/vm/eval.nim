@@ -337,6 +337,8 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
                     of BuiltinCall:
                         addSingleCommand(instruction.op)
                     of SpecialCall:
+                        # TODO(VM/eval) nested `switch` calls are not being optimized
+                        #  labels: vm, evaluator, performance, enhancement
                         addSingleCommand(instruction.op)
 
         i += 1
