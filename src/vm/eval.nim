@@ -83,6 +83,21 @@ template addReplaceOpWithIndex(instructions: var VBinary, oper: OpCode, num: unt
         instructions[^1] = byte(oper)
         instructions.addByte(byte(num))
 
+proc getNextNonNewlineNode(blok: Node, i: var int, nLen: int): Node =
+    result = nil
+    if i + 1 >= nlen: return
+    result = blok.children[i+1]
+
+    var j = i+1
+    while result.kind == NewlineNode and j + 1 < nLen:
+        j += 1
+        result = blok.children[j]
+
+    if result.kind == NewlineNode: 
+        result = nil
+    else:
+        i = j
+
 proc addConst(consts: var ValueArray, instructions: var VBinary, v: Value, op: OpCode, hasShortcut: static bool=true) {.inline,enforceNoRaises.} =
     var indx = consts.indexOfValue(v)
     if indx == -1:
@@ -119,30 +134,81 @@ proc getOperand*(node: Node, inverted: static bool=false): OpCode =
 # Optimization
 #------------------------
 
-template optimizeIf(consts: var ValueArray, it: var VBinary, special: untyped, withInversion=false): untyped =
+template optimizeConditional(
+    consts: var ValueArray, 
+    it: var VBinary, 
+    special: untyped, 
+    withPotentialElse=false,
+    withInversion=false
+): untyped =
     # let's keep some references
     # to the children
     let left {.cursor.} = special.children[0]
     let right {.cursor.} = special.children[1]
 
-    # inline-evaluate left child
-    evaluateBlock(Node(kind:RootNode, children: @[left]), consts, it)
+    # can we optimize?
+    var canWeOptimize = false
 
-    # separately ast+evaluate right child block     
-    var rightIt: VBinary = @[]
-    evaluateBlock(generateAst(right.value), consts, rightIt)
+    when withPotentialElse:
+        var elseChild {.cursor.}: Node
 
-    # get operand & added to the instructions
-    let newOp = getOperand(left, inverted=withInversion)
+        let previousI = i
+        var elseNode = getNextNonNewlineNode(blok, i, nLen)
 
-    # add operand to our instructions
-    if newOp in {opJmpIf, opJmpIfNot}:
-        it.addOpWithNumber(newOp, rightIt.len, hasShortcut=false)
+        if (not elseNode.isNil) and elseNode.kind == SpecialCall and elseNode.op == opElse:
+            elseChild = elseNode.children[0]
+            canWeOptimize = right.kind == ConstantValue and right.value.kind == Block and
+                            elseChild.kind == ConstantValue and elseChild.value.kind == Block
+        else:
+            i = previousI
     else:
-        it.addReplaceOpWithIndex(newOp, rightIt.len)
+        canWeOptimize = right.kind == ConstantValue and right.value.kind == Block
 
-    # finally add the evaluated right block            
-    it.add(rightIt)
+    if canWeOptimize:
+        # inline-evaluate left child
+        evaluateBlock(Node(kind:RootNode, children: @[left]), consts, it)
+
+        # separately ast+evaluate right child block     
+        var rightIt: VBinary = @[]
+        evaluateBlock(generateAst(right.value), consts, rightIt)
+
+        when withPotentialElse:
+            # separately ast+evaluate else child block     
+            var elseIt: VBinary
+            evaluateBlock(generateAst(elseChild.value), consts, elseIt)
+
+        # get operand & added to the instructions
+        let newOp = getOperand(left, inverted=withInversion)
+
+        # get jump distance
+        let jumpDistance =
+            when withPotentialElse:
+                if elseIt.len > 255:
+                    rightIt.len + 3
+                else:
+                    rightIt.len + 2
+            else:
+                rightIt.len
+
+        # add operand to our instructions
+        if newOp in {opJmpIf, opJmpIfNot}:
+            it.addOpWithNumber(newOp, jumpDistance, hasShortcut=false)
+        else:
+            it.addReplaceOpWithIndex(newOp, jumpDistance)
+
+        # add the evaluated right block            
+        it.add(rightIt)
+
+        # finally add some potential else block
+        # preceded by an appropriate jump around it
+        when withPotentialElse:
+            it.addOpWithNumber(opGoto, elseIt.len, hasShortcut=false)
+
+            # add the else block
+            it.add(elseIt)
+
+        # processing finished
+        alreadyProcessed = true
 
 #=======================================
 # Methods
@@ -150,7 +216,7 @@ template optimizeIf(consts: var ValueArray, it: var VBinary, special: untyped, w
 
 proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDictionary=false) =
     let nLen = blok.children.len
-    var i {.register.} = 0
+    var i = 0
 
     #------------------------
     # Shortcuts
@@ -173,14 +239,13 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
         let item = blok.children[i]
 
         var alreadyProcessed = false
+        
         if item.kind == SpecialCall:
             case item.op:
-                of opIf:        optimizeIf(consts, it, item, withInversion=true)
-                of opIfE:
-                    discard
-                of opUnless:    optimizeIf(consts, it, item)
-                of opUnlessE:
-                    discard
+                of opIf:        optimizeConditional(consts, it, item, withInversion=true)
+                of opIfE:       optimizeConditional(consts, it, item, withPotentialElse=true, withInversion=true)
+                of opUnless:    optimizeConditional(consts, it, item)
+                of opUnlessE:   optimizeConditional(consts, it, item, withPotentialElse=true)
                 of opElse:
                     discard
                 of opSwitch:
@@ -189,7 +254,7 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
                     discard
                 else:
                     discard # won't reach here
-                
+
         if not alreadyProcessed:
 
             for instruction in traverse(item):
