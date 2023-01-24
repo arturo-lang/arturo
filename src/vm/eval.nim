@@ -136,6 +136,27 @@ proc getOperand*(node: Node, inverted: static bool=false): OpCode =
             else: 
                 when inverted: opJmpIfNot   else: opJmpIf
 
+func doesNotContainBranching(blok: Value): bool {.enforceNoRaises.} =
+    for subvalue in blok.a:
+        if subvalue.kind == Word and subvalue.s in ["continue", "break"]:
+            return false
+        elif subvalue.kind == Block:
+            if not doesNotContainBranching(subvalue):
+                return false
+    return true
+
+func doesNotContainBranching(node: Node): bool {.enforceNoRaises.} =
+    for subnode in node.children:
+        if subnode.kind == BuiltinCall and subnode.op in {opContinue, opBreak}:
+            return false
+        elif subnode.kind == ConstantValue and subnode.value.kind == Block:
+            if not doesNotContainBranching(subnode.value):
+                return false
+        else:
+            if not doesNotContainBranching(subnode):
+                return false
+    return true
+
 #------------------------
 # Optimization
 #------------------------
@@ -144,6 +165,7 @@ template optimizeConditional(
     consts: var ValueArray, 
     it: var VBinary, 
     special: untyped, 
+    withLoop=false,
     withPotentialElse=false,
     isSwitch=false,
     withInversion=false
@@ -174,53 +196,85 @@ template optimizeConditional(
             else:
                 i = previousI
     else:
-        canWeOptimize = right.kind == ConstantValue and right.value.kind == Block
+        when withLoop:
+            canWeOptimize = right.kind == ConstantValue and right.value.kind == Block and 
+                            left.kind == ConstantValue and left.value.kind == Block
+        else:
+            canWeOptimize = right.kind == ConstantValue and right.value.kind == Block
 
     if canWeOptimize:
-        # inline-evaluate left child
-        evaluateBlock(Node(kind:RootNode, children: @[left]), consts, it)
+        let rightNode = generateAst(right.value)
 
-        # separately ast+evaluate right child block     
-        var rightIt: VBinary = @[]
-        evaluateBlock(generateAst(right.value), consts, rightIt)
-
-        when withPotentialElse:
-            # separately ast+evaluate else child block     
-            var elseIt: VBinary
-            evaluateBlock(generateAst(elseChild.value), consts, elseIt)
-
-        # get operand & added to the instructions
-        let newOp = getOperand(left, inverted=withInversion)
-
-        # get jump distance
-        let jumpDistance =
-            when withPotentialElse:
-                if elseIt.len > 255:
-                    rightIt.len + 3
-                else:
-                    rightIt.len + 2
+        let stillProceed =
+            when withLoop:
+                doesNotContainBranching(rightNode)
             else:
-                rightIt.len
+                true
 
-        # add operand to our instructions
-        if newOp in {opJmpIf, opJmpIfNot}:
-            it.addOpWithNumber(newOp, jumpDistance, hasShortcut=false)
-        else:
-            it.addReplaceOpWithIndex(newOp, jumpDistance)
+        if stillProceed:
 
-        # add the evaluated right block            
-        it.add(rightIt)
+            when withLoop:
+                # separately ast+evaluate right child block     
+                var leftIt: VBinary
+                let leftNode = generateAst(left.value)
+                evaluateBlock(leftNode, consts, leftIt)
+                it.add(leftIt)
+            else:
+                # inline-evaluate left child
+                evaluateBlock(Node(kind:RootNode, children: @[left]), consts, it)
 
-        # finally add some potential else block
-        # preceded by an appropriate jump around it
-        when withPotentialElse:
-            it.addOpWithNumber(opGoto, elseIt.len, hasShortcut=false)
+            # separately ast+evaluate right child block     
+            var rightIt: VBinary
+            evaluateBlock(rightNode, consts, rightIt)
 
-            # add the else block
-            it.add(elseIt)
+            when withPotentialElse:
+                # separately ast+evaluate else child block     
+                var elseIt: VBinary
+                evaluateBlock(generateAst(elseChild.value), consts, elseIt)
 
-        # processing finished
-        alreadyProcessed = true
+            # get operand & added to the instructions
+            let newOp = 
+                when withLoop:
+                    getOperand(leftNode, inverted=withInversion)
+                else:
+                    getOperand(left, inverted=withInversion)
+
+            # get jump distance
+            let jumpDistance =
+                when withPotentialElse:
+                    if elseIt.len > 255:
+                        rightIt.len + 3
+                    else:
+                        rightIt.len + 2
+                elif withLoop:
+                    if (leftIt.len + rightIt.len) > 255:
+                        rightIt.len + 3
+                    else:
+                        rightIt.len + 2
+                else:
+                    rightIt.len
+
+            # add operand to our instructions
+            if newOp in {opJmpIf, opJmpIfNot}:
+                it.addOpWithNumber(newOp, jumpDistance, hasShortcut=false)
+            else:
+                it.addReplaceOpWithIndex(newOp, jumpDistance)
+
+            # add the evaluated right block            
+            it.add(rightIt)
+
+            # finally add some potential else block
+            # preceded by an appropriate jump around it
+            when withPotentialElse:
+                it.addOpWithNumber(opGoto, elseIt.len, hasShortcut=false)
+
+                # add the else block
+                it.add(elseIt)
+            elif withLoop:
+                it.addOpWithNumber(opGoup, leftIt.len + rightIt.len, hasShortcut=false)
+
+            # processing finished
+            alreadyProcessed = true
 
 #=======================================
 # Methods
@@ -259,7 +313,7 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
                 of opUnless:    optimizeConditional(consts, it, item)
                 of opUnlessE:   optimizeConditional(consts, it, item, withPotentialElse=true)
                 of opSwitch:    optimizeConditional(consts, it, item, withPotentialElse=true, isSwitch=true, withInversion=true)
-                of opWhile:     discard
+                of opWhile:     optimizeConditional(consts, it, item, withLoop=true, withInversion=true)
                 of opElse:
                     # `else` is not handled separately
                     # if it's a try?/else block for example, 
