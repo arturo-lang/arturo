@@ -114,6 +114,34 @@ proc addConst(consts: var ValueArray, instructions: var VBinary, v: Value, op: O
 
     instructions.addOpWithNumber(op, indx, hasShortcut)
 
+proc addConstAndGetIndex(consts: var ValueArray, instructions: var VBinary, v: Value, op: OpCode, hasShortcut: static bool=true): int {.inline,enforceNoRaises.} =
+    result = consts.indexOfValue(v)
+    if result == -1:
+        let newv = v
+        newv.readonly = true
+        consts.add(newv)
+        result = consts.len-1
+
+    instructions.addOpWithNumber(op, result, hasShortcut)
+
+proc addVariableLoad(consts: var ValueArray, instructions: var VBinary, v: Value, previousStore: int, previousStorePos: int) {.inline,enforceNoRaises.} =
+    var indx = consts.indexOfValue(v)
+    if indx == -1:
+        let newv = v
+        newv.readonly = true
+        consts.add(newv)
+        indx = consts.len-1
+
+    if indx == previousStore:
+        if indx <= 13:
+            instructions[previousStorePos-1] = (byte(opStorl)-0x0E) + byte(indx)
+        elif indx <= 255:
+            instructions[previousStorePos-2] = byte(opStorl)
+        else:
+            instructions[previousStorePos-3] = byte(opStorlX)
+    else:
+        instructions.addOpWithNumber(opLoad, indx, hasShortcut=true)
+
 proc getOperand*(node: Node, inverted: static bool=false): (OpCode, bool) =
     if node.kind notin CallNode:
         when inverted: (opJmpIfNot, false)   else: (opJmpIf, false)
@@ -295,12 +323,22 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
     let nLen = blok.children.len
     var i = 0
 
+    var lastOpStore = -1
+    var lastOpStorePos = -1
+
     #------------------------
     # Shortcuts
     #------------------------
 
     template addConst(v: Value, op: OpCode, hasShortcut: static bool=true): untyped =
         addConst(consts, it, v, op, hasShortcut)
+
+    template addConstAndGetIndex(v: Value, op: OpCode, hasShortcut: static bool=true): untyped =
+        addConstAndGetIndex(consts, it, v, op, hasShortcut)
+
+    template addVariableLoad(v: Value): untyped =
+        addVariableLoad(consts, it, v, lastOpStore, lastOpStorePos)
+        lastOpStore = -1
 
     template addSingleCommand(op: untyped): untyped =
         it.addByte(op)
@@ -318,6 +356,7 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
         var alreadyProcessed = false
         
         if item.kind == SpecialCall:
+            lastOpStore = -1
             case item.op:
                 of opIf:        optimizeConditional(consts, it, item, withInversion=true)
                 of opIfE:       optimizeConditional(consts, it, item, withPotentialElse=true, withInversion=true)
@@ -345,6 +384,7 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
                     of NewlineNode:
                         addEol(instruction.line)
                     of ConstantValue:
+                        lastOpStore = -1
                         var alreadyPut = false
                         let iv {.cursor.} = instruction.value
                         case instruction.value.kind:
@@ -396,19 +436,25 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
                         if not alreadyPut:
                             addConst(instruction.value, opPush)
                     of VariableLoad:
-                        addConst(instruction.value, opLoad)
+                        addVariableLoad(instruction.value)
                     of AttributeNode:
+                        lastOpStore = -1
                         addConst(instruction.value, opAttr)
                     of VariableStore:
                         if unlikely(isDictionary):
+                            lastOpStore = -1
                             addConst(instruction.value, opDStore, hasShortcut=false)
                         else:
-                            addConst(instruction.value, opStore)
+                            lastOpStore = addConstAndGetIndex(instruction.value, opStore)
+                            lastOpStorePos = it.len
                     of OtherCall:
+                        lastOpStore = -1
                         addConst(instruction.value, opCall)
                     of BuiltinCall:
+                        lastOpStore = -1
                         addSingleCommand(instruction.op)
                     of SpecialCall:
+                        lastOpStore = -1
                         # TODO(VM/eval) nested `switch` calls are not being optimized
                         #  labels: vm, evaluator, performance, enhancement
                         addSingleCommand(instruction.op)
