@@ -386,7 +386,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
 
         op = OpCode(it[i])
 
-        #echo "Executing: " & (stringify(op)) & " at " & $(i)# & " with next: " & $(it[i+1])
+        echo "Executing: " & (stringify(op)) & " at " & $(i)# & " with next: " & $(it[i+1])
 
         hookOpProfiler($(op)):
 
@@ -729,11 +729,11 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
 
                 of opGoup               :
                     i += 1
-                    i -= int(it[i])
+                    i -= (int(it[i]) + 2)
 
                 of opGoupX              :
                     i += 2
-                    i -= int(uint16(it[i-1]) shl 8 + byte(it[i]))
+                    i -= (int(uint16(it[i-1]) shl 8 + byte(it[i])) + 3)
 
                 of opRet                :
                     discard
