@@ -420,7 +420,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 stdout.write instrs[i].s
                 i += 1
                 if i < instrs.len and instrs[i].kind==Integer:
-                    stdout.write "                "
+                    stdout.write " ".repeat(30 - instrs[i].s.len)
                     while i < instrs.len and instrs[i].kind==Integer:
                         if not muted: stdout.write fmt("{resetColor}{fg(grayColor)} #{instrs[i].i}{resetColor}")
                         else: stdout.write " #" & $(instrs[i].i)
