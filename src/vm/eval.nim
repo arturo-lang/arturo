@@ -19,7 +19,7 @@
 # Libraries
 #=======================================
 
-import hashes, tables
+import hashes, sugar, tables
 
 import vm/[ast, bytecode, values/value]
 import vm/values/custom/[vbinary, vlogical]
@@ -83,6 +83,12 @@ template addReplaceOpWithIndex(instructions: var VBinary, oper: OpCode, num: unt
         instructions[^1] = byte(oper)
         instructions.addByte(byte(num))
 
+proc cleanChildren(node: Node): seq[Node] =
+    result = collect:
+        for subnode in node.children:
+            if subnode.kind != NewlineNode:
+                subnode
+
 proc getNextNonNewlineNode(blok: Node, i: var int, nLen: int): Node =
     result = nil
     if i + 1 >= nlen: return
@@ -144,8 +150,9 @@ template optimizeConditional(
 ): untyped =
     # let's keep some references
     # to the children
-    let left {.cursor.} = special.children[0]
-    let right {.cursor.} = special.children[1]
+    let cleanedChildren = cleanChildren(special)
+    let left {.cursor.} = cleanedChildren[0]
+    let right {.cursor.} = cleanedChildren[1]
 
     # can we optimize?
     var canWeOptimize = false
@@ -153,7 +160,7 @@ template optimizeConditional(
     when withPotentialElse:
         var elseChild {.cursor.}: Node
         when isSwitch:
-            elseChild = special.children[2]
+            elseChild = cleanedChildren[2]
             canWeOptimize = right.kind == ConstantValue and right.value.kind == Block and
                             elseChild.kind == ConstantValue and elseChild.value.kind == Block
         else:
