@@ -121,8 +121,14 @@ template callByIndex(idx: int):untyped =
 template fetchAttributeByIndex(idx: int):untyped =
     stack.pushAttr(cnst[idx].s, move stack.pop())
 
-macro performConditionalJump(symb: untyped): untyped =
-    result = quote do:
+template performConditionalJump(symb: untyped, short: static bool=false): untyped =
+    when short:
+        let x = move stack.pop()
+        let y = move stack.pop()
+        i += 1
+        if `symb`(x,y):
+            i += int(it[i])
+    else:
         let x = move stack.pop()
         let y = move stack.pop()
         i += 2
@@ -292,7 +298,7 @@ proc execFunction*(fun: Value, fid: Hash) =
         SetSym(arg, move stack.pop())
 
     if fun.bcode.isNil:
-        fun.bcode = newBytecode(doEval(fun.main))
+        fun.bcode = newBytecode(doEval(fun.main, isFunctionBlock=true))
 
     try:
         ExecLoop(fun.bcode().trans.constants, fun.bcode().trans.instructions)
@@ -347,7 +353,7 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
         SetSym(arg, move stack.pop())
 
     if fun.bcode.isNil:
-        fun.bcode = newBytecode(doEval(fun.main))
+        fun.bcode = newBytecode(doEval(fun.main, isFunctionBlock=true))
 
     try:
         ExecLoop(fun.bcode().trans.constants, fun.bcode().trans.instructions)
@@ -677,35 +683,57 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 # conditional jumps
                 of opJmpIf              :
                     let x = move stack.pop()
+                    i += 1
+                    if not (x.kind==Null or isFalse(x)):
+                        i += int(it[i])
+
+                of opJmpIfX:
+                    let x = move stack.pop()
                     i += 2
                     if not (x.kind==Null or isFalse(x)):
                         i += int(uint16(it[i-1]) shl 8 + byte(it[i]))
                 
                 of opJmpIfNot           :
                     let x = move stack.pop()
+                    i += 1
+                    if x.kind==Null or isFalse(x):
+                        i += int(it[i])
+                
+                of opJmpIfNotX:
+                    let x = move stack.pop()
                     i += 2
                     if x.kind==Null or isFalse(x):
                         i += int(uint16(it[i-1]) shl 8 + byte(it[i]))
 
-                of opJmpIfEq            : performConditionalJump(`==`)
-                of opJmpIfNe            : performConditionalJump(`!=`)
-                of opJmpIfGt            : performConditionalJump(`>`)
-                of opJmpIfGe            : performConditionalJump(`>=`)
-                of opJmpIfLt            : performConditionalJump(`<`)
-                of opJmpIfLe            : performConditionalJump(`<=`)
-
-                of RSRV12               : discard
-                of RSRV13               : discard
-                of RSRV14               : discard
+                of opJmpIfEq            : performConditionalJump(`==`, short=true)
+                of opJmpIfEqX           : performConditionalJump(`==`)
+                of opJmpIfNe            : performConditionalJump(`!=`, short=true)
+                of opJmpIfNeX           : performConditionalJump(`!=`)
+                of opJmpIfGt            : performConditionalJump(`>`, short=true)
+                of opJmpIfGtX           : performConditionalJump(`>`)
+                of opJmpIfGe            : performConditionalJump(`>=`, short=true)
+                of opJmpIfGeX           : performConditionalJump(`>=`)
+                of opJmpIfLt            : performConditionalJump(`<`, short=true)
+                of opJmpIfLtX           : performConditionalJump(`<`)
+                of opJmpIfLe            : performConditionalJump(`<=`, short=true)
+                of opJmpIfLeX           : performConditionalJump(`<=`)
 
                 # flow control
                 of opGoto               :
+                    i += 1
+                    i += int(it[i])
+
+                of opGotoX              :
                     i += 2
                     i += int(uint16(it[i-1]) shl 8 + byte(it[i]))
 
                 of opGoup               :
+                    i += 1
+                    i -= (int(it[i]) + 2)
+
+                of opGoupX              :
                     i += 2
-                    i -= int(uint16(it[i-1]) shl 8 + byte(it[i]))
+                    i -= (int(uint16(it[i-1]) shl 8 + byte(it[i])) + 3)
 
                 of opRet                :
                     discard

@@ -392,10 +392,10 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             while j < v.trans.instructions.len:
                 let op = OpCode(v.trans.instructions[j])
                 instrs.add(newWord(stringify((OpCode(op)))))
-                if op in {opPush, opStore, opDStore, opCall, opLoad, opStorl, opAttr, opEol}:
+                if op in {opPush, opStore, opDStore, opCall, opLoad, opStorl, opAttr, opEol, opJmpIf, opJmpIfNot, opJmpIfEq, opJmpIfNe, opJmpIfGt, opJmpIfGe, opJmpIfLt, opJmpIfLe, opGoto, opGoup}:
                     j += 1
                     instrs.add(newInteger(int(v.trans.instructions[j])))
-                elif op in {opPushX, opStoreX, opDStore, opCallX, opLoadX, opStorlX, opEolX, opJmpIf, opJmpIfNot, opJmpIfEq, opJmpIfNe, opJmpIfGt, opJmpIfGe, opJmpIfLt, opJmpIfLe, opGoto, opGoup}:
+                elif op in {opPushX, opStoreX, opDStore, opCallX, opLoadX, opStorlX, opEolX, opJmpIfX, opJmpIfNotX, opJmpIfEqX, opJmpIfNeX, opJmpIfGtX, opJmpIfGeX, opJmpIfLtX, opJmpIfLeX, opGotoX, opGoupX}:
                     j += 2
                     instrs.add(newInteger(int(uint16(v.trans.instructions[j-1]) shl 8 + byte(v.trans.instructions[j]))))
 
@@ -417,13 +417,19 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             var i = 0
             while i < instrs.len:
                 for i in 0..level: stdout.write "        "
-                stdout.write instrs[i].s
+                let preop = instrs[i].s
+                stdout.write preop
                 i += 1
                 if i < instrs.len and instrs[i].kind==Integer:
-                    stdout.write "                "
+                    stdout.write " ".repeat(20 - preop.len)
                     while i < instrs.len and instrs[i].kind==Integer:
-                        if not muted: stdout.write fmt("{resetColor}{fg(grayColor)} #{instrs[i].i}{resetColor}")
-                        else: stdout.write " #" & $(instrs[i].i)
+                        var numstr = $(instrs[i].i)
+                        if preop.contains("jmp") or preop.contains("go"):
+                            numstr = "@" & numstr
+                        else:
+                            numstr = "#" & numstr
+                        if not muted: stdout.write fmt("{resetColor}{fg(grayColor)} {numstr}{resetColor}")
+                        else: stdout.write numstr
                         i += 1
                 stdout.write "\n"
 

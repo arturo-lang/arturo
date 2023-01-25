@@ -23,7 +23,7 @@ when defined(PROFILER):
     # Libraries
     #=======================================
 
-    import algorithm, hashes, std/monotimes
+    import algorithm, hashes, std/monotimes, std/sets
     import strformat, strutils, sugar, tables, times
 
     import helpers/terminal
@@ -270,9 +270,9 @@ template hookProcProfiler*(name: string, actionContent: untyped): untyped =
     else:
         actionContent
 
-template hookMiscProfiler*(name: string): untyped =
+template hookOptimProfiler*(name: string): untyped =
     when defined(PROFILER):
-        var newRow = addMetricIfNotExists(name, "misc")
+        var newRow = addMetricIfNotExists(name, "optimizations")
         newRow.runs += 1
 
 #=======================================
@@ -285,7 +285,7 @@ proc initProfiler*() =
             "functions": initOrderedTable[string, ProfilerDataRow](),
             "ops": initOrderedTable[string, ProfilerDataRow](),
             "procs": initOrderedTable[string, ProfilerDataRow](),
-            "misc": initOrderedTable[string, ProfilerDataRow]()
+            "optimizations": initOrderedTable[string, ProfilerDataRow]()
         }.toOrderedTable
 
         # TODO(VM/profiler) Completely remove or make it work "properly"
@@ -302,7 +302,7 @@ proc showProfilerData*() =
         printProfilerDataTable("functions")
         printProfilerDataTable("ops")
         printProfilerDataTable("procs")
-        printProfilerDataTable("misc")
+        printProfilerDataTable("optimizations")
         when false:
             printProfilerCallTree()
     else:
