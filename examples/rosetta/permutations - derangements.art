@@ -6,7 +6,7 @@ isClean?: function [s,o][
 ]
 
 derangements: function [n][
-    original: 1..n
+    original: @1..n
     select permutate original 'x ->
         isClean? x original
 ]
