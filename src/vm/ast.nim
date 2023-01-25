@@ -154,6 +154,12 @@ proc addSibling(node: Node, newNode: Node) =
     newNode.parent = node.parent
     node.parent.children.insert(newNode, node.parent.children.find(node)+1)
 
+proc isLastChild(node: Node): bool =
+    var j = node.parent.children.len-1
+    while j >= 0 and node.parent.children[j].kind == NewlineNode:
+        j -= 1
+    return node.parent.children[j] == node
+
 #------------------------
 # Iterators
 #------------------------
@@ -229,7 +235,15 @@ func copyNode(node: Node): Node =
 # Methods
 #=======================================
 
-proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = NoStartingLine, asDictionary: bool = false, processingArrow: static bool = false): int =
+proc processBlock*(
+    root: Node, 
+    blok: Value, 
+    start = 0, 
+    startingLine: uint32 = NoStartingLine, 
+    asDictionary: bool = false, 
+    asFunction: bool = false, 
+    processingArrow: static bool = false
+): int =
     var i: int = start
     var nLen: int = blok.a.len
 
@@ -367,6 +381,13 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = No
                 target.arity = 1
                 target.children.delete(0)
 
+    proc optimizeReturn(target: var Node) {.enforceNoRaises.} =
+        if isLastChild(target):
+            hookOptimProfiler("return (eliminate last)")
+            # Replace last return
+            var left = target.children[0]
+            target.replaceNode(left)
+
     proc updateAritiesFromStore(target: var Node) {.enforceNoRaises.} =
         var child = target.children[0]
 
@@ -401,6 +422,9 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = No
                             of opPow        : target.optimizeArithmeticOp(`^`)
                             of opAppend     : target.optimizeAppend()
                             of opTo         : target.optimizeTo()
+                            of opReturn     : 
+                                if asFunction:
+                                    target.optimizeReturn()
                                 
                             else:
                                 discard
@@ -838,7 +862,7 @@ proc dumpNode*(node: Node, level = 0, single: static bool = false, showNewlines:
 # Main
 #=======================================
 
-proc generateAst*(parsed: Value, asDictionary=false, reuseArities: static bool=false): Node =
+proc generateAst*(parsed: Value, asDictionary=false, asFunction=false, reuseArities: static bool=false): Node =
     result = newRootNode()
 
     when not reuseArities:
@@ -847,6 +871,6 @@ proc generateAst*(parsed: Value, asDictionary=false, reuseArities: static bool=f
                 if v.kind == Function:
                     {k: v.arity}
 
-    discard result.processBlock(parsed, asDictionary=asDictionary)
+    discard result.processBlock(parsed, asDictionary=asDictionary, asFunction=asFunction)
 
     #echo dumpNode(result)
