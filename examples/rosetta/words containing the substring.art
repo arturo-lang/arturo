@@ -1,3 +1,4 @@
-select read.lines "unixdict.txt" 'l -> 
-    and? contains? l "the" 
-         11 < size l
+print.lines
+    select read.lines relative "unixdict.txt" 'l -> 
+        and? [11 < size l]
+             [contains? l "the"]
