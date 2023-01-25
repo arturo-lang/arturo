@@ -298,7 +298,7 @@ proc execFunction*(fun: Value, fid: Hash) =
         SetSym(arg, move stack.pop())
 
     if fun.bcode.isNil:
-        fun.bcode = newBytecode(doEval(fun.main))
+        fun.bcode = newBytecode(doEval(fun.main, isFunctionBlock=true))
 
     try:
         ExecLoop(fun.bcode().trans.constants, fun.bcode().trans.instructions)
@@ -353,7 +353,7 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
         SetSym(arg, move stack.pop())
 
     if fun.bcode.isNil:
-        fun.bcode = newBytecode(doEval(fun.main))
+        fun.bcode = newBytecode(doEval(fun.main, isFunctionBlock=true))
 
     try:
         ExecLoop(fun.bcode().trans.constants, fun.bcode().trans.instructions)
