@@ -331,6 +331,7 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
     #------------------------
 
     template addConst(v: Value, op: OpCode, hasShortcut: static bool=true): untyped =
+        lastOpStore = -1
         addConst(consts, it, v, op, hasShortcut)
 
     template addConstAndGetIndex(v: Value, op: OpCode, hasShortcut: static bool=true): untyped =
@@ -341,6 +342,7 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
         lastOpStore = -1
 
     template addSingleCommand(op: untyped): untyped =
+        lastOpStore = -1
         it.addByte(op)
 
     template addEol(n: untyped): untyped =
@@ -384,7 +386,6 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
                     of NewlineNode:
                         addEol(instruction.line)
                     of ConstantValue:
-                        lastOpStore = -1
                         var alreadyPut = false
                         let iv {.cursor.} = instruction.value
                         case instruction.value.kind:
@@ -438,23 +439,18 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
                     of VariableLoad:
                         addVariableLoad(instruction)
                     of AttributeNode:
-                        lastOpStore = -1
                         addConst(instruction.value, opAttr)
                     of VariableStore:
                         if unlikely(isDictionary):
-                            lastOpStore = -1
                             addConst(instruction.value, opDStore, hasShortcut=false)
                         else:
                             lastOpStore = addConstAndGetIndex(instruction.value, opStore)
                             lastOpStorePos = it.len
                     of OtherCall:
-                        lastOpStore = -1
                         addConst(instruction.value, opCall)
                     of BuiltinCall:
-                        lastOpStore = -1
                         addSingleCommand(instruction.op)
                     of SpecialCall:
-                        lastOpStore = -1
                         # TODO(VM/eval) nested `switch` calls are not being optimized
                         #  labels: vm, evaluator, performance, enhancement
                         addSingleCommand(instruction.op)
