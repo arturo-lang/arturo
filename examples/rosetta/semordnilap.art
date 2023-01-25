@@ -1,4 +1,4 @@
-words: read.lines "http://wiki.puzzlers.org/pub/wordlists/unixdict.txt"
+words: read.lines relative "unixdict.txt"
 pairs: []
 loop words 'wrd [ 
     if and? contains? words reverse wrd 
