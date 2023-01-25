@@ -312,24 +312,31 @@ type
         opSwap          = 0xC4      # ()                # X,Y               # Y,X
 
         # conditional jumps
-        opJmpIf         = 0xC5      # (idx,idxB)        # cond              #
-        opJmpIfNot      = 0xC6      # (idx,idxB)        # cond              #
-        opJmpIfEq       = 0xC7      # (idx,idxB)        # cond              #
-        opJmpIfNe       = 0xC8      # (idx,idxB)        # cond              #
-        opJmpIfGt       = 0xC9      # (idx,idxB)        # cond              #
-        opJmpIfGe       = 0xCA      # (idx,idxB)        # cond              #
-        opJmpIfLt       = 0xCB      # (idx,idxB)        # cond              #
-        opJmpIfLe       = 0xCC      # (idx,idxB)        # cond              #
-
-        RSRV12          = 0xCD      #
-        RSRV13          = 0xCE      #
-        RSRV14          = 0xCF      #
+        opJmpIf         = 0xC5      # (idx)             # cond              #
+        opJmpIfX        = 0xC6      # (idx,idxB)        # cond              #
+        opJmpIfNot      = 0xC7      # (idx)             # cond              #
+        opJmpIfNotX     = 0xC8      # (idx,idxB)        # cond              #
+        opJmpIfEq       = 0xC9      # (idx)             # cond              #
+        opJmpIfEqX      = 0xCA      # (idx,idxB)        # cond              #
+        opJmpIfNe       = 0xCB      # (idx)             # cond              #
+        opJmpIfNeX      = 0xCC      # (idx,idxB)        # cond              #
+        opJmpIfGt       = 0xCD      # (idx)             # cond              #
+        opJmpIfGtX      = 0xCE      # (idx,idxB)        # cond              #
+        opJmpIfGe       = 0xCF      # (idx)             # cond              #
+        opJmpIfGeX      = 0xD0      # (idx,idxB)        # cond              #
+        opJmpIfLt       = 0xD1      # (idx)             # cond              #
+        opJmpIfLtX      = 0xD2      # (idx,idxB)        # cond              #
+        opJmpIfLe       = 0xD3      # (idx)             # cond              #
+        opJmpIfLeX      = 0xD4      # (idx,idxB)        # cond              #
 
         # flow control
-        opGoto          = 0xD0      # (idx,idxB)        #                   #
-        opGoup          = 0xD1      # (idx,idxB)        #                   #
-        opRet           = 0xD2      # ()                #                   #
-        opEnd           = 0xD3      # ()                #                   #
+        opGoto          = 0xD5      # (idx)             #                   #
+        opGotoX         = 0xD6      # (idx,idxB)        #                   #
+        opGoup          = 0xD7      # (idx)             #                   #
+        opGoupX         = 0xD8      # (idx,idxB)        #                   #
+        
+        opRet           = 0xD9      # ()                #                   #
+        opEnd           = 0xDA      # ()                #                   #
 
 when false:
     #=======================================

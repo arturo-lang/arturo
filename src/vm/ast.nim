@@ -15,8 +15,7 @@
 ## 
 ## The main entry point is ``generateAst``.
 
-
-# TODO:
+# Pending task for new AST+Eval:
 # - [x] make Attribute's work
 # - [x] make AttributeLabel's work
 # - [x] make Path's work
@@ -26,9 +25,10 @@
 # - [x] clean up opCode's
 # - [x] attach opCode's to built-in function (for faster lookups)
 # - [x] optimize appends
+# - [x] optimize returns when it's the last statement of a function block
 # - [x] make labels store new functions in TmpArities
 # - [x] make labels unstore overwritten functions in TmpArities
-# - [ ] make if/if?/else/while/switch work
+# - [x] make if/if?/else/while/switch work
 # - [x] correctly process to :string/:integer
 # - [ ] make sure all this left/right (when checking for optimization) are not Newline's
 
@@ -36,12 +36,14 @@
 # Libraries
 #=======================================
 
-import hashes, sequtils, strutils
+import sequtils, strutils
 import sugar, tables, unicode, std/with
 
 import vm/[globals, values/value, values/comparison, values/types]
 import vm/values/printable
 import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vrational, vsymbol, vversion]
+
+import vm/profiler
 
 import vm/bytecode
 #=======================================
@@ -108,8 +110,8 @@ var
 const
     NoStartingLine  = 1896618966'u32
 
-    TerminalNode    : set[NodeKind] = {ConstantValue, VariableLoad}
-    CallNode        : set[NodeKind] = {AttributeNode..SpecialCall}
+    TerminalNode*   : set[NodeKind] = {ConstantValue, VariableLoad}
+    CallNode*       : set[NodeKind] = {AttributeNode..SpecialCall}
 
 #=======================================
 # Forward declarations
@@ -148,6 +150,16 @@ func deleteNode(node: Node) =
 proc replaceNode(node: Node, newNode: Node) =
     newNode.parent = node.parent
     node.parent.children[node.parent.children.find(node)] = newNode
+
+proc addSibling(node: Node, newNode: Node) =
+    newNode.parent = node.parent
+    node.parent.children.insert(newNode, node.parent.children.find(node)+1)
+
+proc isLastChild(node: Node): bool =
+    var j = node.parent.children.len-1
+    while j >= 0 and node.parent.children[j].kind == NewlineNode:
+        j -= 1
+    return node.parent.children[j] == node
 
 #------------------------
 # Iterators
@@ -224,7 +236,15 @@ func copyNode(node: Node): Node =
 # Methods
 #=======================================
 
-proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = NoStartingLine, asDictionary: bool = false, processingArrow: static bool = false): int =
+proc processBlock*(
+    root: Node, 
+    blok: Value, 
+    start = 0, 
+    startingLine: uint32 = NoStartingLine, 
+    asDictionary: bool = false, 
+    asFunction: bool = false, 
+    processingArrow: static bool = false
+): int =
     var i: int = start
     var nLen: int = blok.a.len
 
@@ -255,15 +275,18 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = No
         if left.kind == ConstantValue and left.value.kind in {Integer, Floating}:
             # Constant folding
             if right.kind == ConstantValue and right.value.kind in {Integer, Floating}:
+                hookOptimProfiler("add (CF)")
                 target.replaceNode(newConstant(left.value + right.value))
             # Convert 1 + X -> inc X
             elif right.kind==VariableLoad and left.kind==ConstantValue and left.value == I1:
+                hookOptimProfiler("add (inc)")
                 target.op = opInc
                 target.arity = 1
                 target.setOnlyChild(right)
         
         # Convert X + 1 -> inc X
         elif left.kind==VariableLoad and right.kind==ConstantValue and right.value == I1:
+            hookOptimProfiler("add (inc)")
             target.op = opInc
             target.arity = 1
             target.setOnlyChild(left)
@@ -272,6 +295,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = No
         #         X + Y * X -> X * (Y + 1)
         elif left.kind == VariableLoad and right.op == opMul:
             if right.children[0].kind == VariableLoad and right.children[0].value == left.value:
+                hookOptimProfiler("add (distributive)")
                 target.op = opMul
                 if right.children[1].kind == ConstantValue and right.children[1].value.kind in {Integer, Floating}:
                     right.replaceNode(newConstant(right.children[1].value + I1))
@@ -279,6 +303,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = No
                     right.op = opAdd
                     right.children[0].value = newInteger(1)
             elif right.children[1].kind == VariableLoad and right.children[1].value == left.value:
+                hookOptimProfiler("add (distributive)")
                 target.op = opMul
                 if right.children[0].kind == ConstantValue and right.children[0].value.kind in {Integer, Floating}:
                     right.replaceNode(newConstant(right.children[0].value + I1))
@@ -290,6 +315,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = No
         #         (Y * X) + X -> (Y + 1) * X
         elif right.kind == VariableLoad and left.op == opMul:
             if left.children[0].kind == VariableLoad and left.children[0].value == right.value:
+                hookOptimProfiler("add (distributive)")
                 target.op = opMul
                 if left.children[1].kind == ConstantValue and left.children[1].value.kind in {Integer, Floating}:
                     left.replaceNode(newConstant(left.children[1].value + I1))
@@ -297,6 +323,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = No
                     left.op = opAdd
                     left.children[0].value = newInteger(1)
             elif left.children[1].kind == VariableLoad and left.children[1].value == right.value:
+                hookOptimProfiler("add (distributive)")
                 target.op = opMul
                 if left.children[0].kind == ConstantValue and left.children[0].value.kind in {Integer, Floating}:
                     left.replaceNode(newConstant(left.children[0].value + I1))
@@ -309,9 +336,11 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = No
         var right = target.children[1]
 
         if left.kind == ConstantValue and left.value.kind in {Integer,Floating} and right.kind == ConstantValue and right.value.kind in {Integer,Floating}:
+            hookOptimProfiler("sub (CF)")
             # Constant folding
             target.replaceNode(newConstant(left.value - right.value))
         elif left.kind == VariableLoad and right.kind == ConstantValue and right.value == I1:
+            hookOptimProfiler("sub (dec)")
             # Convert X - 1 -> dec X
             target.op = opDec
             target.arity = 1
@@ -323,36 +352,8 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = No
 
         if left.kind == ConstantValue and left.value.kind in {Integer,Floating} and 
            right.kind == ConstantValue and right.value.kind in {Integer,Floating}:
+            hookOptimProfiler("other (CF)")
             target.replaceNode(newConstant(op(left.value,right.value)))
-
-    proc optimizeUnless(target: var Node) {.enforceNoRaises.} =
-        target.op = 
-            if target.op == opUnless:
-                opIf
-            else:
-                opIfE
-
-        var left = target.children[0]
-
-        case left.op:
-            of opEq   : left.op = opNe
-            of opNe   : left.op = opEq
-            of opLt   : left.op = opGe
-            of opLe   : left.op = opGt
-            of opGt   : left.op = opLe
-            of opGe   : left.op = opLt
-            of opNot  :
-                let newNode = left.children[0]
-                newNode.parent = target
-                target.children[0] = newNode
-            else:
-                let newNode = newCallNode(BuiltinCall, 1, nil, opNot)
-                newNode.children = @[left]
-                target.children[0] = newNode
-                for child in newNode.children:
-                    child.parent = newNode
-
-                newNode.parent = target
 
     proc optimizeAppend(target: var Node) {.enforceNoRaises.} =
         var left = target.children[0]
@@ -361,6 +362,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = No
         if left.kind == ConstantValue and left.value.kind == String:
             # Constant folding
             if right.kind == ConstantValue and right.value.kind == String:
+                hookOptimProfiler("append (CF)")
                 target.replaceNode(newConstant(newString(left.value.s & right.value.s)))
 
     proc optimizeTo(target: var Node) {.enforceNoRaises.} =
@@ -368,17 +370,26 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = No
 
         if left.kind == ConstantValue and left.value.kind==Type:
             if left.value.t == Integer:
+                hookOptimProfiler("to (:integer)")
                 # convert `to :integer` -> opToI
                 target.op = opToI
                 target.arity = 1
                 target.children.delete(0)
             elif left.value.t == String:
+                hookOptimProfiler("To (:string)")
                 # convert `to :string` -> opToS
                 target.op = opToS
                 target.arity = 1
                 target.children.delete(0)
 
-    proc optimizeStores(target: var Node) {.enforceNoRaises.} =
+    proc optimizeReturn(target: var Node) {.enforceNoRaises.} =
+        if isLastChild(target):
+            hookOptimProfiler("return (eliminate last)")
+            # Replace last return
+            var left = target.children[0]
+            target.replaceNode(left)
+
+    proc updateAritiesFromStore(target: var Node) {.enforceNoRaises.} =
         var child = target.children[0]
 
         if child.op == opFunc:
@@ -399,7 +410,7 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = No
         while target.kind in CallNode and target.params == target.arity:
             when optimize:
                 if target.kind == VariableStore:
-                    target.optimizeStores()
+                    target.updateAritiesFromStore()
                 else:
                     try:
                         case target.op:
@@ -410,10 +421,11 @@ proc processBlock*(root: Node, blok: Value, start = 0, startingLine: uint32 = No
                             of opFDiv       : target.optimizeArithmeticOp(`//`)
                             of opMod        : target.optimizeArithmeticOp(`%`)
                             of opPow        : target.optimizeArithmeticOp(`^`)
-                            of opUnless,
-                                opUnlessE    : target.optimizeUnless()
                             of opAppend     : target.optimizeAppend()
                             of opTo         : target.optimizeTo()
+                            of opReturn     : 
+                                if asFunction:
+                                    target.optimizeReturn()
                                 
                             else:
                                 discard
@@ -851,14 +863,15 @@ proc dumpNode*(node: Node, level = 0, single: static bool = false, showNewlines:
 # Main
 #=======================================
 
-proc generateAst*(parsed: Value, asDictionary=false): Node =
+proc generateAst*(parsed: Value, asDictionary=false, asFunction=false, reuseArities: static bool=false): Node =
     result = newRootNode()
 
-    TmpArities = collect:
-        for k,v in Syms.pairs:
-            if v.kind == Function:
-                {k: v.arity}
+    when not reuseArities:
+        TmpArities = collect:
+            for k,v in Syms.pairs:
+                if v.kind == Function:
+                    {k: v.arity}
 
-    discard result.processBlock(parsed, asDictionary=asDictionary)
+    discard result.processBlock(parsed, asDictionary=asDictionary, asFunction=asFunction)
 
     #echo dumpNode(result)
