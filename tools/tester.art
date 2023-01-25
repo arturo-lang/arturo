@@ -36,6 +36,7 @@ canExecute?: function [scri][
             "modular exponentation"
             "next special primes"
             "pell's equation"
+            "permutations - derangements"
             "sorting algorithms - cycle sort"
             "sorting algorithms - pancake sort"
             "sylvester's sequence"
