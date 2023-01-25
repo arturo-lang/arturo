@@ -424,12 +424,8 @@ proc processBlock*(
                             of opAppend     : target.optimizeAppend()
                             of opTo         : target.optimizeTo()
                             of opReturn     : 
-                                # TODO(VM/ast) `return` optimization not working properly
-                                #  see: tests/unittests/branching.art
-                                #  labels: vm, ast, bug
-                                discard
-                                # if asFunction:
-                                #     target.optimizeReturn()
+                                if asFunction and i == nLen-1:
+                                    target.optimizeReturn()
                                 
                             else:
                                 discard
