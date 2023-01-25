@@ -35,6 +35,7 @@ canExecute?: function [scri][
             "lucas-lehmer test"
             "modular exponentation"
             "next special primes"
+            "pell's equation"
             "sorting algorithms - cycle sort"
             "sorting algorithms - pancake sort"
             "sylvester's sequence"
