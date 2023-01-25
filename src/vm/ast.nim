@@ -15,7 +15,7 @@
 ## 
 ## The main entry point is ``generateAst``.
 
-# TODO:
+# Pending task for new AST+Eval:
 # - [x] make Attribute's work
 # - [x] make AttributeLabel's work
 # - [x] make Path's work
@@ -25,6 +25,7 @@
 # - [x] clean up opCode's
 # - [x] attach opCode's to built-in function (for faster lookups)
 # - [x] optimize appends
+# - [x] optimize returns when it's the last statement of a function block
 # - [x] make labels store new functions in TmpArities
 # - [x] make labels unstore overwritten functions in TmpArities
 # - [x] make if/if?/else/while/switch work
