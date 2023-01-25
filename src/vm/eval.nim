@@ -489,7 +489,7 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
 # Main
 #=======================================
 
-proc doEval*(root: Value, isDictionary=false, useStored: static bool = true): Translation {.inline.} = 
+proc doEval*(root: Value, isDictionary=false, isFunctionBlock=false, useStored: static bool = true): Translation {.inline.} = 
     ## Take a parsed Block of values and return its Translation - 
     ## that is: the constants found + the list of bytecode instructions
     
@@ -504,7 +504,7 @@ proc doEval*(root: Value, isDictionary=false, useStored: static bool = true): Tr
     var consts: ValueArray
     var it: VBinary
 
-    evaluateBlock(generateAst(root, asDictionary=isDictionary), consts, it, isDictionary=isDictionary)
+    evaluateBlock(generateAst(root, asDictionary=isDictionary, asFunction=isFunctionBlock), consts, it, isDictionary=isDictionary)
     it.add(byte(opEnd))
 
     result = Translation(constants: consts, instructions: it)
@@ -515,6 +515,6 @@ proc doEval*(root: Value, isDictionary=false, useStored: static bool = true): Tr
         if vhash != -1:
             StoredTranslations[vhash] = result
 
-template evalOrGet*(item: Value): untyped =
+template evalOrGet*(item: Value, isFunction=false): untyped =
     if item.kind==Bytecode: item.trans
-    else: doEval(item)
+    else: doEval(item, isFunctionBlock=isFunction)
