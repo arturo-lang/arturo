@@ -124,7 +124,7 @@ proc addConstAndGetIndex(consts: var ValueArray, instructions: var VBinary, v: V
 
     instructions.addOpWithNumber(op, result, hasShortcut)
 
-proc addVariableLoad(consts: var ValueArray, instructions: var VBinary, v: Value, previousStore: int, previousStorePos: int) {.inline,enforceNoRaises.} =
+proc addVariableLoad(consts: var ValueArray, instructions: var VBinary, nd: Node, v: Value, previousStore: int, previousStorePos: int) {.inline,enforceNoRaises.} =
     var indx = consts.indexOfValue(v)
     if indx == -1:
         let newv = v
@@ -132,7 +132,7 @@ proc addVariableLoad(consts: var ValueArray, instructions: var VBinary, v: Value
         consts.add(newv)
         indx = consts.len-1
 
-    if indx == previousStore:
+    if indx == previousStore and nd.parent.kind != VariableStore:
         if indx <= 13:
             instructions[previousStorePos-1] = (byte(opStorl)-0x0E) + byte(indx)
         elif indx <= 255:
@@ -336,8 +336,8 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
     template addConstAndGetIndex(v: Value, op: OpCode, hasShortcut: static bool=true): untyped =
         addConstAndGetIndex(consts, it, v, op, hasShortcut)
 
-    template addVariableLoad(v: Value): untyped =
-        addVariableLoad(consts, it, v, lastOpStore, lastOpStorePos)
+    template addVariableLoad(nd: Node): untyped =
+        addVariableLoad(consts, it, nd, nd.value, lastOpStore, lastOpStorePos)
         lastOpStore = -1
 
     template addSingleCommand(op: untyped): untyped =
@@ -436,7 +436,7 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
                         if not alreadyPut:
                             addConst(instruction.value, opPush)
                     of VariableLoad:
-                        addVariableLoad(instruction.value)
+                        addVariableLoad(instruction)
                     of AttributeNode:
                         lastOpStore = -1
                         addConst(instruction.value, opAttr)
