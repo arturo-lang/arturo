@@ -24,6 +24,8 @@ import hashes, sugar, tables
 import vm/[ast, bytecode, values/value]
 import vm/values/custom/[vbinary, vlogical]
 
+import vm/profiler
+
 import vm/values/printable
 
 #=======================================
@@ -133,6 +135,8 @@ proc addVariableLoad(consts: var ValueArray, instructions: var VBinary, nd: Node
         indx = consts.len-1
 
     if indx == previousStore and nd.parent.kind != VariableStore:
+        hookOptimProfiler("opStorl")
+
         if indx <= 13:
             instructions[previousStorePos-1] = (byte(opStorl)-0x0E) + byte(indx)
         elif indx <= 255:
@@ -360,12 +364,36 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
         if item.kind == SpecialCall:
             lastOpStore = -1
             case item.op:
-                of opIf:        optimizeConditional(consts, it, item, withInversion=true)
-                of opIfE:       optimizeConditional(consts, it, item, withPotentialElse=true, withInversion=true)
-                of opUnless:    optimizeConditional(consts, it, item)
-                of opUnlessE:   optimizeConditional(consts, it, item, withPotentialElse=true)
-                of opSwitch:    optimizeConditional(consts, it, item, withPotentialElse=true, isSwitch=true, withInversion=true)
-                of opWhile:     optimizeConditional(consts, it, item, withLoop=true, withInversion=true)
+                of opIf:        
+                    optimizeConditional(consts, it, item, withInversion=true)
+                    when defined(PROFILER):
+                        if alreadyProcessed:
+                            hookOptimProfiler("opIf")
+                of opIfE:       
+                    optimizeConditional(consts, it, item, withPotentialElse=true, withInversion=true)
+                    when defined(PROFILER):
+                        if alreadyProcessed:
+                            hookOptimProfiler("opIfE")
+                of opUnless:    
+                    optimizeConditional(consts, it, item)
+                    when defined(PROFILER):
+                        if alreadyProcessed:
+                            hookOptimProfiler("opUnless")
+                of opUnlessE:   
+                    optimizeConditional(consts, it, item, withPotentialElse=true)
+                    when defined(PROFILER):
+                        if alreadyProcessed:
+                            hookOptimProfiler("opUnlessE")
+                of opSwitch:    
+                    optimizeConditional(consts, it, item, withPotentialElse=true, isSwitch=true, withInversion=true)
+                    when defined(PROFILER):
+                        if alreadyProcessed:
+                            hookOptimProfiler("opSwitch")
+                of opWhile:     
+                    optimizeConditional(consts, it, item, withLoop=true, withInversion=true)
+                    when defined(PROFILER):
+                        if alreadyProcessed:
+                            hookOptimProfiler("opWhile")
                 of opElse:
                     # `else` is not handled separately
                     # if it's a try?/else block for example, 
