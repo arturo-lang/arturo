@@ -25,6 +25,7 @@ canExecute?: function [scri][
             "ackermann function"
             "arbitrary-precision integers - included"
             "curzon numbers"
+            "hamming numbers"
             "iban"
             "integer overflow"
             "integer roots"
