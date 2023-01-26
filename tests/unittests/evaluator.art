@@ -1363,6 +1363,197 @@ supersection "BLOCKS & SYNTACTIC SUGAR"
         ; print
         ; end
 
+        byteCode [x: "hello" | upper]
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: hello :string
+        ; 1: upper :word
+        ; 2: x :label
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; push0
+        ; call1
+        ; store2
+        ; end
+
+        byteCode [1..10 | map 'x -> 2 * x]
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: [ :block
+        ;         2 :integer
+        ;         * :symbol
+        ;         x :word
+        ; ]
+        ; 1: x :literal
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; push0
+        ; push1
+        ; consti10
+        ; consti1
+        ; range
+        ; map
+        ; end
+
+        byteCode [1..10 | map 'x -> 2 * x | sum]
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: [ :block
+        ;         2 :integer
+        ;         * :symbol
+        ;         x :word
+        ; ]
+        ; 1: x :literal
+        ; 2: sum :word
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; push0
+        ; push1
+        ; consti10
+        ; consti1
+        ; range
+        ; map
+        ; call2
+        ; end
+
+        byteCode [1..10 | map 'x -> 2 * x | sum | print]
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: [ :block
+        ;         2 :integer
+        ;         * :symbol
+        ;         x :word
+        ; ]
+        ; 1: x :literal
+        ; 2: sum :word
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; push0
+        ; push1
+        ; consti10
+        ; consti1
+        ; range
+        ; map
+        ; call2
+        ; print
+        ; end
+
+        byteCode [
+            1..10 | map 'x -> 2 * x 
+                  | sum 
+                  | print
+        ]
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: [ :block
+        ;         2 :integer
+        ;         * :symbol
+        ;         x :word
+        ; ]
+        ; 1: x :literal
+        ; 2: sum :word
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; push0
+        ; push1
+        ; consti10
+        ; consti1
+        ; range
+        ; map
+        ; call2
+        ; print
+        ; end
+
+        byteCode [
+            filtered: 1..a | map 'x -> 3 * x
+                           | select 'x -> odd? x
+            print filtered
+        ]
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: [ :block
+        ;         odd? :word
+        ;         x :word
+        ; ]
+        ; 1: x :literal
+        ; 2: [ :block
+        ;         3 :integer
+        ;         * :symbol
+        ;         x :word
+        ; ]
+        ; 3: a :word
+        ; 4: filtered :label
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; push0
+        ; push1
+        ; push2
+        ; push1
+        ; load3
+        ; consti1
+        ; range
+        ; map
+        ; select
+        ; storl4
+        ; print
+        ; end
+
+        byteCode [
+            filtered: 1..a | map 'x -> 3 * x
+                           | select => odd?
+            print filtered
+        ]
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: [ :block
+        ;         odd? :word
+        ;         _0 :word
+        ; ]
+        ; 1: _0 :literal
+        ; 2: [ :block
+        ;         3 :integer
+        ;         * :symbol
+        ;         x :word
+        ; ]
+        ; 3: x :literal
+        ; 4: a :word
+        ; 5: filtered :label
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; push0
+        ; push1
+        ; push2
+        ; push3
+        ; load4
+        ; consti1
+        ; range
+        ; map
+        ; select
+        ; storl5
+        ; print
+        ; end
+
 ;/////////////////////////////////////////////////////////
 supersection "OPTIMIZATIONS"
 ;/////////////////////////////////////////////////////////
