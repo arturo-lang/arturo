@@ -24,7 +24,7 @@ byteCode: function [blk][
     btc: to.intrepid :bytecode blk ; this little hack is needed to remove newlines from our block
                                 ; thus, avoiding all opEol/opEolX bytecode being produced
 
-    inspect btc     ; uncomment this line to see the bytecode
+    ;inspect btc    ; uncomment this line to see the bytecode
                     ; in a more readable format
     prints spacer
     print ["input:" as.code blk]
