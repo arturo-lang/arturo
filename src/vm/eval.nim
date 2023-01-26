@@ -377,7 +377,7 @@ template optimizeConditional(
 # Methods
 #=======================================
 
-proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDictionary=false) =
+proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDictionary=false, omitNewlines: bool = false) =
     let nLen = blok.children.len
     var i = 0
 
@@ -466,7 +466,8 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
                     of RootNode:
                         discard
                     of NewlineNode:
-                        addEol(instruction.line)
+                        if not omitNewlines:
+                            addEol(instruction.line)
                     of ConstantValue:
                         var alreadyPut = false
                         let iv {.cursor.} = instruction.value
@@ -543,7 +544,7 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
 # Main
 #=======================================
 
-proc doEval*(root: Value, isDictionary=false, isFunctionBlock=false, useStored: static bool = true): Translation {.inline.} = 
+proc doEval*(root: Value, isDictionary=false, isFunctionBlock=false, omitNewlines=false, useStored: static bool = true): Translation {.inline.} = 
     ## Take a parsed Block of values and return its Translation - 
     ## that is: the constants found + the list of bytecode instructions
     
@@ -558,7 +559,7 @@ proc doEval*(root: Value, isDictionary=false, isFunctionBlock=false, useStored: 
     var consts: ValueArray
     var it: VBinary
 
-    evaluateBlock(generateAst(root, asDictionary=isDictionary, asFunction=isFunctionBlock), consts, it, isDictionary=isDictionary)
+    evaluateBlock(generateAst(root, asDictionary=isDictionary, asFunction=isFunctionBlock), consts, it, isDictionary=isDictionary, omitNewlines=omitNewlines)
     it.add(byte(opEnd))
 
     result = Translation(constants: consts, instructions: it)
