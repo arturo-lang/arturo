@@ -26,8 +26,6 @@ import vm/values/custom/[vbinary, vlogical]
 
 import vm/profiler
 
-import vm/values/printable
-
 #=======================================
 # Variables
 #=======================================
