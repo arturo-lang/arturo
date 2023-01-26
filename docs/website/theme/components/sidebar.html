@@ -17,7 +17,7 @@
                             <||= if (get pagePath (size pagePath)-2) = lower modul [||>
                                 <ul style="margin-right:0">
                                     <||= loop sort keys get pageTree\documentation\library modul 'fun [ ||>
-                                        <li><a <||= if contains? map pagePath => [lower] lower fun [||>class="is-active" <||]||> href="<||= linkTo ~{documentation/library/|modul|/|lower fun|} ||>"><||= replace fun "-" "?" ||></a></li>
+                                        <li><a <||= if contains? map pagePath => lower lower fun [||>class="is-active" <||]||> href="<||= linkTo ~{documentation/library/|modul|/|lower fun|} ||>"><||= replace fun "-" "?" ||></a></li>
                                     <|| ] ||>
                                 </ul>
                             <|| ] ||>
