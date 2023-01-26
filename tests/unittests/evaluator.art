@@ -1731,14 +1731,8 @@ supersection "OPTIMIZATIONS"
         ; ================================
         ; 0: before :string
         ; 1: x :word
-        ; 2: [ :block
-        ;         print :word
-        ;         here :string
-        ;         return :word
-        ;         true :word
-        ; ]
-        ; 3: here :string
-        ; 4: after :string
+        ; 2: here :string
+        ; 3: after :string
 
         ; ================================
         ;  CODE
@@ -1746,12 +1740,12 @@ supersection "OPTIMIZATIONS"
         ; push0
         ; print
         ; load1
-        ; jmpifnot                 #4
-        ; push3
+        ; jmpifnot             @4
+        ; push2
         ; print
         ; constbt
         ; return
-        ; push4
+        ; push3
         ; print
         ; end
 
@@ -1765,14 +1759,8 @@ supersection "OPTIMIZATIONS"
         ; ================================
         ; 0: before :string
         ; 1: x :word
-        ; 2: [ :block
-        ;         print :word
-        ;         here :string
-        ;         return :word
-        ;         false :word
-        ; ]
-        ; 3: here :string
-        ; 4: after :string
+        ; 2: here :string
+        ; 3: after :string
 
         ; ================================
         ;  CODE
@@ -1780,12 +1768,12 @@ supersection "OPTIMIZATIONS"
         ; push0
         ; print
         ; load1
-        ; jmpif                 #4
-        ; push3
+        ; jmpif                @4
+        ; push2
         ; print
         ; constbf
         ; return
-        ; push4
+        ; push3
         ; print
         ; end
 
@@ -1799,14 +1787,8 @@ supersection "OPTIMIZATIONS"
         ; ================================
         ; 0: before :string
         ; 1: x :word
-        ; 2: [ :block
-        ;         print :word
-        ;         here :string
-        ;         return :word
-        ;         true :word
-        ; ]
-        ; 3: here :string
-        ; 4: after :string
+        ; 2: here :string
+        ; 3: after :string
 
         ; ================================
         ;  CODE
@@ -1815,12 +1797,12 @@ supersection "OPTIMIZATIONS"
         ; print
         ; consti2
         ; load1
-        ; jmpifne                 #4
-        ; push3
+        ; jmpifne              @4
+        ; push2
         ; print
         ; constbt
         ; return
-        ; push4
+        ; push3
         ; print
         ; end
 
@@ -1834,14 +1816,8 @@ supersection "OPTIMIZATIONS"
         ; ================================
         ; 0: before :string
         ; 1: x :word
-        ; 2: [ :block
-        ;         print :word
-        ;         here :string
-        ;         return :word
-        ;         true :word
-        ; ]
-        ; 3: here :string
-        ; 4: after :string
+        ; 2: here :string
+        ; 3: after :string
 
         ; ================================
         ;  CODE
@@ -1850,12 +1826,12 @@ supersection "OPTIMIZATIONS"
         ; print
         ; consti2
         ; load1
-        ; jmpifle                 #4
-        ; push3
+        ; jmpifle              @4
+        ; push2
         ; print
         ; constbt
         ; return
-        ; push4
+        ; push3
         ; print
         ; end
 
@@ -1869,14 +1845,8 @@ supersection "OPTIMIZATIONS"
         ; ================================
         ; 0: before :string
         ; 1: x :word
-        ; 2: [ :block
-        ;         print :word
-        ;         here :string
-        ;         return :word
-        ;         true :word
-        ; ]
-        ; 3: here :string
-        ; 4: after :string
+        ; 2: here :string
+        ; 3: after :string
 
         ; ================================
         ;  CODE
@@ -1885,12 +1855,12 @@ supersection "OPTIMIZATIONS"
         ; print
         ; consti2
         ; load1
-        ; jmpifgt                 #4
-        ; push3
+        ; jmpifgt              @4
+        ; push2
         ; print
         ; constbt
         ; return
-        ; push4
+        ; push3
         ; print
         ; end
 
@@ -1908,14 +1878,8 @@ supersection "OPTIMIZATIONS"
         ; ================================
         ; 0: before :string
         ; 1: x :word
-        ; 2: [ :block
-        ;         print :word
-        ;         here :string
-        ;         return :word
-        ;         false :word
-        ; ]
-        ; 3: here :string
-        ; 4: after :string
+        ; 2: here :string
+        ; 3: after :string
 
         ; ================================
         ;  CODE
@@ -1923,12 +1887,12 @@ supersection "OPTIMIZATIONS"
         ; push0
         ; print
         ; load1
-        ; jmpif                 #4
-        ; push3
+        ; jmpif                @4
+        ; push2
         ; print
         ; constbf
         ; return
-        ; push4
+        ; push3
         ; print
         ; end
 
@@ -1942,14 +1906,8 @@ supersection "OPTIMIZATIONS"
         ; ================================
         ; 0: before :string
         ; 1: x :word
-        ; 2: [ :block
-        ;         print :word
-        ;         here :string
-        ;         return :word
-        ;         true :word
-        ; ]
-        ; 3: here :string
-        ; 4: after :string
+        ; 2: here :string
+        ; 3: after :string
 
         ; ================================
         ;  CODE
@@ -1957,12 +1915,12 @@ supersection "OPTIMIZATIONS"
         ; push0
         ; print
         ; load1
-        ; jmpifnot                 #4
-        ; push3
+        ; jmpifnot             @4
+        ; push2
         ; print
         ; constbt
         ; return
-        ; push4
+        ; push3
         ; print
         ; end
 
@@ -1976,14 +1934,8 @@ supersection "OPTIMIZATIONS"
         ; ================================
         ; 0: before :string
         ; 1: x :word
-        ; 2: [ :block
-        ;         print :word
-        ;         here :string
-        ;         return :word
-        ;         false :word
-        ; ]
-        ; 3: here :string
-        ; 4: after :string
+        ; 2: here :string
+        ; 3: after :string
 
         ; ================================
         ;  CODE
@@ -1992,12 +1944,12 @@ supersection "OPTIMIZATIONS"
         ; print
         ; consti2
         ; load1
-        ; jmpifeq                 #4
-        ; push3
+        ; jmpifeq              @4
+        ; push2
         ; print
         ; constbf
         ; return
-        ; push4
+        ; push3
         ; print
         ; end
 
@@ -2011,14 +1963,8 @@ supersection "OPTIMIZATIONS"
         ; ================================
         ; 0: before :string
         ; 1: x :word
-        ; 2: [ :block
-        ;         print :word
-        ;         here :string
-        ;         return :word
-        ;         false :word
-        ; ]
-        ; 3: here :string
-        ; 4: after :string
+        ; 2: here :string
+        ; 3: after :string
 
         ; ================================
         ;  CODE
@@ -2027,12 +1973,12 @@ supersection "OPTIMIZATIONS"
         ; print
         ; consti2
         ; load1
-        ; jmpifgt                 #4
-        ; push3
+        ; jmpifgt              @4
+        ; push2
         ; print
         ; constbf
         ; return
-        ; push4
+        ; push3
         ; print
         ; end
 
@@ -2046,14 +1992,8 @@ supersection "OPTIMIZATIONS"
         ; ================================
         ; 0: before :string
         ; 1: x :word
-        ; 2: [ :block
-        ;         print :word
-        ;         here :string
-        ;         return :word
-        ;         false :word
-        ; ]
-        ; 3: here :string
-        ; 4: after :string
+        ; 2: here :string
+        ; 3: after :string
 
         ; ================================
         ;  CODE
@@ -2062,17 +2002,17 @@ supersection "OPTIMIZATIONS"
         ; print
         ; consti2
         ; load1
-        ; jmpifle                 #4
-        ; push3
+        ; jmpifle              @4
+        ; push2
         ; print
         ; constbf
         ; return
-        ; push4
+        ; push3
         ; print
         ; end
 
     ;*****************************************************************
-    topic "if-else"
+    topic "if?-else"
     ;*****************************************************************
 
         byteCode [
@@ -2083,23 +2023,15 @@ supersection "OPTIMIZATIONS"
         ;  DATA
         ; ================================
         ; 0: x :word
-        ; 1: [ :block
-        ;         return :word
-        ;         true :word
-        ; ]
-        ; 2: [ :block
-        ;         return :word
-        ;         false :word
-        ; ]
 
         ; ================================
         ;  CODE
         ; ================================
         ; load0
-        ; jmpifnot                 #5
+        ; jmpifnot             @4
         ; constbt
         ; return
-        ; goto                 #2
+        ; goto                 @2
         ; constbf
         ; return
         ; end
@@ -2115,42 +2047,28 @@ supersection "OPTIMIZATIONS"
         ; ================================
         ; 0: before :string
         ; 1: a :word
-        ; 2: [ :block
-        ;         print :word
-        ;         here :string
-        ;         return :word
-        ;         true :word
-        ; ]
-        ; 3: here :string
-        ; 4: [ :block
-        ;         print :word
-        ;         there :string
-        ;         return :word
-        ;         false :word
-        ; ]
-        ; 5: there :string
-        ; 6: after :string
+        ; 2: here :string
+        ; 3: there :string
+        ; 4: after :string
 
         ; ================================
         ;  CODE
         ; ================================
         ; push0
         ; print
-        ; consti2
-        ; consti1
-        ; add
+        ; consti3
         ; load1
-        ; jmpifeq                 #7
-        ; push3
+        ; jmpifeq              @6
+        ; push2
         ; print
         ; constbt
         ; return
-        ; goto                 #4
-        ; push5
+        ; goto                 @4
+        ; push3
         ; print
         ; constbf
         ; return
-        ; push6
+        ; push4
         ; print
         ; end
 
@@ -2168,13 +2086,7 @@ supersection "OPTIMIZATIONS"
         ; ================================
         ; 0: before :string
         ; 1: a :word
-        ; 2: [ :block
-        ;         1 :integer
-        ; ]
-        ; 3: [ :block
-        ;         2 :integer
-        ; ]
-        ; 4: after :string
+        ; 2: after :string
 
         ; ================================
         ;  CODE
@@ -2182,11 +2094,11 @@ supersection "OPTIMIZATIONS"
         ; push0
         ; print
         ; load1
-        ; jmpifnot                 #4
+        ; jmpifnot             @3
         ; consti1
-        ; goto                 #1
+        ; goto                 @1
         ; consti2
-        ; push4
+        ; push2
         ; print
         ; end
 
@@ -2195,21 +2107,15 @@ supersection "OPTIMIZATIONS"
         ;  DATA
         ; ================================
         ; 0: x :word
-        ; 1: [ :block
-        ;         1 :integer
-        ; ]
-        ; 2: [ :block
-        ;         2 :integer
-        ; ]
 
         ; ================================
         ;  CODE
         ; ================================
         ; consti1
         ; load0
-        ; jmpifne                 #4
+        ; jmpifne              @3
         ; consti1
-        ; goto                 #1
+        ; goto                 @1
         ; consti2
         ; end
 
@@ -2222,13 +2128,13 @@ supersection "OPTIMIZATIONS"
         ;  DATA
         ; ================================
         ; 0: before :string
-        ; 1: x :word
+        ; 1: [ :block
+        ;         false :word
+        ; ]
         ; 2: [ :block
         ;         true :word
         ; ]
-        ; 3: [ :block
-        ;         false :word
-        ; ]
+        ; 3: x :word
         ; 4: after :string
 
         ; ================================
@@ -2236,12 +2142,12 @@ supersection "OPTIMIZATIONS"
         ; ================================
         ; push0
         ; print
+        ; push1
+        ; push2
         ; consti1
-        ; load1
-        ; jmpifge                 #4
-        ; constbt
-        ; goto                 #1
-        ; constbf
+        ; load3
+        ; lt
+        ; switch
         ; return
         ; push4
         ; print
@@ -2256,14 +2162,14 @@ supersection "OPTIMIZATIONS"
         ;  DATA
         ; ================================
         ; 0: before :string
-        ; 1: z :label
-        ; 2: x :word
-        ; 3: [ :block
-        ;         true :word
-        ; ]
-        ; 4: [ :block
+        ; 1: [ :block
         ;         false :word
         ; ]
+        ; 2: [ :block
+        ;         true :word
+        ; ]
+        ; 3: x :word
+        ; 4: z :label
         ; 5: after :string
 
         ; ================================
@@ -2271,13 +2177,13 @@ supersection "OPTIMIZATIONS"
         ; ================================
         ; push0
         ; print
+        ; push1
+        ; push2
         ; consti1
-        ; load2
-        ; jmpifge                 #4
-        ; constbt
-        ; goto                 #1
-        ; constbf
-        ; store1
+        ; load3
+        ; lt
+        ; switch
+        ; store4
         ; push5
         ; print
         ; end
@@ -2291,14 +2197,14 @@ supersection "OPTIMIZATIONS"
         ;  DATA
         ; ================================
         ; 0: before :string
-        ; 1: z :label
-        ; 2: x :word
-        ; 3: [ :block
-        ;         1 :integer
-        ; ]
-        ; 4: [ :block
+        ; 1: [ :block
         ;         2 :integer
         ; ]
+        ; 2: [ :block
+        ;         1 :integer
+        ; ]
+        ; 3: x :word
+        ; 4: z :label
         ; 5: after :string
 
         ; ================================
@@ -2306,25 +2212,18 @@ supersection "OPTIMIZATIONS"
         ; ================================
         ; push0
         ; print
+        ; push1
+        ; push2
         ; consti1
-        ; load2
-        ; jmpiflt                 #4
-        ; consti1
-        ; goto                 #1
-        ; consti2
+        ; load3
+        ; ge
+        ; switch
         ; consti3
         ; add
-        ; store1
+        ; store4
         ; push5
         ; print
         ; end
-
-        ; TODO: this is not working!!! (see #817)
-        ; byteCode [
-        ;     print "before"
-        ;     return ((x>1)? -> 2 -> 3) + (y<4)? -> 5 -> 6
-        ;     print "after"
-        ; ]
 
     ;*****************************************************************
     topic "while"
@@ -2336,30 +2235,35 @@ supersection "OPTIMIZATIONS"
         ; ================================
         ;  DATA
         ; ================================
-        ; 0: [ :block
-        ;         x :word
-        ;         = :symbol
-        ;         1 :integer
-        ; ]
-        ; 1: [ :block
-        ;         print :word
-        ;         hello :string
-        ; ]
-        ; 2: x :word
-        ; 3: hello :string
+        ; 0: x :word
+        ; 1: hello :string
 
         ; ================================
         ;  CODE
         ; ================================
         ; consti1
-        ; load2
-        ; jmpifne                 #5
-        ; push3
+        ; load0
+        ; jmpifne              @4
+        ; push1
         ; print
-        ; goup                 #10
+        ; goup                 @6
         ; end
 
-        ; TODO: this is not working!!!
-        ; byteCode [
-        ;     while ø [print "hello"]
+        byteCode [
+            while ø [print "hello"]
+        ]
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: [ :block
+        ;         print :word
+        ;         hello :string
         ; ]
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; push0
+        ; constn
+        ; while
+        ; end
