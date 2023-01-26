@@ -389,7 +389,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                         return newBinary(res)
 
                     of Bytecode:
-                        var evaled = doEval(y)
+                        var evaled = doEval(y, omitNewlines=hadAttr("intrepid"))
 
                         return newBytecode(evaled)
                        
