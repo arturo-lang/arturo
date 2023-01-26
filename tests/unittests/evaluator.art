@@ -802,24 +802,24 @@ supersection "FUNCTION CALLS"
         ; ================================
         ;  DATA
         ; ================================
-        ; 0: h :label
-        ; 1: [ :block
+        ; 0: [ :block
         ;         print :word
         ;         function called :string
         ; ]
+        ; 1: h :label
         ; 2: before :string
         ; 3: after :string
 
         ; ================================
         ;  CODE
         ; ================================
-        ; push1
+        ; push0
         ; consta
         ; func
-        ; store0
+        ; store1
         ; push2
         ; print
-        ; call0
+        ; call1
         ; push3
         ; print
         ; end
@@ -834,29 +834,29 @@ supersection "FUNCTION CALLS"
         ; ================================
         ;  DATA
         ; ================================
-        ; 0: f :label
-        ; 1: [ :block
-        ;         x :word
-        ; ]
-        ; 2: [ :block
+        ; 0: [ :block
         ;         x :word
         ;         + :symbol
         ;         1 :integer
         ; ]
+        ; 1: [ :block
+        ;         x :word
+        ; ]
+        ; 2: f :label
         ; 3: before :string
         ; 4: after :string
 
         ; ================================
         ;  CODE
         ; ================================
-        ; push2
+        ; push0
         ; push1
         ; func
-        ; store0
+        ; store2
         ; push3
         ; print
         ; consti10
-        ; call0
+        ; call2
         ; print
         ; push4
         ; print
@@ -873,18 +873,18 @@ supersection "FUNCTION CALLS"
         ; ================================
         ;  DATA
         ; ================================
-        ; 0: g :label
-        ; 1: [ :block
-        ;         z :word
-        ;         w :word
-        ; ]
-        ; 2: [ :block
+        ; 0: [ :block
         ;         2 :integer
         ;         * :symbol
         ;         z :word
         ;         * :symbol
         ;         w :word
         ; ]
+        ; 1: [ :block
+        ;         z :word
+        ;         w :word
+        ; ]
+        ; 2: g :label
         ; 3: before :string
         ; 4: 20 :integer
         ; 5: after :string
@@ -892,15 +892,15 @@ supersection "FUNCTION CALLS"
         ; ================================
         ;  CODE
         ; ================================
-        ; push2
+        ; push0
         ; push1
         ; func
-        ; store0
+        ; store2
         ; push3
         ; print
         ; push4
         ; consti10
-        ; call0
+        ; call2
         ; print
         ; push5
         ; print
@@ -932,14 +932,14 @@ supersection "PATHS"
         ; ================================
         ;  DATA
         ; ================================
-        ; 0: user :word
-        ; 1: name :literal
+        ; 0: name :literal
+        ; 1: user :word
 
         ; ================================
         ;  CODE
         ; ================================
-        ; push1
-        ; load0
+        ; push0
+        ; load1
         ; get
         ; end
 
@@ -947,15 +947,15 @@ supersection "PATHS"
         ; ================================
         ;  DATA
         ; ================================
-        ; 0: user :word
-        ; 1: grades :literal
+        ; 0: grades :literal
+        ; 1: user :word
 
         ; ================================
         ;  CODE
         ; ================================
         ; consti0
-        ; push1
-        ; load0
+        ; push0
+        ; load1
         ; get
         ; get
         ; end
@@ -964,16 +964,16 @@ supersection "PATHS"
         ; ================================
         ;  DATA
         ; ================================
-        ; 0: user :word
+        ; 0: country :literal
         ; 1: address :literal
-        ; 2: country :literal
+        ; 2: user :word
 
         ; ================================
         ;  CODE
         ; ================================
-        ; push2
+        ; push0
         ; push1
-        ; load0
+        ; load2
         ; get
         ; get
         ; end
