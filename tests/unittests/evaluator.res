@@ -321,16 +321,16 @@
         >--------------------------------------------------
 
         input: [h: function [] [print "function called"] print "before" h print "after"] 
-        data: [h [print function called] before after] 
-        code: [33 25 164 48 34 176 96 35 176 218] (10 bytes) 
+        data: [[print function called] h before after] 
+        code: [32 25 178 49 34 189 97 35 189 218] (10 bytes) 
 
         input: [f: function [x] [x + 1] print "before" print f 10 print "after"] 
-        data: [f [x] [x + 1] before after] 
-        code: [34 33 164 48 35 176 10 96 176 36 176 218] (12 bytes) 
+        data: [[x + 1] [x] f before after] 
+        code: [32 33 178 50 35 189 11 98 189 36 189 218] (12 bytes) 
 
         input: [g: $ [z w] [2 * z * w] print "before" print g 10 20 print "after"] 
-        data: [g [z w] [2 * z * w] before 20 after] 
-        code: [34 33 164 48 35 176 36 10 96 176 37 176 218] (13 bytes) 
+        data: [[2 * z * w] [z w] g before 20 after] 
+        code: [32 33 178 50 35 189 36 11 98 189 37 189 218] (13 bytes) 
 
 
 **************************************************
@@ -345,19 +345,19 @@
 
         input: [a\0] 
         data: [a] 
-        code: [0 64 160 218] (4 bytes) 
+        code: [1 64 153 218] (4 bytes) 
 
         input: [user\name] 
         data: [user name] 
-        code: [33 64 160 218] (4 bytes) 
+        code: [33 65 153 218] (4 bytes) 
 
         input: [user\grades\0] 
-        data: [user grades] 
-        code: [0 33 64 160 160 218] (6 bytes) 
+        data: [grades user] 
+        code: [1 32 65 153 153 218] (6 bytes) 
 
         input: [user\address\country] 
-        data: [user address country] 
-        code: [34 33 64 160 160 218] (6 bytes) 
+        data: [country address user] 
+        code: [32 33 66 153 153 218] (6 bytes) 
 
 
         >--------------------------------------------------
