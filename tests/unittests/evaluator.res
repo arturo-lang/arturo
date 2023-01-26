@@ -279,7 +279,7 @@
 
         input: [to :string 5] 
         data: [] 
-        code: [6 172 218] (3 bytes) 
+        code: [6 171 218] (3 bytes) 
 
 
         >--------------------------------------------------
@@ -348,8 +348,8 @@
         code: [1 64 153 218] (4 bytes) 
 
         input: [user\name] 
-        data: [user name] 
-        code: [33 65 153 218] (4 bytes) 
+        data: [name user] 
+        code: [32 65 153 218] (4 bytes) 
 
         input: [user\grades\0] 
         data: [grades user] 
@@ -425,6 +425,10 @@
         data: [[print hello] do done] 
         code: [32 97 34 189 218] (5 bytes) 
 
+        input: [-> 1 -> 2] 
+        data: [[1] [2]] 
+        code: [32 33 218] (3 bytes) 
+
         input: [a: -> upper "hello" b: -> "hello " ++ world] 
         data: [[upper hello] a [hello  ++ world] b] 
         code: [32 49 34 51 218] (5 bytes) 
@@ -446,6 +450,14 @@
         data: [[add _0 _1] [_0 _1] adder] 
         code: [32 33 178 50 218] (5 bytes) 
 
+        input: [subOne: function => [& - 1]] 
+        data: [[_0 - 1] _0 subOne] 
+        code: [32 33 178 50 218] (5 bytes) 
+
+        input: [mulAddOne: $ => [1 + & * &]] 
+        data: [[1 + _0 * _1] [_0 _1] mulAddOne] 
+        code: [32 33 178 50 218] (5 bytes) 
+
 
         >--------------------------------------------------
         > pipe operator (`|`)
@@ -458,6 +470,34 @@
         input: ["hello" | upper | print] 
         data: [hello upper] 
         code: [32 97 189 218] (4 bytes) 
+
+        input: [x: "hello" | upper] 
+        data: [hello upper x] 
+        code: [32 97 50 218] (4 bytes) 
+
+        input: [1 .. 10 | map 'x -> 2 * x] 
+        data: [[2 * x] x] 
+        code: [32 33 11 2 179 181 218] (7 bytes) 
+
+        input: [1 .. 10 | map 'x -> 2 * x | sum] 
+        data: [[2 * x] x sum] 
+        code: [32 33 11 2 179 181 98 218] (8 bytes) 
+
+        input: [1 .. 10 | map 'x -> 2 * x | sum | print] 
+        data: [[2 * x] x sum] 
+        code: [32 33 11 2 179 181 98 189 218] (9 bytes) 
+
+        input: [1 .. 10 | map 'x -> 2 * x | sum | print] 
+        data: [[2 * x] x sum] 
+        code: [32 33 11 2 179 181 98 189 218] (9 bytes) 
+
+        input: [filtered: 1 .. a | map 'x -> 3 * x | select 'x -> odd? x print filtered] 
+        data: [[odd? x] x [3 * x] a filtered] 
+        code: [32 33 34 33 67 2 179 181 182 84 189 218] (12 bytes) 
+
+        input: [filtered: 1 .. a | map 'x -> 3 * x | select => odd? print filtered] 
+        data: [[odd? _0] _0 [3 * x] x a filtered] 
+        code: [32 33 34 35 68 2 179 181 182 85 189 218] (12 bytes) 
 
 
 **************************************************
@@ -480,7 +520,7 @@
 
         input: [2 + 3 + 4 + 5] 
         data: [] 
-        code: [15 218] (2 bytes)
+        code: [15 218] (2 bytes) 
 
         input: [1 + 2 + 3 + 4 + 5 + 6] 
         data: [21] 
@@ -505,24 +545,143 @@
 
 
         >--------------------------------------------------
-        > sub (`-`)
+        > add (`+`) / distributive
         >--------------------------------------------------
 
-        input: [sub 3 2] 
-        data: [] 
-        code: [2 3 129 218] (4 bytes) 
+        input: [X + X * Y] 
+        data: [Y X] 
+        code: [64 2 128 65 130 218] (6 bytes) 
 
-        input: [3 - 2] 
-        data: [] 
-        code: [2 3 129 218] (4 bytes) 
+        input: [(X * Y) + X] 
+        data: [X Y] 
+        code: [64 65 2 128 130 218] (6 bytes) 
 
-        input: [sub 2 1] 
-        data: [] 
-        code: [2 175 218] (3 bytes) 
 
-        input: [2 - 1] 
+        >--------------------------------------------------
+        > sub (`-`) / constant folding
+        >--------------------------------------------------
+
+        input: [sub 2 3] 
         data: [] 
-        code: [2 175 218] (3 bytes) 
+        code: [0 218] (2 bytes) 
+
+        input: [2 - 3] 
+        data: [] 
+        code: [0 218] (2 bytes) 
+
+        input: [8 - 2 - 1] 
+        data: [] 
+        code: [8 218] (2 bytes) 
+
+        input: [30 - 10 - 1] 
+        data: [21] 
+        code: [32 218] (2 bytes) 
+
+
+        >--------------------------------------------------
+        > sub (`-`) / -> dec
+        >--------------------------------------------------
+
+        input: [x - 1] 
+        data: [x] 
+        code: [64 137 218] (3 bytes) 
+
+
+        >--------------------------------------------------
+        > mul (`*`) / constant folding
+        >--------------------------------------------------
+
+        input: [mul 2 3] 
+        data: [] 
+        code: [7 218] (2 bytes) 
+
+        input: [2 * 3] 
+        data: [] 
+        code: [7 218] (2 bytes) 
+
+        input: [2 * 2 * 3] 
+        data: [] 
+        code: [13 218] (2 bytes) 
+
+        input: [2 * 3 * 4 * 5] 
+        data: [120] 
+        code: [32 218] (2 bytes) 
+
+
+        >--------------------------------------------------
+        > div (`/`) / constant folding
+        >--------------------------------------------------
+
+        input: [div 6 3] 
+        data: [] 
+        code: [3 218] (2 bytes) 
+
+        input: [6 / 3] 
+        data: [] 
+        code: [3 218] (2 bytes) 
+
+        input: [6 / 6 / 3] 
+        data: [] 
+        code: [4 218] (2 bytes) 
+
+        input: [50 / 4 / 4 / 2] 
+        data: [25] 
+        code: [32 218] (2 bytes) 
+
+
+        >--------------------------------------------------
+        > fdiv (`//`) / constant folding
+        >--------------------------------------------------
+
+        input: [fdiv 6 3] 
+        data: [] 
+        code: [20 218] (2 bytes) 
+
+        input: [6 // 3] 
+        data: [] 
+        code: [20 218] (2 bytes) 
+
+        input: [4 // 8 // 2] 
+        data: [] 
+        code: [19 218] (2 bytes) 
+
+        input: [55 // 4 // 4 // 2] 
+        data: [27.5] 
+        code: [32 218] (2 bytes) 
+
+
+        >--------------------------------------------------
+        > mod (`%`) / constant folding
+        >--------------------------------------------------
+
+        input: [mod 6 3] 
+        data: [] 
+        code: [1 218] (2 bytes) 
+
+        input: [6 % 3] 
+        data: [] 
+        code: [1 218] (2 bytes) 
+
+        input: [20 % 15 % 6] 
+        data: [] 
+        code: [3 218] (2 bytes) 
+
+
+        >--------------------------------------------------
+        > pow (`^`) / constant folding
+        >--------------------------------------------------
+
+        input: [pow 3 2] 
+        data: [] 
+        code: [10 218] (2 bytes) 
+
+        input: [3 ^ 2] 
+        data: [] 
+        code: [10 218] (2 bytes) 
+
+        input: [2 ^ 2 ^ 2] 
+        data: [16] 
+        code: [32 218] (2 bytes) 
 
 
         >--------------------------------------------------
@@ -530,24 +689,24 @@
         >--------------------------------------------------
 
         input: [print "before" if x [print "here" return true] print "after"] 
-        data: [before x [print here return true] here after] 
-        code: [32 176 65 198 0 4 35 176 21 156 36 176 218] (13 bytes) 
+        data: [before x here after] 
+        code: [32 189 65 199 4 34 189 21 167 35 189 218] (12 bytes) 
 
         input: [print "before" if not? x [print "here" return false] print "after"] 
-        data: [before x [print here return false] here after] 
-        code: [32 176 65 197 0 4 35 176 22 156 36 176 218] (13 bytes) 
+        data: [before x here after] 
+        code: [32 189 65 197 4 34 189 22 167 35 189 218] (12 bytes) 
 
         input: [print "before" if x = 2 [print "here" return true] print "after"] 
-        data: [before x [print here return true] here after] 
-        code: [32 176 2 65 200 0 4 35 176 21 156 36 176 218] (14 bytes) 
+        data: [before x here after] 
+        code: [32 189 3 65 203 4 34 189 21 167 35 189 218] (13 bytes) 
 
         input: [print "before" if x > 2 [print "here" return true] print "after"] 
-        data: [before x [print here return true] here after] 
-        code: [32 176 2 65 204 0 4 35 176 21 156 36 176 218] (14 bytes) 
+        data: [before x here after] 
+        code: [32 189 3 65 211 4 34 189 21 167 35 189 218] (13 bytes) 
 
         input: [print "before" if x =< 2 [print "here" return true] print "after"] 
-        data: [before x [print here return true] here after] 
-        code: [32 176 2 65 201 0 4 35 176 21 156 36 176 218] (14 bytes) 
+        data: [before x here after] 
+        code: [32 189 3 65 205 4 34 189 21 167 35 189 218] (13 bytes) 
 
 
         >--------------------------------------------------
@@ -555,37 +714,37 @@
         >--------------------------------------------------
 
         input: [print "before" unless x [print "here" return false] print "after"] 
-        data: [before x [print here return false] here after] 
-        code: [32 176 65 197 0 4 35 176 22 156 36 176 218] (13 bytes) 
+        data: [before x here after] 
+        code: [32 189 65 197 4 34 189 22 167 35 189 218] (12 bytes) 
 
         input: [print "before" unless not? x [print "here" return true] print "after"] 
-        data: [before x [print here return true] here after] 
-        code: [32 176 65 198 0 4 35 176 21 156 36 176 218] (13 bytes) 
+        data: [before x here after] 
+        code: [32 189 65 199 4 34 189 21 167 35 189 218] (12 bytes) 
 
         input: [print "before" unless x = 2 [print "here" return false] print "after"] 
-        data: [before x [print here return false] here after] 
-        code: [32 176 2 65 199 0 4 35 176 22 156 36 176 218] (14 bytes) 
+        data: [before x here after] 
+        code: [32 189 3 65 201 4 34 189 22 167 35 189 218] (13 bytes) 
 
         input: [print "before" unless x > 2 [print "here" return false] print "after"] 
-        data: [before x [print here return false] here after] 
-        code: [32 176 2 65 201 0 4 35 176 22 156 36 176 218] (14 bytes) 
+        data: [before x here after] 
+        code: [32 189 3 65 205 4 34 189 22 167 35 189 218] (13 bytes) 
 
         input: [print "before" unless x =< 2 [print "here" return false] print "after"] 
-        data: [before x [print here return false] here after] 
-        code: [32 176 2 65 204 0 4 35 176 22 156 36 176 218] (14 bytes) 
+        data: [before x here after] 
+        code: [32 189 3 65 211 4 34 189 22 167 35 189 218] (13 bytes) 
 
 
         >--------------------------------------------------
-        > if-else
+        > if?-else
         >--------------------------------------------------
 
         input: [if? x [return true] else [return false]] 
-        data: [x [return true] [return false]] 
-        code: [64 198 0 5 21 156 208 0 2 22 156 218] (12 bytes) 
+        data: [x] 
+        code: [64 199 4 21 167 213 2 22 167 218] (10 bytes) 
 
         input: [print "before" if? a <> 1 + 2 [print "here" return true] else [print "there" return false] print "after"] 
-        data: [before a [print here return true] here [print there return false] there after] 
-        code: [32 176 2 1 128 65 199 0 7 35 176 21 156 208 0 4 37 176 22 156 38 176 218] (23 bytes) 
+        data: [before a here there after] 
+        code: [32 189 4 65 201 6 34 189 21 167 213 4 35 189 22 167 36 189 218] (19 bytes) 
 
 
         >--------------------------------------------------
@@ -593,24 +752,24 @@
         >--------------------------------------------------
 
         input: [print "before" switch a [1] [2] print "after"] 
-        data: [before a [1] [2] after] 
-        code: [32 176 65 198 0 4 1 208 0 1 2 36 176 218] (14 bytes) 
+        data: [before a after] 
+        code: [32 189 65 199 3 2 213 1 3 34 189 218] (12 bytes) 
 
         input: [(x = 1) ? -> 1 -> 2] 
-        data: [x [1] [2]] 
-        code: [1 64 200 0 4 1 208 0 1 2 218] (11 bytes) 
+        data: [x] 
+        code: [2 64 203 3 2 213 1 3 218] (9 bytes) 
 
         input: [print "before" return (x < 1) ? -> true -> false print "after"] 
-        data: [before x [true] [false] after] 
-        code: [32 176 1 65 202 0 4 21 208 0 1 22 156 36 176 218] (16 bytes) 
+        data: [before [false] [true] x after] 
+        code: [32 189 33 34 2 67 151 165 167 36 189 218] (12 bytes) 
 
         input: [print "before" z: (x < 1) ? -> true -> false print "after"] 
-        data: [before z x [true] [false] after] 
-        code: [32 176 1 66 202 0 4 21 208 0 1 22 49 37 176 218] (16 bytes) 
+        data: [before [false] [true] x z after] 
+        code: [32 189 33 34 2 67 151 165 52 37 189 218] (12 bytes) 
 
         input: [print "before" z: 3 + (x >= 1) ? -> 1 -> 2 print "after"] 
-        data: [before z x [1] [2] after] 
-        code: [32 176 1 66 203 0 4 1 208 0 1 2 3 128 49 37 176 218] (18 bytes) 
+        data: [before [2] [1] x z after] 
+        code: [32 189 33 34 2 67 150 165 4 128 52 37 189 218] (14 bytes) 
 
 
         >--------------------------------------------------
@@ -618,5 +777,9 @@
         >--------------------------------------------------
 
         input: [while [x = 1] [print "hello"]] 
-        data: [[x = 1] [print hello] x hello] 
-        code: [1 66 200 0 5 35 176 209 0 10 218] (11 bytes)
+        data: [x hello] 
+        code: [2 64 203 4 33 189 215 6 218] (9 bytes) 
+
+        input: [while ∅ [print "hello"]] 
+        data: [[print hello]] 
+        code: [32 27 166 218] (4 bytes)
