@@ -196,6 +196,60 @@ func doesNotContainBranching(node: Node): bool {.enforceNoRaises.} =
 # Optimization
 #------------------------
 
+# TODO(VM/eval) optimize conditionals combined with `and?`
+#  Not sure what the benefit-to-effort ratio of this proposal would be, 
+#  but we could definitely optimize this type of scenario.
+# 
+#  For example, right now, `if? x = 2 -> print "X is 2" else -> "X is not 2"`
+#  would lead to pseudo-bytecode looking like this:
+#  ```
+#  push 2
+#  load x
+#  jump_if_not_equal_to else
+#  push "X is 2"
+#  print
+#  else: 
+#   push "X is not 2"
+#   print
+#  ```
+#
+#  Now, what if there is lazy `and?` involved?
+#  E.g. `if? and? [x = 2][y = 3] -> print "YES" -> print "NO"`
+#
+#  Right now, it produces something like:
+#  ```
+#  push [y=3]
+#  push [x=2]
+#  and
+#  jump_if_not
+#  push "YES"
+#  print
+#  else:
+#   push "NO"
+#   print
+#  ```
+#
+#  This could/should produce bytecode like this:
+#  ```
+#  push 2
+#  load x
+#  jump_if_not_equal_to else
+#  push 3
+#  load y
+#  jump_if_not_equal_to else
+#  push "YES"
+#  print
+#  else: 
+#   push "NO"
+#   print
+#  ```
+#
+#  The produced/suggested bytecode is longer but it should be faster,
+#  given that there'll be no implicit function calls; but just linear,
+#  more cache-friendly code to just jump through.
+#
+#  labels: vm, evaluator, enhancement, open discussion
+
 template optimizeConditional(
     consts: var ValueArray, 
     it: var VBinary, 
