@@ -254,15 +254,15 @@
 
         input: [print 2] 
         data: [] 
-        code: [2 176 218] (3 bytes) 
+        code: [3 189 218] (3 bytes) 
 
         input: [size [1 2]] 
         data: [[1 2]] 
-        code: [32 169 218] (3 bytes) 
+        code: [32 183 218] (3 bytes) 
 
         input: [and 1 123] 
         data: [123] 
-        code: [32 1 137 218] (4 bytes) 
+        code: [32 2 139 218] (4 bytes) 
 
 
         >--------------------------------------------------
