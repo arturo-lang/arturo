@@ -242,10 +242,10 @@ template parseString(p: var Parser, stopper: char = Quote) =
                         of 'f':
                             add(p.value, '\f')
                             inc(pos, 2)
-                        of 'n':
+                        of 'n', 'l':
                             add(p.value, '\L')
                             inc(pos, 2)
-                        of 'r':
+                        of 'r', 'c':
                             add(p.value, '\C')
                             inc(pos, 2)
                         of 't':
@@ -254,6 +254,24 @@ template parseString(p: var Parser, stopper: char = Quote) =
                         of 'v':
                             add(p.value, '\v')
                             inc(pos, 2)
+                        of 'x':
+                            inc(pos, 2)
+                            var xi = 0
+                            let endpos = pos + 1
+                            while pos <= endpos:
+                                case p.buf[pos]
+                                    of '0'..'9':
+                                        xi = `shl`(xi, 4) or (ord(p.buf[pos]) - ord('0'))
+                                        inc(pos)
+                                    of 'a'..'f':
+                                        xi = `shl`(xi, 4) or (ord(p.buf[pos]) - ord('a') + 10)
+                                        inc(pos)
+                                    of 'A'..'F':
+                                        xi = `shl`(xi, 4) or (ord(p.buf[pos]) - ord('A') + 10)
+                                        inc(pos)
+                                    else:
+                                        break
+                            add(p.value, chr(xi))
                         else:
                             add(p.value, "\\")
                             add(p.value, p.buf[pos+1])
