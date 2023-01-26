@@ -271,15 +271,15 @@
 
         input: [to :floating 1] 
         data: [:floating] 
-        code: [1 32 157 218] (4 bytes) 
+        code: [2 32 170 218] (4 bytes) 
 
         input: [to :integer "10"] 
         data: [10] 
-        code: [32 159 218] (3 bytes) 
+        code: [32 172 218] (3 bytes) 
 
         input: [to :string 5] 
         data: [] 
-        code: [5 158 218] (3 bytes) 
+        code: [6 172 218] (3 bytes) 
 
 
         >--------------------------------------------------
