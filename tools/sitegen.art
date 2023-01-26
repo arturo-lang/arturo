@@ -17,7 +17,7 @@ modules: new []
 functions: #[]
 relatedFuncs: #[]
 
-rosettas: sort map select list "examples/rosetta" => [in? ".res"] 'rosetta [
+rosettas: sort map select list "examples/rosetta" => [in? & ".res"] 'rosetta [
     (extract.basename rosetta) -- extract.extension rosetta
 ]
 
