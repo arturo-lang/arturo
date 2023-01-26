@@ -1,6 +1,5 @@
 valid?: function [n][
-    pf: factors.prime n
-    every? pf 'f ->
+    every? factors.prime n 'f ->
         and? [contains? to :string n to :string f]
              [1 <> size digits f]
 ]

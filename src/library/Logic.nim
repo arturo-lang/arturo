@@ -30,6 +30,7 @@ proc defineSymbols*() =
 
     builtin "all?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if all values in given block are true",
         args        = {
@@ -46,15 +47,14 @@ proc defineSymbols*() =
             ; false
         """:
             #=======================================================
-            ensureCleaned(x)
             # check if empty
-            if cleanX.len==0: 
+            if x.a.len==0: 
                 push(newLogical(false))
                 return
 
             var allOK = true
 
-            for item in cleanX:
+            for item in x.a:
                 var val {.cursor.}: Value
                 if item.kind == Block: 
                     execUnscoped(item)
@@ -72,6 +72,7 @@ proc defineSymbols*() =
 
     builtin "and?",
         alias       = logicaland, 
+        op          = opAnd,
         rule        = InfixPrecedence,
         description = "return the logical AND for the given values",
         args        = {
@@ -119,6 +120,7 @@ proc defineSymbols*() =
 
     builtin "any?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if any of the values in given block is true",
         args        = {
@@ -135,14 +137,13 @@ proc defineSymbols*() =
             ; false
         """:
             #=======================================================
-            ensureCleaned(x)
             # check if empty
-            if cleanX.len==0: 
+            if x.a.len==0: 
                 push(newLogical(false))
                 return
             
             var anyOK = false
-            for item in cleanX:
+            for item in x.a:
                 var val: Value
                 if item.kind == Block: 
                     execUnscoped(item)
@@ -165,6 +166,7 @@ proc defineSymbols*() =
 
     builtin "false?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = InfixPrecedence,
         description = "returns true if given value is false; otherwise, it returns false",
         args        = {
@@ -190,6 +192,7 @@ proc defineSymbols*() =
 
     builtin "nand?",
         alias       = logicalnand, 
+        op          = opNop,
         rule        = InfixPrecedence,
         description = "return the logical NAND for the given values",
         args        = {
@@ -240,6 +243,7 @@ proc defineSymbols*() =
 
     builtin "nor?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = InfixPrecedence,
         description = "return the logical NOR for the given values",
         args        = {
@@ -290,6 +294,7 @@ proc defineSymbols*() =
 
     builtin "not?",
         alias       = logicalnot, 
+        op          = opNot,
         rule        = PrefixPrecedence,
         description = "return the logical complement of the given value",
         args        = {
@@ -314,6 +319,7 @@ proc defineSymbols*() =
 
     builtin "or?",
         alias       = logicalor, 
+        op          = opOr,
         rule        = InfixPrecedence,
         description = "return the logical OR for the given values",
         args        = {
@@ -366,6 +372,7 @@ proc defineSymbols*() =
 
     builtin "true?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = InfixPrecedence,
         description = "returns true if given value is true; otherwise, it returns false",
         args        = {
@@ -386,6 +393,7 @@ proc defineSymbols*() =
 
     builtin "xnor?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = InfixPrecedence,
         description = "return the logical XNOR for the given values",
         args        = {
@@ -426,6 +434,7 @@ proc defineSymbols*() =
 
     builtin "xor?",
         alias       = logicalxor, 
+        op          = opNop,
         rule        = InfixPrecedence,
         description = "return the logical XOR for the given values",
         args        = {

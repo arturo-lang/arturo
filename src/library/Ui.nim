@@ -44,7 +44,8 @@ proc defineSymbols*() =
     when not defined(NODIALOGS):
         
         builtin "alert",
-            alias       = unaliased, 
+            alias       = unaliased,
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "show notification with given title and message",
             args        = {
@@ -80,6 +81,7 @@ proc defineSymbols*() =
 
         builtin "clip",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "set clipboard content to given text",
             args        = {
@@ -97,6 +99,7 @@ proc defineSymbols*() =
 
         builtin "dialog",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "show a file selection dialog and return selection",
             args        = {
@@ -124,6 +127,7 @@ proc defineSymbols*() =
 
         builtin "popup",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "show popup dialog with given title and message and return result",
             args        = {
@@ -198,6 +202,7 @@ proc defineSymbols*() =
 
         builtin "unclip",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "get clipboard content",
             args        = NoArgs,
@@ -218,6 +223,7 @@ proc defineSymbols*() =
 
         builtin "webview",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "show webview window with given url or html source",
             args        = {
@@ -322,6 +328,7 @@ proc defineSymbols*() =
 
                 builtin "eval",
                     alias       = unaliased, 
+                    op          = opNop,
                     rule        = PrefixPrecedence,
                     description = "Evaluate JavaScript code in active webview",
                     args        = {

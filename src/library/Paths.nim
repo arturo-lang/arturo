@@ -41,6 +41,7 @@ proc defineSymbols*() =
 
         builtin "absolute?",
             alias       = unaliased,
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "check if given path is an absolute path",
             args        = {
@@ -59,6 +60,7 @@ proc defineSymbols*() =
         #  labels: library,enhancement,web
         builtin "extract",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "extract components from path",
             args        = {
@@ -204,6 +206,7 @@ proc defineSymbols*() =
 
         builtin "list",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "get files in given path",
             args        = {
@@ -245,6 +248,7 @@ proc defineSymbols*() =
         #  labels: library, package manager, enhancement
         builtin "module",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "get path for given module name",
             args        = {
@@ -264,7 +268,8 @@ proc defineSymbols*() =
                     push(newString(HomeDir & ".arturo/lib/" & x.s & ".art"))
         
         builtin "normalize",
-            alias       = dotslash, 
+            alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "get normalized version of given path",
             args        = {
@@ -325,6 +330,7 @@ proc defineSymbols*() =
 
         builtin "relative",
             alias       = dotslash, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "get relative path for given path, based on current script's location",
             args        = {

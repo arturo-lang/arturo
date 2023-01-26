@@ -25,6 +25,7 @@ canExecute?: function [scri][
             "ackermann function"
             "arbitrary-precision integers - included"
             "curzon numbers"
+            "hamming numbers"
             "iban"
             "integer overflow"
             "integer roots"
@@ -32,17 +33,21 @@ canExecute?: function [scri][
             "long multiplication"
             "loops - continue"
             "lucas-lehmer test"
+            "magic constant"
             "modular exponentation"
             "next special primes"
+            "pell's equation"
+            "permutations - derangements"
             "sorting algorithms - cycle sort"
             "sorting algorithms - pancake sort"
+            "square root by hand"
             "sylvester's sequence"
             "trigonometric functions"
             "ultra useful primes"
             "unicode strings"
             "wieferich primes"
             "xml - input"
-        ] -> return false
+        ] -> return false 
     ]
 
     if sys\release='full [

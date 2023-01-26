@@ -26,7 +26,6 @@ import helpers/terminal as TerminalHelper
 import vm/globals
 import vm/opcodes
 import vm/values/value
-import vm/values/clean
 
 import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vsocket, vversion]
 
@@ -106,9 +105,7 @@ proc `$`*(v: Value): string {.inline.} =
             # for i,child in v.a:
             #     result &= $(child) & " "
             # result &= "]"
-
-            ensureCleaned(v)
-            result = "[" & cleanV.map((child) => $(child)).join(" ") & "]"
+            result = "[" & v.a.map((child) => $(child)).join(" ") & "]"
 
         of Range     : 
             result = $(v.rng)
@@ -159,7 +156,6 @@ proc `$`*(v: Value): string {.inline.} =
         of Bytecode:
             result = "<bytecode>" & "(" & fmt("{cast[ByteAddress](v):#X}") & ")"
             
-        of Newline: discard
         of Nothing: discard
         of ANY: discard
 
@@ -303,9 +299,8 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
         of Inline,
             Block        :
             dumpBlockStart(v)
-            ensureCleaned(v)
-            for i,child in cleanV:
-                dump(child, level+1, i==(cleanV.len-1), muted=muted)
+            for i,child in v.a:
+                dump(child, level+1, i==(v.a.len-1), muted=muted)
 
             stdout.write "\n"
 
@@ -397,10 +392,10 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             while j < v.trans.instructions.len:
                 let op = OpCode(v.trans.instructions[j])
                 instrs.add(newWord(stringify((OpCode(op)))))
-                if op in {opPush, opStore, opCall, opLoad, opStorl, opAttr, opEol}:
+                if op in {opPush, opStore, opDStore, opCall, opLoad, opStorl, opAttr, opEol, opJmpIf, opJmpIfNot, opJmpIfEq, opJmpIfNe, opJmpIfGt, opJmpIfGe, opJmpIfLt, opJmpIfLe, opGoto, opGoup}:
                     j += 1
                     instrs.add(newInteger(int(v.trans.instructions[j])))
-                elif op in {opPushX, opStoreX, opCallX, opLoadX, opStorlX, opEolX, opJmpIf, opJmpIfNot, opJmpIfEq, opJmpIfNe, opJmpIfGt, opJmpIfGe, opJmpIfLt, opJmpIfLe, opGoto, opGoup}:
+                elif op in {opPushX, opStoreX, opDStore, opCallX, opLoadX, opStorlX, opEolX, opJmpIfX, opJmpIfNotX, opJmpIfEqX, opJmpIfNeX, opJmpIfGtX, opJmpIfGeX, opJmpIfLtX, opJmpIfLeX, opGotoX, opGoupX}:
                     j += 2
                     instrs.add(newInteger(int(uint16(v.trans.instructions[j-1]) shl 8 + byte(v.trans.instructions[j]))))
 
@@ -422,19 +417,24 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
             var i = 0
             while i < instrs.len:
                 for i in 0..level: stdout.write "        "
-                stdout.write instrs[i].s
+                let preop = instrs[i].s
+                stdout.write preop
                 i += 1
                 if i < instrs.len and instrs[i].kind==Integer:
-                    stdout.write "                "
+                    stdout.write " ".repeat(20 - preop.len)
                     while i < instrs.len and instrs[i].kind==Integer:
-                        if not muted: stdout.write fmt("{resetColor}{fg(grayColor)} #{instrs[i].i}{resetColor}")
-                        else: stdout.write " #" & $(instrs[i].i)
+                        var numstr = $(instrs[i].i)
+                        if preop.contains("jmp") or preop.contains("go"):
+                            numstr = "@" & numstr
+                        else:
+                            numstr = "#" & numstr
+                        if not muted: stdout.write fmt("{resetColor}{fg(grayColor)} {numstr}{resetColor}")
+                        else: stdout.write numstr
                         i += 1
                 stdout.write "\n"
 
             dumpBlockEnd()
 
-        of Newline      : discard
         of Nothing      : discard
         of ANY          : discard
 
@@ -487,6 +487,11 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         of Label        : result &= v.s & ":"
         of Attribute         : result &= "." & v.s
         of AttributeLabel    : result &= "." & v.s & ":"
+        of Path,
+           PathLabel    :
+            result = v.p.map((x) => $(x)).join("\\")
+            if v.kind==PathLabel:
+                result &= ":"
         of Symbol       :  result &= $(v.m)
         of SymbolLiteral: result &= "'" & $(v.m)
         of Quantity     : result &= $(v.nm) & ":" & toLowerAscii($(v.unit.name))
@@ -502,9 +507,8 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 result &= "\n"
             
             var parts: seq[string]
-            ensureCleaned(v)
-            for i,child in cleanV:
-                parts.add(codify(child,pretty,unwrapped,level+1, i==(cleanV.len-1), safeStrings=safeStrings))
+            for i,child in v.a:
+                parts.add(codify(child,pretty,unwrapped,level+1, i==(v.a.len-1), safeStrings=safeStrings))
 
             result &= parts.join(" ")
 
