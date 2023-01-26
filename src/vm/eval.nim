@@ -466,7 +466,7 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
                     of RootNode:
                         discard
                     of NewlineNode:
-                        if not omitNewlines:
+                        if likely(not omitNewlines):
                             addEol(instruction.line)
                     of ConstantValue:
                         var alreadyPut = false
