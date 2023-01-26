@@ -390,8 +390,6 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
 
                     of Bytecode:
                         var evaled = doEval(y)
-                        if (hadAttr("optimized")):
-                            evaled = Translation(constants: evaled.constants, instructions: optimizeBytecode(evaled))
 
                         return newBytecode(evaled)
                        
@@ -413,8 +411,6 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                             throwCannotConvert()
                     of Bytecode:
                         var evaled = Translation(constants: y.d["data"].a, instructions: y.d["code"].a.map(proc (x:Value):byte = byte(x.i)))
-                        if (hadAttr("optimized")):
-                            evaled.instructions = optimizeBytecode(evaled)
 
                         return newBytecode(evaled)
                     else:
