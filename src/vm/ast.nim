@@ -301,6 +301,7 @@ proc processBlock*(
                     right.replaceNode(newConstant(right.children[1].value + I1))
                 else:
                     right.op = opAdd
+                    right.children[0].kind = ConstantValue
                     right.children[0].value = newInteger(1)
             elif right.children[1].kind == VariableLoad and right.children[1].value == left.value:
                 hookOptimProfiler("add (distributive)")
@@ -309,6 +310,7 @@ proc processBlock*(
                     right.replaceNode(newConstant(right.children[0].value + I1))
                 else:
                     right.op = opAdd
+                    right.children[1].kind = ConstantValue
                     right.children[1].value = newInteger(1)
         
         # Convert (X * Y) + X -> (1 + Y) * X and
@@ -321,6 +323,7 @@ proc processBlock*(
                     left.replaceNode(newConstant(left.children[1].value + I1))
                 else:
                     left.op = opAdd
+                    left.children[0].kind = ConstantValue
                     left.children[0].value = newInteger(1)
             elif left.children[1].kind == VariableLoad and left.children[1].value == right.value:
                 hookOptimProfiler("add (distributive)")
@@ -329,6 +332,7 @@ proc processBlock*(
                     left.replaceNode(newConstant(left.children[0].value + I1))
                 else:
                     left.op = opAdd
+                    left.children[1].kind = ConstantValue
                     left.children[1].value = newInteger(1)
 
     proc optimizeSub(target: var Node) {.enforceNoRaises.} =
