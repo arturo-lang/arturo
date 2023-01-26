@@ -47,7 +47,7 @@ canExecute?: function [scri][
             "unicode strings"
             "wieferich primes"
             "xml - input"
-        ] -> return false
+        ] -> return false 
     ]
 
     if sys\release='full [
