@@ -1333,7 +1333,7 @@ proc defineSymbols*() =
         attrs       = {
             "format"    : ({String},"use given format (for dates or floating-point numbers)"),
             "unit"      : ({String,Literal},"use given unit (for quantities)"),
-            "optimized" : ({Logical},"convert to optimized bytecode"),
+            "intrepid"  : ({Logical},"convert to bytecode without error-line tracking"),
             "hsl"       : ({Logical},"convert HSL block to color"),
             "hsv"       : ({Logical},"convert HSV block to color")
         },
