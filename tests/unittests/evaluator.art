@@ -1086,7 +1086,6 @@ supersection "BLOCKS & SYNTACTIC SUGAR"
         ; print
         ; end
 
-        ; TODO: this is not working!!! (see #804)
         byteCode [(print 2 print 3)]
         ; ================================
         ;  DATA
@@ -1113,19 +1112,19 @@ supersection "BLOCKS & SYNTACTIC SUGAR"
         ; ================================
         ;  DATA
         ; ================================
-        ; 0: do :word
-        ; 1: [ :block
+        ; 0: [ :block
         ;         print :word
         ;         3 :integer
         ; ]
+        ; 1: do :word
 
         ; ================================
         ;  CODE
         ; ================================
         ; consti2
         ; print
-        ; push1
-        ; call0
+        ; push0
+        ; call1
         ; end
 
     ;*****************************************************************
@@ -1153,18 +1152,18 @@ supersection "BLOCKS & SYNTACTIC SUGAR"
         ; ================================
         ;  DATA
         ; ================================
-        ; 0: do :word
-        ; 1: [ :block
+        ; 0: [ :block
         ;         print :word
         ;         hello :string
         ; ]
+        ; 1: do :word
         ; 2: done :string
 
         ; ================================
         ;  CODE
         ; ================================
-        ; push1
-        ; call0
+        ; push0
+        ; call1
         ; push2
         ; print
         ; end
@@ -1176,25 +1175,25 @@ supersection "BLOCKS & SYNTACTIC SUGAR"
         ; ================================
         ;  DATA
         ; ================================
-        ; 0: a :label
-        ; 1: [ :block
+        ; 0: [ :block
         ;         upper :word
         ;         hello :string
         ; ]
-        ; 2: b :label
-        ; 3: [ :block
+        ; 1: a :label
+        ; 2: [ :block
         ;         hello  :string
         ;         ++ :symbol
         ;         world :word
         ; ]
+        ; 3: b :label
 
         ; ================================
         ;  CODE
         ; ================================
-        ; push1
-        ; store0
-        ; push3
-        ; store2
+        ; push0
+        ; store1
+        ; push2
+        ; store3
         ; end
 
     ;*****************************************************************
@@ -1206,17 +1205,14 @@ supersection "BLOCKS & SYNTACTIC SUGAR"
         ;  DATA
         ; ================================
         ; 0: [ :block
-
-        ; ]
-        ; 1: [ :block
         ;         hello :string
         ; ]
 
         ; ================================
         ;  CODE
         ; ================================
+        ; consta
         ; push0
-        ; push1
         ; end
 
         byteCode [
@@ -1225,23 +1221,20 @@ supersection "BLOCKS & SYNTACTIC SUGAR"
         ; ================================
         ;  DATA
         ; ================================
-        ; 0: f :label
-        ; 1: function :word
-        ; 2: [ :block
-        ;         _0 :word
-        ; ]
-        ; 3: [ :block
+        ; 0: [ :block
         ;         print :word
         ;         _0 :word
         ; ]
+        ; 1: _0 :literal
+        ; 2: f :label
 
         ; ================================
         ;  CODE
         ; ================================
-        ; push3
-        ; push2
-        ; call1
-        ; store0
+        ; push0
+        ; push1
+        ; func
+        ; store2
         ; end
 
         byteCode [
@@ -1250,25 +1243,24 @@ supersection "BLOCKS & SYNTACTIC SUGAR"
         ; ================================
         ;  DATA
         ; ================================
-        ; 0: adder :label
-        ; 1: function :word
-        ; 2: [ :block
-        ;         _0 :word
-        ;         _1 :word
-        ; ]
-        ; 3: [ :block
+        ; 0: [ :block
         ;         add :word
         ;         _0 :word
         ;         _1 :word
         ; ]
+        ; 1: [ :block
+        ;         _0 :word
+        ;         _1 :word
+        ; ]
+        ; 2: adder :label
 
         ; ================================
         ;  CODE
         ; ================================
-        ; push3
-        ; push2
-        ; call1
-        ; store0
+        ; push0
+        ; push1
+        ; func
+        ; store2
         ; end
 
     ;*****************************************************************
@@ -1279,17 +1271,15 @@ supersection "BLOCKS & SYNTACTIC SUGAR"
         ; ================================
         ;  DATA
         ; ================================
-        ; 0: print :word
 
         ; ================================
         ;  CODE
         ; ================================
         ; consti2
-        ; call0
+        ; print
         ; end
 
-        ; TODO: this is not working!!! (see #802)
-        ; byteCode ["hello" | upper | print]
+        byteCode ["hello" | upper | print]
         ; ================================
         ;  DATA
         ; ================================

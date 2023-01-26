@@ -409,8 +409,8 @@
         >--------------------------------------------------
 
         input: [print 2 do :: print 3] 
-        data: [do [print 3]] 
-        code: [2 176 33 96 218] (5 bytes) 
+        data: [[print 3] do] 
+        code: [3 189 32 97 218] (5 bytes) 
 
 
         >--------------------------------------------------
@@ -422,12 +422,12 @@
         code: [32 218] (2 bytes) 
 
         input: [do -> print "hello" print "done"] 
-        data: [do [print hello] done] 
-        code: [33 96 34 176 218] (5 bytes) 
+        data: [[print hello] do done] 
+        code: [32 97 34 189 218] (5 bytes) 
 
         input: [a: -> upper "hello" b: -> "hello " ++ world] 
-        data: [a [upper hello] b [hello  ++ world]] 
-        code: [33 48 35 50 218] (5 bytes) 
+        data: [[upper hello] a [hello  ++ world] b] 
+        code: [32 49 34 51 218] (5 bytes) 
 
 
         >--------------------------------------------------
@@ -435,16 +435,16 @@
         >--------------------------------------------------
 
         input: [=> "hello"] 
-        data: [[] [hello]] 
-        code: [32 33 218] (3 bytes) 
+        data: [[hello]] 
+        code: [25 32 218] (3 bytes) 
 
         input: [f: function => print] 
-        data: [f function [_0] [print _0]] 
-        code: [35 34 97 48 218] (5 bytes) 
+        data: [[print _0] _0 f] 
+        code: [32 33 178 50 218] (5 bytes) 
 
         input: [adder: $ => add] 
-        data: [adder function [_0 _1] [add _0 _1]] 
-        code: [35 34 97 48 218] (5 bytes) 
+        data: [[add _0 _1] [_0 _1] adder] 
+        code: [32 33 178 50 218] (5 bytes) 
 
 
         >--------------------------------------------------
@@ -452,8 +452,12 @@
         >--------------------------------------------------
 
         input: [2 | print] 
-        data: [print] 
-        code: [2 96 218] (3 bytes) 
+        data: [] 
+        code: [3 189 218] (3 bytes) 
+
+        input: ["hello" | upper | print] 
+        data: [hello upper] 
+        code: [32 97 189 218] (4 bytes) 
 
 
 **************************************************
