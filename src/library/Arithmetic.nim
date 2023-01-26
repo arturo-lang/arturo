@@ -29,6 +29,7 @@ proc defineSymbols*() =
 
     builtin "add",
         alias       = plus, 
+        op          = opAdd,
         rule        = InfixPrecedence,
         description = "add given values and return result",
         args        = {
@@ -50,6 +51,7 @@ proc defineSymbols*() =
 
     builtin "dec",
         alias       = unaliased, 
+        op          = opDec,
         rule        = PrefixPrecedence,
         description = "decrease given value by 1",
         args        = {
@@ -69,6 +71,7 @@ proc defineSymbols*() =
         
     builtin "div",
         alias       = slash, 
+        op          = opDiv,
         rule        = InfixPrecedence,
         description = "perform integer division between given values and return result",
         args        = {
@@ -90,6 +93,7 @@ proc defineSymbols*() =
 
     builtin "divmod",
         alias       = slashpercent, 
+        op          = opNop,
         rule        = InfixPrecedence,
         description = "perform integer division between given values and return tuple with quotient and remainder",
         args        = {
@@ -113,6 +117,7 @@ proc defineSymbols*() =
 
     builtin "fdiv",
         alias       = doubleslash, 
+        op          = opFDiv,
         rule        = InfixPrecedence,
         description = "divide given values and return result",
         args        = {
@@ -133,6 +138,7 @@ proc defineSymbols*() =
 
     builtin "inc",
         alias       = unaliased, 
+        op          = opInc,
         rule        = PrefixPrecedence,
         description = "increase given value by 1",
         args        = {
@@ -152,6 +158,7 @@ proc defineSymbols*() =
 
     builtin "mod",
         alias       = percent, 
+        op          = opMod,
         rule        = InfixPrecedence,
         description = "calculate the modulo of given values and return result",
         args        = {
@@ -173,6 +180,7 @@ proc defineSymbols*() =
 
     builtin "mul",
         alias       = asterisk, 
+        op          = opMul,
         rule        = InfixPrecedence,
         description = "calculate the product of given values and return result",
         args        = {
@@ -194,6 +202,7 @@ proc defineSymbols*() =
 
     builtin "neg",
         alias       = unaliased, 
+        op          = opNeg,
         rule        = PrefixPrecedence,
         description = "reverse sign of given value and return it",
         args        = {
@@ -213,6 +222,7 @@ proc defineSymbols*() =
 
     builtin "pow",
         alias       = caret, 
+        op          = opPow,
         rule        = InfixPrecedence,
         description = "calculate the power of given values and return result",
         args        = {
@@ -237,6 +247,7 @@ proc defineSymbols*() =
 
     builtin "sub",
         alias       = minus, 
+        op          = opSub,
         rule        = InfixPrecedence,
         description = "subtract given values and return result",
         args        = {

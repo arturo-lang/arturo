@@ -38,6 +38,7 @@ proc defineSymbols*() =
 
     builtin "average",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get average from given collection of numbers",
         args        = {
@@ -52,11 +53,10 @@ proc defineSymbols*() =
             #=======================================================
             var res = F0.copyValue
             if x.kind == Block:
-                ensureCleaned(x)
-                for num in cleanX:
+                for num in x.a:
                     res += num
 
-                res //= newFloating(cleanX.len)
+                res //= newFloating(x.a.len)
             else:
                 for item in items(x.rng):
                     res += item
@@ -67,6 +67,7 @@ proc defineSymbols*() =
 
     builtin "deviation",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get population standard deviation of given collection of numbers",
         args        = {
@@ -87,14 +88,14 @@ proc defineSymbols*() =
             deviation.sample arr2       ; => 45.65847597731914
         """:
             #=======================================================
-            ensureCleaned(x)
             if (hadAttr("sample")):
-                push newFloating(standardDeviationS(cleanX.map((z)=>asFloat(z))))
+                push newFloating(standardDeviationS(x.a.map((z)=>asFloat(z))))
             else:
-                push newFloating(standardDeviation(cleanX.map((z)=>asFloat(z))))
+                push newFloating(standardDeviation(x.a.map((z)=>asFloat(z))))
 
     builtin "kurtosis",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get population kurtosis of given collection of numbers",
         args        = {
@@ -115,14 +116,14 @@ proc defineSymbols*() =
             kurtosis.sample arr2        ; => 0.5886192422439724
         """:
             #=======================================================
-            ensureCleaned(x)
             if (hadAttr("sample")):
-                push newFloating(kurtosisS(cleanX.map((z)=>asFloat(z))))
+                push newFloating(kurtosisS(x.a.map((z)=>asFloat(z))))
             else:
-                push newFloating(kurtosis(cleanX.map((z)=>asFloat(z))))
+                push newFloating(kurtosis(x.a.map((z)=>asFloat(z))))
 
     builtin "median",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get median from given collection of numbers",
         args        = {
@@ -138,20 +139,20 @@ proc defineSymbols*() =
             ; 3.5
         """:
             #=======================================================
-            ensureCleaned(x)
-            if cleanX.len==0: 
+            if x.a.len==0: 
                 push(VNULL)
             else:
-                let first = cleanX[(cleanX.len-1) div 2]
-                let second = cleanX[((cleanX.len-1) div 2)+1]
+                let first = x.a[(x.a.len-1) div 2]
+                let second = x.a[((x.a.len-1) div 2)+1]
 
-                if cleanX.len mod 2 == 1:
+                if x.a.len mod 2 == 1:
                     push(first) 
                 else:
                     push((first + second)//I2)
 
     builtin "skewness",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get population skewness of given collection of numbers",
         args        = {
@@ -172,14 +173,14 @@ proc defineSymbols*() =
             skewness.sample arr2        ; => 1.40680083744453
         """:
             #=======================================================
-            ensureCleaned(x)
             if (hadAttr("sample")):
-                push newFloating(skewnessS(cleanX.map((z)=>asFloat(z))))
+                push newFloating(skewnessS(x.a.map((z)=>asFloat(z))))
             else:
-                push newFloating(skewness(cleanX.map((z)=>asFloat(z))))
+                push newFloating(skewness(x.a.map((z)=>asFloat(z))))
     
     builtin "variance",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get population variance of given collection of numbers",
         args        = {
@@ -200,11 +201,10 @@ proc defineSymbols*() =
             variance.sample arr2        ; => 2084.696428571428
         """:
             #=======================================================
-            ensureCleaned(x)
             if (hadAttr("sample")):
-                push newFloating(varianceS(cleanX.map((z)=>asFloat(z))))
+                push newFloating(varianceS(x.a.map((z)=>asFloat(z))))
             else:
-                push newFloating(variance(cleanX.map((z)=>asFloat(z))))
+                push newFloating(variance(x.a.map((z)=>asFloat(z))))
 
 #=======================================
 # Add Library

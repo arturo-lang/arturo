@@ -35,6 +35,7 @@ proc defineSymbols*() =
 
     builtin "and",
         alias       = unaliased, 
+        op          = opBAnd,
         rule        = InfixPrecedence,
         description = "calculate the binary AND for the given values",
         args        = {
@@ -56,6 +57,7 @@ proc defineSymbols*() =
 
     builtin "nand",
         alias       = unaliased, 
+        op          = opNop,
         rule        = InfixPrecedence,
         description = "calculate the binary NAND for the given values",
         args        = {
@@ -76,6 +78,7 @@ proc defineSymbols*() =
 
     builtin "nor",
         alias       = unaliased, 
+        op          = opNop,
         rule        = InfixPrecedence,
         description = "calculate the binary NOR for the given values",
         args        = {
@@ -96,6 +99,7 @@ proc defineSymbols*() =
 
     builtin "not",
         alias       = unaliased, 
+        op          = opBNot,
         rule        = PrefixPrecedence,
         description = "calculate the binary complement the given value",
         args        = {
@@ -115,6 +119,7 @@ proc defineSymbols*() =
 
     builtin "or",
         alias       = unaliased, 
+        op          = opBOr,
         rule        = InfixPrecedence,
         description = "calculate the binary OR for the given values",
         args        = {
@@ -135,6 +140,7 @@ proc defineSymbols*() =
 
     builtin "shl",
         alias       = unaliased, 
+        op          = opShl,
         rule        = InfixPrecedence,
         description = "shift-left first value bits by second value",
         args        = {
@@ -167,6 +173,7 @@ proc defineSymbols*() =
 
     builtin "shr",
         alias       = unaliased, 
+        op          = opShr,
         rule        = InfixPrecedence,
         description = "shift-right first value bits by second value",
         args        = {
@@ -187,6 +194,7 @@ proc defineSymbols*() =
 
     builtin "xnor",
         alias       = unaliased, 
+        op          = opNop,
         rule        = InfixPrecedence,
         description = "calculate the binary XNOR for the given values",
         args        = {
@@ -207,6 +215,7 @@ proc defineSymbols*() =
         
     builtin "xor",
         alias       = unaliased, 
+        op          = opNop,
         rule        = InfixPrecedence,
         description = "calculate the binary XOR for the given values",
         args        = {

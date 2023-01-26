@@ -31,30 +31,28 @@ type
 
         # [0x00-0x1F]
         # push constants 
-        opConstI0       = 0x00      # ()                #                   # 0 
-        opConstI1       = 0x01      # ()                #                   # 1
-        opConstI2       = 0x02      # ()                #                   # 2
-        opConstI3       = 0x03      # ()                #                   # 3
-        opConstI4       = 0x04      # ()                #                   # 4
-        opConstI5       = 0x05      # ()                #                   # 5
-        opConstI6       = 0x06      # ()                #                   # 6
-        opConstI7       = 0x07      # ()                #                   # 7
-        opConstI8       = 0x08      # ()                #                   # 8
-        opConstI9       = 0x09      # ()                #                   # 9
-        opConstI10      = 0x0A      # ()                #                   # 10
-        opConstI11      = 0x0B      # ()                #                   # 11
-        opConstI12      = 0x0C      # ()                #                   # 12
-        opConstI13      = 0x0D      # ()                #                   # 13
-        opConstI14      = 0x0E      # ()                #                   # 14
-        opConstI15      = 0x0F      # ()                #                   # 15
+        opConstI1M      = 0x00      # ()                #                   # -1
+        opConstI0       = 0x01      # ()                #                   # 0 
+        opConstI1       = 0x02      # ()                #                   # 1
+        opConstI2       = 0x03      # ()                #                   # 2
+        opConstI3       = 0x04      # ()                #                   # 3
+        opConstI4       = 0x05      # ()                #                   # 4
+        opConstI5       = 0x06      # ()                #                   # 5
+        opConstI6       = 0x07      # ()                #                   # 6
+        opConstI7       = 0x08      # ()                #                   # 7
+        opConstI8       = 0x09      # ()                #                   # 8
+        opConstI9       = 0x0A      # ()                #                   # 9
+        opConstI10      = 0x0B      # ()                #                   # 10
+        opConstI11      = 0x0C      # ()                #                   # 11
+        opConstI12      = 0x0D      # ()                #                   # 12
+        opConstI13      = 0x0E      # ()                #                   # 13
+        opConstI14      = 0x0F      # ()                #                   # 14
+        opConstI15      = 0x10      # ()                #                   # 15
 
-        opConstI1M      = 0x10      # ()                #                   # -1
-
-        opConstF0       = 0x11      # ()                #                   # 0.0
-        opConstF1       = 0x12      # ()                #                   # 1.0
-        opConstF2       = 0x13      # ()                #                   # 2.0
-
-        opConstF1M      = 0x14      # ()                #                   # -1.0
+        opConstF1M      = 0x11      # ()                #                   # -1.0
+        opConstF0       = 0x12      # ()                #                   # 0.0
+        opConstF1       = 0x13      # ()                #                   # 1.0
+        opConstF2       = 0x14      # ()                #                   # 2.0
 
         opConstBT       = 0x15      # ()                #                   # true
         opConstBF       = 0x16      # ()                #                   # false
@@ -211,94 +209,99 @@ type
 
         opNeg           = 0x87      # ()                # x                 # result
 
+        # increment/decrement
+        opInc           = 0x88      # ()                # value             # result
+        opDec           = 0x89      # ()                # value             # result
+
         # binary operators
-        opBNot          = 0x88      # ()                # x                 # result
-        opBAnd          = 0x89      # ()                # x,y               # result
-        opBOr           = 0x8A      # ()                # x,y               # result
+        opBNot          = 0x8A      # ()                # x                 # result
+        opBAnd          = 0x8B      # ()                # x,y               # result
+        opBOr           = 0x8C      # ()                # x,y               # result
 
-        opShl           = 0x8B      # ()                # x,y               # result
-        opShr           = 0x8C      # ()                # x,y               # result
+        opShl           = 0x8D      # ()                # x,y               # result
+        opShr           = 0x8E      # ()                # x,y               # result
 
-        # logical operators
-        opNot           = 0x8D      # ()                # x                 # result
-        opAnd           = 0x8E      # ()                # x,y               # result
-        opOr            = 0x8F      # ()                # x,y               # result
+        RSRV1           = 0x8F      #
 
         # [0x90-0x9F]
+        # logical operators
+        opNot           = 0x90      # ()                # x                 # result
+        opAnd           = 0x91      # ()                # x,y               # result
+        opOr            = 0x92      # ()                # x,y               # result
+
         # comparison operators
-        opEq            = 0x90      # ()                # x,y               # result
-        opNe            = 0x91      # ()                # x,y               # result
-        opGt            = 0x92      # ()                # x,y               # result
-        opGe            = 0x93      # ()                # x,y               # result
-        opLt            = 0x94      # ()                # x,y               # result
-        opLe            = 0x95      # ()                # x,y               # result
+        opEq            = 0x93      # ()                # x,y               # result
+        opNe            = 0x94      # ()                # x,y               # result
+        opGt            = 0x95      # ()                # x,y               # result
+        opGe            = 0x96      # ()                # x,y               # result
+        opLt            = 0x97      # ()                # x,y               # result
+        opLe            = 0x98      # ()                # x,y               # result
 
-        # branching
-        opIf            = 0x96      # ()                # cond,bl           # X
-        opIfE           = 0x97      # ()                # cond,bl           # cond
-        opUnless        = 0x98      # ()                # cond,bl           # X
-        opElse          = 0x99      # ()                # success           # X
-        opSwitch        = 0x9A      # ()                # cond,a,b          # X
-        opWhile         = 0x9B      # ()                # cond,bl           # X
-        opReturn        = 0x9C      # ()                # value             #
+        # getters/setters
+        opGet           = 0x99      # ()                # obj,key           # result
+        opSet           = 0x9A      # ()                # obj,key,rvalue    #
 
-        # converters
-        opTo            = 0x9D      # ()                # tp,value          # result
-        opToS           = 0x9E      # ()                # value             # result
-        opToI           = 0x9F      # ()                # value             # result
+        RSRV2           = 0x9B      #
+        RSRV3           = 0x9C      #
+        RSRV4           = 0x9D      #
+        RSRV5           = 0x9E      #
+        RSRV6           = 0x9F      #
 
         # [0xA0-0xAF]
-        # getters/setters
-        opGet           = 0xA0      # ()                # obj,key           # result
-        opSet           = 0xA1      # ()                # obj,key,rvalue    #
+        # branching
+        opIf            = 0xA0      # ()                # cond,bl           # X
+        opIfE           = 0xA1      # ()                # cond,bl           # cond
+        opUnless        = 0xA2      # ()                # cond,bl           # X
+        opUnlessE       = 0xA3      # ()                # cond,bl           # cond
+        opElse          = 0xA4      # ()                # success           # X
+        opSwitch        = 0xA5      # ()                # cond,a,b          # X
+        opWhile         = 0xA6      # ()                # cond,bl           # X
 
-        # generators
-        opArray         = 0xA2      # ()                # blk               # result
-        opDict          = 0xA3      # ()                # blk               # result
-        opFunc          = 0xA4      # ()                # params,blk        # result
+        opReturn        = 0xA7      # ()                # value             #
+        opBreak         = 0xA8      # ()                #                   #
+        opContinue      = 0xA9      # ()                #                   #
 
-        # ranges & iterators
-        opRange         = 0xA5      # ()                # start,stop        # result
-        opLoop          = 0xA6      # ()                # range,param,blk   # X
-        opMap           = 0xA7      # ()                # range,param,blk   # result
-        opSelect        = 0xA8      # ()                # range,param,blk   # result
+        # converters
+        opTo            = 0xAA      # ()                # tp,value          # result
+        opToS           = 0xAB      # ()                # value             # result
+        opToI           = 0xAC      # ()                # value             # result
 
-        # collections
-        opSize          = 0xA9      # ()                # obj               # result
-        opReplace       = 0xAA      # ()                # obj,what,with     # result
-        opSplit         = 0xAB      # ()                # obj,what          # result
-        opJoin          = 0xAC      # ()                # obj               # result
-        opReverse       = 0xAD      # ()                # blk               # result
-
-        # increment/decrement
-        opInc           = 0xAE      # ()                # value             # result
-        opDec           = 0xAF      # ()                # value             # result
+        RSRV7           = 0xAD      #    
+        RSRV8           = 0xAE      #
+        RSRV9           = 0xAF      #
 
         # [0xB0-0xBF]
-        # i/o operations
-        opPrint         = 0xB0      # ()                # value             #
+        # generators
+        opArray         = 0xB0      # ()                # blk               # result
+        opDict          = 0xB1      # ()                # blk               # result
+        opFunc          = 0xB2      # ()                # params,blk        # result
+        opRange         = 0xB3      # ()                # start,stop        # result
 
-        RSRV1           = 0xB1      #
-        RSRV2           = 0xB2      #
-        RSRV3           = 0xB3      #
-        RSRV4           = 0xB4      #
-        RSRV5           = 0xB5      #
-        RSRV6           = 0xB6      #
-        RSRV7           = 0xB7      #
-        RSRV8           = 0xB8      #
-        RSRV9           = 0xB9      #
-        RSRV10          = 0xBA      #
-        RSRV11          = 0xBB      #
-        RSRV12          = 0xBC      #
-        RSRV13          = 0xBD      #
-        RSRV14          = 0xBE      #
-        RSRV15          = 0xBF      #
+        # ranges & iterators
+        
+        opLoop          = 0xB4      # ()                # range,param,blk   # X
+        opMap           = 0xB5      # ()                # range,param,blk   # result
+        opSelect        = 0xB6      # ()                # range,param,blk   # result
+
+        # collections
+        opSize          = 0xB7      # ()                # obj               # result
+        opReplace       = 0xB8      # ()                # obj,what,with     # result
+        opSplit         = 0xB9      # ()                # obj,what          # result
+        opJoin          = 0xBA      # ()                # obj               # result
+        opReverse       = 0xBB      # ()                # blk               # result
+        opAppend        = 0xBC      # ()                # x,y               # result
+
+        # i/o operations
+        opPrint         = 0xBD      # ()                # value             #
+
+        RSRV10          = 0xBE      #
+        RSRV11          = 0xBF      #
 
         #---------------------------------
         # LOW-LEVEL OPERATIONS
         #---------------------------------
 
-        # [0xB0-0xCF]
+        # [0xC0-0xDF]
         # no operation
         opNop           = 0xC0      # ()                #                   # 
 
@@ -309,24 +312,31 @@ type
         opSwap          = 0xC4      # ()                # X,Y               # Y,X
 
         # conditional jumps
-        opJmpIf         = 0xC5      # (idx,idxB)        # cond              #
-        opJmpIfNot      = 0xC6      # (idx,idxB)        # cond              #
-        opJmpIfEq       = 0xC7      # (idx,idxB)        # cond              #
-        opJmpIfNe       = 0xC8      # (idx,idxB)        # cond              #
-        opJmpIfGt       = 0xC9      # (idx,idxB)        # cond              #
-        opJmpIfGe       = 0xCA      # (idx,idxB)        # cond              #
-        opJmpIfLt       = 0xCB      # (idx,idxB)        # cond              #
-        opJmpIfLe       = 0xCC      # (idx,idxB)        # cond              #
-
-        RSRV16          = 0xCD      #
-        RSRV17          = 0xCE      #
-        RSRV18          = 0xCF      #
+        opJmpIf         = 0xC5      # (idx)             # cond              #
+        opJmpIfX        = 0xC6      # (idx,idxB)        # cond              #
+        opJmpIfNot      = 0xC7      # (idx)             # cond              #
+        opJmpIfNotX     = 0xC8      # (idx,idxB)        # cond              #
+        opJmpIfEq       = 0xC9      # (idx)             # cond              #
+        opJmpIfEqX      = 0xCA      # (idx,idxB)        # cond              #
+        opJmpIfNe       = 0xCB      # (idx)             # cond              #
+        opJmpIfNeX      = 0xCC      # (idx,idxB)        # cond              #
+        opJmpIfGt       = 0xCD      # (idx)             # cond              #
+        opJmpIfGtX      = 0xCE      # (idx,idxB)        # cond              #
+        opJmpIfGe       = 0xCF      # (idx)             # cond              #
+        opJmpIfGeX      = 0xD0      # (idx,idxB)        # cond              #
+        opJmpIfLt       = 0xD1      # (idx)             # cond              #
+        opJmpIfLtX      = 0xD2      # (idx,idxB)        # cond              #
+        opJmpIfLe       = 0xD3      # (idx)             # cond              #
+        opJmpIfLeX      = 0xD4      # (idx,idxB)        # cond              #
 
         # flow control
-        opGoto          = 0xD0      # (idx,idxB)        #                   #
-        opGoup          = 0xD1      # (idx,idxB)        #                   #
-        opRet           = 0xD2      # ()                #                   #
-        opEnd           = 0xD3      # ()                #                   #
+        opGoto          = 0xD5      # (idx)             #                   #
+        opGotoX         = 0xD6      # (idx,idxB)        #                   #
+        opGoup          = 0xD7      # (idx)             #                   #
+        opGoupX         = 0xD8      # (idx,idxB)        #                   #
+        
+        opRet           = 0xD9      # ()                #                   #
+        opEnd           = 0xDA      # ()                #                   #
 
 when false:
     #=======================================

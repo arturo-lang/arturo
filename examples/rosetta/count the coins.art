@@ -4,7 +4,7 @@ changes: function [amount coins][
 
 	loop coins 'coin [
 		loop coin..amount 'j ->
-			set ways j (get ways j) + get ways j-coin
+			ways\[j]: ways\[j] + ways\[j-coin]
 	]
 
 	ways\[amount]

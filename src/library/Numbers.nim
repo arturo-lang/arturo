@@ -52,6 +52,7 @@ proc defineSymbols*() =
 
     builtin "abs",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get the absolute value for given integer",
         args        = {
@@ -82,6 +83,7 @@ proc defineSymbols*() =
 
     builtin "acos",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the inverse cosine of given angle",
         args        = {
@@ -102,6 +104,7 @@ proc defineSymbols*() =
 
     builtin "acosh",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic cosine of given angle",
         args        = {
@@ -122,6 +125,7 @@ proc defineSymbols*() =
 
     builtin "acsec",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the inverse cosecant of given angle",
         args        = {
@@ -142,6 +146,7 @@ proc defineSymbols*() =
 
     builtin "acsech",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic cosecant of given angle",
         args        = {
@@ -162,6 +167,7 @@ proc defineSymbols*() =
 
     builtin "actan",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the inverse cotangent of given angle",
         args        = {
@@ -182,6 +188,7 @@ proc defineSymbols*() =
 
     builtin "actanh",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic cotangent of given angle",
         args        = {
@@ -202,6 +209,7 @@ proc defineSymbols*() =
 
     builtin "angle",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the phase angle of given number",
         args        = {
@@ -218,6 +226,7 @@ proc defineSymbols*() =
 
     builtin "asec",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the inverse secant of given angle",
         args        = {
@@ -237,7 +246,8 @@ proc defineSymbols*() =
             processTrigonometric(arcsec)
 
     builtin "asech",
-        alias       = unaliased, 
+        alias       = unaliased,
+        op          = opNop, 
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic secant of given angle",
         args        = {
@@ -258,6 +268,7 @@ proc defineSymbols*() =
 
     builtin "asin",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the inverse sine of given angle",
         args        = {
@@ -278,6 +289,7 @@ proc defineSymbols*() =
 
     builtin "asinh",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic sine of given angle",
         args        = {
@@ -298,6 +310,7 @@ proc defineSymbols*() =
 
     builtin "atan",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the inverse tangent of given angle",
         args        = {
@@ -318,6 +331,7 @@ proc defineSymbols*() =
 
     builtin "atan2",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the inverse tangent of y / x",
         args        = {
@@ -335,6 +349,7 @@ proc defineSymbols*() =
 
     builtin "atanh",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic tangent of given angle",
         args        = {
@@ -355,6 +370,7 @@ proc defineSymbols*() =
 
     builtin "ceil",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the smallest integer not smaller than given value",
         args        = {
@@ -373,6 +389,7 @@ proc defineSymbols*() =
 
     builtin "clamp",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "force value within given range",
         args        = {
@@ -397,6 +414,7 @@ proc defineSymbols*() =
 
     builtin "conj",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the complex conjugate of given number",
         args        = {
@@ -413,6 +431,7 @@ proc defineSymbols*() =
 
     builtin "cos",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the cosine of given angle",
         args        = {
@@ -433,6 +452,7 @@ proc defineSymbols*() =
 
     builtin "cosh",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic cosine of given angle",
         args        = {
@@ -453,6 +473,7 @@ proc defineSymbols*() =
 
     builtin "csec",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the cosecant of given angle",
         args        = {
@@ -473,6 +494,7 @@ proc defineSymbols*() =
 
     builtin "csech",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic cosecant of given angle",
         args        = {
@@ -493,6 +515,7 @@ proc defineSymbols*() =
 
     builtin "ctan",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the cotangent of given angle",
         args        = {
@@ -512,7 +535,8 @@ proc defineSymbols*() =
             processTrigonometric(cot)
 
     builtin "ctanh",
-        alias       = unaliased, 
+        alias       = unaliased,
+        op          = opNop, 
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic cotangent of given angle",
         args        = {
@@ -533,6 +557,7 @@ proc defineSymbols*() =
 
     builtin "denominator",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get the denominator of given number",
         args        = {
@@ -562,6 +587,7 @@ proc defineSymbols*() =
 
     builtin "digits",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get array of digits of given number",
         args        = {
@@ -602,6 +628,7 @@ proc defineSymbols*() =
 
     builtin "even?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if given number is even",
         args        = {
@@ -620,6 +647,7 @@ proc defineSymbols*() =
 
     builtin "exp",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the exponential function for given value",
         args        = {
@@ -641,6 +669,7 @@ proc defineSymbols*() =
 
     builtin "factorial",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the factorial of given value",
         args        = {
@@ -658,6 +687,7 @@ proc defineSymbols*() =
 
     builtin "factors",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get list of factors for given integer",
         args        = {
@@ -699,6 +729,7 @@ proc defineSymbols*() =
 
     builtin "floor",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the largest integer not greater than given value",
         args        = {
@@ -718,6 +749,7 @@ proc defineSymbols*() =
     when not defined(WEB):
         builtin "gamma",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "calculate the gamma function for given value",
             args        = {
@@ -735,6 +767,7 @@ proc defineSymbols*() =
 
     builtin "gcd",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate greatest common divisor for given collection of integers",
         args        = {
@@ -746,31 +779,31 @@ proc defineSymbols*() =
             print gcd [48 60 120]         ; 12
         """:
             #=======================================================
-            ensureCleaned(x)
-            var current = cleanX[0]
+            var current = x.a[0]
 
             var i = 1
             # TODO(Numbers\gcd) not working for Web builds
             # labels: web,enhancement
-            while i<cleanX.len:
+            while i<x.a.len:
                 if current.iKind==NormalInteger:
-                    if cleanX[i].iKind==BigInteger:
+                    if x.a[i].iKind==BigInteger:
                         when not defined(NOGMP):
-                            current = newInteger(gcd(current.i, cleanX[i].bi))
+                            current = newInteger(gcd(current.i, x.a[i].bi))
                     else:
-                        current = newInteger(gcd(current.i, cleanX[i].i))
+                        current = newInteger(gcd(current.i, x.a[i].i))
                 else:
                     when not defined(NOGMP):
-                        if cleanX[i].iKind==BigInteger:
-                            current = newInteger(gcd(current.bi, cleanX[i].bi))
+                        if x.a[i].iKind==BigInteger:
+                            current = newInteger(gcd(current.bi, x.a[i].bi))
                         else:
-                            current = newInteger(gcd(current.bi, cleanX[i].i))
+                            current = newInteger(gcd(current.bi, x.a[i].i))
                 inc(i)
 
             push(current)
 
     builtin "hypot",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the hypotenuse of a right-angle triangle with given base and height",
         args        = {
@@ -796,6 +829,7 @@ proc defineSymbols*() =
 
     builtin "infinite?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check whether given value is an infinite one",
         args        = {
@@ -812,7 +846,8 @@ proc defineSymbols*() =
                 push(VFALSE)
 
     builtin "lcm",
-        alias       = unaliased, 
+        alias       = unaliased,
+        op          = opNop, 
         rule        = PrefixPrecedence,
         description = "calculate least common multiplier for given collection of integers",
         args        = {
@@ -824,31 +859,31 @@ proc defineSymbols*() =
             print lcm [48 60 120]         ; 240
         """:
             #=======================================================
-            ensureCleaned(x)
-            var current = cleanX[0]
+            var current = x.a[0]
 
             var i = 1
             # TODO(Numbers\lcm) not working for Web builds
             # labels: web,enhancement
-            while i<cleanX.len:
+            while i<x.a.len:
                 if current.iKind==NormalInteger:
-                    if cleanX[i].iKind==BigInteger:
+                    if x.a[i].iKind==BigInteger:
                         when not defined(NOGMP):
-                            current = newInteger(lcm(current.i, cleanX[i].bi))
+                            current = newInteger(lcm(current.i, x.a[i].bi))
                     else:
-                        current = newInteger(lcm(current.i, cleanX[i].i))
+                        current = newInteger(lcm(current.i, x.a[i].i))
                 else:
                     when not defined(NOGMP):
-                        if cleanX[i].iKind==BigInteger:
-                            current = newInteger(lcm(current.bi, cleanX[i].bi))
+                        if x.a[i].iKind==BigInteger:
+                            current = newInteger(lcm(current.bi, x.a[i].bi))
                         else:
-                            current = newInteger(lcm(current.bi, cleanX[i].i))
+                            current = newInteger(lcm(current.bi, x.a[i].i))
                 inc(i)
 
             push(current)
 
     builtin "ln",
         alias       = unaliased, 
+        op          = opNop, 
         rule        = PrefixPrecedence,
         description = "calculate the natural logarithm of given value",
         args        = {
@@ -870,6 +905,7 @@ proc defineSymbols*() =
 
     builtin "log",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the logarithm of value using given base",
         args        = {
@@ -889,6 +925,7 @@ proc defineSymbols*() =
 
     builtin "negative?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if given number is negative",
         args        = {
@@ -918,6 +955,7 @@ proc defineSymbols*() =
 
     builtin "numerator",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get the numerator of given number",
         args        = {
@@ -947,6 +985,7 @@ proc defineSymbols*() =
 
     builtin "odd?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if given number is odd",
         args        = {
@@ -970,6 +1009,7 @@ proc defineSymbols*() =
 
     builtin "positive?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if given number is positive",
         args        = {
@@ -1002,6 +1042,7 @@ proc defineSymbols*() =
         # labels: web,enhancement
         builtin "powmod",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "modular exponentation: calculate the result of (base^exponent) % divider",
             args        = {
@@ -1027,6 +1068,7 @@ proc defineSymbols*() =
         
     builtin "prime?",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "check if given integer is prime",
         args        = {
@@ -1057,6 +1099,7 @@ proc defineSymbols*() =
 
     builtin "product",
         alias       = product, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the product of all values in given list",
         args        = {
@@ -1074,8 +1117,7 @@ proc defineSymbols*() =
         """:
             #=======================================================
             if (hadAttr("cartesian")):
-                ensureCleaned(x)
-                let blk = cleanX.map((z)=>z.a)
+                let blk = x.a.map((z)=>z.a)
                 push(newBlock(cartesianProduct(blk).map((z) => newBlock(z))))
             else:
                 var product = I1.copyValue
@@ -1084,18 +1126,18 @@ proc defineSymbols*() =
                         product *= item
                     push(product)
                 else:
-                    ensureCleaned(x)
-                    if cleanX.len==0: push(I0.copyValue)
+                    if x.a.len==0: push(I0.copyValue)
                     else:
                         var i = 0
-                        while i<cleanX.len:
-                            product *= cleanX[i]
+                        while i<x.a.len:
+                            product *= x.a[i]
                             i += 1
 
                         push(product)
 
     builtin "random",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get a random integer between given limits",
         args        = {
@@ -1115,6 +1157,7 @@ proc defineSymbols*() =
 
     builtin "reciprocal",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the reciprocal of given number",
         args        = {
@@ -1141,6 +1184,7 @@ proc defineSymbols*() =
 
     builtin "round",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "round given value",
         args        = {
@@ -1169,6 +1213,7 @@ proc defineSymbols*() =
 
     builtin "sec",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the secant of given angle",
         args        = {
@@ -1189,6 +1234,7 @@ proc defineSymbols*() =
 
     builtin "sech",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic secant of given angle",
         args        = {
@@ -1209,6 +1255,7 @@ proc defineSymbols*() =
 
     builtin "sin",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the sine of given angle",
         args        = {
@@ -1229,6 +1276,7 @@ proc defineSymbols*() =
 
     builtin "sinh",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic sine of given angle",
         args        = {
@@ -1249,6 +1297,7 @@ proc defineSymbols*() =
 
     builtin "sqrt",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get square root of given value",
         args        = {
@@ -1280,6 +1329,7 @@ proc defineSymbols*() =
 
     builtin "sum",
         alias       = summation, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the sum of all values in given list",
         args        = {
@@ -1299,16 +1349,16 @@ proc defineSymbols*() =
                 for item in items(x.rng):
                     sum += item
             else:
-                ensureCleaned(x)
                 var i = 0
-                while i<cleanX.len:
-                    sum += cleanX[i]
+                while i<x.a.len:
+                    sum += x.a[i]
                     i += 1
 
             push(sum)
 
     builtin "tan",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the tangent of given angle",
         args        = {
@@ -1329,6 +1379,7 @@ proc defineSymbols*() =
 
     builtin "tanh",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic tangent of given angle",
         args        = {

@@ -1,0 +1,14 @@
+barbarian => brain 
+childbear => cider 
+corrigenda => cried 
+gargantuan => grata 
+headdress => hades 
+palladian => plain 
+propionate => point 
+salvation => slain 
+siltation => slain 
+slingshot => sight 
+statuette => saute 
+supersede => spree 
+supervene => spree 
+terminable => trial

@@ -51,6 +51,7 @@ proc defineSymbols*() =
 
     builtin "clear",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "clear terminal",
         args        = NoArgs,
@@ -64,6 +65,7 @@ proc defineSymbols*() =
 
     builtin "color",
         alias       = unaliased, 
+        op          = opNop,
         rule        = PrefixPrecedence,
         description = "get colored version of given string",
         args        = {
@@ -128,6 +130,7 @@ proc defineSymbols*() =
     when not defined(WEB):
         builtin "cursor",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "turn cursor visibility on/off",
             args        = {
@@ -147,6 +150,7 @@ proc defineSymbols*() =
 
         builtin "goto",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "move cursor to given coordinates",
             args        = {
@@ -176,6 +180,7 @@ proc defineSymbols*() =
 
         builtin "input",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "print prompt and get user input",
             args        = {
@@ -245,6 +250,7 @@ proc defineSymbols*() =
 
     builtin "print",
         alias       = unaliased, 
+        op          = opPrint,
         rule        = PrefixPrecedence,
         description = "print given value to screen with newline",
         args        = {
@@ -283,7 +289,8 @@ proc defineSymbols*() =
                 echo $(x)
 
     builtin "prints",
-        alias       = unaliased, 
+        alias       = unaliased,
+        op          = opNop, 
         rule        = PrefixPrecedence,
         description = "print given value to screen",
         args        = {
@@ -323,6 +330,7 @@ proc defineSymbols*() =
     when not defined(WEB):
         builtin "terminal",
             alias       = unaliased, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "get info about terminal",
             args        = NoArgs,

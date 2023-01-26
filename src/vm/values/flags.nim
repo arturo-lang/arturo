@@ -22,7 +22,6 @@ type
     ValueFlag* = enum
         IsReadOnly      # Value has to be copied on assignment
 
-        IsDirty         # For blocks: it may contain Newline values
         IsDynamic       # For blocks: it has to be re-evaluated
                         #             prior to execution
                     
