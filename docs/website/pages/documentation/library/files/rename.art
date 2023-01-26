@@ -1,36 +1,37 @@
 name: "rename"
 type: :function
-module: "Files"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Files.nim#L292"
 description: "rename file at path using given new path name"
+module: "Files"
+line: 368
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Files.nim#L368"
 returns: [
-        :nothing
-    ]
+                :nothing
+        ]
 examples: [
-        {
-            rename "README.md" "READIT.md"
-            ; file renamed
-        }
-    ]
+                {
+                        rename "README.md" "READIT.md"
+                        ; file renamed
+                }
+        ]
 attributes: #[
-    directory: #[
-        types: [
-                :logical
-            ]
-        description: "path is a directory"
+        directory: #[
+                types: [
+                                :logical
+                        ]
+                description: "path is a directory"
+                ]
         ]
-    ]
 arguments: #[
-    file: [
-            :string
+        file: [
+                        :string
+                ]
+        name: [
+                        :string
+                ]
         ]
-    name: [
-            :string
-        ]
-    ]
 related: [
-        "Files/delete"
-         "Files/read"
-         "Files/write"
-         "Files/symlink"
-    ]
+                "Files/delete"
+                 "Files/read"
+                 "Files/write"
+                 "Files/move"
+        ]

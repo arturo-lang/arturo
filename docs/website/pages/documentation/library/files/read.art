@@ -1,97 +1,110 @@
 name: "read"
 type: :function
-module: "Files"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Files.nim#L213"
 description: "read file from given path"
+module: "Files"
+line: 277
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Files.nim#L277"
 returns: [
-        :string
-         :binary
-         :block
-    ]
+                :string
+                 :binary
+                 :block
+        ]
 alias: "<<"
 infix?: false
 examples: [
-        {
-            ; reading a simple local file
-            str: read "somefile.txt"
-        }
-         {
-            ; also works with remote urls
-            page: read "http://www.somewebsite.com/page.html"
-        }
-         {
-            ; we can also "read" JSON data as an object
-            data: read.json "mydata.json"
-        }
-         {
-            ; or even convert Markdown to HTML on-the-fly
-            html: read.markdown "## Hello"     ; "<h2>Hello</h2>"
-        }
-    ]
+                {
+                        ; reading a simple local file
+                        str: read "somefile.txt"
+                }
+                 {
+                        ; also works with remote urls
+                        page: read "http://www.somewebsite.com/page.html"
+                }
+                 {
+                        ; we can also "read" JSON data as an object
+                        data: read.json "mydata.json"
+                }
+                 {
+                        ; or even convert Markdown to HTML on-the-fly
+                        html: read.markdown "## Hello"     ; "<h2>Hello</h2>"
+                }
+        ]
 attributes: #[
-    lines: #[
-        types: [
-                :logical
-            ]
-        description: "read file lines into block"
+        lines: #[
+                types: [
+                                :logical
+                        ]
+                description: "read file lines into block"
+                ]
+        json: #[
+                types: [
+                                :logical
+                        ]
+                description: "read Json into value"
+                ]
+        csv: #[
+                types: [
+                                :logical
+                        ]
+                description: "read CSV file into a block of rows"
+                ]
+        withHeaders: #[
+                types: [
+                                :logical
+                        ]
+                description: "read CSV headers"
+                ]
+        html: #[
+                types: [
+                                :logical
+                        ]
+                description: "read HTML into node dictionary"
+                ]
+        xml: #[
+                types: [
+                                :logical
+                        ]
+                description: "read XML into node dictionary"
+                ]
+        markdown: #[
+                types: [
+                                :logical
+                        ]
+                description: "read Markdown and convert to HTML"
+                ]
+        toml: #[
+                types: [
+                                :logical
+                        ]
+                description: "read TOML into value"
+                ]
+        bytecode: #[
+                types: [
+                                :logical
+                        ]
+                description: "read file as Arturo bytecode"
+                ]
+        binary: #[
+                types: [
+                                :logical
+                        ]
+                description: "read as binary"
+                ]
+        file: #[
+                types: [
+                                :logical
+                        ]
+                description: "read as file (throws an error if not valid)"
+                ]
         ]
-    json: #[
-        types: [
-                :logical
-            ]
-        description: "read Json into value"
-        ]
-    csv: #[
-        types: [
-                :logical
-            ]
-        description: "read CSV file into a block of rows"
-        ]
-    withHeaders: #[
-        types: [
-                :logical
-            ]
-        description: "read CSV headers"
-        ]
-    html: #[
-        types: [
-                :logical
-            ]
-        description: "read HTML into node dictionary"
-        ]
-    xml: #[
-        types: [
-                :logical
-            ]
-        description: "read XML into node dictionary"
-        ]
-    markdown: #[
-        types: [
-                :logical
-            ]
-        description: "read Markdown and convert to HTML"
-        ]
-    toml: #[
-        types: [
-                :logical
-            ]
-        description: "read TOML into value"
-        ]
-    binary: #[
-        types: [
-                :logical
-            ]
-        description: "read as binary"
-        ]
-    ]
 arguments: #[
-    file: [
-            :string
+        file: [
+                        :string
+                ]
         ]
-    ]
 related: [
-        "Files/delete"
-         "Files/rename"
-         "Files/write"
-         "Files/volume"
-    ]
+                "Files/delete"
+                 "Files/rename"
+                 "Files/timestamp"
+                 "Files/write"
+        ]

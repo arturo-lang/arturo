@@ -1,0 +1,25 @@
+name: "lcm"
+type: :function
+description: "calculate least common multiplier for given collection of integers"
+module: "Numbers"
+line: 848
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L848"
+returns: [
+                :integer
+        ]
+examples: [
+                "print lcm [48 60 120]         ; 240"
+        ]
+attributes: #[
+        ]
+arguments: #[
+        numbers: [
+                        :block
+                ]
+        ]
+related: [
+                "Numbers/gcd"
+                 "Numbers/cosh"
+                 "Numbers/ceil"
+                 "Numbers/sum"
+        ]

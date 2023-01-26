@@ -1,54 +1,55 @@
 name: "color"
 type: :function
-module: "Io"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Io.nim#L65"
 description: "get colored version of given string"
+module: "Io"
+line: 66
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Io.nim#L66"
 returns: [
-        :string
-    ]
+                :string
+        ]
 examples: [
-        {
-            print color #green "Hello!"                ; Hello! (in green)
-            print color #red.bold "Some text"          ; Some text (in red/bold)
-        }
-    ]
+                {
+                        print color #green "Hello!"                ; Hello! (in green)
+                        print color #red.bold "Some text"          ; Some text (in red/bold)
+                }
+        ]
 attributes: #[
-    rgb: #[
-        types: [
-                :integer
-            ]
-        description: "use specific RGB color"
+        rgb: #[
+                types: [
+                                :integer
+                        ]
+                description: "use specific RGB color"
+                ]
+        bold: #[
+                types: [
+                                :logical
+                        ]
+                description: "bold font"
+                ]
+        underline: #[
+                types: [
+                                :logical
+                        ]
+                description: "show underlined"
+                ]
+        keep: #[
+                types: [
+                                :logical
+                        ]
+                description: "don\'t reset color at string end"
+                ]
         ]
-    bold: #[
-        types: [
-                :logical
-            ]
-        description: "bold font"
-        ]
-    underline: #[
-        types: [
-                :logical
-            ]
-        description: "show underlined"
-        ]
-    keep: #[
-        types: [
-                :logical
-            ]
-        description: "don\'t reset color at string end"
-        ]
-    ]
 arguments: #[
-    color: [
-            :color
+        color: [
+                        :color
+                ]
+        string: [
+                        :string
+                ]
         ]
-    string: [
-            :string
-        ]
-    ]
 related: [
-        "Io/goto"
-         "Io/cursor"
-         "Io/clear"
-         "Io/terminal"
-    ]
+                "Io/goto"
+                 "Io/cursor"
+                 "Io/clear"
+                 "Io/terminal"
+        ]

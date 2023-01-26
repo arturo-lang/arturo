@@ -1,54 +1,55 @@
 name: "permissions"
 type: :function
-module: "Files"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Files.nim#L134"
 description: "check permissions of given file"
+module: "Files"
+line: 196
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Files.nim#L196"
 returns: [
-        :null
-         :dictionary
-    ]
+                :null
+                 :dictionary
+        ]
 examples: [
-        {
-            inspect permissions "bin/arturo"
-            ; [ :dictionary
-            ;     user    :    [ :dictionary
-            ;         read     :        true :boolean
-            ;         write    :        true :boolean
-            ;         execute  :        true :boolean
-            ;     ]
-            ;     group   :    [ :dictionary
-            ;         read     :        true :boolean
-            ;         write    :        false :boolean
-            ;         execute  :        true :boolean
-            ;     ]
-            ;     others  :    [ :dictionary
-            ;         read     :        true :boolean
-            ;         write    :        false :boolean
-            ;         execute  :        true :boolean
-            ;     ]
-            ; ]
-        }
-         {
-            permissions.set:#[others:#[write:true]] "bin/arturo"
-            ; gave write permission to 'others'
-        }
-    ]
+                {
+                        inspect permissions "bin/arturo"
+                        ; [ :dictionary
+                        ;     user    :    [ :dictionary
+                        ;         read     :        true :boolean
+                        ;         write    :        true :boolean
+                        ;         execute  :        true :boolean
+                        ;     ]
+                        ;     group   :    [ :dictionary
+                        ;         read     :        true :boolean
+                        ;         write    :        false :boolean
+                        ;         execute  :        true :boolean
+                        ;     ]
+                        ;     others  :    [ :dictionary
+                        ;         read     :        true :boolean
+                        ;         write    :        false :boolean
+                        ;         execute  :        true :boolean
+                        ;     ]
+                        ; ]
+                }
+                 {
+                        permissions.set:#[others:#[write:true]] "bin/arturo"
+                        ; gave write permission to 'others'
+                }
+        ]
 attributes: #[
-    set: #[
-        types: [
-                :dictionary
-            ]
-        description: "set using given file permissions"
+        set: #[
+                types: [
+                                :dictionary
+                        ]
+                description: "set using given file permissions"
+                ]
         ]
-    ]
 arguments: #[
-    file: [
-            :string
+        file: [
+                        :string
+                ]
         ]
-    ]
 related: [
-        "Files/exists?"
-         "Files/symlink"
-         "Files/zip"
-         "Files/write"
-    ]
+                "Files/exists?"
+                 "Files/symlink"
+                 "Files/zip"
+                 "Files/write"
+        ]

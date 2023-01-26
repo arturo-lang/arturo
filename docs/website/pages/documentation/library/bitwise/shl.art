@@ -1,0 +1,40 @@
+name: "shl"
+type: :function
+description: "shift-left first value bits by second value"
+module: "Bitwise"
+line: 141
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Bitwise.nim#L141"
+returns: [
+                :integer
+                 :nothing
+        ]
+examples: [
+                "print shl 2 3      ; 16"
+                 {
+                        a: 2
+                        shl 'a 3           ; a: 16
+                }
+        ]
+attributes: #[
+        safe: #[
+                types: [
+                                :logical
+                        ]
+                description: "check for overflows"
+                ]
+        ]
+arguments: #[
+        value: [
+                        :integer
+                         :literal
+                ]
+        bits: [
+                        :integer
+                ]
+        ]
+related: [
+                "Bitwise/shr"
+                 "Bitwise/or"
+                 "Bitwise/xor"
+                 "Bitwise/and"
+        ]

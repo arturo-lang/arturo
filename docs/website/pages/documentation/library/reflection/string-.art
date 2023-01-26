@@ -1,28 +1,29 @@
 name: "string?"
 type: :function
-module: "Reflection"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L694"
 description: "checks if given value is of type :string"
+module: "Reflection"
+line: 869
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L869"
 returns: [
-        :logical
-    ]
-examples: [
-        {
-            print string? "x"           ; true
-            print string? 'x            ; false
-            print string? 123           ; false
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    value: [
-            :any
+                :logical
         ]
-    ]
+examples: [
+                {
+                        print string? "x"           ; true
+                        print string? 'x            ; false
+                        print string? 123           ; false
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        ]
 related: [
-        "Reflection/floating?"
-         "Reflection/integer?"
-         "Reflection/attribute?"
-         "Reflection/inline?"
-    ]
+                "Reflection/range?"
+                 "Reflection/floating?"
+                 "Reflection/version?"
+                 "Reflection/integer?"
+        ]

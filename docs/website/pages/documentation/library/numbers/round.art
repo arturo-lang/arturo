@@ -1,41 +1,42 @@
 name: "round"
 type: :function
-module: "Numbers"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L990"
 description: "round given value"
+module: "Numbers"
+line: 1185
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L1185"
 returns: [
-        :floating
-    ]
+                :floating
+        ]
 examples: [
-        {
-            print round 2.1         ; 2.0
-            print round 2.9         ; 3.0
-            print round 6           ; 6.0
-            
-            print round pi          ; 3.0
-        }
-         {
-            print round.to:5 pi     ; 3.14159
-            print round.to:2 pi     ; 3.14
-        }
-    ]
+                {
+                        print round 2.1         ; 2.0
+                        print round 2.9         ; 3.0
+                        print round 6           ; 6.0
+                        
+                        print round pi          ; 3.0
+                }
+                 {
+                        print round.to:5 pi     ; 3.14159
+                        print round.to:2 pi     ; 3.14
+                }
+        ]
 attributes: #[
-    to: #[
-        types: [
-                :integer
-            ]
-        description: "round to given decimal places"
+        to: #[
+                types: [
+                                :integer
+                        ]
+                description: "round to given decimal places"
+                ]
         ]
-    ]
 arguments: #[
-    value: [
-            :integer
-             :floating
+        value: [
+                        :integer
+                         :floating
+                ]
         ]
-    ]
 related: [
-        "Numbers/random"
-         "Numbers/product"
-         "Numbers/range"
-         "Numbers/powmod"
-    ]
+                "Numbers/random"
+                 "Numbers/product"
+                 "Numbers/numerator"
+                 "Numbers/denominator"
+        ]

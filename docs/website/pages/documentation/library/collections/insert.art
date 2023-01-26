@@ -1,51 +1,52 @@
 name: "insert"
 type: :function
-module: "Collections"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L501"
 description: "insert value in collection at given index"
+module: "Collections"
+line: 778
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L778"
 returns: [
-        :string
-         :dictionary
-         :block
-         :nothing
-    ]
+                :string
+                 :dictionary
+                 :block
+                 :nothing
+        ]
 examples: [
-        {
-            insert [1 2 3 4] 0 "zero"
-            ; => ["zero" 1 2 3 4]
-            
-            print insert "heo" 2 "ll"
-            ; hello
-        }
-         {
-            dict: #[
-                name: John
-            ]
-            
-            insert 'dict 'name "Jane"
-            ; dict: [name: "Jane"]
-        }
-    ]
+                {
+                        insert [1 2 3 4] 0 "zero"
+                        ; => ["zero" 1 2 3 4]
+                        
+                        print insert "heo" 2 "ll"
+                        ; hello
+                }
+                 {
+                        dict: #[
+                            name: John
+                        ]
+                        
+                        insert 'dict 'name "Jane"
+                        ; dict: [name: "Jane"]
+                }
+        ]
 attributes: #[
-    ]
+        ]
 arguments: #[
-    collection: [
-            :string
-             :literal
-             :dictionary
-             :block
+        collection: [
+                        :string
+                         :literal
+                         :dictionary
+                         :block
+                ]
+        index: [
+                        :integer
+                         :string
+                ]
+        value: [
+                        :any
+                ]
         ]
-    index: [
-            :integer
-             :string
-        ]
-    value: [
-            :any
-        ]
-    ]
 related: [
-        "Collections/index"
-         "Collections/min"
-         "Collections/slice"
-         "Collections/set"
-    ]
+                "Collections/index"
+                 "Collections/min"
+                 "Collections/slice"
+                 "Collections/set"
+        ]

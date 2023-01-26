@@ -1,0 +1,32 @@
+name: "compare"
+type: :function
+description: "compare given values and return -1, 0, or 1 based on the result"
+module: "Comparison"
+line: 65
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Comparison.nim#L65"
+returns: [
+                :integer
+        ]
+examples: [
+                {
+                        compare 1 2           ; => -1
+                        compare 3 3           ; => 0
+                        compare 4 3           ; => 1
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        valueA: [
+                        :any
+                ]
+        valueB: [
+                        :any
+                ]
+        ]
+related: [
+                "Converters/store"
+                 "Strings/replace"
+                 "Converters/dictionary"
+                 "Collections/repeat"
+        ]

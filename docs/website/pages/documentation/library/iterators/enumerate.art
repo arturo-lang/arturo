@@ -1,0 +1,53 @@
+name: "enumerate"
+type: :function
+description: "calculate the number of given collection\'s items that satisfy condition"
+module: "Iterators"
+line: 659
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Iterators.nim#L659"
+returns: [
+                :integer
+        ]
+examples: [
+                {
+                        enumerate 1..10000000 => odd? 
+                        ; => 5000000
+                }
+                 {
+                        enumerate.with:'i ["one" "two" "three" "four"] 'x -> i < 3
+                        ; => 3
+                }
+        ]
+attributes: #[
+        with: #[
+                types: [
+                                :literal
+                        ]
+                description: "use given index"
+                ]
+        ]
+arguments: #[
+        collection: [
+                        :integer
+                         :string
+                         :dictionary
+                         :object
+                         :inline
+                         :block
+                         :range
+                ]
+        params: [
+                        :null
+                         :literal
+                         :block
+                ]
+        condition: [
+                        :block
+                         :bytecode
+                ]
+        ]
+related: [
+                "Iterators/select"
+                 "Iterators/filter"
+                 "Iterators/collect"
+                 "Iterators/cluster"
+        ]

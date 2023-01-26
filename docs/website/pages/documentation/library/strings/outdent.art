@@ -1,57 +1,58 @@
 name: "outdent"
 type: :function
-module: "Strings"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L417"
 description: "outdent each line of given text, by using minimum shared indentation"
+module: "Strings"
+line: 640
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L640"
 returns: [
-        :string
-         :nothing
-    ]
-examples: [
-        {
-            print outdent {:
-                one
-                    two
-                    three
-            :}
-            ; one
-            ;     two
-            ;     three
-        }
-         {
-            print outdent.n:1 {:
-                one
-                    two
-                    three
-            :}
-            ;  one
-            ;      two
-            ;      three
-        }
-    ]
-attributes: #[
-    n: #[
-        types: [
-                :integer
-            ]
-        description: "unpad by given number of spaces"
-        ]
-    with: #[
-        types: [
                 :string
-            ]
-        description: "use given padding"
+                 :nothing
         ]
-    ]
+examples: [
+                {
+                        print outdent {:
+                            one
+                                two
+                                three
+                        :}
+                        ; one
+                        ;     two
+                        ;     three
+                }
+                 {
+                        print outdent.n:1 {:
+                            one
+                                two
+                                three
+                        :}
+                        ;  one
+                        ;      two
+                        ;      three
+                }
+        ]
+attributes: #[
+        n: #[
+                types: [
+                                :integer
+                        ]
+                description: "unpad by given number of spaces"
+                ]
+        with: #[
+                types: [
+                                :string
+                        ]
+                description: "use given padding"
+                ]
+        ]
 arguments: #[
-    text: [
-            :string
-             :literal
+        text: [
+                        :string
+                         :literal
+                ]
         ]
-    ]
 related: [
-        "Strings/indent"
-         "Strings/levenshtein"
-         "Strings/replace"
-         "Strings/truncate"
-    ]
+                "Strings/indent"
+                 "Strings/levenshtein"
+                 "Strings/translate"
+                 "Strings/alphabet"
+        ]

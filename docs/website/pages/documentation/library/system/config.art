@@ -1,0 +1,15 @@
+name: "config"
+type: :store
+description: "access global configuration"
+module: "System"
+line: 63
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/System.nim#L63"
+returns: [
+                :store
+        ]
+related: [
+                "System/process"
+                 "System/arg"
+                 "System/env"
+                 "System/script"
+        ]

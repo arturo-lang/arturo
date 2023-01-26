@@ -1,33 +1,34 @@
 name: "attrs"
 type: :function
-module: "Reflection"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L143"
 description: "get dictionary of set attributes"
+module: "Reflection"
+line: 153
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L153"
 returns: [
-        :dictionary
-    ]
+                :dictionary
+        ]
 examples: [
-        {
-            greet: function [x][
-                print ["Hello" x "!"]
-                print attrs
-            ]
-            
-            greet.later "John"
-            
-            ; Hello John!
-            ; [
-            ;    later:    true
-            ; ]
-        }
-    ]
+                {
+                        greet: function [x][
+                            print ["Hello" x "!"]
+                            print attrs
+                        ]
+                        
+                        greet.later "John"
+                        
+                        ; Hello John!
+                        ; [
+                        ;    later:    true
+                        ; ]
+                }
+        ]
 attributes: #[
-    ]
+        ]
 arguments: #[
-    ]
+        ]
 related: [
-        "Reflection/attr"
-         "Reflection/arity"
-         "Reflection/attr?"
-         "Reflection/symbols"
-    ]
+                "Reflection/attr"
+                 "Reflection/arity"
+                 "Reflection/attr?"
+                 "Reflection/symbols"
+        ]

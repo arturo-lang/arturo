@@ -1,0 +1,39 @@
+name: "range"
+type: :function
+description: "get list of values in given range (inclusive)"
+module: "Converters"
+line: 1172
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Converters.nim#L1172"
+returns: [
+                :range
+        ]
+alias: ".."
+infix?: true
+examples: [
+                ""
+        ]
+attributes: #[
+        step: #[
+                types: [
+                                :integer
+                        ]
+                description: "use step between range values"
+                ]
+        ]
+arguments: #[
+        from: [
+                        :integer
+                         :char
+                ]
+        to: [
+                        :integer
+                         :floating
+                         :char
+                ]
+        ]
+related: [
+                "Converters/from"
+                 "Converters/as"
+                 "Converters/array"
+                 "Converters/function"
+        ]

@@ -1,38 +1,39 @@
 name: "open"
 type: :function
-module: "Databases"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Databases.nim#L116"
 description: "opens a new database connection and returns database"
+module: "Databases"
+line: 75
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Databases.nim#L75"
 returns: [
-        :database
-    ]
+                :database
+        ]
 examples: [
-        {
-            db: open "my.db"    ; opens an SQLite database named 'my.db'
-        }
-    ]
+                {
+                        db: open "my.db"    ; opens an SQLite database named 'my.db'
+                }
+        ]
 attributes: #[
-    sqlite: #[
-        types: [
-                :logical
-            ]
-        description: "support for SQLite databases"
+        sqlite: #[
+                types: [
+                                :logical
+                        ]
+                description: "support for SQLite databases"
+                ]
+        mysql: #[
+                types: [
+                                :logical
+                        ]
+                description: "support for MySQL databases"
+                ]
         ]
-    mysql: #[
-        types: [
-                :logical
-            ]
-        description: "support for MySQL databases"
-        ]
-    ]
 arguments: #[
-    name: [
-            :string
+        name: [
+                        :string
+                ]
         ]
-    ]
 related: [
-        "Databases/query"
-         "Colors/blend"
-         "Converters/define"
-         "Strings/outdent"
-    ]
+                "Databases/query"
+                 "Strings/translate"
+                 "Sockets/listen"
+                 "Colors/blend"
+        ]

@@ -1,30 +1,31 @@
 name: "numeric?"
 type: :function
-module: "Strings"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L392"
 description: "check if given string is numeric"
+module: "Strings"
+line: 614
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L614"
 returns: [
-        :logical
-    ]
-examples: [
-        {
-            numeric? "hello"           ; => false
-            numeric? "3.14"            ; => true
-            numeric? "18966"           ; => true
-            numeric? "123xxy"          ; => false
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    string: [
-            :char
-             :string
+                :logical
         ]
-    ]
+examples: [
+                {
+                        numeric? "hello"           ; => false
+                        numeric? "3.14"            ; => true
+                        numeric? "18966"           ; => true
+                        numeric? "123xxy"          ; => false
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        string: [
+                        :char
+                         :string
+                ]
+        ]
 related: [
-        "Strings/upper?"
-         "Strings/lower?"
-         "Strings/suffix?"
-         "Strings/ascii?"
-    ]
+                "Strings/upper?"
+                 "Strings/lower?"
+                 "Strings/suffix?"
+                 "Strings/ascii?"
+        ]

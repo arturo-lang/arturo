@@ -1,29 +1,30 @@
 name: "block?"
 type: :function
-module: "Reflection"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L216"
 description: "checks if given value is of type :block"
+module: "Reflection"
+line: 230
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L230"
 returns: [
-        :logical
-    ]
-examples: [
-        {
-            print block? [1 2 3]            ; true
-            print block? #[name: "John"]    ; false
-            print block? "hello"            ; false
-            print block? 123                ; false
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    value: [
-            :any
+                :logical
         ]
-    ]
+examples: [
+                {
+                        print block? [1 2 3]            ; true
+                        print block? #[name: "John"]    ; false
+                        print block? "hello"            ; false
+                        print block? 123                ; false
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        ]
 related: [
-        "Reflection/logical?"
-         "Reflection/word?"
-         "Reflection/null?"
-         "Reflection/symbol?"
-    ]
+                "Reflection/logical?"
+                 "Reflection/complex?"
+                 "Reflection/color?"
+                 "Reflection/bytecode?"
+        ]

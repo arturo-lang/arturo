@@ -1,39 +1,40 @@
 name: "variance"
 type: :function
-module: "Statistics"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Statistics.nim#L165"
 description: "get population variance of given collection of numbers"
+module: "Statistics"
+line: 181
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Statistics.nim#L181"
 returns: [
-        :floating
-    ]
+                :floating
+        ]
 examples: [
-        {
-            arr:  [1 2 3 4]
-            arr2: [3 120 4 7 87 2 6 34]
-            
-            print variance arr          ; 1.25
-            print variance arr2         ; 1824.109375
-            
-            variance.sample arr         ; => 1.666666666666667
-            variance.sample arr2        ; => 2084.696428571428
-        }
-    ]
+                {
+                        arr:  [1 2 3 4]
+                        arr2: [3 120 4 7 87 2 6 34]
+                        
+                        print variance arr          ; 1.25
+                        print variance arr2         ; 1824.109375
+                        
+                        variance.sample arr         ; => 1.666666666666667
+                        variance.sample arr2        ; => 2084.696428571428
+                }
+        ]
 attributes: #[
-    sample: #[
-        types: [
-                :logical
-            ]
-        description: "calculate the sample variance"
+        sample: #[
+                types: [
+                                :logical
+                        ]
+                description: "calculate the sample variance"
+                ]
         ]
-    ]
 arguments: #[
-    collection: [
-            :block
+        collection: [
+                        :block
+                ]
         ]
-    ]
 related: [
-        "Statistics/deviation"
-         "Statistics/skewness"
-         "Statistics/kurtosis"
-         "Statistics/average"
-    ]
+                "Statistics/deviation"
+                 "Statistics/skewness"
+                 "Statistics/kurtosis"
+                 "Statistics/average"
+        ]

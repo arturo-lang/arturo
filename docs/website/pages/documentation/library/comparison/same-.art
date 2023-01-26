@@ -1,31 +1,32 @@
 name: "same?"
 type: :function
-module: "Comparison"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Comparison.nim#L144"
 description: "check if given values are exactly the same (identity)"
+module: "Comparison"
+line: 209
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Comparison.nim#L209"
 returns: [
-        :logical
-    ]
+                :logical
+        ]
 examples: [
-        {
-            same? 1 2           ; => false
-            same? 3 3           ; => true
-            same? 3 3.0         ; => false
-        }
-    ]
+                {
+                        same? 1 2           ; => false
+                        same? 3 3           ; => true
+                        same? 3 3.0         ; => false
+                }
+        ]
 attributes: #[
-    ]
+        ]
 arguments: #[
-    valueA: [
-            :any
+        valueA: [
+                        :any
+                ]
+        valueB: [
+                        :any
+                ]
         ]
-    valueB: [
-            :any
-        ]
-    ]
 related: [
-        "Comparison/greater?"
-         "Comparison/less?"
-         "Comparison/greaterOrEqual?"
-         "Comparison/equal?"
-    ]
+                "Comparison/between?"
+                 "Comparison/greater?"
+                 "Comparison/less?"
+                 "Comparison/greaterOrEqual?"
+        ]

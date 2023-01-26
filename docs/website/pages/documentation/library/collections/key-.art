@@ -1,38 +1,40 @@
 name: "key?"
 type: :function
+description: "check if collection contains given key"
 module: "Collections"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L550"
-description: "check if dictionary contains given key"
+line: 836
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L836"
 returns: [
-        :logical
-    ]
+                :logical
+        ]
 examples: [
-        {
-            user: #[
-                name: "John"
-                surname: "Doe"
-            ]
-            
-            key? user 'age            ; => false
-            if key? user 'name [
-                print ["Hello" user\name]
-            ]
-            ; Hello John
-        }
-    ]
+                {
+                        user: #[
+                            name: "John"
+                            surname: "Doe"
+                        ]
+                        
+                        key? user 'age            ; => false
+                        if key? user 'name [
+                            print ["Hello" user\name]
+                        ]
+                        ; Hello John
+                }
+        ]
 attributes: #[
-    ]
+        ]
 arguments: #[
-    collection: [
-            :dictionary
+        collection: [
+                        :dictionary
+                         :object
+                ]
+        key: [
+                        :any
+                ]
         ]
-    key: [
-            :any
-        ]
-    ]
 related: [
-        "Collections/empty?"
-         "Collections/in?"
-         "Collections/keys"
-         "Collections/contains?"
-    ]
+                "Collections/empty?"
+                 "Collections/contains?"
+                 "Collections/one?"
+                 "Collections/in?"
+        ]

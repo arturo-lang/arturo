@@ -1,0 +1,30 @@
+name: "rational?"
+type: :function
+description: "checks if given value is of type :rational"
+module: "Reflection"
+line: 775
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L775"
+returns: [
+                :logical
+        ]
+examples: [
+                {
+                        r: to :rational 3.14        ; r: 157/50
+                        
+                        print rational? r           ; true
+                        print rational? 3.14        ; false
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        ]
+related: [
+                "Reflection/version?"
+                 "Reflection/range?"
+                 "Reflection/string?"
+                 "Reflection/floating?"
+        ]

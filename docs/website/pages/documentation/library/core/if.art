@@ -1,32 +1,34 @@
 name: "if"
 type: :function
-module: "Core"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L355"
 description: "perform action, if given condition is not false or null"
+module: "Core"
+line: 433
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L433"
 returns: [
-        :nothing
-    ]
+                :nothing
+        ]
 examples: [
-        {
-            x: 2
-            
-            if x=2 -> print "yes, that's right!"
-            ; yes, that's right!
-        }
-    ]
+                {
+                        x: 2
+                        
+                        if x=2 -> print "yes, that's right!"
+                        ; yes, that's right!
+                }
+        ]
 attributes: #[
-    ]
+        ]
 arguments: #[
-    condition: [
-            :any
+        condition: [
+                        :any
+                ]
+        action: [
+                        :block
+                         :bytecode
+                ]
         ]
-    action: [
-            :block
-        ]
-    ]
 related: [
-        "Core/if?"
-         "Core/unless"
-         "Core/switch"
-         "Core/else"
-    ]
+                "Core/if?"
+                 "Core/unless"
+                 "Core/switch"
+                 "Core/else"
+        ]

@@ -1,44 +1,45 @@
 name: "repeat"
 type: :function
-module: "Collections"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L785"
 description: "repeat value the given number of times and return new one"
+module: "Collections"
+line: 1297
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L1297"
 returns: [
-        :string
-         :block
-    ]
+                :string
+                 :block
+        ]
 examples: [
-        {
-            print repeat "hello" 3
-            ; hellohellohello
-        }
-         {
-            repeat [1 2 3] 3
-            ; => [1 2 3 1 2 3 1 2 3]
-        }
-         {
-            repeat 5 3
-            ; => [5 5 5]
-        }
-         {
-            repeat [[1 2 3]] 3
-            ; => [[1 2 3] [1 2 3] [1 2 3]]
-        }
-    ]
+                {
+                        print repeat "hello" 3
+                        ; hellohellohello
+                }
+                 {
+                        repeat [1 2 3] 3
+                        ; => [1 2 3 1 2 3 1 2 3]
+                }
+                 {
+                        repeat 5 3
+                        ; => [5 5 5]
+                }
+                 {
+                        repeat [[1 2 3]] 3
+                        ; => [[1 2 3] [1 2 3] [1 2 3]]
+                }
+        ]
 attributes: #[
-    ]
+        ]
 arguments: #[
-    value: [
-            :literal
-             :any
+        value: [
+                        :literal
+                         :any
+                ]
+        times: [
+                        :integer
+                ]
         ]
-    times: [
-            :integer
-        ]
-    ]
 related: [
-        "Collections/drop"
-         "Collections/permutate"
-         "Collections/take"
-         "Collections/insert"
-    ]
+                "Collections/drop"
+                 "Collections/permutate"
+                 "Collections/prepend"
+                 "Collections/take"
+        ]

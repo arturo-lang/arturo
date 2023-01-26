@@ -1,0 +1,32 @@
+name: "object?"
+type: :function
+description: "checks if given value is a custom-type object"
+module: "Reflection"
+line: 682
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L682"
+returns: [
+                :logical
+        ]
+examples: [
+                {
+                        define :person [name,surname][]
+                        
+                        x: to :person ["John","Doe"]
+                        
+                        print object? x             ; true
+                        print object? "hello"       ; false
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        ]
+related: [
+                "Reflection/label?"
+                 "Reflection/block?"
+                 "Reflection/bytecode?"
+                 "Reflection/date?"
+        ]

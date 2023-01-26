@@ -1,37 +1,38 @@
 name: "integer?"
 type: :function
-module: "Reflection"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L405"
 description: "checks if given value is of type :integer"
+module: "Reflection"
+line: 483
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L483"
 returns: [
-        :logical
-    ]
-examples: [
-        {
-            print integer? 123                  ; true
-            print integer? "hello"              ; false
-        }
-         {
-            integer?.big 123                    ; => false
-            integer?.big 12345678901234567890   ; => true
-        }
-    ]
-attributes: #[
-    big: #[
-        types: [
                 :logical
-            ]
-        description: "check if, internally, it\'s a bignum"
         ]
-    ]
+examples: [
+                {
+                        print integer? 123                  ; true
+                        print integer? "hello"              ; false
+                }
+                 {
+                        integer?.big 123                    ; => false
+                        integer?.big 12345678901234567890   ; => true
+                }
+        ]
+attributes: #[
+        big: #[
+                types: [
+                                :logical
+                        ]
+                description: "check if, internally, it\'s a bignum"
+                ]
+        ]
 arguments: #[
-    value: [
-            :any
+        value: [
+                        :any
+                ]
         ]
-    ]
 related: [
-        "Reflection/literal?"
-         "Reflection/regex?"
-         "Reflection/string?"
-         "Reflection/inline?"
-    ]
+                "Reflection/literal?"
+                 "Reflection/regex?"
+                 "Reflection/string?"
+                 "Reflection/inline?"
+        ]

@@ -1,0 +1,25 @@
+name: "infinite?"
+type: :function
+description: "check whether given value is an infinite one"
+module: "Numbers"
+line: 830
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L830"
+returns: [
+                :logical
+        ]
+examples: [
+                ""
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        ]
+related: [
+                "Numbers/negative?"
+                 "Numbers/positive?"
+                 "Numbers/prime?"
+                 "Numbers/even?"
+        ]

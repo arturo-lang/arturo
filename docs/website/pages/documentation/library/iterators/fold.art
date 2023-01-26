@@ -1,61 +1,105 @@
 name: "fold"
 type: :function
-module: "Iterators"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Iterators.nim#L143"
 description: "left-fold given collection returning accumulator"
+module: "Iterators"
+line: 863
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Iterators.nim#L863"
 returns: [
-        :null
-         :block
-         :nothing
-    ]
+                :null
+                 :block
+                 :nothing
+        ]
 examples: [
-        {
-            fold 1..10 [x,y]-> x + y
-            ; => 55 (1+2+3+4..) 
-        }
-         {
-            fold 1..10 .seed:1 [x,y][ x * y ]
-            ; => 3628800 (10!) 
-        }
-         {
-            fold 1..3 [x y]-> x - y
-            ; => -6
-        }
-         {
-            fold.right 1..3 [x y]-> x - y
-            ; => 2
-        }
-    ]
+                {
+                        fold 1..10 [x,y]-> x + y
+                        ; => 55 (1+2+3+4..)
+                        
+                        fold 1..10 .seed:1 [x,y][ x * y ]
+                        ; => 3628800 (10!)
+                }
+                 {
+                        fold 1..3 [x,y]-> x - y
+                        ; => -6
+                        
+                        fold.right 1..3 [x,y]-> x - y
+                        ; => 2
+                }
+                 {
+                        fold.seed:"0" to [:string] 1..5 [x,y] ->
+                            "(" ++ x ++ "+" ++ y ++ ")"
+                        ; => (((((0+1)+2)+3)+4)+5)
+                        
+                        fold.right.seed:"0" to [:string] 1..5 [x,y] ->
+                            "(" ++ x ++ "+" ++ y ++ ")"
+                        ; => (1+(2+(3+(4+(5+0)))))
+                }
+                 {
+                        fold 1..10 [x y z] [
+                            print [x y z]
+                            x + z - y
+                        ]
+                        ; 0 1 2
+                        ; 1 3 4
+                        ; 2 5 6
+                        ; 3 7 8
+                        ; 4 9 10
+                        ; => 5
+                }
+                 {
+                        fold.with:'i 1..5 [x y][
+                            print [i x y]
+                            i * x+y
+                        ]
+                        ; 0 0 1
+                        ; 1 0 2
+                        ; 2 2 3
+                        ; 3 10 4
+                        ; 4 42 5
+                        ; => 188
+                }
+        ]
 attributes: #[
-    seed: #[
-        types: [
-                :any
-            ]
-        description: "use specific seed value"
+        with: #[
+                types: [
+                                :literal
+                        ]
+                description: "use given index"
+                ]
+        seed: #[
+                types: [
+                                :any
+                        ]
+                description: "use specific seed value"
+                ]
+        right: #[
+                types: [
+                                :logical
+                        ]
+                description: "perform right folding"
+                ]
         ]
-    right: #[
-        types: [
-                :logical
-            ]
-        description: "perform right folding"
-        ]
-    ]
 arguments: #[
-    collection: [
-            :literal
-             :block
+        collection: [
+                        :integer
+                         :string
+                         :dictionary
+                         :object
+                         :inline
+                         :block
+                         :range
+                ]
+        params: [
+                        :null
+                         :block
+                ]
+        action: [
+                        :block
+                         :bytecode
+                ]
         ]
-    params: [
-            :literal
-             :block
-        ]
-    action: [
-            :block
-        ]
-    ]
 related: [
-        "Iterators/loop"
-         "Iterators/select"
-         "Iterators/filter"
-         "Collections/flatten"
-    ]
+                "Iterators/collect"
+                 "Iterators/loop"
+                 "Iterators/select"
+                 "Iterators/filter"
+        ]

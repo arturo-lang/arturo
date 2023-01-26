@@ -1,27 +1,28 @@
 name: "angle"
 type: :function
-module: "Numbers"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L195"
 description: "calculate the phase angle of given number"
+module: "Numbers"
+line: 210
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L210"
 returns: [
-        :floating
-    ]
-examples: [
-        {
-            a: to complex [1 1]     ; a: 1.0+1.0i
-            print angle a           ; 0.7853981633974483
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    number: [
-            :complex
+                :floating
         ]
-    ]
+examples: [
+                {
+                        a: to complex [1 1]     ; a: 1.0+1.0i
+                        print angle a           ; 0.7853981633974483
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        number: [
+                        :complex
+                ]
+        ]
 related: [
-        "Numbers/tan"
-         "Numbers/tanh"
-         "Numbers/sinh"
-         "Numbers/sin"
-    ]
+                "Numbers/tan"
+                 "Numbers/tanh"
+                 "Numbers/sinh"
+                 "Numbers/sin"
+        ]

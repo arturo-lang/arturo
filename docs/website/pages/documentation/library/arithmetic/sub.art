@@ -1,47 +1,54 @@
 name: "sub"
 type: :function
-module: "Arithmetic"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Arithmetic.nim#L212"
 description: "subtract given values and return result"
+module: "Arithmetic"
+line: 248
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Arithmetic.nim#L248"
 returns: [
-        :integer
-         :floating
-         :complex
-         :color
-         :nothing
-    ]
+                :integer
+                 :floating
+                 :complex
+                 :rational
+                 :quantity
+                 :color
+                 :nothing
+        ]
 alias: "-"
 infix?: true
 examples: [
-        {
-            print sub 2 1      ; 1
-            print 5 - 3        ; 2
-        }
-         {
-            a: 7
-            sub 'a 2           ; a: 5
-        }
-    ]
+                {
+                        print sub 2 1      ; 1
+                        print 5 - 3        ; 2
+                }
+                 {
+                        a: 7
+                        sub 'a 2           ; a: 5
+                }
+        ]
 attributes: #[
-    ]
+        ]
 arguments: #[
-    valueA: [
-            :integer
-             :floating
-             :complex
-             :literal
-             :color
+        valueA: [
+                        :integer
+                         :floating
+                         :complex
+                         :rational
+                         :literal
+                         :quantity
+                         :color
+                ]
+        valueB: [
+                        :integer
+                         :floating
+                         :complex
+                         :rational
+                         :quantity
+                         :color
+                ]
         ]
-    valueB: [
-            :integer
-             :floating
-             :complex
-             :color
-        ]
-    ]
 related: [
-        "Arithmetic/mul"
-         "Arithmetic/add"
-         "Arithmetic/pow"
-         "Arithmetic/fdiv"
-    ]
+                "Arithmetic/mul"
+                 "Arithmetic/add"
+                 "Arithmetic/pow"
+                 "Arithmetic/fdiv"
+        ]

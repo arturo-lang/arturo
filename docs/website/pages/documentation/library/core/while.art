@@ -1,55 +1,52 @@
 name: "while"
 type: :function
-module: "Core"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L818"
 description: "execute action while the given condition is is not false or null"
+module: "Core"
+line: 894
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L894"
 returns: [
-        :nothing
-    ]
+                :nothing
+        ]
 examples: [
-        {
-            i: 0 
-            while [i<10][
-                print ["i =>" i] 
-                i: i + 1
-            ]
-            
-            ; i => 0 
-            ; i => 1 
-            ; i => 2 
-            ; i => 3 
-            ; i => 4 
-            ; i => 5 
-            ; i => 6 
-            ; i => 7 
-            ; i => 8 
-            ; i => 9 
-            
-            while ø [
-                print "something"   ; infinitely
-            ]
-        }
-    ]
+                {
+                        i: 0 
+                        while [i<10][
+                            print ["i =>" i] 
+                            i: i + 1
+                        ]
+                        
+                        ; i => 0 
+                        ; i => 1 
+                        ; i => 2 
+                        ; i => 3 
+                        ; i => 4 
+                        ; i => 5 
+                        ; i => 6 
+                        ; i => 7 
+                        ; i => 8 
+                        ; i => 9 
+                        
+                        while ø [
+                            print "something"   ; infinitely
+                        ]
+                }
+        ]
 attributes: #[
-    import: #[
-        types: [
-                :logical
-            ]
-        description: "execute at root level"
         ]
-    ]
 arguments: #[
-    condition: [
-            :null
-             :block
+        condition: [
+                        :null
+                         :block
+                         :bytecode
+                ]
+        action: [
+                        :block
+                         :bytecode
+                ]
         ]
-    action: [
-            :block
-        ]
-    ]
 related: [
-        "Core/until"
-         "Core/switch"
-         "Core/unless"
-         "Core/continue"
-    ]
+                "Core/until"
+                 "Core/switch"
+                 "Core/unless"
+                 "Core/continue"
+        ]

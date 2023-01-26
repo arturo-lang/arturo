@@ -1,30 +1,39 @@
 name: "pause"
 type: :function
+description: "pause program\'s execution~for the given amount of time"
 module: "System"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/System.nim#L215"
-description: "pause program\'s execution~for the given amount of milliseconds"
+line: 238
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/System.nim#L238"
 returns: [
-        :nothing
-    ]
-examples: [
-        {
-            print "wait a moment"
-            
-            pause 1000      ; sleeping for one second
-            
-            print "done. let's continue..."
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    time: [
-            :integer
+                :nothing
         ]
-    ]
+examples: [
+                {
+                        print "wait a moment"
+                        
+                        pause 1000      ; sleeping for 1000ms = one second
+                        
+                        print "done. let's continue..."
+                }
+                 {
+                        print "waiting for 2 seconds
+                        
+                        pause 2:s       ; let's sleep for a while
+                        
+                        print "done!"
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        time: [
+                        :integer
+                         :quantity
+                ]
+        ]
 related: [
-        "System/process"
-         "System/args"
-         "System/panic"
-         "System/sys"
-    ]
+                "System/process"
+                 "System/panic"
+                 "System/sys"
+                 "System/args"
+        ]

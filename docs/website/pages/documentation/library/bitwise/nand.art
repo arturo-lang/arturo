@@ -1,0 +1,37 @@
+name: "nand"
+type: :function
+description: "calculate the binary NAND for the given values"
+module: "Bitwise"
+line: 58
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Bitwise.nim#L58"
+returns: [
+                :integer
+                 :binary
+                 :nothing
+        ]
+examples: [
+                "print nand 2 3     ; -3"
+                 {
+                        a: 2
+                        nand 'a 3          ; a: -3
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        valueA: [
+                        :integer
+                         :literal
+                         :binary
+                ]
+        valueB: [
+                        :integer
+                         :binary
+                ]
+        ]
+related: [
+                "Bitwise/and"
+                 "Bitwise/nor"
+                 "Bitwise/xnor"
+                 "Bitwise/or"
+        ]

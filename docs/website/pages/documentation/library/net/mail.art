@@ -1,41 +1,44 @@
 name: "mail"
 type: :function
+description: "send mail using given title and message to selected recipient"
 module: "Net"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Net.nim#L82"
-description: "send mail using given message and configuration"
+line: 101
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Net.nim#L101"
 returns: [
-        :nothing
-    ]
+                :nothing
+        ]
 examples: [
-        {
-            mail "recipient@somemail.com"
-                #[
-                    title: "Hello from Arturo"
-                    content: "Arturo rocks!"
-                ]
-                #[
-                    server: "mymailserver.com"
-                    username: "myusername"
-                    password: "mypass123"
-                ]
-        }
-    ]
+                {
+                        mail .using: #[
+                                server: "mymailserver.com"
+                                username: "myusername"
+                                password: "mypass123"
+                            ]
+                            "recipient@somemail.com" "Hello from Arturo" "Arturo rocks!"
+                }
+        ]
 attributes: #[
-    ]
+        using: #[
+                types: [
+                                :dictionary
+                        ]
+                description: "use given configuration"
+                ]
+        ]
 arguments: #[
-    recipient: [
-            :string
+        recipient: [
+                        :string
+                ]
+        title: [
+                        :string
+                ]
+        message: [
+                        :string
+                ]
         ]
-    message: [
-            :dictionary
-        ]
-    config: [
-            :dictionary
-        ]
-    ]
 related: [
-        "Net/download"
-         "Statistics/median"
-         "Strings/match"
-         "Collections/min"
-    ]
+                "Iterators/maximum"
+                 "Collections/min"
+                 "Collections/combine"
+                 "Strings/match"
+        ]
