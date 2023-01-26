@@ -1001,16 +1001,16 @@ supersection "PATHS"
         ; ================================
         ;  DATA
         ; ================================
-        ; 0: user :word
+        ; 0: John :string
         ; 1: name :literal
-        ; 2: John :string
+        ; 2: user :word
 
         ; ================================
         ;  CODE
         ; ================================
-        ; push2
+        ; push0
         ; push1
-        ; load0
+        ; load2
         ; set
         ; end
 
@@ -1018,16 +1018,16 @@ supersection "PATHS"
         ; ================================
         ;  DATA
         ; ================================
-        ; 0: user :word
-        ; 1: grades :literal
+        ; 0: grades :literal
+        ; 1: user :word
 
         ; ================================
         ;  CODE
         ; ================================
         ; consti6
         ; consti0
-        ; push1
-        ; load0
+        ; push0
+        ; load1
         ; get
         ; set
         ; end
@@ -1036,18 +1036,18 @@ supersection "PATHS"
         ; ================================
         ;  DATA
         ; ================================
-        ; 0: user :word
-        ; 1: address :literal
-        ; 2: country :literal
-        ; 3: USA :string
+        ; 0: USA :string
+        ; 1: country :literal
+        ; 2: address :literal
+        ; 3: user :word
 
         ; ================================
         ;  CODE
         ; ================================
-        ; push3
-        ; push2
+        ; push0
         ; push1
-        ; load0
+        ; push2
+        ; load3
         ; get
         ; set
         ; end
@@ -1087,7 +1087,7 @@ supersection "BLOCKS & SYNTACTIC SUGAR"
         ; end
 
         ; TODO: this is not working!!! (see #804)
-        ; byteCode [(print 2 print 3)]
+        byteCode [(print 2 print 3)]
         ; ================================
         ;  DATA
         ; ================================

@@ -366,19 +366,19 @@
 
         input: [a\0: 10] 
         data: [a] 
-        code: [10 0 64 161 218] (5 bytes) 
+        code: [11 1 64 154 218] (5 bytes) 
 
         input: [user\name: "John"] 
-        data: [user name John] 
-        code: [34 33 64 161 218] (5 bytes) 
+        data: [John name user] 
+        code: [32 33 66 154 218] (5 bytes) 
 
         input: [user\grades\0: 6] 
-        data: [user grades] 
-        code: [6 0 33 64 160 161 218] (7 bytes) 
+        data: [grades user] 
+        code: [7 1 32 65 153 154 218] (7 bytes) 
 
         input: [user\address\country: "USA"] 
-        data: [user address country USA] 
-        code: [35 34 33 64 160 161 218] (7 bytes) 
+        data: [USA country address user] 
+        code: [32 33 34 67 153 154 218] (7 bytes) 
 
 
 **************************************************
@@ -393,11 +393,15 @@
 
         input: [(print 2)] 
         data: [] 
-        code: [2 176 218] (3 bytes) 
+        code: [3 189 218] (3 bytes) 
 
         input: [(print 2) (print 3)] 
         data: [] 
-        code: [2 176 3 176 218] (5 bytes) 
+        code: [3 189 4 189 218] (5 bytes) 
+
+        input: [(print 2 print 3)] 
+        data: [] 
+        code: [3 189 4 189 218] (5 bytes) 
 
 
         >--------------------------------------------------
