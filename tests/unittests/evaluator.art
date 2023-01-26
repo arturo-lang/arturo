@@ -1168,6 +1168,24 @@ supersection "BLOCKS & SYNTACTIC SUGAR"
         ; print
         ; end
 
+        byteCode [-> 1 -> 2]
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: [ :block
+        ;         1 :integer
+        ; ]
+        ; 1: [ :block
+        ;         2 :integer
+        ; ]
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; push0
+        ; push1
+        ; end
+
         byteCode [
             a: -> upper "hello"
             b: -> "hello " ++ world
@@ -1253,6 +1271,57 @@ supersection "BLOCKS & SYNTACTIC SUGAR"
         ;         _1 :word
         ; ]
         ; 2: adder :label
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; push0
+        ; push1
+        ; func
+        ; store2
+        ; end
+
+        byteCode [
+            subOne: function => [& - 1]
+        ]
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: [ :block
+        ;         _0 :word
+        ;         - :symbol
+        ;         1 :integer
+        ; ]
+        ; 1: _0 :literal
+        ; 2: subOne :label
+
+        ; ================================
+        ;  CODE
+        ; ================================
+        ; push0
+        ; push1
+        ; func
+        ; store2
+        ; end
+
+        byteCode [
+            mulAddOne: $ => [1 + & * &]
+        ]
+        ; ================================
+        ;  DATA
+        ; ================================
+        ; 0: [ :block
+        ;         1 :integer
+        ;         + :symbol
+        ;         _0 :word
+        ;         * :symbol
+        ;         _1 :word
+        ; ]
+        ; 1: [ :block
+        ;         _0 :word
+        ;         _1 :word
+        ; ]
+        ; 2: mulAddOne :label
 
         ; ================================
         ;  CODE
