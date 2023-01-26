@@ -689,15 +689,15 @@ supersection "FUNCTION CALLS"
         ; ================================
         ;  DATA
         ; ================================
-        ; 0: words :attribute
-        ; 1: hello world :string
+        ; 0: hello world :string
+        ; 1: words :attribute
 
         ; ================================
         ;  CODE
         ; ================================
-        ; push1
+        ; push0
         ; constbt
-        ; attr0
+        ; attr1
         ; split
         ; end
 
@@ -705,16 +705,16 @@ supersection "FUNCTION CALLS"
         ; ================================
         ;  DATA
         ; ================================
-        ; 0: by :attributelabel
+        ; 0: helloXworld :string
         ; 1: X :string
-        ; 2: helloXworld :string
+        ; 2: by :attributelabel
 
         ; ================================
         ;  CODE
         ; ================================
-        ; push2
+        ; push0
         ; push1
-        ; attr0
+        ; attr2
         ; split
         ; end
 
@@ -722,19 +722,19 @@ supersection "FUNCTION CALLS"
         ; ================================
         ;  DATA
         ; ================================
-        ; 0: with :attributelabel
-        ; 1: - :string
-        ; 2: [ :block
+        ; 0: [ :block
         ;         hello :string
         ;         world :string
         ; ]
+        ; 1: - :string
+        ; 2: with :attributelabel
 
         ; ================================
         ;  CODE
         ; ================================
-        ; push2
+        ; push0
         ; push1
-        ; attr0
+        ; attr2
         ; join
         ; end
 
@@ -759,20 +759,19 @@ supersection "FUNCTION CALLS"
         ; array
         ; end
 
-        byteCode ["hello " ++ "world"]
+        byteCode ["hello " ++ x]
         ; ================================
         ;  DATA
         ; ================================
-        ; 0: append :word
+        ; 0: x :word
         ; 1: hello  :string
-        ; 2: world :string
 
         ; ================================
         ;  CODE
         ; ================================
-        ; push2
+        ; load0
         ; push1
-        ; call0
+        ; append
         ; end
 
         byteCode [1..25]

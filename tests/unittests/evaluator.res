@@ -287,16 +287,16 @@
         >--------------------------------------------------
 
         input: [split .words "hello world"] 
-        data: [words hello world] 
-        code: [33 21 112 171 218] (5 bytes) 
+        data: [hello world words] 
+        code: [32 21 113 185 218] (5 bytes) 
 
         input: [split .by: "X" "helloXworld"] 
-        data: [by X helloXworld] 
-        code: [34 33 112 171 218] (5 bytes) 
+        data: [helloXworld X by] 
+        code: [32 33 114 185 218] (5 bytes) 
 
         input: [join .with: "-" ["hello" "world"]] 
-        data: [with - [hello world]] 
-        code: [34 33 112 172 218] (5 bytes) 
+        data: [[hello world] - with] 
+        code: [32 33 114 186 218] (5 bytes) 
 
 
         >--------------------------------------------------
@@ -305,15 +305,15 @@
 
         input: [@ [1 2 3]] 
         data: [[1 2 3]] 
-        code: [32 162 218] (3 bytes) 
+        code: [32 176 218] (3 bytes) 
 
-        input: ["hello " ++ "world"] 
-        data: [append hello  world] 
-        code: [34 33 96 218] (4 bytes) 
+        input: ["hello " ++ x] 
+        data: [x hello ] 
+        code: [64 33 188 218] (4 bytes) 
 
         input: [1 .. 25] 
         data: [25] 
-        code: [32 1 165 218] (4 bytes) 
+        code: [32 2 179 218] (4 bytes) 
 
 
         >--------------------------------------------------
