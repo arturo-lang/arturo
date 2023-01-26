@@ -1,14 +1,15 @@
 name: "null"
 type: :null
-module: "Core"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L487"
 description: "the NULL constant"
+module: "Core"
+line: 565
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L565"
 returns: [
-        :null
-    ]
+                :null
+        ]
 related: [
-        "Core/call"
-         "Core/else"
-         "Core/continue"
-         "Core/until"
-    ]
+                "Core/call"
+                 "Core/else"
+                 "Core/continue"
+                 "Core/until"
+        ]

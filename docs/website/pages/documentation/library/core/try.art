@@ -1,43 +1,39 @@
 name: "try"
 type: :function
-module: "Core"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L591"
 description: "perform action and catch possible errors"
+module: "Core"
+line: 663
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L663"
 returns: [
-        :nothing
-    ]
+                :nothing
+        ]
 examples: [
-        {
-            try [
-                ; let's try something dangerous
-                print 10 / 0
-            ]
-            
-            ; we catch the exception but do nothing with it
-        }
-    ]
+                {
+                        try [
+                            ; let's try something dangerous
+                            print 10 / 0
+                        ]
+                        
+                        ; we catch the exception but do nothing with it
+                }
+        ]
 attributes: #[
-    import: #[
-        types: [
-                :logical
-            ]
-        description: "execute at root level"
+        verbose: #[
+                types: [
+                                :logical
+                        ]
+                description: "print all error messages as usual"
+                ]
         ]
-    verbose: #[
-        types: [
-                :logical
-            ]
-        description: "print all error messages as usual"
-        ]
-    ]
 arguments: #[
-    action: [
-            :block
+        action: [
+                        :block
+                         :bytecode
+                ]
         ]
-    ]
 related: [
-        "Core/try?"
-         "Core/break"
-         "Core/return"
-         "Core/else"
-    ]
+                "Core/try?"
+                 "Core/break"
+                 "Core/return"
+                 "Core/else"
+        ]

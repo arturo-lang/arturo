@@ -1,50 +1,51 @@
 name: "indent"
 type: :function
-module: "Strings"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L171"
 description: "indent each line of given text"
+module: "Strings"
+line: 231
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L231"
 returns: [
-        :string
-         :nothing
-    ]
-examples: [
-        {
-            str: "one\ntwo\nthree"
-            
-            print indent str
-            ;     one
-            ;     two
-            ;     three
-            
-            print indent .n:10 .with:"#" str
-            ; ##########one
-            ; ##########two
-            ; ##########three
-        }
-    ]
-attributes: #[
-    n: #[
-        types: [
-                :integer
-            ]
-        description: "pad by given number of spaces (default: 4)"
-        ]
-    with: #[
-        types: [
                 :string
-            ]
-        description: "use given padding"
+                 :nothing
         ]
-    ]
+examples: [
+                {
+                        str: "one\ntwo\nthree"
+                        
+                        print indent str
+                        ;     one
+                        ;     two
+                        ;     three
+                        
+                        print indent .n:10 .with:"#" str
+                        ; ##########one
+                        ; ##########two
+                        ; ##########three
+                }
+        ]
+attributes: #[
+        n: #[
+                types: [
+                                :integer
+                        ]
+                description: "pad by given number of spaces (default: 4)"
+                ]
+        with: #[
+                types: [
+                                :string
+                        ]
+                description: "use given padding"
+                ]
+        ]
 arguments: #[
-    text: [
-            :string
-             :literal
+        text: [
+                        :string
+                         :literal
+                ]
         ]
-    ]
 related: [
-        "Strings/outdent"
-         "Strings/join"
-         "Strings/truncate"
-         "Strings/render"
-    ]
+                "Strings/outdent"
+                 "Strings/alphabet"
+                 "Strings/join"
+                 "Strings/truncate"
+        ]

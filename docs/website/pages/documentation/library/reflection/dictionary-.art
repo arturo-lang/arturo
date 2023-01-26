@@ -1,27 +1,28 @@
 name: "dictionary?"
 type: :function
-module: "Reflection"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L282"
 description: "checks if given value is of type :dictionary"
+module: "Reflection"
+line: 358
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L358"
 returns: [
-        :logical
-    ]
-examples: [
-        {
-            print dictionary? #[name: "John"]   ; true
-            print dictionary? 123               ; false
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    value: [
-            :any
+                :logical
         ]
-    ]
+examples: [
+                {
+                        print dictionary? #[name: "John"]   ; true
+                        print dictionary? 123               ; false
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        ]
 related: [
-        "Reflection/binary?"
-         "Reflection/function?"
-         "Reflection/literal?"
-         "Reflection/integer?"
-    ]
+                "Reflection/binary?"
+                 "Reflection/rational?"
+                 "Reflection/function?"
+                 "Reflection/literal?"
+        ]

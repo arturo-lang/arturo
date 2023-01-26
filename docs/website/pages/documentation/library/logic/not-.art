@@ -1,32 +1,35 @@
 name: "not?"
 type: :function
-module: "Logic"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Logic.nim#L292"
 description: "return the logical complement of the given value"
+module: "Logic"
+line: 295
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Logic.nim#L295"
 returns: [
-        :logical
-    ]
-examples: [
-        {
-            ready: false
-            if not? ready [
-                print "we're still not ready!"
-            ]
-            
-            ; we're still not ready!
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    value: [
-            :logical
-             :block
+                :logical
         ]
-    ]
+alias: "\xC2\xAC"
+infix?: false
+examples: [
+                {
+                        ready: false
+                        if not? ready [
+                            print "we're still not ready!"
+                        ]
+                        
+                        ; we're still not ready!
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :logical
+                         :block
+                ]
+        ]
 related: [
-        "Logic/nor?"
-         "Logic/xnor?"
-         "Logic/or?"
-         "Logic/xor?"
-    ]
+                "Logic/nor?"
+                 "Logic/xnor?"
+                 "Logic/or?"
+                 "Logic/xor?"
+        ]

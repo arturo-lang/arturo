@@ -1,34 +1,35 @@
 name: "greaterOrEqual?"
 type: :function
-module: "Comparison"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Comparison.nim#L68"
 description: "check if valueA >= valueB (greater than or equal)"
+module: "Comparison"
+line: 129
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Comparison.nim#L129"
 returns: [
-        :logical
-    ]
+                :logical
+        ]
 alias: ">="
 infix?: true
 examples: [
-        {
-            greaterOrEqual? 5 2   ; => true
-            greaterOrEqual? 5 4-1 ; => false
-            
-            print 2>=2            ; true
-        }
-    ]
+                {
+                        greaterOrEqual? 5 2   ; => true
+                        greaterOrEqual? 5 4-1 ; => false
+                        
+                        print 2>=2            ; true
+                }
+        ]
 attributes: #[
-    ]
+        ]
 arguments: #[
-    valueA: [
-            :any
+        valueA: [
+                        :any
+                ]
+        valueB: [
+                        :any
+                ]
         ]
-    valueB: [
-            :any
-        ]
-    ]
 related: [
-        "Comparison/greater?"
-         "Comparison/lessOrEqual?"
-         "Comparison/notEqual?"
-         "Comparison/equal?"
-    ]
+                "Comparison/greater?"
+                 "Comparison/lessOrEqual?"
+                 "Comparison/notEqual?"
+                 "Comparison/equal?"
+        ]

@@ -1,27 +1,28 @@
 name: "attributeLabel?"
 type: :function
-module: "Reflection"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L127"
 description: "checks if given value is of type :attributeLabel"
+module: "Reflection"
+line: 136
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L136"
 returns: [
-        :logical
-    ]
-examples: [
-        {
-            attributeLabel? first [.something: x]
-            ; => true
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    value: [
-            :any
+                :logical
         ]
-    ]
+examples: [
+                {
+                        attributeLabel? first [.something: x]
+                        ; => true
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        ]
 related: [
-        "Reflection/attribute?"
-         "Reflection/pathLabel?"
-         "Reflection/date?"
-         "Reflection/database?"
-    ]
+                "Reflection/attribute?"
+                 "Reflection/pathLabel?"
+                 "Reflection/rational?"
+                 "Reflection/date?"
+        ]

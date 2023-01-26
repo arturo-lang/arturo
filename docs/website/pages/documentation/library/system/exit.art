@@ -1,28 +1,29 @@
 name: "exit"
 type: :function
-module: "System"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/System.nim#L158"
 description: "exit program"
+module: "System"
+line: 173
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/System.nim#L173"
 returns: [
-        :nothing
-    ]
-examples: [
-        "exit              ; (terminates the program)"
-         "exit.with: 3      ; (terminates the program with code 3)"
-    ]
-attributes: #[
-    args: #[
-        types: [
-                :integer
-            ]
-        description: "use given error code"
+                :nothing
         ]
-    ]
+examples: [
+                "exit              ; (terminates the program)"
+                 "exit.with: 3      ; (terminates the program with code 3)"
+        ]
+attributes: #[
+        args: #[
+                types: [
+                                :integer
+                        ]
+                description: "use given error code"
+                ]
+        ]
 arguments: #[
-    ]
+        ]
 related: [
-        "System/panic"
-         "System/env"
-         "System/execute"
-         "System/terminate"
-    ]
+                "System/panic"
+                 "System/env"
+                 "System/execute"
+                 "System/terminate"
+        ]

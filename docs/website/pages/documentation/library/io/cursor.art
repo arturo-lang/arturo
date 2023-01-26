@@ -1,27 +1,28 @@
 name: "cursor"
 type: :function
-module: "Io"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Io.nim#L129"
 description: "turn cursor visibility on/off"
+module: "Io"
+line: 131
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Io.nim#L131"
 returns: [
-        :nothing
-    ]
-examples: [
-        {
-            cursor false    ; (hides the cursor)
-            cursor true     ; (shows the cursor)
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    visible: [
-            :logical
+                :nothing
         ]
-    ]
+examples: [
+                {
+                        cursor false    ; (hides the cursor)
+                        cursor true     ; (shows the cursor)
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        visible: [
+                        :logical
+                ]
+        ]
 related: [
-        "Io/color"
-         "Io/goto"
-         "Io/prints"
-         "Io/terminal"
-    ]
+                "Io/color"
+                 "Io/goto"
+                 "Io/prints"
+                 "Io/terminal"
+        ]

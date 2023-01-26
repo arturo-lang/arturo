@@ -1,34 +1,36 @@
 name: "abs"
 type: :function
-module: "Numbers"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L41"
 description: "get the absolute value for given integer"
+module: "Numbers"
+line: 53
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L53"
 returns: [
-        :integer
-         :floating
-    ]
-examples: [
-        {
-            print abs 6                 ; 6
-            print abs 6-7               ; 1
-        }
-         {
-            abs to :complex @[pi 1] 
-            ; => 3.296908309475615
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    value: [
-            :integer
-             :floating
-             :complex
+                :integer
+                 :floating
         ]
-    ]
+examples: [
+                {
+                        print abs 6                 ; 6
+                        print abs 6-7               ; 1
+                }
+                 {
+                        abs to :complex @[pi 1] 
+                        ; => 3.296908309475615
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :integer
+                         :floating
+                         :complex
+                         :rational
+                ]
+        ]
 related: [
-        "Numbers/asec"
-         "Numbers/acos"
-         "Numbers/acsec"
-         "Numbers/asin"
-    ]
+                "Numbers/acos"
+                 "Numbers/asec"
+                 "Numbers/acsec"
+                 "Numbers/asin"
+        ]

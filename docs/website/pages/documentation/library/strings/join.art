@@ -1,55 +1,56 @@
 name: "join"
 type: :function
-module: "Strings"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L232"
 description: "join collection of values into string"
+module: "Strings"
+line: 295
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L295"
 returns: [
-        :string
-         :nothing
-    ]
-examples: [
-        {
-            arr: ["one" "two" "three"]
-            print join arr
-            ; onetwothree
-            
-            print join.with:"," arr
-            ; one,two,three
-            
-            join 'arr
-            ; arr: "onetwothree"
-        }
-         {
-            print join [`H` `e` `l` `l` `o` `!`]
-            ; Hello!
-            
-            print join @["1 + 2 = " 1+2]
-            ; 1 + 2 = 3
-        }
-    ]
-attributes: #[
-    with: #[
-        types: [
                 :string
-            ]
-        description: "use given separator"
+                 :nothing
         ]
-    path: #[
-        types: [
-                :logical
-            ]
-        description: "join as path components"
+examples: [
+                {
+                        arr: ["one" "two" "three"]
+                        print join arr
+                        ; onetwothree
+                        
+                        print join.with:"," arr
+                        ; one,two,three
+                        
+                        join 'arr
+                        ; arr: "onetwothree"
+                }
+                 {
+                        print join [`H` `e` `l` `l` `o` `!`]
+                        ; Hello!
+                        
+                        print join @["1 + 2 = " 1+2]
+                        ; 1 + 2 = 3
+                }
         ]
-    ]
+attributes: #[
+        with: #[
+                types: [
+                                :string
+                        ]
+                description: "use given separator"
+                ]
+        path: #[
+                types: [
+                                :logical
+                        ]
+                description: "join as path components"
+                ]
+        ]
 arguments: #[
-    collection: [
-            :literal
-             :block
+        collection: [
+                        :literal
+                         :block
+                ]
         ]
-    ]
 related: [
-        "Strings/indent"
-         "Strings/lower"
-         "Strings/jaro"
-         "Strings/capitalize"
-    ]
+                "Strings/indent"
+                 "Strings/lower"
+                 "Strings/jaro"
+                 "Strings/capitalize"
+        ]

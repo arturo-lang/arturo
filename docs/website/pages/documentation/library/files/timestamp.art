@@ -1,0 +1,32 @@
+name: "timestamp"
+type: :function
+description: "get file timestamps"
+module: "Files"
+line: 438
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Files.nim#L438"
+returns: [
+                :null
+                 :dictionary
+        ]
+examples: [
+                {
+                        timestamp "README.md"
+                        ; =>  [created:2022-09-21T12:35:04+02:00 accessed:2022-09-21T12:35:04+02:00 modified:2022-09-21T12:35:04+02:00]
+                        
+                        timestamp "some-file-that-does-not-exist.txt"
+                        ; => null
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        file: [
+                        :string
+                ]
+        ]
+related: [
+                "Files/volume"
+                 "Files/read"
+                 "Files/move"
+                 "Files/delete"
+        ]

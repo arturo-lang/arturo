@@ -1,51 +1,52 @@
 name: "alert"
 type: :function
-module: "Ui"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Ui.nim#L46"
 description: "show notification with given title and message"
+module: "Ui"
+line: 46
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Ui.nim#L46"
 returns: [
-        :logical
-    ]
+                :nothing
+        ]
 examples: [
-        {
-            alert "Hello!" "This is a notification..."
-            ; show an OS notification without any styling
-            
-            alert.error "Ooops!" "Something went wrong!"
-            ; show an OS notification with an error message
-        }
-    ]
+                {
+                        alert "Hello!" "This is a notification..."
+                        ; show an OS notification without any styling
+                        
+                        alert.error "Ooops!" "Something went wrong!"
+                        ; show an OS notification with an error message
+                }
+        ]
 attributes: #[
-    info: #[
-        types: [
-                :logical
-            ]
-        description: "show informational notification"
+        info: #[
+                types: [
+                                :logical
+                        ]
+                description: "show informational notification"
+                ]
+        warning: #[
+                types: [
+                                :logical
+                        ]
+                description: "show notification as a warning"
+                ]
+        error: #[
+                types: [
+                                :logical
+                        ]
+                description: "show notification as an error"
+                ]
         ]
-    warning: #[
-        types: [
-                :logical
-            ]
-        description: "show notification as a warning"
-        ]
-    error: #[
-        types: [
-                :logical
-            ]
-        description: "show notification as an error"
-        ]
-    ]
 arguments: #[
-    title: [
-            :string
+        title: [
+                        :string
+                ]
+        message: [
+                        :string
+                ]
         ]
-    message: [
-            :string
-        ]
-    ]
 related: [
-        "Ui/dialog"
-         "Ui/webview"
-         "Ui/clip"
-         "Ui/popup"
-    ]
+                "Ui/dialog"
+                 "Ui/webview"
+                 "Ui/clip"
+                 "Ui/popup"
+        ]

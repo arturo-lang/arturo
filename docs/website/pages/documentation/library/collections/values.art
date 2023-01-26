@@ -1,32 +1,36 @@
 name: "values"
 type: :function
+description: "get list of values for given collection"
 module: "Collections"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L1365"
-description: "get list of values for given dictionary"
+line: 2223
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L2223"
 returns: [
-        :block
-    ]
-examples: [
-        {
-            user: #[
-                name: "John"
-                surname: "Doe"
-            ]
-            
-            values user
-            => ["John" "Doe"]
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    dictionary: [
-            :dictionary
+                :block
         ]
-    ]
+examples: [
+                {
+                        user: #[
+                            name: "John"
+                            surname: "Doe"
+                        ]
+                        
+                        values user
+                        => ["John" "Doe"]
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        dictionary: [
+                        :dictionary
+                         :object
+                         :block
+                         :range
+                ]
+        ]
 related: [
-        "Collections/keys"
-         "Collections/sample"
-         "Collections/slice"
-         "Collections/index"
-    ]
+                "Collections/keys"
+                 "Collections/sample"
+                 "Collections/size"
+                 "Collections/slice"
+        ]

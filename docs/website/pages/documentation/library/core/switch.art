@@ -1,38 +1,39 @@
 name: "switch"
 type: :function
-module: "Core"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L566"
 description: "if condition is not false or null perform given action, otherwise perform alternative action"
+module: "Core"
+line: 637
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L637"
 returns: [
-        :nothing
-    ]
+                :any
+        ]
 alias: "?"
 infix?: true
 examples: [
-        {
-            x: 2
-            
-            switch x=2 -> print "yes, that's right!"
-                       -> print "nope, that's not right!"
-            ; yes, that's right!
-        }
-    ]
+                {
+                        x: 2
+                        
+                        switch x=2 -> print "yes, that's right!"
+                                   -> print "nope, that's not right!"
+                        ; yes, that's right!
+                }
+        ]
 attributes: #[
-    ]
+        ]
 arguments: #[
-    condition: [
-            :any
+        condition: [
+                        :any
+                ]
+        action: [
+                        :block
+                ]
+        alternative: [
+                        :block
+                ]
         ]
-    action: [
-            :block
-        ]
-    alternative: [
-            :block
-        ]
-    ]
 related: [
-        "Core/if"
-         "Core/while"
-         "Core/else"
-         "Core/until"
-    ]
+                "Core/if"
+                 "Core/while"
+                 "Core/coalesce"
+                 "Core/else"
+        ]

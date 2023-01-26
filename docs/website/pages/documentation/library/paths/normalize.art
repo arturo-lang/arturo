@@ -1,55 +1,56 @@
 name: "normalize"
 type: :function
-module: "Paths"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Paths.nim#L243"
 description: "get normalized version of given path"
+module: "Paths"
+line: 270
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Paths.nim#L270"
 returns: [
-        :string
-         :nothing
-    ]
+                :string
+                 :nothing
+        ]
 examples: [
-        {
-            normalize "one/../two/../../three"
-            ; => ../three
-            
-            normalize "~/one/../two/../../three"
-            ; => three
-        }
-         {
-            normalize.tilde "~/one/../two/../../three"
-            ; => /Users/three
-            
-            normalize.tilde "~/Documents"
-            ; => /Users/drkameleon/Documents
-        }
-         {
-            normalize.executable "myscript"
-            ; => ./myscript
-        }
-    ]
+                {
+                        normalize "one/../two/../../three"
+                        ; => ../three
+                        
+                        normalize "~/one/../two/../../three"
+                        ; => three
+                }
+                 {
+                        normalize.tilde "~/one/../two/../../three"
+                        ; => /Users/three
+                        
+                        normalize.tilde "~/Documents"
+                        ; => /Users/drkameleon/Documents
+                }
+                 {
+                        normalize.executable "myscript"
+                        ; => ./myscript
+                }
+        ]
 attributes: #[
-    executable: #[
-        types: [
-                :logical
-            ]
-        description: "treat path as executable"
+        executable: #[
+                types: [
+                                :logical
+                        ]
+                description: "treat path as executable"
+                ]
+        tilde: #[
+                types: [
+                                :logical
+                        ]
+                description: "expand tildes in path"
+                ]
         ]
-    tilde: #[
-        types: [
-                :logical
-            ]
-        description: "expand tildes in path"
-        ]
-    ]
 arguments: #[
-    path: [
-            :string
-             :literal
+        path: [
+                        :string
+                         :literal
+                ]
         ]
-    ]
 related: [
-        "Paths/module"
-         "Paths/relative"
-         "Paths/extract"
-         "Paths/list"
-    ]
+                "Paths/module"
+                 "Paths/relative"
+                 "Paths/extract"
+                 "Paths/list"
+        ]

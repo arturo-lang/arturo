@@ -1,67 +1,68 @@
 name: "escape"
 type: :function
-module: "Strings"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L113"
 description: "escape given string"
+module: "Strings"
+line: 171
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L171"
 returns: [
-        :string
-         :nothing
-    ]
+                :string
+                 :nothing
+        ]
 examples: [
-        {
-            str: {a long "string" + with \diffe\rent symbols.}
-            
-            print escape str
-            ; "a long \"string\" + with \\diffe\\rent symbols."
-            
-            print escape.json str
-            ; a long \"string\" + with \\diffe\\rent symbols.
-            
-            print escape.regex str
-            ; a\x20long\x20\x22string\x22\x20\x2B\x20with\x20\x5Cdiffe\x5Crent\x20symbols\x2E
-            
-            print escape.shell str
-            ; 'a long "string" + with \diffe\rent symbols.'
-            
-            print escape.xml str
-            ; a long &quot;string&quot; + with \diffe\rent symbols.
-        }
-    ]
+                {
+                        str: {a long "string" + with \diffe\rent symbols.}
+                        
+                        print escape str
+                        ; "a long \"string\" + with \\diffe\\rent symbols."
+                        
+                        print escape.json str
+                        ; a long \"string\" + with \\diffe\\rent symbols.
+                        
+                        print escape.regex str
+                        ; a\x20long\x20\x22string\x22\x20\x2B\x20with\x20\x5Cdiffe\x5Crent\x20symbols\x2E
+                        
+                        print escape.shell str
+                        ; 'a long "string" + with \diffe\rent symbols.'
+                        
+                        print escape.xml str
+                        ; a long &quot;string&quot; + with \diffe\rent symbols.
+                }
+        ]
 attributes: #[
-    json: #[
-        types: [
-                :logical
-            ]
-        description: "for literal use in JSON strings"
+        json: #[
+                types: [
+                                :logical
+                        ]
+                description: "for literal use in JSON strings"
+                ]
+        regex: #[
+                types: [
+                                :logical
+                        ]
+                description: "for literal use in regular expression"
+                ]
+        shell: #[
+                types: [
+                                :logical
+                        ]
+                description: "for use in a shell command"
+                ]
+        xml: #[
+                types: [
+                                :logical
+                        ]
+                description: "for use in an XML document"
+                ]
         ]
-    regex: #[
-        types: [
-                :logical
-            ]
-        description: "for literal use in regular expression"
-        ]
-    shell: #[
-        types: [
-                :logical
-            ]
-        description: "for use in a shell command"
-        ]
-    xml: #[
-        types: [
-                :logical
-            ]
-        description: "for use in an XML document"
-        ]
-    ]
 arguments: #[
-    string: [
-            :string
-             :literal
+        string: [
+                        :string
+                         :literal
+                ]
         ]
-    ]
 related: [
-        "Strings/strip"
-         "Strings/wordwrap"
-         "Strings/truncate"
-         "Strings/prefix"
-    ]
+                "Strings/strip"
+                 "Strings/wordwrap"
+                 "Strings/truncate"
+                 "Strings/replace"
+        ]

@@ -1,32 +1,39 @@
 name: "inc"
 type: :function
-module: "Arithmetic"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Arithmetic.nim#L111"
 description: "increase given value by 1"
+module: "Arithmetic"
+line: 139
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Arithmetic.nim#L139"
 returns: [
-        :integer
-         :floating
-         :nothing
-    ]
-examples: [
-        "print inc 5        ; 6"
-         {
-            a: 4
-            inc 'a             ; a: 5
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    value: [
-            :integer
-             :floating
-             :literal
+                :integer
+                 :floating
+                 :complex
+                 :rational
+                 :quantity
+                 :nothing
         ]
-    ]
+examples: [
+                "print inc 5        ; 6"
+                 {
+                        a: 4
+                        inc 'a             ; a: 5
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :integer
+                         :floating
+                         :complex
+                         :rational
+                         :literal
+                         :quantity
+                ]
+        ]
 related: [
-        "Arithmetic/dec"
-         "Arithmetic/neg"
-         "Arithmetic/fdiv"
-         "Arithmetic/sub"
-    ]
+                "Arithmetic/dec"
+                 "Arithmetic/divmod"
+                 "Converters/in"
+                 "Arithmetic/neg"
+        ]

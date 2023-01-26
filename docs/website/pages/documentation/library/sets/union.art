@@ -1,38 +1,39 @@
 name: "union"
 type: :function
-module: "Sets"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Sets.nim#L226"
 description: "return the union of given sets"
+module: "Sets"
+line: 308
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Sets.nim#L308"
 returns: [
-        :block
-         :nothing
-    ]
+                :block
+                 :nothing
+        ]
 examples: [
-        {
-            print union [1 2 3 4] [3 4 5 6]
-            ; 1 2 3 4 5 6
-        }
-         {
-            a: [1 2 3 4]
-            b: [3 4 5 6]
-            union 'a b
-            ; a: [1 2 3 4 5 6]
-        }
-    ]
+                {
+                        print union [1 2 3 4] [3 4 5 6]
+                        ; 1 2 3 4 5 6
+                }
+                 {
+                        a: [1 2 3 4]
+                        b: [3 4 5 6]
+                        union 'a b
+                        ; a: [1 2 3 4 5 6]
+                }
+        ]
 attributes: #[
-    ]
+        ]
 arguments: #[
-    setA: [
-            :literal
-             :block
+        setA: [
+                        :literal
+                         :block
+                ]
+        setB: [
+                        :block
+                ]
         ]
-    setB: [
-            :block
-        ]
-    ]
 related: [
-        "Sets/difference"
-         "Sets/powerset"
-         "Sets/intersection"
-         "Converters/function"
-    ]
+                "Sets/difference"
+                 "Sets/powerset"
+                 "Sets/intersection"
+                 "Converters/function"
+        ]

@@ -1,34 +1,35 @@
 name: "lighten"
 type: :function
-module: "Colors"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Colors.nim#L126"
 description: "lighten color by given percentage (0.0-1.0)"
+module: "Colors"
+line: 158
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Colors.nim#L158"
 returns: [
-        :color
-    ]
+                :color
+        ]
 examples: [
-        {
-            print #lightblue            ; #ADD8E6
-            
-            lighten #lightblue 0.2      ; => #D0FFFF
-            lighten #lightblue 0.5      ; => #FFFFFF
-            
-            lighten #9944CC 0.3         ; => #C758FF
-        }
-    ]
+                {
+                        print #lightblue            ; #ADD8E6
+                        
+                        lighten #lightblue 0.2      ; => #D0FFFF
+                        lighten #lightblue 0.5      ; => #FFFFFF
+                        
+                        lighten #9944CC 0.3         ; => #C758FF
+                }
+        ]
 attributes: #[
-    ]
+        ]
 arguments: #[
-    color: [
-            :color
+        color: [
+                        :color
+                ]
+        percent: [
+                        :floating
+                ]
         ]
-    percent: [
-            :floating
-        ]
-    ]
 related: [
-        "Colors/darken"
-         "Colors/saturate"
-         "Colors/desaturate"
-         "Colors/invert"
-    ]
+                "Colors/darken"
+                 "Colors/saturate"
+                 "Colors/desaturate"
+                 "Colors/invert"
+        ]

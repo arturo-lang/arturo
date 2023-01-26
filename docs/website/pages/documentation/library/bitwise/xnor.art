@@ -1,0 +1,37 @@
+name: "xnor"
+type: :function
+description: "calculate the binary XNOR for the given values"
+module: "Bitwise"
+line: 195
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Bitwise.nim#L195"
+returns: [
+                :integer
+                 :binary
+                 :nothing
+        ]
+examples: [
+                "print xnor 2 3     ; -2"
+                 {
+                        a: 2
+                        xnor 'a 3          ; a: -2
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        valueA: [
+                        :integer
+                         :literal
+                         :binary
+                ]
+        valueB: [
+                        :integer
+                         :binary
+                ]
+        ]
+related: [
+                "Bitwise/xor"
+                 "Bitwise/nor"
+                 "Bitwise/and"
+                 "Bitwise/nand"
+        ]

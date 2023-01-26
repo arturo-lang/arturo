@@ -1,38 +1,41 @@
 name: "and?"
 type: :function
-module: "Logic"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Logic.nim#L73"
 description: "return the logical AND for the given values"
+module: "Logic"
+line: 73
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Logic.nim#L73"
 returns: [
-        :logical
-    ]
+                :logical
+        ]
+alias: "\xE2\x88\xA7"
+infix?: true
 examples: [
-        {
-            x: 2
-            y: 5
-            
-            if and? x=2 y>5 [
-                print "yep, that's correct!"]
-            ]
-            
-            ; yep, that's correct!
-        }
-    ]
+                {
+                        x: 2
+                        y: 5
+                        
+                        if and? x=2 y>5 [
+                            print "yep, that's correct!"]
+                        ]
+                        
+                        ; yep, that's correct!
+                }
+        ]
 attributes: #[
-    ]
+        ]
 arguments: #[
-    valueA: [
-            :logical
-             :block
+        valueA: [
+                        :logical
+                         :block
+                ]
+        valueB: [
+                        :logical
+                         :block
+                ]
         ]
-    valueB: [
-            :logical
-             :block
-        ]
-    ]
 related: [
-        "Logic/nand?"
-         "Logic/nor?"
-         "Logic/xnor?"
-         "Logic/or?"
-    ]
+                "Logic/nand?"
+                 "Logic/nor?"
+                 "Logic/xnor?"
+                 "Logic/or?"
+        ]

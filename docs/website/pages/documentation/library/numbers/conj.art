@@ -1,27 +1,28 @@
 name: "conj"
 type: :function
-module: "Numbers"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L372"
 description: "calculate the complex conjugate of given number"
+module: "Numbers"
+line: 415
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L415"
 returns: [
-        :complex
-    ]
-examples: [
-        {
-            b: to :complex [1 2]        ; b: 1.0+2.0i
-            print conj b                ; 1.0-2.0i
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    number: [
-            :complex
+                :complex
         ]
-    ]
+examples: [
+                {
+                        b: to :complex [1 2]        ; b: 1.0+2.0i
+                        print conj b                ; 1.0-2.0i
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        number: [
+                        :complex
+                ]
+        ]
 related: [
-        "Numbers/cos"
-         "Numbers/ctan"
-         "Numbers/angle"
-         "Numbers/cosh"
-    ]
+                "Numbers/cos"
+                 "Numbers/ctan"
+                 "Numbers/angle"
+                 "Numbers/cosh"
+        ]

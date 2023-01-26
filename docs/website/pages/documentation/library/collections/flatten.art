@@ -1,47 +1,49 @@
 name: "flatten"
 type: :function
-module: "Collections"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L328"
 description: "flatten given collection by eliminating nested blocks"
+module: "Collections"
+line: 509
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L509"
 returns: [
-        :block
-    ]
+                :block
+        ]
 examples: [
-        {
-            arr: [[1 2 3] [4 5 6]]
-            print flatten arr
-            ; 1 2 3 4 5 6
-        }
-         {
-            arr: [[1 2 3] [4 5 6]]
-            flatten 'arr
-            ; arr: [1 2 3 4 5 6]
-        }
-         {
-            flatten [1 [2 3] [4 [5 6]]]
-            ; => [1 2 3 4 5 6]
-        }
-         {
-            flatten.once [1 [2 3] [4 [5 6]]]
-            ; => [1 2 3 4 [5 6]]
-        }
-    ]
+                {
+                        arr: [[1 2 3] [4 5 6]]
+                        print flatten arr
+                        ; 1 2 3 4 5 6
+                }
+                 {
+                        arr: [[1 2 3] [4 5 6]]
+                        flatten 'arr
+                        ; arr: [1 2 3 4 5 6]
+                }
+                 {
+                        flatten [1 [2 3] [4 [5 6]]]
+                        ; => [1 2 3 4 5 6]
+                }
+                 {
+                        flatten.once [1 [2 3] [4 [5 6]]]
+                        ; => [1 2 3 4 [5 6]]
+                }
+        ]
 attributes: #[
-    once: #[
-        types: [
-                :logical
-            ]
-        description: "do not perform recursive flattening"
+        once: #[
+                types: [
+                                :logical
+                        ]
+                description: "do not perform recursive flattening"
+                ]
         ]
-    ]
 arguments: #[
-    collection: [
-            :block
+        collection: [
+                        :literal
+                         :block
+                ]
         ]
-    ]
 related: [
-        "Collections/combine"
-         "Collections/last"
-         "Collections/insert"
-         "Collections/slice"
-    ]
+                "Collections/last"
+                 "Collections/rotate"
+                 "Collections/insert"
+                 "Collections/slice"
+        ]

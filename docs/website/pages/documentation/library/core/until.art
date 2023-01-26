@@ -1,44 +1,47 @@
 name: "until"
 type: :function
-module: "Core"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L714"
 description: "execute action until the given condition is not false or null"
+module: "Core"
+line: 786
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L786"
 returns: [
-        :nothing
-    ]
+                :nothing
+        ]
 examples: [
-        {
-            i: 0 
-            until [
-                print ["i =>" i] 
-                i: i + 1
-            ][i = 10]
-            
-            ; i => 0 
-            ; i => 1 
-            ; i => 2 
-            ; i => 3 
-            ; i => 4 
-            ; i => 5 
-            ; i => 6 
-            ; i => 7 
-            ; i => 8 
-            ; i => 9
-        }
-    ]
+                {
+                        i: 0 
+                        until [
+                            print ["i =>" i] 
+                            i: i + 1
+                        ][i = 10]
+                        
+                        ; i => 0 
+                        ; i => 1 
+                        ; i => 2 
+                        ; i => 3 
+                        ; i => 4 
+                        ; i => 5 
+                        ; i => 6 
+                        ; i => 7 
+                        ; i => 8 
+                        ; i => 9
+                }
+        ]
 attributes: #[
-    ]
+        ]
 arguments: #[
-    action: [
-            :block
+        action: [
+                        :block
+                         :bytecode
+                ]
+        condition: [
+                        :block
+                         :bytecode
+                ]
         ]
-    condition: [
-            :block
-        ]
-    ]
 related: [
-        "Core/while"
-         "Core/unless"
-         "Core/dup"
-         "Core/continue"
-    ]
+                "Core/while"
+                 "Core/unless"
+                 "Core/dup"
+                 "Core/continue"
+        ]

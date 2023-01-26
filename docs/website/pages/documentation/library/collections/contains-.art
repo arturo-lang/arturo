@@ -1,51 +1,68 @@
 name: "contains?"
 type: :function
-module: "Collections"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L156"
 description: "check if collection contains given value"
+module: "Collections"
+line: 226
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L226"
 returns: [
-        :string
-         :dictionary
-         :block
-         :nothing
-    ]
+                :logical
+        ]
 examples: [
-        {
-            arr: [1 2 3 4]
-            
-            contains? arr 5             ; => false
-            contains? arr 2             ; => true
-        }
-         {
-            user: #[
-                name: "John"
-                surname: "Doe"
-            ]
-            
-            contains? dict "John"       ; => true
-            contains? dict "Paul"       ; => false
-            
-            contains? keys dict "name"  ; => true
-        }
-         {
-            contains? "hello" "x"       ; => false
-        }
-    ]
+                {
+                        arr: [1 2 3 4]
+                        
+                        contains? arr 5             ; => false
+                        contains? arr 2             ; => true
+                }
+                 {
+                        user: #[
+                            name: "John"
+                            surname: "Doe"
+                        ]
+                        
+                        contains? dict "John"       ; => true
+                        contains? dict "Paul"       ; => false
+                        
+                        contains? keys dict "name"  ; => true
+                }
+                 {
+                        contains? "hello" "x"       ; => false
+                        contains? "hello" `h`       ; => true
+                }
+                 {
+                        contains?.at:1 "hello" "el" ; => true
+                        contains?.at:4 "hello" `o`  ; => true
+                }
+                 {
+                        print contains?.at:2 ["one" "two" "three"] "two"
+                        ; false
+                        
+                        print contains?.at:1 ["one" "two" "three"] "two"
+                        ; true
+                }
+        ]
 attributes: #[
-    ]
+        at: #[
+                types: [
+                                :integer
+                        ]
+                description: "check at given location within collection"
+                ]
+        ]
 arguments: #[
-    collection: [
-            :string
-             :dictionary
-             :block
+        collection: [
+                        :string
+                         :dictionary
+                         :block
+                         :range
+                ]
+        value: [
+                        :any
+                ]
         ]
-    value: [
-            :any
-        ]
-    ]
 related: [
-        "Collections/sorted?"
-         "Collections/in?"
-         "Collections/empty?"
-         "Collections/key?"
-    ]
+                "Collections/key?"
+                 "Collections/sorted?"
+                 "Collections/in?"
+                 "Collections/one?"
+        ]

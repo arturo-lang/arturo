@@ -1,38 +1,39 @@
 name: "attr?"
 type: :function
-module: "Reflection"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L82"
 description: "check if given attribute exists"
+module: "Reflection"
+line: 89
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L89"
 returns: [
-        :logical
-    ]
-examples: [
-        {
-            greet: function [x][
-                if? not? attr? 'later [
-                    print ["Hello" x "!"]
-                ]
-                else [
-                    print [x "I'm afraid I'll greet you later!"]
-                ]
-            ]
-            
-            greet.later "John"
-            
-            ; John I'm afraid I'll greet you later!
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    name: [
-            :string
-             :literal
+                :logical
         ]
-    ]
+examples: [
+                {
+                        greet: function [x][
+                            if? not? attr? 'later [
+                                print ["Hello" x "!"]
+                            ]
+                            else [
+                                print [x "I'm afraid I'll greet you later!"]
+                            ]
+                        ]
+                        
+                        greet.later "John"
+                        
+                        ; John I'm afraid I'll greet you later!
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        name: [
+                        :string
+                         :literal
+                ]
+        ]
 related: [
-        "Reflection/attribute?"
-         "Reflection/set?"
-         "Reflection/string?"
-         "Reflection/path?"
-    ]
+                "Reflection/attribute?"
+                 "Reflection/set?"
+                 "Reflection/string?"
+                 "Reflection/date?"
+        ]

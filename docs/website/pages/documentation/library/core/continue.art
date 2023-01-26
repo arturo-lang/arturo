@@ -1,39 +1,40 @@
 name: "continue"
 type: :function
-module: "Core"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L178"
 description: "immediately continue with next iteration"
+module: "Core"
+line: 242
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L242"
 returns: [
-        :block
-    ]
+                :nothing
+        ]
 examples: [
-        {
-            loop 1..5 'x [
-                print ["x:" x]
-                if x=3 -> continue
-                print "after check"
-            ]
-            print "after loop"
-            
-            ; x: 1 
-            ; after check
-            ; x: 2 
-            ; after check
-            ; x: 3 
-            ; x: 4 
-            ; after check
-            ; x: 5 
-            ; after check
-            ; after loop
-        }
-    ]
+                {
+                        loop 1..5 'x [
+                            print ["x:" x]
+                            if x=3 -> continue
+                            print "after check"
+                        ]
+                        print "after loop"
+                        
+                        ; x: 1 
+                        ; after check
+                        ; x: 2 
+                        ; after check
+                        ; x: 3 
+                        ; x: 4 
+                        ; after check
+                        ; x: 5 
+                        ; after check
+                        ; after loop
+                }
+        ]
 attributes: #[
-    ]
+        ]
 arguments: #[
-    ]
+        ]
 related: [
-        "Core/ensure"
-         "Core/while"
-         "Core/until"
-         "Core/call"
-    ]
+                "Core/ensure"
+                 "Core/while"
+                 "Core/until"
+                 "Core/coalesce"
+        ]

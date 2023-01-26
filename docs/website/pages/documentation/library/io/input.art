@@ -1,70 +1,71 @@
 name: "input"
 type: :function
-module: "Io"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Io.nim#L177"
 description: "print prompt and get user input"
+module: "Io"
+line: 181
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Io.nim#L181"
 returns: [
-        :string
-    ]
-examples: [
-        {
-            name: input "What is your name? "
-            ; (user enters his name: Bob)
-            
-            print ["Hello" name "!"]
-            ; Hello Bob!
-        }
-         {
-            ; creating a simple REPL
-            while [true][ 
-                inp: input.repl 
-                          .history: "myhistory.txt"
-                          .complete:["Hello there", "Hello world!"] 
-                          .hint:#[he: "perhaps you want to say hello?"] 
-                          "## "
-            
-                print ["got:" inp] 
-            ]
-            ; will show a REPL-like interface, with arrow navigation enabled
-            ; show previous entries with arrow-up, store entries in
-            ; a recoverable file and also use autocompletions and hints
-            ; based on give reference
-        }
-    ]
-attributes: #[
-    repl: #[
-        types: [
-                :logical
-            ]
-        description: "get input as if in a REPL"
-        ]
-    history: #[
-        types: [
                 :string
-            ]
-        description: "set path for saving history"
         ]
-    complete: #[
-        types: [
-                :block
-            ]
-        description: "use given array for auto-completions"
+examples: [
+                {
+                        name: input "What is your name? "
+                        ; (user enters his name: Bob)
+                        
+                        print ["Hello" name "!"]
+                        ; Hello Bob!
+                }
+                 {
+                        ; creating a simple REPL
+                        while [true][ 
+                            inp: input.repl 
+                                      .history: "myhistory.txt"
+                                      .complete:["Hello there", "Hello world!"] 
+                                      .hint:#[he: "perhaps you want to say hello?"] 
+                                      "## "
+                        
+                            print ["got:" inp] 
+                        ]
+                        ; will show a REPL-like interface, with arrow navigation enabled
+                        ; show previous entries with arrow-up, store entries in
+                        ; a recoverable file and also use autocompletions and hints
+                        ; based on give reference
+                }
         ]
-    hint: #[
-        types: [
-                :dictionary
-            ]
-        description: "use given dictionary for typing hints"
+attributes: #[
+        repl: #[
+                types: [
+                                :logical
+                        ]
+                description: "get input as if in a REPL"
+                ]
+        history: #[
+                types: [
+                                :string
+                        ]
+                description: "set path for saving history"
+                ]
+        complete: #[
+                types: [
+                                :block
+                        ]
+                description: "use given array for auto-completions"
+                ]
+        hint: #[
+                types: [
+                                :dictionary
+                        ]
+                description: "use given dictionary for typing hints"
+                ]
         ]
-    ]
 arguments: #[
-    prompt: [
-            :string
+        prompt: [
+                        :string
+                ]
         ]
-    ]
 related: [
-        "Io/prints"
-         "Io/print"
-         "Reflection/inspect"
-         "Io/goto"
-    ]
+                "Io/prints"
+                 "Io/print"
+                 "Reflection/inspect"
+                 "Io/goto"
+        ]

@@ -1,35 +1,37 @@
 name: "ctan"
 type: :function
-module: "Numbers"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L472"
 description: "calculate the cotangent of given angle"
+module: "Numbers"
+line: 516
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L516"
 returns: [
-        :floating
-         :complex
-    ]
-examples: [
-        {
-            print ctan 0                ; inf
-            print ctan 0.3              ; 3.232728143765828
-            print ctan 1.0              ; 0.6420926159343308
-        }
-         {
-            ctan to :complex [1 1]
-            ; => 0.2176215618544027-0.8680141428959249i
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    angle: [
-            :integer
-             :floating
-             :complex
+                :floating
+                 :complex
         ]
-    ]
+examples: [
+                {
+                        print ctan 0                ; inf
+                        print ctan 0.3              ; 3.232728143765828
+                        print ctan 1.0              ; 0.6420926159343308
+                }
+                 {
+                        ctan to :complex [1 1]
+                        ; => 0.2176215618544027-0.8680141428959249i
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        angle: [
+                        :integer
+                         :floating
+                         :complex
+                         :quantity
+                ]
+        ]
 related: [
-        "Numbers/tan"
-         "Numbers/actan"
-         "Numbers/ctanh"
-         "Numbers/tanh"
-    ]
+                "Numbers/tan"
+                 "Numbers/actan"
+                 "Numbers/ctanh"
+                 "Numbers/tanh"
+        ]

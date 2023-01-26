@@ -1,44 +1,45 @@
 name: "list"
 type: :function
-module: "Paths"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Paths.nim#L190"
 description: "get files in given path"
+module: "Paths"
+line: 207
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Paths.nim#L207"
 returns: [
-        :block
-    ]
+                :block
+        ]
 examples: [
-        {
-            loop list "." 'file [
-                print file
-            ]
-            
-            ; tests
-            ; var
-            ; data.txt
-        }
-    ]
+                {
+                        loop list "." 'file [
+                            print file
+                        ]
+                        
+                        ; tests
+                        ; var
+                        ; data.txt
+                }
+        ]
 attributes: #[
-    recursive: #[
-        types: [
-                :logical
-            ]
-        description: "perform recursive search"
+        recursive: #[
+                types: [
+                                :logical
+                        ]
+                description: "perform recursive search"
+                ]
+        relative: #[
+                types: [
+                                :logical
+                        ]
+                description: "get relative paths"
+                ]
         ]
-    relative: #[
-        types: [
-                :logical
-            ]
-        description: "get relative paths"
-        ]
-    ]
 arguments: #[
-    path: [
-            :string
+        path: [
+                        :string
+                ]
         ]
-    ]
 related: [
-        "Files/volume"
-         "Paths/relative"
-         "Paths/normalize"
-         "Paths/extract"
-    ]
+                "Files/volume"
+                 "Paths/relative"
+                 "Paths/normalize"
+                 "Paths/extract"
+        ]

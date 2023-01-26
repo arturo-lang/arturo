@@ -1,45 +1,47 @@
 name: "unless?"
 type: :function
-module: "Core"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L677"
 description: "perform action, if given condition is false or null and return condition result"
+module: "Core"
+line: 749
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L749"
 returns: [
-        :logical
-    ]
+                :logical
+        ]
 examples: [
-        {
-            x: 2
-            
-            result: unless? x=1 -> print "yep, x is not 1!"
-            ; yep, x is not 1!
-            
-            print result
-            ; true
-            
-            z: 1
-            
-            unless? x>z [
-                print "yep, x was not greater than z"
-            ]
-            else [
-                print "x was greater than z"
-            ]
-            ; x was greater than z
-        }
-    ]
+                {
+                        x: 2
+                        
+                        result: unless? x=1 -> print "yep, x is not 1!"
+                        ; yep, x is not 1!
+                        
+                        print result
+                        ; true
+                        
+                        z: 1
+                        
+                        unless? x>z [
+                            print "yep, x was not greater than z"
+                        ]
+                        else [
+                            print "x was greater than z"
+                        ]
+                        ; x was greater than z
+                }
+        ]
 attributes: #[
-    ]
+        ]
 arguments: #[
-    condition: [
-            :any
+        condition: [
+                        :any
+                ]
+        action: [
+                        :block
+                         :bytecode
+                ]
         ]
-    action: [
-            :block
-        ]
-    ]
 related: [
-        "Core/unless"
-         "Core/if?"
-         "Core/when?"
-         "Core/else"
-    ]
+                "Core/unless"
+                 "Core/if?"
+                 "Core/when?"
+                 "Core/else"
+        ]

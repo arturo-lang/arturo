@@ -1,32 +1,34 @@
 name: "unless"
 type: :function
-module: "Core"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L656"
 description: "perform action, if given condition is false or null"
+module: "Core"
+line: 727
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L727"
 returns: [
-        :nothing
-    ]
+                :nothing
+        ]
 examples: [
-        {
-            x: 2
-            
-            unless x=1 -> print "yep, x is not 1!"
-            ; yep, x is not 1!
-        }
-    ]
+                {
+                        x: 2
+                        
+                        unless x=1 -> print "yep, x is not 1!"
+                        ; yep, x is not 1!
+                }
+        ]
 attributes: #[
-    ]
+        ]
 arguments: #[
-    condition: [
-            :any
+        condition: [
+                        :any
+                ]
+        action: [
+                        :block
+                         :bytecode
+                ]
         ]
-    action: [
-            :block
-        ]
-    ]
 related: [
-        "Core/unless?"
-         "Core/else"
-         "Core/if"
-         "Core/until"
-    ]
+                "Core/unless?"
+                 "Core/else"
+                 "Core/if"
+                 "Core/until"
+        ]

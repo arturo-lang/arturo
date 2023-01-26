@@ -1,83 +1,84 @@
 name: "split"
 type: :function
-module: "Collections"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L1123"
 description: "split collection to components"
+module: "Collections"
+line: 1867
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L1867"
 returns: [
-        :block
-         :nothing
-    ]
+                :block
+                 :nothing
+        ]
 examples: [
-        {
-            split "hello"                 ; => [`h` `e` `l` `l` `o`]
-        }
-         {
-            split.words "hello world"     ; => ["hello" "world"]
-        }
-         {
-            split.every: 2 "helloworld"
-            ; => ["he" "ll" "ow" "or" "ld"]
-        }
-         {
-            split.at: 4 "helloworld"
-            ; => ["hell" "oworld"]
-        }
-         {
-            arr: 1..9
-            split.at:3 'arr
-            ; => [ [1 2 3 4] [5 6 7 8 9] ]
-        }
-    ]
+                {
+                        split "hello"                 ; => [`h` `e` `l` `l` `o`]
+                }
+                 {
+                        split.words "hello world"     ; => ["hello" "world"]
+                }
+                 {
+                        split.every: 2 "helloworld"
+                        ; => ["he" "ll" "ow" "or" "ld"]
+                }
+                 {
+                        split.at: 4 "helloworld"
+                        ; => ["hell" "oworld"]
+                }
+                 {
+                        arr: 1..9
+                        split.at:3 'arr
+                        ; => [ [1 2 3 4] [5 6 7 8 9] ]
+                }
+        ]
 attributes: #[
-    words: #[
-        types: [
-                :logical
-            ]
-        description: "split string by whitespace"
+        words: #[
+                types: [
+                                :logical
+                        ]
+                description: "split string by whitespace"
+                ]
+        lines: #[
+                types: [
+                                :logical
+                        ]
+                description: "split string by lines"
+                ]
+        by: #[
+                types: [
+                                :string
+                                 :regex
+                                 :block
+                        ]
+                description: "split using given separator"
+                ]
+        at: #[
+                types: [
+                                :integer
+                        ]
+                description: "split collection at given position"
+                ]
+        every: #[
+                types: [
+                                :integer
+                        ]
+                description: "split collection every *n* elements"
+                ]
+        path: #[
+                types: [
+                                :logical
+                        ]
+                description: "split path components in string"
+                ]
         ]
-    lines: #[
-        types: [
-                :logical
-            ]
-        description: "split string by lines"
-        ]
-    by: #[
-        types: [
-                :string
-                 :regex
-                 :block
-            ]
-        description: "split using given separator"
-        ]
-    at: #[
-        types: [
-                :integer
-            ]
-        description: "split collection at given position"
-        ]
-    every: #[
-        types: [
-                :integer
-            ]
-        description: "split collection every <n> elements"
-        ]
-    path: #[
-        types: [
-                :logical
-            ]
-        description: "split path components in string"
-        ]
-    ]
 arguments: #[
-    collection: [
-            :string
-             :literal
-             :block
+        collection: [
+                        :string
+                         :literal
+                         :block
+                ]
         ]
-    ]
 related: [
-        "Collections/set"
-         "Collections/slice"
-         "Collections/empty"
-         "Collections/flatten"
-    ]
+                "Collections/set"
+                 "Collections/slice"
+                 "Collections/couple"
+                 "Collections/empty"
+        ]

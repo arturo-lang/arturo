@@ -1,35 +1,36 @@
 name: "inspect"
 type: :function
-module: "Reflection"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L382"
 description: "print full dump of given value to screen"
+module: "Reflection"
+line: 459
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L459"
 returns: [
-        :nothing
-    ]
+                :nothing
+        ]
 examples: [
-        {
-            inspect 3                 ; 3 :integer
-            
-            a: "some text"
-            inspect a                 ; some text :string
-        }
-    ]
+                {
+                        inspect 3                 ; 3 :integer
+                        
+                        a: "some text"
+                        inspect a                 ; some text :string
+                }
+        ]
 attributes: #[
-    muted: #[
-        types: [
-                :logical
-            ]
-        description: "don\'t use color output"
+        muted: #[
+                types: [
+                                :logical
+                        ]
+                description: "don\'t use color output"
+                ]
         ]
-    ]
 arguments: #[
-    value: [
-            :any
+        value: [
+                        :any
+                ]
         ]
-    ]
 related: [
-        "Reflection/info"
-         "Reflection/type"
-         "Io/prints"
-         "Reflection/arity"
-    ]
+                "Reflection/info"
+                 "Reflection/type"
+                 "Io/prints"
+                 "Reflection/arity"
+        ]

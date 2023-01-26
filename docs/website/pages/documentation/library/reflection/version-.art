@@ -1,0 +1,28 @@
+name: "version?"
+type: :function
+description: "checks if given value is of type :version"
+module: "Reflection"
+line: 985
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L985"
+returns: [
+                :logical
+        ]
+examples: [
+                {
+                        print version? 1.0.2        ; true
+                        print version? "1.0.2"      ; false
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        ]
+related: [
+                "Reflection/string?"
+                 "Reflection/rational?"
+                 "Reflection/inline?"
+                 "Reflection/function?"
+        ]
