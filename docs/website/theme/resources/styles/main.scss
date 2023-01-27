@@ -56,10 +56,12 @@ a.navbar-item:hover {
 .screenshot {
     // box-shadow: 0 0 28px 3px #7a347b; 
     mix-blend-mode: luminosity; 
+    opacity: 66%;
     border-radius: 10px;
 
     &:hover {
-        mix-blend-mode: normal;
+        // mix-blend-mode: normal;
+        opacity: 100%;
     }
 }
 
