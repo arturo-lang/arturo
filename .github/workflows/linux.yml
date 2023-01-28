@@ -112,17 +112,9 @@ jobs:
           ./build.nims install ${{ matrix.version }} log
 
       - name: Upload Artifacts
-        if: matrix.version == 'mini'
         uses: 'actions/upload-artifact@v2'
         with:
-          name: "arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}"
-          path: bin/arturo
-
-      - name: Upload Artifacts
-        if: matrix.version != 'mini'
-        uses: 'actions/upload-artifact@v2'
-        with:
-          name: "arturo-${{matrix.version}}-x86_64-${{matrix.os}}"
+          name: "arturo-${{matrix.version}}-${{matrix.arch}}-linux"
           path: bin/arturo
 
       - name: Run unit tests (full)
