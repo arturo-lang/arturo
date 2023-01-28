@@ -97,7 +97,7 @@ jobs:
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
         with:
-          name: "arturo-${{matrix.version}}-${{matrix.os}}"
+          name: "arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}"
           path: bin/arturo
 
       - name: Run unit tests (full)
