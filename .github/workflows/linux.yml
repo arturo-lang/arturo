@@ -99,7 +99,7 @@ jobs:
           sudo apt-get install gcc-arm-linux-gnueabihf gcc-aarch64-linux-gnu
 
       - name: Install dependencies (full)
-        if: matrix.arch == 'x86_64' && (matrix.version == 'full' || matrix.version == 'safe')
+        if: matrix.version != 'mini'
         run: |
           sudo apt-get install libwebkit2gtk-4.0-dev libmpfr-dev
           
@@ -107,30 +107,15 @@ jobs:
         run: |
           nim --version
           
-      - name: Build Arturo (mini)
-        if: matrix.version == 'mini'
+      - name: Build Arturo
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
           ./build.nims install ${{ matrix.version }} ${{ matrix.arch }} log
 
-      - name: Build Arturo (full)
-        if: matrix.arch == 'x86_64' && (matrix.version == 'full' || matrix.version == 'safe')
-        run: |
-          echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
-          ./build.nims install ${{ matrix.version }} log
-
-      - name: Upload Artifacts (mini)
-        if: matrix.version == 'mini'
+      - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
         with:
           name: "arturo-${{matrix.version}}-${{matrix.arch}}-linux"
-          path: bin/arturo
-
-      - name: Upload Artifacts (full)
-        if: matrix.version == 'full' && matrix.arch == 'x86_64'
-        uses: 'actions/upload-artifact@v2'
-        with:
-          name: "arturo-${{matrix.version}}-x86_64-linux"
           path: bin/arturo
 
       - name: Run unit tests
