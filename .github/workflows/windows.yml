@@ -92,7 +92,7 @@ jobs:
         if: matrix.version == 'mini' && matrix.arch == 'x86'
         shell: msys2 {0}
         run: |
-          pacman --noconfirm -S p7zip mingw-w64i686-toolchain
+          pacman --noconfirm -S p7zip mingw-w64-i686-toolchain
           mkdir dist
           mkdir nim
           curl -L https://nim-lang.org/download/dlls.zip -o dist/dlls.zip
