@@ -76,7 +76,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install glibc-headers
+          sudo apt-get install build-essential
 
       - name: Install more dependencies
         if: matrix.version == 'full'
