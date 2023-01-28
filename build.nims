@@ -79,7 +79,9 @@ let
         "release"           : "-d:strip --passC:'-flto' --passL:'-flto'",
         "safe"              : "-d:SAFE",
         "vcc"               : "",
-        "web"               : "--verbosity:3 -d:WEB"
+        "web"               : "--verbosity:3 -d:WEB",
+        "x86"               : "--cpu:i386",  
+        "x86-64"            : "--cpu:amd64"
     }.toTable
 
 #=======================================
