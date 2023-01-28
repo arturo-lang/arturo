@@ -74,13 +74,13 @@ jobs:
           nim-version: 'stable'
 
       - name: Install dependencies
-        if: matrix.version == 'mini' && matrix.arch != "arm" && matrix.arch != "arm64"
+        if: matrix.version == 'mini' && matrix.arch != 'arm' && matrix.arch != 'arm64'
         run: |
           sudo apt-get update
           sudo apt-get install gcc-multilib g++-multilib
 
       - name: Install dependencies
-        if: matrix.version == 'mini' && (matrix.arch == "arm" || matrix.arch == "arm64")
+        if: matrix.version == 'mini' && (matrix.arch == 'arm' || matrix.arch == 'arm64')
         run: |
           sudo apt-get update
           sudo apt-get install gcc-arm-linux-gnueabihf gcc-aarch64-linux-gnu
