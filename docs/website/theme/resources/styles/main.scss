@@ -546,3 +546,18 @@ li.source-link {
 	-moz-transition: All 0.3s ease;
 	-o-transition: All 0.3s ease;
 }
+
+/////
+
+#showAll {
+    a {
+        color: #777;
+        border-bottom: 1px dashed #777;
+
+        &:hover {
+            color: #363636;
+            border-bottom: 1px solid #363636;
+            text-decoration: none;
+        }
+    }
+}

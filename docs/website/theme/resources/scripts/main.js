@@ -334,6 +334,15 @@ function ajaxPost(url,action,data) {
 	xmlhttp.setRequestHeader('Content-Type', 'application/json');
     xmlhttp.send(JSON.stringify(data));
 }
+
+function showAllBuilds(){
+	var elems=document.getElementsByClassName('hidden-row');
+	for(var i = 0; i < elems.length; i++){
+		elems[i].classList.remove("is-hidden");
+	}
+	document.getElementById("showAll").style.display='none';
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 	const clipboard = new Clipboard('.copy', {
 		target: (trigger) => {
@@ -370,6 +379,25 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById(div).innerHTML = content;
         }
 
+		// add given class to all elements with another given class
+		function switchToBuildView(mini){
+			var elemsA, elemsB;
+			if (mini){
+				elemsA = document.getElementsByClassName("full-version");
+				elemsB = document.getElementsByClassName("mini-version");
+			} else {
+				elemsA = document.getElementsByClassName("mini-version");
+				elemsB = document.getElementsByClassName("full-version");
+			}
+			for(var i = 0; i < elemsA.length; i++){
+				elemsA[i].classList.add("is-hidden");
+			}
+			for(var i = 0; i < elemsB.length; i++){
+				elemsB[i].classList.remove("is-hidden");
+			}
+		}
+
+
         function setClass(cl,content){
             var elems=document.getElementsByClassName(cl);
             for(var i = 0; i < elems.length; i++){
@@ -389,12 +417,10 @@ document.addEventListener('DOMContentLoaded', () => {
 		document.getElementById('version-switch').addEventListener('click', function() {
 			if (this.checked) {
 				this.checked = true;
-				hideTableElement('downloadstable-mini');
-				showTableElement('downloadstable-full');
+				switchToBuildView(false);
 			} else {
 				this.checked = false;
-				hideTableElement('downloadstable-full');
-				showTableElement('downloadstable-mini');
+				switchToBuildView(true);
 			}
 		});
 
@@ -407,8 +433,8 @@ document.addEventListener('DOMContentLoaded', () => {
             var parsed = JSON.parse(data);
             /*console.log(parsed);*/
             var releaseVersion = parsed[0].tag_name;
-            setClass("release-version", parsed[0].tag_name);
-            setClass("release-version-mini", `${parsed[0].tag_name}<sup>*</sup>`);
+            //setClass("release-version", parsed[0].tag_name);
+            //setClass("release-version-mini", `${parsed[0].tag_name}<sup>*</sup>`);
             setDiv("release-date", parsed[0].published_at);
 			/*
             ajaxGet(parsed[0].assets_url, function (data){
