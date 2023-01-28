@@ -32,6 +32,9 @@ jobs:
           - mini
           - full
           - safe
+        arch:
+          - x86
+          - x86-64
     steps:
       - name: "Cancel similar actions in progress"
         uses: styfle/cancel-workflow-action@0.10.0
@@ -89,7 +92,7 @@ jobs:
       - name: Build Arturo
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
-          ./build.nims install ${{ matrix.version }} log
+          ./build.nims install ${{ matrix.version }} ${{ matrix.arch }} log
 
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
