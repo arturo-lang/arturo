@@ -120,13 +120,13 @@ jobs:
           path: bin/arturo
 
       - name: Run unit tests (full)
-        if: matrix.version == 'full' && matrix.arch == "x86_64"
+        if: matrix.version == 'full' && matrix.arch == 'x86_64'
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
           arturo tools/tester.art
 
       - name: Run unit tests (mini)
-        if: matrix.version == 'mini' && matrix.arch == "x86_64"
+        if: matrix.version == 'mini' && matrix.arch == 'x86_64'
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
           arturo tools/tester.art
