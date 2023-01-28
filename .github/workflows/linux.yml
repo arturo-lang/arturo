@@ -74,15 +74,18 @@ jobs:
           nim-version: 'stable'
 
       - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install glibc-headers
+
+      - name: Install more dependencies
         if: matrix.version == 'full'
         run: |
-          sudo apt-get update
           sudo apt-get install libwebkit2gtk-4.0-dev libmpfr-dev
 
-      - name: Install dependencies
+      - name: Install more dependencies
         if: matrix.version == 'safe'
         run: |
-          sudo apt-get update
           sudo apt-get install libwebkit2gtk-4.0-dev libmpfr-dev
           
       - name: Verify dependecies
