@@ -76,7 +76,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install gcc-multilib
+          sudo apt-get install gcc-multilib g++-multilib
 
       - name: Install more dependencies
         if: matrix.version == 'full'
