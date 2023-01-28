@@ -37,6 +37,19 @@ jobs:
           - x86_64
           - arm
           - arm64
+        exclude:
+          - version: full
+            arch: x86
+          - version: full
+            arch: arm
+          - version: full
+            arch: arm64
+          - version: safe
+            arch: x86
+          - version: safe
+            arch: arm
+          - version: safe
+            arch: arm64
     steps:
       - name: "Cancel similar actions in progress"
         uses: styfle/cancel-workflow-action@0.10.0
