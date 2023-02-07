@@ -55,10 +55,15 @@
                         
                         <div class="content">
                             <ul class="list">
-                                <||= loop sort keys get pageTree\documentation\library last chop pagePath 'fff [ fun: replace replace fff "_" "" "-" "?" ||>
-                                    <|| if and? :function = type var fun `?` <> last fun [ ||>
-                                        <li class="list-item"><a href="<||= linkTo ~{documentation/library/|last chop pagePath|/|lower fun|} ||>"><||= fun ||></a></li>
-                                    <|| ] ||>
+                                <|| 
+                                    funcList: select map sort keys get pageTree\documentation\library last chop pagePath 'fff [
+                                        @[last chop pagePath, replace replace fff "_" "" "-" "?"]
+                                    ] 'fff [
+                                        and? :function = type var fff\1 `?` <> last fff\1
+                                    ]
+                                ||>
+                                <||= loop funcList 'fff [ ||>
+                                    <li class="list-item"><a href="<||= linkTo ~{documentation/library/|fff\0|/|lower fff\1|} ||>"><||= fff\1 ||></a></li>
                                 <||]||>
                             </ul>
                         </div>
