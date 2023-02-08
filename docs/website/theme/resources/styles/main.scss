@@ -601,6 +601,11 @@ li.source-link {
     .card {
         background: $dark-purple2;
         color: $dark-fg2;
+        border: 1px solid #000;
+
+        svg {
+            filter: invert(0.8);
+        }
     }
 
     .sidebar {
@@ -609,5 +614,22 @@ li.source-link {
 
     a {
         color: #8ae190;
+    }
+
+    code {
+        background: black;
+        color: #DAD;
+    }
+
+    .motto {
+        text-shadow: rgb(0 0 0 / 50%) 0px 3px 3px
+    }
+
+    .footer {
+        background: black;
+
+        a.footer-icon {
+            color: #DAD;
+        }
     }
 }
