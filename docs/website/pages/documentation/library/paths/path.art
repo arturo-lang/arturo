@@ -1,14 +1,15 @@
 name: "path"
 type: :dictionary
-module: "Paths"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Paths.nim#L296"
 description: "common path constants"
+module: "Paths"
+line: 326
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Paths.nim#L326"
 returns: [
-        :dictionary
-    ]
+                :dictionary
+        ]
 related: [
-        "Paths/extract"
-         "Paths/relative"
-         "Paths/normalize"
-         "Paths/list"
-    ]
+                "Paths/extract"
+                 "Paths/relative"
+                 "Paths/normalize"
+                 "Paths/list"
+        ]

@@ -1,0 +1,28 @@
+name: "superuser?"
+type: :function
+description: "check if current user has administrator/root privileges"
+module: "System"
+line: 313
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/System.nim#L313"
+returns: [
+                :logical
+        ]
+examples: [
+                {
+                        ; when running as root
+                        superuser?          ; => true
+                        
+                        ; when running as regular user
+                        superuser?          ; => false
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        ]
+related: [
+                "Sets/superset?"
+                 "Strings/upper?"
+                 "System/process"
+                 "System/pause"
+        ]

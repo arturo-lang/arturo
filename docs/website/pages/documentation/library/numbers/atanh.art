@@ -1,35 +1,37 @@
 name: "atanh"
 type: :function
-module: "Numbers"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L333"
 description: "calculate the inverse hyperbolic tangent of given angle"
+module: "Numbers"
+line: 350
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L350"
 returns: [
-        :floating
-         :complex
-    ]
-examples: [
-        {
-            print atanh 0               ; 0.0
-            print atanh 0.3             ; 0.3095196042031118
-            print atanh 1.0             ; inf
-        }
-         {
-            atanh to :complex @[pi 1]
-            ; => 0.2946214403408571+1.470828825919461i
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    angle: [
-            :integer
-             :floating
-             :complex
+                :floating
+                 :complex
         ]
-    ]
+examples: [
+                {
+                        print atanh 0               ; 0.0
+                        print atanh 0.3             ; 0.3095196042031118
+                        print atanh 1.0             ; inf
+                }
+                 {
+                        atanh to :complex @[pi 1]
+                        ; => 0.2946214403408571+1.470828825919461i
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        angle: [
+                        :integer
+                         :floating
+                         :complex
+                         :quantity
+                ]
+        ]
 related: [
-        "Numbers/actanh"
-         "Numbers/asinh"
-         "Numbers/atan"
-         "Numbers/actan"
-    ]
+                "Numbers/actanh"
+                 "Numbers/asinh"
+                 "Numbers/atan"
+                 "Numbers/actan"
+        ]

@@ -1,39 +1,40 @@
 name: "hash"
 type: :function
-module: "Crypto"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Crypto.nim#L191"
 description: "get hash for given value"
+module: "Crypto"
+line: 210
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Crypto.nim#L210"
 returns: [
-        :integer
-         :string
-    ]
+                :integer
+                 :string
+        ]
 examples: [
-        {
-            print hash "hello"      ; 613153351
-            print hash [1 2 3]      ; 645676735036410
-            print hash 123          ; 123
-            
-            a: [1 2 3]
-            b: [1 2 3]
-            print (hash a)=(hash b) ; true
-        }
-    ]
+                {
+                        print hash "hello"      ; 613153351
+                        print hash [1 2 3]      ; 645676735036410
+                        print hash 123          ; 123
+                        
+                        a: [1 2 3]
+                        b: [1 2 3]
+                        print (hash a)=(hash b) ; true
+                }
+        ]
 attributes: #[
-    string: #[
-        types: [
-                :logical
-            ]
-        description: "get as a string"
+        string: #[
+                types: [
+                                :logical
+                        ]
+                description: "get as a string"
+                ]
         ]
-    ]
 arguments: #[
-    value: [
-            :any
+        value: [
+                        :any
+                ]
         ]
-    ]
 related: [
-        "Crypto/digest"
-         "Numbers/abs"
-         "Converters/as"
-         "Numbers/asin"
-    ]
+                "Crypto/digest"
+                 "Numbers/abs"
+                 "Converters/as"
+                 "Numbers/clamp"
+        ]

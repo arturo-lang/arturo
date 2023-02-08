@@ -1,34 +1,35 @@
 name: "new"
 type: :function
-module: "Core"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L464"
 description: "create new value by cloning given one"
+module: "Core"
+line: 541
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L541"
 returns: [
-        :any
-    ]
-examples: [
-        {
-            c: "Hello"
-            d: new c        ; make a copy of the older string
-            
-            ; changing one string in-place
-            ; will change only the string in question
-            
-            'd ++ "World"
-            print d                 ; HelloWorld
-            print c                 ; Hello
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    value: [
-            :any
+                :any
         ]
-    ]
+examples: [
+                {
+                        c: "Hello"
+                        d: new c        ; make a copy of the older string
+                        
+                        ; changing one string in-place
+                        ; will change only the string in question
+                        
+                        'd ++ "World"
+                        print d                 ; HelloWorld
+                        print c                 ; Hello
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        ]
 related: [
-        "Core/return"
-         "Core/let"
-         "Core/unless"
-         "Core/until"
-    ]
+                "Core/return"
+                 "Core/let"
+                 "Core/unless"
+                 "Core/until"
+        ]

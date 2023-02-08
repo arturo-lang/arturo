@@ -1,32 +1,33 @@
 name: "desaturate"
 type: :function
-module: "Colors"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Colors.nim#L84"
 description: "desaturate color by given percentage (0.0-1.0)"
+module: "Colors"
+line: 89
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Colors.nim#L89"
 returns: [
-        :color
-    ]
+                :color
+        ]
 examples: [
-        {
-            desaturate #red 0.2         ; => #E61919
-            desaturate #red 0.5         ; => #BF4040
-            
-            desaturate #9944CC 0.3      ; => #9558B8
-        }
-    ]
+                {
+                        desaturate #red 0.2         ; => #E61919
+                        desaturate #red 0.5         ; => #BF4040
+                        
+                        desaturate #9944CC 0.3      ; => #9558B8
+                }
+        ]
 attributes: #[
-    ]
+        ]
 arguments: #[
-    color: [
-            :color
+        color: [
+                        :color
+                ]
+        percent: [
+                        :floating
+                ]
         ]
-    percent: [
-            :floating
-        ]
-    ]
 related: [
-        "Colors/saturate"
-         "Colors/darken"
-         "Colors/lighten"
-         "Colors/palette"
-    ]
+                "Colors/saturate"
+                 "Colors/darken"
+                 "Colors/lighten"
+                 "Colors/palette"
+        ]

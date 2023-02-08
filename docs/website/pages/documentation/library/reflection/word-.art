@@ -1,27 +1,28 @@
 name: "word?"
 type: :function
-module: "Reflection"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L804"
 description: "checks if given value is of type :word"
+module: "Reflection"
+line: 1002
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L1002"
 returns: [
-        :logical
-    ]
-examples: [
-        {
-            word? first [something x]
-            ; => true
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    value: [
-            :any
+                :logical
         ]
-    ]
+examples: [
+                {
+                        word? first [something x]
+                        ; => true
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        ]
 related: [
-        "Reflection/char?"
-         "Reflection/regex?"
-         "Reflection/block?"
-         "Reflection/string?"
-    ]
+                "Reflection/color?"
+                 "Reflection/char?"
+                 "Reflection/block?"
+                 "Reflection/range?"
+        ]

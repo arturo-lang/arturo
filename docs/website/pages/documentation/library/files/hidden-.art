@@ -1,0 +1,28 @@
+name: "hidden?"
+type: :function
+description: "check if file/folder at given path is hidden"
+module: "Files"
+line: 142
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Files.nim#L142"
+returns: [
+                :logical
+        ]
+examples: [
+                {
+                        hidden? "README.md"     ; => false
+                        hidden? ".git"          ; => true
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        file: [
+                        :string
+                ]
+        ]
+related: [
+                "Files/exists?"
+                 "Reflection/date?"
+                 "Dates/wednesday?"
+                 "Reflection/integer?"
+        ]

@@ -1,38 +1,39 @@
 name: "drop"
 type: :function
+description: "drop first *number* of elements from given collection and return the remaining ones"
 module: "Collections"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L199"
-description: "drop first <number> of elements from given collection and return the remaining ones"
+line: 352
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L352"
 returns: [
-        :string
-         :block
-         :nothing
-    ]
+                :string
+                 :block
+                 :nothing
+        ]
 examples: [
-        {
-            str: drop "some text" 5
-            print str                     ; text
-        }
-         {
-            arr: 1..10
-            drop 'arr 3                   ; arr: [4 5 6 7 8 9 10]
-        }
-    ]
+                {
+                        str: drop "some text" 5
+                        print str                     ; text
+                }
+                 {
+                        arr: 1..10
+                        drop 'arr 3                   ; arr: [4 5 6 7 8 9 10]
+                }
+        ]
 attributes: #[
-    ]
+        ]
 arguments: #[
-    collection: [
-            :string
-             :literal
-             :block
+        collection: [
+                        :string
+                         :literal
+                         :block
+                ]
+        number: [
+                        :integer
+                ]
         ]
-    number: [
-            :integer
-        ]
-    ]
 related: [
-        "Collections/take"
-         "Collections/repeat"
-         "Collections/first"
-         "Collections/permutate"
-    ]
+                "Collections/take"
+                 "Collections/couple"
+                 "Collections/repeat"
+                 "Collections/first"
+        ]

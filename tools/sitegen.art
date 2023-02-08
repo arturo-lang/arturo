@@ -17,7 +17,7 @@ modules: new []
 functions: #[]
 relatedFuncs: #[]
 
-rosettas: sort map select list "examples/rosetta" => [in? ".res"] 'rosetta [
+rosettas: sort map select list "examples/rosetta" => [contains? & ".res"] 'rosetta [
     (extract.basename rosetta) -- extract.extension rosetta
 ]
 
@@ -32,7 +32,7 @@ write "docs/website/data/rosetta.art" as.pretty.code dict
 print as.pretty.code dict
 
 ; get modules and functions
-loop symbols [sym][
+loop keys symbols [sym][
     print ["processing:" sym]
     inf: info.get sym
 
@@ -47,7 +47,7 @@ loop symbols [sym][
 
         levD: 100
         related: new #[]
-        loop symbols [sym2][
+        loop keys symbols [sym2][
             inf2: info.get sym2
 
             if and? key? inf2 'module

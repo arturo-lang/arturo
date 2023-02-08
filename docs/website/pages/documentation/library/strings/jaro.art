@@ -1,35 +1,36 @@
 name: "jaro"
 type: :function
-module: "Strings"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L211"
 description: "calculate Jaro distance/similarity between given strings"
+module: "Strings"
+line: 273
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L273"
 returns: [
-        :floating
-    ]
+                :floating
+        ]
 examples: [
-        {
-            jaro "one" "one"        ; => 1.0
-            
-            jaro "crate" "trace"    ; => 0.7333333333333334
-            jaro "dwayne" "duane"   ; => 0.8222222222222223
-            
-            jaro "abcdef" "fedcba"  ; => 0.3888888888888888
-            jaro "abcde" "vwxyz"    ; => 0.0
-        }
-    ]
+                {
+                        jaro "one" "one"        ; => 1.0
+                        
+                        jaro "crate" "trace"    ; => 0.7333333333333334
+                        jaro "dwayne" "duane"   ; => 0.8222222222222223
+                        
+                        jaro "abcdef" "fedcba"  ; => 0.3888888888888888
+                        jaro "abcde" "vwxyz"    ; => 0.0
+                }
+        ]
 attributes: #[
-    ]
+        ]
 arguments: #[
-    stringA: [
-            :string
+        stringA: [
+                        :string
+                ]
+        stringB: [
+                        :string
+                ]
         ]
-    stringB: [
-            :string
-        ]
-    ]
 related: [
-        "Strings/replace"
-         "Strings/match"
-         "Strings/levenshtein"
-         "Strings/join"
-    ]
+                "Strings/replace"
+                 "Strings/match"
+                 "Strings/levenshtein"
+                 "Strings/join"
+        ]

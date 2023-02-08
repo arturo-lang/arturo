@@ -32,6 +32,24 @@ jobs:
           - mini
           - full
           - safe
+        arch:
+          - x86
+          - x86_64
+          - arm
+          - arm64
+        exclude:
+          - version: full
+            arch: x86
+          - version: full
+            arch: arm
+          - version: full
+            arch: arm64
+          - version: safe
+            arch: x86
+          - version: safe
+            arch: arm
+          - version: safe
+            arch: arm64
     steps:
       - name: "Cancel similar actions in progress"
         uses: styfle/cancel-workflow-action@0.10.0
@@ -55,7 +73,6 @@ jobs:
         with:
           path: ~/.choosenim
           key: ${{ matrix.os }}-choosenim-${{ steps.get-date.outputs.date }}
-        if: runner.os != 'Windows'
 
       - name: Cache Nimble
         id: cache-nimble
@@ -63,23 +80,27 @@ jobs:
         with:
           path: ~/.nimble
           key: ${{ matrix.os }}-nimble-${{ hashFiles('*.nimble') }}
-        if: runner.os != 'Windows'
 
       - name: Setup nim
         uses: jiro4989/setup-nim-action@v1
         with:
           nim-version: 'stable'
 
-      - name: Install dependencies
-        if: matrix.version == 'full'
+      - name: Install dependencies (mini / x86)
+        if: matrix.version == 'mini' && matrix.arch != 'arm' && matrix.arch != 'arm64'
         run: |
           sudo apt-get update
-          sudo apt-get install libwebkit2gtk-4.0-dev libmpfr-dev
+          sudo apt-get install gcc-multilib g++-multilib
 
-      - name: Install dependencies
-        if: matrix.version == 'safe'
+      - name: Install dependencies (mini / arm)
+        if: matrix.version == 'mini' && (matrix.arch == 'arm' || matrix.arch == 'arm64')
         run: |
           sudo apt-get update
+          sudo apt-get install gcc-arm-linux-gnueabihf gcc-aarch64-linux-gnu
+
+      - name: Install dependencies (full)
+        if: matrix.version != 'mini'
+        run: |
           sudo apt-get install libwebkit2gtk-4.0-dev libmpfr-dev
           
       - name: Verify dependecies
@@ -89,22 +110,16 @@ jobs:
       - name: Build Arturo
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
-          ./build.nims install ${{ matrix.version }} log
+          ./build.nims install ${{ matrix.version }} ${{ matrix.arch }} log
 
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
         with:
-          name: "arturo-${{matrix.version}}-${{matrix.os}}"
+          name: "arturo-${{matrix.version}}-${{matrix.arch}}-linux"
           path: bin/arturo
 
-      - name: Run unit tests (full)
-        if: matrix.version == 'full'
-        run: |
-          echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
-          arturo tools/tester.art
-
-      - name: Run unit tests (mini)
-        if: matrix.version == 'mini'
+      - name: Run unit tests
+        if: matrix.arch == 'x86_64' && (matrix.version == 'full' || matrix.version == 'mini')
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
           arturo tools/tester.art

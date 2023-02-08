@@ -1,35 +1,36 @@
 name: "hypot"
 type: :function
-module: "Numbers"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L706"
 description: "calculate the hypotenuse of a right-angle triangle with given base and height"
+module: "Numbers"
+line: 804
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L804"
 returns: [
-        :floating
-    ]
+                :floating
+        ]
 examples: [
-        {
-            print hypot 3 4
-            ; 5.0
-            
-            print hypot 4.0 5.0
-            ; 6.403124237432849
-        }
-    ]
+                {
+                        print hypot 3 4
+                        ; 5.0
+                        
+                        print hypot 4.0 5.0
+                        ; 6.403124237432849
+                }
+        ]
 attributes: #[
-    ]
+        ]
 arguments: #[
-    base: [
-            :integer
-             :floating
+        base: [
+                        :integer
+                         :floating
+                ]
+        height: [
+                        :integer
+                         :floating
+                ]
         ]
-    height: [
-            :integer
-             :floating
-        ]
-    ]
 related: [
-        "Numbers/floor"
-         "Numbers/actanh"
-         "Numbers/product"
-         "Numbers/acosh"
-    ]
+                "Numbers/floor"
+                 "Numbers/actanh"
+                 "Numbers/product"
+                 "Numbers/acosh"
+        ]

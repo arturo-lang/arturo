@@ -1,0 +1,37 @@
+name: "nor"
+type: :function
+description: "calculate the binary NOR for the given values"
+module: "Bitwise"
+line: 79
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Bitwise.nim#L79"
+returns: [
+                :integer
+                 :binary
+                 :nothing
+        ]
+examples: [
+                "print nor 2 3      ; -4"
+                 {
+                        a: 2
+                        nor 'a 3           ; a: -4
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        valueA: [
+                        :integer
+                         :literal
+                         :binary
+                ]
+        valueB: [
+                        :integer
+                         :binary
+                ]
+        ]
+related: [
+                "Bitwise/xnor"
+                 "Bitwise/xor"
+                 "Bitwise/nand"
+                 "Bitwise/not"
+        ]

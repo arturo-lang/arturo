@@ -1,32 +1,39 @@
 name: "dec"
 type: :function
-module: "Arithmetic"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Arithmetic.nim#L51"
 description: "decrease given value by 1"
+module: "Arithmetic"
+line: 52
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Arithmetic.nim#L52"
 returns: [
-        :integer
-         :floating
-         :nothing
-    ]
-examples: [
-        "print dec 5        ; 4"
-         {
-            a: 4
-            dec 'a             ; a: 3
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    value: [
-            :integer
-             :floating
-             :literal
+                :integer
+                 :floating
+                 :complex
+                 :rational
+                 :quantity
+                 :nothing
         ]
-    ]
+examples: [
+                "print dec 5        ; 4"
+                 {
+                        a: 4
+                        dec 'a             ; a: 3
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :integer
+                         :floating
+                         :complex
+                         :rational
+                         :literal
+                         :quantity
+                ]
+        ]
 related: [
-        "Arithmetic/inc"
-         "Arithmetic/neg"
-         "Arithmetic/fdiv"
-         "Arithmetic/div"
-    ]
+                "Arithmetic/inc"
+                 "Arithmetic/neg"
+                 "Arithmetic/fdiv"
+                 "Arithmetic/div"
+        ]

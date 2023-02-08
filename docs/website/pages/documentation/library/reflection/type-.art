@@ -1,28 +1,29 @@
 name: "type?"
 type: :function
-module: "Reflection"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L787"
 description: "checks if given value is of type :type"
+module: "Reflection"
+line: 967
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L967"
 returns: [
-        :logical
-    ]
-examples: [
-        {
-            print type? :string         ; true
-            print type? "string"        ; false
-            print type? 123             ; false
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    value: [
-            :any
+                :logical
         ]
-    ]
+examples: [
+                {
+                        print type? :string         ; true
+                        print type? "string"        ; false
+                        print type? 123             ; false
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        ]
 related: [
-        "Reflection/date?"
-         "Reflection/literal?"
-         "Reflection/integer?"
-         "Reflection/regex?"
-    ]
+                "Reflection/date?"
+                 "Reflection/complex?"
+                 "Reflection/literal?"
+                 "Reflection/integer?"
+        ]

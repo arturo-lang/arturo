@@ -826,7 +826,8 @@ proc defineSymbols*() =
                         # and join the different strings
                         res = ""
                         for i, v in arr:
-                            add(res, v.s)
+                            if (not v.isNil) and v.kind==String:
+                                add(res, v.s)
 
                         # if recursive, check if there's still more embedded tags
                         # otherwise, break out of the loop

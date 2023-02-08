@@ -1,0 +1,37 @@
+name: "or"
+type: :function
+description: "calculate the binary OR for the given values"
+module: "Bitwise"
+line: 120
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Bitwise.nim#L120"
+returns: [
+                :integer
+                 :binary
+                 :nothing
+        ]
+examples: [
+                "print or 2 3       ; 3"
+                 {
+                        a: 2
+                        or 'a 3            ; a: 3
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        valueA: [
+                        :integer
+                         :literal
+                         :binary
+                ]
+        valueB: [
+                        :integer
+                         :binary
+                ]
+        ]
+related: [
+                "Bitwise/xor"
+                 "Bitwise/nor"
+                 "Bitwise/xnor"
+                 "Bitwise/and"
+        ]

@@ -1,40 +1,41 @@
 name: "sqrt"
 type: :function
-module: "Numbers"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L1102"
 description: "get square root of given value"
+module: "Numbers"
+line: 1298
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L1298"
 returns: [
-        :floating
-    ]
+                :floating
+        ]
 examples: [
-        {
-            print sqrt 4                ; 2.0
-            print sqrt 16.0             ; 4.0
-            print sqrt 1.45             ; 1.20415945787923
-        }
-         {
-            sqrt to :complex @[pi 1]
-            ; => 1.794226987182141+0.2786715413222365i
-        }
-    ]
+                {
+                        print sqrt 4                ; 2.0
+                        print sqrt 16.0             ; 4.0
+                        print sqrt 1.45             ; 1.20415945787923
+                }
+                 {
+                        sqrt to :complex @[pi 1]
+                        ; => 1.794226987182141+0.2786715413222365i
+                }
+        ]
 attributes: #[
-    integer: #[
-        types: [
-                :logical
-            ]
-        description: "get the integer square root"
+        integer: #[
+                types: [
+                                :logical
+                        ]
+                description: "get the integer square root"
+                ]
         ]
-    ]
 arguments: #[
-    value: [
-            :integer
-             :floating
-             :complex
+        value: [
+                        :integer
+                         :floating
+                         :complex
+                ]
         ]
-    ]
 related: [
-        "Numbers/digits"
-         "Numbers/factors"
-         "Numbers/sin"
-         "Numbers/csec"
-    ]
+                "Numbers/numerator"
+                 "Numbers/digits"
+                 "Numbers/factorial"
+                 "Numbers/factors"
+        ]

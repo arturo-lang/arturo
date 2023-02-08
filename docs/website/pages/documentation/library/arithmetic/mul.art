@@ -1,44 +1,50 @@
 name: "mul"
 type: :function
-module: "Arithmetic"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Arithmetic.nim#L151"
 description: "calculate the product of given values and return result"
+module: "Arithmetic"
+line: 181
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Arithmetic.nim#L181"
 returns: [
-        :integer
-         :floating
-         :complex
-         :nothing
-    ]
+                :integer
+                 :floating
+                 :complex
+                 :rational
+                 :nothing
+        ]
 alias: "*"
 infix?: true
 examples: [
-        {
-            print mul 1 2      ; 2
-            print 2 * 3        ; 6
-        }
-         {
-            a: 5
-            mul 'a 2           ; a: 10
-        }
-    ]
+                {
+                        print mul 1 2      ; 2
+                        print 2 * 3        ; 6
+                }
+                 {
+                        a: 5
+                        mul 'a 2           ; a: 10
+                }
+        ]
 attributes: #[
-    ]
+        ]
 arguments: #[
-    valueA: [
-            :integer
-             :floating
-             :complex
-             :literal
+        valueA: [
+                        :integer
+                         :floating
+                         :complex
+                         :rational
+                         :literal
+                         :quantity
+                ]
+        valueB: [
+                        :integer
+                         :floating
+                         :complex
+                         :rational
+                         :quantity
+                ]
         ]
-    valueB: [
-            :integer
-             :floating
-             :complex
-        ]
-    ]
 related: [
-        "Arithmetic/mod"
-         "Arithmetic/sub"
-         "Arithmetic/pow"
-         "Numbers/sum"
-    ]
+                "Arithmetic/mod"
+                 "Arithmetic/sub"
+                 "Arithmetic/pow"
+                 "Numbers/sum"
+        ]

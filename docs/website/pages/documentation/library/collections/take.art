@@ -1,38 +1,40 @@
 name: "take"
 type: :function
-module: "Collections"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L1307"
 description: "keep first <number> of elements from given collection and return the remaining ones"
+module: "Collections"
+line: 2086
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L2086"
 returns: [
-        :string
-         :block
-         :nothing
-    ]
+                :string
+                 :block
+                 :nothing
+        ]
 examples: [
-        {
-            str: take "some text" 5
-            print str                     ; some
-        }
-         {
-            arr: 1..10
-            take 'arr 3                   ; arr: [1 2 3]
-        }
-    ]
+                {
+                        str: take "some text" 5
+                        print str                     ; some
+                }
+                 {
+                        arr: 1..10
+                        take 'arr 3                   ; arr: [1 2 3]
+                }
+        ]
 attributes: #[
-    ]
+        ]
 arguments: #[
-    collection: [
-            :string
-             :literal
-             :block
+        collection: [
+                        :string
+                         :literal
+                         :block
+                         :range
+                ]
+        number: [
+                        :integer
+                ]
         ]
-    number: [
-            :integer
-        ]
-    ]
 related: [
-        "Collections/drop"
-         "Collections/permutate"
-         "Collections/repeat"
-         "Collections/sample"
-    ]
+                "Collections/drop"
+                 "Collections/tally"
+                 "Collections/permutate"
+                 "Collections/couple"
+        ]

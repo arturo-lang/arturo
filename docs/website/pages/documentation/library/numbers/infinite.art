@@ -1,0 +1,15 @@
+name: "infinite"
+type: :floating
+description: "the IEEE floating point value of positive infinity"
+module: "Numbers"
+line: 825
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L825"
+returns: [
+                :floating
+        ]
+related: [
+                "Numbers/asin"
+                 "Numbers/sin"
+                 "Numbers/digits"
+                 "Numbers/factors"
+        ]

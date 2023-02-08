@@ -1,30 +1,31 @@
 name: "prints"
 type: :function
-module: "Io"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Io.nim#L278"
 description: "print given value to screen"
+module: "Io"
+line: 291
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Io.nim#L291"
 returns: [
-        :nothing
-    ]
-examples: [
-        {
-            prints "Hello "
-            prints "world"
-            print "!"             
-            
-            ; Hello world!
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    value: [
-            :any
+                :nothing
         ]
-    ]
+examples: [
+                {
+                        prints "Hello "
+                        prints "world"
+                        print "!"             
+                        
+                        ; Hello world!
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        ]
 related: [
-        "Io/print"
-         "Io/input"
-         "Io/terminal"
-         "Io/goto"
-    ]
+                "Io/print"
+                 "Io/input"
+                 "Io/terminal"
+                 "Io/goto"
+        ]

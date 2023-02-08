@@ -1,27 +1,28 @@
 name: "path?"
 type: :function
-module: "Reflection"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L591"
 description: "checks if given value is of type :path"
+module: "Reflection"
+line: 703
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L703"
 returns: [
-        :logical
-    ]
-examples: [
-        {
-            path? first [a\b\c x]
-            ; => true
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    value: [
-            :any
+                :logical
         ]
-    ]
+examples: [
+                {
+                        path? first [a\b\c x]
+                        ; => true
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        ]
 related: [
-        "Reflection/date?"
-         "Reflection/pathLabel?"
-         "Reflection/char?"
-         "Reflection/label?"
-    ]
+                "Reflection/date?"
+                 "Reflection/pathLabel?"
+                 "Reflection/char?"
+                 "Reflection/label?"
+        ]

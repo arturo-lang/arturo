@@ -1,27 +1,28 @@
 name: "char?"
 type: :function
-module: "Reflection"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L234"
 description: "checks if given value is of type :char"
+module: "Reflection"
+line: 269
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L269"
 returns: [
-        :logical
-    ]
-examples: [
-        {
-            print char? `a`         ; true
-            print char? 123         ; false
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    value: [
-            :any
+                :logical
         ]
-    ]
+examples: [
+                {
+                        print char? `a`         ; true
+                        print char? 123         ; false
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        ]
 related: [
-        "Reflection/binary?"
-         "Reflection/path?"
-         "Reflection/word?"
-         "Reflection/date?"
-    ]
+                "Reflection/color?"
+                 "Reflection/binary?"
+                 "Reflection/path?"
+                 "Reflection/date?"
+        ]

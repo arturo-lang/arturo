@@ -1,32 +1,35 @@
 name: "capitalize"
 type: :function
-module: "Strings"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L94"
 description: "convert given string to capitalized"
+module: "Strings"
+line: 145
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L145"
 returns: [
-        :string
-         :nothing
-    ]
-examples: [
-        {
-            print capitalize "hello World"      ; "Hello World"
-        }
-         {
-            str: "hello World"
-            capitalize 'str                     ; str: "Hello World"
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    string: [
-            :string
-             :literal
+                :char
+                 :string
+                 :nothing
         ]
-    ]
+examples: [
+                {
+                        print capitalize "hello World"      ; "Hello World"
+                }
+                 {
+                        str: "hello World"
+                        capitalize 'str                     ; str: "Hello World"
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        string: [
+                        :char
+                         :string
+                         :literal
+                ]
+        ]
 related: [
-        "Strings/upper"
-         "Strings/lower"
-         "Strings/strip"
-         "Strings/truncate"
-    ]
+                "Strings/upper"
+                 "Strings/lower"
+                 "Strings/alphabet"
+                 "Strings/strip"
+        ]

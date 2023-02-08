@@ -1,21 +1,22 @@
 name: "clear"
 type: :function
-module: "Io"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Io.nim#L52"
 description: "clear terminal"
+module: "Io"
+line: 52
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Io.nim#L52"
 returns: [
-        :nothing
-    ]
+                :nothing
+        ]
 examples: [
-        "clear             ; (clears the screen)"
-    ]
+                "clear             ; (clears the screen)"
+        ]
 attributes: #[
-    ]
+        ]
 arguments: #[
-    ]
+        ]
 related: [
-        "Io/terminal"
-         "Io/color"
-         "Io/cursor"
-         "Files/read"
-    ]
+                "Io/terminal"
+                 "Io/color"
+                 "Io/cursor"
+                 "Files/read"
+        ]

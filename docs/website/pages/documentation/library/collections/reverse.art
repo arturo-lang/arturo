@@ -1,36 +1,44 @@
 name: "reverse"
 type: :function
-module: "Collections"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L824"
 description: "reverse given collection"
+module: "Collections"
+line: 1338
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L1338"
 returns: [
-        :string
-         :block
-         :nothing
-    ]
-examples: [
-        {
-            print reverse [1 2 3 4]           ; 4 3 2 1
-            print reverse "Hello World"       ; dlroW olleH
-        }
-         {
-            str: "my string"
-            reverse 'str
-            print str                         ; gnirts ym
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    collection: [
-            :string
-             :literal
-             :block
+                :string
+                 :block
+                 :nothing
         ]
-    ]
+examples: [
+                {
+                        print reverse [1 2 3 4]           ; 4 3 2 1
+                        print reverse "Hello World"       ; dlroW olleH
+                }
+                 {
+                        str: "my string"
+                        reverse 'str
+                        print str                         ; gnirts ym
+                }
+        ]
+attributes: #[
+        exact: #[
+                types: [
+                                :logical
+                        ]
+                description: "make sure the reverse range contains the same elements"
+                ]
+        ]
+arguments: #[
+        collection: [
+                        :string
+                         :literal
+                         :block
+                         :range
+                ]
+        ]
 related: [
-        "Collections/remove"
-         "Collections/empty"
-         "Collections/first"
-         "Collections/squeeze"
-    ]
+                "Collections/remove"
+                 "Collections/empty"
+                 "Collections/prepend"
+                 "Collections/values"
+        ]

@@ -1,0 +1,31 @@
+name: "couple"
+type: :function
+description: "get combination of elements in given collections as array of tuples"
+module: "Collections"
+line: 308
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L308"
+returns: [
+                :block
+        ]
+examples: [
+                {
+                        couple ["one" "two" "three"] [1 2 3]
+                        ; => [[1 "one"] [2 "two"] [3 "three"]]
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        collectionA: [
+                        :block
+                ]
+        collectionB: [
+                        :block
+                ]
+        ]
+related: [
+                "Collections/combine"
+                 "Collections/decouple"
+                 "Collections/drop"
+                 "Collections/permutate"
+        ]

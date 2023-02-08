@@ -1,35 +1,36 @@
 name: "is?"
 type: :function
-module: "Reflection"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L429"
 description: "check whether value is of given type"
+module: "Reflection"
+line: 508
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L508"
 returns: [
-        :logical
-    ]
+                :logical
+        ]
 examples: [
-        {
-            is? :string "hello"       ; => true
-            is? :block [1 2 3]        ; => true
-            is? :integer "boom"       ; => false
-            
-            is? [:string] ["one" "two"]     ; => true
-            is? [:integer] [1 "two]         ; => false
-        }
-    ]
+                {
+                        is? :string "hello"       ; => true
+                        is? :block [1 2 3]        ; => true
+                        is? :integer "boom"       ; => false
+                        
+                        is? [:string] ["one" "two"]     ; => true
+                        is? [:integer] [1 "two]         ; => false
+                }
+        ]
 attributes: #[
-    ]
+        ]
 arguments: #[
-    type: [
-            :type
-             :block
+        type: [
+                        :type
+                         :block
+                ]
+        value: [
+                        :any
+                ]
         ]
-    value: [
-            :any
-        ]
-    ]
 related: [
-        "Reflection/integer?"
-         "Reflection/set?"
-         "Reflection/literal?"
-         "Reflection/string?"
-    ]
+                "Reflection/integer?"
+                 "Reflection/set?"
+                 "Reflection/literal?"
+                 "Reflection/string?"
+        ]

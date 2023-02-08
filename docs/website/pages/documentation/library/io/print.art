@@ -1,32 +1,33 @@
 name: "print"
 type: :function
-module: "Io"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Io.nim#L239"
 description: "print given value to screen with newline"
+module: "Io"
+line: 251
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Io.nim#L251"
 returns: [
-        :nothing
-    ]
+                :nothing
+        ]
 examples: [
-        {
-            print "Hello world!"          ; Hello world!
-        }
-    ]
+                {
+                        print "Hello world!"          ; Hello world!
+                }
+        ]
 attributes: #[
-    lines: #[
-        types: [
-                :logical
-            ]
-        description: "print each value in block in a new line"
+        lines: #[
+                types: [
+                                :logical
+                        ]
+                description: "print each value in block in a new line"
+                ]
         ]
-    ]
 arguments: #[
-    value: [
-            :any
+        value: [
+                        :any
+                ]
         ]
-    ]
 related: [
-        "Io/prints"
-         "Io/input"
-         "Io/terminal"
-         "Strings/indent"
-    ]
+                "Io/prints"
+                 "Io/input"
+                 "Io/terminal"
+                 "Strings/indent"
+        ]

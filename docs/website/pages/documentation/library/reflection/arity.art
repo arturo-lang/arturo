@@ -1,21 +1,22 @@
 name: "arity"
 type: :function
-module: "Reflection"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L37"
 description: "get index of function arities"
+module: "Reflection"
+line: 37
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L37"
 returns: [
-        :dictionary
-    ]
+                :dictionary
+        ]
 examples: [
-        "print arity\\print   ; 1"
-    ]
+                "print arity\\print   ; 1"
+        ]
 attributes: #[
-    ]
+        ]
 arguments: #[
-    ]
+        ]
 related: [
-        "Reflection/attrs"
-         "Reflection/attr"
-         "Reflection/inspect"
-         "Io/prints"
-    ]
+                "Reflection/attrs"
+                 "Reflection/attr"
+                 "Reflection/inspect"
+                 "Reflection/rational?"
+        ]

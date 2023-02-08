@@ -1,14 +1,15 @@
 name: "true"
 type: :logical
-module: "Logic"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Logic.nim#L363"
 description: "the TRUE logical constant"
+module: "Logic"
+line: 368
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Logic.nim#L368"
 returns: [
-        :logical
-    ]
+                :logical
+        ]
 related: [
-        "Logic/maybe"
-         "Logic/false"
-         "Core/null"
-         "Ui/unclip"
-    ]
+                "Logic/maybe"
+                 "Logic/false"
+                 "Core/null"
+                 "Ui/unclip"
+        ]

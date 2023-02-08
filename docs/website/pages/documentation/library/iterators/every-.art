@@ -1,43 +1,66 @@
 name: "every?"
 type: :function
+description: "check if every item in collection satisfies given condition"
 module: "Iterators"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Iterators.nim#L34"
-description: "check if every single item in collection satisfy given condition"
+line: 689
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Iterators.nim#L689"
 returns: [
-        :logical
-    ]
+                :logical
+        ]
 examples: [
-        {
-            if every? [2 4 6 8] 'x [even? x] 
-                -> print "every number is an even integer"
-            ; every number is an even integer
-        }
-         {
-            print every? 1..10 'x -> x < 11
-            ; true
-        }
-         {
-            print every? [2 3 5 7 11 14] 'x [prime? x]
-            ; false
-        }
-    ]
+                {
+                        if every? [2 4 6 8] 'x [even? x]
+                            -> print "every number is an even integer"
+                        ; every number is an even integer
+                }
+                 {
+                        print every? 1..10 'x -> x < 11
+                        ; true
+                }
+                 {
+                        print every? 1..10 [x y]-> 20 > x+y
+                        ; true
+                }
+                 {
+                        print every? [2 3 5 7 11 14] 'x [prime? x]
+                        ; false
+                }
+                 {
+                        print every?.with:'i ["one" "two" "three"] 'x -> 4 > (size x)-i
+                        ; true
+                }
+        ]
 attributes: #[
-    ]
+        with: #[
+                types: [
+                                :literal
+                        ]
+                description: "use given index"
+                ]
+        ]
 arguments: #[
-    collection: [
-            :block
+        collection: [
+                        :integer
+                         :string
+                         :dictionary
+                         :object
+                         :inline
+                         :block
+                         :range
+                ]
+        params: [
+                        :null
+                         :literal
+                         :block
+                ]
+        condition: [
+                        :block
+                         :bytecode
+                ]
         ]
-    params: [
-            :literal
-             :block
-        ]
-    condition: [
-            :block
-        ]
-    ]
 related: [
-        "Iterators/some?"
-         "Iterators/filter"
-         "Iterators/select"
-         "Collections/key?"
-    ]
+                "Iterators/some?"
+                 "Iterators/enumerate"
+                 "Collections/zero?"
+                 "Collections/one?"
+        ]
