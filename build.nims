@@ -76,7 +76,7 @@ let
         "profile"           : "-d:PROFILE --profiler:on --stackTrace:on",
         "profilenative"     : "--debugger:native",
         "profiler"          : "-d:PROFILER --profiler:on --stackTrace:on",
-        "release"           : "-d:strip --passC:'-flto' --passL:'-flto'",
+        "release"           : (when defined(windows): "-d:strip" else: "-d:strip --passC:'-flto' --passL:'-flto'"),
         "safe"              : "-d:SAFE",
         "vcc"               : "",
         "web"               : "--verbosity:3 -d:WEB",
