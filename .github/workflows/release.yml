@@ -96,26 +96,26 @@ jobs:
           echo "$HOME/.arturo/bin" >> $GITHUB_PATH
 
       - name: Create artifact (Linux)
-        if: matrix.os == "ubuntu-latest"
+        if: matrix.os == 'ubuntu-latest'
         run: |
           install -m 0755 ./bin/${{ env.app-name }} .
           tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-linux.tar.gz ${{ env.app-name }} README.md LICENSE
 
       - name: Create artifact (macOS)
-        if: matrix.os == "macos-latest"
+        if: matrix.os == 'macos-latest'
         run: |
           install -m 0755 ./bin/${{ env.app-name }} .
           tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-macos.tar.gz ${{ env.app-name }} README.md LICENSE
 
       - name: Upload Artifact (Linux)
-        if: matrix.os == "ubuntu-latest"
+        if: matrix.os == 'ubuntu-latest'
         uses: 'actions/upload-artifact@v1'
         with:
           name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-linux.tar.gz
           path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-linux.tar.gz
 
       - name: Upload Artifact (macOS)
-        if: matrix.os == "macos-latest"
+        if: matrix.os == 'macos-latest'
         uses: 'actions/upload-artifact@v1'
         with:
           name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-macos.tar.gz
