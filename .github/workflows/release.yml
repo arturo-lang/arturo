@@ -349,20 +349,20 @@ jobs:
 
       - name: Package artifact
         run: |
-          7z a ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{runner.os}}-${{matrix.version}}.zip arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}/*
-          tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-WindowsMsys2-${{matrix.version}}.tar.gz arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}/*
+          7z a ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-windows.zip arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}/*
+          tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-windows-msys2.tar.gz arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}/*
 
       - name: Upload Artifact
         uses: 'actions/upload-artifact@v1'
         with:
           name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-windows.zip
-          path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{runner.os}}-${{matrix.version}}.zip
+          path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-windows.zip
 
       - name: Upload Msys Artifact
         uses: 'actions/upload-artifact@v1'
         with:
-          name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-windows-msys.tar.gz
-          path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-WindowsMsys2-${{matrix.version}}.tar.gz
+          name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-windows-msys2.tar.gz
+          path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-windows-msys2.tar.gz
 
   web:
     name: "Package Web"
