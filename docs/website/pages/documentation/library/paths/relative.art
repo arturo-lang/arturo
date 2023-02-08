@@ -1,31 +1,32 @@
 name: "relative"
 type: :function
-module: "Paths"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Paths.nim#L301"
 description: "get relative path for given path, based on current script\'s location"
+module: "Paths"
+line: 331
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Paths.nim#L331"
 returns: [
-        :string
-    ]
+                :string
+        ]
 alias: "./"
 infix?: false
 examples: [
-        {
-            ; we are in folder: /Users/admin/Desktop
-            
-            print relative "test.txt"
-            ; /Users/admin/Desktop/test.txt
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    path: [
-            :string
+                {
+                        ; we are in folder: /Users/admin/Desktop
+                        
+                        print relative "test.txt"
+                        ; /Users/admin/Desktop/test.txt
+                }
         ]
-    ]
+attributes: #[
+        ]
+arguments: #[
+        path: [
+                        :string
+                ]
+        ]
 related: [
-        "Paths/normalize"
-         "Paths/module"
-         "Paths/list"
-         "Paths/path"
-    ]
+                "Paths/normalize"
+                 "Paths/module"
+                 "Paths/list"
+                 "Paths/path"
+        ]

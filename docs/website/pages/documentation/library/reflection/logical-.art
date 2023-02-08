@@ -1,32 +1,33 @@
 name: "logical?"
 type: :function
-module: "Reflection"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L553"
 description: "checks if given value is of type :logical"
+module: "Reflection"
+line: 642
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L642"
 returns: [
-        :logical
-    ]
-examples: [
-        {
-            print logical? true         ; true
-            print logical? false        ; true
-            print logical? maybe        ; true
-        }
-         {
-            print logical? 1=1          ; true
-            print logical? 123          ; false
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    value: [
-            :any
+                :logical
         ]
-    ]
+examples: [
+                {
+                        print logical? true         ; true
+                        print logical? false        ; true
+                        print logical? maybe        ; true
+                }
+                 {
+                        print logical? 1=1          ; true
+                        print logical? 123          ; false
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        ]
 related: [
-        "Reflection/literal?"
-         "Reflection/block?"
-         "Reflection/floating?"
-         "Reflection/label?"
-    ]
+                "Reflection/literal?"
+                 "Reflection/block?"
+                 "Reflection/floating?"
+                 "Reflection/label?"
+        ]

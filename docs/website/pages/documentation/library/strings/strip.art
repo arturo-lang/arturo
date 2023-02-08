@@ -1,48 +1,49 @@
 name: "strip"
 type: :function
-module: "Strings"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L695"
 description: "strip whitespace from given string"
+module: "Strings"
+line: 913
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L913"
 returns: [
-        :string
-         :nothing
-    ]
+                :string
+                 :nothing
+        ]
 examples: [
-        {
-            str: "     Hello World     "
-            
-            print ["strip all:"      ">" strip str       "<"]
-            print ["strip leading:"  ">" strip.start str "<"]
-            print ["strip trailing:" ">" strip.end str   "<"]
-            
-            ; strip all: > Hello World < 
-            ; strip leading: > Hello World      < 
-            ; strip trailing: >      Hello World <
-        }
-    ]
+                {
+                        str: "     Hello World     "
+                        
+                        print ["strip all:"      ">" strip str       "<"]
+                        print ["strip leading:"  ">" strip.start str "<"]
+                        print ["strip trailing:" ">" strip.end str   "<"]
+                        
+                        ; strip all: > Hello World < 
+                        ; strip leading: > Hello World      < 
+                        ; strip trailing: >      Hello World <
+                }
+        ]
 attributes: #[
-    start: #[
-        types: [
-                :logical
-            ]
-        description: "strip leading whitespace"
+        start: #[
+                types: [
+                                :logical
+                        ]
+                description: "strip leading whitespace"
+                ]
+        end: #[
+                types: [
+                                :logical
+                        ]
+                description: "strip trailing whitespace"
+                ]
         ]
-    end: #[
-        types: [
-                :logical
-            ]
-        description: "strip trailing whitespace"
-        ]
-    ]
 arguments: #[
-    string: [
-            :string
-             :literal
+        string: [
+                        :string
+                         :literal
+                ]
         ]
-    ]
 related: [
-        "Strings/escape"
-         "Strings/capitalize"
-         "Strings/prefix"
-         "Strings/wordwrap"
-    ]
+                "Strings/escape"
+                 "Strings/capitalize"
+                 "Strings/wordwrap"
+                 "Strings/match"
+        ]

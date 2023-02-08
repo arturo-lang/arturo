@@ -1,42 +1,43 @@
 name: "digits"
 type: :function
-module: "Numbers"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L514"
 description: "get array of digits of given number"
+module: "Numbers"
+line: 588
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L588"
 returns: [
-        :block
-    ]
+                :block
+        ]
 examples: [
-        {
-            digits 123
-            ; => [1 2 3]
-            
-            digits 0
-            ; => [0]
-            
-            digits neg 12345
-            ; => [1 2 3 4 5]
-            
-            ; digits 1231231231231231231231231231023
-            ; => [1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 0 2 3]
-        }
-    ]
+                {
+                        digits 123
+                        ; => [1 2 3]
+                        
+                        digits 0
+                        ; => [0]
+                        
+                        digits neg 12345
+                        ; => [1 2 3 4 5]
+                        
+                        ; digits 1231231231231231231231231231023
+                        ; => [1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 0 2 3]
+                }
+        ]
 attributes: #[
-    base: #[
-        types: [
-                :integer
-            ]
-        description: "use given based (default: 10)"
+        base: #[
+                types: [
+                                :integer
+                        ]
+                description: "use given based (default: 10)"
+                ]
         ]
-    ]
 arguments: #[
-    number: [
-            :integer
+        number: [
+                        :integer
+                ]
         ]
-    ]
 related: [
-        "Numbers/factors"
-         "Numbers/sqrt"
-         "Numbers/log"
-         "Numbers/sinh"
-    ]
+                "Numbers/denominator"
+                 "Numbers/factors"
+                 "Numbers/numerator"
+                 "Numbers/sqrt"
+        ]

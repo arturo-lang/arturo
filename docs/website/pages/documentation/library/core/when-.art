@@ -1,33 +1,34 @@
 name: "when?"
 type: :function
-module: "Core"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L779"
 description: "check if a specific condition is fulfilled and, if so, execute given action"
+module: "Core"
+line: 854
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L854"
 returns: [
-        :logical
-    ]
+                :logical
+        ]
 examples: [
-        {
-            a: 2
-            case [a]
-                when? [<2] -> print "a is less than 2"
-                when? [=2] -> print "a is 2"
-                else       -> print "a is greater than 2"
-        }
-    ]
+                {
+                        a: 2
+                        case [a]
+                            when? [<2] -> print "a is less than 2"
+                            when? [=2] -> print "a is 2"
+                            else       -> print "a is greater than 2"
+                }
+        ]
 attributes: #[
-    ]
+        ]
 arguments: #[
-    condition: [
-            :block
+        condition: [
+                        :block
+                ]
+        action: [
+                        :block
+                ]
         ]
-    action: [
-            :block
-        ]
-    ]
 related: [
-        "Core/unless?"
-         "Core/while"
-         "Core/try?"
-         "Core/if?"
-    ]
+                "Core/unless?"
+                 "Core/while"
+                 "Core/try?"
+                 "Iterators/every?"
+        ]

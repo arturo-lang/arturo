@@ -1,33 +1,34 @@
 name: "empty?"
 type: :function
-module: "Collections"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L251"
 description: "check if given collection is empty"
+module: "Collections"
+line: 410
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L410"
 returns: [
-        :logical
-    ]
-examples: [
-        {
-            empty? ""             ; => true
-            empty? []             ; => true
-            empty? #[]            ; => true
-            
-            empty? [1 "two" 3]    ; => false
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    collection: [
-            :null
-             :string
-             :dictionary
-             :block
+                :logical
         ]
-    ]
+examples: [
+                {
+                        empty? ""             ; => true
+                        empty? []             ; => true
+                        empty? #[]            ; => true
+                        
+                        empty? [1 "two" 3]    ; => false
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        collection: [
+                        :null
+                         :string
+                         :dictionary
+                         :block
+                ]
+        ]
 related: [
-        "Collections/sorted?"
-         "Collections/key?"
-         "Collections/contains?"
-         "Collections/in?"
-    ]
+                "Collections/sorted?"
+                 "Collections/key?"
+                 "Collections/one?"
+                 "Collections/zero?"
+        ]

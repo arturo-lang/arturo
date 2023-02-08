@@ -1,55 +1,56 @@
 name: "truncate"
 type: :function
-module: "Strings"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L770"
 description: "truncate string at given length"
+module: "Strings"
+line: 1000
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L1000"
 returns: [
-        :string
-         :nothing
-    ]
-examples: [
-        {
-            str: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse erat quam"
-            
-            truncate str 30
-            ; => "Lorem ipsum dolor sit amet, con..."
-            
-            truncate.preserve str 30
-            ; => "Lorem ipsum dolor sit amet,..."
-            
-            truncate.with:"---" str 30
-            ; => "Lorem ipsum dolor sit amet, con---"
-            
-            truncate.preserve.with:"---" str 30
-            ; => "Lorem ipsum dolor sit amet,---"
-        }
-    ]
-attributes: #[
-    with: #[
-        types: [
                 :string
-            ]
-        description: "use given filler"
+                 :nothing
         ]
-    preserve: #[
-        types: [
-                :logical
-            ]
-        description: "preserve word boundaries"
+examples: [
+                {
+                        str: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse erat quam"
+                        
+                        truncate str 30
+                        ; => "Lorem ipsum dolor sit amet, con..."
+                        
+                        truncate.preserve str 30
+                        ; => "Lorem ipsum dolor sit amet,..."
+                        
+                        truncate.with:"---" str 30
+                        ; => "Lorem ipsum dolor sit amet, con---"
+                        
+                        truncate.preserve.with:"---" str 30
+                        ; => "Lorem ipsum dolor sit amet,---"
+                }
         ]
-    ]
+attributes: #[
+        with: #[
+                types: [
+                                :string
+                        ]
+                description: "use given filler"
+                ]
+        preserve: #[
+                types: [
+                                :logical
+                        ]
+                description: "preserve word boundaries"
+                ]
+        ]
 arguments: #[
-    string: [
-            :string
-             :literal
+        string: [
+                        :string
+                         :literal
+                ]
+        cutoff: [
+                        :integer
+                ]
         ]
-    cutoff: [
-            :integer
-        ]
-    ]
 related: [
-        "Strings/capitalize"
-         "Strings/render"
-         "Strings/escape"
-         "Strings/lower"
-    ]
+                "Strings/capitalize"
+                 "Strings/render"
+                 "Strings/escape"
+                 "Strings/lower"
+        ]

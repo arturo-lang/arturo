@@ -1,0 +1,35 @@
+name: "denominator"
+type: :function
+description: "get the denominator of given number"
+module: "Numbers"
+line: 558
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L558"
+returns: [
+                :integer
+        ]
+examples: [
+                {
+                        num: to :rational 12.4      ; num: 62/5
+                        print denominator num
+                        ; => 5
+                }
+                 {
+                        print denominator 10
+                        ; => 1
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        number: [
+                        :integer
+                         :floating
+                         :rational
+                ]
+        ]
+related: [
+                "Numbers/numerator"
+                 "Numbers/digits"
+                 "Numbers/random"
+                 "Numbers/reciprocal"
+        ]

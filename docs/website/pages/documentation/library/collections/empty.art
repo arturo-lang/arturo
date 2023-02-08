@@ -1,31 +1,32 @@
 name: "empty"
 type: :function
-module: "Collections"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L228"
 description: "empty given collection"
+module: "Collections"
+line: 385
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L385"
 returns: [
-        :nothing
-    ]
-examples: [
-        {
-            a: [1 2 3]
-            empty 'a              ; a: []
-        }
-         {
-            str: "some text"
-            empty 'str            ; str: ""
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    collection: [
-            :literal
+                :nothing
         ]
-    ]
+examples: [
+                {
+                        a: [1 2 3]
+                        empty 'a              ; a: []
+                }
+                 {
+                        str: "some text"
+                        empty 'str            ; str: ""
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        collection: [
+                        :literal
+                ]
+        ]
 related: [
-        "Collections/reverse"
-         "Collections/remove"
-         "Collections/max"
-         "Collections/shuffle"
-    ]
+                "Collections/reverse"
+                 "Collections/remove"
+                 "Collections/keys"
+                 "Collections/max"
+        ]

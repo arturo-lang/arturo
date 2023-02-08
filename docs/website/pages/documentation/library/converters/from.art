@@ -1,46 +1,58 @@
 name: "from"
 type: :function
-module: "Converters"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Converters.nim#L752"
 description: "get value from string, using given representation"
+module: "Converters"
+line: 889
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Converters.nim#L889"
 returns: [
-        :any
-    ]
+                :any
+        ]
 examples: [
-        {
-            print from.binary "1011"        ; 11
-            print from.octal "1011"         ; 521
-            print from.hex "0xDEADBEEF"     ; 3735928559
-        }
-    ]
+                {
+                        print from.binary "1011"        ; 11
+                        print from.octal "1011"         ; 521
+                        print from.hex "0xDEADBEEF"     ; 3735928559
+                }
+                 {
+                        from.opcode 'push1
+                        => 33
+                }
+        ]
 attributes: #[
-    binary: #[
-        types: [
-                :logical
-            ]
-        description: "get integer from binary representation"
+        binary: #[
+                types: [
+                                :logical
+                        ]
+                description: "get integer from binary representation"
+                ]
+        hex: #[
+                types: [
+                                :logical
+                        ]
+                description: "get integer from hexadecimal representation"
+                ]
+        octal: #[
+                types: [
+                                :logical
+                        ]
+                description: "get integer from octal representation"
+                ]
+        opcode: #[
+                types: [
+                                :logical
+                        ]
+                description: "get opcode by from opcode literal"
+                ]
         ]
-    hex: #[
-        types: [
-                :logical
-            ]
-        description: "get integer from hexadecimal representation"
-        ]
-    octal: #[
-        types: [
-                :logical
-            ]
-        description: "get integer from octal representation"
-        ]
-    ]
 arguments: #[
-    value: [
-            :string
+        value: [
+                        :string
+                         :literal
+                ]
         ]
-    ]
 related: [
-        "Converters/array"
-         "Converters/function"
-         "Converters/dictionary"
-         "Converters/to"
-    ]
+                "Converters/range"
+                 "Converters/array"
+                 "Converters/function"
+                 "Converters/dictionary"
+        ]

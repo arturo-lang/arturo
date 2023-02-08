@@ -1,58 +1,59 @@
 name: "pad"
 type: :function
-module: "Strings"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L469"
 description: "align string by adding given padding"
+module: "Strings"
+line: 695
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L695"
 returns: [
-        :string
-    ]
+                :string
+        ]
 examples: [
-        {
-            pad "good" 10                 ; => "      good"
-            pad.right "good" 10           ; => "good      "
-            pad.center "good" 10          ; => "   good   "
-        }
-         {
-            a: "hello"
-            pad 'a 10                     ; a: "     hello"
-        }
-         {
-            pad.with:`0` to :string 123 5   
-            ; => 00123
-        }
-    ]
+                {
+                        pad "good" 10                 ; => "      good"
+                        pad.right "good" 10           ; => "good      "
+                        pad.center "good" 10          ; => "   good   "
+                }
+                 {
+                        a: "hello"
+                        pad 'a 10                     ; a: "     hello"
+                }
+                 {
+                        pad.with:`0` to :string 123 5   
+                        ; => 00123
+                }
+        ]
 attributes: #[
-    center: #[
-        types: [
-                :logical
-            ]
-        description: "add padding to both sides"
+        center: #[
+                types: [
+                                :logical
+                        ]
+                description: "add padding to both sides"
+                ]
+        right: #[
+                types: [
+                                :logical
+                        ]
+                description: "add right padding"
+                ]
+        with: #[
+                types: [
+                                :char
+                        ]
+                description: "pad with given character"
+                ]
         ]
-    right: #[
-        types: [
-                :logical
-            ]
-        description: "add right padding"
-        ]
-    with: #[
-        types: [
-                :char
-            ]
-        description: "pad with given character"
-        ]
-    ]
 arguments: #[
-    string: [
-            :string
-             :literal
+        string: [
+                        :string
+                         :literal
+                ]
+        padding: [
+                        :integer
+                ]
         ]
-    padding: [
-            :integer
-        ]
-    ]
 related: [
-        "Strings/jaro"
-         "Strings/match"
-         "Strings/wordwrap"
-         "Strings/replace"
-    ]
+                "Strings/jaro"
+                 "Strings/match"
+                 "Strings/wordwrap"
+                 "Strings/alphabet"
+        ]

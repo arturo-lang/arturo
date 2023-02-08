@@ -1,30 +1,31 @@
 name: "false?"
 type: :function
-module: "Logic"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Logic.nim#L167"
 description: "returns true if given value is false; otherwise, it returns false"
+module: "Logic"
+line: 167
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Logic.nim#L167"
 returns: [
-        :logical
-    ]
-examples: [
-        {
-            print false? 1 = 2          ; true
-            print false? 1 <> 2         ; false
-            print false? odd? 2         ; true
-            
-            print false? [1 2 3]        ; false
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    value: [
-            :any
+                :logical
         ]
-    ]
+examples: [
+                {
+                        print false? 1 = 2          ; true
+                        print false? 1 <> 2         ; false
+                        print false? odd? 2         ; true
+                        
+                        print false? [1 2 3]        ; false
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        ]
 related: [
-        "Logic/true?"
-         "Logic/all?"
-         "Logic/and?"
-         "Logic/any?"
-    ]
+                "Logic/true?"
+                 "Logic/all?"
+                 "Logic/and?"
+                 "Logic/any?"
+        ]

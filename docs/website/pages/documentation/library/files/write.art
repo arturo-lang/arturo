@@ -1,71 +1,72 @@
 name: "write"
 type: :function
-module: "Files"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Files.nim#L394"
 description: "write content to file at given path"
+module: "Files"
+line: 504
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Files.nim#L504"
 returns: [
-        :nothing
-    ]
+                :nothing
+        ]
 alias: ">>"
 infix?: false
 examples: [
-        {
-            ; write some string data to given file path
-            write "somefile.txt" "Hello world!"
-        }
-         {
-            ; we can also write any type of data as JSON
-            write.json "data.json" myData
-        }
-         {
-            ; append to an existing file
-            write.append "somefile.txt" "Yes, Hello again!"
-        }
-    ]
+                {
+                        ; write some string data to given file path
+                        write "somefile.txt" "Hello world!"
+                }
+                 {
+                        ; we can also write any type of data as JSON
+                        write.json "data.json" myData
+                }
+                 {
+                        ; append to an existing file
+                        write.append "somefile.txt" "Yes, Hello again!"
+                }
+        ]
 attributes: #[
-    append: #[
-        types: [
-                :logical
-            ]
-        description: "append to given file"
+        append: #[
+                types: [
+                                :logical
+                        ]
+                description: "append to given file"
+                ]
+        directory: #[
+                types: [
+                                :logical
+                        ]
+                description: "create directory at path"
+                ]
+        json: #[
+                types: [
+                                :logical
+                        ]
+                description: "write value as Json"
+                ]
+        compact: #[
+                types: [
+                                :logical
+                        ]
+                description: "produce compact, non-prettified Json code"
+                ]
+        binary: #[
+                types: [
+                                :logical
+                        ]
+                description: "write as binary"
+                ]
         ]
-    directory: #[
-        types: [
-                :logical
-            ]
-        description: "create directory at path"
-        ]
-    json: #[
-        types: [
-                :logical
-            ]
-        description: "write value as Json"
-        ]
-    compact: #[
-        types: [
-                :logical
-            ]
-        description: "produce compact, non-prettified Json code"
-        ]
-    binary: #[
-        types: [
-                :logical
-            ]
-        description: "write as binary"
-        ]
-    ]
 arguments: #[
-    file: [
-            :null
-             :string
+        file: [
+                        :null
+                         :string
+                ]
+        content: [
+                        :any
+                ]
         ]
-    content: [
-            :any
-        ]
-    ]
 related: [
-        "Files/volume"
-         "Files/rename"
-         "Files/zip"
-         "Files/delete"
-    ]
+                "Files/move"
+                 "Files/volume"
+                 "Files/rename"
+                 "Files/zip"
+        ]

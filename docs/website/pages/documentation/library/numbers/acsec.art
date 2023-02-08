@@ -1,35 +1,37 @@
 name: "acsec"
 type: :function
-module: "Numbers"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L111"
 description: "calculate the inverse cosecant of given angle"
+module: "Numbers"
+line: 126
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L126"
 returns: [
-        :floating
-         :complex
-    ]
-examples: [
-        {
-            print acsec 0               ; nan
-            print acsec 1.0             ; 1.570796326794897
-            print acsec 10              ; 0.1001674211615598
-        }
-         {
-            acsec to :complex @[pi 1]
-            ; => 0.2918255976444114-0.0959139808172324i
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    angle: [
-            :integer
-             :floating
-             :complex
+                :floating
+                 :complex
         ]
-    ]
+examples: [
+                {
+                        print acsec 0               ; nan
+                        print acsec 1.0             ; 1.570796326794897
+                        print acsec 10              ; 0.1001674211615598
+                }
+                 {
+                        acsec to :complex @[pi 1]
+                        ; => 0.2918255976444114-0.0959139808172324i
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        angle: [
+                        :integer
+                         :floating
+                         :complex
+                         :quantity
+                ]
+        ]
 related: [
-        "Numbers/asec"
-         "Numbers/acos"
-         "Numbers/acsech"
-         "Numbers/asech"
-    ]
+                "Numbers/asec"
+                 "Numbers/acos"
+                 "Numbers/acsech"
+                 "Numbers/asech"
+        ]

@@ -1,28 +1,29 @@
 name: "even?"
 type: :function
-module: "Numbers"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L554"
 description: "check if given number is even"
+module: "Numbers"
+line: 629
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L629"
 returns: [
-        :logical
-    ]
-examples: [
-        {
-            even? 4           ; => true
-            even? 3           ; => false
-        }
-         "print select 1..10 => even?       ; 2 4 6 8 10"
-    ]
-attributes: #[
-    ]
-arguments: #[
-    number: [
-            :integer
+                :logical
         ]
-    ]
+examples: [
+                {
+                        even? 4           ; => true
+                        even? 3           ; => false
+                }
+                 "print select 1..10 => even?       ; 2 4 6 8 10"
+        ]
+attributes: #[
+        ]
+arguments: #[
+        number: [
+                        :integer
+                ]
+        ]
 related: [
-        "Numbers/zero?"
-         "Numbers/odd?"
-         "Numbers/negative?"
-         "Numbers/prime?"
-    ]
+                "Numbers/odd?"
+                 "Numbers/negative?"
+                 "Numbers/prime?"
+                 "Numbers/positive?"
+        ]

@@ -1,35 +1,37 @@
 name: "asinh"
 type: :function
-module: "Numbers"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L274"
 description: "calculate the inverse hyperbolic sine of given angle"
+module: "Numbers"
+line: 290
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L290"
 returns: [
-        :floating
-         :complex
-    ]
-examples: [
-        {
-            print asinh 0               ; 0.0
-            print asinh 0.3             ; 0.2956730475634224
-            print asinh 1.0             ; 0.881373587019543
-        }
-         {
-            asinh to :complex @[pi 1]
-            ; => 1.904627686970658+0.2955850342116299i
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    angle: [
-            :integer
-             :floating
-             :complex
+                :floating
+                 :complex
         ]
-    ]
+examples: [
+                {
+                        print asinh 0               ; 0.0
+                        print asinh 0.3             ; 0.2956730475634224
+                        print asinh 1.0             ; 0.881373587019543
+                }
+                 {
+                        asinh to :complex @[pi 1]
+                        ; => 1.904627686970658+0.2955850342116299i
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        angle: [
+                        :integer
+                         :floating
+                         :complex
+                         :quantity
+                ]
+        ]
 related: [
-        "Numbers/asech"
-         "Numbers/acosh"
-         "Numbers/acsech"
-         "Numbers/atanh"
-    ]
+                "Numbers/asech"
+                 "Numbers/acosh"
+                 "Numbers/acsech"
+                 "Numbers/atanh"
+        ]

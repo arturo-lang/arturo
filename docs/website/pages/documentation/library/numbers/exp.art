@@ -1,35 +1,36 @@
 name: "exp"
 type: :function
-module: "Numbers"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L572"
 description: "calculate the exponential function for given value"
+module: "Numbers"
+line: 648
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L648"
 returns: [
-        :floating
-         :complex
-    ]
-examples: [
-        {
-            print exp 1.0           ; 2.718281828459045
-            print exp 0             ; 1.0
-            print exp neg 1.0       ; 0.3678794411714423
-        }
-         {
-            exp to :complex @[pi 1]
-            ; => 12.50296958887651+19.47222141884161i
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    value: [
-            :integer
-             :floating
-             :complex
+                :floating
+                 :complex
         ]
-    ]
+examples: [
+                {
+                        print exp 1.0           ; 2.718281828459045
+                        print exp 0             ; 1.0
+                        print exp neg 1.0       ; 0.3678794411714423
+                }
+                 {
+                        exp to :complex @[pi 1]
+                        ; => 12.50296958887651+19.47222141884161i
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :integer
+                         :floating
+                         :complex
+                ]
+        ]
 related: [
-        "Numbers/sech"
-         "Numbers/product"
-         "Numbers/ceil"
-         "Numbers/hypot"
-    ]
+                "Numbers/reciprocal"
+                 "Numbers/sech"
+                 "Numbers/product"
+                 "Numbers/ceil"
+        ]

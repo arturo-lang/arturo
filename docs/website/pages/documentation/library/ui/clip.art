@@ -1,26 +1,27 @@
 name: "clip"
 type: :function
-module: "Ui"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Ui.nim#L81"
 description: "set clipboard content to given text"
+module: "Ui"
+line: 82
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Ui.nim#L82"
 returns: [
-        :nothing
-    ]
-examples: [
-        {
-            clip "this is something to be pasted into the clipboard"
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    content: [
-            :string
+                :nothing
         ]
-    ]
+examples: [
+                {
+                        clip "this is something to be pasted into the clipboard"
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        content: [
+                        :string
+                ]
+        ]
 related: [
-        "Ui/unclip"
-         "Ui/alert"
-         "Ui/popup"
-         "Ui/dialog"
-    ]
+                "Ui/unclip"
+                 "Ui/alert"
+                 "Ui/popup"
+                 "Ui/dialog"
+        ]

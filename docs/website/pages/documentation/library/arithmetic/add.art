@@ -1,47 +1,54 @@
 name: "add"
 type: :function
-module: "Arithmetic"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Arithmetic.nim#L30"
 description: "add given values and return result"
+module: "Arithmetic"
+line: 30
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Arithmetic.nim#L30"
 returns: [
-        :integer
-         :floating
-         :complex
-         :color
-         :nothing
-    ]
+                :integer
+                 :floating
+                 :complex
+                 :rational
+                 :quantity
+                 :color
+                 :nothing
+        ]
 alias: "+"
 infix?: true
 examples: [
-        {
-            print add 1 2      ; 3
-            print 1 + 3        ; 4
-        }
-         {
-            a: 4
-            add 'a 1           ; a: 5
-        }
-    ]
+                {
+                        print add 1 2      ; 3
+                        print 1 + 3        ; 4
+                }
+                 {
+                        a: 4
+                        add 'a 1           ; a: 5
+                }
+        ]
 attributes: #[
-    ]
+        ]
 arguments: #[
-    valueA: [
-            :integer
-             :floating
-             :complex
-             :literal
-             :color
+        valueA: [
+                        :integer
+                         :floating
+                         :complex
+                         :rational
+                         :literal
+                         :quantity
+                         :color
+                ]
+        valueB: [
+                        :integer
+                         :floating
+                         :complex
+                         :rational
+                         :quantity
+                         :color
+                ]
         ]
-    valueB: [
-            :integer
-             :floating
-             :complex
-             :color
-        ]
-    ]
 related: [
-        "Arithmetic/fdiv"
-         "Arithmetic/mod"
-         "Arithmetic/sub"
-         "Arithmetic/mul"
-    ]
+                "Arithmetic/fdiv"
+                 "Arithmetic/mod"
+                 "Arithmetic/sub"
+                 "Arithmetic/divmod"
+        ]

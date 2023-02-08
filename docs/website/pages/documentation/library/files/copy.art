@@ -1,40 +1,41 @@
 name: "copy"
 type: :function
-module: "Files"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Files.nim#L52"
 description: "copy file at path to given destination"
+module: "Files"
+line: 55
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Files.nim#L55"
 returns: [
-        :nothing
-    ]
+                :nothing
+        ]
 examples: [
-        {
-            copy "testscript.art" normalize.tilde "~/Desktop/testscript.art"
-            ; copied file
-        }
-         {
-            copy "testfolder" normalize.tilde "~/Desktop/testfolder"
-            ; copied whole folder
-        }
-    ]
+                {
+                        copy "testscript.art" normalize.tilde "~/Desktop/testscript.art"
+                        ; copied file
+                }
+                 {
+                        copy "testfolder" normalize.tilde "~/Desktop/testfolder"
+                        ; copied whole folder
+                }
+        ]
 attributes: #[
-    directory: #[
-        types: [
-                :logical
-            ]
-        description: "path is a directory"
+        directory: #[
+                types: [
+                                :logical
+                        ]
+                description: "path is a directory"
+                ]
         ]
-    ]
 arguments: #[
-    file: [
-            :string
+        file: [
+                        :string
+                ]
+        destination: [
+                        :string
+                ]
         ]
-    destination: [
-            :string
-        ]
-    ]
 related: [
-        "Files/zip"
-         "Files/symlink"
-         "Files/volume"
-         "Files/write"
-    ]
+                "Files/move"
+                 "Files/zip"
+                 "Files/symlink"
+                 "Files/volume"
+        ]

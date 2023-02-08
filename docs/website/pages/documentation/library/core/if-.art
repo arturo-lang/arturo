@@ -1,46 +1,47 @@
 name: "if?"
 type: :function
-module: "Core"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L376"
 description: "perform action, if given condition is not false or null and return condition result"
+module: "Core"
+line: 455
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L455"
 returns: [
-        :logical
-    ]
+                :logical
+        ]
 examples: [
-        {
-            x: 2
-            
-            result: if? x=2 -> print "yes, that's right!"
-            ; yes, that's right!
-            
-            print result
-            ; true
-        }
-         {
-            x: 2
-            z: 3
-            
-            if? x>z [
-                print "x was greater than z"
-            ]
-            else [
-                print "nope, x was not greater than z"
-            ]
-        }
-    ]
+                {
+                        x: 2
+                        
+                        result: if? x=2 -> print "yes, that's right!"
+                        ; yes, that's right!
+                        
+                        print result
+                        ; true
+                }
+                 {
+                        x: 2
+                        z: 3
+                        
+                        if? x>z [
+                            print "x was greater than z"
+                        ]
+                        else [
+                            print "nope, x was not greater than z"
+                        ]
+                }
+        ]
 attributes: #[
-    ]
+        ]
 arguments: #[
-    condition: [
-            :any
+        condition: [
+                        :any
+                ]
+        action: [
+                        :block
+                ]
         ]
-    action: [
-            :block
-        ]
-    ]
 related: [
-        "Core/if"
-         "Core/unless?"
-         "Core/try?"
-         "Core/switch"
-    ]
+                "Core/if"
+                 "Core/unless?"
+                 "Core/try?"
+                 "Core/switch"
+        ]

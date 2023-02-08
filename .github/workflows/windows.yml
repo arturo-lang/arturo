@@ -27,6 +27,8 @@ jobs:
         version:
           - mini
           - full
+        arch:
+          - x86_64
     steps:
       - name: "Cancel similar actions in progress"
         uses: styfle/cancel-workflow-action@0.10.0
@@ -99,7 +101,7 @@ jobs:
       - name: Create artifact (full)
         if: matrix.version == 'full'
         run: |
-          mkdir arturo-${{matrix.version}}-${{matrix.os}}
+          mkdir arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
           
           curl -L https://arturo-lang.s3.amazonaws.com/libcrypto-1_1-x64.dll -o libcrypto-1_1-x64.dll
           curl -L https://arturo-lang.s3.amazonaws.com/libssl-1_1-x64.dll -o libssl-1_1-x64.dll
@@ -108,29 +110,29 @@ jobs:
           curl -L https://arturo-lang.s3.amazonaws.com/libgmp-10.dll -o libgmp-10.dll
           curl -L https://arturo-lang.s3.amazonaws.com/libmpfr-4.dll -o limpfr-4.dll
           
-          cp *.dll arturo-${{matrix.version}}-${{matrix.os}}
-          cp src/extras/webview/deps/dlls/x64/webview.dll arturo-${{matrix.version}}-${{matrix.os}}
-          cp src/extras/webview/deps/dlls/x64/WebView2Loader.dll arturo-${{matrix.version}}-${{matrix.os}}
+          cp *.dll arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
+          cp src/extras/webview/deps/dlls/x64/webview.dll arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
+          cp src/extras/webview/deps/dlls/x64/WebView2Loader.dll arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
 
-          cp bin/arturo.exe arturo-${{matrix.version}}-${{matrix.os}}
-          cp *.dll arturo-${{matrix.version}}-${{matrix.os}}
+          cp bin/arturo.exe arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
+          cp *.dll arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
 
       - name: Create artifact (mini)
         if: matrix.version == 'mini'
         run: |
-          mkdir arturo-${{matrix.version}}-${{matrix.os}}
+          mkdir arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
           
           curl -L https://arturo-lang.s3.amazonaws.com/libcrypto-1_1-x64.dll -o libcrypto-1_1-x64.dll
           curl -L https://arturo-lang.s3.amazonaws.com/libssl-1_1-x64.dll -o libssl-1_1-x64.dll
           curl -L https://arturo-lang.s3.amazonaws.com/pcre64.dll -o pcre64.dll
 
-          cp *.dll arturo-${{matrix.version}}-${{matrix.os}}
+          cp *.dll arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
 
-          cp bin/arturo.exe arturo-${{matrix.version}}-${{matrix.os}}
-          cp *.dll arturo-${{matrix.version}}-${{matrix.os}}
+          cp bin/arturo.exe arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
+          cp *.dll arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
 
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v1'
         with:
-          name: arturo-${{matrix.version}}-${{matrix.os}}
-          path: arturo-${{matrix.version}}-${{matrix.os}}
+          name: arturo-${{matrix.version}}-${{matrix.arch}}-windows
+          path: arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}

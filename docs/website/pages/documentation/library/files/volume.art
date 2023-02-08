@@ -1,28 +1,29 @@
 name: "volume"
 type: :function
-module: "Files"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Files.nim#L375"
 description: "get file size for given path"
+module: "Files"
+line: 484
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Files.nim#L484"
 returns: [
-        :integer
-    ]
-examples: [
-        {
-            volume "README.md"
-            ; => 13704 
-            ; (size in bytes)
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    file: [
-            :string
+                :quantity
         ]
-    ]
+examples: [
+                {
+                        volume "README.md"
+                        ; => 13704B 
+                        ; (size in bytes)
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        file: [
+                        :string
+                ]
+        ]
 related: [
-        "Files/delete"
-         "Files/write"
-         "Files/read"
-         "Paths/list"
-    ]
+                "Files/timestamp"
+                 "Files/delete"
+                 "Files/write"
+                 "Files/move"
+        ]

@@ -1,35 +1,36 @@
 name: "break"
 type: :function
-module: "Core"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L82"
 description: "break out of current block or loop"
+module: "Core"
+line: 86
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L86"
 returns: [
-        :block
-    ]
+                :nothing
+        ]
 examples: [
-        {
-            loop 1..5 'x [
-                print ["x:" x]
-                if x=3 -> break
-                print "after check"
-            ]
-            print "after loop"
-            
-            ; x: 1
-            ; after check
-            ; x: 2
-            ; after check
-            ; x: 3
-            ; after loop
-        }
-    ]
+                {
+                        loop 1..5 'x [
+                            print ["x:" x]
+                            if x=3 -> break
+                            print "after check"
+                        ]
+                        print "after loop"
+                        
+                        ; x: 1
+                        ; after check
+                        ; x: 2
+                        ; after check
+                        ; x: 3
+                        ; after loop
+                }
+        ]
 attributes: #[
-    ]
+        ]
 arguments: #[
-    ]
+        ]
 related: [
-        "Core/try"
-         "Core/return"
-         "Core/new"
-         "Core/case"
-    ]
+                "Core/try"
+                 "Core/return"
+                 "Core/new"
+                 "Core/case"
+        ]

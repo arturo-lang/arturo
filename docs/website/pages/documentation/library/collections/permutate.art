@@ -1,27 +1,63 @@
 name: "permutate"
 type: :function
-module: "Collections"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L682"
 description: "get all possible permutations of the elements in given collection"
+module: "Collections"
+line: 1077
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L1077"
 returns: [
-        :block
-    ]
-examples: [
-        {
-            permutate [A B C]
-            ; => [[A B C] [A C B] [C A B] [B A C] [B C A] [C B A]]
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    collection: [
-            :block
+                :block
         ]
-    ]
+examples: [
+                {
+                        permutate [A B C]
+                        ; => [[A B C] [A C B] [B A C] [B C A] [C A B] [C B A]]
+                        
+                        permutate.repeated [A B C]
+                        ; => [[A A A] [A A B] [A A C] [A B A] [A B B] [A B C] [A C A] [A C B] [A C C] [B A A] [B A B] [B A C] [B B A] [B B B] [B B C] [B C A] [B C B] [B C C] [C A A] [C A B] [C A C] [C B A] [C B B] [C B C] [C C A] [C C B] [C C C]]
+                }
+                 {
+                        permutate.by:2 [A B C]
+                        ; => [[A B] [A C] [B A] [B C] [C A] [C B]]
+                        
+                        permutate.repeated.by:2 [A B C]
+                        ; => [[A A] [A B] [A C] [B A] [B B] [B C] [C A] [C B] [C C]]
+                }
+                 {
+                        permutate.count [A B C]
+                        ; => 6
+                        
+                        permutate.count.repeated.by:2 [A B C]
+                        ; => 9
+                }
+        ]
+attributes: #[
+        by: #[
+                types: [
+                                :integer
+                        ]
+                description: "define size of each set"
+                ]
+        repeated: #[
+                types: [
+                                :logical
+                        ]
+                description: "allow for permutations with repeated elements"
+                ]
+        count: #[
+                types: [
+                                :logical
+                        ]
+                description: "just count the number of permutations"
+                ]
+        ]
+arguments: #[
+        collection: [
+                        :block
+                ]
+        ]
 related: [
-        "Collections/combine"
-         "Collections/repeat"
-         "Collections/sample"
-         "Collections/first"
-    ]
+                "Collections/combine"
+                 "Collections/couple"
+                 "Collections/repeat"
+                 "Collections/sample"
+        ]

@@ -1,27 +1,28 @@
 name: "date?"
 type: :function
-module: "Reflection"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L266"
 description: "checks if given value is of type :date"
+module: "Reflection"
+line: 341
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L341"
 returns: [
-        :logical
-    ]
-examples: [
-        {
-            print date? now             ; true
-            print date? "hello"         ; false
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    value: [
-            :any
+                :logical
         ]
-    ]
+examples: [
+                {
+                        print date? now             ; true
+                        print date? "hello"         ; false
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :any
+                ]
+        ]
 related: [
-        "Reflection/path?"
-         "Reflection/label?"
-         "Reflection/database?"
-         "Reflection/type?"
-    ]
+                "Reflection/path?"
+                 "Reflection/label?"
+                 "Reflection/range?"
+                 "Reflection/database?"
+        ]

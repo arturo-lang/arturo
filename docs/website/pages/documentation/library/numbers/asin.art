@@ -1,35 +1,37 @@
 name: "asin"
 type: :function
-module: "Numbers"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L253"
 description: "calculate the inverse sine of given angle"
+module: "Numbers"
+line: 269
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L269"
 returns: [
-        :floating
-         :complex
-    ]
-examples: [
-        {
-            print asin 0                ; 0.0
-            print asin 0.3              ; 0.3046926540153975
-            print asin 1.0              ; 1.570796326794897
-        }
-         {
-            asin to :complex @[pi 1]
-            ; => 1.248543032813438+1.867114393160262i
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    angle: [
-            :integer
-             :floating
-             :complex
+                :floating
+                 :complex
         ]
-    ]
+examples: [
+                {
+                        print asin 0                ; 0.0
+                        print asin 0.3              ; 0.3046926540153975
+                        print asin 1.0              ; 1.570796326794897
+                }
+                 {
+                        asin to :complex @[pi 1]
+                        ; => 1.248543032813438+1.867114393160262i
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        angle: [
+                        :integer
+                         :floating
+                         :complex
+                         :quantity
+                ]
+        ]
 related: [
-        "Numbers/asec"
-         "Numbers/asinh"
-         "Numbers/acos"
-         "Numbers/sin"
-    ]
+                "Numbers/asec"
+                 "Numbers/asinh"
+                 "Numbers/acos"
+                 "Numbers/sin"
+        ]

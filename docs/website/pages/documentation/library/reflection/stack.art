@@ -1,26 +1,27 @@
 name: "stack"
 type: :function
-module: "Reflection"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L658"
 description: "get current stack"
+module: "Reflection"
+line: 831
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L831"
 returns: [
-        :dictionary
-    ]
+                :dictionary
+        ]
 examples: [
-        {
-            1 2 3 "done"
-            
-            print stack
-            ; 1 2 3 done
-        }
-    ]
+                {
+                        1 2 3 "done"
+                        
+                        print stack
+                        ; 1 2 3 done
+                }
+        ]
 attributes: #[
-    ]
+        ]
 arguments: #[
-    ]
+        ]
 related: [
-        "Reflection/symbols"
-         "Reflection/attrs"
-         "Reflection/attr"
-         "Reflection/benchmark"
-    ]
+                "Reflection/symbols"
+                 "Reflection/attrs"
+                 "System/sys"
+                 "Reflection/attr"
+        ]

@@ -1,29 +1,30 @@
 name: "powerset"
 type: :function
-module: "Sets"
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Sets.nim#L95"
 description: "return the powerset of given set"
+module: "Sets"
+line: 173
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Sets.nim#L173"
 returns: [
-        :block
-         :nothing
-    ]
-examples: [
-        {
-            powerset [1 2 3]
-            ;  [[] [1] [2] [1 3] [3] [1 2] [2 3] [1 2 3]]
-        }
-    ]
-attributes: #[
-    ]
-arguments: #[
-    set: [
-            :literal
-             :block
+                :block
+                 :nothing
         ]
-    ]
+examples: [
+                {
+                        powerset [1 2 3]
+                        ;  [[] [1] [2] [1 3] [3] [1 2] [2 3] [1 2 3]]
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        set: [
+                        :literal
+                         :block
+                ]
+        ]
 related: [
-        "Sets/difference"
-         "Sets/intersection"
-         "Sets/union"
-         "Sets/superset?"
-    ]
+                "Sets/difference"
+                 "Sets/intersection"
+                 "Sets/union"
+                 "Sets/superset?"
+        ]

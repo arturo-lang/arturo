@@ -1,0 +1,33 @@
+name: "not"
+type: :function
+description: "calculate the binary complement the given value"
+module: "Bitwise"
+line: 100
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Bitwise.nim#L100"
+returns: [
+                :integer
+                 :binary
+                 :nothing
+        ]
+examples: [
+                "print not 123      ; -124"
+                 {
+                        a: 123
+                        not 'a             ; a: -124
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        value: [
+                        :integer
+                         :literal
+                         :binary
+                ]
+        ]
+related: [
+                "Bitwise/nor"
+                 "Bitwise/xnor"
+                 "Bitwise/xor"
+                 "Bitwise/nand"
+        ]

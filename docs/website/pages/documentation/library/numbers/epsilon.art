@@ -1,0 +1,15 @@
+name: "epsilon"
+type: :floating
+description: "the constant e, Euler\'s number"
+module: "Numbers"
+line: 624
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L624"
+returns: [
+                :floating
+        ]
+related: [
+                "Numbers/pi"
+                 "Numbers/numerator"
+                 "Numbers/ceil"
+                 "Numbers/denominator"
+        ]
