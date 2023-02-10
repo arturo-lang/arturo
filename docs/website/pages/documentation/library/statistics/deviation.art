@@ -3,7 +3,7 @@ type: :function
 description: "get population standard deviation of given collection of numbers"
 module: "Statistics"
 line: 68
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Statistics.nim#L68"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Statistics.nim#L68"
 returns: [
                 :floating
         ]

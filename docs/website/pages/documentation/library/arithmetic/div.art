@@ -3,7 +3,7 @@ type: :function
 description: "perform integer division between given values and return result"
 module: "Arithmetic"
 line: 72
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Arithmetic.nim#L72"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Arithmetic.nim#L72"
 returns: [
                 :integer
                  :floating

@@ -3,7 +3,7 @@ type: :function
 description: "subtract given values and return result"
 module: "Arithmetic"
 line: 248
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Arithmetic.nim#L248"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Arithmetic.nim#L248"
 returns: [
                 :integer
                  :floating

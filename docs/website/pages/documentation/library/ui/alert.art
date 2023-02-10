@@ -3,7 +3,7 @@ type: :function
 description: "show notification with given title and message"
 module: "Ui"
 line: 46
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Ui.nim#L46"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Ui.nim#L46"
 returns: [
                 :nothing
         ]

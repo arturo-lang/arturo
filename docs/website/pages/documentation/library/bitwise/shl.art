@@ -3,7 +3,7 @@ type: :function
 description: "shift-left first value bits by second value"
 module: "Bitwise"
 line: 141
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Bitwise.nim#L141"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Bitwise.nim#L141"
 returns: [
                 :integer
                  :nothing

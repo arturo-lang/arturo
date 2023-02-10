@@ -3,7 +3,7 @@ type: :function
 description: "get colored version of given string"
 module: "Io"
 line: 66
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Io.nim#L66"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Io.nim#L66"
 returns: [
                 :string
         ]

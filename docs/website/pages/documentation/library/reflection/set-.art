@@ -3,7 +3,7 @@ type: :function
 description: "check if given variable is defined"
 module: "Reflection"
 line: 812
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L812"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Reflection.nim#L812"
 returns: [
                 :logical
         ]

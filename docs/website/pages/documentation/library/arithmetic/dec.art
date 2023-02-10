@@ -3,7 +3,7 @@ type: :function
 description: "decrease given value by 1"
 module: "Arithmetic"
 line: 52
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Arithmetic.nim#L52"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Arithmetic.nim#L52"
 returns: [
                 :integer
                  :floating

@@ -3,7 +3,7 @@ type: :function
 description: "get date before given one using interval"
 module: "Dates"
 line: 96
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Dates.nim#L96"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Dates.nim#L96"
 returns: [
                 :date
         ]

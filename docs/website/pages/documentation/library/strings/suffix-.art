@@ -2,8 +2,8 @@ name: "suffix?"
 type: :function
 description: "check if string ends with given suffix"
 module: "Strings"
-line: 950
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L950"
+line: 951
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Strings.nim#L951"
 returns: [
                 :logical
         ]

@@ -3,7 +3,7 @@ type: :function
 description: "calculate the number of given collection\'s items that satisfy condition"
 module: "Iterators"
 line: 659
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Iterators.nim#L659"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Iterators.nim#L659"
 returns: [
                 :integer
         ]

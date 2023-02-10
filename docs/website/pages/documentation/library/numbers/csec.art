@@ -3,7 +3,7 @@ type: :function
 description: "calculate the cosecant of given angle"
 module: "Numbers"
 line: 474
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L474"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Numbers.nim#L474"
 returns: [
                 :floating
                  :complex

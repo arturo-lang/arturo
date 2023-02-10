@@ -3,7 +3,7 @@ type: :function
 description: "chunk together consecutive items in collection that abide by given predicate"
 module: "Iterators"
 line: 468
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Iterators.nim#L468"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Iterators.nim#L468"
 returns: [
                 :block
                  :nothing

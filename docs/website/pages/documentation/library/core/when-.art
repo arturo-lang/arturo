@@ -3,7 +3,7 @@ type: :function
 description: "check if a specific condition is fulfilled and, if so, execute given action"
 module: "Core"
 line: 854
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L854"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Core.nim#L854"
 returns: [
                 :logical
         ]

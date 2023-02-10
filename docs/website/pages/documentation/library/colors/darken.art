@@ -3,7 +3,7 @@ type: :function
 description: "darken color by given percentage (0.0-1.0)"
 module: "Colors"
 line: 65
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Colors.nim#L65"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Colors.nim#L65"
 returns: [
                 :color
         ]

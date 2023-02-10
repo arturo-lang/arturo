@@ -3,7 +3,7 @@ type: :function
 description: "get index of function arities"
 module: "Reflection"
 line: 37
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L37"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Reflection.nim#L37"
 returns: [
                 :dictionary
         ]

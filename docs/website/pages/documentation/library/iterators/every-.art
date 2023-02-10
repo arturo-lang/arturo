@@ -3,7 +3,7 @@ type: :function
 description: "check if every item in collection satisfies given condition"
 module: "Iterators"
 line: 689
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Iterators.nim#L689"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Iterators.nim#L689"
 returns: [
                 :logical
         ]

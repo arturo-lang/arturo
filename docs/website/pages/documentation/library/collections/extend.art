@@ -3,7 +3,7 @@ type: :function
 description: "get new dictionary by merging given ones"
 module: "Collections"
 line: 436
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L436"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Collections.nim#L436"
 returns: [
                 :dictionary
         ]

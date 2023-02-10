@@ -3,7 +3,7 @@ type: :function
 description: "get dictionary-index charset for given locale"
 module: "Strings"
 line: 68
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L68"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Strings.nim#L68"
 returns: [
                 :null
                  :block

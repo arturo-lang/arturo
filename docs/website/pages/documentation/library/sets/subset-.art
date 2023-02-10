@@ -3,7 +3,7 @@ type: :function
 description: "check if given set is a subset of second set"
 module: "Sets"
 line: 194
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Sets.nim#L194"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Sets.nim#L194"
 returns: [
                 :logical
         ]

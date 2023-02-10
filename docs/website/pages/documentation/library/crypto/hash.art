@@ -3,7 +3,7 @@ type: :function
 description: "get hash for given value"
 module: "Crypto"
 line: 210
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Crypto.nim#L210"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Crypto.nim#L210"
 returns: [
                 :integer
                  :string

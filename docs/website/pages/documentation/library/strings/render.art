@@ -3,7 +3,7 @@ type: :function
 description: "render template with |string| interpolation"
 module: "Strings"
 line: 767
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L767"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Strings.nim#L767"
 returns: [
                 :string
                  :nothing
