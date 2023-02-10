@@ -3,7 +3,7 @@ type: :function
 description: "collect items from given collection condition while is true"
 module: "Iterators"
 line: 581
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Iterators.nim#L581"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Iterators.nim#L581"
 returns: [
                 :block
                  :nothing

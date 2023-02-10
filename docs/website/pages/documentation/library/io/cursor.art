@@ -3,7 +3,7 @@ type: :function
 description: "turn cursor visibility on/off"
 module: "Io"
 line: 131
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Io.nim#L131"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Io.nim#L131"
 returns: [
                 :nothing
         ]

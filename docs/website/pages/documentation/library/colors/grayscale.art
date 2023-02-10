@@ -3,7 +3,7 @@ type: :function
 description: "convert color to grayscale"
 module: "Colors"
 line: 113
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Colors.nim#L113"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Colors.nim#L113"
 returns: [
                 :color
         ]

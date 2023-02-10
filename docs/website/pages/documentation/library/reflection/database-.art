@@ -3,7 +3,7 @@ type: :function
 description: "checks if given value is of type :database"
 module: "Reflection"
 line: 324
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L324"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Reflection.nim#L324"
 returns: [
                 :logical
         ]

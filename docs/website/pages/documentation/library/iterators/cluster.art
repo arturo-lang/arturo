@@ -3,7 +3,7 @@ type: :function
 description: "group together items in collection that abide by given predicate"
 module: "Iterators"
 line: 522
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Iterators.nim#L522"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Iterators.nim#L522"
 returns: [
                 :block
                  :nothing

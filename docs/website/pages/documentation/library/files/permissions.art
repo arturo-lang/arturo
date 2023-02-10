@@ -3,7 +3,7 @@ type: :function
 description: "check permissions of given file"
 module: "Files"
 line: 196
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Files.nim#L196"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Files.nim#L196"
 returns: [
                 :null
                  :dictionary

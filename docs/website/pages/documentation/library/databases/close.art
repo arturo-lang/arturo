@@ -3,7 +3,7 @@ type: :function
 description: "close given database"
 module: "Databases"
 line: 52
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Databases.nim#L52"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Databases.nim#L52"
 returns: [
                 :nothing
         ]

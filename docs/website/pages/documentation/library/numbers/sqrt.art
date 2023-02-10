@@ -3,7 +3,7 @@ type: :function
 description: "get square root of given value"
 module: "Numbers"
 line: 1298
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L1298"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Numbers.nim#L1298"
 returns: [
                 :floating
         ]

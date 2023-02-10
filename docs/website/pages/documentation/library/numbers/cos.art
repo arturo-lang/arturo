@@ -3,7 +3,7 @@ type: :function
 description: "calculate the cosine of given angle"
 module: "Numbers"
 line: 432
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L432"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Numbers.nim#L432"
 returns: [
                 :floating
                  :complex

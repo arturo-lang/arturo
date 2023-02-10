@@ -2,8 +2,8 @@ name: "wordwrap"
 type: :function
 description: "word wrap a given string"
 module: "Strings"
-line: 1105
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L1105"
+line: 1106
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Strings.nim#L1106"
 returns: [
                 :string
         ]

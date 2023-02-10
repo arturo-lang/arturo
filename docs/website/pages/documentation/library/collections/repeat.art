@@ -3,7 +3,7 @@ type: :function
 description: "repeat value the given number of times and return new one"
 module: "Collections"
 line: 1297
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L1297"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Collections.nim#L1297"
 returns: [
                 :string
                  :block

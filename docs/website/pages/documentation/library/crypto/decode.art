@@ -3,7 +3,7 @@ type: :function
 description: "encode given value (default: base-64)"
 module: "Crypto"
 line: 67
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Crypto.nim#L67"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Crypto.nim#L67"
 returns: [
                 :string
                  :nothing
