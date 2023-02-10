@@ -3,7 +3,7 @@ type: :function
 description: "create new socket connection to given server port"
 module: "Sockets"
 line: 75
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Sockets.nim#L75"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Sockets.nim#L75"
 returns: [
                 :socket
         ]

@@ -3,7 +3,7 @@ type: :function
 description: "get the absolute value for given integer"
 module: "Numbers"
 line: 53
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L53"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Numbers.nim#L53"
 returns: [
                 :integer
                  :floating

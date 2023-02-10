@@ -3,7 +3,7 @@ type: :function
 description: "checks if given value is of type :dictionary"
 module: "Reflection"
 line: 358
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L358"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Reflection.nim#L358"
 returns: [
                 :logical
         ]

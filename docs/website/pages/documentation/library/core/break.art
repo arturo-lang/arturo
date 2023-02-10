@@ -3,7 +3,7 @@ type: :function
 description: "break out of current block or loop"
 module: "Core"
 line: 86
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L86"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Core.nim#L86"
 returns: [
                 :nothing
         ]

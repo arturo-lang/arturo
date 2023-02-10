@@ -3,7 +3,7 @@ type: :function
 description: "execute action while the given condition is is not false or null"
 module: "Core"
 line: 894
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L894"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Core.nim#L894"
 returns: [
                 :nothing
         ]

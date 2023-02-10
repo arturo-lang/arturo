@@ -3,7 +3,7 @@ type: :function
 description: "check if given date is a Sunday"
 module: "Dates"
 line: 303
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Dates.nim#L303"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Dates.nim#L303"
 returns: [
                 :logical
         ]

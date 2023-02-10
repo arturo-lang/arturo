@@ -3,7 +3,7 @@ type: :function
 description: "create palette using given base color"
 module: "Colors"
 line: 184
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Colors.nim#L184"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Colors.nim#L184"
 returns: [
                 :block
         ]

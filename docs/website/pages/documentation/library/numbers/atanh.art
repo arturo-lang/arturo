@@ -3,7 +3,7 @@ type: :function
 description: "calculate the inverse hyperbolic tangent of given angle"
 module: "Numbers"
 line: 350
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L350"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Numbers.nim#L350"
 returns: [
                 :floating
                  :complex

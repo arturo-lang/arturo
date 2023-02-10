@@ -3,7 +3,7 @@ type: :function
 description: "check if given number or collection size is one"
 module: "Collections"
 line: 1027
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L1027"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Collections.nim#L1027"
 returns: [
                 :logical
         ]

@@ -3,7 +3,7 @@ type: :function
 description: "check if string matches given regular expression"
 module: "Strings"
 line: 568
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L568"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Strings.nim#L568"
 returns: [
                 :logical
         ]

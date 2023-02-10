@@ -2,8 +2,8 @@ name: "whitespace?"
 type: :function
 description: "check if given string consists only of whitespace"
 module: "Strings"
-line: 1146
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L1146"
+line: 1147
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Strings.nim#L1147"
 returns: [
                 :logical
         ]

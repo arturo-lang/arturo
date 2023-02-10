@@ -3,7 +3,7 @@ type: :function
 description: "show popup dialog with given title and message and return result"
 module: "Ui"
 line: 128
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Ui.nim#L128"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Ui.nim#L128"
 returns: [
                 :logical
                  :literal

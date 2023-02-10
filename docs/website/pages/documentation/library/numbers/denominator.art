@@ -3,7 +3,7 @@ type: :function
 description: "get the denominator of given number"
 module: "Numbers"
 line: 558
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L558"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Numbers.nim#L558"
 returns: [
                 :integer
         ]

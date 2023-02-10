@@ -3,7 +3,7 @@ type: :function
 description: "perform integer division between given values and return tuple with quotient and remainder"
 module: "Arithmetic"
 line: 94
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Arithmetic.nim#L94"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Arithmetic.nim#L94"
 returns: [
                 :block
                  :nothing

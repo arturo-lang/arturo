@@ -3,7 +3,7 @@ type: :function
 description: "check if given number is even"
 module: "Numbers"
 line: 629
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L629"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Numbers.nim#L629"
 returns: [
                 :logical
         ]

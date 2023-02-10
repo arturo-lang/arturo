@@ -3,7 +3,7 @@ type: :function
 description: "calculate the exponential function for given value"
 module: "Numbers"
 line: 648
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L648"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Numbers.nim#L648"
 returns: [
                 :floating
                  :complex

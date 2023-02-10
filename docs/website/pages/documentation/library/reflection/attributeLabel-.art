@@ -3,7 +3,7 @@ type: :function
 description: "checks if given value is of type :attributeLabel"
 module: "Reflection"
 line: 136
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L136"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Reflection.nim#L136"
 returns: [
                 :logical
         ]

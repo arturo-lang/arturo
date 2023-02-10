@@ -3,7 +3,7 @@ type: :function
 description: "check if string starts with given prefix"
 module: "Strings"
 line: 742
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L742"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Strings.nim#L742"
 returns: [
                 :logical
         ]
