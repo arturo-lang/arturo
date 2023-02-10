@@ -3,7 +3,7 @@ type: :function
 description: "spin color around the hue wheel by given amount"
 module: "Colors"
 line: 275
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Colors.nim#L275"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Colors.nim#L275"
 returns: [
                 :color
         ]

@@ -3,7 +3,7 @@ type: :function
 description: "calculate the inverse hyperbolic sine of given angle"
 module: "Numbers"
 line: 290
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Numbers.nim#L290"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L290"
 returns: [
                 :floating
                  :complex

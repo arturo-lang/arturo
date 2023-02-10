@@ -3,7 +3,7 @@ type: :function
 description: "get normalized version of given path"
 module: "Paths"
 line: 270
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Paths.nim#L270"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Paths.nim#L270"
 returns: [
                 :string
                  :nothing

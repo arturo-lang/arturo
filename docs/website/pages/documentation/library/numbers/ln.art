@@ -3,7 +3,7 @@ type: :function
 description: "calculate the natural logarithm of given value"
 module: "Numbers"
 line: 884
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Numbers.nim#L884"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L884"
 returns: [
                 :floating
                  :complex

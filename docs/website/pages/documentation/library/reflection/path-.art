@@ -3,7 +3,7 @@ type: :function
 description: "checks if given value is of type :path"
 module: "Reflection"
 line: 703
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Reflection.nim#L703"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L703"
 returns: [
                 :logical
         ]

@@ -3,7 +3,7 @@ type: :function
 description: "checks if given value is a custom-type object"
 module: "Reflection"
 line: 682
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Reflection.nim#L682"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L682"
 returns: [
                 :logical
         ]

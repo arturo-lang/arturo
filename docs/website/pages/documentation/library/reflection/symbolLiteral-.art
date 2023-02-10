@@ -3,7 +3,7 @@ type: :function
 description: "checks if given value is of type :symbolLiteral"
 module: "Reflection"
 line: 904
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Reflection.nim#L904"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L904"
 returns: [
                 :logical
         ]

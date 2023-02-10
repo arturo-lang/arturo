@@ -3,7 +3,7 @@ type: :function
 description: "get collection\'s item by given index"
 module: "Collections"
 line: 543
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Collections.nim#L543"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L543"
 returns: [
                 :any
         ]

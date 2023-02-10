@@ -3,7 +3,7 @@ type: :function
 description: "check if given integer is prime"
 module: "Numbers"
 line: 1069
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Numbers.nim#L1069"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L1069"
 returns: [
                 :logical
         ]

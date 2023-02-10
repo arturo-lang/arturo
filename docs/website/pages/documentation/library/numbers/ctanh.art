@@ -3,7 +3,7 @@ type: :function
 description: "calculate the hyperbolic cotangent of given angle"
 module: "Numbers"
 line: 537
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Numbers.nim#L537"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L537"
 returns: [
                 :floating
                  :complex

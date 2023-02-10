@@ -3,7 +3,7 @@ type: :function
 description: "set collection\'s item at index to given value"
 module: "Collections"
 line: 1452
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Collections.nim#L1452"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L1452"
 returns: [
                 :nothing
         ]

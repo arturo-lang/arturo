@@ -3,7 +3,7 @@ type: :function
 description: "get clipboard content"
 module: "Ui"
 line: 203
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Ui.nim#L203"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Ui.nim#L203"
 returns: [
                 :string
         ]

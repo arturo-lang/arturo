@@ -3,7 +3,7 @@ type: :function
 description: "opens a new database connection and returns database"
 module: "Databases"
 line: 75
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Databases.nim#L75"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Databases.nim#L75"
 returns: [
                 :database
         ]

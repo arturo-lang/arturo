@@ -3,7 +3,7 @@ type: :function
 description: "clear terminal"
 module: "Io"
 line: 52
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Io.nim#L52"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Io.nim#L52"
 returns: [
                 :nothing
         ]

@@ -3,7 +3,7 @@ type: :function
 description: "return the union of given sets"
 module: "Sets"
 line: 308
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Sets.nim#L308"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Sets.nim#L308"
 returns: [
                 :block
                  :nothing

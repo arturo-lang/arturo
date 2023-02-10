@@ -3,7 +3,7 @@ type: :function
 description: "close given socket"
 module: "Sockets"
 line: 264
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Sockets.nim#L264"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Sockets.nim#L264"
 returns: [
                 :nothing
         ]

@@ -3,7 +3,7 @@ type: :function
 description: "get median from given collection of numbers"
 module: "Statistics"
 line: 124
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Statistics.nim#L124"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Statistics.nim#L124"
 returns: [
                 :null
                  :integer

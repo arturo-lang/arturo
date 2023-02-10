@@ -3,7 +3,7 @@ type: :function
 description: "check whether given value is an infinite one"
 module: "Numbers"
 line: 830
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Numbers.nim#L830"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L830"
 returns: [
                 :logical
         ]

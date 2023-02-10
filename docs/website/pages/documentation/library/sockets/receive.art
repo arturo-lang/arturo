@@ -3,7 +3,7 @@ type: :function
 description: "receive line of data from selected socket"
 module: "Sockets"
 line: 161
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Sockets.nim#L161"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Sockets.nim#L161"
 returns: [
                 :string
         ]

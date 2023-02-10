@@ -3,7 +3,7 @@ type: :function
 description: "check if given set is a superset of second set"
 module: "Sets"
 line: 251
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Sets.nim#L251"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Sets.nim#L251"
 returns: [
                 :logical
         ]

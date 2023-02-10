@@ -3,7 +3,7 @@ type: :function
 description: "get dictionary of set attributes"
 module: "Reflection"
 line: 153
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Reflection.nim#L153"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L153"
 returns: [
                 :dictionary
         ]

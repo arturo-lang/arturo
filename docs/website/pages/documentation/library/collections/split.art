@@ -3,7 +3,7 @@ type: :function
 description: "split collection to components"
 module: "Collections"
 line: 1867
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Collections.nim#L1867"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L1867"
 returns: [
                 :block
                  :nothing

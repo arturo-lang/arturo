@@ -3,7 +3,7 @@ type: :function
 description: "calculate the inverse cosine of given angle"
 module: "Numbers"
 line: 84
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Numbers.nim#L84"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L84"
 returns: [
                 :floating
                  :complex

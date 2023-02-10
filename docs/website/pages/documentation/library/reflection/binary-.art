@@ -3,7 +3,7 @@ type: :function
 description: "checks if given value is of type :binary"
 module: "Reflection"
 line: 213
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Reflection.nim#L213"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L213"
 returns: [
                 :logical
         ]

@@ -3,7 +3,7 @@ type: :function
 description: "strip whitespace from given string"
 module: "Strings"
 line: 914
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Strings.nim#L914"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L914"
 returns: [
                 :string
                  :nothing

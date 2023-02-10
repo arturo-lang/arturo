@@ -3,7 +3,7 @@ type: :function
 description: "check if collection contains given value"
 module: "Collections"
 line: 226
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Collections.nim#L226"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L226"
 returns: [
                 :logical
         ]

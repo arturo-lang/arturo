@@ -3,7 +3,7 @@ type: :function
 description: "check if valueA = valueB (equality)"
 module: "Comparison"
 line: 89
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Comparison.nim#L89"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Comparison.nim#L89"
 returns: [
                 :logical
         ]

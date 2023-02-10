@@ -3,7 +3,7 @@ type: :function
 description: "modular exponentation: calculate the result of (base^exponent) % divider"
 module: "Numbers"
 line: 1043
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Numbers.nim#L1043"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L1043"
 returns: [
                 :null
                  :integer

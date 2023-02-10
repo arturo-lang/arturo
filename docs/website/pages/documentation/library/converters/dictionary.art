@@ -3,7 +3,7 @@ type: :function
 description: "create dictionary from given block or file, by getting all internal symbols"
 module: "Converters"
 line: 811
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Converters.nim#L811"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Converters.nim#L811"
 returns: [
                 :dictionary
         ]

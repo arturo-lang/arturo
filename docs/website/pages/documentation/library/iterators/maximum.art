@@ -3,7 +3,7 @@ type: :function
 description: "get maximum item from collection based on given predicate"
 module: "Iterators"
 line: 1149
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Iterators.nim#L1149"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Iterators.nim#L1149"
 returns: [
                 :block
                  :nothing

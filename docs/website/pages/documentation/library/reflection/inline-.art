@@ -3,7 +3,7 @@ type: :function
 description: "checks if given value is of type :inline"
 module: "Reflection"
 line: 442
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Reflection.nim#L442"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L442"
 returns: [
                 :logical
         ]

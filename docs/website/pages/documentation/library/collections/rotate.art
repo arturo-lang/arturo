@@ -3,7 +3,7 @@ type: :function
 description: "right-rotate collection by given distance"
 module: "Collections"
 line: 1386
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Collections.nim#L1386"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L1386"
 returns: [
                 :string
                  :block

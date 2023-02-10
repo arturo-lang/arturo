@@ -3,7 +3,7 @@ type: :function
 description: "get minimum item from collection based on given predicate"
 module: "Iterators"
 line: 1203
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Iterators.nim#L1203"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Iterators.nim#L1203"
 returns: [
                 :block
                  :nothing

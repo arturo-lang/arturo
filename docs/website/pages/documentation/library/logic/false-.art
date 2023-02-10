@@ -3,7 +3,7 @@ type: :function
 description: "returns true if given value is false; otherwise, it returns false"
 module: "Logic"
 line: 167
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Logic.nim#L167"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Logic.nim#L167"
 returns: [
                 :logical
         ]

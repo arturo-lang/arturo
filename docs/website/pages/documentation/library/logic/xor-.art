@@ -3,7 +3,7 @@ type: :function
 description: "return the logical XOR for the given values"
 module: "Logic"
 line: 435
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Logic.nim#L435"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Logic.nim#L435"
 returns: [
                 :logical
         ]
