@@ -3,7 +3,7 @@ type: :function
 description: "blend given colors and get result"
 module: "Colors"
 line: 35
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Colors.nim#L35"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Colors.nim#L35"
 returns: [
                 :color
         ]

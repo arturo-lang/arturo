@@ -3,7 +3,7 @@ type: :function
 description: "calculate the inverse secant of given angle"
 module: "Numbers"
 line: 227
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Numbers.nim#L227"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L227"
 returns: [
                 :floating
                  :complex

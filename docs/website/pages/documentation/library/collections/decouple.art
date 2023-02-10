@@ -3,7 +3,7 @@ type: :function
 description: "get tuple of collections from a coupled collection of tuples"
 module: "Collections"
 line: 326
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Collections.nim#L326"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L326"
 returns: [
                 :block
         ]

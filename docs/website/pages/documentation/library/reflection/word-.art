@@ -3,7 +3,7 @@ type: :function
 description: "checks if given value is of type :word"
 module: "Reflection"
 line: 1002
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Reflection.nim#L1002"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L1002"
 returns: [
                 :logical
         ]

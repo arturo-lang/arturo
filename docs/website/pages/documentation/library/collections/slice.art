@@ -3,7 +3,7 @@ type: :function
 description: "get a slice of collection between given indices"
 module: "Collections"
 line: 1601
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Collections.nim#L1601"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L1601"
 returns: [
                 :string
                  :block

@@ -3,7 +3,7 @@ type: :function
 description: "send given message to selected socket"
 module: "Sockets"
 line: 207
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Sockets.nim#L207"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Sockets.nim#L207"
 returns: [
                 :nothing
         ]

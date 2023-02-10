@@ -3,7 +3,7 @@ type: :function
 description: "calculate the logarithm of value using given base"
 module: "Numbers"
 line: 906
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Numbers.nim#L906"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L906"
 returns: [
                 :floating
         ]

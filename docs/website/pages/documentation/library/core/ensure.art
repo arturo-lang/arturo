@@ -3,7 +3,7 @@ type: :function
 description: "assert given condition is true, or exit"
 module: "Core"
 line: 411
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Core.nim#L411"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L411"
 returns: [
                 :nothing
         ]

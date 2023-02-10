@@ -201,7 +201,7 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
         when defined(DOCGEN):
             if v.info.line != 0:
                 result["line"] = newInteger(v.info.line)
-                result["source"] = newString("https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/" & result["module"].s & ".nim#L" & $(result["line"].i))
+                result["source"] = newString("https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/" & result["module"].s & ".nim#L" & $(result["line"].i))
 
         if v.info.kind==Function:
             var args = initOrderedTable[string,Value]()

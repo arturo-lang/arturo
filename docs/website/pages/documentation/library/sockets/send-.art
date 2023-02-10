@@ -3,7 +3,7 @@ type: :function
 description: "send given message to selected socket and return true if successful"
 module: "Sockets"
 line: 238
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Sockets.nim#L238"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Sockets.nim#L238"
 returns: [
                 :logical
         ]

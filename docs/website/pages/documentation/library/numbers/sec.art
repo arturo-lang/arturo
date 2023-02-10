@@ -3,7 +3,7 @@ type: :function
 description: "calculate the secant of given angle"
 module: "Numbers"
 line: 1214
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Numbers.nim#L1214"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L1214"
 returns: [
                 :floating
                  :complex

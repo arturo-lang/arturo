@@ -3,7 +3,7 @@ type: :function
 description: "drop first *number* of elements from given collection and return the remaining ones"
 module: "Collections"
 line: 352
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Collections.nim#L352"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L352"
 returns: [
                 :string
                  :block

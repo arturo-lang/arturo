@@ -3,7 +3,7 @@ type: :function
 description: "define new type with given prototype"
 module: "Converters"
 line: 698
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Converters.nim#L698"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Converters.nim#L698"
 returns: [
                 :nothing
         ]

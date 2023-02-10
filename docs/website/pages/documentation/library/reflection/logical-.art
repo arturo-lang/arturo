@@ -3,7 +3,7 @@ type: :function
 description: "checks if given value is of type :logical"
 module: "Reflection"
 line: 642
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Reflection.nim#L642"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L642"
 returns: [
                 :logical
         ]

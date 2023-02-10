@@ -3,7 +3,7 @@ type: :function
 description: "get path for given module name"
 module: "Paths"
 line: 249
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Paths.nim#L249"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Paths.nim#L249"
 returns: [
                 :null
                  :string

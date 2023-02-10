@@ -3,7 +3,7 @@ type: :function
 description: "get population skewness of given collection of numbers"
 module: "Statistics"
 line: 153
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Statistics.nim#L153"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Statistics.nim#L153"
 returns: [
                 :floating
         ]

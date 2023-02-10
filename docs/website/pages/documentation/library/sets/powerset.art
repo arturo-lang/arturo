@@ -3,7 +3,7 @@ type: :function
 description: "return the powerset of given set"
 module: "Sets"
 line: 173
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Sets.nim#L173"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Sets.nim#L173"
 returns: [
                 :block
                  :nothing

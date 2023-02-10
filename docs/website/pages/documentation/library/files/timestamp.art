@@ -3,7 +3,7 @@ type: :function
 description: "get file timestamps"
 module: "Files"
 line: 438
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Files.nim#L438"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Files.nim#L438"
 returns: [
                 :null
                  :dictionary

@@ -3,7 +3,7 @@ type: :function
 description: "check if string ends with given suffix"
 module: "Strings"
 line: 951
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Strings.nim#L951"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L951"
 returns: [
                 :logical
         ]

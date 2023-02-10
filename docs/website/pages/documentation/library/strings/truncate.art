@@ -3,7 +3,7 @@ type: :function
 description: "truncate string at given length"
 module: "Strings"
 line: 1001
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Strings.nim#L1001"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L1001"
 returns: [
                 :string
                  :nothing

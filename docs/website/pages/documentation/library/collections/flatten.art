@@ -3,7 +3,7 @@ type: :function
 description: "flatten given collection by eliminating nested blocks"
 module: "Collections"
 line: 509
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Collections.nim#L509"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L509"
 returns: [
                 :block
         ]

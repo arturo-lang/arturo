@@ -3,7 +3,7 @@ type: :function
 description: "align string by adding given padding"
 module: "Strings"
 line: 695
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Strings.nim#L695"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L695"
 returns: [
                 :string
         ]

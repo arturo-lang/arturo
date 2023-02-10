@@ -3,7 +3,7 @@ type: :function
 description: "create closure-style block by embedding given words"
 module: "Converters"
 line: 1420
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Converters.nim#L1420"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Converters.nim#L1420"
 returns: [
                 :block
         ]
