@@ -3,7 +3,7 @@ type: :function
 description: "create new value by cloning given one"
 module: "Core"
 line: 541
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L541"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Core.nim#L541"
 returns: [
                 :any
         ]

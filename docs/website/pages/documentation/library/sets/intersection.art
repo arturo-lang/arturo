@@ -3,7 +3,7 @@ type: :function
 description: "return the intersection of given sets"
 module: "Sets"
 line: 146
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Sets.nim#L146"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Sets.nim#L146"
 returns: [
                 :block
                  :nothing

@@ -3,7 +3,7 @@ type: :function
 description: "if condition is not false or null perform given action, otherwise perform alternative action"
 module: "Core"
 line: 637
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L637"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Core.nim#L637"
 returns: [
                 :any
         ]

@@ -3,7 +3,7 @@ type: :function
 description: "open given URL with default browser"
 module: "Net"
 line: 48
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Net.nim#L48"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Net.nim#L48"
 returns: [
                 :nothing
         ]

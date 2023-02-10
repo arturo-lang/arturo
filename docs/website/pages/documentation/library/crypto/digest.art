@@ -3,7 +3,7 @@ type: :function
 description: "get digest for given value (default: MD5)"
 module: "Crypto"
 line: 177
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Crypto.nim#L177"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Crypto.nim#L177"
 returns: [
                 :string
                  :nothing

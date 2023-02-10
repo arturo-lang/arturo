@@ -3,7 +3,7 @@ type: :function
 description: "print info for given symbol"
 module: "Reflection"
 line: 377
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L377"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Reflection.nim#L377"
 returns: [
                 :dictionary
                  :nothing

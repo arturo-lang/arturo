@@ -3,7 +3,7 @@ type: :function
 description: "extract components from path"
 module: "Paths"
 line: 61
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Paths.nim#L61"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Paths.nim#L61"
 returns: [
                 :string
                  :dictionary

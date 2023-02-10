@@ -3,7 +3,7 @@ type: :function
 description: "check if current user has administrator/root privileges"
 module: "System"
 line: 313
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/System.nim#L313"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/System.nim#L313"
 returns: [
                 :logical
         ]

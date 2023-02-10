@@ -3,7 +3,7 @@ type: :function
 description: "get list of factors for given integer"
 module: "Numbers"
 line: 688
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L688"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Numbers.nim#L688"
 returns: [
                 :block
         ]

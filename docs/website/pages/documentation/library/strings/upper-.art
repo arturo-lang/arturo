@@ -2,8 +2,8 @@ name: "upper?"
 type: :function
 description: "check if given string is uppercase"
 module: "Strings"
-line: 1075
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L1075"
+line: 1076
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Strings.nim#L1076"
 returns: [
                 :logical
         ]

@@ -3,7 +3,7 @@ type: :function
 description: "force value within given range"
 module: "Numbers"
 line: 390
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L390"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Numbers.nim#L390"
 returns: [
                 :integer
                  :floating

@@ -3,7 +3,7 @@ type: :function
 description: "create function with given arguments and body"
 module: "Converters"
 line: 933
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Converters.nim#L933"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Converters.nim#L933"
 returns: [
                 :function
         ]

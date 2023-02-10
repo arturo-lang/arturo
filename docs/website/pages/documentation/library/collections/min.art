@@ -3,7 +3,7 @@ type: :function
 description: "get minimum element in given collection"
 module: "Collections"
 line: 982
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L982"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Collections.nim#L982"
 returns: [
                 :null
                  :any

@@ -3,7 +3,7 @@ type: :function
 description: "compare given values and return -1, 0, or 1 based on the result"
 module: "Comparison"
 line: 65
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Comparison.nim#L65"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Comparison.nim#L65"
 returns: [
                 :integer
         ]

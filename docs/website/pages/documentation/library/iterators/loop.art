@@ -3,7 +3,7 @@ type: :function
 description: "loop through collection, using given iterator and block"
 module: "Iterators"
 line: 1018
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Iterators.nim#L1018"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Iterators.nim#L1018"
 returns: [
                 :nothing
         ]

@@ -3,7 +3,7 @@ type: :function
 description: "exit program with error message"
 module: "System"
 line: 198
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/System.nim#L198"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/System.nim#L198"
 returns: [
                 :logical
         ]

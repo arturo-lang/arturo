@@ -3,7 +3,7 @@ type: :function
 description: "return the difference of given sets"
 module: "Sets"
 line: 58
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Sets.nim#L58"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Sets.nim#L58"
 returns: [
                 :block
                  :nothing

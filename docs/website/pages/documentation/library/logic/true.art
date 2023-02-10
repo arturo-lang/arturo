@@ -3,7 +3,7 @@ type: :logical
 description: "the TRUE logical constant"
 module: "Logic"
 line: 368
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Logic.nim#L368"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Logic.nim#L368"
 returns: [
                 :logical
         ]

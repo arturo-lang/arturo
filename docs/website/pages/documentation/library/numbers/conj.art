@@ -3,7 +3,7 @@ type: :function
 description: "calculate the complex conjugate of given number"
 module: "Numbers"
 line: 415
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L415"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Numbers.nim#L415"
 returns: [
                 :complex
         ]

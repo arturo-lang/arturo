@@ -3,7 +3,7 @@ type: :function
 description: "check if given number or collection size is zero"
 module: "Collections"
 line: 2255
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L2255"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Collections.nim#L2255"
 returns: [
                 :logical
         ]

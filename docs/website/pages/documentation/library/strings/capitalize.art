@@ -3,7 +3,7 @@ type: :function
 description: "convert given string to capitalized"
 module: "Strings"
 line: 145
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L145"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Strings.nim#L145"
 returns: [
                 :char
                  :string

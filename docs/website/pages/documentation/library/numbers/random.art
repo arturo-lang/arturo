@@ -3,7 +3,7 @@ type: :function
 description: "get a random integer between given limits"
 module: "Numbers"
 line: 1138
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L1138"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Numbers.nim#L1138"
 returns: [
                 :integer
                  :floating

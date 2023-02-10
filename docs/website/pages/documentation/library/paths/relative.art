@@ -3,7 +3,7 @@ type: :function
 description: "get relative path for given path, based on current script\'s location"
 module: "Paths"
 line: 331
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Paths.nim#L331"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Paths.nim#L331"
 returns: [
                 :string
         ]

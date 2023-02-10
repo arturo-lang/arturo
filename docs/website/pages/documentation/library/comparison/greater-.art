@@ -3,7 +3,7 @@ type: :function
 description: "check if valueA > valueB (greater than)"
 module: "Comparison"
 line: 109
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Comparison.nim#L109"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Comparison.nim#L109"
 returns: [
                 :logical
         ]

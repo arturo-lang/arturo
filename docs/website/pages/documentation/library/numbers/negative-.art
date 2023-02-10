@@ -3,7 +3,7 @@ type: :function
 description: "check if given number is negative"
 module: "Numbers"
 line: 926
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L926"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Numbers.nim#L926"
 returns: [
                 :logical
         ]

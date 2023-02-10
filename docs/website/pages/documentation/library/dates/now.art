@@ -3,7 +3,7 @@ type: :function
 description: "get date/time now"
 module: "Dates"
 line: 232
-source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Dates.nim#L232"
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.82/src/library/Dates.nim#L232"
 returns: [
                 :date
         ]
