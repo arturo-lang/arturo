@@ -432,10 +432,10 @@ document.addEventListener('DOMContentLoaded', () => {
         ajaxGet("https://api.github.com/repos/arturo-lang/arturo/releases", function (data){
             var parsed = JSON.parse(data);
             /*console.log(parsed);*/
-            var releaseVersion = parsed[0].tag_name;
+            //var releaseVersion = parsed[0].tag_name;
             //setClass("release-version", parsed[0].tag_name);
             //setClass("release-version-mini", `${parsed[0].tag_name}<sup>*</sup>`);
-            setDiv("release-date", parsed[0].published_at);
+            //setDiv("release-date", parsed[0].published_at);
 			/*
             ajaxGet(parsed[0].assets_url, function (data){
                 var parsed = JSON.parse(data);
