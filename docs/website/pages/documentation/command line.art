@@ -66,7 +66,7 @@ This will output a `path/to/your/script.art.bcode` file.
 arturo -x path/to/your/script.art.bcode
 ```
 
-<h3 id="package-manager">Package manager</h3>
+<h3 id="package-manager">Package manager <span class="tag is-danger">Experimental</span></h3>
 
 Although Arturo's philosophy is batteries-included - so you'll most likely need nothing that is not already included - Arturo also comes with a ready-to-use package manager, to make your life even easier.
 
