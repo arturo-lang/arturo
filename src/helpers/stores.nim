@@ -152,8 +152,15 @@ proc loadStore*(store: VStore, justCreated=false) =
 proc createEmptyStoreOnDisk*(store: VStore) =
     case store.kind:
         of NativeStore:
+            # create path's directory if not exists
+            let dir = splitFile(store.path).dir
+            if not dir.dirExists():
+                createDir(dir)
             writeToFile(store.path, "")
         of JsonStore:
+            let dir = splitFile(store.path).dir
+            if not dir.dirExists():
+                createDir(dir)
             writeToFile(store.path, "{}")
         of SqliteStore:
             when not defined(NOSQLITE):
