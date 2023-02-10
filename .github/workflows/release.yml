@@ -20,7 +20,7 @@ jobs:
     strategy:
       matrix:
         os:
-          - ubuntu-latest
+          - ubuntu-20.04
           - macos-latest
         version:
           - mini
@@ -69,19 +69,19 @@ jobs:
           echo "$HOME/.nimble/bin" >> $GITHUB_PATH
 
       - name: Install dependencies (Linux / mini / x86)
-        if: matrix.version == 'mini' && matrix.arch != 'arm' && matrix.arch != 'arm64' && matrix.os == 'ubuntu-latest'
+        if: matrix.version == 'mini' && matrix.arch != 'arm' && matrix.arch != 'arm64' && matrix.os == 'ubuntu-20.04'
         run: |
           sudo apt-get update
           sudo apt-get install gcc-multilib g++-multilib
 
       - name: Install dependencies (Linux / mini / arm)
-        if: matrix.version == 'mini' && (matrix.arch == 'arm' || matrix.arch == 'arm64') && matrix.os == 'ubuntu-latest'
+        if: matrix.version == 'mini' && (matrix.arch == 'arm' || matrix.arch == 'arm64') && matrix.os == 'ubuntu-20.04'
         run: |
           sudo apt-get update
           sudo apt-get install gcc-arm-linux-gnueabihf gcc-aarch64-linux-gnu
 
       - name: Install dependencies (Linux / full)
-        if: matrix.version != 'mini' && matrix.os == 'ubuntu-latest'
+        if: matrix.version != 'mini' && matrix.os == 'ubuntu-20.04'
         run: |
           sudo apt-get install libwebkit2gtk-4.0-dev libmpfr-dev
 
@@ -96,7 +96,7 @@ jobs:
           echo "$HOME/.arturo/bin" >> $GITHUB_PATH
 
       - name: Create artifact (Linux)
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-20.04'
         run: |
           install -m 0755 ./bin/${{ env.app-name }} .
           tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-linux.tar.gz ${{ env.app-name }} README.md LICENSE
@@ -108,7 +108,7 @@ jobs:
           tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-macos.tar.gz ${{ env.app-name }} README.md LICENSE
 
       - name: Upload Artifact (Linux)
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-20.04'
         uses: 'actions/upload-artifact@v1'
         with:
           name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-linux.tar.gz
