@@ -595,7 +595,7 @@ proc defineSymbols*() =
         returns     = {Block,Nothing},
         example     = """
             collect [1 3 5 4 6 7] => odd?
-            ; => [1 3 4]
+            ; => [1 3 5]
 
             collect [1 2 3 4 3 2 1 2 3] 'x -> x < 4
             ; => [1 2 3]
