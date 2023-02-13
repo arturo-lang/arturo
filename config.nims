@@ -16,19 +16,18 @@ if hostOS=="windows":
         )
     )
 
-if hostOS!="windows":
-    let
-        mimallocPath = projectDir() / "extras" / "mimalloc" 
-        mimallocStatic = "mimallocStatic=\"" & (mimallocPath / "src" / "static.c") & '"'
-        mimallocIncludePath = "mimallocIncludePath=\"" & (mimallocPath / "include") & '"'
+let
+    mimallocPath = projectDir() / "extras" / "mimalloc" 
+    mimallocStatic = "mimallocStatic=\"" & (mimallocPath / "src" / "static.c") & '"'
+    mimallocIncludePath = "mimallocIncludePath=\"" & (mimallocPath / "include") & '"'
 
-    switch("define", mimallocStatic)
-    switch("define", mimallocIncludePath)
+switch("define", mimallocStatic)
+switch("define", mimallocIncludePath)
 
-    case get("cc"):
-        of "gcc", "clang", "icc", "icl":
-            switch("passC", "-ftls-model=initial-exec -fno-builtin-malloc")
-        else:
-            discard
-    
-    patchFile("stdlib", "malloc", "src" / "extras" / "mimalloc")
+case get("cc"):
+    of "gcc", "clang", "icc", "icl":
+        switch("passC", "-ftls-model=initial-exec -fno-builtin-malloc")
+    else:
+        discard
+ 
+patchFile("stdlib", "malloc", "src" / "extras" / "mimalloc")
