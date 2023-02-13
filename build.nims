@@ -102,7 +102,7 @@ var
 
     FLAGS*              = "--verbosity:1 --hints:on --hint:ProcessingStmt:off --hint:XCannotRaiseY:off --warning:GcUnsafe:off --warning:ProveInit:off --warning:ProveField:off --warning:Uninit:off " & 
                           "--skipUserCfg:on --colors:off -d:danger " &
-                          "--panics:off --mm:orc -d:useMalloc --checks:off " &
+                          "--panics:off --mm:orc -d:useMalloc --checks:off --tlsemulation:on " &
                           "-d:ssl --cincludes:extras --opt:speed --nimcache:.cache " & (when not defined(windows): "--passL:'-pthread' " else: "") &
                           "--path:src "
     CONFIG              ="@full"
