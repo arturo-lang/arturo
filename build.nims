@@ -103,7 +103,7 @@ var
     FLAGS*              = "--verbosity:1 --hints:on --hint:ProcessingStmt:off --hint:XCannotRaiseY:off --warning:GcUnsafe:off --warning:ProveInit:off --warning:ProveField:off --warning:Uninit:off " & 
                           "--skipUserCfg:on --colors:off -d:danger " &
                           "--panics:off --mm:orc -d:useMalloc --checks:off " &
-                          "-d:ssl --cincludes:extras --opt:speed --nimcache:.cache " & (when hostOS != "windows": "--passL:'-pthread' " else: "--passL:'-static-libgcc'") &
+                          "-d:ssl --cincludes:extras --opt:speed --nimcache:.cache " & (when hostOS != "windows": "--passL:'-pthread' " else: "--passL:'-static-libgcc ' ") &
                           "--path:src "
     CONFIG              ="@full"
 
