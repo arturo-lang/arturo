@@ -112,7 +112,11 @@ jobs:
           curl -L https://arturo-lang.s3.amazonaws.com/libwinpthread-1.dll -o libwinpthread-1.dll
           curl -L https://arturo-lang.s3.amazonaws.com/libgmp-10.dll -o libgmp-10.dll
           curl -L https://arturo-lang.s3.amazonaws.com/libmpfr-6.dll -o libmpfr-6.dll
+          curl -L https://arturo-lang.s3.amazonaws.com/sqlite3_64.dll -o sqlite3_64.dll
           curl -L https://arturo-lang.s3.amazonaws.com/libgcc_s_seh-1.dll -o libgcc_s_seh-1.dll
+          curl -L https://arturo-lang.s3.amazonaws.com/pcre64.dll -o pcre64.dll
+          curl -L https://arturo-lang.s3.amazonaws.com/libssl-1_1-x64.dll -o libssl-1_1-x64.dll
+          curl -L https://arturo-lang.s3.amazonaws.com/libcrypto-1_1-x64.dll -o libcrypto-1_1-x64.dll
 
           
           cp *.dll arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
@@ -131,6 +135,9 @@ jobs:
           mkdir arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
           
           curl -L https://arturo-lang.s3.amazonaws.com/libwinpthread-1.dll -o libwinpthread-1.dll
+          curl -L https://arturo-lang.s3.amazonaws.com/pcre64.dll -o pcre64.dll
+          curl -L https://arturo-lang.s3.amazonaws.com/libssl-1_1-x64.dll -o libssl-1_1-x64.dll
+          curl -L https://arturo-lang.s3.amazonaws.com/libcrypto-1_1-x64.dll -o libcrypto-1_1-x64.dll
 
           cp *.dll arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
 
