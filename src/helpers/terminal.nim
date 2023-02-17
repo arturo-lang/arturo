@@ -77,7 +77,7 @@ template rgb*(color: tuple[r, g, b: int]):string =
 
 proc isColorFriendlyTerminal*(): bool =
     when defined(windows):
-        (os.getenv("COMSPEC").isNil) or (os.getenv("PSModulePath").isNil)
+        (os.getEnv("COMSPEC").isNil) or (os.getEnv("PSModulePath").isNil)
     else:
         true        
 
