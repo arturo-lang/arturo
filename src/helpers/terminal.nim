@@ -16,6 +16,9 @@ when not defined(WEB):
 when defined(WEB):
     import jsconsole
 
+when not defined(WEB) and not defined(windows):
+    import os
+
 #=======================================
 # Global Variables
 #=======================================
@@ -71,6 +74,12 @@ template rgb*(color: string=""):string =
 template rgb*(color: tuple[r, g, b: int]):string =
     if NoColors: ""
     else: ";38;2;" & $(color[0]) & ";" & $(color[1]) & ";" & $(color[2])
+
+proc isColorFriendlyTerminal*(): bool =
+    when not defined(WEB) and not defined(windows):
+        true
+    else:
+        (os.getenv("COMSPEC").isNil) or (os.getenv("PSModulePath").isNil)
 
 proc clearTerminal*() = 
     when defined(WEB):
