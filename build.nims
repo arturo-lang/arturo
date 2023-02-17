@@ -76,7 +76,7 @@ let
         "profile"           : "-d:PROFILE --profiler:on --stackTrace:on",
         "profilenative"     : "--debugger:native",
         "profiler"          : "-d:PROFILER --profiler:on --stackTrace:on",
-        "release"           : (when defined(windows): "-d:strip" else: "-d:strip --passC:'-flto' --passL:'-flto'"),
+        "release"           : (when hostOS=="windows": "-d:strip" else: "-d:strip --passC:'-flto' --passL:'-flto'"),
         "safe"              : "-d:SAFE",
         "vcc"               : "",
         "web"               : "--verbosity:3 -d:WEB",
@@ -103,7 +103,7 @@ var
     FLAGS*              = "--verbosity:1 --hints:on --hint:ProcessingStmt:off --hint:XCannotRaiseY:off --warning:GcUnsafe:off --warning:ProveInit:off --warning:ProveField:off --warning:Uninit:off " & 
                           "--skipUserCfg:on --colors:off -d:danger " &
                           "--panics:off --mm:orc -d:useMalloc --checks:off " &
-                          "-d:ssl --cincludes:extras --opt:speed --nimcache:.cache " & (when not defined(windows): "--passL:'-pthread' " else: "") &
+                          "-d:ssl --cincludes:extras --opt:speed --nimcache:.cache " & (when hostOS != "windows": "--passL:'-pthread' " else: " ") &
                           "--path:src "
     CONFIG              ="@full"
 
