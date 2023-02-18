@@ -302,7 +302,7 @@ proc compile*(footer=false): int =
     if (hostOS=="windows" and not FLAGS.contains("NOWEBVIEW") and IS_DEV):
         let (outw,oute) = gorgeEx "src\\extras\\webview\\deps\\build.bat"
         echo "OUTW: " & outw
-        echo "OUTE: " & oute
+        echo "OUTE: " & $(oute)
 
     # if hostOS=="windows":
     #     FLAGS = """{FLAGS} --passL:"-static """.fmt & staticExec("pkg-config --libs-only-L libcrypto").strip() & """ -lcrypto -Bdynamic" """.fmt
