@@ -25,8 +25,10 @@ else:
 when defined(PROFILE):
     import nimprof
 
-when not defined(WEB):
+when defined(PORTABLE):
     import os
+
+when not defined(WEB):
     import helpers/terminal
 
 when not defined(WEB) and not defined(PORTABLE):
