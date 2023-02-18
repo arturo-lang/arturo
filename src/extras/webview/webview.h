@@ -2,6 +2,7 @@
  * MIT License
  *
  * Copyright (c) 2017 Serge Zaitsev
+ * Copyright (c) 2022 Steffen André Langnes
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +29,66 @@
 #define WEBVIEW_API extern
 #endif
 
+#ifndef WEBVIEW_VERSION_MAJOR
+// The current library major version.
+#define WEBVIEW_VERSION_MAJOR 0
+#endif
+
+#ifndef WEBVIEW_VERSION_MINOR
+// The current library minor version.
+#define WEBVIEW_VERSION_MINOR 10
+#endif
+
+#ifndef WEBVIEW_VERSION_PATCH
+// The current library patch version.
+#define WEBVIEW_VERSION_PATCH 0
+#endif
+
+#ifndef WEBVIEW_VERSION_PRE_RELEASE
+// SemVer 2.0.0 pre-release labels prefixed with "-".
+#define WEBVIEW_VERSION_PRE_RELEASE ""
+#endif
+
+#ifndef WEBVIEW_VERSION_BUILD_METADATA
+// SemVer 2.0.0 build metadata prefixed with "+".
+#define WEBVIEW_VERSION_BUILD_METADATA ""
+#endif
+
+// Utility macro for stringifying a macro argument.
+#define WEBVIEW_STRINGIFY(x) #x
+
+// Utility macro for stringifying the result of a macro argument expansion.
+#define WEBVIEW_EXPAND_AND_STRINGIFY(x) WEBVIEW_STRINGIFY(x)
+
+// SemVer 2.0.0 version number in MAJOR.MINOR.PATCH format.
+#define WEBVIEW_VERSION_NUMBER                                                 \
+  WEBVIEW_EXPAND_AND_STRINGIFY(WEBVIEW_VERSION_MAJOR)                          \
+  "." WEBVIEW_EXPAND_AND_STRINGIFY(                                            \
+      WEBVIEW_VERSION_MINOR) "." WEBVIEW_EXPAND_AND_STRINGIFY(WEBVIEW_VERSION_PATCH)
+
+// Holds the elements of a MAJOR.MINOR.PATCH version number.
+typedef struct {
+  // Major version.
+  unsigned int major;
+  // Minor version.
+  unsigned int minor;
+  // Patch version.
+  unsigned int patch;
+} webview_version_t;
+
+// Holds the library's version information.
+typedef struct {
+  // The elements of the version number.
+  webview_version_t version;
+  // SemVer 2.0.0 version number in MAJOR.MINOR.PATCH format.
+  char version_number[32];
+  // SemVer 2.0.0 pre-release labels prefixed with "-" if specified, otherwise
+  // an empty string.
+  char pre_release[48];
+  // SemVer 2.0.0 build metadata prefixed with "+", otherwise an empty string.
+  char build_metadata[48];
+} webview_version_info_t;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -39,7 +100,9 @@ typedef void *webview_t;
 // pointer to the native window handle. If it's non-null - then child WebView
 // is embedded into the given parent window. Otherwise a new window is created.
 // Depending on the platform, a GtkWindow, NSWindow or HWND pointer can be
-// passed here.
+// passed here. Returns null on failure. Creation can fail for various reasons
+// such as when required runtime dependencies are missing or when window creation
+// fails.
 WEBVIEW_API webview_t webview_create(int debug, void *window);
 
 // Destroys a webview and closes the native window.
@@ -75,10 +138,16 @@ WEBVIEW_API void webview_set_title(webview_t w, const char *title);
 WEBVIEW_API void webview_set_size(webview_t w, int width, int height,
                                   int hints);
 
-// Navigates webview to the given URL. URL may be a data URI, i.e.
-// "data:text/html,<html>...</html>". It is often ok not to url-encode it
-// properly, webview will re-encode it for you.
+// Navigates webview to the given URL. URL may be a properly encoded data URI.
+// Examples:
+// webview_navigate(w, "https://github.com/webview/webview");
+// webview_navigate(w, "data:text/html,%3Ch1%3EHello%3C%2Fh1%3E");
+// webview_navigate(w, "data:text/html;base64,PGgxPkhlbGxvPC9oMT4=");
 WEBVIEW_API void webview_navigate(webview_t w, const char *url);
+
+// Set webview HTML directly.
+// Example: webview_set_html(w, "<h1>Hello</h1>");
+WEBVIEW_API void webview_set_html(webview_t w, const char *html);
 
 // Injects JavaScript code at the initialization of the new page. Every time
 // the webview will open a the new page - this initialization code will be
@@ -100,6 +169,9 @@ WEBVIEW_API void webview_bind(webview_t w, const char *name,
                                          void *arg),
                               void *arg);
 
+// Removes a native C callback that was previously set by webview_bind.
+WEBVIEW_API void webview_unbind(webview_t w, const char *name);
+
 // Allows to return a value from the native binding. Original request pointer
 // must be provided to help internal RPC engine match requests with responses.
 // If status is zero - result is expected to be a valid JSON result value.
@@ -107,8 +179,12 @@ WEBVIEW_API void webview_bind(webview_t w, const char *name,
 WEBVIEW_API void webview_return(webview_t w, const char *seq, int status,
                                 const char *result);
 
+// Get the library's version information.
+// @since 0.10
+WEBVIEW_API const webview_version_info_t *webview_version();
+
 #ifdef __cplusplus
 }
-#endif
 
+#endif /* __cplusplus */
 #endif /* WEBVIEW_H */
