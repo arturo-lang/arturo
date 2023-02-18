@@ -299,7 +299,7 @@ proc compile*(footer=false): int =
     var res = 0
 
     # use VCC for non-MINI Windows builds
-    if (hostOS=="windows" and not FLAGS.contains("NOWEBVIEW") and IS_DEV):
+    if (hostOS=="windows" and not FLAGS.contains("NOWEBVIEW")):
         let (outw,oute) = gorgeEx "src\\extras\\webview\\deps\\build.bat"
         echo "OUTW: " & outw
         echo "OUTE: " & $(oute)
