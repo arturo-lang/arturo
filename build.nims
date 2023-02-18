@@ -300,7 +300,9 @@ proc compile*(footer=false): int =
 
     # use VCC for non-MINI Windows builds
     if (hostOS=="windows" and not FLAGS.contains("NOWEBVIEW") and IS_DEV):
-        let (_,_) = gorgeEx "src\\extras\\webview\\deps\\build.bat"
+        let (outw,oute) = gorgeEx "src\\extras\\webview\\deps\\build.bat"
+        echo "OUTW: " & outw
+        echo "OUTE: " & oute
 
     # if hostOS=="windows":
     #     FLAGS = """{FLAGS} --passL:"-static """.fmt & staticExec("pkg-config --libs-only-L libcrypto").strip() & """ -lcrypto -Bdynamic" """.fmt
