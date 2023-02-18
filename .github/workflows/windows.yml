@@ -66,7 +66,7 @@ jobs:
 
           nim --version
 
-          ./build.nims install ${{ matrix.version }} log
+          ./build.nims install ${{ matrix.version }} dev log
 
       - name: Install dependencies + Build Arturo (mini)
         if: matrix.version == 'mini'
