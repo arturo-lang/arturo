@@ -12,4 +12,3 @@ factorion?: function [n, base][
 
 loop 9..12 'base ->
     print ["Base" base "factorions:" select 1..45000 'z -> factorion? z base]
-]
