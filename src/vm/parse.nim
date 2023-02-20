@@ -409,7 +409,7 @@ template parseCurlyString(p: var Parser) =
                             add(regexFlags, p.buf[pos])
                             inc(pos)
                         if p.buf[pos] != RCurly:
-                            SyntaxError_UnterminatedString("curly", initialLine, getContext(p, initialPoint))
+                            SyntaxError_UnterminatedString("regex", initialLine, getContext(p, initialPoint))
                         else:
                             inc(pos)
                             break
