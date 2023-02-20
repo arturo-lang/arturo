@@ -403,7 +403,7 @@ template parseCurlyString(p: var Parser) =
                         inc(pos,2)
                         break
                     elif p.buf[pos+1] in {'i','m','s'}:
-                        add(p.value, p.buf[pos+1])
+                        add(regexFlags, p.buf[pos+1])
                         inc(pos,2)
                         while p.buf[pos] in {'i','m','s'}:
                             add(regexFlags, p.buf[pos])
