@@ -301,13 +301,25 @@ A string is nothing but a series of characters, seen as one unit. In Arturo, to 
 
 <h4 id="regex">:regex</h4>
 
-A regex value is nothing but a string containing a regular expression (that is then compiled and treated as such):
+A regex value is nothing but a string containing a regular expression (that is then compiled and treated as such).
+
+The normal syntax is `{/regex/}`:
 
 ```red
 type {/[A-Z]/}                    ; => :regex
 
 replace "HelLo" {/[A-Z]/} "X"     ; here we replace all capital letters
                                   ; with an X
+```
+
+While we may - optionally - use any of the supported PCRE-compliant flags:
+
+- `i`: case-insensitive matching
+- `m`: multiline
+- `s`: dot-all
+
+```red
+match "Hello" {/he/i}             ; => ["He"]
 ```
 
 <h4 id="literal">:literal</h4>

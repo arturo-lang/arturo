@@ -327,6 +327,7 @@ template parseCurlyString(p: var Parser) =
     var curliesExpected = 1
     var verbatimString = false
     var regexString = false
+    var regexFlags = ""
     if p.buf[pos]=='!':
         inc(pos)
         while p.buf[pos] in Letters:
@@ -385,11 +386,33 @@ template parseCurlyString(p: var Parser) =
                 else:
                     add(p.value, p.buf[pos])
                     inc(pos)
+            of '\\':
+                if regexString:
+                    if p.buf[pos+1]=='/':
+                        add(p.value, '/')
+                        inc(pos, 2)
+                    else:
+                        add(p.value, '\\')
+                        inc(pos)
+                else:
+                    add(p.value, p.buf[pos])
+                    inc(pos)
             of '/':
                 if regexString:
                     if p.buf[pos+1]==RCurly:
                         inc(pos,2)
                         break
+                    elif p.buf[pos+1] in {'i','m','s'}:
+                        add(regexFlags, p.buf[pos+1])
+                        inc(pos,2)
+                        while p.buf[pos] in {'i','m','s'}:
+                            add(regexFlags, p.buf[pos])
+                            inc(pos)
+                        if p.buf[pos] != RCurly:
+                            SyntaxError_UnterminatedString("regex", initialLine, getContext(p, initialPoint))
+                        else:
+                            inc(pos)
+                            break
                     else:
                         add(p.value, p.buf[pos])
                         inc(pos)
@@ -408,7 +431,7 @@ template parseCurlyString(p: var Parser) =
         if verbatimString:
             AddToken newString(p.value)
         elif regexString:
-            AddToken newRegex(p.value)
+            AddToken newRegex(p.value, regexFlags)
         else:
             AddToken newString(p.value, dedented=true)
 
@@ -784,7 +807,7 @@ template parsePath(p: var Parser, root: Value, curLevel: int) =
             of LBracket:
                 inc(p.bufpos)
                 setLen(p.value,0)
-                var subblock = parseBlock(p,curLevel+1)
+                var subblock = parseBlock(p,curLevel+1,isSubBlock=true)
                 p.values[^1].add(subblock)
             else:
                 break
@@ -812,12 +835,17 @@ template parseExponent(p: var Parser) =
 
     p.bufpos = pos
 
-proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inline.} =
-    var topBlock: Value
+proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline: bool = false): Value {.inline.} =
+    #var topBlock: Value
     var scriptStr: string
-    if isDeferred: topBlock = newBlock()
-    else: topBlock = newInline()
-    let initial = p.bufpos
+    var topBlock =
+        if isSubInline:
+            newInline()
+        else:
+            newBlock()
+    # if isSubBlock: topBlock = newBlock()
+    # else: topBlock = newInline()
+    let initial = p.bufpos - 1
     let initialLine = p.lineNumber
     while true:
         setLen(p.value, 0)
@@ -825,7 +853,11 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inl
 
         case p.buf[p.bufpos]
             of EOF:
-                if unlikely(level!=0): SyntaxError_MissingClosingBracket(initialLine, getContext(p, initial-1))
+                if unlikely(level!=0): 
+                    if isSubBlock:
+                        SyntaxError_MissingClosingSquareBracket(initialLine, getContext(p, initial))
+                    else:
+                        SyntaxError_MissingClosingParenthesis(initialLine, getContext(p, initial))
                 break
             of Quote:
                 parseString(p)
@@ -929,22 +961,34 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inl
                         AddToken newAttribute(p.value)
             of LBracket:
                 inc(p.bufpos)
-                var subblock = parseBlock(p,level+1)
+                var subblock = parseBlock(p,level+1, isSubBlock=true)
                 AddToken subblock
             of RBracket:
-                inc(p.bufpos)
-                break
+                if isSubBlock:
+                    inc(p.bufpos)
+                    break
+                else:
+                    if isSubInline:
+                        SyntaxError_MissingClosingParenthesis(initialLine, getContext(p, initial))
+                    else:
+                        SyntaxError_StrayClosingSquareBracket(p.lineNumber, getContext(p, p.bufpos))
             of LParen:
                 inc(p.bufpos)
-                var subblock = parseBlock(p, level+1, isDeferred=false)
+                var subblock = parseBlock(p, level+1, isSubInline=true)
                 AddToken subblock
             of RParen:
-                inc(p.bufpos)
-                break
+                if isSubInline:
+                    inc(p.bufpos)
+                    break
+                else:
+                    if isSubBlock:
+                        SyntaxError_MissingClosingSquareBracket(initialLine, getContext(p, initial))
+                    else:
+                        SyntaxError_StrayClosingParenthesis(p.lineNumber, getContext(p, p.bufpos))
             of LCurly:
                 parseCurlyString(p)
             of RCurly:
-                inc(p.bufpos)
+                SyntaxError_StrayClosingCurlyBracket(p.lineNumber, getContext(p, p.bufpos))
             of '\194':
                 if p.buf[p.bufpos+1]=='\171': # got «
                     if p.buf[p.bufpos+2]=='\194' and p.buf[p.bufpos+3]=='\171':
