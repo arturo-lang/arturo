@@ -77,7 +77,9 @@ template rgb*(color: tuple[r, g, b: int]):string =
 
 proc isColorFriendlyTerminal*(): bool =
     when defined(windows):
-        (not existsEnv("COMSPEC")) and (not existsEnv("PSModulePath"))
+        existsEnv("MSYSTEM") or 
+        existsEnv("TERM") or 
+        ((not existsEnv("COMSPEC")) and (not existsEnv("PSModulePath")))
     else:
         true        
 
