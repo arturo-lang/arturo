@@ -161,10 +161,34 @@ proc CompilerError_UnrecognizedOption*(name: string) =
 
 # Syntax errors
 
-proc SyntaxError_MissingClosingBracket*(lineno: int, context: string) =
+proc SyntaxError_MissingClosingSquareBracket*(lineno: int, context: string) =
     CurrentLine = lineno
     panic SyntaxError,
-          "missing closing bracket" & ";;" & 
+          "missing closing square bracket: `]`" & ";;" & 
+          "near: " & context
+
+proc SyntaxError_MissingClosingParenthesis*(lineno: int, context: string) =
+    CurrentLine = lineno
+    panic SyntaxError,
+          "missing closing square bracket: `)`" & ";;" & 
+          "near: " & context
+
+proc SyntaxError_StrayClosingSquareBracket*(lineno: int, context: string) =
+    CurrentLine = lineno
+    panic SyntaxError,
+          "stray closing square bracket: `]`" & ";;" & 
+          "near: " & context
+
+proc SyntaxError_StrayClosingCurlyBracket*(lineno: int, context: string) =
+    CurrentLine = lineno
+    panic SyntaxError,
+          "stray closing curly bracket: `}`" & ";;" & 
+          "near: " & context
+
+proc SyntaxError_StrayClosingParenthesis*(lineno: int, context: string) =
+    CurrentLine = lineno
+    panic SyntaxError,
+          "stray closing parenthesis: `)`" & ";;" & 
           "near: " & context
 
 proc SyntaxError_UnterminatedString*(strtype: string, lineno: int, context: string) =
