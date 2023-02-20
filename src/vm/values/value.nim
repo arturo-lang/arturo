@@ -444,9 +444,9 @@ func newRegex*(rx: sink VRegex): Value {.inline, enforceNoRaises.} =
     ## create Regex value from VRegex
     Value(kind: Regex, rx: rx)
 
-func newRegex*(rx: string): Value {.inline.} =
+func newRegex*(rx: string, rflags: string = ""): Value {.inline.} =
     ## create Regex value from string
-    newRegex(newRegexObj(rx))
+    newRegex(newRegexObj(rx, rflags))
 
 func newColor*(l: VColor): Value {.inline, enforceNoRaises.} =
     ## create Color value from VColor
