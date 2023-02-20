@@ -1,6 +1,10 @@
 v0.9.84
 ========
 
+### Language
+
+- Added flag support for `:regex` values (`/i`, `/m` & `/s`)
+
 ### Misc
 
 - Introduced error messages for extra/stray closing brackets (square, curly or parentheses)
