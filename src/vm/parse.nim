@@ -385,11 +385,33 @@ template parseCurlyString(p: var Parser) =
                 else:
                     add(p.value, p.buf[pos])
                     inc(pos)
+            of '\\':
+                if regexString:
+                    if p.buf[pos+1]=='/':
+                        add(p.value, '/')
+                        inc(pos, 2)
+                    else:
+                        add(p.value, '\\')
+                        inc(pos)
+                else:
+                    add(p.value, p.buf[pos])
+                    inc(pos)
             of '/':
                 if regexString:
                     if p.buf[pos+1]==RCurly:
                         inc(pos,2)
                         break
+                    elif p.buf[pos+1] in {'i','m','s'}:
+                        add(p.value, p.buf[pos+1])
+                        inc(pos,2)
+                        while p.buf[pos] in {'i','m','s'}:
+                            add(p.value, p.buf[pos])
+                            inc(pos)
+                        if p.buf[pos] != RCurly:
+                            SyntaxError_UnterminatedString("curly", initialLine, getContext(p, initialPoint))
+                        else:
+                            inc(pos)
+                            break
                     else:
                         add(p.value, p.buf[pos])
                         inc(pos)
