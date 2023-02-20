@@ -167,6 +167,24 @@ proc SyntaxError_MissingClosingBracket*(lineno: int, context: string) =
           "missing closing bracket" & ";;" & 
           "near: " & context
 
+proc SyntaxError_StrayClosingSquareBracket*(lineno: int, context: string) =
+    CurrentLine = lineno
+    panic SyntaxError,
+          "stray closing square bracket (`]`)" & ";;" & 
+          "near: " & context
+
+proc SyntaxError_StrayClosingCurlyBracket*(lineno: int, context: string) =
+    CurrentLine = lineno
+    panic SyntaxError,
+          "stray closing curly bracket (`}`)" & ";;" & 
+          "near: " & context
+
+proc SyntaxError_StrayClosingParenthesis*(lineno: int, context: string) =
+    CurrentLine = lineno
+    panic SyntaxError,
+          "stray closing curly bracket (`)`)" & ";;" & 
+          "near: " & context
+
 proc SyntaxError_UnterminatedString*(strtype: string, lineno: int, context: string) =
     var strt = strtype
     if strt!="": strt &= " "
