@@ -835,7 +835,7 @@ template parseExponent(p: var Parser) =
 
     p.bufpos = pos
 
-proc parseBlock(p: var Parser, level: int, isDeferred: bool = true): Value {.inline.} =
+proc parseBlock(p: var Parser, level: int, isDeferred: bool = true, isSubBlock: bool = false, isSubInline: bool = false): Value {.inline.} =
     var topBlock: Value
     var scriptStr: string
     if isDeferred: topBlock = newBlock()
