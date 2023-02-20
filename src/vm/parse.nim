@@ -807,7 +807,7 @@ template parsePath(p: var Parser, root: Value, curLevel: int) =
             of LBracket:
                 inc(p.bufpos)
                 setLen(p.value,0)
-                var subblock = parseBlock(p,curLevel+1)
+                var subblock = parseBlock(p,curLevel+1,isSubBlock=true)
                 p.values[^1].add(subblock)
             else:
                 break
