@@ -835,10 +835,10 @@ template parseExponent(p: var Parser) =
 
     p.bufpos = pos
 
-proc parseBlock(p: var Parser, level: int, isDeferred: bool = true, isSubBlock: bool = false, isSubInline: bool = false): Value {.inline.} =
+proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline: bool = false): Value {.inline.} =
     var topBlock: Value
     var scriptStr: string
-    if isDeferred: topBlock = newBlock()
+    if isSubInline: topBlock = newBlock()
     else: topBlock = newInline()
     let initial = p.bufpos
     let initialLine = p.lineNumber
@@ -952,7 +952,7 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true, isSubBlock: 
                         AddToken newAttribute(p.value)
             of LBracket:
                 inc(p.bufpos)
-                var subblock = parseBlock(p,level+1)
+                var subblock = parseBlock(p,level+1, isSubBlock=true)
                 AddToken subblock
             of RBracket:
                 if isSubBlock:
@@ -962,7 +962,7 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true, isSubBlock: 
                     SyntaxError_StrayClosingSquareBracket(p.lineNumber, getContext(p, p.bufpos))
             of LParen:
                 inc(p.bufpos)
-                var subblock = parseBlock(p, level+1, isDeferred=false)
+                var subblock = parseBlock(p, level+1, isSubInline=true)
                 AddToken subblock
             of RParen:
                 if isSubInline:
