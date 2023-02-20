@@ -164,13 +164,13 @@ proc CompilerError_UnrecognizedOption*(name: string) =
 proc SyntaxError_MissingClosingSquareBracket*(lineno: int, context: string) =
     CurrentLine = lineno
     panic SyntaxError,
-          "missing closing square bracket: `]" & ";;" & 
+          "missing closing square bracket: `]`" & ";;" & 
           "near: " & context
 
 proc SyntaxError_MissingClosingParenthesis*(lineno: int, context: string) =
     CurrentLine = lineno
     panic SyntaxError,
-          "missing closing square bracket: `)" & ";;" & 
+          "missing closing square bracket: `)`" & ";;" & 
           "near: " & context
 
 proc SyntaxError_StrayClosingSquareBracket*(lineno: int, context: string) =
