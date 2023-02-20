@@ -327,6 +327,7 @@ template parseCurlyString(p: var Parser) =
     var curliesExpected = 1
     var verbatimString = false
     var regexString = false
+    var regexFlags = ""
     if p.buf[pos]=='!':
         inc(pos)
         while p.buf[pos] in Letters:
@@ -405,7 +406,7 @@ template parseCurlyString(p: var Parser) =
                         add(p.value, p.buf[pos+1])
                         inc(pos,2)
                         while p.buf[pos] in {'i','m','s'}:
-                            add(p.value, p.buf[pos])
+                            add(regexFlags, p.buf[pos])
                             inc(pos)
                         if p.buf[pos] != RCurly:
                             SyntaxError_UnterminatedString("curly", initialLine, getContext(p, initialPoint))
@@ -430,7 +431,7 @@ template parseCurlyString(p: var Parser) =
         if verbatimString:
             AddToken newString(p.value)
         elif regexString:
-            AddToken newRegex(p.value)
+            AddToken newRegex(p.value, regexFlags)
         else:
             AddToken newString(p.value, dedented=true)
 
