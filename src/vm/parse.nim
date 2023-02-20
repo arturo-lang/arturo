@@ -836,10 +836,15 @@ template parseExponent(p: var Parser) =
     p.bufpos = pos
 
 proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline: bool = false): Value {.inline.} =
-    var topBlock: Value
+    #var topBlock: Value
     var scriptStr: string
-    if isSubInline: topBlock = newBlock()
-    else: topBlock = newInline()
+    var topBlock =
+        if isSubInline:
+            newInline()
+        else:
+            newBlock()
+    # if isSubBlock: topBlock = newBlock()
+    # else: topBlock = newInline()
     let initial = p.bufpos
     let initialLine = p.lineNumber
     while true:
