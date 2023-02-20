@@ -853,7 +853,11 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
 
         case p.buf[p.bufpos]
             of EOF:
-                if unlikely(level!=0): SyntaxError_MissingClosingBracket(initialLine, getContext(p, initial-1))
+                if unlikely(level!=0): 
+                    if isSubBlock:
+                        SyntaxError_MissingClosingSquareBracket(initialLine, getContext(p, initial-1))
+                    else:
+                        SyntaxError_MissingClosingParenthesis(initialLine, getContext(p, initial-1))
                 break
             of Quote:
                 parseString(p)
@@ -964,7 +968,10 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                     inc(p.bufpos)
                     break
                 else:
-                    SyntaxError_StrayClosingSquareBracket(p.lineNumber, getContext(p, p.bufpos))
+                    if isSubInline:
+                        SyntaxError_MissingClosingParenthesis(p.lineNumber, getContext(p, p.bufpos))
+                    else:
+                        SyntaxError_StrayClosingSquareBracket(p.lineNumber, getContext(p, p.bufpos))
             of LParen:
                 inc(p.bufpos)
                 var subblock = parseBlock(p, level+1, isSubInline=true)
@@ -974,7 +981,10 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                     inc(p.bufpos)
                     break
                 else:
-                    SyntaxError_StrayClosingParenthesis(p.lineNumber, getContext(p, p.bufpos))
+                    if isSubBlock:
+                        SyntaxError_MissingClosingSquareBracket(p.lineNumber, getContext(p, p.bufpos))
+                    else:
+                        SyntaxError_StrayClosingParenthesis(p.lineNumber, getContext(p, p.bufpos))
             of LCurly:
                 parseCurlyString(p)
             of RCurly:
