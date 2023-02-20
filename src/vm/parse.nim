@@ -845,7 +845,7 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
             newBlock()
     # if isSubBlock: topBlock = newBlock()
     # else: topBlock = newInline()
-    let initial = p.bufpos
+    let initial = p.bufpos - 1
     let initialLine = p.lineNumber
     while true:
         setLen(p.value, 0)
@@ -855,9 +855,9 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
             of EOF:
                 if unlikely(level!=0): 
                     if isSubBlock:
-                        SyntaxError_MissingClosingSquareBracket(initialLine, getContext(p, initial-1))
+                        SyntaxError_MissingClosingSquareBracket(initialLine, getContext(p, initial))
                     else:
-                        SyntaxError_MissingClosingParenthesis(initialLine, getContext(p, initial-1))
+                        SyntaxError_MissingClosingParenthesis(initialLine, getContext(p, initial))
                 break
             of Quote:
                 parseString(p)
@@ -969,7 +969,7 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                     break
                 else:
                     if isSubInline:
-                        SyntaxError_MissingClosingParenthesis(p.lineNumber, getContext(p, p.bufpos))
+                        SyntaxError_MissingClosingParenthesis(initialLine, getContext(p, initial))
                     else:
                         SyntaxError_StrayClosingSquareBracket(p.lineNumber, getContext(p, p.bufpos))
             of LParen:
@@ -982,7 +982,7 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                     break
                 else:
                     if isSubBlock:
-                        SyntaxError_MissingClosingSquareBracket(p.lineNumber, getContext(p, p.bufpos))
+                        SyntaxError_MissingClosingSquareBracket(initialLine, getContext(p, initial))
                     else:
                         SyntaxError_StrayClosingParenthesis(p.lineNumber, getContext(p, p.bufpos))
             of LCurly:
