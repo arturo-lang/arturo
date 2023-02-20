@@ -955,19 +955,25 @@ proc parseBlock(p: var Parser, level: int, isDeferred: bool = true, isSubBlock: 
                 var subblock = parseBlock(p,level+1)
                 AddToken subblock
             of RBracket:
-                inc(p.bufpos)
-                break
+                if isSubBlock:
+                    inc(p.bufpos)
+                    break
+                else:
+                    SyntaxError_StrayClosingSquareBracket(p.lineNumber, getContext(p.lineNumber))
             of LParen:
                 inc(p.bufpos)
                 var subblock = parseBlock(p, level+1, isDeferred=false)
                 AddToken subblock
             of RParen:
-                inc(p.bufpos)
-                break
+                if isSubInline:
+                    inc(p.bufpos)
+                    break
+                else:
+                    SyntaxError_StrayClosingParenthesis(p.lineNumber, getContext(p.lineNumber))
             of LCurly:
                 parseCurlyString(p)
             of RCurly:
-                inc(p.bufpos)
+                SyntaxError_StrayClosingCurlyBracket(p.lineNumber, getContext(p.lineNumber))
             of '\194':
                 if p.buf[p.bufpos+1]=='\171': # got «
                     if p.buf[p.bufpos+2]=='\194' and p.buf[p.bufpos+3]=='\171':
