@@ -126,6 +126,9 @@ proc defineSymbols*() =
                 let title = y.s
                 let message = z.s
 
+                if checkAttr("using"):
+                    discard
+                
                 retrieveConfig("mail", "using")
 
                 # TODO(Net/mail) raise error, if there is no configuration provided whatsoever
