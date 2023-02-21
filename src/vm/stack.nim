@@ -157,10 +157,6 @@ macro checkAttrUnsafeImpl*(name: untyped): untyped =
     result = quote do:
         (let `attrName` = popAttr(`name`); (not `attrName`.isNil))
 
-proc showArgError*(): bool =
-    echo "ARG ERROR!!!!"
-    quit(1)
-
 macro checkAttrImpl*(name: untyped): untyped =
     ## check if attribute ``name`` exists in the attributes table
     ## 
@@ -168,8 +164,9 @@ macro checkAttrImpl*(name: untyped): untyped =
     ## a condition)
     let attrName =  ident('a' & ($name).capitalizeAscii())
     let attrTName = ident('t' & ($name).capitalizeAscii())
+    let attrField = newStrLitNode('.' & ($name))
     result = quote do:
-        (let `attrName` = popAttr(`name`); (not `attrName`.isNil) and (`attrName`.kind in `attrTName` or showArgError()))
+        (let `attrName` = popAttr(`name`); (not `attrName`.isNil) and (`attrName`.kind in `attrTName` or showWrongAttributeTypeError(currentBuiltinName, `attrField`,`attrName`.kind,`attrTName`)))
 
 template checkAttr*(name: untyped, doValidate=true): untyped =
     when doValidate:
