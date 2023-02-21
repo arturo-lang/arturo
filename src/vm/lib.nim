@@ -59,8 +59,9 @@ else:
 
 macro attrTypes*(name: static[string], types: static[set[ValueKind]]): untyped =
     let attrRequiredTypes =  ident('t' & ($name).capitalizeAscii())
-    result = quote do:
-        let `attrRequiredTypes` = `types`
+    if types != {Logical}:
+        result = quote do:
+            let `attrRequiredTypes` = `types`
     
 template addOne*(attrs: untyped, idx: int): untyped =
     when attrs.len > idx:
