@@ -67,36 +67,11 @@ template addOne*(attrs: untyped, idx: int): untyped =
     when attrs.len > idx:
         attrTypes(attrs[idx][0], attrs[idx][1][0])
 
-macro unrollSeq(x: static openArray[int], name, body: untyped) =
-  result = newStmtList()
-  for a in x:
-    result.add(newBlockStmt(newStmtList(
-      newConstStmt(name, newLit(a)),
-      copy body
-    )))
-
-template addAttrTypes*(attrs: untyped): untyped =
-    attrs.addOne(0)
-    attrs.addOne(1)
-    attrs.addOne(2)
-    attrs.addOne(3)
-    attrs.addOne(4)
-    attrs.addOne(5)
-    attrs.addOne(6)
-    attrs.addOne(7)
-    attrs.addOne(8)
-    attrs.addOne(9)
-    attrs.addOne(10)
-    attrs.addOne(11)
-    attrs.addOne(12)
-    attrs.addOne(13)
-    attrs.addOne(14)
-    attrs.addOne(15)
-    attrs.addOne(16)
-    attrs.addOne(17)
-    attrs.addOne(18)
-    attrs.addOne(19)
-    attrs.addOne(20)
+macro addAttrTypes*(attrs: untyped): untyped =
+    result = newStmtList()
+    for i in 0..<20:
+        result.add quote do:
+            addOne(`attrs`, `i`)
 
 template builtin*(n: string, alias: VSymbol, op: OpCode, rule: PrecedenceKind, description: string, args: untyped, attrs: static openArray[(string,(set[ValueKind],string))], returns: ValueSpec, example: string, act: untyped):untyped =
     ## add new builtin, function with given name, alias, 
