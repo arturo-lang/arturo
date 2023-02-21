@@ -304,6 +304,12 @@ proc RuntimeError_WrongArgumentType*(functionName: string, actual: string, param
           "incorrect argument type for " & paramPos & " parameter;" &
           "accepts " & accepted
 
+proc RuntimeError_WrongAttributeType*(functionName: string, attributeName: string, actual: string, accepted: string) =
+    panic RuntimeError, 
+          "cannot perform _" & (functionName) & ";" &
+          "incorrect argument type for _" & (attributeName) & "_ -> " & actual &
+          "accepts " & accepted
+
 proc RuntimeError_CannotConvert*(arg,fromType,toType: string) =
     panic RuntimeError,
           "cannot convert argument: " & truncate(arg,20) & ";" &
