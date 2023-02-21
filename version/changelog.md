@@ -8,6 +8,7 @@ v0.9.84
 ### Misc
 
 - Introduced error messages for extra/stray closing brackets (square, curly or parentheses)
+- Added type-checking for built-in function attributes
 
 
 v0.9.82
