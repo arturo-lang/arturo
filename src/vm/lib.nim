@@ -12,8 +12,8 @@
 # Libraries
 #=======================================
 
-import bitops, macros, sequtils, strutils, tables
-export bitops, strutils, tables
+import macros, sequtils, strutils, tables
+export strutils, tables
 
 import vm/[globals, errors, opcodes, stack, values/comparison, values/printable, values/value]
 export comparison, globals, printable, opcodes, stack, value
