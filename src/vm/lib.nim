@@ -54,9 +54,6 @@ else:
 #     else:
 #         args
 
-# template attrTypes*(nm: string, attribs: untyped): untyped =
-#     let `nm` = attribs
-
 macro attrTypes*(name: static[string], types: static[set[ValueKind]]): untyped =
     let attrRequiredTypes =  ident('t' & ($name).capitalizeAscii())
     if types != {Logical}:
