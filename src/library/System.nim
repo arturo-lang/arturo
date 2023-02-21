@@ -176,19 +176,13 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "exit program",
         args        = NoArgs,
-        attrs       = {
-            "with"      : ({Integer},"use given error code"),
-        },
+        attrs       = NoAttrs,
         returns     = {Nothing},
         example     = """
             exit              ; (terminates the program)
-            ..........
-            exit.with: 3      ; (terminates the program with code 3)
         """:
             #=======================================================
             var errCode = QuitSuccess
-            if checkAttr("with"):
-                errCode = aWith.i
 
             when not defined(WEB):
                 savePendingStores()
