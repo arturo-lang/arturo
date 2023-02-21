@@ -271,7 +271,11 @@ template fetchParamsBlock() {.dirty.} =
 
 template prepareIteration(doesAcceptLiterals=true) {.dirty.} =
     let preevaled = evalOrGet(z)
-    let withIndex = popAttr("with")
+    let withIndex: Value = 
+        if checkAttr("with"):
+            aWith
+        else: 
+            nil
     let hasIndex = not withIndex.isNil
     var iterable{.cursor.} = x
 
