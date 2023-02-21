@@ -143,7 +143,7 @@ proc defineSymbols*() =
                 push(VNULL)
             else:
                 let sorted = x.a.sorted(order = SortOrder.Ascending)
-                let first = x.a[(x.a.len-1) div 2]
+                let first = sorted[(sorted.len-1) div 2]
                 let second = x.a[((x.a.len-1) div 2)+1]
 
                 if x.a.len mod 2 == 1:
