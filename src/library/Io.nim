@@ -73,7 +73,6 @@ proc defineSymbols*() =
             "string": {String}
         },
         attrs       = {
-            "rgb"       : ({Integer},"use specific RGB color"),
             "bold"      : ({Logical},"bold font"),
             "underline" : ({Logical},"show underlined"),
             "keep"      : ({Logical},"don't reset color at string end")
