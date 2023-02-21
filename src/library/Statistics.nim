@@ -146,7 +146,7 @@ proc defineSymbols*() =
                 let first = sorted[(sorted.len-1) div 2]
                 let second = sorted[((sorted.len-1) div 2)+1]
 
-                if x.a.len mod 2 == 1:
+                if sorted.len mod 2 == 1:
                     push(first)
                 else:
                     push((first + second)//I2)
