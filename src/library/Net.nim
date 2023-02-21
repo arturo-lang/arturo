@@ -360,7 +360,7 @@ proc defineSymbols*() =
                 if checkAttr("port"):
                     port = aPort.i
             
-                if checkAttr("chrome"):
+                if hadAttr("chrome"):
                     openChromeWindow(port)
 
                 # necessary so that "serveInternal" is available
