@@ -12,8 +12,8 @@
 # Libraries
 #=======================================
 
-import macros, sequtils, strutils, tables
-export strutils, tables
+import bitops, macros, sequtils, strutils, tables
+export bitops, strutils, tables
 
 import vm/[globals, errors, opcodes, stack, values/comparison, values/printable, values/value]
 export comparison, globals, printable, opcodes, stack, value
@@ -56,7 +56,10 @@ else:
 
 macro attrTypes*(name: static[string], types: static[set[ValueKind]]): untyped =
     let attrRequiredTypes =  ident('t' & ($name).capitalizeAscii())
-    if types != {Logical}:
+    if types == {Any}:
+        result = quote do:
+            let `attrRequiredTypes` = {Null..Any}
+    elif types != {Logical}:
         result = quote do:
             let `attrRequiredTypes` = `types`
     
