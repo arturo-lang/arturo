@@ -177,7 +177,7 @@ proc defineSymbols*() =
         description = "exit program",
         args        = NoArgs,
         attrs       = {
-            "args"      : ({Integer},"use given error code"),
+            "with"      : ({Integer},"use given error code"),
         },
         returns     = {Nothing},
         example     = """
