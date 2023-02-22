@@ -1,8 +1,8 @@
-print median @[5, 7, 4, 9, 5, 4, 4, 3] ; 4.5 -- ok!
-print median @[25, 20, 30, 30, 20, 24, 24, 30, 31]; 25 -- ok!
-print median @[1, 6, 12, 19, 5, 0, 6]; 6 -- ok
-print median @[9, 6, 12, 5, 17, 3, 9, 5, 10, 2, 8, 7]; null -- wrong! (7.5)
-print median @[6 8 10 12 14 16 18 20]; 13.0 -- ok!
-print median @[7.5 8.0 8.5 9.0 9.5 10.0]; 8.75 -- ok!
+print median @[5, 7, 4, 9, 5, 4, 4, 3]
+print median @[25, 20, 30, 30, 20, 24, 24, 30, 31]
+print median @[1, 6, 12, 19, 5, 0, 6]
+print median @[9, 6, 12, 5, 17, 3, 9, 5, 10, 2, 8, 7]
+print median @[6 8 10 12 14 16 18 20]
+print median @[7.5 8.0 8.5 9.0 9.5 10.0]
 ; mixing ints and floats
-print median @[7.5 8 8.5 9 9.5 10]; 8.75 -- ok!
+print median @[7.5 8 8.5 9 9.5 10]
