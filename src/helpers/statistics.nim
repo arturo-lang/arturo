@@ -35,10 +35,6 @@ proc medianOfMedians*[T](container: seq[T], middle: int): T =
     ]#
 
     const tiny = 5
-
-    if container.len <= tiny:
-        return container.sorted()[middle]
-
     var
         medians, left, right: seq[T]
         pivot: T
