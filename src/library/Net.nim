@@ -18,9 +18,9 @@
 when defined(ssl):
 
     when defined(windows): 
-        {.passL: "-static -Lsrc/extras/openssl/deps/windows -lssl -lcrypto -lws2_32".}
+        {.passL: "-Bstatic -Lsrc/extras/openssl/deps/windows -lssl -lcrypto -lws2_32 -Bdynamic".}
     elif defined(linux):
-        {.passL: "-static -Lsrc/extras/openssl/deps/linux -lssl -lcrypto".}
+        {.passL: "-Bstatic -Lsrc/extras/openssl/deps/linux -lssl -lcrypto -Bdynamic".}
     elif defined(macosx):
         {.passL: "-Bstatic -Lsrc/extras/openssl/deps/macosx -lssl -lcrypto -Bdynamic".}
 
