@@ -59,7 +59,7 @@ let
         "docgen"            : "-d:DOCGEN",
         "dontcompress"      : "",
         "dontinstall"       : "",
-        "full"              : "",
+        "full"              : "-d:ssl",
         "log"               : "",
         "memprofile"        : "-d:PROFILE --profiler:off --stackTrace:on --d:memProfiler",
         "mini"              : "",
@@ -71,6 +71,7 @@ let
         "nogmp"             : "-d:NOGMP",
         "noparsers"         : "-d:NOPARSERS",
         "nosqlite"          : "-d:NOSQLITE",
+        "nossl"             : "-d:NOSSL",
         "nowebview"         : "-d:NOWEBVIEW",
         "optimized"         : "-d:OPTIMIZED",
         "profile"           : "-d:PROFILE --profiler:on --stackTrace:on",
@@ -103,7 +104,7 @@ var
     FLAGS*              = "--verbosity:1 --hints:on --hint:ProcessingStmt:off --hint:XCannotRaiseY:off --warning:GcUnsafe:off --warning:ProveInit:off --warning:ProveField:off --warning:Uninit:off " & 
                           "--skipUserCfg:on --colors:off -d:danger " &
                           "--panics:off --mm:orc -d:useMalloc --checks:off " &
-                          "-d:ssl --cincludes:extras --opt:speed --nimcache:.cache " & (when hostOS != "windows": "--passL:'-pthread' " else: " ") &
+                          "--cincludes:extras --opt:speed --nimcache:.cache " & (when hostOS != "windows": "--passL:'-pthread' " else: " ") &
                           "--path:src "
     CONFIG              ="@full"
 
@@ -246,6 +247,7 @@ proc miniBuild*() =
         "nogmp", 
         "noparsers", 
         "nosqlite", 
+        "nossl",
         "nowebview"
     ]:
         FLAGS = "{FLAGS} {OPTIONS[k]}".fmt
@@ -528,6 +530,9 @@ while true:
                     showHelp(error=true, errorMsg="Erroneous argument supplied!")
         of cmdEnd: 
             break
+
+if CONFIG == "@full":
+    FLAGS = FLAGS & " " & OPTIONS["full"]
 
 # show our log anyway
 showLogo()
