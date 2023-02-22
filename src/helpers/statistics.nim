@@ -1,4 +1,20 @@
-import std/sequtils
+import std/logging
+
+var logger = newConsoleLogger()
+
+proc distribute[T](container: seq[T], every: int): seq[seq[T]] =
+    var
+        count: int = 0
+        current: seq[T] = @[]
+
+    for element in container:
+        if count != 0 and count mod every == 0:
+            result.add current
+            current = @[]
+            count.inc()
+        else:
+            current.add element
+            count.inc()
 
 
 proc medianOfMedians*[T](container: seq[T], middle: int): T =
@@ -20,17 +36,20 @@ proc medianOfMedians*[T](container: seq[T], middle: int): T =
         » Read more on: https://brilliant.org/wiki/median-finding-algorithm/
     ]#
 
-    const tiny = 16
+    const tiny = 5
 
     if container.len <= tiny:
         return container.sorted()[middle]
 
-    var
-        subLists: seq[seq[T]] = container.distribute(container.len div tiny)
-        medians: seq[T]
+    var subLists: seq[seq[T]] = container.distribute(tiny)
+    logger.log(lvlNotice, "subLists: " ,$subLists)
+    var medians: seq[T]
 
     for list in subLists:
+        logger.log(lvlNotice, "subList: " ,$list)
         medians.add list.medianOfMedians(list.len div 2)
+
+    logger.log(lvlNotice, "medians: " ,$medians)
 
     var pivot: T
 
@@ -38,6 +57,8 @@ proc medianOfMedians*[T](container: seq[T], middle: int): T =
         pivot = medians.sorted()[medians.len div 2]
     else:
         pivot = medians.medianOfMedians(medians.len div 2)
+
+    logger.log(lvlNotice, "pivot: " ,$pivot)
 
     var
         left, right: seq[T]
@@ -47,8 +68,12 @@ proc medianOfMedians*[T](container: seq[T], middle: int): T =
         elif element < pivot: left.add element
 
     if middle < left.len:
+        logger.log(lvlNotice, $middle , " < " , $left.len)
         return left.medianOfMedians(middle)
     elif middle > left.len:
+        logger.log(lvlNotice, $middle , " > " , $left.len)
+        logger.log(lvlNotice, "k = " ,$(middle - left.len - 1))
         return right.medianOfMedians(middle - left.len - 1)
     else:
+        logger.log(lvlNotice, "returning " ,$pivot)
         return pivot
