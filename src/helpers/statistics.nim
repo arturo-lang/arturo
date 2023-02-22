@@ -4,17 +4,15 @@
 proc distribute[T](container: seq[T], size: int): seq[seq[T]] =
     ## Distributes elements in subSequences of maximum `size`
     var
-        count: int = 0
+        count: int = 1
         current: seq[T] = @[]
 
     for element in container:
-        if count != 0 and count mod size == 0:
+        current.add element
+        if (count mod size == 0) or (count == container.len):
             result.add current
             current = @[]
-            count.inc()
-        else:
-            current.add element
-            count.inc()
+        count.inc()
 
 
 proc medianOfMedians*[T](container: seq[T], middle: int): T =
