@@ -21,7 +21,7 @@
 
 import algorithm, sequtils, stats, sugar
 
-import helpers/ranges
+import helpers/ranges, helpers/statistics
 
 import vm/lib
 
@@ -142,14 +142,14 @@ proc defineSymbols*() =
             if x.a.len==0:
                 push(VNULL)
             else:
-                let sorted = x.a.sorted(order = SortOrder.Ascending)
-                let first = sorted[(sorted.len-1) div 2]
-                let second = sorted[((sorted.len-1) div 2)+1]
 
-                if sorted.len mod 2 == 1:
-                    push(first)
+                if x.a.len mod 2 == 1:
+                    push x.a.medianOfMedians((x.a.len - 1) div 2)
                 else:
-                    push((first + second)//I2)
+                    let
+                        first = x.a.medianOfMedians(x.a.len div 2)
+                        second = x.a.medianOfMedians((x.a.len div 2) - 1)
+                    push ((first + second)//I2)
 
     builtin "skewness",
         alias       = unaliased,
