@@ -153,11 +153,11 @@ proc defineSymbols*() =
             else:
                 let secondPos = x.a.len div 2
                 if x.a.len mod 2 == 1:
-                    push x.a.medianOfMedians(secondPos)
+                    push x.a.quickSelect(secondPos)
                 else:
                     let
-                        first = x.a.medianOfMedians(secondPos - 1)
-                        second = x.a.medianOfMedians(secondPos)
+                        first = x.a.quickSelect(secondPos - 1)
+                        second = x.a.quickSelect(secondPos)
 
                     push ((first + second)//I2)
 
