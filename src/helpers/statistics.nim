@@ -1,6 +1,5 @@
-import std/logging
-
-var logger = newConsoleLogger()
+#import std/logging
+# var logger = newConsoleLogger()
 
 proc distribute[T](container: seq[T], every: int): seq[seq[T]] =
     var
@@ -41,24 +40,18 @@ proc medianOfMedians*[T](container: seq[T], middle: int): T =
     if container.len <= tiny:
         return container.sorted()[middle]
 
-    var subLists: seq[seq[T]] = container.distribute(tiny)
-    logger.log(lvlNotice, "subLists: " ,$subLists)
-    var medians: seq[T]
+    var
+        subLists: seq[seq[T]] = container.distribute(tiny)
+        medians: seq[T]
 
     for list in subLists:
-        logger.log(lvlNotice, "subList: " ,$list)
         medians.add list.medianOfMedians(list.len div 2)
 
-    logger.log(lvlNotice, "medians: " ,$medians)
-
     var pivot: T
-
     if medians.len <= tiny:
         pivot = medians.sorted()[medians.len div 2]
     else:
         pivot = medians.medianOfMedians(medians.len div 2)
-
-    logger.log(lvlNotice, "pivot: " ,$pivot)
 
     var
         left, right: seq[T]
@@ -68,12 +61,8 @@ proc medianOfMedians*[T](container: seq[T], middle: int): T =
         elif element < pivot: left.add element
 
     if middle < left.len:
-        logger.log(lvlNotice, $middle , " < " , $left.len)
         return left.medianOfMedians(middle)
     elif middle > left.len:
-        logger.log(lvlNotice, $middle , " > " , $left.len)
-        logger.log(lvlNotice, "k = " ,$(middle - left.len - 1))
         return right.medianOfMedians(middle - left.len - 1)
     else:
-        logger.log(lvlNotice, "returning " ,$pivot)
         return pivot
