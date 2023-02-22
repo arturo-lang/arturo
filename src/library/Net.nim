@@ -24,7 +24,7 @@ when not defined(WEB):
     import httpcore, std/net, os, strformat
     import strutils, times, uri
 
-    when not defined(NOSSL):
+    when defined(ssl):
         import smtp
 
     import helpers/jsonobject
@@ -101,7 +101,7 @@ proc defineSymbols*() =
                 var client = newHttpClient()
                 client.downloadFile(path,target)
 
-        when not defined(NOSSL):
+        when defined(ssl):
             builtin "mail",
                 alias       = unaliased, 
                 op          = opNop,
@@ -258,7 +258,7 @@ proc defineSymbols*() =
 
                 if checkAttr("certificate"):
                     let certificate = aCertificate.s
-                    when not defined(NOSSL):
+                    when defined(ssl):
                         client = newHttpClient(
                             userAgent = agent,
                             sslContext = newContext(certFile=certificate),
