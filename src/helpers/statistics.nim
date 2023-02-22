@@ -1,6 +1,3 @@
-#import std/logging
-# var logger = newConsoleLogger()
-
 proc distribute[T](container: seq[T], size: int): seq[seq[T]] =
     ## Distributes elements in subSequences of maximum `size`
     var
