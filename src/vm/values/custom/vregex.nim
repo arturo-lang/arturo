@@ -8,6 +8,13 @@
 
 ## The internal `:regex` type
 
+when defined(windows): 
+    {.passL: "-Bstatic -Lsrc/extras/pcre/deps/windows -lpcre -Bdynamic".}
+elif defined(linux):
+    {.passL: "-Bstatic -Lsrc/extras/pcre/deps/linux -lpcre -Bdynamic".}
+elif defined(macosx):
+    {.passL: "-Bstatic -Lsrc/extras/pcre/deps/macos -lpcre -Bdynamic".}
+
 #=======================================
 # Libraries
 #=======================================
