@@ -1,13 +1,13 @@
 #import std/logging
 # var logger = newConsoleLogger()
 
-proc distribute[T](container: seq[T], every: int): seq[seq[T]] =
+proc distribute[T](container: seq[T], size: int): seq[seq[T]] =
     var
         count: int = 0
         current: seq[T] = @[]
 
     for element in container:
-        if count != 0 and count mod every == 0:
+        if count != 0 and count mod size == 0:
             result.add current
             current = @[]
             count.inc()
