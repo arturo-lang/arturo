@@ -39,14 +39,12 @@ proc medianOfMedians*[T](container: seq[T], middle: int): T =
     if container.len <= tiny:
         return container.sorted()[middle]
 
-    var medians: seq[T]
+    var
+        medians, left, right: seq[T]
+        pivot: T
 
     for list in container.distribute(tiny):
         medians.add list.medianOfMedians(list.len div 2)
-
-    var
-        pivot: T
-        left, right: seq[T]
 
     if medians.len <= tiny:
         pivot = medians.sorted()[medians.len div 2]
