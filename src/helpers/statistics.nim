@@ -2,6 +2,7 @@
 # var logger = newConsoleLogger()
 
 proc distribute[T](container: seq[T], size: int): seq[seq[T]] =
+    ## Distributes elements in subSequences of maximum `size`
     var
         count: int = 0
         current: seq[T] = @[]
