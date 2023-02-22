@@ -15,6 +15,10 @@
 
 {.used.}
 
+#=======================================
+# Compilation & Linking
+#=======================================
+
 when defined(ssl):
 
     when defined(windows): 
