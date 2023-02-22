@@ -54,6 +54,6 @@ proc medianOfMedians*[T](container: seq[T], middle: int): T =
     if middle < left.len:
         return left.medianOfMedians(middle)
     elif middle > left.len:
-        return right.medianOfMedians(middle - left.len - 1)
+        return right.medianOfMedians(middle - left.high)
     else:
         return pivot
