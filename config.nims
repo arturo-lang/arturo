@@ -32,12 +32,17 @@ case get("cc"):
  
 patchFile("stdlib", "malloc", "src" / "extras" / "mimalloc")
 
-when defined(ssl):
-  when defined(windows): 
-    switch("define", "noOpenSSLHacks")
-    switch("define", "sslVersion:(")
-    switch("dynlibOverride", "ssl-")
-    switch("dynlibOverride", "crypto-")
-  else:
-    switch("dynlibOverride", "ssl")
-    switch("dynlibOverride", "crypto")
+when defined(windows): 
+    switch("dynlibOverride", "pcre64")
+
+    when defined(ssl):
+        switch("define", "noOpenSSLHacks")
+        switch("define", "sslVersion:(")
+        switch("dynlibOverride", "ssl-")
+        switch("dynlibOverride", "crypto-")
+else:
+    switch("dynlibOverride", "pcre")
+
+    when defined(ssl):
+        switch("dynlibOverride", "ssl")
+        switch("dynlibOverride", "crypto")
