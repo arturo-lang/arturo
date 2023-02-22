@@ -15,6 +15,15 @@
 
 {.used.}
 
+when defined(ssl):
+
+    when defined(windows): 
+        {.passL: "-static -Lsrc/extras/openssl/deps/windows -lssl -lcrypto -lws2_32".}
+    elif defined(linux):
+        {.passL: "-static -Lsrc/extras/openssl/deps/linux -lssl -lcrypto".}
+    elif defined(macosx):
+        {.passL: "-Bstatic -Lsrc/extras/openssl/deps/macosx -lssl -lcrypto -Bdynamic".}
+
 #=======================================
 # Libraries
 #=======================================
