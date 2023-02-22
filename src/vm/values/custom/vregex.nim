@@ -8,6 +8,10 @@
 
 ## The internal `:regex` type
 
+#=======================================
+# Compilation & Linking
+#=======================================
+
 when defined(windows): 
     {.passL: "-Bstatic -Lsrc/extras/pcre/deps/windows -lpcre -Bdynamic".}
 elif defined(linux):
