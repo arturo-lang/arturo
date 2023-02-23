@@ -129,7 +129,7 @@ proc defineSymbols*() =
                 "port"  : {Integer}
             },
             attrs       = {
-                "blocking"  : ({String},"set blocking mode (default: false)"),
+                "blocking"  : ({Logical},"set blocking mode (default: false)"),
                 "udp"       : ({Logical},"use UDP instead of TCP")
             },
             returns     = {Socket},

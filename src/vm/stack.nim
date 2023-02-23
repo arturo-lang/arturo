@@ -148,14 +148,31 @@ proc popAttr*(attr: string): Value {.inline,enforceNoRaises.} =
     hookProcProfiler("stack/popAttr"):
         discard Attrs.pop(attr, result)
 
-macro checkAttr*(name: untyped): untyped =
+macro checkAttrUnsafeImpl*(name: untyped): untyped =
     ## check if attribute ``name`` exists in the attributes table
     ## 
     ## **Hint:** To be normally used with ``if`` statements (as 
     ## a condition)
     let attrName =  ident('a' & ($name).capitalizeAscii())
     result = quote do:
-        (let `attrName` = popAttr(`name`); not `attrName`.isNil)
+        (let `attrName` = popAttr(`name`); (not `attrName`.isNil))
+
+macro checkAttrImpl*(name: untyped): untyped =
+    ## check if attribute ``name`` exists in the attributes table
+    ## 
+    ## **Hint:** To be normally used with ``if`` statements (as 
+    ## a condition)
+    let attrName =  ident('a' & ($name).capitalizeAscii())
+    let attrTName = ident('t' & ($name).capitalizeAscii())
+    let attrField = newStrLitNode('.' & ($name))
+    result = quote do:
+        (let `attrName` = popAttr(`name`); (not `attrName`.isNil) and (`attrName`.kind in `attrTName` or showWrongAttributeTypeError(currentBuiltinName, `attrField`,`attrName`.kind,`attrTName`)))
+
+template checkAttr*(name: untyped, doValidate=true): untyped =
+    when doValidate:
+        checkAttrImpl(name)
+    else:
+        checkAttrUnsafeImpl(name)
 
 template hadAttr*(attr: string): bool = 
     ## check if attribute ``attr`` exists in the attributes table
