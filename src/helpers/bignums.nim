@@ -82,20 +82,20 @@ func newInt*(x: culong): Int =
 
 func newInt*(x: int = 0): Int =
     new(result, finalizeInt)
-    # when isLLP64():
-    #     if x.fitsLLP64Long:
-    #         mpz_init_set_si(result[], x.clong)
-    #     elif x.fitsLLP64ULong:
-    #         mpz_init_set_ui(result[], x.culong)
-    #     else:
-    #         mpz_init(result[])
-    #         if x < 0: result[].mp_size = -1 else: result[].mp_size = 1
-    #         if x < 0 and x > low(int):
-    #             result[].mp_d[] = (-x).mp_limb_t
-    #         else:
-    #             result[].mp_d[] = x.mp_limb_t
-    # else:
-    mpz_init_set_si(result[], x.clong)
+    when isLLP64():
+        if x.fitsLLP64Long:
+            mpz_init_set_si(result[], x.clong)
+        elif x.fitsLLP64ULong:
+            mpz_init_set_ui(result[], x.culong)
+        else:
+            mpz_init(result[])
+            if x < 0: result[].mp_size = -1 else: result[].mp_size = 1
+            if x < 0 and x > low(int):
+                result[].mp_d[] = (-x).mp_limb_t
+            else:
+                result[].mp_d[] = x.mp_limb_t
+    else:
+        mpz_init_set_si(result[], x.clong)
 
 func newInt*(x: Float): Int =
     new(result,finalizeInt)
