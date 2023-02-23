@@ -1,4 +1,21 @@
+#=======================================================
+# Arturo
+# Programming Language + Bytecode VM compiler
+# (c) 2019-2023 Yanis Zafirópulos &
+#               Arturo contributors
+#
+# @file: helpers/statistics.nim
+#=======================================================
+
+#=======================================
+# Libraries
+#=======================================
+
 import std/random
+
+#=======================================
+# Methods
+#=======================================
 
 proc quickSelect*[T](container: seq[T], index: int): T =
     ## return the smallest `index`th number of a container
