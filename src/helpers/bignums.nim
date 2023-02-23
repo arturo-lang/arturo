@@ -89,14 +89,17 @@ func newInt*(x: int = 0): Int =
             mpz_init_set_ui(result[], x.culong)
         else:
             debugEcho "not fitting in anything. let's see.."
-            mpz_init(result[])
-            if x < 0: result[].mp_size = -1 else: result[].mp_size = 1
-            if x < 0 and x > low(int):
-                debugEcho "x < 0 and x > low(int)"
-                result[].mp_d[] = (-x).mp_limb_t
-            else:
-                debugEcho "x >= 0 or x <= low(int)"
-                result[].mp_d[] = x.mp_limb_t
+            mpz_init_set_ui(result[], (x.uint32) shr 32)
+            mpz_mul_2exp(result[], result[], 32)
+            mpz_add_ui(result[], x.uint32);
+            # mpz_init(result[])
+            # if x < 0: result[].mp_size = -1 else: result[].mp_size = 1
+            # if x < 0 and x > low(int):
+            #     debugEcho "x < 0 and x > low(int)"
+            #     result[].mp_d[] = (-x).mp_limb_t
+            # else:
+            #     debugEcho "x >= 0 or x <= low(int)"
+            #     result[].mp_d[] = x.mp_limb_t
     else:
         mpz_init_set_si(result[], x.clong)
 
