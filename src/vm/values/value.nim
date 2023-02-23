@@ -193,7 +193,6 @@ when defined(WEB):
 
 when not defined(NOGMP):
     proc newInteger*(bi: Int): Value {.inline.} =
-        debugEcho "generating new BigNum"
         result = Value(kind: Integer, iKind: BigInteger, bi: bi)
 
 func newInteger*(i: int): Value {.inline, enforceNoRaises.} =
