@@ -193,6 +193,7 @@ when defined(WEB):
 
 when not defined(NOGMP):
     proc newInteger*(bi: Int): Value {.inline.} =
+        echo "generating new BigNum"
         result = Value(kind: Integer, iKind: BigInteger, bi: bi)
 
 func newInteger*(i: int): Value {.inline, enforceNoRaises.} =
@@ -1160,6 +1161,7 @@ proc `*`*(x: Value, y: Value): Value =
                         when defined(WEB):
                             return newInteger(big(x.i)*big(y.i))
                         elif not defined(NOGMP):
+                            echo "entering GMP mode..."
                             return newInteger(newInt(x.i)*y.i)
                         else:
                             RuntimeError_IntegerOperationOverflow("mul", valueAsString(x), valueAsString(y))
