@@ -52,3 +52,4 @@ proc quickSelect*[T](container: seq[T], index: int): T =
         return same[0]
     else:
         return right.quickSelect(index - left.len - same.len)
+        
