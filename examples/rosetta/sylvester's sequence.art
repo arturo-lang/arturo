@@ -1,22 +1,7 @@
-getIntegerType: function [int][
-    (integer?.big int)? -> "big" -> "normal"
-]
-
-customProduct: function [idx, lst][
-    result: 1
-    loop lst 'item [
-        print ["Term No" idx "-> multiplying:" result "(" getIntegerType result ")" "with:" item "(" getIntegerType item ")"]
-        result: result * item
-        print ["result:" result]
-    ]
-    print "------"
-    return result
-]
-
 sylvester: function [lim][
     result: [2]
     loop 2..lim 'x [
-        'result ++ customProduct x-1 result
+        'result ++ inc fold result .seed:1 [a b][a * b]
     ]
     return result
 ]
