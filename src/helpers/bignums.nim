@@ -726,20 +726,6 @@ func `$`*(z: Int, base: cint = 10): string =
     result = newString(digits(z, base) + 2)
     result.setLen(mpz_get_str(cstring(result), base, z[]).len)
 
-# func `$`*(z: Float, base: range[(2.cint) .. (62.cint)] = 10, n_digits = 0): string =
-#     # let outOfRange = toCDouble(z)
-#     # if base == 10 and outOfRange != FloatOverflow:
-#     #     return $outOfRange
-  
-#     var exp: mp_exp_t
-#     var str = newString(n_digits + 1)
-#     var coeff = $mpfr_get_str(cstring(str),exp,base,(csize_t)n_digits,z[],MPFR_RNDN)
-#     coeff.insert(".", abs(exp))
-#     return "str: " & str & ", coeff: " & coeff & ", exp: " & $exp
-#     if (exp != 0):  return coeff & "e" & (if exp>0: "+" else: "") & $exp
-#     if coeff == "": return "0.0"
-#     result = coeff
-
 #=======================================
 # Methods
 #=======================================
