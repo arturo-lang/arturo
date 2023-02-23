@@ -6,7 +6,7 @@
 # @file: library/Statistics.nim
 #=======================================================
 
-## The main Statistics module 
+## The main Statistics module
 ## (part of the standard library)
 
 #=======================================
@@ -19,9 +19,9 @@
 # Libraries
 #=======================================
 
-import sequtils, stats, sugar
+import algorithm, sequtils, stats, sugar
 
-import helpers/ranges
+import helpers/ranges, helpers/statistics
 
 import vm/lib
 
@@ -37,7 +37,7 @@ proc defineSymbols*() =
     #  labels: library, enhancement, open discussion
 
     builtin "average",
-        alias       = unaliased, 
+        alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "get average from given collection of numbers",
@@ -66,7 +66,7 @@ proc defineSymbols*() =
             push(res)
 
     builtin "deviation",
-        alias       = unaliased, 
+        alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "get population standard deviation of given collection of numbers",
@@ -83,7 +83,7 @@ proc defineSymbols*() =
 
             print deviation arr         ; 1.118033988749895
             print deviation arr2        ; 42.70959347734417
-            
+
             deviation.sample arr        ; => 1.290994448735806
             deviation.sample arr2       ; => 45.65847597731914
         """:
@@ -94,7 +94,7 @@ proc defineSymbols*() =
                 push newFloating(standardDeviation(x.a.map((z)=>asFloat(z))))
 
     builtin "kurtosis",
-        alias       = unaliased, 
+        alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "get population kurtosis of given collection of numbers",
@@ -122,7 +122,7 @@ proc defineSymbols*() =
                 push newFloating(kurtosis(x.a.map((z)=>asFloat(z))))
 
     builtin "median",
-        alias       = unaliased, 
+        alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "get median from given collection of numbers",
@@ -134,24 +134,35 @@ proc defineSymbols*() =
         example     = """
             print median [2 4 5 6 7 2 3]
             ; 6
-            
+
             print median [1 5 2 3 4 7 9 8]
             ; 3.5
         """:
             #=======================================================
-            if x.a.len==0: 
+            if x.a.len==0:
                 push(VNULL)
-            else:
-                let first = x.a[(x.a.len-1) div 2]
-                let second = x.a[((x.a.len-1) div 2)+1]
+            elif x.a.len < 6 and x.a.len mod 2 == 0:
+                let
+                    sorted = x.a.sorted()
+                    secondPos = sorted.len div 2
+                    first = sorted[secondPos - 1]
+                    second = sorted[secondPos]
 
+                push ((first + second)//I2)
+
+            else:
+                let secondPos = x.a.len div 2
                 if x.a.len mod 2 == 1:
-                    push(first) 
+                    push x.a.quickSelect(secondPos)
                 else:
-                    push((first + second)//I2)
+                    let
+                        first = x.a.quickSelect(secondPos - 1)
+                        second = x.a.quickSelect(secondPos)
+
+                    push ((first + second)//I2)
 
     builtin "skewness",
-        alias       = unaliased, 
+        alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "get population skewness of given collection of numbers",
@@ -177,9 +188,9 @@ proc defineSymbols*() =
                 push newFloating(skewnessS(x.a.map((z)=>asFloat(z))))
             else:
                 push newFloating(skewness(x.a.map((z)=>asFloat(z))))
-    
+
     builtin "variance",
-        alias       = unaliased, 
+        alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "get population variance of given collection of numbers",
