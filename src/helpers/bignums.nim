@@ -193,6 +193,8 @@ func cmp*(x: Int, y: culong): cint =
     elif result > 0:
         result = 1
 
+# TODO(Bignums/cmp) should properly handle LLP64 mode
+#  labels: critical, bug, windows
 func cmp*(x: Int, y: int): cint =
     # when isLLP64():
     #     if y.fitsLLP64Long:
