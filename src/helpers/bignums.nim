@@ -82,6 +82,8 @@ func newInt*(x: culong): Int =
 
 func newInt*(x: int = 0): Int =
     new(result, finalizeInt)
+    debugEcho "in newInt"
+    debugEcho "isLLP64: " & $(isLLP64())
     # when isLLP64():
     #     if x.fitsLLP64Long:
     #         mpz_init_set_si(result[], x.clong)
