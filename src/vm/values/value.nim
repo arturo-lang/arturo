@@ -1157,11 +1157,9 @@ proc `*`*(x: Value, y: Value): Value =
                     try:
                         return newInteger(x.i*y.i)
                     except OverflowDefect:
-                        echo "OVERFLOW!!!"
                         when defined(WEB):
                             return newInteger(big(x.i)*big(y.i))
                         elif not defined(NOGMP):
-                            echo "entering GMP mode..."
                             return newInteger(newInt(x.i)*y.i)
                         else:
                             RuntimeError_IntegerOperationOverflow("mul", valueAsString(x), valueAsString(y))
@@ -1241,7 +1239,6 @@ proc `*=`*(x: var Value, y: Value) =
                     try:
                         safeMulI(x.i, y.i)
                     except OverflowDefect:
-                        echo "OVERFLOW!!!"
                         when defined(WEB):
                             x = newInteger(big(x.i)*big(y.i))
                         elif not defined(NOGMP):
