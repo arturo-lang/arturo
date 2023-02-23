@@ -146,19 +146,17 @@ func set*(z: Int, x: culong): Int =
 
 func set*(z: Int, x: int): Int =
     result = z
-    # when isLLP64():
-    #     if x.fitsLLP64Long:
-    #         mpz_set_si(result[], x.clong)
-    #     elif x.fitsLLP64ULong:
-    #         mpz_set_ui(result[], x.culong)
-    #     else:
-    #         if x < 0: result[].mp_size = -1 else: result[].mp_size = 1
-    #         if x < 0 and x > low(int):
-    #             result[].mp_d[] = (-x).mp_limb_t
-    #         else:
-    #             result[].mp_d[] = x.mp_limb_t
-    # else:
-    mpz_set_si(result[], x.clong)
+    when isLLP64():
+        if x.fitsLLP64Long:
+            mpz_init_set_si(result[], x.clong)
+        elif x.fitsLLP64ULong:
+            mpz_init_set_ui(result[], x.culong)
+        else:
+            mpz_init_set_ui(result[], (x shr 32).uint32)
+            mpz_mul_2exp(result[], result[], 32)
+            mpz_add_ui(result[], result[], (x.uint32))
+    else:
+        mpz_init_set_si(result[], x.clong)
 
 func set*(z: Int, s: string, base: cint = 10): Int =
     validBase(base)
