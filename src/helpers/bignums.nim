@@ -82,16 +82,6 @@ func newInt*(x: culong): Int =
 
 func newInt*(x: int = 0): Int =
     new(result, finalizeInt)
-    # mpz_init_set_ui(result[], (x shr 32).uint32)
-    # debugEcho "x.culong: " & $(x.culong)
-    # debugEcho "x.uint32: " & $(x.uint32)
-    # debugEcho "x.culong >> 32: " & $((x.culong) shr 32)
-    # debugEcho "x.culong >> 32: " & $((x.uint32) shr 32)
-
-    # mpz_mul_2exp(result[], result[], 32)
-    # mpz_add_ui(result[], result[], (x.uint32))
-    # var z = x
-    # mpz_import(result[], 1, 1, sizeof(int).csize_t, 0, 0, z.addr)
     when isLLP64():
         if x.fitsLLP64Long:
             mpz_init_set_si(result[], x.clong)
@@ -101,18 +91,6 @@ func newInt*(x: int = 0): Int =
             mpz_init_set_ui(result[], (x shr 32).uint32)
             mpz_mul_2exp(result[], result[], 32)
             mpz_add_ui(result[], result[], (x.uint32))
-            # debugEcho "not fitting in anything. let's see.."
-            # mpz_init_set_ui(result[], (x.uint32) shr 32)
-            # mpz_mul_2exp(result[], result[], 32)
-            # mpz_add_ui(result[], result[], x.uint32)
-            # mpz_init(result[])
-            # if x < 0: result[].mp_size = -1 else: result[].mp_size = 1
-            # if x < 0 and x > low(int):
-            #     debugEcho "x < 0 and x > low(int)"
-            #     result[].mp_d[] = (-x).mp_limb_t
-            # else:
-            #     debugEcho "x >= 0 or x <= low(int)"
-            #     result[].mp_d[] = x.mp_limb_t
     else:
         mpz_init_set_si(result[], x.clong)
 
