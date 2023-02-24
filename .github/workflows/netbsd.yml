@@ -50,7 +50,7 @@ jobs:
         with:
           usesh: true
           prepare: |
-            /usr/sbin/pkg_add wget nim gmp mpfr bash databases/sqlite3
+            /usr/sbin/pkg_add wget nim gmp mpfr bash pcre databases/sqlite3
           run: |
             ./build.nims install ${{ matrix.version }} log
             export PATH="$HOME/.arturo/bin:$PATH"
@@ -59,5 +59,5 @@ jobs:
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
         with:
-          name: "arturo-${{matrix.version}}-${{matrix.arch}}-freebsd"
+          name: "arturo-${{matrix.version}}-${{matrix.arch}}-openbsd"
           path: bin/arturo
