@@ -25,7 +25,7 @@ when defined(linux):
     {.compile("window/window.cc", staticExec"pkg-config --cflags gtk+-3.0 webkit2gtk-4.0").}
     {.passC: staticExec"pkg-config --cflags gtk+-3.0 webkit2gtk-4.0".}
     {.passL: staticExec"pkg-config --libs gtk+-3.0 webkit2gtk-4.0".}
-elif defined(freebsd):
+elif defined(freebsd) or defined(netbsd) or defined(openbsd):
     {.compile("window/window.cc", staticExec"pkg-config --cflags gtk3 webkit2-gtk3").}
     {.passC: staticExec"pkg-config --cflags gtk3 webkit2-gtk3".}
     {.passL: staticExec"pkg-config --libs gtk3 webkit2-gtk3".}
