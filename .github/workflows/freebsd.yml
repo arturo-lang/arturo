@@ -22,6 +22,7 @@ defaults:
 
 jobs:  
   build:
+    name: Build & Test
     runs-on: macos-latest
     strategy:
       matrix:
@@ -32,9 +33,8 @@ jobs:
         arch:
           - x86_64
     concurrency:
-      group: ${{ github.head_ref || github.run_id }}
+      group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
-    name: Build & Test
     steps:
       - name: "Checkout"
         uses: actions/checkout@main
