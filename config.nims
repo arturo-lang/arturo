@@ -41,7 +41,8 @@ when defined(windows):
         switch("dynlibOverride", "ssl-")
         switch("dynlibOverride", "crypto-")
 else:
-    switch("dynlibOverride", "pcre")
+    when defined(macosx):
+        switch("dynlibOverride", "pcre")
 
     when defined(ssl):
         switch("dynlibOverride", "ssl")
