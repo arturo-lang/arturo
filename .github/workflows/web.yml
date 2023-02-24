@@ -26,8 +26,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        version:
+        platform:
           - web
+        version:
+          - mini
+        arch:
+          - js
     steps:
       - name: "Cancel similar actions in progress"
         uses: styfle/cancel-workflow-action@0.10.0
