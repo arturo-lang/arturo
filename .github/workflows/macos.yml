@@ -35,10 +35,9 @@ jobs:
         arch:
           - x86_64
     concurrency:
-      group: ${{ github.head_ref || github.run_id }}
+      group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
     steps:
-
       - name: "Checkout"
         uses: actions/checkout@main
         with:
