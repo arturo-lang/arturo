@@ -252,7 +252,7 @@ proc miniBuild*() =
 
     # plus, shrinking + the MINI flag
     FLAGS = FLAGS & " -d:MINI"
-    if hostOS=="freebsd":
+    if hostOS=="freebsd" or hostOS=="openbsd" or hostOS=="netbsd":
         FLAGS = FLAGS & " --verbosity:3 "
 
 proc compressBinary() =
