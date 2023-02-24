@@ -32,9 +32,6 @@ jobs:
           - mini
         arch:
           - js
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
-      cancel-in-progress: true
     steps:
       - name: "Checkout"
         uses: actions/checkout@main
