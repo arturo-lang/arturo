@@ -31,14 +31,11 @@ jobs:
           - mini
         arch:
           - x86_64
+    concurrency:
+      group: ${{ github.head_ref || github.run_id }}
+      cancel-in-progress: true
     name: Build & Test
     steps:
-      - name: "Cancel similar actions in progress"
-        uses: styfle/cancel-workflow-action@0.10.0
-        with:
-          all_but_latest: true
-          access_token: ${{ github.token }}
-
       - name: "Checkout"
         uses: actions/checkout@main
         with:
