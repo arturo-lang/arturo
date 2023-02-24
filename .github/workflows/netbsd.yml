@@ -46,7 +46,7 @@ jobs:
 
       - name: Setup environment & Build Arturo
         id: test
-        uses: vmactions/netbsd-vm@v0
+        uses: vmactions/openbsd-vm@v0
         with:
           usesh: true
           prepare: |
