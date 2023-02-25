@@ -23,10 +23,6 @@ import math, hashes
 # Types
 #=======================================
 
-# TODO(VM/values/custom/vrational) add support for BigNum based rational numbers
-#  see: https://discord.com/channels/765519132186640445/829324913097048065/1078783018187100341
-#  labels: values, enhancement
-
 type 
     VRationalObj*[T] = object
         num*: T
