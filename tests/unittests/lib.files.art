@@ -5,13 +5,18 @@
 ;; doing functions independents of each other.
 
 
-tempFolder: "temp"
-
-createTempFolder: $[folder :string][
-    execute.args: [folder]
-    "mkdir"
-    print ~"Created: |folder|/"
+topic: $[topic :string] [
+    print ""
+    print ~">> |topic|"
+    print ""
 ]
+
+execute "mkdir temp"
+print "Created: temp/"
+
+; ---------------------------- Functions ----------------------------
+
+; -- Test: copy
 
 finishTempFolder: $[folder :string][
     execute.args: [~"|folder|/", "--recursive"]
@@ -52,4 +57,5 @@ createTempFolder tempFolder
 ; -- hidden?
 
 
-finishTempFolder tempFolder
+; ---- Finish
+execute "rm temp/** --recursive"
