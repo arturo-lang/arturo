@@ -91,7 +91,7 @@ B
 C
 
 Deleting...
-now:  
+now:
 
 >> delete.directory - with mixed folders
 
@@ -269,36 +269,36 @@ This is a multiline File.
 [attrs:[] text:
 
     Unordered List with Square Bullets
-    
+
         Arturo
         Python
         Ruby
-    
-    
+
+
         Hello
-        
+
         World
-    
+
 
  body:[attrs:[] text:
     Unordered List with Square Bullets
-    
+
         Arturo
         Python
         Ruby
-    
-    
+
+
         Hello
-        
+
         World
-    
+
  h2:[attrs:[] text:Unordered List with Square Bullets] ul:[attrs:[style:list-style-type:square;] text:
         Arturo
         Python
         Ruby
      li:[[attrs:[] text:Arturo] [attrs:[] text:Python] [attrs:[] text:Ruby]]] p:[attrs:[] text:
         Hello
-        
+
         World
      br:[attrs:[] text:]]]]
 
