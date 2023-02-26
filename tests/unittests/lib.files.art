@@ -89,6 +89,28 @@ do [
 
 ; -- Test: delete
 
+topic "delete"
+do [
+
+    ; preparing
+    ; Using write because I can't redirect using `execute` function
+    write "temp/file.txt" "Hello, world!"
+
+    ; 1st assertion
+    print execute "cat temp/file.txt"
+
+    ; action
+    print "deleting..."
+    delete "temp/file.txt"
+
+    ; 2nd assertion
+    print execute "cat temp/file.txt"
+
+    ; cleaning
+    execute "rm temp/* --recursive"
+
+]
+
 ; -- Test: move
 
 ; -- Test: permissions
