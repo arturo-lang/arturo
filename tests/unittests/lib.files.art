@@ -302,8 +302,22 @@ do [
 
 ]
 
+
+;; What is the difference between `read` and `read.lines`?
+topic "read.lines"
+do [
+
+    ; preparing
+    write "temp/test.txt" {
+        Hello, world
+        This is a multiline File.
+        :)
+    }
+
     ; action & assertion
-    print read "temp/test.txt"
+    a: read "temp/test.txt"
+    inspect a
+    print a
 
     ; cleaning
     execute "rm temp/* --recursive"
