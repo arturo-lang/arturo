@@ -213,6 +213,36 @@ do [
     execute "rm temp/* --recursive"
 
 ]
+
+topic "move.directory - with mixed folders"
+do [
+
+    ; preparing
+
+    execute "mkdir temp/toMove"
+    execute "mkdir temp/toMove/folder{A,B,C}"
+    execute "mkdir temp/toMove/folder{A,B,C}/{A,B,C}"
+
+    write "temp/toMove/folderA/A/file.txt" "Hello, world!"
+    write "temp/toMove/folderB/B/file.txt" "Hello, world!"
+    write "temp/toMove/folderC/C/file.txt" "Hello, world!"
+    write "temp/toMove/folderA/file.txt" "Hello, world!"
+    write "temp/toMove/file.txt" "Hello, world!"
+
+    execute "mkdir temp/dest"
+
+    ; action
+    move.directory "temp/toMove/" "temp/dest"
+
+    ; assertion
+    print execute "ls temp/dest/** --recursive"
+
+    ; cleaning
+    execute "rm temp/* --recursive"
+
+]
+
+
 ; -- Test: permissions
 
 ; -- Test: read
