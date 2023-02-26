@@ -386,6 +386,38 @@ do [
 
 ]
 
+topic "read.html"
+do [
+
+    ; preparing
+    write "temp/test.html" {
+        <!DOCTYPE html>
+        <html>
+        <body>
+            <h2>Unordered List with Square Bullets</h2>
+            <ul style="list-style-type:square;">
+                <li>Arturo</li>
+                <li>Python</li>
+                <li>Ruby</li>
+            </ul>
+            <p>
+                Hello
+                <br>
+                World
+            </p>
+        </body>
+        </html>
+    }
+
+    ; action & assertion
+    a: read.html "temp/test.html"
+    print a
+
+    ; cleaning
+    execute "rm temp/* --recursive"
+
+]
+
 ; -- Test: rename
 
 ; -- Test: symlink
