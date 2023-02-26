@@ -111,6 +111,30 @@ do [
 
 ]
 
+topic "delete.directory - with empty folders"
+do [
+
+    ; preparing
+    execute "mkdir temp/folder{A,B,C}"
+    execute "mkdir temp/folder{A,B,C}/{A,B,C}"
+
+    ; assertion
+    print execute "ls temp/**"
+
+    ; action
+    print "Deleting..."
+    delete.directory "temp/folderA"
+    delete.directory "temp/folderB"
+    delete.directory "temp/folderC"
+
+    ; assertion
+    print ["now:" execute "ls temp"]
+
+    ; cleaning
+    execute "rm temp/* --recursive"
+
+]
+
 ; -- Test: move
 
 ; -- Test: permissions
