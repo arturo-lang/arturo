@@ -282,6 +282,20 @@ do [
 
 ; -- Test: read
 
+topic "read"
+do [
+
+    ; preparing
+    write "temp/test.txt" "Hello, world!"
+
+    ; action & assertion
+    print read "temp/test.txt"
+
+    ; cleaning
+    execute "rm temp/* --recursive"
+
+]
+
 ; -- Test: rename
 
 ; -- Test: symlink
