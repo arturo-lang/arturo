@@ -286,7 +286,21 @@ topic "read"
 do [
 
     ; preparing
-    write "temp/test.txt" "Hello, world!"
+    write "temp/test.txt" {
+        Hello, world
+        This is a multiline File.
+        :)
+    }
+
+    ; action & assertion
+    a: read "temp/test.txt"
+    inspect a
+    print a
+
+    ; cleaning
+    execute "rm temp/* --recursive"
+
+]
 
     ; action & assertion
     print read "temp/test.txt"
