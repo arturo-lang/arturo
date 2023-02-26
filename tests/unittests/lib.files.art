@@ -36,6 +36,26 @@ do [
     execute "rm temp/* --recursive"
 
 ]
+
+
+topic "copy.directory - with empty folders"
+do [
+
+    ; preparing
+    execute "mkdir temp/toCopy"
+    execute "mkdir temp/toCopy/folder{A,B,C}"
+    execute "mkdir temp/toCopy/folder{A,B,C}/{A,B,C}"
+    execute "mkdir temp/dest"
+
+    ; action
+    copy.directory "temp/toCopy/" "temp/dest"
+
+    ; assertion
+    print execute "ls temp/dest/**"
+
+    ; cleaning
+    execute "rm temp/* --recursive"
+
 ]
 
 createTempFolder tempFolder
