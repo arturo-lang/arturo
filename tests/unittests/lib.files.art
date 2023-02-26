@@ -192,6 +192,27 @@ do [
 ]
 
 
+
+topic "move.directory - with empty folders"
+do [
+
+    ; preparing
+    execute "mkdir temp/toMove"
+    execute "mkdir temp/toMove/folder{A,B,C}"
+    execute "mkdir temp/toMove/folder{A,B,C}/{A,B,C}"
+    execute "mkdir temp/dest"
+
+    ; action
+    move.directory "temp/toMove/" "temp/dest"
+
+    ; assertion
+    print execute "ls temp/dest/**"
+    print execute "ls temp/toMove/**"
+
+    ; cleaning
+    execute "rm temp/* --recursive"
+
+]
 ; -- Test: permissions
 
 ; -- Test: read
