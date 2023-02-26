@@ -366,6 +366,26 @@ do [
 
 ]
 
+topic "read.csv.withHeaders"
+do [
+
+    ; preparing
+    write "temp/test.csv" {
+        language; version; platform
+        Arturo; 0.9.83; win10
+        Python; 3.9; gnu/linux
+        Ruby; 3.2.1; macOS
+    }
+
+    ; action & assertion
+    a: read.csv.withHeaders "temp/test.csv"
+    inspect a
+
+    ; cleaning
+    execute "rm temp/* --recursive"
+
+]
+
 ; -- Test: rename
 
 ; -- Test: symlink
