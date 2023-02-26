@@ -626,7 +626,16 @@ do [
 
 ]
 
-; -- Test: symlink
+; ; -- Test: symlink
+
+;; How can I properly test it?
+; topic "rename.directory"
+; do [
+;
+;     ; cleaning
+;     execute "rm temp/* --recursive"
+;
+; ]
 
 ; -- Test: timestamp
 
