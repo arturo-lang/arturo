@@ -511,6 +511,32 @@ do [
 
 ]
 
+topic "read.toml -- from ini file"
+do [
+
+    ; preparing
+    write "temp/test.ini" {
+        [package]
+        name = "TOML Reader"
+        description = "Yet another TOML Reader"
+        version = "1.0.1"
+        authors = ["author A", "author B"]
+        license = "MIT"
+
+        [config]
+        version = "^0.9"
+        pkg-manager = "^0.2"
+    }
+
+    ; action & assertion
+    a: read.toml "temp/test.ini"
+    inspect a
+
+    ; cleaning
+    execute "rm temp/* --recursive"
+
+]
+
 ; -- Test: rename
 
 ; -- Test: symlink
