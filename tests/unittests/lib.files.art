@@ -18,10 +18,24 @@ print "Created: temp/"
 
 ; -- Test: copy
 
-finishTempFolder: $[folder :string][
-    execute.args: [~"|folder|/", "--recursive"]
-    "rm"
-    print ~"Deleted: |folder|/**"
+topic "copy"
+do [
+
+    ; preparing
+    execute "mkdir temp/toCopy"
+    ; Using write because I can't redirect using `execute` function
+    write "temp/toCopy/file.txt" "Hello, world!"
+
+    ; action
+    copy "temp/toCopy/file.txt" "temp/copied.txt"
+
+    ; assertion
+    print execute "cat temp/copied.txt"
+
+    ; cleaning
+    execute "rm temp/* --recursive"
+
+]
 ]
 
 createTempFolder tempFolder
