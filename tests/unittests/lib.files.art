@@ -554,6 +554,24 @@ do [
 
 ]
 
+;; What is the difference from `read`?
+topic "read.file"
+do [
+
+    ; preparing
+    write.binary "temp/test.bin" {
+        Hello, World!
+    }
+
+    ; action & assertion
+    a: read.file "temp/test.bin"
+    inspect a
+
+    ; cleaning
+    execute "rm temp/* --recursive"
+
+]
+
 ; -- Test: rename
 
 ; -- Test: symlink
