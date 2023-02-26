@@ -537,6 +537,21 @@ do [
 
 ]
 
+;; How can I test it?
+; topic "read.bytecode"
+; do [
+;
+;     ; preparing
+;
+;     ; action & assertion
+;     a: read.bytecode "temp/test.artc"
+;     inspect a
+;
+;     ; cleaning
+;     execute "rm temp/* --recursive"
+;
+; ]
+
 topic "read.binary"
 do [
 
