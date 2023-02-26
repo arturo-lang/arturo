@@ -324,6 +324,28 @@ do [
 
 ]
 
+topic "read.json"
+do [
+
+    ; preparing
+    write "temp/test.json" {
+        {
+            "name": "Arturo",
+            "version": "0.9.83",
+            "build": "b/12",
+            "platform": "amd/win10"
+        }
+    }
+
+    ; action & assertion
+    a: read.json "temp/test.json"
+    inspect a
+
+    ; cleaning
+    execute "rm temp/* --recursive"
+
+]
+
 ; -- Test: rename
 
 ; -- Test: symlink
