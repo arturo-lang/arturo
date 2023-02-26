@@ -607,6 +607,25 @@ do [
 
 ]
 
+topic "rename.directory"
+do [
+
+    ; preparing
+    ; Using write because I can't redirect using `execute` function
+    execute "mkdir temp/folder"
+
+    ; action
+    print execute "ls temp"
+    rename.directory "temp/folder" "temp/directory"
+
+    ; assertion
+    print execute "ls temp"
+
+    ; cleaning
+    execute "rm temp/* --recursive"
+
+]
+
 ; -- Test: symlink
 
 ; -- Test: timestamp
