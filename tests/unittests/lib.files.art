@@ -245,6 +245,20 @@ do [
 
 ; -- Test: permissions
 
+topic "permissions"
+do [
+
+    ; preparing
+    ; Using write because I can't redirect using `execute` function
+    write "temp/file.txt" "Hello, world!"
+
+    ; action & assertion
+    inspect permissions "temp/file.txt"
+
+    ; cleaning
+    execute "rm temp/* --recursive"
+
+]
 ; -- Test: read
 
 ; -- Test: rename
