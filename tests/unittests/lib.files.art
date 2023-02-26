@@ -171,6 +171,27 @@ do [
 
 ; -- Test: move
 
+topic "move"
+do [
+
+    ; preparing
+    execute "mkdir temp/toMove"
+    ; Using write because I can't redirect using `execute` function
+    write "temp/toMove/file.txt" "Hello, world!"
+
+    ; action
+    move "temp/toMove/file.txt" "temp/moved.txt"
+
+    ; assertion
+    print execute "cat temp/moved.txt"
+    print execute "cat temp/toMove/moved.txt"
+
+    ; cleaning
+    execute "rm temp/* --recursive"
+
+]
+
+
 ; -- Test: permissions
 
 ; -- Test: read
