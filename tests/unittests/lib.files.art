@@ -135,6 +135,40 @@ do [
 
 ]
 
+topic "delete.directory - with mixed folders"
+do [
+
+    ; preparing
+
+    execute "mkdir temp/folder{A,B,C}"
+    execute "mkdir temp/folder{A,B,C}/{A,B,C}"
+
+    ; Using write because I can't redirect using `execute` function
+    write "temp/folderA/A/file.txt" "Hello, world!"
+    write "temp/folderB/B/file.txt" "Hello, world!"
+    write "temp/folderC/C/file.txt" "Hello, world!"
+    write "temp/folderA/file.txt" "Hello, world!"
+    write "temp/file.txt" "Hello, world!"
+
+    ; 1st assertion
+    print execute "ls temp/**"
+
+    ; action
+    print "Deleting..."
+
+    delete.directory "temp/folderA"
+    delete.directory "temp/folderB"
+    delete.directory "temp/folderC"
+    delete "file.txt"
+
+    ; 2nd assertion
+    print execute "ls temp/**"
+
+    ; cleaning
+    execute "rm temp/* --recursive"
+
+]
+
 ; -- Test: move
 
 ; -- Test: permissions
