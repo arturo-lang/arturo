@@ -537,6 +537,23 @@ do [
 
 ]
 
+topic "read.binary"
+do [
+
+    ; preparing
+    write "temp/test.bin" {
+        Hello, World!
+    }
+
+    ; action & assertion
+    a: read.binary "temp/test.bin"
+    inspect a
+
+    ; cleaning
+    execute "rm temp/* --recursive"
+
+]
+
 ; -- Test: rename
 
 ; -- Test: symlink
