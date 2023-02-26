@@ -259,6 +259,27 @@ do [
     execute "rm temp/* --recursive"
 
 ]
+
+
+;; Returns me a `SIGSEGV: Illegal storage access. (Attempt to read from nil?)`
+; topic "permissions.set"
+; do [
+;
+;     ; preparing
+;     ; Using write because I can't redirect using `execute` function
+;     write "temp/file.txt" "Hello, world!"
+;
+;     ; action
+;     permissions.set: #[others:#[write:false]] "temp/file.txt"
+;
+;     ; assertion
+;     inspect permissions "temp/file.txt"
+;
+;     ; cleaning
+;     execute "rm temp/* --recursive"
+;
+; ]
+
 ; -- Test: read
 
 ; -- Test: rename
