@@ -1,0 +1,55 @@
+;; Library: Files -- https://arturo-lang.io/documentation/library/files/
+;;
+;; This file tests Arturo's Files Library
+;; for obvious reasons, bash is used as helper to this,
+;; doing functions independents of each other.
+
+
+tempFolder: "temp"
+
+createTempFolder: $[folder :string][
+    execute.args: [folder]
+    "mkdir"
+    print ~"Created: |folder|/"
+]
+
+finishTempFolder: $[folder :string][
+    execute.args: [~"|folder|/", "--recursive"]
+    "rm"
+    print ~"Deleted: |folder|/**"
+]
+
+createTempFolder tempFolder
+
+; ----- Functions
+
+; -- Test: copy
+
+; -- Test: delete
+
+; -- Test: move
+
+; -- Test: permissions
+
+; -- Test: read
+
+; -- Test: rename
+
+; -- Test: symlink
+
+; -- Test: timestamp
+
+; -- Test: unzip
+
+; -- Test: volume
+
+; -- Test: write
+
+; -- Test: zip
+
+; -- exists?
+
+; -- hidden?
+
+
+finishTempFolder tempFolder
