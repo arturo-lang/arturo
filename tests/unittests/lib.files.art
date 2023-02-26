@@ -418,6 +418,40 @@ do [
 
 ]
 
+topic "read.xml"
+do [
+
+    ; preparing
+    write "temp/test.xml" {
+        <?xml version="1.0"?>
+        <languages>
+        <language id="art">
+            <name>Arturo Programming Language</name>
+            <author>Yanis Zafiropulos</author>
+            <category>Scripting and Concatenative</category>
+        </language>
+        <language id="py">
+            <name>CPython</name>
+            <author>Guido van Rossum</author>
+            <category>Scripting and Object Oriented</category>
+        </language>
+        <language id="rb">
+            <name>Ruby</name>
+            <author>Yukihiro Matsumoto</author>
+            <category>Scripting and Object Oriented</category>
+        </language>
+        </languages>
+    }
+
+    ; action & assertion
+    a: read.xml "temp/test.xml"
+    inspect a
+
+    ; cleaning
+    execute "rm temp/* --recursive"
+
+]
+
 ; -- Test: rename
 
 ; -- Test: symlink
