@@ -589,6 +589,24 @@ do [
 
 ; -- Test: rename
 
+topic "rename"
+do [
+
+    ; preparing
+    ; Using write because I can't redirect using `execute` function
+    write "temp/file.txt" "Hello, world!"
+
+    ; action
+    rename "temp/file.txt" "temp/renamed.txt"
+
+    ; assertion
+    print execute "cat temp/renamed.txt"
+
+    ; cleaning
+    execute "rm temp/* --recursive"
+
+]
+
 ; -- Test: symlink
 
 ; -- Test: timestamp
