@@ -754,6 +754,21 @@ do [
 
 ; -- hidden?
 
+topic "hidden?"
+do [
+
+    print hidden? "README.md"
+    print hidden? "src"
+    print hidden? ".gitignore"
+    print hidden? ".cache"
+    print hidden? ".github"
+    print hidden? ".git"
+
+    ; cleaning
+    execute "rm temp/* --recursive"
+
+]
+
 
 ; ---- Finish
 execute "rmdir temp"
