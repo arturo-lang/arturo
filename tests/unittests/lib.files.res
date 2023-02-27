@@ -91,7 +91,7 @@ B
 C
 
 Deleting...
-now:
+now:  
 
 >> delete.directory - with mixed folders
 
@@ -217,12 +217,23 @@ This is a multiline File.
 
 >> read.lines
 
-[1;32mHello, world
-This is a multiline File.
-:)[0;90m :string[0m
-Hello, world
-This is a multiline File.
-:)
+[1;35m[[0;90m :block[0m
+        [1;32mThe Language[0;90m :string[0m
+        [1;32m------------------------------[0;90m :string[0m
+        [1;32m[0;90m :string[0m
+        [1;32mArturo is an independently-developed, modern programming language,[0;90m :string[0m
+        [1;32mvaguely related to various other ones - including but not limited to:[0;90m :string[0m
+        [1;32mLogo, Rebol, Forth, Ruby, Haskell, D, Smalltalk, Tcl, and Lisp.[0;90m :string[0m
+        [1;32m[0;90m :string[0m
+        [1;32mThe language has been designed[0;90m :string[0m
+        [1;32mfollowing some very simple and straightforward principles:[0;90m :string[0m
+        [1;32m[0;90m :string[0m
+        [1;32m- Code is just a list of words, symbols and literal values[0;90m :string[0m
+        [1;32m- Words and symbols within a block are interpreted - when needed -[0;90m :string[0m
+        [1;32m    according to the context[0;90m :string[0m
+        [1;32m- No reserved words or keywords -[0;90m :string[0m
+        [1;32m    look for them as hard as you can; there are absolutely none[0;90m :string[0m
+[1;35m][0m
 
 >> read.json
 
@@ -269,36 +280,36 @@ This is a multiline File.
 [attrs:[] text:
 
     Unordered List with Square Bullets
-
+    
         Arturo
         Python
         Ruby
-
-
+    
+    
         Hello
-
+        
         World
-
+    
 
  body:[attrs:[] text:
     Unordered List with Square Bullets
-
+    
         Arturo
         Python
         Ruby
-
-
+    
+    
         Hello
-
+        
         World
-
+    
  h2:[attrs:[] text:Unordered List with Square Bullets] ul:[attrs:[style:list-style-type:square;] text:
         Arturo
         Python
         Ruby
      li:[[attrs:[] text:Arturo] [attrs:[] text:Python] [attrs:[] text:Ruby]]] p:[attrs:[] text:
         Hello
-
+        
         World
      br:[attrs:[] text:]]]]
 
@@ -398,4 +409,94 @@ before you are comfortable enough to write your first program.</p>
 
 >> read.file
 
-[1;32mHello, World![0;90m :string[0m
+[1;32mtemp/test.bin[0;90m :string[0m
+error raised!
+
+>> rename
+
+Hello, world!
+
+
+>> rename.directory
+
+folder
+
+directory
+
+
+>> timestamp
+
+assertions passed
+
+>> zip & unzip
+
+
+---
+temp/dest.zip
+
+---
+temp/dest.zip
+
+temp/README.md:
+README.md
+
+
+>> volume
+
+13B
+
+>> write
+
+Hello, world!
+
+
+>> write.append
+
+Hello, world!
+From Arturo's World!
+
+
+>> write.directory
+
+directory
+folder
+
+
+>> write.json
+
+{
+    "name": "Arturo",
+    "version": "1.9.83",
+    "build": "b/12",
+    "platform": "amd/win10"
+}
+
+
+>> write.json.compact
+
+{"name":"Arturo","version":"1.9.83","build":"b/12","platform":"amd/win10"}
+
+
+>> write.binary
+
+Hello, world!
+
+
+>> exists?
+
+file does not exist
+file exists
+
+>> exists?.directory
+
+directory does not exist
+directory exists
+
+>> hidden?
+
+false
+false
+false
+false
+false
+true
