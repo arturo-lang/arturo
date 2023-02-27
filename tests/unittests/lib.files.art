@@ -758,6 +758,21 @@ do [
 
 ]
 
+topic "write.directory"
+do [
+
+    ; action
+    write.directory "temp/folder" null
+    write.directory "temp/directory" null
+
+    ; assertion
+    print execute "ls temp/"
+
+    ; cleaning
+    execute "rm temp/* --recursive"
+
+]
+
 topic "write.json"
 do [
 
