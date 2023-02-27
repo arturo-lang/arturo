@@ -1,0 +1,8 @@
+primesBelow100: select 1..100 => prime?
+
+loop 1..dec size primesBelow100 'p [
+    p1: primesBelow100\[p-1]
+    p2: primesBelow100\[p]
+    if prime? dec p1 + p2 ->
+        print ["(" p1 "," p2 ")"]
+]
