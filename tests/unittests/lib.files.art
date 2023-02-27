@@ -309,15 +309,25 @@ do [
 
     ; preparing
     write "temp/test.txt" {
-        Hello, world
-        This is a multiline File.
-        :)
+        The Language
+        ------------------------------
+
+        Arturo is an independently-developed, modern programming language,
+        vaguely related to various other ones - including but not limited to:
+        Logo, Rebol, Forth, Ruby, Haskell, D, Smalltalk, Tcl, and Lisp.
+
+        The language has been designed
+        following some very simple and straightforward principles:
+
+        - Code is just a list of words, symbols and literal values
+        - Words and symbols within a block are interpreted - when needed -
+            according to the context
+        - No reserved words or keywords -
+            look for them as hard as you can; there are absolutely none
     }
 
     ; action & assertion
-    a: read "temp/test.txt"
-    inspect a
-    print a
+    inspect read.lines "temp/test.txt"
 
     ; cleaning
     execute "rm temp/* --recursive"
