@@ -660,13 +660,43 @@ do [
 
 ]
 
-; -- Test: unzip
+; -- Test: zip & unzip
+
+;; Zip is writing an empty archive
+; topic "delete.directory - with mixed folders"
+; do [
+;     ; preparing
+;     execute "mkdir temp/folder{A,B,C}"
+;     execute "mkdir temp/folder{A,B,C}/{A,B,C}"
+;
+;     ; Using write because I can't redirect using `execute` function
+;     write "temp/folderA/A/file.txt" "Hello, world!"
+;     write "temp/folderB/B/file.txt" "Hello, world!"
+;     write "temp/folderC/C/file.txt" "Hello, world!"
+;     write "temp/folderA/file.txt" "Hello, world!"
+;     write "temp/file.txt" "Hello, world!"
+;
+;     ; 1st assertion
+;     print execute "ls temp/**"
+;
+;     ; zip's assertion
+;     print "Zipping..."
+;     zip "temp/dest.zip" ["temp/file.txt" "temp/folderA" "temp/folderB" "temp/folderC"]
+;     print execute "ls temp/**"
+;
+;     ; unzip's assertion
+;     print "Unzipping..."
+;     unzip "temp/" "temp/dest.zip"
+;     print execute "ls temp/**"
+;
+;     ; cleaning
+;     execute "rm temp/* --recursive"
+; ]
+
 
 ; -- Test: volume
 
 ; -- Test: write
-
-; -- Test: zip
 
 ; -- exists?
 
