@@ -11,6 +11,11 @@ topic: $[topic :string] [
     print ""
 ]
 
+inspect: $[T][
+    print T
+    print type T
+]
+
 execute "mkdir temp"
 print "Created: temp/"
 
