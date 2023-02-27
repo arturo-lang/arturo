@@ -1,15 +1,5 @@
-firstAndLastIs3?: function [n][
-    if not? prime? n -> return false
-    return and? -> 3 = first digits n
-                -> 3 = last digits n
-]
+    3   313   353   373   383  3023  3083  3163  3203  3253  3313 
+ 3323  3343  3373  3413  3433  3463  3533  3583  3593  3613  3623 
+ 3643  3673  3733  3793  3803  3823  3833  3853  3863  3923  3943 
 
-primesWithFirstAndLast3: select 1..4000 => firstAndLastIs3?
-
-nofPrimesBelow1M: enumerate 1..1000000 => firstAndLastIs3?
-
-loop split.every: 11 primesWithFirstAndLast3 'x ->
-    print map x 's -> pad to :string s 5
-
-print ""
-print ["Found" nofPrimesBelow1M "primes starting and ending with 3 below 1000000."]
+Found 2251 primes starting and ending with 3 below 1000000. 
