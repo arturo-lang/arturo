@@ -696,6 +696,20 @@ do [
 
 ; -- Test: volume
 
+topic "volume"
+do [
+
+    ; preparing
+    write "temp/test.bin" "Hello, World!"
+
+    ; action & assertion
+    print volume "temp/test.bin"
+
+    ; cleaning
+    execute "rm temp/* --recursive"
+
+]
+
 ; -- Test: write
 
 ; -- exists?
