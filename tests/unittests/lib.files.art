@@ -662,6 +662,23 @@ do [
 
 ; -- Test: zip & unzip
 
+topic "zip & unzip"
+do [
+
+    print execute "ls temp/"
+    print "---"
+    zip "temp/dest.zip" ["README.md"]
+    print execute "ls temp/*"
+    print "---"
+    unzip "temp/README.md" "temp/dest.zip"
+    print execute "ls temp/*"
+
+    ; cleaning
+    execute "rm temp/*.zip --recursive"
+    execute "rm temp/* --recursive"
+
+]
+
 ;; Zip is not working for folders
 ; topic "zip & unzip -- wit folders"
 ; do [
