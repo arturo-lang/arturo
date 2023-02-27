@@ -796,6 +796,22 @@ do [
     execute "rm temp/* --recursive"
 
 ]
+
+topic "write.binary"
+do [
+
+    ; action
+    write "temp/file.bin" "Hello, world!"
+
+    ; assertion
+    print execute "cat temp/file.bin"
+
+    ; cleaning
+    execute "rm temp/* --recursive"
+
+]
+
+
 ; -- Test: exists?
 
 topic "exists?"
