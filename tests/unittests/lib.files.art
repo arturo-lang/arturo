@@ -733,6 +733,25 @@ do [
 
 ]
 
+topic "exists?.directory"
+do [
+
+    if not? exists?.directory "temp/dir" [
+        print "directory does not exist"
+    ]
+
+    ; Using write because I can't redirect using `execute` function
+    execute "mkdir temp/dir"
+
+    if exists?.directory "temp/dir" [
+        print "directory exists"
+    ]
+
+    ; cleaning
+    execute "rm temp/* --recursive"
+
+]
+
 ; -- hidden?
 
 
