@@ -188,92 +188,38 @@ file.txt
 
 >> permissions
 
-[1;35m[[0;90m :dictionary[0m
-        user    :        [1;35m[[0;90m :dictionary[0m
-                read     :                [1;32mtrue[0;90m :logical[0m
-                write    :                [1;32mtrue[0;90m :logical[0m
-                execute  :                [1;32mtrue[0;90m :logical[0m
-        [1;35m][0m
-        group   :        [1;35m[[0;90m :dictionary[0m
-                read     :                [1;32mtrue[0;90m :logical[0m
-                write    :                [1;32mtrue[0;90m :logical[0m
-                execute  :                [1;32mtrue[0;90m :logical[0m
-        [1;35m][0m
-        others  :        [1;35m[[0;90m :dictionary[0m
-                read     :                [1;32mtrue[0;90m :logical[0m
-                write    :                [1;32mtrue[0;90m :logical[0m
-                execute  :                [1;32mtrue[0;90m :logical[0m
-        [1;35m][0m
-[1;35m][0m
+[user:[read:true write:true execute:true] group:[read:true write:true execute:true] others:[read:true write:true execute:true]]
+:dictionary
 
 >> read
 
-[1;32mHello, world
+Hello, world
 This is a multiline File.
-:)[0;90m :string[0m
+:)
+:string
 Hello, world
 This is a multiline File.
 :)
 
 >> read.lines
 
-[1;35m[[0;90m :block[0m
-        [1;32mThe Language[0;90m :string[0m
-        [1;32m------------------------------[0;90m :string[0m
-        [1;32m[0;90m :string[0m
-        [1;32mArturo is an independently-developed, modern programming language,[0;90m :string[0m
-        [1;32mvaguely related to various other ones - including but not limited to:[0;90m :string[0m
-        [1;32mLogo, Rebol, Forth, Ruby, Haskell, D, Smalltalk, Tcl, and Lisp.[0;90m :string[0m
-        [1;32m[0;90m :string[0m
-        [1;32mThe language has been designed[0;90m :string[0m
-        [1;32mfollowing some very simple and straightforward principles:[0;90m :string[0m
-        [1;32m[0;90m :string[0m
-        [1;32m- Code is just a list of words, symbols and literal values[0;90m :string[0m
-        [1;32m- Words and symbols within a block are interpreted - when needed -[0;90m :string[0m
-        [1;32m    according to the context[0;90m :string[0m
-        [1;32m- No reserved words or keywords -[0;90m :string[0m
-        [1;32m    look for them as hard as you can; there are absolutely none[0;90m :string[0m
-[1;35m][0m
+The Language ------------------------------  Arturo is an independently-developed, modern programming language, vaguely related to various other ones - including but not limited to: Logo, Rebol, Forth, Ruby, Haskell, D, Smalltalk, Tcl, and Lisp.  The language has been designed following some very simple and straightforward principles:  - Code is just a list of words, symbols and literal values - Words and symbols within a block are interpreted - when needed -     according to the context - No reserved words or keywords -     look for them as hard as you can; there are absolutely none 
+:block
 
 >> read.json
 
-[1;35m[[0;90m :dictionary[0m
-        name      :        [1;32mArturo[0;90m :string[0m
-        version   :        [1;32m0.9.83[0;90m :string[0m
-        build     :        [1;32mb/12[0;90m :string[0m
-        platform  :        [1;32mamd/win10[0;90m :string[0m
-[1;35m][0m
+[name:Arturo version:0.9.83 build:b/12 platform:amd/win10]
+:dictionary
 
 >> read.csv
 
-[1;35m[[0;90m :block[0m
-        [1;35m[[0;90m :block[0m
-                [1;32mlanguage; version; platform[0;90m :string[0m
-        [1;35m][0m
-        [1;35m[[0;90m :block[0m
-                [1;32mArturo; 0.9.83; win10[0;90m :string[0m
-        [1;35m][0m
-        [1;35m[[0;90m :block[0m
-                [1;32mPython; 3.9; gnu/linux[0;90m :string[0m
-        [1;35m][0m
-        [1;35m[[0;90m :block[0m
-                [1;32mRuby; 3.2.1; macOS[0;90m :string[0m
-        [1;35m][0m
-[1;35m][0m
+[language; version; platform] [Arturo; 0.9.83; win10] [Python; 3.9; gnu/linux] [Ruby; 3.2.1; macOS] 
+:block
 
 >> read.csv.withHeaders
 
-[1;35m[[0;90m :block[0m
-        [1;35m[[0;90m :dictionary[0m
-                language; version; platform  :                [1;32mArturo; 0.9.83; win10[0;90m :string[0m
-        [1;35m][0m
-        [1;35m[[0;90m :dictionary[0m
-                language; version; platform  :                [1;32mPython; 3.9; gnu/linux[0;90m :string[0m
-        [1;35m][0m
-        [1;35m[[0;90m :dictionary[0m
-                language; version; platform  :                [1;32mRuby; 3.2.1; macOS[0;90m :string[0m
-        [1;35m][0m
-[1;35m][0m
+[language; version; platform:Arturo; 0.9.83; win10] [language; version; platform:Python; 3.9; gnu/linux] [language; version; platform:Ruby; 3.2.1; macOS] 
+:block
 
 >> read.html
 
@@ -315,33 +261,12 @@ This is a multiline File.
 
 >> read.xml
 
-[1;35m[[0;90m :block[0m
-        [1;35m[[0;90m :dictionary[0m
-                name      :                [1;32mArturo Programming Language[0;90m :string[0m
-                author    :                [1;32mYanis Zafiropulos[0;90m :string[0m
-                category  :                [1;32mScripting and Concatenative[0;90m :string[0m
-                _tag      :                [1;32mlanguage[0;90m :string[0m
-                id        :                [1;32mart[0;90m :string[0m
-        [1;35m][0m
-        [1;35m[[0;90m :dictionary[0m
-                name      :                [1;32mCPython[0;90m :string[0m
-                author    :                [1;32mGuido van Rossum[0;90m :string[0m
-                category  :                [1;32mScripting and Object Oriented[0;90m :string[0m
-                _tag      :                [1;32mlanguage[0;90m :string[0m
-                id        :                [1;32mpy[0;90m :string[0m
-        [1;35m][0m
-        [1;35m[[0;90m :dictionary[0m
-                name      :                [1;32mRuby[0;90m :string[0m
-                author    :                [1;32mYukihiro Matsumoto[0;90m :string[0m
-                category  :                [1;32mScripting and Object Oriented[0;90m :string[0m
-                _tag      :                [1;32mlanguage[0;90m :string[0m
-                id        :                [1;32mrb[0;90m :string[0m
-        [1;35m][0m
-[1;35m][0m
+[name:Arturo Programming Language author:Yanis Zafiropulos category:Scripting and Concatenative _tag:language id:art] [name:CPython author:Guido van Rossum category:Scripting and Object Oriented _tag:language id:py] [name:Ruby author:Yukihiro Matsumoto category:Scripting and Object Oriented _tag:language id:rb] 
+:block
 
 >> read.markdown
 
-[1;32m<h1>Arturo Basics</h1>
+<h1>Arturo Basics</h1>
 <blockquote>
 <p>Arturo is a very simple language.
 Even without any prior experience,
@@ -359,57 +284,28 @@ before you are comfortable enough to write your first program.</p>
 <li><a href="https://arturo-lang.io/documentation/language/#precedence-and-evaluation">Precedence &amp; Evaluation</a></li>
 <li><a href="https://arturo-lang.io/documentation/language/#scope-and-rules">Scope &amp; Rules</a></li>
 </ol>
-[0;90m :string[0m
+
+:string
 
 >> read.toml
 
-[1;35m[[0;90m :dictionary[0m
-        arturo  :        [1;35m[[0;90m :dictionary[0m
-                package  :                [1;35m[[0;90m :dictionary[0m
-                        name         :                        [1;32mTOML Reader[0;90m :string[0m
-                        description  :                        [1;32mYet another TOML Reader[0;90m :string[0m
-                        version      :                        [1;32m1.0.1[0;90m :string[0m
-                        authors      :                        [1;35m[[0;90m :block[0m
-                                [1;32mauthor A[0;90m :string[0m
-                                [1;32mauthor B[0;90m :string[0m
-                        [1;35m][0m
-                        license      :                        [1;32mMIT[0;90m :string[0m
-                [1;35m][0m
-                config   :                [1;35m[[0;90m :dictionary[0m
-                        version      :                        [1;32m^0.9[0;90m :string[0m
-                        pkg-manager  :                        [1;32m^0.2[0;90m :string[0m
-                [1;35m][0m
-        [1;35m][0m
-[1;35m][0m
+[arturo:[package:[name:TOML Reader description:Yet another TOML Reader version:1.0.1 authors:[author A author B] license:MIT] config:[version:^0.9 pkg-manager:^0.2]]]
+:dictionary
 
 >> read.toml -- from ini file
 
-[1;35m[[0;90m :dictionary[0m
-        package  :        [1;35m[[0;90m :dictionary[0m
-                name         :                [1;32mTOML Reader[0;90m :string[0m
-                description  :                [1;32mYet another TOML Reader[0;90m :string[0m
-                version      :                [1;32m1.0.1[0;90m :string[0m
-                authors      :                [1;35m[[0;90m :block[0m
-                        [1;32mauthor A[0;90m :string[0m
-                        [1;32mauthor B[0;90m :string[0m
-                [1;35m][0m
-                license      :                [1;32mMIT[0;90m :string[0m
-        [1;35m][0m
-        config   :        [1;35m[[0;90m :dictionary[0m
-                version      :                [1;32m^0.9[0;90m :string[0m
-                pkg-manager  :                [1;32m^0.2[0;90m :string[0m
-        [1;35m][0m
-[1;35m][0m
+[package:[name:TOML Reader description:Yet another TOML Reader version:1.0.1 authors:[author A author B] license:MIT] config:[version:^0.9 pkg-manager:^0.2]]
+:dictionary
 
 >> read.binary
 
-[1;35m[[0;90m :binary[0m
-        [0m[0;90m48 [0m[0m[0;90m65 [0m[0m[0;90m6C [0m[0m[0;90m6C [0m[0m[0;90m6F [0m[0m[0;90m2C [0m[0m[0;90m20 [0m[0m[0;90m57 [0m[0m[0;90m6F [0m[0m[0;90m72 [0m[0m[0;90m6C [0m[0m[0;90m64 [0m[0m[0;90m21 [0m
-[1;35m][0m
+48 65 6C 6C 6F 2C 20 57 6F 72 6C 64 21
+:binary
 
 >> read.file
 
-[1;32mtemp/test.bin[0;90m :string[0m
+temp/test.bin
+:string
 error raised!
 
 >> rename
