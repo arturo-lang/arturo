@@ -546,18 +546,24 @@ do [
 
 ]
 
-;; How can I test it?
+;; Commented code because, can't delete "hello.art.bcode", what breaks other tests
+;; BTW, read.bytecode is working well
 ; topic "read.bytecode"
 ; do [
 ;
 ;     ; preparing
+;     write "temp/hello.art" {
+;         print "Hello, world!"
+;     }
+;
+;     execute "arturo -c temp/hello.art"
+;     print execute "ls temp/"
 ;
 ;     ; action & assertion
-;     a: read.bytecode "temp/test.artc"
-;     inspect a
+;     inspect read.bytecode "temp/hello.art.bcode"
 ;
 ;     ; cleaning
-;     execute "rm temp/* --recursive"
+;     execute "rm temp/* --recursive --force"
 ;
 ; ]
 
