@@ -303,7 +303,6 @@ do [
 ]
 
 
-;; What is the difference between `read` and `read.lines`?
 topic "read.lines"
 do [
 
