@@ -573,14 +573,16 @@ do [
 topic "read.file"
 do [
 
-    ; preparing
-    write.binary "temp/test.bin" {
-        Hello, World!
-    }
-
     ; action & assertion
-    a: read.file "temp/test.bin"
-    inspect a
+
+    inspect read "temp/test.bin"
+    ; temp/test.bin :string
+    try? -> inspect read.file "temp/test.bin"
+    else -> print "error raised!"
+    ; >> Runtime | File: lib.files.art
+    ; error | Line: 578
+    ;       |
+    ;       | file not found: temp/test.bin
 
     ; cleaning
     execute "rm temp/* --recursive"
