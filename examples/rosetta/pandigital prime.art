@@ -1,0 +1,14 @@
+allowed: @1..7
+pandigital?: function [n][
+    allowed = sort unique digits n
+]
+
+largestPossiblePandigital: 7654321
+
+until -> dec 'largestPossiblePandigital [
+    and? -> pandigital? largestPossiblePandigital
+         -> prime? largestPossiblePandigital
+]
+
+print "The largest pandigital prime is:"
+print largestPossiblePandigital
