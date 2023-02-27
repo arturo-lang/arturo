@@ -584,7 +584,6 @@ do [
 
 ]
 
-;; What is the difference from `read`?
 topic "read.file"
 do [
 
