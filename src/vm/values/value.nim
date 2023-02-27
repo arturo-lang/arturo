@@ -1135,6 +1135,7 @@ proc `-=`*(x: var Value, y: Value) =
 
 # TODO(Value/`*`) multiplication not working for Integer-Quantity pairs
 #  e.g. `10 * 3:USD` doesn't work, but `3:USD * 10` does
+#  this could also be used for: https://rosettacode.org/wiki/Currency
 #  labels: bug, values, critical
 proc `*`*(x: Value, y: Value): Value =
     ## multiply given values 
