@@ -712,7 +712,26 @@ do [
 
 ; -- Test: write
 
-; -- exists?
+; -- Test: exists?
+
+topic "exists?"
+do [
+
+    if not? exists? "temp/file.txt" [
+        print "file does not exist"
+    ]
+
+    ; Using write because I can't redirect using `execute` function
+    write "temp/file.txt" "Hello, world!"
+
+    if exists? "temp/file.txt" [
+        print "file exists"
+    ]
+
+    ; cleaning
+    execute "rm temp/* --recursive"
+
+]
 
 ; -- hidden?
 
