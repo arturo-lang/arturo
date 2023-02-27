@@ -641,6 +641,25 @@ do [
 
 ; -- Test: timestamp
 
+topic "timestamp"
+do [
+
+    ; preparing
+    ; Using write because I can't redirect using `execute` function
+    write "temp/file.txt" "Hello, world!"
+
+    ; action & assertion
+    a: timestamp "temp/file.txt"
+    ensure -> a\created
+    ensure -> a\accessed
+    ensure -> a\modified
+    print "assertions passed"
+
+    ; cleaning
+    execute "rm temp/* --recursive"
+
+]
+
 ; -- Test: unzip
 
 ; -- Test: volume
