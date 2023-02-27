@@ -662,8 +662,8 @@ do [
 
 ; -- Test: zip & unzip
 
-;; Zip is writing an empty archive
-; topic "delete.directory - with mixed folders"
+;; Zip is not working for folders
+; topic "zip & unzip -- wit folders"
 ; do [
 ;     ; preparing
 ;     execute "mkdir temp/folder{A,B,C}"
