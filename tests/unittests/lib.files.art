@@ -729,6 +729,19 @@ do [
 
 ; -- Test: write
 
+topic "write"
+do [
+
+    ; action
+    write "temp/file.txt" "Hello, world!"
+
+    ; assertion
+    print execute "cat temp/file.txt"
+
+    ; cleaning
+    execute "rm temp/* --recursive"
+
+]
 ; -- Test: exists?
 
 topic "exists?"
