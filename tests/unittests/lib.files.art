@@ -757,6 +757,26 @@ do [
     execute "rm temp/* --recursive"
 
 ]
+
+topic "write.json"
+do [
+
+    ; action
+    write.json "temp/file.txt" #[
+        name: "Arturo",
+        version: 1.9.83,
+        build: "b/12",
+        platform: "amd/win10"
+    ]
+
+    ; assertion
+    print execute "cat temp/file.txt"
+
+    ; cleaning
+    execute "rm temp/* --recursive"
+
+]
+
 ; -- Test: exists?
 
 topic "exists?"
