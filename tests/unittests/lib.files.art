@@ -826,45 +826,39 @@ do [
 
 ]
 
-exit
-
 ; -- Test: exists?
 
 topic "exists?"
 do [
 
-    if not? exists? "temp/file.txt" [
+    dir: createTestFolder "exists"
+
+    if not? exists? ~"|dir|/file.txt" [
         print "file does not exist"
     ]
 
-    ; Using write because I can't redirect using `execute` function
     write "temp/file.txt" "Hello, world!"
 
-    if exists? "temp/file.txt" [
+    if exists? ~"|dir|/file.txt" [
         print "file exists"
     ]
-
-    ; cleaning
-    execute "rm temp/* --recursive"
 
 ]
 
 topic "exists?.directory"
 do [
 
-    if not? exists?.directory "temp/dir" [
+    dir: createTestFolder "exists-dir"
+
+    if not? exists?.directory ~"|dir|/dir" [
         print "directory does not exist"
     ]
 
-    ; Using write because I can't redirect using `execute` function
-    execute "mkdir temp/dir"
+    write.directory ~"|dir|/dir" null
 
-    if exists?.directory "temp/dir" [
+    if exists?.directory ~"|dir|/dir" [
         print "directory exists"
     ]
-
-    ; cleaning
-    execute "rm temp/* --recursive"
 
 ]
 
@@ -880,11 +874,8 @@ do [
     print hidden? ".github"
     print hidden? ".git"
 
-    ; cleaning
-    execute "rm temp/* --recursive"
-
 ]
 
 
 ; ---- Finish
-deleteTestFolder
+do -> deleteTestFolder
