@@ -12,7 +12,7 @@
 # Libraries
 #=======================================
 
-import sequtils, strutils, tables
+import macros, sequtils, strutils, tables
 export strutils, tables
 
 import vm/[globals, errors, opcodes, stack, values/comparison, values/printable, values/value]
@@ -54,7 +54,26 @@ else:
 #     else:
 #         args
 
-template builtin*(n: string, alias: VSymbol, op: OpCode, rule: PrecedenceKind, description: string, args: untyped, attrs: untyped, returns: ValueSpec, example: string, act: untyped):untyped =
+macro attrTypes*(name: static[string], types: static[set[ValueKind]]): untyped =
+    let attrRequiredTypes =  ident('t' & ($name).capitalizeAscii())
+    if types == {Any}:
+        result = quote do:
+            let `attrRequiredTypes` {.used.} = {Null..Any}
+    elif types != {Logical}:
+        result = quote do:
+            let `attrRequiredTypes` {.used.} = `types`
+    
+template addOne*(attrs: untyped, idx: int): untyped =
+    when attrs.len > idx:
+        attrTypes(attrs[idx][0], attrs[idx][1][0])
+
+macro addAttrTypes*(attrs: untyped): untyped =
+    result = newStmtList()
+    for i in 0..<20:
+        result.add quote do:
+            addOne(`attrs`, `i`)
+
+template builtin*(n: string, alias: VSymbol, op: OpCode, rule: PrecedenceKind, description: string, args: untyped, attrs: static openArray[(string,(set[ValueKind],string))], returns: ValueSpec, example: string, act: untyped):untyped =
     ## add new builtin, function with given name, alias, 
     ## rule, etc - followed by the code block to be 
     ## executed when the function is called
@@ -87,6 +106,9 @@ template builtin*(n: string, alias: VSymbol, op: OpCode, rule: PrecedenceKind, d
             proc () =
                 hookProcProfiler("lib/require"):
                     require(n, args)
+
+                when attrs != NoAttrs:
+                    addAttrTypes(attrs)
 
                 {.emit: "////implementation: " & (static (instantiationInfo().filename.replace(".nim"))) & "/" & n .}
 
@@ -194,27 +216,37 @@ proc showWrongArgumentTypeError*(name: string, pos: int, params: openArray[Value
 
     RuntimeError_WrongArgumentType(name, actualStr, ordinalPos, acceptedStr)
 
+proc showWrongAttributeTypeError*(fName: string, aName: string, actual:ValueKind, expected: set[ValueKind]): bool =
+    ## show relevant error message in case an attribute
+    ## fails to validate its argument
+    var expectedValues = toSeq(expected.items)
+    let acceptedStr = expectedValues.map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
+    let actualStr = ":" & ($(actual)).toLowerAscii()
+    RuntimeError_WrongAttributeType(fName, aName, actualStr, acceptedStr)
+
 template require*(name: string, spec: untyped): untyped =
     ## make sure that the given arguments match the given spec, 
     ## before passing the control to the function
     when spec!=NoArgs:
+        const currentBuiltinName {.inject.} = name
+
         if unlikely(SP<(static spec.len)):
-            RuntimeError_NotEnoughArguments(name, spec.len)
+            RuntimeError_NotEnoughArguments(currentBuiltinName, spec.len)
 
     when (static spec.len)>=1 and spec!=NoArgs:
         let x {.inject.} = move stack.pop()
         when not (ANY in static spec[0][1]):
             if unlikely(not (x.kind in (static spec[0][1]))):
-                showWrongArgumentTypeError(name, 0, [x], spec)
+                showWrongArgumentTypeError(currentBuiltinName, 0, [x], spec)
                 
         when (static spec.len)>=2:
             let y {.inject.} = move stack.pop()
             when not (ANY in static spec[1][1]):
                 if unlikely(not (y.kind in (static spec[1][1]))):
-                    showWrongArgumentTypeError(name, 1, [x,y], spec)
+                    showWrongArgumentTypeError(currentBuiltinName, 1, [x,y], spec)
                     
             when (static spec.len)>=3:
                 let z {.inject.} = move stack.pop()
                 when not (ANY in static spec[2][1]):
                     if unlikely(not (z.kind in (static spec[2][1]))):
-                        showWrongArgumentTypeError(name, 2, [x,y,z], spec)
+                        showWrongArgumentTypeError(currentBuiltinName, 2, [x,y,z], spec)

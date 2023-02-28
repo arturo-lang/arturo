@@ -855,6 +855,12 @@ proc defineSymbols*() =
                 else:
                     push(newString(res))
 
+    # TODO(Strings/replace) better implementation with more options needed
+    #  Obviously, no need to overdo it here. But at least, we could add support for things like `.once`
+    #  or strict replacement of the matched groups, etc - if possible, in the style of `match`
+    #
+    #  see: https://discord.com/channels/765519132186640445/829324913097048065/1078717850270842962
+    #  labels: enhancement,library
     builtin "replace",
         alias       = unaliased, 
         op          = opReplace,
