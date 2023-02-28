@@ -747,63 +747,55 @@ do [
 topic "write"
 do [
 
-    ; action
-    write "temp/file.txt" "Hello, world!"
+    dir: createTestFolder "write"
 
-    ; assertion
-    print execute "cat temp/file.txt"
+    write ~"|dir|/file.txt" "Hello, world!"
+    ensure -> exists? ~"|dir|/file.txt"
 
-    ; cleaning
-    execute "rm temp/* --recursive"
+    print read.file ~"|dir|/file.txt"
 
 ]
 
 topic "write.append"
 do [
 
-    ; action
-    write "temp/file.txt" "Hello, world!"
-    write.append "temp/file.txt" "\nFrom Arturo's World!"
+    dir: createTestFolder "write-append"
 
-    ; assertion
-    print execute "cat temp/file.txt"
+    write ~"|dir|/file.txt" "Hello, world!"
+    ensure -> exists? ~"|dir|/file.txt"
+    print read ~"|dir|/file.txt"
 
-    ; cleaning
-    execute "rm temp/* --recursive"
+    write.append ~"|dir|/file.txt" "\nFrom Arturo's World!"
+    print read.file ~"|dir|/file.txt"
 
 ]
 
 topic "write.directory"
 do [
 
-    ; action
-    write.directory "temp/folder" null
-    write.directory "temp/directory" null
+    dir: createTestFolder "write-dir"
+    print ["before:", list ~"|dir|"]
 
-    ; assertion
-    print execute "ls temp/"
+    write.directory ~"|dir|/folder" null
+    write.directory ~"|dir|/directory" null
 
-    ; cleaning
-    execute "rm temp/* --recursive"
+    print ["now:", list ~"|dir|"]
 
 ]
 
 topic "write.json"
 do [
 
-    ; action
-    write.json "temp/file.txt" #[
+    dir: createTestFolder "write-json"
+
+    write.json ~"|dir|/file.json" #[
         name: "Arturo",
         version: 1.9.83,
         build: "b/12",
         platform: "amd/win10"
     ]
 
-    ; assertion
-    print execute "cat temp/file.txt"
-
-    ; cleaning
-    execute "rm temp/* --recursive"
+    print read.file ~"|dir|/file.json"
 
 ]
 
@@ -811,36 +803,30 @@ do [
 topic "write.json.compact"
 do [
 
-    ; action
-    write.json.compact "temp/file.txt" #[
+    dir: createTestFolder "write-c-json"
+
+    write.json.compact ~"|dir|/file.json" #[
         name: "Arturo",
         version: 1.9.83,
         build: "b/12",
         platform: "amd/win10"
     ]
 
-    ; assertion
-    print execute "cat temp/file.txt"
-
-    ; cleaning
-    execute "rm temp/* --recursive"
+    print read.file ~"|dir|/file.json"
 
 ]
 
 topic "write.binary"
 do [
 
-    ; action
-    write "temp/file.bin" "Hello, world!"
+    dir: createTestFolder "write-bin"
 
-    ; assertion
-    print execute "cat temp/file.bin"
-
-    ; cleaning
-    execute "rm temp/* --recursive"
+    write.binary ~"|dir|/file.bin" "Hello, world!"
+    print read.file ~"|dir|/file.bin"
 
 ]
 
+exit
 
 ; -- Test: exists?
 
