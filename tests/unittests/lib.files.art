@@ -535,25 +535,20 @@ do [
 
 ]
 
-;; Commented code because, can't delete "hello.art.bcode", what breaks other tests
-;; BTW, read.bytecode is working well
+;; This code breaks other tests. Why?
+;; And further, returns a :binary instead of :bytecode...
 ; topic "read.bytecode"
 ; do [
 ;
-;     ; preparing
-;     write "temp/hello.art" {
-;         print "Hello, world!"
-;     }
+;     dir: createTestFolder "exists-dir"
 ;
-;     execute "arturo -c temp/hello.art"
-;     print execute "ls temp/"
+;     code: [print 2 + 1]
+;     bcode: to :bytecode code
 ;
-;     ; action & assertion
-;     inspect read.bytecode "temp/hello.art.bcode"
-;
-;     ; cleaning
-;     execute "rm temp/* --recursive --force"
-;
+;     write.binary "test.bcode" bcode
+;     print type read.bytecode "test.bcode"
+;     ; :binary ??
+
 ; ]
 
 topic "read.binary"
@@ -934,7 +929,6 @@ do [
     print hidden? ".git"
 
 ]
-
 
 ; ---- Finish
 do -> deleteTestFolder
