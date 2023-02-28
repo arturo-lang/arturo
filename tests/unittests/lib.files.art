@@ -265,20 +265,16 @@ do [
 topic "read"
 do [
 
-    ; preparing
-    write "temp/test.txt" {
+    dir: createTestFolder "read"
+
+    write ~"|dir|/test.txt" {
         Hello, world
         This is a multiline File.
         :)
     }
 
     ; action & assertion
-    a: read "temp/test.txt"
-    inspect a
-    print a
-
-    ; cleaning
-    execute "rm temp/* --recursive"
+    inspect read ~"|dir|/test.txt"
 
 ]
 
@@ -286,8 +282,9 @@ do [
 topic "read.lines"
 do [
 
-    ; preparing
-    write "temp/test.txt" {
+    dir: createTestFolder "read-lines"
+
+    write ~"|dir|/test.txt" {
         The Language
         ------------------------------
 
@@ -306,18 +303,16 @@ do [
     }
 
     ; action & assertion
-    inspect read.lines "temp/test.txt"
-
-    ; cleaning
-    execute "rm temp/* --recursive"
+    inspect read.lines ~"|dir|/test.txt"
 
 ]
 
 topic "read.json"
 do [
 
-    ; preparing
-    write "temp/test.json" {
+    dir: createTestFolder "read-json"
+
+    write ~"|dir|/test.json" {
         {
             "name": "Arturo",
             "version": "0.9.83",
@@ -327,19 +322,16 @@ do [
     }
 
     ; action & assertion
-    a: read.json "temp/test.json"
-    inspect a
-
-    ; cleaning
-    execute "rm temp/* --recursive"
+    inspect read.json ~"|dir|/test.json"
 
 ]
 
 topic "read.csv"
 do [
 
-    ; preparing
-    write "temp/test.csv" {
+    dir: createTestFolder "read-csv"
+
+    write ~"|dir|/test.csv" {
         language; version; platform
         Arturo; 0.9.83; win10
         Python; 3.9; gnu/linux
@@ -347,19 +339,16 @@ do [
     }
 
     ; action & assertion
-    a: read.csv "temp/test.csv"
-    inspect a
-
-    ; cleaning
-    execute "rm temp/* --recursive"
+    inspect read.csv ~"|dir|/test.csv"
 
 ]
 
 topic "read.csv.withHeaders"
 do [
 
-    ; preparing
-    write "temp/test.csv" {
+    dir: createTestFolder "read-csv-headers"
+
+    write ~"|dir|/test.csv" {
         language; version; platform
         Arturo; 0.9.83; win10
         Python; 3.9; gnu/linux
@@ -367,19 +356,16 @@ do [
     }
 
     ; action & assertion
-    a: read.csv.withHeaders "temp/test.csv"
-    inspect a
-
-    ; cleaning
-    execute "rm temp/* --recursive"
+    inspect read.csv.withHeaders ~"|dir|/test.csv"
 
 ]
 
 topic "read.html"
 do [
 
-    ; preparing
-    write "temp/test.html" {
+    dir: createTestFolder "read-html"
+
+    write ~"|dir|/test.html" {
         <!DOCTYPE html>
         <html>
         <body>
@@ -399,19 +385,16 @@ do [
     }
 
     ; action & assertion
-    a: read.html "temp/test.html"
-    print a
-
-    ; cleaning
-    execute "rm temp/* --recursive"
+    inspect read.html ~"|dir|/test.html"
 
 ]
 
 topic "read.xml"
 do [
 
-    ; preparing
-    write "temp/test.xml" {
+    dir: createTestFolder "read-xml"
+
+    write ~"|dir|/test.xml" {
         <?xml version="1.0"?>
         <languages>
         <language id="art">
@@ -433,19 +416,16 @@ do [
     }
 
     ; action & assertion
-    a: read.xml "temp/test.xml"
-    inspect a
-
-    ; cleaning
-    execute "rm temp/* --recursive"
+    inspect read.xml ~"|dir|/test.xml"
 
 ]
 
 topic "read.markdown"
 do [
 
-    ; preparing
-    write "temp/test.markdown" {
+    dir: createTestFolder "read-md"
+
+    write ~"|dir|/test.md" {
         # Arturo Basics
 
         > Arturo is a very simple language.
@@ -466,19 +446,15 @@ do [
     }
 
     ; action & assertion
-    a: read.markdown "temp/test.markdown"
-    inspect a
-
-    ; cleaning
-    execute "rm temp/* --recursive"
+    inspect read.markdown ~"|dir|/test.md"
 
 ]
 
 topic "read.toml"
 do [
 
-    ; preparing
-    write "temp/test.toml" {
+    dir: createTestFolder "read-toml"
+    write ~"|dir|/test.toml" {
         [arturo.package]
         name = "TOML Reader"
         description = "Yet another TOML Reader"
@@ -492,19 +468,16 @@ do [
     }
 
     ; action & assertion
-    a: read.toml "temp/test.toml"
-    inspect a
-
-    ; cleaning
-    execute "rm temp/* --recursive"
+    inspect read.toml ~"|dir|/test.toml"
 
 ]
 
 topic "read.toml -- from ini file"
 do [
 
-    ; preparing
-    write "temp/test.ini" {
+    dir: createTestFolder "read-ini"
+
+    write ~"|dir|/test.ini" {
         [package]
         name = "TOML Reader"
         description = "Yet another TOML Reader"
@@ -518,11 +491,7 @@ do [
     }
 
     ; action & assertion
-    a: read.toml "temp/test.ini"
-    inspect a
-
-    ; cleaning
-    execute "rm temp/* --recursive"
+    inspect read.toml ~"|dir|/test.ini"
 
 ]
 
@@ -550,36 +519,30 @@ do [
 topic "read.binary"
 do [
 
-    ; preparing
-    write "temp/test.bin" {
+    dir: createTestFolder "read-bin"
+    write ~"|dir|/test.bin" {
         Hello, World!
     }
 
     ; action & assertion
-    a: read.binary "temp/test.bin"
-    inspect a
-
-    ; cleaning
-    execute "rm temp/* --recursive"
+    inspect read.binary ~"|dir|/test.bin"
 
 ]
 
 topic "read.file"
 do [
 
-    ; action & assertion
+    dir: createTestFolder "read-file"
 
-    inspect read "temp/test.bin"
-    ; temp/test.bin :string
-    try? -> inspect read.file "temp/test.bin"
-    else -> print "error raised!"
+    inspect read ~"|dir|/test.bin"
+    ; temp/read-file/test.bin :string
+
+    try? -> inspect read.file ~"|dir|/test.bin"
+    else -> print "error raised as expected!"
     ; >> Runtime | File: lib.files.art
     ; error | Line: 578
     ;       |
     ;       | file not found: temp/test.bin
-
-    ; cleaning
-    execute "rm temp/* --recursive"
 
 ]
 
