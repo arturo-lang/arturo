@@ -44,12 +44,14 @@ do [
     dir: createTestFolder "copy"
 
     write ~"|dir|/file.txt" "Hello, world!"
+    ensure -> exists? ~"|dir|/file.txt"
 
-    ; action
+    ; ---------//---------//---------//
+
     copy ~"|dir|/file.txt" ~"|dir|/copied.txt"
 
-    ; assertion
     list ~"|dir|"
+
     if every? ["file", "copied"] 'file -> exists? ~"|dir|/|file|.txt"
     -> print "copy is working well!"
 
@@ -65,7 +67,11 @@ do [
     loop folders 'f -> write.directory ~"|dir|/input/|f|" null
     write.directory ~"|dir|/dest" null
 
-    ; action
+    ensure -> every? folders 'f -> exists?.directory ~"|dir|/input/|f|"
+    ensure -> exists?.directory ~"|dir|/dest"
+
+    ; ---------//---------//---------//
+
     copy.directory ~"|dir|/input" ~"|dir|/dest"
 
     ; assertion
@@ -84,10 +90,13 @@ do [
     loop folders 'f -> write ~"|dir|/input/|f|/file.txt" "."
     write.directory ~"|dir|/dest" null
 
-    ; action
+    ensure -> every? folders 'f -> exists?.directory ~"|dir|/input/|f|/file.txt"
+    ensure -> exists?.directory ~"|dir|/dest"
+
+    ; ---------//---------//---------//
+
     copy.directory ~"|dir|/input" ~"|dir|/dest"
 
-    ; assertion
     if every? folders 'f -> exists? ~"|dir|/dest/|f|/file.txt"
     -> print "copy filled directory is working well!"
 
@@ -103,8 +112,9 @@ do [
 
     write ~"|dir|/file.txt" "Hello, world!"
 
-    if exists? ~"|dir|/file.txt"
-    -> print "exists"
+    ensure -> exists? ~"|dir|/file.txt"
+
+    ; ---------//---------//---------//
 
     delete ~"|dir|/file.txt"
 
@@ -121,10 +131,11 @@ do [
     folders: @["A" "B" "C"]
     loop folders 'f -> write.directory ~"|dir|/|f|" null
 
-    if every? folders 'f -> exists?.directory ~"|dir|/|f|"
-    -> print "directories created!"
+    ensure -> every? folders 'f
+        -> exists?.directory ~"|dir|/|f|"
 
-    ; action
+    ; ---------//---------//---------//
+
     loop folders 'f -> delete.directory ~"|dir|/|f|"
     if every? folders 'f -> not? exists?.directory ~"|dir|/|f|"
     -> print "directories deleted!"
@@ -140,8 +151,9 @@ do [
     loop folders 'f -> write.directory ~"|dir|/|f|" null
     loop folders 'f -> write ~"|dir|/|f|/file.txt" "."
 
-    if every? folders 'f -> exists? ~"|dir|/|f|/file.txt"
-    -> print "directories & files created!"
+    ensure -> every? folders 'f -> exists? ~"|dir|/|f|/file.txt"
+
+    ; ---------//---------//---------//
 
     loop folders 'f -> delete.directory ~"|dir|/|f|"
 
@@ -163,10 +175,10 @@ do [
     ensure -> exists? ~"|dir|/file.txt"
     ensure -> not? exists? ~"|dir|/dest/file.txt"
 
-    ; action
+    ; ---------//---------//---------//
+
     move ~"|dir|/file.txt" ~"|dir|/dest/file.txt"
 
-    ; assertion
     if and?
         not? exists? ~"|dir|/file.txt"
         exists? ~"|dir|/dest/file.txt"
@@ -190,10 +202,10 @@ do [
 
     print "empty folders created inside input/"
 
-    ; action
+    ; ---------//---------//---------//
+
     move.directory ~"|dir|/input" ~"|dir|/dest"
 
-    ; assertion
     ensure -> not? exists?.directory ~"|dir|/input"
     ensure -> every? folders 'f
     -> exists?.directory ~"|dir|/dest/|f|"
@@ -213,12 +225,12 @@ do [
     loop folders 'f -> write ~"|dir|/input/|f|/file.txt" "."
     write.directory ~"|dir|/dest" null
 
-    print "filled folders created inside input/"
+    ensure -> every? folders 'f -> exists? ~"|dir|/|f|/file.txt"
 
-    ; action
+    ; ---------//---------//---------//
+
     move.directory ~"|dir|/input" ~"|dir|/dest"
 
-    ; assertion
     ensure -> not? exists?.directory ~"|dir|/input"
     ensure -> every? folders 'f
     -> exists? ~"|dir|/dest/|f|/file.txt"
@@ -236,8 +248,9 @@ do [
     dir: createTestFolder "permissions"
 
     write ~"|dir|/file.txt" "Hello, world!"
+    ensure -> exists? ~"|dir|/file.txt"
 
-    ; action & assertion
+    ; ---------//---------//---------//
     inspect permissions ~"|dir|/file.txt"
 
 ]
@@ -272,8 +285,10 @@ do [
         This is a multiline File.
         :)
     }
+    ensure -> exists? ~"|dir|/test.txt"
 
-    ; action & assertion
+    ; ---------//---------//---------//
+
     inspect read ~"|dir|/test.txt"
 
 ]
@@ -302,7 +317,10 @@ do [
             look for them as hard as you can; there are absolutely none
     }
 
-    ; action & assertion
+    ensure -> exists? ~"|dir|/test.txt"
+
+    ; ---------//---------//---------//
+
     inspect read.lines ~"|dir|/test.txt"
 
 ]
@@ -321,7 +339,10 @@ do [
         }
     }
 
-    ; action & assertion
+    ensure -> exists? ~"|dir|/test.json"
+
+    ; ---------//---------//---------//
+
     inspect read.json ~"|dir|/test.json"
 
 ]
@@ -338,7 +359,10 @@ do [
         Ruby; 3.2.1; macOS
     }
 
-    ; action & assertion
+    ensure -> exists? ~"|dir|/test.csv"
+
+    ; ---------//---------//---------//
+
     inspect read.csv ~"|dir|/test.csv"
 
 ]
@@ -355,7 +379,10 @@ do [
         Ruby; 3.2.1; macOS
     }
 
-    ; action & assertion
+    ensure -> exists? ~"|dir|/test.csv"
+
+    ; ---------//---------//---------//
+
     inspect read.csv.withHeaders ~"|dir|/test.csv"
 
 ]
@@ -384,7 +411,10 @@ do [
         </html>
     }
 
-    ; action & assertion
+    ensure -> exists? ~"|dir|/test.html"
+
+    ; ---------//---------//---------//
+
     inspect read.html ~"|dir|/test.html"
 
 ]
@@ -415,7 +445,10 @@ do [
         </languages>
     }
 
-    ; action & assertion
+    ensure -> exists? ~"|dir|/test.xml"
+
+    ; ---------//---------//---------//
+
     inspect read.xml ~"|dir|/test.xml"
 
 ]
@@ -445,7 +478,10 @@ do [
 
     }
 
-    ; action & assertion
+    ensure -> exists? ~"|dir|/test.md"
+
+    ; ---------//---------//---------//
+
     inspect read.markdown ~"|dir|/test.md"
 
 ]
@@ -467,7 +503,10 @@ do [
         pkg-manager = "^0.2"
     }
 
-    ; action & assertion
+    ensure -> exists? ~"|dir|/test.toml"
+
+    ; ---------//---------//---------//
+
     inspect read.toml ~"|dir|/test.toml"
 
 ]
@@ -490,7 +529,10 @@ do [
         pkg-manager = "^0.2"
     }
 
-    ; action & assertion
+    ensure -> exists? ~"|dir|/test.ini"
+
+    ; ---------//---------//---------//
+
     inspect read.toml ~"|dir|/test.ini"
 
 ]
@@ -524,7 +566,10 @@ do [
         Hello, World!
     }
 
-    ; action & assertion
+    ensure -> exists? ~"|dir|/test.bin"
+
+    ; ---------//---------//---------//
+
     inspect read.binary ~"|dir|/test.bin"
 
 ]
@@ -533,6 +578,10 @@ topic "read.file"
 do [
 
     dir: createTestFolder "read-file"
+
+    ensure -> not? exists? ~"|dir|/test.bin"
+
+    ; ---------//---------//---------//
 
     inspect read ~"|dir|/test.bin"
     ; temp/read-file/test.bin :string
@@ -554,10 +603,12 @@ do [
     dir: createTestFolder "rename"
     write ~"|dir|/file.txt" "Hello, world!"
 
-    ; action
+    ensure -> exists? ~"|dir|/file.txt"
+
+    ; ---------//---------//---------//
+
     rename ~"|dir|/file.txt"  ~"|dir|/renamed.txt"
 
-    ; assertion
     ensure -> not? exists? ~"|dir|/file.txt"
     print ["file: " read.file ~"|dir|/renamed.txt"]
 
@@ -573,7 +624,8 @@ do [
 
     ensure -> exists? ~"|dir|/folder/file.txt"
 
-    ; action
+    ; ---------//---------//---------//
+
     rename.directory ~"|dir|/folder" ~"|dir|/renamed"
     ensure -> not? exists? ~"|dir|/folder/file.txt"
     ensure -> exists? ~"|dir|/renamed/file.txt"
@@ -602,7 +654,10 @@ do [
 
     write ~"|dir|/file.txt" "Hello, world!"
 
-    ; action & assertion
+    ensure -> exists? ~"|dir|/file.txt"
+
+    ; ---------//---------//---------//
+
     a: timestamp ~"|dir|/file.txt"
     ensure -> a\created
     ensure -> a\accessed
@@ -620,7 +675,7 @@ do [
     dir: createTestFolder "zip-unzip-readme"
 
     ;; outputs me an empty .zip
-    zip ~"|dir|/dest.zip" [~"README.md"]
+    zip ~"|dir|/dest.zip" [~"README.md"]; takes from repository's root
     ensure -> exists? ~"|dir|/dest.zip"
     print "zipped as dest.zip"
 
@@ -735,10 +790,12 @@ do [
 
     dir: createTestFolder "volume"
 
-    write "temp/test.bin" "Hello, World!"
+    write ~"|dir|/test.bin" "Hello, World!"
+    ensure -> exists? ~"|dir|/file.txt"
 
-    ; action & assertion
-    print volume "temp/test.bin"
+    ; ---------//---------//---------//
+
+    print volume ~"|dir|/test.bin"
 
 ]
 
@@ -751,6 +808,8 @@ do [
 
     write ~"|dir|/file.txt" "Hello, world!"
     ensure -> exists? ~"|dir|/file.txt"
+
+    ; ---------//---------//---------//
 
     print read.file ~"|dir|/file.txt"
 
@@ -765,6 +824,8 @@ do [
     ensure -> exists? ~"|dir|/file.txt"
     print read ~"|dir|/file.txt"
 
+    ; ---------//---------//---------//
+
     write.append ~"|dir|/file.txt" "\nFrom Arturo's World!"
     print read.file ~"|dir|/file.txt"
 
@@ -775,6 +836,8 @@ do [
 
     dir: createTestFolder "write-dir"
     print ["before:", list ~"|dir|"]
+
+    ; ---------//---------//---------//
 
     write.directory ~"|dir|/folder" null
     write.directory ~"|dir|/directory" null
@@ -837,7 +900,7 @@ do [
         print "file does not exist"
     ]
 
-    write "temp/file.txt" "Hello, world!"
+    write ~"|dir|/file.txt" "Hello, world!"
 
     if exists? ~"|dir|/file.txt" [
         print "file exists"
