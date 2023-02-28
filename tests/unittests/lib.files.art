@@ -598,19 +598,17 @@ do [
 topic "timestamp"
 do [
 
-    ; preparing
-    ; Using write because I can't redirect using `execute` function
-    write "temp/file.txt" "Hello, world!"
+    dir: createTestFolder "timestamp"
+
+    write ~"|dir|/file.txt" "Hello, world!"
 
     ; action & assertion
-    a: timestamp "temp/file.txt"
+    a: timestamp ~"|dir|/file.txt"
     ensure -> a\created
     ensure -> a\accessed
     ensure -> a\modified
-    print "assertions passed"
 
-    ; cleaning
-    execute "rm temp/* --recursive"
+    print ~"all fields are filled: |keys a|"
 
 ]
 
