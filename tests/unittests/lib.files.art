@@ -233,15 +233,12 @@ do [
 topic "permissions"
 do [
 
-    ; preparing
-    ; Using write because I can't redirect using `execute` function
-    write "temp/file.txt" "Hello, world!"
+    dir: createTestFolder "permissions"
+
+    write ~"|dir|/file.txt" "Hello, world!"
 
     ; action & assertion
-    inspect permissions "temp/file.txt"
-
-    ; cleaning
-    execute "rm temp/* --recursive"
+    inspect permissions ~"|dir|/file.txt"
 
 ]
 
@@ -250,18 +247,16 @@ do [
 ; topic "permissions.set"
 ; do [
 ;
-;     ; preparing
-;     ; Using write because I can't redirect using `execute` function
-;     write "temp/file.txt" "Hello, world!"
+;     dir: createTestFolder "permissions-set"
+;
+;     write ~"|dir|/file.txt" "Hello, world!"
 ;
 ;     ; action
-;     permissions.set: #[others:#[write:false]] "temp/file.txt"
+;     permissions.set: #[others:#[write:false]] ~"|dir|/file.txt"
 ;
 ;     ; assertion
-;     inspect permissions "temp/file.txt"
+;     inspect permissions ~"|dir|/file.txt"
 ;
-;     ; cleaning
-;     execute "rm temp/* --recursive"
 ;
 ; ]
 
