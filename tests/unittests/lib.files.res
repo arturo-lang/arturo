@@ -2,189 +2,40 @@ Created: temp/
 
 >> copy
 
-Hello, world!
-
+copy is working well!
 
 >> copy.directory - with empty folders
 
-temp/dest/folderA:
-A
-B
-C
+copy empty directory is working well!
 
-temp/dest/folderB:
-A
-B
-C
+>> copy.directory - with filled folders
 
-temp/dest/folderC:
-A
-B
-C
-
-
->> copy.directory - with mixed folders
-
-temp/dest/file.txt
-
-temp/dest/folderA:
-A
-B
-C
-file.txt
-
-temp/dest/folderA/A:
-file.txt
-
-temp/dest/folderA/B:
-
-temp/dest/folderA/C:
-
-temp/dest/folderB:
-A
-B
-C
-
-temp/dest/folderB/A:
-
-temp/dest/folderB/B:
-file.txt
-
-temp/dest/folderB/C:
-
-temp/dest/folderC:
-A
-B
-C
-
-temp/dest/folderC/A:
-
-temp/dest/folderC/B:
-
-temp/dest/folderC/C:
-file.txt
-
+copy filled directory is working well!
 
 >> delete
 
-Hello, world!
-
-deleting...
-cat: temp/file.txt: No such file or directory
-
+deleted
 
 >> delete.directory - with empty folders
 
-temp/folderA:
-A
-B
-C
+directories deleted!
 
-temp/folderB:
-A
-B
-C
+>> delete.directory - with filled folders
 
-temp/folderC:
-A
-B
-C
-
-Deleting...
-now:  
-
->> delete.directory - with mixed folders
-
-temp/file.txt
-
-temp/folderA:
-A
-B
-C
-file.txt
-
-temp/folderB:
-A
-B
-C
-
-temp/folderC:
-A
-B
-C
-
-Deleting...
-temp/file.txt
-
+directories & files deleted!
 
 >> move
 
-Hello, world!
-
-cat: temp/toMove/moved.txt: No such file or directory
-
+file.txt moved to dest/
 
 >> move.directory - with empty folders
 
-temp/dest/folderA:
-A
-B
-C
+empty folders created inside input/
+empty folders moved to dest/
 
-temp/dest/folderB:
-A
-B
-C
+>> move.directory - with filled folders
 
-temp/dest/folderC:
-A
-B
-C
-
-ls: cannot access 'temp/toMove/**': No such file or directory
-
-
->> move.directory - with mixed folders
-
-temp/dest/file.txt
-
-temp/dest/folderA:
-A
-B
-C
-file.txt
-
-temp/dest/folderA/A:
-file.txt
-
-temp/dest/folderA/B:
-
-temp/dest/folderA/C:
-
-temp/dest/folderB:
-A
-B
-C
-
-temp/dest/folderB/A:
-
-temp/dest/folderB/B:
-file.txt
-
-temp/dest/folderB/C:
-
-temp/dest/folderC:
-A
-B
-C
-
-temp/dest/folderC/A:
-
-temp/dest/folderC/B:
-
-temp/dest/folderC/C:
-file.txt
-
+filled folders moved to dest/
 
 >> permissions
 
@@ -197,9 +48,6 @@ Hello, world
 This is a multiline File.
 :)
 :string
-Hello, world
-This is a multiline File.
-:)
 
 >> read.lines
 
@@ -258,6 +106,7 @@ The Language ------------------------------  Arturo is an independently-develope
         
         World
      br:[attrs:[] text:]]]]
+:dictionary
 
 >> read.xml
 
@@ -304,37 +153,31 @@ before you are comfortable enough to write your first program.</p>
 
 >> read.file
 
-temp/test.bin
+temp/read-file/test.bin
 :string
-error raised!
+error raised as expected!
 
 >> rename
 
-Hello, world!
-
+file:  Hello, world! 
 
 >> rename.directory
 
-folder
-
-directory
-
+directory renamed [temp\rename-dir\renamed\file.txt] 
 
 >> timestamp
 
-assertions passed
+all fields are filled: [created accessed modified]
 
->> zip & unzip
+>> zip & unzip - README
+
+zipped as dest.zip
+unzipped as README.md
+
+>> zip & unzip - src/arturo.nim
 
 
----
-temp/dest.zip
-
----
-temp/dest.zip
-
-temp/README.md:
-README.md
+>> zip & unzip - destination
 
 
 >> volume
@@ -345,18 +188,16 @@ README.md
 
 Hello, world!
 
-
 >> write.append
 
 Hello, world!
+Hello, world!
 From Arturo's World!
-
 
 >> write.directory
 
-directory
-folder
-
+before: [] 
+now: [temp\write-dir\directory temp\write-dir\folder] 
 
 >> write.json
 
@@ -367,16 +208,13 @@ folder
     "platform": "amd/win10"
 }
 
-
 >> write.json.compact
 
 {"name":"Arturo","version":"1.9.83","build":"b/12","platform":"amd/win10"}
 
-
 >> write.binary
 
 Hello, world!
-
 
 >> exists?
 
@@ -396,3 +234,4 @@ false
 false
 false
 true
+Removed: temp/
