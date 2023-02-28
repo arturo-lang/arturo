@@ -50,11 +50,33 @@ proc `$`*(rx: VRegex): string =
     else:
         rx.pattern
 
-proc newRegexObj*(pattern: string): VRegex =
+proc newRegexObj*(pattern: string, flags: string = ""): VRegex =
     when defined(WEB):
-        newRegExp(cstring(pattern))
+        if flags == "":
+            result = newRegExp(cstring(pattern))
+        else:
+            var fla = ""
+            if flags.contains("i"):
+                fla.add("i")
+            if flags.contains("m"):
+                fla.add("m")
+            if flags.contains("s"):
+                fla.add("s")
+            
+            result = newRegExp(cstring(pattern), cstring(fla))
     else:
-        re(pattern)
+        if flags == "":
+            result = re(pattern)
+        else:
+            var patt = pattern
+            if flags.contains("i"):
+                patt = "(?i)" & patt
+            if flags.contains("m"):
+                patt = "(?m)" & patt
+            if flags.contains("s"):
+                patt = "(?s)" & patt
+
+            result = re(patt)
 
 proc contains*(str: string, rx: VRegex): bool =
     when defined(WEB):

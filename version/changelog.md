@@ -1,3 +1,22 @@
+v0.9.84
+========
+
+### Language
+
+- Added flag support for `:regex` values (`/i`, `/m` & `/s`)
+
+### Library
+
+**Enhancements, Changes & Fixes**
+
+- Statistics\median: fixed bug + better and more efficient implementation
+
+### Misc
+
+- Introduced error messages for extra/stray closing brackets (square, curly or parentheses)
+- Added type-checking for built-in function attributes
+- Fixed issue with GMP-based BigNum handling on Windows
+
 v0.9.82
 ========
 
@@ -19,6 +38,7 @@ v0.9.82
 ### Library
 
 **New**
+
 - Arithmetic: added new `divmod` method
 - Collections: added new `combine`, `decouple`, `one?`, `prepend`, `rotate` & `tally` methods
 - Comparison: added new `between?` & `compare` methods

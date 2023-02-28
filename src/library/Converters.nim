@@ -123,7 +123,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                             when not defined(NOGMP): 
                                 return newString($(y.bi))
                     of Quantity:
-                        if checkAttr("unit"):
+                        if checkAttr("unit", doValidate=false):
                             return newQuantity(y, parseQuantitySpec(aUnit.s))
                         else:
                             throwConversionFailed()
@@ -153,7 +153,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                         else:
                             return newString($(y.f))
                     of Quantity:
-                        if checkAttr("unit"):
+                        if checkAttr("unit", doValidate=false):
                             return newQuantity(y, parseQuantitySpec(aUnit.s))
                         else:
                             throwConversionFailed()
@@ -478,7 +478,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                         else:
                             return newString($(y))
                     of Quantity:
-                        if checkAttr("unit"):
+                        if checkAttr("unit", doValidate=false):
                             let target = parseQuantitySpec(aUnit.s).name
                             return newQuantity(convertQuantityValue(y.nm, y.unit.name, target), target)
                         else:
