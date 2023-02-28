@@ -1,0 +1,25 @@
+naccis: #[
+    lucas:      [2 1]
+    fibonacci:  [1 1]
+    tribonacci: [1 1 2]
+    tetranacci: [1 1 2 4] 
+    pentanacci: [1 1 2 4 8] 
+    hexanacci:  [1 1 2 4 8 16] 
+    heptanacci: [1 1 2 4 8 16 32] 
+    octonacci:  [1 1 2 4 8 16 32 64] 
+    nonanacci:  [1 1 2 4 8 16 32 64 128] 
+    decanacci:  [1 1 2 4 8 16 32 64 128 256]
+]
+
+anyNacci: function [start, count][
+    n: size start
+    result: new start
+    do.times: count-n ->
+        result: result ++ sum last.n:n result
+
+    return join.with:", " to [:string] result
+]
+
+loop naccis [k,v][
+    print [pad (k ++ ":") 12 anyNacci v 15]
+]
