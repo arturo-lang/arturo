@@ -52,8 +52,8 @@ do [
 
     list ~"|dir|"
 
-    if every? ["file", "copied"] 'file -> exists? ~"|dir|/|file|.txt"
-    -> print "copy is working well!"
+    ensure -> every? ["file", "copied"] 'file -> exists? ~"|dir|/|file|.txt"
+    print "copy is working well!"
 
 ]
 
@@ -74,8 +74,8 @@ do [
 
     copy.directory ~"|dir|/input" ~"|dir|/dest"
 
-    if every? folders 'f -> exists?.directory ~"|dir|/dest/|f|"
-    -> print "copy empty directory is working well!"
+    ensure -> every? folders 'f -> exists?.directory ~"|dir|/dest/|f|"
+    print "copy empty directory is working well!"
 
 ]
 
@@ -96,8 +96,8 @@ do [
 
     copy.directory ~"|dir|/input" ~"|dir|/dest"
 
-    if every? folders 'f -> exists? ~"|dir|/dest/|f|/file.txt"
-    -> print "copy filled directory is working well!"
+    ensure -> every? folders 'f -> exists? ~"|dir|/dest/|f|/file.txt"
+    print "copy filled directory is working well!"
 
 ]
 
@@ -117,8 +117,8 @@ do [
 
     delete ~"|dir|/file.txt"
 
-    if not? exists? ~"|dir|/file.txt"
-    -> print "deleted"
+    ensure -> not? exists? ~"|dir|/file.txt"
+    print "deleted"
 
 ]
 
@@ -136,8 +136,8 @@ do [
     ; ---------//---------//---------//
 
     loop folders 'f -> delete.directory ~"|dir|/|f|"
-    if every? folders 'f -> not? exists?.directory ~"|dir|/|f|"
-    -> print "directories deleted!"
+    ensure -> every? folders 'f -> not? exists?.directory ~"|dir|/|f|"
+    print "directories deleted!"
 
 ]
 
@@ -156,8 +156,8 @@ do [
 
     loop folders 'f -> delete.directory ~"|dir|/|f|"
 
-    if every? folders 'f -> not? exists? ~"|dir|/|f|/file.txt"
-    -> print "directories & files deleted!"
+    ensure -> every? folders 'f -> not? exists? ~"|dir|/|f|/file.txt"
+    print "directories & files deleted!"
 
 ]
 
@@ -178,10 +178,9 @@ do [
 
     move ~"|dir|/file.txt" ~"|dir|/dest/file.txt"
 
-    if and?
-        not? exists? ~"|dir|/file.txt"
-        exists? ~"|dir|/dest/file.txt"
-    -> print "file.txt moved to dest/"
+    ensure -> and? not? exists? ~"|dir|/file.txt"
+                   exists? ~"|dir|/dest/file.txt"
+    print "file.txt moved to dest/"
 
 ]
 
