@@ -672,12 +672,10 @@ do [
 
     dir: createTestFolder "zip-unzip-readme"
 
-    ;; outputs me an empty .zip
     zip ~"|dir|/dest.zip" [~"README.md"]; takes from repository's root
     ensure -> exists? ~"|dir|/dest.zip"
     print "zipped as dest.zip"
 
-    ;; Tries to unzip an empty file
     unzip ~"|dir|" ~"|dir|/dest.zip"
     ensure -> exists? ~"|dir|/README.md"
 
