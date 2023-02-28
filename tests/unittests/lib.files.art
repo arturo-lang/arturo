@@ -551,37 +551,34 @@ do [
 topic "rename"
 do [
 
-    ; preparing
-    ; Using write because I can't redirect using `execute` function
-    write "temp/file.txt" "Hello, world!"
+    dir: createTestFolder "rename"
+    write ~"|dir|/file.txt" "Hello, world!"
 
     ; action
-    rename "temp/file.txt" "temp/renamed.txt"
+    rename ~"|dir|/file.txt"  ~"|dir|/renamed.txt"
 
     ; assertion
-    print execute "cat temp/renamed.txt"
-
-    ; cleaning
-    execute "rm temp/* --recursive"
+    ensure -> not? exists? ~"|dir|/file.txt"
+    print ["file: " read.file ~"|dir|/renamed.txt"]
 
 ]
 
 topic "rename.directory"
 do [
 
-    ; preparing
-    ; Using write because I can't redirect using `execute` function
-    execute "mkdir temp/folder"
+    dir: createTestFolder "rename-dir"
+
+    write.directory ~"|dir|/folder" null
+    write ~"|dir|/folder/file.txt" "."
+
+    ensure -> exists? ~"|dir|/folder/file.txt"
 
     ; action
-    print execute "ls temp"
-    rename.directory "temp/folder" "temp/directory"
+    rename.directory ~"|dir|/folder" ~"|dir|/renamed"
+    ensure -> not? exists? ~"|dir|/folder/file.txt"
+    ensure -> exists? ~"|dir|/renamed/file.txt"
 
-    ; assertion
-    print execute "ls temp"
-
-    ; cleaning
-    execute "rm temp/* --recursive"
+    print ["directory renamed", list ~"|dir|/renamed"]
 
 ]
 
