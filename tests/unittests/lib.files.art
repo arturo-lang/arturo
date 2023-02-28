@@ -615,7 +615,7 @@ do [
 ; -- Test: zip & unzip
 
 topic "zip & unzip - README"
-try -> do [
+do [
 
     dir: createTestFolder "zip-unzip-readme"
 
@@ -629,6 +629,31 @@ try -> do [
     ensure -> exists? ~"|dir|/README.md"
 
     print "unzipped as README.md"
+
+]
+
+topic "zip & unzip - src/arturo.nim"
+;do
+[
+
+    dir: createTestFolder "zip-unzip-with-path"
+
+    ;; outputs me an empty .zip
+    zip ~"|dir|/dest.zip" [~"src/arturo.nim"]
+    ensure -> exists? ~"|dir|/dest.zip"
+    print "zipped as dest.zip"
+
+    ;; Tries to unzip an empty file
+    unzip ~"|dir|" ~"|dir|/dest.zip"
+    ensure -> exists? ~"|dir|/arturo.nim"
+
+    ;; >> Assertion | File: lib.files.art
+    ;;   error | Line: 647
+    ;;         |
+    ;;         | [exists? ~ "|dir|/arturo.nim"]
+
+
+    print "unzipped as arturo.nim"
 
 ]
 
