@@ -614,33 +614,60 @@ do [
 
 ; -- Test: zip & unzip
 
-topic "zip & unzip"
-do [
+topic "zip & unzip - README"
+try -> do [
 
-    dir: createTestFolder "zip-unzip-file"
+    dir: createTestFolder "zip-unzip-readme"
+
+    ;; outputs me an empty .zip
+    zip ~"|dir|/dest.zip" [~"README.md"]
+    ensure -> exists? ~"|dir|/dest.zip"
+    print "zipped as dest.zip"
+
+    ;; Tries to unzip an empty file
+    unzip ~"|dir|" ~"|dir|/dest.zip"
+    ensure -> exists? ~"|dir|/README.md"
+
+    print "unzipped as README.md"
+
+]
+
+topic "zip & unzip - destination"
+;do
+[
+
+    dir: createTestFolder "zip-unzip-file-dest"
 
     write ~"|dir|/file.txt" "Hello, world!"
     ensure -> exists? ~"|dir|/file.txt"
 
-    zip ~"|dir|/dest.zip" [~"|dir|/file.txt"]
-    ensure -> exists? ~"|dir|/dest.zip"
-    print "zipped! as dest.zip"
+    ;; outputs me an empty .zip
+    ; zip ~"|dir|/dest.zip" [~"|dir|/file.txt"]
+    ; ensure -> exists? ~"|dir|/dest.zip"
+    ; print "zipped as dest.zip"
+
+    ;; outputs me an empty .zip
+    ; file: ~"|dir|/file.txt"
+    ;
+    ; zip ~"|dir|/dest.zip" [file]
+    ; ensure -> exists? ~"|dir|/dest.zip"
+    ; print "zipped as dest.zip"
+
+    ;; outputs me an empty .zip
+    ; zip ~"|dir|/dest.zip" ["temp/zip-unzip-file-dest/file.txt"]
+    ; ensure -> exists? ~"|dir|/dest.zip"
+    ; print "zipped as dest.zip"
 
     delete ~"|dir|/file.txt"
     ensure -> not? exists? ~"|dir|/file.txt"
     print "file.txt removed"
 
-    ;; Is it unzipping?
-    ; unzip ~"|dir|" ~"|dir|/dest.zip"
-    ; ensure -> exists? ~"|dir|/file.txt"
+    ;; Tries to unzip an empty file
+    unzip ~"|dir|" ~"|dir|/dest.zip"
+    ensure -> exists? ~"|dir|/file.txt"
 
-    ;; >> Assertion | File: lib.files.art
-    ;;        error | Line: 635
-    ;;              |
-    ;;              | [exists? ~ "|dir|/file.txt"]
-
-    ; print "unzipped! as file.txtt"
-    ; print ["content" read.file ~"|dir|/file.txt"]
+    print "unzipped! as file.txtt"
+    print ["content" read.file ~"|dir|/file.txt"]
 
 ]
 
