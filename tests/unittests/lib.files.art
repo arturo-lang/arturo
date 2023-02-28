@@ -155,71 +155,75 @@ do [
 topic "move"
 do [
 
-    ; preparing
-    execute "mkdir temp/toMove"
-    ; Using write because I can't redirect using `execute` function
-    write "temp/toMove/file.txt" "Hello, world!"
+    dir: createTestFolder "move"
+
+    write.directory ~"|dir|/dest" null
+    write ~"|dir|/file.txt" "Hello, world!"
+
+    ensure -> exists? ~"|dir|/file.txt"
+    ensure -> not? exists? ~"|dir|/dest/file.txt"
 
     ; action
-    move "temp/toMove/file.txt" "temp/moved.txt"
+    move ~"|dir|/file.txt" ~"|dir|/dest/file.txt"
 
     ; assertion
-    print execute "cat temp/moved.txt"
-    print execute "cat temp/toMove/moved.txt"
-
-    ; cleaning
-    execute "rm temp/* --recursive"
+    if and?
+        not? exists? ~"|dir|/file.txt"
+        exists? ~"|dir|/dest/file.txt"
+    -> print "file.txt moved to dest/"
 
 ]
-
-
 
 topic "move.directory - with empty folders"
 do [
 
-    ; preparing
-    execute "mkdir temp/toMove"
-    execute "mkdir temp/toMove/folder{A,B,C}"
-    execute "mkdir temp/toMove/folder{A,B,C}/{A,B,C}"
-    execute "mkdir temp/dest"
+    dir: createTestFolder "move-empty-dir"
+
+    folders: @["A" "B" "C"]
+    loop folders 'f -> write.directory ~"|dir|/input/|f|" null
+    write.directory ~"|dir|/dest" null
+
+    ensure -> every? folders 'f
+    -> and?
+        exists?.directory ~"|dir|/input/|f|"
+        not? exists?.directory ~"|dir|/dest/|f|"
+
+    print "empty folders created inside input/"
 
     ; action
-    move.directory "temp/toMove/" "temp/dest"
+    move.directory ~"|dir|/input" ~"|dir|/dest"
 
     ; assertion
-    print execute "ls temp/dest/**"
-    print execute "ls temp/toMove/**"
+    ensure -> not? exists?.directory ~"|dir|/input"
+    ensure -> every? folders 'f
+    -> exists?.directory ~"|dir|/dest/|f|"
 
-    ; cleaning
-    execute "rm temp/* --recursive"
+    print "empty folders moved to dest/"
 
 ]
 
-topic "move.directory - with mixed folders"
+
+topic "move.directory - with filled folders"
 do [
 
-    ; preparing
+    dir: createTestFolder "move-filled-dir"
 
-    execute "mkdir temp/toMove"
-    execute "mkdir temp/toMove/folder{A,B,C}"
-    execute "mkdir temp/toMove/folder{A,B,C}/{A,B,C}"
+    folders: @["A" "B" "C"]
+    loop folders 'f -> write.directory ~"|dir|/input/|f|" null
+    loop folders 'f -> write ~"|dir|/input/|f|/file.txt" "."
+    write.directory ~"|dir|/dest" null
 
-    write "temp/toMove/folderA/A/file.txt" "Hello, world!"
-    write "temp/toMove/folderB/B/file.txt" "Hello, world!"
-    write "temp/toMove/folderC/C/file.txt" "Hello, world!"
-    write "temp/toMove/folderA/file.txt" "Hello, world!"
-    write "temp/toMove/file.txt" "Hello, world!"
-
-    execute "mkdir temp/dest"
+    print "filled folders created inside input/"
 
     ; action
-    move.directory "temp/toMove/" "temp/dest"
+    move.directory ~"|dir|/input" ~"|dir|/dest"
 
     ; assertion
-    print execute "ls temp/dest/** --recursive"
+    ensure -> not? exists?.directory ~"|dir|/input"
+    ensure -> every? folders 'f
+    -> exists? ~"|dir|/dest/|f|/file.txt"
 
-    ; cleaning
-    execute "rm temp/* --recursive"
+    print "filled folders moved to dest/"
 
 ]
 
