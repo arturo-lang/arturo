@@ -74,7 +74,6 @@ do [
 
     copy.directory ~"|dir|/input" ~"|dir|/dest"
 
-    ; assertion
     if every? folders 'f -> exists?.directory ~"|dir|/dest/|f|"
     -> print "copy empty directory is working well!"
 
@@ -90,7 +89,7 @@ do [
     loop folders 'f -> write ~"|dir|/input/|f|/file.txt" "."
     write.directory ~"|dir|/dest" null
 
-    ensure -> every? folders 'f -> exists?.directory ~"|dir|/input/|f|/file.txt"
+    ensure -> every? folders 'f -> exists? ~"|dir|/input/|f|/file.txt"
     ensure -> exists?.directory ~"|dir|/dest"
 
     ; ---------//---------//---------//
@@ -225,7 +224,7 @@ do [
     loop folders 'f -> write ~"|dir|/input/|f|/file.txt" "."
     write.directory ~"|dir|/dest" null
 
-    ensure -> every? folders 'f -> exists? ~"|dir|/|f|/file.txt"
+    ensure -> every? folders 'f -> exists? ~"|dir|/input/|f|/file.txt"
 
     ; ---------//---------//---------//
 
@@ -791,7 +790,7 @@ do [
     dir: createTestFolder "volume"
 
     write ~"|dir|/test.bin" "Hello, World!"
-    ensure -> exists? ~"|dir|/file.txt"
+    ensure -> exists? ~"|dir|/test.bin"
 
     ; ---------//---------//---------//
 
