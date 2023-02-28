@@ -41,19 +41,17 @@ createTempFolder
 topic "copy"
 do [
 
-    ; preparing
-    execute "mkdir temp/toCopy"
-    ; Using write because I can't redirect using `execute` function
-    write "temp/toCopy/file.txt" "Hello, world!"
+    dir: createTestFolder "copy"
+
+    write ~"|dir|/file.txt" "Hello, world!"
 
     ; action
-    copy "temp/toCopy/file.txt" "temp/copied.txt"
+    copy ~"|dir|/file.txt" ~"|dir|/copied.txt"
 
     ; assertion
-    print execute "cat temp/copied.txt"
-
-    ; cleaning
-    execute "rm temp/* --recursive"
+    list ~"|dir|"
+    if every? ["file", "copied"] 'file -> exists? ~"|dir|/|file|.txt"
+    -> print "copy is working well!"
 
 ]
 
@@ -61,48 +59,37 @@ do [
 topic "copy.directory - with empty folders"
 do [
 
-    ; preparing
-    execute "mkdir temp/toCopy"
-    execute "mkdir temp/toCopy/folder{A,B,C}"
-    execute "mkdir temp/toCopy/folder{A,B,C}/{A,B,C}"
-    execute "mkdir temp/dest"
+    dir: createTestFolder "copy-empty-dir"
+
+    folders: @["A" "B" "C"]
+    loop folders 'f -> write.directory ~"|dir|/input/|f|" null
+    write.directory ~"|dir|/dest" null
 
     ; action
-    copy.directory "temp/toCopy/" "temp/dest"
+    copy.directory ~"|dir|/input" ~"|dir|/dest"
 
     ; assertion
-    print execute "ls temp/dest/**"
-
-    ; cleaning
-    execute "rm temp/* --recursive"
+    if every? folders 'f -> exists?.directory ~"|dir|/dest/|f|"
+    -> print "copy empty directory is working well!"
 
 ]
 
-topic "copy.directory - with mixed folders"
+topic "copy.directory - with filled folders"
 do [
 
-    ; preparing
+    dir: createTestFolder "copy-filled-dir"
 
-    execute "mkdir temp/toCopy"
-    execute "mkdir temp/toCopy/folder{A,B,C}"
-    execute "mkdir temp/toCopy/folder{A,B,C}/{A,B,C}"
-
-    write "temp/toCopy/folderA/A/file.txt" "Hello, world!"
-    write "temp/toCopy/folderB/B/file.txt" "Hello, world!"
-    write "temp/toCopy/folderC/C/file.txt" "Hello, world!"
-    write "temp/toCopy/folderA/file.txt" "Hello, world!"
-    write "temp/toCopy/file.txt" "Hello, world!"
-
-    execute "mkdir temp/dest"
+    folders: @["A" "B" "C"]
+    loop folders 'f -> write.directory ~"|dir|/input/|f|" null
+    loop folders 'f -> write ~"|dir|/input/|f|/file.txt" "."
+    write.directory ~"|dir|/dest" null
 
     ; action
-    copy.directory "temp/toCopy/" "temp/dest"
+    copy.directory ~"|dir|/input" ~"|dir|/dest"
 
     ; assertion
-    print execute "ls temp/dest/** --recursive"
-
-    ; cleaning
-    execute "rm temp/* --recursive"
+    if every? folders 'f -> exists? ~"|dir|/dest/|f|/file.txt"
+    -> print "copy filled directory is working well!"
 
 ]
 
@@ -920,4 +907,4 @@ do [
 
 
 ; ---- Finish
-execute "rmdir temp"
+deleteTestFolder
