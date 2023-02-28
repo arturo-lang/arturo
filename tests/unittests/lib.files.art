@@ -733,14 +733,12 @@ topic "zip & unzip - destination"
 topic "volume"
 do [
 
-    ; preparing
+    dir: createTestFolder "volume"
+
     write "temp/test.bin" "Hello, World!"
 
     ; action & assertion
     print volume "temp/test.bin"
-
-    ; cleaning
-    execute "rm temp/* --recursive"
 
 ]
 
