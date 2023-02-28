@@ -16,8 +16,23 @@ inspect: $[T][
     print type T
 ]
 
-execute "mkdir temp"
-print "Created: temp/"
+createTempFolder: $[][
+    write.directory "temp/" null
+    print "Created: temp/"
+]
+
+createTestFolder: $[topic][
+    write.directory ~"temp/|topic|" null
+    return ~"temp/|topic|"
+]
+
+deleteTestFolder: $[][
+    delete.directory "temp/"
+    print "Removed: temp/"
+]
+
+
+createTempFolder
 
 ; ---------------------------- Functions ----------------------------
 
