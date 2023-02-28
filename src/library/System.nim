@@ -322,6 +322,13 @@ proc defineSymbols*() =
                 #=======================================================
                 push newLogical(isAdmin())
 
+    # TODO(System/sys) add info about endianess?
+    #  we could add another field to the dictionary, like "endianess" : "big" or "little"
+    #  or, perhaps even better, make our existing cpu field a dictionary with two fields:
+    #  - type: amd64
+    #  - endian: little
+    #  ...
+    #  labels: library, enhancement
     builtin "sys",
         alias       = unaliased, 
         op          = opNop,
