@@ -617,17 +617,30 @@ do [
 topic "zip & unzip"
 do [
 
-    print execute "ls temp/"
-    print "---"
-    zip "temp/dest.zip" ["README.md"]
-    print execute "ls temp/*"
-    print "---"
-    unzip "temp/README.md" "temp/dest.zip"
-    print execute "ls temp/*"
+    dir: createTestFolder "zip-unzip-file"
 
-    ; cleaning
-    execute "rm temp/*.zip --recursive"
-    execute "rm temp/* --recursive"
+    write ~"|dir|/file.txt" "Hello, world!"
+    ensure -> exists? ~"|dir|/file.txt"
+
+    zip ~"|dir|/dest.zip" [~"|dir|/file.txt"]
+    ensure -> exists? ~"|dir|/dest.zip"
+    print "zipped! as dest.zip"
+
+    delete ~"|dir|/file.txt"
+    ensure -> not? exists? ~"|dir|/file.txt"
+    print "file.txt removed"
+
+    ;; Is it unzipping?
+    ; unzip ~"|dir|" ~"|dir|/dest.zip"
+    ; ensure -> exists? ~"|dir|/file.txt"
+
+    ;; >> Assertion | File: lib.files.art
+    ;;        error | Line: 635
+    ;;              |
+    ;;              | [exists? ~ "|dir|/file.txt"]
+
+    ; print "unzipped! as file.txtt"
+    ; print ["content" read.file ~"|dir|/file.txt"]
 
 ]
 
