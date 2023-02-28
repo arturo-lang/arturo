@@ -99,80 +99,54 @@ do [
 topic "delete"
 do [
 
-    ; preparing
-    ; Using write because I can't redirect using `execute` function
-    write "temp/file.txt" "Hello, world!"
+    dir: createTestFolder "delete"
 
-    ; 1st assertion
-    print execute "cat temp/file.txt"
+    write ~"|dir|/file.txt" "Hello, world!"
 
-    ; action
-    print "deleting..."
-    delete "temp/file.txt"
+    if exists? ~"|dir|/file.txt"
+    -> print "exists"
 
-    ; 2nd assertion
-    print execute "cat temp/file.txt"
+    delete ~"|dir|/file.txt"
 
-    ; cleaning
-    execute "rm temp/* --recursive"
+    if not? exists? ~"|dir|/file.txt"
+    -> print "deleted"
 
 ]
 
 topic "delete.directory - with empty folders"
 do [
 
-    ; preparing
-    execute "mkdir temp/folder{A,B,C}"
-    execute "mkdir temp/folder{A,B,C}/{A,B,C}"
+    dir: createTestFolder "delete-empty-folders"
 
-    ; assertion
-    print execute "ls temp/**"
+    folders: @["A" "B" "C"]
+    loop folders 'f -> write.directory ~"|dir|/|f|" null
+
+    if every? folders 'f -> exists?.directory ~"|dir|/|f|"
+    -> print "directories created!"
 
     ; action
-    print "Deleting..."
-    delete.directory "temp/folderA"
-    delete.directory "temp/folderB"
-    delete.directory "temp/folderC"
-
-    ; assertion
-    print ["now:" execute "ls temp"]
-
-    ; cleaning
-    execute "rm temp/* --recursive"
+    loop folders 'f -> delete.directory ~"|dir|/|f|"
+    if every? folders 'f -> not? exists?.directory ~"|dir|/|f|"
+    -> print "directories deleted!"
 
 ]
 
-topic "delete.directory - with mixed folders"
+topic "delete.directory - with filled folders"
 do [
 
-    ; preparing
+    dir: createTestFolder "delete-filled-dir"
 
-    execute "mkdir temp/folder{A,B,C}"
-    execute "mkdir temp/folder{A,B,C}/{A,B,C}"
+    folders: @["A" "B" "C"]
+    loop folders 'f -> write.directory ~"|dir|/|f|" null
+    loop folders 'f -> write ~"|dir|/|f|/file.txt" "."
 
-    ; Using write because I can't redirect using `execute` function
-    write "temp/folderA/A/file.txt" "Hello, world!"
-    write "temp/folderB/B/file.txt" "Hello, world!"
-    write "temp/folderC/C/file.txt" "Hello, world!"
-    write "temp/folderA/file.txt" "Hello, world!"
-    write "temp/file.txt" "Hello, world!"
+    if every? folders 'f -> exists? ~"|dir|/|f|/file.txt"
+    -> print "directories & files created!"
 
-    ; 1st assertion
-    print execute "ls temp/**"
+    loop folders 'f -> delete.directory ~"|dir|/|f|"
 
-    ; action
-    print "Deleting..."
-
-    delete.directory "temp/folderA"
-    delete.directory "temp/folderB"
-    delete.directory "temp/folderC"
-    delete "file.txt"
-
-    ; 2nd assertion
-    print execute "ls temp/**"
-
-    ; cleaning
-    execute "rm temp/* --recursive"
+    if every? folders 'f -> not? exists? ~"|dir|/|f|/file.txt"
+    -> print "directories & files deleted!"
 
 ]
 
