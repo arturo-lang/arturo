@@ -27,7 +27,7 @@ jobs:
     strategy:
       matrix:
         os:
-          - ubuntu-20.04
+          - ubuntu-latest
         version:
           - mini
           - full
@@ -51,12 +51,6 @@ jobs:
           - version: safe
             arch: arm64
     steps:
-      - name: "Cancel similar actions in progress"
-        uses: styfle/cancel-workflow-action@0.10.0
-        with:
-          all_but_latest: true
-          access_token: ${{ github.token }}
-
       - name: "Checkout"
         uses: actions/checkout@main
         with:
@@ -101,6 +95,7 @@ jobs:
       - name: Install dependencies (full)
         if: matrix.version != 'mini'
         run: |
+          sudo apt-get update
           sudo apt-get install libwebkit2gtk-4.0-dev libmpfr-dev
           
       - name: Verify dependecies

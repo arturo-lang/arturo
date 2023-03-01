@@ -236,6 +236,108 @@ jobs:
           name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-freebsd.tar.gz
           path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-freebsd.tar.gz
 
+  netbsd:
+    name: "Package NetBSD"
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        os:
+          - netbsd-latest
+        version:
+          - mini
+        arch:
+          - x86_64
+
+    steps:
+      - name: "Cancel similar actions in progress"
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{ github.token }}
+
+      - name: "Checkout"
+        uses: actions/checkout@main
+        with:
+          submodules: recursive
+
+      - name: "Get version"
+        uses: pCYSl5EDgo/cat@master
+        id: versionNumber
+        with:
+          path: version/version
+          trim: true
+
+      - name: Setup environment & Build Arturo
+        id: test
+        uses: vmactions/netbsd-vm@v0
+        with:
+          usesh: true
+          prepare: /usr/sbin/pkg_add nim gmp mpfr bash pcre sqlite3
+          run: |
+            ./build.nims install ${{ matrix.version }} ${{ matrix.arch }} log release
+            export PATH="$HOME/.arturo/bin:$PATH"
+
+      - name: Create artifact
+        run: |
+          install -m 0755 ./bin/${{ env.app-name }} .
+          tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-netbsd.tar.gz ${{ env.app-name }} README.md LICENSE
+
+      - name: Upload Artifact
+        uses: 'actions/upload-artifact@v1'
+        with:
+          name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-netbsd.tar.gz
+          path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-netbsd.tar.gz
+
+  openbsd:
+    name: "Package OpenBSD"
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        os:
+          - openbsd-latest
+        version:
+          - mini
+        arch:
+          - x86_64
+
+    steps:
+      - name: "Cancel similar actions in progress"
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{ github.token }}
+
+      - name: "Checkout"
+        uses: actions/checkout@main
+        with:
+          submodules: recursive
+
+      - name: "Get version"
+        uses: pCYSl5EDgo/cat@master
+        id: versionNumber
+        with:
+          path: version/version
+          trim: true
+
+      - name: Setup environment & Build Arturo
+        id: test
+        uses: vmactions/openbsd-vm@v0
+        with:
+          usesh: true
+          prepare: /usr/sbin/pkg_add nim gmp mpfr bash pcre databases/sqlite3
+          run: |
+            ./build.nims install ${{ matrix.version }} ${{ matrix.arch }} log release
+            export PATH="$HOME/.arturo/bin:$PATH"
+
+      - name: Create artifact
+        run: |
+          install -m 0755 ./bin/${{ env.app-name }} .
+          tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-openbsd.tar.gz ${{ env.app-name }} README.md LICENSE
+
+      - name: Upload Artifact
+        uses: 'actions/upload-artifact@v1'
+        with:
+          name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-openbsd.tar.gz
+          path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.arch}}-openbsd.tar.gz
+
   windows:
     name: "Package Windows"
     runs-on: ${{ matrix.os }}
@@ -315,8 +417,6 @@ jobs:
         run: |
           mkdir arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
 
-          curl -L https://arturo-lang.s3.amazonaws.com/libcrypto-1_1-x64.dll -o libcrypto-1_1-x64.dll
-          curl -L https://arturo-lang.s3.amazonaws.com/libssl-1_1-x64.dll -o libssl-1_1-x64.dll
           curl -L https://arturo-lang.s3.amazonaws.com/pcre64.dll -o pcre64.dll
           curl -L https://arturo-lang.s3.amazonaws.com/sqlite3_64.dll -o sqlite3_64.dll
           curl -L https://arturo-lang.s3.amazonaws.com/libgmp-10.dll -o libgmp-10.dll
@@ -336,8 +436,6 @@ jobs:
         run: |
           mkdir arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
 
-          curl -L https://arturo-lang.s3.amazonaws.com/libcrypto-1_1-x64.dll -o libcrypto-1_1-x64.dll
-          curl -L https://arturo-lang.s3.amazonaws.com/libssl-1_1-x64.dll -o libssl-1_1-x64.dll
           curl -L https://arturo-lang.s3.amazonaws.com/pcre64.dll -o pcre64.dll
 
           cp *.dll arturo-${{matrix.version}}-${{matrix.arch}}-${{matrix.os}}
