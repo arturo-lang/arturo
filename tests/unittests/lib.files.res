@@ -125,36 +125,36 @@ This is a multiline File.
 [ :dictionary
         attrs  :        [ :dictionary
         ]
-        text   :
+        text   :        
 
     Unordered List with Square Bullets
-
+    
         Arturo
         Python
         Ruby
-
-
+    
+    
         Hello
-
+        
         World
-
+    
 
  :string
         body   :        [ :dictionary
                 attrs  :                [ :dictionary
                 ]
-                text   :
+                text   :                
     Unordered List with Square Bullets
-
+    
         Arturo
         Python
         Ruby
-
-
+    
+    
         Hello
-
+        
         World
-
+    
  :string
                 h2     :                [ :dictionary
                         attrs  :                        [ :dictionary
@@ -165,7 +165,7 @@ This is a multiline File.
                         attrs  :                        [ :dictionary
                                 style  :                                list-style-type:square; :string
                         ]
-                        text   :
+                        text   :                        
         Arturo
         Python
         Ruby
@@ -191,9 +191,9 @@ This is a multiline File.
                 p      :                [ :dictionary
                         attrs  :                        [ :dictionary
                         ]
-                        text   :
+                        text   :                        
         Hello
-
+        
         World
      :string
                         br     :                        [ :dictionary
@@ -296,7 +296,7 @@ before you are comfortable enough to write your first program.</p>
 >> read.binary
 
 [ :binary
-        48 65 6C 6C 6F 2C 20 57 6F 72 6C 64 21
+        48 65 6C 6C 6F 2C 20 57 6F 72 6C 64 21 
 ]
 
 >> read.file
@@ -306,11 +306,11 @@ error raised as expected!
 
 >> rename
 
-file:  Hello, world!
+file:  Hello, world! 
 
 >> rename.directory
 
-directory renamed [temp\rename-dir\renamed\file.txt]
+directory renamed [temp\rename-dir\renamed\file.txt] 
 
 >> timestamp
 
@@ -343,8 +343,8 @@ From Arturo's World!
 
 >> write.directory
 
-before: []
-now: [temp\write-dir\directory temp\write-dir\folder]
+before: [] 
+now: [temp\write-dir\directory temp\write-dir\folder] 
 
 >> write.json
 
