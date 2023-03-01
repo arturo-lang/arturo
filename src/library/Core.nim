@@ -37,6 +37,10 @@ import vm/[env, errors, eval, exec, parse]
 
 proc defineSymbols*() =
 
+    # TODO(Core) add new `throw` built-in method?
+    #  this could easily work with a new `:exception` built-in type
+    #  labels: library, new feature,open discussion
+
     builtin "alias",
         alias       = unaliased, 
         op          = opNop,
