@@ -31,3 +31,19 @@ case get("cc"):
         discard
  
 patchFile("stdlib", "malloc", "src" / "extras" / "mimalloc")
+
+when defined(windows): 
+    switch("dynlibOverride", "pcre64")
+
+    when defined(ssl):
+        switch("define", "noOpenSSLHacks")
+        switch("define", "sslVersion:(")
+        switch("dynlibOverride", "ssl-")
+        switch("dynlibOverride", "crypto-")
+else:
+    when defined(macosx):
+        switch("dynlibOverride", "pcre")
+
+    when defined(ssl):
+        switch("dynlibOverride", "ssl")
+        switch("dynlibOverride", "crypto")

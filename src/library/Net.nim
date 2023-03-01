@@ -16,13 +16,29 @@
 {.used.}
 
 #=======================================
+# Compilation & Linking
+#=======================================
+
+when defined(ssl):
+
+    when defined(windows): 
+        {.passL: "-Bstatic -Lsrc/extras/openssl/deps/windows -lssl -lcrypto -lws2_32 -Bdynamic".}
+    elif defined(linux):
+        {.passL: "-Bstatic -Lsrc/extras/openssl/deps/linux -lssl -lcrypto -Bdynamic".}
+    elif defined(macosx):
+        {.passL: "-Bstatic -Lsrc/extras/openssl/deps/macos -lssl -lcrypto -Bdynamic".}
+
+#=======================================
 # Libraries
 #=======================================
 
 when not defined(WEB):
     import algorithm, asyncdispatch, browsers, httpclient
-    import httpcore, std/net, os, smtp, strformat
+    import httpcore, std/net, os, strformat
     import strutils, times, uri
+
+    when defined(ssl):
+        import smtp
 
     import helpers/jsonobject
     import helpers/servers
@@ -98,48 +114,49 @@ proc defineSymbols*() =
                 var client = newHttpClient()
                 client.downloadFile(path,target)
 
-        builtin "mail",
-            alias       = unaliased, 
-            op          = opNop,
-            rule        = PrefixPrecedence,
-            description = "send mail using given title and message to selected recipient",
-            args        = {
-                "recipient" : {String},
-                "title"     : {String},
-                "message"   : {String}
-            },
-            attrs       = {
-                "using"     : ({Dictionary},"use given configuration")
-            },
-            returns     = {Nothing},
-            example     = """
-            mail .using: #[
-                    server: "mymailserver.com"
-                    username: "myusername"
-                    password: "mypass123"
-                ]
-                "recipient@somemail.com" "Hello from Arturo" "Arturo rocks!"                
-            """:
-                #=======================================================
-                when defined(SAFE): RuntimeError_OperationNotPermitted("mail")
-                let recipient = x.s
-                let title = y.s
-                let message = z.s
+        when defined(ssl):
+            builtin "mail",
+                alias       = unaliased, 
+                op          = opNop,
+                rule        = PrefixPrecedence,
+                description = "send mail using given title and message to selected recipient",
+                args        = {
+                    "recipient" : {String},
+                    "title"     : {String},
+                    "message"   : {String}
+                },
+                attrs       = {
+                    "using"     : ({Dictionary},"use given configuration")
+                },
+                returns     = {Nothing},
+                example     = """
+                mail .using: #[
+                        server: "mymailserver.com"
+                        username: "myusername"
+                        password: "mypass123"
+                    ]
+                    "recipient@somemail.com" "Hello from Arturo" "Arturo rocks!"                
+                """:
+                    #=======================================================
+                    when defined(SAFE): RuntimeError_OperationNotPermitted("mail")
+                    let recipient = x.s
+                    let title = y.s
+                    let message = z.s
 
-                if checkAttr("using"):
-                    discard
-                
-                retrieveConfig("mail", "using")
+                    if checkAttr("using"):
+                        discard
+                    
+                    retrieveConfig("mail", "using")
 
-                # TODO(Net/mail) raise error, if there is no configuration provided whatsoever
-                #  perhaps, this could be also done in a more "templated" way; at least, for Config values
-                #  labels: library, bug
+                    # TODO(Net/mail) raise error, if there is no configuration provided whatsoever
+                    #  perhaps, this could be also done in a more "templated" way; at least, for Config values
+                    #  labels: library, bug
 
-                var mesg = createMessage(title, message, @[recipient])
-                let smtpConn = newSmtp(useSsl = true, debug=true)
-                smtpConn.connect(config["server"].s, Port 465)
-                smtpConn.auth(config["username"].s, config["password"].s)
-                smtpConn.sendmail(config["username"].s, @[recipient], $mesg)
+                    var mesg = createMessage(title, message, @[recipient])
+                    let smtpConn = newSmtp(useSsl = true, debug=true)
+                    smtpConn.connect(config["server"].s, Port 465)
+                    smtpConn.auth(config["username"].s, config["password"].s)
+                    smtpConn.sendmail(config["username"].s, @[recipient], $mesg)
 
         # TODO(Net\request) could it work for Web/JS builds?
         #  it could easily be a hidden Ajax request
@@ -254,13 +271,23 @@ proc defineSymbols*() =
 
                 if checkAttr("certificate"):
                     let certificate = aCertificate.s
-                    client = newHttpClient(
-                        userAgent = agent,
-                        sslContext = newContext(certFile=certificate),
-                        proxy = proxy, 
-                        timeout = timeout,
-                        headers = headers
-                    )
+                    when defined(ssl):
+                        client = newHttpClient(
+                            userAgent = agent,
+                            sslContext = newContext(certFile=certificate),
+                            proxy = proxy, 
+                            timeout = timeout,
+                            headers = headers
+                        )
+                    else:
+                        # TODO(Net/request) show warning/error when trying to use SSL certificates in MINI builds
+                        #  labels: library, error handling, enhancement
+                        client = newHttpClient(
+                            userAgent = agent,
+                            proxy = proxy, 
+                            timeout = timeout,
+                            headers = headers
+                        )
                 else:
                     client = newHttpClient(
                         userAgent = agent,

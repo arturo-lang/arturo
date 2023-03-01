@@ -9,6 +9,15 @@
 ## The internal `:regex` type
 
 #=======================================
+# Compilation & Linking
+#=======================================
+
+when defined(windows): 
+    {.passL: "-Bstatic -Lsrc/extras/pcre/deps/windows -lpcre -Bdynamic".}
+elif defined(macosx):
+    {.passL: "-Bstatic -Lsrc/extras/pcre/deps/macos -lpcre -Bdynamic".}
+
+#=======================================
 # Libraries
 #=======================================
 
