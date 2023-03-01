@@ -328,7 +328,7 @@ do [
 
     dir: createTestFolder "read-json"
 
-    write ~"|dir|/test.json" {
+    jsonSample: {
         {
             "name": "Arturo",
             "version": "0.9.83",
@@ -337,11 +337,14 @@ do [
         }
     }
 
+    write ~"|dir|/test.json" write ~"|dir|/test.json" jsonSample
+
     ensure -> exists? ~"|dir|/test.json"
 
     ; ---------//---------//---------//
 
-    inspect read.json ~"|dir|/test.json"
+    inspect read.json jsonSample
+    ; inspect read.json ~"|dir|/test.json"
 
 ]
 
@@ -413,7 +416,7 @@ do [
 
     ; ---------//---------//---------//
 
-    inspect read.html.file relative ~"|dir|/test.html"
+    inspect read.html ~"|dir|/test.html"
 
 ]
 
