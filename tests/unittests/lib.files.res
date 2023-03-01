@@ -138,7 +138,7 @@ This is a multiline File.
 >> read.binary
 
 [ :binary
-        48 65 6C 6C 6F 2C 20 57 6F 72 6C 64 21 
+        48 65 6C 6C 6F 2C 20 57 6F 72 6C 64 21
 ]
 
 >> read.file
@@ -148,11 +148,11 @@ error raised as expected!
 
 >> rename
 
-file:  Hello, world! 
+file:  Hello, world!
 
 >> rename.directory
 
-directory renamed [temp\rename-dir\renamed\file.txt] 
+directory renamed
 
 >> timestamp
 
@@ -185,8 +185,7 @@ From Arturo's World!
 
 >> write.directory
 
-before: [] 
-now: [temp\write-dir\directory temp\write-dir\folder] 
+passed!
 
 >> write.json
 
