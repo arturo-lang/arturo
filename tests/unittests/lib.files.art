@@ -11,10 +11,10 @@ topic: $[topic :string] [
     print ""
 ]
 
-inspect: $[T][
-    print T
-    print type T
-]
+; inspect: $[T][
+;     print T
+;     print type T
+; ]
 
 createTempFolder: $[][
     write.directory "temp/" null
