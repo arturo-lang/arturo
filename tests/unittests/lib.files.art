@@ -413,7 +413,7 @@ do [
 
     ; ---------//---------//---------//
 
-    inspect read.html ~"|dir|/test.html"
+    inspect read.html relative ~"|dir|/test.html"
 
 ]
 
