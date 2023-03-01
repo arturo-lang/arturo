@@ -274,6 +274,10 @@ proc defineSymbols*() =
                 except OSError:
                     push(VNULL)
 
+        # TODO(Files/read) add support for different delimiters when in `.csv` mode
+        #  this could be something as simple as `.with:` or `.delimiter:`, or `.delimited:`
+        #  also see: https://github.com/arturo-lang/arturo/pull/1008#issuecomment-1450571702
+        #  labels:library,enhancement
         builtin "read",
             alias       = doublearrowleft, 
             op          = opNop,
