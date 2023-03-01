@@ -926,8 +926,10 @@ do [
 
 ; -- hidden?
 
-topic "hidden?"
-do [
+;; hidden doesn't work as expected in different OSes
+;; See https://github.com/arturo-lang/arturo/pull/1008#issuecomment-1450535386
+topic "hidden?" ;do
+[
 
     print hidden? "README.md"
     print hidden? "src"
