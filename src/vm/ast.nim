@@ -405,7 +405,7 @@ proc processBlock*(
                 TmpArities[target.value.s] = int8(params.value.a.countIt(it.kind != Type))
         else:
             TmpArities.del(target.value.s)
-
+ 
     #------------------------
     # Helper Functions
     #------------------------
