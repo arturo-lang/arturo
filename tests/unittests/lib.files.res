@@ -77,18 +77,46 @@ This is a multiline File.
 
 >> read.csv
 
+[ :block
+        [ :block
+                language :string
+                 version :string
+                 platform :string
+        ]
+        [ :block
+                Arturo :string
+                 0.9.83 :string
+                 win10 :string
+        ]
+        [ :block
+                Python :string
+                 3.9 :string
+                 gnu/linux :string
+        ]
+        [ :block
+                Ruby :string
+                 3.2.1 :string
+                 macOS :string
+        ]
+]
 
 >> read.csv.withHeaders
 
 [ :block
         [ :dictionary
-                language; version; platform  :                Arturo; 0.9.83; win10 :string
+                language   :                Arturo :string
+                 version   :                 0.9.83 :string
+                 platform  :                 win10 :string
         ]
         [ :dictionary
-                language; version; platform  :                Python; 3.9; gnu/linux :string
+                language   :                Python :string
+                 version   :                 3.9 :string
+                 platform  :                 gnu/linux :string
         ]
         [ :dictionary
-                language; version; platform  :                Ruby; 3.2.1; macOS :string
+                language   :                Ruby :string
+                 version   :                 3.2.1 :string
+                 platform  :                 macOS :string
         ]
 ]
 
