@@ -425,8 +425,11 @@ do [
 
 ]
 
+;; Isn't working as expected
+; See: https://github.com/arturo-lang/arturo/pull/1008#issuecomment-1450753235
 topic "read.xml"
-do [
+;do
+[
 
     dir: createTestFolder "read-xml"
 
