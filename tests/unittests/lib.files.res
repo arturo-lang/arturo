@@ -375,4 +375,5 @@ directory exists
 
 >> hidden?
 
+passed!
 Removed: temp/
