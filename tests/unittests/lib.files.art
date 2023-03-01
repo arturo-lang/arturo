@@ -430,7 +430,7 @@ do [
 
     dir: createTestFolder "read-xml"
 
-    write ~"|dir|/test.xml" {
+    xmlSample: {
         <?xml version="1.0"?>
         <languages>
         <language id="art">
@@ -451,11 +451,13 @@ do [
         </languages>
     }
 
+    write ~"|dir|/test.xml" xmlSample
+
     ensure -> exists? ~"|dir|/test.xml"
 
     ; ---------//---------//---------//
 
-    inspect read.xml ~"|dir|/test.xml"
+    inspect read.xml xmlSample
 
 ]
 
