@@ -396,7 +396,7 @@ do [
 
     dir: createTestFolder "read-html"
 
-    write ~"|dir|/test.html" {
+    htmlSample: {
         <!DOCTYPE html>
         <html>
         <body>
@@ -415,11 +415,13 @@ do [
         </html>
     }
 
+    write ~"|dir|/test.html" htmlSample
+
     ensure -> exists? ~"|dir|/test.html"
 
     ; ---------//---------//---------//
 
-    inspect read.html ~"|dir|/test.html"
+    inspect read.html htmlSample
 
 ]
 
