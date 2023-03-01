@@ -241,7 +241,7 @@ do [
 ; -- Test: permissions
 
 ;; permissions doesn't work as expected in different OSes
-;; See https://github.com/arturo-lang/arturo/pull/1008#issuecomment-1450535386
+; See https://github.com/arturo-lang/arturo/pull/1008#issuecomment-1450535386
 topic "permissions" ; do
 [
 
@@ -351,7 +351,7 @@ do [
 ]
 
 ;; read.csv doesn't work with the same bahavior in different OSes
-;; See https://github.com/arturo-lang/arturo/pull/1008#issuecomment-1450535386
+; See https://github.com/arturo-lang/arturo/pull/1008#issuecomment-1450535386
 topic "read.csv"
 ;do
 [
@@ -927,7 +927,7 @@ do [
 ; -- hidden?
 
 ;; hidden doesn't work as expected in different OSes
-;; See https://github.com/arturo-lang/arturo/pull/1008#issuecomment-1450535386
+; See https://github.com/arturo-lang/arturo/pull/1008#issuecomment-1450535386
 topic "hidden?" ;do
 [
 
