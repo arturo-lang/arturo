@@ -852,14 +852,16 @@ topic "write.directory"
 do [
 
     dir: createTestFolder "write-dir"
-    print ["before:", list ~"|dir|"]
 
     ; ---------//---------//---------//
 
     write.directory ~"|dir|/folder" null
     write.directory ~"|dir|/directory" null
 
-    print ["now:", list ~"|dir|"]
+    ensure -> exists?.directory ~"|dir|/folder"
+    ensure -> exists?.directory ~"|dir|/directory"
+
+    print "passed!"
 
 ]
 
