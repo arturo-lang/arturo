@@ -22,7 +22,7 @@ import os
 {.passC: "-I" & parentDir(currentSourcePath()) .}
 {.compile("libclipboard/clipboard_common.c", "-I" & parentDir(currentSourcePath())).}
 
-when defined(linux) or defined(freebsd):
+when defined(linux) or defined(freebsd) or defined(netbsd) or defined(openbsd):
     {.compile("libclipboard/clipboard_x11.c", "-DLIBCLIPBOARD_BUILD_X11 -pthread").}
     {.passL: "-pthread -lxcb".}
 elif defined(macosx):
