@@ -1,14 +1,3 @@
-solve: function [triangle][
-    tri: triangle
-    while [1 < size tri][
-        t0: last tri
-        chop 'tri
-        loop.with:'i tri\[dec size tri] 't ->
-            tri\[dec size tri]\[i]: t + max @[t0\[i] t0\[inc i]]
-    ]
-    tri\0\0
-]
-
 data: {:
                           55
                         94 48
@@ -29,6 +18,17 @@ data: {:
   06 71 28 75 94 48 37 10 23 51 06 48 53 18 74 98 15
 27 02 92 23 08 71 76 84 15 52 92 63 81 10 44 10 69 93
 :}
+
+solve: function [triangle][
+    tri: triangle
+    while [1 < size tri][
+        t0: last tri
+        chop 'tri
+        loop.with:'i tri\[dec size tri] 't ->
+            tri\[dec size tri]\[i]: t + max @[t0\[i] t0\[inc i]]
+    ]
+    tri\0\0
+]
 
 print solve map split.lines strip data 'x ->
     map split.by:" " strip x 'y ->
