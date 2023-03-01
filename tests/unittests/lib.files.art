@@ -924,17 +924,25 @@ do [
 
 ; -- hidden?
 
-;; hidden doesn't work as expected in different OSes
-; See https://github.com/arturo-lang/arturo/pull/1008#issuecomment-1450535386
-topic "hidden?" ;do
-[
+topic "hidden?"
+do [
 
-    print hidden? "README.md"
-    print hidden? "src"
-    print hidden? ".gitignore"
-    print hidden? ".cache"
-    print hidden? ".github"
-    print hidden? ".git"
+    ;; Since just `.git` is considered hidden in windows
+    ;; and every folder/file that starts with `.` is considered hidden
+    (sys\os = "windows")? [
+        if and?
+            hidden? ".git"
+            every? ["README.md" "src" ".gitignore" ".cache" ".github"]
+                'f -> not? hidden? f
+        ->
+            print "passed!"
+    ][
+        if and?
+            every? ["README.md" "src"] 'f -> not? hidden? f
+            every? [".gitignore" ".cache" ".github"] 'f -> hidden? f
+        ->
+            print "passed!"
+    ]
 
 ]
 
