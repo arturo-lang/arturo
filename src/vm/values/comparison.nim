@@ -166,6 +166,9 @@ proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
             else:
                 return false
 
+# TODO(VM/values/comparison) add `<` support for Date values
+#  currently, `=` is support but not `<` and `>`!
+#  labels: critical,bug,values
 proc `<`*(x: Value, y: Value): bool {.inline.}=
     if x.kind in {Integer, Floating, Rational} and y.kind in {Integer, Floating, Rational}:
         if x.kind==Integer:
@@ -252,6 +255,9 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
             else:
                 return false
 
+# TODO(VM/values/comparison) add `>` support for Date values
+#  currently, `=` is support but not `<` and `>`!
+#  labels: critical,bug,values
 proc `>`*(x: Value, y: Value): bool {.inline.}=
     if x.kind in {Integer, Floating, Rational} and y.kind in {Integer, Floating, Rational}:
         if x.kind==Integer:
