@@ -47,7 +47,7 @@ type
 
     BuiltinAction* = proc ()
 
-    # TODO(VM/values/types add new `:matrix` type?
+    # TODO(VM/values/types) add new `:matrix` type?
     #  this would normally go with a separate Linear Algebra-related stdlib module
     #  labels: vm, values, enhancement, open discussion
 
