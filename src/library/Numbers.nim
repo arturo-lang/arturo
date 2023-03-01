@@ -48,6 +48,9 @@ template processTrigonometric(fun: untyped): untyped =
 # Methods
 #=======================================
 
+# TODO(Numbers) add `tau` constant
+#  labels:library, new feature
+ 
 proc defineSymbols*() =
 
     builtin "abs",
