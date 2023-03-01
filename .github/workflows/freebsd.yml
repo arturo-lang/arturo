@@ -21,7 +21,8 @@ defaults:
     shell: bash -l {0}
 
 jobs:  
-  freebsd:
+  build:
+    name: Build & Test
     runs-on: macos-latest
     strategy:
       matrix:
@@ -31,14 +32,7 @@ jobs:
           - mini
         arch:
           - x86_64
-    name: Build & Test
     steps:
-      - name: "Cancel similar actions in progress"
-        uses: styfle/cancel-workflow-action@0.10.0
-        with:
-          all_but_latest: true
-          access_token: ${{ github.token }}
-
       - name: "Checkout"
         uses: actions/checkout@main
         with:

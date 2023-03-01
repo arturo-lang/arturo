@@ -59,7 +59,7 @@ let
         "docgen"            : "-d:DOCGEN",
         "dontcompress"      : "",
         "dontinstall"       : "",
-        "full"              : "",
+        "full"              : "-d:ssl",
         "log"               : "",
         "memprofile"        : "-d:PROFILE --profiler:off --stackTrace:on --d:memProfiler",
         "mini"              : "",
@@ -103,7 +103,7 @@ var
     FLAGS*              = "--verbosity:1 --hints:on --hint:ProcessingStmt:off --hint:XCannotRaiseY:off --warning:GcUnsafe:off --warning:ProveInit:off --warning:ProveField:off --warning:Uninit:off " & 
                           "--skipUserCfg:on --colors:off -d:danger " &
                           "--panics:off --mm:orc -d:useMalloc --checks:off " &
-                          "-d:ssl --cincludes:extras --opt:speed --nimcache:.cache " & (when hostOS != "windows": "--passL:'-pthread' " else: " ") &
+                          "--cincludes:extras --opt:speed --nimcache:.cache " & (when hostOS != "windows": "--passL:'-pthread' " else: " ") &
                           "--path:src "
     CONFIG              ="@full"
 
@@ -252,7 +252,7 @@ proc miniBuild*() =
 
     # plus, shrinking + the MINI flag
     FLAGS = FLAGS & " -d:MINI"
-    if hostOS=="freebsd":
+    if hostOS=="freebsd" or hostOS=="openbsd" or hostOS=="netbsd":
         FLAGS = FLAGS & " --verbosity:3 "
 
 proc compressBinary() =
@@ -528,6 +528,9 @@ while true:
                     showHelp(error=true, errorMsg="Erroneous argument supplied!")
         of cmdEnd: 
             break
+
+if CONFIG == "@full":
+    FLAGS = FLAGS & " " & OPTIONS["full"]
 
 # show our log anyway
 showLogo()
