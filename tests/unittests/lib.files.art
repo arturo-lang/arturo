@@ -649,7 +649,7 @@ do [
     ensure -> not? exists? ~"|dir|/folder/file.txt"
     ensure -> exists? ~"|dir|/renamed/file.txt"
 
-    print ["directory renamed", list ~"|dir|/renamed"]
+    print "directory renamed"
 
 ]
 
