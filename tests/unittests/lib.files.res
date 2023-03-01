@@ -39,79 +39,169 @@ filled folders moved to dest/
 
 >> permissions
 
-[user:[read:true write:true execute:true] group:[read:true write:true execute:true] others:[read:true write:true execute:true]]
-:dictionary
 
 >> read
 
 Hello, world
 This is a multiline File.
-:)
-:string
+:) :string
 
 >> read.lines
 
-The Language ------------------------------  Arturo is an independently-developed, modern programming language, vaguely related to various other ones - including but not limited to: Logo, Rebol, Forth, Ruby, Haskell, D, Smalltalk, Tcl, and Lisp.  The language has been designed following some very simple and straightforward principles:  - Code is just a list of words, symbols and literal values - Words and symbols within a block are interpreted - when needed -     according to the context - No reserved words or keywords -     look for them as hard as you can; there are absolutely none 
-:block
+[ :block
+        The Language :string
+        ------------------------------ :string
+         :string
+        Arturo is an independently-developed, modern programming language, :string
+        vaguely related to various other ones - including but not limited to: :string
+        Logo, Rebol, Forth, Ruby, Haskell, D, Smalltalk, Tcl, and Lisp. :string
+         :string
+        The language has been designed :string
+        following some very simple and straightforward principles: :string
+         :string
+        - Code is just a list of words, symbols and literal values :string
+        - Words and symbols within a block are interpreted - when needed - :string
+            according to the context :string
+        - No reserved words or keywords - :string
+            look for them as hard as you can; there are absolutely none :string
+]
 
 >> read.json
 
-[name:Arturo version:0.9.83 build:b/12 platform:amd/win10]
-:dictionary
+[ :dictionary
+        name      :        Arturo :string
+        version   :        0.9.83 :string
+        build     :        b/12 :string
+        platform  :        amd/win10 :string
+]
 
 >> read.csv
 
-[language; version; platform] [Arturo; 0.9.83; win10] [Python; 3.9; gnu/linux] [Ruby; 3.2.1; macOS] 
-:block
 
 >> read.csv.withHeaders
 
-[language; version; platform:Arturo; 0.9.83; win10] [language; version; platform:Python; 3.9; gnu/linux] [language; version; platform:Ruby; 3.2.1; macOS] 
-:block
+[ :block
+        [ :dictionary
+                language; version; platform  :                Arturo; 0.9.83; win10 :string
+        ]
+        [ :dictionary
+                language; version; platform  :                Python; 3.9; gnu/linux :string
+        ]
+        [ :dictionary
+                language; version; platform  :                Ruby; 3.2.1; macOS :string
+        ]
+]
 
 >> read.html
 
-[attrs:[] text:
+[ :dictionary
+        attrs  :        [ :dictionary
+        ]
+        text   :
 
     Unordered List with Square Bullets
-    
-        Arturo
-        Python
-        Ruby
-    
-    
-        Hello
-        
-        World
-    
 
- body:[attrs:[] text:
+        Arturo
+        Python
+        Ruby
+
+
+        Hello
+
+        World
+
+
+ :string
+        body   :        [ :dictionary
+                attrs  :                [ :dictionary
+                ]
+                text   :
     Unordered List with Square Bullets
-    
+
         Arturo
         Python
         Ruby
-    
-    
+
+
         Hello
-        
+
         World
-    
- h2:[attrs:[] text:Unordered List with Square Bullets] ul:[attrs:[style:list-style-type:square;] text:
+
+ :string
+                h2     :                [ :dictionary
+                        attrs  :                        [ :dictionary
+                        ]
+                        text   :                        Unordered List with Square Bullets :string
+                ]
+                ul     :                [ :dictionary
+                        attrs  :                        [ :dictionary
+                                style  :                                list-style-type:square; :string
+                        ]
+                        text   :
         Arturo
         Python
         Ruby
-     li:[[attrs:[] text:Arturo] [attrs:[] text:Python] [attrs:[] text:Ruby]]] p:[attrs:[] text:
+     :string
+                        li     :                        [ :block
+                                [ :dictionary
+                                        attrs  :                                        [ :dictionary
+                                        ]
+                                        text   :                                        Arturo :string
+                                ]
+                                [ :dictionary
+                                        attrs  :                                        [ :dictionary
+                                        ]
+                                        text   :                                        Python :string
+                                ]
+                                [ :dictionary
+                                        attrs  :                                        [ :dictionary
+                                        ]
+                                        text   :                                        Ruby :string
+                                ]
+                        ]
+                ]
+                p      :                [ :dictionary
+                        attrs  :                        [ :dictionary
+                        ]
+                        text   :
         Hello
-        
+
         World
-     br:[attrs:[] text:]]]]
-:dictionary
+     :string
+                        br     :                        [ :dictionary
+                                attrs  :                                [ :dictionary
+                                ]
+                                text   :                                 :string
+                        ]
+                ]
+        ]
+]
 
 >> read.xml
 
-[name:Arturo Programming Language author:Yanis Zafiropulos category:Scripting and Concatenative _tag:language id:art] [name:CPython author:Guido van Rossum category:Scripting and Object Oriented _tag:language id:py] [name:Ruby author:Yukihiro Matsumoto category:Scripting and Object Oriented _tag:language id:rb] 
-:block
+[ :block
+        [ :dictionary
+                name      :                Arturo Programming Language :string
+                author    :                Yanis Zafiropulos :string
+                category  :                Scripting and Concatenative :string
+                _tag      :                language :string
+                id        :                art :string
+        ]
+        [ :dictionary
+                name      :                CPython :string
+                author    :                Guido van Rossum :string
+                category  :                Scripting and Object Oriented :string
+                _tag      :                language :string
+                id        :                py :string
+        ]
+        [ :dictionary
+                name      :                Ruby :string
+                author    :                Yukihiro Matsumoto :string
+                category  :                Scripting and Object Oriented :string
+                _tag      :                language :string
+                id        :                rb :string
+        ]
+]
 
 >> read.markdown
 
@@ -133,37 +223,66 @@ before you are comfortable enough to write your first program.</p>
 <li><a href="https://arturo-lang.io/documentation/language/#precedence-and-evaluation">Precedence &amp; Evaluation</a></li>
 <li><a href="https://arturo-lang.io/documentation/language/#scope-and-rules">Scope &amp; Rules</a></li>
 </ol>
-
-:string
+ :string
 
 >> read.toml
 
-[arturo:[package:[name:TOML Reader description:Yet another TOML Reader version:1.0.1 authors:[author A author B] license:MIT] config:[version:^0.9 pkg-manager:^0.2]]]
-:dictionary
+[ :dictionary
+        arturo  :        [ :dictionary
+                package  :                [ :dictionary
+                        name         :                        TOML Reader :string
+                        description  :                        Yet another TOML Reader :string
+                        version      :                        1.0.1 :string
+                        authors      :                        [ :block
+                                author A :string
+                                author B :string
+                        ]
+                        license      :                        MIT :string
+                ]
+                config   :                [ :dictionary
+                        version      :                        ^0.9 :string
+                        pkg-manager  :                        ^0.2 :string
+                ]
+        ]
+]
 
 >> read.toml -- from ini file
 
-[package:[name:TOML Reader description:Yet another TOML Reader version:1.0.1 authors:[author A author B] license:MIT] config:[version:^0.9 pkg-manager:^0.2]]
-:dictionary
+[ :dictionary
+        package  :        [ :dictionary
+                name         :                TOML Reader :string
+                description  :                Yet another TOML Reader :string
+                version      :                1.0.1 :string
+                authors      :                [ :block
+                        author A :string
+                        author B :string
+                ]
+                license      :                MIT :string
+        ]
+        config   :        [ :dictionary
+                version      :                ^0.9 :string
+                pkg-manager  :                ^0.2 :string
+        ]
+]
 
 >> read.binary
 
-48 65 6C 6C 6F 2C 20 57 6F 72 6C 64 21
-:binary
+[ :binary
+        48 65 6C 6C 6F 2C 20 57 6F 72 6C 64 21
+]
 
 >> read.file
 
-temp/read-file/test.bin
-:string
+temp/read-file/test.bin :string
 error raised as expected!
 
 >> rename
 
-file:  Hello, world! 
+file:  Hello, world!
 
 >> rename.directory
 
-directory renamed [temp\rename-dir\renamed\file.txt] 
+directory renamed [temp\rename-dir\renamed\file.txt]
 
 >> timestamp
 
@@ -196,8 +315,8 @@ From Arturo's World!
 
 >> write.directory
 
-before: [] 
-now: [temp\write-dir\directory temp\write-dir\folder] 
+before: []
+now: [temp\write-dir\directory temp\write-dir\folder]
 
 >> write.json
 
@@ -228,10 +347,4 @@ directory exists
 
 >> hidden?
 
-false
-false
-false
-false
-false
-true
 Removed: temp/
