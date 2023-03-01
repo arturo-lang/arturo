@@ -122,176 +122,18 @@ This is a multiline File.
 
 >> read.html
 
-[ :dictionary
-        attrs  :        [ :dictionary
-        ]
-        text   :        
-
-    Unordered List with Square Bullets
-    
-        Arturo
-        Python
-        Ruby
-    
-    
-        Hello
-        
-        World
-    
-
- :string
-        body   :        [ :dictionary
-                attrs  :                [ :dictionary
-                ]
-                text   :                
-    Unordered List with Square Bullets
-    
-        Arturo
-        Python
-        Ruby
-    
-    
-        Hello
-        
-        World
-    
- :string
-                h2     :                [ :dictionary
-                        attrs  :                        [ :dictionary
-                        ]
-                        text   :                        Unordered List with Square Bullets :string
-                ]
-                ul     :                [ :dictionary
-                        attrs  :                        [ :dictionary
-                                style  :                                list-style-type:square; :string
-                        ]
-                        text   :                        
-        Arturo
-        Python
-        Ruby
-     :string
-                        li     :                        [ :block
-                                [ :dictionary
-                                        attrs  :                                        [ :dictionary
-                                        ]
-                                        text   :                                        Arturo :string
-                                ]
-                                [ :dictionary
-                                        attrs  :                                        [ :dictionary
-                                        ]
-                                        text   :                                        Python :string
-                                ]
-                                [ :dictionary
-                                        attrs  :                                        [ :dictionary
-                                        ]
-                                        text   :                                        Ruby :string
-                                ]
-                        ]
-                ]
-                p      :                [ :dictionary
-                        attrs  :                        [ :dictionary
-                        ]
-                        text   :                        
-        Hello
-        
-        World
-     :string
-                        br     :                        [ :dictionary
-                                attrs  :                                [ :dictionary
-                                ]
-                                text   :                                 :string
-                        ]
-                ]
-        ]
-]
 
 >> read.xml
 
-[ :block
-        [ :dictionary
-                name      :                Arturo Programming Language :string
-                author    :                Yanis Zafiropulos :string
-                category  :                Scripting and Concatenative :string
-                _tag      :                language :string
-                id        :                art :string
-        ]
-        [ :dictionary
-                name      :                CPython :string
-                author    :                Guido van Rossum :string
-                category  :                Scripting and Object Oriented :string
-                _tag      :                language :string
-                id        :                py :string
-        ]
-        [ :dictionary
-                name      :                Ruby :string
-                author    :                Yukihiro Matsumoto :string
-                category  :                Scripting and Object Oriented :string
-                _tag      :                language :string
-                id        :                rb :string
-        ]
-]
 
 >> read.markdown
 
-<h1>Arturo Basics</h1>
-<blockquote>
-<p>Arturo is a very simple language.
-Even without any prior experience,
-I estimate it would take you roughly half an hour
-before you are comfortable enough to write your first program.</p>
-</blockquote>
-<hr>
-<ul>
-<li><a href="https://arturo-lang.io/documentation/library">Library</a></li>
-<li><a href="https://arturo-lang.io/documentation/examples">Examples</a></li>
-</ul>
-<h2>First Steps</h2>
-<ol>
-<li><a href="https://arturo-lang.io/documentation/language/#the-main-components">Main Components</a></li>
-<li><a href="https://arturo-lang.io/documentation/language/#precedence-and-evaluation">Precedence &amp; Evaluation</a></li>
-<li><a href="https://arturo-lang.io/documentation/language/#scope-and-rules">Scope &amp; Rules</a></li>
-</ol>
- :string
 
 >> read.toml
 
-[ :dictionary
-        arturo  :        [ :dictionary
-                package  :                [ :dictionary
-                        name         :                        TOML Reader :string
-                        description  :                        Yet another TOML Reader :string
-                        version      :                        1.0.1 :string
-                        authors      :                        [ :block
-                                author A :string
-                                author B :string
-                        ]
-                        license      :                        MIT :string
-                ]
-                config   :                [ :dictionary
-                        version      :                        ^0.9 :string
-                        pkg-manager  :                        ^0.2 :string
-                ]
-        ]
-]
 
 >> read.toml -- from ini file
 
-[ :dictionary
-        package  :        [ :dictionary
-                name         :                TOML Reader :string
-                description  :                Yet another TOML Reader :string
-                version      :                1.0.1 :string
-                authors      :                [ :block
-                        author A :string
-                        author B :string
-                ]
-                license      :                MIT :string
-        ]
-        config   :        [ :dictionary
-                version      :                ^0.9 :string
-                pkg-manager  :                ^0.2 :string
-        ]
-]
 
 >> read.binary
 
