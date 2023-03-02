@@ -427,6 +427,9 @@ topic "read.html"
     ; ---------//---------//---------//
 
     inspect read.html htmlSample
+    ensure -> equal?
+        read.html htmlSample
+        read.html ~"|dir|/test.html"
 
 ]
 
