@@ -1,0 +1,51 @@
+cr: [1]
+cs: [2]
+
+extendRS: function [][
+    x: cr\[dec size cr] + cs\[dec size cr]
+    'cr ++ x
+    loop (1 + cs\[dec size cs])..dec x 'y -> 'cs ++ y
+    'cs ++ x + 1
+]
+
+ffr: function [rn][
+    while [rn > size cr] -> extendRS
+    cr\[rn-1]
+]
+
+ffs: function [sn][
+    while [sn > size cs] -> extendRS
+    cs\[sn-1]
+]
+
+loop 1..10 'i -> prints [ffr i ""]
+print ""
+; for i in 1..10: stdout.write ffr i," "
+; echo ""
+
+; var bin: array[1..1000, int]
+; for i in 1..40: inc bin[ffr i]
+; for i in 1..960: inc bin[ffs i]
+; var all = true
+; for x in bin:
+;   if x != 1:
+;     all = false
+;     break
+
+; if all: echo "All Integers 1..1000 found OK"
+; else: echo "All Integers 1..1000 NOT found only once: ERROR"
+; proc extendRS =
+;   let x = cr[cr.high] + cs[cr.high]
+;   cr.add x
+;   for y in cs[cs.high] + 1 ..< x: cs.add y
+;   cs.add x + 1
+
+; proc ffr(n: int): int =
+;   assert n > 0
+;   while n > cr.len: extendRS()
+;   cr[n - 1]
+
+; proc ffs(n: int): int =
+;   assert n > 0
+;   while n > cs.len: extendRS()
+;   cs[n - 1]
