@@ -515,7 +515,8 @@ topic "read.toml"
  [
 
     dir: createTestFolder "read-toml"
-    write ~"|dir|/test.toml" {
+
+    tomlSample: {
         [arturo.package]
         name = "TOML Reader"
         description = "Yet another TOML Reader"
@@ -528,11 +529,16 @@ topic "read.toml"
         pkg-manager = "^0.2"
     }
 
+    write ~"|dir|/test.toml" tomlSample
+
     ensure -> exists? ~"|dir|/test.toml"
 
     ; ---------//---------//---------//
 
-    inspect read.toml ~"|dir|/test.toml"
+    inspect read.toml tomlSample
+    ensure -> equal?
+        read.toml tomlSample
+        read.toml ~"|dir|/test.toml"
 
 ]
 
