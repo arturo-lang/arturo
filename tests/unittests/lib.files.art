@@ -346,7 +346,9 @@ do [
     ; ---------//---------//---------//
 
     inspect read.json jsonSample
-    ; inspect read.json ~"|dir|/test.json"
+    ensure -> equal?
+        read.json jsonSample
+        read.json ~"|dir|/test.json"
 
 ]
 
