@@ -477,7 +477,7 @@ topic "read.markdown"
 
     dir: createTestFolder "read-md"
 
-    write ~"|dir|/test.md" {
+    mdSample:  {
         # Arturo Basics
 
         > Arturo is a very simple language.
@@ -497,11 +497,16 @@ topic "read.markdown"
 
     }
 
+    write ~"|dir|/test.md" mdSample
+
     ensure -> exists? ~"|dir|/test.md"
 
     ; ---------//---------//---------//
 
-    inspect read.markdown ~"|dir|/test.md"
+    inspect read.markdown mdSample
+    ensure -> equal?
+        read.markdown mdSample
+        read.markdown ~"|dir|/test.md"
 
 ]
 
