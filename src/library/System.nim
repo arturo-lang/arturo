@@ -298,6 +298,10 @@ proc defineSymbols*() =
     #  Right now, it picks script-comments from the entire script, but these are not accessible from an included script, nor from the includer. 
     #  So, its current usefulness is very much doubtable.
     #  labels: library, enhancement, open discussion
+
+    # TODO(System/script) also add information about the current script being executed
+    #  another location could also be Paths/path
+    #  labels: library,enhancement
     constant "script",
         alias       = unaliased,
         description = "embedded information about the current script":
