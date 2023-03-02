@@ -339,7 +339,7 @@ do [
         }
     }
 
-    write ~"|dir|/test.json" write ~"|dir|/test.json" jsonSample
+    write ~"|dir|/test.json" jsonSample
 
     ensure -> exists? ~"|dir|/test.json"
 
