@@ -1,0 +1,26 @@
+farey: function [n][
+    f1: [0 1]
+    f2: @[1 n]
+    result: @["0/1" ~"1/|n|"]
+
+    while [1 < f2\1][
+        k: (n + f1\1) / f2\1
+        aux: f1
+        f1: f2
+        f2: @[
+            (f2\0 * k) - aux\0, 
+            (f2\1 * k) - aux\1
+        ]
+        'result ++ (to :string f2\0) ++ "/" ++ (to :string f2\1)
+    ]
+    return result
+]
+
+loop 1..11 'i ->
+    print [pad (to :string i) ++ ":" 3 join.with:" " farey i]
+
+print ""
+print "Number of fractions in the Farey sequence:"
+
+loop range.step: 100 100 1000 'r ->
+    print "F(" ++ (pad (to :string r) 4) ++ ") = " ++ (pad to :string size farey r 6)
