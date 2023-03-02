@@ -48,7 +48,7 @@ canExecute?: function [scri][
             "wieferich primes"
             "xml - input"
 
-            "lib.files.art"
+            "lib.files"
         ] -> return false
     ]
 
