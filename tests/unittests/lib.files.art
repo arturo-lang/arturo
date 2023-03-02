@@ -547,7 +547,7 @@ topic "read.toml -- from ini file"
 
     dir: createTestFolder "read-ini"
 
-    write ~"|dir|/test.ini" {
+    iniSample: {
         [package]
         name = "TOML Reader"
         description = "Yet another TOML Reader"
@@ -560,11 +560,16 @@ topic "read.toml -- from ini file"
         pkg-manager = "^0.2"
     }
 
+    write ~"|dir|/test.ini" iniSample
+
     ensure -> exists? ~"|dir|/test.ini"
 
     ; ---------//---------//---------//
 
-    inspect read.toml ~"|dir|/test.ini"
+    inspect read.toml iniSample
+    ensure -> equal?
+        read.toml iniSample
+        read.toml ~"|dir|/test.ini"
 
 ]
 
