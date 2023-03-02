@@ -466,6 +466,9 @@ topic "read.xml"
     ; ---------//---------//---------//
 
     inspect read.xml xmlSample
+    ensure -> equal?
+        read.xml xmlSample
+        read.xml ~"|dir|/test.xml"
 
 ]
 
