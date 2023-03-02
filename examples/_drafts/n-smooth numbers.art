@@ -1,0 +1,90 @@
+; import sequtils, strutils
+; import bignum
+
+; const N = 521
+
+
+; func initPrimes(): tuple[primes: seq[Int]; smallPrimes: seq[int]] =
+
+;   var sieve: array[2..N, bool]
+;   for n in 2..N:
+;     if not sieve[n]:
+;       for k in countup(n * n, N, n): sieve[k] = true
+
+;   for n, isComposite in sieve:
+;     if not isComposite:
+;       result.primes.add newInt(n)
+;       if n <= 29: result.smallPrimes.add n
+
+; # Cache all primes up to N.
+; let (Primes, SmallPrimes) = initPrimes()
+
+N: 251
+
+Primes: select 2..N => prime?
+
+nsmooth: function [n, sz][
+    bn: n
+    result: array.of:sz 0
+    'result\[0]: 1
+    next: []
+    i: 3
+    loop Primes 'prime [
+        if prime > bn -> break
+        'next ++ prime
+    ]
+
+    indices: array.of: size next 0
+    loop 1..dec sz 'm [
+        print m
+        result\[m]: min.index next
+        print ["next:" next, "min.index:" min.index next]
+        loop 0..dec size indices 'j [
+            if result\[m] = next\[j] ->
+                indices\[j]: indices\[j] + 1
+                next\[j] = Primes\[j] * result\[indices\[j]]
+        ]
+    ]
+    return result
+]
+
+; proc nSmooth(n, size: Positive): seq[Int] =
+;   assert n in 2..N, "'n' must be between 2 and " & $N
+
+;   let bn = newInt(n)
+;   assert bn in Primes, "'n' must be a prime number"
+
+;   result.setLen(size)
+;   result[0] = newInt(1)
+
+;   var next: seq[Int]
+;   for prime in Primes:
+;     if prime > bn: break
+;     next.add prime
+
+;   var indices = newSeq[int](next.len)
+;   for m in 1..<size:
+;     result[m] = next[next.minIndex()]
+;     for i in 0..indices.high:
+;       if result[m] == next[i]:
+;         inc indices[i]
+;         next[i] = Primes[i] * result[indices[i]]
+
+print nsmooth 5 25
+
+; when isMainModule:
+
+;   for n in SmallPrimes:
+;     echo "The first ", n, "-smooth numbers are:"
+;     echo nSmooth(n, 25).join(" ")
+;     echo ""
+
+;   for n in SmallPrimes[1..^1]:
+;     echo "The 3000th to 3202th ", n, "-smooth numbers are:"
+;     echo nSmooth(n, 3002)[2999..^1].join(" ")
+;     echo ""
+
+;   for n in [503, 509, 521]:
+;     echo "The 30000th to 30019th ", n, "-smooth numbers are:"
+;     echo nSmooth(n, 30_019)[29_999..^1].join(" ")
+;     echo ""
