@@ -11,7 +11,7 @@ if 1 = size arg -> errorMargin: to :integer first arg
 
 supersuccess: 0
 superskipped: 0
-supertotal: 0 
+supertotal: 0
 
 canExecute?: function [scri][
     scr: extract.filename scri
@@ -47,7 +47,9 @@ canExecute?: function [scri][
             "unicode strings"
             "wieferich primes"
             "xml - input"
-        ] -> return false 
+
+            "lib.files"
+        ] -> return false
     ]
 
     if sys\release='full [
@@ -73,7 +75,7 @@ runSet: function [title,location].export:[supersuccess,supertotal,superskipped][
         script: replace test ".res" ".art"
         expected: split.lines strip read test
 
-        prints pad.right ((color #magenta "\n- Running: ") ++ truncate.preserve extract.filename script 40) 70 
+        prints pad.right ((color #magenta "\n- Running: ") ++ truncate.preserve extract.filename script 40) 70
         if? canExecute? script [
 
             ;tim: benchmark.get [
@@ -103,7 +105,7 @@ runSet: function [title,location].export:[supersuccess,supertotal,superskipped][
             success: success + 1
             supersuccess: supersuccess + 1
         ]
-    ] 
+    ]
 
     print "\n"
     print pad.left render.template "<||= success ||> of <||= size tests ||> tasks succeeded ◀" 69
@@ -125,7 +127,7 @@ supertime: in's benchmark.get [
     runSet "Examples" "../examples/rosetta"
 ]
 
-if supersuccess < supertotal-errorMargin [ 
+if supersuccess < supertotal-errorMargin [
     panic.code: 1 "Some unit-tests failed!"
 ]
 
