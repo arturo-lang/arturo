@@ -486,6 +486,10 @@ do [
     debug in?.at:1 "John" dict
     debug in? dict "Jane" dict
 
+    topic "in?.deep - with :block"
+    b: [1 2 4 [3 4 [5 6] 7] 8 [9 10]]
+    print in? 6 b
+
 ]
 
 
@@ -1700,4 +1704,3 @@ do [
     debug zero? null
 
 ]
-
