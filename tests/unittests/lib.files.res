@@ -100,6 +100,31 @@ This is a multiline File.
         ]
 ]
 
+>> read.csv.delimiter
+
+[ :block
+        [ :block
+                language :string
+                 version :string
+                 platform :string
+        ]
+        [ :block
+                Arturo :string
+                 0.9.83 :string
+                 win10 :string
+        ]
+        [ :block
+                Python :string
+                 3.9 :string
+                 gnu/linux :string
+        ]
+        [ :block
+                Ruby :string
+                 3.2.1 :string
+                 macOS :string
+        ]
+]
+
 >> read.csv.withHeaders
 
 [ :block
