@@ -222,6 +222,9 @@ do [
     debug contains?.at:0 dict "John"
     debug contains?.at:1 dict "John"
     debug contains? dict "Jane"
+    
+    topic "contains?.deep - with :block"
+    print contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 6
 
 ]
 

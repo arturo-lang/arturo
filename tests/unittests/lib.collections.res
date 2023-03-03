@@ -129,6 +129,10 @@ true :logical
 false :logical 
 false :logical 
 
+>> in?.deep - with :block
+
+true
+
 >> couple
 
 [[one 1] [two 2] [three 3]] :block 
