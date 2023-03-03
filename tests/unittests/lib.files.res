@@ -312,6 +312,9 @@ file:  Hello, world!
 
 directory renamed
 
+>> symlink & exists.symlink
+
+
 >> timestamp
 
 all fields are filled: [created accessed modified]
