@@ -302,6 +302,7 @@ proc defineSymbols*() =
                         "lines"         : ({Logical},"read file lines into block"),
                         "json"          : ({Logical},"read Json into value"),
                         "csv"           : ({Logical},"read CSV file into a block of rows"),
+                        "delimiter"     : ({Char},   "read CSV file with a specific delimiter"),
                         "withHeaders"   : ({Logical},"read CSV headers"),
                         "html"          : ({Logical},"read HTML into node dictionary"),
                         "xml"           : ({Logical},"read XML into node dictionary"),
@@ -316,6 +317,7 @@ proc defineSymbols*() =
                         "lines"         : ({Logical},"read file lines into block"),
                         "json"          : ({Logical},"read Json into value"),
                         "csv"           : ({Logical},"read CSV file into a block of rows"),
+                        "delimiter"     : ({Char},   "read CSV file with a specific delimiter"),
                         "withHeaders"   : ({Logical},"read CSV headers"),
                         "bytecode"      : ({Logical},"read file as Arturo bytecode"),
                         "binary"        : ({Logical},"read as binary"),
@@ -356,7 +358,11 @@ proc defineSymbols*() =
                     elif (hadAttr("json")):
                         push(valueFromJson(src))
                     elif (hadAttr("csv")):
-                        push(parseCsvInput(src, withHeaders=(hadAttr("withHeaders"))))
+                        if checkAttr("delimiter"):
+                            let delimiter = aDelimiter.c.char()
+                            push(parseCsvInput(src, withHeaders=hadAttr("withHeaders"), withDelimiter=delimiter))
+                        else:
+                            push(parseCsvInput(src, (hadAttr("withHeaders"))))
                     elif (hadAttr("bytecode")):
                         let bcode = readBytecode(x.s)
                         let parsed = doParse(bcode[0], isFile=false).a[0]
