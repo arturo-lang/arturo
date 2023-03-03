@@ -1,5 +1,4 @@
-﻿
->> append
+﻿>> append
 
 
 >> append - :binary < :binary :binary
