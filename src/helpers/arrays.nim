@@ -212,14 +212,16 @@ proc prependInPlace*(s: var Value, t: Value) {.inline,enforceNoRaises.} =
         s.a.insert(i, cnt)
         cnt += 1
         
-        
-proc inNestedBlock*(sequence: ValueArray, target: Value): bool =
-    for element in sequence: 
+proc inNestedBlock*[T](container: openArray[T], target: T): bool =
+    ## Searches for an `target` recursively, 
+    ## even if it's inside another container
+    
+    for element in container:
         if element == target: 
             return true
-        elif Block == element.kind:
+        elif element.kind == Block:
             if element.a.inNestedBlock(target): 
                 return true
-            
+        
     return false
                 
