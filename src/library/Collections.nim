@@ -285,7 +285,7 @@ proc defineSymbols*() =
                         push(newLogical(values[at] == y))
                     else:
                         discard
-            if checkAttr("deep"):
+            if hadAttr("deep"):
                 case x.kind:
                     of String:
                         if y.kind == Regex:
