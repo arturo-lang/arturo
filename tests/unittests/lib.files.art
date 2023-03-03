@@ -662,20 +662,17 @@ do [
 
 ]
 
-; ; -- Test: symlink
+; -- Test: symlink
 
 topic "symlink & exists.symlink"
 do [
 
     dir: createTestFolder "symlink"
     
-    write ~"|dir|/a.md" « # Hello, world
-    
     ; For windows, you need have administrator privileges to create symlinks
     if ("windows" <> sys\os) [
-        symlink.hard "README.md" "/home/README.md"
+        symlink.hard "README.md" ~"|dir|/README.md"
         ensure -> exists?.symlink ~"|dir|/README.md"
-        ensure -> exists?.symlink "/home/README.md"
     ]
 
 ]
