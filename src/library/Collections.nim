@@ -654,7 +654,8 @@ proc defineSymbols*() =
             "collection": {String, Block, Range, Dictionary}
         },
         attrs       = {
-            "at"    : ({Integer}, "check at given location within collection")
+            "at"    : ({Integer}, "check at given location within collection"),
+            "deep"  : ({Logical}, "check internal blocks too")
         },
         returns     = {Logical},
         example     = """
@@ -703,6 +704,24 @@ proc defineSymbols*() =
                     of Dictionary:
                         let values = toSeq(y.d.values)
                         push(newLogical(values[at] == x))
+                    else:
+                        discard
+            elif hadAttr("deep"):
+                case y.kind:
+                    of String:
+                        if x.kind == Regex:
+                            push(newLogical(y.s.contains(x.rx)))
+                        elif x.kind == Char:
+                            push(newLogical($(x.c) in y.s))
+                        else:
+                            push(newLogical(x.s in y.s))
+                    of Block:
+                        push(newLogical(y.a.inNestedBlock(x)))
+                    of Range:
+                        push(newLogical(x in y.rng))
+                    of Dictionary:
+                        let values = toSeq(y.d.values)
+                        push(newLogical(values.inNestedBlock(x)))
                     else:
                         discard
             else:

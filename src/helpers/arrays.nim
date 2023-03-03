@@ -211,3 +211,15 @@ proc prependInPlace*(s: var Value, t: Value) {.inline,enforceNoRaises.} =
     for i in t.a:
         s.a.insert(i, cnt)
         cnt += 1
+        
+        
+proc inNestedBlock*(sequence: ValueArray, target: Value): bool =
+    for element in sequence: 
+        if element == target: 
+            return true
+        elif Block == element.kind:
+            if element.a.inNestedBlock(target): 
+                return true
+            
+    return false
+                
