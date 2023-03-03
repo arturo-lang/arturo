@@ -18,14 +18,14 @@ import vm/values/value
 # Methods
 #=======================================
 
-proc parseCsvInput*(input: string, withHeaders: bool = false): Value =
+proc parseCsvInput*(input: string, withHeaders: bool = false, withDelimiter: char = ','): Value =
     var x: CsvParser
     var s = newStringStream(input)
 
     var rows: ValueArray
 
     if not withHeaders:
-        open(x, s, "")
+        open(x, s, "", separator=withDelimiter)
         while readRow(x):
             var row: ValueArray
 
@@ -34,7 +34,7 @@ proc parseCsvInput*(input: string, withHeaders: bool = false): Value =
 
             rows.add(newBlock(row))
     else:
-        open(x, s, "")
+        open(x, s, "", separator=withDelimiter)
         readHeaderRow(x)
         while readRow(x):
             var row: ValueDict = initOrderedTable[string,Value]()
