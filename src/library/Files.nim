@@ -123,7 +123,8 @@ proc defineSymbols*() =
                 "file"  : {String}
             },
             attrs       = {
-                "directory" : ({Logical},"check for directory")
+                "directory" : ({Logical},"check for directory"),
+                "symlink"   : ({Logical},"check for symlink")
             },
             returns     = {Logical},
             example     = """
@@ -136,6 +137,8 @@ proc defineSymbols*() =
 
                 if (hadAttr("directory")): 
                     push(newLogical(dirExists(x.s)))
+                elif (hadAttr("symlink")): 
+                    push(newLogical(symlinkExists(x.s)))
                 else: 
                     push(newLogical(fileExists(x.s)))
 
