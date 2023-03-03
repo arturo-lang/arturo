@@ -274,6 +274,10 @@ true :logical
 false :logical 
 false :logical 
 
+>> in?.deep - with :block
+
+true
+
 >> index
 
 1 :integer 
