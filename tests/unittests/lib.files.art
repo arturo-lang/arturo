@@ -664,14 +664,25 @@ do [
 
 ; ; -- Test: symlink
 
-;; How can I properly test it?
-; topic "rename.directory"
-; do [
-;
-;     ; cleaning
-;     execute "rm temp/* --recursive"
-;
-; ]
+topic "symlink & exists.symlink"
+do [
+
+    dir: createTestFolder "symlink"
+    
+    write ~"|dir|/a.md" « # Hello, world
+    write ~"|dir|/b.md" «
+    
+    ; For windows, you need have administrator privileges to create symlinks
+    if ("windows" <> sys\os) [
+        symlink.hard ~"|dir|/a.md" ~"|dir|/b.md"
+    
+        write ~"|dir|/a.md" « # Hello, Arturo
+        
+        ensure -> exists?.symlink ~"|dir|/a.md"
+        ensure -> exists?.symlink ~"|dir|/b.md"
+    ]
+
+]
 
 ; -- Test: timestamp
 
