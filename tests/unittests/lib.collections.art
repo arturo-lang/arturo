@@ -419,32 +419,23 @@ do [
 
 ]
 
-
+; couple don't support literals yet
 topic "couple"
 do [
-
-    ; With the same amount
-    debug couple ["one" "two" "three"] [1 2 3]
-
-    ; With different amounts
-    bigger: ["one" "two" "three" "I'm out"]
-    smaller: [1 2 3]
-
-    debug couple bigger smaller
-    debug couple smaller bigger
-
+    ensure -> [["one" 1] ["two" 2] ["three" 3]] = couple ["one" "two" "three"] [1 2 3]
+    passed
 ]
 
 topic "decouple"
 do [
-
-    c: [[1 "one"] [2 "two"] [3 "three"]]
-    debug decouple c
-
-    decouple 'c, debug c
-
+    ensure -> [["one" "two" "three"] [1 2 3]] = decouple [["one" 1] ["two" 2] ["three" 3]]
+    passed
+    
+    a:  [["one" 1] ["two" 2] ["three" 3]]
+    decouple 'a
+    ensure -> [["one" "two" "three"] [1 2 3]] = a
+    passed
 ]
-
 
 topic "drop"
 do [
