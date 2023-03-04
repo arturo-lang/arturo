@@ -337,52 +337,85 @@ do [
 
 ]
 
-exit
-
-topic "contains?"
+topic "contains? - :string"
 do [
-
-    topic "contains? - with :string"
     str: "Arturo"
-    debug contains? str "Art"         ; :string
-    debug contains? str `t`           ; :char
-    debug contains? str {/[Art]/}     ; :regex
-    debug contains? str "Football"
-    debug contains?.at:0 str "Art"
-    debug contains?.at:2 str "Art"
+    ensure -> contains? str "Art"         ; :string
+    passed
+    ensure -> contains? str `t`           ; :char
+    passed
+    ensure -> contains? str {/[Art]/}     ; :regex
+    passed
+    ensure -> not? contains? str "Football"
+    passed
+    ensure -> contains?.at:0 str "Art"
+    passed
+    ensure -> not? contains?.at:2 str "Art"
+    passed
+]
 
-
-    topic "contains? - with :block"
+topic "contains? - :block"
+do [
     block: ["Arturo" "Python" "Ruby"]
-    debug contains? block "Arturo"
-    debug contains? block "F#"
-    debug contains?.at: 0 block "Arturo"
-    debug contains?.at: 2 block "Python"
+    ensure -> contains? block "Arturo"
+    passed
+    ensure -> not? contains? block "F#"
+    passed
+    ensure -> contains?.at: 0 block "Arturo"
+    passed
+    ensure -> not? contains?.at: 2 block "Python"
+    passed
+]
 
-    topic "contains? - with nested :block"
-    nested: [
-        ["Arturo" "Python" "Ruby"] 
-        ["C" "C++" "Nim"]]
-    debug contains? nested "Arturo"
-    debug contains? nested ["C" "C++" "Nim"]
-    debug contains?.at: 0 nested ["C" "C++" "Nim"]
-    debug contains?.at: 1 nested "Python"
+topic "contains? - with nested :block"
+do [
+    nested: [["Arturo" "Python" "Ruby"] ["C" "C++" "Nim"]]
+    ensure -> not? contains? nested "Arturo"
+    passed
+    ensure -> contains? nested ["C" "C++" "Nim"]
+    passed
+    ensure -> not? contains?.at: 0 nested ["C" "C++" "Nim"]
+    passed
+    ensure -> not? contains?.at: 1 nested "Python"
+    passed
+]
 
-    topic "contains? - with :range"
+topic "contains? - with :range"
+do [
     rng: 1..10
-    debug contains? rng 5
-    debug contains? rng 0
+    ensure -> contains? rng 5
+    passed
+    ensure -> not? contains? rng 0
+    passed
+    ensure -> contains? 1..10 5
+    passed
+    ensure -> not? contains? 1..10 0
+    passed
+    ensure -> contains?.at: 0 1..10 1
+    passed
+    ensure -> not? contains?.at: 0 1..10 0
+    passed
+]
 
-    topic "contains? - with :dictionary"
+topic "contains? - with :dictionary"
+do [
     dict: #[ name: "John" surname: "Doe"]
-    debug contains? keys dict "name"
-    debug contains?.at:0 keys dict "name"
-    debug contains?.at:1 keys dict "name"
-    debug contains? keys dict "id"
-    debug contains? dict "John"
-    debug contains?.at:0 dict "John"
-    debug contains?.at:1 dict "John"
-    debug contains? dict "Jane"
+    ensure -> contains? keys dict "name"
+    passed
+    ensure -> contains?.at:0 keys dict "name"
+    passed
+    ensure -> not? contains?.at:1 keys dict "name"
+    passed
+    ensure -> not? contains? keys dict "id"
+    passed
+    ensure -> contains? dict "John"
+    passed
+    ensure -> contains?.at:0 dict "John"
+    passed
+    ensure -> not? contains?.at:1 dict "John"
+    passed
+    ensure -> not? contains? dict "Jane"
+    passed
 
 ]
 
