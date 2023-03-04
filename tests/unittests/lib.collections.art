@@ -3,11 +3,9 @@ debug: $[variable][
     print[variable type variable]
 ]
 
-topic: $[topic :string] [
-    print ""
-    print ~">> |topic|"
-    print ""
-]
+topic: $[topic :string] -> print ~"\n>> |topic|"
+passed: $[] -> print "[+] passed!"
+
 
 ; ==> Tests
 
