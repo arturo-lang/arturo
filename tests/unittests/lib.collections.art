@@ -170,55 +170,81 @@ do [
         passed
 
     ]
-
+    
     topic "append - [:string] < [:string] + :string"
     do [
-
-        a: ["A" "r" "t" "u" "r"]
-        debug append ["A" "r" "t" "u" "r"]    "o"
-        append 'a "o", debug a
-
-        b: ["L" "a" "n" "g" "u" "a" "g"]
-        debug ["L" "a" "n" "g" "u" "a" "g"] ++ "e"
-        'b ++ "e", debug b
-
-        ; Testing precedence
-        c: ["A" "r" "t"]
-        debug append ["A" "r" "t"] append "u" append "r"    "o"
-        append 'c append "u" append "r" "o", debug c
-
-        d: ["L" "a" "n" "g"]
-        debug ["L" "a" "n" "g"] ++ "u" ++ "a" ++ "g" ++ "e"
-        'd ++ "u" ++ "a" ++ "g" ++ "e", debug d
-
+        ensure -> ["A" "r" "t" "uro"] = append ["A" "r" "t"] "uro"
+        passed
+        ensure -> ["L" "a" "n" "g" "u" "a" "g" "e"] = append ["L" "a" "n" "g" "u" "a" "g"] "e"
+        passed
+        
+        ensure -> ["A" "r" "t" "uro"] = ["A" "r" "t"] ++ "uro"
+        passed
+        ensure -> ["L" "a" "n" "g" "u" "a" "g" "e"] = ["L" "a" "n" "g" "u" "a" "g"] ++ "e"
+        passed
     ]
-
-    topic "append - [:string] < [:string] + [:string]"
+    
+    topic "append - [:string] < [:string] (literal) + :string"
     do [
-
+        a: ["A" "r" "t"] 
+        append 'a "uro"
+        ensure -> ["A" "r" "t" "uro"] = a
+        passed
+        
+        a: ["L" "a" "n" "g" "u" "a" "g"]
+        append 'a "e"
+        ensure -> ["L" "a" "n" "g" "u" "a" "g" "e"] = a
+        passed
+        
         a: ["A" "r" "t"]
-        debug append ["A" "r" "t"] ["u" "r" "o"]
-        append 'a ["u" "r" "o"], debug a
+        'a ++ "uro"
+        ensure -> ["A" "r" "t" "uro"] =  a
+        passed
+        
+        a: ["L" "a" "n" "g" "u" "a" "g"]
+        'a ++ "e"
+        ensure -> ["L" "a" "n" "g" "u" "a" "g" "e"] = a
+        passed
+    ]
 
-        b: ["L" "a" "n" "g"]
-        debug ["L" "a" "n" "g"] ++ ["u" "a" "g" "e"]
-        'b ++ ["u" "a" "g" "e"], debug b
+    topic "append - [:string] < [:string] + :string - testing precedence"
+    do [
+        
+        ensure -> ["L" "a" "n" "g" "uage"] =  ["L" "a" "n" "g"] ++ "u" ++ "a" ++ "g" ++ "e"
+        passed
+        
+        a: ["L" "a" "n" "g"]
+        'a ++ "u" ++ "a" ++ "g" ++ "e"
+        ensure -> ["L" "a" "n" "g" "uage"] = a
+        passed
 
     ]
 
-    topic "append - [:integer] < [:integer] + [:integer]|:integer"
+    topic "append - :block < :block + :block"
     do [
 
-        a: [1 2 3]
-        debug append [1 2 3] [4 5 6]
-        'a ++ [4 5 6], debug a
-
-        debug append [1 2 3 4 5 6] 7
-        'a ++ 7, debug a
-
+        ensure -> ['literal "string" 102230 ] = append ['literal "string" ] 102230
+        passed
+        
+        ensure -> ['literal "string" 102230 ] = ['literal "string" ] ++ 102230
+        passed
     ]
-]
+    
+    topic "append - :block < :block (literal) + :block"
+    do [
 
+        a: ['literal "string" ]
+        append 'a 102230
+        ensure -> ['literal "string" 102230 ] = a
+        passed
+        
+        a: ['literal "string" ]
+        'a ++ 102230
+        ensure -> ['literal "string" 102230 ] = a
+        passed
+    ]
+
+]
 
 topic "chop"
 do [
