@@ -41,6 +41,7 @@ canExecute?: function [scri][
             "pell's equation"
             "permutations - derangements"
             "sequence of primorial primes"
+            "sort a list of object identifiers"
             "sorting algorithms - cycle sort"
             "sorting algorithms - pancake sort"
             "square root by hand"
