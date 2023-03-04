@@ -1,0 +1,24 @@
+primes: select 1..1666 => prime?
+sphenic: []
+
+loop 0..dec size primes 'p1 ->
+    loop (p1+1)..dec size primes 'p2 ->
+        loop (p2+1)..dec size primes 'p3 ->
+            try -> 'sphenic ++ primes\[p1] * primes\[p2] * primes\[p3]
+
+sphenicBelow1K: sort unique select sphenic 'x -> x < 1000
+print "Sphenic numbers up to 1000:"
+loop split.every: 15 sphenicBelow1K 'x ->
+    print map x 's -> pad to :string s 4
+
+sphenicBelow10K: select sphenic 'x -> x < 10000
+
+sphenicTripletsBelow10K: sort select sphenicBelow10K 'x ->
+    and? [contains? sphenicBelow10K x+1] [contains? sphenicBelow10K x+2]
+
+print ""
+print "Sphenic triplets up to 10000:"
+loop split.every: 3 sphenicTripletsBelow10K 'x ->
+    print map x 's [
+        pad as.code @[s, s+1, s+2] 12
+    ]
