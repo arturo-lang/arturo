@@ -20,10 +20,12 @@ canExecute?: function [scri][
             "runtime.NumberOutOfPermittedRange"
 
             "branching"
+            "lib.files"
             "sorting"
 
             "ackermann function"
             "arbitrary-precision integers - included"
+            "combinations and permutations"
             "curzon numbers"
             "hamming numbers"
             "iban"
@@ -38,6 +40,9 @@ canExecute?: function [scri][
             "next special primes"
             "pell's equation"
             "permutations - derangements"
+            "repunit primes"
+            "sequence of primorial primes"
+            "sort a list of object identifiers"
             "sorting algorithms - cycle sort"
             "sorting algorithms - pancake sort"
             "square root by hand"
@@ -47,8 +52,6 @@ canExecute?: function [scri][
             "unicode strings"
             "wieferich primes"
             "xml - input"
-
-            "lib.files"
         ] -> return false
     ]
 

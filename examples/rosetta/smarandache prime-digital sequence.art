@@ -1,0 +1,9 @@
+spds: 2..∞ | select.first:100 'x ->
+                and? -> prime? x
+                     -> every? digits x => prime?
+
+print "First 25 SPDS primes:"
+print first.n: 25 spds
+
+print ""
+print ["100th SPDS prime:" last spds]

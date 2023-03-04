@@ -1,0 +1,33 @@
+setBits: function [inp, n][
+    e: size inp
+    print "n = " ++ (to :string n) ++ "; Width e = " ++ (to :string e) ++ ":"
+
+    result: new ø
+    if? or? zero? e n =< 0 -> result: inp
+    else [
+        result: split inp
+        loop 0..e-1 'i [
+            if inp\[i] = `1` [
+                j: i + 1
+                while [and? j =< i+n j < e][
+                    result\[j]: `1`
+                    j: j + 1
+                ]
+            ]
+        ]
+        result: join result
+    ]
+
+    print ["\tinput  :" inp]
+    print ["\tresult :" result]
+]
+
+setBits "1000" 2
+setBits "0100" 2
+setBits "0010" 2
+setBits "0000" 2
+
+setBits "010000000000100000000010000000010000000100000010000010000100010010" 0
+setBits "010000000000100000000010000000010000000100000010000010000100010010" 1
+setBits "010000000000100000000010000000010000000100000010000010000100010010" 2
+setBits "010000000000100000000010000000010000000100000010000010000100010010" 3

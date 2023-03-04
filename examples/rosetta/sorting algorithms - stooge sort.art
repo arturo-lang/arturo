@@ -1,0 +1,21 @@
+innerStoogeSort: function [a, i, j][
+    if a\[j] < a\[i] [
+        t: a\[i]
+        a\[i]: a\[j]
+        a\[j]: t
+    ]
+    if 1 < j - i [
+        t: (1 + j - i) / 3
+        innerStoogeSort a i j-t
+        innerStoogeSort a i+t j
+        innerStoogeSort a i j-t
+    ]
+]
+
+stoogeSort: function [arr][
+    result: new arr
+    innerStoogeSort result 0 dec size result
+    return result
+]
+
+print stoogeSort [3 1 2 8 5 7 9 4 6]

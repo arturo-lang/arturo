@@ -1,0 +1,54 @@
+juggler: function [n][
+    a: new n
+    
+    count: 0
+    mx: a
+    mxIdx: 0
+
+    while [a <> 1][
+        f: to :floating a
+        a: (zero? and to :integer a 1)? -> sqrt f
+                                        -> f * sqrt f
+        inc 'count
+        if a > mx [
+            mx: a
+            mxIdx: count
+        ]
+    ]
+
+    return @[count, mx, mxIdx]
+]
+
+print "n   l[n]            h[n]  i[n]"
+print "——————————————————————————————"
+
+loop 20..39 'n [
+    [l, h, i]: juggler n
+    prints n
+    prints "   "
+    prints pad to :string l 2
+    prints "  "
+    prints pad to :string h 14
+    prints "     "
+    print i
+]
+
+; import math, strformat
+
+; func juggler(n: Positive): tuple[count: int; max: uint64; maxIdx: int] =
+;   var a = n.uint64
+;   result = (0, a, 0)
+;   while a != 1:
+;     let f = float(a)
+;     a = if (a and 1) == 0: sqrt(f).uint64
+;         else: uint64(f * sqrt(f))
+;     inc result.count
+;     if a > result.max:
+;       result.max = a
+;       result.maxIdx = result.count
+
+; echo "n   l[n]            h[n]  i[n]"
+; echo "——————————————————————————————"
+; for n in 20..39:
+;   let (l, h, i) = juggler(n)
+;   echo &"{n}   {l:2}  {h:14}     {i}"

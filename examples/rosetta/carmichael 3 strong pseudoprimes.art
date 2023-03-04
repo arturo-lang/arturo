@@ -1,0 +1,27 @@
+printOneLine: function [a,b,c,d]->
+    print [
+        pad to :string a 3 "x" 
+        pad to :string b 5 "x" 
+        pad to :string c 5 "=" 
+        pad to :string d 10
+    ]
+
+2..61 | select => prime?
+      | loop 'p ->
+            loop 2..p 'h3 [
+                g: h3 + p
+                loop 1..g 'd ->
+                    if and? -> zero? mod g*p-1 d
+                            -> zero? mod d+p*p h3 [
+
+                        q: 1 + ((p-1)*g)/d
+
+                        if prime? q [
+                            r: 1 + (p * q) / h3
+
+                            if and? [prime? r]
+                                    [one? (q*r) % p-1]->
+                                printOneLine p q r (p*q*r)
+                        ]
+                    ]
+            ]

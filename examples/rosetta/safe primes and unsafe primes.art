@@ -1,0 +1,32 @@
+primes: select 2..10000000 => prime?
+
+safe?: function [n]->
+    prime? (n-1)/2
+
+unsafe?: function [n]->
+    not? safe? n
+
+printWithCommas: function [lst]->
+    join.with:", " to [:string] lst
+
+print ["first 35 safe primes:" 
+        primes | select.first:35 => safe?
+               | printWithCommas]
+
+print ["safe primes below 1M:" 
+        primes | select 'x -> x < 1000000
+               | enumerate => safe?]
+
+print ["safe primes below 10M:" 
+        primes | enumerate => safe?]
+
+print ["first 40 unsafe primes:" 
+        primes | select.first:40 => unsafe?
+               | printWithCommas]
+
+print ["unsafe primes below 1M:" 
+        primes | select 'x -> x < 1000000
+               | enumerate => unsafe?]
+
+print ["unsafe primes below 10M:" 
+        primes | enumerate => unsafe?]

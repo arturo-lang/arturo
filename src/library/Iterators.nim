@@ -9,6 +9,13 @@
 ## The main Iterators module 
 ## (part of the standard library)
 
+# TODO(Iterators) add `.rolling` option
+#  this would allow us to have a rolling window of values
+#  for example, if we have a list of 10 values, and we want to
+#  iterate over it with a window of 3 values, we would get:
+#  `[1,2,3], [2,3,4], [3,4,5], [4,5,6], [5,6,7], [6,7,8], [7,8,9], [8,9,10]`
+#  labels: library, enhancement
+
 #=======================================
 # Pragmas
 #=======================================

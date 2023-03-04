@@ -1,0 +1,21 @@
+replacement: function [rule,ch,order][
+    loop rule 'r ->
+        if r\[0] = order -> return r\[1]
+    return ch
+]
+multiReplace: function [str, rules][
+    cntr: #.raw flatten couple keys rules repeat 0 size rules
+
+    join map str 'ch [
+        (key? cntr ch)? [
+            cntr\[ch]: cntr\[ch] + 1
+            replacement rules\[ch] ch dec cntr\[ch]
+        ] -> ch
+    ]
+]
+
+print multiReplace "abracadabra" #[
+    a: [[0 `A`][1 `B`][3 `C`][4 `D`]]
+    b: [[0 `E`]]
+    r: [[1 `F`]]
+]
