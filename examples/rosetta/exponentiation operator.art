@@ -22,22 +22,3 @@ print ""
 print ["2.0 ^ -3 =" myPow 2.0 neg 3]
 print ["1.5 ^ 0 =" myPow 1.5 0]
 print ["4.5 ^ 2 =" myPow 4.5 2]
-
-
-; F my_pow(base, exp) -> Float
-;    I exp < 0
-;       R 1 / my_pow(base, -exp)
-;    I exp == 0
-;       R 1
-;    V ans = base
-;    L 0 .< exp - 1
-;       ans *= base
-;    R ans
-
-; print(‘2  ^ 3   = ’my_pow(2, 3))
-; print(‘1  ^ -10 = ’my_pow(1, -10))
-; print(‘-1 ^ -3  = ’my_pow(-1, -3))
-; print()
-; print(‘2.0 ^ -3 = ’my_pow(2.0, -3))
-; print(‘1.5 ^ 0  = ’my_pow(1.5, 0))
-; print(‘4.5 ^ 2  = ’my_pow(4.5, 2))
