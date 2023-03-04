@@ -14,20 +14,57 @@ do [
 
     topic "append - :binary < :binary :binary"
     do [
-        bin0: to :binary 0
-        bin1: to :binary 1
-        debug append bin0 bin1
-
-        append 'bin0 bin1, debug bin0
+        b0: to :binary 0
+        b1: to :binary 1
+        
+        ensure -> as.binary 1 = append b0 b1
+        passed
+        
+        b0: to :binary 0
+        b1: to :binary 1
+        
+        ensure -> as.binary 1 = b0 ++ b1
+        passed
+    ]
+    topic "append - :binary < :binary (literal) :binary"
+    do [
+        b0: to :binary 0
+        b1: to :binary 1
+        append 'b0 b1
+        
+        ensure -> as.binary 1 = b0
+        passed
+        
+        b0: to :binary 0
+        b1: to :binary 1
+        'b0 ++ b1
+        
+        ensure -> as.binary 1 = b0
+        passed
     ]
 
     topic "append - :binary < :binary :integer"
     do [
-        bin0: to :binary 0
-        int1: 1
-        debug append bin0 int1
+        b: to :binary 0
+        ensure -> as.binary 1 = append b 1
+        passed
         
-        append 'bin0 int1, debug bin0
+        b: to :binary 0
+        ensure -> as.binary 1 = b ++ 1
+        passed
+    ]
+    
+    topic "append - :binary < :binary (literal) :integer"
+    do [
+        b: to :binary 0
+        append 'b 1
+        ensure -> as.binary 1 = b
+        passed
+        
+        b: to :binary 0
+        'b ++ 1
+        ensure -> as.binary 1 = b
+        passed
     ]
 
     topic "append - :string < :string + :string"
@@ -1698,4 +1735,3 @@ do [
     debug zero? null
 
 ]
-
