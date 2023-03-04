@@ -373,6 +373,27 @@ do
 
 ]
 
+topic "read.csv.delimiter"
+do
+[
+
+    dir: createTestFolder "read-csv-delimiter"
+
+    write ~"|dir|/test.csv" {
+        language; version; platform
+        Arturo; 0.9.83; win10
+        Python; 3.9; gnu/linux
+        Ruby; 3.2.1; macOS
+    }
+
+    ensure -> exists? ~"|dir|/test.csv"
+
+    ; ---------//---------//---------//
+
+    inspect read.csv.delimiter: `;` ~"|dir|/test.csv"
+
+]
+
 topic "read.csv.withHeaders"
 do [
 
