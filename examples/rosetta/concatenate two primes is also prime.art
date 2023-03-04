@@ -1,0 +1,11 @@
+primesBelow100: select 1..100 => prime?
+allPossibleConcats: permutate.repeat.by:2 primesBelow100
+
+concatPrimes: allPossibleConcats | map 'x -> to :integer (to :string x\[0]) ++ (to :string x\[1])
+                                 | select => prime?
+                                 | sort
+                                 | unique
+
+print ["Found" size concatPrimes "concatenations of primes below 100:"]
+loop split.every: 16 concatPrimes 'x ->
+    print map x 's -> pad to :string s 4

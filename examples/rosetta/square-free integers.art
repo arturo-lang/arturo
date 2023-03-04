@@ -1,0 +1,27 @@
+squareFree?: function [n][
+    mx: to :integer sqrt n
+    loop 2..mx 'r ->
+        if zero? n % r ^ 2 -> return false
+
+    return true
+]
+
+sqFreeUpTo145: [1 2 3] ++ select 1..145 => squareFree?
+print "Square-free integers from 1 to 145:"
+loop split.every: 20 sqFreeUpTo145 'x ->
+    print map x 's -> pad to :string s 4
+
+print ""
+
+sqFreeUpToTrillion: select 1000000000000..1000000000145 => squareFree?
+print "Square-free integers from 1000000000000 to 1000000000145:"
+loop split.every: 5 sqFreeUpToTrillion 'x ->
+    print map x 's -> pad to :string s 14
+
+print ""
+
+print ["Number of square-free numbers between 1 and 100: " s100: <= 3 + enumerate 1..100 => squareFree?]
+print ["Number of square-free numbers between 1 and 1000: " s1000: <= s100 + enumerate 101..1000 => squareFree?]
+print ["Number of square-free numbers between 1 and 10000: " s10000: <= s1000 + enumerate 1001..10000 => squareFree?]
+print ["Number of square-free numbers between 1 and 100000: " s100000: <= s10000 + enumerate 10001..100000 => squareFree?]
+print ["Number of square-free numbers between 1 and 1000000: " s100000 + enumerate 100001..1000000 => squareFree?]

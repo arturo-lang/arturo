@@ -1,0 +1,11 @@
+extraPrime?: function [n]->
+    all? @[
+        prime? n
+        prime? sum digits n
+        every? digits n => prime?
+    ]
+
+extraPrimesBelow10K: select 1..10000 => extraPrime?
+
+loop split.every: 9 extraPrimesBelow10K 'x ->
+    print map x 's -> pad to :string s 5

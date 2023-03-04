@@ -323,6 +323,10 @@ proc defineSymbols*() =
                         else:
                             push(newString(normalizedPath(x.s)))
 
+        # TODO(Paths/path) move to System module?
+        #  although it's about paths, actually it's more about *system* paths;
+        #  rather than path manipulation. So, that could be a better fit.
+        #  labels: enhancement, library
         constant "path",
             alias       = unaliased,
             description = "common path constants":

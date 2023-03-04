@@ -1,0 +1,7 @@
+cube: function [z]->
+    z * z * z
+
+loop 1..10 'x [
+    benchmark -> 
+        loop 1..400 'o -> cube 5
+]

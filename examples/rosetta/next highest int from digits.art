@@ -1,0 +1,20 @@
+canHaveGreater?: function [n][
+    mydigs: digits n
+    maxdigs: reverse sort mydigs
+
+    return some? 0..dec size mydigs 'i ->
+        maxdigs\[i] > mydigs\[i]
+]
+nextHighest: function [n][
+    if not? canHaveGreater? n -> return n
+
+    ndigs: sort digits n
+    i: n + 1
+    while [ndigs <> sort digits i]->
+        i: i + 1
+
+    return i
+]
+
+loop [0, 9, 12, 21, 12453, 738440, 45072010, 95322020] 'num ->
+    print [pad (to :string num) 9 "->" nextHighest num]

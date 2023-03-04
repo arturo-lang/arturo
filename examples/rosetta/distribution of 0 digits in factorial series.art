@@ -1,0 +1,12 @@
+su: 0.0
+f: 1
+lim: 100
+loop 1..10000 'n [
+    'f * n
+    str: to :string f
+    'su + (enumerate str 'c -> c = `0`) // size str
+    if n = lim [
+        print [n ":" su // n]
+        'lim * 10
+    ]
+]

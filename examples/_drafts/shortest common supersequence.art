@@ -1,0 +1,67 @@
+lcs: function [x,y][
+    print ["in LCS:" x y]
+    ensure -> string? x
+    ensure -> string? y
+    if or? empty? x empty? y -> return ""
+    x1: x\[0..(size x)-2]
+    y1: y\[0..(size y)-2]
+    if (last x)=(last y)-> return (lcs to :string x1 to :string y1) ++ (last x)
+    x2: lcs x to :string y1
+    y2: lcs to :string x1 y
+    return ((size x2) > y2)? -> x2 -> y2
+]
+
+scs: function [u,v][
+    lc: lcs u v
+    ui: 0
+    vi: 0
+    result: ""
+    loop lc 'ch [
+        while [and? -> ui < size u -> u\[ui] <> ch][
+            'result ++ u\[ui]
+            inc 'ui
+        ]
+        while [and? -> vi < size v -> v\[vi] <> ch][
+            'result ++ v\[vi]
+            inc 'vi
+        ]
+        'result ++ ch
+        inc 'ui
+        inc 'vi
+    ]
+    if ui < size u -> 'result ++ u\[ui..(size u)-1]
+    if vi < size v -> 'result ++ v\[vi..(size v)-1]
+]
+
+U: "abcbdab"
+V: "bdcaba"
+print scs U V
+; proc scs(u, v: string): string =
+;   let lcs = lcs(u, v)
+;   var ui, vi = 0
+;   for ch in lcs:
+;     while ui < u.len and u[ui] != ch:
+;       result.add u[ui]
+;       inc ui
+;     while vi < v.len and v[vi] != ch:
+;       result.add v[vi]
+;       inc vi
+;     result.add ch
+;     inc ui
+;     inc vi
+;   if ui < u.len: result.add u.substr(ui)
+;   if vi < v.len: result.add v.substr(vi)
+; ; proc lcs(x, y: string): string =
+; ;   if x.len == 0 or y.len == 0: return
+; ;   let x1 = x[0..^2]
+; ;   let y1 = y[0..^2]
+; ;   if x[^1] == y[^1]: return lcs(x1, y1) & x[^1]
+; ;   let x2 = lcs(x, y1)
+; ;   let y2 = lcs(x1, y)
+; ;   result = if x2.len > y2.len: x2 else: y2
+
+
+; when isMainModule:
+;   let u = "abcbdab"
+;   let v = "bdcaba"
+;   echo scs(u, v)

@@ -1,0 +1,18 @@
+digs: (@`0`..`9`) ++ @`A`..`Z`
+toBase: function [n,base][
+    join map digits.base:base n 'x -> digs\[x]
+]
+
+rhonda?: function [n,base][
+    (base * sum factors.prime n) = product digits.base:base n
+]
+
+nonPrime: select 2..16 'x -> not? prime? x
+
+loop nonPrime 'npbase [
+    print "The first 10 Rhonda numbers, base-" ++ (to :string npbase) ++ ":"
+    rhondas: select.first:10 1..∞ 'z -> rhonda? z npbase
+    print ["In base 10 ->" join.with:", " to [:string] rhondas]
+    print ["In base" npbase "->" join.with:", " to [:string] map rhondas 'w -> toBase w npbase]
+    print ""
+]

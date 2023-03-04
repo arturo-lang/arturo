@@ -298,6 +298,10 @@ proc defineSymbols*() =
     #  Right now, it picks script-comments from the entire script, but these are not accessible from an included script, nor from the includer. 
     #  So, its current usefulness is very much doubtable.
     #  labels: library, enhancement, open discussion
+
+    # TODO(System/script) also add information about the current script being executed
+    #  another location could also be Paths/path
+    #  labels: library,enhancement
     constant "script",
         alias       = unaliased,
         description = "embedded information about the current script":
@@ -322,6 +326,21 @@ proc defineSymbols*() =
                 #=======================================================
                 push newLogical(isAdmin())
 
+    # TODO(System/sys) normalize the way CPU architecture is shown
+    #  in our new release builds, we annotate x86_64/amd64 builds as "x86_64"
+    #  here, our sys\cpu field would return "amd64"
+    #
+    #  obviously, we should normalize this, but we need to decide on a single name
+    #  and then, we need to make sure that all our build scripts are using the same name
+    #  labels: library, enhancement, open discussion
+
+    # TODO(System/sys) add info about endianess?
+    #  we could add another field to the dictionary, like "endianess" : "big" or "little"
+    #  or, perhaps even better, make our existing cpu field a dictionary with two fields:
+    #  - type: amd64
+    #  - endian: little
+    #  ...
+    #  labels: library, enhancement
     builtin "sys",
         alias       = unaliased, 
         op          = opNop,

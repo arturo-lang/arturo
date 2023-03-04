@@ -1,0 +1,7 @@
+people: [
+    ["joe" 120]
+    ["foo" 31]
+    ["bar" 51]
+]
+
+print arrange people 'x -> x\0

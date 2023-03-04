@@ -1,0 +1,26 @@
+motzkin: function [n][
+    result: array.of:n+1 0
+    result\[0]: 1
+    result\[1]: 1
+
+    loop 2..n 'i ->
+        result\[i]: ((result\[i-1] * (inc 2*i)) + result\[i-2] * (sub 3*i 3)) / i+2
+    
+    return result
+]
+
+printLine: function [items][
+    pads: [4 20 7]
+    loop.with:'i items 'item [
+        prints pad to :string item pads\[i]
+    ]
+    print ""
+]
+
+motzkins: motzkin 41
+
+printLine ["n" "M[n]" "prime"]
+print repeat "=" 31
+
+loop.with:'i motzkins 'm ->
+    printLine @[i m prime? m]

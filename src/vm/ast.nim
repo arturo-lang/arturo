@@ -15,22 +15,11 @@
 ## 
 ## The main entry point is ``generateAst``.
 
-# Pending task for new AST+Eval:
-# - [x] make Attribute's work
-# - [x] make AttributeLabel's work
-# - [x] make Path's work
-# - [x] make PathLabel's work
-# - [x] make Newline values work
-# - [x] create new opCode for append
-# - [x] clean up opCode's
-# - [x] attach opCode's to built-in function (for faster lookups)
-# - [x] optimize appends
-# - [x] optimize returns when it's the last statement of a function block
-# - [x] make labels store new functions in TmpArities
-# - [x] make labels unstore overwritten functions in TmpArities
-# - [x] make if/if?/else/while/switch work
-# - [x] correctly process to :string/:integer
-# - [ ] make sure all this left/right (when checking for optimization) are not Newline's
+# TODO(VM/ast) show warning in case `else` is preceded by `if` - and not `if?`
+#  labels: vm, ast, enhancement, error handling
+
+# TODO(VM/ast) make sure all left-right checking are not Newlines
+#  labels: vm, ast, enhancement, unit-test
 
 #=======================================
 # Libraries

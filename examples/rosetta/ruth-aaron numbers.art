@@ -1,0 +1,11 @@
+fRuthAaron?: function [n]-> (sum factors.prime n) = sum factors.prime n+1
+dRuthAaron?: function [n]-> (sum unique factors.prime n) = sum unique factors.prime n+1
+
+print "First 30 Ruth-Aaron numbers (factors):"
+loop split.every: 10 select.first:30 1..∞ => fRuthAaron? 'x ->
+    print map x 's -> pad to :string s 5
+
+print ""
+print "First 30 Ruth-Aaron numbers (divisors):"
+loop split.every: 10 select.first:30 1..∞ => dRuthAaron? 'x ->
+    print map x 's -> pad to :string s 5
