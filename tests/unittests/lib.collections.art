@@ -521,29 +521,25 @@ do [
     passed
 ]
 
-topic "first"
+topic "first - .n"
 do [
 
-    debug first "Arturo"
-    debug first.n: 3 "Arturo"
+    ensure -> `A` = first "Arturo"
+    passed
+    ensure -> "A" <> first "Arturo"
+    passed
+    ensure -> "Art" = first.n: 3 "Arturo"
+    passed
+    
+    ensure -> "one" = first ["one" "two" "three"]
+    passed
+    ensure -> ["one" "two"] = first.n: 2 ["one" "two" "three"]
+    passed
 
-    debug first ["one" "two" "three"]
-    debug first.n: 2 ["one" "two" "three"]
-
-    print first 1..10
-    print first 5..0
-    print first 0..40
-    first.n: 6 0..10
-    ; storing into a variable
-    r1: 1..10
-    print first r1
-    print first.n: 6 r1
-    ; using range function
-    print first range 0 10
-    print first.n: 6 range 0 10
-    r2: range 0 10
-    print first range 0 10
-    print first.n: 6 range 0 10
+    ensure -> 5 = first 5..10
+    passed
+    ensure -> (to :block 5..7) = first.n: 3 5..10
+    passed
 
 ]
 
