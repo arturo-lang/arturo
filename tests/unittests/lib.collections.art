@@ -477,52 +477,30 @@ do [
     passed
 ]
 
-topic "drop"
+topic "empty - empty?"
 do [
-
-    a: "Arturo"
-    debug drop "Arturo" 2
-    drop 'a 2, debug a
-
-    b: [ 4 3 2 1 2 3 4 5 ]
-    debug drop [ 4 3 2 1 2 3 4 5 ] 3
-    drop 'b 3, debug b
-
-]
-
-
-topic "empty"
-do [
-
     b1: ["Arturo" "C" "Python" "Ruby"]
     b2: [1 2 3 4 5 6 7 8 9 10]
-    b3: ['north 'south 'east 'west]
+    b3: @['north 'south 'east 'west]
     s: "Arturo"
     d: #[ name: "John" surname: "Doe"]
-
-    print "before empty"
-    debug b1, debug b2, debug b3
-    debug s,  debug d
-
-    empty 'b1, empty 'b2, empty 'b3
-    empty 's,  empty 'd
-
-    print "after empty"
-    debug b1, debug b2, debug b3
-    debug s,  debug d
-
-]
-
-topic "empty?"
-do [
-
-    debug empty? "" 
-    debug empty? "Arturo" 
-    debug empty? [] 
-    debug empty? ['north 'south 'east 'west]
-    debug empty? #[]
-    debug empty? #[ name: "John" surname: "Doe"]
-
+    
+    empty 'b1
+    empty 'b2
+    empty 'b3
+    empty 's
+    empty 'd
+    
+    ensure -> empty? b1
+    passed
+    ensure -> empty? b2
+    passed
+    ensure -> empty? b3
+    passed
+    ensure -> empty? s
+    passed
+    ensure -> empty? d
+    passed
 ]
 
 
