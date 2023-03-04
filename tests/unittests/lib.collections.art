@@ -70,52 +70,104 @@ do [
     topic "append - :string < :string + :string"
     do [
 
-        a: "Art"
-        debug append "Art" "uro"
-        append 'a "uro", debug a
+        ensure -> "Arturo" = append "Art" "uro"
+        passed
+        
+        ensure -> "Arturo" = "Art" ++ "uro"
+        passed
 
-        b: "Lang"
-        debug "Lang" ++ "uage"
-        'b ++ "uage", debug b
+    ]
+    
+        topic "append - :string < :string (literal) + :string"
+    do [
+
+        s: "Art"
+        append 's "uro"
+        ensure -> "Arturo" = s
+        passed
+        
+        s: "Art"
+        's ++ "uro"
+        ensure -> "Arturo" = s
+        passed
 
     ]
 
     topic "append - :string < :string + :char"
     do [
 
-        a: "Artur"
-        debug append "Artur" `o`
-        append 'a `o`, debug a
+        ensure -> "Arturo" = append "Artur" `o`
+        passed
 
-        b: "Languag"
-        debug "Languag" ++ `e`
-        'b ++ `e`, debug b
+        ensure -> "Arturo" = "Artur" ++ `o`
+        passed
+
+    ]
+    
+    topic "append - :string < :string (literal) + :char"
+    do [
+
+        s: "Artur"
+        append 's `o`
+        ensure -> "Arturo" = s
+        passed
+
+        s: "Artur"
+        's ++ `o`
+        ensure -> "Arturo" = s
+        passed
 
     ]
 
     topic "append - :string < :char + :char"
     do [
 
-        a: `a`
-        debug append `a` `b`
-        append 'a `b`, debug a
+        ensure -> "ab" = append `a` `b`
+        passed
+        
+        ensure -> "ab" = `a` ++ `b`
+        passed
 
-        b: `c`
-        debug `c` ++ `d`
-        'b ++ `d`, debug b
+    ]
+    
+    topic "append - :string < :char (literal) + :char"
+    do [
+
+        c: `a`
+        append 'c `b`
+        ensure -> "ab" = c
+        passed
+        
+        c: `a`
+        'c ++ `b`
+        ensure -> "ab" = c
+        passed
 
     ]
 
     topic "append - :string < :char + :string"
     do [
 
-        a: `a`
-        debug append `a` "rt"
-        append 'a "rt", debug a
+        ensure -> "Arturo" = append `A` "rturo"
+        passed
+        
+        ensure -> "Arturo" = `A` ++ "rturo"
+        passed
 
-        b: `l`
-        debug `l` ++ "ang"
-        'b ++ "ang", debug b
+    ]
+    
+    topic "append - :string < :char (literal) + :string"
+    do [
+        
+        c: `A`
+        append 'c "rturo"
+        ensure -> "Arturo" = c
+        passed
+        
+        c: `A`
+        'c ++ "rturo"
+        ensure -> "Arturo" = c
+        passed
 
     ]
 
