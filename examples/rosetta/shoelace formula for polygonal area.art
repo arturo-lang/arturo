@@ -1,13 +1,5 @@
 define :point [x,y][]
 
-; func shoelace(points: openArray[Point]): float =
-;   var leftSum, rightSum = 0.0
-;   for i in 0..<len(points):
-;     var j = (i + 1) mod len(points)
-;     leftSum  += points[i].x * points[j].y
-;     rightSum += points[j].x * points[i].y
-;   0.5 * abs(leftSum - rightSum)
-
 shoelace: function [pts][
     [leftSum, rightSum]: 0
 
