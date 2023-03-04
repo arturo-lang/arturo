@@ -246,32 +246,70 @@ do [
 
 ]
 
-topic "chop"
+topic "chop - :string < :string :string"
 do [
+    ensure -> "Artur" = chop "Arturo"
+    passed
+    ensure -> "Art" = chop chop chop "Arturo"
+    passed
+]
 
-    ; with :string
-    debug chop "Artu"
-    debug chop chop chop "Arturo"
+topic "chop.times - :string < :string :string"
+do [
+    ensure -> "Art" = chop.times: 3 "Arturo"
+    passed
+]
 
-    debug chop.times: 3 "Arturo" ; returns Art :string
+topic "chop - :string < :string (literal) :string"
+do [
+    a: "Arturo", chop 'a
     
-    s1: "Arturo"
-    chop.times: 3 's1, debug s1 ; returns Art :string
-    s2: "Artu"
-    chop 's2, debug s2
+    ensure -> "Artur" = a
+    passed
     
+    b: "Arturo"
+    try? -> chop chop chop 'b
+    else -> passed
+]
 
-    ; with :block
-    debug chop [1 2 3 4]
-    debug chop chop [1 2 3 4 5]
+topic "chop.times - :string < :string (literal) :string"
+do [
+    a: "Arturo", chop.times: 3 'a
+    ensure -> "Art" = a
+    passed
+]
 
-    b1: [1 2 3 4 5]
-    chop.times: 2 'b1, debug b1     ; returns [1 2 3] :block
-    debug chop.times: 2 [1 2 3 4 5] ; returns [1 2 3] :block
+topic "chop - :block < :block :block"
+do [
+    ensure -> [1 2 3 4] = chop [1 2 3 4 5]
+    passed
+    ensure -> [1 2] = chop chop chop [1 2 3 4 5]
+    passed
+]
 
-    b2: [1 2 3 4]
-    chop 'b2, debug b2
+topic "chop.times - :block < :block :block"
+do [
+    ensure -> [1 2] = chop.times: 3 [1 2 3 4 5]
+    passed
+]
 
+topic "chop - :block < :block (literal) :block"
+do [
+    a: [1 2 3 4 5], chop 'a
+    
+    ensure -> [1 2 3 4] = a
+    passed
+    
+    b: [1 2 3 4 5]
+    try? -> chop chop chop 'b
+    else -> passed
+]
+
+topic "chop.times - :block < :block (literal) :block"
+do [
+    a: [1 2 3 4 5], chop.times: 3 'a
+    ensure -> [1 2] = a
+    passed
 ]
 
 
