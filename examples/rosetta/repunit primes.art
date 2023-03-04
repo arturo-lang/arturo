@@ -1,0 +1,15 @@
+getRepunit: function [n,b][
+    result: 1
+    loop 1..dec n 'z ->
+        result: result + b^z
+    return result
+]
+
+loop 2..16 'base [
+    print [
+        pad (to :string base) ++ ":" 4
+        join.with:", " to [:string] select 2..1001 'x ->
+            and? -> prime? x
+                 -> prime? getRepunit x base
+    ]
+]
