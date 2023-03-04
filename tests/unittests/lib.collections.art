@@ -508,16 +508,18 @@ topic "extend"
 do [
 
     person: #[ name: "john" surname: "doe" ]
-    debug person
-    debug extend person #[ age: 35 ]
-
-    jane: #[ name: "jane" surname: "doe" ]
-    debug jane
-    extend 'jane #[ age: 35 ]
-    debug jane
-
+    ensure -> (#[ name: "john" surname: "doe" age: 35 ]) = extend person #[ age: 35 ]
+    passed
 ]
 
+topic "extend (literal)"
+do [
+
+    person: #[ name: "john" surname: "doe" ]
+    extend 'person #[ age: 35 ]
+    ensure -> (#[ name: "john" surname: "doe" age: 35 ]) = person
+    passed
+]
 
 topic "first"
 do [
