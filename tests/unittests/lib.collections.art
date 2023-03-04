@@ -437,6 +437,46 @@ do [
     passed
 ]
 
+topic "drop - :string < :string :string"
+do [
+    ensure -> "rturo" = drop "Arturo" 1
+    passed
+    ensure -> "uro" = drop "Arturo" 3
+    passed
+]
+
+topic "drop - :string < :string (literal) :string"
+do [
+    a: "Arturo", drop 'a 1
+    
+    ensure -> "rturo" = a
+    passed
+    
+    b: "Arturo", drop 'b 3
+    ensure -> "uro" = b
+    passed
+]
+
+topic "drop - :block < :block :block"
+do [
+    ensure -> [2 3 4 5] = drop [1 2 3 4 5] 1
+    passed
+    ensure -> [4 5] = drop [1 2 3 4 5] 3
+    passed
+]
+
+topic "drop - :block < :block (literal) :block"
+do [
+    a: [1 2 3 4 5], drop 'a 1
+    
+    ensure -> [2 3 4 5] = a
+    passed
+    
+    b: [1 2 3 4 5], drop 'b 3
+    ensure -> [4 5] = b
+    passed
+]
+
 topic "drop"
 do [
 
