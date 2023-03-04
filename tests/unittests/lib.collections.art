@@ -546,17 +546,24 @@ do [
 topic "flatten"
 do [
 
-    arr: [[1 2 3] [4 5 6]]
+    ensure -> [1 2 3 4 5 6] = flatten [[1 2 3] [4 5 6]]
+    passed
+    
+    a: [[1 2 3] [4 5 6]], flatten 'a
+    ensure -> [1 2 3 4 5 6] = a
+    passed
 
-    debug flatten arr
-    debug arr
-    flatten 'arr, debug arr
+]
 
-    arr2: [[4 5 6] [1 2 3]]
+topic "flatten.once"
+do [
 
-    debug flatten [1 [2 3] [4 [5 6]]]
-    debug flatten.once [1 [2 3] [4 [5 6]]]
-    flatten.once 'arr2, debug arr2
+    ensure -> [1 2 3 4 [5 6]] = flatten.once [1 [2 3] [4 [5 6]]]
+    passed
+    
+    a: [1 [2 3] [4 [5 6]]], flatten.once 'a
+    ensure -> [1 2 3 4 [5 6]] = a
+    passed
 
 ]
 
