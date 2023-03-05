@@ -957,14 +957,18 @@ do [
 ]
 
 
-topic "keys"
+topic "keys - :dictionary"
 do [
 
-    ; :dictionary
     user: #[ name: "John" surname: "Doe" ]
-    debug keys user
+    ensure -> ["name" "surname"] = keys user
+    passed
 
-    ; :object
+]
+
+topic "keys - :object"
+do [
+    
     define :person [name, surname][
         init: ->
             this\name: capitalize this\name
@@ -972,11 +976,11 @@ do [
         print: ->
             ~"NAME: |this\name|, SURNAME: |this\surname|"
     ]
-    
-    personA: to :person ["John" "Doe"]
-    debug keys personA
-]
 
+    p: to :person ["John" "Doe"]
+    ensure -> ["name" "surname"] = keys p
+    passed
+]
 
 topic "last"
 do [
