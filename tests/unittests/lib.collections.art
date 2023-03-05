@@ -982,29 +982,25 @@ do [
     passed
 ]
 
-topic "last"
+topic "last - .n"
 do [
 
-    debug last "Arturo"
-    debug last.n: 3 "Arturo"
+    ensure -> `o` = last "Arturo"
+    passed
+    ensure -> "o" <> last "Arturo"
+    passed
+    ensure -> "uro" = last.n: 3 "Arturo"
+    passed
+    
+    ensure -> "three" = last ["one" "two" "three"]
+    passed
+    ensure -> ["two" "three"] = last.n: 2 ["one" "two" "three"]
+    passed
 
-    debug last ["one" "two" "three"]
-    debug last.n: 2 ["one" "two" "three"]
-
-    print last 1..10
-    print last 5..0
-    print last 0..40
-    last.n: 6 0..10
-    ; storing into a variable
-    r1: 1..10
-    print last r1
-    print last.n: 6 r1
-    ; using range function
-    print last range 0 10
-    print last.n: 6 range 0 10
-    r2: range 0 10
-    print last range 0 10
-    print last.n: 6 range 0 10
+    ensure -> 10 = last 5..10
+    passed
+    ensure -> (to :block 8..10) = last.n: 3 5..10
+    passed
 
 ]
 
