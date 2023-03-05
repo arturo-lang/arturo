@@ -1004,35 +1004,38 @@ do [
 
 ]
 
-
-topic "max"
+topic "max - [:integer] - .index"
 do [
+    ensure -> 9 = max [4 2 8 5 9 1]
+    passed
+    ensure -> 4 = max.index [4 2 8 5 9 1]
+    passed
+]
 
-    debug max [4 2 8 5 1 9]
-    debug max.index [4 2 8 5 1 9]
-    debug max ["Granada" "Manchester" "Boston"]
-    debug max.index ["Granada" "Manchester" "Boston"]
-    
-    print max 1..10
-    print max 5..0
-    print max.index 1..10
-    print max.index 5..0
-    ; storing into a variable
-    r1: 1..10
-    print max r1
-    print max.index r1
-    ; using range function
-    print max range 1 10
-    print max range 5 0
-    print max.index range 1 10
-    print max.index range 5 0
-    r2: range 0 10
-    r3: range 5 0
-    print max r2
-    print max r3
-    print max.index r2
-    print max.index r3
+topic "max - [:string] - .index"
+do [
+    ensure -> "Manchester" = max ["Granada" "Manchester" "Boston"]
+    passed
+    ensure -> 1 = max.index ["Granada" "Manchester" "Boston"]
+    passed
+]
 
+topic "max - [:literal] - .index"
+do [
+    ensure -> 'manchester = max ['granada 'manchester 'boston]
+    passed
+    ensure -> 1 = max.index ['granada 'manchester 'boston]
+    passed
+]
+
+topic "max - :range - .index"
+do [
+    ensure -> 10 = max 0..10
+    ensure -> 10 = max range 0 10
+    passed
+    ensure -> 5 = max.index 5..10
+    ensure -> 5 = max.index range 5 10
+    passed
 ]
 
 
