@@ -796,29 +796,52 @@ do [
 ]
 
 
-
-topic "index"
+topic "index - :string"
 do [
+    
+    ensure -> 0 = index "Arturo" "Art"
+    passed
+    ensure -> 3 = index "Arturo" "uro"
+    passed
+    
+]
 
+topic "index - :dictionary"
+do [
+    
     user: #[
         name: "John"
         surname: "Doe"
     ]
 
-    debug index "hello" "e"
-    debug index [1 2 3] 3
-    debug index "hello" "x" ; returns null
-    debug index user "John"
-    debug index user "Doe"
+    ensure -> "name" = index user "John"
+    passed
+    ensure -> "surname" = index user "Doe"
+    passed
     
-    print index 5..10 5
-    print index 5..10 6
-    ; storing into a variable
-    r1: 1..10
-    print index r1 5
-    print index r1 6
-
 ]
+
+topic "index - :block"
+do [
+    
+    a: ["zero" "one" "two"]
+    ensure -> 0 = index a "zero"
+    passed
+    ensure -> 1 = index a "one"
+    passed
+    ensure -> 2 = index a "two"
+    passed
+    
+]
+
+topic "index - :range"
+do [
+    ensure -> 1 = index range 0 10 1
+    passed
+    ensure -> 0 = index 5..10 5
+    passed
+]
+
 
 
 topic "insert"
