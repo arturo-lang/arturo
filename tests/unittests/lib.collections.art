@@ -567,55 +567,65 @@ do [
 
 ]
 
-
-topic "get"
+topic "get - :string"
 do [
+    
+    ensure -> `r` = get "Arturo" 1
+    passed
+    
+    s: "Arturo"
+    
+    ensure -> `r` = s\1
+    passed
+    
+    i: 0
+    ensure -> `r` = s\[i + 1]
+    passed
+    
+]
 
-    ; :binary
-    bi: to :binary 65000
-    debug bi
-    debug to :binary get bi 1
-
-    ; :bytecode
-    bt: to :bytecode [print "hello"]
-    debug bt\data
-    debug bt\code
-
-    ; :date
+topic "get - :date"
+do [
+    
     d: to :date .format: "MMM dd" "Jan 15"
-    debug get d 'day
-    debug get d 'Month
+    
+    ensure -> 1 = d\month 
+    passed
+    ensure -> 15 = d\day 
+    passed
+]
 
-    ; :dictionary
+topic "get - :binary"
+do [
+    bi: to :binary 65000
+    ensure -> (from.hex "E8") = get bi 1
+    passed
+]
+
+
+topic "get - :dictionary"
+do [
+    
     user: #[
         name: "John"
         surname: "Doe"
     ]
 
-    debug user\name
-    debug user\["name"]
-    debug get user 'name
-    debug get user 'surname
-    debug user\["surname"]
+    ensure -> "John" = user\name
+    passed
+    ensure -> "John" = user\["name"]
+    passed
+    ensure -> "John" = get user 'name
+    passed
+    ensure -> "Doe" = get user 'surname
+    passed
+    ensure -> "Doe" = user\["surname"]
+    passed
+    
+]
 
-    user\name: "Jane"
-    debug get user 'name
-
-    arr: ["zero" "one" "two"]
-    debug arr\0
-    debug get arr 0
-
-    arr\[0]: "first"
-    debug arr
-
-    name: "John Doe"
-    namesInitial: get name 0
-    surnamesInitial: get name 5
-
-    debug namesInitial
-    debug surnamesInitial
-
-    ; :object
+topic "get - :object"
+do [
     define :person [name, surname][
         init: ->
             this\name: capitalize this\name
@@ -623,22 +633,84 @@ do [
         print: ->
             ~"NAME: |this\name|, SURNAME: |this\surname|"
     ]
+    
+    p: to :person ["John" "Doe"]
+    ensure -> "John" = get p 'name
+    ensure -> "Doe" = get p 'surname
+    passed
+    ensure -> "John" = get p "name"
+    ensure -> "Doe" = get p "surname"
+    passed
+    ensure -> "John" = p\name
+    ensure -> "Doe" = p\surname
+    passed
+    ensure -> "John" = p\["name"]
+    ensure -> "Doe" = p\["surname"]
+    passed
+    
+]
 
-    personA: to :person ["John" "Doe"]
-    debug personA
-    debug get person 'name
+topic "get - :store"
+do [
+    
+    p: store "MyDB"
+    p\name: "John"
+    p\surname: "Doe"
 
-    print get range 0 10 1
-    print get 5..10 0
+    ensure -> "John" = get p 'name
+    ensure -> "Doe" = get p 'surname
+    passed
+    ensure -> "John" = get p "name"
+    ensure -> "Doe" = get p "surname"
+    passed
+    ensure -> "John" = p\name
+    ensure -> "Doe" = p\surname
+    passed
+    ensure -> "John" = p\["name"]
+    ensure -> "Doe" = p\["surname"]
+    passed
+    
+]
 
-    ; :store
-    st: store "teststore"
-    st\name: "John"
-    st\surname: "Doe"
+topic "get - :block"
+do [
+    
+    a: ["zero" "one" "two"]
+    ensure -> "zero" = get a 0
+    ensure -> "zero" = a\0
+    passed
+    ensure -> "one" = get a 1
+    ensure -> "one" = a\1
+    passed
+    ensure -> "two" = get a 2
+    ensure -> "two" = a\2
+    passed
+    
+]
 
-    debug get st 'name
-    debug st\surname
+topic "get - :range"
+do [
+    ensure -> 1 = get range 0 10 1
+    passed
+    ensure -> 5 = get 5..10 0
+    passed
+]
 
+topic "get - :bytecode"
+do [
+    bt: to :bytecode [print "hello"]
+    ensure -> ["hello"] = bt\data
+    ensure -> [32 189 218] = bt\code
+    passed
+    ensure -> ["hello"] = get bt 'data
+    ensure -> [32 189 218] = get bt 'code
+    passed
+    ensure -> ["hello"] = get bt "data"
+    ensure -> [32 189 218] = get bt "code"
+    passed
+    ensure -> ["hello"] = bt\["data"]
+    ensure -> [32 189 218] = bt\["code"]
+    passed
 ]
 
 
