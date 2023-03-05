@@ -1039,34 +1039,38 @@ do [
 ]
 
 
-topic "min"
+topic "min - [:integer] - .index"
 do [
+    ensure -> 1 = min [4 2 8 5 9 1]
+    passed
+    ensure -> 5 = min.index [4 2 8 5 9 1]
+    passed
+]
 
-    debug min [4 2 8 5 1 9]
-    debug min.index [4 2 8 5 1 9]
-    debug min ["Granada" "Manchester" "Boston"]
-    debug min.index ["Granada" "Manchester" "Boston"]
-    
-    print min 1..10
-    print min 5..0
-    print min.index 1..10
-    print min.index 5..0
-    ; storing into a variable
-    r1: 1..10
-    print min r1
-    print min.index r1
-    ; using range function
-    print min range 1 10
-    print min range 5 0
-    print min.index range 1 10
-    print min.index range 5 0
-    r2: range 0 10
-    r3: range 5 0
-    print min r2
-    print min r3
-    print min.index r2
-    print min.index r3
+topic "min - [:string] - .index"
+do [
+    ensure -> "Boston" = min ["Granada" "Manchester" "Boston"]
+    passed
+    ensure -> 2 = min.index ["Granada" "Manchester" "Boston"]
+    passed
+]
 
+topic "min - [:literal] - .index"
+do [
+    ensure -> 'boston = min ['granada 'manchester 'boston]
+    passed
+    ensure -> 2 = min.index ['granada 'manchester 'boston]
+    passed
+]
+
+topic "min - :range - .index"
+do [
+    ensure -> 0 = min 0..10
+    ensure -> 0 = min range 10 0
+    passed
+    ensure -> 5 = min.index 10..5
+    ensure -> 0 = min.index range 5 10
+    passed
 ]
 
 
