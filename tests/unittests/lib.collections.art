@@ -653,7 +653,7 @@ do [
 topic "get - :store"
 do [
     
-    p: store "MyDB"
+    p: store "test.db"
     p\name: "John"
     p\surname: "Doe"
 
