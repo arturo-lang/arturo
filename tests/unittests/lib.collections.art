@@ -713,60 +713,88 @@ do [
     passed
 ]
 
-
-topic "in?"
+topic "in? - :string"
 do [
-
-    topic "in? - with :string"
     str: "Arturo"
-    debug in? "Art"      str ; :string
-    debug in? `t`        str ; :char
-    debug in? {/[Art]/}  str ; :regex
-    debug in? "Football" str
-    debug in?.at:0 "Art" str
-    debug in?.at:2 "Art" str
+    ensure -> in? "Art" str        ; :string
+    passed
+    ensure -> in? `t` str           ; :char
+    passed
+    ensure -> in? {/[Art]/} str     ; :regex
+    passed
+    ensure -> not? in? "Football" str 
+    passed
+    ensure -> in?.at:0 "Art" str
+    passed
+    ensure -> not? in?.at:2 "Art" str 
+    passed
+]
 
-
-    topic "in? - with :block"
+topic "in? - :block"
+do [
     block: ["Arturo" "Python" "Ruby"]
-    debug in? "Arturo"       block
-    debug in? "F#"           block
-    debug in?.at: 0 "Arturo" block
-    debug in?.at: 2 "Python" block
+    ensure -> in? "Arturo" block
+    passed
+    ensure -> not? in? "F#" block
+    passed
+    ensure -> in?.at:0 "Arturo" block
+    passed
+    ensure -> not? in?.at:2 "Python" block 
+    passed
+]
 
-    topic "in? - with nested :block"
-    nested: [
-        ["Arturo" "Python" "Ruby"] 
-        ["C" "C++" "Nim"]]
-    debug in? "Arturo"                nested
-    debug in? ["C" "C++" "Nim"]       nested
-    debug in?.at: 0 ["C" "C++" "Nim"] nested
-    debug in?.at: 1 "Python"          nested
+topic "in? - with nested :block"
+do [
+    nested: [["Arturo" "Python" "Ruby"] ["C" "C++" "Nim"]]
+    ensure -> not? in? "Arturo" nested 
+    passed
+    ensure -> in? ["C" "C++" "Nim"] nested 
+    passed
+    ensure -> not? in?.at:0 ["C" "C++" "Nim"] nested 
+    passed
+    ensure -> not? in?.at:1 "Python" nested 
+    passed
+]
 
-    print in? 1 1..10
-    print in? 0 1..10
-    print in? 1 range 1 10
-    print in? 0 range 1 10
-    ; storing into a variable
-    r1: 1..10
-    print in? 1 r1
-    print in? 0 r1
-    r2: range 1 10
-    print in? 1 r2
-    print in? 0 r2
+topic "in? - with :range"
+do [
+    rng: 1..10
+    ensure -> in? 5 rng 
+    passed
+    ensure -> not? in? 0 rng 
+    passed
+    ensure -> in? 5 1..10 
+    passed
+    ensure -> not? in? 0 1..10 
+    passed
+    ensure -> in?.at:0 1 1..10 
+    passed
+    ensure -> not? in?.at:0 0 1..10 
+    passed
+]
 
-    topic "in? - with :dictionary"
+topic "in? - with :dictionary"
+do [
     dict: #[ name: "John" surname: "Doe"]
-    debug in?"name"       keys dict
-    debug in?.at:0 "name" keys dict
-    debug in?.at:1 "name" keys dict
-    debug in? "id"        keys dict
-    debug in? "John"      dict
-    debug in?.at:0 "John" dict
-    debug in?.at:1 "John" dict
-    debug in? dict "Jane" dict
+    ensure -> in? "name" keys dict 
+    passed
+    ensure -> in?.at:0 "name" keys dict 
+    passed
+    ensure -> not? in?.at:1 "name" keys dict
+    passed
+    ensure -> not? in? "id" keys dict 
+    passed
+    ensure -> in? "John" dict 
+    passed
+    ensure -> in?.at:0 "John" dict
+    passed
+    ensure -> not? in?.at:1 "John" dict 
+    passed
+    ensure -> not? in? "Jane" dict 
+    passed
 
 ]
+
 
 
 topic "index"
