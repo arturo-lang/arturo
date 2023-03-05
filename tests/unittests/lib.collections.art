@@ -917,17 +917,25 @@ do [
     
 ]
 
-topic "key?"
+topic "key? - :dictionary"
 do [
 
-    ; :dictionary
     user: #[ name: "John" surname: "Doe" ]
-    debug key? user 'name
-    debug key? user "name"
-    debug key? user 'age
-    debug key? user "age"
+    ensure -> key? user 'name
+    ensure -> key? user "name"
+    passed
+    ensure -> key? user 'surname
+    ensure -> key? user "surname"
+    passed
+    ensure -> not? key? user 'age
+    ensure -> not? key? user "age"
+    passed
 
-    ; :object
+]
+
+topic "key? - :object"
+do [
+    
     define :person [name, surname][
         init: ->
             this\name: capitalize this\name
@@ -936,13 +944,16 @@ do [
             ~"NAME: |this\name|, SURNAME: |this\surname|"
     ]
 
-    personA: to :person ["John" "Doe"]
-    debug key? personA 'name
-    debug key? personA "name"
-    debug key? personA 'surname
-    debug key? personA "surname"
-    debug key? personA 'age
-    debug key? personA "age"
+    p: to :person ["John" "Doe"]
+    ensure -> key? p 'name
+    ensure -> key? p "name"
+    passed
+    ensure -> key? p 'surname
+    ensure -> key? p "surname"
+    passed
+    ensure -> not? key? p 'age
+    ensure -> not? key? p "age"
+    passed
 ]
 
 
