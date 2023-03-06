@@ -1,0 +1,19 @@
+a: function [v][
+    print ["called function A with:" v]
+    v
+]
+
+b: function [v][
+    print ["called function B with:" v]
+    v
+]
+
+loop @[true false] 'i ->
+    loop @[true false] 'j ->
+        print ["\tThe result of A(i) AND B(j) is:" and? -> a i -> b j]
+
+print ""
+
+loop @[true false] 'i ->
+    loop @[true false] 'j ->
+        print ["\tThe result of A(i) OR B(j) is:" or? -> a i -> b j]
