@@ -1874,14 +1874,25 @@ do [
 topic "slice"
 do [
 
-    debug slice "Arturo" 0 2
-    debug slice ["Arturo" "Python" "Ruby" "C" "C++" "Nim" "Wren"] 3 5
+    ensure -> "Art" = slice "Arturo" 0 2
+    passed
+    
+    ensure -> ["C" "C++" "Nim"] 
+        = slice ["Arturo" "Python" "Ruby" "C" "C++" "Nim" "Wren"] 3 5
+    passed
 
-    a: ["Arturo" "Python" "Ruby" "C" "C++" "Nim" "Wren"]
-    b: "Arturo"
+]
 
-    slice 'a 3 5, debug a
-    slice 'b 0 2, debug b
+topic "slice - (literal)"
+do [
+
+    a: "Arturo", slice 'a 0 2
+    ensure -> "Art" = a
+    passed
+    
+    a: ["Arturo" "Python" "Ruby" "C" "C++" "Nim" "Wren"], slice 'a 3 5
+    ensure -> ["C" "C++" "Nim"] = a
+    passed
 
 ]
 
