@@ -1639,68 +1639,184 @@ do [
 ]
 
 
-topic "set"
+topic "set - :string"
 do [
-
-    ; TODO: test with
-    ; :bytecode
-
-    ; :binary
-    bin0: to :binary 0
-    debug bin0
-    set bin0 0 1, debug bin0
-
-    ; :block
-    arr: [1 2 3 4]
-    set arr 0 "one", debug arr
-
-    ; :dictionary
-    myDict: #[
-        name: "John"
-        age: 34
-    ]
-
-    set myDict 'name "Michael"
-    debug myDict
-
-    myDict\name: "Jane"
-    debug myDict
-
-    myDict\["name"]: "Christian"
-    debug myDict
-
-    ; :object
-    define :person [name, surname][
-        init: ->
-            this\name: capitalize this\name
-        
-        print: ->
-            ~"NAME: |this\name|, SURNAME: |this\surname|"
-    ]
-
-    personA: to :person ["John" "Doe"]
-    set personA 'surname "Wick"
-    debug personA
-
-    ; :string
-    s1: "Arruro"
-    set s1 2 "t"
-    debug s1
-
-    s1: "Arruro"
-    set s1 2 `t`
-    debug s1
-
-    ; :store
-    st: store "teststore"
-    st\name: "John"
-    st\surname: "Doe"
-
-    debug get st 'name
-    debug st\surname
-
+    
+    a: "Aaturo", set a 1 `r`
+    ensure -> "Arturo" = a 
+    passed
+    
+    a: "Aaturo", set a 1 "r"
+    ensure -> "Arturo" = a
+    passed
+    
+    a: "Aaturo", a: "Arturo"
+    ensure -> "Arturo" = a
+    passed
+    
+    a: "Aaturo", a\1: `r`
+    ensure -> "Arturo" = a
+    passed
+    
+    a: "Aaturo", a\[1]: `r`
+    ensure -> "Arturo" = a
+    passed
+    
 ]
 
+topic "set - :binary"
+do [
+    
+    bi: to :binary 65000
+    set bi 0 1
+    
+    ensure -> "01 E8" = ~"|bi|"
+    passed
+    
+    
+    bi: to :binary 65000
+    bi\0: 1
+    
+    ensure -> "01 E8" = ~"|bi|"
+    passed
+    
+]
+
+topic "set - :dictionary"
+do [
+    
+    user: #[]
+
+    set user 'name "John"
+    ensure -> "John" = user\name
+    passed
+    
+    set user 'surname "Doe"
+    ensure -> "Doe" = user\surname
+    passed
+    
+    set user 'age 36
+    ensure -> 36 = get user 'age
+    passed
+    
+    set user "name" "Jane"
+    ensure -> "Jane" = user\name
+    passed
+    
+    user\surname: "Dio"
+    ensure -> "Dio" = user\surname
+    passed
+    
+    user\["age"]: 42
+    ensure -> 42 = get user 'age
+    passed
+    
+]
+
+topic "set - :object"
+do [
+    
+    define :person [name, surname][]
+    user: to :person []
+    
+    set user 'name "John"
+    ensure -> "John" = user\name
+    passed
+    
+    set user 'surname "Doe"
+    ensure -> "Doe" = user\surname
+    passed
+    
+    set user 'age 36
+    ensure -> 36 = get user 'age
+    passed
+    
+    set user "name" "Jane"
+    ensure -> "Jane" = user\name
+    passed
+    
+    user\surname: "Dio"
+    ensure -> "Dio" = user\surname
+    passed
+    
+    user\["age"]: 42
+    ensure -> 42 = get user 'age
+    passed
+    
+]
+
+topic "set - :store"
+do [
+    
+    user: store "test.db"
+
+    set user 'name "John"
+    ensure -> "John" = user\name
+    passed
+    
+    set user 'surname "Doe"
+    ensure -> "Doe" = user\surname
+    passed
+    
+    set user 'age 36
+    ensure -> 36 = get user 'age
+    passed
+    
+    set user "name" "Jane"
+    ensure -> "Jane" = user\name
+    passed
+    
+    user\surname: "Dio"
+    ensure -> "Dio" = user\surname
+    passed
+    
+    user\["age"]: 42
+    ensure -> 42 = get user 'age
+    passed
+    
+    set user 0 "John"
+    ensure -> "John" = user\0
+    passed
+    
+    user\[1]: "Doe"
+    ensure -> "Doe" = user\1
+    passed
+    
+    user\2: 36
+    ensure -> 36 = get user '2
+    passed
+    
+]
+
+topic "set - :block"
+do [
+    
+    a: ["zero" "one" "two"]
+    
+    set a 0 "0"
+    ensure -> "0" = a\0
+    passed
+    a\[1]: "1"
+    ensure -> "1" = a\1
+    passed
+    
+]
+
+topic "set - :bytecode"
+do [
+    
+    bt: to :bytecode [print "hello"]
+    
+    ; set bt 'data ["world!"]
+    ; bt\code\0: 42
+    
+    ; ensure -> ["world"] = bt\data
+    ; passed
+    
+    ; ensure -> [42 189 218] = bt\code
+    ; passed
+    
+]
 
 topic "shuffle"
 do [
