@@ -2070,23 +2070,28 @@ do [
 topic "sorted?"
 do [
 
-    print sorted? [1 2 3 4 5]
-    print sorted? [4 3 2 1 5]
-    print sorted? [5 4 3 2 1] 
-    print sorted? ["Arturo" "Python" "Ruby"]
-    print sorted? ["Python" "Ruby" "Arturo"]
-    print sorted? ["Ruby" "Python" "Arturo"] 
+    ensure -> sorted? [1 2 3 4 5]
+    ensure -> sorted? ["Arturo" "Python" "Ruby"]
+    passed
+    
+    ensure -> not? sorted? [4 3 2 1 5]
+    ensure -> not? sorted? [5 4 3 2 1] 
+    ensure -> not? sorted? ["Python" "Ruby" "Arturo"]
+    ensure -> not? sorted? ["Ruby" "Python" "Arturo"] 
+    passed
     
     ; .descending
-    print sorted?.descending [5 4 3 2 1]
-    print sorted?.descending [4 3 2 1 5]
-    print sorted?.descending [1 2 3 4 5]
-    print sorted?.descending ["Ruby" "Python" "Arturo"] 
-    print sorted?.descending ["Python" "Ruby" "Arturo"]
-    print sorted?.descending ["Arturo" "Python" "Ruby"]
+    ensure -> sorted?.descending [5 4 3 2 1]
+    ensure -> sorted?.descending ["Ruby" "Python" "Arturo"] 
+    passed
+    
+    ensure -> not? sorted?.descending [4 3 2 1 5]
+    ensure -> not? sorted?.descending [1 2 3 4 5]
+    ensure -> not? sorted?.descending ["Python" "Ruby" "Arturo"]
+    ensure -> not? sorted?.descending ["Arturo" "Python" "Ruby"]
+    passed
 
 ]
-
 
 topic "split"
 do [
