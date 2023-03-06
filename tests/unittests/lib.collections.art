@@ -1165,93 +1165,139 @@ do [
 
     topic "prepend - :binary < :binary :binary"
     do [
-        bin0: to :binary 0
-        bin1: to :binary 1
-        debug prepend bin0 bin1
-
-        prepend 'bin0 bin1, debug bin0
+        b0: to :binary 0
+        b1: to :binary 1
+        
+        ensure -> as.binary 1 = prepend b1 b0
+        passed
+    ]
+    
+    topic "prepend - :binary < :binary (literal) :binary"
+    do [
+        b0: to :binary 0
+        b1: to :binary 1
+        prepend 'b1 b0
+        
+        ensure -> as.binary 1 = b1
+        passed
     ]
 
     topic "prepend - :binary < :binary :integer"
     do [
-        bin0: to :binary 0
-        int1: 1
-        debug prepend bin0 int1
-
-        prepend 'bin0 int1, debug bin0
+        b: to :binary 1
+        ensure -> as.binary 0 = prepend b 0
+        passed
+    ]
+    
+    topic "prepend - :binary < :binary (literal) :integer"
+    do [
+        b: to :binary 1
+        prepend 'b 0
+        ensure -> as.binary 0 = b
+        passed
     ]
 
     topic "prepend - :string < :string + :string"
     do [
-
-        a: "uro"
-        debug prepend "uro" "Art"
-        prepend 'a "Art", debug a
-
+        ensure -> "Arturo" = prepend "uro" "Art"
+        passed
+    ]
+    
+    topic "prepend - :string < :string (literal) + :string"
+    do [
+        s: "uro"
+        prepend 's "Art"
+        ensure -> "Arturo" = s
+        passed
     ]
 
     topic "prepend - :string < :string + :char"
     do [
-
-        a: "rturo"
-        debug prepend "rturo" `A`
-        prepend 'a `A`, debug a
-
+        ensure -> "Arturo" = prepend "rturo" `A`
+        passed
+    ]
+    
+    topic "prepend - :string < :string (literal) + :char"
+    do [
+        s: "rturo"
+        prepend 's `A`
+        ensure -> "Arturo" = s
+        passed
     ]
 
     topic "prepend - :string < :char + :char"
     do [
-
-        a: `b`
-        debug prepend `b` `a`
-        prepend 'a `a`, debug a
-
+        ensure -> "ba" = prepend `a` `b`
+        passed
+    ]
+    
+    topic "prepend - :string < :char (literal) + :char"
+    do [
+        c: `a`
+        prepend 'c `b`
+        ensure -> "ba" = c
+        passed
     ]
 
     topic "prepend - :string < :char + :string"
     do [
-
-        a: `t`
-        debug prepend `t` "ar"
-        prepend 'a "ar", debug a
-
+        ensure -> "Arturo" = prepend "rturo" `A`
+        passed
     ]
-
+    
+    topic "prepend - :string < :char (literal) + :string"
+    do [
+        c: "rturo"
+        prepend 'c `A`
+        ensure -> "Arturo" = c
+        passed
+    ]
+    
     topic "prepend - [:string] < [:string] + :string"
     do [
-
-        a: ["r" "t" "u" "r" "o"]
-        debug prepend ["r" "t" "u" "r" "o"] "A"
-        prepend 'a "A", debug a
-
-        ; Testing precedence
-        c: ["u" "r" "o"]
-        debug prepend ["u" "r" "o"] prepend "t" prepend "r" "A"
-        prepend 'c prepend "t" prepend "r" "A", debug c
-
+        ensure -> ["Art" "u" "r" "o"] = prepend ["u" "r" "o"] "Art"
+        passed
+        ensure -> ["L" "a" "n" "g" "u" "a" "g" "e"] = prepend ["a" "n" "g" "u" "a" "g" "e"] "L"
+        passed
     ]
-
-    topic "prepend - [:string] < [:string] + [:string]"
+    
+    topic "prepend - [:string] < [:string] (literal) + :string"
     do [
-
         a: ["u" "r" "o"]
-        debug prepend ["u" "r" "o"] ["A" "r" "t"]
-        prepend 'a ["A" "r" "t"], debug a
-
+        prepend 'a "Art"
+        ensure -> ["Art" "u" "r" "o"] = a
+        passed
+        
+        a: ["a" "n" "g" "u" "a" "g" "e"]
+        prepend 'a "L"
+        ensure -> ["L" "a" "n" "g" "u" "a" "g" "e"] = a
+        passed
     ]
 
-    topic "prepend - [:integer] < [:integer] + [:integer]|:integer"
+    topic "prepend - [:string] < [:string] + :string - testing precedence"
+    do [
+        
+        ensure -> ["egau" "u" "a" "g" "e"] =  prepend ["u" "a" "g" "e"] prepend "u" prepend "a" prepend "g" "e"
+        passed
+    ]
+
+    topic "prepend - :block < :block + :block"
     do [
 
-        a: [1 2 3]
-        debug prepend [4 5 6] [1 2 3]
-        debug prepend [1 2 3 4 5 6] 0
-        prepend 'a 0, debug a
+        ensure -> [102230 'literal "string" ] = prepend ['literal "string" ] 102230
+        passed
+    ]
+    
+    topic "prepend - :block < :block (literal) + :block"
+    do [
 
+        a: ['literal "string" ]
+        prepend 'a 102230
+        ensure -> [ 102230 'literal "string" ] = a
+        passed
     ]
 
 ]
-
 
 topic "remove"
 do [
