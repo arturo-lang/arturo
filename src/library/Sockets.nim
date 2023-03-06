@@ -43,6 +43,8 @@ when not defined(WEB):
 # TODO(Sockets) add function to return current HostName
 #  any even better implementation would be to actually return a dictionary, with different
 #  details about the host, e.g.: `host\name`, etc
+#  use case: https://rosettacode.org/wiki/Hostname
+#  for reference: https://nim-lang.org/docs/nativesockets.html#getHostname
 #  labels: library, enhancement
 
 proc defineSymbols*() =
