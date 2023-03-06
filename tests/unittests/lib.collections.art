@@ -1554,42 +1554,40 @@ do [
 
 topic "reverse"
 do [
-
-    debug reverse [1 2 3 4 5]
-    debug reverse [[1 2 3] [4 5 6] [7 8 9]]
-    debug reverse "Manchester"
-
-    b: [[1 2 3] [4 5 6] [7 8 9]]
-    s: "Arturo"
-    reverse 'b, debug b
-    reverse 's, debug s
-
-    topic "reverse - with :range"
-    debug reverse 1..10
-    r1: 10..0
-    reverse 'r1, debug r1
-
-    topic "reverse - .exact"
-    do [
-
-        debug reverse.exact [1 2 3 4 5]
-        debug reverse.exact [[1 2 3] [4 5 6] [7 8 9]]
-        debug reverse.exact "Manchester"
-
-        b: [[1 2 3] [4 5 6] [7 8 9]]
-        s: "Arturo"
-        reverse.exact 'b, debug b
-        reverse.exact 's, debug s
-
-        topic "reverse - .exact with :range"
-        debug reverse.exact 1..10
-        r2: 10..0
-        reverse.exact 'r2, debug r2
-
-    ]
-
+    ensure -> [4 3 2 1] = reverse [1 2 3 4]
+    passed 
+    ensure -> [[7 8 9] [4 5 6] [1 2 3]] = reverse [[1 2 3] [4 5 6] [7 8 9]]
+    passed 
+    ensure -> "dlroW olleH" = reverse "Hello World"
+    passed 
+    ensure -> (10..0) = reverse 0..10
+    ensure -> (10..0) = reverse.exact 0..10
+    passed 
 ]
 
+topic "reverse (literal)"
+do [
+    
+    a: [1 2 3 4], reverse 'a
+    ensure -> [4 3 2 1] = a 
+    passed 
+    
+    a: [[1 2 3] [4 5 6] [7 8 9]], reverse 'a
+    ensure -> [[7 8 9] [4 5 6] [1 2 3]] = a 
+    passed
+    
+    a: "Hello World", reverse 'a
+    ensure -> "dlroW olleH" = a 
+    passed
+    
+    a:  0..10, reverse 'a
+    ensure -> (10..0) = a 
+    
+    a: 0..10, reverse.exact 'a
+    ensure -> (10..0) = a
+    passed 
+    
+]
 
 topic "rotate"
 do [
