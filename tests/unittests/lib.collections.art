@@ -1129,16 +1129,34 @@ do [
 topic "permutate"
 do [
 
-    debug permutate [A B C]
-    debug permutate [[1 2 3] [4 5 6]]
-
-    debug permutate.by: 2 [A B C]
-    debug permutate.repeated [A B C]
-    debug permutate.repeated.by: 2 [A B C]
-
-    debug permutate.count [A B C]
-    debug permutate.count.repeated.by: 2 
-        [A B C]
+    ensure -> [[A B C] [A C B] [B A C] [B C A] [C A B] [C B A]] 
+        = permutate [A B C]
+    passed
+    
+    ensure -> [
+        [A A A] [A A B] [A A C] [A B A] [A B B] [A B C] [A C A] [A C B] [A C C] 
+        [B A A] [B A B] [B A C] [B B A] [B B B] [B B C] [B C A] [B C B] [B C C] 
+        [C A A] [C A B] [C A C] [C B A] [C B B] [C B C] [C C A] [C C B] [C C C]]
+        = permutate.repeated [A B C]
+    passed
+        
+    ensure -> [[A B] [A C] [B A] [B C] [C A] [C B]] 
+        = permutate.by:2 [A B C]
+    passed
+    
+    ensure -> [[A A] [A B] [A C] [B A] [B B] [B C] [C A] [C B] [C C]] 
+        = permutate.repeated.by:2 [A B C]
+    passed
+        
+    ensure -> 6 = permutate.count [A B C]
+    passed
+    ensure -> 6 = permutate.count.by: 2 [A B C]
+    passed
+    ensure -> 27 = permutate.count.repeated [A B C]
+    passed
+    ensure -> 9 = permutate.count.repeated.by:2 [A B C]
+    passed
+    
 
 ]
 
