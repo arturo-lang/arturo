@@ -1822,12 +1822,14 @@ topic "shuffle"
 do [
 
     a: shuffle [1 2 3 4 5 6]
-    print size a
-    print every? a 'item [ type? item :integer ]
+    ensure -> 6 = size a
+    ensure -> every? a 'item [ type? item :integer ]
+    passed
 
     a: shuffle ["Manchester" "Granada" "Boston" "Davos"]
-    print size a
-    print every? a 'item [ type? item :string ]
+    ensure -> 4 = size a
+    ensure -> every? a 'item [ type? item :string ]
+    passed
 
 ]
 
