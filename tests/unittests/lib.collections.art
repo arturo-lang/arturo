@@ -1078,6 +1078,8 @@ do [
 
     ensure -> not? one? null
     ensure -> not? one? ø 
+    ensure -> not? one? infinite
+    ensure -> not? one? ∞
     passed 
 
     ensure -> one? 1 
@@ -1102,7 +1104,6 @@ do [
     ensure -> not? one? #[] 
     ensure -> not? one? #[name: "Jane" surname: "Doe"]
     passed
-    
     
     define :person [name, surname][]
     define :pet [name][]
