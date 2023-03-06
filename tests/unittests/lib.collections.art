@@ -2059,45 +2059,57 @@ do [
 
 ]
 
-
 topic "zero?"
 do [
-    topic "zero? - with :integer"
-    debug zero? 5-5
-    debug zero? 4-3
 
-    topic "zero? - with :floating"
-    debug zero? 0.0
-    debug zero? 1.0
+    ensure -> zero? null
+    ensure -> zero? ø 
+    ensure -> not? zero? infinite
+    ensure -> not? zero? ∞
+    passed 
 
-    topic "zero? - with :string"
-    debug zero? ""
-    debug zero? "Arturo"
+    ensure -> zero? 0 
+    ensure -> not? zero? 1 
+    ensure -> not? zero? 5
+    passed
 
-    topic "zero? - with :block"
-    debug zero? [] 
-    debug zero? ["apple" "pear"] 
-
-    topic "zero? - with :range"
-    debug zero? 0..0
-    debug zero? range 0 0
-    debug zero? 0..10
-    debug zero? range 0 10
-    debug zero? ø
-
-    topic "zero? - with :dictionary"
-    debug zero? #[]
-    debug zero? #[ name: "John" ]
-
-    ; topic "zero? - with :object"
-    define :person [][
-    ]
-
-    personA: to :person []
-    debug personA
-    debug zero? personA
-
-    topic "zero? - with :null"
-    debug zero? null
+    ensure -> zero? 0.0 
+    ensure -> not? zero? 0.1 
+    ensure -> not? zero? 1.0
+    ensure -> not? zero? 1.1
+    ensure -> not? zero? 5
+    passed
+    
+    ensure -> zero? ""
+    ensure -> not? zero? "0" 
+    ensure -> not? zero? "1"
+    ensure -> not? zero? "Arturo" 
+    passed
+    
+    ensure -> zero? #[] 
+    ensure -> not? zero? #[name: "Jane"]
+    ensure -> not? zero? #[name: "Jane" surname: "Doe"]
+    passed
+    
+    define :person [name, surname][]
+    define :pet [name][]
+    ensure -> zero? to :pet []
+    ensure -> zero? to :person []
+    ensure -> not? zero? to :pet ["Johnis"]
+    ensure -> not? zero? to :person ["John"]
+    ensure -> not? zero? to :person ["John" "Doe"]
+    passed
+    
+    ensure -> zero? [] 
+    ensure -> not? zero? [a]
+    ensure -> not? zero? [a b]
+    ensure -> not? zero? [a b c d e f]
+    passed
+    
+    ; range always have at least one element
+    ensure -> not? zero? 0..0
+    ensure -> not? zero? 0..1
+    ensure -> not? zero? 0..10
+    passed
 
 ]
