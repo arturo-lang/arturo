@@ -1073,51 +1073,54 @@ do [
     passed
 ]
 
-
 topic "one?"
 do [
 
-    topic "one? - with :integer"
-    debug one? 4-3
-    debug one? 5  
+    ensure -> not? one? null
+    ensure -> not? one? ø 
+    passed 
 
-    topic "one? - with :floating"
-    debug one? 1.0
-    debug one? 0.0
+    ensure -> one? 1 
+    ensure -> not? one? 0 
+    ensure -> not? one? 5
+    passed
 
-    topic "one? - with :string"
-    debug one? "A"
-    debug one? "Arturo"
-
-    topic "one? - with :block"
-    debug one? ["apple"] 
-    debug one? ["apple" "pear"] 
-
-    topic "one? - with :range"
-    print one? 0..0 ; Yet not
-    print one? 0..10
-
-    topic "one? - with :dictionary"
-    debug one? #[ name: "John" ]
-    debug one? #[ name: "John" surname: "Doe" ]
-
-
-    topic "one? - with :object"
-    define :person [name, surname][
-        init: ->
-            this\name: capitalize this\name
-        
-        print: ->
-            ~"NAME: |this\name|, SURNAME: |this\surname|"
-    ]
-
-    personA: to :person ["John"]
-    personB: to :person ["John" "Doe"]
-    debug one? personA
-    debug one? personB
-
-    topic "one? - with :null"
-    debug one? null
+    ensure -> one? 1.0
+    ensure -> not? one? 1.1
+    ensure -> not? one? 0.0 
+    ensure -> not? one? 0.1 
+    ensure -> not? one? 5
+    passed
+    
+    ensure -> one? "1"
+    ensure -> one? "0" 
+    ensure -> not? one? ""
+    ensure -> not? one? "Arturo" 
+    passed
+    
+    ensure -> one? #[name: "Jane"]
+    ensure -> not? one? #[] 
+    ensure -> not? one? #[name: "Jane" surname: "Doe"]
+    passed
+    
+    
+    define :person [name, surname][]
+    define :pet [name][]
+    ensure -> one? to :pet ["Johnis"]
+    ensure -> one? to :person ["John"]
+    ensure -> not? one? to :person ["John" "Doe"]
+    passed
+    
+    ensure -> one? [a]
+    ensure -> not? one? [] 
+    ensure -> not? one? [a b]
+    ensure -> not? one? [a b c d e f]
+    passed
+    
+    ensure -> one? 0..0
+    ensure -> not? one? 0..1
+    ensure -> not? one? 0..10
+    passed
 
 ]
 
