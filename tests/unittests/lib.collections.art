@@ -1591,33 +1591,37 @@ do [
 
 topic "rotate"
 do [
-
-    ; :block
-    debug rotate [2 3 4 5 1] 1 
-    b1: [3 4 5 1 2]
-    rotate 'b1 2, debug b1
-
-    ; :string
-    debug rotate "turoAr" 2
-
-    s1: "turoAr"
-    rotate 's1 2, debug s1
-
-    ; -- left
-    ; :block
-    debug rotate.left [4 5 1 2 3] 2
-    b2: [3 4 5 1 2]
-    rotate.left 'b2 3
-    debug b2
-
-    ; :string
-    debug rotate.left "roArtu" 2
-
-    s2: "oArtur"
-    rotate.left 's2 1, debug s2
-
+    
+    ensure -> [e a b c d] = rotate [a b c d e] 1
+    ensure -> [d e a b c] = rotate [a b c d e] 2
+    ensure -> [b c d e a] = rotate.left [a b c d e] 1  
+    ensure -> [c d e a b] = rotate.left [a b c d e] 2
+    passed
+    
+    ensure -> "oHell" = rotate "Hello" 1
+    ensure -> "loHel" = rotate "Hello" 2
+    ensure -> "elloH" = rotate.left "Hello" 1  
+    ensure -> "lloHe" = rotate.left "Hello" 2
+    passed
+    
 ]
 
+topic "rotate"
+do [
+    
+    a: [a b c d e], rotate 'a 2
+    ensure -> [d e a b c] = a
+    a: [a b c d e], rotate.left 'a 2
+    ensure -> [c d e a b] = a
+    passed
+    
+    a: "Hello", rotate 'a 2
+    ensure -> "loHel" = a
+    a: "Hello", rotate.left 'a 2
+    ensure -> "lloHe" = a
+    passed
+    
+]
 
 topic "sample"
 do [
