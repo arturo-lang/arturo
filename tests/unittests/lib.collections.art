@@ -1838,38 +1838,35 @@ topic "size"
 do [
 
     ; :string
-    print ["Good morning!" size "Good morning!"]
-    print ["Konnichiwa!" size "Konnichiwa!"]
-    print ["こんいちわ！" size "こんいちわ！"]
-    ; :block
-    print [["one" "two" "three"] 
-        size ["one" "two" "three"]]
+    ensure -> 5 = size "こんいちわ"
+    ensure -> 1 = size "私"
+    ensure -> 13 = size "Good morning!"
+    ensure -> 0 = size ""
+    passed
+    
+    ensure -> 3 = size ["one" "two" "three"]
+    ensure -> 0 = size []
+    passed
+    
+    ensure -> 11 = size 0..10
+    ensure -> 1 = size 0..0
+    passed
+    
+    ensure -> 2 = size #[name: "John", surname: "Doe"]
+    ensure -> 0 = size #[]
+    passed
 
-    print size range 0 10
-    print size 0..10
-    r1: 0..20
-    print size r1
+    define :person [name, surname][]
+    p: to :person []
+    
+    ensure -> 0 = size p
+    p\name: "Jane"
+    ensure -> 1 = size p
+    passed
 
-    ; :dictionary
-    print [#[name: "John", surname: "Doe"] 
-        size #[name: "John", surname: "Doe"]]
-
-    ; :object
-    define :person [name, surname][
-        init: ->
-            this\name: capitalize this\name
-        
-        print: ->
-            ~"NAME: |this\name|, SURNAME: |this\surname|"
-    ]
-
-    p1: to :person ["Joe"]
-    debug size p1
-    p2: to :person ["Joe" "Doe"]
-    debug size p2
-
-    ; :null
-    print [null size null]
+    ensure -> 0 = size null
+    ensure -> 0 = size ø 
+    passed
 
 ]
 
