@@ -1,0 +1,4 @@
+while [true][
+    i: input "> "
+    print i
+]
