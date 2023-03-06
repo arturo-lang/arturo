@@ -1299,168 +1299,230 @@ do [
 
 ]
 
-topic "remove"
+topic "remove - :string"
 do [
-    ; default
-    topic "remove - default"
-    do [
+    
+    ensure -> "Art" = remove "Arturo" "uro"
+    ensure -> "Art" = "Arturo" -- "uro"
+    passed
+    
+    ensure -> "Artur" = remove "Arturo" `o`
+    ensure -> "Artur" = "Arturo" -- `o`
+    passed
+    
+    ensure -> "C+" = remove.once "C++" "+"
+    ensure -> "C+" = remove.once "C++" `+`
+    ensure -> "C+" = "C++" --.once "+"
+    ensure -> "C+" = "C++" --.once `+`
+    passed
 
-        ; :string
-        s1: "Arturo"
-        debug remove "Arturo" "uro"
-        remove 's1 "uro", debug s1
+    ; ensure -> "Rby" = remove.index "Ruby" 1
+    ; ensure -> "Rby" = "Ruby" --.index 1
+    ; passed
+    
+    ensure -> "empty --flag" = remove.prefix "--empty --flag" "--"
+    ensure -> "empty --flag" = "--empty --flag" --.prefix "--"
+    passed
+    
+    ensure -> "test.txt file" = remove.suffix "test.txt file.txt" ".txt"
+    ensure -> "test.txt file" = "test.txt file.txt" --.suffix ".txt"
+    passed
+    
+]
 
-        s2: "Language"
-        debug "Language" -- "uage"
-        's2 -- "uage", debug s2
+topic "remove - :string (literal)"
+do [
+    
+    a: "Arturo", remove 'a "uro"
+    ensure -> "Art" = a
+    
+    a: "Arturo", 'a -- "uro"
+    ensure -> "Art" = a
+    
+    passed
+    
+    a: "Arturo", remove 'a `o`
+    ensure -> "Artur" = a
+    
+    a: "Arturo", 'a -- `o`
+    ensure -> "Artur" = a
+    
+    passed
+    
+    a: "C++", remove.once 'a "+"
+    ensure -> "C+" = a
+    
+    a: "C++", remove.once 'a `+`
+    ensure -> "C+" = a
+    
+    a: "C++", 'a --.once "+"
+    ensure -> "C+" = a
+    
+    a: "C++", 'a --.once `+`
+    ensure -> "C+" = a
+    
+    passed
 
-        ; :string -- :char
-        s3: "hello"
-        debug remove "hello" `l`
-        remove 's3 `l`, debug s3
+    ; a: "Ruby", remove.index 'a 1
+    ; ensure -> "Rby" = a
+    
+    ; a: "Ruby", 'a --.index 1
+    ; ensure -> "Rby" = a
+    ; passed
+    
+    a: "--empty --flag", remove.prefix 'a "--"
+    ensure -> "empty --flag" = a  
+    
+    a: "--empty --flag", 'a --.prefix "--"
+    ensure -> "empty --flag" = a  
+    passed
+    
+    a: "test.txt file.txt", remove.suffix 'a ".txt"
+    ensure -> "test.txt file" = a
+    
+    a: "test.txt file.txt", 'a --.suffix ".txt"
+    ensure -> "test.txt file" = a
+    passed
+    
+]
 
-        s4: "hello"
-        debug "hello" -- `l`
-        's4 -- `l`, debug s4
+topic "remove - :dictionary"
+do [
+    
+    ensure -> (#[name: "John"]) = remove #[name: "John" surname: "Doe"] "Doe"
+    ensure -> (#[name: "John"]) = (#[name: "John" surname: "Doe"]) -- "Doe"
+    passed
+    
+    ensure -> (#[name: "John"]) = remove.key #[name: "John" surname: "Doe"] "surname"
+    ensure -> (#[name: "John"]) = remove.key #[name: "John" surname: "Doe"] 'surname
+    ensure -> (#[name: "John"]) = (#[name: "John" surname: "Doe"]) --.key "surname"
+    ensure -> (#[name: "John"]) = (#[name: "John" surname: "Doe"]) --.key 'surname
+    passed
+    
+]
 
+topic "remove - :dictionary (literal)"
+do [
+    
+    u: #[name: "John" surname: "Doe"], remove 'u "Doe"
+    ensure -> (#[name: "John"]) = u
+    
+    u: #[name: "John" surname: "Doe"], 'u -- "Doe"
+    ensure -> (#[name: "John"]) = u
+    
+    passed
+    
+    u: #[name: "John" surname: "Doe"], remove.key 'u "surname"
+    ensure -> (#[name: "John"]) = u
+    
+    u: #[name: "John" surname: "Doe"], 'u --.key "surname"
+    ensure -> (#[name: "John"]) = u
+    
+    u: #[name: "John" surname: "Doe"], remove.key 'u 'surname
+    ensure -> (#[name: "John"]) = u
+    
+    u: #[name: "John" surname: "Doe"], 'u --.key 'surname
+    ensure -> (#[name: "John"]) = u
+    
+    passed
+    
+]
 
-        ; :block
-        debug remove [1 2 3 4] 4
-        debug remove [1 2 3 4] [2 4]
-
-        b1: [1 2 3 5 6 4]
-        debug [1 2 3 4] -- 4
-        debug [1 2 3 4] -- [2 4]
-        remove 'b1 [5 6], debug b1
-
-        debug remove [1 6 2 5 3 4 5 6] [5 2]
-        debug remove [1 [6 2] 5 3 [6 2] 4 5 6] [6 2]
+topic "remove - :block"
+do [
+    
+    ensure -> [[1 2] 3 4 [1 2] 3 4] 
+        = remove [1 2 [1 2] 3 4 1 2 [1 2] 3 4] [1 2]
+    
+    ensure -> [[1 2] 3 4 [1 2] 3 4] 
+        = [1 2 [1 2] 3 4 1 2 [1 2] 3 4] -- [1 2]
         
-        b2: [1 6 2 5 3 4 5 6]
-        b3: [1 [6 2] 5 3 [6 2] 4 5 6]
-        remove 'b2 [5 2], debug b2
-        remove 'b3 [6 2], debug b3
-
-
-        ; :dictionary
-        debug remove #[name: "John" surname: "Doe"] "John"
+    passed
+    
+    ensure -> [1 2 3 4 1 2 [1 2] 3 4]
+        = remove.index [1 2 [1 2] 3 4 1 2 [1 2] 3 4] 2
+    
+    ensure -> [1 2 3 4 1 2 [1 2] 3 4]
+        = [1 2 [1 2] 3 4 1 2 [1 2] 3 4] --.index 2
         
-        ; Note: It's not a bug, but it's important to be here.
-        ; Read the solved: 
-        ; [Collections/remove] -- is not working with :dictionary #918
-        ; explanation: https://github.com/arturo-lang/arturo/issues/918#issuecomment-1361466787
-        ; print #[name: "John" surname: "Doe"] -- "John"
+    passed
+    
+    
+    ensure -> [[1 2] 3 4 1 2 [1 2] 3 4] 
+        = remove.once [1 2 [1 2] 3 4 1 2 [1 2] 3 4] [1 2]
         
-        user: #[name: "John" surname: "Doe"]
-        user2: #[name: "John" surname: "Wick"]
-        remove 'user "John", debug user
-        'user2 -- "John", debug user2
-
-
-    ]
-
-    topic "remove - .index"
-    do[
-        debug remove.index [0 1 2 3 4 5] 3
-        debug remove.index [0 1 2 3 4 5] 4
-        debug remove.index [0 1 2 3 4 5] 0
-
-        a: [5 4 3 2 1 0]
-        remove.index 'a 2, debug a
-        remove.index 'a 0, debug a
-        remove.index 'a 3, debug a
-    ]
-
-    topic "remove - .prefix"
-    do [
-
-        a: "test_function.art"
-        debug remove.prefix "test_function.art" "test_"
-        remove.prefix 'a "test_", debug a
-
-    ]
-
-    topic "remove - .suffix"
-    do [
-
-        a: "test_function.art"
-        debug remove.suffix "test_function.art" ".art"
-        remove.suffix 'a ".art", debug a
-
-    ]
-
-    topic "remove - .key"
-    do [
-
-        user: #[
-            name: "John"
-            surname: "Doe"
-        ]
-
-        remove.key 'user "surname"
-        debug user
-
-    ]
-
-    topic "remove - .once"
-    do [
-
-        topic "remove - .once :string"
-        debug remove.once "hello" "l"
-
-        debug remove.once "hello" `l`
-
-        s1: "hello"
-        remove.once 's1 "l", debug s1
-
-        s2: "hello"
-        remove.once 's2 `l`, debug s2
+    ensure -> [[1 2] 3 4 1 2 [1 2] 3 4] 
+        = [1 2 [1 2] 3 4 1 2 [1 2] 3 4] --.once [1 2]
         
-        ; :block
-        topic "remove - .once :block"
-        debug remove.once [1 2 5 3 4 5] 5
-        b1: [1 2 5 3 4 5]
-        remove.once 'b1 5, debug b1
-
-        ; Testing new behavior from PR #877
-        debug remove.once [1 6 2 5 3 4 5 6] [6 2]
-        debug remove.once [1 2 [6 2] 5 3 4 5 6] [6 2]
-        debug remove.once [1 2 [1 2] 3 4 1 2 [1 2] 3 4]  [1 2]
-
-        b2: [1 6 2 5 3 4 5 6]
-        b3: [1 2 [6 2] 5 3 [6 2] 4 5 6]
-        b4: [1 2 [1 2] 3 4 1 2 [1 2] 3 4]
-        remove.once 'b2 [6 2], debug b2
-        remove.once 'b3 [6 2], debug b3
-        remove.once 'b4 [1 2], debug b4
-
-        ; :dictionary
-        topic "remove - .once :dictionary"
-        debug remove.once #[name: "John" surname: "Doe" father: "John"] 
-            "John"
+    passed
+    
+    
+    ensure -> [1 2 3 4 1 2 3 4] 
+        = remove.instance [1 2 [1 2] 3 4 1 2 [1 2] 3 4] [1 2]
         
-        user: #[name: "John" surname: "Doe" father: "John"]
-        remove.once 'user "John", debug user
+    ensure -> [1 2 3 4 1 2 3 4] 
+        = [1 2 [1 2] 3 4 1 2 [1 2] 3 4] --.instance [1 2]
+        
+    passed
+    
+        
+    ensure -> [1 2 3 4 1 2 [1 2] 3 4] 
+        = remove.instance.once [1 2 [1 2] 3 4 1 2 [1 2] 3 4] [1 2]
+        
+    ensure -> [1 2 3 4 1 2 [1 2] 3 4] 
+        = [1 2 [1 2] 3 4 1 2 [1 2] 3 4] --.instance.once [1 2]
+    
+    passed
+    
+]
 
-    ]
-
-    topic "remove - .instance"
-    do [
-
-        a1: [1 2 [1 2] 1 2 3 [1 2]]
-        debug remove.instance [1 2 [1 2] 1 2 3 [1 2]] [1 2]
-        remove.instance 'a1 [1 2], debug a1
-
-    ]
-
-    topic "remove - .instance.once"
-    do [
-
-        a1: [1 2 [1 2] 1 2 3 [1 2]]
-        debug remove.instance.once [1 2 [1 2] 1 2 3 [1 2]] [1 2]
-        remove.instance.once 'a1 [1 2], debug a1
-
-    ]
+topic "remove - :block (literal)"
+do [
+    
+    b: [1 2 [1 2] 3 4 1 2 [1 2] 3 4], remove 'b [1 2]
+    ensure -> [[1 2] 3 4 [1 2] 3 4] = b
+    
+    b: [1 2 [1 2] 3 4 1 2 [1 2] 3 4], 'b -- [1 2]
+    ensure -> [[1 2] 3 4 [1 2] 3 4] = b
+    
+    passed
+    
+    
+    b: [1 2 [1 2] 3 4 1 2 [1 2] 3 4], remove.index 'b 2
+    ensure -> [1 2 3 4 1 2 [1 2] 3 4] = b
+    
+    b: [1 2 [1 2] 3 4 1 2 [1 2] 3 4], 'b --.index 2
+    ensure -> [1 2 3 4 1 2 [1 2] 3 4] = b
+    
+    passed
+    
+    
+    b: [1 2 [1 2] 3 4 1 2 [1 2] 3 4], remove.once 'b [1 2]
+    ensure -> [[1 2] 3 4 1 2 [1 2] 3 4] =  b
+        
+    b: [1 2 [1 2] 3 4 1 2 [1 2] 3 4], 'b --.once [1 2]
+    ensure -> [[1 2] 3 4 1 2 [1 2] 3 4] = b
+        
+    passed
+    
+    
+    b: [1 2 [1 2] 3 4 1 2 [1 2] 3 4], remove.instance 'b [1 2]
+    ensure -> [1 2 3 4 1 2 3 4] =  b
+      
+    b: [1 2 [1 2] 3 4 1 2 [1 2] 3 4], 'b --.instance [1 2]
+    ensure -> [1 2 3 4 1 2 3 4] = b
+        
+    passed
+    
+    
+    b: [1 2 [1 2] 3 4 1 2 [1 2] 3 4], remove.instance.once 'b [1 2]
+    ensure -> [1 2 3 4 1 2 [1 2] 3 4] =  b
+    
+    b: [1 2 [1 2] 3 4 1 2 [1 2] 3 4], 'b --.instance.once [1 2]
+    ensure -> [1 2 3 4 1 2 [1 2] 3 4] = b
+    
+    passed
+    
 ]
 
 
