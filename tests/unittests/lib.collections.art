@@ -1626,16 +1626,15 @@ do [
 topic "sample"
 do [
 
-    table: ["apple" "appricot" "banana"]
-    fruit: sample table
-
-    print type fruit
-    print in? fruit table
-
-    alphabet: `a`..`z`
-    letter: sample alphabet
-    print type letter
-    print in? letter alphabet
+    a: ["apple" "appricot" "banana"]
+    ensure -> in? (sample a) a
+    ensure -> string? (sample a)
+    passed
+    
+    a: `a`..`z`
+    ensure -> in? (sample a) a
+    ensure -> char? (sample a)
+    passed
 
 ]
 
