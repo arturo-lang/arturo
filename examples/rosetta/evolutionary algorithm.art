@@ -1,0 +1,40 @@
+target: "METHINKS IT IS LIKE A WEASEL"
+alphabet: [` `] ++ @`A`..`Z`
+p: 0.05
+c: 100
+
+
+negFitness: function [trial][
+    result: 0
+    loop 0..dec size trial 'i ->
+        if target\[i] <> trial\[i] -> inc 'result
+    return result
+]
+
+mutate: function [parent][
+    result: ""
+    loop parent 'c ->
+        'result ++ (p > random 0.0 1.0)? -> sample alphabet -> c
+    return result
+]
+
+parent: ""
+do.times: size target ->
+    'parent ++ sample alphabet
+
+j: 0
+
+copies: []
+while [parent <> target][
+    'copies ++ map c 'i -> mutate parent
+
+    best: first copies
+    loop 1..dec size copies 'i [
+        if (negFitness copies\[i]) < negFitness best ->
+            best: copies\[i]
+    ]
+    parent: best
+
+    print [pad to :string j 2 parent]
+    inc 'j
+]
