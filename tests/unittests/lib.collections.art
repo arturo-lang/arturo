@@ -1525,23 +1525,32 @@ do [
     
 ]
 
-
 topic "repeat"
 do [
-
-    debug repeat "hello" 3
-
-    a: "Arturo"
-    repeat 'a 3, debug a
-
-    debug repeat [1 2 3] 3
-    debug repeat [[1 2 3]] 3
-    
-    b: [4 5 6]
-    repeat 'b 3, debug b
-
+    ensure -> "hellohellohello" = repeat "hello" 3
+    passed
+    ensure -> [5 5 5] = repeat 5 3
+    passed
+    ensure -> [[1 2 3] [1 2 3] [1 2 3]] = repeat [[1 2 3]] 3
+    passed
 ]
 
+topic "repeat (literal)"
+do [
+    
+    string: "hello", repeat 'string 3
+    ensure -> "hellohellohello" = string
+    passed
+    
+    number: 5, repeat 'number 3
+    ensure -> [5 5 5] = number
+    passed
+    
+    array: [[1 2 3]], repeat 'array 3
+    ensure -> [[1 2 3] [1 2 3] [1 2 3]] = array
+    passed
+    
+]
 
 topic "reverse"
 do [
