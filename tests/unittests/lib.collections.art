@@ -2093,131 +2093,276 @@ do [
 
 ]
 
-topic "split"
+topic "split - + .every"
 do [
-
-    ; default
-    debug split "Arturo"
     
-    a: "Arturo"
-    split 'a, debug a
+    ensure -> ["A" "r" "t" "u" "r" "o"] = split "Arturo"
+    passed
+    
+    ensure -> ["Art" "uro"] = split.every: 3 "Arturo"
+    passed
+    
+    ; Don't do anyting for :block type
+    ensure -> [[1 2 3] [4 5 6] [7 8]] = split [[1 2 3] [4 5 6] [7 8]]
+    passed
+    
+    ensure -> [[[1 2 3] [4 5 6]] [[7 8]]] = split.every: 2 [[1 2 3] [4 5 6] [7 8]]
+    passed
+    
+]
 
-    debug split [[1 2 3] [4 5 6] [7 8]]
-    b: [[1 2 3] [4 5 6] [7 8]]
-    split 'b, debug b
+topic "split - + .every (literal)"
+do [
+    
+    a: "Arturo", split 'a
+    ensure -> ["A" "r" "t" "u" "r" "o"] = a
+    passed
+    
+    ; a: "Arturo", split.every: 3 'a
+    ; ensure -> ["Art" "uro"] = a
+    ; passed
+    
+    ; Don't do anyting for :block type
+    a: [[1 2 3] [4 5 6] [7 8]], split 'a
+    ensure -> [[1 2 3] [4 5 6] [7 8]] = a
+    passed
+    
+    a: [[1 2 3] [4 5 6] [7 8]], split.every: 2 'a
+    ensure -> [[[1 2 3] [4 5 6]] [[7 8]]] = a
+    passed
+    
+]
 
-    debug split [1 2 3 4 5 6]
-    c: [1 2 3 4 5 6]
-    split 'c, debug c
+topic "split - .words"
+do [
+    
+    ensure -> ["Arturo" "Programming" "Language"] = split.words "Arturo Programming Language"
+    passed
+    
+    ; Don't change behavior
+    ensure -> ["Arturo" "Programming" "Language"] = split.words.every:2 "Arturo Programming Language"
+    passed
+    
+]
 
-    topic "split - .path"
-    do [
+topic "split - .words (literal)"
+do [
+    
+    a: "Arturo Programming Language", split.words 'a
+    ensure -> ["Arturo" "Programming" "Language"] = a
+    passed
+    
+    ; Don't change behavior
+    a: "Arturo Programming Language", split.words.every:2 'a
+    ensure -> ["Arturo" "Programming" "Language"] = a
+    passed
+    
+]
 
-        ; They would return the same result
-        (sys\os = "windows")? [
+topic "split - .lines"
+do [
+    
+    string: {
+        {
+            "object": "value",
+            "array": ["value", "value"],
+        }
+    }
+    
+    expected: ["{" "    \"object\": \"value\"," "    \"array\": [\"value\", \"value\"]," "}"]
+    
+    ensure -> expected = split.lines string 
+    passed
+    
+    ; Don't change behavior
+    ensure -> expected = split.lines.every: 2 string 
+    passed
+    
+]
+
+topic "split - .lines (literal)"
+do [
+    
+    string: {
+        {
+            "object": "value",
+            "array": ["value", "value"],
+        }
+    }
+    
+    expected: ["{" "    \"object\": \"value\"," "    \"array\": [\"value\", \"value\"]," "}"]
+    
+    split.lines 'string 
+    
+    ensure -> expected = string
+    passed
+    
+    
+    string: {
+        {
+            "object": "value",
+            "array": ["value", "value"],
+        }
+    }
+    
+    ; Don't change behavior
+    split.lines.every: 2 'string 
+    ensure -> expected = string
+    passed
+    
+]
+
+topic "split - .by"
+do [
+    ensure -> ["Arturo" " Nim" " Ruby" " Python", " C", " CoffeeScript"] 
+        = split.by: "," "Arturo, Nim, Ruby, Python, C, CoffeeScript"
+    passed
+    
+    ensure -> ["Arturo" " Nim" " Ruby" " Python", " C", " CoffeeScript"] 
+        = split.by: {/,/} "Arturo, Nim, Ruby, Python, C, CoffeeScript"
+    passed
+    
+    sample: {
+        Arturo is an independently-developed,
+        modern programming language,
+        vaguely related to various other ones
+        - including but not limited to:
+        Logo, Rebol, Forth, Ruby, Haskell, D, Smalltalk, Tcl,
+        and Lisp.
+    }
+    
+    result: [
+        "Arturo is an independently" "developed" 
+        "modern programming language" 
+        "vaguely related to various other ones" 
+        " including but not limited to" 
+        "Logo" " Rebol" " Forth" " Ruby" " Haskell" 
+        " D" " Smalltalk" " Tcl" "and Lisp"
+    ]
+    
+    ensure -> result
+        = split.by: ["," "-" ":" "\n" "."] sample
+    passed
+
+]
+
+topic "split - .by (literal)"
+do [
+    sample: "Arturo, Nim, Ruby, Python, C, CoffeeScript", split.by: "," 'sample
+    ensure -> ["Arturo" " Nim" " Ruby" " Python", " C", " CoffeeScript"] 
+        = sample
+    passed
+    
+    sample: "Arturo, Nim, Ruby, Python, C, CoffeeScript", split.by: {/,/} 'sample 
+    ensure -> ["Arturo" " Nim" " Ruby" " Python", " C", " CoffeeScript"] 
+        = sample
+    passed
+    
+    sample: {
+        Arturo is an independently-developed,
+        modern programming language,
+        vaguely related to various other ones
+        - including but not limited to:
+        Logo, Rebol, Forth, Ruby, Haskell, D, Smalltalk, Tcl,
+        and Lisp.
+    }
+    
+    result: [
+        "Arturo is an independently" "developed" 
+        "modern programming language" 
+        "vaguely related to various other ones" 
+        " including but not limited to" 
+        "Logo" " Rebol" " Forth" " Ruby" " Haskell" 
+        " D" " Smalltalk" " Tcl" "and Lisp"
+    ]
+    
+    split.by: ["," "-" ":" "\n" "."] 'sample
+    ensure -> result = sample
+    passed
+
+]
+
+topic "split - .at"
+do [
+    
+    ensure -> ["hell" "oworld"] = split.at: 4 "helloworld"
+    passed
+    
+    ensure -> [["Arturo" " Nim" " Ruby" " Python"] [" C" " CoffeeScript"]] 
+        = split.at: 4 ["Arturo" " Nim" " Ruby" " Python", " C", " CoffeeScript"]  
+    passed
+    
+]
+
+topic "split - .at (literal)"
+do [
+    
+    a: "helloworld", split.at: 4 'a
+    ensure -> ["hell" "oworld"] = a
+    passed
+    
+    ; Not working for literals
+    ; a: ["Arturo" " Nim" " Ruby" " Python", " C", " CoffeeScript"], split.at: 4 'a
+    ; print as.code a ; => [["Arturo" " Nim" " Ruby" " Python" " C"] [" C" " CoffeeScript"]]
+    ; ensure -> [["Arturo" " Nim" " Ruby" " Python"] [" C" " CoffeeScript"]] = a
+    ; passed
+    
+]
+
+topic "split - .path"
+do [
+    
+    (sys\os = "windows")? [
             ; Accepts \\ and / paths
-            debug split.path "directory\\wofilerld"
-            debug split.path "\\usr\\bin"
-
-            p1: "directory\\wofilerld\\"
-            p2: "\\usr\\bin"
+            ensure -> ["directory" "wofilerld"] = split.path "directory\\wofilerld"
+            ensure -> ["usr" "bin"] = split.path "\\usr\\bin"
+            passed
+            
+            ensure -> ["directory" "wofilerld"] = split.path "directory/wofilerld"
+            ensure -> ["usr" "bin"] = split.path "/usr/bin"
+            passed
+        
         ][
             ; Accepts / paths
-            debug split.path "directory/wofilerld"
-            debug split.path "/usr/bin"
-
-            p1: "directory/wofilerld/"
-            p2: "/usr/bin"
-        ]
-
-        debug split.path p1
-        debug split.path p2
-        split.path 'p1, debug p1
-        split.path 'p2, debug p2
-
-        ; tests the Unix's default path and Windows' alternative
-        ; Since, you can use it on Msys, for instance
-        ; it gives the same result in both
-        debug split.path "/usr/bin/"
-        debug split.path "/usr/bin"
-        debug split.path "usr/bin/"
-
+            ensure -> ["directory" "wofilerld"] = "directory/wofilerld"
+            passed
+            
+            ensure -> ["usr" "bin"] = split.path "/usr/bin"
+            passed
+            
     ]
+    
+]
 
-    topic "split - .words & .lines"
-    do [
-
-        debug split.words "Hello World!"
-        s1: "Hello World!"
-        split.words 's1, debug s1
-
-        debug split.lines "Hi\nmy\nname\nis..."
-        s2: "Hi\nmy\nname\nis..."
-        split.lines 's2, debug s2
-
+topic "split - .path (literal)"
+do [
+    
+    (sys\os = "windows")? [
+            ; Accepts \\ and / paths
+            p: "directory\\wofilerld", split.path 'p
+            p2: "\\usr\\bin", split.path 'p2
+            ensure -> ["directory" "wofilerld"] = p
+            ensure -> ["usr" "bin"] = p2
+            passed
+            
+            p: "directory/wofilerld", split.path 'p
+            p2: "/usr/bin", split.path 'p2
+            ensure -> ["directory" "wofilerld"] = p
+            ensure -> ["usr" "bin"] = p2
+            passed
+        
+        ][
+            ; Accepts / paths
+            p: "directory/wofilerld", split.path 'p
+            ensure -> ["directory" "wofilerld"] = p
+            passed
+            
+            p: "/usr/bin", split.path 'p
+            ensure -> ["usr" "bin"] = split.path p
+            passed
+            
     ]
-
-    topic "split - .by"
-    do [
-
-        debug split.by: "/" "directory/file.ext"
-
-        csv: "id;nickname;name;age"
-        split.by: ";" 'csv, debug csv
-
-    ]
-
-    topic "split - .at"
-    do [
-
-        debug split.at: 5 "Hello, World"
-        s: "Hello, World"
-        split.at: 5 's, debug s
-
-        debug split.at: 4 [
-            "Arnold" "Andreas" "Paul" "Ricard" "Linus"
-            "Yanis" "Helena" "Eva" "Blanca"
-        ]
-
-        b: [
-            "Arnold" "Andreas" "Paul" "Ricard" "Linus"
-            "Yanis" "Helena" "Eva" "Blanca"
-        ]
-        split.at: 4 'b, debug b
-
-    ]
-
-    topic "split - .every"
-    do [
-
-        debug split.every: 3 "split collection to components"
-        debug split.every: 3 [
-            "Arnold" "Andreas" "Paul" "Ricard" "Linus"
-            "Yanis" "Helena" "Eva" "Blanca"
-        ]
-
-
-        b: ["Arnold" "Andreas" "Paul" 
-            "Ricard" "Linus" "Yanis" 
-            "Helena" "Eva" "Blanca"
-        ]
-        split.every: 3 'b, debug b
-
-        city: split.every: 3 "Manchester"
-        print [city, size city\0, size city\1, size city\2, size city\3]
-
-        lang: split.every: 4 "Arturo"
-        print [lang, size lang\0, size lang\1]
-
-        city2: "Manchester"
-        lang2: "Arturo"
-        split.every: 3 'city2
-        split.every: 4 'lang2
-        print [city2, size city2\0, size city2\1, size city2\2, size city2\3]
-        print [lang2, size lang2\0 size, lang2\1]
-
-    ]
-
+    
 ]
 
 
