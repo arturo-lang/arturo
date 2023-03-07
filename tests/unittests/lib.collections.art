@@ -2589,7 +2589,7 @@ do [
             passed
             
             p: "/usr/bin", split.path 'p
-            ensure -> ["usr" "bin"] = split.path p
+            ensure -> ["usr" "bin"] =  p
             passed
             
     ]
