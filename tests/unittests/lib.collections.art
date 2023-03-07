@@ -2183,21 +2183,118 @@ do [
     
 ]
 
+topic "sort - .by"
+do [
+    
+    ; @ is mandatory here
+    users: @[
+        #[ name: "John" surname: "Doe" ]
+        #[ name: "Jane" surname: "Doe" ]
+        #[ name: "John" surname: "Wick" ]
+        #[ name: "Arnold" surname: "Schwarzenegger" ]
+    ]
 
-;     topic "sort - .by"
-;     do [
-
-;         user1: #[ name: "John" surname: "Doe" ]
-;         user2: #[ name: "Jane" surname: "Doe" ]
-;         user3: #[ name: "John" surname: "Wick" ]
-;         user4: #[ name: "Arnold" surname: "Schwarzenegger" ]
-
-;         arr: @[user1 user2 user3 user4]
-;         debug sort.by: "surname" arr
-;         debug sort.by: 'name arr
-
-;     ]
-; ]
+    result: @[
+        #[name: "John" surname: "Doe" ] 
+        #[name: "Jane" surname: "Doe" ] 
+        #[name: "Arnold" surname: "Schwarzenegger" ] 
+        #[name: "John" surname: "Wick" ]
+    ]
+        
+    ensure -> result = sort.by: 'surname users
+    
+    
+    
+    ; .descending
+    
+    @ is mandatory here
+    users: @[
+        #[ name: "John" surname: "Doe" ]
+        #[ name: "Jane" surname: "Doe" ]
+        #[ name: "John" surname: "Wick" ]
+        #[ name: "Arnold" surname: "Schwarzenegger" ]
+    ]
+    
+    result: [
+        #[name: "John" surname: "Wick" ]
+        #[name: "Arnold" surname: "Schwarzenegger" ] 
+        #[name: "John" surname: "Doe" ] 
+        #[name: "Jane" surname: "Doe" ] 
+    ]
+        
+    ensure -> result = sort.descending.by: "surname" users
+    ensure -> result = sort.descending.by: 'surname users
+    passed
+    
+    
+    
+    ; .sensitive
+    
+    @ is mandatory here
+    users: @[
+        #[ name: "John" surname: "poe" ]
+        #[ name: "Jane" surname: "Poe" ]
+        #[ name: "John" surname: "Paul" ]
+        #[ name: "Arnold" surname: "paul" ]
+    ]
+    
+    result: [
+        #[ name: "John" surname: "Paul" ]
+        #[ name: "Jane" surname: "Poe" ]
+        #[ name: "Arnold" surname: "paul" ]
+        #[ name: "John" surname: "poe" ]
+    ]
+        
+    ensure -> result = sort.sensitive.by: "surname" users
+    ensure -> result = sort.sensitive.by: 'surname users
+    passed
+    
+    
+    
+    ; .as
+    
+    ; @ is mandatory here
+    ; words: @[
+    ;     #[a: "uno" b: "ábaco"]
+    ;     #[a: "dos" b: "perversión"]
+    ;     #[a: "tres" b: "aberración"]
+    ;     #[a: "abismo" b: "abaco"]
+    ; ]
+    
+    ; result: [
+    ;     #[a: "abismo" b: "abaco" ] 
+    ;     #[a: "uno" b: "ábaco" ]
+    ;     #[a: "tres" b: "aberración" ] 
+    ;     #[a: "dos" b: "perversión" ] 
+    ; ]
+    
+    ; ensure -> result = sort.sensitive.by: "b" words
+    ; ensure -> result = sort.sensitive.by: 'b words
+    ; passed
+    
+    
+    
+    ; .ascii
+    
+    ; words: @[
+    ;     #[a: "uno" b: "ábaco"]
+    ;     #[a: "dos" b: "perversión"]
+    ;     #[a: "tres" b: "aberración"]
+    ;     #[a: "abismo" b: "abaco"]
+    ; ]
+    
+    ; result: [
+    ;     #[a: "abismo" b: "abaco" ] 
+    ;     #[a: "uno" b: "ábaco" ]
+    ;     #[a: "tres" b: "aberración" ] 
+    ;     #[a: "dos" b: "perversión" ] 
+    ; ]
+    
+    ; ensure -> result = sort.ascii.by: "b" words
+    ; ensure -> result = sort.ascii.by: 'b words
+    ; passed
+         
+]
 
 
 topic "sorted?"
