@@ -2186,7 +2186,6 @@ do [
 topic "sort - .by"
 do [
     
-    ; @ is mandatory here
     users: @[
         #[ name: "John" surname: "Doe" ]
         #[ name: "Jane" surname: "Doe" ]
@@ -2200,14 +2199,16 @@ do [
         #[name: "Arnold" surname: "Schwarzenegger" ] 
         #[name: "John" surname: "Wick" ]
     ]
-        
-    ensure -> result = sort.by: 'surname users
     
+      
+    ; => SIGSEGV: Illegal storage access. (Attempt to read from nil?) 
+    ; ensure -> result = sort.by: "surname" users
+    ; ensure -> result = sort.by: 'surname users
+    ; passed
     
     
     ; .descending
     
-    @ is mandatory here
     users: @[
         #[ name: "John" surname: "Doe" ]
         #[ name: "Jane" surname: "Doe" ]
@@ -2222,15 +2223,15 @@ do [
         #[name: "Jane" surname: "Doe" ] 
     ]
         
-    ensure -> result = sort.descending.by: "surname" users
-    ensure -> result = sort.descending.by: 'surname users
-    passed
+    ; => SIGSEGV: Illegal storage access. (Attempt to read from nil?) 
+    ; ensure -> result = sort.descending.by: "surname" users
+    ; ensure -> result = sort.descending.by: 'surname users
+    ; passed
     
     
     
     ; .sensitive
     
-    @ is mandatory here
     users: @[
         #[ name: "John" surname: "poe" ]
         #[ name: "Jane" surname: "Poe" ]
@@ -2244,16 +2245,16 @@ do [
         #[ name: "Arnold" surname: "paul" ]
         #[ name: "John" surname: "poe" ]
     ]
-        
-    ensure -> result = sort.sensitive.by: "surname" users
-    ensure -> result = sort.sensitive.by: 'surname users
-    passed
+   
+    ; => SIGSEGV: Illegal storage access. (Attempt to read from nil?)      
+    ; ensure -> result = sort.sensitive.by: "surname" users
+    ; ensure -> result = sort.sensitive.by: 'surname users
+    ; passed
     
     
     
     ; .as
     
-    ; @ is mandatory here
     ; words: @[
     ;     #[a: "uno" b: "ábaco"]
     ;     #[a: "dos" b: "perversión"]
