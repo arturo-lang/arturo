@@ -2445,24 +2445,36 @@ do [
 topic "unique"
 do [
     
-    ; :block
-    debug unique [1 2 4 1 3 2]
-    b: [1 2 4 1 3 2]
-    unique 'b, debug b
+    ensure -> [1 2 4 3] = unique [1 2 4 1 3 2]
+    passed
+    
+    ensure -> "helo wrd" = unique "hellllo wooooorrrrld"
+    passed
+    
+    a: (unique.id "art-")
+    ensure -> prefix? a "art-"
+    ensure -> 4 < size a
+    passed
+    
+]
 
-    id1: unique.id [1 2 4 1 3 2]
-    id2: unique.id [1 2 4 1 3 2 5 6 5 7 4]
-    print id1 <> id2
-
-    ; :string
-    debug unique "Arturo"
-    s: "Arturo"
-    unique 's, debug s
-
-    sid1: unique.id "Arturo"
-    sid2: unique.id "Python"
-    print sid1 <> sid2
-
+topic "unique - literal"
+do [
+    
+    a: [1 2 4 1 3 2], unique 'a
+    ensure -> [1 2 4 3] = a
+    passed
+    
+    a: "hellllo wooooorrrrld", unique 'a
+    ensure -> "helo wrd" = a
+    passed
+    
+    ; Don't work for literals
+    a: "art-", unique.id 'a
+    ensure -> "art-" = a
+    ensure -> 4 = size a
+    passed
+    
 ]
 
 
