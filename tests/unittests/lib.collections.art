@@ -1906,75 +1906,140 @@ do [
     ensure -> [1 2 3 4 5] = sort [5 2 3 1 4]
     passed
     
-    ensure -> ["Arturo" "C" "CoffeeScript" "Nim"] 
-        = sort ["C" "Arturo" "Nim" "CoffeeScript"]
+    ensure -> ["Arturo" "arturo" "c" "C" "CoffeeScript" "coffeescript" "nim" "Nim"]
+        = sort ["c" "C" "CoffeeScript" "nim" "Arturo" "coffeescript" "arturo" "Nim"]
     passed
+    
     
     ensure -> (#[art: "Arturo" coffee: "CoffeeScript" langc: "C" nim: "Nim" ]) 
         = sort #[ langc: "C" art: "Arturo" nim: "Nim" coffee: "CoffeeScript" ]
     passed
+    
+    
     
     ; .descending
     
     ensure -> [5 4 3 2 1] = sort.descending [5 2 3 1 4]
     passed
     
+    
     ensure -> ["Nim" "CoffeeScript" "C" "Arturo"]
         = sort.descending ["C" "Arturo" "Nim" "CoffeeScript"]
     passed
     
+    
     ensure -> (#[nim: "Nim" langc: "C" coffee: "CoffeeScript" art: "Arturo" ]) 
         = sort.descending #[ langc: "C" art: "Arturo" nim: "Nim" coffee: "CoffeeScript" ]
     passed
+    
+    
+    
+    ; .sensitive
+    
+    ensure -> ["Arturo" "C" "CoffeeScript" "Nim" "arturo" "c" "coffeescript" "nim"]
+        = sort.sensitive ["c" "C" "CoffeeScript" "nim" "Arturo" "coffeescript" "arturo" "Nim"]
+    passed
+    
+    ensure -> ["nim" "coffeescript" "c" "arturo" "Nim" "CoffeeScript" "C" "Arturo"]
+        = sort.sensitive.descending ["c" "C" "CoffeeScript" "nim" "Arturo" "coffeescript" "arturo" "Nim"]
+    passed
+    
     
 ]
 
 topic "sort - + .descending (literal)"
 do [
     
+    
     a: [5 2 3 1 4], sort 'a
     ensure -> [1 2 3 4 5] = a
     passed
     
-    a: ["C" "Arturo" "Nim" "CoffeeScript"], sort 'a
-    ensure -> ["Arturo" "C" "CoffeeScript" "Nim"] 
+    
+    a: ["c" "C" "CoffeeScript" "nim" "Arturo" "coffeescript" "arturo" "Nim"]
+    sort 'a
+    ensure -> ["Arturo" "arturo" "c" "C" "CoffeeScript" "coffeescript" "nim" "Nim"]
         = a
     passed
+    
     
     a: #[ langc: "C" art: "Arturo" nim: "Nim" coffee: "CoffeeScript" ], sort 'a
     ensure -> (#[art: "Arturo" coffee: "CoffeeScript" langc: "C" nim: "Nim" ]) 
         = a
     passed
     
+    
+    
     ; .descending
+    
     
     a: [5 2 3 1 4], sort.descending 'a
     ensure -> [5 4 3 2 1] = a
     passed
+    
     
     a: ["C" "Arturo" "Nim" "CoffeeScript"], sort.descending 'a
     ensure -> ["Nim" "CoffeeScript" "C" "Arturo"]
         = a
     passed
     
+    
     a: #[ langc: "C" art: "Arturo" nim: "Nim" coffee: "CoffeeScript" ], sort.descending 'a
     ensure -> (#[nim: "Nim" langc: "C" coffee: "CoffeeScript" art: "Arturo" ])
         = a
     passed
+    
+    
+    
+    ; .sensitive
+    
+    a: ["c" "C" "CoffeeScript" "nim" "Arturo" "coffeescript" "arturo" "Nim"]
+    sort.sensitive 'a
+    ensure -> ["Arturo" "C" "CoffeeScript" "Nim" "arturo" "c" "coffeescript" "nim"]
+        = a
+    passed
+    
+    
+    a: ["c" "C" "CoffeeScript" "nim" "Arturo" "coffeescript" "arturo" "Nim"]
+    sort.sensitive.descending 'a
+    ensure -> ["nim" "coffeescript" "c" "arturo" "Nim" "CoffeeScript" "C" "Arturo"]
+        =  a
+    passed
+    
     
 ]
 
 topic "sort - .values"
 do [
     
+    
     ensure -> (#[age: 35 income: 5000 surname: "Doe" name: "John" ]) 
         = sort.values #[ name: "John" surname: "Doe" age: 35 income: 5000]
     passed
     
-    ; .descending
-    
     ensure -> (#[name: "John" surname: "Doe" age: 35 income: 5000 ]) 
         = sort.values.descending #[ name: "John" surname: "Doe" age: 35 income: 5000]
+    passed
+    
+    
+    
+    ; .sensitive
+    
+    
+    ensure -> (#[a: "A" b: "c" c: "a" d: "C" e: "b" g: "B" ])
+        = sort.sensitive #[b: "c" a: "A"  c: "a" e: "b" d:"C" g: "B" ]
+    passed
+    
+    ensure -> (#[g: "B" e: "b" d: "C" c: "a" b: "c" a: "A" ])
+        = sort.sensitive.descending #[b: "c" a: "A"  c: "a" e: "b" d:"C" g: "B" ]
+    passed
+    
+    ensure -> (#[a: "A" g: "B" d: "C" c: "a" e: "b" b: "c" ])
+        = sort.sensitive.values #[b: "c" a: "A"  c: "a" e: "b" d:"C" g: "B" ]
+    passed
+    
+    ensure -> (#[b: "c" e: "b" c: "a" d: "C" g: "B" a: "A" ])
+        = sort.sensitive.descending.values #[b: "c" a: "A"  c: "a" e: "b" d:"C" g: "B" ]
     passed
     
 ]
@@ -1982,11 +2047,13 @@ do [
 topic "sort - .values (literal)"
 do [
     
+    
     user: #[ name: "John" surname: "Doe" age: 35 income: 5000]
     sort.values 'user
     ensure -> (#[age: 35 income: 5000 surname: "Doe" name: "John" ]) 
         = user
     passed
+    
     
     user: #[ name: "John" surname: "Doe" age: 35 income: 5000]
     sort.values.descending 'user
@@ -1994,9 +2061,36 @@ do [
         = user
     passed
     
+    
+    
+    ; .sensitive
+    
+    
+    a: #[b: "c" a: "A"  c: "a" e: "b" d:"C" g: "B" ]
+    sort.sensitive 'a
+    ensure -> (#[a: "A" b: "c" c: "a" d: "C" e: "b" g: "B" ])
+        = a
+    passed
+    
+    a: #[b: "c" a: "A"  c: "a" e: "b" d:"C" g: "B" ]
+    sort.sensitive.descending 'a
+    ensure -> (#[g: "B" e: "b" d: "C" c: "a" b: "c" a: "A" ])
+        = a
+    passed
+    
+    a: #[b: "c" a: "A"  c: "a" e: "b" d:"C" g: "B" ]
+    sort.sensitive.values 'a
+    ensure -> (#[a: "A" g: "B" d: "C" c: "a" e: "b" b: "c" ])
+        = a
+    passed
+    
+    a: #[b: "c" a: "A"  c: "a" e: "b" d:"C" g: "B" ]
+    sort.sensitive.descending.values 'a
+    ensure -> (#[b: "c" e: "b" c: "a" d: "C" g: "B" a: "A" ])
+        = a
+    passed
+    
 ]
-
-exit
 
 ;     topic "sort - .sensitive .as with :block and :dictionary"
 ;     do [
