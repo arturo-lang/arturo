@@ -2478,42 +2478,42 @@ do [
 ]
 
 
-topic "values"
+topic "values - :dictionary"
 do [
-
-    ; Do nothing?
-    debug values ["Arturo" "Ruby" "Python" "Nim"]
-
-    r1: 1..10
-    r2: range 1 10
-    debug values 1..10
-    debug values range 1 10
-    debug values r1
-    debug values r2
-
+    
     user: #[
         name: "John"
         surname: "Doe"
-        id: "012568"
-        city: "Manchester"
-        age: 45
     ]
 
-    debug values user
+    ensure -> ["John" "Doe"] = values user
+    passed
+]
 
-    ; test with :object
-    define :person [name, surname][
-        init: ->
-            this\name: capitalize this\name
-        
-        print: ->
-            ~"NAME: |this\name|, SURNAME: |this\surname|"
-    ]
+topic "values - :object"
+do [
+    define :person [name, surname][]
+    p: to :person ["John" "Doe"]
+    
+    ensure -> ["John" "Doe"] = values p
+    passed
+    
+]
 
-    personA: to :person ["John" "Doe"]
-    debug personA
-    debug values personA
+topic "values - :block"
+do [
+    
+    ensure -> ["zero" "one" "two"] = values ["zero" "one" "two"]
+    passed
+    
+]
 
+topic "values - :range"
+do [
+    ensure -> [0 1 2 3 4 5 6 7 8 9 10] = values range 0 10
+    passed
+    ensure -> [5 6 7 8 9 10] = values 5..10
+    passed
 ]
 
 topic "zero?"
