@@ -1,0 +1,4 @@
+fifthDigitSum?: function [n]->
+    n = sum map digits n 'd -> d^5
+
+print dec sum select 1..1000000 => fifthDigitSum?
