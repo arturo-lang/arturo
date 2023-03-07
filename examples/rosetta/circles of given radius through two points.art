@@ -1,5 +1,6 @@
 getPoint: function [p]->  ~{(x: |p\0|, y: |p\1|)}
 getCircle: function [c]-> ~{(x: |c\0|, y: |c\1|, r: |c\2|)}
+
 circles: function [p1, p2, r][
     if r = 0 -> return "radius of zero"
     if p1 = p2 -> return "coincident points gives infinite number of circles"
