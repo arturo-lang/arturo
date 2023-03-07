@@ -1900,47 +1900,103 @@ do [
 ; topic "sort"
 ; do [
 
-;     ; default
-;     topic "sort - default"
-;     do [
+topic "sort - + .descending"
+do [
+    
+    ensure -> [1 2 3 4 5] = sort [5 2 3 1 4]
+    passed
+    
+    ensure -> ["Arturo" "C" "CoffeeScript" "Nim"] 
+        = sort ["C" "Arturo" "Nim" "CoffeeScript"]
+    passed
+    
+    ensure -> (#[art: "Arturo" coffee: "CoffeeScript" langc: "C" nim: "Nim" ]) 
+        = sort #[ langc: "C" art: "Arturo" nim: "Nim" coffee: "CoffeeScript" ]
+    passed
+    
+    ; .descending
+    
+    ensure -> [5 4 3 2 1] = sort.descending [5 2 3 1 4]
+    passed
+    
+    ensure -> ["Nim" "CoffeeScript" "C" "Arturo"]
+        = sort.descending ["C" "Arturo" "Nim" "CoffeeScript"]
+    passed
+    
+    ensure -> (#[nim: "Nim" langc: "C" coffee: "CoffeeScript" art: "Arturo" ]) 
+        = sort.descending #[ langc: "C" art: "Arturo" nim: "Nim" coffee: "CoffeeScript" ]
+    passed
+    
+]
 
-;         debug sort [5 4 3 2 1]
-;         debug sort ["Ruby" "Arturo" "Python"]
-;         debug sort #[ c: "C" art: "Arturo"
-;             nim: "Nim" coffee: "CoffeeScript" ]
+topic "sort - + .descending (literal)"
+do [
+    
+    a: [5 2 3 1 4], sort 'a
+    ensure -> [1 2 3 4 5] = a
+    passed
+    
+    a: ["C" "Arturo" "Nim" "CoffeeScript"], sort 'a
+    ensure -> ["Arturo" "C" "CoffeeScript" "Nim"] 
+        = a
+    passed
+    
+    a: #[ langc: "C" art: "Arturo" nim: "Nim" coffee: "CoffeeScript" ], sort 'a
+    ensure -> (#[art: "Arturo" coffee: "CoffeeScript" langc: "C" nim: "Nim" ]) 
+        = a
+    passed
+    
+    ; .descending
+    
+    a: [5 2 3 1 4], sort.descending 'a
+    ensure -> [5 4 3 2 1] = a
+    passed
+    
+    a: ["C" "Arturo" "Nim" "CoffeeScript"], sort.descending 'a
+    ensure -> ["Nim" "CoffeeScript" "C" "Arturo"]
+        = a
+    passed
+    
+    a: #[ langc: "C" art: "Arturo" nim: "Nim" coffee: "CoffeeScript" ], sort.descending 'a
+    ensure -> (#[nim: "Nim" langc: "C" coffee: "CoffeeScript" art: "Arturo" ])
+        = a
+    passed
+    
+]
 
-;         a: [5 4 3 2 1]
-;         b: ["Ruby" "Arturo" "Python"]
-;         c: #[ c: "C" art: "Arturo" 
-;             nim: "Nim" coffee: "CoffeeScript"]
-;         sort 'a, debug a
-;         sort 'b, debug b
-;         sort 'c, debug c
+topic "sort - .values"
+do [
+    
+    ensure -> (#[age: 35 income: 5000 surname: "Doe" name: "John" ]) 
+        = sort.values #[ name: "John" surname: "Doe" age: 35 income: 5000]
+    passed
+    
+    ; .descending
+    
+    ensure -> (#[name: "John" surname: "Doe" age: 35 income: 5000 ]) 
+        = sort.values.descending #[ name: "John" surname: "Doe" age: 35 income: 5000]
+    passed
+    
+]
 
-;     ]
+topic "sort - .values (literal)"
+do [
+    
+    user: #[ name: "John" surname: "Doe" age: 35 income: 5000]
+    sort.values 'user
+    ensure -> (#[age: 35 income: 5000 surname: "Doe" name: "John" ]) 
+        = user
+    passed
+    
+    user: #[ name: "John" surname: "Doe" age: 35 income: 5000]
+    sort.values.descending 'user
+    ensure -> (#[name: "John" surname: "Doe" age: 35 income: 5000 ]) 
+        = user
+    passed
+    
+]
 
-;     topic "sort - .values"
-;     do [
-
-;         debug sort.values #[
-;             name: "John"
-;             surname: "Doe"
-;             id: "012568"
-;             city: "Manchester"
-;             age: 45
-;         ]
-
-;         user: #[
-;             name: "John"
-;             surname: "Doe"
-;             id: "012568"
-;             city: "Manchester"
-;             age: 45
-;         ]
-
-;         sort.values 'user, debug user
-
-;     ]
+exit
 
 ;     topic "sort - .sensitive .as with :block and :dictionary"
 ;     do [
