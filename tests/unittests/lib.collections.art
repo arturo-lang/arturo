@@ -2402,18 +2402,31 @@ do [
 
 topic "take"
 do [
+    ensure -> "some" = take "some text" 4   
+    passed
+    
+    ensure -> [Arturo Nim] = take [Arturo Nim C Rust Cobol] 2 
+    passed
+    
+    ensure -> [0 1 2 3] = take 0..10 4 
+    passed
+]
 
-    debug take "some text" 7
-    s: "some text"
-    take 's 7, debug s
-    debug take ["Arnold" "Andreas" "Paul"] 2
-    b: ["Arnold" "Andreas" "Paul"]
-    take 'b 2, debug b
-
-    debug take 1..10 3
-    arr: 1..10
-    take 'arr 3, debug arr
-
+topic "take - (literal)"
+do [
+    
+    a: "some text", take 'a 4   
+    ensure -> "some" = a
+    passed
+    
+    a: [Arturo Nim C Rust Cobol], take 'a 2 
+    ensure -> [Arturo Nim] = a
+    passed
+    
+    a: 0..10,  take 'a 4 
+    ensure -> [0 1 2 3] = a
+    passed
+    
 ]
 
 
