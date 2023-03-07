@@ -2555,7 +2555,7 @@ do [
         
         ][
             ; Accepts / paths
-            ensure -> ["directory" "wofilerld"] = "directory/wofilerld"
+            ensure -> ["directory" "wofilerld"] = split.path "directory/wofilerld"
             passed
             
             ensure -> ["usr" "bin"] = split.path "/usr/bin"
