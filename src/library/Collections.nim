@@ -586,6 +586,7 @@ proc defineSymbols*() =
             print get str 1               ; e
             z: 0
             print str\[z+1]               ; e
+            print str\[0..4]              ; Hello
         """:
             #=======================================================
             case x.kind:
