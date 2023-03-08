@@ -39,6 +39,7 @@ canExecute?: function [scri][
             "modular exponentation"
             "next special primes"
             "pell's equation"
+            "penta-power prime seeds"
             "permutations - derangements"
             "repunit primes"
             "sequence of primorial primes"
