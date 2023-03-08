@@ -679,7 +679,8 @@ proc defineSymbols*() =
             "collection": {String, Block, Range, Dictionary}
         },
         attrs       = {
-            "at"    : ({Integer}, "check at given location within collection")
+            "at"    : ({Integer}, "check at given location within collection"),
+            "deep"    : ({Logical}, "searches recursively in deep for a value.")
         },
         returns     = {Logical},
         example     = """
@@ -740,12 +741,19 @@ proc defineSymbols*() =
                         else:
                             push(newLogical(x.s in y.s))
                     of Block:
-                        push(newLogical(x in y.a))
+                        if hadAttr("deep"):
+                            push newLogical(y.a.inNestedBlock(x))
+                        else:
+                            push(newLogical(x in y.a))
                     of Range:
                         push(newLogical(x in y.rng))
                     of Dictionary:
-                        let values = toSeq(y.d.values)
-                        push(newLogical(x in values))
+                        if hadAttr("deep"):
+                            let values: ValueArray = y.d.getValuesinDeep()
+                            push newLogical(x in values)
+                        else:
+                            let values = toSeq(y.d.values)
+                            push(newLogical(x in values))
                     else:
                         discard
 
