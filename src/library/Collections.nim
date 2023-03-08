@@ -1951,8 +1951,8 @@ proc defineSymbols*() =
                         var ret: seq[string]
                         var length = InPlaced.s.len
                         var i = 0
-
-                        while i <= length:
+                        
+                        while i < length:
                             if i + aEvery.i <= length:
                                 ret.add(InPlaced.s[i..i+aEvery.i-1])
                                 i += aEvery.i
