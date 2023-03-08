@@ -1873,6 +1873,10 @@ proc defineSymbols*() =
     #   split.every: 3 'b, debug b
     #  ```
     #  labels: library, bug
+
+    # TODO(Collections/split) `.every` not working properly with Literal values?
+    #  see: https://github.com/arturo-lang/arturo/pull/1045#issuecomment-1458674117
+    #  labels: library, bug
     builtin "split",
         alias       = unaliased,
         op          = opSplit,
