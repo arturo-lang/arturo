@@ -274,6 +274,17 @@ proc defineSymbols*() =
 
             print contains?.at:1 ["one" "two" "three"] "two"
             ; true
+            ..........
+            print contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 6
+            ; true
+            ..........
+            user: #[ 
+                name: "John" surname: "Doe"
+                mom: #[ name: "Jane" surname: "Doe" ]
+            ]
+            
+            print contains?.deep user "Jane"
+            ; true
         """:
             #=======================================================
             if checkAttr("at"):
