@@ -710,6 +710,17 @@ proc defineSymbols*() =
 
             print in?.at:1 "two" ["one" "two" "three"]
             ; true
+            ..........
+            print in?.deep 6 [1 2 4 [3 4 [5 6] 7] 8 [9 10]]
+            ; true
+            ..........
+            user: #[ 
+                name: "John" surname: "Doe"
+                mom: #[ name: "Jane" surname: "Doe" ]
+            ]
+            
+            print in?.deep "Jane" user
+            ; true
         """:
             #=======================================================
             if checkAttr("at"):
