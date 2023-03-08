@@ -1,0 +1,20 @@
+
+palindrome?: function [n]->
+    (to :string n) = reverse to :string n
+
+getAllMuls: function [n][
+    result: []
+    limFrom: 10^ n-1
+    limTo: dec 10^n
+    loop limFrom..limTo 'a [
+        loop limFrom..limTo 'b [
+            m: a*b
+            if palindrome? m -> 
+                'result ++ @[@[a, b, a*b]]
+        ]
+    ]
+    return result
+]
+
+largestPal: maximum getAllMuls 3 'x -> last x
+print ["Largest palindromic product of two 3-digit integers:" largestPal\0 "x" largestPal\1 "=" largestPal\2]
