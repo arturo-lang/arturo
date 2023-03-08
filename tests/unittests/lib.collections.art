@@ -2035,17 +2035,17 @@ do [
     ; .ascii
     
     
-    ; a: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
-    ; sort.ascii 'a
-    ; ensure -> ["ábaco" "aberración" "abismo" "dos" "perversión" "tres" "uno" "Uno"]
-    ;     = a
-    ; passed
+    a: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+    sort.ascii 'a
+    ensure -> ["ábaco" "aberración" "abismo" "dos" "perversión" "tres" "uno" "Uno"]
+        = a
+    passed
     
-    ; a: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
-    ; sort.descending.ascii 'a
-    ; ensure -> ["uno" "Uno" "tres" "perversión" "dos" "abismo" "aberración" "ábaco"]
-    ;    = a
-    ; passed
+    a: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+    sort.descending.ascii 'a
+    ensure -> ["uno" "Uno" "tres" "perversión" "dos" "abismo" "aberración" "ábaco"]
+       = a
+    passed
     
     
 ]
