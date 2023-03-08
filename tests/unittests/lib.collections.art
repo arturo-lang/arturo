@@ -431,6 +431,7 @@ do [
     ensure -> contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 4
     ensure -> contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 2
     ensure -> contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 1
+    passed
     ensure -> not? contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 11
     ensure -> not? contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 0
     passed
@@ -452,6 +453,7 @@ do [
     ensure -> contains?.deep "John"
     ensure -> contains?.deep "Jane"
     ensure -> contains?.deep "Doe"
+    passed
     ensure -> not? contains?.deep "Joshep"
     ensure -> not? contains?.deep "Juan"
     passed
