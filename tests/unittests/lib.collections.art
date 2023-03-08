@@ -450,12 +450,12 @@ do [
         ]
     ]
     
-    ensure -> contains?.deep "John"
-    ensure -> contains?.deep "Jane"
-    ensure -> contains?.deep "Doe"
+    ensure -> contains?.deep user "John"
+    ensure -> contains?.deep user "Jane"
+    ensure -> contains?.deep user "Doe"
     passed
-    ensure -> not? contains?.deep "Joshep"
-    ensure -> not? contains?.deep "Juan"
+    ensure -> not? contains?.deep user "Joshep"
+    ensure -> not? contains?.deep user "Juan"
     passed
     
 ]
