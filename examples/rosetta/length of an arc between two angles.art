@@ -1,6 +1,4 @@
 degToRad: function [deg]-> deg * pi // 180
-radToDeg: function [rad]-> rad * 180 // pi
-
 doublePi: 2 * pi
 
 arcLength: function [r, a, b][
