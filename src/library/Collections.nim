@@ -641,7 +641,16 @@ proc defineSymbols*() =
                             else:
                                 push(getStoreKey(x.sto, $(y)))
                 of String:
-                    push(newChar(x.s.runeAtPos(y.i)))
+                    if likely(y.kind==Integer):
+                        push(newChar(x.s.runeAtPos(y.i)))
+                    else:
+                        let rLen = y.rng.len
+                        var res: seq[Rune] = newSeq[Rune](rLen)
+                        var i = 0
+                        for item in items(y.rng):
+                            res[i] = x.s.runeAtPos(item.i)
+                            i += 1
+                        push(newString($(res)))
                 of Date:
                     push(GetKey(x.e, y.s))
                 else: discard
