@@ -582,6 +582,24 @@ do [
     ensure -> `r` = s\[i + 1]
     passed
     
+    ensure -> "Art"    = get s 0..2
+    ensure -> "Artur"  = get s 0..4
+    ensure -> "Arturo" = get s 0..5
+    ensure -> "orutrA" = get s 5..0
+    ensure -> "rutrA"  = get s 4..0
+    ensure -> "trA"    = get s 2..0
+    ensure -> "r"      = get s 1..1
+    passed
+    
+    ensure -> "Art" = s\[0..2]
+    ensure -> "Artur" = s\[0..4]
+    ensure -> "Arturo" = s\[0..5]
+    ensure -> "orutrA" = s\[5..0]
+    ensure -> "rutrA" = s\[4..0]
+    ensure -> "trA" = s\[2..0]
+    ensure -> "r" = s\[1..1]
+    passed
+    
 ]
 
 topic "get - :date"
