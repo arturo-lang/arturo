@@ -1,0 +1,7 @@
+sets: @[[1 2 0] @[3 4 neg 1 1] [7 8 9 11 12]]
+
+loop sets 's ->
+    print [
+        "Set:" s 
+        "-> First missing positive integer:" first select.first 1..∞ 'x -> not? in? x s
+    ]
