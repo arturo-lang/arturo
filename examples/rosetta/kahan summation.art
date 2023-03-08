@@ -1,0 +1,25 @@
+kahanSum: function [inp][
+    c: 0
+    result: 0
+    loop inp 'val [
+        y: val - c
+        t: result + y
+        c: (t-result) - y
+        result: t
+    ]
+    return result
+]
+
+eps: 1.0
+while [1 <> 1 + eps]->
+    eps: eps / 2
+
+a: 1.0
+b: eps
+c: neg eps
+
+print ["Sum of 1.0, epsilon and -epsilon for epsilon:" eps]
+
+print ["Is result equal to 1.0?"]
+print ["- simple addition:" 1 = (a + b) + c]
+print ["- using Kahan sum:" one? kahanSum @[a b c]]
