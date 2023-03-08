@@ -1,0 +1,6 @@
+loop.with:'i arg 'a ->
+    print ["argument" (to :string i)++":" a]
+
+loop args [k,v]->
+    if k <> "values" ->
+        print ["found option:" k "with value:" v "(of type:" (to :string type v)++")"]
