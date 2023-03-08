@@ -252,6 +252,8 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
                     return x.proto.doCompare(x, y) == -1
                 else:
                     return false
+            of Date:
+                return x.eobj < y.eobj
             else:
                 return false
 
@@ -341,6 +343,8 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
                     return x.proto.doCompare(x,y) == 1
                 else:
                     return false
+            of Date:
+                return x.eobj > y.eobj
             else:
                 return false
 
