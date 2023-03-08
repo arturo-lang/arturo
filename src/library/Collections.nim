@@ -1649,6 +1649,15 @@ proc defineSymbols*() =
                 else:
                     push(newBlock())
 
+    # TODO(Collections/sort) clean rewrite needed
+    #  the whole implementation looks like a patchwork of ideas and is not that
+    #  easy to debug.
+    #  also, there seem to be different types of issues: https://github.com/arturo-lang/arturo/pull/1045#issuecomment-1458960243
+    #  labels: library, cleanup
+
+    # TODO(Collection/sort) make sure all options work as expected for Literal values too
+    #  see: https://github.com/arturo-lang/arturo/pull/1045#issuecomment-1458960243
+    #  labels: library, bug, critical
     builtin "sort",
         alias       = unaliased,
         op          = opNop,
