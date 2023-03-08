@@ -419,6 +419,45 @@ do [
 
 ]
 
+topic "contains?.deep - with :block"
+do [
+ 
+    ensure -> contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 6
+    ensure -> contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 5
+    ensure -> contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 8
+    ensure -> contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 9
+    ensure -> contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 10
+    ensure -> contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 3
+    ensure -> contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 4
+    ensure -> contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 2
+    ensure -> contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 1
+    ensure -> not? contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 11
+    ensure -> not? contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 0
+    passed
+    
+]
+
+topic "contains?.deep - with :dictionary"
+do [
+    
+    user: #[ 
+        name: "John" 
+        surname: "Doe"
+        mom: #[
+            name: "Jane"
+            surname: "Doe"
+        ]
+    ]
+    
+    ensure -> contains?.deep "John"
+    ensure -> contains?.deep "Jane"
+    ensure -> contains?.deep "Doe"
+    ensure -> not? contains?.deep "Joshep"
+    ensure -> not? contains?.deep "Juan"
+    passed
+    
+]
+
 ; couple don't support literals yet
 topic "couple"
 do [
