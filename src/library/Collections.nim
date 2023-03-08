@@ -31,6 +31,7 @@ import algorithm, os, random, sequtils
 import strutils, sugar, unicode
 
 import helpers/arrays
+import helpers/dictionaries
 import helpers/combinatorics
 import helpers/ranges
 when not defined(WEB):
@@ -311,10 +312,11 @@ proc defineSymbols*() =
                     of Range:
                         push(newLogical(y in x.rng))
                     of Dictionary:
-                        let values = toSeq(x.d.values)
                         if hadAttr("deep"):
+                            let values = toSeq(flattenedDictionary(x.d))
                             push newLogical(values.inNestedBlock(y))
                         else:
+                            let values = toSeq(x.d.values)
                             push(newLogical(y in values))
                     else:
                         discard
