@@ -313,8 +313,8 @@ proc defineSymbols*() =
                         push(newLogical(y in x.rng))
                     of Dictionary:
                         if hadAttr("deep"):
-                            let values = toSeq(flattenedDictionary(x.d))
-                            push newLogical(values.inNestedBlock(y))
+                            let values: ValueArray = x.d.getValuesinDeep()
+                            push newLogical(y in values)
                         else:
                             let values = toSeq(x.d.values)
                             push(newLogical(y in values))
