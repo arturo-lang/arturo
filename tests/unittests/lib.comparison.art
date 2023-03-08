@@ -56,3 +56,18 @@ print [1 2 3]=[1 2 3]
 print [1 2 3]=[4 5 6]
 
 print [1 2 3 4]>[1 2 3]
+
+a: to :date .format: "YYYY" "2002"
+b: to :date .format: "YYYY" "2001"
+print a > b
+print a < b
+
+a: to :date .format: "MMM dd" "Jan 15"
+b: to :date .format: "MMM dd" "Jan 14"
+print a > b
+print a < b
+
+a: to :date .format: "HH:mm" "13:25"
+b: to :date .format: "HH:mm" "12:12"
+print a > b
+print a < b
