@@ -224,10 +224,6 @@ proc defineSymbols*() =
                 push(newBlock(getCombinations(x.a, sz, doRepeat).map((
                         z)=>newBlock(z))))
 
-    # TODO(Collections/contains?) add new `.deep` option?
-    #  this would allow us to check whether a nested block contains a specific value
-    #  e.g. `contains?.deep [[1 2 3] [4 5 6]] 2` would return *true*
-    #  labels: library, enhancement, open discussion
 
     # TODO(Collections/contains?) add new `.key` option?
     #  this would allow us to check whether the given dictionary contains a specific key
