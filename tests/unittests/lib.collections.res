@@ -292,6 +292,14 @@
 [+] passed!
 [+] passed!
 
+>> in?.deep - with :block
+[+] passed!
+[+] passed!
+
+>> in?.deep - with :dictionary
+[+] passed!
+[+] passed!
+
 >> index - :string
 [+] passed!
 [+] passed!
