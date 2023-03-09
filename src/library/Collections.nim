@@ -775,6 +775,12 @@ proc defineSymbols*() =
                     else:
                         discard
 
+    # TODO(Collections/index) add `.from:` & `.to:` options to search in range
+    #  The two options don't have to be used at the same time. For example:
+    #  - just setting `.from:` will search from given index to the end
+    #  - just setting `.to:` will search from the beginning to given index
+    #  and so on...
+    #  labels: library, enhancement
     builtin "index",
         alias       = unaliased,
         op          = opNop,
