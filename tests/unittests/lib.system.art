@@ -20,7 +20,7 @@ do [
     passed
     
     ensure -> dictionary? sys\cpu
-    ensure -> string? sys\cpu\arch
+    ensure -> literal? sys\cpu\arch
     ensure -> and? literal? sys\cpu\endian
               or? 
                 equal? sys\cpu\endian 'little
