@@ -1,0 +1,4 @@
+loop 1..49 'n [
+    ns: to :string n
+    print [pad to :string n 2 "->" (first select.first 0..∞ 'x -> prefix? to :string x^2 ns)^2]
+]
