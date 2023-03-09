@@ -116,9 +116,9 @@ proc getSystemInfo*(): ValueDict =
         result["cpu"].d["type"] = newString(hostCPU)
         result["cpu"].d["endian"] = 
             if cpuEndian == Endianness.littleEndian:
-                newString("little")
+                newLiteral("little")
             else:
-                newString("big")
+                newLiteral("big")
 
         when not defined(NOGMP):
             result["deps"].d["gmp"] = newVersion($(gmpVersion))
