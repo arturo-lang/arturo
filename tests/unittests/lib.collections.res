@@ -147,6 +147,14 @@
 [+] passed!
 [+] passed!
 
+>> contains?.deep - with :block
+[+] passed!
+[+] passed!
+
+>> contains?.deep - with :dictionary
+[+] passed!
+[+] passed!
+
 >> couple
 [+] passed!
 
@@ -281,6 +289,14 @@
 [+] passed!
 [+] passed!
 [+] passed!
+[+] passed!
+[+] passed!
+
+>> in?.deep - with :block
+[+] passed!
+[+] passed!
+
+>> in?.deep - with :dictionary
 [+] passed!
 [+] passed!
 
