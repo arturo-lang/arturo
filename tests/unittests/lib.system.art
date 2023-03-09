@@ -1,2 +1,31 @@
 topic: $[topic :string] -> print ~"\n>> |topic|"
 passed: $[] -> print "[+] passed!"
+
+topic "sys"
+do [
+            
+    ensure -> dictionary? sys
+    passed
+    
+    ensure -> string? sys\author
+    ensure -> string? sys\copyright
+    passed
+    
+    ensure -> version? sys\version
+    ensure -> integer? sys\build
+    ensure -> date? sys\buildDate
+    ensure -> dictionary? sys\deps
+    ensure -> string? sys\binary
+    ensure -> literal? sys\release
+    passed
+    
+    ensure -> dictionary? sys\cpu
+    ensure -> string? sys\cpu\type
+    ensure -> and? string? sys\cpu\endian
+              or? 
+                equal? sys\cpu\endian "little"
+                equal? sys\cpu\endian "big"
+    ensure -> string? sys\os
+    passed
+    
+]
