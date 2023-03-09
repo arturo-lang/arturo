@@ -1,0 +1,8 @@
+funcs: [ø]
+
+loop 1..10 'f ->
+    'funcs ++ function [] with 'f [
+        f * f
+    ]
+
+print call funcs\3 []

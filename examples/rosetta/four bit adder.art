@@ -1,0 +1,43 @@
+binStringToBits: function [x][
+    result: map reverse x 'i -> to :integer to :string i
+    result: result ++ repeat 0 4-size result
+    return result
+]
+
+bitsToBinString: function [x][
+    join reverse map x 'i -> to :string i
+]
+
+fullAdder: function [a,b,c0][
+    [s,c]: halfAdder c0 a
+    [s,c1]: halfAdder s b
+    return @[s, or c c1]
+]
+
+halfAdder: function [a,b][
+    return @[xor a b, and a b]
+]
+
+fourBitAdder: function [a,b][
+    aBits: binStringToBits a
+    bBits: binStringToBits b
+
+    [s0,c0]: fullAdder aBits\0 bBits\0 0
+    [s1,c1]: fullAdder aBits\1 bBits\1 c0
+    [s2,c2]: fullAdder aBits\2 bBits\2 c1
+    [s3,c3]: fullAdder aBits\3 bBits\3 c2
+
+    return @[
+        bitsToBinString @[s0,s1,s2,s3]
+        to :string c3
+    ]
+]
+
+loop 0..15 'a [
+    loop 0..15 'b [
+        binA: (as.binary a) ++ join to [:string] repeat 0 4-size as.binary a
+        binB: (as.binary b) ++ join to [:string] repeat 0 4-size as.binary b
+        [sm,carry]: fourBitAdder binA binB
+        print [pad to :string a 2 "+" pad to :string b 2 "=" binA "+" binB "=" "("++carry++")" sm "=" from.binary carry ++ sm]
+    ]
+]

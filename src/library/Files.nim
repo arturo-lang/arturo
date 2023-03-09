@@ -50,6 +50,10 @@ proc defineSymbols*() =
     # TODO(Files) more potential built-in function candidates?
     #  labels: library, enhancement, open discussion
 
+    # TODO(Files) add function to enable writing/reading to/from binary files
+    #  this should obviously support writing a 16-bit int, and all this
+    #  labels: library, enhancement, new feature, open discussion
+
     when not defined(WEB):
 
         builtin "copy",
@@ -274,6 +278,20 @@ proc defineSymbols*() =
                 except OSError:
                     push(VNULL)
 
+        # TODO(Files/read) add support for different delimiters when in `.csv` mode
+        #  this could be something as simple as `.with:` or `.delimiter:`, or `.delimited:`
+        #  also see: https://github.com/arturo-lang/arturo/pull/1008#issuecomment-1450571702
+        #  labels:library,enhancement
+
+        # TODO(Files/read) show a warning in case an unsupported attribute is used in MINI builds
+        #  right now, passing e.g. `.html` in a MINI build will silently fail, but
+        #  the results might be too confusing: 
+        #  https://github.com/arturo-lang/arturo/pull/1008#issuecomment-1451696988
+        #
+        #  In that case, instead of just ignoring the passed option - as we normally do -
+        #  we should something: an error? a "warning"? it doesn't matter. But something *must*
+        #  be shown to avoid perplexing the user.
+        #  labels: library, enhancement
         builtin "read",
             alias       = doublearrowleft, 
             op          = opNop,
@@ -288,6 +306,7 @@ proc defineSymbols*() =
                         "lines"         : ({Logical},"read file lines into block"),
                         "json"          : ({Logical},"read Json into value"),
                         "csv"           : ({Logical},"read CSV file into a block of rows"),
+                        "delimiter"     : ({Char},   "read CSV file with a specific delimiter"),
                         "withHeaders"   : ({Logical},"read CSV headers"),
                         "html"          : ({Logical},"read HTML into node dictionary"),
                         "xml"           : ({Logical},"read XML into node dictionary"),
@@ -302,6 +321,7 @@ proc defineSymbols*() =
                         "lines"         : ({Logical},"read file lines into block"),
                         "json"          : ({Logical},"read Json into value"),
                         "csv"           : ({Logical},"read CSV file into a block of rows"),
+                        "delimiter"     : ({Char},   "read CSV file with a specific delimiter"),
                         "withHeaders"   : ({Logical},"read CSV headers"),
                         "bytecode"      : ({Logical},"read file as Arturo bytecode"),
                         "binary"        : ({Logical},"read as binary"),
@@ -342,7 +362,11 @@ proc defineSymbols*() =
                     elif (hadAttr("json")):
                         push(valueFromJson(src))
                     elif (hadAttr("csv")):
-                        push(parseCsvInput(src, withHeaders=(hadAttr("withHeaders"))))
+                        if checkAttr("delimiter"):
+                            let delimiter = aDelimiter.c.char()
+                            push(parseCsvInput(src, withHeaders=hadAttr("withHeaders"), withDelimiter=delimiter))
+                        else:
+                            push(parseCsvInput(src, (hadAttr("withHeaders"))))
                     elif (hadAttr("bytecode")):
                         let bcode = readBytecode(x.s)
                         let parsed = doParse(bcode[0], isFile=false).a[0]

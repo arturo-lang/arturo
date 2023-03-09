@@ -1,0 +1,45 @@
+define :history [][
+    init: [
+        this\record: @[0]
+    ]
+]
+assign: function [historyVar,newValue][
+    historyVar\record: historyVar\record ++ newValue
+]
+
+alias.infix {'-->} 'assign
+
+records: function [historyVar][
+    historyVar\record
+]
+
+retrieve: function [historyVar][
+    result: last historyVar\record
+    historyVar\record: chop historyVar\record
+    return result
+]
+
+current: function [historyVar][
+    return last historyVar\record
+]
+
+do [
+    h: to :history []
+
+    print "Assigning three values: 1, 2, 3..."
+    h --> 1
+    h --> 2
+    h --> 3
+
+    print "\nHistory (oldest values first):"
+    print [">" records h]
+
+    print ["\nCurrent value is:" current h]
+
+    print "\nRecalling the three values..."
+    loop 1..3 'x ->
+        print ["- Recalled:" retrieve h]
+
+    print "\nHistory:"
+    print [">" records h]
+]

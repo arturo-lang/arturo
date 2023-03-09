@@ -48,6 +48,9 @@ template processTrigonometric(fun: untyped): untyped =
 # Methods
 #=======================================
 
+# TODO(Numbers) add `tau` constant
+#  labels:library, new feature
+ 
 proc defineSymbols*() =
 
     builtin "abs",
@@ -1295,6 +1298,10 @@ proc defineSymbols*() =
             #=======================================================
             processTrigonometric(sinh)
 
+    # TODO(Numbers) add `cbrt` built-in function
+    #  the goal would be to have a function that returns the cubic root of a number
+    #  potential use: https://rosettacode.org/wiki/Cubic_special_primes
+    #  labels: library, enhancement, new feature
     builtin "sqrt",
         alias       = unaliased, 
         op          = opNop,

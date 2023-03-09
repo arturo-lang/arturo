@@ -47,12 +47,17 @@ type
 
     BuiltinAction* = proc ()
 
-    # TODO(VM/values/types add new `:matrix` type?
+    # TODO(VM/values/types) add new `:matrix` type?
     #  this would normally go with a separate Linear Algebra-related stdlib module
     #  labels: vm, values, enhancement, open discussion
 
     # TODO(VM/values/types) add new `:typeset` type?
     #  or... could this be encapsulated in our existing `:type` values?
+    #  labels: vm, values, enhancement, open discussion
+
+    # TODO(Vm/values/types) add new `:exception` type?
+    #  this could work well with a new potential `try?`/`catch` syntax, 
+    #  or a `throw` method
     #  labels: vm, values, enhancement, open discussion
 
     ValueKind* = enum

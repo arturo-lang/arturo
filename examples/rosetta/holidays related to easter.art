@@ -1,0 +1,49 @@
+holidayOffsets: #[
+    "Easter": 0
+    "Ascension": 39
+    "Pentecost": 49
+    "Trinity": 56
+    "C/Christi": 60
+]
+
+easterDate: function [year][
+    a: year % 19
+    b: year / 100
+    c: year % 100
+    d: b / 4
+    e: b % 4
+    f: (b + 8) / 25
+    g: (1 + b - f) / 3
+    h: (((b - d) - g) + 15 + 19 * a) % 30
+    i: c / 4
+    k: c % 4
+    l: (32 + (2 * e) + ((2 * i) - h) - k) % 7
+    m: (a + (11 * h) + (22 * l)) / 451
+    n: h + (l - (7 * m)) + 114
+    month: n / 31
+    day: (n % 31) + 1
+    return to :date .format:"d-M-YYYY" ~"|day|-|month|-|year|"
+]
+
+outputHolidays: function [year][
+    edate: easterDate year
+
+    prints pad to :string year 4
+    prints "  "
+
+    loop holidayOffsets [holiday, offset][
+        newDate: after.days:offset edate
+        s: to :string .format:"dd MMM" newDate
+        prints pad.center s size holiday
+        prints "  "
+    ]
+    print ""
+]
+
+print "Year  Easter  Ascension  Pentecost  Trinity  C/Christi"
+print " CE   Sunday  Thursday    Sunday    Sunday   Thursday "
+print "----  ------  --------- ----------  -------  ---------"
+
+loop range.step:100 400 2100 => outputHolidays
+print ""
+loop 2010..2020 => outputHolidays

@@ -1,0 +1,8 @@
+productUpTo: #["1": 1]
+primorials: unique map 2..4000 'x ->
+    productUpTo\[x]: <= productUpTo\[x-1] * (prime? x)? -> x -> 1
+
+primorials | map.with:'i 'x -> @[i x]
+           | select.first:20 'x -> or? [prime? x\1 + 1][prime? x\1 - 1]
+           | map 'x -> x\0 + 1
+           | print

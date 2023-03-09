@@ -11,7 +11,7 @@ if 1 = size arg -> errorMargin: to :integer first arg
 
 supersuccess: 0
 superskipped: 0
-supertotal: 0 
+supertotal: 0
 
 canExecute?: function [scri][
     scr: extract.filename scri
@@ -20,10 +20,13 @@ canExecute?: function [scri][
             "runtime.NumberOutOfPermittedRange"
 
             "branching"
+            "lib.collections"
+            "lib.files"
             "sorting"
 
             "ackermann function"
             "arbitrary-precision integers - included"
+            "combinations and permutations"
             "curzon numbers"
             "hamming numbers"
             "iban"
@@ -38,6 +41,9 @@ canExecute?: function [scri][
             "next special primes"
             "pell's equation"
             "permutations - derangements"
+            "repunit primes"
+            "sequence of primorial primes"
+            "sort a list of object identifiers"
             "sorting algorithms - cycle sort"
             "sorting algorithms - pancake sort"
             "square root by hand"
@@ -47,7 +53,7 @@ canExecute?: function [scri][
             "unicode strings"
             "wieferich primes"
             "xml - input"
-        ] -> return false 
+        ] -> return false
     ]
 
     if sys\release='full [
@@ -73,7 +79,7 @@ runSet: function [title,location].export:[supersuccess,supertotal,superskipped][
         script: replace test ".res" ".art"
         expected: split.lines strip read test
 
-        prints pad.right ((color #magenta "\n- Running: ") ++ truncate.preserve extract.filename script 40) 70 
+        prints pad.right ((color #magenta "\n- Running: ") ++ truncate.preserve extract.filename script 40) 70
         if? canExecute? script [
 
             ;tim: benchmark.get [
@@ -103,7 +109,7 @@ runSet: function [title,location].export:[supersuccess,supertotal,superskipped][
             success: success + 1
             supersuccess: supersuccess + 1
         ]
-    ] 
+    ]
 
     print "\n"
     print pad.left render.template "<||= success ||> of <||= size tests ||> tasks succeeded ◀" 69
@@ -125,7 +131,7 @@ supertime: in's benchmark.get [
     runSet "Examples" "../examples/rosetta"
 ]
 
-if supersuccess < supertotal-errorMargin [ 
+if supersuccess < supertotal-errorMargin [
     panic.code: 1 "Some unit-tests failed!"
 ]
 
