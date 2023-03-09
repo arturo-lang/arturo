@@ -113,7 +113,7 @@ proc getSystemInfo*(): ValueDict =
                     newLiteral("full")
         }.toOrderedTable
         
-        result["cpu"].d["type"] = newString(hostCPU)
+        result["cpu"].d["arch"] = newString(hostCPU)
         result["cpu"].d["endian"] = 
             if cpuEndian == Endianness.littleEndian:
                 newLiteral("little")
