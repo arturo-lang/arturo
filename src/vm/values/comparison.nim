@@ -162,7 +162,7 @@ proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
                     if x.dbKind==SqliteDatabase: return cast[ByteAddress](x.sqlitedb) == cast[ByteAddress](y.sqlitedb)
                     #elif x.dbKind==MysqlDatabase: return cast[ByteAddress](x.mysqldb) == cast[ByteAddress](y.mysqldb)
             of Date:
-                return x.eobj == y.eobj
+                return x.eobj[] == y.eobj[]
             else:
                 return false
 
