@@ -45,6 +45,7 @@ canExecute?: function [scri][
             "quad-power prime seeds"
             "repunit primes"
             "sequence of primorial primes"
+            "smallest power of 6 whose decimal expansion contains n"
             "sort a list of object identifiers"
             "sorting algorithms - cycle sort"
             "sorting algorithms - pancake sort"
