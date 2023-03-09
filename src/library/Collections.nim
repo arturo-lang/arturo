@@ -1819,18 +1819,23 @@ proc defineSymbols*() =
                                 proc (v1, v2: Value): int =
                                 cmp(v1.d[aBy.s], v2.d[aBy.s]),
                                         order = sortOrdering)
-                        else:
+                        else:               
+                            var sortAscii = (hadAttr("ascii"))
+                            
                             if checkAttr("as"):
                                 InPlaced.a.unisort(aAs.s, sensitive = hadAttr(
-                                        "sensitive"), order = sortOrdering)
+                                        "sensitive"), order = sortOrdering, 
+                                        ascii = sortAscii)
                             else:
                                 if (hadAttr("sensitive")):
                                     InPlaced.a.unisort("en", sensitive = true,
-                                            order = sortOrdering)
+                                            order = sortOrdering, 
+                                            ascii = sortAscii)
                                 else:
                                     if InPlaced.a[0].kind == String:
                                         InPlaced.a.unisort("en",
-                                                order = sortOrdering)
+                                                order = sortOrdering, 
+                                                ascii = sortAscii)
                                     else:
                                         InPlaced.a.sort(order = sortOrdering)
                 else:
