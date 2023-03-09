@@ -12,7 +12,7 @@
 # Libraries
 #=======================================
 
-import lenientops, tables, unicode
+import lenientops, tables, unicode, times
 
 when defined(WEB):
     import std/jsbigints
@@ -253,7 +253,7 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
                 else:
                     return false
             of Date:
-                return x.eobj < y.eobj
+                return x.eobj[] < y.eobj[]
             else:
                 return false
 
@@ -344,7 +344,7 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
                 else:
                     return false
             of Date:
-                return x.eobj > y.eobj
+                return x.eobj[] > y.eobj[]
             else:
                 return false
 
