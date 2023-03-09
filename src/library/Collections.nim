@@ -780,6 +780,7 @@ proc defineSymbols*() =
     #  - just setting `.from:` will search from given index to the end
     #  - just setting `.to:` will search from the beginning to given index
     #  and so on...
+    #  use case: https://rosettacode.org/wiki/Text_between
     #  labels: library, enhancement
     builtin "index",
         alias       = unaliased,
