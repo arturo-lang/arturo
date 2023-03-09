@@ -42,6 +42,7 @@ canExecute?: function [scri][
             "pell's equation"
             "penta-power prime seeds"
             "permutations - derangements"
+            "quad-power prime seeds"
             "repunit primes"
             "sequence of primorial primes"
             "sort a list of object identifiers"
