@@ -21,10 +21,10 @@ do [
     
     ensure -> dictionary? sys\cpu
     ensure -> string? sys\cpu\type
-    ensure -> and? string? sys\cpu\endian
+    ensure -> and? literal? sys\cpu\endian
               or? 
-                equal? sys\cpu\endian "little"
-                equal? sys\cpu\endian "big"
+                equal? sys\cpu\endian 'little
+                equal? sys\cpu\endian 'big
     ensure -> string? sys\os
     passed
     
