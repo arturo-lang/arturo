@@ -1,0 +1,2 @@
+topic: $[topic :string] -> print ~"\n>> |topic|"
+passed: $[] -> print "[+] passed!"
