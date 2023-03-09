@@ -1,875 +1,776 @@
+
 >> append
 
-
 >> append - :binary < :binary :binary
+[+] passed!
+[+] passed!
 
-00 01 :binary 
-00 01 :binary 
+>> append - :binary < :binary (literal) :binary
+[+] passed!
+[+] passed!
 
 >> append - :binary < :binary :integer
+[+] passed!
+[+] passed!
 
-00 01 :binary 
-00 01 :binary 
+>> append - :binary < :binary (literal) :integer
+[+] passed!
+[+] passed!
 
 >> append - :string < :string + :string
+[+] passed!
+[+] passed!
 
-Arturo :string 
-Arturo :string 
-Language :string 
-Language :string 
+>> append - :string < :string (literal) + :string
+[+] passed!
+[+] passed!
 
 >> append - :string < :string + :char
+[+] passed!
+[+] passed!
 
-Arturo :string 
-Arturo :string 
-Language :string 
-Language :string 
+>> append - :string < :string (literal) + :char
+[+] passed!
+[+] passed!
 
 >> append - :string < :char + :char
+[+] passed!
+[+] passed!
 
-ab :string 
-ab :string 
-cd :string 
-cd :string 
+>> append - :string < :char (literal) + :char
+[+] passed!
+[+] passed!
 
 >> append - :string < :char + :string
+[+] passed!
+[+] passed!
 
-art :string 
-art :string 
-lang :string 
-lang :string 
+>> append - :string < :char (literal) + :string
+[+] passed!
+[+] passed!
 
 >> append - [:string] < [:string] + :string
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
-[A r t u r o] :block 
-[A r t u r o] :block 
-[L a n g u a g e] :block 
-[L a n g u a g e] :block 
-[A r t uro] :block 
-[A r t uro] :block 
-[L a n g uage] :block 
-[L a n g uage] :block 
+>> append - [:string] < [:string] (literal) + :string
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
->> append - [:string] < [:string] + [:string]
+>> append - [:string] < [:string] + :string - testing precedence
+[+] passed!
+[+] passed!
 
-[A r t u r o] :block 
-[A r t u r o] :block 
-[L a n g u a g e] :block 
-[L a n g u a g e] :block 
+>> append - :block < :block + :block
+[+] passed!
+[+] passed!
 
->> append - [:integer] < [:integer] + [:integer]|:integer
+>> append - :block < :block (literal) + :block
+[+] passed!
+[+] passed!
 
-[1 2 3 4 5 6] :block 
-[1 2 3 4 5 6] :block 
-[1 2 3 4 5 6 7] :block 
-[1 2 3 4 5 6 7] :block 
+>> chop - :string < :string :string
+[+] passed!
+[+] passed!
 
->> chop
+>> chop.times - :string < :string :string
+[+] passed!
 
-Art :string 
-Art :string 
-Art :string 
-Art :string 
-Art :string 
-[1 2 3] :block 
-[1 2 3] :block 
-[1 2 3] :block 
-[1 2 3] :block 
-[1 2 3] :block 
+>> chop - :string < :string (literal) :string
+[+] passed!
+[+] passed!
 
->> combine
+>> chop.times - :string < :string (literal) :string
+[+] passed!
 
-[[A B C]] :block 
-[[[A B] [C D]]] :block 
-[[A B] [A C] [B C]] :block 
-[[A A A] [A A B] [A A C] [A B B] [A B C] [A C C] [B B B] [B B C] [B C C] [C C C]] :block 
-[[A A] [A B] [A C] [B B] [B C] [C C]] :block 
-1 :integer 
-6 :integer 
+>> chop - :block < :block :block
+[+] passed!
+[+] passed!
 
->> contains?
+>> chop.times - :block < :block :block
+[+] passed!
 
+>> chop - :block < :block (literal) :block
+[+] passed!
+[+] passed!
 
->> contains? - with :string
+>> chop.times - :block < :block (literal) :block
+[+] passed!
 
-true :logical 
-true :logical 
-true :logical 
-false :logical 
-true :logical 
-false :logical 
+>> combine - .count - .repeat - .by
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
->> contains? - with :block
+>> contains? - :string
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
-true :logical 
-false :logical 
-true :logical 
-false :logical 
+>> contains? - :block
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> contains? - with nested :block
-
-false :logical 
-true :logical 
-false :logical 
-false :logical 
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> contains? - with :range
-
-true :logical 
-false :logical 
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> contains? - with :dictionary
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
-true :logical 
-true :logical 
-false :logical 
-false :logical 
-true :logical 
-true :logical 
-false :logical 
-false :logical 
+>> contains?.deep - with :block
+[+] passed!
+[+] passed!
+
+>> contains?.deep - with :dictionary
+[+] passed!
+[+] passed!
 
 >> couple
-
-[[one 1] [two 2] [three 3]] :block 
-[[one 1] [two 2] [three 3]] :block 
-[[1 one] [2 two] [3 three]] :block 
+[+] passed!
 
 >> decouple
+[+] passed!
+[+] passed!
 
-[[1 2 3] [one two three]] :block 
-[[1 2 3] [one two three]] :block 
+>> drop - :string < :string :string
+[+] passed!
+[+] passed!
 
->> drop
+>> drop - :string < :string (literal) :string
+[+] passed!
+[+] passed!
 
-turo :string 
-turo :string 
-[1 2 3 4 5] :block 
-[1 2 3 4 5] :block 
+>> drop - :block < :block :block
+[+] passed!
+[+] passed!
 
->> empty
+>> drop - :block < :block (literal) :block
+[+] passed!
+[+] passed!
 
-before empty
-[Arturo C Python Ruby] :block 
-[1 2 3 4 5 6 7 8 9 10] :block 
-[north south east west] :block 
-Arturo :string 
-[name:John surname:Doe] :dictionary 
-after empty
-[] :block 
-[] :block 
-[] :block 
- :string 
-[] :dictionary 
-
->> empty?
-
-true :logical 
-false :logical 
-true :logical 
-false :logical 
-true :logical 
-false :logical 
+>> empty - empty?
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> extend
+[+] passed!
 
-[name:john surname:doe] :dictionary 
-[name:john surname:doe age:35] :dictionary 
-[name:jane surname:doe] :dictionary 
-[name:jane surname:doe age:35] :dictionary 
+>> extend (literal)
+[+] passed!
 
->> first
-
-A :char 
-Art :string 
-one :string 
-[one two] :block 
-1
-5
-0
-1
-1 2 3 4 5 6 
-0
-0 1 2 3 4 5 
-0
-0 1 2 3 4 5 
+>> first - .n
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> flatten
+[+] passed!
+[+] passed!
 
-[1 2 3 4 5 6] :block 
-[[1 2 3] [4 5 6]] :block 
-[1 2 3 4 5 6] :block 
-[1 2 3 4 5 6] :block 
-[1 2 3 4 [5 6]] :block 
-[4 5 6 1 2 3] :block 
+>> flatten.once
+[+] passed!
+[+] passed!
 
->> get
+>> get - :string
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
-FD E8 :binary 
-E8 :binary 
-[hello] :block 
-[32 189 218] :block 
-15 :integer 
-January :string 
-John :string 
-John :string 
-John :string 
-Doe :string 
-Doe :string 
-Jane :string 
-zero :string 
-zero :string 
-[first one two] :block 
-J :char 
-D :char 
-NAME: John, SURNAME: Doe :person 
-john :string 
-1
-5
-John :string 
-Doe :string 
+>> get - :date
+[+] passed!
+[+] passed!
 
->> in?
+>> get - :binary
+[+] passed!
 
+>> get - :dictionary
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
->> in? - with :string
+>> get - :object
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
-true :logical 
-true :logical 
-true :logical 
-false :logical 
-true :logical 
-false :logical 
+>> get - :store
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
->> in? - with :block
+>> get - :block
+[+] passed!
+[+] passed!
+[+] passed!
 
-true :logical 
-false :logical 
-true :logical 
-false :logical 
+>> get - :range
+[+] passed!
+[+] passed!
+
+>> get - :bytecode
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> in? - :string
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> in? - :block
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> in? - with nested :block
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
-false :logical 
-true :logical 
-false :logical 
-false :logical 
-true
-false
-true
-false
-true
-false
-true
-false
+>> in? - with :range
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> in? - with :dictionary
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
-true :logical 
-true :logical 
-false :logical 
-false :logical 
-true :logical 
-true :logical 
-false :logical 
-false :logical 
+>> in?.deep - with :block
+[+] passed!
+[+] passed!
 
->> index
+>> in?.deep - with :dictionary
+[+] passed!
+[+] passed!
 
-1 :integer 
-2 :integer 
-null :null 
-name :string 
-surname :string 
-0
-1
-4
-5
+>> index - :string
+[+] passed!
+[+] passed!
 
->> insert
+>> index - :dictionary
+[+] passed!
+[+] passed!
 
-[name:John age:32] :dictionary 
-[name:Joe, Again] :dictionary 
-[zero 1 2 3 4] :block 
-[1 2 [3 4 5] 6 7 8 9 10] :block 
-[0 1 2 3 4] :block 
-hello :string 
-Arturo :string 
-hello :string 
-Ruby :string 
+>> index - :block
+[+] passed!
+[+] passed!
+[+] passed!
 
->> key?
+>> index - :range
+[+] passed!
+[+] passed!
 
-true :logical 
-true :logical 
-false :logical 
-false :logical 
-true :logical 
-true :logical 
-true :logical 
-true :logical 
-false :logical 
-false :logical 
+>> insert - :string
+[+] passed!
+[+] passed!
 
->> keys
+>> insert - :string (literal)
+[+] passed!
+[+] passed!
 
-[name surname] :block 
-[name surname] :block 
+>> get - :dictionary
+[+] passed!
 
->> last
+>> get - :dictionary (literal)
+[+] passed!
 
-o :char 
-uro :string 
-three :string 
-[two three] :block 
-10
-0
-40
-10
-5 6 7 8 9 10 
-10
-5 6 7 8 9 10 
-10
-5 6 7 8 9 10 
+>> get - :block
+[+] passed!
 
->> max
+>> get - :block (literal)
+[+] passed!
 
-9 :integer 
-5 :integer 
-Manchester :string 
-1 :integer 
-10
-5
-9
-0
-10
-9
-10
-5
-9
-0
-10
-5
-10
-0
+>> key? - :dictionary
+[+] passed!
+[+] passed!
+[+] passed!
 
->> min
+>> key? - :object
+[+] passed!
+[+] passed!
+[+] passed!
 
-1 :integer 
-4 :integer 
-Boston :string 
-2 :integer 
-1
-0
-0
-5
-1
-0
-1
-0
-0
-5
-0
-0
-0
-5
+>> keys - :dictionary
+[+] passed!
+
+>> keys - :object
+[+] passed!
+
+>> last - .n
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> max - [:integer] - .index
+[+] passed!
+[+] passed!
+
+>> max - [:string] - .index
+[+] passed!
+[+] passed!
+
+>> max - [:literal] - .index
+[+] passed!
+[+] passed!
+
+>> max - :range - .index
+[+] passed!
+[+] passed!
+
+>> min - [:integer] - .index
+[+] passed!
+[+] passed!
+
+>> min - [:string] - .index
+[+] passed!
+[+] passed!
+
+>> min - [:literal] - .index
+[+] passed!
+[+] passed!
+
+>> min - :range - .index
+[+] passed!
+[+] passed!
 
 >> one?
-
-
->> one? - with :integer
-
-true :logical 
-false :logical 
-
->> one? - with :floating
-
-true :logical 
-false :logical 
-
->> one? - with :string
-
-true :logical 
-false :logical 
-
->> one? - with :block
-
-true :logical 
-false :logical 
-
->> one? - with :range
-
-true
-false
-
->> one? - with :dictionary
-
-true :logical 
-false :logical 
-
->> one? - with :object
-
-true :logical 
-false :logical 
-
->> one? - with :null
-
-false :logical 
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> permutate
-
-[[A B C] [A C B] [B A C] [B C A] [C A B] [C B A]] :block 
-[[[1 2 3] [4 5 6]] [[4 5 6] [1 2 3]]] :block 
-[[A B] [A C] [B A] [B C] [C A] [C B]] :block 
-[[A A A] [A A B] [A A C] [A B A] [A B B] [A B C] [A C A] [A C B] [A C C] [B A A] [B A B] [B A C] [B B A] [B B B] [B B C] [B C A] [B C B] [B C C] [C A A] [C A B] [C A C] [C B A] [C B B] [C B C] [C C A] [C C B] [C C C]] :block 
-[[A A] [A B] [A C] [B A] [B B] [B C] [C A] [C B] [C C]] :block 
-6 :integer 
-9 :integer 
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> prepend
 
-
 >> prepend - :binary < :binary :binary
+[+] passed!
 
-01 00 :binary 
-01 00 :binary 
+>> prepend - :binary < :binary (literal) :binary
+[+] passed!
 
 >> prepend - :binary < :binary :integer
+[+] passed!
 
-01 00 :binary 
-01 00 :binary 
+>> prepend - :binary < :binary (literal) :integer
+[+] passed!
 
 >> prepend - :string < :string + :string
+[+] passed!
 
-Arturo :string 
-Arturo :string 
+>> prepend - :string < :string (literal) + :string
+[+] passed!
 
 >> prepend - :string < :string + :char
+[+] passed!
 
-Arturo :string 
-Arturo :string 
+>> prepend - :string < :string (literal) + :char
+[+] passed!
 
 >> prepend - :string < :char + :char
+[+] passed!
 
-ab :string 
-ab :string 
+>> prepend - :string < :char (literal) + :char
+[+] passed!
 
 >> prepend - :string < :char + :string
+[+] passed!
 
-art :string 
-art :string 
+>> prepend - :string < :char (literal) + :string
+[+] passed!
 
 >> prepend - [:string] < [:string] + :string
+[+] passed!
+[+] passed!
 
-[A r t u r o] :block 
-[A r t u r o] :block 
-[Art u r o] :block 
-[Art u r o] :block 
+>> prepend - [:string] < [:string] (literal) + :string
+[+] passed!
+[+] passed!
 
->> prepend - [:string] < [:string] + [:string]
+>> prepend - [:string] < [:string] + :string - testing precedence
+[+] passed!
 
-[A r t u r o] :block 
-[A r t u r o] :block 
+>> prepend - :block < :block + :block
+[+] passed!
 
->> prepend - [:integer] < [:integer] + [:integer]|:integer
+>> prepend - :block < :block (literal) + :block
+[+] passed!
 
-[1 2 3 4 5 6] :block 
-[0 1 2 3 4 5 6] :block 
-[0 1 2 3] :block 
+>> remove - :string
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
->> remove
+>> remove - :string (literal)
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
+>> remove - :dictionary
+[+] passed!
+[+] passed!
 
->> remove - default
+>> remove - :dictionary (literal)
+[+] passed!
+[+] passed!
 
-Art :string 
-Art :string 
-Lang :string 
-Lang :string 
-heo :string 
-heo :string 
-heo :string 
-heo :string 
-[1 2 3] :block 
-[1 3] :block 
-[1 2 3] :block 
-[1 3] :block 
-[1 2 3 4] :block 
-[1 6 3 4 6] :block 
-[1 [6 2] 5 3 [6 2] 4 5] :block 
-[1 6 3 4 6] :block 
-[1 [6 2] 5 3 [6 2] 4 5] :block 
-[surname:Doe] :dictionary 
-[surname:Doe] :dictionary 
-[surname:Wick] :dictionary 
+>> remove - :block
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
->> remove - .index
-
-[0 1 2 4 5] :block 
-[0 1 2 3 5] :block 
-[1 2 3 4 5] :block 
-[5 4 2 1 0] :block 
-[4 2 1 0] :block 
-[4 2 1] :block 
-
->> remove - .prefix
-
-function.art :string 
-function.art :string 
-
->> remove - .suffix
-
-test_function :string 
-test_function :string 
-
->> remove - .key
-
-[name:John] :dictionary 
-
->> remove - .once
-
-
->> remove - .once :string
-
-helo :string 
-helo :string 
-helo :string 
-helo :string 
-
->> remove - .once :block
-
-[1 2 3 4 5] :block 
-[1 2 3 4 5] :block 
-[1 5 3 4 5 6] :block 
-[1 [6 2] 5 3 4 5] :block 
-[[1 2] 3 4 1 2 [1 2] 3 4] :block 
-[1 5 3 4 5 6] :block 
-[1 [6 2] 5 3 [6 2] 4 5] :block 
-[[1 2] 3 4 1 2 [1 2] 3 4] :block 
-
->> remove - .once :dictionary
-
-[surname:Doe father:John] :dictionary 
-[surname:Doe father:John] :dictionary 
-
->> remove - .instance
-
-[1 2 1 2 3] :block 
-[1 2 1 2 3] :block 
-
->> remove - .instance.once
-
-[1 2 1 2 3 [1 2]] :block 
-[1 2 1 2 3 [1 2]] :block 
+>> remove - :block (literal)
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> repeat
+[+] passed!
+[+] passed!
+[+] passed!
 
-hellohellohello :string 
-ArturoArturoArturo :string 
-[1 2 3 1 2 3 1 2 3] :block 
-[[1 2 3] [1 2 3] [1 2 3]] :block 
-[4 5 6 4 5 6 4 5 6] :block 
+>> repeat (literal)
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> reverse
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
-[5 4 3 2 1] :block 
-[[7 8 9] [4 5 6] [1 2 3]] :block 
-retsehcnaM :string 
-[[7 8 9] [4 5 6] [1 2 3]] :block 
-orutrA :string 
-
->> reverse - with :range
-
-10..1 :range 
-0..10 :range 
-
->> reverse - .exact
-
-[5 4 3 2 1] :block 
-[[7 8 9] [4 5 6] [1 2 3]] :block 
-retsehcnaM :string 
-[[7 8 9] [4 5 6] [1 2 3]] :block 
-orutrA :string 
-
->> reverse - .exact with :range
-
-10..1 :range 
-0..10 :range 
+>> reverse (literal)
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> rotate
+[+] passed!
+[+] passed!
 
-[1 2 3 4 5] :block 
-[1 2 3 4 5] :block 
-Arturo :string 
-Arturo :string 
-[1 2 3 4 5] :block 
-[1 2 3 4 5] :block 
-Arturo :string 
-Arturo :string 
+>> rotate
+[+] passed!
+[+] passed!
 
 >> sample
+[+] passed!
+[+] passed!
 
-:string
-true
-:char
-true
+>> set - :string
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
->> set
+>> set - :binary
+[+] passed!
+[+] passed!
 
-00 :binary 
-01 :binary 
-[one 2 3 4] :block 
-[name:Michael age:34] :dictionary 
-[name:Jane age:34] :dictionary 
-[name:Christian age:34] :dictionary 
-NAME: John, SURNAME: Wick :person 
-Arturo :string 
-Arturo :string 
-John :string 
-Doe :string 
+>> set - :dictionary
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> set - :object
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> set - :store
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> set - :block
+[+] passed!
+[+] passed!
+
+>> set - :bytecode
 
 >> shuffle
-
-6
-true
-4
-true
+[+] passed!
+[+] passed!
 
 >> size
-
-Good morning! 13 
-Konnichiwa! 11 
-こんいちわ！ 6 
-[one two three] 3 
-11
-11
-21
-[name:John surname:Doe] 2 
-1 :integer 
-2 :integer 
-null 0 
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> slice
+[+] passed!
+[+] passed!
 
-Art :string 
-[C C++ Nim] :block 
-[C C++ Nim] :block 
-Art :string 
+>> slice - (literal)
+[+] passed!
+[+] passed!
 
->> sort
+>> sort - + .descending
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
-
->> sort - default
-
-[1 2 3 4 5] :block 
-[Arturo Python Ruby] :block 
-[art:Arturo c:C coffee:CoffeeScript nim:Nim] :dictionary 
-[1 2 3 4 5] :block 
-[Arturo Python Ruby] :block 
-[art:Arturo c:C coffee:CoffeeScript nim:Nim] :dictionary 
+>> sort - + .descending (literal)
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> sort - .values
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
-[age:45 id:012568 surname:Doe name:John city:Manchester] :dictionary 
-[age:45 id:012568 surname:Doe name:John city:Manchester] :dictionary 
-
->> sort - .sensitive .as with :block and :dictionary
-
-aberración abismo dos perversión tres uno Uno ábaco 
-aberración abismo dos perversión tres uno Uno ábaco 
-[h:aberración g:abismo b:dos e:perversión c:tres a:uno d:Uno f:ábaco]
-[h:aberración g:abismo b:dos e:perversión c:tres a:uno d:Uno f:ábaco]
-ábaco aberración abismo dos perversión tres uno Uno 
-ábaco aberración abismo dos perversión tres uno Uno 
-[f:ábaco h:aberración g:abismo b:dos e:perversión c:tres a:uno d:Uno]
-[f:ábaco h:aberración g:abismo b:dos e:perversión c:tres a:uno d:Uno]
-Uno aberración abismo dos perversión tres uno ábaco 
-Uno aberración abismo dos perversión tres uno ábaco 
-[d:Uno h:aberración g:abismo b:dos e:perversión c:tres a:uno f:ábaco]
-[d:Uno h:aberración g:abismo b:dos e:perversión c:tres a:uno f:ábaco]
-Uno ábaco aberración abismo dos perversión tres uno 
-Uno ábaco aberración abismo dos perversión tres uno 
-[d:Uno f:ábaco h:aberración g:abismo b:dos e:perversión c:tres a:uno]
-[d:Uno f:ábaco h:aberración g:abismo b:dos e:perversión c:tres a:uno]
-0 1 2 3 4 5 6 7 8 9 10 
-0 1 2 3 4 5 6 7 8 9 10 
-[k:0 j:1 i:2 h:3 g:4 f:5 e:6 d:7 c:8 b:9 a:10]
-[k:0 j:1 i:2 h:3 g:4 f:5 e:6 d:7 c:8 b:9 a:10]
-
->> sort - .descending .sensitive .as with :block and :dictionary
-
-ábaco uno Uno tres perversión dos abismo aberración 
-ábaco uno Uno tres perversión dos abismo aberración 
-[f:ábaco a:uno d:Uno c:tres e:perversión b:dos g:abismo h:aberración]
-[f:ábaco a:uno d:Uno c:tres e:perversión b:dos g:abismo h:aberración]
-uno Uno tres perversión dos abismo aberración ábaco 
-uno Uno tres perversión dos abismo aberración ábaco 
-[a:uno d:Uno c:tres e:perversión b:dos g:abismo h:aberración f:ábaco]
-[a:uno d:Uno c:tres e:perversión b:dos g:abismo h:aberración f:ábaco]
-ábaco uno tres perversión dos abismo aberración Uno 
-ábaco uno tres perversión dos abismo aberración Uno 
-[f:ábaco a:uno c:tres e:perversión b:dos g:abismo h:aberración d:Uno]
-[f:ábaco a:uno c:tres e:perversión b:dos g:abismo h:aberración d:Uno]
-uno tres perversión dos abismo aberración ábaco Uno 
-uno tres perversión dos abismo aberración ábaco Uno 
-[a:uno c:tres e:perversión b:dos g:abismo h:aberración f:ábaco d:Uno]
-[a:uno c:tres e:perversión b:dos g:abismo h:aberración f:ábaco d:Uno]
-10 9 8 7 6 5 4 3 2 1 0 
-10 9 8 7 6 5 4 3 2 1 0 
-[k:10 j:9 i:8 h:7 g:6 f:5 e:4 d:3 c:2 b:1 a:0]
-[k:10 j:9 i:8 h:7 g:6 f:5 e:4 d:3 c:2 b:1 a:0]
+>> sort - .values (literal)
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> sort - .by
 
-[[name:John surname:Doe] [name:Jane surname:Doe] [name:Arnold surname:Schwarzenegger] [name:John surname:Wick]] :block 
-[[name:Arnold surname:Schwarzenegger] [name:Jane surname:Doe] [name:John surname:Doe] [name:John surname:Wick]] :block 
-
 >> sorted?
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
-true
-false
-false
-true
-false
-false
-true
-false
-false
-true
-false
-false
+>> split - + .every
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
->> split
+>> split - + .every (literal)
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
-[A r t u r o] :block 
-[A r t u r o] :block 
-[[1 2 3] [4 5 6] [7 8]] :block 
-[[1 2 3] [4 5 6] [7 8]] :block 
-[1 2 3 4 5 6] :block 
-[1 2 3 4 5 6] :block 
+>> split - .words
+[+] passed!
+[+] passed!
 
->> split - .path
+>> split - .words (literal)
+[+] passed!
+[+] passed!
 
-[directory wofilerld] :block 
-[usr bin] :block 
-[directory wofilerld] :block 
-[usr bin] :block 
-[directory wofilerld] :block 
-[usr bin] :block 
-[usr bin] :block 
-[usr bin] :block 
-[usr bin] :block 
+>> split - .lines
+[+] passed!
+[+] passed!
 
->> split - .words & .lines
-
-[Hello World!] :block 
-[Hello World!] :block 
-[Hi my name is...] :block 
-[Hi my name is...] :block 
+>> split - .lines (literal)
+[+] passed!
+[+] passed!
 
 >> split - .by
+[+] passed!
+[+] passed!
+[+] passed!
 
-[directory file.ext] :block 
-[id nickname name age] :block 
+>> split - .by (literal)
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> split - .at
+[+] passed!
+[+] passed!
 
-[Hello , World] :block 
-[Hello , World] :block 
-[[Arnold Andreas Paul Ricard] [Linus Yanis Helena Eva Blanca]] :block 
-[[Arnold Andreas Paul Ricard Linus] [Linus Yanis Helena Eva Blanca]] :block 
+>> split - .at (literal)
+[+] passed!
 
->> split - .every
+>> split - .path
+[+] passed!
+[+] passed!
 
-[spl it  col lec tio n t o c omp one nts] :block 
-[[Arnold Andreas Paul] [Ricard Linus Yanis] [Helena Eva Blanca]] :block 
-[[Arnold Andreas Paul] [Ricard Linus Yanis] [Helena Eva Blanca]] :block 
-[Man che ste r] 3 3 3 1 
-[Artu ro] 4 2 
-[Man che ste r] 3 3 3 1 
-[Artu ro] 4 2 
+>> split - .path (literal)
+[+] passed!
+[+] passed!
 
 >> squeeze
+[+] passed!
+[+] passed!
+[+] passed!
 
-[1 2 3 4 2 3 4 5 6 7] :block 
-[1 [4 2 3] 1 2 3 [4 2 3] 4 5 [6 7]] :block 
-[1 [4 2 3] 1 2 3 [4 2 3] 4 5 [6 7]] :block 
-helo world :string 
-helo world :string 
-[4 2 1 3 6] :block 
+>> squeeze - (literal)
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> take
+[+] passed!
+[+] passed!
+[+] passed!
 
-some te :string 
-some te :string 
-[Arnold Andreas] :block 
-[Arnold Andreas] :block 
-[1 2 3] :block 
-[1 2 3] :block 
+>> take - (literal)
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> tally
-
-[h:1 e:1 l:3 o:2 W:1 r:1 d:1] :dictionary 
-[1:5 2:5 4:3 3:2 5:3 6:3 7:1] :dictionary 
+[+] passed!
+[+] passed!
 
 >> unique
+[+] passed!
+[+] passed!
+[+] passed!
 
-[1 2 4 3] :block 
-[1 2 4 3] :block 
-true
-Artuo :string 
-Artuo :string 
-true
+>> unique - literal
+[+] passed!
+[+] passed!
+[+] passed!
 
->> values
+>> values - :dictionary
+[+] passed!
 
-[Arturo Ruby Python Nim] :block 
-[1 2 3 4 5 6 7 8 9 10] :block 
-[1 2 3 4 5 6 7 8 9 10] :block 
-[1 2 3 4 5 6 7 8 9 10] :block 
-[1 2 3 4 5 6 7 8 9 10] :block 
-[John Doe 012568 Manchester 45] :block 
-NAME: John, SURNAME: Doe :person 
-[John Doe] :block 
+>> values - :object
+[+] passed!
+
+>> values - :block
+[+] passed!
+
+>> values - :range
+[+] passed!
+[+] passed!
 
 >> zero?
-
-
->> zero? - with :integer
-
-true :logical 
-false :logical 
-
->> zero? - with :floating
-
-true :logical 
-false :logical 
-
->> zero? - with :string
-
-true :logical 
-false :logical 
-
->> zero? - with :block
-
-true :logical 
-false :logical 
-
->> zero? - with :range
-
-false :logical 
-false :logical 
-false :logical 
-false :logical 
-true :logical 
-
->> zero? - with :dictionary
-
-true :logical 
-false :logical 
-[] :person 
-true :logical 
-
->> zero? - with :null
-
-true :logical
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!

@@ -22,3 +22,11 @@ proc flattenedDictionary*(vd: ValueDict): ValueArray =
     for k,v in vd.pairs:
         result.add(newString(k))
         result.add(v)
+        
+        
+proc getValuesinDeep*(dict: ValueDict): ValueArray =
+    for key, value in dict.pairs:
+        if value.kind == Dictionary:
+            result.add getValuesinDeep(value.d)
+        else:
+            result.add value
