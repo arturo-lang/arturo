@@ -1,0 +1,41 @@
+; import strformat, strutils
+; import bignum
+
+k: 1
+toFind: @0..50
+result: array.of:51 0
+
+while [0 < size toFind][
+    str: to :string k ^ k
+    ni: 0
+    while [ni < size toFind][
+        n: toFind\[ni]
+        print n
+        if? contains? str to :string n [
+            result\[n]: k
+            remove 'toFind n
+        ]
+        else [
+            ni: ni + 1
+        ]
+    ]
+    inc 'k
+]
+; var k = 1u
+; var toFind = {0..50}
+; var results: array[0..50, uint]
+; while toFind.card > 0:
+;   let str = $(pow(newInt(k), k))
+;   for n in toFind:
+;     if str.find($n) >= 0:
+;       results[n] = k
+;       toFind.excl(n)
+;   inc k
+
+print "Smallest values of k such that k^k contains n:"
+loop result [n,k][
+    print [n "->" k]
+]
+; for n, k in results:
+;   stdout.write &"{n:2} → {k:<2}   ", if (n + 1) mod 9 == 0: '\n' else: ' '
+; echo()
