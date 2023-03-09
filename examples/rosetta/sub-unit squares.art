@@ -1,0 +1,6 @@
+allSquares:  map 1..1000000 'x -> x^2
+subUnits: allSquares | select 'z -> not? some? digits z 'w -> w=0 
+                     | select 'x -> contains? allSquares to :integer join map digits x 'k -> k-1
+
+print ["The first" size subUnits "sub-unit squares:"]
+print subUnits
