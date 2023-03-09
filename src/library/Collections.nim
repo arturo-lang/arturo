@@ -1915,9 +1915,6 @@ proc defineSymbols*() =
     #  ```
     #  labels: library, bug
 
-    # TODO(Collections/split) `.every` not working properly with Literal values?
-    #  see: https://github.com/arturo-lang/arturo/pull/1045#issuecomment-1458674117
-    #  labels: library, bug
     builtin "split",
         alias       = unaliased,
         op          = opSplit,
@@ -1983,8 +1980,8 @@ proc defineSymbols*() =
                         var ret: seq[string]
                         var length = InPlaced.s.len
                         var i = 0
-
-                        while i <= length:
+                        
+                        while i < length:
                             if i + aEvery.i <= length:
                                 ret.add(InPlaced.s[i..i+aEvery.i-1])
                                 i += aEvery.i
