@@ -10,9 +10,10 @@
 # Libraries
 #=======================================
 
-import hashes, sequtils, strutils, tables, unicode
+import hashes, sequtils, strutils, tables, unicode, algorithm, sugar
 
 import helpers/sets
+import helpers/unisort
 
 import vm/values/comparison
 import vm/values/value
@@ -211,3 +212,91 @@ proc prependInPlace*(s: var Value, t: Value) {.inline,enforceNoRaises.} =
     for i in t.a:
         s.a.insert(i, cnt)
         cnt += 1
+
+
+# `collections\sort` related functions for arrays
+
+type SortParams* = tuple
+    descending: bool
+    sensitive:  bool
+    ascii:      bool
+    language:   string
+    key:        string
+
+proc sortBlockBy(container: ValueArray, order: SortOrder, key: string): ValueArray =
+    
+    case container[0].kind
+    of Dictionary: return container.sorted(
+            (x, y) => cmp(x.d[key], y.d[key]), 
+            order = order
+        )
+    of Object: return container.sorted(
+            (x, y) => cmp(x.o[key], y.o[key]), 
+            order = order
+        )
+    else: discard # should raise an error
+
+
+proc sortBlock*(
+    container: ValueArray, 
+    params: SortParams
+    ): ValueArray =
+    
+    let order: SortOrder =
+        if params.descending: SortOrder.Descending
+        else:  SortOrder.Ascending
+        
+    if params.key == "":
+        return container.sortBlockBy(order, params.key)
+        
+    if container[0].kind == String:
+        echo "1"
+        return container.unisorted(
+            lang      = params.language,
+            sensitive = params.sensitive,
+            ascii     = params.ascii,
+            order     = order
+        )
+    else:
+        echo "2"
+        return container.sorted(order)
+    
+
+proc sortBlockBy(container: var ValueArray, order: SortOrder, key: string) =
+    
+    case container[0].kind
+    of Dictionary: container.sort(
+            (x, y) => cmp(x.d[key], y.d[key]), 
+            order = order
+        )
+    of Object: container.sort(
+            (x, y) => cmp(x.o[key], y.o[key]), 
+            order = order
+        )
+    else: discard # should raise an error
+
+
+proc sortBlock*(
+    container: var ValueArray, 
+    params: SortParams
+    ) =
+    
+    let order: SortOrder =
+        if params.descending: SortOrder.Descending
+        else:  SortOrder.Ascending
+        
+    if params.key == "":
+        container.sortBlockBy(order, params.key)
+    elif container[0].kind == String:
+        container.unisort(
+            lang      = params.language,
+            sensitive = params.sensitive,
+            ascii     = params.ascii,
+            order     = order
+        )
+    else:
+        container.sort(order = order)
+    
+        
+    
+    

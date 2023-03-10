@@ -30,13 +30,12 @@ when not defined(NOGMP):
 import algorithm, os, random, sequtils
 import strutils, sugar, unicode
 
-import helpers/arrays
+import helpers/[arrays, dictionaries]
 import helpers/combinatorics
 import helpers/ranges
 when not defined(WEB):
     import helpers/stores
 import helpers/strings
-import helpers/unisort
 
 import vm/lib
 
@@ -1685,159 +1684,43 @@ proc defineSymbols*() =
             sort 'b
             print b                       ; one three two
         """:
-            #=======================================================
-            var sortOrdering = SortOrder.Ascending
-
-            if (hadAttr("descending")):
-                sortOrdering = SortOrder.Descending
-
-            if x.kind == Block:
-                if x.a.len == 0: push(newBlock())
-                else:
-                    if checkAttr("by"):
-                        if x.a.len > 0:
-                            var sorted: ValueArray
-
-                            if x.a[0].kind == Dictionary:
-                                sorted = x.a.sorted(
-                                    proc (v1, v2: Value): int =
-                                    cmp(v1.d[aBy.s], v2.d[aBy.s]),
-                                            order = sortOrdering)
-                            else:
-                                sorted = x.a.sorted(
-                                    proc (v1, v2: Value): int =
-                                    cmp(v1.o[aBy.s], v2.o[aBy.s]),
-                                            order = sortOrdering)
-
-                            push(newBlock(sorted))
-                        else:
-                            push(newDictionary())
-                    else:
-                        var sortAscii = (hadAttr("ascii"))
-
-                        if checkAttr("as"):
-                            push(newBlock(x.a.unisorted(aAs.s,
-                                    sensitive = hadAttr("sensitive"),
-                                    order = sortOrdering, ascii = sortAscii)))
-                        else:
-                            if (hadAttr("sensitive")):
-                                push(newBlock(x.a.unisorted("en",
-                                        sensitive = true, order = sortOrdering,
-                                        ascii = sortAscii)))
-                            else:
-                                if x.a[0].kind == String:
-                                    push(newBlock(x.a.unisorted("en",
-                                            order = sortOrdering,
-                                            ascii = sortAscii)))
-                                else:
-                                    push(newBlock(x.a.sorted(
-                                            order = sortOrdering)))
-
-            elif x.kind == Dictionary:
-                var sorted = x.d
-                var sortAscii = (hadAttr("ascii"))
-
-                if checkAttr("as"):
-                    push(newDictionary(sorted.unisorted(aAs.s, 
-                        sensitive = hadAttr("sensitive"),
-                        order = sortOrdering, 
-                        ascii = sortAscii,
-                        byValue = hadAttr("values"))))
-                else:
-                    if (hadAttr("sensitive")):
-                        push(newDictionary(sorted.unisorted("en", 
-                            sensitive = true,
-                            order = sortOrdering, 
-                            ascii = sortAscii,
-                            byValue = hadAttr("values"))))
-                    else:
-                        var isString = false
-                        for v in values(sorted):
-                            if v.kind == String:
-                                isString = true
-                            break
-
-                        if isString:
-                            push(newDictionary(sorted.unisorted("en",
-                                order = sortOrdering,
-                                ascii = sortAscii,
-                                byValue = hadAttr("values"))))
-                        else:
-                            var res = newOrderedTable[string, Value]()
-                            for k, v in sorted.pairs:
-                                res[k] = v
-
-                            if hadAttr("values"):
-                                res.sort(proc (x, y: (string, Value)): int = 
-                                    cmp(x[1], y[1])
-                                , order = sortOrdering)
-                            else:
-                                res.sort(proc (x, y: (string, Value)): int = 
-                                    cmp(x[0], y[0])
-                                , order = sortOrdering)
-
-                            push(newDictionary(res))
-
+            #=======================================================                 
+                 
+                           
+            if x.a.len == 0: push(newBlock())
             else:
-                ensureInPlace()
-                if InPlaced.kind == Block:
-                    if InPlaced.a.len > 0:
-                        if checkAttr("by"):
-                            InPlaced.a.sort(
-                                proc (v1, v2: Value): int =
-                                cmp(v1.d[aBy.s], v2.d[aBy.s]),
-                                        order = sortOrdering)
-                        else:
-                            if checkAttr("as"):
-                                InPlaced.a.unisort(aAs.s, sensitive = hadAttr(
-                                        "sensitive"), order = sortOrdering)
-                            else:
-                                if (hadAttr("sensitive")):
-                                    InPlaced.a.unisort("en", sensitive = true,
-                                            order = sortOrdering)
-                                else:
-                                    if InPlaced.a[0].kind == String:
-                                        InPlaced.a.unisort("en",
-                                                order = sortOrdering)
-                                    else:
-                                        InPlaced.a.sort(order = sortOrdering)
-                else:
-                    var sortAscii = (hadAttr("ascii"))
-
-                    if checkAttr("as"):
-                        InPlaced.d.unisort(aAs.s, 
-                            sensitive = hadAttr("sensitive"),
-                            order = sortOrdering, 
-                            ascii = sortAscii,
-                            byValue = hadAttr("values"))
-                    else:
-                        if (hadAttr("sensitive")):
-                            InPlaced.d.unisort("en", 
-                                sensitive = true,
-                                order = sortOrdering, 
-                                ascii = sortAscii,
-                                byValue = hadAttr("values"))
-                        else:
-                            var isString = false
-                            for v in values(InPlaced.d):
-                                if v.kind == String:
-                                    isString = true
-                                break
-
-                            if isString:
-                                InPlaced.d.unisort("en",
-                                    order = sortOrdering,
-                                    ascii = sortAscii,
-                                    byValue = hadAttr("values"))
-                            else:
-                                if hadAttr("values"):
-                                    InPlaced.d.sort(proc (x, y: (string, Value)): int = 
-                                        cmp(x[1], y[1])
-                                    , order = sortOrdering)
-                                else:
-                                    InPlaced.d.sort(proc (x, y: (string, Value)): int = 
-                                        cmp(x[0], y[0])
-                                    , order = sortOrdering)
+                
+                var params: SortParams = 
+                    (
+                        descending: hadAttr("descending"), 
+                        sensitive: hadAttr("sensitive"), 
+                        ascii: hadAttr("ascii"),
+                        language:
+                            if checkAttr("as"): aAs.s
+                            else: "en",
+                        key:
+                            if checkAttr("by"): aBy.s
+                            else: "" 
+                    )     
+                
+                proc asImmut[T](t: T): lent T = t
+                
+                case x.kind
+                of Block: 
+                    push newBlock(x.a.asImmut.sortBlock(params))
+                of Dictionary: 
+                    push newDictionary(x.d.asImmut.sortDictionary(
+                        params, hadAttr("values")))
+                of Literal:
+                    ensureInPlace()
+                    case InPlaced.kind
+                    of Block: 
+                        Inplaced.a.sortBlock(params)
+                    of Dictionary: 
+                        Inplaced.d.sortDictionary(params, hadAttr("values"))
+                    else: discard  # should raise an error 
+                else: discard
+                
 
     # TODO(Collections/sorted?) doesn't work properly
     #  it should work in an identical way as `sort`
