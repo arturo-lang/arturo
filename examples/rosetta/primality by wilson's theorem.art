@@ -1,4 +1,4 @@
-; by @krenium
+; by @Krenium
 
 factorial: function [x]-> product 1..x
 
