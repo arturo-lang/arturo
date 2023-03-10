@@ -47,7 +47,7 @@ if 2>sys\build -> buildNo: ""
 
 Details: {
     # version : v/|sys\version| |buildNo|@ |sys\buildDate|
-    # arch    : |sys\cpu|/|sys\os|
+    # arch    : |sys\cpu\arch|/|sys\os|
 }
 
 BR: "\n"
