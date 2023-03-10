@@ -23,7 +23,7 @@ when not defined(NOSQLITE):
 
 import pcre
 
-import os, strutils, tables, times
+import os, strutils, tables, times, system
 
 import helpers/terminal
 
@@ -104,7 +104,7 @@ proc getSystemInfo*(): ValueDict =
                     newString("arturo.js")
                 else:
                     newString(getAppFilename()),
-            "cpu"       : newString(hostCPU),
+            "cpu"       : newDictionary(),
             "os"        : newString(hostOS),
             "release"   : 
                 when defined(MINI):
@@ -112,6 +112,13 @@ proc getSystemInfo*(): ValueDict =
                 else:
                     newLiteral("full")
         }.toOrderedTable
+        
+        result["cpu"].d["arch"] = newLiteral(hostCPU)
+        result["cpu"].d["endian"] = 
+            if cpuEndian == Endianness.littleEndian:
+                newLiteral("little")
+            else:
+                newLiteral("big")
 
         when not defined(NOGMP):
             result["deps"].d["gmp"] = newVersion($(gmpVersion))
