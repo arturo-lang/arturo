@@ -376,7 +376,10 @@ proc defineSymbols*() =
             ;		pcre    :		8.45.0 :version
             ;	] 
             ;	binary     :	/Users/drkameleon/OpenSource/arturo-lang/arturo/bin/arturo :string
-            ;	cpu        :	amd64 :string
+            ;	cpu        :        [ :dictionary
+            ;           arch    :                amd64 :literal
+            ;           endian  :                little :literal
+            ;   ]
             ; 	os         :	macosx :string
             ;  	release    :	full :literal
             ;]
