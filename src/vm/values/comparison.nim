@@ -12,7 +12,7 @@
 # Libraries
 #=======================================
 
-import lenientops, tables, unicode, times
+import lenientops, tables, times, unicode
 
 when defined(WEB):
     import std/jsbigints
