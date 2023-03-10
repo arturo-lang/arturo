@@ -333,14 +333,6 @@ proc defineSymbols*() =
     #  obviously, we should normalize this, but we need to decide on a single name
     #  and then, we need to make sure that all our build scripts are using the same name
     #  labels: library, enhancement, open discussion
-
-    # TODO(System/sys) add info about endianess?
-    #  we could add another field to the dictionary, like "endianess" : "big" or "little"
-    #  or, perhaps even better, make our existing cpu field a dictionary with two fields:
-    #  - type: amd64
-    #  - endian: little
-    #  ...
-    #  labels: library, enhancement
     builtin "sys",
         alias       = unaliased, 
         op          = opNop,
