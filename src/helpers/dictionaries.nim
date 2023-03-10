@@ -24,7 +24,14 @@ proc flattenedDictionary*(vd: ValueDict): ValueArray =
         result.add(newString(k))
         result.add(v)
         
-        
+proc getValuesinDeep*(dict: ValueDict): ValueArray =
+    for key, value in dict.pairs:
+        if value.kind == Dictionary:
+            result.add getValuesinDeep(value.d)
+        else:
+            result.add value
+
+
 # `collections\sort` related functions for dictionaries
 
 proc all(s: ValueDict, pred: (Value) -> bool): bool =
@@ -92,4 +99,3 @@ proc sortDictionary*(
             dictionary.sort((x, y) => cmp(x[1], y[1]), order = order)
         else:
             dictionary.sort((x, y) => cmp(x[0], y[0]), order = order)
-        

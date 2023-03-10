@@ -419,6 +419,47 @@ do [
 
 ]
 
+topic "contains?.deep - with :block"
+do [
+ 
+    ensure -> contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 6
+    ensure -> contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 5
+    ensure -> contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 8
+    ensure -> contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 9
+    ensure -> contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 10
+    ensure -> contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 3
+    ensure -> contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 4
+    ensure -> contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 2
+    ensure -> contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 1
+    passed
+    ensure -> not? contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 11
+    ensure -> not? contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 0
+    passed
+    
+]
+
+topic "contains?.deep - with :dictionary"
+do [
+    
+    user: #[ 
+        name: "John" 
+        surname: "Doe"
+        mom: #[
+            name: "Jane"
+            surname: "Doe"
+        ]
+    ]
+    
+    ensure -> contains?.deep user "John"
+    ensure -> contains?.deep user "Jane"
+    ensure -> contains?.deep user "Doe"
+    passed
+    ensure -> not? contains?.deep user "Joshep"
+    ensure -> not? contains?.deep user "Juan"
+    passed
+    
+]
+
 ; couple don't support literals yet
 topic "couple"
 do [
@@ -580,6 +621,24 @@ do [
     
     i: 0
     ensure -> `r` = s\[i + 1]
+    passed
+    
+    ensure -> "Art"    = get s 0..2
+    ensure -> "Artur"  = get s 0..4
+    ensure -> "Arturo" = get s 0..5
+    ensure -> "orutrA" = get s 5..0
+    ensure -> "rutrA"  = get s 4..0
+    ensure -> "trA"    = get s 2..0
+    ensure -> "r"      = get s 1..1
+    passed
+    
+    ensure -> "Art" = s\[0..2]
+    ensure -> "Artur" = s\[0..4]
+    ensure -> "Arturo" = s\[0..5]
+    ensure -> "orutrA" = s\[5..0]
+    ensure -> "rutrA" = s\[4..0]
+    ensure -> "trA" = s\[2..0]
+    ensure -> "r" = s\[1..1]
     passed
     
 ]
@@ -793,6 +852,47 @@ do [
     ensure -> not? in? "Jane" dict 
     passed
 
+]
+
+topic "in?.deep - with :block"
+do [
+ 
+    ensure -> in?.deep 6 [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 
+    ensure -> in?.deep 5 [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 
+    ensure -> in?.deep 8 [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 
+    ensure -> in?.deep 9 [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 
+    ensure -> in?.deep 3 [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 
+    ensure -> in?.deep 4 [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 
+    ensure -> in?.deep 2 [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 
+    ensure -> in?.deep 1 [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 
+    ensure -> in?.deep 10 [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 
+    passed
+    ensure -> not? in?.deep 0 [1 2 4 [3 4 [5 6] 7] 8 [9 10]]
+    ensure -> not? in?.deep 11 [1 2 4 [3 4 [5 6] 7] 8 [9 10]]
+    passed
+    
+]
+
+topic "in?.deep - with :dictionary"
+do [
+    
+    user: #[ 
+        name: "John" 
+        surname: "Doe"
+        mom: #[
+            name: "Jane"
+            surname: "Doe"
+        ]
+    ]
+    
+    ensure -> in?.deep "John" user
+    ensure -> in?.deep "Jane" user
+    ensure -> in?.deep "Doe" user
+    passed
+    ensure -> not? in?.deep "Joshep" user
+    ensure -> not? in?.deep "Juan" user
+    passed
+    
 ]
 
 
@@ -2035,17 +2135,17 @@ do [
     ; .ascii
     
     
-    ; a: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
-    ; sort.ascii 'a
-    ; ensure -> ["ábaco" "aberración" "abismo" "dos" "perversión" "tres" "uno" "Uno"]
-    ;     = a
-    ; passed
+    a: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+    sort.ascii 'a
+    ensure -> ["ábaco" "aberración" "abismo" "dos" "perversión" "tres" "uno" "Uno"]
+        = a
+    passed
     
-    ; a: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
-    ; sort.descending.ascii 'a
-    ; ensure -> ["uno" "Uno" "tres" "perversión" "dos" "abismo" "aberración" "ábaco"]
-    ;    = a
-    ; passed
+    a: ["uno","dos","tres","Uno","perversión","ábaco","abismo", "aberración"]
+    sort.descending.ascii 'a
+    ensure -> ["uno" "Uno" "tres" "perversión" "dos" "abismo" "aberración" "ábaco"]
+       = a
+    passed
     
     
 ]
@@ -2349,9 +2449,9 @@ do [
     ensure -> ["A" "r" "t" "u" "r" "o"] = a
     passed
     
-    ; a: "Arturo", split.every: 3 'a
-    ; ensure -> ["Art" "uro"] = a
-    ; passed
+    a: "Arturo", split.every: 3 'a
+    ensure -> ["Art" "uro"] = a
+    passed
     
     ; Don't do anyting for :block type
     a: [[1 2 3] [4 5 6] [7 8]], split 'a

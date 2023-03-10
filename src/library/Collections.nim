@@ -30,9 +30,11 @@ when not defined(NOGMP):
 import algorithm, os, random, sequtils
 import strutils, sugar, unicode
 
-import helpers/[arrays, dictionaries]
+import helpers/arrays
+import helpers/dictionaries
 import helpers/combinatorics
 import helpers/ranges
+
 when not defined(WEB):
     import helpers/stores
 import helpers/strings
@@ -222,10 +224,6 @@ proc defineSymbols*() =
                 push(newBlock(getCombinations(x.a, sz, doRepeat).map((
                         z)=>newBlock(z))))
 
-    # TODO(Collections/contains?) add new `.deep` option?
-    #  this would allow us to check whether a nested block contains a specific value
-    #  e.g. `contains?.deep [[1 2 3] [4 5 6]] 2` would return *true*
-    #  labels: library, enhancement, open discussion
 
     # TODO(Collections/contains?) add new `.key` option?
     #  this would allow us to check whether the given dictionary contains a specific key
@@ -241,7 +239,8 @@ proc defineSymbols*() =
             "value"     : {Any}
         },
         attrs       = {
-            "at"    : ({Integer}, "check at given location within collection")
+            "at"    : ({Integer}, "check at given location within collection"),
+            "deep"    : ({Logical}, "searches recursively in deep for a value.")
         },
         returns     = {Logical},
         example     = """
@@ -270,6 +269,17 @@ proc defineSymbols*() =
             ; false
 
             print contains?.at:1 ["one" "two" "three"] "two"
+            ; true
+            ..........
+            print contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 6
+            ; true
+            ..........
+            user: #[ 
+                name: "John" surname: "Doe"
+                mom: #[ name: "Jane" surname: "Doe" ]
+            ]
+            
+            print contains?.deep user "Jane"
             ; true
         """:
             #=======================================================
@@ -302,12 +312,19 @@ proc defineSymbols*() =
                         else:
                             push(newLogical(y.s in x.s))
                     of Block:
-                        push(newLogical(y in x.a))
+                        if hadAttr("deep"):
+                            push newLogical(x.a.inNestedBlock(y))
+                        else:
+                            push(newLogical(y in x.a))
                     of Range:
                         push(newLogical(y in x.rng))
                     of Dictionary:
-                        let values = toSeq(x.d.values)
-                        push(newLogical(y in values))
+                        if hadAttr("deep"):
+                            let values: ValueArray = x.d.getValuesinDeep()
+                            push newLogical(y in values)
+                        else:
+                            let values = toSeq(x.d.values)
+                            push(newLogical(y in values))
                     else:
                         discard
 
@@ -585,6 +602,7 @@ proc defineSymbols*() =
             print get str 1               ; e
             z: 0
             print str\[z+1]               ; e
+            print str\[0..4]              ; Hello
         """:
             #=======================================================
             case x.kind:
@@ -640,14 +658,20 @@ proc defineSymbols*() =
                             else:
                                 push(getStoreKey(x.sto, $(y)))
                 of String:
-                    push(newChar(x.s.runeAtPos(y.i)))
+                    if likely(y.kind==Integer):
+                        push(newChar(x.s.runeAtPos(y.i)))
+                    else:
+                        let rLen = y.rng.len
+                        var res: seq[Rune] = newSeq[Rune](rLen)
+                        var i = 0
+                        for item in items(y.rng):
+                            res[i] = x.s.runeAtPos(item.i)
+                            i += 1
+                        push(newString($(res)))
                 of Date:
                     push(GetKey(x.e, y.s))
                 else: discard
 
-    # TODO(Collections/in?) add new `.deep` option?
-    #  same as with `contains?`
-    #  labels: library, enhancement, open discussion
 
     # TODO(Collections/in?) add new `.key` option?
     #  same as with `contains?`
@@ -662,7 +686,8 @@ proc defineSymbols*() =
             "collection": {String, Block, Range, Dictionary}
         },
         attrs       = {
-            "at"    : ({Integer}, "check at given location within collection")
+            "at"    : ({Integer}, "check at given location within collection"),
+            "deep"    : ({Logical}, "searches recursively in deep for a value.")
         },
         returns     = {Logical},
         example     = """
@@ -691,6 +716,17 @@ proc defineSymbols*() =
             ; false
 
             print in?.at:1 "two" ["one" "two" "three"]
+            ; true
+            ..........
+            print in?.deep 6 [1 2 4 [3 4 [5 6] 7] 8 [9 10]]
+            ; true
+            ..........
+            user: #[ 
+                name: "John" surname: "Doe"
+                mom: #[ name: "Jane" surname: "Doe" ]
+            ]
+            
+            print in?.deep "Jane" user
             ; true
         """:
             #=======================================================
@@ -723,12 +759,19 @@ proc defineSymbols*() =
                         else:
                             push(newLogical(x.s in y.s))
                     of Block:
-                        push(newLogical(x in y.a))
+                        if hadAttr("deep"):
+                            push newLogical(y.a.inNestedBlock(x))
+                        else:
+                            push(newLogical(x in y.a))
                     of Range:
                         push(newLogical(x in y.rng))
                     of Dictionary:
-                        let values = toSeq(y.d.values)
-                        push(newLogical(x in values))
+                        if hadAttr("deep"):
+                            let values: ValueArray = y.d.getValuesinDeep()
+                            push newLogical(x in values)
+                        else:
+                            let values = toSeq(y.d.values)
+                            push(newLogical(x in values))
                     else:
                         discard
 
@@ -1689,7 +1732,7 @@ proc defineSymbols*() =
                            
             if x.a.len == 0: push(newBlock())
             else:
-                
+              
                 var params: SortParams = 
                     (
                         descending: hadAttr("descending"), 
@@ -1766,9 +1809,6 @@ proc defineSymbols*() =
     #  ```
     #  labels: library, bug
 
-    # TODO(Collections/split) `.every` not working properly with Literal values?
-    #  see: https://github.com/arturo-lang/arturo/pull/1045#issuecomment-1458674117
-    #  labels: library, bug
     builtin "split",
         alias       = unaliased,
         op          = opSplit,
@@ -1834,8 +1874,8 @@ proc defineSymbols*() =
                         var ret: seq[string]
                         var length = InPlaced.s.len
                         var i = 0
-
-                        while i <= length:
+                        
+                        while i < length:
                             if i + aEvery.i <= length:
                                 ret.add(InPlaced.s[i..i+aEvery.i-1])
                                 i += aEvery.i

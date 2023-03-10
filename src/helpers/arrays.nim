@@ -211,9 +211,19 @@ proc prependInPlace*(s: var Value, t: Value) {.inline,enforceNoRaises.} =
     var cnt = 0
     for i in t.a:
         s.a.insert(i, cnt)
-        cnt += 1
-
-
+        cnt += 1 
+      
+proc inNestedBlock*(container: ValueArray, target: Value): bool =
+    for element in container:
+        if element == target:
+            return true
+        if element.kind == Block:
+            if element.a.inNestedBlock(target):
+                return true
+        
+    return false
+        
+        
 # `collections\sort` related functions for arrays
 
 type SortParams* = tuple
@@ -294,7 +304,3 @@ proc sortBlock*(
         )
     else:
         container.sort(order = order)
-    
-        
-    
-    
