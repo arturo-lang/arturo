@@ -250,7 +250,6 @@ proc sortBlock*(
         return container.sortBlockBy(order, params.key)
         
     if container[0].kind == String:
-        echo "1"
         return container.unisorted(
             lang      = params.language,
             sensitive = params.sensitive,
@@ -258,7 +257,6 @@ proc sortBlock*(
             order     = order
         )
     else:
-        echo "2"
         return container.sorted(order)
     
 
