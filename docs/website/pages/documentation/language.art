@@ -247,7 +247,7 @@ A string is nothing but a series of characters, seen as one unit. In Arturo, to 
 **Single-line strings**
 
 - using double quotes: ```x: "this is a string"``` (with escaped characters)
-- using right *smart-quote* notation ```x: » This is a string``` (in this case, everything following `»` till the end of the line, will be stripped and considered one string)
+- using right *smart-quote* notation ```x: « This is a string``` (in this case, everything following `«` till the end of the line, will be stripped and considered one string)
 
 **Multi-line strings**
 
