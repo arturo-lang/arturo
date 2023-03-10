@@ -434,7 +434,7 @@ proc defineSymbols*() =
     # TODO(Strings/match) should work for Web builds as well
     #  labels: library, web, bug
 
-    # TODO(Strings/match) added support for Char values as the value-to-match
+    # TODO(Strings/match) add support for Char values as the value-to-match
     #  labels: library, enhancement
     when not defined(WEB):
         builtin "match",
