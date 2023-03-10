@@ -444,7 +444,7 @@ proc defineSymbols*() =
             description = "get matches within string, using given regular expression",
             args        = {
                 "string": {String},
-                "regex" : {Regex, String}
+                "regex" : {Regex, String, Char}
             },
             attrs       = {
                 "once"      : ({Logical},"get just the first match"),
@@ -492,7 +492,8 @@ proc defineSymbols*() =
                 #=======================================================
                 let rgx : VRegex =
                     if y.kind==Regex: y.rx
-                    else: newRegex(y.s).rx
+                    elif y.kind==String: newRegex(y.s).rx
+                    else: newRegex($(y.c)).rx
 
                 var iFrom = 0
                 var iTo = int.high
