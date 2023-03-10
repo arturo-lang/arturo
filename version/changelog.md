@@ -20,6 +20,7 @@ v0.9.84
 - Collections\sort: fixed `.ascii` when working with Literal values
 - Files\read: added `.delimiter:` support for CSV's
 - Statistics\median: fixed bug + better and more efficient implementation
+- Strings\match: added support for Char values as needle
 - System\sys: added info about CPU endianess and re-organized returned information
 
 ### Misc
