@@ -1,0 +1,13 @@
+print type 2
+print type "hello world"
+print type [1 2 3]
+
+print is? :integer 4
+print is? :integer "hello world"
+
+print is? :string "hello world"
+print is? :string 7
+
+print string? "boom"
+print logical? true
+print block? ["one" "two" "three"]

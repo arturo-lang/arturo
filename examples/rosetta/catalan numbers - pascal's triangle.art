@@ -1,0 +1,13 @@
+n: 15
+t: new array.of:n+2 0
+
+t\[1]: 1
+
+loop 1..n 'i [
+    loop i..1 'j -> t\[j]: t\[j] + t\[j-1]
+    t\[i+1]: t\[i]
+    loop (i+1)..1 'j -> t\[j]: t\[j] + t\[j-1]
+    prints t\[i+1] - t\[i]
+    prints " "
+]
+print ""

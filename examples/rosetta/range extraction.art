@@ -1,0 +1,30 @@
+extractRange: function [inp][
+    items: map split.by:"," join split.lines strip inp 'x -> to :integer strip x
+    ranges: []
+
+    i: 0
+    while [i < size items][
+        fst: items\[i]
+        offset: i
+        while [true][
+            if (i + 1) >= size items -> break
+            if (fst - offset) <> items\[i+1] - (i+1) -> break
+            i: i + 1
+        ]
+        lst: items\[i]
+        case [(lst-fst)=]
+            when? -> 0 -> 'ranges ++ ~"|fst|"
+            when? -> 1 -> 'ranges ++ ~"|fst|, |lst|"
+            else -> 'ranges ++ ~"|fst|-|lst|"
+        i: i + 1
+    ]
+
+    return join.with:", " ranges
+]
+
+print extractRange {
+    0,  1,  2,  4,  6,  7,  8, 11, 12, 14,
+   15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+   25, 27, 28, 29, 30, 31, 32, 33, 35, 36,
+   37, 38, 39
+}
