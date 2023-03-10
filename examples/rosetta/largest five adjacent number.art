@@ -1,0 +1,19 @@
+N: join to [:string] map 1..100 'x -> random 1000000000 9999999999
+
+i: 0
+maxNum: 0
+minNum: ∞
+while [i < (size N)-5][
+    num: to :integer join @[N\[i] N\[i+1] N\[i+2] N\[i+3] N\[i+4]]
+    if num > maxNum -> maxNum: num
+    if num < minNum -> minNum: num
+    i: i + 1
+]
+
+print "Our random 1000-digit number is:"
+print N
+
+print ""
+
+print ["Max 5-adjacent number found:" maxNum]
+print ["Min 5-adjacent number found:" (repeat "0" 5-(size to :string minNum)) ++ (to :string minNum)]

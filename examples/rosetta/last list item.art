@@ -1,0 +1,11 @@
+lst: [6 81 243 14 25 49 123 69 11]
+initial: lst
+while [1 < size lst][
+    remove 'lst min1: <= min lst
+    remove 'lst min2: <= min lst
+    append 'lst min1 + min2
+    print ["List:" lst]
+]
+
+print ""
+print [initial "=>" lst]

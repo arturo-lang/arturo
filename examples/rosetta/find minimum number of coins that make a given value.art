@@ -1,0 +1,19 @@
+coins: [200 100 50 20 10 5 2 1]
+target: 988
+
+print ["Minimum number of coins to make a value of " (to :string target)++":"]
+
+cnt: 0
+remaining: new target
+
+loop coins 'coin [
+    n: remaining / coin
+    if not? zero? n [
+        cnt: cnt + n
+        print ["    coins of" coin "->" n]
+        remaining: remaining - n * coin
+        if zero? remaining -> break
+    ]
+]
+
+print ["\nTotal: " cnt]

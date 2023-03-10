@@ -1,0 +1,4 @@
+loop 3..8 'nofDigits ->
+    loop (10 ^ nofDigits-1)..dec 10^nofDigits 'n ->
+        if n = sum map digits n => [& ^ nofDigits] -> 
+            print n

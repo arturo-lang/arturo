@@ -1,0 +1,14 @@
+corput: function [num, base][
+    result: to :rational 0
+    b: 1 // base
+    n: num
+    while [not? zero? n][
+        result: result + b * n % base
+        n: n / base
+        b: b // base
+    ]
+    return result
+]
+
+loop 2..5 'bs ->
+    print ["Base" bs ":" join.with:", " to [:string] map 1..10 'z -> corput z bs]

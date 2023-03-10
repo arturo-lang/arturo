@@ -1,0 +1,13 @@
+agm: function [a,g][
+    delta: 1e-15
+    [aNew, aOld, gOld]: @[0, a, g]
+
+    while [delta < abs aOld - gOld][
+        aNew: 0.5 * aOld + gOld
+        gOld: sqrt aOld * gOld
+        aOld: aNew
+    ]
+    return aOld
+]
+
+print agm 1.0 1.0/sqrt 2.0

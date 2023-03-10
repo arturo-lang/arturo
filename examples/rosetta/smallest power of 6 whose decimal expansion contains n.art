@@ -1,0 +1,4 @@
+loop 0..22 'n [
+    ns: to :string n
+    print [pad to :string n 2 "->" 6 ^ first select.first 0..∞ 'x -> contains? to :string 6^x ns]
+]

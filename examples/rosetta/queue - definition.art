@@ -1,0 +1,21 @@
+define :queue [][
+    init: [
+        this\items: []
+    ]
+]
+
+empty?: function [this :queue][
+    zero? this\items
+]
+
+push: function [this :queue, item][
+    this\items: this\items ++ item
+]
+
+pop: function [this :queue][
+    ensure -> not? empty? this
+
+    result: this\items\0
+    this\items: remove.index this\items 0
+    return result
+]
