@@ -14,6 +14,9 @@
 when not defined(WEB) and not defined(windows):
     import parseopt, sequtils, sugar
 
+when not defined(WEB):
+    import nativesockets
+
 when not defined(NOGMP):
     import extras/gmp
     import extras/mpfr
@@ -106,6 +109,7 @@ proc getSystemInfo*(): ValueDict =
                     newString(getAppFilename()),
             "cpu"       : newDictionary(),
             "os"        : newString(hostOS),
+            "hostname"  : newString(""),
             "release"   : 
                 when defined(MINI):
                     newLiteral("mini")
@@ -119,6 +123,9 @@ proc getSystemInfo*(): ValueDict =
                 newLiteral("little")
             else:
                 newLiteral("big")
+
+        when not defined(WEB):
+            result["hostname"] = newString(getHostname())
 
         when not defined(NOGMP):
             result["deps"].d["gmp"] = newVersion($(gmpVersion))
