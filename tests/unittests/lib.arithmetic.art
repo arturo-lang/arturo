@@ -90,11 +90,21 @@ do [
     ensure -> expected = add 1 a
     passed
     
+    ; :rational :integer
     a: to :rational [3 5]
     'a + 1
     ensure -> a = to :rational [8 5]
     add 'a 1
     ensure -> a = to :rational [13 5]
+    passed
+    
+    ; :integer :rational
+    a: 1
+    'a + to :rational [3 5]
+    ensure -> a = to :rational [8 5]
+    a: 1
+    add 'a to :rational [3 5]
+    ensure -> a = to :rational [8 5]
     passed
     
     
