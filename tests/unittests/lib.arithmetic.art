@@ -120,6 +120,28 @@ do [
     ensure -> null = add #red 1
     passed  
     
+    ; :integer :color
+    a: 1
+    'a + #red
+    ; ensure -> a = 1
+    ensure -> a = null
+    a: 1
+    add 'a #red
+    ; ensure -> a = 1
+    ensure -> a = null
+    passed
+    
+    ; :color :integer
+    a: #red
+    'a + 1
+    ; ensure -> a = #red
+    ensure -> a = null
+    a: #red
+    add 'a 1
+    ; ensure -> a = #red
+    ensure -> a = null
+    passed
+    
     
     ; ------ floating
     
