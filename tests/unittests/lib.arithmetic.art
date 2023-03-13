@@ -261,8 +261,8 @@ do [
     passed
     
     
-    ; ------ floating
-    
+    ; ------ complex
+     
     topic "add - :complex :complex"
     
     a: to :complex [1 2]
