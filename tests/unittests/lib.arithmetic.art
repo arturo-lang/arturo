@@ -99,6 +99,92 @@ do [
     ensure -> null = add 1 #red
     ensure -> null = add #red 1
     passed  
+    
+    
+    ; ------ floating
+    
+    topic "add - :floating :floating"
+    
+    ensure -> 2 = 1.0 + 1.0
+    ensure -> 2 = add 1.0 1.0
+    passed
+    
+    ensure -> 2.0 = 1.0 + 1.0
+    ensure -> 2.0 = add 1.0 1.0
+    passed
+    
+    ensure -> 4 = 1.5 + 2.5
+    ensure -> 4 = 2.5 + 1.5
+    ensure -> 4 = add 1.5 2.5
+    ensure -> 4 = add 2.5 1.5
+    passed
+    
+    ensure -> 4.0 = 1.5 + 2.5
+    ensure -> 4.0 = 2.5 + 1.5
+    ensure -> 4.0 = add 1.5 2.5
+    ensure -> 4.0 = add 2.5 1.5
+    passed
+    
+    a: 2.5
+    add 'a 1.5
+    ensure -> a = 4.0
+    'a + 1.5
+    ensure -> a = 5.5
+    passed
+    
+    ensure -> 0 = 1.5 + (neg 1.5)
+    ensure -> 0 = (neg 1.5) + 1.5
+    ensure -> 0 = add 1.5 (neg 1.5)
+    ensure -> 0 = add (neg 1.5) 1.5
+    passed
+    
+    
+    "add - :floating :complex"
+    a: to :complex [1 2]
+    ensure -> (to :complex [2.5 2.0]) = a + 1.5
+    ensure -> (to :complex [2.5 2.0]) = 1.5 + a
+    ensure -> (to :complex [2.5 2.0]) = add a 1.5
+    ensure -> (to :complex [2.5 2.0]) = add 1.5 a
+    passed
+    
+    a: to :complex [1 2]
+    
+    'a + 1.5
+    ensure -> (to :complex [2.5 2.0]) = a
+    add 'a 1.5
+    ensure -> (to :complex [4 2.0]) = a
+    passed
+    
+    
+    "add - :floating :rational"
+    
+    a: to :rational [3 5]
+    expected: to :rational [11 10]
+    ensure -> expected = a + 0.5
+    ensure -> expected = 0.5 + a
+    ensure -> expected = add a 0.5
+    ensure -> expected = add 0.5 a
+    passed
+    
+    a: to :rational [3 5]
+    'a + 0.5
+    ensure -> a = to :rational [11 10]
+    add 'a 1.0
+    ensure -> a = to :rational [21 10]
+    passed
+    
+    
+    topic "add - :floating :quantity"
+    ; todo
+    
+    
+    topic "add - :floating :color"
+    
+    ensure -> null = 1.5 + #red
+    ensure -> null = #red + 1.5
+    ensure -> null = add 1.5 #red
+    ensure -> null = add #red 1.5
+    passed  
 
     
 ]
