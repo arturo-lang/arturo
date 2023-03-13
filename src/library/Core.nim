@@ -412,10 +412,7 @@ proc defineSymbols*() =
             if isFalse(y): 
                 execUnscoped(x)
             
-    # TODO(Core/ensure) add option for custom message
-    #  so that when `ensure` fails, the message can be customized
-    #  use case: https://rosettacode.org/wiki/Assertions_in_design_by_contract
-    #  labels: library, enhancement
+            
     builtin "ensure",
         alias       = unaliased, 
         op          = opNop,
