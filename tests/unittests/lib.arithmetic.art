@@ -319,6 +319,28 @@ do [
     ensure -> null = add a #red
     ensure -> null = add #red a
     passed  
+    
+    ; :complex :color
+    a: to :complex [1 2]
+    'a + #red
+    ; ensure -> a = 1
+    ensure -> a = null
+    a: to :complex [1 2]
+    add 'a #red
+    ; ensure -> a = 1
+    ensure -> a = null
+    passed
+    
+    ; :color :complex
+    a: #red
+    'a + to :complex [1 2]
+    ; ensure -> a = #red
+    ensure -> a = null
+    a: #red
+    add 'a to :complex [1 2]
+    ; ensure -> a = #red
+    ensure -> a = null
+    passed
 
     
 ]
