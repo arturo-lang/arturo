@@ -238,6 +238,28 @@ do [
     ensure -> null = add #red 1.5
     passed  
     
+    ; :floating :color
+    a: 1.5
+    'a + #red
+    ; ensure -> a = 1
+    ensure -> a = null
+    a: 1.5
+    add 'a #red
+    ; ensure -> a = 1
+    ensure -> a = null
+    passed
+    
+    ; :color :floating
+    a: #red
+    'a + 1.5
+    ; ensure -> a = #red
+    ensure -> a = null
+    a: #red
+    add 'a 1.5
+    ; ensure -> a = #red
+    ensure -> a = null
+    passed
+    
     
     ; ------ floating
     
