@@ -434,6 +434,10 @@ proc defineSymbols*() =
             ensure [num > 0]
 
             print "good, the number is positive indeed. let's continue..."
+            ..........
+            ensure.message: "Wrong calc" ->  0 = 1 + 1
+            ; >> Assertion | "Wrong calc": [0 = 1 + 1]
+            ;        error |
         """:
             #=======================================================
             
