@@ -37,7 +37,7 @@ do [
     passed
     
     
-    "add - :int :floating"
+    topic "add - :int :floating"
     
     ensure -> 2.0 = 1 + 1.0
     ensure -> 2.0 = 1.0 + 1
@@ -53,7 +53,7 @@ do [
     passed
     
     
-    "add - :int :complex"
+    topic "add - :int :complex"
     a: to :complex [1 2]
     ensure -> (to :complex [2.0 2.0]) = a + 1
     ensure -> (to :complex [2.0 2.0]) = 1 + a
@@ -80,7 +80,7 @@ do [
     passed
     
     
-    "add - :int :rational"
+    topic "add - :int :rational"
     
     a: to :rational [3 5]
     expected: to :rational [8 5]
@@ -181,7 +181,7 @@ do [
     passed
     
     
-    "add - :floating :complex"
+    topic "add - :floating :complex"
     a: to :complex [1 2]
     ensure -> (to :complex [2.5 2.0]) = a + 1.5
     ensure -> (to :complex [2.5 2.0]) = 1.5 + a
@@ -208,7 +208,7 @@ do [
     passed
     
     
-    "add - :floating :rational"
+    topic "add - :floating :rational"
     
     a: to :rational [3 5]
     expected: to :rational [11 10]
@@ -261,7 +261,7 @@ do [
     passed
     
     
-    "add - :complex :rational"
+    topic "add - :complex :rational"
     
     a: to :complex [1 2]
     b: to :rational [3 5]
