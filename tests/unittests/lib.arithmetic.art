@@ -185,6 +185,66 @@ do [
     ensure -> null = add 1.5 #red
     ensure -> null = add #red 1.5
     passed  
+    
+    
+    ; ------ floating
+    
+    topic "add - :complex :complex"
+    
+    a: to :complex [1 2]
+    b: to :complex [2 1]
+    ensure -> (to :complex [3.0 3.0]) = a + b
+    ensure -> (to :complex [3.0 3.0]) = b + a
+    ensure -> (to :complex [3.0 3.0]) = add a b
+    ensure -> (to :complex [3.0 3.0]) = add b a
+    passed
+    
+    a: to :complex [1 2]
+    b: to :complex [2 1]
+    
+    'a + b
+    ensure -> (to :complex [3.0 3.0]) = a
+    add 'a b
+    ensure -> (to :complex [5 4]) = a
+    passed
+    
+    
+    "add - :complex :rational"
+    
+    a: to :complex [1 2]
+    b: to :rational [3 5]
+    expected: to :rational [11 10]
+    ensure -> null = a + b
+    ensure -> null = b + a
+    ensure -> null = add a b
+    ensure -> null = add b a
+    passed
+    
+    ; :complex :rational - :rational :complex
+    a: to :complex [1 2]
+    b: to :rational [3 5]
+    
+    'a + b
+    ensure -> a = to :complex [1 2]
+    passed
+    
+    add 'b a
+    ensure -> b = to :rational [3 5]
+    passed
+    
+    
+    topic "add - :complex :quantity"
+    ; todo
+    
+    
+    topic "add - :complex :color"
+    
+    a: to :complex [1 2]
+    ensure -> null = a + #red
+    ensure -> null = #red + a
+    ensure -> null = add a #red
+    ensure -> null = add #red a
+    passed  
 
     
 ]
