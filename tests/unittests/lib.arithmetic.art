@@ -1,12 +1,107 @@
-; basic arithmetic operations
-print add 1 2
-print 1+2
-x: new 1
-add 'x 2
-print x
+; helper function
+debug: $[variable][
+    print[variable type variable]
+]
 
-print 1
-print 2
+topic: $[topic :string] -> print ~"\n>> |topic|"
+passed: $[] -> print "[+] passed!"
+
+; ==> Tests
+
+topic "add"
+do [
+    
+    topic "add - :integer :integer"
+    
+    ensure -> 2 = 1 + 1
+    ensure -> 2 = add 1 1
+    passed
+    
+    ensure -> 3 = 1 + 2
+    ensure -> 3 = 2 + 1
+    ensure -> 3 = add 1 2
+    ensure -> 3 = add 2 1
+    passed
+    
+    a: 2
+    add 'a 1
+    ensure -> a = 3
+    'a + 1
+    ensure -> a = 4
+    passed
+    
+    ensure -> 0 = 1 + (neg 1)
+    ensure -> 0 = (neg 1) + 1
+    ensure -> 0 = add 1 (neg 1)
+    ensure -> 0 = add (neg 1) 1
+    passed
+    
+    
+    "add - :int :floating"
+    
+    ensure -> 2.0 = 1 + 1.0
+    ensure -> 2.0 = 1.0 + 1
+    ensure -> 2.0 = add 1 1.0
+    ensure -> 2.0 = add 1.0 1
+    passed
+    
+    a: 2
+    add 'a 1.0  ; int + float
+    ensure -> a = 3.0
+    'a + 1      ; float + int
+    ensure -> a = 4.0
+    passed
+    
+    
+    "add - :int :complex"
+    a: to :complex [1 2]
+    ensure -> (to :complex [2.0 2.0]) = a + 1
+    ensure -> (to :complex [2.0 2.0]) = 1 + a
+    ensure -> (to :complex [2.0 2.0]) = add a 1
+    ensure -> (to :complex [2.0 2.0]) = add 1 a
+    passed
+    
+    a: to :complex [1 2]
+    
+    'a + 1
+    ensure -> (to :complex [2.0 2.0]) = a
+    add 'a 1
+    ensure -> (to :complex [3.0 2.0]) = a
+    passed
+    
+    
+    "add - :int :rational"
+    
+    a: to :rational [3 5]
+    expected: to :rational [8 5]
+    ensure -> expected = a + 1
+    ensure -> expected = 1 + a
+    ensure -> expected = add a 1
+    ensure -> expected = add 1 a
+    passed
+    
+    a: to :rational [3 5]
+    'a + 1
+    ensure -> a = to :rational [8 5]
+    add 'a 1
+    ensure -> a = to :rational [13 5]
+    passed
+    
+    
+    topic "add - :int :quantity"
+    ; todo
+    
+    
+    topic "add - :int :color"
+    
+    ensure -> null = 1 + #red
+    ensure -> null = #red + 1
+    ensure -> null = add 1 #red
+    ensure -> null = add #red 1
+    passed  
+
+    
+]
 
 print sub 2 1
 print 2-1
