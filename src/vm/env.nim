@@ -117,7 +117,7 @@ proc getSystemInfo*(): ValueDict =
                     newLiteral("full")
         }.toOrderedTable
         
-        result["cpu"].d["arch"] = newLiteral(hostCPU)
+        result["cpu"].d["arch"] = newLiteral(hostCPU.replace("i386","x86"))
         result["cpu"].d["endian"] = 
             if cpuEndian == Endianness.littleEndian:
                 newLiteral("little")
