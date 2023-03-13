@@ -343,6 +343,65 @@ do [
     passed
 
     
+    ; ------ rational
+     
+    topic "add - :rational :rational"
+    
+    a: to :rational [3 5]
+    b: to :rational [1 2]
+    ensure -> (to :rational [11 10]) = a + b
+    ensure -> (to :rational [11 10]) = b + a
+    ensure -> (to :rational [11 10]) = add a b
+    ensure -> (to :rational [11 10]) = add b a
+    passed
+    
+    a: to :rational [3 5]
+    b: to :rational [1 2]
+    
+    'a + b
+    ensure -> (to :rational [11 10]) = a
+    add 'a b
+    ensure -> (to :rational [8 5]) = a
+    ensure -> (to :rational [32 20]) = a
+    passed
+    
+    
+    topic "add - :rational :quantity"
+    ; todo
+    
+    
+    topic "add - :rational :color"
+    
+    a: to :rational [3 5]
+    ensure -> null = a + #red
+    ensure -> null = #red + a
+    ensure -> null = add a #red
+    ensure -> null = add #red a
+    passed  
+    
+    ; :complex :color
+    a: to :rational [3 5]
+    'a + #red
+    ; ensure -> a = 1
+    ensure -> a = null
+    a: to :rational [3 5]
+    add 'a #red
+    ; ensure -> a = 1
+    ensure -> a = null
+    passed
+    
+    ; :color :complex
+    a: #red
+    'a + to :rational [3 5]
+    ; ensure -> a = #red
+    ensure -> a = null
+    a: #red
+    add 'a to :rational [3 5]
+    ; ensure -> a = #red
+    ensure -> a = null
+    passed
+
+    
 ]
 
 print sub 2 1
