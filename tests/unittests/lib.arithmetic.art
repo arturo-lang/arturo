@@ -427,6 +427,11 @@ do [
     
     topic "add - :color :quantity"
     ; todo
+    
+    
+    ; ------ quantity
+     
+    topic "add - :quantity :quantity"
 
     
 ]
