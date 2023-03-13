@@ -189,12 +189,22 @@ do [
     ensure -> (to :complex [2.5 2.0]) = add 1.5 a
     passed
     
+    ; :complex :floating
     a: to :complex [1 2]
     
     'a + 1.5
     ensure -> (to :complex [2.5 2.0]) = a
     add 'a 1.5
     ensure -> (to :complex [4 2.0]) = a
+    passed
+    
+    ; :floating :complex
+    a: 1.5
+    'a + to :complex [1 2]
+    ensure -> (to :complex [2.5 2.0]) = a
+    a: 1.5
+    add 'a to :complex [1 2]
+    ensure -> (to :complex [2.5 2.0]) = a
     passed
     
     
