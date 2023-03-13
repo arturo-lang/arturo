@@ -61,12 +61,22 @@ do [
     ensure -> (to :complex [2.0 2.0]) = add 1 a
     passed
     
+    ; :complex :integer
     a: to :complex [1 2]
     
     'a + 1
     ensure -> (to :complex [2.0 2.0]) = a
     add 'a 1
     ensure -> (to :complex [3.0 2.0]) = a
+    passed
+    
+    ; :integer :complex
+    a: 1
+    'a + to :complex [1 2]
+    ensure -> (to :complex [2.0 2.0]) = a
+    a: 1
+    add 'a to :complex [1 1]
+    ensure -> (to :complex [2 1]) = a
     passed
     
     
