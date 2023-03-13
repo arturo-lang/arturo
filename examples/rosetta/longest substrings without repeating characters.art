@@ -1,0 +1,25 @@
+unrepeatableSubstrings: function [s][
+    result: [["",0]]
+
+    if zero? s -> return []
+    if one? s -> return @[s]
+
+    loop 0..dec size s 'a [
+        if (a+1) =< dec size s [
+            loop a..dec size s 'b [
+                substr: to :string slice s a b
+                ss: size substr
+                if and? -> ss >= last maximum result 'x -> last x
+                        -> substr = unique substr [
+                    result: (select result 'x -> ss = last x) ++ @[@[substr, ss]]
+                ]
+            ]
+        ]
+    ]
+    result: unique map result 'x -> first x
+    return result
+]
+
+
+loop ["xyzyabcybdfd", "xyzyab", "zzzzz", "a", ""] 'str ->
+    print [str "=> longest unrepeatable substring:" unrepeatableSubstrings str]

@@ -1,0 +1,9 @@
+degToRad: function [deg]-> deg * pi // 180
+doublePi: 2 * pi
+
+arcLength: function [r, a, b][
+    d: (abs a-b) % doublePi
+    return r * (d >= pi)? -> d -> doublePi - d
+]
+
+print ["Arc length:" to :string .format:".5f" arcLength 10 degToRad 10.0 degToRad 120.0]

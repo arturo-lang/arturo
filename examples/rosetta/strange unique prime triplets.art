@@ -1,0 +1,17 @@
+findTriplets: function [upTo][
+    results: []
+    loop select 2..upTo => prime? 'n ->
+        loop select n..upTo => prime? 'm ->
+            loop select m..upTo => prime? 'p ->
+                if all? @[
+                    3 = size unique @[n m p]
+                    prime? n+m+p
+                ]-> 'results ++ @[@[n,m,p]]
+    return results
+]
+
+loop.with:'i findTriplets 30 'res ->
+    print [i+1 "->" join.with:" + " to [:string] res "=" sum res]
+
+print ""
+print ["If n, m, p < 1000 -> total number of triplets:" size findTriplets 1000]

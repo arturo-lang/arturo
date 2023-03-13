@@ -437,6 +437,13 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
                         if alreadyProcessed:
                             hookOptimProfiler("opUnlessE")
                 of opSwitch:    
+                    # TODO(VM/eval) `switch` not working properly in `print` block?
+                    #  For example this: https://github.com/arturo-lang/arturo/blob/even-more-RC-problem-solving/examples/rosetta/practical%20numbers.art#L24-L25
+                    #  if written like: ```
+                    #  print ["666" (practical? 666) ? -> "is" -> "is not" "a practical number"]
+                    #  ```
+                    #  the whole thing freezes
+                    #  labels: vm, bug, evaluator
                     optimizeConditional(consts, it, item, withPotentialElse=true, isSwitch=true, withInversion=true)
                     when defined(PROFILER):
                         if alreadyProcessed:

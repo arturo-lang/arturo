@@ -14,6 +14,9 @@
 when not defined(WEB) and not defined(windows):
     import parseopt, sequtils, sugar
 
+when not defined(WEB):
+    import nativesockets
+
 when not defined(NOGMP):
     import extras/gmp
     import extras/mpfr
@@ -23,7 +26,7 @@ when not defined(NOSQLITE):
 
 import pcre
 
-import os, strutils, tables, times
+import os, strutils, tables, times, system
 
 import helpers/terminal
 
@@ -104,14 +107,25 @@ proc getSystemInfo*(): ValueDict =
                     newString("arturo.js")
                 else:
                     newString(getAppFilename()),
-            "cpu"       : newString(hostCPU),
+            "cpu"       : newDictionary(),
             "os"        : newString(hostOS),
+            "hostname"  : newString(""),
             "release"   : 
                 when defined(MINI):
                     newLiteral("mini")
                 else:
                     newLiteral("full")
         }.toOrderedTable
+        
+        result["cpu"].d["arch"] = newLiteral(hostCPU)
+        result["cpu"].d["endian"] = 
+            if cpuEndian == Endianness.littleEndian:
+                newLiteral("little")
+            else:
+                newLiteral("big")
+
+        when not defined(WEB):
+            result["hostname"] = newString(getHostname())
 
         when not defined(NOGMP):
             result["deps"].d["gmp"] = newVersion($(gmpVersion))

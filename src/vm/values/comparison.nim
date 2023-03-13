@@ -12,7 +12,7 @@
 # Libraries
 #=======================================
 
-import lenientops, tables, unicode
+import lenientops, tables, times, unicode
 
 when defined(WEB):
     import std/jsbigints
@@ -162,7 +162,7 @@ proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
                     if x.dbKind==SqliteDatabase: return cast[ByteAddress](x.sqlitedb) == cast[ByteAddress](y.sqlitedb)
                     #elif x.dbKind==MysqlDatabase: return cast[ByteAddress](x.mysqldb) == cast[ByteAddress](y.mysqldb)
             of Date:
-                return x.eobj == y.eobj
+                return x.eobj[] == y.eobj[]
             else:
                 return false
 
@@ -252,12 +252,11 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
                     return x.proto.doCompare(x, y) == -1
                 else:
                     return false
+            of Date:
+                return x.eobj[] < y.eobj[]
             else:
                 return false
 
-# TODO(VM/values/comparison) add `>` support for Date values
-#  currently, `=` is support but not `<` and `>`!
-#  labels: critical,bug,values
 proc `>`*(x: Value, y: Value): bool {.inline.}=
     if x.kind in {Integer, Floating, Rational} and y.kind in {Integer, Floating, Rational}:
         if x.kind==Integer:
@@ -341,6 +340,8 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
                     return x.proto.doCompare(x,y) == 1
                 else:
                     return false
+            of Date:
+                return x.eobj[] > y.eobj[]
             else:
                 return false
 

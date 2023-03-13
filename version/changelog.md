@@ -1,6 +1,10 @@
 v0.9.84
 ========
 
+### Documentation
+
+- Added numerous new Rosetta Code examples
+
 ### Language
 
 - Added flag support for `:regex` values (`/i`, `/m` & `/s`)
@@ -9,13 +13,22 @@ v0.9.84
 
 **Enhancements, Changes & Fixes**
 
+- Collections\contains?: added `.deep` option
+- Collections\get: fixed to work with String-Range parameters
+- Collections\in?: added `.deep` option
+- Collections\split: fixed `.every:` when working with Literal values
+- Collections\sort: fixed `.ascii` when working with Literal values
+- Files\read: added `.delimiter:` support for CSV's
 - Statistics\median: fixed bug + better and more efficient implementation
+- Strings\match: added support for Char values as needle
+- System\sys: added info about CPU endianess and re-organized returned information
 
 ### Misc
 
 - Introduced error messages for extra/stray closing brackets (square, curly or parentheses)
 - Added type-checking for built-in function attributes
 - Fixed issue with GMP-based BigNum handling on Windows
+- Fixed issues with Date values and comparison operators
 
 v0.9.82
 ========

@@ -1,6 +1,11 @@
+@font-face {
+    font-family: "Fira Code Arturo";
+    src: url('../fonts/FiraCode-Regular.ttf') format('truetype');
+  }
+
 #editor {
     height: calc(100vh - 103px); /* navbar: 52 + tabs+margin: 51 */
-    font-family: 'Fira Code', monospace !important;
+    font-family: 'Fira Code Arturo', monospace !important;
     text-shadow: 0 1px rgba(0,0,0,.3);
     line-height: 1.5;
     font-size: 1em;
@@ -10,7 +15,7 @@
 #terminal {
     padding: 1em;
     background: black;
-    font-family: 'Fira Code', monospace !important;
+    font-family: 'Fira Code Arturo', monospace !important;
     white-space: pre-wrap;
     color: white;
 }

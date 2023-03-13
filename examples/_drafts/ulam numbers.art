@@ -1,0 +1,49 @@
+; import strformat, times
+
+ulam: function [n][
+    ulams: [1 2]
+    sieve: [1 1]
+    u: 2
+    while [n > size ulams][
+        s: u + ulams\[dec dec size ulams]
+        'sieve ++ repeat 0 1+ s - size sieve
+        loop ulams 'ulm [
+            v: u + ulm - 1
+            sieve\[v]: sieve\[v] 1
+        ]
+        loop u..dec size sieve 'i [
+            if 1 = sieve\[i][
+                u: i+1
+                break
+            ]
+        ]
+        'ulams ++ u
+    ]
+    return last ulams
+]
+; func ulam(n: Positive): int =
+;   var
+;     ulams = @[1, 2]
+;     sieve = @[1, 1]
+;     u = 2
+;   while ulams.len < n:
+;     let s = u + ulams[^2]
+;     sieve.setLen(s)
+;     for i in 0..<ulams.high:
+;       let v = u + ulams[i] - 1
+;       inc sieve[v]
+;     for i in u..sieve.high:
+;       if sieve[i] == 1:
+;         u = i + 1
+;         break
+;     ulams.add u
+;   result = ulams[^1]
+
+print ulam 1000
+; let t0 = cpuTime()
+; var n = 1
+; for _ in 0..4:
+;   let suffix = if n == 1: "st" else: "th"
+;   echo &"The {n}{suffix} Ulam number is {ulam(n)}."
+;   n *= 10
+; echo &"\nTook {cpuTime() - t0:.3f} s."

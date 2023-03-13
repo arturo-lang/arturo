@@ -333,14 +333,6 @@ proc defineSymbols*() =
     #  obviously, we should normalize this, but we need to decide on a single name
     #  and then, we need to make sure that all our build scripts are using the same name
     #  labels: library, enhancement, open discussion
-
-    # TODO(System/sys) add info about endianess?
-    #  we could add another field to the dictionary, like "endianess" : "big" or "little"
-    #  or, perhaps even better, make our existing cpu field a dictionary with two fields:
-    #  - type: amd64
-    #  - endian: little
-    #  ...
-    #  labels: library, enhancement
     builtin "sys",
         alias       = unaliased, 
         op          = opNop,
@@ -376,8 +368,12 @@ proc defineSymbols*() =
             ;		pcre    :		8.45.0 :version
             ;	] 
             ;	binary     :	/Users/drkameleon/OpenSource/arturo-lang/arturo/bin/arturo :string
-            ;	cpu        :	amd64 :string
+            ;	cpu        :        [ :dictionary
+            ;           arch    :                amd64 :literal
+            ;           endian  :                little :literal
+            ;   ]
             ; 	os         :	macosx :string
+            ;   hostname   :    drkameleons-Mac.home :string
             ;  	release    :	full :literal
             ;]
         """:

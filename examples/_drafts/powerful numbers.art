@@ -1,0 +1,92 @@
+PrimeSquares: 2..100 | select => prime?
+               | map 'x -> x * x
+
+squareFree?: function [n][
+    loop PrimeSquares 'p2 [
+        if p2 > n -> break
+        if zero? n % p2 -> return false
+    ]
+    return true
+]
+; func isSquareFree(n: uint64): bool =
+;   const Primes = [uint64 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41,
+;                          43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]
+;   for p in Primes:
+;     let p2 = p * p
+;     if p2 > n: break
+;     if n mod p2 == 0: return false
+;   result = true
+
+iroot: function [n, r][
+    adj: 1e-6
+    to :integer ((to :floating n) ^ 1//r) + adj
+]
+; func iroot(n: uint64; r: Natural): uint64 =
+;   const Adj = 1e-6
+;   result = uint64(pow(float(n), 1 / r) + Adj)
+
+powerful: function [n, k][
+    res: []
+
+    f: function [m, r][
+        if r < k [
+            'res ++ m
+            return ø
+        ]
+        rt: iroot n/m r
+        loop 1..rt 'v [
+            if and? r > k 
+        ]
+    ]
+]
+
+func powerful(n: uint64; k: Natural): seq[uint64] =
+  var res: seq[uint64]
+
+  func f(m: uint64; r: Natural) =
+    if r < k:
+      res.add m
+      return
+    let root = iroot(n div m, r)
+    for v in 1..root:
+      if r > k and (not v.isSquareFree or gcd(m, v) != 1):
+        continue
+      f(m * v^r, r - 1)
+
+  f(1, 2 * k - 1)
+  res.sort()
+  return res
+
+
+func powerfulCount(n: uint64; k: Natural): uint64 =
+  var count = 0u64
+
+  func f(m: uint64; r: Natural) =
+    let root = iroot(n div m, r)
+    if r <= k:
+      count += root
+      return
+    for v in 1..root:
+      if v.isSquareFree and gcd(m, v) == 1:
+        f(m * v^r, r - 1)
+
+  f(1, 2 * k - 1)
+  return count
+
+
+var p: uint64 = 10
+for k in 2..10:
+  p *= 10
+  let result = powerful(p, k)
+  let head = result[0..4].join(" ")
+  let tail = result[^5..^1].join(" ")
+  echo &"{result.len} {k:2}-powerful numbers <= 10^{k}: {head} ... {tail}"
+echo()
+
+for k in 2..10:
+  p = 1
+  var counts: seq[uint64]
+  for j in 0..k+9:
+    counts.add powerfulcount(p, k)
+    p *= 10
+  echo &"Count of {k:2}-powerful numbers <= 10^j, j in 0 ≤ j < {k+10}: {counts.join(\" \")}"
