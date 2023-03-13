@@ -424,7 +424,9 @@ proc defineSymbols*() =
         args        = {
             "condition"     : {Block}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "message"   : ({String},"prints a custom message when ensure fails")
+        },
         returns     = {Nothing},
         example     = """
             num: input "give me a positive number"
@@ -434,9 +436,15 @@ proc defineSymbols*() =
             print "good, the number is positive indeed. let's continue..."
         """:
             #=======================================================
-            execUnscoped(x)
-            if isFalse(pop()):
-                AssertionError_AssertionFailed(x.codify())
+            
+            if checkAttr("message"):
+                execUnscoped(x)
+                if isFalse(pop()):
+                    AssertionError_AssertionFailed(x.codify(), aMessage.s)
+            else:
+                execUnscoped(x)
+                if isFalse(pop()):
+                    AssertionError_AssertionFailed(x.codify())
 
     builtin "if",
         alias       = unaliased, 
