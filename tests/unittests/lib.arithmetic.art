@@ -419,6 +419,24 @@ do [
     ensure -> #808080 = add #gray #black
     passed
     
+    
+    ;; Don't work for literals
+    ; a: #gray
+    ; 'a + #black
+    ; ensure -> #gray = a
+    ; 'a + #blue
+    ; ensure -> #FFFFFF = a
+    
+    topic "add - :color :quantity"
+    ; todo
+    
+    
+    ; ------ quantity
+     
+    topic "add - :quantity :quantity"
+
+    
+]
     a: #gray
     'a + #black
     ensure -> #808080 = a
