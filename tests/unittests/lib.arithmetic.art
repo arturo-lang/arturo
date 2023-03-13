@@ -400,6 +400,33 @@ do [
     ; ensure -> a = #red
     ensure -> a = null
     passed
+    
+    ; ------ color
+     
+    topic "add - :color :color"
+    
+    ensure -> #red = #red + #red
+    ensure -> #white = #black + #white
+    ensure -> #white = #white + #black
+    ensure -> #red = add #red #red
+    ensure -> #white = add #black #white
+    ensure -> #white = add #white #black
+    passed
+    
+    ensure -> #FF00FF = #blue + #red
+    ensure -> #808080 = #gray + #black
+    ensure -> #FF00FF = add #blue #red
+    ensure -> #808080 = add #gray #black
+    passed
+    
+    a: #gray
+    'a + #black
+    ensure -> #808080 = a
+    'a + #blue
+    ensure -> #FFFFFF = a
+    
+    topic "add - :color :quantity"
+    ; todo
 
     
 ]
