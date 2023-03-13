@@ -437,31 +437,443 @@ do [
 
     
 ]
-    a: #gray
-    'a + #black
-    ensure -> #808080 = a
-    'a + #blue
-    ensure -> #FFFFFF = a
+
+topic "sub"
+do [
     
-    topic "add - :color :quantity"
+    topic "sub - :integer :integer"
+    
+    ensure -> 2 = 4 - 2
+    ensure -> 2 = sub 4 2
+    passed
+    
+    ensure -> 3 = 5 - 2
+    ensure -> 3 = sub 5 2
+    ensure -> 3 <> 2 - 5
+    ensure -> (neg 3) =  2 - 5
+    ensure -> 3 <> sub 2 5
+    ensure -> (neg 3) =  sub 2 5
+    passed
+    
+    a: 2
+    sub 'a 1
+    ensure -> a = 1
+    'a - 2
+    ensure -> a = neg 1
+    passed
+    
+    ensure -> 2 = 1 - neg 1
+    ensure -> (neg 2) = (neg 1) - 1
+    ensure -> 2 = sub 1 neg 1
+    ensure -> (neg 2) = sub neg 1 1
+    passed
+    
+    
+    topic "sub - :int :floating"
+    
+    ensure -> 2.0 = 3 - 1.0
+    ensure -> 2.0 = 3.0 - 1
+    ensure -> 2.0 = sub 3 1.0
+    ensure -> 2.0 = sub 3.0 1
+    passed
+    
+    a: 2
+    sub 'a 1.0  ; int + float
+    ensure -> a = 1.0
+    'a - 1      ; float + int
+    ensure -> a = 0.0
+    passed
+    
+    
+    topic "sub - :int :complex"
+    
+    ;; todo: revise this behavior
+    a: to :complex [1 2]
+    ensure -> (to :complex [0.0 2.0]) = a - 1
+    ; ensure -> (to :complex [0.0 (neg 2.0)]) = 1 - a
+    ensure -> (to :complex [0.0 2.0]) = sub a 1
+    ; ensure -> (to :complex [0.0 (neg 2.0)]) = sub 1 a
+    passed
+    
+    ; :complex :integer
+    ;; todo: revise this behavior
+    a: to :complex [1 2]
+    'a - 1
+    ensure -> (to :complex [0.0 2.0]) = a
+    sub 'a 1
+    ; ensure -> (to :complex [(neg 1.0) 2.0]) = a
+    passed
+    
+    ; :integer :complex
+    ;; todo: revise this behavior
+    a: 1
+    'a - to :complex [1 2]
+    ; ensure -> (to :complex [0.0 2.0]) = a
+    a: 1
+    add 'a to :complex [1 1]
+    ; ensure -> (to :complex [0.0 2.0]) = a
+    ; passed
+    
+    
+    topic "sub - :int :rational"
+    
+    ;; todo: revise this behavior
+    a: to :rational [3 5]
+    ; expected: to :rational [(neg 2) 5]
+    ; ensure -> expected = a - 1
+    ; ensure -> expected = 1 - a
+    ; ensure -> expected = sub a 1
+    ; ensure -> expected = sub 1 a
+    ; passed
+    
+    ; :rational :integer
+    ;; todo: revise this behavior
+    a: to :rational [3 5]
+    'a - 1
+    ; ensure -> a = to :rational [(neg 2) 5]
+    sub 'a 1
+    ; ensure -> a = to :rational [(neg 7) 5]
+    ; passed
+    
+    ; :integer :rational
+    ;; todo: revise this behavior
+    a: 1
+    'a + to :rational [3 5]
+    ; ensure -> a = o :rational [(neg 2) 5]
+    a: 1
+    add 'a to :rational [3 5]
+    ; ensure -> a = to :rational [(neg 7) 5]
+    ; passed
+    
+    
+    topic "sub - :int :quantity"
+    ; todo
+    
+    
+    topic "sub - :int :color"
+    
+    ensure -> null = 1 - #red
+    ensure -> null = #red - 1
+    ensure -> null = sub 1 #red
+    ensure -> null = sub #red 1
+    passed  
+    
+    ; :integer :color
+    a: 1
+    'a - #red
+    ; ensure -> a = 1
+    ensure -> a = null
+    a: 1
+    sub 'a #red
+    ; ensure -> a = 1
+    ensure -> a = null
+    passed
+    
+    ; :color :integer
+    a: #red
+    'a - 1
+    ; ensure -> a = #red
+    ensure -> a = null
+    a: #red
+    sub 'a 1
+    ; ensure -> a = #red
+    ensure -> a = null
+    passed
+    
+    
+    ; ------ floating
+    
+    topic "sub - :floating :floating"
+    
+    ensure -> 2 = 3.0 - 1.0
+    ensure -> 2 = sub 3.0 1.0
+    passed
+    
+    ensure -> (neg 1) = 1.5 - 2.5
+    ensure -> 1 = 2.5 - 1.5
+    ensure -> (neg 1) = sub 1.5 2.5
+    ensure -> 1 = sub 2.5 1.5
+    passed
+    
+    ensure -> (neg 1.0) = 1.5 - 2.5
+    ensure -> 1.0 = 2.5 - 1.5
+    ensure -> (neg 1.0) = sub 1.5 2.5
+    ensure -> 1.0 = sub 2.5 1.5
+    passed
+    
+    a: 2.5
+    sub 'a 1.5
+    ensure -> a = 1.0
+    'a - 1.5
+    ensure -> a = neg 0.5
+    passed
+    
+    ensure -> 3 = 1.5 - (neg 1.5)
+    ensure -> (neg 3.0) = (neg 1.5) - 1.5
+    ensure -> 3.0 = sub 1.5 (neg 1.5)
+    ensure -> (neg 3) = sub (neg 1.5) 1.5
+    passed
+    
+    
+    topic "sub - :floating :complex"
+    
+    ;; todo: revise this behavior
+    
+    a: to :complex [1 2]
+    ; ensure -> (to :complex [(neg 0.5) 2.0]) = a - 1.5
+    ; ensure -> (to :complex [(neg 0.5) 2.0]) = 1.5 - a
+    ; ensure -> (to :complex [(neg 0.5) 2.0]) = sub a 1.5
+    ; ensure -> (to :complex [(neg 0.5) 2.0]) = sub 1.5 a
+    ; passed
+    
+    ; :complex :floating
+    a: to :complex [1 2]
+    
+    'a - 1.5
+    ; ensure -> a = to :complex [(neg 0.5) 2.0]
+    sub 'a 1.5
+    ; ensure -> a = to :complex [(neg 2.0) 2.0]
+    passed
+    
+    ; :floating :complex
+    a: 1.5
+    'a - to :complex [1 2]
+    ; ensure -> a = to :complex [(neg 2.0) 2.0]
+    a: 1.5
+    sub 'a to :complex [1 2]
+    ; ensure -> a = to :complex [(neg 2.0) 2.0]
+    ; passed
+    
+    
+    topic "sub - :floating :rational"
+    ;; todo: revise this behavior
+    
+    a: to :rational [3 5]
+    expected: to :rational [1 10]
+    expected2: to :rational [(neg 1) 10]
+    ensure -> expected = a - 0.5
+    ; ensure -> expected2 = 0.5 - a
+    ensure -> expected = sub a 0.5
+    ; ensure -> expected2 = sub 0.5 a
+    ; passed
+    
+    a: to :rational [3 5]
+    'a - 0.5
+    ensure -> a = to :rational [1 10]
+    sub 'a 1.0
+    ; ensure -> a = to :rational [(neg 9) 10]
+    ; passed
+    
+    
+    topic "sub - :floating :quantity"
+    ; todo
+    
+    
+    topic "sub - :floating :color"
+    
+    ensure -> null = 1.5 - #red
+    ensure -> null = #red - 1.5
+    ensure -> null = sub 1.5 #red
+    ensure -> null = sub #red 1.5
+    passed  
+    
+    ; :floating :color
+    a: 1.5
+    'a - #red
+    ; ensure -> a = 1
+    ensure -> a = null
+    a: 1.5
+    sub 'a #red
+    ; ensure -> a = 1
+    ensure -> a = null
+    passed
+    
+    ; :color :floating
+    a: #red
+    'a - 1.5
+    ; ensure -> a = #red
+    ensure -> a = null
+    a: #red
+    sub 'a 1.5
+    ; ensure -> a = #red
+    ensure -> a = null
+    passed
+    
+    
+    ; ------ complex
+     
+    topic "sub - :complex :complex"
+    ;; todo: revise this behavior
+    
+    a: to :complex [1 2]
+    b: to :complex [2 1]
+    ; ensure -> (to :complex [(neg 1.0) 1.0]) = a - b
+    ; ensure -> (to :complex [1.0 (neg 1.0)]) = b - a
+    ; ensure -> (to :complex [(neg 1.0) 1.0]) = sub a b
+    ; ensure -> (to :complex [1.0 (neg 1.0)]) = sub b a
+    ; passed
+    
+    a: to :complex [1 2]
+    b: to :complex [2 1]
+    
+    'a - b
+    ; ensure -> (to :complex [(neg 1.0) 1.0]) = a
+    sub 'a b
+    ; ensure -> (to :complex [(neg 3.0) 0.0]) = a
+    ; passed
+    
+    
+    topic "sub - :complex :rational"
+    
+    a: to :complex [1 2]
+    b: to :rational [3 5]
+    expected: to :rational [11 10]
+    ensure -> null = a - b
+    ensure -> null = b - a
+    ensure -> null = sub a b
+    ensure -> null = sub b a
+    passed
+    
+    ; :complex :rational - :rational :complex
+    a: to :complex [1 2]
+    b: to :rational [3 5]
+    
+    'a - b
+    ensure -> a = to :complex [1 2]
+    passed
+    
+    sub 'b a
+    ensure -> b = to :rational [3 5]
+    passed
+    
+    
+    topic "sub - :complex :quantity"
+    ; todo
+    
+    
+    topic "sub - :complex :color"
+    
+    a: to :complex [1 2]
+    ensure -> null = a - #red
+    ensure -> null = #red - a
+    ensure -> null = sub a #red
+    ensure -> null = sub #red a
+    passed  
+    
+    ; :complex :color
+    a: to :complex [1 2]
+    'a - #red
+    ; ensure -> a = to :complex [1 2]
+    ensure -> a = null
+    a: to :complex [1 2]
+    add 'a #red
+    ; ensure -> a = to :complex [1 2]
+    ensure -> a = null
+    passed
+    
+    ; :color :complex
+    a: #red
+    'a + to :complex [1 2]
+    ; ensure -> a = #red
+    ensure -> a = null
+    a: #red
+    add 'a to :complex [1 2]
+    ; ensure -> a = #red
+    ensure -> a = null
+    passed
+
+    
+    ; ------ rational
+     
+    topic "sub - :rational :rational"
+    
+    a: to :rational [3 5]
+    b: to :rational [1 2]
+    ensure -> (to :rational [1 10]) = a - b
+    ; ensure -> (to :rational [(neg 1) 10]) = b - a
+    ensure -> (to :rational [1 10]) = sub a b
+    ; ensure -> (to :rational [(neg 1) 10]) = sub b a
+    ; passed
+    
+    a: to :rational [3 5]
+    b: to :rational [1 2]
+    
+    'a - b
+    ensure -> (to :rational [1 10]) = a
+    sub 'a b
+    ; ensure -> (to :rational [(neg 2) 5]) = a
+    ; passed
+    
+    
+    topic "sub - :rational :quantity"
+    ; todo
+    
+    
+    topic "sub - :rational :color"
+    
+    a: to :rational [3 5]
+    ensure -> null = a - #red
+    ensure -> null = #red - a
+    ensure -> null = sub a #red
+    ensure -> null = sub #red a
+    passed  
+    
+    ; :complex :color
+    a: to :rational [3 5]
+    'a - #red
+    ; ensure -> a = 1
+    ensure -> a = null
+    a: to :rational [3 5]
+    sub 'a #red
+    ; ensure -> a = 1
+    ensure -> a = null
+    passed
+    
+    ; :color :complex
+    a: #red
+    'a - to :rational [3 5]
+    ; ensure -> a = #red
+    ensure -> a = null
+    a: #red
+    sub 'a to :rational [3 5]
+    ; ensure -> a = #red
+    ensure -> a = null
+    passed
+    
+    ; ------ color
+     
+    topic "sub - :color :color"
+    
+    ; ensure -> #black = #red - #red
+    ; ensure -> #black = #black - #white
+    ; ensure -> #black = #white - #black
+    ; ensure -> #black = sub #red #red
+    ; ensure -> #black = sub #black #white
+    ; ensure -> #black = sub #white #black
+    ; passed
+    
+    ; ensure -> #00FF00 = #blue - #red
+    ; ensure -> #808080 = #gray - #black
+    ; ensure -> #00FF00 = sub #blue #red
+    ; ensure -> #808080 = sub #gray #black
+    ; passed
+    
+    ; a: #gray
+    ; 'a + #black
+    ; ensure -> #808080 = a
+    ; 'a + #blue
+    ; ensure -> #00FF00 = a
+    
+    topic "sub - :color :quantity"
     ; todo
     
     
     ; ------ quantity
      
-    topic "add - :quantity :quantity"
+    topic "sub - :quantity :quantity"
 
     
 ]
-
-print sub 2 1
-print 2-1
-y: new 2
-sub 'y 1
-print y
-
-print sub 1 2
-print 1-2
 
 print mul 2 3
 print 2*3
