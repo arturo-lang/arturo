@@ -1352,6 +1352,8 @@ proc defineSymbols*() =
             to :floating 4                ; 4.0
 
             to :complex [1 2]             ; 1.0+2.0i
+            
+            ; make sure you're using the `array` (`@`) converter here, since `neg` must be evaluated first
             to :complex @[2.3 neg 4.5]    ; 2.3-4.5i
             
             to :boolean 0                 ; false
