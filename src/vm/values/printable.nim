@@ -476,8 +476,6 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         of Rational     : 
             if v.rat.num < 0 and v.rat.den < 0:
                 result &= fmt("to :rational @[neg {v.rat.num * -1} neg {v.rat.den * -1}]")
-            elif v.rat.den < 0:
-                result &= fmt("to :rational @[{v.rat.num} neg {v.rat.den * -1}]")
             elif v.rat.num < 0:
                 result &= fmt("to :rational @[neg {v.rat.num * -1} {v.rat.den}]")
             else:
