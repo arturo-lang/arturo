@@ -1,2 +1,2 @@
-ensure.message: "Wrong calc" -> 0 = 1 - 1
-ensure.message: "Wrong calc" -> 0 = 1 + 1
+ensure.that: "Wrong calc" -> 0 = 1 - 1
+ensure.that: "Wrong calc" -> 0 = 1 + 1
