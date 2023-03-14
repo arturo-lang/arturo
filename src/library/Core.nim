@@ -422,7 +422,7 @@ proc defineSymbols*() =
             "condition"     : {Block}
         },
         attrs       = {
-            "message"   : ({String},"prints a custom message when ensure fails")
+            "that"   : ({String},"prints a custom message when ensure fails")
         },
         returns     = {Nothing},
         example     = """
@@ -438,10 +438,10 @@ proc defineSymbols*() =
         """:
             #=======================================================
             
-            if checkAttr("message"):
+            if checkAttr("that"):
                 execUnscoped(x)
                 if isFalse(pop()):
-                    AssertionError_AssertionFailed(x.codify(), aMessage.s)
+                    AssertionError_AssertionFailed(x.codify(), aThat.s)
             else:
                 execUnscoped(x)
                 if isFalse(pop()):
