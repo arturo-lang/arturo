@@ -34,7 +34,7 @@ jobs:
           - safe
         arch:
           - x86
-          - x86_64
+          - amd64
           - arm
           - arm64
         exclude:
@@ -114,7 +114,7 @@ jobs:
           path: bin/arturo
 
       - name: Run unit tests
-        if: matrix.arch == 'x86_64' && (matrix.version == 'full' || matrix.version == 'mini')
+        if: matrix.arch == 'amd64' && (matrix.version == 'full' || matrix.version == 'mini')
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
           arturo tools/tester.art
