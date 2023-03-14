@@ -1060,7 +1060,9 @@ proc `-=`*(x: var Value, y: Value) =
     ## store the result in the first value
     ## 
     ## **Hint:** In-place, mutating operation
-    if not (x.kind in {Integer, Floating, Complex, Rational}) or not (y.kind in {Integer, Floating, Complex, Rational}):
+    if x.kind==Color and y.kind==Color:
+        x.l = x.l - y.l 
+    elif not (x.kind in {Integer, Floating, Complex, Rational}) or not (y.kind in {Integer, Floating, Complex, Rational}):
         if x.kind == Quantity:
             if y.kind == Quantity:
                 if x.unit.name == y.unit.name:
