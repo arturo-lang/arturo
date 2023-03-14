@@ -221,7 +221,8 @@ proc AssertionError_AssertionFailed*(context: string) =
           
 proc AssertionError_AssertionFailed*(context: string, message: string) =
     panic AssertionError, 
-          "\"" & message & "\": " & context
+          message & ":;" & 
+          "for: " & context
 
 # Runtime errors
 
