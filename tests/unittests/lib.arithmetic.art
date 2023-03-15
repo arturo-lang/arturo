@@ -420,12 +420,11 @@ do [
     passed
     
     
-    ;; Don't work for literals
-    ; a: #gray
-    ; 'a + #black
-    ; ensure -> #gray = a
-    ; 'a + #blue
-    ; ensure -> #FFFFFF = a
+    a: #gray
+    'a + #black
+    ensure -> #gray = a
+    'a + #blue
+    ensure -> #8080FF = a
     
     topic "add - :color :quantity"
     ; todo
