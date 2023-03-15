@@ -1,0 +1,9 @@
+reversed: function [x]->
+    to :integer join to [:string] reverse digits x
+
+specialDivisors: select 1..200 'n ->
+    every? factors n 'd ->
+        zero? (reversed n) % reversed d
+
+loop split.every: 9 specialDivisors 'x ->
+    print map x 's -> pad to :string s 4

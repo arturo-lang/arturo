@@ -1,0 +1,18 @@
+idoneal?: function [n][
+    loop 1..n 'a [
+        loop (a+1)..n 'b [
+            if n < a*b + a + b -> break
+            loop (b+1)..n 'c [
+                s: sum @[a*b b*c a*c]
+                if s = n -> return false
+                if s > n -> break
+            ]
+        ]
+    ]
+    return true
+]
+
+idoneals: select 1..1850 => idoneal?
+
+loop split.every: 13 idoneals 'x ->
+    print map x 's -> pad to :string s 4

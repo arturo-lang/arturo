@@ -1,0 +1,14 @@
+found: select 6..998 => even?
+
+loop 1..497 'l ->
+    loop 1..l 'w [
+        lw: l * w
+        if lw >= 498 -> break
+        loop 1..w 'h [
+            sa: 2 * (lw + (w*h) + h*l)
+            (sa < 1000)? -> 'found -- sa
+                         -> break
+        ]
+    ]
+
+print found

@@ -1,0 +1,2 @@
+print first select.first range.step:20 20 ∞ 'x ->
+    every? 11..19 'z -> zero? x % z

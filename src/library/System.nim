@@ -373,6 +373,7 @@ proc defineSymbols*() =
             ;           endian  :                little :literal
             ;   ]
             ; 	os         :	macosx :string
+            ;   hostname   :    drkameleons-Mac.home :string
             ;  	release    :	full :literal
             ;]
         """:

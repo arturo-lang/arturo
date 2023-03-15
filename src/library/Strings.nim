@@ -433,6 +433,9 @@ proc defineSymbols*() =
 
     # TODO(Strings/match) should work for Web builds as well
     #  labels: library, web, bug
+
+    # TODO(Strings/match) add support for Char values as the value-to-match
+    #  labels: library, enhancement
     when not defined(WEB):
         builtin "match",
             alias       = unaliased, 
@@ -441,7 +444,7 @@ proc defineSymbols*() =
             description = "get matches within string, using given regular expression",
             args        = {
                 "string": {String},
-                "regex" : {Regex, String}
+                "regex" : {Regex, String, Char}
             },
             attrs       = {
                 "once"      : ({Logical},"get just the first match"),
@@ -489,7 +492,8 @@ proc defineSymbols*() =
                 #=======================================================
                 let rgx : VRegex =
                     if y.kind==Regex: y.rx
-                    else: newRegex(y.s).rx
+                    elif y.kind==String: newRegex(y.s).rx
+                    else: newRegex($(y.c)).rx
 
                 var iFrom = 0
                 var iTo = int.high
