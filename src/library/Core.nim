@@ -412,10 +412,7 @@ proc defineSymbols*() =
             if isFalse(y): 
                 execUnscoped(x)
             
-    # TODO(Core/ensure) add option for custom message
-    #  so that when `ensure` fails, the message can be customized
-    #  use case: https://rosettacode.org/wiki/Assertions_in_design_by_contract
-    #  labels: library, enhancement
+            
     builtin "ensure",
         alias       = unaliased, 
         op          = opNop,
@@ -424,7 +421,9 @@ proc defineSymbols*() =
         args        = {
             "condition"     : {Block}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "that"   : ({String},"prints a custom message when ensure fails")
+        },
         returns     = {Nothing},
         example     = """
             num: input "give me a positive number"
@@ -432,11 +431,21 @@ proc defineSymbols*() =
             ensure [num > 0]
 
             print "good, the number is positive indeed. let's continue..."
+            ..........
+            ensure.message: "Wrong calc" ->  0 = 1 + 1
+            ; >> Assertion | "Wrong calc": [0 = 1 + 1]
+            ;        error |
         """:
             #=======================================================
-            execUnscoped(x)
-            if isFalse(pop()):
-                AssertionError_AssertionFailed(x.codify())
+            
+            if checkAttr("that"):
+                execUnscoped(x)
+                if isFalse(pop()):
+                    AssertionError_AssertionFailed(x.codify(), aThat.s)
+            else:
+                execUnscoped(x)
+                if isFalse(pop()):
+                    AssertionError_AssertionFailed(x.codify())
 
     builtin "if",
         alias       = unaliased, 

@@ -464,8 +464,20 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 when defined(WEB) or not defined(NOGMP):
                     result &= $(v.bi)
         of Floating     : result &= $(v.f)
-        of Complex      : result &= fmt("to :complex [{v.z.re} {v.z.im}]")
-        of Rational     : result &= fmt("to :rational [{v.rat.num} {v.rat.den}]")
+        of Complex      : 
+            if v.z.re < 0 and v.z.im < 0:
+                result &= fmt("to :complex @[neg {v.z.re * -1} neg {v.z.im * -1}]")
+            elif v.z.re < 0:
+                result &= fmt("to :complex @[neg {v.z.re * -1} {v.z.im}]")
+            elif v.z.im < 0:
+                result &= fmt("to :complex @[{v.z.re} neg {v.z.im * -1}]")
+            else:
+                result &= fmt("to :complex [{v.z.re} {v.z.im}]")
+        of Rational     : 
+            if v.rat.num < 0:
+                result &= fmt("to :rational @[neg {v.rat.num * -1} {v.rat.den}]")
+            else:
+                result &= fmt("to :rational [{v.rat.num} {v.rat.den}]")
         of Version      : result &= fmt("{v.major}.{v.minor}.{v.patch}{v.extra}")
         of Type         : 
             if v.tpKind==BuiltinType:
