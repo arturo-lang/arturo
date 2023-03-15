@@ -575,6 +575,81 @@ do [
 ]
 
 
+topic "neg"
+do [
+    
+    topic "neg - :integer"
+    
+    ensure -> (5 * neg 1) = neg 5 
+    ensure -> (1 * neg 1) = neg 1
+    ensure -> 1 = neg neg 1
+    ensure -> (0 * neg 1) = neg 0 
+    passed
+    
+    a: 4
+    neg 'a
+    ensure -> a = (4 * neg 1)
+    passed
+
+    
+    topic "neg - :floating"
+    
+    ; Never do floating comparison, it can give wrong results, even rounding
+    ; Read: What Every Computer Scientist Should Know About Floating-Point Arithmetic - Oracle
+    ;       https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html
+    
+    ensure -> ((5.5 * neg 1) + 0.1) > neg 5.5
+    ensure -> ((5.5 * neg 1) - 0.1) < neg 5.5
+    ensure -> ((1 * neg 1) + 0.1) > neg 1.0 
+    ensure -> ((1 * neg 1) - 0.1) < neg 1.0 
+    ensure -> ((0.125 * neg 1) + 0.1) > neg 0.125
+    ensure -> ((0.125 * neg 1) - 0.1)  < neg neg 0.125
+    passed
+    
+    a: 4.6
+    neg 'a
+    
+    ensure -> (4.7 * neg 1) < a
+    ensure -> (4.5 * neg 1) > a
+    passed
+    
+    
+    topic "neg - :complex"
+    
+    ensure -> (to :complex @[neg 5 neg 2]) = neg to :complex [5 2]
+    ensure -> (to :complex @[neg 1.5 neg 2]) = neg to :complex [1.5 2]
+    ensure -> (to :complex @[0 neg 2]) = neg to :complex [0 2]
+    ensure -> (to :complex @[1 neg 2]) = neg to :complex @[neg 1 2]
+    passed
+    
+    a: to :complex [1 2]
+    neg 'a
+    ensure -> a = to :complex @[neg 1 neg 2]
+    passed
+    
+    
+    topic "neg - :rational"
+    
+    ensure -> (to :rational @[neg 3 5]) = neg to :rational [3 5]
+    ; ensure -> (to :rational @[neg 1.5 3]) = neg to :rational [1.5 3]
+    ensure -> (to :rational @[0 1]) = neg to :rational [0 2]
+    ensure -> (to :rational @[1 2]) = neg to :rational @[neg 1 2]
+    ensure -> (to :rational @[1 2]) = neg to :rational @[1 neg 2]
+    passed
+    
+    a: to :rational [3 5]
+    neg 'a
+    ensure -> a = to :rational @[neg 3 5]
+    passed
+    
+    
+    topic "neg - :quantity"
+    ; todo
+    
+
+]
+
+
 topic "sub"
 do [
     
@@ -1022,6 +1097,3 @@ print add 1 mul 2 3
 print 1+2*3
 print 2*3+1
 print (1+2)*3
-
-; other functions
-print neg 1
