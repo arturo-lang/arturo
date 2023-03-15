@@ -502,6 +502,79 @@ do [
 ]
 
 
+topic "inc"
+do [
+    
+    topic "inc - :integer"
+    
+    ensure -> 6 = inc 5 
+    ensure -> 0 = inc neg 1
+    ensure -> 1 = inc 0 
+    passed
+    
+    a: 4
+    inc 'a
+    ensure -> a = 5
+    passed
+
+    
+    topic "inc - :floating"
+    
+    ; Never do floating comparison, it can give wrong results, even rounding
+    ; Read: What Every Computer Scientist Should Know About Floating-Point Arithmetic - Oracle
+    ;       https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html
+    
+    ensure -> 6.6 > inc 5.5
+    ensure -> 6.4 < inc 5.5
+    ensure -> 2.1 > inc 1.0 
+    ensure -> 0.9 < inc 1.0 
+    ensure -> (0.876) > inc neg 0.125
+    ensure -> (0.874) < inc neg 0.125
+    passed
+    
+    a: 4.6
+    inc 'a
+    
+    ensure -> 5.7 > a
+    ensure -> 5.5 < a
+    passed
+    
+    
+    topic "inc - :complex"
+    
+    ensure -> (to :complex [6 2]) = inc to :complex [5 2]
+    ensure -> (to :complex [2.5 2]) = inc to :complex [1.5 2]
+    ensure -> (to :complex @[1 2]) = inc to :complex [0 2]
+    ensure -> (to :complex @[0 2]) = inc to :complex @[neg 1 2]
+    passed
+    
+    a: to :complex [1 2]
+    inc 'a
+    ensure -> a = to :complex [2 2]
+    passed
+    
+    
+    topic "inc - :rational"
+    
+    ensure -> (to :rational @[8 5]) = inc to :rational [3 5]
+    ; ensure -> (to :rational @[3 2]) = inc to :rational [1.5 3]
+    ensure -> (to :rational @[1 1]) = inc to :rational [0 2]
+    ensure -> (to :rational @[1 2]) = inc to :rational @[neg 1 2]
+    passed
+    
+    a: to :rational [3 5]
+    inc 'a
+    ensure -> a = to :rational @[8 5]
+    passed
+    
+    
+    topic "inc - :quantity"
+    ; todo
+    
+
+]
+
+
 topic "sub"
 do [
     
@@ -952,8 +1025,3 @@ print (1+2)*3
 
 ; other functions
 print neg 1
-
-print inc 3
-a: new 3
-inc 'a
-print a
