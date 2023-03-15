@@ -429,6 +429,80 @@ do [
     
 ]
 
+topic "dec"
+do [
+    
+    topic "dec - :integer"
+    
+    ensure -> 4 = dec 5 
+    ensure -> 0 = dec 1 
+    ensure -> (neg 1) = dec 0 
+    passed
+    
+    a: 4
+    dec 'a
+    ensure -> a = 3
+    passed
+
+    
+    topic "dec - :floating"
+    
+    ; Never do floating comparison, it can give wrong results, even rounding
+    ; Read: What Every Computer Scientist Should Know About Floating-Point Arithmetic - Oracle
+    ;       https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html
+    
+    ensure -> 4.6 > dec 5.5
+    ensure -> 4.4 < dec 5.5
+    ensure -> 0.1 > dec 1.0 
+    ensure -> (neg 0.9) < dec 1.0 
+    ensure -> (neg 0.876) < dec 0.125
+    ensure -> (neg 0.874) > dec 0.125
+    passed
+    
+    a: 4.6
+    dec 'a
+    print a
+    
+    ensure -> 3.7 > a
+    ensure -> 3.5 < a
+    passed
+    
+    
+    topic "dec - :complex"
+    
+    ensure -> (to :complex [4 2]) = dec to :complex [5 2]
+    ensure -> (to :complex [0.5 2]) = dec to :complex [1.5 2]
+    ensure -> (to :complex @[neg 1 2]) = dec to :complex [0 2]
+    ensure -> (to :complex @[neg 2 2]) = dec to :complex @[neg 1 2]
+    passed
+    
+    a: to :complex [1 2]
+    dec 'a
+    ensure -> a = to :complex [0 2]
+    passed
+    
+    
+    topic "dec - :rational"
+    
+    ensure -> (to :rational @[neg 2 5]) = dec to :rational [3 5]
+    ; ensure -> (to :rational @[neg 1 2]) = dec to :rational [1.5 3]
+    ensure -> (to :rational @[neg 1 1]) = dec to :rational [0 2]
+    ensure -> (to :rational @[neg 3 2]) = dec to :rational @[neg 1 2]
+    passed
+    
+    a: to :rational [3 5]
+    dec 'a
+    ensure -> a = to :rational @[neg 2 5]
+    passed
+    
+    
+    topic "dec - :quantity"
+    ; todo
+    
+
+]
+
+
 topic "sub"
 do [
     
@@ -884,8 +958,3 @@ print inc 3
 a: new 3
 inc 'a
 print a
-
-print dec 3
-b: new 3
-dec 'b
-print b
