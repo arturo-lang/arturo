@@ -218,6 +218,11 @@ proc SyntaxError_EmptyLiteral*(lineno: int, context: string) =
 proc AssertionError_AssertionFailed*(context: string) =
     panic AssertionError,
           context
+          
+proc AssertionError_AssertionFailed*(context: string, message: string) =
+    panic AssertionError, 
+          message & ":;" & 
+          "for: " & context
 
 # Runtime errors
 
