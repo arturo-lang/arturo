@@ -123,22 +123,20 @@ do [
     ; :integer :color
     a: 1
     'a + #red
-    ; ensure -> a = 1
     ensure -> a = null
+    
     a: 1
     add 'a #red
-    ; ensure -> a = 1
     ensure -> a = null
     passed
     
     ; :color :integer
     a: #red
     'a + 1
-    ; ensure -> a = #red
     ensure -> a = null
+    
     a: #red
     add 'a 1
-    ; ensure -> a = #red
     ensure -> a = null
     passed
     
@@ -241,22 +239,20 @@ do [
     ; :floating :color
     a: 1.5
     'a + #red
-    ; ensure -> a = 1
     ensure -> a = null
+    
     a: 1.5
     add 'a #red
-    ; ensure -> a = 1
     ensure -> a = null
     passed
     
     ; :color :floating
     a: #red
     'a + 1.5
-    ; ensure -> a = #red
     ensure -> a = null
+    
     a: #red
     add 'a 1.5
-    ; ensure -> a = #red
     ensure -> a = null
     passed
     
@@ -323,22 +319,20 @@ do [
     ; :complex :color
     a: to :complex [1 2]
     'a + #red
-    ; ensure -> a = 1
     ensure -> a = null
+    
     a: to :complex [1 2]
     add 'a #red
-    ; ensure -> a = 1
     ensure -> a = null
     passed
     
     ; :color :complex
     a: #red
     'a + to :complex [1 2]
-    ; ensure -> a = #red
     ensure -> a = null
+    
     a: #red
     add 'a to :complex [1 2]
-    ; ensure -> a = #red
     ensure -> a = null
     passed
 
@@ -382,22 +376,20 @@ do [
     ; :complex :color
     a: to :rational [3 5]
     'a + #red
-    ; ensure -> a = 1
     ensure -> a = null
+    
     a: to :rational [3 5]
     add 'a #red
-    ; ensure -> a = 1
     ensure -> a = null
     passed
     
     ; :color :complex
     a: #red
     'a + to :rational [3 5]
-    ; ensure -> a = #red
     ensure -> a = null
+    
     a: #red
     add 'a to :rational [3 5]
-    ; ensure -> a = #red
     ensure -> a = null
     passed
     
@@ -554,22 +546,20 @@ do [
     ; :integer :color
     a: 1
     'a - #red
-    ; ensure -> a = 1
     ensure -> a = null
+    
     a: 1
     sub 'a #red
-    ; ensure -> a = 1
     ensure -> a = null
     passed
     
     ; :color :integer
     a: #red
     'a - 1
-    ; ensure -> a = #red
     ensure -> a = null
+    
     a: #red
     sub 'a 1
-    ; ensure -> a = #red
     ensure -> a = null
     passed
     
@@ -670,22 +660,20 @@ do [
     ; :floating :color
     a: 1.5
     'a - #red
-    ; ensure -> a = 1
     ensure -> a = null
+    
     a: 1.5
     sub 'a #red
-    ; ensure -> a = 1
     ensure -> a = null
     passed
     
     ; :color :floating
     a: #red
     'a - 1.5
-    ; ensure -> a = #red
     ensure -> a = null
+    
     a: #red
     sub 'a 1.5
-    ; ensure -> a = #red
     ensure -> a = null
     passed
     
@@ -752,22 +740,20 @@ do [
     ; :complex :color
     a: to :complex [1 2]
     'a - #red
-    ; ensure -> a = to :complex [1 2]
     ensure -> a = null
+    
     a: to :complex [1 2]
     add 'a #red
-    ; ensure -> a = to :complex [1 2]
     ensure -> a = null
     passed
     
     ; :color :complex
     a: #red
     'a + to :complex [1 2]
-    ; ensure -> a = #red
     ensure -> a = null
+    
     a: #red
     add 'a to :complex [1 2]
-    ; ensure -> a = #red
     ensure -> a = null
     passed
 
@@ -810,22 +796,20 @@ do [
     ; :complex :color
     a: to :rational [3 5]
     'a - #red
-    ; ensure -> a = 1
     ensure -> a = null
+    
     a: to :rational [3 5]
     sub 'a #red
-    ; ensure -> a = 1
     ensure -> a = null
     passed
     
     ; :color :complex
     a: #red
     'a - to :rational [3 5]
-    ; ensure -> a = #red
     ensure -> a = null
+    
     a: #red
     sub 'a to :rational [3 5]
-    ; ensure -> a = #red
     ensure -> a = null
     passed
     
