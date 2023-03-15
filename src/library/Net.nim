@@ -316,7 +316,7 @@ proc defineSymbols*() =
                     try:
                         let respStatus = (response.status.splitWhitespace())[0]
                         ret["status"] = newInteger(respStatus)
-                    except:
+                    except CatchableError:
                         ret["status"] = newString(response.status)
 
                     for k,v in response.headers.table:
@@ -326,7 +326,7 @@ proc defineSymbols*() =
                                 of "age","content-length": 
                                     try:
                                         val = newInteger(v[0])
-                                    except:
+                                    except CatchableError:
                                         val = newString(v[0])
                                 of "access-control-allow-credentials":
                                     val = newLogical(v[0])
@@ -337,7 +337,7 @@ proc defineSymbols*() =
                                     let timeFormat = initTimeFormat(dateFormat)
                                     try:
                                         val = newDate(parse(cleanDate, timeFormat))
-                                    except:
+                                    except CatchableError:
                                         val = newString(v[0])
                                 else:
                                     val = newString(v[0])
@@ -424,7 +424,7 @@ proc defineSymbols*() =
                         if reqAction!=HttpGet: 
                             try:
                                 reqBodyV = valueFromJson(reqBody) 
-                            except:
+                            except CatchableError:
                                 reqBodyV = newDictionary()
                                 for k,v in decodeQuery(reqBody):
                                     reqBodyV.d[k] = newString(v)

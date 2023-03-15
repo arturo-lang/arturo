@@ -114,7 +114,7 @@ proc showVMErrors*(e: ref Exception) =
         # if $(header) notin [RuntimeError, AssertionError, SyntaxError, ProgramError, CompilerError]:
         #     e.msg = getLineError() & "uncaught system exception:;" & e.msg
         #     header = RuntimeError
-    except:
+    except CatchableError:
         header = "HEADER"
 
     let marker = ">>"
@@ -405,5 +405,5 @@ proc ProgramError_panic*(message: string, code: int) =
 #                 ret &= ";"
 
 #         ret
-#     except:
+#     except CatchableError:
 #         ""
