@@ -27,7 +27,7 @@ jobs:
           - full
         arch:
           - x86
-          - x86_64
+          - amd64
           - arm
           - arm64
         exclude:
@@ -195,7 +195,7 @@ jobs:
         version:
           - mini
         arch:
-          - x86_64
+          - amd64
 
     steps:
       - name: "Cancel similar actions in progress"
@@ -246,7 +246,7 @@ jobs:
         version:
           - mini
         arch:
-          - x86_64
+          - amd64
 
     steps:
       - name: "Cancel similar actions in progress"
@@ -297,7 +297,7 @@ jobs:
         version:
           - mini
         arch:
-          - x86_64
+          - amd64
 
     steps:
       - name: "Cancel similar actions in progress"
@@ -349,7 +349,7 @@ jobs:
           - mini
           - full
         arch:
-          - x86_64
+          - amd64
 
     steps:
       - name: "Cancel similar actions in progress"

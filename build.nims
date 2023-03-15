@@ -81,7 +81,7 @@ let
         "vcc"               : "",
         "web"               : "--verbosity:3 -d:WEB",
         "x86"               : "--cpu:i386 " & (when defined(gcc): "--passC:'-m32' --passL:'-m32'" else: ""),  
-        "x86_64"            : ""
+        "amd64"             : ""
     }.toTable
 
 #=======================================
