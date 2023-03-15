@@ -461,7 +461,6 @@ do [
     
     a: 4.6
     dec 'a
-    print a
     
     ensure -> 3.7 > a
     ensure -> 3.5 < a
