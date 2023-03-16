@@ -205,7 +205,7 @@ template handleBranching*(tryDoing, finalize: untyped): untyped =
         return
     except ContinueTriggered:
         discard
-    except Defect as e:
+    except CatchableError, Defect as e:
         raise e 
     finally:
         finalize
