@@ -422,7 +422,7 @@ proc processBlock*(
                                 
                             else:
                                 discard
-                    except CatchableError:
+                    except Defect, CatchableError:
                         discard
 
             target = target.parent
