@@ -710,7 +710,7 @@ proc defineSymbols*() =
             let verbose = (hadAttr("verbose"))
             try:
                 execUnscoped(x)
-            except CatchableError:
+            except CatchableError, Defect:
                 let e = getCurrentException()
                 if verbose:
                     showVMErrors(e)
@@ -763,7 +763,7 @@ proc defineSymbols*() =
                 execUnscoped(x)
 
                 push(VTRUE)
-            except CatchableError:
+            except CatchableError, Defect:
                 let e = getCurrentException()
                 if verbose:
                     showVMErrors(e)
