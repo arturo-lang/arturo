@@ -483,7 +483,7 @@ proc defineSymbols*() =
                         "accessed": newDate(local(getLastAccessTime(x.s))),
                         "modified": newDate(local(getLastModificationTime(x.s)))
                     }.toOrderedTable)
-                except:
+                except CatchableError:
                     push VNULL
                         
         builtin "unzip",
