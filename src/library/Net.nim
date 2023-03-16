@@ -39,10 +39,10 @@ when not defined(WEB):
 
     when defined(ssl):
         import smtp
+        import helpers/stores
 
     import helpers/jsonobject
     import helpers/servers
-    import helpers/stores
     import helpers/terminal
     import helpers/url
     import helpers/webviews
