@@ -270,11 +270,10 @@ proc defineSymbols*() =
                 var client: HttpClient
 
                 if checkAttr("certificate"):
-                    let certificate = aCertificate.s
                     when defined(ssl):
                         client = newHttpClient(
                             userAgent = agent,
-                            sslContext = newContext(certFile=certificate),
+                            sslContext = newContext(certFile=aCertificate.s),
                             proxy = proxy, 
                             timeout = timeout,
                             headers = headers
