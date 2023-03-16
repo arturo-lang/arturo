@@ -115,7 +115,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                                     var ret: string
                                     formatValue(ret, y.i, aFormat.s)
                                     return newString(ret)
-                                except:
+                                except CatchableError:
                                     throwConversionFailed()
                             else:
                                 return newString($(y.i))
@@ -148,7 +148,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                                 var ret: string
                                 formatValue(ret, y.f, aFormat.s)
                                 return newString(ret)
-                            except:
+                            except CatchableError:
                                 throwConversionFailed()
                         else:
                             return newString($(y.f))
@@ -172,7 +172,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                                 formatValue(ret2, y.z.im, aFormat.s)
 
                                 return newString($(ret) & (if y.z.im >= 0: "+" else: "") & $(ret2) & "i")
-                            except:
+                            except CatchableError:
                                 throwConversionFailed()
                         else:
                             return newString($(y))
@@ -272,7 +272,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                     of Color:
                         try:
                             return newColor(y.s)
-                        except:
+                        except CatchableError:
                             throwConversionFailed()
                     of Date:
                         var dateFormat = "yyyy-MM-dd'T'HH:mm:sszzz"
@@ -282,7 +282,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                         let timeFormat = initTimeFormat(dateFormat)
                         try:
                             return newDate(parse(y.s, timeFormat))
-                        except:
+                        except CatchableError:
                             throwConversionFailed()
                     else:
                         throwCannotConvert()
@@ -477,7 +477,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                                     formatValue(ret, float(y.nm.i), aFormat.s)
 
                                 return newString(ret & stringify(y.unit.name))
-                            except:
+                            except CatchableError:
                                 throwConversionFailed()
                         else:
                             return newString($(y))
@@ -508,7 +508,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                         
                         try:
                             return newString(format(y.eobj, dateFormat))
-                        except:
+                        except CatchableError:
                             throwConversionFailed()
                     else: 
                         throwCannotConvert()
