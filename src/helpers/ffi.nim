@@ -172,5 +172,5 @@ when not defined(WEB):
         except VMError as e:
             raise e
 
-        except:
+        except CatchableError:
             RuntimeError_ErrorLoadingLibrarySymbol(path, meth)
