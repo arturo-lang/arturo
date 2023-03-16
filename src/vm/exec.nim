@@ -196,6 +196,8 @@ template finalizeLeaklessOne*(): untyped =
     else:
         Syms[toRestoreKey] = move toRestoreVal
 
+# TODO(VM/exec) Should also catch any *CatchableError* in `handleBranching`?
+#  labels: vm, execution, error handling
 template handleBranching*(tryDoing, finalize: untyped): untyped =
     ## Wrapper for code that may throw *Break* or *Continue* signals, 
     ## or other errors that are to be caught
@@ -205,7 +207,7 @@ template handleBranching*(tryDoing, finalize: untyped): untyped =
         return
     except ContinueTriggered:
         discard
-    except CatchableError, Defect as e:
+    except Defect as e:
         raise e 
     finally:
         finalize
