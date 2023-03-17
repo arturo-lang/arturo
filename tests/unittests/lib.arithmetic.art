@@ -832,6 +832,216 @@ do [
 ]
 
 
+topic "fdiv"
+do [
+    
+    topic "fdiv - :integer :integer"
+    
+    ensure -> 1.0 = 1 // 1
+    ensure -> 0.0 = 0 // 1
+    ensure -> 1.0 = fdiv 1 1
+    ensure -> 0.0 = fdiv 0 1
+    passed
+    
+    try? -> 1.0 // 0
+    else -> passed
+    
+    try? -> fdiv 1 0
+    else -> passed
+    
+    ensure -> 0.5 = 1 // 2
+    ensure -> 2.0 = 2 // 1
+    ensure -> 0.5 = fdiv 1 2
+    ensure -> 2.0 = fdiv 2 1
+    passed
+    
+    ensure -> (neg 2.0) = 8 // neg 4
+    passed
+    
+    a: 8
+    fdiv 'a 4
+    ensure -> a = 2.0
+    'a // 2
+    ensure -> a = 1.0
+    passed
+    
+    topic "fdiv - :int :floating"
+    
+    ensure -> 1 = 1 // 1.0
+    ensure -> 0 = 0 // 1.0
+    ensure -> 1 = fdiv 1 1.0
+    ensure -> 0 = fdiv 0 1.0
+    passed
+
+    ensure -> (1 // 1.0) = 1.0 // 1
+    ensure -> (0 // 1.0) = 0.0 // 1
+    ensure -> (fdiv 1 1.0) = fdiv 1.0 1
+    ensure -> (fdiv 0 1.0) = fdiv 0.0 1
+    passed
+    
+    try? -> 1 // 0.0
+    else -> passed
+
+    try? -> 1.0 // 0
+    else -> passed
+    
+    try? -> fdiv 1.0 0
+    else -> passed
+
+    try? -> fdiv 1.0 0
+    else -> passed
+    
+    ensure -> 2.0 = 1 // 0.5
+    ensure -> 0.5 = 1.0 // 2
+    ensure -> 2.0 = 8 // 4.0
+    ensure -> 2.0 = fdiv 1 0.5
+    ensure -> 0.5 = fdiv 1.0 2
+    ensure -> 2.0 = fdiv 8 4.0
+    passed
+    
+    ensure -> (8 // 4.0) = 8.0 // 4
+    ensure -> (fdiv 8 4.0) = fdiv 8.0 4
+    passed
+    
+    ensure -> (neg 2) = 8 // neg 4.0
+    passed
+
+    ensure -> (8 // neg 4.0) = 8.0 // neg 4
+    passed
+    
+    ensure -> (1 // 2.0) = (1 * 0.5)
+    passed
+    
+    a: 8
+    fdiv 'a 4.0
+    ensure -> a = 2.0
+    'a // 2
+    ensure -> a = 1.0
+    passed
+    
+    
+    topic "fdiv - :integer :rational"
+    
+    a: to :rational [1 2]
+    expected: to :rational [1 4]
+    ensure -> expected = a // 2
+    ensure -> 4 = 2 // a
+    ensure -> expected = fdiv a 2
+    ensure -> 4 = fdiv 2 a
+    passed
+    
+    ; :rational :integer
+    a: to :rational [1 2]
+    'a // 2
+    ensure -> a = to :rational [1 4]
+    fdiv 'a 2
+    ensure -> a = to :rational [1 8]
+    passed
+    
+    ; :integer :rational
+    a: 2
+    'a // to :rational [1 2]
+    ensure -> a = 4
+    a: 2
+    fdiv 'a to :rational [1 2]
+    ensure -> a = 4
+    passed
+    
+    
+    topic "fdiv - :integer :quantity"
+    ; todo
+    
+    
+    ; ------ floating
+    
+    topic "fdiv - :floating :floating"
+    
+    ensure -> 1 = 1.0 // 1.0
+    ensure -> 1 = fdiv 1.0 1.0
+    passed
+    
+    ensure -> 0.5 = 1.5 // 3.0
+    ensure -> 0.5 = fdiv 1.5 3.0
+    ensure -> 2.0 = 3.0 // 1.5
+    ensure -> 2.0 = fdiv 3.0 1.5
+    passed
+    
+    a: 1.5
+    fdiv 'a 3.0
+    ensure -> a = 0.5
+    'a // 0.5
+    ensure -> a = 1.0
+    passed
+    
+  
+    topic "fdiv - :floating :rational"
+    
+    a: to :rational [1 2]
+    expected: to :rational [1 4]
+    ensure -> expected = a // 2.0
+    ensure -> 4.0 = 2.0 // a
+    ensure -> expected = fdiv a 2.0
+    ensure -> 4.0 = fdiv 2.0 a
+    passed
+    
+    ; :rational :integer
+    a: to :rational [1 2]
+    'a // 2.0
+    ensure -> a = to :rational [1 4]
+    fdiv 'a 2.0
+    ensure -> a = to :rational [1 8]
+    passed
+    
+    ; :integer :rational
+    a: 2.0
+    'a // to :rational [1 2]
+    ensure -> a = 4.0
+    a: 2.0
+    fdiv 'a to :rational [1 2]
+    ensure -> a = 4.0
+    passed
+    
+    
+    topic "fdiv - :floating :quantity"
+    ; todo
+    
+    
+    ; ------ rational
+     
+    topic "fdiv - :rational :rational"
+    
+    a: to :rational [3 5]
+    b: to :rational [1 2]
+    ensure -> (to :rational [6 5]) = a // b
+    ensure -> (to :rational [5 6]) = b // a
+    ensure -> (to :rational [6 5]) = fdiv a b
+    ensure -> (to :rational [5 6]) = fdiv b a
+    passed
+    
+    
+    a: to :rational [3 5]
+    b: to :rational [1 2]
+    
+    'a // b
+    ensure -> (to :rational [6 5]) = a
+    fdiv 'a b
+    ensure -> (to :rational [12 5]) = a
+    ensure -> (to :rational [24 10]) = a
+    passed
+    
+    
+    topic "fdiv - :rational :quantity"
+    ; todo
+    
+        
+    ; ------ quantity
+     
+    topic "fdiv - :quantity :quantity"
+
+    
+]
+
+
 
 topic "inc"
 do [
@@ -1405,8 +1615,6 @@ print 2*3
 z: new 2
 mul 'z 3
 print z
-
-print fdiv 7 3
 
 print mod 10 3
 print 10%3
