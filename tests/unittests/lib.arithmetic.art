@@ -1977,8 +1977,8 @@ do [
     passed
     
     ; neg exponent
-    ensure -> (1//4) = pow 2 neg 2
-    ensure -> (1000//27) = pow 0.3 neg 3
+    ensure -> "0.25" = ~"|pow 2 neg 2|"
+    ensure -> "37.03703703703704" = ~"|pow 0.3 neg 3|"
     passed
     
     ; more proprieties
@@ -1994,7 +1994,7 @@ do [
     passed
     
     ensure -> 4 = 2 ^ 2
-    ensure -> (27 // 1000) = 0.3 ^ 3
+    ensure -> "0.027" = ~"|0.3 ^ 3|"
     passed
     
     ; neg base
@@ -2003,8 +2003,8 @@ do [
     passed
     
     ; neg exponent
-    ensure -> (1//4) = 2 ^ neg 2
-    ensure -> (1000//27) = 0.3 ^ neg 3
+    ensure -> "0.25" = ~"|2 ^ neg 2|"
+    ensure -> "37.03703703703704" = ~"|0.3 ^ neg 3|"
     passed
     
     ; more proprieties
@@ -2103,8 +2103,8 @@ do [
     passed
     
     ; neg exponent
-    ensure -> (1//4) = pow 2.0 neg 2.0
-    ensure -> (1000//27) = pow 0.3 neg 3.0
+    ensure -> "0.25" = ~"|pow 2.0 neg 2.0|"
+    ensure -> "37.03703703703704" = ~"|pow 0.3 neg 3.0|"
     passed
     
     ; more proprieties
@@ -2120,7 +2120,7 @@ do [
     passed
     
     ensure -> 4 = 2.0 ^ 2.0
-    ensure -> (27 // 1000) = 0.3 ^ 3.0
+    ensure -> "0.027" = ~"|0.3 ^ 3.0|"
     passed
     
     ; neg base
@@ -2129,8 +2129,8 @@ do [
     passed
     
     ; neg exponent
-    ensure -> (1//4) = 2.0 ^ neg 2.0
-    ensure -> (1000//27) = 0.3 ^ neg 3.0
+    ensure ->  "0.25" = ~"|2.0 ^ neg 2.0|"
+    ensure -> "37.03703703703704" = ~"|0.3 ^ neg 3.0|"
     passed
     
     ; more proprieties
