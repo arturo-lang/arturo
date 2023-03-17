@@ -417,6 +417,7 @@ do [
     ensure -> #gray = a
     'a + #blue
     ensure -> #8080FF = a
+    passed
     
     topic "add - :color :quantity"
     ; todo
@@ -2595,6 +2596,7 @@ do [
     ensure -> #80808000 = a
     'a - #blue
     ensure -> #80800000 = a
+    passed
     
     topic "sub - :color :quantity"
     ; todo
