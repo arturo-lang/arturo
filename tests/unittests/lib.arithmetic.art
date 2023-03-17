@@ -2607,8 +2607,11 @@ do [
     
 ]
 
-; operator lack of precedence
-print add 1 mul 2 3
-print 1+2*3
-print 2*3+1
-print (1+2)*3
+topic « - precedence analysis
+do [
+    ensure -> 7 = 1+2*3
+    ensure -> 8 = 2*3+1
+    ensure -> 9 = (1+2)*3
+    ensure -> 8 = 2*(3+1)
+    passed
+]
