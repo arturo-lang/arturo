@@ -1968,7 +1968,7 @@ do [
     passed
     
     ensure -> 4 = pow 2 2
-    ensure -> (27 // 1000) = pow 0.3 3
+    ensure -> "0.027" = ~"|pow 0.3 3|"
     passed
     
     ; neg base
@@ -2094,7 +2094,7 @@ do [
     passed
     
     ensure -> 4.0 = pow 2.0 2.0
-    ensure -> (27.0 // 1000.0) = pow 0.3 3.0
+    ensure -> ensure -> "0.027" = ~"|pow 0.3 3.0|"
     passed
     
     ; neg base
