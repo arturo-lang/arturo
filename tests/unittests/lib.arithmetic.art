@@ -1116,6 +1116,188 @@ do [
 ]
 
 
+topic "mod"
+do [
+    
+    topic "mod - :integer :integer"
+    
+    ensure -> 0 = 1 % 1
+    ensure -> 0 = 0 % 1
+    ensure -> 0 = mod 1 1
+    ensure -> 0 = mod 0 1
+    passed
+    
+    try? -> 1 % 0
+    else -> passed
+    
+    try? -> mod 1 0
+    else -> passed
+    
+    ensure -> 1 = 1 % 2
+    ensure -> 0 = 2 % 1
+    ensure -> 1 = mod 1 2
+    ensure -> 0 = mod 2 1
+    passed
+    
+    ensure -> 0 = 8 % neg 4
+    passed
+    
+    a: 8
+    mod 'a 4
+    ensure -> a = 0
+    a: 8
+    'a % 3
+    ensure -> a = 2
+    passed
+    
+    topic "mod - :int :floating"
+    
+    ensure -> 0 = 1 % 1.0
+    ensure -> 0 = 0 % 1.0
+    ensure -> 0 = mod 1 1.0
+    ensure -> 0 = mod 0 1.0
+    passed
+
+    ensure -> (1 % 1.0) = 1.0 % 1
+    ensure -> (0 % 1.0) = 0.0 % 1
+    ensure -> (mod 1 1.0) = mod 1.0 1
+    ensure -> (mod 0 1.0) = mod 0.0 1
+    passed
+    
+    try? -> 1 % 0.0
+    else -> passed
+
+    try? -> 1.0 % 0
+    else -> passed
+    
+    try? -> mod 1.0 0
+    else -> passed
+
+    try? -> mod 1.0 0
+    else -> passed
+    
+    ensure -> 0 = 1 % 0.5
+    ensure -> 1 = 1.0 % 2
+    ensure -> 0 = 8 % 4.0
+    ensure -> 0 = mod 1 0.5
+    ensure -> 1 = mod 1.0 2
+    ensure -> 0 = mod 8 4.0
+    passed
+    
+    ensure -> (8 % 4.0) = 8.0 % 4
+    ensure -> (mod 8 4.0) = mod 8.0 4
+    passed
+    
+    ensure -> 0 = 8 % neg 4.0
+    passed
+
+    ensure -> (8 % neg 4.0) = 8.0 % neg 4
+    passed
+    
+    a: 8
+    mod 'a 4.0
+    ensure -> a = 0.0
+    a: 8
+    'a % 3
+    ensure -> a = 2.0
+    passed
+    
+    
+    ; topic "mod - :int :rational"
+    
+    ; a: to :rational [1 2]
+    ; passed
+    
+    ; :rational :integer
+    ; a: to :rational [1 2]
+    ; passed
+    
+    ; :integer :rational
+    ; a: 2
+    ; 'a % to :rational [1 2]
+    ; a: 2
+    ; mod 'a to :rational [1 2]
+    ; passed
+    
+    
+    topic "mod - :integer :quantity"
+    ; todo
+    
+    
+    ; ------ floating
+    
+    topic "mod - :floating :floating"
+    
+    ensure -> 0 = 1.0 % 1.0
+    ensure -> 0 = mod 1.0 1.0
+    passed
+    
+    ensure -> 1.5 = 1.5 % 3.0
+    ensure -> 1.5 = mod 1.5 3.0
+    ensure -> 0.0 = 3.0 % 1.5
+    ensure -> 0.0 = mod 3.0 1.5
+    passed
+    
+    a: 1.5
+    mod 'a 3.0
+    ensure -> a = 1.5
+    'a % 0.5
+    ensure -> a = 0.0
+    passed
+    
+    
+    topic "mod - :floating :rational"
+    
+    ; a: to :rational [1 2]
+    ; passed
+    
+    ; :rational :integer
+    ; a: to :rational [1 2]
+    ; 'a % 2.0
+    ; mod 'a 2.0
+    ; passed
+    
+    ; :integer :rational
+    ; a: 2.0
+    ; 'a % to :rational [1 2]
+    ; a: 2.0
+    ; mod 'a to :rational [1 2]
+    ; passed
+    
+    
+    topic "mod - :floating :quantity"
+    ; todo
+    
+ 
+    ; ------ rational
+     
+    topic "mod - :rational :rational"
+    
+    ; a: to :rational [3 5]
+    ; b: to :rational [1 2]
+    ; passed
+    
+    
+    ; a: to :rational [3 5]
+    ; b: to :rational [1 2]
+    
+    ; 'a % b
+    ; passed
+    
+    
+    topic "mod - :rational :quantity"
+    ; todo
+    
+        
+    ; ------ quantity
+     
+    topic "mod - :quantity :quantity"
+
+    
+]
+
+
+
 topic "neg"
 do [
     
@@ -1615,12 +1797,6 @@ print 2*3
 z: new 2
 mul 'z 3
 print z
-
-print mod 10 3
-print 10%3
-q: new 10
-mod 'q 3
-print q
 
 print pow 2 3
 print 2^3
