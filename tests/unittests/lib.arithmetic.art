@@ -1574,6 +1574,312 @@ do [
 ]
 
 
+topic "mul"
+do [
+    
+    topic "mul - :integer :integer"
+    
+    ensure -> 1 = 1 * 1
+    ensure -> 0 = 0 * 1
+    ensure -> 1 = mul 1 1
+    ensure -> 0 = mul 0 1
+    passed
+    
+    ensure -> 2 = 1 * 2
+    ensure -> 2 = 2 * 1
+    ensure -> 2 = mul 1 2
+    ensure -> 2 = mul 2 1
+    passed
+    
+    ensure -> (neg 32) = 8 * neg 4
+    passed
+    
+    a: 8
+    mul 'a 4
+    ensure -> a = 32
+    'a * 2
+    ensure -> a = 64
+    passed
+    
+    topic "mul - :int :floating"
+    
+    ensure -> 1 = 1 * 1.0
+    ensure -> 0 = 0 * 1.0
+    ensure -> 1 = mul 1 1.0
+    ensure -> 0 = mul 0 1.0
+    passed
+
+    ensure -> (1 * 1.0) = 1.0 * 1
+    ensure -> (0 * 1.0) = 0.0 * 1
+    ensure -> (mul 1 1.0) = mul 1.0 1
+    ensure -> (mul 0 1.0) = mul 0.0 1
+    passed
+    
+    ensure -> 0.5 = 1 * 0.5
+    ensure -> 2 = 1.0 * 2
+    ensure -> 32 = 8 * 4.0
+    ensure -> 0.5 = mul 1 0.5
+    ensure -> 2 = mul 1.0 2
+    ensure -> 32 = mul 8 4.0
+    passed
+    
+    ensure -> (8 * 4.0) = 8.0 * 4
+    ensure -> (mul 8 4.0) = mul 8.0 4
+    passed
+    
+    ensure -> (neg 32) = 8 * neg 4.0
+    passed
+
+    ensure -> (8 * neg 4.0) = 8.0 * neg 4
+    passed
+    
+    a: 8
+    mul 'a 4.0
+    ensure -> a = 32.0
+    'a * 2
+    ensure -> a = 64.0
+    passed
+    
+    
+    topic "mul - :integer :complex"
+    
+    a: to :complex [2 5]
+    ensure -> (to :complex [4 10]) = a * 2
+    ensure -> (to :complex [4 10]) = mul a 2
+    passed
+    
+    a: to :complex [1 2]
+    ensure -> a = 1 * a
+    ensure -> a = mul 1 a
+    passed
+    
+    ; :complex :integer
+    a: to :complex [2 5]
+    'a * 2
+    ensure -> a = to :complex [4 10]
+    mul 'a 2
+    ensure -> a = to :complex [8 20]
+    passed
+    
+    ; :integer :complex
+    a: 2
+    'a * to :complex [2 5]
+    ensure -> a = to :complex [4 10]
+    
+    a: 4
+    mul 'a to :complex [2 5]
+    ensure -> a = to :complex [8 20]
+    passed
+    
+    
+    topic "mul - :integer :rational"
+    
+    a: to :rational [1 2]
+    ensure -> (to :rational [1 1]) = a * 2
+    ensure -> (to :rational [1 1]) = mul a 2
+    ensure -> (2 * a) = a * 2
+    ensure -> (mul 2 a) = mul a 2
+    passed
+    
+    
+    :rational :integer
+    a: to :rational [3 5]
+    'a * 2
+    ensure -> a = to :rational [6 5]
+    mul 'a 2
+    ensure -> a = to :rational [12 5]
+    passed
+    
+    
+    ; :integer :rational
+    a: 2
+    'a * to :rational [3 5]
+    ensure -> a = to :rational [6 5]
+    a: 2
+    mul 'a to :rational [3 5]
+    ensure -> a = to :rational [6 5]
+    passed
+    
+    
+    topic "mul - :integer :quantity"
+    ; todo
+    
+    
+    ; ------ floating
+    
+    topic "mul - :floating :floating"
+    
+    ensure -> 1 = 1.0 * 1.0
+    ensure -> 1 = mul 1.0 1.0
+    passed
+    
+    ensure -> 4.5 = 1.5 * 3.0
+    ensure -> 4.5 = mul 1.5 3.0
+    ensure -> 4.5 = 3.0 * 1.5
+    ensure -> 4.5 = mul 3.0 1.5
+    passed
+    
+    a: 1.5
+    mul 'a 3.0
+    ensure -> a = 4.5
+    'a * 0.5
+    ensure -> a = 2.25
+    passed
+    
+    
+    topic "mul - :floating :complex"
+    
+    a: to :complex [2 5]
+    ensure -> (to :complex [4 10]) = a * 2.0
+    ensure -> (to :complex [4 10]) = mul a 2.0
+    passed
+    
+    a: to :complex [1 2]
+    ensure -> a = 1.0 * a
+    ensure -> a = mul 1.0 a
+    passed
+    
+    ; :complex :floating
+    a: to :complex [2 5]
+    'a * 2.0
+    ensure -> a = to :complex [4 10]
+    mul 'a 2.0
+    ensure -> a = to :complex [8 20]
+    passed
+    
+    ; :floating :complex
+    a: 2.0
+    'a * to :complex [2 5]
+    ensure -> a = to :complex [4 10]
+    
+    a: 4.0
+    mul 'a to :complex [2 5]
+    ensure -> a = to :complex [8 20]
+    passed
+    
+    
+    topic "mul - :floating :rational"
+    
+    a: to :rational [1 2]
+    ensure -> (to :rational [1 1]) = a * 2
+    ensure -> (to :rational [1 1]) = mul a 2
+    ensure -> (2 * a) = a * 2
+    ensure -> (mul 2 a) = mul a 2
+    passed
+    
+    
+    ; :rational :floating
+    a: to :rational [3 5]
+    'a * 2.0
+    ensure -> a = to :rational [6 5]
+    mul 'a 2.0
+    ensure -> a = to :rational [12 5]
+    passed
+    
+    
+    ; :floating :rational
+    a: 2.0
+    'a * to :rational [3 5]
+    ensure -> a = to :rational [6 5]
+    a: 2.0
+    mul 'a to :rational [3 5]
+    ensure -> a = to :rational [6 5]
+    passed
+    
+    
+    topic "mul - :floating :quantity"
+    ; todo
+    
+    
+    ; ------ complex
+     
+    topic "mul - :complex :complex"
+    
+    a: to :complex [3 2]
+    b: to :complex @[3 neg 2]
+    
+    ensure -> (to :complex @[13 0]) = a * b
+    ensure -> (to :complex @[13 0]) = mul a b
+    
+    ensure -> (to :complex @[13 0]) = b * a
+    ensure -> (to :complex @[13 0]) = mul b a
+    passed
+    
+    a: to :complex [3 2]
+    b: to :complex @[3 neg 2]
+    'a * b
+    ensure -> (to :complex @[13 0]) = a
+    a: to :complex [3 2]
+    b: to :complex @[3 neg 2]
+    mul 'a b
+    ensure -> (to :complex @[13 0]) = a
+    passed
+    
+    
+    topic "mul - :complex :rational"
+    
+    a: to :complex [1 2]
+    b: to :rational [3 5]
+    expected: to :rational [11 10]
+    ensure -> null = a * b
+    ensure -> null = b * a
+    ensure -> null = mul a b
+    ensure -> null = mul b a
+    passed
+    
+    ; :complex :rational - :rational :complex
+    a: to :complex [1 2]
+    b: to :rational [1 1]
+    
+    ; 'a * b
+    ; ensure -> a = to :complex [1 2]
+    ; passed
+    
+    b: to :rational [3 5]
+    mul 'b a
+    ensure -> b = to :rational [3 5]
+    passed
+    
+    topic "mul - :complex :quantity"
+    ; todo
+    
+    
+    ; ------ rational
+     
+    topic "mul - :rational :rational"
+    
+    a: to :rational [3 5]
+    b: to :rational [1 2]
+    ensure -> (to :rational [3 10]) = a * b
+    ensure -> (to :rational [3 10]) = b * a
+    ensure -> (to :rational [3 10]) = mul a b
+    ensure -> (to :rational [3 10]) = mul b a
+    passed
+    
+    
+    a: to :rational [3 5]
+    b: to :rational [1 2]
+    
+    'a * b
+    ensure -> (to :rational [3 10]) = a
+    mul 'a b
+    ensure -> (to :rational [3 20]) = a
+    ensure -> (to :rational [6 40]) = a
+    passed
+    
+    
+    topic "mul - :rational :quantity"
+    ; todo
+    
+        
+    ; ------ quantity
+     
+    topic "mul - :quantity :quantity"
+
+    
+]
+
+
 
 topic "neg"
 do [
@@ -2068,12 +2374,6 @@ do [
 
     
 ]
-
-print mul 2 3
-print 2*3
-z: new 2
-mul 'z 3
-print z
 
 print pow 2 3
 print 2^3
