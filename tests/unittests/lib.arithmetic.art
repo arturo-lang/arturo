@@ -502,6 +502,337 @@ do [
 ]
 
 
+
+topic "div"
+do [
+    
+    topic "div - :integer :integer"
+    
+    ensure -> 1 = 1 / 1
+    ensure -> 0 = 0 / 1
+    ensure -> 1 = div 1 1
+    ensure -> 0 = div 0 1
+    passed
+    
+    try? -> 1 / 0
+    else -> passed
+    
+    try? -> div 1 0
+    else -> passed
+    
+    ensure -> 0 = 1 / 2
+    ensure -> 2 = 2 / 1
+    ensure -> 0 = div 1 2
+    ensure -> 2 = div 2 1
+    passed
+    
+    ensure -> (neg 2) = 8 / neg 4
+    passed
+    
+    a: 8
+    div 'a 4
+    ensure -> a = 2
+    'a / 2
+    ensure -> a = 1
+    passed
+    
+    topic "div - :int :floating"
+    
+    ensure -> 1 = 1 / 1.0
+    ensure -> 0 = 0 / 1.0
+    ensure -> 1 = div 1 1.0
+    ensure -> 0 = div 0 1.0
+    passed
+
+    ensure -> (1 / 1.0) = 1.0 / 1
+    ensure -> (0 / 1.0) = 0.0 / 1
+    ensure -> (div 1 1.0) = div 1.0 1
+    ensure -> (div 0 1.0) = div 0.0 1
+    passed
+    
+    try? -> 1 / 0.0
+    else -> passed
+
+    try? -> 1.0 / 0
+    else -> passed
+    
+    try? -> div 1.0 0
+    else -> passed
+
+    try? -> div 1.0 0
+    else -> passed
+    
+    ensure -> 2.0 = 1 / 0.5
+    ensure -> 0.5 = 1.0 / 2
+    ensure -> 2.0 = 8 / 4.0
+    ensure -> 2.0 = div 1 0.5
+    ensure -> 0.5 = div 1.0 2
+    ensure -> 2.0 = div 8 4.0
+    passed
+    
+    ensure -> (8 / 4.0) = 8.0 / 4
+    ensure -> (div 8 4.0) = div 8.0 4
+    passed
+    
+    ensure -> (neg 2) = 8 / neg 4.0
+    passed
+
+    ensure -> (8 / neg 4.0) = 8.0 / neg 4
+    passed
+    
+    ensure -> (1 / 2.0) = (1 * 0.5)
+    passed
+    
+    a: 8
+    div 'a 4.0
+    ensure -> a = 2.0
+    'a / 2
+    ensure -> a = 1.0
+    passed
+    
+    
+    topic "div - :int :complex"
+    
+    ; side note: render is used to compare the returned value avoiding floating imprecisions
+    
+    a: to :complex [2 5]
+    ensure -> "1.0+2.5i" = ~"|a / 2|"
+    ensure -> "1.0+2.5i" = ~"|div a 2|"
+    passed
+    
+    a: to :complex [1 2]
+    ensure -> (to :complex @[1.0 / 5 neg (2.0 / 5)]) = 1 / a
+    ensure -> (to :complex @[1.0 / 5 neg (2.0 / 5)]) = div 1 a
+    passed
+    
+    ; :complex :integer
+    a: to :complex [2 5]
+    'a / 2
+    ensure -> "1.0+2.5i" = ~"|a|"
+    a: to :complex [2 5]
+    div 'a 2
+    ensure -> "1.0+2.5i" = ~"|a|"
+    passed
+    
+    ; :integer :complex
+    a: 1
+    'a / to :complex [1 2]
+    ensure -> (to :complex @[1.0 / 5 neg (2.0 / 5)]) = a
+    
+    a: 1
+    div 'a to :complex [1 2]
+    ensure -> (to :complex @[1.0 / 5 neg (2.0 / 5)]) = a
+    passed
+    
+    
+    topic "div - :int :rational"
+    
+    a: to :rational [1 2]
+    expected: to :rational [1 4]
+    ; ensure -> expected = a / 2
+    ensure -> 4 = 2 / a
+    ; ensure -> expected = div a 2
+    ensure -> 4 = div 2 a
+    passed
+    
+    ; :rational :integer
+    ; a: to :rational [1 2]
+    ; 'a / 2
+    ; ensure -> a = to :rational [1 4]
+    ; div 'a 2
+    ; ensure -> a = to :rational [1 8]
+    ; passed
+    
+    ; :integer :rational
+    a: 2
+    'a / to :rational [1 2]
+    ensure -> a = 4
+    a: 2
+    div 'a to :rational [1 2]
+    ensure -> a = 4
+    passed
+    
+    
+    topic "div - :integer :quantity"
+    ; todo
+    
+    
+    ; ------ floating
+    
+    topic "div - :floating :floating"
+    
+    ensure -> 1 = 1.0 / 1.0
+    ensure -> 1 = div 1.0 1.0
+    passed
+    
+    ensure -> 0.5 = 1.5 / 3.0
+    ensure -> 0.5 = div 1.5 3.0
+    ensure -> 2.0 = 3.0 / 1.5
+    ensure -> 2.0 = div 3.0 1.5
+    passed
+    
+    a: 1.5
+    div 'a 3.0
+    ensure -> a = 0.5
+    'a / 0.5
+    ensure -> a = 1.0
+    passed
+    
+    
+    topic "div - :floating :complex"
+    ; side note: render is used to compare the returned value avoiding floating imprecisions
+    
+    a: to :complex [2 5]
+    ensure -> "1.0+2.5i" = ~"|a / 2.0|"
+    ensure -> "1.0+2.5i" = ~"|div a 2.0|"
+    passed
+    
+    a: to :complex [1 2]
+    ensure -> (to :complex @[1.0 / 5 neg (2.0 / 5)]) = 1.0 / a
+    ensure -> (to :complex @[1.0 / 5 neg (2.0 / 5)]) = div 1.0 a
+    passed
+    
+    ; :complex :floating
+    a: to :complex [2 5]
+    'a / 2.0
+    ensure -> "1.0+2.5i" = ~"|a|"
+    a: to :complex [2 5]
+    div 'a 2.0
+    ensure -> "1.0+2.5i" = ~"|a|"
+    passed
+    
+    ; :floating :complex
+    a: 1.0
+    'a / to :complex [1 2]
+    ensure -> (to :complex @[1.0 / 5 neg (2.0 / 5)]) = a
+    
+    a: 1.0
+    div 'a to :complex [1 2]
+    ensure -> (to :complex @[1.0 / 5 neg (2.0 / 5)]) = a
+    passed
+    
+    
+    topic "div - :floating :rational"
+    
+    a: to :rational [1 2]
+    expected: to :rational [1 4]
+    ; ensure -> expected = a / 2.0
+    ensure -> 4.0 = 2.0 / a
+    ; ensure -> expected = div a 2.0
+    ensure -> 4.0 = div 2.0 a
+    passed
+    
+    ; :rational :integer
+    ; a: to :rational [1 2]
+    ; 'a / 2.0
+    ; ensure -> a = to :rational [1 4]
+    ; div 'a 2.0
+    ; ensure -> a = to :rational [1 8]
+    ; passed
+    
+    ; :integer :rational
+    a: 2.0
+    'a / to :rational [1 2]
+    ensure -> a = 4.0
+    a: 2.0
+    div 'a to :rational [1 2]
+    ensure -> a = 4.0
+    passed
+    
+    
+    topic "div - :floating :quantity"
+    ; todo
+    
+    
+    ; ------ complex
+     
+    topic "div - :complex :complex"
+    
+    a: to :complex [3 2]
+    b: to :complex @[3 neg 2]
+    
+    ensure -> (to :complex @[5.0 / 13, 12.0 / 13]) = a / b
+    ensure -> (to :complex @[5.0 / 13, 12.0 / 13]) = div a b
+    
+    ensure -> (to :complex @[5.0 / 13, neg (12.0 / 13)]) = b / a
+    ensure -> (to :complex @[5.0 / 13, neg (12.0 / 13)]) = div b a
+    passed
+    
+    a: to :complex [3 2]
+    b: to :complex @[3 neg 2]
+    'a / b
+    ensure -> (to :complex @[5.0 / 13, 12.0 / 13]) = a
+    a: to :complex [3 2]
+    b: to :complex @[3 neg 2]
+    div 'a b
+    ensure -> (to :complex @[5.0 / 13, 12.0 / 13]) = a
+    passed
+    
+    
+    topic "div - :complex :rational"
+    
+    a: to :complex [1 2]
+    b: to :rational [3 5]
+    expected: to :rational [11 10]
+    ensure -> null = a / b
+    ensure -> null = b / a
+    ensure -> null = div a b
+    ensure -> null = div b a
+    passed
+    
+    ; :complex :rational - :rational :complex
+    a: to :complex [1 2]
+    b: to :rational [3 5]
+    
+    'a / b
+    ensure -> a = to :complex @[infinite infinite]
+    passed
+    
+    div 'b a
+    ensure -> b = to :rational [3 5]
+    passed
+    
+    topic "div - :complex :quantity"
+    ; todo
+    
+    
+    ; ------ rational
+     
+    topic "div - :rational :rational"
+    
+    a: to :rational [3 5]
+    b: to :rational [1 2]
+    ; ensure -> (to :rational [6 5]) = a / b
+    ; ensure -> (to :rational [5 6]) = b / a
+    ; ensure -> (to :rational [6 5]) = div a b
+    ; ensure -> (to :rational [5 6]) = div b a
+    ; passed
+    
+    
+    a: to :rational [3 5]
+    b: to :rational [1 2]
+    
+    ; 'a / b
+    ; ensure -> (to :rational [6 5]) = a
+    ; div 'a b
+    ; ensure -> (to :rational [12 5]) = a
+    ; ensure -> (to :rational [24 10]) = a
+    ; passed
+    
+    
+    topic "div - :rational :quantity"
+    ; todo
+    
+        
+    ; ------ quantity
+     
+    topic "div - :quantity :quantity"
+
+    
+]
+
+
+
 topic "inc"
 do [
     
@@ -1074,12 +1405,6 @@ print 2*3
 z: new 2
 mul 'z 3
 print z
-
-print div 7 3
-print 7/3
-w: new 7
-div 'w 3
-print w
 
 print fdiv 7 3
 
