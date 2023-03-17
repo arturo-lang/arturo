@@ -986,7 +986,7 @@ do [
     ensure -> a = [0.5, 1.5]
     a: 3.0
     'a /% 0.5
-    ensure -> a = [2.0, 0]
+    ensure -> a = [6.0, 0]
     passed
     
     
