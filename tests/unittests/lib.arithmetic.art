@@ -832,6 +832,283 @@ do [
 ]
 
 
+topic "divmod"
+do [
+    
+    topic "divmod - :integer :integer"
+    
+    ensure -> [1, 0] = 1 /% 1
+    ensure -> [0, 0] = 0 /% 1
+    ensure -> [1, 0] = divmod 1 1
+    ensure -> [0, 0] = divmod 0 1
+    passed
+    
+    try? -> 1 /% 0
+    else -> passed
+    
+    try? -> divmod 1 0
+    else -> passed
+    
+    ensure -> [0, 1] = 1 /% 2
+    ensure -> [2, 0] = 2 /% 1
+    ensure -> [0, 1] = divmod 1 2
+    ensure -> [2, 0] = divmod 2 1
+    passed
+    
+    ensure -> @[neg 2, 0] = 8 /% neg 4
+    passed
+    
+    a: 8
+    divmod 'a 4
+    ensure -> a = [2, 0]
+    a: 8
+    'a /% 3
+    ensure -> a = [2, 2]
+    passed
+    
+    
+    topic "divmod - :int :floating"
+    
+    ensure -> [1, 0] = 1 /% 1.0
+    ensure -> [0, 0] = 0 /% 1.0
+    ensure -> [1, 0] = divmod 1 1.0
+    ensure -> [0, 0] = divmod 0 1.0
+    passed
+
+    ensure -> (1 /% 1.0) = 1.0 /% 1
+    ensure -> (0 /% 1.0) = 0.0 /% 1
+    ensure -> (divmod 1 1.0) = divmod 1.0 1
+    ensure -> (divmod 0 1.0) = divmod 0.0 1
+    passed
+    
+    try? -> 1 /% 0.0
+    else -> passed
+
+    try? -> 1.0 /% 0
+    else -> passed
+    
+    try? -> divmod 1.0 0
+    else -> passed
+
+    try? -> divmod 1.0 0
+    else -> passed
+    
+    ensure -> [2.0, 0] = 1 /% 0.5
+    ensure -> [0.5, 1] = 1.0 /% 2
+    ensure -> [2.0, 0] = 8 /% 4.0
+    ensure -> [2.0, 0] = divmod 1 0.5
+    ensure -> [0.5, 1] = divmod 1.0 2
+    ensure -> [2.0, 0] = divmod 8 4.0
+    passed
+    
+    ensure -> (8 /% 4.0) = 8.0 /% 4
+    ensure -> (divmod 8 4.0) = divmod 8.0 4
+    passed
+    
+    ensure -> @[neg 2, 0] = 8 /% neg 4.0
+    passed
+
+    ensure -> (8 /% neg 4.0) = 8.0 /% neg 4
+    passed
+    
+    a: 8
+    divmod 'a 4.0
+    ensure -> a = [2.0, 0]
+    a: 8
+    'a /% 3
+    ensure -> a = [2 2]
+    passed
+    
+    
+    topic "divmod - :int :complex"
+    
+    ; a: to :complex [2 5]
+    ; passed
+    
+    ; a: to :complex [1 2]
+    ; passed
+    
+    ; :complex :integer
+    ; a: to :complex [2 5]
+    ; 'a /% 2
+    ; a: to :complex [2 5]
+    ; divmod 'a 2
+    ; passed
+    
+    ; :integer :complex
+    ; a: 1
+    ; 'a /% to :complex [1 2]
+    
+    ; a: 1
+    ; divmod 'a to :complex [1 2]
+    ; passed
+    
+    
+    topic "divmod - :int :rational"
+    
+    a: to :rational [1 2]
+    ; passed
+    
+    ; ; :rational :integer
+    ; a: to :rational [1 2]
+    ; 'a /% 2
+    ; divmod 'a 2
+    ; passed
+    
+    ; ; :integer :rational
+    ; a: 2
+    ; 'a /% to :rational [1 2]
+    ; a: 2
+    ; divmod 'a to :rational [1 2]
+    ; passed
+    
+    
+    topic "divmod - :integer :quantity"
+    ; todo
+    
+    
+    ; ------ floating
+    
+    topic "divmod - :floating :floating"
+    
+    ensure -> [1, 0] = 1.0 /% 1.0
+    ensure -> [1, 0] = divmod 1.0 1.0
+    passed
+    
+    ensure -> [0.5, 1.5] = 1.5 /% 3.0
+    ensure -> [0.5, 1.5] = divmod 1.5 3.0
+    ensure -> [2.0, 0] = 3.0 /% 1.5
+    ensure -> [2.0, 0] = divmod 3.0 1.5
+    passed
+    
+    a: 1.5
+    divmod 'a 3.0
+    ensure -> a = [0.5, 1.5]
+    a: 3.0
+    'a /% 0.5
+    ensure -> a = [2.0, 0]
+    passed
+    
+    
+    topic "divmod - :floating :complex"
+    ; side note: render is used to compare the returned value avoiding floating imprecisions
+    
+    ; a: to :complex [2 5]
+    ; passed
+    
+    ; a: to :complex [1 2]
+    ; passed
+    
+    ; ; :complex :floating
+    ; a: to :complex [2 5]
+    ; 'a /% 2.0
+    ; a: to :complex [2 5]
+    ; divmod 'a 2.0
+    ; passed
+    
+    ; ; :floating :complex
+    ; a: 1.0
+    ; 'a /% to :complex [1 2]
+    
+    ; a: 1.0
+    ; divmod 'a to :complex [1 2]
+    ; passed
+    
+    
+    topic "divmod - :floating :rational"
+    
+    ; a: to :rational [1 2]
+    ; expected: to :rational [1 4]
+    ; passed
+    
+    ; ; :rational :integer
+    ; a: to :rational [1 2]
+    ; 'a /% 2.0
+    ; ensure -> a = to :rational [1 4]
+    ; divmod 'a 2.0
+    ; ensure -> a = to :rational [1 8]
+    ; passed
+    
+    ; ; :integer :rational
+    ; a: 2.0
+    ; 'a /% to :rational [1 2]
+    ; a: 2.0
+    ; divmod 'a to :rational [1 2]
+    ; passed
+    
+    
+    topic "divmod - :floating :quantity"
+    ; todo
+    
+    
+    ; ------ complex
+     
+    topic "divmod - :complex :complex"
+    
+    ; a: to :complex [3 2]
+    ; b: to :complex @[3 neg 2]
+    ; passed
+    
+    ; a: to :complex [3 2]
+    ; b: to :complex @[3 neg 2]
+    ; 'a /% b
+    ; a: to :complex [3 2]
+    ; b: to :complex @[3 neg 2]
+    ; divmod 'a b
+    ; passed
+    
+    
+    topic "divmod - :complex :rational"
+    
+    ; a: to :complex [1 2]
+    ; b: to :rational [3 5]
+    ; expected: to :rational [11 10]
+    ; passed
+    
+    ; ; :complex :rational - :rational :complex
+    ; a: to :complex [1 2]
+    ; b: to :rational [3 5]
+    
+    ; 'a /% b
+    ; passed
+    
+    ; divmod 'b a
+    ; passed
+    
+    topic "divmod - :complex :quantity"
+    ; todo
+    
+    
+    ; ------ rational
+     
+    topic "divmod - :rational :rational"
+    
+    ; a: to :rational [3 5]
+    ; b: to :rational [1 2]
+    ; passed
+    
+    
+    ; a: to :rational [3 5]
+    ; b: to :rational [1 2]
+    
+    ; 'a /% b
+    ; divmod 'a b
+    ; passed
+    
+    
+    topic "divmod - :rational :quantity"
+    ; todo
+    
+        
+    ; ------ quantity
+     
+    topic "divmod - :quantity :quantity"
+
+    
+]
+
+
+
 topic "fdiv"
 do [
     
