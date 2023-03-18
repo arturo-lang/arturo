@@ -842,7 +842,8 @@ proc `--`*(va: static[ValueKind | IntegerKind], vb: static[ValueKind | IntegerKi
 proc `+`*(x: Value, y: Value): Value =
     ## add given values and return the result
     
-    case takes(x,y):
+    let pair = takes(x,y)
+    case pair:
         of Integer -- Integer:
             try:
                 return newInteger(x.i+y.i)
@@ -864,7 +865,7 @@ proc `+`*(x: Value, y: Value): Value =
             return newFloating(x.f+y.f)
 
         #***************************************
-        
+
         of Integer -- BigInteger:
             when defined(WEB):
                 return newInteger(big(x.i)+y.bi)
