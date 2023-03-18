@@ -805,9 +805,9 @@ template ensureStoreIsLoaded*(sto: VStore) =
     else:
         sto.forceLoad(sto)
 
-template takes*(va: Value, vb: Value): uint32 =
-    let xKind {.inject.} = va.kind
-    let yKind {.inject.} = vb.kind
+func takes*(va: Value, vb: Value): uint32 {.inline.} =
+    let xKind = va.kind
+    let yKind = vb.kind
 
     (cast[uint32](ord(xKind)) shl 16) or 
     (cast[uint32](ord(yKind))) or  
