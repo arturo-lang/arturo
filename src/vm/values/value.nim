@@ -805,6 +805,32 @@ template ensureStoreIsLoaded*(sto: VStore) =
     else:
         sto.forceLoad(sto)
 
+template takes*(va: Value, vb: Value): uint32 =
+    let xKind {.inject.} = va.kind
+    let yKind {.inject.} = vb.kind
+
+    (cast[uint32](ord(xKind)) shl 16) or 
+    (cast[uint32](ord(yKind))) or  
+    (cast[uint32](cast[uint32](xKind==Integer) * cast[uint32](va.iKind==BigInteger)) shl 31) or
+    (cast[uint32](cast[uint32](yKind==Integer) * cast[uint32](vb.iKind==BigInteger)) shl 15)
+
+proc `--`*(va: static[ValueKind | IntegerKind], vb: static[ValueKind | IntegerKind]): uint32 {.compileTime.}=
+    when va is ValueKind:
+        result = cast[uint32](ord(va)) shl 16
+    elif va is IntegerKind:
+        when va == NormalInteger:
+            result = cast[uint32](ord(Integer)) shl 16
+        elif va == BigInteger:
+            result = cast[uint32](ord(Integer)) shl 16 or (1 shl 31)
+
+    when vb is ValueKind:
+        result = result or cast[uint32](ord(vb))
+    elif vb is IntegerKind:
+        when vb == NormalInteger:
+            result = result or cast[uint32](ord(Integer))
+        elif vb == BigInteger:
+            result = result or cast[uint32](ord(Integer)) or (1 shl 15)
+
 #=======================================
 # Methods
 #=======================================
