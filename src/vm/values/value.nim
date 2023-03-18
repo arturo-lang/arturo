@@ -861,7 +861,6 @@ proc `+`*(x: Value, y: Value): Value =
                 else:
                     return newInteger(x.bi+y.i)
         of Floating -- Floating:
-            {.linearScanEnd.}
             return newFloating(x.f+y.f)
 
         #***************************************
