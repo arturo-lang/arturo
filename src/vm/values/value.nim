@@ -841,82 +841,177 @@ proc `--`*(va: static[ValueKind | IntegerKind], vb: static[ValueKind | IntegerKi
 
 proc `+`*(x: Value, y: Value): Value =
     ## add given values and return the result
-    if x.kind==Color and y.kind==Color:
-        return newColor(x.l + y.l)
-    if not (x.kind in {Integer, Floating, Complex, Rational}) or not (y.kind in {Integer, Floating, Complex, Rational}):
-        if x.kind == Quantity:
-            if y.kind == Quantity:
-                if x.unit.name == y.unit.name:
-                    return newQuantity(x.nm + y.nm, x.unit)
+    
+    case takes(x,y):
+        of Integer -- Integer:
+            try:
+                return newInteger(x.i+y.i)
+            except OverflowDefect:
+                when defined(WEB):
+                    return newInteger(big(x.i)+big(y.i))
+                elif not defined(NOGMP):
+                    return newInteger(newInt(x.i)+y.i)
                 else:
-                    return newQuantity(x.nm + convertQuantityValue(y.nm, y.unit.name, x.unit.name), x.unit)
+                    RuntimeError_IntegerOperationOverflow("add", valueAsString(x), valueAsString(y))
+        of BigInteger -- Integer:
+            when not defined(NOGMP):
+                when defined(WEB):
+                    return newInteger(x.bi+big(y.i))
+                else:
+                    return newInteger(x.bi+y.i)
+        of Floating -- Floating:
+            {.linearScanEnd.}
+            return newFloating(x.f+y.f)
+
+        #***************************************
+        
+        of Integer -- BigInteger:
+            when defined(WEB):
+                return newInteger(big(x.i)+y.bi)
             else:
-                return newQuantity(x.nm + y, x.unit)
+                return newInteger(x.i+y.bi)
+        of BigInteger -- BigInteger:
+            return newInteger(x.bi+y.bi)
+
+        of Integer -- Floating:
+            return newFloating(x.i+y.f)
+
+        of BigInteger -- Floating:
+            return newFloating(x.bi+y.f)
+
+        of Integer -- Rational:
+            return newRational(x.i+y.rat)
+
+        of Integer -- Complex:
+            return newComplex(float(x.i)+y.z)
+        
+        of Floating -- Integer:
+            return newFloating(x.f+float(y.i))
+
+        of Floating -- BigInteger:
+            return newFloating(x.f+y.bi)
+
+        of Floating -- Rational:
+            return newRational(toRational(x.f)+y.rat)
+
+        of Floating -- Complex:
+            return newComplex(x.f+y.z)
+
+        of Rational -- Integer:
+            return newRational(x.rat+y.i)
+
+        of Rational -- Floating:
+            return newRational(x.rat+toRational(y.f))
+
+        of Rational -- Rational:
+            return newRational(x.rat+y.rat)
+
+        of Complex -- Integer:
+            return newComplex(x.z+float(y.i))
+
+        of Complex -- Floating:
+            return newComplex(x.z+y.f)
+
+        of Complex -- Complex:
+            return newComplex(x.z+y.z)
+
+        of Color -- Color:
+            return newColor(x.l + y.l)
+
+        of Quantity -- Quantity:
+            if x.unit.name == y.unit.name:
+                return newQuantity(x.nm + y.nm, x.unit)
+            else:
+                return newQuantity(x.nm + convertQuantityValue(y.nm, y.unit.name, x.unit.name), x.unit)
+
+        of Quantity -- Integer:
+            return newQuantity(x.nm + y, x.unit)
+
+        of Quantity -- Floating:
+            return newQuantity(x.nm + y, x.unit)
+
+        of Quantity -- Rational:
+            return newQuantity(x.nm + y, x.unit)
+
         else:
             return VNULL
-    else:
-        if x.kind==Integer and y.kind==Integer:
-            if likely(x.iKind==NormalInteger):
-                if likely(y.iKind==NormalInteger):
-                    try:
-                        return newInteger(x.i+y.i)
-                    except OverflowDefect:
-                        when defined(WEB):
-                            return newInteger(big(x.i)+big(y.i))
-                        elif not defined(NOGMP):
-                            return newInteger(newInt(x.i)+y.i)
-                        else:
-                            RuntimeError_IntegerOperationOverflow("add", valueAsString(x), valueAsString(y))
-                else:
-                    when defined(WEB):
-                        return newInteger(big(x.i)+y.bi)
-                    elif not defined(NOGMP):
-                        return newInteger(x.i+y.bi)
-            else:
-                when defined(WEB):
-                    if unlikely(y.iKind==BigInteger):
-                        return newInteger(x.bi+y.bi)
-                    else:
-                        return newInteger(x.bi+big(y.i))
-                elif not defined(NOGMP):
-                    if unlikely(y.iKind==BigInteger):
-                        return newInteger(x.bi+y.bi)
-                    else:
-                        return newInteger(x.bi+y.i)
-        else:
-            if x.kind==Floating:
-                if y.kind==Floating: return newFloating(x.f+y.f)
-                elif y.kind==Complex: return newComplex(x.f+y.z)
-                elif y.kind==Rational: return newRational(toRational(x.f) + y.rat)
-                else: 
-                    if likely(y.iKind==NormalInteger):
-                        return newFloating(x.f+y.i)
-                    else:
-                        when not defined(NOGMP):
-                            return newFloating(x.f+y.bi)
-            elif x.kind==Complex:
-                if y.kind==Integer:
-                    if likely(y.iKind==NormalInteger): return newComplex(x.z+float(y.i))
-                    else: return VNULL
-                elif y.kind==Floating: return newComplex(x.z+y.f)
-                elif y.kind==Rational: return VNULL
-                else: return newComplex(x.z+y.z)
-            elif x.kind==Rational:
-                if y.kind==Integer:
-                    if likely(y.iKind==NormalInteger): return newRational(x.rat+y.i)
-                    else: return VNULL
-                elif y.kind==Floating: return newRational(x.rat+toRational(y.f))
-                elif y.kind==Complex: return VNULL
-                else: return newRational(x.rat+y.rat)
-            else:
-                if y.kind==Floating: 
-                    if likely(x.iKind==NormalInteger):
-                        return newFloating(x.i+y.f)
-                    else:
-                        when not defined(NOGMP):
-                            return newFloating(x.bi+y.f)
-                elif y.kind==Rational: return newRational(x.i+y.rat)
-                else: return newComplex(float(x.i)+y.z)
+
+    # if x.kind==Color and y.kind==Color:
+    #     return newColor(x.l + y.l)
+    # if not (x.kind in {Integer, Floating, Complex, Rational}) or not (y.kind in {Integer, Floating, Complex, Rational}):
+    #     if x.kind == Quantity:
+    #         if y.kind == Quantity:
+    #             if x.unit.name == y.unit.name:
+    #                 return newQuantity(x.nm + y.nm, x.unit)
+    #             else:
+    #                 return newQuantity(x.nm + convertQuantityValue(y.nm, y.unit.name, x.unit.name), x.unit)
+    #         else:
+    #             return newQuantity(x.nm + y, x.unit)
+    #     else:
+    #         return VNULL
+    # else:
+    #     if x.kind==Integer and y.kind==Integer:
+    #         if likely(x.iKind==NormalInteger):
+    #             if likely(y.iKind==NormalInteger):
+    #                 try:
+    #                     return newInteger(x.i+y.i)
+    #                 except OverflowDefect:
+    #                     when defined(WEB):
+    #                         return newInteger(big(x.i)+big(y.i))
+    #                     elif not defined(NOGMP):
+    #                         return newInteger(newInt(x.i)+y.i)
+    #                     else:
+    #                         RuntimeError_IntegerOperationOverflow("add", valueAsString(x), valueAsString(y))
+    #             else:
+    #                 when defined(WEB):
+    #                     return newInteger(big(x.i)+y.bi)
+    #                 elif not defined(NOGMP):
+    #                     return newInteger(x.i+y.bi)
+    #         else:
+    #             when defined(WEB):
+    #                 if unlikely(y.iKind==BigInteger):
+    #                     return newInteger(x.bi+y.bi)
+    #                 else:
+    #                     return newInteger(x.bi+big(y.i))
+    #             elif not defined(NOGMP):
+    #                 if unlikely(y.iKind==BigInteger):
+    #                     return newInteger(x.bi+y.bi)
+    #                 else:
+    #                     return newInteger(x.bi+y.i)
+    #     else:
+    #         if x.kind==Floating:
+    #             if y.kind==Floating: return newFloating(x.f+y.f)
+    #             elif y.kind==Complex: return newComplex(x.f+y.z)
+    #             elif y.kind==Rational: return newRational(toRational(x.f) + y.rat)
+    #             else: 
+    #                 if likely(y.iKind==NormalInteger):
+    #                     return newFloating(x.f+y.i)
+    #                 else:
+    #                     when not defined(NOGMP):
+    #                         return newFloating(x.f+y.bi)
+    #         elif x.kind==Complex:
+    #             if y.kind==Integer:
+    #                 if likely(y.iKind==NormalInteger): return newComplex(x.z+float(y.i))
+    #                 else: return VNULL
+    #             elif y.kind==Floating: return newComplex(x.z+y.f)
+    #             elif y.kind==Rational: return VNULL
+    #             else: return newComplex(x.z+y.z)
+    #         elif x.kind==Rational:
+    #             if y.kind==Integer:
+    #                 if likely(y.iKind==NormalInteger): return newRational(x.rat+y.i)
+    #                 else: return VNULL
+    #             elif y.kind==Floating: return newRational(x.rat+toRational(y.f))
+    #             elif y.kind==Complex: return VNULL
+    #             else: return newRational(x.rat+y.rat)
+    #         else:
+    #             if y.kind==Floating: 
+    #                 if likely(x.iKind==NormalInteger):
+    #                     return newFloating(x.i+y.f)
+    #                 else:
+    #                     when not defined(NOGMP):
+    #                         return newFloating(x.bi+y.f)
+    #             elif y.kind==Rational: return newRational(x.i+y.rat)
+    #             else: return newComplex(float(x.i)+y.z)
 
 proc `+=`*(x: var Value, y: Value) =
     ## add given values 
