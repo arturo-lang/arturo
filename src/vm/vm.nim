@@ -169,7 +169,7 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
 template handleVMErrors(blk: untyped): untyped =
     try:
         blk
-    except:
+    except CatchableError, Defect:
         let e = getCurrentException()        
         showVMErrors(e)
 

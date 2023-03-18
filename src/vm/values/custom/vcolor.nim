@@ -1425,7 +1425,7 @@ func parseColor*(str: string): VColor =
         elif s.len==6:  result = colorFromHex(s)
         elif s.len==8:  result = colorFromHexWithAlpha(s)
         else:           result = colorByName(s)
-    except:
+    except CatchableError:
         result = colorByName(s)
 
 #=======================================
