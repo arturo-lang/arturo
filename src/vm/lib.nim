@@ -15,8 +15,8 @@
 import macros, sequtils, strutils, tables
 export strutils, tables
 
-import vm/[globals, errors, opcodes, stack, values/comparison, values/printable, values/value]
-export comparison, globals, printable, opcodes, stack, value
+import vm/[globals, errors, opcodes, stack, values/comparison, values/operators, values/printable, values/value]
+export comparison, globals, opcodes, operators, printable, stack, value
 
 import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrational, vregex, vsymbol]
 export vcolor, vcomplex, vlogical, vquantity, vrational, vregex, vsymbol
