@@ -846,6 +846,14 @@ elif sizeof(clonglong) == 8:
     proc addInt64Overflow[T: int64|int](a, b: T, c: var T): bool {.
         importc: "__builtin_saddll_overflow", nodecl, nosideeffect.}
 
+static:
+    echo "DEBUGGING"
+    echo "========================================================"
+    echo "size(clong) = ", sizeof(clong)
+    echo "size(clonglong) = ", sizeof(clonglong)
+    echo "size(int) = ", sizeof(int)
+    echo "========================================================"
+
 proc `+`*(x: Value, y: Value): Value =
     ## add given values and return the result
     
