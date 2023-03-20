@@ -839,21 +839,36 @@ proc `--`*(va: static[ValueKind | IntegerKind], vb: static[ValueKind | IntegerKi
 #  Various core arithmetic operations between Value values may lead to errors. Are we catching - and reporting - them all properly?
 #  labels: vm, values, error handling, unit-test
 
+proc addInt64Overflow[T: int64|int](a, b: T, c: var T): bool {.
+    importc: "__builtin_saddl_overflow", nodecl, nosideeffect.}
+
 proc `+`*(x: Value, y: Value): Value =
     ## add given values and return the result
     
     let pair = takes(x,y)
     case pair:
         of Integer -- Integer:
-            try:
-                return newInteger(x.i+y.i)
-            except OverflowDefect:
+            var res: int
+            if unlikely(addInt64Overflow(x.i, y.i, res)):
+                # echo "overflow!"
                 when defined(WEB):
                     return newInteger(big(x.i)+big(y.i))
                 elif not defined(NOGMP):
                     return newInteger(newInt(x.i)+y.i)
                 else:
                     RuntimeError_IntegerOperationOverflow("add", valueAsString(x), valueAsString(y))
+            return newInteger(res)
+            # try:
+            #     return newInteger(x.i+y.i)
+            # except OverflowDefect:
+            #     echo $(sizeof(clong))
+            #     echo "overflow!"
+            #     when defined(WEB):
+            #         return newInteger(big(x.i)+big(y.i))
+            #     elif not defined(NOGMP):
+            #         return newInteger(newInt(x.i)+y.i)
+            #     else:
+            #         RuntimeError_IntegerOperationOverflow("add", valueAsString(x), valueAsString(y))
         of BigInteger -- Integer:
             when not defined(NOGMP):
                 when defined(WEB):
@@ -861,6 +876,7 @@ proc `+`*(x: Value, y: Value): Value =
                 else:
                     return newInteger(x.bi+y.i)
         of Floating -- Floating:
+            #{.linearScanEnd.}
             return newFloating(x.f+y.f)
 
         #***************************************
