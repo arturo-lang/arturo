@@ -852,6 +852,7 @@ static:
     echo "size(clong) = ", sizeof(clong)
     echo "size(clonglong) = ", sizeof(clonglong)
     echo "size(int) = ", sizeof(int)
+    echo "size(cint) = ", sizeof(cint)
     echo "========================================================"
 
 proc `+`*(x: Value, y: Value): Value =
