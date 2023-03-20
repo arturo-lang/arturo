@@ -821,7 +821,7 @@ proc `--`*(va: static[ValueKind | IntegerKind], vb: static[ValueKind | IntegerKi
         when va == NormalInteger:
             result = cast[uint32](ord(Integer)) shl 16
         elif va == BigInteger:
-            result = cast[uint32](ord(Integer)) shl 16 or (1 shl 31)
+            result = cast[uint32](ord(Integer)) shl 16 or (1.uint32 shl 31)
 
     when vb is ValueKind:
         result = result or cast[uint32](ord(vb))
@@ -829,7 +829,7 @@ proc `--`*(va: static[ValueKind | IntegerKind], vb: static[ValueKind | IntegerKi
         when vb == NormalInteger:
             result = result or cast[uint32](ord(Integer))
         elif vb == BigInteger:
-            result = result or cast[uint32](ord(Integer)) or (1 shl 15)
+            result = result or cast[uint32](ord(Integer)) or (1.uint32 shl 15)
 
 #=======================================
 # Methods
