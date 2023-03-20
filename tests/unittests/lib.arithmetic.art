@@ -346,7 +346,25 @@ do [
     
     
     topic "add - :complex :quantity"
-    ; todo
+    ; todo: check if :quantity :complex should be possible
+
+    ensure -> "31.0+2.0i:usd" = ~"|as.code 30:usd + to :complex [1 2]|"
+    ensure -> "31.0+2.0i:eur" = ~"|as.code 30:eur + to :complex [1 2]|"
+    ensure -> "31.0+2.0i:usd" = ~"|as.code add 30:usd to :complex [1 2]|"
+    ensure -> "31.0+2.0i:eur" = ~"|as.code add 30:eur to :complex [1 2]|"
+    ensure -> null = (to :complex [1 2]) + 30:usd
+    ensure -> null = (to :complex [1 2]) + 30:eur
+    ensure -> null = add (to :complex [1 2]) 30:usd
+    ensure -> null = add (to :complex [1 2]) 30:eur
+    passed
+    
+    a: 30:usd, 'a + to :complex [1 2]
+    ensure -> "31.0+2.0i:usd" = ~"|as.code a|"
+    passed
+    
+    a: to :complex [1 2], 'a + 30:usd
+    ensure -> null = a
+    passed
     
     
     topic "add - :complex :color"

@@ -48,6 +48,8 @@
 [+] passed!
 
 >> add - :floating :quantity
+[+] passed!
+[+] passed!
 
 >> add - :floating :color
 [+] passed!
@@ -64,6 +66,7 @@
 [+] passed!
 
 >> add - :complex :quantity
+[+] passed!
 [+] passed!
 [+] passed!
 
