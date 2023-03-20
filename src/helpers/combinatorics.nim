@@ -12,6 +12,8 @@
 
 import vm/values/value
 
+import vm/values/operators
+
 #=======================================
 # Helpers
 #=======================================
