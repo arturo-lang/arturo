@@ -21,7 +21,9 @@
 [+] passed!
 [+] passed!
 
->> add - :int :quantity
+>> add - :integer :quantity
+[+] passed!
+[+] passed!
 
 >> add - :int :color
 [+] passed!

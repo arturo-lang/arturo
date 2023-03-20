@@ -108,8 +108,29 @@ do [
     passed
     
     
-    topic "add - :int :quantity"
-    ; todo
+    topic "add - :integer :quantity"
+    ; todo: compare with respective types
+    ; todo: fix behavior for :int :quant
+    ensure -> 35 = 30:usd + 5
+    ensure -> 35 = 30:eur + 5
+    ensure -> 35 = add 30:usd 5
+    ensure -> 35 = add 30:eur 5
+    ; ensure -> 35 = 5 + 30:usd
+    ; ensure -> 35 = 5 + 30:eur
+    ; ensure -> 35 = add 5 30:usd
+    ; ensure -> 35 = add 5 30:eur
+    passed
+    
+    ; todo: compare with respective types
+    a: 30:usd, 'a + 5
+    ensure -> 35 = a
+    passed
+    
+    ; todo: compare with respective types
+    ; todo: fix behavior for :int :quant
+    ; a: 5, 'a + 30:usd
+    ; ensure -> 35 = a
+    ; passed
     
     
     topic "add - :int :color"
