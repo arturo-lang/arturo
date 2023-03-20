@@ -805,7 +805,7 @@ template ensureStoreIsLoaded*(sto: VStore) =
     else:
         sto.forceLoad(sto)
 
-func takes*(va: Value, vb: Value): uint32 {.inline.} =
+template takes*(va: Value, vb: Value): uint32 =
     let xKind = va.kind
     let yKind = vb.kind
 
