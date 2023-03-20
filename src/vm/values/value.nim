@@ -848,14 +848,14 @@ else:
 #         importc: "__builtin_saddl_overflow", nodecl, nosideeffect.}
 # elif sizeof(clonglong) == 8:
     
-static:
-    echo "DEBUGGING"
-    echo "========================================================"
-    echo "size(clong) = ", sizeof(clong)
-    echo "size(clonglong) = ", sizeof(clonglong)
-    echo "size(int) = ", sizeof(int)
-    echo "size(cint) = ", sizeof(cint)
-    echo "========================================================"
+# static:
+#     echo "DEBUGGING"
+#     echo "========================================================"
+#     echo "size(clong) = ", sizeof(clong)
+#     echo "size(clonglong) = ", sizeof(clonglong)
+#     echo "size(int) = ", sizeof(int)
+#     echo "size(cint) = ", sizeof(cint)
+#     echo "========================================================"
 
 proc `+`*(x: Value, y: Value): Value =
     ## add given values and return the result
