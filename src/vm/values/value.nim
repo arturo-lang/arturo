@@ -889,7 +889,7 @@ proc `+`*(x: Value, y: Value): Value =
                     return newInteger(x.i+y.bi)
         of BigInteger -- BigInteger:
             when not defined(NOGMP):
-            return newInteger(x.bi+y.bi)
+                return newInteger(x.bi+y.bi)
 
         of Integer -- Floating:
             return newFloating(x.i+y.f)
