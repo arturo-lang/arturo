@@ -839,8 +839,12 @@ proc `--`*(va: static[ValueKind | IntegerKind], vb: static[ValueKind | IntegerKi
 #  Various core arithmetic operations between Value values may lead to errors. Are we catching - and reporting - them all properly?
 #  labels: vm, values, error handling, unit-test
 
-proc addInt64Overflow[T: int64|int](a, b: T, c: var T): bool {.
-    importc: "__builtin_saddl_overflow", nodecl, nosideeffect.}
+when sizeof(clong) == 8:
+    proc addInt64Overflow[T: int64|int](a, b: T, c: var T): bool {.
+        importc: "__builtin_saddl_overflow", nodecl, nosideeffect.}
+elif sizeof(clonglong) == 8:
+    proc addInt64Overflow[T: int64|int](a, b: T, c: var T): bool {.
+        importc: "__builtin_saddll_overflow", nodecl, nosideeffect.}
 
 proc `+`*(x: Value, y: Value): Value =
     ## add given values and return the result
