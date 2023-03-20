@@ -842,7 +842,7 @@ proc `--`*(va: static[ValueKind | IntegerKind], vb: static[ValueKind | IntegerKi
 when defined(bit32):
     proc addIntOverflow(a, b: int, c: var int): bool {.importc: "__builtin_sadd_overflow", nodecl, nosideeffect.}
 else:
-    proc addInt64Overflow(a, b: int, c: var int): bool {.importc: "__builtin_saddll_overflow", nodecl, nosideeffect.}
+    proc addIntOverflow(a, b: int, c: var int): bool {.importc: "__builtin_saddll_overflow", nodecl, nosideeffect.}
 # when sizeof(clong) == 8:
 #     proc addInt64Overflow[T: int64|int](a, b: T, c: var T): bool {.
 #         importc: "__builtin_saddl_overflow", nodecl, nosideeffect.}
@@ -864,7 +864,7 @@ proc `+`*(x: Value, y: Value): Value =
     case pair:
         of Integer -- Integer:
             var res: int
-            if unlikely(addInt64Overflow(x.i, y.i, res)):
+            if unlikely(addIntOverflow(x.i, y.i, res)):
                 # echo "overflow!"
                 when defined(WEB):
                     return newInteger(big(x.i)+big(y.i))
