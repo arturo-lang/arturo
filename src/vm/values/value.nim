@@ -882,18 +882,21 @@ proc `+`*(x: Value, y: Value): Value =
         #***************************************
 
         of Integer -- BigInteger:
-            when defined(WEB):
-                return newInteger(big(x.i)+y.bi)
-            else:
-                return newInteger(x.i+y.bi)
+            when not defined(NOGMP):
+                when defined(WEB):
+                    return newInteger(big(x.i)+y.bi)
+                else:
+                    return newInteger(x.i+y.bi)
         of BigInteger -- BigInteger:
+            when not defined(NOGMP):
             return newInteger(x.bi+y.bi)
 
         of Integer -- Floating:
             return newFloating(x.i+y.f)
 
         of BigInteger -- Floating:
-            return newFloating(x.bi+y.f)
+            when not defined(NOGMP):
+                return newFloating(x.bi+y.f)
 
         of Integer -- Rational:
             return newRational(x.i+y.rat)
@@ -905,7 +908,8 @@ proc `+`*(x: Value, y: Value): Value =
             return newFloating(x.f+float(y.i))
 
         of Floating -- BigInteger:
-            return newFloating(x.f+y.bi)
+            when not defined(NOGMP):
+                return newFloating(x.f+y.bi)
 
         of Floating -- Rational:
             return newRational(toRational(x.f)+y.rat)
