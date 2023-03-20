@@ -21,9 +21,17 @@
 
 import vm/lib
 
+when not defined(NOGMP):
+    import helpers/bignums as BignumsHelper
+
 #=======================================
 # Methods
 #=======================================
+
+when defined(bit32):
+    proc addIntOverflow(a, b: int, c: var int): bool {.importc: "__builtin_sadd_overflow", nodecl, nosideeffect.}
+else:
+    proc addIntOverflow(a, b: int, c: var int): bool {.importc: "__builtin_saddll_overflow", nodecl, nosideeffect.}
 
 proc defineSymbols*() =
 
@@ -47,7 +55,20 @@ proc defineSymbols*() =
         """:
             #=======================================================
             if x.kind==Literal  : ensureInPlace(); InPlaced += y
-            else                : push(x+y)
+            else                : 
+                if likely(x.kind==Integer) and likely(x.iKind==NormalInteger) and likely(y.kind==Integer) and likely(y.iKind==NormalInteger):
+                    var res: int
+                    if unlikely(addIntOverflow(x.i, y.i, res)):
+                        # echo "overflow!"
+                        when defined(WEB):
+                            push(newInteger(big(x.i)+big(y.i)))
+                        elif not defined(NOGMP):
+                            push(newInteger(newInt(x.i)+y.i))
+                        else:
+                            RuntimeError_IntegerOperationOverflow("add", valueAsString(x), valueAsString(y))
+                    push(newInteger(res))
+                else:
+                    push(x+y)
 
     builtin "dec",
         alias       = unaliased, 
