@@ -64,6 +64,8 @@
 [+] passed!
 
 >> add - :complex :quantity
+[+] passed!
+[+] passed!
 
 >> add - :complex :color
 [+] passed!
