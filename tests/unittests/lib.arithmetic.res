@@ -367,6 +367,10 @@
 >> mod - :floating :rational
 
 >> mod - :floating :quantity
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> mod - :rational :rational
 
