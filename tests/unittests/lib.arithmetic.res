@@ -306,6 +306,9 @@
 [+] passed!
 
 >> fdiv - :rational :quantity
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> fdiv - :quantity :quantity
 
