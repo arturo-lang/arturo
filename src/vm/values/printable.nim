@@ -49,11 +49,20 @@ when defined(WEB):
 # Methods
 #=======================================
 
+proc stringify*(vk: ValueKind): string =
+    result = ":" & ($(vk)).toLowerAscii()
+
 proc valueKind*(v: Value, withBigInfo: static bool = false): string {.inline.} =
-    result = ":" & $(v.kind).toLowerAscii()
-    when withBigInfo:
-        if v.kind==Integer and v.iKind==BigInteger:
-            result &= " (big)"
+    if v.kind==Type:
+        if v.tpKind==BuiltinType:
+            result = stringify(v.t)
+        else:
+            result = ":" & v.ts.name
+    else:
+        result = stringify(v.kind)
+        when withBigInfo:
+            if v.kind==Integer and v.iKind==BigInteger:
+                result &= " (big)"
 
 proc `$`*(v: Value): string {.inline.} =
     case v.kind:
@@ -79,7 +88,7 @@ proc `$`*(v: Value): string {.inline.} =
         of Version      : return $(v.version)
         of Type         : 
             if v.tpKind==BuiltinType:
-                return ":" & ($v.t).toLowerAscii()
+                return stringify(v.t)
             else:
                 return ":" & v.ts.name
         of Char         : return $(v.c)
