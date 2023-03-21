@@ -1368,7 +1368,36 @@ do [
     
     
     topic "divmod - :rational :quantity"
-    ; todo
+    ; todo: fix error raise
+
+    ; ensure -> "[60:usd to :rational [0 1]]" = ~"|as.code 30:usd /% to :rational [1 2]|"
+    ; ensure -> "[60:eur to :rational [0 1]]" = ~"|as.code 30:eur /% to :rational [1 2]|"
+    ; ensure -> "[60:usd to :rational [0 1]]" = ~"|as.code divmod 30:usd to :rational [1 2]|"
+    ; ensure -> "[60:eur to :rational [0 1]]" = ~"|as.code divmod 30:eur to :rational [1 2]|"
+    
+    ; error:
+    ; >> Runtime | incompatible operation between quantities
+    ;      error | attempted: mod
+    ;            | with:  (currency) 1/2 (area)
+    
+    ; ensure -> "[0 to :rational [1 2]]" = ~"|as.code (to :rational [1 2]) /% 30:usd"
+    ; ensure -> "[0 to :rational [1 2]]" = ~"|as.code (to :rational [1 2]) /% 30:eur"
+    ; ensure -> "[0 to :rational [1 2]]" = ~"|as.code divmod  (to :rational [1 2]) 30:usd"
+    ; ensure -> "[0 to :rational [1 2]]" = ~"|as.code divmod  (to :rational [1 2]) 30:eur"
+    ; passed
+    
+    ; error:
+    ; >> Runtime | incompatible operation between quantities
+    ;      error | attempted: mod
+    ;            | with: 1/2 (area)  (currency)
+    
+    ; a: 30:usd, 'a /% to :rational [1 2]
+    ; ensure -> "[60:eur to :rational [0 1]]" = ~"|as.code a|"
+    ; passed
+    
+    ; a: to :rational [1 2], 'a /% 30:usd
+    ; ensure -> "[0 to :rational [1 2]]" = ~"|ac.code a|"
+    ; passed
     
         
     ; ------ quantity
