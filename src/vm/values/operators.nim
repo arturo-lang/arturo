@@ -132,13 +132,14 @@ proc convertQuantityValue*(nm: Value, fromU: UnitName, toU: UnitName, fromKind =
             return nm * newFloating(fmultiplier)
 
 template normalIntegerOperation*(): bool =
+    ## check if both operands (x,y) are Integers, but not GMP-style BigNums
     when not declared(xKind):
         let xKind {.inject.} = x.kind
         let yKind {.inject.} = y.kind
 
     likely(xKind==Integer) and likely(x.iKind==NormalInteger) and likely(yKind==Integer) and likely(y.iKind==NormalInteger)
 
-template takes*(): untyped =
+template getValuePair*(): untyped =
     let xKind {.inject.} = x.kind
     let yKind {.inject.} = y.kind
 
@@ -194,7 +195,7 @@ template normalIntegerAdd*(x, y: Value): untyped =
 proc `+`*(x: Value, y: Value): Value =
     ## add given values and return the result
 
-    let pair = takes()
+    let pair = getValuePair()
     case pair:
         of Integer    || Integer        :   return normalIntegerAdd(x,y)
         of Integer    || BigInteger     :   (when GMP: return newInteger(toBig(x.i) + y.bi))
@@ -314,8 +315,56 @@ proc `+=`*(x: var Value, y: Value) =
                 elif y.kind==Rational: x = newRational(x.i+y.rat)
                 else: x = newComplex(float(x.i)+y.z)
 
+template normalIntegerSub*(x, y: Value): untyped =
+    var res: int
+    if unlikely(subIntWithOverflow(x.i, y.i, res)):
+        when not defined(NOGMP):
+            newInteger(toNewBig(x.i) - toBig(y.i))
+        else:
+            RuntimeError_IntegerOperationOverflow("sub", valueAsString(x), valueAsString(y))
+            VNULL
+    else:
+        newInteger(res)
+
 proc `-`*(x: Value, y: Value): Value = 
     ## subtract given values and return the result
+
+    let pair = getValuePair()
+    case pair:
+        of Integer    || Integer        :   return normalIntegerSub(x,y)
+        of Integer    || BigInteger     :   (when GMP: return newInteger(toBig(x.i) - y.bi))
+        of BigInteger || Integer        :   (when GMP: return newInteger(x.bi - toBig(y.i)))
+        of BigInteger || BigInteger     :   (when GMP: return newInteger(x.bi-y.bi))
+        of Integer    || Floating       :   return newFloating(x.i-y.f)
+        of BigInteger || Floating       :   (when GMP: return newFloating(x.bi-y.f))
+        of Integer    || Rational       :   return newRational(x.i-y.rat)
+        of Integer    || Complex        :   return newComplex(float(x.i)-y.z)
+
+        of Floating   || Integer        :   return newFloating(x.f-float(y.i))
+        of Floating   || Floating       :   return newFloating(x.f-y.f)
+        of Floating   || BigInteger     :   (when GMP: return newFloating(x.f-y.bi))
+        of Floating   || Rational       :   return newRational(toRational(x.f)-y.rat)
+        of Floating   || Complex        :   return newComplex(x.f-y.z)
+
+        of Rational   || Integer        :   return newRational(x.rat-y.i)
+        of Rational   || Floating       :   return newRational(x.rat-toRational(y.f))
+        of Rational   || Rational       :   return newRational(x.rat-y.rat)
+
+        of Complex    || Integer        :   return newComplex(x.z-float(y.i))
+        of Complex    || Floating       :   return newComplex(x.z-y.f)
+        of Complex    || Complex        :   return newComplex(x.z-y.z)
+        
+        of Color      || Color          :   return newColor(x.l - y.l)
+        of Quantity   || Integer        :   return newQuantity(x.nm - y, x.unit)
+        of Quantity   || Floating       :   return newQuantity(x.nm - y, x.unit)
+        of Quantity   || Rational       :   return newQuantity(x.nm - y, x.unit)
+        of Quantity   || Quantity       :
+            if x.unit.name == y.unit.name:
+                return newQuantity(x.nm - y.nm, x.unit)
+            else:
+                return newQuantity(x.nm - convertQuantityValue(y.nm, y.unit.name, x.unit.name), x.unit)
+        else:
+            return invalidOperation("sub")
     if x.kind==Color and y.kind==Color:
         return newColor(x.l - y.l)
     if not (x.kind in {Integer, Floating, Complex, Rational}) or not (y.kind in {Integer, Floating, Complex, Rational}):
