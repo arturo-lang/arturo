@@ -130,7 +130,7 @@ template takes*(): untyped =
     (cast[uint32](cast[uint32](xKind==Integer) * cast[uint32](x.iKind==BigInteger)) shl 31) or
     (cast[uint32](cast[uint32](yKind==Integer) * cast[uint32](y.iKind==BigInteger)) shl 15)
 
-proc `--`*(va: static[ValueKind | IntegerKind], vb: static[ValueKind | IntegerKind]): uint32 {.compileTime.}=
+proc `||`*(va: static[ValueKind | IntegerKind], vb: static[ValueKind | IntegerKind]): uint32 {.compileTime.}=
     when va is ValueKind:
         result = cast[uint32](ord(va)) shl 16
     elif va is IntegerKind:
@@ -171,34 +171,34 @@ proc `+`*(x: Value, y: Value): Value =
     
     let pair = takes()
     case pair:
-        of Integer -- Integer       :   return normalIntegerAdd(x,y)
-        of Integer -- BigInteger    :   (when GMP: return newInteger(toBig(x.i) + y.bi))
-        of BigInteger -- Integer    :   (when GMP: return newInteger(x.bi + toBig(y.i)))
-        of BigInteger -- BigInteger :   (when GMP: return newInteger(x.bi+y.bi))
-        of Integer -- Floating      :   (when GMP: return newFloating(x.i+y.f))
-        of BigInteger -- Floating   :   (when GMP: return newFloating(x.bi+y.f))
-        of Integer -- Rational      :   return newRational(x.i+y.rat)
-        of Integer -- Complex       :   return newComplex(float(x.i)+y.z)
+        of Integer || Integer       :   return normalIntegerAdd(x,y)
+        of Integer || BigInteger    :   (when GMP: return newInteger(toBig(x.i) + y.bi))
+        of BigInteger || Integer    :   (when GMP: return newInteger(x.bi + toBig(y.i)))
+        of BigInteger || BigInteger :   (when GMP: return newInteger(x.bi+y.bi))
+        of Integer || Floating      :   (when GMP: return newFloating(x.i+y.f))
+        of BigInteger || Floating   :   (when GMP: return newFloating(x.bi+y.f))
+        of Integer || Rational      :   return newRational(x.i+y.rat)
+        of Integer || Complex       :   return newComplex(float(x.i)+y.z)
 
-        of Floating -- Integer      :   return newFloating(x.f+float(y.i))
-        of Floating -- Floating     :   return newFloating(x.f+y.f)
-        of Floating -- BigInteger   :   (when GMP: return newFloating(x.f+y.bi))
-        of Floating -- Rational     :   return newRational(toRational(x.f)+y.rat)
-        of Floating -- Complex      :   return newComplex(x.f+y.z)
+        of Floating || Integer      :   return newFloating(x.f+float(y.i))
+        of Floating || Floating     :   return newFloating(x.f+y.f)
+        of Floating || BigInteger   :   (when GMP: return newFloating(x.f+y.bi))
+        of Floating || Rational     :   return newRational(toRational(x.f)+y.rat)
+        of Floating || Complex      :   return newComplex(x.f+y.z)
 
-        of Rational -- Integer      :   return newRational(x.rat+y.i)
-        of Rational -- Floating     :   return newRational(x.rat+toRational(y.f))
-        of Rational -- Rational     :   return newRational(x.rat+y.rat)
+        of Rational || Integer      :   return newRational(x.rat+y.i)
+        of Rational || Floating     :   return newRational(x.rat+toRational(y.f))
+        of Rational || Rational     :   return newRational(x.rat+y.rat)
 
-        of Complex -- Integer       :   return newComplex(x.z+float(y.i))
-        of Complex -- Floating      :   return newComplex(x.z+y.f)
-        of Complex -- Complex       :   return newComplex(x.z+y.z)
+        of Complex || Integer       :   return newComplex(x.z+float(y.i))
+        of Complex || Floating      :   return newComplex(x.z+y.f)
+        of Complex || Complex       :   return newComplex(x.z+y.z)
         
-        of Color -- Color           :   return newColor(x.l + y.l)
-        of Quantity -- Integer      :   return newQuantity(x.nm + y, x.unit)
-        of Quantity -- Floating     :   return newQuantity(x.nm + y, x.unit)
-        of Quantity -- Rational     :   return newQuantity(x.nm + y, x.unit)
-        of Quantity -- Quantity     :
+        of Color || Color           :   return newColor(x.l + y.l)
+        of Quantity || Integer      :   return newQuantity(x.nm + y, x.unit)
+        of Quantity || Floating     :   return newQuantity(x.nm + y, x.unit)
+        of Quantity || Rational     :   return newQuantity(x.nm + y, x.unit)
+        of Quantity || Quantity     :
             if x.unit.name == y.unit.name:
                 return newQuantity(x.nm + y.nm, x.unit)
             else:
