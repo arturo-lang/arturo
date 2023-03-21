@@ -201,6 +201,10 @@
 [+] passed!
 
 >> div - :quantity :quantity
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> divmod
 
