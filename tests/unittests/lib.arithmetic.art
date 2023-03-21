@@ -1403,7 +1403,22 @@ do [
     ; ------ quantity
      
     topic "divmod - :quantity :quantity"
-
+    ; todo: compare with respective types
+    ; todo: how can I test it for different currencies?
+    
+    ensure -> "[4 0:usd]" = ~"|as.code (20:usd) /% (5:usd)|"
+    ensure -> "[4 0:usd]" = ~"|as.code (20:usd) /% (5:usd)|"
+    ensure -> "[0 0.2:m]" = ~"|as.code 1:m /% 20:cm|"
+    ensure -> "[0 0.2:m]" = ~"|as.code 1:m /% 20:cm|"
+    passed
+    
+    a: 20:usd, 'a /% 5:usd
+    ensure -> "[4 0:usd]" = ~"|as.code a|" 
+    passed
+    
+    a: 1:m, 'a /% 20:cm
+    ensure -> "[0 0.2:m]" = ~"|as.code a|"
+    passed
     
 ]
 
