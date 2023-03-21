@@ -1503,7 +1503,18 @@ do [
     
     
     topic "inc - :quantity"
-    ; todo
+    ; todo: compare with respective types
+    
+    ensure -> 30 = inc 29:usd
+    ensure -> 30 = inc 29:eur
+    ; ensure -> 30:usd = inc 29:usd
+    ; ensure -> 30:eur = inc 29:eur
+    ensure -> 0:m = inc (neg 1:m)
+    passed
+    
+    a: 29:usd, inc 'a
+    ensure -> 30 = a
+    passed
     
 
 ]
