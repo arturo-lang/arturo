@@ -29,20 +29,32 @@ import vm/values/value
 
 import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vversion]
 
+#=======================================
+# Constants
+#=======================================
+
+const
+    GMP = not defined(NOGMP)
+
+#=======================================
+# Pragmas
+#=======================================
+
+{.push overflowChecks: on.}
+
+#=======================================
+# Forward declarations
+#=======================================
+
 proc `+`*(x: Value, y: Value): Value
 proc `-`*(x: Value, y: Value): Value
 proc `*`*(x: Value, y: Value): Value
 proc `/`*(x: Value, y: Value): Value
 proc `//`*(x: Value, y: Value): Value
 
-const
-    GMP = not defined(NOGMP)
-
-{.push overflowChecks: on.}
-
-# template GMP*(blk: untyped): untyped =
-#     when not defined(NOGMP):
-#         blk
+#=======================================
+# Helpers
+#=======================================
 
 template toBig*(v: untyped): untyped =
     when defined(WEB):
