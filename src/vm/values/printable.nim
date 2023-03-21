@@ -49,6 +49,12 @@ when defined(WEB):
 # Methods
 #=======================================
 
+proc valueKind*(v: Value, withBigInfo: static bool = false): string {.inline.} =
+    result = ":" & $(v.kind).toLowerAscii()
+    when withBigInfo:
+        if v.kind==Integer and v.iKind==BigInteger:
+            result &= " (big)"
+
 proc `$`*(v: Value): string {.inline.} =
     case v.kind:
         of Null         : return "null"
