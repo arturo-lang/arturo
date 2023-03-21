@@ -3234,7 +3234,25 @@ do [
     
     
     topic "sub - :rational :quantity"
-    ; todo
+    ; todo: verify this comparison
+
+    ensure -> "59/2:usd" = ~"|as.code 30:usd - to :rational [1 2]|"
+    ensure -> "59/2:eur" = ~"|as.code 30:eur - to :rational [1 2]|"
+    ensure -> "59/2:usd" = ~"|as.code sub 30:usd to :rational [1 2]|"
+    ensure -> "59/2:eur" = ~"|as.code sub 30:eur to :rational [1 2]|"
+    ensure -> null = (to :rational [1 2]) - 30:usd
+    ensure -> null = (to :rational [1 2]) - 30:eur
+    ensure -> null = sub (to :rational [1 2]) 30:usd
+    ensure -> null = sub (to :rational [1 2]) 30:eur
+    passed
+    
+    a: 30:usd, 'a - to :rational [1 2]
+    ensure -> "59/2:usd" = ~"|as.code a|"
+    passed
+    
+    a: to :rational [1 2], 'a - 30:usd
+    ensure -> null = a
+    passed
     
     
     topic "sub - :rational :color"
