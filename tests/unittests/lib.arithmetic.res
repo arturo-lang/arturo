@@ -599,6 +599,9 @@
 [+] passed!
 
 >> sub - :complex :quantity
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> sub - :complex :color
 [+] passed!
