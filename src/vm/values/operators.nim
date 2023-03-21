@@ -155,13 +155,14 @@ proc `--`*(va: static[ValueKind | IntegerKind], vb: static[ValueKind | IntegerKi
 #  Various core arithmetic operations between Value values may lead to errors. Are we catching - and reporting - them all properly?
 #  labels: vm, values, error handling, unit-test
 
-template normalIntegerAdd*(x, y: Value): Value =
+template normalIntegerAdd*(x, y: Value): untyped =
     var res: int
     if unlikely(addIntWithOverflow(x.i, y.i, res)):
         when not defined(NOGMP):
             newInteger(toNewBig(x.i) + toBig(y.i))
         else:
             RuntimeError_IntegerOperationOverflow("add", valueAsString(x), valueAsString(y))
+            VNULL
     else:
         newInteger(res)
 
@@ -178,17 +179,21 @@ proc `+`*(x: Value, y: Value): Value =
         of BigInteger -- Floating   :   (when GMP: return newFloating(x.bi+y.f))
         of Integer -- Rational      :   return newRational(x.i+y.rat)
         of Integer -- Complex       :   return newComplex(float(x.i)+y.z)
+
         of Floating -- Integer      :   return newFloating(x.f+float(y.i))
         of Floating -- Floating     :   return newFloating(x.f+y.f)
         of Floating -- BigInteger   :   (when GMP: return newFloating(x.f+y.bi))
         of Floating -- Rational     :   return newRational(toRational(x.f)+y.rat)
         of Floating -- Complex      :   return newComplex(x.f+y.z)
+
         of Rational -- Integer      :   return newRational(x.rat+y.i)
         of Rational -- Floating     :   return newRational(x.rat+toRational(y.f))
         of Rational -- Rational     :   return newRational(x.rat+y.rat)
+
         of Complex -- Integer       :   return newComplex(x.z+float(y.i))
         of Complex -- Floating      :   return newComplex(x.z+y.f)
         of Complex -- Complex       :   return newComplex(x.z+y.z)
+        
         of Color -- Color           :   return newColor(x.l + y.l)
         of Quantity -- Integer      :   return newQuantity(x.nm + y, x.unit)
         of Quantity -- Floating     :   return newQuantity(x.nm + y, x.unit)
