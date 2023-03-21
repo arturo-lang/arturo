@@ -411,6 +411,8 @@
 [+] passed!
 
 >> mul - :integer :quantity
+[+] passed!
+[+] passed!
 
 >> mul - :floating :floating
 [+] passed!
