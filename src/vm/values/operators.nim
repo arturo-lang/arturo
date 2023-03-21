@@ -57,13 +57,13 @@ proc `//`*(x: Value, y: Value): Value
 # Helpers
 #=======================================
 
-template toBig*(v: untyped): untyped =
+template toBig(v: untyped): untyped =
     when defined(WEB):
         big(v)
     else:
         v
 
-template toNewBig*(v: untyped): untyped =
+template toNewBig(v: untyped): untyped =
     when defined(WEB):
         big(v)
     else:
@@ -88,6 +88,82 @@ func safePow[T: SomeNumber](x: T, y: Natural): T =
             if y == 0:
                 break
             safeMulI(x, x)
+
+template getValuePair(): untyped =
+    let xKind {.inject.} = x.kind
+    let yKind {.inject.} = y.kind
+
+    (cast[uint32](ord(xKind)) shl 16.uint32) or 
+    (cast[uint32](ord(yKind))) or  
+    (cast[uint32](cast[uint32](xKind==Integer) * cast[uint32](x.iKind==BigInteger)) shl 31) or
+    (cast[uint32](cast[uint32](yKind==Integer) * cast[uint32](y.iKind==BigInteger)) shl 15)
+
+proc `||`(va: static[ValueKind | IntegerKind], vb: static[ValueKind | IntegerKind]): uint32 {.compileTime.}=
+    when va is ValueKind:
+        result = cast[uint32](ord(va)) shl 16
+    elif va is IntegerKind:
+        when va == NormalInteger:
+            result = cast[uint32](ord(Integer)) shl 16
+        elif va == BigInteger:
+            result = cast[uint32](ord(Integer)) shl 16 or (1.uint32 shl 31)
+
+    when vb is ValueKind:
+        result = result or cast[uint32](ord(vb))
+    elif vb is IntegerKind:
+        when vb == NormalInteger:
+            result = result or cast[uint32](ord(Integer))
+        elif vb == BigInteger:
+            result = result or cast[uint32](ord(Integer)) or (1.uint32 shl 15)
+
+proc invalidOperation(op: string, x: Value, y: Value): Value =
+    when not defined(WEB):
+        RuntimeError_InvalidOperation(op, valueKind(x, withBigInfo=true), valueKind(y, withBigInfo=true))
+    VNULL
+
+template invalidOperation(op: string): untyped =
+    invalidOperation(op, x, y)
+
+#=======================================
+# Templates
+#=======================================
+
+template normalIntegerOperation*(): bool =
+    ## check if both operands (x,y) are Integers, but not GMP-style BigNums
+    when not declared(xKind):
+        let xKind {.inject.} = x.kind
+        let yKind {.inject.} = y.kind
+
+    likely(xKind==Integer) and likely(x.iKind==NormalInteger) and likely(yKind==Integer) and likely(y.iKind==NormalInteger)
+
+template normalIntegerAdd*(x, y: Value): untyped =
+    ## add two normal Integer values, checking for overflow
+    ## and return result
+    var res: int
+    if unlikely(addIntWithOverflow(x.i, y.i, res)):
+        when not defined(NOGMP):
+            newInteger(toNewBig(x.i) + toBig(y.i))
+        else:
+            RuntimeError_IntegerOperationOverflow("add", valueAsString(x), valueAsString(y))
+            VNULL
+    else:
+        newInteger(res)
+
+template normalIntegerSub*(x, y: Value): untyped =
+    ## subtract two normal Integer values, checking for overflow
+    ## and return result
+    var res: int
+    if unlikely(subIntWithOverflow(x.i, y.i, res)):
+        when not defined(NOGMP):
+            newInteger(toNewBig(x.i) - toBig(y.i))
+        else:
+            RuntimeError_IntegerOperationOverflow("sub", valueAsString(x), valueAsString(y))
+            VNULL
+    else:
+        newInteger(res)
+
+#=======================================
+# Methods
+#=======================================
 
 proc convertToTemperatureUnit*(v: Value, src: UnitName, tgt: UnitName): Value =
     ## convert given temperature value ``v`` from ``src`` unit to ``tgt``
@@ -131,66 +207,13 @@ proc convertQuantityValue*(nm: Value, fromU: UnitName, toU: UnitName, fromKind =
         else:
             return nm * newFloating(fmultiplier)
 
-template normalIntegerOperation*(): bool =
-    ## check if both operands (x,y) are Integers, but not GMP-style BigNums
-    when not declared(xKind):
-        let xKind {.inject.} = x.kind
-        let yKind {.inject.} = y.kind
-
-    likely(xKind==Integer) and likely(x.iKind==NormalInteger) and likely(yKind==Integer) and likely(y.iKind==NormalInteger)
-
-template getValuePair*(): untyped =
-    let xKind {.inject.} = x.kind
-    let yKind {.inject.} = y.kind
-
-    (cast[uint32](ord(xKind)) shl 16.uint32) or 
-    (cast[uint32](ord(yKind))) or  
-    (cast[uint32](cast[uint32](xKind==Integer) * cast[uint32](x.iKind==BigInteger)) shl 31) or
-    (cast[uint32](cast[uint32](yKind==Integer) * cast[uint32](y.iKind==BigInteger)) shl 15)
-
-proc `||`*(va: static[ValueKind | IntegerKind], vb: static[ValueKind | IntegerKind]): uint32 {.compileTime.}=
-    when va is ValueKind:
-        result = cast[uint32](ord(va)) shl 16
-    elif va is IntegerKind:
-        when va == NormalInteger:
-            result = cast[uint32](ord(Integer)) shl 16
-        elif va == BigInteger:
-            result = cast[uint32](ord(Integer)) shl 16 or (1.uint32 shl 31)
-
-    when vb is ValueKind:
-        result = result or cast[uint32](ord(vb))
-    elif vb is IntegerKind:
-        when vb == NormalInteger:
-            result = result or cast[uint32](ord(Integer))
-        elif vb == BigInteger:
-            result = result or cast[uint32](ord(Integer)) or (1.uint32 shl 15)
-
-proc invalidOperation(op: string, x: Value, y: Value): Value =
-    when not defined(WEB):
-        RuntimeError_InvalidOperation(op, valueKind(x, withBigInfo=true), valueKind(y, withBigInfo=true))
-    VNULL
-
-template invalidOperation(op: string): untyped =
-    invalidOperation(op, x, y)
-
 #=======================================
-# Methods
+# Overloads
 #=======================================
 
 # TODO(VM/values/value) Verify that all errors are properly thrown
 #  Various core arithmetic operations between Value values may lead to errors. Are we catching - and reporting - them all properly?
 #  labels: vm, values, error handling, unit-test
-
-template normalIntegerAdd*(x, y: Value): untyped =
-    var res: int
-    if unlikely(addIntWithOverflow(x.i, y.i, res)):
-        when not defined(NOGMP):
-            newInteger(toNewBig(x.i) + toBig(y.i))
-        else:
-            RuntimeError_IntegerOperationOverflow("add", valueAsString(x), valueAsString(y))
-            VNULL
-    else:
-        newInteger(res)
 
 proc `+`*(x: Value, y: Value): Value =
     ## add given values and return the result
@@ -315,17 +338,6 @@ proc `+=`*(x: var Value, y: Value) =
                 elif y.kind==Rational: x = newRational(x.i+y.rat)
                 else: x = newComplex(float(x.i)+y.z)
 
-template normalIntegerSub*(x, y: Value): untyped =
-    var res: int
-    if unlikely(subIntWithOverflow(x.i, y.i, res)):
-        when not defined(NOGMP):
-            newInteger(toNewBig(x.i) - toBig(y.i))
-        else:
-            RuntimeError_IntegerOperationOverflow("sub", valueAsString(x), valueAsString(y))
-            VNULL
-    else:
-        newInteger(res)
-
 proc `-`*(x: Value, y: Value): Value = 
     ## subtract given values and return the result
 
@@ -365,83 +377,6 @@ proc `-`*(x: Value, y: Value): Value =
                 return newQuantity(x.nm - convertQuantityValue(y.nm, y.unit.name, x.unit.name), x.unit)
         else:
             return invalidOperation("sub")
-    # if x.kind==Color and y.kind==Color:
-    #     return newColor(x.l - y.l)
-    # if not (x.kind in {Integer, Floating, Complex, Rational}) or not (y.kind in {Integer, Floating, Complex, Rational}):
-    #     if x.kind == Quantity:
-    #         if y.kind == Quantity:
-    #             if x.unit.name == y.unit.name:
-    #                 return newQuantity(x.nm - y.nm, x.unit)
-    #             else:
-    #                 return newQuantity(x.nm - convertQuantityValue(y.nm, y.unit.name, x.unit.name), x.unit)
-    #         else:
-    #             return newQuantity(x.nm - y, x.unit)
-    #     else:
-    #         return VNULL
-    # else:
-    #     if x.kind==Integer and y.kind==Integer:
-    #         if likely(x.iKind==NormalInteger):
-    #             if likely(y.iKind==NormalInteger):
-    #                 try:
-    #                     return newInteger(x.i-y.i)
-    #                 except OverflowDefect:
-    #                     when defined(WEB):
-    #                         return newInteger(big(x.i)-big(y.i))
-    #                     elif not defined(NOGMP):
-    #                         return newInteger(newInt(x.i)-y.i)
-    #                     else:
-    #                         RuntimeError_IntegerOperationOverflow("sub", valueAsString(x), valueAsString(y))
-    #             else:
-    #                 when defined(WEB):
-    #                     return newInteger(big(x.i)-y.bi)
-    #                 elif not defined(NOGMP):
-    #                     return newInteger(x.i-y.bi)
-                    
-    #         else:
-    #             when defined(WEB):
-    #                 if unlikely(y.iKind==BigInteger):
-    #                     return newInteger(x.bi-y.bi)
-    #                 else:
-    #                     return newInteger(x.bi-big(y.i))
-    #             elif not defined(NOGMP):
-    #                 if unlikely(y.iKind==BigInteger):
-    #                     return newInteger(x.bi-y.bi)
-    #                 else:
-    #                     return newInteger(x.bi-y.i)
-    #     else:
-    #         if x.kind==Floating:
-    #             if y.kind==Floating: return newFloating(x.f-y.f)
-    #             elif y.kind==Complex: return newComplex(x.f-y.z)
-    #             elif y.kind==Rational: return newRational(toRational(x.f)-y.rat)
-    #             else: 
-    #                 if likely(y.iKind==NormalInteger):
-    #                     return newFloating(x.f-y.i)
-    #                 else:
-    #                     when not defined(NOGMP):
-    #                         return newFloating(x.f-y.bi)
-    #         elif x.kind==Complex:
-    #             if y.kind==Integer:
-    #                 if likely(y.iKind==NormalInteger): return newComplex(x.z-float(y.i))
-    #                 else: return VNULL
-    #             elif y.kind==Floating: return newComplex(x.z-y.f)
-    #             elif y.kind==Rational: return VNULL
-    #             else: return newComplex(x.z-y.z)
-    #         elif x.kind==Rational:
-    #             if y.kind==Integer:
-    #                 if likely(y.iKind==NormalInteger): return newRational(x.rat-y.i)
-    #                 else: return VNULL
-    #             elif y.kind==Floating: return newRational(x.rat-toRational(y.f))
-    #             elif y.kind==Complex: return VNULL
-    #             else: return newRational(x.rat-y.rat)
-    #         else:
-    #             if y.kind==Floating: 
-    #                 if likely(x.iKind==NormalInteger):
-    #                     return newFloating(x.i-y.f)
-    #                 else:
-    #                     when not defined(NOGMP):
-    #                         return newFloating(x.bi-y.f)
-    #             elif y.kind==Rational: return newRational(x.i-y.rat)
-    #             else: return newComplex(float(x.i)-y.z)
 
 proc `-=`*(x: var Value, y: Value) =
     ## subtract given values and 
