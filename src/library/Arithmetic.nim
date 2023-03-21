@@ -204,8 +204,12 @@ proc defineSymbols*() =
             mul 'a 2           ; a: 10
         """:
             #=======================================================
-            if x.kind==Literal  : ensureInPlace(); InPlaced *= y
-            else                : push(x*y)
+            if xKind==Literal : 
+                ensureInPlace(); InPlaced *= y
+            elif normalIntegerOperation():
+                push(normalIntegerMul(x,y))
+            else:
+                push(x*y)
 
     builtin "neg",
         alias       = unaliased, 
