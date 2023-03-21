@@ -27,7 +27,7 @@ import vm/errors
 import vm/values/types
 import vm/values/value
 
-import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vsocket, vsymbol, vversion]
+import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vversion]
 
 proc `+`*(x: Value, y: Value): Value
 proc `-`*(x: Value, y: Value): Value
