@@ -16,7 +16,7 @@
 # Libraries
 #=======================================
 
-import hashes, lenientops, macros
+import hashes, macros
 import math, sequtils, strutils
 import sugar, tables, times, unicode
 
