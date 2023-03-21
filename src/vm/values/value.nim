@@ -33,7 +33,7 @@ when defined(WEB):
 when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
-when not defined(WEB):
+when defined(NOGMP):
    import vm/errors
 
 import vm/opcodes
