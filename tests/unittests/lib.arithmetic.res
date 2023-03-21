@@ -628,6 +628,9 @@
 [+] passed!
 
 >> sub - :color :quantity
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> sub - :quantity :quantity
 
