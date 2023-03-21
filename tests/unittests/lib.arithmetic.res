@@ -479,6 +479,7 @@
 [+] passed!
 
 >> neg - :quantity
+[+] passed!
 
 >> pow
 
