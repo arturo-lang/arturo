@@ -159,6 +159,14 @@ proc `||`*(va: static[ValueKind | IntegerKind], vb: static[ValueKind | IntegerKi
         elif vb == BigInteger:
             result = result or cast[uint32](ord(Integer)) or (1.uint32 shl 15)
 
+proc invalidOperation(op: string, x: Value, y: Value): Value =
+    when not defined(WEB):
+        RuntimeError_InvalidOperation(op, valueAsString(x), valueAsString(y))
+    VNULL
+
+template invalidOperation(op: string): untyped =
+    invalidOperation(op, x, y)
+
 #=======================================
 # Methods
 #=======================================
@@ -216,7 +224,7 @@ proc `+`*(x: Value, y: Value): Value =
             else:
                 return newQuantity(x.nm + convertQuantityValue(y.nm, y.unit.name, x.unit.name), x.unit)
         else:
-            return VNULL
+            return invalidOperation("add")
 
 proc `+=`*(x: var Value, y: Value) =
     ## add given values 
