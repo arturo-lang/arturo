@@ -157,6 +157,8 @@
 [+] passed!
 
 >> div - :integer :quantity
+[+] passed!
+[+] passed!
 
 >> div - :floating :floating
 [+] passed!
