@@ -100,6 +100,9 @@
 [+] passed!
 
 >> add - :quantity :quantity
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> dec
 
