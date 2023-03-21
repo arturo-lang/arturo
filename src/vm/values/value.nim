@@ -712,25 +712,25 @@ func asInt*(v: Value): int {.enforceNoRaises.} =
     else:
         result = int(v.f)
 
-proc safeMulI[T: SomeInteger](x: var T, y: T) {.inline, noSideEffect.} =
-    x = x * y
+# proc safeMulI[T: SomeInteger](x: var T, y: T) {.inline, noSideEffect.} =
+#     x = x * y
 
-func safePow[T: SomeNumber](x: T, y: Natural): T =
-    case y
-    of 0: result = 1
-    of 1: result = x
-    of 2: result = x * x
-    of 3: result = x * x * x
-    else:
-        var (x, y) = (x, y)
-        result = 1
-        while true:
-            if (y and 1) != 0:
-                safeMulI(result, x)
-            y = y shr 1
-            if y == 0:
-                break
-            safeMulI(x, x)
+# func safePow[T: SomeNumber](x: T, y: Natural): T =
+#     case y
+#     of 0: result = 1
+#     of 1: result = x
+#     of 2: result = x * x
+#     of 3: result = x * x * x
+#     else:
+#         var (x, y) = (x, y)
+#         result = 1
+#         while true:
+#             if (y and 1) != 0:
+#                 safeMulI(result, x)
+#             y = y shr 1
+#             if y == 0:
+#                 break
+#             safeMulI(x, x)
 
 func valueAsString*(v: Value): string {.inline,enforceNoRaises.} =
     ## get numeric value forcefully as a string
