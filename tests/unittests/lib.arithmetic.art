@@ -2925,7 +2925,28 @@ do [
     
     
     topic "sub - :int :quantity"
-    ; todo
+    ; todo: compare with respective types
+    ; todo: fix behavior for :int :quant
+    ensure -> 25 = 30:usd - 5
+    ensure -> 25 = 30:eur - 5
+    ensure -> 25 = sub 30:usd 5
+    ensure -> 25 = sub 30:eur 5
+    ; ensure -> 25 = 5 - 30:usd
+    ; ensure -> 25 = 5 - 30:eur
+    ; ensure -> 25 = sub 5 30:usd
+    ; ensure -> 25 = sub 5 30:eur
+    passed
+    
+    ; todo: compare with respective types
+    a: 30:usd, 'a - 5
+    ensure -> 25 = a
+    passed
+    
+    ; todo: compare with respective types
+    ; todo: fix behavior for :int :quant
+    ; a: 5, 'a - 30:usd
+    ; ensure -> 25 = a
+    ; passed
     
     
     topic "sub - :int :color"

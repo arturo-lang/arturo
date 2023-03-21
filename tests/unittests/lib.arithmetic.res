@@ -556,6 +556,8 @@
 [+] passed!
 
 >> sub - :int :quantity
+[+] passed!
+[+] passed!
 
 >> sub - :int :color
 [+] passed!
