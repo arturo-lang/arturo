@@ -600,7 +600,19 @@ do [
     
     
     topic "dec - :quantity"
-    ; todo
+    ; todo: compare with respective types
+    
+    ensure -> 30 = dec 31:usd
+    ensure -> 30 = dec 31:eur
+    ; ensure -> 30:usd = dec 31:usd
+    ; ensure -> 30:eur = dec 31:eur
+    ensure -> 0:m = dec 1:m
+    ensure -> (neg 1:m) = dec 0:m
+    passed
+    
+    a: 31:usd, dec 'a
+    ensure -> 30 = a
+    passed
     
 
 ]
