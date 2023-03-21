@@ -161,6 +161,19 @@ template normalIntegerSub*(x, y: Value): untyped =
     else:
         newInteger(res)
 
+template normalIntegerMul*(x, y: Value): untyped =
+    ## subtract two normal Integer values, checking for overflow
+    ## and return result
+    var res: int
+    if unlikely(mulIntWithOverflow(x.i, y.i, res)):
+        when not defined(NOGMP):
+            newInteger(toNewBig(x.i) * toBig(y.i))
+        else:
+            RuntimeError_IntegerOperationOverflow("mul", valueAsString(x), valueAsString(y))
+            VNULL
+    else:
+        newInteger(res)
+
 #=======================================
 # Methods
 #=======================================
