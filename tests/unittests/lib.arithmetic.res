@@ -443,6 +443,9 @@
 [+] passed!
 
 >> mul - :complex :quantity
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> mul - :rational :rational
 [+] passed!
