@@ -22,6 +22,7 @@ when not defined(NOGMP):
 
 import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vversion]
 import vm/values/value
+import vm/values/operators
 
 #=======================================
 # Methods

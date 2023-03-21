@@ -21,6 +21,9 @@
 
 import vm/lib
 
+when not defined(NOGMP):
+    import helpers/bignums as BignumsHelper
+
 #=======================================
 # Methods
 #=======================================
@@ -46,8 +49,12 @@ proc defineSymbols*() =
             add 'a 1           ; a: 5
         """:
             #=======================================================
-            if x.kind==Literal  : ensureInPlace(); InPlaced += y
-            else                : push(x+y)
+            if xKind==Literal : 
+                ensureInPlace(); InPlaced += y
+            elif normalIntegerOperation():
+                push(normalIntegerAdd(x,y))
+            else:
+                push(x+y)
 
     builtin "dec",
         alias       = unaliased, 
