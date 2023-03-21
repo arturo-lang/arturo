@@ -235,18 +235,21 @@ template require*(name: string, spec: untyped): untyped =
 
     when (static spec.len)>=1 and spec!=NoArgs:
         let x {.inject.} = move stack.pop()
+        let xKind {.inject, used.} = x.kind
         when not (ANY in static spec[0][1]):
-            if unlikely(not (x.kind in (static spec[0][1]))):
+            if unlikely(not (xKind in (static spec[0][1]))):
                 showWrongArgumentTypeError(currentBuiltinName, 0, [x], spec)
                 
         when (static spec.len)>=2:
             let y {.inject.} = move stack.pop()
+            let yKind {.inject, used.} = y.kind
             when not (ANY in static spec[1][1]):
-                if unlikely(not (y.kind in (static spec[1][1]))):
+                if unlikely(not (yKind in (static spec[1][1]))):
                     showWrongArgumentTypeError(currentBuiltinName, 1, [x,y], spec)
                     
             when (static spec.len)>=3:
                 let z {.inject.} = move stack.pop()
+                let zKind {.inject, used.} = z.kind
                 when not (ANY in static spec[2][1]):
-                    if unlikely(not (z.kind in (static spec[2][1]))):
+                    if unlikely(not (zKind in (static spec[2][1]))):
                         showWrongArgumentTypeError(currentBuiltinName, 2, [x,y,z], spec)
