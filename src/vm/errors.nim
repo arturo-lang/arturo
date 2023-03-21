@@ -252,9 +252,9 @@ proc RuntimeError_IncompatibleQuantityOperation*(operation: string, argA, argB, 
 
 proc RuntimeError_InvalidOperation*(operation: string, argA, argB: string) =
     panic RuntimeError,
-            "invalid operation" & ";" &
-            "attempted: " & operation & ";" &
-            "with: " & truncate(argA & " " & argB, 30)
+            "invalid operation _" & operation & "_;" &
+            "between: " & argA & ";" &
+            "and: " & argB
 
 proc RuntimeError_CannotConvertQuantity*(val, argA, kindA, argB, kindB: string) =
     panic RuntimeError,
