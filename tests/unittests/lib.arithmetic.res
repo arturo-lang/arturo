@@ -176,6 +176,8 @@
 [+] passed!
 
 >> div - :floating :quantity
+[+] passed!
+[+] passed!
 
 >> div - :complex :complex
 [+] passed!
