@@ -237,6 +237,10 @@
 >> divmod - :floating :rational
 
 >> divmod - :floating :quantity
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> divmod - :complex :complex
 

@@ -1266,7 +1266,32 @@ do [
     
     
     topic "divmod - :floating :quantity"
-    ; todo
+    ; todo: compare with respective types
+    ; todo: fix behavior for :quant :float
+    ; todo: fix behavior for :float :quant
+    
+    ensure -> "[6.0:usd null]" = ~"|as.code 30:usd /% 5.0|"
+    ensure -> "[6.0:eur null]" = ~"|as.code 30:eur /% 5.0|"
+    ensure -> "[6.0:usd null]" = ~"|as.code divmod 30:usd 5.0|"
+    ensure -> "[6.0:eur null]" = ~"|as.code divmod 30:eur 5.0|"
+    passed
+    
+    ensure -> "[null null]" = ~"|as.code 5.0 /% 30:usd|"
+    ensure -> "[null null]" = ~"|as.code 5.0 /% 30:eur|"
+    ensure -> "[null null]" = ~"|as.code divmod 5.0 30:usd|"
+    ensure -> "[null null]" = ~"|as.code divmod 5.0 30:eur|"
+    passed
+    
+    ; todo: behavior is not completelly right
+    a: 30:usd, 'a /% 5.0
+    ensure -> "[6.0:usd null]" = ~"|as.code a|"
+    passed
+    
+    ; todo: compare with respective types
+    ; todo: fix behavior for :int :quant
+    a: 5.0, 'a /% 30:usd
+    ensure -> "[null null]" = ~"|as.code a|"
+    passed
     
     
     ; ------ complex
