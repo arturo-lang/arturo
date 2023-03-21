@@ -298,6 +298,8 @@
 [+] passed!
 
 >> fdiv - :floating :quantity
+[+] passed!
+[+] passed!
 
 >> fdiv - :rational :rational
 [+] passed!

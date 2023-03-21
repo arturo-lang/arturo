@@ -1616,7 +1616,28 @@ do [
     
     
     topic "fdiv - :floating :quantity"
-    ; todo
+    ; todo: compare with respective types
+    ; todo: fix behavior for :float :quant
+    ensure -> 60 = 30:usd // 0.5
+    ensure -> 60 = 30:eur // 0.5
+    ensure -> 60 = fdiv 30:usd 0.5
+    ensure -> 60 = fdiv 30:eur 0.5
+    ; ensure -> 60 = 0.5 // 30:usd
+    ; ensure -> 60 = 0.5 // 30:eur
+    ; ensure -> 60 = fdiv 0.5 30:usd
+    ; ensure -> 60 = fdiv 0.5 30:eur
+    passed
+    
+    ; todo: compare with respective types
+    a: 30:usd, 'a // 0.5
+    ensure -> 60 = a
+    passed
+    
+    ; todo: compare with respective types
+    ; todo: fix behavior for :float :quant
+    ; a: 0.5, 'a // 30:usd
+    ; ensure -> 60 = a
+    ; passed
     
     
     ; ------ rational
