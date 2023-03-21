@@ -3217,7 +3217,7 @@ do [
     ensure -> a = null
     
     a: to :complex [1 2]
-    add 'a #red
+    sub 'a #red
     ensure -> a = null
     passed
     
@@ -3227,7 +3227,7 @@ do [
     ensure -> a = null
     
     a: #red
-    add 'a to :complex [1 2]
+    sub 'a to :complex [1 2]
     ensure -> a = null
     passed
 
