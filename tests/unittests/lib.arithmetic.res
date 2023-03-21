@@ -256,6 +256,9 @@
 >> divmod - :rational :quantity
 
 >> divmod - :quantity :quantity
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> fdiv
 
