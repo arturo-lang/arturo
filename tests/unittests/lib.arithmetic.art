@@ -498,8 +498,18 @@ do [
     passed
     
     topic "add - :color :quantity"
-    ; todo
+
+    ensure -> null = #red + 30:usd
+    ensure -> null = 30:usd + #red
+    passed
     
+    a: #red, 'a + 30:usd
+    ensure -> null = a
+    passed
+    
+    a: 30:usd, 'a + #red
+    ensure -> null = a
+    passed
     
     ; ------ quantity
      

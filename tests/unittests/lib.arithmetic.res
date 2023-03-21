@@ -95,6 +95,9 @@
 [+] passed!
 
 >> add - :color :quantity
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> add - :quantity :quantity
 
