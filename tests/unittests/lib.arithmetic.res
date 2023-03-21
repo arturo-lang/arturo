@@ -613,6 +613,9 @@
 [+] passed!
 
 >> sub - :rational :quantity
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> sub - :rational :color
 [+] passed!
