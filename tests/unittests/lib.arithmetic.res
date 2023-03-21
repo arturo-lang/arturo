@@ -315,6 +315,10 @@
 [+] passed!
 
 >> fdiv - :quantity :quantity
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> inc
 
