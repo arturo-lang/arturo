@@ -2570,8 +2570,12 @@ do [
     
     
     topic "neg - :quantity"
-    ; todo
     
+    ensure -> "-20USD" = ~"|neg 20:usd|"
+    ensure -> "-20EUR" = ~"|neg 20:eur|"
+    ensure -> "-20m" = ~"|neg 20:m|"
+    ensure -> "-20cm" = ~"|neg 20:cm|"
+    passed
 
 ]
 
