@@ -210,8 +210,8 @@ proc showWrongArgumentTypeError*(name: string, pos: int, params: openArray[Value
     ## fails to validate the arguments passed to the 
     ## function
     var expectedValues = toSeq((expected[pos][1]).items)
-    let acceptedStr = expectedValues.map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
-    let actualStr = params.map(proc(x:Value):string = ":" & ($(x.kind)).toLowerAscii()).join(" ")
+    let acceptedStr = expectedValues.map(proc(x:ValueKind):string = stringify(x)).join(" ")
+    let actualStr = params.map(proc(x:Value):string = valueKind(x)).join(" ")
     var ordinalPos: string = ["first","second","third"][pos]
 
     RuntimeError_WrongArgumentType(name, actualStr, ordinalPos, acceptedStr)
@@ -220,8 +220,8 @@ proc showWrongAttributeTypeError*(fName: string, aName: string, actual:ValueKind
     ## show relevant error message in case an attribute
     ## fails to validate its argument
     var expectedValues = toSeq(expected.items)
-    let acceptedStr = expectedValues.map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
-    let actualStr = ":" & ($(actual)).toLowerAscii()
+    let acceptedStr = expectedValues.map(proc(x:ValueKind):string = stringify(x)).join(" ")
+    let actualStr = stringify(actual)
     RuntimeError_WrongAttributeType(fName, aName, actualStr, acceptedStr)
 
 template require*(name: string, spec: untyped): untyped =
