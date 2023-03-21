@@ -304,6 +304,8 @@
 [+] passed!
 
 >> inc - :quantity
+[+] passed!
+[+] passed!
 
 >> mod
 
