@@ -20,6 +20,8 @@ when defined(WEB):
 when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
+import helpers/intrinsics
+
 import vm/errors
 
 import vm/values/types
@@ -33,7 +35,26 @@ proc `*`*(x: Value, y: Value): Value
 proc `/`*(x: Value, y: Value): Value
 proc `//`*(x: Value, y: Value): Value
 
+const
+    GMP = not defined(NOGMP)
+
 {.push overflowChecks: on.}
+
+# template GMP*(blk: untyped): untyped =
+#     when not defined(NOGMP):
+#         blk
+
+template toBig*(v: untyped): untyped =
+    when defined(WEB):
+        big(v)
+    else:
+        v
+
+template toNewBig*(v: untyped): untyped =
+    when defined(WEB):
+        big(v)
+    else:
+        newInt(v)
 
 proc safeMulI[T: SomeInteger](x: var T, y: T) {.inline, noSideEffect.} =
     x = x * y
@@ -101,6 +122,9 @@ template normalIntegerOperation*(): bool =
     likely(xKind==Integer) and likely(x.iKind==NormalInteger) and likely(yKind==Integer) and likely(y.iKind==NormalInteger)
 
 template takes*(): untyped =
+    let xKind {.inject.} = x.kind
+    let yKind {.inject.} = y.kind
+
     (cast[uint32](ord(xKind)) shl 16.uint32) or 
     (cast[uint32](ord(yKind))) or  
     (cast[uint32](cast[uint32](xKind==Integer) * cast[uint32](x.iKind==BigInteger)) shl 31) or
@@ -131,19 +155,11 @@ proc `--`*(va: static[ValueKind | IntegerKind], vb: static[ValueKind | IntegerKi
 #  Various core arithmetic operations between Value values may lead to errors. Are we catching - and reporting - them all properly?
 #  labels: vm, values, error handling, unit-test
 
-when defined(bit32):
-    proc addIntOverflow(a, b: int, c: var int): bool {.importc: "__builtin_sadd_overflow", nodecl, nosideeffect.}
-else:
-    proc addIntOverflow(a, b: int, c: var int): bool {.importc: "__builtin_saddll_overflow", nodecl, nosideeffect.}
-
 template normalIntegerAdd*(x, y: Value): Value =
     var res: int
-    if unlikely(addIntOverflow(x.i, y.i, res)):
-        # echo "overflow!"
-        when defined(WEB):
-            newInteger(big(x.i)+big(y.i))
-        elif not defined(NOGMP):
-            newInteger(newInt(x.i)+y.i)
+    if unlikely(addIntWithOverflow(x.i, y.i, res)):
+        when not defined(NOGMP):
+            newInteger(toNewBig(x.i) + toBig(y.i))
         else:
             RuntimeError_IntegerOperationOverflow("add", valueAsString(x), valueAsString(y))
     else:
@@ -154,93 +170,34 @@ proc `+`*(x: Value, y: Value): Value =
     
     let pair = takes()
     case pair:
-        of Integer -- Integer:
-            return normalIntegerAdd(x,y)
-        of BigInteger -- Integer:
-            when not defined(NOGMP):
-                when defined(WEB):
-                    return newInteger(x.bi+big(y.i))
-                else:
-                    return newInteger(x.bi+y.i)
-        of Floating -- Floating:
-            #{.linearScanEnd.}
-            return newFloating(x.f+y.f)
-
-        #***************************************
-
-        of Integer -- BigInteger:
-            when not defined(NOGMP):
-                when defined(WEB):
-                    return newInteger(big(x.i)+y.bi)
-                else:
-                    return newInteger(x.i+y.bi)
-
-        of BigInteger -- BigInteger:
-            when not defined(NOGMP):
-                return newInteger(x.bi+y.bi)
-
-        of Integer -- Floating:
-            return newFloating(x.i+y.f)
-
-        of BigInteger -- Floating:
-            when not defined(NOGMP):
-                return newFloating(x.bi+y.f)
-
-        of Integer -- Rational:
-            return newRational(x.i+y.rat)
-
-        of Integer -- Complex:
-            return newComplex(float(x.i)+y.z)
-        
-        of Floating -- Integer:
-            return newFloating(x.f+float(y.i))
-
-        of Floating -- BigInteger:
-            when not defined(NOGMP):
-                return newFloating(x.f+y.bi)
-
-        of Floating -- Rational:
-            return newRational(toRational(x.f)+y.rat)
-
-        of Floating -- Complex:
-            return newComplex(x.f+y.z)
-
-        of Rational -- Integer:
-            return newRational(x.rat+y.i)
-
-        of Rational -- Floating:
-            return newRational(x.rat+toRational(y.f))
-
-        of Rational -- Rational:
-            return newRational(x.rat+y.rat)
-
-        of Complex -- Integer:
-            return newComplex(x.z+float(y.i))
-
-        of Complex -- Floating:
-            return newComplex(x.z+y.f)
-
-        of Complex -- Complex:
-            return newComplex(x.z+y.z)
-
-        of Color -- Color:
-            return newColor(x.l + y.l)
-
-        of Quantity -- Quantity:
+        of Integer -- Integer       :   return normalIntegerAdd(x,y)
+        of Integer -- BigInteger    :   (when GMP: return newInteger(toBig(x.i) + y.bi))
+        of BigInteger -- Integer    :   (when GMP: return newInteger(x.bi + toBig(y.i)))
+        of BigInteger -- BigInteger :   (when GMP: return newInteger(x.bi+y.bi))
+        of Integer -- Floating      :   (when GMP: return newFloating(x.i+y.f))
+        of BigInteger -- Floating   :   (when GMP: return newFloating(x.bi+y.f))
+        of Integer -- Rational      :   return newRational(x.i+y.rat)
+        of Integer -- Complex       :   return newComplex(float(x.i)+y.z)
+        of Floating -- Integer      :   return newFloating(x.f+float(y.i))
+        of Floating -- Floating     :   return newFloating(x.f+y.f)
+        of Floating -- BigInteger   :   (when GMP: return newFloating(x.f+y.bi))
+        of Floating -- Rational     :   return newRational(toRational(x.f)+y.rat)
+        of Floating -- Complex      :   return newComplex(x.f+y.z)
+        of Rational -- Integer      :   return newRational(x.rat+y.i)
+        of Rational -- Floating     :   return newRational(x.rat+toRational(y.f))
+        of Rational -- Rational     :   return newRational(x.rat+y.rat)
+        of Complex -- Integer       :   return newComplex(x.z+float(y.i))
+        of Complex -- Floating      :   return newComplex(x.z+y.f)
+        of Complex -- Complex       :   return newComplex(x.z+y.z)
+        of Color -- Color           :   return newColor(x.l + y.l)
+        of Quantity -- Integer      :   return newQuantity(x.nm + y, x.unit)
+        of Quantity -- Floating     :   return newQuantity(x.nm + y, x.unit)
+        of Quantity -- Rational     :   return newQuantity(x.nm + y, x.unit)
+        of Quantity -- Quantity     :
             if x.unit.name == y.unit.name:
                 return newQuantity(x.nm + y.nm, x.unit)
             else:
                 return newQuantity(x.nm + convertQuantityValue(y.nm, y.unit.name, x.unit.name), x.unit)
-
-        of Quantity -- Integer:
-            return newQuantity(x.nm + y, x.unit)
-
-        of Quantity -- Floating:
-            return newQuantity(x.nm + y, x.unit)
-
-        of Quantity -- Rational:
-            return newQuantity(x.nm + y, x.unit)
-
         else:
             return VNULL
 
