@@ -247,6 +247,9 @@
 >> divmod - :complex :rational
 
 >> divmod - :complex :quantity
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> divmod - :rational :rational
 
