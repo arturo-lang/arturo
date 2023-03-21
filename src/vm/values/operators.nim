@@ -26,6 +26,7 @@ import vm/errors
 
 import vm/values/types
 import vm/values/value
+import vm/values/printable
 
 import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vversion]
 
@@ -134,7 +135,7 @@ template normalIntegerOperation*(): bool =
     when not declared(xKind):
         let xKind {.inject.} = x.kind
         let yKind {.inject.} = y.kind
-        
+
     likely(xKind==Integer) and likely(x.iKind==NormalInteger) and likely(yKind==Integer) and likely(y.iKind==NormalInteger)
 
 template takes*(): untyped =
@@ -165,7 +166,7 @@ proc `||`*(va: static[ValueKind | IntegerKind], vb: static[ValueKind | IntegerKi
 
 proc invalidOperation(op: string, x: Value, y: Value): Value =
     when not defined(WEB):
-        RuntimeError_InvalidOperation(op, valueAsString(x), valueAsString(y))
+        RuntimeError_InvalidOperation(op, codify(x), codify(y))
     VNULL
 
 template invalidOperation(op: string): untyped =
