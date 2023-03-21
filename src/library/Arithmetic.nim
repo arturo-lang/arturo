@@ -51,8 +51,8 @@ proc defineSymbols*() =
             #=======================================================
             if x.kind==Literal  : ensureInPlace(); InPlaced += y
             else                : 
-                let xKind = x.kind
-                let yKind = y.kind
+                # let xKind = x.kind
+                # let yKind = y.kind
                 if normalIntegerOperation():
                     push(normalIntegerAdd(x,y))
                 else:
