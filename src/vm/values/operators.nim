@@ -473,10 +473,6 @@ proc `-=`*(x: var Value, y: Value) =
                 elif y.kind==Rational: x = newRational(x.i-y.rat)
                 else: x = newComplex(float(x.i)-y.z)
 
-# TODO(Value/`*`) multiplication not working for Integer-Quantity pairs
-#  e.g. `10 * 3:USD` doesn't work, but `3:USD * 10` does
-#  this could also be used for: https://rosettacode.org/wiki/Currency
-#  labels: bug, values, critical
 proc `*`*(x: Value, y: Value): Value =
     ## multiply given values and return the result
     
