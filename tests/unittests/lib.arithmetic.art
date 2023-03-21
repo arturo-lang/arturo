@@ -1905,7 +1905,41 @@ do [
     
     
     topic "mod - :integer :quantity"
-    ; todo
+    ; todo: compare with respective types
+    ; todo: fix behavior for :quant :int
+    ; todo: fix behavior for :int :quant
+    
+    ; ensure -> 0:usd = 30:usd % 5
+    ; ensure -> 0:eur = 30:eur % 5
+    ; ensure -> 0:usd = mod 30:usd 5
+    ; ensure -> 0:eur = mod 30:eur 5
+    
+    ; error:
+    ; >> Runtime | incompatible operation between quantities
+    ;      error | attempted: mod
+    ;            | with:  (currency) 5 (energy)
+    
+    ; ensure -> 5:usd = 5 % 30:usd
+    ; ensure -> 5:eur = 5 % 30:eur
+    ; ensure -> 5:usd = mod 5 30:usd
+    ; ensure -> 5:eur = mod 5 30:eur
+    ; passed
+    
+    ; error:
+    ; >> Runtime | incompatible operation between quantities
+    ;      error | attempted: mod
+    ;            | with: 5 (energy)  (currency)
+    
+    ; todo: compare with respective types
+    ; a: 30:usd, 'a % 5
+    ; ensure -> 0:usd = a
+    ; passed
+    
+    ; todo: compare with respective types
+    ; todo: fix behavior for :int :quant
+    ; a: 5, 'a % 30:usd
+    ; ensure -> 5:usd = a
+    ; passed
     
     
     ; ------ floating
