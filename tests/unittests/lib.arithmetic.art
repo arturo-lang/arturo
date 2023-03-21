@@ -1329,7 +1329,25 @@ do [
     ; passed
     
     topic "divmod - :complex :quantity"
-    ; todo
+    ; todo: check if :quantity :complex should be possible
+
+    ensure -> "[6.0-12.0i:usd null]" = ~"|as.code 30:usd /% to :complex [1 2]|"
+    ensure -> "[6.0-12.0i:eur null]" = ~"|as.code 30:eur /% to :complex [1 2]|"
+    ensure -> "[6.0-12.0i:usd null]" = ~"|as.code divmod 30:usd to :complex [1 2]|"
+    ensure -> "[6.0-12.0i:eur null]" = ~"|as.code divmod 30:eur to :complex [1 2]|"
+    ensure -> "[null null]" = ~"|as.code (to :complex [1 2]) /% 30:usd|"
+    ensure -> "[null null]" = ~"|as.code (to :complex [1 2]) /% 30:eur|"
+    ensure -> "[null null]" = ~"|as.code divmod (to :complex [1 2]) 30:usd|"
+    ensure -> "[null null]" = ~"|as.code divmod (to :complex [1 2]) 30:eur|"
+    passed
+    
+    a: 30:usd, 'a /% to :complex [1 2]
+    ensure -> "[6.0-12.0i:usd null]" = ~"|as.code a|"
+    passed
+    
+    a: to :complex [1 2], 'a /% 30:usd
+    ensure -> "[null null]" = ~"|as.code a|"
+    passed
     
     
     ; ------ rational
