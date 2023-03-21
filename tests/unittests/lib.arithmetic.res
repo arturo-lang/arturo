@@ -633,6 +633,9 @@
 [+] passed!
 
 >> sub - :quantity :quantity
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> - precedence analysis
 [+] passed!
