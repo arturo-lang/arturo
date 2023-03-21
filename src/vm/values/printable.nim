@@ -87,10 +87,7 @@ proc `$`*(v: Value): string {.inline.} =
             return $(v.rat)
         of Version      : return $(v.version)
         of Type         : 
-            if v.tpKind==BuiltinType:
-                return stringify(v.t)
-            else:
-                return ":" & v.ts.name
+            return valueKind(v)
         of Char         : return $(v.c)
         of String,
            Word, 
