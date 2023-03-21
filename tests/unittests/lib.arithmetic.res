@@ -457,6 +457,8 @@
 [+] passed!
 
 >> mul - :quantity :quantity
+[+] passed!
+[+] passed!
 
 >> neg
 

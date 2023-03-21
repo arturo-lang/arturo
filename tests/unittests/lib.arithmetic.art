@@ -2468,7 +2468,34 @@ do [
     ; ------ quantity
      
     topic "mul - :quantity :quantity"
-
+    ; todo: compare with respective types
+    ; todo: how can I test it for different currencies?
+    
+    ; todo:  fix error
+        
+    ; ensure -> 60 = 20:usd * 30:usd
+    ; ensure -> 60 = 30:usd * 20:usd
+    ; passed
+    
+    ; error:
+    ; >> Runtime | File: lib.arithmetic.art
+    ;      error | Line: 2474
+    ;            |
+    ;            | incompatible operation between quantities
+    ;            | attempted: mul
+    ;            | with:  (currency)  (currency)
+    
+    ensure -> 0.2:m2 = 1:m * 20:cm
+    ensure -> 0.2:m2 = 20:cm * 1:m
+    passed
+    
+    ; a: 20:usd, 'a * 30:usd
+    ; ensure -> 60 = a 
+    ; passed
+    
+    a: 1:m, 'a * 20:cm
+    ensure -> 0.2:m2 = a
+    passed
     
 ]
 
