@@ -581,6 +581,8 @@
 [+] passed!
 
 >> sub - :floating :quantity
+[+] passed!
+[+] passed!
 
 >> sub - :floating :color
 [+] passed!
