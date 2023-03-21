@@ -377,6 +377,10 @@
 >> mod - :rational :quantity
 
 >> mod - :quantity :quantity
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> mul
 
