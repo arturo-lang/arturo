@@ -28,11 +28,6 @@ when not defined(NOGMP):
 # Methods
 #=======================================
 
-when defined(bit32):
-    proc addIntOverflow(a, b: int, c: var int): bool {.importc: "__builtin_sadd_overflow", nodecl, nosideeffect.}
-else:
-    proc addIntOverflow(a, b: int, c: var int): bool {.importc: "__builtin_saddll_overflow", nodecl, nosideeffect.}
-
 proc defineSymbols*() =
 
     builtin "add",
