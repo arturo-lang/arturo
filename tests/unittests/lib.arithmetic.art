@@ -951,7 +951,25 @@ do [
     passed
     
     topic "div - :complex :quantity"
-    ; todo
+    ; todo: check if :quantity :complex should be possible
+
+    ensure -> "6.0-12.0i:usd" = ~"|as.code 30:usd / to :complex [1 2]|"
+    ensure -> "6.0-12.0i:eur" = ~"|as.code 30:eur / to :complex [1 2]|"
+    ensure -> "6.0-12.0i:usd" = ~"|as.code div 30:usd to :complex [1 2]|"
+    ensure -> "6.0-12.0i:eur" = ~"|as.code div 30:eur to :complex [1 2]|"
+    ensure -> null = (to :complex [1 2]) / 30:usd
+    ensure -> null = (to :complex [1 2]) / 30:eur
+    ensure -> null = div (to :complex [1 2]) 30:usd
+    ensure -> null = div (to :complex [1 2]) 30:eur
+    passed
+    
+    a: 30:usd, 'a / to :complex [1 2]
+    ensure -> "6.0-12.0i:usd" = ~"|as.code a|"
+    passed
+    
+    a: to :complex [1 2], 'a / 30:usd
+    ensure -> null = a
+    passed
     
     
     ; ------ rational

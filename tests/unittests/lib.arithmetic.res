@@ -189,6 +189,9 @@
 [+] passed!
 
 >> div - :complex :quantity
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> div - :rational :rational
 
