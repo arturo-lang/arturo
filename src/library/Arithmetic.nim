@@ -56,19 +56,25 @@ proc defineSymbols*() =
             #=======================================================
             if x.kind==Literal  : ensureInPlace(); InPlaced += y
             else                : 
-                if likely(x.kind==Integer) and likely(x.iKind==NormalInteger) and likely(y.kind==Integer) and likely(y.iKind==NormalInteger):
-                    var res: int
-                    if unlikely(addIntOverflow(x.i, y.i, res)):
-                        # echo "overflow!"
-                        when defined(WEB):
-                            push(newInteger(big(x.i)+big(y.i)))
-                        elif not defined(NOGMP):
-                            push(newInteger(newInt(x.i)+y.i))
-                        else:
-                            RuntimeError_IntegerOperationOverflow("add", valueAsString(x), valueAsString(y))
-                    push(newInteger(res))
+                let xKind = x.kind
+                let yKind = y.kind
+                if normalIntegerOperation():
+                    push(normalIntegerAdd(x,y))
                 else:
                     push(x+y)
+                # if likely(x.kind==Integer) and likely(x.iKind==NormalInteger) and likely(y.kind==Integer) and likely(y.iKind==NormalInteger):
+                #     var res: int
+                #     if unlikely(addIntOverflow(x.i, y.i, res)):
+                #         # echo "overflow!"
+                #         when defined(WEB):
+                #             push(newInteger(big(x.i)+big(y.i)))
+                #         elif not defined(NOGMP):
+                #             push(newInteger(newInt(x.i)+y.i))
+                #         else:
+                #             RuntimeError_IntegerOperationOverflow("add", valueAsString(x), valueAsString(y))
+                #     push(newInteger(res))
+                # else:
+                #     push(x+y)
 
     builtin "dec",
         alias       = unaliased, 
