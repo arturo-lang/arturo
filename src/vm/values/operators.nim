@@ -131,6 +131,10 @@ proc convertQuantityValue*(nm: Value, fromU: UnitName, toU: UnitName, fromKind =
             return nm * newFloating(fmultiplier)
 
 template normalIntegerOperation*(): bool =
+    when not declared(xKind):
+        let xKind {.inject.} = x.kind
+        let yKind {.inject.} = y.kind
+        
     likely(xKind==Integer) and likely(x.iKind==NormalInteger) and likely(yKind==Integer) and likely(y.iKind==NormalInteger)
 
 template takes*(): untyped =
