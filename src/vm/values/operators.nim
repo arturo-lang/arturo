@@ -166,7 +166,13 @@ proc `||`*(va: static[ValueKind | IntegerKind], vb: static[ValueKind | IntegerKi
 
 proc invalidOperation(op: string, x: Value, y: Value): Value =
     when not defined(WEB):
-        RuntimeError_InvalidOperation(op, codify(x), codify(y))
+        var xT = ":" & ($(x.kind)).toLowerAscii()
+        if x.kind == Integer and x.iKind == BigInteger:
+            xT &= " (big)"
+        var yT = ":" & ($(y.kind)).toLowerAscii()
+        if y.kind == Integer and y.iKind == BigInteger:
+            yT &= " (big)"
+        RuntimeError_InvalidOperation(op, xT, yT)
     VNULL
 
 template invalidOperation(op: string): untyped =
