@@ -997,7 +997,25 @@ do [
     
     
     topic "div - :rational :quantity"
-    ; todo
+    ; todo: verify this comparison
+
+    ensure -> "60:usd" = ~"|as.code 30:usd / to :rational [1 2]|"
+    ensure -> "60:eur" = ~"|as.code 30:eur / to :rational [1 2]|"
+    ensure -> "60:usd" = ~"|as.code div 30:usd to :rational [1 2]|"
+    ensure -> "60:eur" = ~"|as.code div 30:eur to :rational [1 2]|"
+    ensure -> null = (to :rational [1 2]) / 30:usd
+    ensure -> null = (to :rational [1 2]) / 30:eur
+    ensure -> null = div (to :rational [1 2]) 30:usd
+    ensure -> null = div (to :rational [1 2]) 30:eur
+    passed
+    
+    a: 30:usd, 'a / to :rational [1 2]
+    ensure -> "60:usd" = ~"|as.code a|"
+    passed
+    
+    a: to :rational [1 2], 'a / 30:usd
+    ensure -> null = a
+    passed
     
         
     ; ------ quantity

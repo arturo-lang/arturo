@@ -196,6 +196,9 @@
 >> div - :rational :rational
 
 >> div - :rational :quantity
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> div - :quantity :quantity
 
