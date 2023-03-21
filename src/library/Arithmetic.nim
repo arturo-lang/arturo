@@ -271,8 +271,12 @@ proc defineSymbols*() =
             sub 'a 2           ; a: 5
         """:
             #=======================================================
-            if x.kind==Literal  : ensureInPlace(); InPlaced -= y
-            else                : push(x-y)
+            if xKind==Literal : 
+                ensureInPlace(); InPlaced += y
+            elif normalIntegerOperation():
+                push(normalIntegerSub(x,y))
+            else:
+                push(x-y)
 
 #=======================================
 # Add Library
