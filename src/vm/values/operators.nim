@@ -478,84 +478,121 @@ proc `-=`*(x: var Value, y: Value) =
 #  this could also be used for: https://rosettacode.org/wiki/Currency
 #  labels: bug, values, critical
 proc `*`*(x: Value, y: Value): Value =
-    ## multiply given values 
-    ## and return the result
-    if not (x.kind in {Integer, Floating, Complex, Rational}) or not (y.kind in {Integer, Floating, Complex, Rational}):
-        if x.kind == Quantity:
-            if y.kind == Quantity:
-                let finalSpec = getFinalUnitAfterOperation("mul", x.unit, y.unit)
-                if unlikely(finalSpec == ErrorQuantity):
-                    when not defined(WEB):
-                        RuntimeError_IncompatibleQuantityOperation("mul", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
-                else:
-                    return newQuantity(x.nm * convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
+    ## multiply given values and return the result
+    
+    let pair = getValuePair()
+    case pair:
+        of Integer    || Integer        :   return normalIntegerMul(x,y)
+        of Integer    || BigInteger     :   (when GMP: return newInteger(toBig(x.i) * y.bi))
+        of BigInteger || Integer        :   (when GMP: return newInteger(x.bi * toBig(y.i)))
+        of BigInteger || BigInteger     :   (when GMP: return newInteger(x.bi * y.bi))
+        of Integer    || Floating       :   return newFloating(x.i * y.f)
+        of BigInteger || Floating       :   (when GMP: return newFloating(x.bi * y.f))
+        of Integer    || Rational       :   return newRational(x.i * y.rat)
+        of Integer    || Complex        :   return newComplex(float(x.i) * y.z)
+
+        of Floating   || Integer        :   return newFloating(x.f * float(y.i))
+        of Floating   || Floating       :   return newFloating(x.f * y.f)
+        of Floating   || BigInteger     :   (when GMP: return newFloating(x.f * y.bi))
+        of Floating   || Rational       :   return newRational(toRational(x.f) * y.rat)
+        of Floating   || Complex        :   return newComplex(x.f * y.z)
+
+        of Rational   || Integer        :   return newRational(x.rat * y.i)
+        of Rational   || Floating       :   return newRational(x.rat * toRational(y.f))
+        of Rational   || Rational       :   return newRational(x.rat * y.rat)
+
+        of Complex    || Integer        :   return newComplex(x.z * float(y.i))
+        of Complex    || Floating       :   return newComplex(x.z * y.f)
+        of Complex    || Complex        :   return newComplex(x.z * y.z)
+        
+        of Quantity   || Integer        :   return newQuantity(x.nm * y, x.unit)
+        of Quantity   || Floating       :   return newQuantity(x.nm * y, x.unit)
+        of Quantity   || Rational       :   return newQuantity(x.nm * y, x.unit)
+        of Quantity   || Quantity       :
+            let finalSpec = getFinalUnitAfterOperation("mul", x.unit, y.unit)
+            if unlikely(finalSpec == ErrorQuantity):
+                when not defined(WEB):
+                    RuntimeError_IncompatibleQuantityOperation("mul", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
             else:
-                return newQuantity(x.nm * y, x.unit)
+                return newQuantity(x.nm * convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
         else:
-            return VNULL
-    else:
-        if x.kind==Integer and y.kind==Integer:
-            if likely(x.iKind==NormalInteger):
-                if likely(y.iKind==NormalInteger):
-                    try:
-                        return newInteger(x.i*y.i)
-                    except OverflowDefect:
-                        when defined(WEB):
-                            return newInteger(big(x.i)*big(y.i))
-                        elif not defined(NOGMP):
-                            return newInteger(newInt(x.i)*y.i)
-                        else:
-                            RuntimeError_IntegerOperationOverflow("mul", valueAsString(x), valueAsString(y))
-                else:
-                    when defined(WEB):
-                        return newInteger(big(x.i)*y.bi)
-                    elif not defined(NOGMP):
-                        return newInteger(x.i*y.bi)
-            else:
-                when defined(WEB):
-                    if unlikely(y.iKind==BigInteger):
-                        return newInteger(x.bi*y.bi)
-                    else:
-                        return newInteger(x.bi*big(y.i))
-                elif not defined(NOGMP):
-                    if unlikely(y.iKind==BigInteger):
-                        return newInteger(x.bi*y.bi)
-                    else:
-                        return newInteger(x.bi*y.i)
-        else:
-            if x.kind==Floating:
-                if y.kind==Floating: return newFloating(x.f*y.f)
-                elif y.kind==Complex: return newComplex(x.f*y.z)
-                elif y.kind==Rational: return newRational(toRational(x.f)*y.rat)
-                else:
-                    if likely(y.iKind==NormalInteger):
-                        return newFloating(x.f*y.i)
-                    else:
-                        when not defined(NOGMP):
-                            return newFloating(x.f * y.bi)
-            elif x.kind==Complex:
-                if y.kind==Integer:
-                    if likely(y.iKind==NormalInteger): return newComplex(x.z*float(y.i))
-                    else: return VNULL
-                elif y.kind==Floating: return newComplex(x.z*y.f)
-                elif y.kind==Rational: return VNULL
-                else: return newComplex(x.z*y.z)
-            elif x.kind==Rational:
-                if y.kind==Integer:
-                    if likely(y.iKind==NormalInteger): return newRational(x.rat*y.i)
-                    else: return VNULL
-                elif y.kind==Floating: return newRational(x.rat*toRational(y.f))
-                elif y.kind==Complex: return VNULL
-                else: return newRational(x.rat*y.rat)
-            else:
-                if y.kind==Floating: 
-                    if likely(x.iKind==NormalInteger):
-                        return newFloating(x.i*y.f)
-                    else:
-                        when not defined(NOGMP):
-                            return newFloating(x.bi * y.f)
-                elif y.kind==Rational: return newRational(x.i*y.rat)
-                else: return newComplex(float(x.i)*y.z)
+            return invalidOperation("mul")
+    # if not (x.kind in {Integer, Floating, Complex, Rational}) or not (y.kind in {Integer, Floating, Complex, Rational}):
+    #     if x.kind == Quantity:
+    #         if y.kind == Quantity:
+    #             let finalSpec = getFinalUnitAfterOperation("mul", x.unit, y.unit)
+    #             if unlikely(finalSpec == ErrorQuantity):
+    #                 when not defined(WEB):
+    #                     RuntimeError_IncompatibleQuantityOperation("mul", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
+    #             else:
+    #                 return newQuantity(x.nm * convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
+    #         else:
+    #             return newQuantity(x.nm * y, x.unit)
+    #     else:
+    #         return VNULL
+    # else:
+    #     if x.kind==Integer and y.kind==Integer:
+    #         if likely(x.iKind==NormalInteger):
+    #             if likely(y.iKind==NormalInteger):
+    #                 try:
+    #                     return newInteger(x.i*y.i)
+    #                 except OverflowDefect:
+    #                     when defined(WEB):
+    #                         return newInteger(big(x.i)*big(y.i))
+    #                     elif not defined(NOGMP):
+    #                         return newInteger(newInt(x.i)*y.i)
+    #                     else:
+    #                         RuntimeError_IntegerOperationOverflow("mul", valueAsString(x), valueAsString(y))
+    #             else:
+    #                 when defined(WEB):
+    #                     return newInteger(big(x.i)*y.bi)
+    #                 elif not defined(NOGMP):
+    #                     return newInteger(x.i*y.bi)
+    #         else:
+    #             when defined(WEB):
+    #                 if unlikely(y.iKind==BigInteger):
+    #                     return newInteger(x.bi*y.bi)
+    #                 else:
+    #                     return newInteger(x.bi*big(y.i))
+    #             elif not defined(NOGMP):
+    #                 if unlikely(y.iKind==BigInteger):
+    #                     return newInteger(x.bi*y.bi)
+    #                 else:
+    #                     return newInteger(x.bi*y.i)
+    #     else:
+    #         if x.kind==Floating:
+    #             if y.kind==Floating: return newFloating(x.f*y.f)
+    #             elif y.kind==Complex: return newComplex(x.f*y.z)
+    #             elif y.kind==Rational: return newRational(toRational(x.f)*y.rat)
+    #             else:
+    #                 if likely(y.iKind==NormalInteger):
+    #                     return newFloating(x.f*y.i)
+    #                 else:
+    #                     when not defined(NOGMP):
+    #                         return newFloating(x.f * y.bi)
+    #         elif x.kind==Complex:
+    #             if y.kind==Integer:
+    #                 if likely(y.iKind==NormalInteger): return newComplex(x.z*float(y.i))
+    #                 else: return VNULL
+    #             elif y.kind==Floating: return newComplex(x.z*y.f)
+    #             elif y.kind==Rational: return VNULL
+    #             else: return newComplex(x.z*y.z)
+    #         elif x.kind==Rational:
+    #             if y.kind==Integer:
+    #                 if likely(y.iKind==NormalInteger): return newRational(x.rat*y.i)
+    #                 else: return VNULL
+    #             elif y.kind==Floating: return newRational(x.rat*toRational(y.f))
+    #             elif y.kind==Complex: return VNULL
+    #             else: return newRational(x.rat*y.rat)
+    #         else:
+    #             if y.kind==Floating: 
+    #                 if likely(x.iKind==NormalInteger):
+    #                     return newFloating(x.i*y.f)
+    #                 else:
+    #                     when not defined(NOGMP):
+    #                         return newFloating(x.bi * y.f)
+    #             elif y.kind==Rational: return newRational(x.i*y.rat)
+    #             else: return newComplex(float(x.i)*y.z)
 
 proc `*=`*(x: var Value, y: Value) =
     ## multiply given values 
