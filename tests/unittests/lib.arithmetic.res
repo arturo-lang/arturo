@@ -80,6 +80,9 @@
 [+] passed!
 
 >> add - :rational :quantity
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> add - :rational :color
 [+] passed!
