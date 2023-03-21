@@ -284,6 +284,8 @@
 [+] passed!
 
 >> fdiv - :integer :quantity
+[+] passed!
+[+] passed!
 
 >> fdiv - :floating :floating
 [+] passed!
