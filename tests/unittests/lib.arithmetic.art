@@ -2806,7 +2806,17 @@ do [
     
     
     topic "pow - :floating :quantity"
-    ; todo
+    
+    ; ensure -> 256:usd = 2:usd ^ 8
+    ; passed
+    
+    ; error:
+    ; >> Runtime | incompatible operation between quantities
+    ;      error | attempted: pow
+    ;            | with:  (currency) 8 (:integer)
+
+    ; try -> 2 ^ 8:usd
+    ; else -> passed
 
 ]
 
