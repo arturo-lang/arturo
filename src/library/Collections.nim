@@ -992,8 +992,10 @@ proc defineSymbols*() =
                     if x.rng.infinite:
                         push(newFloating(Inf))
                     else:
-                        let items = toSeq(x.rng.items)
-                        push(items[x.rng.len-1])
+                        if x.rng.start < x.rng.stop: 
+                            push(newInteger(x.rng.max()[1].i))
+                        else:
+                            push(newInteger(x.rng.min()[1].i))
                 else:
                     if x.a.len == 0: push(VNULL)
                     else: push(x.a[x.a.len-1])
