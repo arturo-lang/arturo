@@ -262,6 +262,10 @@ proc RuntimeError_CannotConvertQuantity*(val, argA, kindA, argB, kindB: string) 
           "from: " & argA & " (" & kindA & ") " & ";" &
           "to: " & argB & " (" & kindB & ")"
 
+proc RuntimeError_DivisionByZero*() =
+    panic RuntimeError,
+            "division by zero"
+
 proc RuntimeError_OutOfBounds*(indx: int, maxRange: int) =
     panic RuntimeError,
           "array index out of bounds: " & $(indx) & ";" & 
