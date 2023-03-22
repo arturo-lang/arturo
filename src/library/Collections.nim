@@ -992,7 +992,7 @@ proc defineSymbols*() =
                     if x.rng.infinite:
                         push(newFloating(Inf))
                     else:
-                        if x.rng.start < x.rng.stop: 
+                        if x.rng.forward: 
                             push(newInteger(x.rng.max()[1].i))
                         else:
                             push(newInteger(x.rng.min()[1].i))
