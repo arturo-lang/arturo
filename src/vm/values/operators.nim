@@ -940,33 +940,34 @@ proc `/%`*(x: Value, y: Value): Value =
     let pair = getValuePair()
     case pair:
         of Integer    || Integer        :   return normalIntegerDivMod(x,y)
-        of Integer    || BigInteger     :   (when GMP: return newInteger(toBig(x.i) mod notZero(y.bi)))
-        of BigInteger || Integer        :   (when GMP: return newInteger(x.bi mod toBig(notZero(y.i))))
-        of BigInteger || BigInteger     :   (when GMP: return newInteger(x.bi mod notZero(y.bi)))
-        of Integer    || Floating       :   return newFloating(float(x.i) / notZero(y.f))
-        of BigInteger || Floating       :   (when GMP: return newFloating(x.bi / notZero(y.f)))
-        of Integer    || Rational       :   return newRational(toRational(x.i) mod notZero(y.rat))
+        of Integer    || BigInteger     :   
+            when GMP: 
+                let dm=divmod(x.i, notZero(y.bi))
+                return newBlock(@[newInteger(dm[0]), newInteger(dm[1])])
+        of BigInteger || Integer        :   
+            when GMP: 
+                let dm=divmod(x.bi, notZero(y.i))
+                return newBlock(@[newInteger(dm[0]), newInteger(dm[1])])
+        of BigInteger || BigInteger     :   
+            when GMP: 
+                let dm=divmod(x.bi, notZero(y.bi))
+                return newBlock(@[newInteger(dm[0]), newInteger(dm[1])])
+        of Integer    || Floating       :   return newBlock(@[x/notZero(y), x%y])
+        of BigInteger || Floating       :   return newBlock(@[x/notZero(y), x%y])
+        of Integer    || Rational       :   return newBlock(@[x/notZero(y), x%y])
 
-        of Floating   || Integer        :   return newFloating(x.f mod float(notZero(y.i)))
-        of Floating   || Floating       :   return newFloating(x.f mod notZero(y.f))
-        of Floating   || Rational       :   return newRational(toRational(x.f) mod notZero(y.rat))
+        of Floating   || Integer        :   return newBlock(@[x/notZero(y), x%y])
+        of Floating   || Floating       :   return newBlock(@[x/notZero(y), x%y])
+        of Floating   || Rational       :   return newBlock(@[x/notZero(y), x%y])
 
-        of Rational   || Integer        :   return newRational(x.rat mod toRational(notZero(y.i)))
-        of Rational   || Floating       :   return newRational(x.rat mod toRational(notZero(y.f)))
-        of Rational   || Rational       :   return newRational(x.rat mod notZero(y.rat))
+        of Rational   || Integer        :   return newBlock(@[x/notZero(y), x%y])
+        of Rational   || Floating       :   return newBlock(@[x/notZero(y), x%y])
+        of Rational   || Rational       :   return newBlock(@[x/notZero(y), x%y])
         
-        of Quantity   || Integer        :   return newQuantity(x.nm % y, x.unit)
-        of Quantity   || Floating       :   return newQuantity(x.nm % y, x.unit)
-        of Quantity   || Rational       :   return newQuantity(x.nm % y, x.unit)
-        of Quantity   || Quantity       :
-            let finalSpec = getFinalUnitAfterOperation("divmod", x.unit, y.unit)
-            if unlikely(finalSpec == ErrorQuantity):
-                when not defined(WEB):
-                    RuntimeError_IncompatibleQuantityOperation("divmod", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
-            elif finalSpec == NumericQuantity:
-                return x.nm % y.nm
-            else:
-                return newQuantity(x.nm % convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
+        of Quantity   || Integer        :   return newBlock(@[x/notZero(y), x%y])
+        of Quantity   || Floating       :   return newBlock(@[x/notZero(y), x%y])
+        of Quantity   || Rational       :   return newBlock(@[x/notZero(y), x%y])
+        of Quantity   || Quantity       :   return newBlock(@[x/notZero(y), x%y])
         else:
             return invalidOperation("divmod")
     # if not (x.kind in {Integer,Floating,Rational}) or not (y.kind in {Integer,Floating,Rational}):
