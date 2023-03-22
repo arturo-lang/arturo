@@ -1101,6 +1101,11 @@ do [
     passed
     ensure -> (to :block 8..10) = last.n: 3 5..10
     passed
+    
+    ensure -> infinite = last 5..infinite
+    passed
+    ensure -> infinite = last.n: 2 5..infinite
+    passed
 
 ]
 
