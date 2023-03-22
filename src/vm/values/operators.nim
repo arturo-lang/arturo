@@ -117,6 +117,11 @@ proc `||`(va: static[ValueKind | IntegerKind], vb: static[ValueKind | IntegerKin
         elif vb == BigInteger:
             result = result or cast[uint32](ord(Integer)) or (1.uint32 shl 15)
 
+template notZero(v: int | Int | float): untyped =
+    if unlikely(v==0):
+        RuntimeError_DivisionByZero()
+    v
+
 proc invalidOperation(op: string, x: Value, y: Value): Value =
     when not defined(WEB):
         RuntimeError_InvalidOperation(op, valueKind(x, withBigInfo=true), valueKind(y, withBigInfo=true))
@@ -175,6 +180,11 @@ template normalIntegerMul*(x, y: Value): untyped =
             VNULL
     else:
         newInteger(res)
+
+template normalIntegerDiv*(x, y: Value): untyped =
+    ## subtract two normal Integer values, checking for overflow
+    ## and return result
+    newInteger(x.i div notZero(y.i))
 
 #=======================================
 # Methods
@@ -608,76 +618,115 @@ proc `*=`*(x: var Value, y: Value) =
 
 proc `/`*(x: Value, y: Value): Value =
     ## divide (integer division) given values and return the result
-    if not (x.kind in {Integer, Floating, Complex, Rational}) or not (y.kind in {Integer, Floating, Complex, Rational}):
-        if x.kind == Quantity:
-            if y.kind == Quantity:
-                let finalSpec = getFinalUnitAfterOperation("div", x.unit, y.unit)
-                if unlikely(finalSpec == ErrorQuantity):
-                    when not defined(WEB):
-                        RuntimeError_IncompatibleQuantityOperation("div", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
-                elif finalSpec == NumericQuantity:
-                    return x.nm / y.nm
-                else:
-                    return newQuantity(x.nm / convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
+
+    let pair = getValuePair()
+    case pair:
+        of Integer    || Integer        :   return normalIntegerDiv(x,y)
+        of Integer    || BigInteger     :   (when GMP: return newInteger(toBig(x.i) * y.bi))
+        of BigInteger || Integer        :   (when GMP: return newInteger(x.bi * toBig(y.i)))
+        of BigInteger || BigInteger     :   (when GMP: return newInteger(x.bi * y.bi))
+        of Integer    || Floating       :   return newFloating(x.i * y.f)
+        of BigInteger || Floating       :   (when GMP: return newFloating(x.bi * y.f))
+        of Integer    || Rational       :   return newRational(x.i * y.rat)
+        of Integer    || Complex        :   return newComplex(float(x.i) * y.z)
+        of Integer    || Quantity       :   return newQuantity(x * y.nm, y.unit)
+
+        of Floating   || Integer        :   return newFloating(x.f * float(y.i))
+        of Floating   || Floating       :   return newFloating(x.f * y.f)
+        of Floating   || BigInteger     :   (when GMP: return newFloating(x.f * y.bi))
+        of Floating   || Rational       :   return newRational(toRational(x.f) * y.rat)
+        of Floating   || Complex        :   return newComplex(x.f * y.z)
+
+        of Rational   || Integer        :   return newRational(x.rat * y.i)
+        of Rational   || Floating       :   return newRational(x.rat * toRational(y.f))
+        of Rational   || Rational       :   return newRational(x.rat * y.rat)
+
+        of Complex    || Integer        :   return newComplex(x.z * float(y.i))
+        of Complex    || Floating       :   return newComplex(x.z * y.f)
+        of Complex    || Complex        :   return newComplex(x.z * y.z)
+        
+        of Quantity   || Integer        :   return newQuantity(x.nm * y, x.unit)
+        of Quantity   || Floating       :   return newQuantity(x.nm * y, x.unit)
+        of Quantity   || Rational       :   return newQuantity(x.nm * y, x.unit)
+        of Quantity   || Quantity       :
+            let finalSpec = getFinalUnitAfterOperation("mul", x.unit, y.unit)
+            if unlikely(finalSpec == ErrorQuantity):
+                when not defined(WEB):
+                    RuntimeError_IncompatibleQuantityOperation("mul", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
             else:
-                return newQuantity(x.nm / y, x.unit)
+                return newQuantity(x.nm * convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
         else:
-            return VNULL
-    else:
-        if x.kind==Integer and y.kind==Integer:
-            if likely(x.iKind==NormalInteger):
-                if likely(y.iKind==NormalInteger):
-                    return newInteger(x.i div y.i)
-                else:
-                    when defined(WEB):
-                        return newInteger(big(x.i) div y.bi)
-                    elif not defined(NOGMP):
-                        return newInteger(x.i div y.bi)
-            else:
-                when defined(WEB):
-                    if unlikely(y.iKind==BigInteger):
-                        return newInteger(x.bi div y.bi)
-                    else:
-                        return newInteger(x.bi div big(y.i))
-                elif not defined(NOGMP):
-                    if unlikely(y.iKind==BigInteger):
-                        return newInteger(x.bi div y.bi)
-                    else:
-                        return newInteger(x.bi div y.i)
-        else:
-            if x.kind==Floating:
-                if y.kind==Floating: return newFloating(x.f/y.f)
-                elif y.kind==Complex: return newComplex(x.f/y.z)
-                elif y.kind==Rational: return newInteger(toRational(x.f) div y.rat)
-                else: 
-                    if likely(y.iKind==NormalInteger):
-                        return newFloating(x.f/y.i)
-                    else:
-                        when not defined(NOGMP):
-                            return newFloating(x.f / y.bi)
-            elif x.kind==Complex:
-                if y.kind==Integer:
-                    if likely(y.iKind==NormalInteger): return newComplex(x.z/float(y.i))
-                    else: return VNULL
-                elif y.kind==Floating: return newComplex(x.z/y.f)
-                elif y.kind==Rational: return VNULL
-                else: return newComplex(x.z/y.z)
-            elif x.kind==Rational:
-                if y.kind==Integer:
-                    if likely(y.iKind==NormalInteger): return newInteger(x.rat div toRational(y.i))
-                    else: return VNULL
-                elif y.kind==Floating: return newInteger(x.rat div toRational(y.f))
-                elif y.kind==Complex: return VNULL
-                else: return newInteger(x.rat div y.rat)
-            else:
-                if y.kind==Floating: 
-                    if likely(x.iKind==NormalInteger):
-                        return newFloating(x.i/y.f)
-                    else:
-                        when not defined(NOGMP):
-                            return newFloating(x.bi/y.f)
-                elif y.kind==Rational: return newInteger(toRational(x.i) div y.rat)
-                else: return newComplex(float(x.i)/y.z)
+            return invalidOperation("div")
+    # if not (x.kind in {Integer, Floating, Complex, Rational}) or not (y.kind in {Integer, Floating, Complex, Rational}):
+    #     if x.kind == Quantity:
+    #         if y.kind == Quantity:
+    #             let finalSpec = getFinalUnitAfterOperation("div", x.unit, y.unit)
+    #             if unlikely(finalSpec == ErrorQuantity):
+    #                 when not defined(WEB):
+    #                     RuntimeError_IncompatibleQuantityOperation("div", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
+    #             elif finalSpec == NumericQuantity:
+    #                 return x.nm / y.nm
+    #             else:
+    #                 return newQuantity(x.nm / convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
+    #         else:
+    #             return newQuantity(x.nm / y, x.unit)
+    #     else:
+    #         return VNULL
+    # else:
+    #     if x.kind==Integer and y.kind==Integer:
+    #         if likely(x.iKind==NormalInteger):
+    #             if likely(y.iKind==NormalInteger):
+    #                 return newInteger(x.i div y.i)
+    #             else:
+    #                 when defined(WEB):
+    #                     return newInteger(big(x.i) div y.bi)
+    #                 elif not defined(NOGMP):
+    #                     return newInteger(x.i div y.bi)
+    #         else:
+    #             when defined(WEB):
+    #                 if unlikely(y.iKind==BigInteger):
+    #                     return newInteger(x.bi div y.bi)
+    #                 else:
+    #                     return newInteger(x.bi div big(y.i))
+    #             elif not defined(NOGMP):
+    #                 if unlikely(y.iKind==BigInteger):
+    #                     return newInteger(x.bi div y.bi)
+    #                 else:
+    #                     return newInteger(x.bi div y.i)
+    #     else:
+    #         if x.kind==Floating:
+    #             if y.kind==Floating: return newFloating(x.f/y.f)
+    #             elif y.kind==Complex: return newComplex(x.f/y.z)
+    #             elif y.kind==Rational: return newInteger(toRational(x.f) div y.rat)
+    #             else: 
+    #                 if likely(y.iKind==NormalInteger):
+    #                     return newFloating(x.f/y.i)
+    #                 else:
+    #                     when not defined(NOGMP):
+    #                         return newFloating(x.f / y.bi)
+    #         elif x.kind==Complex:
+    #             if y.kind==Integer:
+    #                 if likely(y.iKind==NormalInteger): return newComplex(x.z/float(y.i))
+    #                 else: return VNULL
+    #             elif y.kind==Floating: return newComplex(x.z/y.f)
+    #             elif y.kind==Rational: return VNULL
+    #             else: return newComplex(x.z/y.z)
+    #         elif x.kind==Rational:
+    #             if y.kind==Integer:
+    #                 if likely(y.iKind==NormalInteger): return newInteger(x.rat div toRational(y.i))
+    #                 else: return VNULL
+    #             elif y.kind==Floating: return newInteger(x.rat div toRational(y.f))
+    #             elif y.kind==Complex: return VNULL
+    #             else: return newInteger(x.rat div y.rat)
+    #         else:
+    #             if y.kind==Floating: 
+    #                 if likely(x.iKind==NormalInteger):
+    #                     return newFloating(x.i/y.f)
+    #                 else:
+    #                     when not defined(NOGMP):
+    #                         return newFloating(x.bi/y.f)
+    #             elif y.kind==Rational: return newInteger(toRational(x.i) div y.rat)
+    #             else: return newComplex(float(x.i)/y.z)
 
 proc `/=`*(x: var Value, y: Value) =
     ## divide (integer division) given values 
