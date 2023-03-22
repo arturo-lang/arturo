@@ -614,7 +614,7 @@ proc `*=`*(x: var Value, y: Value) =
                             x = newFloating(x.bi*y.f)
                 elif y.kind==Rational: x = newRational(x.i * y.rat)
                 else: x = newComplex(float(x.i)*y.z)
-
+{.pop.}
 proc `/`*(x: Value, y: Value): Value =
     ## divide (integer division) given values and return the result
 
@@ -657,7 +657,7 @@ proc `/`*(x: Value, y: Value): Value =
                 return newQuantity(x.nm / convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
         else:
             return invalidOperation("div")
-
+{.push overflowChecks: on.}
 proc `/=`*(x: var Value, y: Value) =
     ## divide (integer division) given values 
     ## and store the result in the first one 
