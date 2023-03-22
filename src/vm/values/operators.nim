@@ -655,7 +655,7 @@ proc `/`*(x: Value, y: Value): Value =
             let finalSpec = getFinalUnitAfterOperation("div", x.unit, y.unit)
             if unlikely(finalSpec == ErrorQuantity):
                 when not defined(WEB):
-                    RuntimeError_IncompatibleQuantityOperation("mul", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
+                    RuntimeError_IncompatibleQuantityOperation("div", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
             elif finalSpec == NumericQuantity:
                 return x.nm / y.nm
             else:
@@ -752,40 +752,31 @@ proc `//`*(x: Value, y: Value): Value =
     let pair = getValuePair()
     case pair:
         of Integer    || Integer        :   return normalIntegerFDiv(x,y)
-        of Integer    || BigInteger     :   (when GMP: return newInteger(toBig(x.i) div notZero(y.bi)))
-        of BigInteger || Integer        :   (when GMP: return newInteger(x.bi div toBig(notZero(y.i))))
-        of BigInteger || BigInteger     :   (when GMP: return newInteger(x.bi div notZero(y.bi)))
-        of Integer    || Floating       :   return newFloating(x.i / notZero(y.f))
+        of Integer    || Floating       :   return newFloating(float(x.i) / notZero(y.f))
         of BigInteger || Floating       :   (when GMP: return newFloating(x.bi / notZero(y.f)))
-        of Integer    || Rational       :   return newInteger(toRational(x.i) div notZero(y.rat))
-        of Integer    || Complex        :   return newComplex(float(x.i) / notZero(y.z))
+        of Integer    || Rational       :   return newRational(x.i / notZero(y.rat))
 
         of Floating   || Integer        :   return newFloating(x.f / float(notZero(y.i)))
         of Floating   || BigInteger     :   (when GMP: return newFloating(x.f / notZero(y.bi)))
         of Floating   || Floating       :   return newFloating(x.f / notZero(y.f))
-        of Floating   || Rational       :   return newInteger(toRational(x.f) div notZero(y.rat))
-        of Floating   || Complex        :   return newComplex(x.f / notZero(y.z))
+        of Floating   || Rational       :   return newRational(toRational(x.f) / notZero(y.rat))
 
-        of Rational   || Integer        :   return newInteger(x.rat div toRational(notZero(y.i)))
-        of Rational   || Floating       :   return newInteger(x.rat div toRational(notZero(y.f)))
-        of Rational   || Rational       :   return newInteger(x.rat div notZero(y.rat))
-
-        of Complex    || Integer        :   return newComplex(x.z / float(notZero(y.i)))
-        of Complex    || Floating       :   return newComplex(x.z / notZero(y.f))
-        of Complex    || Complex        :   return newComplex(x.z / notZero(y.z))
+        of Rational   || Integer        :   return newRational(x.rat / notZero(y.i))
+        of Rational   || Floating       :   return newRational(x.rat / toRational(notZero(y.f)))
+        of Rational   || Rational       :   return newRational(x.rat / notZero(y.rat))
         
-        of Quantity   || Integer        :   return newQuantity(x.nm / y, x.unit)
-        of Quantity   || Floating       :   return newQuantity(x.nm / y, x.unit)
-        of Quantity   || Rational       :   return newQuantity(x.nm / y, x.unit)
+        of Quantity   || Integer        :   return newQuantity(x.nm // y, x.unit)
+        of Quantity   || Floating       :   return newQuantity(x.nm // y, x.unit)
+        of Quantity   || Rational       :   return newQuantity(x.nm // y, x.unit)
         of Quantity   || Quantity       :
-            let finalSpec = getFinalUnitAfterOperation("div", x.unit, y.unit)
+            let finalSpec = getFinalUnitAfterOperation("fdiv", x.unit, y.unit)
             if unlikely(finalSpec == ErrorQuantity):
                 when not defined(WEB):
-                    RuntimeError_IncompatibleQuantityOperation("mul", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
+                    RuntimeError_IncompatibleQuantityOperation("fdiv", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
             elif finalSpec == NumericQuantity:
-                return x.nm / y.nm
+                return x.nm // y.nm
             else:
-                return newQuantity(x.nm / convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
+                return newQuantity(x.nm // convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
         else:
             return invalidOperation("fdiv")
     # if not (x.kind in {Integer, Floating, Rational}) or not (y.kind in {Integer, Floating, Rational}):
