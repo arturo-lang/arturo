@@ -43,6 +43,11 @@ func mulmod*[T: SomeInteger](a, b, modulus: T): T =
         if (b_m and 1) == 1: result = addmod(result, a_m, modulus)
         a_m = (a_m shl 1) - (if a_m >= (modulus - a_m): modulus else: 0)
         b_m = b_m shr 1
+
+func divmod*[T: SomeInteger](a, b: T): array[2, T] =
+    let quot = a div b
+    let rem = a - b * quot
+    return [quot, rem]
  
 func expmod*[T: SomeInteger](base, exponent, modulus: T): T =
     result = 1
