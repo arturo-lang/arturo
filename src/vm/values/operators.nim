@@ -745,7 +745,7 @@ proc `/=`*(x: var Value, y: Value) =
                             x = newFloating(x.bi/y.f)
                 elif y.kind==Rational: x = newInteger(toRational(x.i) div y.rat)
                 else: x = newComplex(float(x.i)/y.z)
-
+{.pop.}
 proc `//`*(x: Value, y: Value): Value =
     ## divide (floating-point division) given values and return the result
     
@@ -820,7 +820,7 @@ proc `//`*(x: Value, y: Value): Value =
     #                         return newFloating(x.bi/y.f)
     #             else: return newRational(x.i / y.rat)
 
-
+{.push overflowChecks: on.}
 proc `//=`*(x: var Value, y: Value) =
     ## divide (floating-point division) given values 
     ## and store the result in the first one 
