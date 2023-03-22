@@ -605,8 +605,7 @@ proc `*=`*(x: var Value, y: Value) =
 #     x.fv / y
 
 proc `/`*(x: Value, y: Value): Value =
-    ## divide (integer division) given values 
-    ## and return the result
+    ## divide (integer division) given values and return the result
     if not (x.kind in {Integer, Floating, Complex, Rational}) or not (y.kind in {Integer, Floating, Complex, Rational}):
         if x.kind == Quantity:
             if y.kind == Quantity:
