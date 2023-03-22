@@ -41,7 +41,7 @@ const
 # Pragmas
 #=======================================
 
-{.push overflowChecks: on.}
+#{.push overflowChecks: on.}
 
 #=======================================
 # Forward declarations
@@ -68,7 +68,7 @@ template toNewBig(v: untyped): untyped =
         big(v)
     else:
         newInt(v)
-
+{.push overflowChecks: on.}
 proc safeMulI[T: SomeInteger](x: var T, y: T) {.inline, noSideEffect.} =
     x = x * y
 
@@ -88,6 +88,8 @@ func safePow[T: SomeNumber](x: T, y: Natural): T =
             if y == 0:
                 break
             safeMulI(x, x)
+
+{.pop.}
 
 template getValuePair(): untyped =
     let xKind {.inject.} = x.kind
@@ -267,7 +269,7 @@ proc `+`*(x: Value, y: Value): Value =
                 return newQuantity(x.nm + convertQuantityValue(y.nm, y.unit.name, x.unit.name), x.unit)
         else:
             return invalidOperation("add")
-
+{.push overflowChecks: on.}
 proc `+=`*(x: var Value, y: Value) =
     ## add given values 
     ## and store the result in the first value
@@ -350,7 +352,7 @@ proc `+=`*(x: var Value, y: Value) =
                             x = newFloating(x.bi+y.f)
                 elif y.kind==Rational: x = newRational(x.i+y.rat)
                 else: x = newComplex(float(x.i)+y.z)
-
+{.pop.}
 proc `-`*(x: Value, y: Value): Value = 
     ## subtract given values and return the result
 
@@ -390,7 +392,7 @@ proc `-`*(x: Value, y: Value): Value =
                 return newQuantity(x.nm - convertQuantityValue(y.nm, y.unit.name, x.unit.name), x.unit)
         else:
             return invalidOperation("sub")
-
+{.push overflowChecks: on.}
 proc `-=`*(x: var Value, y: Value) =
     ## subtract given values and 
     ## store the result in the first value
@@ -472,7 +474,7 @@ proc `-=`*(x: var Value, y: Value) =
                             x = newFloating(x.bi-y.f)
                 elif y.kind==Rational: x = newRational(x.i-y.rat)
                 else: x = newComplex(float(x.i)-y.z)
-
+{.pop.}
 proc `*`*(x: Value, y: Value): Value =
     ## multiply given values and return the result
     
@@ -514,7 +516,7 @@ proc `*`*(x: Value, y: Value): Value =
                 return newQuantity(x.nm * convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
         else:
             return invalidOperation("mul")
-
+{.push overflowChecks: on.}
 proc `*=`*(x: var Value, y: Value) =
     ## multiply given values 
     ## and store the result in the first one
@@ -1574,5 +1576,4 @@ proc factorial*(x: Value): Value =
         else:
             when not defined(WEB):
                 RuntimeError_NumberOutOfPermittedRange("factorial",valueAsString(x), "")
-
 {.pop.}
