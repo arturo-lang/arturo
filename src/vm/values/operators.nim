@@ -196,7 +196,7 @@ template normalIntegerDiv*(x, y: Value): untyped =
 template normalIntegerFDiv*(x, y: Value): untyped =
     ## divide (floating-point division) two normal Integer values, checking for DivisionByZero
     ## and return result
-    newInteger(x.i div notZero(y.i))
+    newFloating(x.i / notZero(y.i))
 
 #=======================================
 # Methods
