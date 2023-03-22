@@ -97,7 +97,11 @@ func powIntWithOverflow(a,b:int, res: var int): bool =
     case b:
         of 0: res = 1
         of 1: res = a
-        of 2: result = mulIntWithOverflow(a, b, res)
+        of 2: result = mulIntWithOverflow(a, a, res)
+        of 3: 
+            result = mulIntWithOverflow(a, a, res)
+            if not result:
+                result = mulIntWithOverflow(a, res, res)
         else:
             var (x,y) = (a,b)
             res = 1
@@ -607,7 +611,7 @@ proc dec*(x: Value): Value =
         of Quantity: return newQuantity(x.nm - I1, x.unit)
         else:
             return invalidOperation("dec")
-        
+
 proc `*`*(x: Value, y: Value): Value =
     ## multiply given values and return the result
     
