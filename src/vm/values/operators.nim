@@ -267,8 +267,8 @@ proc `+`*(x: Value, y: Value): Value =
         of Integer    || Complex        :   return newComplex(float(x.i) + y.z)
 
         of Floating   || Integer        :   return newFloating(x.f + float(y.i))
-        of Floating   || Floating       :   return newFloating(x.f + y.f)
         of Floating   || BigInteger     :   (when GMP: return newFloating(x.f + y.bi))
+        of Floating   || Floating       :   return newFloating(x.f + y.f)
         of Floating   || Rational       :   return newRational(toRational(x.f) + y.rat)
         of Floating   || Complex        :   return newComplex(x.f + y.z)
 
@@ -390,8 +390,8 @@ proc `-`*(x: Value, y: Value): Value =
         of Integer    || Complex        :   return newComplex(float(x.i) - y.z)
 
         of Floating   || Integer        :   return newFloating(x.f - float(y.i))
-        of Floating   || Floating       :   return newFloating(x.f - y.f)
         of Floating   || BigInteger     :   (when GMP: return newFloating(x.f - y.bi))
+        of Floating   || Floating       :   return newFloating(x.f - y.f)
         of Floating   || Rational       :   return newRational(toRational(x.f) - y.rat)
         of Floating   || Complex        :   return newComplex(x.f - y.z)
 
@@ -513,8 +513,8 @@ proc `*`*(x: Value, y: Value): Value =
         of Integer    || Quantity       :   return newQuantity(x * y.nm, y.unit)
 
         of Floating   || Integer        :   return newFloating(x.f * float(y.i))
-        of Floating   || Floating       :   return newFloating(x.f * y.f)
         of Floating   || BigInteger     :   (when GMP: return newFloating(x.f * y.bi))
+        of Floating   || Floating       :   return newFloating(x.f * y.f)
         of Floating   || Rational       :   return newRational(toRational(x.f) * y.rat)
         of Floating   || Complex        :   return newComplex(x.f * y.z)
 
@@ -635,8 +635,8 @@ proc `/`*(x: Value, y: Value): Value =
         of Integer    || Complex        :   return newComplex(float(x.i) / notZero(y.z))
 
         of Floating   || Integer        :   return newFloating(x.f / float(notZero(y.i)))
-        of Floating   || Floating       :   return newFloating(x.f / notZero(y.f))
         of Floating   || BigInteger     :   (when GMP: return newFloating(x.f / notZero(y.bi)))
+        of Floating   || Floating       :   return newFloating(x.f / notZero(y.f))
         of Floating   || Rational       :   return newInteger(toRational(x.f) div notZero(y.rat))
         of Floating   || Complex        :   return newComplex(x.f / notZero(y.z))
 
@@ -761,8 +761,8 @@ proc `//`*(x: Value, y: Value): Value =
         of Integer    || Complex        :   return newComplex(float(x.i) / notZero(y.z))
 
         of Floating   || Integer        :   return newFloating(x.f / float(notZero(y.i)))
-        of Floating   || Floating       :   return newFloating(x.f / notZero(y.f))
         of Floating   || BigInteger     :   (when GMP: return newFloating(x.f / notZero(y.bi)))
+        of Floating   || Floating       :   return newFloating(x.f / notZero(y.f))
         of Floating   || Rational       :   return newInteger(toRational(x.f) div notZero(y.rat))
         of Floating   || Complex        :   return newComplex(x.f / notZero(y.z))
 
