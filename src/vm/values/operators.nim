@@ -827,10 +827,10 @@ proc `//=`*(x: var Value, y: Value) =
                         when not defined(NOGMP):
                             x = newFloating(x.bi/y.f)
                 else: x = newRational(x.i / y.rat)
-                
+{.pop.}
+
 proc `%`*(x: Value, y: Value): Value =
-    ## perform the modulo operation between given values 
-    ## and return the result
+    ## perform the modulo operation between given values and return the result
     if not (x.kind in {Integer,Floating,Rational}) or not (y.kind in {Integer,Floating,Rational}):
         if (x.kind == Quantity and y.kind == Quantity) and (x.unit.kind==y.unit.kind):
             if x.unit.name == y.unit.name:
@@ -890,6 +890,7 @@ proc `%`*(x: Value, y: Value): Value =
                         # when not defined(NOGMP):
                         #     return newFloating(x.bi mod y.f)
 
+{.push overflowChecks: on.}
 proc `%=`*(x: var Value, y: Value) =
     ## perform the modulo operation between given values
     ## and store the result in the first one
