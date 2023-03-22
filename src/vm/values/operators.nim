@@ -952,22 +952,22 @@ proc `/%`*(x: Value, y: Value): Value =
             when GMP: 
                 let dm=divmod(x.bi, notZero(y.bi))
                 return newBlock(@[newInteger(dm[0]), newInteger(dm[1])])
-        of Integer    || Floating       :   return newBlock(@[x/notZero(y), x%y])
-        of BigInteger || Floating       :   return newBlock(@[x/notZero(y), x%y])
-        of Integer    || Rational       :   return newBlock(@[x/notZero(y), x%y])
+        of Integer    || Floating       :   return newBlock(@[x/y, x%y])
+        of BigInteger || Floating       :   return newBlock(@[x/y, x%y])
+        of Integer    || Rational       :   return newBlock(@[x/y, x%y])
 
-        of Floating   || Integer        :   return newBlock(@[x/notZero(y), x%y])
-        of Floating   || Floating       :   return newBlock(@[x/notZero(y), x%y])
-        of Floating   || Rational       :   return newBlock(@[x/notZero(y), x%y])
+        of Floating   || Integer        :   return newBlock(@[x/y, x%y])
+        of Floating   || Floating       :   return newBlock(@[x/y, x%y])
+        of Floating   || Rational       :   return newBlock(@[x/y, x%y])
 
-        of Rational   || Integer        :   return newBlock(@[x/notZero(y), x%y])
-        of Rational   || Floating       :   return newBlock(@[x/notZero(y), x%y])
-        of Rational   || Rational       :   return newBlock(@[x/notZero(y), x%y])
+        of Rational   || Integer        :   return newBlock(@[x/y, x%y])
+        of Rational   || Floating       :   return newBlock(@[x/y, x%y])
+        of Rational   || Rational       :   return newBlock(@[x/y, x%y])
         
-        of Quantity   || Integer        :   return newBlock(@[x/notZero(y), x%y])
-        of Quantity   || Floating       :   return newBlock(@[x/notZero(y), x%y])
-        of Quantity   || Rational       :   return newBlock(@[x/notZero(y), x%y])
-        of Quantity   || Quantity       :   return newBlock(@[x/notZero(y), x%y])
+        of Quantity   || Integer        :   return newBlock(@[x/y, x%y])
+        of Quantity   || Floating       :   return newBlock(@[x/y, x%y])
+        of Quantity   || Rational       :   return newBlock(@[x/y, x%y])
+        of Quantity   || Quantity       :   return newBlock(@[x/y, x%y])
         else:
             return invalidOperation("divmod")
     # if not (x.kind in {Integer,Floating,Rational}) or not (y.kind in {Integer,Floating,Rational}):
