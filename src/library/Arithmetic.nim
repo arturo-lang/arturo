@@ -73,8 +73,12 @@ proc defineSymbols*() =
             dec 'a             ; a: 3
         """:
             #=======================================================
-            if x.kind==Literal  : ensureInPlace(); InPlaced -= I1
-            else                : push(x-I1)
+            if xKind==Literal : 
+                ensureInPlace(); InPlaced -= I1
+            elif normalIntegerOperation():
+                push(normalIntegerDec(x))
+            else:
+                push(dec(x))
         
     builtin "div",
         alias       = slash, 
@@ -172,8 +176,12 @@ proc defineSymbols*() =
             inc 'a             ; a: 5
         """:
             #=======================================================
-            if x.kind==Literal  : ensureInPlace(); InPlaced += I1
-            else                : push(x+I1)
+            if xKind==Literal : 
+                ensureInPlace(); InPlaced += I1
+            elif normalIntegerOperation():
+                push(normalIntegerInc(x))
+            else:
+                push(inc(x))
 
     builtin "mod",
         alias       = percent, 
