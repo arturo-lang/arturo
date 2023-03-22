@@ -149,13 +149,19 @@ template notZero(v: untyped): untyped =
             RuntimeError_DivisionByZero()
     v
 
-proc invalidOperation(op: string, x: Value, y: Value): Value =
+proc invalidOperation(op: string, x: Value, y: Value = nil): Value =
     when not defined(WEB):
-        RuntimeError_InvalidOperation(op, valueKind(x, withBigInfo=true), valueKind(y, withBigInfo=true))
+        if y.isNil:
+            RuntimeError_InvalidOperation(op, valueKind(x, withBigInfo=true), "")
+        else:
+            RuntimeError_InvalidOperation(op, valueKind(x, withBigInfo=true), valueKind(y, withBigInfo=true))
     VNULL
 
 template invalidOperation(op: string): untyped =
-    invalidOperation(op, x, y)
+    when declared(y):
+        invalidOperation(op, x, y)
+    else:
+        invalidOperation(op, x)
 
 #=======================================
 # Templates
@@ -165,9 +171,13 @@ template normalIntegerOperation*(): bool =
     ## check if both operands (x,y) are Integers, but not GMP-style BigNums
     when not declared(xKind):
         let xKind {.inject.} = x.kind
-        let yKind {.inject.} = y.kind
+        when declared(y):
+            let yKind {.inject.} = y.kind
 
-    likely(xKind==Integer) and likely(x.iKind==NormalInteger) and likely(yKind==Integer) and likely(y.iKind==NormalInteger)
+    when declared(y):
+        likely(xKind==Integer) and likely(x.iKind==NormalInteger) and likely(yKind==Integer) and likely(y.iKind==NormalInteger)
+    else:
+        likely(xKind==Integer) and likely(x.iKind==NormalInteger)
 
 template normalIntegerAdd*(x, y: Value): untyped =
     ## add two normal Integer values, checking for overflow
@@ -182,6 +192,19 @@ template normalIntegerAdd*(x, y: Value): untyped =
     else:
         newInteger(res)
 
+template normalIntegerInc*(x: Value): untyped =
+    ## increment a normal Integer value by 1, checking for overflow
+    ## and return result
+    var res: int
+    if unlikely(addIntWithOverflow(x.i, 1, res)):
+        when not defined(NOGMP):
+            newInteger(toNewBig(x.i) + toBig(1))
+        else:
+            RuntimeError_IntegerOperationOverflow("inc", valueAsString(x), valueAsString(y))
+            VNULL
+    else:
+        newInteger(res)
+
 template normalIntegerSub*(x, y: Value): untyped =
     ## subtract two normal Integer values, checking for overflow
     ## and return result
@@ -191,6 +214,19 @@ template normalIntegerSub*(x, y: Value): untyped =
             newInteger(toNewBig(x.i) - toBig(y.i))
         else:
             RuntimeError_IntegerOperationOverflow("sub", valueAsString(x), valueAsString(y))
+            VNULL
+    else:
+        newInteger(res)
+
+template normalIntegerDec*(x: Value): untyped =
+    ## decrement a normal Integer value by 1, checking for overflow
+    ## and return result
+    var res: int
+    if unlikely(subIntWithOverflow(x.i, 1, res)):
+        when not defined(NOGMP):
+            newInteger(toNewBig(x.i) - toBig(1))
+        else:
+            RuntimeError_IntegerOperationOverflow("dec", valueAsString(x), valueAsString(y))
             VNULL
     else:
         newInteger(res)
@@ -422,6 +458,20 @@ proc `+=`*(x: var Value, y: Value) =
                 elif y.kind==Rational: x = newRational(x.i+y.rat)
                 else: x = newComplex(float(x.i)+y.z)
 {.pop.}
+proc inc*(x: Value): Value =
+    ## increment given value and return the result
+
+    case x.kind:
+        of Integer:
+            if x.iKind==NormalInteger: return normalIntegerInc(x)
+            else: (when GMP: return newInteger(x.bi+toBig(1)))
+        of Floating: return newFloating(x.f+1.0)
+        of Rational: return newRational(x.rat+1)
+        of Complex: return newComplex(x.z+1.0)
+        of Quantity: return newQuantity(x.nm + I1, x.unit)
+        else:
+            return invalidOperation("inc")
+
 proc `-`*(x: Value, y: Value): Value = 
     ## subtract given values and return the result
 
@@ -544,6 +594,20 @@ proc `-=`*(x: var Value, y: Value) =
                 elif y.kind==Rational: x = newRational(x.i-y.rat)
                 else: x = newComplex(float(x.i)-y.z)
 {.pop.}
+proc dec*(x: Value): Value =
+    ## decrement given value and return the result
+
+    case x.kind:
+        of Integer:
+            if x.iKind==NormalInteger: return normalIntegerDec(x)
+            else: (when GMP: return newInteger(x.bi-toBig(1)))
+        of Floating: return newFloating(x.f-1.0)
+        of Rational: return newRational(x.rat-1)
+        of Complex: return newComplex(x.z-1.0)
+        of Quantity: return newQuantity(x.nm - I1, x.unit)
+        else:
+            return invalidOperation("dec")
+        
 proc `*`*(x: Value, y: Value): Value =
     ## multiply given values and return the result
     
