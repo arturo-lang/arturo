@@ -198,6 +198,11 @@ template normalIntegerFDiv*(x, y: Value): untyped =
     ## and return result
     newFloating(x.i / notZero(y.i))
 
+template normalIntegerMod*(x, y: Value): untyped =
+    ## modulo two normal Integer values, checking for DivisionByZero
+    ## and return result
+    newInteger(x.i mod notZero(y.i))
+
 #=======================================
 # Methods
 #=======================================
