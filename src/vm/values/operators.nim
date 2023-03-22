@@ -176,7 +176,7 @@ template normalIntegerSub*(x, y: Value): untyped =
         newInteger(res)
 
 template normalIntegerMul*(x, y: Value): untyped =
-    ## subtract two normal Integer values, checking for overflow
+    ## multiply two normal Integer values, checking for overflow
     ## and return result
     var res: int
     if unlikely(mulIntWithOverflow(x.i, y.i, res)):
@@ -189,7 +189,12 @@ template normalIntegerMul*(x, y: Value): untyped =
         newInteger(res)
 
 template normalIntegerDiv*(x, y: Value): untyped =
-    ## subtract two normal Integer values, checking for overflow
+    ## divide (integer division) two normal Integer values, checking for DivisionByZero
+    ## and return result
+    newInteger(x.i div notZero(y.i))
+
+template normalIntegerFDiv*(x, y: Value): untyped =
+    ## divide (floating-point division) two normal Integer values, checking for DivisionByZero
     ## and return result
     newInteger(x.i div notZero(y.i))
 
@@ -742,8 +747,47 @@ proc `/=`*(x: var Value, y: Value) =
                 else: x = newComplex(float(x.i)/y.z)
 
 proc `//`*(x: Value, y: Value): Value =
-    ## divide (floating-point division) given values 
-    ## and return the result
+    ## divide (floating-point division) given values and return the result
+    
+    let pair = getValuePair()
+    case pair:
+        of Integer    || Integer        :   return normalIntegerFDiv(x,y)
+        of Integer    || BigInteger     :   (when GMP: return newInteger(toBig(x.i) div notZero(y.bi)))
+        of BigInteger || Integer        :   (when GMP: return newInteger(x.bi div toBig(notZero(y.i))))
+        of BigInteger || BigInteger     :   (when GMP: return newInteger(x.bi div notZero(y.bi)))
+        of Integer    || Floating       :   return newFloating(x.i / notZero(y.f))
+        of BigInteger || Floating       :   (when GMP: return newFloating(x.bi / notZero(y.f)))
+        of Integer    || Rational       :   return newInteger(toRational(x.i) div notZero(y.rat))
+        of Integer    || Complex        :   return newComplex(float(x.i) / notZero(y.z))
+
+        of Floating   || Integer        :   return newFloating(x.f / float(notZero(y.i)))
+        of Floating   || Floating       :   return newFloating(x.f / notZero(y.f))
+        of Floating   || BigInteger     :   (when GMP: return newFloating(x.f / notZero(y.bi)))
+        of Floating   || Rational       :   return newInteger(toRational(x.f) div notZero(y.rat))
+        of Floating   || Complex        :   return newComplex(x.f / notZero(y.z))
+
+        of Rational   || Integer        :   return newInteger(x.rat div toRational(notZero(y.i)))
+        of Rational   || Floating       :   return newInteger(x.rat div toRational(notZero(y.f)))
+        of Rational   || Rational       :   return newInteger(x.rat div notZero(y.rat))
+
+        of Complex    || Integer        :   return newComplex(x.z / float(notZero(y.i)))
+        of Complex    || Floating       :   return newComplex(x.z / notZero(y.f))
+        of Complex    || Complex        :   return newComplex(x.z / notZero(y.z))
+        
+        of Quantity   || Integer        :   return newQuantity(x.nm / y, x.unit)
+        of Quantity   || Floating       :   return newQuantity(x.nm / y, x.unit)
+        of Quantity   || Rational       :   return newQuantity(x.nm / y, x.unit)
+        of Quantity   || Quantity       :
+            let finalSpec = getFinalUnitAfterOperation("div", x.unit, y.unit)
+            if unlikely(finalSpec == ErrorQuantity):
+                when not defined(WEB):
+                    RuntimeError_IncompatibleQuantityOperation("mul", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
+            elif finalSpec == NumericQuantity:
+                return x.nm / y.nm
+            else:
+                return newQuantity(x.nm / convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
+        else:
+            return invalidOperation("fdiv")
     if not (x.kind in {Integer, Floating, Rational}) or not (y.kind in {Integer, Floating, Rational}):
         if x.kind == Quantity:
             if y.kind == Quantity:
