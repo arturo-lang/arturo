@@ -752,7 +752,7 @@ proc `//`*(x: Value, y: Value): Value =
     let pair = getValuePair()
     case pair:
         of Integer    || Integer        :   return normalIntegerFDiv(x,y)
-        of Integer    || BigInteger     :   return newInteger(x.i // notZero(y.bi))
+        of Integer    || BigInteger     :   (when GMP: return newInteger(x.i // notZero(y.bi)))
         of Integer    || Floating       :   return newFloating(float(x.i) / notZero(y.f))
         of BigInteger || Floating       :   (when GMP: return newFloating(x.bi / notZero(y.f)))
         of Integer    || Rational       :   return newRational(x.i / notZero(y.rat))
