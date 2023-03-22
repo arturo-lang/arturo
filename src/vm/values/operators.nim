@@ -92,6 +92,25 @@ func safePow[T: SomeNumber](x: T, y: Natural): T =
 
 {.pop.}
 
+func powIntWithOverflow(a,b:int, res: var int): bool =
+    result = false
+    case b:
+        of 0: res = 1
+        of 1: res = a
+        of 2: result = mulIntWithOverflow(a, b, res)
+        else:
+            var (x,y) = (a,b)
+            res = 1
+            while true:
+                if (y and 1) != 0:
+                    if mulIntWithOverflow(res, x, res):
+                        return true
+                y = y shr 1
+                if y == 0:
+                    break
+                if mulIntWithOverflow(x, x, x):
+                    return true
+
 template getValuePair(): untyped =
     let xKind {.inject.} = x.kind
     let yKind {.inject.} = y.kind
@@ -209,6 +228,22 @@ template normalIntegerDivMod*(x, y: Value): untyped =
     ## and return result
     let dm = divmod(x.i, notZero(y.i))
     newBlock(@[newInteger(dm[0]), newInteger(dm[1])])
+
+template normalIntegerPow*(x, y: Value): untyped =
+    ## get the power of two normal Integer values, checking for overflow
+    ## and return result
+    var res: int
+    if unlikely(powIntWithOverflow(x.i, y.i, res)):
+        when not defined(NOGMP):
+            when defined(WEB):
+                newInteger(big(x.i) ** big(y.i))
+            else:
+                newInteger(pow(x.i, culong(y.i)))
+        else:
+            RuntimeError_IntegerOperationOverflow("pow", valueAsString(x), valueAsString(y))
+            VNULL
+    else:
+        newInteger(res)
 
 #=======================================
 # Methods
@@ -970,52 +1005,7 @@ proc `/%`*(x: Value, y: Value): Value =
         of Quantity   || Quantity       :   return newBlock(@[x/y, x%y])
         else:
             return invalidOperation("divmod")
-    # if not (x.kind in {Integer,Floating,Rational}) or not (y.kind in {Integer,Floating,Rational}):
-    #     return newBlock(@[x/y, x%y])
-    # else:
-    #     if x.kind==Integer and y.kind==Integer:
-    #         if likely(x.iKind==NormalInteger):
-    #             if likely(y.iKind==NormalInteger):
-    #                 return newBlock(@[x/y, x%y])
-    #             else:
-    #                 when defined(WEB):
-    #                     return newBlock(@[x/y, x%y])
-    #                 elif not defined(NOGMP):
-    #                     let dm = divmod(x.i, y.bi)
-    #                     return newBlock(@[newInteger(dm.q), newInteger(dm.r)])
-    #         else:
-    #             when defined(WEB):
-    #                 return newBlock(@[x/y, x%y])
-    #             elif not defined(NOGMP):
-    #                 if unlikely(y.iKind==BigInteger):
-    #                     let dm = divmod(x.bi, y.bi)
-    #                     return newBlock(@[newInteger(dm.q), newInteger(dm.r)])
-    #                 else:
-    #                     let dm = divmod(x.bi, y.i)
-    #                     return newBlock(@[newInteger(dm.q), newInteger(dm.r)])
-    #     else:
-    #         if x.kind==Floating:
-    #             if y.kind==Floating: return newBlock(@[x/y, x%y])
-    #             elif y.kind==Rational: return newBlock(@[x/y, x%y])
-    #             else: 
-    #                 if likely(y.iKind==NormalInteger):
-    #                     return newBlock(@[x/y, x%y])
-    #                 else:
-    #                     discard
-    #                     # when not defined(NOGMP):
-    #                     #     return newFloating(x.f mod y.bi)
-    #         elif x.kind==Rational:
-    #             if y.kind==Floating: return newBlock(@[x/y, x%y])
-    #             elif y.kind==Rational: return newBlock(@[x/y, x%y])
-    #             else: return newBlock(@[x/y, x%y])
-    #         else:
-    #             if y.kind==Rational:
-    #                 return newBlock(@[x/y, x%y])
-    #             else:
-    #                 if likely(x.iKind==NormalInteger):
-    #                     return newBlock(@[x/y, x%y])
-    #                 else:
-    #                     discard
+
 {.push overflowChecks: on.}
 proc `/%=`*(x: var Value, y: Value) =
     ## perform the divmod operation between given values
