@@ -615,14 +615,6 @@ proc `*=`*(x: var Value, y: Value) =
                 elif y.kind==Rational: x = newRational(x.i * y.rat)
                 else: x = newComplex(float(x.i)*y.z)
 
-# method `/`*(x: FloatingValue, y: Float): Float {.base.} =
-#     discard
-# method `/`*(x: NormalFloatingV, y: Float): Float = 
-#     newFloat(x.fv) / y
-
-# method `/`*(x: BigFloatingV, y: Float): Float =
-#     x.fv / y
-
 proc `/`*(x: Value, y: Value): Value =
     ## divide (integer division) given values and return the result
 
