@@ -976,8 +976,11 @@ proc defineSymbols*() =
                     if x.s.len == 0: push(newString(""))
                     else: push(newString(x.s[x.s.len-aN.i..^1]))
                 elif x.kind == Range:
-                    let items = toSeq(x.rng.items)
-                    push(newBlock(items[x.rng.len-aN.i..^1]))
+                    if x.rng.infinite:
+                        push(newFloating(Inf))
+                    else:
+                        let items = toSeq(x.rng.items)
+                        push(newBlock(items[x.rng.len-aN.i..^1]))
                 else:
                     if x.a.len == 0: push(newBlock())
                     else: push(newBlock(x.a[x.a.len-aN.i..^1]))
@@ -986,8 +989,11 @@ proc defineSymbols*() =
                     if x.s.len == 0: push(VNULL)
                     else: push(newChar(toRunes(x.s)[^1]))
                 elif x.kind == Range:
-                    let items = toSeq(x.rng.items)
-                    push(items[x.rng.len-1])
+                    if x.rng.infinite:
+                        push(newFloating(Inf))
+                    else:
+                        let items = toSeq(x.rng.items)
+                        push(items[x.rng.len-1])
                 else:
                     if x.a.len == 0: push(VNULL)
                     else: push(x.a[x.a.len-1])
