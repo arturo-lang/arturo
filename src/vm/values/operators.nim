@@ -752,6 +752,7 @@ proc `//`*(x: Value, y: Value): Value =
     let pair = getValuePair()
     case pair:
         of Integer    || Integer        :   return normalIntegerFDiv(x,y)
+        of Integer    || BigInteger     :   return newInteger(x.i // notZero(y.bi))
         of Integer    || Floating       :   return newFloating(float(x.i) / notZero(y.f))
         of BigInteger || Floating       :   (when GMP: return newFloating(x.bi / notZero(y.f)))
         of Integer    || Rational       :   return newRational(x.i / notZero(y.rat))
@@ -779,6 +780,46 @@ proc `//`*(x: Value, y: Value): Value =
                 return newQuantity(x.nm // convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
         else:
             return invalidOperation("fdiv")
+    # if not (x.kind in {Integer, Floating, Rational}) or not (y.kind in {Integer, Floating, Rational}):
+    #     if x.kind == Quantity:
+    #         if y.kind == Quantity:
+    #             let finalSpec = getFinalUnitAfterOperation("fdiv", x.unit, y.unit)
+    #             if unlikely(finalSpec == ErrorQuantity):
+    #                 when not defined(WEB):
+    #                     RuntimeError_IncompatibleQuantityOperation("fdiv", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
+    #             elif finalSpec == NumericQuantity:
+    #                 return x.nm // y.nm
+    #             else:
+    #                 return newQuantity(x.nm // convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
+    #         else:
+    #             return newQuantity(x.nm // y, x.unit)
+    #     else:
+    #         return VNULL
+    # else:
+    #     if x.kind==Integer and y.kind==Integer:
+    #         return newFloating(x.i / y.i)
+    #     else:
+    #         if x.kind==Floating:
+    #             if y.kind==Floating: return newFloating(x.f / y.f)
+    #             elif y.kind==Rational: return newRational(toRational(x.f)/y.rat)
+    #             else: 
+    #                 if likely(y.iKind==NormalInteger):
+    #                     return newFloating(x.f/float(y.i))
+    #                 else:
+    #                     when not defined(NOGMP):
+    #                         return newFloating(x.f / y.bi)
+    #         elif x.kind==Rational:
+    #             if y.kind==Floating: return newRational(x.rat / toRational(y.f))
+    #             elif y.kind==Rational: return newRational(x.rat / y.rat)
+    #             else: return newRational(x.rat / y.i)
+    #         else:
+    #             if y.kind==Floating:
+    #                 if likely(x.iKind==NormalInteger):
+    #                     return newFloating(float(x.i)/y.f)
+    #                 else:
+    #                     when not defined(NOGMP):
+    #                         return newFloating(x.bi/y.f)
+    #             else: return newRational(x.i / y.rat)
 
 {.push overflowChecks: on.}
 proc `//=`*(x: var Value, y: Value) =
