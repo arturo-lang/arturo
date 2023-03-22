@@ -275,7 +275,7 @@ proc defineSymbols*() =
         """:
             #=======================================================
             if xKind==Literal : 
-                ensureInPlace(); InPlaced -= y
+                ensureInPlace(); InPlaced ^= y
             elif normalIntegerOperation():
                 push(normalIntegerPow(x,y))
             else:
