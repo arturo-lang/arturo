@@ -95,8 +95,12 @@ proc defineSymbols*() =
             div 'a 3           ; a: 2
         """:
             #=======================================================
-            if x.kind==Literal  : ensureInPlace(); InPlaced /= y
-            else                : push(x/y)
+            if xKind==Literal : 
+                ensureInPlace(); InPlaced /= y
+            elif normalIntegerOperation():
+                push(normalIntegerDiv(x,y))
+            else:
+                push(x/y)
 
     builtin "divmod",
         alias       = slashpercent, 
