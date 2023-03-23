@@ -66,10 +66,10 @@ proc generateCustomObject(prot: Prototype, arguments: ValueArray | ValueDict): V
     )
 
 template throwCannotConvert(): untyped = 
-    RuntimeError_CannotConvert(codify(y), $(yKind), (if x.tpKind==UserType: x.ts.name else: $(x.t)))
+    RuntimeError_CannotConvert(codify(y), $(y.kind), (if x.tpKind==UserType: x.ts.name else: $(x.t)))
 
 template throwConversionFailed(): untyped =
-    RuntimeError_ConversionFailed(codify(y), $(yKind), (if x.tpKind==UserType: x.ts.name else: $(x.t)))
+    RuntimeError_ConversionFailed(codify(y), $(y.kind), (if x.tpKind==UserType: x.ts.name else: $(x.t)))
 
 # TODO(Converters) Make sure `convertedValueToType` works fine + add tests
 #  labels: library, cleanup, unit-test
