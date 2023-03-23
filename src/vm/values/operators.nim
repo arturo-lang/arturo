@@ -204,7 +204,7 @@ template normalIntegerInc*(x: Value): untyped =
         when not defined(NOGMP):
             newInteger(toNewBig(x.i) + toBig(1))
         else:
-            RuntimeError_IntegerOperationOverflow("inc", valueAsString(x), valueAsString(y))
+            RuntimeError_IntegerOperationOverflow("inc", valueAsString(x), "")
             VNULL
     else:
         newInteger(res)
@@ -230,7 +230,7 @@ template normalIntegerDec*(x: Value): untyped =
         when not defined(NOGMP):
             newInteger(toNewBig(x.i) - toBig(1))
         else:
-            RuntimeError_IntegerOperationOverflow("dec", valueAsString(x), valueAsString(y))
+            RuntimeError_IntegerOperationOverflow("dec", valueAsString(x), "")
             VNULL
     else:
         newInteger(res)
