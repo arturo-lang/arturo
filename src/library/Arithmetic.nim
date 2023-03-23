@@ -52,7 +52,7 @@ proc defineSymbols*() =
             if xKind==Literal : 
                 ensureInPlace(); InPlaced += y
             elif normalIntegerOperation():
-                push(normalIntegerAdd(x,y))
+                push(normalIntegerAdd(x.i, y.i))
             else:
                 push(x+y)
 
@@ -76,7 +76,7 @@ proc defineSymbols*() =
             if xKind==Literal : 
                 ensureInPlace(); InPlaced -= I1
             elif normalIntegerOperation():
-                push(normalIntegerDec(x))
+                push(normalIntegerDec(x.i))
             else:
                 push(dec(x))
         
@@ -102,7 +102,7 @@ proc defineSymbols*() =
             if xKind==Literal : 
                 ensureInPlace(); InPlaced /= y
             elif normalIntegerOperation():
-                push(normalIntegerDiv(x,y))
+                push(normalIntegerDiv(x.i, y.i))
             else:
                 push(x/y)
 
@@ -130,7 +130,7 @@ proc defineSymbols*() =
             if xKind==Literal : 
                 ensureInPlace(); InPlaced /%= y
             elif normalIntegerOperation():
-                push(normalIntegerDivMod(x,y))
+                push(normalIntegerDivMod(x.i, y.i))
             else:
                 push(x/%y)
 
@@ -155,7 +155,7 @@ proc defineSymbols*() =
             if xKind==Literal : 
                 ensureInPlace(); InPlaced //= y
             elif normalIntegerOperation():
-                push(normalIntegerFDiv(x,y))
+                push(normalIntegerFDiv(x.i, y.i))
             else:
                 push(x//y)
 
@@ -179,7 +179,7 @@ proc defineSymbols*() =
             if xKind==Literal : 
                 ensureInPlace(); InPlaced += I1
             elif normalIntegerOperation():
-                push(normalIntegerInc(x))
+                push(normalIntegerInc(x.i))
             else:
                 push(inc(x))
 
@@ -205,7 +205,7 @@ proc defineSymbols*() =
             if xKind==Literal : 
                 ensureInPlace(); InPlaced %= y
             elif normalIntegerOperation():
-                push(normalIntegerMod(x,y))
+                push(normalIntegerMod(x.i, y.i))
             else:
                 push(x%y)
 
@@ -231,7 +231,7 @@ proc defineSymbols*() =
             if xKind==Literal : 
                 ensureInPlace(); InPlaced *= y
             elif normalIntegerOperation():
-                push(normalIntegerMul(x,y))
+                push(normalIntegerMul(x.i, y.i))
             else:
                 push(x*y)
 
@@ -307,7 +307,7 @@ proc defineSymbols*() =
             if xKind==Literal : 
                 ensureInPlace(); InPlaced -= y
             elif normalIntegerOperation():
-                push(normalIntegerSub(x,y))
+                push(normalIntegerSub(x.i, y.i))
             else:
                 push(x-y)
 
