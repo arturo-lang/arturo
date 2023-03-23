@@ -413,6 +413,6 @@ proc factorial*(x: int): Value =
             for item in items:
                 res = res * item
         elif defined(NOGMP):
-            RuntimeError_NumberOutOfPermittedRange("factorial",valueAsString(x), "")
+            RuntimeError_NumberOutOfPermittedRange("factorial",$x, "")
         else:
             return newInteger(BignumsHelper.fac(x))
