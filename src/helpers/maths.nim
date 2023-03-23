@@ -20,6 +20,7 @@ when defined(WEB):
 elif not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
+import vm/errors
 import vm/values/value
 
 #=======================================
@@ -412,6 +413,6 @@ proc factorial*(x: int): Value =
             for item in items:
                 res = res * item
         elif defined(NOGMP):
-            RuntimeError_NumberOutOfPermittedRange("factorial",valueAsString(x), "")
+            RuntimeError_NumberOutOfPermittedRange("factorial",$x, "")
         else:
             return newInteger(BignumsHelper.fac(x))
