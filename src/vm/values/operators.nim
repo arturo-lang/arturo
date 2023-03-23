@@ -183,90 +183,90 @@ template normalIntegerOperation*(): bool =
     else:
         likely(xKind==Integer) and likely(x.iKind==NormalInteger)
 
-template normalIntegerAdd*(x, y: Value): untyped =
+template normalIntegerAdd*(x, y: int): untyped =
     ## add two normal Integer values, checking for overflow
     ## and return result
     var res: int
-    if unlikely(addIntWithOverflow(x.i, y.i, res)):
+    if unlikely(addIntWithOverflow(x, y, res)):
         when not defined(NOGMP):
-            newInteger(toNewBig(x.i) + toBig(y.i))
+            newInteger(toNewBig(x) + toBig(y))
         else:
-            RuntimeError_IntegerOperationOverflow("add", valueAsString(x), valueAsString(y))
+            RuntimeError_IntegerOperationOverflow("add", $x, $y)
             VNULL
     else:
         newInteger(res)
 
-template normalIntegerInc*(x: Value): untyped =
+template normalIntegerInc*(x: int): untyped =
     ## increment a normal Integer value by 1, checking for overflow
     ## and return result
     var res: int
-    if unlikely(addIntWithOverflow(x.i, 1, res)):
+    if unlikely(addIntWithOverflow(x, 1, res)):
         when not defined(NOGMP):
-            newInteger(toNewBig(x.i) + toBig(1))
+            newInteger(toNewBig(x) + toBig(1))
         else:
-            RuntimeError_IntegerOperationOverflow("inc", valueAsString(x), "")
+            RuntimeError_IntegerOperationOverflow("inc", $x, "")
             VNULL
     else:
         newInteger(res)
 
-template normalIntegerSub*(x, y: Value): untyped =
+template normalIntegerSub*(x, y: int): untyped =
     ## subtract two normal Integer values, checking for overflow
     ## and return result
     var res: int
-    if unlikely(subIntWithOverflow(x.i, y.i, res)):
+    if unlikely(subIntWithOverflow(x, y, res)):
         when not defined(NOGMP):
-            newInteger(toNewBig(x.i) - toBig(y.i))
+            newInteger(toNewBig(x) - toBig(y))
         else:
-            RuntimeError_IntegerOperationOverflow("sub", valueAsString(x), valueAsString(y))
+            RuntimeError_IntegerOperationOverflow("sub", $x, $y)
             VNULL
     else:
         newInteger(res)
 
-template normalIntegerDec*(x: Value): untyped =
+template normalIntegerDec*(x: int): untyped =
     ## decrement a normal Integer value by 1, checking for overflow
     ## and return result
     var res: int
-    if unlikely(subIntWithOverflow(x.i, 1, res)):
+    if unlikely(subIntWithOverflow(x, 1, res)):
         when not defined(NOGMP):
-            newInteger(toNewBig(x.i) - toBig(1))
+            newInteger(toNewBig(x) - toBig(1))
         else:
-            RuntimeError_IntegerOperationOverflow("dec", valueAsString(x), "")
+            RuntimeError_IntegerOperationOverflow("dec", $x, "")
             VNULL
     else:
         newInteger(res)
 
-template normalIntegerMul*(x, y: Value): untyped =
+template normalIntegerMul*(x, y: int): untyped =
     ## multiply two normal Integer values, checking for overflow
     ## and return result
     var res: int
-    if unlikely(mulIntWithOverflow(x.i, y.i, res)):
+    if unlikely(mulIntWithOverflow(x, y, res)):
         when not defined(NOGMP):
-            newInteger(toNewBig(x.i) * toBig(y.i))
+            newInteger(toNewBig(x) * toBig(y))
         else:
-            RuntimeError_IntegerOperationOverflow("mul", valueAsString(x), valueAsString(y))
+            RuntimeError_IntegerOperationOverflow("mul", $x, $y)
             VNULL
     else:
         newInteger(res)
 
-template normalIntegerDiv*(x, y: Value): untyped =
+template normalIntegerDiv*(x, y: int): untyped =
     ## divide (integer division) two normal Integer values, checking for DivisionByZero
     ## and return result
-    newInteger(x.i div notZero(y.i))
+    newInteger(x div notZero(y))
 
-template normalIntegerFDiv*(x, y: Value): untyped =
+template normalIntegerFDiv*(x, y: int): untyped =
     ## divide (floating-point division) two normal Integer values, checking for DivisionByZero
     ## and return result
-    newFloating(x.i / notZero(y.i))
+    newFloating(x / notZero(y))
 
-template normalIntegerMod*(x, y: Value): untyped =
+template normalIntegerMod*(x, y: int): untyped =
     ## modulo two normal Integer values, checking for DivisionByZero
     ## and return result
-    newInteger(x.i mod notZero(y.i))
+    newInteger(x mod notZero(y))
 
-template normalIntegerDivMod*(x, y: Value): untyped =
+template normalIntegerDivMod*(x, y: int): untyped =
     ## divide+modulo (integer division) two normal Integer values, checking for DivisionByZero
     ## and return result
-    let dm = divmod(x.i, notZero(y.i))
+    let dm = divmod(x, notZero(y))
     newBlock(@[newInteger(dm[0]), newInteger(dm[1])])
 
 template normalIntegerPow*(x, y: int): untyped =
@@ -1169,89 +1169,7 @@ proc `^`*(x: Value, y: Value): Value =
                     RuntimeError_IncompatibleQuantityOperation("pow", valueAsString(x), valueAsString(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
         else:
             return invalidOperation("pow")
-    # if not (x.kind in {Integer, Floating, Complex, Rational}) or not (y.kind in {Integer, Floating}):
-    #     if x.kind == Quantity:
-    #         if y.kind==Integer and (y.i > 0 and y.i < 4):
-    #             if y.i == 1: return x
-    #             elif y.i == 2: return x * x
-    #             elif y.i == 3: return x * x * x
-    #             else:
-    #                 when not defined(WEB):
-    #                     RuntimeError_IncompatibleQuantityOperation("pow", valueAsString(x), valueAsString(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
-    #         elif y.kind==Floating and (y.f > 0 and y.f < 4):
-    #             if y.f == 1.0: return x
-    #             elif y.f == 2.0: return x * x
-    #             elif y.f == 3.0: return x * x * x
-    #             else:
-    #                 when not defined(WEB):
-    #                     RuntimeError_IncompatibleQuantityOperation("pow", valueAsString(x), valueAsString(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
-    #         else:
-    #             when not defined(WEB):
-    #                 RuntimeError_IncompatibleQuantityOperation("pow", valueAsString(x), valueAsString(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
-    #     else: 
-    #         return VNULL
-    # else:
-    #     if x.kind==Integer and y.kind==Integer:
-    #         if likely(x.iKind==NormalInteger):
-    #             if likely(y.iKind==NormalInteger):
-    #                 try:
-    #                     if y.i >= 0:
-    #                         return newInteger(safePow(x.i,y.i))
-    #                     else:
-    #                         return newFloating(pow(asFloat(x),asFloat(y)))
-    #                 except OverflowDefect:
-    #                     when defined(WEB):
-    #                         return newInteger(big(x.i) ** big(y.i))
-    #                     elif not defined(NOGMP):
-    #                         return newInteger(pow(x.i,culong(y.i)))
-    #                     else:
-    #                         RuntimeError_IntegerOperationOverflow("pow", valueAsString(x), valueAsString(y))
-    #             else:
-    #                 when defined(WEB):
-    #                     return newInteger(big(x.i) ** y.bi)
-    #                 elif not defined(NOGMP):
-    #                     RuntimeError_NumberOutOfPermittedRange("pow",valueAsString(x), valueAsString(y))
-    #         else:
-    #             when defined(WEB):
-    #                 if likely(y.iKind==NormalInteger): 
-    #                     return newInteger(x.bi ** big(y.i))
-    #                 else: 
-    #                     return newInteger(x.bi ** y.bi)
-    #             elif not defined(NOGMP):
-    #                 if likely(y.iKind==NormalInteger):
-    #                     return newInteger(pow(x.bi,culong(y.i)))
-    #                 else:
-    #                     RuntimeError_NumberOutOfPermittedRange("pow",valueAsString(x), valueAsString(y))
-    #     else:
-    #         if x.kind==Floating:
-    #             if y.kind==Floating: return newFloating(pow(x.f,y.f))
-    #             elif y.kind==Complex: return VNULL
-    #             else: 
-    #                 if likely(y.iKind==NormalInteger):
-    #                     return newFloating(pow(x.f,float(y.i)))
-    #                 else:
-    #                     when not defined(NOGMP):
-    #                         return newFloating(pow(x.f,y.bi))
-    #         elif x.kind==Complex:
-    #             if y.kind==Integer:
-    #                 if likely(y.iKind==NormalInteger): return newComplex(pow(x.z,float(y.i)))
-    #                 else: return VNULL
-    #             elif y.kind==Floating: return newComplex(pow(x.z,y.f))
-    #             else: return newComplex(pow(x.z,y.z))
-    #         elif x.kind==Rational:
-    #             if y.kind==Integer:
-    #                 if likely(y.iKind==NormalInteger): return newRational(safePow(x.rat.num,y.i),safePow(x.rat.den,y.i))
-    #                 else: return VNULL
-    #             elif y.kind==Floating: return newRational(pow(float(x.rat.num), y.f) / pow(float(x.rat.den), y.f))
-    #             else: return VNULL
-    #         else:
-    #             if y.kind==Floating: 
-    #                 if likely(x.iKind==NormalInteger):
-    #                     return newFloating(pow(float(x.i),y.f))
-    #                 else:
-    #                     when not defined(NOGMP):
-    #                         return newFloating(pow(x.bi,y.f))
-    #             else: return VNULL
+
 {.push overflowChecks: on.}
 proc `^=`*(x: var Value, y: Value) =
     ## perform the power operation between given values
