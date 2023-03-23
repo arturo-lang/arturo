@@ -248,6 +248,19 @@ template normalIntegerMul*(x, y: int): untyped =
     else:
         newInteger(res)
 
+template normalIntegerNeg*(x: int): untyped =
+    ## negate a normal Integer value, checking for overflow
+    ## and return result
+    var res: int
+    if unlikely(mulIntWithOverflow(x, -1, res)):
+        when not defined(NOGMP):
+            newInteger(toNewBig(x) * toBig(-1))
+        else:
+            RuntimeError_IntegerOperationOverflow("neg", $x, "")
+            VNULL
+    else:
+        newInteger(res)
+
 template normalIntegerDiv*(x, y: int): untyped =
     ## divide (integer division) two normal Integer values, checking for DivisionByZero
     ## and return result
@@ -768,6 +781,22 @@ proc `*=`*(x: var Value, y: Value) =
                 elif y.kind==Rational: x = newRational(x.i * y.rat)
                 else: x = newComplex(float(x.i)*y.z)
 {.pop.}
+
+
+proc neg*(x: Value): Value =
+    ## negate given value and return the result
+
+    case x.kind:
+        of Integer:
+            if x.iKind==NormalInteger: return normalIntegerNeg(x.i)
+            else: (when GMP: return newInteger(x.bi+toBig(1)))
+        of Floating: return newFloating(x.f*(-1.0))
+        of Rational: return newRational(x.rat*(-1))
+        of Complex: return newComplex(x.z*(-1.0))
+        of Quantity: return newQuantity(x.nm * I1M, x.unit)
+        else:
+            return invalidOperation("neg")
+
 proc `/`*(x: Value, y: Value): Value =
     ## divide (integer division) given values and return the result
 
