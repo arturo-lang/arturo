@@ -20,6 +20,7 @@ when defined(WEB):
 elif not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
+import vm/errors
 import vm/values/value
 
 #=======================================
