@@ -288,6 +288,36 @@ template normalIntegerPow*(x, y: int): untyped =
     else:
         newFloating(pow(float(x), float(y)))
 
+template normalIntegerAnd*(x, y: int): untyped =
+    ## bitwise AND two normal Integer values
+    ## and return result
+    newInteger(x and y)
+
+template normalIntegerOr*(x, y: int): untyped =
+    ## bitwise OR two normal Integer values
+    ## and return result
+    newInteger(x or y)
+
+template normalIntegerXor*(x, y: int): untyped =
+    ## bitwise XOR two normal Integer values
+    ## and return result
+    newInteger(x xor y)
+
+template normalIntegerNot*(x: int): untyped =
+    ## bitwise NOT of a normal Integer value
+    ## and return result
+    newInteger(not x)
+
+template normalIntegerShl*(x, y: int): untyped =
+    ## bitwise shift left two normal Integer values
+    ## and return result
+    newInteger(x shl y)
+
+template normalIntegerShr*(x, y: int): untyped =
+    ## bitwise shift right two normal Integer values
+    ## and return result
+    newInteger(x shr y)
+
 #=======================================
 # Methods
 #=======================================
@@ -1231,7 +1261,7 @@ proc `^=`*(x: var Value, y: Value) =
                         when not defined(NOGMP):
                             x = newFloating(pow(x.bi,y.f))
                 else: discard
-
+{.pop.}
 proc `&&`*(x: Value, y: Value): Value =
     ## perform binary-and between given values
     ## and return the result
@@ -1261,7 +1291,7 @@ proc `&&`*(x: Value, y: Value): Value =
                     return newInteger(x.bi and y.bi)
                 else:
                     return newInteger(x.bi and y.i)
-
+{.push overflowChecks: on.}
 proc `&&=`*(x: var Value, y: Value) =
     ## perform binary-and between given values
     ## and store the result in the first value
@@ -1293,7 +1323,7 @@ proc `&&=`*(x: var Value, y: Value) =
                     x = newInteger(x.bi and y.bi)
                 else:
                     x = newInteger(x.bi and y.i)
-
+{.pop.}
 proc `||`*(x: Value, y: Value): Value =
     ## perform binary-or between given values
     ## and return the result
@@ -1324,7 +1354,7 @@ proc `||`*(x: Value, y: Value): Value =
                     return newInteger(x.bi or y.bi)
                 else:
                     return newInteger(x.bi or y.i)
-
+{.push overflowChecks: on.}
 proc `||=`*(x: var Value, y: Value) =
     ## perform binary-or between given values
     ## and store the result in the first value
@@ -1356,7 +1386,7 @@ proc `||=`*(x: var Value, y: Value) =
                     x = newInteger(x.bi or y.bi)
                 else:
                     x = newInteger(x.bi or y.i)
-
+{.pop.}
 proc `^^`*(x: Value, y: Value): Value =
     ## perform binary-xor between given values
     ## and return the result
@@ -1386,7 +1416,7 @@ proc `^^`*(x: Value, y: Value): Value =
                     return newInteger(x.bi xor y.bi)
                 else:
                     return newInteger(x.bi xor y.i)
-
+{.push overflowChecks: on.}
 proc `^^=`*(x: var Value, y: Value) =
     ## perform binary-xor between given values
     ## and store the result in the first value
@@ -1418,7 +1448,7 @@ proc `^^=`*(x: var Value, y: Value) =
                     x = newInteger(x.bi xor y.bi)
                 else:
                     x = newInteger(x.bi xor y.i)
-
+{.pop.}
 proc `>>`*(x: Value, y: Value): Value =
     ## perform binary-right-shift between given values
     ## and return the result
@@ -1444,7 +1474,7 @@ proc `>>`*(x: Value, y: Value): Value =
                     RuntimeError_NumberOutOfPermittedRange("shr",valueAsString(x), valueAsString(y))
                 else:
                     return newInteger(x.bi shr culong(y.i))
-
+{.push overflowChecks: on.}
 proc `>>=`*(x: var Value, y: Value) =
     ## perform binary-right-shift between given values
     ## and store the result in the first value
@@ -1472,7 +1502,7 @@ proc `>>=`*(x: var Value, y: Value) =
                     RuntimeError_NumberOutOfPermittedRange("shr",valueAsString(x), valueAsString(y))
                 else:
                     x = newInteger(x.bi shr culong(y.i))
-
+{.pop.}
 proc `<<`*(x: Value, y: Value): Value =
     ## perform binary-left-shift between given values
     ## and return the result
@@ -1498,7 +1528,7 @@ proc `<<`*(x: Value, y: Value): Value =
                     RuntimeError_NumberOutOfPermittedRange("shl",valueAsString(x), valueAsString(y))
                 else:
                     return newInteger(x.bi shl culong(y.i))
-
+{.push overflowChecks: on.}
 proc `<<=`*(x: var Value, y: Value) =
     ## perform binary-left-shift between given values
     ## and store the result in the first value
@@ -1526,7 +1556,7 @@ proc `<<=`*(x: var Value, y: Value) =
                     RuntimeError_NumberOutOfPermittedRange("shl",valueAsString(x), valueAsString(y))
                 else:
                     x = newInteger(x.bi shl culong(y.i))
-
+{.pop.}
 proc `!!`*(x: Value): Value =
     ## perform binary-not for given value
     ## and return the result
@@ -1540,7 +1570,7 @@ proc `!!`*(x: Value): Value =
         else:
             when not defined(NOGMP):
                 return newInteger(not x.bi)
-
+{.push overflowChecks: on.}
 proc `!!=`*(x: var Value) =
     ## perform binary-not for given value
     ## and store the result back in it
