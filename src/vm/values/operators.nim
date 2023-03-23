@@ -171,17 +171,28 @@ template invalidOperation(op: string): untyped =
 # Templates
 #=======================================
 
-template normalIntegerOperation*(): bool =
+template normalIntegerOperation*(inPlace=false): bool =
     ## check if both operands (x,y) are Integers, but not GMP-style BigNums
-    when not declared(xKind):
-        let xKind {.inject.} = x.kind
+    when inPlace:
+        let xKind {.inject.} = InPlaced.kind
         when declared(y):
             let yKind {.inject.} = y.kind
-
-    when declared(y):
-        likely(xKind==Integer) and likely(x.iKind==NormalInteger) and likely(yKind==Integer) and likely(y.iKind==NormalInteger)
     else:
-        likely(xKind==Integer) and likely(x.iKind==NormalInteger)
+        when not declared(xKind):
+            let xKind {.inject.} = x.kind
+            when declared(y):
+                let yKind {.inject.} = y.kind
+
+    when inPlace:
+        when declared(y):
+            likely(xKind==Integer) and likely(InPlaced.iKind==NormalInteger) and likely(yKind==Integer) and likely(y.iKind==NormalInteger)
+        else:
+            likely(xKind==Integer) and likely(InPlaced.iKind==NormalInteger)
+    else:
+        when declared(y):
+            likely(xKind==Integer) and likely(x.iKind==NormalInteger) and likely(yKind==Integer) and likely(y.iKind==NormalInteger)
+        else:
+            likely(xKind==Integer) and likely(x.iKind==NormalInteger)
 
 template normalIntegerAdd*(x, y: int): untyped =
     ## add two normal Integer values, checking for overflow
@@ -208,6 +219,16 @@ template normalIntegerInc*(x: int): untyped =
             VNULL
     else:
         newInteger(res)
+
+template normalIntegerIncI*(x: var Value): untyped =
+    ## increment a normal Integer value by 1, checking for overflow
+    ## and return result
+    if unlikely(addIntWithOverflow(x.i, 1, x.i)):
+        when not defined(NOGMP):
+            x = newInteger(toNewBig(x.i) + toBig(1))
+        else:
+            RuntimeError_IntegerOperationOverflow("inc", $x.i, "")
+            VNULL
 
 template normalIntegerSub*(x, y: int): untyped =
     ## subtract two normal Integer values, checking for overflow
@@ -521,6 +542,20 @@ proc inc*(x: Value): Value =
         of Quantity: return newQuantity(x.nm + I1, x.unit)
         else:
             return invalidOperation("inc")
+
+proc incI*(x: var Value) =
+    ## increment given value and return the result
+
+    case x.kind:
+        of Integer:
+            if x.iKind==NormalInteger: normalIntegerIncI(x)
+            else: (when GMP: inc(x.bi, 1))
+        of Floating: x.f += 1.0
+        of Rational: x.rat += 1
+        of Complex: x.z = x.z + 1.0
+        of Quantity: x.nm += I1
+        else:
+            discard invalidOperation("inc")
 
 proc `-`*(x: Value, y: Value): Value = 
     ## subtract given values and return the result
