@@ -793,6 +793,13 @@ func abs*(z, x: Int): Int =
 func abs*(x: Int): Int =
     newInt().abs(x)
 
+func neg*(z, x: Int): Int =
+    result = z
+    mpz_neg(result[], x[])
+
+func neg*(x: Int): Int =
+    newInt().neg(x)
+
 func gcd*(z, x, y: Int): Int =
     result = z
     mpz_gcd(z[], x[], y[])
