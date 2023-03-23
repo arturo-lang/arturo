@@ -1410,6 +1410,34 @@ proc `^^=`*(x: var Value, y: Value) =
                 else:
                     x = newInteger(x.bi xor y.i)
 {.pop.}
+proc `!!`*(x: Value): Value =
+    ## perform binary-NOT on given value and return the result
+
+    case x.kind:
+        of Integer:
+            if x.iKind==NormalInteger: return normalIntegerNot(x.i)
+            else: (when GMP: return newInteger(not x.bi))
+        of Binary: return newBinary(not x.n)
+        else:
+            return invalidOperation("not")
+
+{.push overflowChecks: on.}
+proc `!!=`*(x: var Value) =
+    ## perform binary-not for given value
+    ## and store the result back in it
+    ## 
+    ## **Hint:** In-place, mutation operation
+    if x.kind == Binary:
+        x = newBinary(not x.n)
+    elif not (x.kind==Integer):
+        x = VNULL
+    else:
+        if likely(x.iKind==NormalInteger):
+            x = newInteger(not x.i)
+        else:
+            when not defined(NOGMP):
+                x = newInteger(not x.bi)
+{.pop.}
 proc `>>`*(x: Value, y: Value): Value =
     ## perform binary-right-shift between given values
     ## and return the result
@@ -1517,34 +1545,6 @@ proc `<<=`*(x: var Value, y: Value) =
                     RuntimeError_NumberOutOfPermittedRange("shl",valueAsString(x), valueAsString(y))
                 else:
                     x = newInteger(x.bi shl culong(y.i))
-{.pop.}
-proc `!!`*(x: Value): Value =
-    ## perform binary-NOT on given value and return the result
-
-    case x.kind:
-        of Integer:
-            if x.iKind==NormalInteger: return normalIntegerNot(x.i)
-            else: (when GMP: return newInteger(not x.bi))
-        of Binary: return newBinary(not x.n)
-        else:
-            return invalidOperation("not")
-        
-{.push overflowChecks: on.}
-proc `!!=`*(x: var Value) =
-    ## perform binary-not for given value
-    ## and store the result back in it
-    ## 
-    ## **Hint:** In-place, mutation operation
-    if x.kind == Binary:
-        x = newBinary(not x.n)
-    elif not (x.kind==Integer):
-        x = VNULL
-    else:
-        if likely(x.iKind==NormalInteger):
-            x = newInteger(not x.i)
-        else:
-            when not defined(NOGMP):
-                x = newInteger(not x.bi)
 
 proc factorial*(x: Value): Value =
     ## calculate factorial of given value
