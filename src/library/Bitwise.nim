@@ -76,8 +76,12 @@ proc defineSymbols*() =
             nand 'a 3          ; a: -3
         """:
             #=======================================================
-            if x.kind==Literal : ensureInPlace(); InPlaced &&= y; !!= InPlaced
-            else               : push(!! (x && y))
+            if xKind==Literal : 
+                ensureInPlace(); InPlaced &&= y; !!= InPlaced
+            elif normalIntegerOperation():
+                push(normalIntegerNot(normalIntegerAnd(x.i, y.i).i))
+            else:
+                push(!! (x && y))
 
     builtin "nor",
         alias       = unaliased, 
@@ -97,8 +101,12 @@ proc defineSymbols*() =
             nor 'a 3           ; a: -4
         """:
             #=======================================================
-            if x.kind==Literal : ensureInPlace(); InPlaced ||= y; !!= InPlaced
-            else               : push(!! (x || y))
+            if xKind==Literal : 
+                ensureInPlace(); InPlaced ||= y; !!= InPlaced
+            elif normalIntegerOperation():
+                push(normalIntegerNot(normalIntegerOr(x.i, y.i).i))
+            else:
+                push(!! (x || y))
 
     builtin "not",
         alias       = unaliased, 
@@ -221,8 +229,12 @@ proc defineSymbols*() =
             xnor 'a 3          ; a: -2
         """:
             #=======================================================
-            if x.kind==Literal : ensureInPlace(); InPlaced ^^= y; !!= InPlaced
-            else               : push(!! (x ^^ y))
+            if xKind==Literal : 
+                ensureInPlace(); InPlaced ^^= y; !!= InPlaced
+            elif normalIntegerOperation():
+                push(normalIntegerNot(normalIntegerXor(x.i, y.i).i))
+            else:
+                push(!! (x ^^ y))
         
     builtin "xor",
         alias       = unaliased, 
