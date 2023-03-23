@@ -10,6 +10,8 @@
 # Libraries
 #=======================================
 
+import helpers/maths
+
 import vm/values/value
 
 import vm/values/operators
@@ -89,9 +91,9 @@ func getCombinations*(lst: ValueArray, size: int, repeated: bool = false): seq[V
 proc countPermutations*(lst: ValueArray, size: int, repeated: bool = false): Value =
     let n = lst.len
     if repeated: newInteger(n) ^ newInteger(size)
-    else: factorial(newInteger(n)) / factorial(newInteger(n-size))
+    else: factorial(n) / factorial(n-size)
 
 proc countCombinations*(lst: ValueArray, size: int, repeated: bool = false): Value =
     let n = lst.len
-    if repeated: factorial(newInteger(n+size-1)) / (factorial(newInteger(size))*factorial(newInteger(n-1)))
-    else: factorial(newInteger(n)) / (factorial(newInteger(size))*factorial(newInteger(n-size)))
+    if repeated: factorial(n+size-1) / (factorial(size)*factorial(n-1))
+    else: factorial(n) / (factorial(size)*factorial(n-size))
