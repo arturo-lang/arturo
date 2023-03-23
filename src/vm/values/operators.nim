@@ -1362,34 +1362,21 @@ proc `||=`*(x: var Value, y: Value) =
                     x = newInteger(x.bi or y.i)
 {.pop.}
 proc `^^`*(x: Value, y: Value): Value =
-    ## perform binary-xor between given values
-    ## and return the result
-    if (x.kind == Binary or y.kind==Binary) and (x.kind in {Integer, Binary} and y.kind in {Integer, Binary}):
-        var a = (if x.kind==Binary: x.n else: numberToBinary(x.i))
-        var b = (if y.kind==Binary: y.n else: numberToBinary(y.i))
-        return newBinary(a xor b)
-    elif not (x.kind==Integer) or not (y.kind==Integer):
-        return VNULL
-    else:
-        if likely(x.iKind==NormalInteger):
-            if likely(y.iKind==NormalInteger):
-                return newInteger(x.i xor y.i)
-            else:
-                when defined(WEB):
-                    return newInteger(big(x.i) xor y.bi)
-                elif not defined(NOGMP):
-                    return newInteger(x.i xor y.bi)
+    ## perform binary-XOR between given values and return the result
+    
+    let pair = getValuePair()
+    case pair:
+        of Integer    || Integer        :   return normalIntegerXor(x.i, y.i)
+        of Integer    || BigInteger     :   (when GMP: return newInteger(toBig(x.i) xor y.bi))
+        of BigInteger || Integer        :   (when GMP: return newInteger(x.bi xor toBig(y.i)))
+        of BigInteger || BigInteger     :   (when GMP: return newInteger(x.bi xor y.bi))
+        of Integer    || Binary         :   return newBinary(numberToBinary(x.i) xor y.n)
+
+        of Binary     || Integer        :   return newBinary(x.n xor numberToBinary(y.i))
+        of Binary     || Binary         :   return newBinary(x.n xor y.n)
+
         else:
-            when defined(WEB):
-                if unlikely(y.iKind==BigInteger):
-                    return newInteger(x.bi xor y.bi)
-                else:
-                    return newInteger(x.bi xor big(y.i))
-            elif not defined(NOGMP):
-                if unlikely(y.iKind==BigInteger):
-                    return newInteger(x.bi xor y.bi)
-                else:
-                    return newInteger(x.bi xor y.i)
+            return invalidOperation("xor")
 {.push overflowChecks: on.}
 proc `^^=`*(x: var Value, y: Value) =
     ## perform binary-xor between given values
