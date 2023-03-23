@@ -1161,7 +1161,7 @@ proc `/%=`*(x: var Value, y: Value) =
                         discard
 {.pop.}
 proc `^`*(x: Value, y: Value): Value =
-    ## perform the power operation between given values
+    ## perform the power operation between given values and return the result
     
     let pair = getValuePair()
     case pair:
@@ -1263,34 +1263,47 @@ proc `^=`*(x: var Value, y: Value) =
                 else: discard
 {.pop.}
 proc `&&`*(x: Value, y: Value): Value =
-    ## perform binary-and between given values
-    ## and return the result
-    if (x.kind == Binary or y.kind==Binary) and (x.kind in {Integer, Binary} and y.kind in {Integer, Binary}):
-        var a = (if x.kind==Binary: x.n else: numberToBinary(x.i))
-        var b = (if y.kind==Binary: y.n else: numberToBinary(y.i))
-        return newBinary(a and b)
-    elif not (x.kind==Integer) or not (y.kind==Integer):
-        return VNULL
-    else:
-        if likely(x.iKind==NormalInteger):
-            if likely(y.iKind==NormalInteger):
-                return newInteger(x.i and y.i)
-            else:
-                when defined(WEB):
-                    return newInteger(big(x.i) and y.bi)
-                elif not defined(NOGMP):
-                    return newInteger(x.i and y.bi)
+    ## perform binary-AND between given values and return the result
+    
+    let pair = getValuePair()
+    case pair:
+        of Integer    || Integer        :   return normalIntegerAnd(x.i, y.i)
+        of Integer    || BigInteger     :   (when GMP: return newInteger(toBig(x.i) and y.bi))
+        of BigInteger || Integer        :   (when GMP: return newInteger(x.bi and toBig(y.i)))
+        of BigInteger || BigInteger     :   (when GMP: return newInteger(x.bi and y.bi))
+        of Integer    || Binary         :   return newBinary(numberToBinary(x.i) and y.n)
+
+        of Binary     || Integer        :   return newBinary(x.n and numberToBinary(y.i))
+        of Binary     || Binary         :   return newBinary(x.n and y.n)
+
         else:
-            when defined(WEB):
-                if unlikely(y.iKind==BigInteger):
-                    return newInteger(x.bi and y.bi)
-                else:
-                    return newInteger(x.bi and big(y.i))
-            elif not defined(NOGMP):
-                if unlikely(y.iKind==BigInteger):
-                    return newInteger(x.bi and y.bi)
-                else:
-                    return newInteger(x.bi and y.i)
+            return invalidOperation("and")
+    # if (x.kind == Binary or y.kind==Binary) and (x.kind in {Integer, Binary} and y.kind in {Integer, Binary}):
+    #     var a = (if x.kind==Binary: x.n else: numberToBinary(x.i))
+    #     var b = (if y.kind==Binary: y.n else: numberToBinary(y.i))
+    #     return newBinary(a and b)
+    # elif not (x.kind==Integer) or not (y.kind==Integer):
+    #     return VNULL
+    # else:
+    #     if likely(x.iKind==NormalInteger):
+    #         if likely(y.iKind==NormalInteger):
+    #             return newInteger(x.i and y.i)
+    #         else:
+    #             when defined(WEB):
+    #                 return newInteger(big(x.i) and y.bi)
+    #             elif not defined(NOGMP):
+    #                 return newInteger(x.i and y.bi)
+    #     else:
+    #         when defined(WEB):
+    #             if unlikely(y.iKind==BigInteger):
+    #                 return newInteger(x.bi and y.bi)
+    #             else:
+    #                 return newInteger(x.bi and big(y.i))
+    #         elif not defined(NOGMP):
+    #             if unlikely(y.iKind==BigInteger):
+    #                 return newInteger(x.bi and y.bi)
+    #             else:
+    #                 return newInteger(x.bi and y.i)
 {.push overflowChecks: on.}
 proc `&&=`*(x: var Value, y: Value) =
     ## perform binary-and between given values
