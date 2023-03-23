@@ -1126,7 +1126,7 @@ proc `/%=`*(x: var Value, y: Value) =
                         x = newBlock(@[x/y, x%y])
                     else:
                         discard
-
+{.pop.}
 proc `^`*(x: Value, y: Value): Value =
     ## perform the power operation between given values
     if not (x.kind in {Integer, Floating, Complex, Rational}) or not (y.kind in {Integer, Floating}):
@@ -1212,7 +1212,7 @@ proc `^`*(x: Value, y: Value): Value =
                         when not defined(NOGMP):
                             return newFloating(pow(x.bi,y.f))
                 else: return VNULL
-
+{.push overflowChecks: on.}
 proc `^=`*(x: var Value, y: Value) =
     ## perform the power operation between given values
     ## and store the result in the first value
