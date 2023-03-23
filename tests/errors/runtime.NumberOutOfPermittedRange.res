@@ -2,6 +2,6 @@
 >> Runtime | File: runtime.NumberOutOfPermittedRange.art
      error | Line: 3
            | 
-           | number operator out of range - up to 64-bit integers supported
-           | attempted: pow
-           | with: 234234 123123123123123123123
+           | invalid operation pow
+           | between: :integer
+           | and: :integer (big)
