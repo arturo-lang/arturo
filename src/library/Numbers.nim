@@ -40,7 +40,7 @@ import vm/lib
 
 template processTrigonometric(fun: untyped): untyped =
     var v = x
-    if x.kind == Quantity:
+    if xKind == Quantity:
         v = convertQuantityValue(x.nm, x.unit.name, RAD)
 
     if v.kind==Complex: push(newComplex(fun(v.z)))
@@ -73,15 +73,15 @@ proc defineSymbols*() =
             ; => 3.296908309475615
         """:
             #=======================================================
-            if x.kind==Integer:
+            if xKind==Integer:
                 if x.iKind==NormalInteger: 
                     push(newInteger(abs(x.i)))
                 else:
                     when defined(WEB) or not defined(NOGMP):
                         push(newInteger(abs(x.bi)))
-            elif x.kind==Floating:
+            elif xKind==Floating:
                 push(newFloating(abs(x.f)))
-            elif x.kind==Complex:
+            elif xKind==Complex:
                 push(newFloating(abs(x.z)))
             else:
                 push(newRational(abs(x.rat)))
@@ -581,9 +581,9 @@ proc defineSymbols*() =
             #=======================================================
             var rat: VRational
 
-            if x.kind==Rational:
+            if xKind==Rational:
                 rat = x.rat
-            elif x.kind==Integer:
+            elif xKind==Integer:
                 rat = toRational(x.i)
             else:
                 rat = toRational(x.f)
@@ -669,7 +669,7 @@ proc defineSymbols*() =
             ; => 12.50296958887651+19.47222141884161i
         """:
             #=======================================================
-            if x.kind==Complex: push(newComplex(exp(x.z)))
+            if xKind==Complex: push(newComplex(exp(x.z)))
             else: push(newFloating(exp(asFloat(x))))
 
     builtin "factorial",
@@ -848,7 +848,7 @@ proc defineSymbols*() =
         example     = """
         """:
             #=======================================================
-            if x.kind == Floating and (x.f == Inf or x.f == NegInf):
+            if xKind == Floating and (x.f == Inf or x.f == NegInf):
                 push(VTRUE)
             else:
                 push(VFALSE)
@@ -908,7 +908,7 @@ proc defineSymbols*() =
             ; => 1.19298515341341+0.308169071115985i
         """:
             #=======================================================
-            if x.kind==Complex: push(newComplex(ln(x.z)))
+            if xKind==Complex: push(newComplex(ln(x.z)))
             else: push(newFloating(ln(asFloat(x))))
 
     builtin "log",
@@ -946,7 +946,7 @@ proc defineSymbols*() =
             negative? 6-7     ; => true 
         """:
             #=======================================================
-            if x.kind==Integer:
+            if xKind==Integer:
                 if x.iKind==BigInteger:
                     when defined(WEB):
                         push(newLogical(x.bi < big(0)))
@@ -954,11 +954,11 @@ proc defineSymbols*() =
                         push(newLogical(negative(x.bi)))
                 else:
                     push(newLogical(x < I0))
-            elif x.kind==Floating:
+            elif xKind==Floating:
                 push(newLogical(x.f < 0.0))
-            elif x.kind==Rational:
+            elif xKind==Rational:
                 push(newLogical(x.rat.num < 0)):
-            elif x.kind==Complex:
+            elif xKind==Complex:
                 push(newLogical(x.z.re < 0.0 or (x.z.re == 0.0 and x.z.im < 0.0)))
 
     builtin "numerator",
@@ -982,9 +982,9 @@ proc defineSymbols*() =
             #=======================================================
             var rat: VRational
 
-            if x.kind==Rational:
+            if xKind==Rational:
                 rat = x.rat
-            elif x.kind==Integer:
+            elif xKind==Integer:
                 rat = toRational(x.i)
             else:
                 rat = toRational(x.f)
@@ -1030,7 +1030,7 @@ proc defineSymbols*() =
             positive? 6-7     ; => false
         """:
             #=======================================================
-            if x.kind==Integer:
+            if xKind==Integer:
                 if x.iKind==BigInteger:
                     when defined(WEB):
                         push(newLogical(x.bi > big(0)))
@@ -1038,11 +1038,11 @@ proc defineSymbols*() =
                         push(newLogical(positive(x.bi)))
                 else:
                     push(newLogical(x > I0))
-            elif x.kind==Floating:
+            elif xKind==Floating:
                 push(newLogical(x.f > 0.0))
-            elif x.kind==Rational:
+            elif xKind==Rational:
                 push(newLogical(x.rat.num > 0)):
-            elif x.kind==Complex:
+            elif xKind==Complex:
                 push(newLogical(x.z.re > 0.0 or (x.z.re == 0.0 and x.z.im > 0.0)))
     
     when not defined(NOGMP):
@@ -1129,7 +1129,7 @@ proc defineSymbols*() =
                 push(newBlock(cartesianProduct(blk).map((z) => newBlock(z))))
             else:
                 var product = I1.copyValue
-                if x.kind==Range:
+                if xKind==Range:
                     for item in items(x.rng):
                         product *= item
                     push(product)
@@ -1158,7 +1158,7 @@ proc defineSymbols*() =
             rnd: random 0 60          ; rnd: (a random number between 0 and 60)
         """:
             #=======================================================
-            if x.kind==Integer and y.kind==Integer:
+            if xKind==Integer and yKind==Integer:
                 push(newInteger(rand(x.i..y.i)))
             else:
                 push(newFloating(rand(asFloat(x)..asFloat(y))))
@@ -1183,9 +1183,9 @@ proc defineSymbols*() =
             reciprocal 3.2      ; => 5/16
         """:
             #=======================================================
-            if x.kind==Integer:
+            if xKind==Integer:
                 push(newRational(reciprocal(toRational(x.i))))
-            elif x.kind==Floating:
+            elif xKind==Floating:
                 push(newRational(reciprocal(toRational(x.f))))
             else:
                 push(newRational(reciprocal(x.rat)))
@@ -1336,7 +1336,7 @@ proc defineSymbols*() =
                         push(newInteger(isqrt(x.bi)))
                 else:
                     push(newInteger(isqrt(x.i)))
-            elif x.kind==Complex: push(newComplex(sqrt(x.z)))
+            elif xKind==Complex: push(newComplex(sqrt(x.z)))
             else: push(newFloating(sqrt(asFloat(x))))
 
     builtin "sum",
@@ -1357,7 +1357,7 @@ proc defineSymbols*() =
         """:
             #=======================================================
             var sum = I0.copyValue
-            if x.kind==Range:
+            if xKind==Range:
                 for item in items(x.rng):
                     sum += item
             else:

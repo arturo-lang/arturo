@@ -134,7 +134,7 @@ proc defineSymbols*() =
                     with = aWith.a.map((x) => $(x))
 
                 if x.dbKind == SqliteDatabase:
-                    if y.kind == String:
+                    if yKind == String:
                         if (let got = execSqliteDb(x.sqlitedb, y.s, with); got[0]==ValidQueryResult):
                             push(newBlock(got[1]))
                     else:

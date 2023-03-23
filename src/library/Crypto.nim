@@ -58,7 +58,7 @@ proc defineSymbols*() =
             ; 414FA339
         """:
             #=======================================================
-            if x.kind==Literal:
+            if xKind==Literal:
                 ensureInPlace()
                 InPlaced.s = InPlaced.s.crc32()
             else:
@@ -85,13 +85,13 @@ proc defineSymbols*() =
         """:
             #=======================================================
             if (hadAttr("url")):
-                if x.kind==Literal:
+                if xKind==Literal:
                     ensureInPlace()
                     InPlaced.s = InPlaced.s.decodeUrl()
                 else:
                     push(newString(x.s.decodeUrl()))
             else:
-                if x.kind==Literal:
+                if xKind==Literal:
                     ensureInPlace()
                     InPlaced.s = InPlaced.s.decode()
                 else:
@@ -127,7 +127,7 @@ proc defineSymbols*() =
             if (hadAttr("url")):
                 let spaces = (hadAttr("spaces"))
                 let slashes = (hadAttr("slashes"))
-                if x.kind==Literal:
+                if xKind==Literal:
                     ensureInPlace()
                     InPlaced.s = InPlaced.s.urlencode(encodeSpaces=spaces, encodeSlashes=slashes)
                 else:
@@ -140,13 +140,13 @@ proc defineSymbols*() =
                     if checkAttr("to"):
                         dest = aTo.s
 
-                    if x.kind==Literal:
+                    if xKind==Literal:
                         ensureInPlace()
                         InPlaced.s = convert(InPlaced.s, srcEncoding=src, destEncoding=dest)
                     else:
                         push(newString(convert(x.s, srcEncoding=src, destEncoding=dest)))
                 else:
-                    if x.kind==String:
+                    if xKind==String:
                         push(newString(x.s))
 
             elif checkAttr("to"):
@@ -154,17 +154,17 @@ proc defineSymbols*() =
                     var src = "CP1252"
                     var dest = aTo.s
 
-                    if x.kind==Literal:
+                    if xKind==Literal:
                         ensureInPlace()
                         InPlaced.s = convert(InPlaced.s, srcEncoding=src, destEncoding=dest)
                     else:
                         push(newString(convert(x.s, srcEncoding=src, destEncoding=dest)))
                 else:
-                    if x.kind==String:
+                    if xKind==String:
                         push(newString(x.s))
 
             else:
-                if x.kind==Literal:
+                if xKind==Literal:
                     ensureInPlace()
                     InPlaced.s = InPlaced.s.encode()
                 else:
@@ -195,13 +195,13 @@ proc defineSymbols*() =
             """:
                 #=======================================================
                 if (hadAttr("sha")):
-                    if x.kind==Literal:
+                    if xKind==Literal:
                         ensureInPlace()
                         SetInPlace(newString(($(secureHash(InPlaced.s))).toLowerAscii()))
                     else:
                         push(newString(($(secureHash(x.s))).toLowerAscii()))
                 else:
-                    if x.kind==Literal:
+                    if xKind==Literal:
                         ensureInPlace()
                         SetInPlace(newString(($(toMD5(InPlaced.s))).toLowerAscii()))
                     else:

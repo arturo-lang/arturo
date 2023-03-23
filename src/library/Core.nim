@@ -75,9 +75,9 @@ proc defineSymbols*() =
                 prec = InfixPrecedence
 
             var sym: VSymbol
-            if x.kind==String:
+            if xKind==String:
                 sym = doParse(x.s, isFile=false).a[0].m
-            elif x.kind==Block:
+            elif xKind==Block:
                 sym = x.a[0].m
             else:
                 sym = x.m
@@ -180,7 +180,7 @@ proc defineSymbols*() =
             else:
                 var fun: Value
 
-                if x.kind in {Literal, String}:
+                if xKind in {Literal, String}:
                     fun = FetchSym(x.s)
                 else:
                     fun = x
@@ -190,7 +190,7 @@ proc defineSymbols*() =
 
                 if fun.fnKind==UserFunction:
                     var fid: Hash
-                    if x.kind in {Literal,String}:
+                    if xKind in {Literal,String}:
                         fid = hash(x.s)
                     else:
                         fid = hash(fun)
@@ -217,7 +217,7 @@ proc defineSymbols*() =
                 else       -> print "a is greater than 2"
         """:
             #=======================================================
-            if x.kind==Null:
+            if xKind==Null:
                 push(newBlock())
             else:
                 push(x)
@@ -237,7 +237,7 @@ proc defineSymbols*() =
         example     = """
         """:
             #=======================================================
-            let condition = not (x.kind==Null or isFalse(x))
+            let condition = not (xKind==Null or isFalse(x))
             if condition:
                 push(x)
             else:
@@ -338,11 +338,11 @@ proc defineSymbols*() =
                 times = aTimes.i
 
             var evaled: Translation
-            if x.kind != String:
+            if xKind != String:
                 evaled = evalOrGet(x)
 
             while currentTime < times:
-                if x.kind in {Block,Bytecode}:
+                if xKind in {Block,Bytecode}:
                     execUnscoped(evaled)
                     
                 else: # string
@@ -465,7 +465,7 @@ proc defineSymbols*() =
             ; yes, that's right!
         """:
             #=======================================================
-            let condition = not (x.kind==Null or isFalse(x))
+            let condition = not (xKind==Null or isFalse(x))
             if condition: 
                 execUnscoped(y)
 
@@ -500,7 +500,7 @@ proc defineSymbols*() =
             ]
         """:
             #=======================================================
-            let condition = not (x.kind==Null or isFalse(x))
+            let condition = not (xKind==Null or isFalse(x))
             if condition: 
                 execUnscoped(y)
 
@@ -545,8 +545,8 @@ proc defineSymbols*() =
             [d,m]: divmod 10 3      ; d: 3, m: 1
         """:
             #=======================================================
-            if x.kind==Block:
-                if y.kind==Block:
+            if xKind==Block:
+                if yKind==Block:
                     for i,w in pairs(x.a):
                         SetSym(w.s, y.a[i], safe=true)
                 else:
@@ -680,7 +680,7 @@ proc defineSymbols*() =
             ; yes, that's right!
         """:
             #=======================================================
-            let condition = not (x.kind==Null or isFalse(x))
+            let condition = not (xKind==Null or isFalse(x))
             if condition: 
                 execUnscoped(y)
             else:
@@ -787,7 +787,7 @@ proc defineSymbols*() =
             ; yep, x is not 1!
         """:
             #=======================================================
-            let condition = x.kind==Null or isFalse(x)
+            let condition = xKind==Null or isFalse(x)
             if condition: 
                 execUnscoped(y)
 
@@ -822,7 +822,7 @@ proc defineSymbols*() =
             ; x was greater than z
         """:
             #=======================================================
-            let condition = x.kind==Null or isFalse(x)
+            let condition = xKind==Null or isFalse(x)
             if condition: 
                 execUnscoped(y)
 
@@ -970,7 +970,7 @@ proc defineSymbols*() =
             ]
         """:
             #=======================================================
-            if x.kind==Null:
+            if xKind==Null:
                 let preevaledY = evalOrGet(y)
                 while true:
                     handleBranching:
