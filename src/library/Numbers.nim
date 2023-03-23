@@ -30,6 +30,8 @@ when not defined(NOGMP):
 import helpers/maths
 import helpers/ranges
 
+import vm/errors
+
 import vm/lib
 
 #=======================================
@@ -686,7 +688,10 @@ proc defineSymbols*() =
             factorial 20        ; => 2432902008176640000
         """:
             #=======================================================
-            push(factorial(x))
+            if unlikely(x.iKind == BigInteger):
+                RuntimeError_InvalidOperation("factorial", valueKind(x, withBigInfo=true), "")
+            else:
+                push(factorial(x.i))
 
     builtin "factors",
         alias       = unaliased, 
