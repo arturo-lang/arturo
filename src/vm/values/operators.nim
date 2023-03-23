@@ -1313,35 +1313,21 @@ proc `&&=`*(x: var Value, y: Value) =
                     x = newInteger(x.bi and y.i)
 {.pop.}
 proc `||`*(x: Value, y: Value): Value =
-    ## perform binary-or between given values
-    ## and return the result
-    if (x.kind == Binary or y.kind==Binary) and (x.kind in {Integer, Binary} and y.kind in {Integer, Binary}):
-        var a = (if x.kind==Binary: x.n else: numberToBinary(x.i))
-        var b = (if y.kind==Binary: y.n else: numberToBinary(y.i))
-        return newBinary(a or b)
-    elif not (x.kind==Integer) or not (y.kind==Integer):
-        return VNULL
-    else:
-        if likely(x.iKind==NormalInteger):
-            if likely(y.iKind==NormalInteger):
-                return newInteger(x.i or y.i)
-            else:
-                when defined(WEB):
-                    return newInteger(big(x.i) or y.bi)
-                elif not defined(NOGMP):
-                    return newInteger(x.i or y.bi)
-                
+    ## perform binary-OR between given values and return the result
+    
+    let pair = getValuePair()
+    case pair:
+        of Integer    || Integer        :   return normalIntegerOr(x.i, y.i)
+        of Integer    || BigInteger     :   (when GMP: return newInteger(toBig(x.i) or y.bi))
+        of BigInteger || Integer        :   (when GMP: return newInteger(x.bi or toBig(y.i)))
+        of BigInteger || BigInteger     :   (when GMP: return newInteger(x.bi or y.bi))
+        of Integer    || Binary         :   return newBinary(numberToBinary(x.i) or y.n)
+
+        of Binary     || Integer        :   return newBinary(x.n or numberToBinary(y.i))
+        of Binary     || Binary         :   return newBinary(x.n or y.n)
+
         else:
-            when defined(WEB):
-                if unlikely(y.iKind==BigInteger):
-                    return newInteger(x.bi or y.bi)
-                else:
-                    return newInteger(x.bi or big(y.i))
-            elif not defined(NOGMP):
-                if unlikely(y.iKind==BigInteger):
-                    return newInteger(x.bi or y.bi)
-                else:
-                    return newInteger(x.bi or y.i)
+            return invalidOperation("or")
 {.push overflowChecks: on.}
 proc `||=`*(x: var Value, y: Value) =
     ## perform binary-or between given values
