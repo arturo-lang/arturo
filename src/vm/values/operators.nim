@@ -269,21 +269,24 @@ template normalIntegerDivMod*(x, y: Value): untyped =
     let dm = divmod(x.i, notZero(y.i))
     newBlock(@[newInteger(dm[0]), newInteger(dm[1])])
 
-template normalIntegerPow*(x, y: Value): untyped =
+template normalIntegerPow*(x, y: int): untyped =
     ## get the power of two normal Integer values, checking for overflow
     ## and return result
-    var res: int
-    if unlikely(powIntWithOverflow(x.i, y.i, res)):
-        when not defined(NOGMP):
-            when defined(WEB):
-                newInteger(big(x.i) ** big(y.i))
+    if likely(y >= 0):
+        var res: int
+        if unlikely(powIntWithOverflow(x, y, res)):
+            when not defined(NOGMP):
+                when defined(WEB):
+                    newInteger(big(x) ** big(y))
+                else:
+                    newInteger(pow(x, culong(y)))
             else:
-                newInteger(pow(x.i, culong(y.i)))
+                RuntimeError_IntegerOperationOverflow("pow", valueAsString(x), valueAsString(y))
+                VNULL
         else:
-            RuntimeError_IntegerOperationOverflow("pow", valueAsString(x), valueAsString(y))
-            VNULL
+            newInteger(res)
     else:
-        newInteger(res)
+        newFloating(pow(float(x), float(y)))
 
 #=======================================
 # Methods
@@ -1132,40 +1135,38 @@ proc `^`*(x: Value, y: Value): Value =
     
     let pair = getValuePair()
     case pair:
-        of Integer    || Integer        :   return normalIntegerMul(x,y)
-        of Integer    || BigInteger     :   (when GMP: return newInteger(toBig(x.i) * y.bi))
-        of BigInteger || Integer        :   (when GMP: return newInteger(x.bi * toBig(y.i)))
-        of BigInteger || BigInteger     :   (when GMP: return newInteger(x.bi * y.bi))
-        of Integer    || Floating       :   return newFloating(x.i * y.f)
-        of BigInteger || Floating       :   (when GMP: return newFloating(x.bi * y.f))
-        of Integer    || Rational       :   return newRational(x.i * y.rat)
-        of Integer    || Complex        :   return newComplex(float(x.i) * y.z)
-        of Integer    || Quantity       :   return newQuantity(x * y.nm, y.unit)
+        of Integer    || Integer        :   return normalIntegerPow(x.i, y.i)
+        of BigInteger || Integer        :   (when GMP: return newInteger(pow(x.bi, culong(y.i))))
+        of Integer    || Floating       :   return newFloating(pow(float(x.i), y.f))
+        of BigInteger || Floating       :   (when GMP: return newFloating(pow(x.bi, y.f)))
 
-        of Floating   || Integer        :   return newFloating(x.f * float(y.i))
-        of Floating   || BigInteger     :   (when GMP: return newFloating(x.f * y.bi))
-        of Floating   || Floating       :   return newFloating(x.f * y.f)
-        of Floating   || Rational       :   return newRational(toRational(x.f) * y.rat)
-        of Floating   || Complex        :   return newComplex(x.f * y.z)
+        of Floating   || Integer        :   return newFloating(pow(x.f, float(y.i)))
+        of Floating   || BigInteger     :   (when GMP: return newFloating(pow(x.f, y.bi)))
+        of Floating   || Floating       :   return newFloating(pow(x.f, y.f))
 
-        of Rational   || Integer        :   return newRational(x.rat * y.i)
-        of Rational   || Floating       :   return newRational(x.rat * toRational(y.f))
-        of Rational   || Rational       :   return newRational(x.rat * y.rat)
+        of Rational   || Integer        :   return newRational(normalIntegerPow(x.rat.num, y.i), normalIntegerPow(x.rat.den, y.i))
+        of Rational   || Floating       :   discard notZero(x.rat.den); return newRational(pow(float(x.rat.num), y.f) / pow(float(x.rat.den), y.f))
 
-        of Complex    || Integer        :   return newComplex(x.z * float(y.i))
-        of Complex    || Floating       :   return newComplex(x.z * y.f)
-        of Complex    || Complex        :   return newComplex(x.z * y.z)
+        of Complex    || Integer        :   return newComplex(pow(x.z, float(y.i)))
+        of Complex    || Floating       :   return newComplex(pow(x.z, y.f))
+        of Complex    || Complex        :   return newComplex(pow(x.z, y.z))
         
-        of Quantity   || Integer        :   return newQuantity(x.nm * y, x.unit)
-        of Quantity   || Floating       :   return newQuantity(x.nm * y, x.unit)
-        of Quantity   || Rational       :   return newQuantity(x.nm * y, x.unit)
-        of Quantity   || Quantity       :
-            let finalSpec = getFinalUnitAfterOperation("mul", x.unit, y.unit)
-            if unlikely(finalSpec == ErrorQuantity):
-                when not defined(WEB):
-                    RuntimeError_IncompatibleQuantityOperation("pow", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
-            else:
-                return newQuantity(x.nm * convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
+        of Quantity   || Integer        :   
+            case y.i:
+                of 0: return newInteger(1)
+                of 1: return x
+                of 2: return x * x
+                of 3: return x * x * x
+                else:
+                    RuntimeError_IncompatibleQuantityOperation("pow", valueAsString(x), valueAsString(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
+        of Quantity   || Floating       :
+            case y.f:
+                of 0.0: return newInteger(1)
+                of 1.0: return x
+                of 2.0: return x * x
+                of 3.0: return x * x * x
+                else:
+                    RuntimeError_IncompatibleQuantityOperation("pow", valueAsString(x), valueAsString(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
         else:
             return invalidOperation("pow")
     # if not (x.kind in {Integer, Floating, Complex, Rational}) or not (y.kind in {Integer, Floating}):
