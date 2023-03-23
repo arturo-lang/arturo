@@ -377,7 +377,7 @@ proc `+`*(x: Value, y: Value): Value =
 
     let pair = getValuePair()
     case pair:
-        of Integer    || Integer        :   return normalIntegerAdd(x,y)
+        of Integer    || Integer        :   return normalIntegerAdd(x.i, y.i)
         of Integer    || BigInteger     :   (when GMP: return newInteger(toBig(x.i) + y.bi))
         of BigInteger || Integer        :   (when GMP: return newInteger(x.bi + toBig(y.i)))
         of BigInteger || BigInteger     :   (when GMP: return newInteger(x.bi + y.bi))
@@ -500,7 +500,7 @@ proc inc*(x: Value): Value =
 
     case x.kind:
         of Integer:
-            if x.iKind==NormalInteger: return normalIntegerInc(x)
+            if x.iKind==NormalInteger: return normalIntegerInc(x.i)
             else: (when GMP: return newInteger(x.bi+toBig(1)))
         of Floating: return newFloating(x.f+1.0)
         of Rational: return newRational(x.rat+1)
@@ -514,7 +514,7 @@ proc `-`*(x: Value, y: Value): Value =
 
     let pair = getValuePair()
     case pair:
-        of Integer    || Integer        :   return normalIntegerSub(x,y)
+        of Integer    || Integer        :   return normalIntegerSub(x.i, y.i)
         of Integer    || BigInteger     :   (when GMP: return newInteger(toBig(x.i) - y.bi))
         of BigInteger || Integer        :   (when GMP: return newInteger(x.bi - toBig(y.i)))
         of BigInteger || BigInteger     :   (when GMP: return newInteger(x.bi - y.bi))
@@ -636,7 +636,7 @@ proc dec*(x: Value): Value =
 
     case x.kind:
         of Integer:
-            if x.iKind==NormalInteger: return normalIntegerDec(x)
+            if x.iKind==NormalInteger: return normalIntegerDec(x.i)
             else: (when GMP: return newInteger(x.bi-toBig(1)))
         of Floating: return newFloating(x.f-1.0)
         of Rational: return newRational(x.rat-1)
@@ -650,7 +650,7 @@ proc `*`*(x: Value, y: Value): Value =
     
     let pair = getValuePair()
     case pair:
-        of Integer    || Integer        :   return normalIntegerMul(x,y)
+        of Integer    || Integer        :   return normalIntegerMul(x.i, y.i)
         of Integer    || BigInteger     :   (when GMP: return newInteger(toBig(x.i) * y.bi))
         of BigInteger || Integer        :   (when GMP: return newInteger(x.bi * toBig(y.i)))
         of BigInteger || BigInteger     :   (when GMP: return newInteger(x.bi * y.bi))
@@ -773,7 +773,7 @@ proc `/`*(x: Value, y: Value): Value =
 
     let pair = getValuePair()
     case pair:
-        of Integer    || Integer        :   return normalIntegerDiv(x,y)
+        of Integer    || Integer        :   return normalIntegerDiv(x.i, y.i)
         of Integer    || BigInteger     :   (when GMP: return newInteger(toBig(x.i) div notZero(y.bi)))
         of BigInteger || Integer        :   (when GMP: return newInteger(x.bi div toBig(notZero(y.i))))
         of BigInteger || BigInteger     :   (when GMP: return newInteger(x.bi div notZero(y.bi)))
@@ -899,7 +899,7 @@ proc `//`*(x: Value, y: Value): Value =
     
     let pair = getValuePair()
     case pair:
-        of Integer    || Integer        :   return normalIntegerFDiv(x,y)
+        of Integer    || Integer        :   return normalIntegerFDiv(x.i, y.i)
         of Integer    || BigInteger     :   (when GMP: return newInteger(x.i // notZero(y.bi)))
         of Integer    || Floating       :   return newFloating(float(x.i) / notZero(y.f))
         of BigInteger || Floating       :   (when GMP: return newFloating(x.bi / notZero(y.f)))
@@ -982,7 +982,7 @@ proc `%`*(x: Value, y: Value): Value =
 
     let pair = getValuePair()
     case pair:
-        of Integer    || Integer        :   return normalIntegerMod(x,y)
+        of Integer    || Integer        :   return normalIntegerMod(x.i, y.i)
         of Integer    || BigInteger     :   (when GMP: return newInteger(toBig(x.i) mod notZero(y.bi)))
         of BigInteger || Integer        :   (when GMP: return newInteger(x.bi mod toBig(notZero(y.i))))
         of BigInteger || BigInteger     :   (when GMP: return newInteger(x.bi mod notZero(y.bi)))
@@ -1075,7 +1075,7 @@ proc `/%`*(x: Value, y: Value): Value =
     ## and return the result as a *tuple* Block value
     let pair = getValuePair()
     case pair:
-        of Integer    || Integer        :   return normalIntegerDivMod(x,y)
+        of Integer    || Integer        :   return normalIntegerDivMod(x.i, y.i)
         of Integer    || BigInteger     :   
             when GMP: 
                 let dm=divmod(x.i, notZero(y.bi))
