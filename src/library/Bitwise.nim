@@ -208,8 +208,12 @@ proc defineSymbols*() =
             shr 'a 3           ; a: 2
         """:
             #=======================================================
-            if x.kind==Literal : ensureInPlace(); InPlaced >>= y
-            else               : push(x >> y)
+            if xKind==Literal : 
+                ensureInPlace(); InPlaced >>= y
+            elif normalIntegerOperation():
+                push(normalIntegerShr(x.i, y.i))
+            else:
+                push(x >> y)
 
     builtin "xnor",
         alias       = unaliased, 
