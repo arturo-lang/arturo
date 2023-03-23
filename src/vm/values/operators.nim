@@ -281,7 +281,7 @@ template normalIntegerPow*(x, y: int): untyped =
                 else:
                     newInteger(pow(x, culong(y)))
             else:
-                RuntimeError_IntegerOperationOverflow("pow", valueAsString(x), valueAsString(y))
+                RuntimeError_IntegerOperationOverflow("pow", $x, $y)
                 VNULL
         else:
             newInteger(res)
