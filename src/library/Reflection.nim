@@ -131,7 +131,7 @@ proc defineSymbols*() =
             ; => true
         """:
             #=======================================================
-            push(newLogical(x.kind==Attribute))
+            push(newLogical(xKind==Attribute))
 
     builtin "attributeLabel?",
         alias       = unaliased, 
@@ -148,7 +148,7 @@ proc defineSymbols*() =
             ; => true
         """:
             #=======================================================
-            push(newLogical(x.kind==AttributeLabel))
+            push(newLogical(xKind==AttributeLabel))
 
     builtin "attrs",
         alias       = unaliased, 
@@ -225,7 +225,7 @@ proc defineSymbols*() =
             ; => true
         """:
             #=======================================================
-            push(newLogical(x.kind==Binary))
+            push(newLogical(xKind==Binary))
 
     builtin "block?",
         alias       = unaliased, 
@@ -244,7 +244,7 @@ proc defineSymbols*() =
             print block? 123                ; false
         """:
             #=======================================================
-            push(newLogical(x.kind==Block))
+            push(newLogical(xKind==Block))
 
     builtin "bytecode?",
         alias       = unaliased, 
@@ -264,7 +264,7 @@ proc defineSymbols*() =
             print bytecode? code       ; false
         """:
             #=======================================================
-            push(newLogical(x.kind==Bytecode))
+            push(newLogical(xKind==Bytecode))
 
     builtin "char?",
         alias       = unaliased,
@@ -281,7 +281,7 @@ proc defineSymbols*() =
             print char? 123         ; false
         """:
             #=======================================================
-            push(newLogical(x.kind==Char))
+            push(newLogical(xKind==Char))
 
     builtin "color?",
         alias       = unaliased, 
@@ -300,7 +300,7 @@ proc defineSymbols*() =
             print color? 123            ; false
         """:
             #=======================================================
-            push(newLogical(x.kind==Color))
+            push(newLogical(xKind==Color))
 
     builtin "complex?",
         alias       = unaliased, 
@@ -319,7 +319,7 @@ proc defineSymbols*() =
             print complex? 123          ; false
         """:
             #=======================================================
-            push(newLogical(x.kind==Complex))
+            push(newLogical(xKind==Complex))
 
     builtin "database?",
         alias       = unaliased, 
@@ -336,7 +336,7 @@ proc defineSymbols*() =
             ; => true
         """:
             #=======================================================
-            push(newLogical(x.kind==Database))
+            push(newLogical(xKind==Database))
 
     builtin "date?",
         alias       = unaliased, 
@@ -353,7 +353,7 @@ proc defineSymbols*() =
             print date? "hello"         ; false
         """:
             #=======================================================
-            push(newLogical(x.kind==Date))
+            push(newLogical(xKind==Date))
 
     builtin "dictionary?",
         alias       = unaliased, 
@@ -370,7 +370,7 @@ proc defineSymbols*() =
             print dictionary? 123               ; false
         """:
             #=======================================================
-            push(newLogical(x.kind==Dictionary))
+            push(newLogical(xKind==Dictionary))
 
     when not defined(WEB):
 
@@ -420,7 +420,7 @@ proc defineSymbols*() =
                 var searchable: string
                 var value: Value = nil
 
-                if x.kind == SymbolLiteral:
+                if xKind == SymbolLiteral:
                     searchable = $(x.m)
                     for (sym, binding) in pairs(Aliases):
                         if sym == x.m:
@@ -454,7 +454,7 @@ proc defineSymbols*() =
             ; => true
         """:
             #=======================================================
-            push(newLogical(x.kind==Inline))
+            push(newLogical(xKind==Inline))
 
     builtin "inspect",
         alias       = unaliased, 
@@ -501,9 +501,9 @@ proc defineSymbols*() =
         """:
             #=======================================================
             if (hadAttr("big")):
-                push(newLogical(x.kind==Integer and x.iKind==BigInteger))
+                push(newLogical(xKind==Integer and x.iKind==BigInteger))
             else:
-                push(newLogical(x.kind==Integer))
+                push(newLogical(xKind==Integer))
 
     builtin "is?",
         alias       = unaliased, 
@@ -525,17 +525,17 @@ proc defineSymbols*() =
             is? [:integer] [1 "two]         ; => false
         """:
             #=======================================================
-            if y.kind != Object:
-                if x.kind == Type:
+            if yKind != Object:
+                if xKind == Type:
                     if x.t == Any:
                         push(VTRUE)
                     else:
-                        push(newLogical(x.t == y.kind))
+                        push(newLogical(x.t == yKind))
                 else:
                     let tp = x.a[0].t
                     var res = true
                     if tp != Any:
-                        if y.kind != Block: 
+                        if yKind != Block: 
                             res = false
                         else:
                             if y.a.len==0: 
@@ -571,7 +571,7 @@ proc defineSymbols*() =
             print floating? "hello"     ; false
         """:
             #=======================================================
-            push(newLogical(x.kind==Floating))
+            push(newLogical(xKind==Floating))
 
     builtin "function?",
         alias       = unaliased, 
@@ -600,9 +600,9 @@ proc defineSymbols*() =
         """:
             #=======================================================
             if (hadAttr("builtin")):
-                push(newLogical(x.kind==Function and x.fnKind==BuiltinFunction))
+                push(newLogical(xKind==Function and x.fnKind==BuiltinFunction))
             else:
-                push(newLogical(x.kind==Function))
+                push(newLogical(xKind==Function))
 
     builtin "label?",
         alias       = unaliased, 
@@ -619,7 +619,7 @@ proc defineSymbols*() =
             ; => true
         """:
             #=======================================================
-            push(newLogical(x.kind==Label))
+            push(newLogical(xKind==Label))
 
     builtin "literal?",
         alias       = unaliased, 
@@ -637,7 +637,7 @@ proc defineSymbols*() =
             print literal? 123          ; false
         """:
             #=======================================================
-            push(newLogical(x.kind==Literal))
+            push(newLogical(xKind==Literal))
 
     builtin "logical?",
         alias       = unaliased, 
@@ -658,7 +658,7 @@ proc defineSymbols*() =
             print logical? 123          ; false
         """:
             #=======================================================
-            push(newLogical(x.kind==Logical))
+            push(newLogical(xKind==Logical))
 
     builtin "null?",
         alias       = unaliased, 
@@ -677,7 +677,7 @@ proc defineSymbols*() =
             print null? 123             ; false
         """:
             #=======================================================
-            push(newLogical(x.kind==Null))
+            push(newLogical(xKind==Null))
 
     builtin "object?",
         alias       = unaliased, 
@@ -698,7 +698,7 @@ proc defineSymbols*() =
             print object? "hello"       ; false
         """:
             #=======================================================
-            push(newLogical(x.kind==Object))
+            push(newLogical(xKind==Object))
 
     builtin "path?",
         alias       = unaliased, 
@@ -715,7 +715,7 @@ proc defineSymbols*() =
             ; => true
         """:
             #=======================================================
-            push(newLogical(x.kind==Path))
+            push(newLogical(xKind==Path))
 
     builtin "pathLabel?",
         alias       = unaliased, 
@@ -732,7 +732,7 @@ proc defineSymbols*() =
             ; => true
         """:
             #=======================================================
-            push(newLogical(x.kind==PathLabel))
+            push(newLogical(xKind==PathLabel))
 
     builtin "quantity?",
         alias       = unaliased, 
@@ -751,7 +751,7 @@ proc defineSymbols*() =
             print quantity? 3           ; false 
         """:
             #=======================================================
-            push(newLogical(x.kind==Quantity))
+            push(newLogical(xKind==Quantity))
 
     builtin "range?",
         alias       = unaliased, 
@@ -770,7 +770,7 @@ proc defineSymbols*() =
             print range? [1 2 3]        ; false
         """:
             #=======================================================
-            push(newLogical(x.kind==Range))
+            push(newLogical(xKind==Range))
 
     builtin "rational?",
         alias       = unaliased, 
@@ -789,7 +789,7 @@ proc defineSymbols*() =
             print rational? 3.14        ; false
         """:
             #=======================================================
-            push(newLogical(x.kind==Rational))
+            push(newLogical(xKind==Rational))
 
     builtin "regex?",
         alias       = unaliased, 
@@ -807,7 +807,7 @@ proc defineSymbols*() =
             print regex? 123            ; false
         """:
             #=======================================================
-            push(newLogical(x.kind==Regex))
+            push(newLogical(xKind==Regex))
 
     builtin "set?",
         alias       = unaliased, 
@@ -882,7 +882,7 @@ proc defineSymbols*() =
             print string? 123           ; false
         """:
             #=======================================================
-            push(newLogical(x.kind==String))
+            push(newLogical(xKind==String))
 
     builtin "symbol?",
         alias       = unaliased, 
@@ -899,7 +899,7 @@ proc defineSymbols*() =
             ; => true
         """:
             #=======================================================
-            push(newLogical(x.kind==Symbol))
+            push(newLogical(xKind==Symbol))
 
     builtin "symbolLiteral?",
         alias       = unaliased, 
@@ -916,7 +916,7 @@ proc defineSymbols*() =
             ; => true
         """:
             #=======================================================
-            push(newLogical(x.kind==SymbolLiteral))
+            push(newLogical(xKind==SymbolLiteral))
 
     builtin "symbols",
         alias       = unaliased, 
@@ -959,8 +959,8 @@ proc defineSymbols*() =
             print type "hello world"  ; :string
         """:
             #=======================================================
-            if x.kind != Object:
-                push(newType(x.kind))
+            if xKind != Object:
+                push(newType(xKind))
             else:
                 push(newUserType(x.proto.name))
 
@@ -980,7 +980,7 @@ proc defineSymbols*() =
             print type? 123             ; false
         """:
             #=======================================================
-            push(newLogical(x.kind==Type))
+            push(newLogical(xKind==Type))
 
     builtin "version?",
         alias       = unaliased, 
@@ -997,7 +997,7 @@ proc defineSymbols*() =
             print version? "1.0.2"      ; false
         """:
             #=======================================================
-            push(newLogical(x.kind==Version))
+            push(newLogical(xKind==Version))
 
     builtin "word?",
         alias       = unaliased, 
@@ -1014,7 +1014,7 @@ proc defineSymbols*() =
             ; => true
         """:
             #=======================================================
-            push(newLogical(x.kind==Word))
+            push(newLogical(xKind==Word))
 
 #=======================================
 # Add Library
