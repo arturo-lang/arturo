@@ -415,34 +415,3 @@ proc factorial*(x: int): Value =
             RuntimeError_NumberOutOfPermittedRange("factorial",valueAsString(x), "")
         else:
             return newInteger(BignumsHelper.fac(x))
-# proc factorial*(x: Value): Value =
-#     ## calculate factorial of given value
-#     if not (x.kind == Integer):
-#         return VNULL
-#     else:
-#         if likely(x.iKind==NormalInteger):
-#             if x.i < 21:
-#                 when defined(WEB):
-#                     if x.i < 13:
-#                         return newInteger(fac(x.i))
-#                     else:
-#                         let items = (toSeq(1..x.i)).map((w)=>newInteger(w))
-#                         var res = newInteger(1)
-#                         for item in items:
-#                             res = res * item
-#                         return res
-#                 else:
-#                     return newInteger(fac(x.i))
-#             else:
-#                 when defined(WEB):
-#                     let items = (toSeq(1..x.i)).map((w)=>newInteger(w))
-#                     var res = newInteger(1)
-#                     for item in items:
-#                         res = res * item
-#                 elif defined(NOGMP):
-#                     RuntimeError_NumberOutOfPermittedRange("factorial",valueAsString(x), "")
-#                 else:
-#                     return newInteger(newInt().fac(x.i))
-#         else:
-#             when not defined(WEB):
-#                 RuntimeError_NumberOutOfPermittedRange("factorial",valueAsString(x), "")
