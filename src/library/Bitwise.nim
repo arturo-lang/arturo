@@ -177,14 +177,18 @@ proc defineSymbols*() =
             shl 'a 3           ; a: 16
         """:
             #=======================================================
-            if x.kind==Literal : 
+            if xKind==Literal : 
                 ensureInPlace(); 
-                let valBefore = InPlaced 
+                let valBefore = InPlaced
                 InPlaced <<= y
                 if InPlaced < valBefore and (hadAttr("safe")):
                     SetInPlace(newBigInteger(valBefore.i) << y)
-                    
-            else               : 
+            elif normalIntegerOperation():
+                var res = normalIntegerShl(x.i, y.i)
+                if res < x and (hadAttr("safe")):
+                    res = newBigInteger(x.i) << y
+                push(res)
+            else:
                 var res = x << y
                 if res < x and (hadAttr("safe")):
                     res = newBigInteger(x.i) << y
