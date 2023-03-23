@@ -979,8 +979,7 @@ proc defineSymbols*() =
                     if x.rng.infinite:
                         push(newFloating(Inf))
                     else:
-                        let items = toSeq(x.rng.items)
-                        push(newBlock(items[x.rng.len-aN.i..^1]))
+                        push(newRange(x.rng[x.rng.len-aN.i..x.rng.len, true]))
                 else:
                     if x.a.len == 0: push(newBlock())
                     else: push(newBlock(x.a[x.a.len-aN.i..^1]))
@@ -992,10 +991,7 @@ proc defineSymbols*() =
                     if x.rng.infinite:
                         push(newFloating(Inf))
                     else:
-                        if x.rng.forward: 
-                            push(newInteger(x.rng.max()[1].i))
-                        else:
-                            push(newInteger(x.rng.min()[1].i))
+                        push(x.rng[x.rng.len, true])
                 else:
                     if x.a.len == 0: push(VNULL)
                     else: push(x.a[x.a.len-1])
