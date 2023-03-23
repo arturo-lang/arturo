@@ -1519,18 +1519,16 @@ proc `<<=`*(x: var Value, y: Value) =
                     x = newInteger(x.bi shl culong(y.i))
 {.pop.}
 proc `!!`*(x: Value): Value =
-    ## perform binary-not for given value
-    ## and return the result
-    if x.kind == Binary:
-        return newBinary(not x.n)
-    elif not (x.kind==Integer):
-        return VNULL
-    else:
-        if likely(x.iKind==NormalInteger):
-            return newInteger(not x.i)
+    ## perform binary-NOT on given value and return the result
+
+    case x.kind:
+        of Integer:
+            if x.iKind==NormalInteger: return normalIntegerNot(x.i)
+            else: (when GMP: return newInteger(not x.bi))
+        of Binary: return newBinary(not x.n)
         else:
-            when not defined(NOGMP):
-                return newInteger(not x.bi)
+            return invalidOperation("not")
+        
 {.push overflowChecks: on.}
 proc `!!=`*(x: var Value) =
     ## perform binary-not for given value
