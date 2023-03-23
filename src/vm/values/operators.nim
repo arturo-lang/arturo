@@ -789,7 +789,7 @@ proc neg*(x: Value): Value =
     case x.kind:
         of Integer:
             if x.iKind==NormalInteger: return normalIntegerNeg(x.i)
-            else: (when GMP: return newInteger(x.bi+toBig(1)))
+            else: (when GMP: return newInteger(neg(x.bi)))
         of Floating: return newFloating(x.f*(-1.0))
         of Rational: return newRational(x.rat*(-1))
         of Complex: return newComplex(x.z*(-1.0))
