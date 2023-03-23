@@ -51,9 +51,12 @@ proc defineSymbols*() =
             and 'a 3           ; a: 2
         """:
             #=======================================================
-            if x.kind==Literal : ensureInPlace(); InPlaced &&= y
-            else               : push(x && y)
-
+            if xKind==Literal : 
+                ensureInPlace(); InPlaced &&= y
+            elif normalIntegerOperation():
+                push(normalIntegerAnd(x.i, y.i))
+            else:
+                push(x && y)
 
     builtin "nand",
         alias       = unaliased, 
@@ -114,8 +117,12 @@ proc defineSymbols*() =
             not 'a             ; a: -124
         """:
             #=======================================================
-            if x.kind==Literal : ensureInPlace(); !!= InPlaced 
-            else               : push(!! x)
+            if xKind==Literal : 
+                ensureInPlace(); !!= InPlaced
+            elif normalIntegerOperation():
+                push(normalIntegerNot(x.i))
+            else:
+                push(!!x)
 
     builtin "or",
         alias       = unaliased, 
@@ -135,8 +142,12 @@ proc defineSymbols*() =
             or 'a 3            ; a: 3
         """:
             #=======================================================
-            if x.kind==Literal : ensureInPlace(); InPlaced ||= y
-            else               : push(x || y)
+            if xKind==Literal : 
+                ensureInPlace(); InPlaced ||= y
+            elif normalIntegerOperation():
+                push(normalIntegerOr(x.i, y.i))
+            else:
+                push(x || y)
 
     builtin "shl",
         alias       = unaliased, 
@@ -231,8 +242,12 @@ proc defineSymbols*() =
             xor 'a 3           ; a: 1
         """:
             #=======================================================
-            if x.kind==Literal : ensureInPlace(); InPlaced ^^= y
-            else               : push(x ^^ y)
+            if xKind==Literal : 
+                ensureInPlace(); InPlaced ^^= y
+            elif normalIntegerOperation():
+                push(normalIntegerXor(x.i, y.i))
+            else:
+                push(x ^^ y)
 
 #=======================================
 # Add Library
