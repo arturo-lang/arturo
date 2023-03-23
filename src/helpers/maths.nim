@@ -414,7 +414,7 @@ proc factorial*(x: int): Value =
         elif defined(NOGMP):
             RuntimeError_NumberOutOfPermittedRange("factorial",valueAsString(x), "")
         else:
-            return newBigInteger(fac(x))
+            return newInteger(BignumsHelper.fac(x))
 # proc factorial*(x: Value): Value =
 #     ## calculate factorial of given value
 #     if not (x.kind == Integer):
