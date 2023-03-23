@@ -1129,89 +1129,128 @@ proc `/%=`*(x: var Value, y: Value) =
 {.pop.}
 proc `^`*(x: Value, y: Value): Value =
     ## perform the power operation between given values
-    if not (x.kind in {Integer, Floating, Complex, Rational}) or not (y.kind in {Integer, Floating}):
-        if x.kind == Quantity:
-            if y.kind==Integer and (y.i > 0 and y.i < 4):
-                if y.i == 1: return x
-                elif y.i == 2: return x * x
-                elif y.i == 3: return x * x * x
-                else:
-                    when not defined(WEB):
-                        RuntimeError_IncompatibleQuantityOperation("pow", valueAsString(x), valueAsString(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
-            elif y.kind==Floating and (y.f > 0 and y.f < 4):
-                if y.f == 1.0: return x
-                elif y.f == 2.0: return x * x
-                elif y.f == 3.0: return x * x * x
-                else:
-                    when not defined(WEB):
-                        RuntimeError_IncompatibleQuantityOperation("pow", valueAsString(x), valueAsString(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
-            else:
+    
+    let pair = getValuePair()
+    case pair:
+        of Integer    || Integer        :   return normalIntegerMul(x,y)
+        of Integer    || BigInteger     :   (when GMP: return newInteger(toBig(x.i) * y.bi))
+        of BigInteger || Integer        :   (when GMP: return newInteger(x.bi * toBig(y.i)))
+        of BigInteger || BigInteger     :   (when GMP: return newInteger(x.bi * y.bi))
+        of Integer    || Floating       :   return newFloating(x.i * y.f)
+        of BigInteger || Floating       :   (when GMP: return newFloating(x.bi * y.f))
+        of Integer    || Rational       :   return newRational(x.i * y.rat)
+        of Integer    || Complex        :   return newComplex(float(x.i) * y.z)
+        of Integer    || Quantity       :   return newQuantity(x * y.nm, y.unit)
+
+        of Floating   || Integer        :   return newFloating(x.f * float(y.i))
+        of Floating   || BigInteger     :   (when GMP: return newFloating(x.f * y.bi))
+        of Floating   || Floating       :   return newFloating(x.f * y.f)
+        of Floating   || Rational       :   return newRational(toRational(x.f) * y.rat)
+        of Floating   || Complex        :   return newComplex(x.f * y.z)
+
+        of Rational   || Integer        :   return newRational(x.rat * y.i)
+        of Rational   || Floating       :   return newRational(x.rat * toRational(y.f))
+        of Rational   || Rational       :   return newRational(x.rat * y.rat)
+
+        of Complex    || Integer        :   return newComplex(x.z * float(y.i))
+        of Complex    || Floating       :   return newComplex(x.z * y.f)
+        of Complex    || Complex        :   return newComplex(x.z * y.z)
+        
+        of Quantity   || Integer        :   return newQuantity(x.nm * y, x.unit)
+        of Quantity   || Floating       :   return newQuantity(x.nm * y, x.unit)
+        of Quantity   || Rational       :   return newQuantity(x.nm * y, x.unit)
+        of Quantity   || Quantity       :
+            let finalSpec = getFinalUnitAfterOperation("mul", x.unit, y.unit)
+            if unlikely(finalSpec == ErrorQuantity):
                 when not defined(WEB):
-                    RuntimeError_IncompatibleQuantityOperation("pow", valueAsString(x), valueAsString(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
-        else: 
-            return VNULL
-    else:
-        if x.kind==Integer and y.kind==Integer:
-            if likely(x.iKind==NormalInteger):
-                if likely(y.iKind==NormalInteger):
-                    try:
-                        if y.i >= 0:
-                            return newInteger(safePow(x.i,y.i))
-                        else:
-                            return newFloating(pow(asFloat(x),asFloat(y)))
-                    except OverflowDefect:
-                        when defined(WEB):
-                            return newInteger(big(x.i) ** big(y.i))
-                        elif not defined(NOGMP):
-                            return newInteger(pow(x.i,culong(y.i)))
-                        else:
-                            RuntimeError_IntegerOperationOverflow("pow", valueAsString(x), valueAsString(y))
-                else:
-                    when defined(WEB):
-                        return newInteger(big(x.i) ** y.bi)
-                    elif not defined(NOGMP):
-                        RuntimeError_NumberOutOfPermittedRange("pow",valueAsString(x), valueAsString(y))
+                    RuntimeError_IncompatibleQuantityOperation("pow", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
             else:
-                when defined(WEB):
-                    if likely(y.iKind==NormalInteger): 
-                        return newInteger(x.bi ** big(y.i))
-                    else: 
-                        return newInteger(x.bi ** y.bi)
-                elif not defined(NOGMP):
-                    if likely(y.iKind==NormalInteger):
-                        return newInteger(pow(x.bi,culong(y.i)))
-                    else:
-                        RuntimeError_NumberOutOfPermittedRange("pow",valueAsString(x), valueAsString(y))
+                return newQuantity(x.nm * convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
         else:
-            if x.kind==Floating:
-                if y.kind==Floating: return newFloating(pow(x.f,y.f))
-                elif y.kind==Complex: return VNULL
-                else: 
-                    if likely(y.iKind==NormalInteger):
-                        return newFloating(pow(x.f,float(y.i)))
-                    else:
-                        when not defined(NOGMP):
-                            return newFloating(pow(x.f,y.bi))
-            elif x.kind==Complex:
-                if y.kind==Integer:
-                    if likely(y.iKind==NormalInteger): return newComplex(pow(x.z,float(y.i)))
-                    else: return VNULL
-                elif y.kind==Floating: return newComplex(pow(x.z,y.f))
-                else: return newComplex(pow(x.z,y.z))
-            elif x.kind==Rational:
-                if y.kind==Integer:
-                    if likely(y.iKind==NormalInteger): return newRational(safePow(x.rat.num,y.i),safePow(x.rat.den,y.i))
-                    else: return VNULL
-                elif y.kind==Floating: return newRational(pow(float(x.rat.num), y.f) / pow(float(x.rat.den), y.f))
-                else: return VNULL
-            else:
-                if y.kind==Floating: 
-                    if likely(x.iKind==NormalInteger):
-                        return newFloating(pow(float(x.i),y.f))
-                    else:
-                        when not defined(NOGMP):
-                            return newFloating(pow(x.bi,y.f))
-                else: return VNULL
+            return invalidOperation("pow")
+    # if not (x.kind in {Integer, Floating, Complex, Rational}) or not (y.kind in {Integer, Floating}):
+    #     if x.kind == Quantity:
+    #         if y.kind==Integer and (y.i > 0 and y.i < 4):
+    #             if y.i == 1: return x
+    #             elif y.i == 2: return x * x
+    #             elif y.i == 3: return x * x * x
+    #             else:
+    #                 when not defined(WEB):
+    #                     RuntimeError_IncompatibleQuantityOperation("pow", valueAsString(x), valueAsString(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
+    #         elif y.kind==Floating and (y.f > 0 and y.f < 4):
+    #             if y.f == 1.0: return x
+    #             elif y.f == 2.0: return x * x
+    #             elif y.f == 3.0: return x * x * x
+    #             else:
+    #                 when not defined(WEB):
+    #                     RuntimeError_IncompatibleQuantityOperation("pow", valueAsString(x), valueAsString(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
+    #         else:
+    #             when not defined(WEB):
+    #                 RuntimeError_IncompatibleQuantityOperation("pow", valueAsString(x), valueAsString(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
+    #     else: 
+    #         return VNULL
+    # else:
+    #     if x.kind==Integer and y.kind==Integer:
+    #         if likely(x.iKind==NormalInteger):
+    #             if likely(y.iKind==NormalInteger):
+    #                 try:
+    #                     if y.i >= 0:
+    #                         return newInteger(safePow(x.i,y.i))
+    #                     else:
+    #                         return newFloating(pow(asFloat(x),asFloat(y)))
+    #                 except OverflowDefect:
+    #                     when defined(WEB):
+    #                         return newInteger(big(x.i) ** big(y.i))
+    #                     elif not defined(NOGMP):
+    #                         return newInteger(pow(x.i,culong(y.i)))
+    #                     else:
+    #                         RuntimeError_IntegerOperationOverflow("pow", valueAsString(x), valueAsString(y))
+    #             else:
+    #                 when defined(WEB):
+    #                     return newInteger(big(x.i) ** y.bi)
+    #                 elif not defined(NOGMP):
+    #                     RuntimeError_NumberOutOfPermittedRange("pow",valueAsString(x), valueAsString(y))
+    #         else:
+    #             when defined(WEB):
+    #                 if likely(y.iKind==NormalInteger): 
+    #                     return newInteger(x.bi ** big(y.i))
+    #                 else: 
+    #                     return newInteger(x.bi ** y.bi)
+    #             elif not defined(NOGMP):
+    #                 if likely(y.iKind==NormalInteger):
+    #                     return newInteger(pow(x.bi,culong(y.i)))
+    #                 else:
+    #                     RuntimeError_NumberOutOfPermittedRange("pow",valueAsString(x), valueAsString(y))
+    #     else:
+    #         if x.kind==Floating:
+    #             if y.kind==Floating: return newFloating(pow(x.f,y.f))
+    #             elif y.kind==Complex: return VNULL
+    #             else: 
+    #                 if likely(y.iKind==NormalInteger):
+    #                     return newFloating(pow(x.f,float(y.i)))
+    #                 else:
+    #                     when not defined(NOGMP):
+    #                         return newFloating(pow(x.f,y.bi))
+    #         elif x.kind==Complex:
+    #             if y.kind==Integer:
+    #                 if likely(y.iKind==NormalInteger): return newComplex(pow(x.z,float(y.i)))
+    #                 else: return VNULL
+    #             elif y.kind==Floating: return newComplex(pow(x.z,y.f))
+    #             else: return newComplex(pow(x.z,y.z))
+    #         elif x.kind==Rational:
+    #             if y.kind==Integer:
+    #                 if likely(y.iKind==NormalInteger): return newRational(safePow(x.rat.num,y.i),safePow(x.rat.den,y.i))
+    #                 else: return VNULL
+    #             elif y.kind==Floating: return newRational(pow(float(x.rat.num), y.f) / pow(float(x.rat.den), y.f))
+    #             else: return VNULL
+    #         else:
+    #             if y.kind==Floating: 
+    #                 if likely(x.iKind==NormalInteger):
+    #                     return newFloating(pow(float(x.i),y.f))
+    #                 else:
+    #                     when not defined(NOGMP):
+    #                         return newFloating(pow(x.bi,y.f))
+    #             else: return VNULL
 {.push overflowChecks: on.}
 proc `^=`*(x: var Value, y: Value) =
     ## perform the power operation between given values
