@@ -82,13 +82,13 @@ proc defineSymbols*() =
         """:
             #=======================================================
             if (hadAttr("symmetric")):
-                if x.kind==Literal:
+                if xKind==Literal:
                     ensureInPlace()
                     SetInPlace(newBlock(toSeq(symmetricDifference(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
                 else:
                     push(newBlock(toSeq(symmetricDifference(toOrderedSet(x.a), toOrderedSet(y.a)))))
             else:
-                if x.kind==Literal:
+                if xKind==Literal:
                     ensureInPlace()
                     SetInPlace(newBlock(toSeq(difference(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
                 else:
@@ -164,7 +164,7 @@ proc defineSymbols*() =
             ; a: [3 4]
         """:
             #=======================================================
-            if x.kind==Literal:
+            if xKind==Literal:
                 ensureInPlace()
                 SetInPlace(newBlock(toSeq(intersection(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
             else:
@@ -185,7 +185,7 @@ proc defineSymbols*() =
             ;  [[] [1] [2] [1 3] [3] [1 2] [2 3] [1 2 3]]
         """:
             #=======================================================
-            if x.kind==Literal:
+            if xKind==Literal:
                 ensureInPlace()
                 SetInPlace(newBlock(toSeq(powerset(toOrderedSet(InPlaced.a))).map((hs) => newBlock(toSeq(hs)))))
             else:
@@ -326,7 +326,7 @@ proc defineSymbols*() =
             ; a: [1 2 3 4 5 6]
         """:
             #=======================================================
-            if x.kind==Literal:
+            if xKind==Literal:
                 ensureInPlace()
                 SetInPlace(newBlock(toSeq(union(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
             else:

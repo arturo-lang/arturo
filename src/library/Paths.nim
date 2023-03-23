@@ -128,7 +128,7 @@ proc defineSymbols*() =
             ; => 300
             """:
                 #=======================================================
-                if x.kind==Color:
+                if xKind==Color:
                     if (hadAttr("red")):
                         push newInteger(RGBfromColor(x.l).r)
                     elif (hadAttr("green")):
@@ -298,7 +298,7 @@ proc defineSymbols*() =
             """:
                 #=======================================================
                 if (hadAttr("executable")):
-                    if x.kind==Literal:
+                    if xKind==Literal:
                         ensureInPlace()
                         if (hadAttr("tilde")):
                             InPlaced.s = InPlaced.s.expandTilde()
@@ -312,7 +312,7 @@ proc defineSymbols*() =
                         ret.normalizeExe()
                         push(newString(ret))
                 else:
-                    if x.kind==Literal:
+                    if xKind==Literal:
                         ensureInPlace()
                         if (hadAttr("tilde")):
                             InPlaced.s = InPlaced.s.expandTilde()

@@ -56,7 +56,7 @@ proc defineSymbols*() =
             if checkAttr("balance"):
                 balance = aBalance.f
 
-            if x.kind == Literal:
+            if xKind == Literal:
                 ensureInPlace()
                 SetInPlace(newColor(blendColors(InPlaced.l, y.l, balance)))
             else:
@@ -80,7 +80,7 @@ proc defineSymbols*() =
             darken #9944CC 0.3      ; => #6B308F
         """:
             #=======================================================
-            if x.kind == Literal:
+            if xKind == Literal:
                 ensureInPlace()
                 SetInPlace(newColor(alterColorValue(InPlaced.l, y.f * (-1))))
             else:
@@ -104,7 +104,7 @@ proc defineSymbols*() =
             desaturate #9944CC 0.3      ; => #9558B8
         """:
             #=======================================================
-            if x.kind == Literal:
+            if xKind == Literal:
                 ensureInPlace()
                 SetInPlace(newColor(saturateColor(InPlaced.l, y.f * (-1))))
             else:
@@ -127,7 +127,7 @@ proc defineSymbols*() =
             grayscale #FF44CC           ; => #A2A2A2
         """:
             #=======================================================
-            if x.kind == Literal:
+            if xKind == Literal:
                 ensureInPlace()
                 SetInPlace(newColor(saturateColor(InPlaced.l, -1.0)))
             else:
@@ -149,7 +149,7 @@ proc defineSymbols*() =
             invert #orange              ; => #0059FF
         """:
             #=======================================================
-            if x.kind == Literal:
+            if xKind == Literal:
                 ensureInPlace()
                 SetInPlace(newColor(invertColor(InPlaced.l)))
             else:
@@ -175,7 +175,7 @@ proc defineSymbols*() =
             lighten #9944CC 0.3         ; => #C758FF
         """:
             #=======================================================
-            if x.kind == Literal:
+            if xKind == Literal:
                 ensureInPlace()
                 SetInPlace(newColor(alterColorValue(InPlaced.l, y.f)))
             else:
@@ -266,7 +266,7 @@ proc defineSymbols*() =
             saturate #9944CC 0.3        ; => #A030E0
         """:
             #=======================================================
-            if x.kind == Literal:
+            if xKind == Literal:
                 ensureInPlace()
                 SetInPlace(newColor(saturateColor(InPlaced.l, y.f)))
             else:
@@ -291,7 +291,7 @@ proc defineSymbols*() =
             spin #123456 360        ; => #123456
         """:
             #=======================================================
-            if x.kind == Literal:
+            if xKind == Literal:
                 ensureInPlace()
                 SetInPlace(newColor(spinColor(InPlaced.l, y.i)))
             else:
