@@ -365,6 +365,13 @@
 [+] passed!
 [+] passed!
 [+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> max - [:integer] - .index
 [+] passed!
