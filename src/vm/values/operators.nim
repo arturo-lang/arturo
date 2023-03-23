@@ -1278,32 +1278,7 @@ proc `&&`*(x: Value, y: Value): Value =
 
         else:
             return invalidOperation("and")
-    # if (x.kind == Binary or y.kind==Binary) and (x.kind in {Integer, Binary} and y.kind in {Integer, Binary}):
-    #     var a = (if x.kind==Binary: x.n else: numberToBinary(x.i))
-    #     var b = (if y.kind==Binary: y.n else: numberToBinary(y.i))
-    #     return newBinary(a and b)
-    # elif not (x.kind==Integer) or not (y.kind==Integer):
-    #     return VNULL
-    # else:
-    #     if likely(x.iKind==NormalInteger):
-    #         if likely(y.iKind==NormalInteger):
-    #             return newInteger(x.i and y.i)
-    #         else:
-    #             when defined(WEB):
-    #                 return newInteger(big(x.i) and y.bi)
-    #             elif not defined(NOGMP):
-    #                 return newInteger(x.i and y.bi)
-    #     else:
-    #         when defined(WEB):
-    #             if unlikely(y.iKind==BigInteger):
-    #                 return newInteger(x.bi and y.bi)
-    #             else:
-    #                 return newInteger(x.bi and big(y.i))
-    #         elif not defined(NOGMP):
-    #             if unlikely(y.iKind==BigInteger):
-    #                 return newInteger(x.bi and y.bi)
-    #             else:
-    #                 return newInteger(x.bi and y.i)
+
 {.push overflowChecks: on.}
 proc `&&=`*(x: var Value, y: Value) =
     ## perform binary-and between given values
