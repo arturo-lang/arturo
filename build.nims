@@ -100,12 +100,7 @@ var
     IS_DEV              = false 
     MODE                = ""       
 
-    # TODO(build.nims) remove `BareExcept`-related warnings altogether
-    #  we should just add `--warning:BareExcept:off` to `FLAGS` and be done with it
-    #  but: since this is a new feature, enabled post-1.6.12, we'll have to wait until
-    #  the BSD-based distros all have the updated Nim version
-    #  labels: enhancement, cleanup
-    FLAGS*              = "--verbosity:1 --hints:on --hint:ProcessingStmt:off --hint:XCannotRaiseY:off --warning:GcUnsafe:off --warning:ProveInit:off --warning:ProveField:off --warning:Uninit:off " & 
+    FLAGS*              = "--verbosity:1 --hints:on --hint:ProcessingStmt:off --hint:XCannotRaiseY:off --warning:GcUnsafe:off --warning:ProveInit:off --warning:ProveField:off --warning:Uninit:off --warning:BareExcept:off " & 
                           "--skipUserCfg:on --colors:off -d:danger " &
                           "--panics:off --mm:orc -d:useMalloc --checks:off " &
                           "--cincludes:extras --opt:speed --nimcache:.cache " & (when hostOS != "windows": "--passL:'-pthread' " else: " ") &
