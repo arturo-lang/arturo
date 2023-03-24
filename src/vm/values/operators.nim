@@ -1253,39 +1253,27 @@ proc `^^`*(x: Value, y: Value): Value =
 
         else:
             return invalidOperation("xor")
-{.push overflowChecks: on.}
+
 proc `^^=`*(x: var Value, y: Value) =
-    ## perform binary-xor between given values
+    ## perform binary-XOR between given values
     ## and store the result in the first value
     ## 
     ## **Hint:** In-place, mutation operation
-    if (x.kind == Binary or y.kind==Binary) and (x.kind in {Integer, Binary} and y.kind in {Integer, Binary}):
-        var a = (if x.kind==Binary: x.n else: numberToBinary(x.i))
-        var b = (if y.kind==Binary: y.n else: numberToBinary(y.i))
-        x = newBinary(a xor b)
-    elif not (x.kind==Integer) or not (y.kind==Integer):
-        x = VNULL
-    else:
-        if likely(x.iKind==NormalInteger):
-            if likely(y.iKind==NormalInteger):
-                x = newInteger(x.i xor y.i)
-            else:
-                when defined(WEB):
-                    x = newInteger(big(x.i) xor y.bi)
-                elif not defined(NOGMP):
-                    x = newInteger(x.i xor y.bi)
+    
+    let pair = getValuePair()
+    case pair:
+        of Integer    || Integer        :   normalIntegerXorI(x, y.i)
+        of Integer    || BigInteger     :   (when GMP: x = newInteger(toBig(x.i) xor y.bi))
+        of BigInteger || Integer        :   (when GMP: xorI(x.bi, toBig(y.i)))
+        of BigInteger || BigInteger     :   (when GMP: xorI(x.bi, y.bi))
+        of Integer    || Binary         :   x = newBinary(numberToBinary(x.i) xor y.n)
+
+        of Binary     || Integer        :   x.n = x.n xor numberToBinary(y.i)
+        of Binary     || Binary         :   x.n = x.n xor y.n
+
         else:
-            when defined(WEB):
-                if unlikely(y.iKind==BigInteger):
-                    x = newInteger(x.bi xor y.bi)
-                else:
-                    x = newInteger(x.bi xor big(y.i))
-            elif not defined(NOGMP):
-                if unlikely(y.iKind==BigInteger):
-                    x = newInteger(x.bi xor y.bi)
-                else:
-                    x = newInteger(x.bi xor y.i)
-{.pop.}
+            discard invalidOperation("xor")
+
 proc `!!`*(x: Value): Value =
     ## perform binary-NOT on given value and return the result
 
