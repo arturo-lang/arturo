@@ -608,6 +608,9 @@ func pow*(z: Int, x, y: culong): Int =
 func pow*(x: culong | Int, y: culong): Int =
     newInt().pow(x, y)
 
+func powI*(x: Int, y: culong) =
+    mpz_pow_ui(x[], x[], y)
+
 func pow*(x: int, y: culong): Int =
     when isLLP64():
         if x.fitsLLP64ULong: pow(x.culong, y) else: pow(newInt(x), y)
