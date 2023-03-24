@@ -51,12 +51,7 @@ proc defineSymbols*() =
             and 'a 3           ; a: 2
         """:
             #=======================================================
-            if xKind==Literal : 
-                ensureInPlace(); InPlaced &&= y
-            elif normalIntegerOperation():
-                push(normalIntegerAnd(x.i, y.i))
-            else:
-                push(x && y)
+            generateOperationB("and", `&&`, `&&=`)
 
     builtin "nand",
         alias       = unaliased, 
@@ -125,12 +120,7 @@ proc defineSymbols*() =
             not 'a             ; a: -124
         """:
             #=======================================================
-            if xKind==Literal : 
-                ensureInPlace(); !!= InPlaced
-            elif normalIntegerOperation():
-                push(normalIntegerNot(x.i))
-            else:
-                push(!!x)
+            generateOperationA("not", `!!`, `!!=`)
 
     builtin "or",
         alias       = unaliased, 
@@ -150,12 +140,7 @@ proc defineSymbols*() =
             or 'a 3            ; a: 3
         """:
             #=======================================================
-            if xKind==Literal : 
-                ensureInPlace(); InPlaced ||= y
-            elif normalIntegerOperation():
-                push(normalIntegerOr(x.i, y.i))
-            else:
-                push(x || y)
+            generateOperationB("or", `||`, `||=`)
 
     builtin "shl",
         alias       = unaliased, 
@@ -212,12 +197,7 @@ proc defineSymbols*() =
             shr 'a 3           ; a: 2
         """:
             #=======================================================
-            if xKind==Literal : 
-                ensureInPlace(); InPlaced >>= y
-            elif normalIntegerOperation():
-                push(normalIntegerShr(x.i, y.i))
-            else:
-                push(x >> y)
+            generateOperationB("shr", `>>`, `>>=`)
 
     builtin "xnor",
         alias       = unaliased, 
@@ -262,12 +242,7 @@ proc defineSymbols*() =
             xor 'a 3           ; a: 1
         """:
             #=======================================================
-            if xKind==Literal : 
-                ensureInPlace(); InPlaced ^^= y
-            elif normalIntegerOperation():
-                push(normalIntegerXor(x.i, y.i))
-            else:
-                push(x ^^ y)
+            generateOperationB("xor", `^^`, `^^=`)
 
 #=======================================
 # Add Library
