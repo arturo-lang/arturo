@@ -317,7 +317,7 @@ template normalIntegerNeg*(x: int): untyped =
     else:
         newInteger(res)
 
-template normalIntegerNegI*(x: var Value, y: int): untyped =
+template normalIntegerNegI*(x: var Value): untyped =
     ## negate a normal Integer value, checking for overflow
     ## and set result in-place
     if unlikely(mulIntWithOverflow(x.i, -1, x.i)):
@@ -615,7 +615,7 @@ proc inc*(x: Value): Value =
 
 proc incI*(x: var Value) =
     ## increment given value
-    ## and store the result in the first value
+    ## and store back the result
     ## 
     ## **Hint:** In-place, mutating operation
 
@@ -729,7 +729,7 @@ proc dec*(x: Value): Value =
 
 proc decI*(x: var Value) =
     ## increment given value
-    ## and store the result in the first value
+    ## and store back the result
     ## 
     ## **Hint:** In-place, mutating operation
 
@@ -844,6 +844,23 @@ proc neg*(x: Value): Value =
         of Quantity: return newQuantity(x.nm * I1M, x.unit)
         else:
             return invalidOperation("neg")
+
+proc negI*(x: var Value) =
+    ## negate given value
+    ## and store back the result
+    ## 
+    ## **Hint:** In-place, mutating operation
+
+    case x.kind:
+        of Integer:
+            if x.iKind==NormalInteger: normalIntegerNegI(x)
+            else: (when GMP: negI(x.bi))
+        of Floating: x.f *= -1.0
+        of Rational: x.rat *= -1
+        of Complex: x.z *= -1.0
+        of Quantity: x.nm *= I1M
+        else:
+            discard invalidOperation("neg")
 
 proc `/`*(x: Value, y: Value): Value =
     ## divide (integer division) given values and return the result
