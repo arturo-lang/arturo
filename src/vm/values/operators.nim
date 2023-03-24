@@ -92,29 +92,6 @@ func safePow[T: SomeNumber](x: T, y: Natural): T =
 
 {.pop.}
 
-func powIntWithOverflow(a,b:int, res: var int): bool =
-    result = false
-    case b:
-        of 0: res = 1
-        of 1: res = a
-        of 2: result = mulIntWithOverflow(a, a, res)
-        of 3: 
-            result = mulIntWithOverflow(a, a, res)
-            if not result:
-                result = mulIntWithOverflow(a, res, res)
-        else:
-            var (x,y) = (a,b)
-            res = 1
-            while true:
-                if (y and 1) != 0:
-                    if mulIntWithOverflow(res, x, res):
-                        return true
-                y = y shr 1
-                if y == 0:
-                    break
-                if mulIntWithOverflow(x, x, x):
-                    return true
-
 template getValuePair(): untyped =
     let xKind {.inject.} = x.kind
     let yKind {.inject.} = y.kind
