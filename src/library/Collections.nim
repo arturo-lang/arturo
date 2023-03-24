@@ -979,7 +979,10 @@ proc defineSymbols*() =
                     if x.rng.infinite:
                         push(newFloating(Inf))
                     else:
-                        push(newRange(x.rng[x.rng.len-aN.i..x.rng.len, true]))
+                        if aN.i == 1 or aN.i == 0:
+                            push(x.rng[x.rng.len, true])
+                        else:
+                            push(newRange(x.rng[x.rng.len-aN.i..x.rng.len, true]))
                 else:
                     if x.a.len == 0: push(newBlock())
                     else: push(newBlock(x.a[x.a.len-aN.i..^1]))
