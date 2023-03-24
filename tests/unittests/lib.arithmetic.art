@@ -321,7 +321,7 @@ do [
     passed
     
     
-    ; topic "add - :complex :rational"
+    topic "add - :complex :rational"
     
     ; a: to :complex [1 2]
     ; b: to :rational [3 5]
