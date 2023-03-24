@@ -30,7 +30,27 @@ when not defined(NOGMP):
 # Helpers
 #=======================================
 
-macro arithmeticOperation*(name: static[string], op: untyped, inplaceOp: untyped): untyped =
+macro arithmeticOperationA*(name: static[string], op: untyped, inplaceOp: untyped): untyped =
+    ## generates the code necessary for arithmetic operations
+    ## that only require one operand, e.g. `inc`
+    let normalInteger =  ident("normalInteger" & ($name).capitalizeAscii())
+    let normalIntegerI = ident("normalInteger" & ($name).capitalizeAscii() & "I")
+
+    result = quote do:
+        if xKind==Literal : 
+            ensureInPlace()
+            if normalIntegerOperation(inPlace=true):
+                `normalIntegerI`(InPlaced)
+            else:
+                `inplaceOp`(InPlaced)
+        elif normalIntegerOperation():
+            push(`normalInteger`(x.i))
+        else:
+            push(`op`(x))
+
+macro arithmeticOperationB*(name: static[string], op: untyped, inplaceOp: untyped): untyped =
+    ## generates the code necessary for arithmetic operations
+    ## that require two operands, e.g. `add`
     let normalInteger =  ident("normalInteger" & ($name).capitalizeAscii())
     let normalIntegerI = ident("normalInteger" & ($name).capitalizeAscii() & "I")
 
@@ -71,7 +91,7 @@ proc defineSymbols*() =
             add 'a 1           ; a: 5
         """:
             #=======================================================
-            arithmeticOperation("add", `+`, `+=`)
+            arithmeticOperationB("add", `+`, `+=`)
 
     builtin "dec",
         alias       = unaliased, 
@@ -90,16 +110,7 @@ proc defineSymbols*() =
             dec 'a             ; a: 3
         """:
             #=======================================================
-            if xKind==Literal : 
-                ensureInPlace()
-                if normalIntegerOperation(inPlace=true):
-                    normalIntegerDecI(InPlaced)
-                else:
-                    decI(InPlaced)
-            elif normalIntegerOperation():
-                push(normalIntegerDec(x.i))
-            else:
-                push(dec(x))
+            arithmeticOperationA("dec", `dec`, `decI`)
         
     builtin "div",
         alias       = slash, 
@@ -197,16 +208,7 @@ proc defineSymbols*() =
             inc 'a             ; a: 5
         """:
             #=======================================================
-            if xKind==Literal : 
-                ensureInPlace()
-                if normalIntegerOperation(inPlace=true):
-                    normalIntegerIncI(InPlaced)
-                else:
-                    incI(InPlaced)
-            elif normalIntegerOperation():
-                push(normalIntegerInc(x.i))
-            else:
-                push(inc(x))
+            arithmeticOperationA("inc", `inc`, `incI`)
 
     builtin "mod",
         alias       = percent, 
