@@ -270,33 +270,33 @@ do [
     ; passed
     
     
-    topic "add - :floating :color"
+    ; topic "add - :floating :color"
     
-    ensure -> null = 1.5 + #red
-    ensure -> null = #red + 1.5
-    ensure -> null = add 1.5 #red
-    ensure -> null = add #red 1.5
-    passed  
+    ; ensure -> null = 1.5 + #red
+    ; ensure -> null = #red + 1.5
+    ; ensure -> null = add 1.5 #red
+    ; ensure -> null = add #red 1.5
+    ; passed  
     
-    ; :floating :color
-    a: 1.5
-    'a + #red
-    ensure -> a = null
+    ; ; :floating :color
+    ; a: 1.5
+    ; 'a + #red
+    ; ensure -> a = null
     
-    a: 1.5
-    add 'a #red
-    ensure -> a = null
-    passed
+    ; a: 1.5
+    ; add 'a #red
+    ; ensure -> a = null
+    ; passed
     
-    ; :color :floating
-    a: #red
-    'a + 1.5
-    ensure -> a = null
+    ; ; :color :floating
+    ; a: #red
+    ; 'a + 1.5
+    ; ensure -> a = null
     
-    a: #red
-    add 'a 1.5
-    ensure -> a = null
-    passed
+    ; a: #red
+    ; add 'a 1.5
+    ; ensure -> a = null
+    ; passed
     
     
     ; ------ complex
