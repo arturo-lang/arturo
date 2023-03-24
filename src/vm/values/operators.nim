@@ -255,6 +255,15 @@ template normalIntegerDec*(x: int): untyped =
     else:
         newInteger(res)
 
+template normalIntegerDecI*(x: var Value): untyped =
+    ## decrement a normal Integer value by 1, checking for overflow
+    ## and return result
+    if unlikely(subIntWithOverflow(x.i, 1, x.i)):
+        when not defined(NOGMP):
+            x = newInteger(toNewBig(x.i) - toBig(1))
+        else:
+            RuntimeError_IntegerOperationOverflow("dec", $x.i, "")
+
 template normalIntegerMul*(x, y: int): untyped =
     ## multiply two normal Integer values, checking for overflow
     ## and return result
@@ -691,6 +700,23 @@ proc dec*(x: Value): Value =
         of Quantity: return newQuantity(x.nm - I1, x.unit)
         else:
             return invalidOperation("dec")
+
+proc decI*(x: var Value) =
+    ## increment given value and 
+    ## store the result in the first value
+    ## 
+    ## **Hint:** In-place, mutating operation
+
+    case x.kind:
+        of Integer:
+            if x.iKind==NormalInteger: normalIntegerDecI(x)
+            else: (when GMP: dec(x.bi, 1))
+        of Floating: x.f -= 1.0
+        of Rational: x.rat -= 1
+        of Complex: x.z = x.z - 1.0
+        of Quantity: x.nm -= I1
+        else:
+            discard invalidOperation("dec")
 
 proc `*`*(x: Value, y: Value): Value =
     ## multiply given values and return the result
