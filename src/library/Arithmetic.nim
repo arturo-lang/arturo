@@ -74,7 +74,11 @@ proc defineSymbols*() =
         """:
             #=======================================================
             if xKind==Literal : 
-                ensureInPlace(); InPlaced -= I1
+                ensureInPlace()
+                if normalIntegerOperation(inPlace=true):
+                    normalIntegerDecI(InPlaced)
+                else:
+                    decI(InPlaced)
             elif normalIntegerOperation():
                 push(normalIntegerDec(x.i))
             else:
@@ -177,7 +181,7 @@ proc defineSymbols*() =
         """:
             #=======================================================
             if xKind==Literal : 
-                ensureInPlace(); 
+                ensureInPlace()
                 if normalIntegerOperation(inPlace=true):
                     normalIntegerIncI(InPlaced)
                 else:
