@@ -1111,59 +1111,14 @@ proc `/%`*(x: Value, y: Value): Value =
         else:
             return invalidOperation("divmod")
 
-{.push overflowChecks: on.}
-proc `/%=`*(x: var Value, y: Value) =
+proc `/%`*(x: var Value, y: Value): Value =
     ## perform the divmod operation between given values
     ## and store the result in the first one
     ## 
     ## **Hint:** In-place, mutating operation
-    if not (x.kind in {Integer,Floating,Rational}) or not (y.kind in {Integer,Floating,Rational}):
-        x = newBlock(@[x/y, x%y])
-    else:
-        if x.kind==Integer and y.kind==Integer:
-            if likely(x.iKind==NormalInteger):
-                if likely(y.iKind==NormalInteger):
-                    x = newBlock(@[x/y, x%y])
-                else:
-                    when defined(WEB):
-                        x = newBlock(@[x/y, x%y])
-                    elif not defined(NOGMP):
-                        let dm = divmod(x.i, y.bi)
-                        x = newBlock(@[newInteger(dm.q), newInteger(dm.r)])
-            else:
-                when defined(WEB):
-                    x = newBlock(@[x/y, x%y])
-                elif not defined(NOGMP):
-                    if unlikely(y.iKind==BigInteger):
-                        let dm = divmod(x.bi, y.bi)
-                        x = newBlock(@[newInteger(dm.q), newInteger(dm.r)])
-                    else:
-                        let dm = divmod(x.bi, y.i)
-                        x = newBlock(@[newInteger(dm.q), newInteger(dm.r)])
-        else:
-            if x.kind==Floating:
-                if y.kind==Floating: x = newBlock(@[x/y, x%y])
-                elif y.kind==Rational: x = newBlock(@[x/y, x%y])
-                else: 
-                    if likely(y.iKind==NormalInteger):
-                        x = newBlock(@[x/y, x%y])
-                    else:
-                        discard
-                        # when not defined(NOGMP):
-                        #     return newFloating(x.f mod y.bi)
-            elif x.kind==Rational:
-                if y.kind==Floating: x = newBlock(@[x/y, x%y])
-                elif y.kind==Rational: x = newBlock(@[x/y, x%y])
-                else: x = newBlock(@[x/y, x%y])
-            else:
-                if y.kind==Rational:
-                    x = newBlock(@[x/y, x%y])
-                else:
-                    if likely(x.iKind==NormalInteger):
-                        x = newBlock(@[x/y, x%y])
-                    else:
-                        discard
-{.pop.}
+    
+    x = x /% y
+
 proc `^`*(x: Value, y: Value): Value =
     ## perform the power operation between given values and return the result
     
