@@ -1308,37 +1308,20 @@ proc `<<`*(x: Value, y: Value): Value =
         of BigInteger || Integer        :   (when GMP: return newInteger(x.bi shl culong(y.i)))
         else:
             return invalidOperation("shl")
-    
-{.push overflowChecks: on.}
+
 proc `<<=`*(x: var Value, y: Value) =
-    ## perform binary-left-shift between given values
+    ## perform binary left-shift between given values
     ## and store the result in the first value
     ## 
     ## **Hint:** In-place, mutation operation
-    if not (x.kind==Integer) or not (y.kind==Integer):
-        x = VNULL
-    else:
-        if likely(x.iKind==NormalInteger):
-            if likely(y.iKind==NormalInteger):
-                x = newInteger(x.i shl y.i)
-            else:
-                when defined(WEB):
-                    x = newInteger(big(x.i) shl y.bi)
-                elif not defined(NOGMP):
-                    RuntimeError_NumberOutOfPermittedRange("shl",valueAsString(x), valueAsString(y))
-        else:
-            when defined(WEB):
-                if unlikely(y.iKind==BigInteger):
-                    x = newInteger(x.bi shl y.bi)
-                else:
-                    x = newInteger(x.bi shl big(y.i))
-            elif not defined(NOGMP):
-                if unlikely(y.iKind==BigInteger):
-                    RuntimeError_NumberOutOfPermittedRange("shl",valueAsString(x), valueAsString(y))
-                else:
-                    x = newInteger(x.bi shl culong(y.i))
 
-{.pop.}
+    let pair = getValuePair()
+    case pair:
+        of Integer    || Integer        :   normalIntegerShlI(x, y.i)
+        of BigInteger || Integer        :   (when GMP: shlI(x.bi, culong(y.i)))
+        else:
+            discard invalidOperation("shl")
+    
 proc `>>`*(x: Value, y: Value): Value =
     ## perform binary right-shift between given values and return the result
 
@@ -1349,33 +1332,15 @@ proc `>>`*(x: Value, y: Value): Value =
         else:
             return invalidOperation("shr")
 
-{.push overflowChecks: on.}
 proc `>>=`*(x: var Value, y: Value) =
-    ## perform binary-right-shift between given values
+    ## perform binary right-shift between given values
     ## and store the result in the first value
     ## 
     ## **Hint:** In-place, mutation operation
-    if not (x.kind==Integer) or not (y.kind==Integer):
-        x = VNULL
-    else:
-        if likely(x.iKind==NormalInteger):
-            if likely(y.iKind==NormalInteger):
-                x = newInteger(x.i shr y.i)
-            else:
-                when defined(WEB):
-                    x = newInteger(big(x.i) shr y.bi)
-                elif not defined(NOGMP):
-                    RuntimeError_NumberOutOfPermittedRange("shr",valueAsString(x), valueAsString(y))
-        else:
-            when defined(WEB):
-                if unlikely(y.iKind==BigInteger):
-                    x = newInteger(x.bi shr y.bi)
-                else:
-                    x = newInteger(x.bi shr big(y.i))
-            elif not defined(NOGMP):
-                if unlikely(y.iKind==BigInteger):
-                    RuntimeError_NumberOutOfPermittedRange("shr",valueAsString(x), valueAsString(y))
-                else:
-                    x = newInteger(x.bi shr culong(y.i))
 
-{.pop.}
+    let pair = getValuePair()
+    case pair:
+        of Integer    || Integer        :   normalIntegerShrI(x, y.i)
+        of BigInteger || Integer        :   (when GMP: shrI(x.bi, culong(y.i)))
+        else:
+            discard invalidOperation("shl")
