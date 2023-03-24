@@ -1145,7 +1145,10 @@ do [
     ensure -> (2..0) = last.n: 3 range 5 0
     ensure -> (range.step: 2 3 1) = last.n: 2 range.step: 2 5 0
     passed
-
+    
+    ensure -> 5 = last.n: 1 range 0 5
+    ensure -> 0 = last.n: 1 range 5 0
+    passed
 
     try? -> last.n: neg 2 range 0 5
     else -> passed
