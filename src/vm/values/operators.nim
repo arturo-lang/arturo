@@ -207,6 +207,15 @@ template normalIntegerAdd*(x, y: int): untyped =
     else:
         newInteger(res)
 
+template normalIntegerAddI*(x: var Value, y: int): untyped =
+    ## add two normal Integer values, checking for overflow
+    ## and set result in-place
+    if unlikely(addIntWithOverflow(x.i, y, x.i)):
+        when not defined(NOGMP):
+            x = newInteger(toNewBig(x.i) + toBig(y))
+        else:
+            RuntimeError_IntegerOperationOverflow("add", $x.i, $y)
+
 template normalIntegerInc*(x: int): untyped =
     ## increment a normal Integer value by 1, checking for overflow
     ## and return result
@@ -241,6 +250,15 @@ template normalIntegerSub*(x, y: int): untyped =
             VNULL
     else:
         newInteger(res)
+
+template normalIntegerSubI*(x: var Value, y: int): untyped =
+    ## subtract two normal Integer values, checking for overflow
+    ## and set result in-place
+    if unlikely(subIntWithOverflow(x.i, y, x.i)):
+        when not defined(NOGMP):
+            x = newInteger(toNewBig(x.i) - toBig(y))
+        else:
+            RuntimeError_IntegerOperationOverflow("sub", $x.i, $y)
 
 template normalIntegerDec*(x: int): untyped =
     ## decrement a normal Integer value by 1, checking for overflow
@@ -277,6 +295,15 @@ template normalIntegerMul*(x, y: int): untyped =
     else:
         newInteger(res)
 
+template normalIntegerMulI*(x: var Value, y: int): untyped =
+    ## multiply two normal Integer values, checking for overflow
+    ## and set result in-place
+    if unlikely(mulIntWithOverflow(x.i, y, x.i)):
+        when not defined(NOGMP):
+            x = newInteger(toNewBig(x.i) * toBig(y))
+        else:
+            RuntimeError_IntegerOperationOverflow("mul", $x.i, $y)
+
 template normalIntegerNeg*(x: int): untyped =
     ## negate a normal Integer value, checking for overflow
     ## and return result
@@ -290,26 +317,56 @@ template normalIntegerNeg*(x: int): untyped =
     else:
         newInteger(res)
 
+template normalIntegerNegI*(x: var Value, y: int): untyped =
+    ## negate a normal Integer value, checking for overflow
+    ## and set result in-place
+    if unlikely(mulIntWithOverflow(x.i, -1, x.i)):
+        when not defined(NOGMP):
+            x = newInteger(toNewBig(x.i) + toBig(-1))
+        else:
+            RuntimeError_IntegerOperationOverflow("neg", $x.i, "")
+
 template normalIntegerDiv*(x, y: int): untyped =
     ## divide (integer division) two normal Integer values, checking for DivisionByZero
     ## and return result
     newInteger(x div notZero(y))
+
+template normalIntegerDivI*(x: var Value, y: int): untyped =
+    ## divide (integer division) two normal Integer values, checking for DivisionByZero
+    ## and set result in-place
+    x = newInteger(x.i div notZero(y))
 
 template normalIntegerFDiv*(x, y: int): untyped =
     ## divide (floating-point division) two normal Integer values, checking for DivisionByZero
     ## and return result
     newFloating(x / notZero(y))
 
+template normalIntegerFDivI*(x: var Value, y: int): untyped =
+    ## divide (floating-point division) two normal Integer values, checking for DivisionByZero
+    ## and set result in-place
+    x.i /= notZero(y)
+
 template normalIntegerMod*(x, y: int): untyped =
     ## modulo two normal Integer values, checking for DivisionByZero
     ## and return result
     newInteger(x mod notZero(y))
+
+template normalIntegerModI*(x: var Value, y: int): untyped =
+    ## divide (floating-point division) two normal Integer values, checking for DivisionByZero
+    ## and set result in-place
+    x = newInteger(x mod notZero(y))
 
 template normalIntegerDivMod*(x, y: int): untyped =
     ## divide+modulo (integer division) two normal Integer values, checking for DivisionByZero
     ## and return result
     let dm = divmod(x, notZero(y))
     newBlock(@[newInteger(dm[0]), newInteger(dm[1])])
+
+template normalIntegerDivModI*(x: var Value, y: int): untyped =
+    ## divide+modulo (integer division) two normal Integer values, checking for DivisionByZero
+    ## and set result in-place
+    let dm = divmod(x.i, notZero(y))
+    x = newBlock(@[newInteger(dm[0]), newInteger(dm[1])])
 
 template normalIntegerPow*(x, y: int): untyped =
     ## get the power of two normal Integer values, checking for overflow
@@ -330,35 +387,80 @@ template normalIntegerPow*(x, y: int): untyped =
     else:
         newFloating(pow(float(x), float(y)))
 
+template normalIntegerPowI*(x: var Value, y: int): untyped =
+    ## get the power of two normal Integer values, checking for overflow
+    ## and set result in-place
+    if likely(y >= 0):
+        if unlikely(powIntWithOverflow(x.i, y, x.i)):
+            when not defined(NOGMP):
+                when defined(WEB):
+                    x = newInteger(big(x.i) ** big(y))
+                else:
+                    x = newInteger(pow(x.i, culong(y)))
+            else:
+                RuntimeError_IntegerOperationOverflow("pow", $x.i, $y)
+    else:
+        x = newFloating(pow(float(x.i), float(y)))
+
 template normalIntegerAnd*(x, y: int): untyped =
     ## bitwise AND two normal Integer values
     ## and return result
     newInteger(x and y)
+
+template normalIntegerAndI*(x: var Value, y: int): untyped =
+    ## bitwise AND two normal Integer values
+    ## and set result in-place
+    x.i = x.i and y
 
 template normalIntegerOr*(x, y: int): untyped =
     ## bitwise OR two normal Integer values
     ## and return result
     newInteger(x or y)
 
+template normalIntegerOrI*(x: var Value, y: int): untyped =
+    ## bitwise OR two normal Integer values
+    ## and set result in-place
+    x.i = x.i or y
+
 template normalIntegerXor*(x, y: int): untyped =
     ## bitwise XOR two normal Integer values
     ## and return result
     newInteger(x xor y)
+
+template normalIntegerXorI*(x: var Value, y: int): untyped =
+    ## bitwise XOR two normal Integer values
+    ## and set result in-place
+    x.i = x.i xor y
 
 template normalIntegerNot*(x: int): untyped =
     ## bitwise NOT of a normal Integer value
     ## and return result
     newInteger(not x)
 
+template normalIntegerNotI*(x: var Value): untyped =
+    ## bitwise NOT of a normal Integer value
+    ## and set result in-place
+    x.i = not x.i
+
 template normalIntegerShl*(x, y: int): untyped =
-    ## bitwise shift left two normal Integer values
+    ## bitwise shift-left two normal Integer values
     ## and return result
     newInteger(x shl y)
 
+template normalIntegerShlI*(x: var Value, y: int): untyped =
+    ## bitwise shift-left two normal Integer values
+    ## and set result in-place
+    x.i = x.i shl y
+
 template normalIntegerShr*(x, y: int): untyped =
-    ## bitwise shift right two normal Integer values
+    ## bitwise shift-right two normal Integer values
     ## and return result
     newInteger(x shr y)
+
+template normalIntegerShrI*(x: var Value, y: int): untyped =
+    ## bitwise shift-right two normal Integer values
+    ## and set result in-place
+    x.i = x.i shr y
 
 #=======================================
 # Methods
