@@ -1185,6 +1185,52 @@ proc defineSymbols*() =
             else:
                 push(newBlock(getPermutations(x.a, sz, doRepeat).map((
                         z)=>newBlock(z))))
+                        
+                        
+    builtin "pop",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "remove and return the last item from given collection",
+        args        = {
+            "collection": {Literal}
+        },
+        attrs       = {
+            "n"     : ({Integer}, "remove multiple items. (Must be greater than 0.)")
+        },
+        returns     = {Any},
+        example     = """
+            ..........
+        """:
+            #=======================================================
+            var n = 
+                if checkAttr("n"): aN.i
+                else: 1
+            
+            ensureInPlace()
+            if n == 1:
+                case InPlaced.kind:
+                of String: 
+                    push(newChar(InPlaced.s[^1]))
+                    Inplaced.s = InPlaced.s[0..^(n + 1)]
+                of Block:
+                    if InPlaced.a.len > 0:
+                        push(InPlaced.a[^1])
+                        InPlaced.a = InPlaced.a[0..^(n + 1)]
+                else: discard
+            elif n > 1:
+                case InPlaced.kind:
+                of String: 
+                    push(newString(InPlaced.s[(InPlaced.s.len-n)..^1]))
+                    InPlaced.s = InPlaced.s[0..^(n + 1)]
+                of Block:
+                    if InPlaced.a.len > 0:
+                        push(newBlock(InPlaced.a[(InPlaced.a.len-n)..^1]))
+                        InPlaced.a = InPlaced.a[0..^(n + 1)]
+                else: discard
+            else: raise newException(ValueError, "Attribute 'n can't be 0 or negative.")
+                
+
 
     builtin "prepend",
         alias       = unaliased,
