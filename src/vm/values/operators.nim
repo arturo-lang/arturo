@@ -881,6 +881,52 @@ proc `/`*(x: Value, y: Value): Value =
                 return newQuantity(x.nm / convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
         else:
             return invalidOperation("div")
+
+proc `/=`*(x: var Value, y: Value) =
+    ## divide (integer division) given values
+    ## and store the result in the first one 
+    ## 
+    ## **Hint:** In-place, mutating operation
+
+    let pair = getValuePair()
+    case pair:
+        of Integer    || Integer        :   normalIntegerDivI(x, y.i)
+        of Integer    || BigInteger     :   (when GMP: x = newInteger(toBig(x.i) div notZero(y.bi)))
+        of BigInteger || Integer        :   (when GMP: divI(x.bi, notZero(y.i)))
+        of BigInteger || BigInteger     :   (when GMP: divI(x.bi, notZero(y.bi)))
+        of Integer    || Floating       :   x = newFloating(x.i / notZero(y.f))
+        of BigInteger || Floating       :   (when GMP: x = newFloating(x.bi / notZero(y.f)))
+        of Integer    || Rational       :   x = newInteger(toRational(x.i) div notZero(y.rat))
+        of Integer    || Complex        :   x = newComplex(float(x.i) / notZero(y.z))
+
+        of Floating   || Integer        :   x.f /= float(notZero(y.i))
+        of Floating   || BigInteger     :   (when GMP: x = newFloating(x.f / notZero(y.bi)))
+        of Floating   || Floating       :   x.f /= notZero(y.f)
+        of Floating   || Rational       :   x = newInteger(toRational(x.f) div notZero(y.rat))
+        of Floating   || Complex        :   x = newComplex(x.f / notZero(y.z))
+
+        of Rational   || Integer        :   x = newInteger(x.rat div toRational(notZero(y.i)))
+        of Rational   || Floating       :   x = newInteger(x.rat div toRational(notZero(y.f)))
+        of Rational   || Rational       :   x = newInteger(x.rat div notZero(y.rat))
+
+        of Complex    || Integer        :   x.z /= float(notZero(y.i))
+        of Complex    || Floating       :   x.z /= notZero(y.f)
+        of Complex    || Complex        :   x.z /= notZero(y.z)
+        
+        of Quantity   || Integer        :   x.nm /= y
+        of Quantity   || Floating       :   x.nm /= y
+        of Quantity   || Rational       :   x.nm /= y
+        of Quantity   || Quantity       :
+            let finalSpec = getFinalUnitAfterOperation("div", x.unit, y.unit)
+            if unlikely(finalSpec == ErrorQuantity):
+                when not defined(WEB):
+                    RuntimeError_IncompatibleQuantityOperation("div", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
+            elif finalSpec == NumericQuantity:
+                x.nm /= y.nm
+            else:
+                x = newQuantity(x.nm / convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
+        else:
+            discard invalidOperation("div")
 {.push overflowChecks: on.}
 proc `/=`*(x: var Value, y: Value) =
     ## divide (integer division) given values 
