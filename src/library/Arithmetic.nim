@@ -275,13 +275,7 @@ proc defineSymbols*() =
             pow 'a 2           ; a: 25
         """:
             #=======================================================
-            if xKind==Literal : 
-                ensureInPlace(); InPlaced ^= y
-            elif normalIntegerOperation():
-                push(normalIntegerPow(x.i, y.i))
-            else:
-                push(x^y)
-
+            arithmeticOperationB("pow", `^`, `^=`)
 
     # TODO(Arithmetic) add `powmod` built-in function?
     #  labels: library, enhancement, open discussion
