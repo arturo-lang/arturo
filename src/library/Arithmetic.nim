@@ -50,7 +50,11 @@ proc defineSymbols*() =
         """:
             #=======================================================
             if xKind==Literal : 
-                ensureInPlace(); InPlaced += y
+                ensureInPlace()
+                if normalIntegerOperation(inPlace=true):
+                    normalIntegerAddI(InPlaced, y.i)
+                else:
+                    InPlaced += y
             elif normalIntegerOperation():
                 push(normalIntegerAdd(x.i, y.i))
             else:
