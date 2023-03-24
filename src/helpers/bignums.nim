@@ -559,6 +559,9 @@ func `mod`*(x: Int, y: int | culong | Int): Int =
 func `mod`*(x: int | culong, y: Int): Int =
     newInt().`mod`(newInt(x), y)
 
+func `modI`*(x: Int, y: int | culong | Int) = 
+    discard x.`mod`(x, y)
+
 func modInverse*(z, g, n: Int): bool =
     mpz_invert(z[], g[], n[]) != 0
 
