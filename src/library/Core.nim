@@ -827,6 +827,48 @@ proc defineSymbols*() =
                 execUnscoped(y)
 
             push(newLogical(condition))
+            
+    builtin "unstack",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "pop top <number> values from stack",
+        args        = {
+            "number"    : {Integer}
+        },
+        attrs       = {
+            "discard"   : ({Logical},"do not return anything")
+        },
+        returns     = {Any},
+        example     = """
+            1 2 3
+            a: pop 1        ; a: 3
+
+            1 2 3
+            b: pop 2        ; b: [3 2]
+            ..........
+            1 2 3
+            pop.discard 1   ; popped 3 from the stack
+        """:
+            #=======================================================
+            let doDiscard = (hadAttr("discard"))
+
+            if x.i==1:
+                if doDiscard: discard pop()
+                else: discard
+            else:
+                if doDiscard: 
+                    var i = 0
+                    while i<x.i:
+                        discard pop()
+                        i+=1
+                else:
+                    var res: ValueArray
+                    var i = 0
+                    while i<x.i:
+                        res.add pop()
+                        i+=1
+                    push(newBlock(res))
 
     builtin "until",
         alias       = unaliased, 
