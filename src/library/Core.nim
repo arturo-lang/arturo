@@ -851,8 +851,13 @@ proc defineSymbols*() =
             pop.discard 1   ; popped 3 from the stack
         """:
             #=======================================================
+            if Stack[0..SP-1].len < x.i:
+                RuntimeError_OperationNotPermitted(
+                    "Stack Underflow."
+                )
+            
             let doDiscard = (hadAttr("discard"))
-
+            
             if x.i==1:
                 if doDiscard: discard pop()
                 else: discard
@@ -869,6 +874,7 @@ proc defineSymbols*() =
                         res.add pop()
                         i+=1
                     push(newBlock(res))
+
 
     builtin "until",
         alias       = unaliased, 
