@@ -472,6 +472,9 @@ func `div`*(z, x: Int, y: int): Int =
 func `div`*(x: Int, y: int | culong | Int): Int =
     newInt().`div`(x, y)
 
+func `divI`*(x: Int, y: int | culong | Int) = 
+    x.`div`(x, y)
+
 func `div`*(x: int | culong, y: Int): Int =
     newInt().`div`(newInt(x), y)
 
