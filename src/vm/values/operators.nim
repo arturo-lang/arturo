@@ -69,28 +69,6 @@ template toNewBig(v: untyped): untyped =
         big(v)
     else:
         newInt(v)
-{.push overflowChecks: on.}
-proc safeMulI[T: SomeInteger](x: var T, y: T) {.inline, noSideEffect.} =
-    x = x * y
-
-func safePow[T: SomeNumber](x: T, y: Natural): T =
-    case y
-    of 0: result = 1
-    of 1: result = x
-    of 2: result = x * x
-    of 3: result = x * x * x
-    else:
-        var (x, y) = (x, y)
-        result = 1
-        while true:
-            if (y and 1) != 0:
-                safeMulI(result, x)
-            y = y shr 1
-            if y == 0:
-                break
-            safeMulI(x, x)
-
-{.pop.}
 
 template getValuePair(): untyped =
     let xKind {.inject.} = x.kind
