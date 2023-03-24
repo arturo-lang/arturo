@@ -228,7 +228,6 @@ template normalIntegerIncI*(x: var Value): untyped =
             x = newInteger(toNewBig(x.i) + toBig(1))
         else:
             RuntimeError_IntegerOperationOverflow("inc", $x.i, "")
-            VNULL
 
 template normalIntegerSub*(x, y: int): untyped =
     ## subtract two normal Integer values, checking for overflow
