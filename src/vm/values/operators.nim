@@ -1111,7 +1111,7 @@ proc `/%`*(x: Value, y: Value): Value =
         else:
             return invalidOperation("divmod")
 
-proc `/%`*(x: var Value, y: Value): Value =
+proc `/%=`*(x: var Value, y: Value) =
     ## perform the divmod operation between given values
     ## and store the result in the first one
     ## 
