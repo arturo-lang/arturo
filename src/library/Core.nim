@@ -842,13 +842,13 @@ proc defineSymbols*() =
         returns     = {Any},
         example     = """
             1 2 3
-            a: pop 1        ; a: 3
+            a: unstack 1        ; a: 3
 
             1 2 3
-            b: pop 2        ; b: [3 2]
+            b: unstack 2        ; b: [3 2]
             ..........
             1 2 3
-            pop.discard 1   ; popped 3 from the stack
+            unstack.discard 1   ; popped 3 from the stack
         """:
             #=======================================================
             if Stack[0..SP-1].len < x.i:
