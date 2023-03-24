@@ -584,15 +584,6 @@ proc defineSymbols*() =
         description = "the NULL constant":
             VNULL
 
-    # TODO(Core/pop) should be probably renamed
-    #  `pop` could easily do what a `pop` normally does, and that would mean
-    #  a built-in method in the Collections module that pops/deletes an element from
-    #  a given block/collection and returns it
-    #
-    #  This one refers to the stack and it could be quite confusing.
-    #
-    #  So, preferrably, IMHO, this should be renamed to something like: `unstack`, `destack`, etc
-    #  label: library, enhancement, open discussion
 
     builtin "return",
         alias       = unaliased, 
