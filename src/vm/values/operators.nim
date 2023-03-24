@@ -321,7 +321,7 @@ template normalIntegerFDiv*(x, y: int): untyped =
 template normalIntegerFDivI*(x: var Value, y: int): untyped =
     ## divide (floating-point division) two normal Integer values, checking for DivisionByZero
     ## and set result in-place
-    x = newFloating(x / notZero(y))
+    x = newFloating(x.i / notZero(y))
 
 template normalIntegerMod*(x, y: int): untyped =
     ## modulo two normal Integer values, checking for DivisionByZero
@@ -331,7 +331,7 @@ template normalIntegerMod*(x, y: int): untyped =
 template normalIntegerModI*(x: var Value, y: int): untyped =
     ## divide (floating-point division) two normal Integer values, checking for DivisionByZero
     ## and set result in-place
-    x = newInteger(x mod notZero(y))
+    x = newInteger(x.i mod notZero(y))
 
 template normalIntegerDivMod*(x, y: int): untyped =
     ## divide+modulo (integer division) two normal Integer values, checking for DivisionByZero
