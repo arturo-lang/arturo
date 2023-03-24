@@ -1074,63 +1074,6 @@ proc `%=`*(x: var Value, y: Value) =
         else:
             discard invalidOperation("mod")
 
-# {.push overflowChecks: on.}
-# proc `%=`*(x: var Value, y: Value) =
-#     ## perform the modulo operation between given values
-#     ## and store the result in the first one
-#     ## 
-#     ## **Hint:** In-place, mutating operation
-#     if not (x.kind in {Integer,Floating,Rational}) or not (y.kind in {Integer,Floating,Rational}):
-#         if (x.kind == Quantity and y.kind == Quantity) and (x.unit.kind==y.unit.kind):
-#             if x.unit.name == y.unit.name:
-#                 x.nm %= y.nm
-#             else:
-#                 x.nm %= convertQuantityValue(y.nm, y.unit.name, x.unit.name)
-#         else:
-#             if unlikely(x.unit.kind != y.unit.kind):
-#                 when not defined(WEB):
-#                     RuntimeError_IncompatibleQuantityOperation("mod", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
-#             else:
-#                 x = VNULL
-#     else:
-#         if x.kind==Integer and y.kind==Integer:
-#             if likely(x.iKind==NormalInteger):
-#                 if likely(y.iKind==NormalInteger): 
-#                     x.i = x.i mod y.i
-#                 else: 
-#                     when defined(WEB):
-#                         x = newInteger(big(x.i) mod y.bi)
-#                     elif not defined(NOGMP):
-#                         x = newInteger(x.i mod y.bi)
-#             else:
-#                 when defined(WEB):
-#                     if likely(y.iKind==NormalInteger): 
-#                         x = newInteger(x.bi mod big(y.i))
-#                     else: 
-#                         x = newInteger(x.bi mod y.bi)
-#                 elif not defined(NOGMP):
-#                     if likely(y.iKind==NormalInteger): 
-#                         x = newInteger(x.bi mod y.i)
-#                     else: 
-#                         x = newInteger(x.bi mod y.bi)
-#         else:
-#             if x.kind==Floating:
-#                 if y.kind==Floating: x = newFloating(x.f mod y.f)
-#                 elif y.kind==Rational: x = newRational(toRational(x.f) mod y.rat)
-#                 else: 
-#                     if likely(y.iKind==NormalInteger):
-#                         x = newFloating(x.f mod float(y.i))
-#             elif x.kind==Rational:
-#                 if y.kind==Floating: x = newRational(x.rat mod toRational(y.f))
-#                 elif y.kind==Rational: x = newRational(x.rat mod y.rat)
-#                 else: x = newRational(x.rat mod toRational(y.i))
-#             else:
-#                 if y.kind==Rational:
-#                     x = newRational(toRational(x.i) mod y.rat)
-#                 else:
-#                     if likely(x.iKind==NormalInteger):
-#                         x = newFloating(float(x.i) mod y.f)
-# {.pop.}
 proc `/%`*(x: Value, y: Value): Value =
     ## perform the divmod operation between given values
     ## and return the result as a *tuple* Block value
