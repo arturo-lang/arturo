@@ -219,12 +219,7 @@ proc defineSymbols*() =
             mod 'a 3           ; a: 2
         """:
             #=======================================================
-            if xKind==Literal : 
-                ensureInPlace(); InPlaced %= y
-            elif normalIntegerOperation():
-                push(normalIntegerMod(x.i, y.i))
-            else:
-                push(x%y)
+            arithmeticOperationB("mod", `%`, `%=`)
 
     builtin "mul",
         alias       = asterisk, 
