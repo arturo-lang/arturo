@@ -274,12 +274,7 @@ proc defineSymbols*() =
             neg 'a             ; a: -5
         """:
             #=======================================================
-            if xKind==Literal : 
-                ensureInPlace(); InPlaced *= I1M
-            elif normalIntegerOperation():
-                push(normalIntegerNeg(x.i))
-            else:
-                push(neg(x))
+            arithmeticOperationA("neg", `neg`, `negI`)
 
     builtin "pow",
         alias       = caret, 
