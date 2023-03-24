@@ -1317,6 +1317,45 @@ do [
 
 ]
 
+
+topic "pop"
+do [
+    
+    topic "pop - :block .n"
+    
+    a: [0 1 2 3 4 5]
+    b: pop a
+    
+    ensure -> [0 1 2 3 4] = a
+    ensure -> 5 = b
+    passed
+    
+    b: pop.n: 2 a
+
+    ensure -> [0 1 2] = a
+    ensure -> [3 4] = b
+    passed
+
+
+    topic "pop - :string .n"
+    
+    a: "Arturoo"
+    b: pop a
+    
+    ensure -> "Arturo" = a
+    ensure -> `o` = b
+    passed
+    
+    b: pop.n: 3 a
+
+    ensure -> "Art" = a
+    ensure -> "uro" = b
+    passed
+    
+
+]
+
+
 topic "prepend"
 do [
 
