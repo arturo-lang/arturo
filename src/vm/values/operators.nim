@@ -1216,39 +1216,27 @@ proc `||`*(x: Value, y: Value): Value =
 
         else:
             return invalidOperation("or")
-{.push overflowChecks: on.}
+
 proc `||=`*(x: var Value, y: Value) =
-    ## perform binary-or between given values
+    ## perform binary-OR between given values
     ## and store the result in the first value
     ## 
     ## **Hint:** In-place, mutation operation
-    if (x.kind == Binary or y.kind==Binary) and (x.kind in {Integer, Binary} and y.kind in {Integer, Binary}):
-        var a = (if x.kind==Binary: x.n else: numberToBinary(x.i))
-        var b = (if y.kind==Binary: y.n else: numberToBinary(y.i))
-        x = newBinary(a or b)
-    elif not (x.kind==Integer) or not (y.kind==Integer):
-        x = VNULL
-    else:
-        if likely(x.iKind==NormalInteger):
-            if likely(y.iKind==NormalInteger):
-                x = newInteger(x.i or y.i)
-            else:
-                when defined(WEB):
-                    x = newInteger(big(x.i) or y.bi)
-                elif not defined(NOGMP):
-                    x = newInteger(x.i or y.bi)
+    
+    let pair = getValuePair()
+    case pair:
+        of Integer    || Integer        :   normalIntegerOrI(x, y.i)
+        of Integer    || BigInteger     :   (when GMP: x = newInteger(toBig(x.i) or y.bi))
+        of BigInteger || Integer        :   (when GMP: orI(x.bi, toBig(y.i)))
+        of BigInteger || BigInteger     :   (when GMP: orI(x.bi, y.bi))
+        of Integer    || Binary         :   x = newBinary(numberToBinary(x.i) or y.n)
+
+        of Binary     || Integer        :   x.n = x.n or numberToBinary(y.i)
+        of Binary     || Binary         :   x.n = x.n or y.n
+
         else:
-            when defined(WEB):
-                if unlikely(y.iKind==BigInteger):
-                    x = newInteger(x.bi or y.bi)
-                else:
-                    x = newInteger(x.bi or big(y.i))
-            elif not defined(NOGMP):
-                if unlikely(y.iKind==BigInteger):
-                    x = newInteger(x.bi or y.bi)
-                else:
-                    x = newInteger(x.bi or y.i)
-{.pop.}
+            discard invalidOperation("or")
+
 proc `^^`*(x: Value, y: Value): Value =
     ## perform binary-XOR between given values and return the result
     
