@@ -1395,7 +1395,7 @@ func `-`*(a, b: VColor): VColor =
         satMinus(A.a, B.a)
     )
 
-`-=`*(a: var VColor, b: VColor) =
+func `-=`*(a: var VColor, b: VColor) =
     a = a - b
 
 func `$`*(c: VColor): string =
