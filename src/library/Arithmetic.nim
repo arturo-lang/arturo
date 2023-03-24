@@ -154,12 +154,7 @@ proc defineSymbols*() =
             divmod 'a 4             ; a: [1, 2]
         """:
             #=======================================================
-            if xKind==Literal : 
-                ensureInPlace(); InPlaced /%= y
-            elif normalIntegerOperation():
-                push(normalIntegerDivMod(x.i, y.i))
-            else:
-                push(x/%y)
+            arithmeticOperationB("divmod", `/%`, `/%=`)
 
     builtin "fdiv",
         alias       = doubleslash, 
