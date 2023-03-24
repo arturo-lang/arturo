@@ -47,15 +47,6 @@ import vm/values/custom/[vbinary, vrange]
 # Methods
 #=======================================
 
-# TODO(Collections) add a proper `pop` built-in method
-#  right now, `chop` works like that, kind-of, but does *not* return the
-#  removed item
-#
-#  also: Core/pop actually pop an item from the VM stack, which *is* useful,
-#  but a) not so common, b) we might need a different name for that
-#
-#  labels: library, enhancement, open discussion
-
 proc defineSymbols*() =
 
     builtin "append",
