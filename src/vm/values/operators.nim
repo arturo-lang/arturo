@@ -222,7 +222,7 @@ template normalIntegerInc*(x: int): untyped =
 
 template normalIntegerIncI*(x: var Value): untyped =
     ## increment a normal Integer value by 1, checking for overflow
-    ## and return result
+    ## and set result in-place
     if unlikely(addIntWithOverflow(x.i, 1, x.i)):
         when not defined(NOGMP):
             x = newInteger(toNewBig(x.i) + toBig(1))
@@ -257,7 +257,7 @@ template normalIntegerDec*(x: int): untyped =
 
 template normalIntegerDecI*(x: var Value): untyped =
     ## decrement a normal Integer value by 1, checking for overflow
-    ## and return result
+    ## and set result in-place
     if unlikely(subIntWithOverflow(x.i, 1, x.i)):
         when not defined(NOGMP):
             x = newInteger(toNewBig(x.i) - toBig(1))
