@@ -800,6 +800,9 @@ func neg*(z, x: Int): Int =
 func neg*(x: Int): Int =
     newInt().neg(x)
 
+func negI*(x: Int) =
+    mpz_neg(x[], x[])
+
 func gcd*(z, x, y: Int): Int =
     result = z
     mpz_gcd(z[], x[], y[])
