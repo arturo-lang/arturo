@@ -426,6 +426,16 @@
 [+] passed!
 [+] passed!
 
+>> pop
+
+>> pop - :block .n
+[+] passed!
+[+] passed!
+
+>> pop - :string .n
+[+] passed!
+[+] passed!
+
 >> prepend
 
 >> prepend - :binary < :binary :binary
