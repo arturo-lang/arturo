@@ -179,12 +179,7 @@ proc defineSymbols*() =
             fdiv 'a 3          ; a: 2.0
         """:
             #=======================================================
-            if xKind==Literal : 
-                ensureInPlace(); InPlaced //= y
-            elif normalIntegerOperation():
-                push(normalIntegerFDiv(x.i, y.i))
-            else:
-                push(x//y)
+            arithmeticOperationB("fdiv", `//`, `//=`)
 
     builtin "inc",
         alias       = unaliased, 
