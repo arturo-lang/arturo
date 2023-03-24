@@ -12,7 +12,7 @@
 # Libraries
 #=======================================
 
-import lenientops, math, strutils
+import lenientops, macros, math, strutils
 
 when defined(WEB):
     import std/jsbigints
@@ -53,6 +53,46 @@ proc `-`*(x: Value, y: Value): Value
 proc `*`*(x: Value, y: Value): Value
 proc `/`*(x: Value, y: Value): Value
 proc `//`*(x: Value, y: Value): Value
+
+#=======================================
+# Macros
+#=======================================
+
+macro arithmeticOperationA*(name: static[string], op: untyped, inplaceOp: untyped): untyped =
+    ## generates the code necessary for arithmetic operations
+    ## that only require one operand, e.g. `inc`
+    let normalInteger =  ident("normalInteger" & ($name).capitalizeAscii())
+    let normalIntegerI = ident("normalInteger" & ($name).capitalizeAscii() & "I")
+
+    result = quote do:
+        if xKind==Literal : 
+            ensureInPlace()
+            if normalIntegerOperation(inPlace=true):
+                `normalIntegerI`(InPlaced)
+            else:
+                `inplaceOp`(InPlaced)
+        elif normalIntegerOperation():
+            push(`normalInteger`(x.i))
+        else:
+            push(`op`(x))
+
+macro arithmeticOperationB*(name: static[string], op: untyped, inplaceOp: untyped): untyped =
+    ## generates the code necessary for arithmetic operations
+    ## that require two operands, e.g. `add`
+    let normalInteger =  ident("normalInteger" & ($name).capitalizeAscii())
+    let normalIntegerI = ident("normalInteger" & ($name).capitalizeAscii() & "I")
+
+    result = quote do:
+        if xKind==Literal : 
+            ensureInPlace()
+            if normalIntegerOperation(inPlace=true):
+                `normalIntegerI`(InPlaced, y.i)
+            else:
+                `inplaceOp`(InPlaced, y)
+        elif normalIntegerOperation():
+            push(`normalInteger`(x.i, y.i))
+        else:
+            push(`op`(x,y))
 
 #=======================================
 # Helpers
