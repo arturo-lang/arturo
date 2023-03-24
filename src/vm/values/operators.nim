@@ -1285,24 +1285,20 @@ proc `!!`*(x: Value): Value =
         else:
             return invalidOperation("not")
 
-{.push overflowChecks: on.}
-proc `!!=`*(x: var Value) =
-    ## perform binary-not for given value
-    ## and store the result back in it
+proc `!!=`*(x: Value): Value =
+    ## perform binary-NOT on given value
+    ## and store back the result
     ## 
-    ## **Hint:** In-place, mutation operation
-    if x.kind == Binary:
-        x = newBinary(not x.n)
-    elif not (x.kind==Integer):
-        x = VNULL
-    else:
-        if likely(x.iKind==NormalInteger):
-            x = newInteger(not x.i)
-        else:
-            when not defined(NOGMP):
-                x = newInteger(not x.bi)
+    ## **Hint:** In-place, mutating operation
 
-{.pop.}
+    case x.kind:
+        of Integer:
+            if x.iKind==NormalInteger: normalIntegerNotI(x)
+            else: (when GMP: notI(x.bi))
+        of Binary: x.n = not x.n
+        else:
+            discard invalidOperation("not")
+
 proc `<<`*(x: Value, y: Value): Value =
     ## perform binary left-shift between given values and return the result
 
