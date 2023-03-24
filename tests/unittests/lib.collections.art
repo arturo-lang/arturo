@@ -1148,6 +1148,8 @@ do [
     
     ensure -> 5 = last.n: 1 range 0 5
     ensure -> 0 = last.n: 1 range 5 0
+    ensure -> 5 = last.n: 0 range 0 5
+    ensure -> 0 = last.n: 0 range 5 0
     passed
 
     try? -> last.n: neg 2 range 0 5
