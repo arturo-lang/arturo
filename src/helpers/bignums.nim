@@ -669,6 +669,12 @@ func `and`*(z, x, y: Int): Int =
 func `and`*(x, y: Int): Int =
     newInt().`and`(x, y)
 
+func `andI`*(x: Int, y: culong) =
+    mpz_and(x[], x[], newInt(y)[])
+
+func `andI`*(x: Int, y: Int) =
+    mpz_and(x[], x[], y[])
+
 func `and`*(x: Int, y: int | culong): Int =
     x and newInt(y)
 
@@ -681,6 +687,12 @@ func `or`*(z, x, y: Int): Int =
 
 func `or`*(x, y: Int): Int =
     newInt().`or`(x, y)
+
+func `orI`*(x: Int, y: culong) =
+    mpz_ior(x[], x[], newInt(y)[])
+
+func `orI`*(x: Int, y: Int) =
+    mpz_ior(x[], x[], y[])
 
 func `or`*(x: Int, y: int | culong): Int =
     x or newInt(y)
@@ -695,6 +707,12 @@ func `xor`*(z, x, y: Int): Int =
 func `xor`*(x, y: Int): Int =
     newInt().`xor`(x, y)
 
+func `xorI`*(x: Int, y: culong) =
+    mpz_xor(x[], x[], newInt(y)[])
+
+func `xorI`*(x: Int, y: Int) =
+    mpz_xor(x[], x[], y[])
+
 func `xor`*(x: Int, y: int | culong): Int =
     x xor newInt(y)
 
@@ -708,6 +726,9 @@ func `not`*(z, x: Int): Int =
 func `not`*(x: Int): Int =
     newInt().`not` x
 
+func `notI`*(x: Int) =
+    mpz_com(x[], x[])
+
 func `shr`*(z, x: Int, y: culong): Int =
     result = z
     mpz_fdiv_q_2exp(z[], x[], y)
@@ -715,12 +736,18 @@ func `shr`*(z, x: Int, y: culong): Int =
 func `shr`*(x: Int, y: culong): Int =
     newInt().`shr`(x, y)
 
+func `shrI`*(x: Int, y: culong) =
+    mpz_fdiv_q_2exp(x[], x[], y)
+
 func `shl`*(z, x: Int, y: culong): Int =
     result = z
     mpz_mul_2exp(z[], x[], y)
 
 func `shl`*(x: Int, y: culong): Int =
     newInt().`shl`(x, y)
+
+func `shlI`*(x: Int, y: culong) =
+    mpz_mul_2exp(x[], x[], y)
 
 #-----------------------
 # Output
