@@ -1200,7 +1200,27 @@ proc defineSymbols*() =
         },
         returns     = {Any},
         example     = """
+            a: [0 1 2 3 4 5]
+            b: pop 'a
+            
+            print as.code a     ; => [0 1 2 3 4]
+            print as.code b     ; => 5
+            
+            b: pop.n: 2 'a
+
+            print as.code a     ; => [0 1 2]
+            print as.code b     ; => [3 4]
             ..........
+            a: "Arturoo"
+            b: pop 'a
+            
+            print as.code a     ; => "Arturo"
+            print as.code b     ; => `o`
+            
+            b: pop.n: 3 'a
+
+            print as.code a     ; => "Art"
+            print as.code b     ; => "uro"
         """:
             #=======================================================
             var n = 
