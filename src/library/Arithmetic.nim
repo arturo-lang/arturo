@@ -49,7 +49,7 @@ proc defineSymbols*() =
             add 'a 1           ; a: 5
         """:
             #=======================================================
-            arithmeticOperationB("add", `+`, `+=`)
+            generateOperationB("add", `+`, `+=`)
 
     builtin "dec",
         alias       = unaliased, 
@@ -68,7 +68,7 @@ proc defineSymbols*() =
             dec 'a             ; a: 3
         """:
             #=======================================================
-            arithmeticOperationA("dec", `dec`, `decI`)
+            generateOperationA("dec", `dec`, `decI`)
         
     builtin "div",
         alias       = slash, 
@@ -89,7 +89,7 @@ proc defineSymbols*() =
             div 'a 3           ; a: 2
         """:
             #=======================================================
-            arithmeticOperationB("div", `/`, `/=`)
+            generateOperationB("div", `/`, `/=`)
 
     builtin "divmod",
         alias       = slashpercent, 
@@ -112,7 +112,7 @@ proc defineSymbols*() =
             divmod 'a 4             ; a: [1, 2]
         """:
             #=======================================================
-            arithmeticOperationB("divmod", `/%`, `/%=`)
+            generateOperationB("divmod", `/%`, `/%=`)
 
     builtin "fdiv",
         alias       = doubleslash, 
@@ -132,7 +132,7 @@ proc defineSymbols*() =
             fdiv 'a 3          ; a: 2.0
         """:
             #=======================================================
-            arithmeticOperationB("fdiv", `//`, `//=`)
+            generateOperationB("fdiv", `//`, `//=`)
 
     builtin "inc",
         alias       = unaliased, 
@@ -151,7 +151,7 @@ proc defineSymbols*() =
             inc 'a             ; a: 5
         """:
             #=======================================================
-            arithmeticOperationA("inc", `inc`, `incI`)
+            generateOperationA("inc", `inc`, `incI`)
 
     builtin "mod",
         alias       = percent, 
@@ -172,7 +172,7 @@ proc defineSymbols*() =
             mod 'a 3           ; a: 2
         """:
             #=======================================================
-            arithmeticOperationB("mod", `%`, `%=`)
+            generateOperationB("mod", `%`, `%=`)
 
     builtin "mul",
         alias       = asterisk, 
@@ -193,7 +193,7 @@ proc defineSymbols*() =
             mul 'a 2           ; a: 10
         """:
             #=======================================================
-            arithmeticOperationB("mul", `*`, `*=`)
+            generateOperationB("mul", `*`, `*=`)
 
     builtin "neg",
         alias       = unaliased, 
@@ -212,7 +212,7 @@ proc defineSymbols*() =
             neg 'a             ; a: -5
         """:
             #=======================================================
-            arithmeticOperationA("neg", `neg`, `negI`)
+            generateOperationA("neg", `neg`, `negI`)
 
     builtin "pow",
         alias       = caret, 
@@ -233,7 +233,7 @@ proc defineSymbols*() =
             pow 'a 2           ; a: 25
         """:
             #=======================================================
-            arithmeticOperationB("pow", `^`, `^=`)
+            generateOperationB("pow", `^`, `^=`)
 
     # TODO(Arithmetic) add `powmod` built-in function?
     #  labels: library, enhancement, open discussion
@@ -257,7 +257,7 @@ proc defineSymbols*() =
             sub 'a 2           ; a: 5
         """:
             #=======================================================
-            arithmeticOperationB("sub", `-`, `-=`)
+            generateOperationB("sub", `-`, `-=`)
 
 #=======================================
 # Add Library
