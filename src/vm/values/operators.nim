@@ -1159,68 +1159,111 @@ proc `^`*(x: Value, y: Value): Value =
         else:
             return invalidOperation("pow")
 
-{.push overflowChecks: on.}
 proc `^=`*(x: var Value, y: Value) =
     ## perform the power operation between given values
     ## and store the result in the first value
     ## 
     ## **Hint:** In-place, mutation operation
-    if not (x.kind in {Integer, Floating, Complex, Rational}) or not (y.kind in {Integer, Floating}):
-        if x.kind == Quantity:
-            if y.kind==Integer and (y.i > 0 and y.i < 4):
-                if y.i == 1: discard
-                elif y.i == 2: x *= x
-                elif y.i == 3: x *= x * x
+    
+    let pair = getValuePair()
+    case pair:
+        of Integer    || Integer        :   normalIntegerPowI(x, y.i)
+        of BigInteger || Integer        :   (when GMP: powI(x.bi, culong(y.i)))
+        of Integer    || Floating       :   x = newFloating(pow(float(x.i), y.f))
+        of BigInteger || Floating       :   (when GMP: x = newFloating(pow(x.bi, y.f)))
+
+        of Floating   || Integer        :   x.f = pow(x.f, float(y.i))
+        of Floating   || BigInteger     :   (when GMP: x = newFloating(pow(x.f, y.bi)))
+        of Floating   || Floating       :   x.f = pow(x.f, y.f)
+
+        of Rational   || Integer        :   x = newRational(normalIntegerPow(x.rat.num, y.i), normalIntegerPow(x.rat.den, y.i))
+        of Rational   || Floating       :   x = newRational(pow(float(x.rat.num), y.f) / pow(float(x.rat.den), y.f))
+
+        of Complex    || Integer        :   x.z = pow(x.z, float(y.i))
+        of Complex    || Floating       :   x.z = pow(x.z, y.f)
+        of Complex    || Complex        :   x.z = pow(x.z, y.z)
+        
+        of Quantity   || Integer        :   
+            case y.i:
+                of 0: x = newInteger(1)
+                of 1: discard
+                of 2: x *= x
+                of 3: x *= x * x
                 else:
-                    when not defined(WEB):
-                        RuntimeError_IncompatibleQuantityOperation("pow", valueAsString(x), valueAsString(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
-            elif y.kind==Floating and (y.f > 0 and y.f < 4):
-                if y.f == 1.0: discard
-                elif y.f == 2.0: x *= x
-                elif y.f == 3.0: x *= x * x
-                else:
-                    when not defined(WEB):
-                        RuntimeError_IncompatibleQuantityOperation("pow", valueAsString(x), valueAsString(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
-            else:
-                when not defined(WEB):
                     RuntimeError_IncompatibleQuantityOperation("pow", valueAsString(x), valueAsString(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
-        else: 
-            x = VNULL
-    else:
-        if x.kind==Integer and y.kind==Integer:
-            let res = pow(float(x.i),float(y.i))
-            x = newInteger(int(res))
+        of Quantity   || Floating       :
+            case y.f:
+                of 0.0: x = newInteger(1)
+                of 1.0: discard
+                of 2.0: x *= x
+                of 3.0: x *= x * x
+                else:
+                    RuntimeError_IncompatibleQuantityOperation("pow", valueAsString(x), valueAsString(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
         else:
-            if x.kind==Floating:
-                if y.kind==Floating: x = newFloating(pow(x.f,y.f))
-                elif y.kind==Complex: discard
-                else: 
-                    if likely(x.iKind==NormalInteger):
-                        x = newFloating(pow(x.f,float(y.i)))
-                    else:
-                        when not defined(NOGMP):
-                            x = newFloating(pow(x.f,y.bi))
-            elif x.kind==Complex:
-                if y.kind==Integer:
-                    if likely(y.iKind==NormalInteger): x = newComplex(pow(x.z,float(y.i)))
-                    else: discard
-                elif y.kind==Floating: x = newComplex(pow(x.z,y.f))
-                else: x = newComplex(pow(x.z,y.z))
-            elif x.kind==Rational:
-                if y.kind==Integer:
-                    if likely(y.iKind==NormalInteger): x = newRational(safePow(x.rat.num,y.i),safePow(x.rat.den,y.i))
-                    else: discard
-                elif y.kind==Floating: x = newRational(pow(float(x.rat.num), y.f) / pow(float(x.rat.den), y.f))
-                else: discard
-            else:
-                if y.kind==Floating:
-                    if likely(x.iKind==NormalInteger):
-                        x = newFloating(pow(float(x.i),y.f))
-                    else:
-                        when not defined(NOGMP):
-                            x = newFloating(pow(x.bi,y.f))
-                else: discard
-{.pop.}
+            discard invalidOperation("pow")
+
+# {.push overflowChecks: on.}
+# proc `^=`*(x: var Value, y: Value) =
+#     ## perform the power operation between given values
+#     ## and store the result in the first value
+#     ## 
+#     ## **Hint:** In-place, mutation operation
+#     if not (x.kind in {Integer, Floating, Complex, Rational}) or not (y.kind in {Integer, Floating}):
+#         if x.kind == Quantity:
+#             if y.kind==Integer and (y.i > 0 and y.i < 4):
+#                 if y.i == 1: discard
+#                 elif y.i == 2: x *= x
+#                 elif y.i == 3: x *= x * x
+#                 else:
+#                     when not defined(WEB):
+#                         RuntimeError_IncompatibleQuantityOperation("pow", valueAsString(x), valueAsString(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
+#             elif y.kind==Floating and (y.f > 0 and y.f < 4):
+#                 if y.f == 1.0: discard
+#                 elif y.f == 2.0: x *= x
+#                 elif y.f == 3.0: x *= x * x
+#                 else:
+#                     when not defined(WEB):
+#                         RuntimeError_IncompatibleQuantityOperation("pow", valueAsString(x), valueAsString(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
+#             else:
+#                 when not defined(WEB):
+#                     RuntimeError_IncompatibleQuantityOperation("pow", valueAsString(x), valueAsString(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
+#         else: 
+#             x = VNULL
+#     else:
+#         if x.kind==Integer and y.kind==Integer:
+#             let res = pow(float(x.i),float(y.i))
+#             x = newInteger(int(res))
+#         else:
+#             if x.kind==Floating:
+#                 if y.kind==Floating: x = newFloating(pow(x.f,y.f))
+#                 elif y.kind==Complex: discard
+#                 else: 
+#                     if likely(x.iKind==NormalInteger):
+#                         x = newFloating(pow(x.f,float(y.i)))
+#                     else:
+#                         when not defined(NOGMP):
+#                             x = newFloating(pow(x.f,y.bi))
+#             elif x.kind==Complex:
+#                 if y.kind==Integer:
+#                     if likely(y.iKind==NormalInteger): x = newComplex(pow(x.z,float(y.i)))
+#                     else: discard
+#                 elif y.kind==Floating: x = newComplex(pow(x.z,y.f))
+#                 else: x = newComplex(pow(x.z,y.z))
+#             elif x.kind==Rational:
+#                 if y.kind==Integer:
+#                     if likely(y.iKind==NormalInteger): x = newRational(safePow(x.rat.num,y.i),safePow(x.rat.den,y.i))
+#                     else: discard
+#                 elif y.kind==Floating: x = newRational(pow(float(x.rat.num), y.f) / pow(float(x.rat.den), y.f))
+#                 else: discard
+#             else:
+#                 if y.kind==Floating:
+#                     if likely(x.iKind==NormalInteger):
+#                         x = newFloating(pow(float(x.i),y.f))
+#                     else:
+#                         when not defined(NOGMP):
+#                             x = newFloating(pow(x.bi,y.f))
+#                 else: discard
+# {.pop.}
 proc `&&`*(x: Value, y: Value): Value =
     ## perform binary-AND between given values and return the result
     
