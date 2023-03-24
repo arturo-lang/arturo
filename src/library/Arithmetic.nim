@@ -19,10 +19,32 @@
 # Libraries
 #=======================================
 
+import macros, strutils
+
 import vm/lib
 
 when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
+
+#=======================================
+# Helpers
+#=======================================
+
+macro arithmeticOperation*(name: static[string], op: untyped, inplaceOp: untyped): untyped =
+    let normalInteger =  ident("normalInteger" & ($name).capitalizeAscii())
+    let normalIntegerI = ident("normalInteger" & ($name).capitalizeAscii() & "I")
+
+    result = quote do:
+        if xKind==Literal : 
+            ensureInPlace()
+            if normalIntegerOperation(inPlace=true):
+                `normalIntegerI`(InPlaced, y.i)
+            else:
+                `inplaceOp`(InPlaced, y)
+        elif normalIntegerOperation():
+            push(`normalInteger`(x.i, y.i))
+        else:
+            push(`op`(x,y))
 
 #=======================================
 # Methods
@@ -49,16 +71,17 @@ proc defineSymbols*() =
             add 'a 1           ; a: 5
         """:
             #=======================================================
-            if xKind==Literal : 
-                ensureInPlace()
-                if normalIntegerOperation(inPlace=true):
-                    normalIntegerAddI(InPlaced, y.i)
-                else:
-                    InPlaced += y
-            elif normalIntegerOperation():
-                push(normalIntegerAdd(x.i, y.i))
-            else:
-                push(x+y)
+            arithmeticOperation("add", `+`, `+=`)
+            # if xKind==Literal : 
+            #     ensureInPlace()
+            #     if normalIntegerOperation(inPlace=true):
+            #         normalIntegerAddI(InPlaced, y.i)
+            #     else:
+            #         InPlaced += y
+            # elif normalIntegerOperation():
+            #     push(normalIntegerAdd(x.i, y.i))
+            # else:
+            #     push(x+y)
 
     builtin "dec",
         alias       = unaliased, 
