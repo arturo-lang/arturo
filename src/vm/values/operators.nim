@@ -1001,54 +1001,6 @@ proc `//=`*(x: var Value, y: Value) =
         else:
             discard invalidOperation("fdiv")
 
-# {.push overflowChecks: on.}
-# proc `//=`*(x: var Value, y: Value) =
-#     ## divide (floating-point division) given values 
-#     ## and store the result in the first one 
-#     ## 
-#     ## **Hint:** In-place, mutating operation
-#     if not (x.kind in {Integer, Floating, Rational}) or not (y.kind in {Integer, Floating, Rational}):
-#         if x.kind == Quantity:
-#             if y.kind == Quantity:
-#                 let finalSpec = getFinalUnitAfterOperation("fdiv", x.unit, y.unit)
-#                 if unlikely(finalSpec == ErrorQuantity):
-#                     when not defined(WEB):
-#                         RuntimeError_IncompatibleQuantityOperation("fdiv", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
-#                 elif finalSpec == NumericQuantity:
-#                     x = x.nm // y.nm
-#                 else:
-#                     x = newQuantity(x.nm // convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
-#             else:
-#                 x.nm //= y
-#         else:
-#             x = VNULL
-#     else:
-#         if x.kind==Integer and y.kind==Integer:
-#             x = newFloating(x.i / y.i)
-#         else:
-#             if x.kind==Floating:
-#                 if y.kind==Floating: x.f /= y.f
-#                 elif y.kind==Rational: x = newRational(toRational(x.f)/y.rat)
-#                 else: 
-#                     if y.iKind == NormalInteger:
-#                         x.f = x.f / float(y.i)
-#                     else:
-#                         when not defined(NOGMP):
-#                             x = newFloating(x.f / y.bi)
-#             elif x.kind==Rational:
-#                 if y.kind==Floating: x.rat /= toRational(y.f)
-#                 elif y.kind==Rational: x.rat /= y.rat
-#                 else: x.rat /= y.i
-#             else:
-#                 if y.kind==Floating:
-#                     if likely(x.iKind==NormalInteger):
-#                         x = newFloating(float(x.i)/y.f)
-#                     else:
-#                         when not defined(NOGMP):
-#                             x = newFloating(x.bi/y.f)
-#                 else: x = newRational(x.i / y.rat)
-# {.pop.}
-
 proc `%`*(x: Value, y: Value): Value =
     ## perform the modulo operation between given values and return the result
 
