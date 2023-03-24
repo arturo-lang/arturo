@@ -1220,6 +1220,23 @@ proc `^=`*(x: var Value, y: Value) =
         else:
             discard invalidOperation("pow")
 
+proc `&&`*(x: Value, y: Value): Value =
+    ## perform binary-AND between given values and return the result
+    
+    let pair = getValuePair()
+    case pair:
+        of Integer    || Integer        :   return normalIntegerAnd(x.i, y.i)
+        of Integer    || BigInteger     :   (when GMP: return newInteger(toBig(x.i) and y.bi))
+        of BigInteger || Integer        :   (when GMP: return newInteger(x.bi and toBig(y.i)))
+        of BigInteger || BigInteger     :   (when GMP: return newInteger(x.bi and y.bi))
+        of Integer    || Binary         :   return newBinary(numberToBinary(x.i) and y.n)
+
+        of Binary     || Integer        :   return newBinary(x.n and numberToBinary(y.i))
+        of Binary     || Binary         :   return newBinary(x.n and y.n)
+
+        else:
+            return invalidOperation("and")
+
 proc `&&=`*(x: var Value, y: Value) =
     ## perform binary-AND between given values
     ## and store the result in the first value
