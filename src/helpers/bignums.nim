@@ -669,7 +669,7 @@ func `and`*(z, x, y: Int): Int =
 func `and`*(x, y: Int): Int =
     newInt().`and`(x, y)
 
-func `andI`*(x: Int, y: culong) =
+func `andI`*(x: Int, y: culong | int) =
     mpz_and(x[], x[], newInt(y)[])
 
 func `andI`*(x: Int, y: Int) =
@@ -688,7 +688,7 @@ func `or`*(z, x, y: Int): Int =
 func `or`*(x, y: Int): Int =
     newInt().`or`(x, y)
 
-func `orI`*(x: Int, y: culong) =
+func `orI`*(x: Int, y: culong | int) =
     mpz_ior(x[], x[], newInt(y)[])
 
 func `orI`*(x: Int, y: Int) =
@@ -707,7 +707,7 @@ func `xor`*(z, x, y: Int): Int =
 func `xor`*(x, y: Int): Int =
     newInt().`xor`(x, y)
 
-func `xorI`*(x: Int, y: culong) =
+func `xorI`*(x: Int, y: culong | int) =
     mpz_xor(x[], x[], newInt(y)[])
 
 func `xorI`*(x: Int, y: Int) =
