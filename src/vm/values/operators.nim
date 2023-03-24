@@ -1342,7 +1342,7 @@ proc `!!`*(x: Value): Value =
         else:
             return invalidOperation("not")
 
-proc `!!=`*(x: var Value): Value =
+proc `!!=`*(x: var Value) =
     ## perform binary-NOT on given value
     ## and store back the result
     ## 
