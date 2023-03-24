@@ -323,14 +323,14 @@ do [
     
     topic "add - :complex :rational"
     
-    ; a: to :complex [1 2]
-    ; b: to :rational [3 5]
-    ; expected: to :rational [11 10]
-    ; ensure -> null = a + b
-    ; ensure -> null = b + a
-    ; ensure -> null = add a b
-    ; ensure -> null = add b a
-    ; passed
+    a: to :complex [1 2]
+    b: to :rational [3 5]
+    expected: to :rational [11 10]
+    ensure -> null = a + b
+    ensure -> null = b + a
+    ensure -> null = add a b
+    ensure -> null = add b a
+    passed
     
     ; :complex :rational - :rational :complex
     a: to :complex [1 2]
