@@ -785,88 +785,133 @@ proc `*`*(x: Value, y: Value): Value =
                 return newQuantity(x.nm * convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
         else:
             return invalidOperation("mul")
-{.push overflowChecks: on.}
+
 proc `*=`*(x: var Value, y: Value) =
-    ## multiply given values 
+    ## multiply given values
     ## and store the result in the first one
     ## 
     ## **Hint:** In-place, mutating operation
-    if not (x.kind in {Integer, Floating, Complex, Rational}) or not (y.kind in {Integer, Floating, Complex, Rational}):
-        if x.kind == Quantity:
-            if y.kind == Quantity:
-                let finalSpec = getFinalUnitAfterOperation("mul", x.unit, y.unit)
-                if unlikely(finalSpec == ErrorQuantity):
-                    when not defined(WEB):
-                        RuntimeError_IncompatibleQuantityOperation("mul", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
-                else:
-                    x = newQuantity(x.nm * convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
+    
+    let pair = getValuePair()
+    case pair:
+        of Integer    || Integer        :   normalIntegerMulI(x, y.i)
+        of Integer    || BigInteger     :   (when GMP: x = newInteger(toBig(x.i) * y.bi))
+        of BigInteger || Integer        :   (when GMP: x.bi *= toBig(y.i))
+        of BigInteger || BigInteger     :   (when GMP: x.bi *= y.bi)
+        of Integer    || Floating       :   x = newFloating(x.i * y.f)
+        of BigInteger || Floating       :   (when GMP: x = newFloating(x.bi * y.f))
+        of Integer    || Rational       :   x = newRational(x.i * y.rat)
+        of Integer    || Complex        :   x = newComplex(float(x.i) * y.z)
+        of Integer    || Quantity       :   x = newQuantity(x * y.nm, y.unit)
+
+        of Floating   || Integer        :   x.f *= float(y.i)
+        of Floating   || BigInteger     :   (when GMP: x = newFloating(x.f * y.bi))
+        of Floating   || Floating       :   x.f *= y.f
+        of Floating   || Rational       :   x = newRational(toRational(x.f) * y.rat)
+        of Floating   || Complex        :   x = newComplex(x.f * y.z)
+
+        of Rational   || Integer        :   x.rat *= y.i
+        of Rational   || Floating       :   x.rat *= toRational(y.f)
+        of Rational   || Rational       :   x.rat *= y.rat
+
+        of Complex    || Integer        :   x.z *= float(y.i)
+        of Complex    || Floating       :   x.z *= y.f
+        of Complex    || Complex        :   x.z *= y.z
+        
+        of Quantity   || Integer        :   x.nm *= y
+        of Quantity   || Floating       :   x.nm *= y
+        of Quantity   || Rational       :   x.nm *= y
+        of Quantity   || Quantity       :
+            let finalSpec = getFinalUnitAfterOperation("mul", x.unit, y.unit)
+            if unlikely(finalSpec == ErrorQuantity):
+                when not defined(WEB):
+                    RuntimeError_IncompatibleQuantityOperation("mul", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
             else:
-                x.nm *= y
+                x = newQuantity(x.nm * convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
         else:
-            x = VNULL
-    else:
-        if x.kind==Integer and y.kind==Integer:
-            if likely(x.iKind==NormalInteger):
-                if likely(y.iKind==NormalInteger):
-                    try:
-                        safeMulI(x.i, y.i)
-                    except OverflowDefect:
-                        when defined(WEB):
-                            x = newInteger(big(x.i)*big(y.i))
-                        elif not defined(NOGMP):
-                            x = newInteger(newInt(x.i)*y.i)
-                        else:
-                            RuntimeError_IntegerOperationOverflow("mul", valueAsString(x), valueAsString(y))
-                else:
-                    when defined(WEB):
-                        x = newInteger(big(x.i)*y.bi)
-                    elif not defined(NOGMP):
-                        x = newInteger(x.i*y.bi)
-            else:
-                when defined(WEB):
-                    if unlikely(y.iKind==BigInteger):
-                        x.bi *= y.bi
-                    else:
-                        x.bi *= big(y.i)
-                elif not defined(NOGMP):
-                    if unlikely(y.iKind==BigInteger):
-                        x.bi *= y.bi
-                    else:
-                        x.bi *= y.i
-        else:
-            if x.kind==Floating:
-                if y.kind==Floating: x.f *= y.f
-                elif y.kind==Complex: x = newComplex(x.f * y.z)
-                elif y.kind==Rational: x = newRational(toRational(x.f) * y.rat)
-                else: 
-                    if y.iKind == NormalInteger:
-                        x.f = x.f * y.i
-                    else:
-                        when not defined(NOGMP):
-                            x = newFloating(x.f * y.bi)
-            elif x.kind==Complex:
-                if y.kind==Integer:
-                    if likely(y.iKind==NormalInteger): x = newComplex(x.z * float(y.i))
-                    else: discard
-                elif y.kind==Floating: x = newComplex(x.z * y.f)
-                else: x.z *= y.z
-            elif x.kind==Rational:
-                if y.kind==Integer:
-                    if likely(y.iKind==NormalInteger): x.rat *= y.i
-                    else: discard
-                elif y.kind==Floating: x.rat *= toRational(y.f)
-                elif y.kind==Complex: discard
-                else: x.rat *= y.rat
-            else:
-                if y.kind==Floating: 
-                    if likely(x.iKind==NormalInteger):
-                        x = newFloating(x.i*y.f)
-                    else:
-                        when not defined(NOGMP):
-                            x = newFloating(x.bi*y.f)
-                elif y.kind==Rational: x = newRational(x.i * y.rat)
-                else: x = newComplex(float(x.i)*y.z)
-{.pop.}
+            discard invalidOperation("mul")
+# {.push overflowChecks: on.}
+# proc `*=`*(x: var Value, y: Value) =
+#     ## multiply given values 
+#     ## and store the result in the first one
+#     ## 
+#     ## **Hint:** In-place, mutating operation
+#     if not (x.kind in {Integer, Floating, Complex, Rational}) or not (y.kind in {Integer, Floating, Complex, Rational}):
+#         if x.kind == Quantity:
+#             if y.kind == Quantity:
+#                 let finalSpec = getFinalUnitAfterOperation("mul", x.unit, y.unit)
+#                 if unlikely(finalSpec == ErrorQuantity):
+#                     when not defined(WEB):
+#                         RuntimeError_IncompatibleQuantityOperation("mul", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
+#                 else:
+#                     x = newQuantity(x.nm * convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
+#             else:
+#                 x.nm *= y
+#         else:
+#             x = VNULL
+#     else:
+#         if x.kind==Integer and y.kind==Integer:
+#             if likely(x.iKind==NormalInteger):
+#                 if likely(y.iKind==NormalInteger):
+#                     try:
+#                         safeMulI(x.i, y.i)
+#                     except OverflowDefect:
+#                         when defined(WEB):
+#                             x = newInteger(big(x.i)*big(y.i))
+#                         elif not defined(NOGMP):
+#                             x = newInteger(newInt(x.i)*y.i)
+#                         else:
+#                             RuntimeError_IntegerOperationOverflow("mul", valueAsString(x), valueAsString(y))
+#                 else:
+#                     when defined(WEB):
+#                         x = newInteger(big(x.i)*y.bi)
+#                     elif not defined(NOGMP):
+#                         x = newInteger(x.i*y.bi)
+#             else:
+#                 when defined(WEB):
+#                     if unlikely(y.iKind==BigInteger):
+#                         x.bi *= y.bi
+#                     else:
+#                         x.bi *= big(y.i)
+#                 elif not defined(NOGMP):
+#                     if unlikely(y.iKind==BigInteger):
+#                         x.bi *= y.bi
+#                     else:
+#                         x.bi *= y.i
+#         else:
+#             if x.kind==Floating:
+#                 if y.kind==Floating: x.f *= y.f
+#                 elif y.kind==Complex: x = newComplex(x.f * y.z)
+#                 elif y.kind==Rational: x = newRational(toRational(x.f) * y.rat)
+#                 else: 
+#                     if y.iKind == NormalInteger:
+#                         x.f = x.f * y.i
+#                     else:
+#                         when not defined(NOGMP):
+#                             x = newFloating(x.f * y.bi)
+#             elif x.kind==Complex:
+#                 if y.kind==Integer:
+#                     if likely(y.iKind==NormalInteger): x = newComplex(x.z * float(y.i))
+#                     else: discard
+#                 elif y.kind==Floating: x = newComplex(x.z * y.f)
+#                 else: x.z *= y.z
+#             elif x.kind==Rational:
+#                 if y.kind==Integer:
+#                     if likely(y.iKind==NormalInteger): x.rat *= y.i
+#                     else: discard
+#                 elif y.kind==Floating: x.rat *= toRational(y.f)
+#                 elif y.kind==Complex: discard
+#                 else: x.rat *= y.rat
+#             else:
+#                 if y.kind==Floating: 
+#                     if likely(x.iKind==NormalInteger):
+#                         x = newFloating(x.i*y.f)
+#                     else:
+#                         when not defined(NOGMP):
+#                             x = newFloating(x.bi*y.f)
+#                 elif y.kind==Rational: x = newRational(x.i * y.rat)
+#                 else: x = newComplex(float(x.i)*y.z)
+# {.pop.}
 
 
 proc neg*(x: Value): Value =
