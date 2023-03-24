@@ -58,7 +58,7 @@ proc `//`*(x: Value, y: Value): Value
 # Macros
 #=======================================
 
-macro arithmeticOperationA*(name: static[string], op: untyped, inplaceOp: untyped): untyped =
+macro generateOperationA*(name: static[string], op: untyped, inplaceOp: untyped): untyped =
     ## generates the code necessary for arithmetic operations
     ## that only require one operand, e.g. `inc`
     let normalInteger =  ident("normalInteger" & ($name).capitalizeAscii())
@@ -76,7 +76,7 @@ macro arithmeticOperationA*(name: static[string], op: untyped, inplaceOp: untype
         else:
             push(`op`(x))
 
-macro arithmeticOperationB*(name: static[string], op: untyped, inplaceOp: untyped): untyped =
+macro generateOperationB*(name: static[string], op: untyped, inplaceOp: untyped): untyped =
     ## generates the code necessary for arithmetic operations
     ## that require two operands, e.g. `add`
     let normalInteger =  ident("normalInteger" & ($name).capitalizeAscii())
