@@ -1,0 +1,22 @@
+; by @Krenium
+
+unplanned: function [][
+    drawers: shuffle @1..100
+    every? 1..100 'x -> some? 1..50 => [x = sample drawers]
+]
+
+planned: function [][
+    drawers: shuffle @1..100
+    every? 1..100 'x [
+        next: x
+        some? 1..50 => [x = next: <= drawers\[next-1]]
+    ]
+]
+
+test: function [f][
+    count: enumerate 10000 => [call f []]
+    print [f ~"|mul fdiv count 10000 100|%"]
+]
+
+test 'unplanned
+test 'planned
