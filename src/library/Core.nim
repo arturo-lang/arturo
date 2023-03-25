@@ -801,10 +801,7 @@ proc defineSymbols*() =
             unstack.discard 1   ; popped 3 from the stack
         """:
             #=======================================================
-            if Stack[0..SP-1].len < x.i:
-                RuntimeError_OperationNotPermitted(
-                    "Stack Underflow."
-                )
+            if Stack[0..SP-1].len < x.i: RuntimeError_StackUnderflow()
             
             let doDiscard = (hadAttr("discard"))
             
