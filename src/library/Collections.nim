@@ -511,13 +511,10 @@ proc defineSymbols*() =
                     if x.s.len == 0: push(newString(""))
                     else: push(newString(x.s[0..aN.i-1]))
                 elif x.kind == Range:
-                    if x.rng.infinite and not x.rng.forward:
-                        push(newFloating(Inf))
+                    if aN.i == 1 or aN.i == 0:
+                        push(x.rng[0, true])
                     else:
-                        if aN.i == 1 or aN.i == 0:
-                            push(x.rng[0, true])
-                        else:
-                            push(newRange(x.rng[0..aN.i, true]))
+                        push(newRange(x.rng[0..aN.i, true]))
                 else:
                     if x.a.len == 0: push(newBlock())
                     else: push(newBlock(x.a[0..aN.i-1]))
