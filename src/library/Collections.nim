@@ -512,7 +512,7 @@ proc defineSymbols*() =
                     else: push(newString(x.s[0..aN.i-1]))
                 elif x.kind == Range:
                     if aN.i == 1 or aN.i == 0:
-                        push(x.rng[0, true])
+                        push(x.rng[1, true])
                     else:
                         push(newRange(x.rng[0..aN.i, true]))
                 else:
