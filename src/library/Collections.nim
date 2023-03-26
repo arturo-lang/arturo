@@ -1194,24 +1194,41 @@ proc defineSymbols*() =
             a: [0 1 2 3 4 5]
             b: pop 'a
             
-            print as.code a     ; => [0 1 2 3 4]
-            print as.code b     ; => 5
+            inspect a
+            ; [ :block
+            ;         0 :integer
+            ;         1 :integer
+            ;         2 :integer
+            ;         3 :integer
+            ;         4 :integer
+            ; ]
+            inspect b     ; 5 :integer
+
             
             b: pop.n: 2 'a
 
-            print as.code a     ; => [0 1 2]
-            print as.code b     ; => [3 4]
+            inspect a
+            ; [ :block
+            ;         0 :integer
+            ;         1 :integer
+            ;         2 :integer
+            ; ]
+            inspect b
+            ; [ :block
+            ;         3 :integer
+            ;         4 :integer
+            ; ]
             ..........
             a: "Arturoo"
             b: pop 'a
             
-            print as.code a     ; => "Arturo"
-            print as.code b     ; => `o`
+            inspect a     ; Arturo :string
+            inspect b     ; o :char
             
             b: pop.n: 3 'a
 
-            print as.code a     ; => "Art"
-            print as.code b     ; => "uro"
+            inspect a     ; Art :string
+            inspect b     ; uro :string
         """:
             #=======================================================
             var n = 
