@@ -579,7 +579,7 @@ do [
 
     ensure -> 5 = first 5..10
     passed
-    ensure -> (to :block 5..7) = first.n: 3 5..10
+    ensure -> (to :block 5..7) = @first.n: 3 5..10
     passed
     
     
