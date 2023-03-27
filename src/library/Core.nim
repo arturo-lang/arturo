@@ -584,56 +584,6 @@ proc defineSymbols*() =
         description = "the NULL constant":
             VNULL
 
-    # TODO(Core/pop) should be probably renamed
-    #  `pop` could easily do what a `pop` normally does, and that would mean
-    #  a built-in method in the Collections module that pops/deletes an element from
-    #  a given block/collection and returns it
-    #
-    #  This one refers to the stack and it could be quite confusing.
-    #
-    #  So, preferrably, IMHO, this should be renamed to something like: `unstack`, `destack`, etc
-    #  label: library, enhancement, open discussion
-    builtin "pop",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "pop top <number> values from stack",
-        args        = {
-            "number"    : {Integer}
-        },
-        attrs       = {
-            "discard"   : ({Logical},"do not return anything")
-        },
-        returns     = {Any},
-        example     = """
-            1 2 3
-            a: pop 1        ; a: 3
-
-            1 2 3
-            b: pop 2        ; b: [3 2]
-            ..........
-            1 2 3
-            pop.discard 1   ; popped 3 from the stack
-        """:
-            #=======================================================
-            let doDiscard = (hadAttr("discard"))
-
-            if x.i==1:
-                if doDiscard: discard pop()
-                else: discard
-            else:
-                if doDiscard: 
-                    var i = 0
-                    while i<x.i:
-                        discard pop()
-                        i+=1
-                else:
-                    var res: ValueArray
-                    var i = 0
-                    while i<x.i:
-                        res.add pop()
-                        i+=1
-                    push(newBlock(res))
 
     builtin "return",
         alias       = unaliased, 
@@ -827,6 +777,51 @@ proc defineSymbols*() =
                 execUnscoped(y)
 
             push(newLogical(condition))
+            
+    builtin "unstack",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "pop top <number> values from stack",
+        args        = {
+            "number"    : {Integer}
+        },
+        attrs       = {
+            "discard"   : ({Logical},"do not return anything")
+        },
+        returns     = {Any},
+        example     = """
+            1 2 3
+            a: unstack 1        ; a: 3
+
+            1 2 3
+            b: unstack 2        ; b: [3 2]
+            ..........
+            1 2 3
+            unstack.discard 1   ; popped 3 from the stack
+        """:
+            #=======================================================
+            if Stack[0..SP-1].len < x.i: RuntimeError_StackUnderflow()
+            
+            let doDiscard = (hadAttr("discard"))
+            
+            if x.i==1:
+                if doDiscard: discard pop()
+                else: discard
+            else:
+                if doDiscard: 
+                    var i = 0
+                    while i<x.i:
+                        discard pop()
+                        i+=1
+                else:
+                    var res: ValueArray
+                    var i = 0
+                    while i<x.i:
+                        res.add pop()
+                        i+=1
+                    push(newBlock(res))
+
 
     builtin "until",
         alias       = unaliased, 
