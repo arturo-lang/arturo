@@ -537,6 +537,7 @@ proc `+`*(x: Value, y: Value): Value =
 
         of Complex    || Integer        :   return newComplex(x.z + float(y.i))
         of Complex    || Floating       :   return newComplex(x.z + y.f)
+        of Complex    || Rational       :   return newComplex(x.z + toFloat(y.rat))
         of Complex    || Complex        :   return newComplex(x.z + y.z)
         
         of Color      || Color          :   return newColor(x.l + y.l)
@@ -580,6 +581,7 @@ proc `+=`*(x: var Value, y: Value) =
 
         of Complex    || Integer        :   x.z += float(y.i)
         of Complex    || Floating       :   x.z += y.f
+        of Complex    || Rational       :   x.z += toFloat(y.rat)
         of Complex    || Complex        :   x.z += y.z
         
         of Color      || Color          :   x.l += y.l
@@ -651,6 +653,7 @@ proc `-`*(x: Value, y: Value): Value =
 
         of Complex    || Integer        :   return newComplex(x.z - float(y.i))
         of Complex    || Floating       :   return newComplex(x.z - y.f)
+        of Complex    || Rational       :   return newComplex(x.z - toFloat(y.rat))
         of Complex    || Complex        :   return newComplex(x.z - y.z)
         
         of Color      || Color          :   return newColor(x.l - y.l)
@@ -694,6 +697,7 @@ proc `-=`*(x: var Value, y: Value) =
 
         of Complex    || Integer        :   x.z -= float(y.i)
         of Complex    || Floating       :   x.z -= y.f
+        of Complex    || Rational       :   x.z -= toFloat(y.rat)
         of Complex    || Complex        :   x.z -= y.z
         
         of Color      || Color          :   x.l -= y.l
@@ -766,6 +770,7 @@ proc `*`*(x: Value, y: Value): Value =
 
         of Complex    || Integer        :   return newComplex(x.z * float(y.i))
         of Complex    || Floating       :   return newComplex(x.z * y.f)
+        of Complex    || Rational       :   return newComplex(x.z * toFloat(y.rat))
         of Complex    || Complex        :   return newComplex(x.z * y.z)
         
         of Quantity   || Integer        :   return newQuantity(x.nm * y, x.unit)
@@ -811,6 +816,7 @@ proc `*=`*(x: var Value, y: Value) =
 
         of Complex    || Integer        :   x.z *= float(y.i)
         of Complex    || Floating       :   x.z *= y.f
+        of Complex    || Rational       :   x.z *= toFloat(y.rat)
         of Complex    || Complex        :   x.z *= y.z
         
         of Quantity   || Integer        :   x.nm *= y
@@ -883,6 +889,7 @@ proc `/`*(x: Value, y: Value): Value =
 
         of Complex    || Integer        :   return newComplex(x.z / float(notZero(y.i)))
         of Complex    || Floating       :   return newComplex(x.z / notZero(y.f))
+        of Complex    || Rational       :   return newComplex(x.z / toFloat(notZero(y.rat)))
         of Complex    || Complex        :   return newComplex(x.z / notZero(y.z))
         
         of Quantity   || Integer        :   return newQuantity(x.nm / y, x.unit)
@@ -929,6 +936,7 @@ proc `/=`*(x: var Value, y: Value) =
 
         of Complex    || Integer        :   x.z /= float(notZero(y.i))
         of Complex    || Floating       :   x.z /= notZero(y.f)
+        of Complex    || Rational       :   x.z /= toFloat(notZero(y.rat))
         of Complex    || Complex        :   x.z /= notZero(y.z)
         
         of Quantity   || Integer        :   x.nm /= y
