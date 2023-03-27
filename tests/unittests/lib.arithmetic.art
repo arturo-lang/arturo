@@ -439,11 +439,14 @@ do [
     topic "add - :rational :quantity"
     ; todo: verify this comparison
 
+    ensure -> all? @[
+        "61/2:usd" = as.code 30:usd + to :rational [1 2]
+        "61/2:eur" = as.code 30:eur + to :rational [1 2]
+        "61/2:usd" = as.code add 30:usd to :rational [1 2]
+        "61/2:eur" = as.code add 30:eur to :rational [1 2]
+    ]
+
     ensure -> not? any? @[
-        try? -> "61/2:usd" = ~"|as.code 30:usd + to :rational [1 2]|"
-        try? -> "61/2:eur" = ~"|as.code 30:eur + to :rational [1 2]|"
-        try? -> "61/2:usd" = ~"|as.code add 30:usd to :rational [1 2]|"
-        try? -> "61/2:eur" = ~"|as.code add 30:eur to :rational [1 2]|"
         try? -> (to :rational [1 2]) + 30:usd
         try? -> (to :rational [1 2]) + 30:eur
         try? -> add (to :rational [1 2]) 30:usd
@@ -451,8 +454,8 @@ do [
     ]
     passed
     
-    a: 30:usd
-    ensure -> not? try? -> 'a + to :rational [1 2]
+    a: 30:usd, 'a + to :rational [1 2]
+    ensure -> "61/2:usd" = as.code a
     passed
     
     a: to :rational [1 2]
