@@ -584,7 +584,6 @@ proc defineSymbols*() =
         description = "the NULL constant":
             VNULL
 
-
     builtin "return",
         alias       = unaliased, 
         op          = opReturn,
