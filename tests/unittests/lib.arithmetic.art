@@ -2459,22 +2459,24 @@ do [
     topic "mul - :complex :quantity"
     ; todo: check if :quantity :complex should be possible
 
-    ensure -> "30.0+60.0i:usd" = ~"|as.code 30:usd * to :complex [1 2]|"
-    ensure -> "30.0+60.0i:eur" = ~"|as.code 30:eur * to :complex [1 2]|"
-    ensure -> "30.0+60.0i:usd" = ~"|as.code mul 30:usd to :complex [1 2]|"
-    ensure -> "30.0+60.0i:eur" = ~"|as.code mul 30:eur to :complex [1 2]|"
-    ensure -> null = (to :complex [1 2]) * 30:usd
-    ensure -> null = (to :complex [1 2]) * 30:eur
-    ensure -> null = mul (to :complex [1 2]) 30:usd
-    ensure -> null = mul (to :complex [1 2]) 30:eur
+    ensure -> not? any? @[
+        try? -> 30:usd * to :complex [1 2]
+        try? -> 30:eur * to :complex [1 2]
+        try? -> mul 30:usd to :complex [1 2]
+        try? -> mul 30:eur to :complex [1 2]
+        try? -> (to :complex [1 2]) * 30:usd
+        try? -> (to :complex [1 2]) * 30:eur
+        try? -> mul (to :complex [1 2]) 30:usd
+        try? -> mul (to :complex [1 2]) 30:eur
+    ]
     passed
     
-    a: 30:usd, 'a * to :complex [1 2]
-    ensure -> "30.0+60.0i:usd" = ~"|as.code a|"
+    a: 30:usd
+    ensure -> not? try? -> 'a * to :complex [1 2]
     passed
     
-    a: to :complex [1 2], 'a * 30:usd
-    ensure -> null = a
+    a: to :complex [1 2]
+    ensure -> not? try? -> 'a * 30:usd
     passed
     
     
@@ -2509,18 +2511,20 @@ do [
     ensure -> "15/1:eur" = ~"|as.code 30:eur * to :rational [1 2]|"
     ensure -> "15/1:usd" = ~"|as.code mul 30:usd to :rational [1 2]|"
     ensure -> "15/1:eur" = ~"|as.code mul 30:eur to :rational [1 2]|"
-    ensure -> null = (to :rational [1 2]) * 30:usd
-    ensure -> null = (to :rational [1 2]) * 30:eur
-    ensure -> null = mul (to :rational [1 2]) 30:usd
-    ensure -> null = mul (to :rational [1 2]) 30:eur
+    ensure -> not? any? @[
+        try? -> (to :rational [1 2]) * 30:usd
+        try? -> (to :rational [1 2]) * 30:eur
+        try? -> mul (to :rational [1 2]) 30:usd
+        try? -> mul (to :rational [1 2]) 30:eur
+    ]
     passed
     
     a: 30:usd, 'a * to :rational [1 2]
     ensure -> "15/1:usd" = ~"|as.code a|"
     passed
     
-    a: to :rational [1 2], 'a * 30:usd
-    ensure -> null = a
+    a: to :rational [1 2]
+    ensure -> not? try? -> 'a * 30:usd
     passed
     
         
@@ -3010,30 +3014,28 @@ do [
     
     topic "sub - :int :color"
     
-    ensure -> null = 1 - #red
-    ensure -> null = #red - 1
-    ensure -> null = sub 1 #red
-    ensure -> null = sub #red 1
+    ensure -> not? any? @[
+        try? -> 1 - #red
+        try? -> #red - 1
+        try? -> sub 1 #red
+        try? -> sub #red 1
+    ]
     passed  
     
     ; :integer :color
     a: 1
-    'a - #red
-    ensure -> a = null
+    ensure -> not? try? -> 'a - #red
     
     a: 1
-    sub 'a #red
-    ensure -> a = null
+    ensure -> not? try? -> sub 'a #red
     passed
     
     ; :color :integer
     a: #red
-    'a - 1
-    ensure -> a = null
+    ensure -> not? try? -> 'a - 1
     
     a: #red
-    sub 'a 1
-    ensure -> a = null
+    ensure -> not? try? -> sub 'a 1
     passed
     
     
@@ -3145,30 +3147,28 @@ do [
     
     topic "sub - :floating :color"
     
-    ensure -> null = 1.5 - #red
-    ensure -> null = #red - 1.5
-    ensure -> null = sub 1.5 #red
-    ensure -> null = sub #red 1.5
+    ensure -> not? any? @[
+        try? -> 1.5 - #red
+        try? -> #red - 1.5
+        try? -> sub 1.5 #red
+        try? -> sub #red 1.5
+    ]
     passed  
     
     ; :floating :color
     a: 1.5
-    'a - #red
-    ensure -> a = null
+    ensure -> not? try? -> 'a - #red
     
     a: 1.5
-    sub 'a #red
-    ensure -> a = null
+    ensure -> not? try? -> sub 'a #red
     passed
     
     ; :color :floating
     a: #red
-    'a - 1.5
-    ensure -> a = null
+    ensure -> not? try? -> 'a - 1.5
     
     a: #red
-    sub 'a 1.5
-    ensure -> a = null
+    ensure -> not? try? -> sub 'a 1.5
     passed
     
     
