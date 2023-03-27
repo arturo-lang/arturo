@@ -1,0 +1,10 @@
+; by @Krenium
+
+calmo?: function [n][
+    f: (factors n) -- @[1 n]
+    unless zero? (size f) % 3 -> return false
+    every? f [x y z] -> prime? x+y+z
+]
+
+1..1000 | select => calmo?
+        | print

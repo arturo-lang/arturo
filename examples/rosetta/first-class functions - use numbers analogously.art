@@ -1,0 +1,19 @@
+; by @Krenium
+
+x: 2.0
+xi: 0.5
+y: 4.0
+yi: 0.25
+z: x + y
+zi: 1 / z
+
+multiplier: function [m n][
+    function [a] with [m n][
+        a*m*n
+    ]
+]
+
+couple @[x y z] @[xi yi zi]
+    | map 'p -> multiplier p\0 p\1
+    | map => [call & -> 0.5]
+    | print
