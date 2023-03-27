@@ -1,0 +1,40 @@
+super: $ => [fold.seed:1 1..& [x y] -> x * factorial y]
+
+hyper: $ => [fold.seed:1 1..& [x y] -> x * y^y]
+
+alternating: $[n][
+    fold 1..n [x y] ->
+        x + (factorial y) * (neg 1)^n-y
+]
+
+exponential: $ => [fold.seed:1 0..& [x y] -> y^x]
+
+rf: function [n][
+    if 1 = n -> return 0
+    b: a: <= 1
+    while -> n > a [
+        'b + 1
+        'a * b
+    ]
+    if a = n -> return b
+    return null
+]
+
+print "First 10 superfactorials:"
+print map 0..9 => super
+
+print "\nFirst 10 hyperfactorials:"
+print map 0..9 => hyper
+
+print "\nFirst 10 alternating factorials:"
+print map 0..9 => alternating
+
+print "\nFirst 5 exponential factorials:"
+print map 0..4 => exponential
+
+prints "\nNumber of digits in $5: "
+print size ~"|exponential 5|"
+print ""
+
+[1 2 6 24 120 720 5040 40320 362880 3628800 119]
+    | loop 'x -> print ~"rf(|x|) = |rf x|"
