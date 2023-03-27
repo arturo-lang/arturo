@@ -345,8 +345,12 @@ do [
     ensure -> not? try? -> add 'b a
     passed
     
-    
-    topic "add - :complex :quantity"
+    ; ** I'm commenting this out, since I don't think it makes any sense
+    ; ** to have something like `31.0+2.0i:usd`, so this type of operations
+    ; ** have been excluded, but feel free to correct me if I'm wrong
+    ; ** and I'll re-implement them, so that we can re-enable the tests here
+
+    ; topic "add - :complex :quantity"
     ; todo: check if :quantity :complex should be possible
 
     ; ensure -> "31.0+2.0i:usd" = ~"|as.code 30:usd + to :complex [1 2]|"
@@ -368,7 +372,6 @@ do [
     ; a: to :complex [1 2]
     ; ensure -> not? try? -> 'a + 30:usd
     ; passed
-    
     
     topic "add - :complex :color"
     
