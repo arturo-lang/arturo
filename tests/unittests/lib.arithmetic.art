@@ -459,34 +459,32 @@ do [
     ensure -> not? try? -> 'a + 30:usd
     passed
     
-    
+
     topic "add - :rational :color"
     
     a: to :rational [3 5]
-    ensure -> null = a + #red
-    ensure -> null = #red + a
-    ensure -> null = add a #red
-    ensure -> null = add #red a
+    ensure -> not? any? @[
+        try? -> a + #red
+        try? -> #red + a
+        try? -> add a #red
+        try? -> add #red a
+    ]
     passed  
     
     ; :complex :color
     a: to :rational [3 5]
-    'a + #red
-    ensure -> a = null
+    ensure -> not? try? -> 'a + #red
     
     a: to :rational [3 5]
-    add 'a #red
-    ensure -> a = null
+    ensure -> not? try? -> add 'a #red
     passed
     
     ; :color :complex
     a: #red
-    'a + to :rational [3 5]
-    ensure -> a = null
+    ensure -> not? try? -> 'a + to :rational [3 5]
     
     a: #red
-    add 'a to :rational [3 5]
-    ensure -> a = null
+    ensure -> not? try? -> add 'a to :rational [3 5]
     passed
     
     ; ------ color
@@ -517,16 +515,18 @@ do [
     
     topic "add - :color :quantity"
 
-    ensure -> null = #red + 30:usd
-    ensure -> null = 30:usd + #red
+    ensure -> not? any? @[
+        try? -> #red + 30:usd
+        try? -> 30:usd + #red
+    ]
     passed
     
-    a: #red, 'a + 30:usd
-    ensure -> null = a
+    a: #red
+    ensure -> not? try? -> 'a + 30:usd
     passed
     
-    a: 30:usd, 'a + #red
-    ensure -> null = a
+    a: 30:usd
+    ensure -> not? try? -> 'a + #red
     passed
     
     ; ------ quantity
