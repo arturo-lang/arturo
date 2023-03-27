@@ -2066,9 +2066,9 @@ proc defineSymbols*() =
                             strEnd = 2
                         SetInPlace(newStringBlock(InPlaced.s[strStart..^strEnd].split({DirSep,AltSep})))
                     elif checkAttr("by"):
-                        if aByKind == String:
+                        if aBy.kind == String:
                             SetInPlace(newStringBlock(InPlaced.s.split(aBy.s)))
-                        elif aByKind == Regex:
+                        elif aBy.kind == Regex:
                             SetInPlace(newStringBlock(InPlaced.s.split(aBy.rx)))
                         else:
                             SetInPlace(newStringBlock(toSeq(
@@ -2127,9 +2127,9 @@ proc defineSymbols*() =
                         strEnd = 2
                     push(newStringBlock(x.s[strStart..^strEnd].split({DirSep,AltSep})))
                 elif checkAttr("by"):
-                    if aByKind == String:
+                    if aBy.kind == String:
                         push(newStringBlock(x.s.split(aBy.s)))
-                    elif aByKind == Regex:
+                    elif aBy.kind == Regex:
                         push(newStringBlock(x.s.split(aBy.rx)))
                     else:
                         push(newStringBlock(toSeq(x.s.tokenize(aBy.a.map((k)=>k.s)))))
