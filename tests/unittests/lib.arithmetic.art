@@ -952,11 +952,14 @@ do [
     
     a: to :complex [1 2]
     b: to :rational [3 5]
-    expected: to :rational [11 10]
-    ensure -> null = a / b
-    ensure -> null = b / a
-    ensure -> null = div a b
-    ensure -> null = div b a
+    expected: to :complex @[1//3//5 2//3//5]
+
+    ensure -> expected = a / b
+    ensure -> expected = div a b
+    ensure -> not? any? @[
+        try? -> b / a
+        try? -> div b a
+    ]
     passed
     
     ; :complex :rational - :rational :complex
@@ -964,11 +967,10 @@ do [
     b: to :rational [3 5]
     
     'a / b
-    ensure -> a = to :complex @[infinite infinite]
+    ensure -> a = expected
     passed
     
-    div 'b a
-    ensure -> b = to :rational [3 5]
+    ensure -> not? try? -> div 'b a
     passed
     
     topic "div - :complex :quantity"
