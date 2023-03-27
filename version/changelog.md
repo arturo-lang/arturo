@@ -11,17 +11,29 @@ v0.9.84
 
 ### Library
 
+**New**
+
+- Collections: added new `pop` method
+
 **Enhancements, Changes & Fixes**
 
+- Arithmetic: all operations have been sanitized and throw an error in case it's between a non-supported pair of value types, instead of just returning *null*
+- Arithmetic\add: fixed for operations between Color values
+- Arithmetic\sub: fixed for operations between Color values
 - Collections\contains?: added `.deep` option
+- Collections\first: made to return ranges for Range values + ability to handle infinite ranges correctly
 - Collections\get: fixed to work with String-Range parameters
 - Collections\in?: added `.deep` option
+- Collections\last: made to return ranges for Range values + ability to handle infinite ranges correctly
+- Converters\as: fixed `.code` to properly convert Rational or Complex values with negative fields
+- Core\ensure: added `.that:` option (to show user-defined message on failure)
+- Core\pop: renamed to `unstack` (`pop` is added as a proper popping function in Collections)
 - Collections\split: fixed `.every:` when working with Literal values
 - Collections\sort: fixed `.ascii` when working with Literal values
 - Files\read: added `.delimiter:` support for CSV's
 - Statistics\median: fixed bug + better and more efficient implementation
 - Strings\match: added support for Char values as needle
-- System\sys: added info about CPU endianess and re-organized returned information
+- System\sys: added info about CPU endianess, current hostname and re-organized returned information
 
 ### Misc
 
@@ -29,6 +41,7 @@ v0.9.84
 - Added type-checking for built-in function attributes
 - Fixed issue with GMP-based BigNum handling on Windows
 - Fixed issues with Date values and comparison operators
+- Added `autocomplete:` magic variable, to enable setting (or unsetting) autocompletion in the REPL console
 
 v0.9.82
 ========
