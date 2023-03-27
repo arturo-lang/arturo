@@ -380,10 +380,10 @@ do [
     
     a: to :complex [1 2]
     ensure -> not? any? @[
-        a + #red
-        #red + a
-        add a #red
-        add #red a
+        try? -> a + #red
+        try? -> #red + a
+        try? -> add a #red
+        try? -> add #red a
     ]
     passed  
     
