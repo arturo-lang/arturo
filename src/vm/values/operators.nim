@@ -581,6 +581,7 @@ proc `+=`*(x: var Value, y: Value) =
 
         of Complex    || Integer        :   x.z += float(y.i)
         of Complex    || Floating       :   x.z += y.f
+        of Complex    || Rational       :   x.z += toFloat(y.rat)
         of Complex    || Complex        :   x.z += y.z
         
         of Color      || Color          :   x.l += y.l
