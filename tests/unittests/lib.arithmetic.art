@@ -3198,11 +3198,11 @@ do [
     
     a: to :complex [1 2]
     b: to :rational [3 5]
-    expected: to :rational [11 10]
-    ensure -> null = a - b
-    ensure -> null = b - a
-    ensure -> null = sub a b
-    ensure -> null = sub b a
+    expected: to :complex [0.4 2.0]
+    ensure -> expected = a - b
+    ensure -> not? try? -> b - a
+    ensure -> expected = sub a b
+    ensure -> not? try? -> sub b a
     passed
     
     ; :complex :rational - :rational :complex
@@ -3210,63 +3210,62 @@ do [
     b: to :rational [3 5]
     
     'a - b
-    ensure -> a = to :complex [1 2]
+    ensure -> a = expected
     passed
     
-    sub 'b a
-    ensure -> b = to :rational [3 5]
+    ensure -> not? try? -> sub 'b a
     passed
     
     
     topic "sub - :complex :quantity"
     ; todo: check if :quantity :complex should be possible
 
-    ensure -> "29.0-2.0i:usd" = ~"|as.code 30:usd - to :complex [1 2]|"
-    ensure -> "29.0-2.0i:eur" = ~"|as.code 30:eur - to :complex [1 2]|"
-    ensure -> "29.0-2.0i:usd" = ~"|as.code sub 30:usd to :complex [1 2]|"
-    ensure -> "29.0-2.0i:eur" = ~"|as.code sub 30:eur to :complex [1 2]|"
-    ensure -> null = (to :complex [1 2]) - 30:usd
-    ensure -> null = (to :complex [1 2]) - 30:eur
-    ensure -> null = sub (to :complex [1 2]) 30:usd
-    ensure -> null = sub (to :complex [1 2]) 30:eur
+    ensure -> not? any? @[
+        try? -> 30:usd - to :complex [1 2]
+        try? -> 30:eur - to :complex [1 2]
+        try? -> sub 30:usd to :complex [1 2]
+        try? -> sub 30:eur to :complex [1 2]
+        try? -> (to :complex [1 2]) - 30:usd
+        try? -> (to :complex [1 2]) - 30:eur
+        try? -> sub (to :complex [1 2]) 30:usd
+        try? -> sub (to :complex [1 2]) 30:eur
+    ]
     passed
     
-    a: 30:usd, 'a - to :complex [1 2]
-    ensure -> "29.0-2.0i:usd" = ~"|as.code a|"
+    a: 30:usd
+    ensure -> not? try? -> 'a - to :complex [1 2]
     passed
     
-    a: to :complex [1 2], 'a - 30:usd
-    ensure -> null = a
+    a: to :complex [1 2]
+    ensure -> not? try? -> 'a - 30:usd
     passed
     
     
     topic "sub - :complex :color"
     
     a: to :complex [1 2]
-    ensure -> null = a - #red
-    ensure -> null = #red - a
-    ensure -> null = sub a #red
-    ensure -> null = sub #red a
+    ensure -> not? any? @[
+        try? -> a - #red
+        try? -> #red - a
+        try? -> sub a #red
+        try? -> sub #red a
+    ]
     passed  
     
     ; :complex :color
     a: to :complex [1 2]
-    'a - #red
-    ensure -> a = null
+    ensure -> not? try? -> 'a - #red
     
     a: to :complex [1 2]
-    sub 'a #red
-    ensure -> a = null
+    ensure -> not? try? -> sub 'a #red
     passed
     
     ; :color :complex
     a: #red
-    'a + to :complex [1 2]
-    ensure -> a = null
+    ensure -> not? try? -> 'a + to :complex [1 2]
     
     a: #red
-    sub 'a to :complex [1 2]
-    ensure -> a = null
+    ensure -> not? try? -> sub 'a to :complex [1 2]
     passed
 
     
@@ -3299,48 +3298,48 @@ do [
     ensure -> "59/2:eur" = ~"|as.code 30:eur - to :rational [1 2]|"
     ensure -> "59/2:usd" = ~"|as.code sub 30:usd to :rational [1 2]|"
     ensure -> "59/2:eur" = ~"|as.code sub 30:eur to :rational [1 2]|"
-    ensure -> null = (to :rational [1 2]) - 30:usd
-    ensure -> null = (to :rational [1 2]) - 30:eur
-    ensure -> null = sub (to :rational [1 2]) 30:usd
-    ensure -> null = sub (to :rational [1 2]) 30:eur
+    ensure -> not? any? @[
+        try? -> (to :rational [1 2]) - 30:usd
+        try? -> (to :rational [1 2]) - 30:eur
+        try? -> sub (to :rational [1 2]) 30:usd
+        try? -> sub (to :rational [1 2]) 30:eur
+    ]
     passed
     
     a: 30:usd, 'a - to :rational [1 2]
     ensure -> "59/2:usd" = ~"|as.code a|"
     passed
     
-    a: to :rational [1 2], 'a - 30:usd
-    ensure -> null = a
+    a: to :rational [1 2]
+    ensure -> not? try? -> 'a - 30:usd
     passed
     
     
     topic "sub - :rational :color"
     
     a: to :rational [3 5]
-    ensure -> null = a - #red
-    ensure -> null = #red - a
-    ensure -> null = sub a #red
-    ensure -> null = sub #red a
+    ensure -> not? any? @[
+        try? -> a - #red
+        try? -> #red - a
+        try? -> sub a #red
+        try? -> sub #red a
+    ]
     passed  
     
     ; :complex :color
     a: to :rational [3 5]
-    'a - #red
-    ensure -> a = null
+    ensure -> not? try? -> 'a - #red
     
     a: to :rational [3 5]
-    sub 'a #red
-    ensure -> a = null
+    ensure -> not? try? -> sub 'a #red
     passed
     
     ; :color :complex
     a: #red
-    'a - to :rational [3 5]
-    ensure -> a = null
+    ensure -> not? try? -> 'a - to :rational [3 5]
     
     a: #red
-    sub 'a to :rational [3 5]
-    ensure -> a = null
+    ensure -> not? try? -> sub 'a to :rational [3 5]
     passed
     
     ; ------ color
@@ -3371,16 +3370,16 @@ do [
     topic "sub - :color :quantity"
     ; todo: should reaise an error...
     
-    ensure -> null = #red + 30:usd
-    ensure -> null = 30:usd + #red
+    ensure -> not? try? -> #red + 30:usd
+    ensure -> not? try? -> 30:usd + #red
     passed
     
-    a: #red, 'a + 30:usd
-    ensure -> null = a
+    a: #red
+    ensure -> not? try? -> 'a + 30:usd
     passed
     
-    a: 30:usd, 'a + #red
-    ensure -> null = a
+    a: 30:usd
+    ensure -> not? try? -> 'a + #red
     passed
     
     
