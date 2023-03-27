@@ -2437,24 +2437,23 @@ do [
     
     a: to :complex [1 2]
     b: to :rational [3 5]
-    expected: to :rational [11 10]
-    ensure -> null = a * b
-    ensure -> null = b * a
-    ensure -> null = mul a b
-    ensure -> null = mul b a
+    expected: to :complex [0.6 1.2]
+    ensure -> expected = a * b
+    ensure -> not? try? -> b * a
+    ensure -> expected = mul a b
+    ensure -> not? try? -> mul b a
     passed
     
     ; :complex :rational - :rational :complex
     a: to :complex [1 2]
     b: to :rational [1 1]
     
-    ; 'a * b
-    ; ensure -> a = to :complex [1 2]
-    ; passed
+    'a * b
+    ensure -> a = to :complex [1 2]
+    passed
     
     b: to :rational [3 5]
-    mul 'b a
-    ensure -> b = to :rational [3 5]
+    ensure -> not? try? -> mul 'b a
     passed
     
     topic "mul - :complex :quantity"
