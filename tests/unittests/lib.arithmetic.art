@@ -976,22 +976,24 @@ do [
     topic "div - :complex :quantity"
     ; todo: check if :quantity :complex should be possible
 
-    ensure -> "6.0-12.0i:usd" = ~"|as.code 30:usd / to :complex [1 2]|"
-    ensure -> "6.0-12.0i:eur" = ~"|as.code 30:eur / to :complex [1 2]|"
-    ensure -> "6.0-12.0i:usd" = ~"|as.code div 30:usd to :complex [1 2]|"
-    ensure -> "6.0-12.0i:eur" = ~"|as.code div 30:eur to :complex [1 2]|"
-    ensure -> null = (to :complex [1 2]) / 30:usd
-    ensure -> null = (to :complex [1 2]) / 30:eur
-    ensure -> null = div (to :complex [1 2]) 30:usd
-    ensure -> null = div (to :complex [1 2]) 30:eur
+    ensure -> not? any? @[
+        try? -> 30:usd / to :complex [1 2]
+        try? ->  30:eur / to :complex [1 2]
+        try? -> div 30:usd to :complex [1 2]
+        try? -> div 30:eur to :complex [1 2]
+        try? -> (to :complex [1 2]) / 30:usd
+        try? -> (to :complex [1 2]) / 30:eur
+        try? -> div (to :complex [1 2]) 30:usd
+        try? -> div (to :complex [1 2]) 30:eur
+    ]
     passed
     
-    a: 30:usd, 'a / to :complex [1 2]
-    ensure -> "6.0-12.0i:usd" = ~"|as.code a|"
+    a: 30:usd
+    ensure -> not? try? -> 'a / to :complex [1 2]
     passed
     
-    a: to :complex [1 2], 'a / 30:usd
-    ensure -> null = a
+    a: to :complex [1 2]
+    ensure -> not? try? -> 'a / 30:usd
     passed
     
     
@@ -1026,18 +1028,21 @@ do [
     ensure -> "60:eur" = ~"|as.code 30:eur / to :rational [1 2]|"
     ensure -> "60:usd" = ~"|as.code div 30:usd to :rational [1 2]|"
     ensure -> "60:eur" = ~"|as.code div 30:eur to :rational [1 2]|"
-    ensure -> null = (to :rational [1 2]) / 30:usd
-    ensure -> null = (to :rational [1 2]) / 30:eur
-    ensure -> null = div (to :rational [1 2]) 30:usd
-    ensure -> null = div (to :rational [1 2]) 30:eur
+
+    ensure -> not? any? @[
+        try? -> (to :rational [1 2]) / 30:usd
+        try? -> (to :rational [1 2]) / 30:eur
+        try? -> div (to :rational [1 2]) 30:usd
+        try? -> div (to :rational [1 2]) 30:eur
+    ]
     passed
     
     a: 30:usd, 'a / to :rational [1 2]
     ensure -> "60:usd" = ~"|as.code a|"
     passed
     
-    a: to :rational [1 2], 'a / 30:usd
-    ensure -> null = a
+    a: to :rational [1 2]
+    ensure -> not? try? -> 'a / 30:usd
     passed
     
         
