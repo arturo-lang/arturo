@@ -1,0 +1,6 @@
+; by @Krenium
+
+r: range .step: 2 1 1000
+r | map 'x -> @[x x+2 x+6 x+8]
+  | select => [every? & => prime?]
+  | loop => print
