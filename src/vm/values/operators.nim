@@ -883,9 +883,9 @@ proc `/`*(x: Value, y: Value): Value =
         of Floating   || Rational       :   return newInteger(toRational(x.f) div notZero(y.rat))
         of Floating   || Complex        :   return newComplex(x.f / notZero(y.z))
 
-        of Rational   || Integer        :   return newInteger(x.rat div toRational(notZero(y.i)))
-        of Rational   || Floating       :   return newInteger(x.rat div toRational(notZero(y.f)))
-        of Rational   || Rational       :   return newInteger(x.rat div notZero(y.rat))
+        of Rational   || Integer        :   return newRational(x.rat / toRational(notZero(y.i)))
+        of Rational   || Floating       :   return newRational(x.rat / toRational(notZero(y.f)))
+        of Rational   || Rational       :   return newRational(x.rat / notZero(y.rat))
 
         of Complex    || Integer        :   return newComplex(x.z / float(notZero(y.i)))
         of Complex    || Floating       :   return newComplex(x.z / notZero(y.f))
@@ -930,9 +930,9 @@ proc `/=`*(x: var Value, y: Value) =
         of Floating   || Rational       :   x = newInteger(toRational(x.f) div notZero(y.rat))
         of Floating   || Complex        :   x = newComplex(x.f / notZero(y.z))
 
-        of Rational   || Integer        :   x = newInteger(x.rat div toRational(notZero(y.i)))
-        of Rational   || Floating       :   x = newInteger(x.rat div toRational(notZero(y.f)))
-        of Rational   || Rational       :   x = newInteger(x.rat div notZero(y.rat))
+        of Rational   || Integer        :   x.rat /= toRational(notZero(y.i))
+        of Rational   || Floating       :   x.rat /= toRational(notZero(y.f))
+        of Rational   || Rational       :   x.rat /= notZero(y.rat)
 
         of Complex    || Integer        :   x.z /= float(notZero(y.i))
         of Complex    || Floating       :   x.z /= notZero(y.f)
