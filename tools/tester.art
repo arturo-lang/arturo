@@ -33,6 +33,7 @@ canExecute?: function [scri][
             "integer overflow"
             "integer roots"
             "jacobsthal numbers"
+            "left factorials"
             "long multiplication"
             "loops - continue"
             "lucas-lehmer test"
