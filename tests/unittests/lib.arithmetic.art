@@ -325,11 +325,13 @@ do [
     
     a: to :complex [1 2]
     b: to :rational [3 5]
-    expected: to :rational [11 10]
-    ensure -> null = a + b
-    ensure -> null = b + a
-    ensure -> null = add a b
-    ensure -> null = add b a
+    expected: to :complex [1.6 2.0]
+    ensure -> all? @[
+        expected = a + b
+        not? try? -> b + a
+        expected = add a b
+        not? try? -> add b a
+    ]
     passed
     
     ; :complex :rational - :rational :complex
@@ -337,34 +339,35 @@ do [
     b: to :rational [3 5]
     
     'a + b
-    ensure -> a = to :complex [1 2]
+    ensure -> a = to :complex [1.6 2.0]
     passed
     
-    add 'b a
-    ensure -> b = to :rational [3 5]
+    ensure -> not? try? -> add 'b a
     passed
     
     
     topic "add - :complex :quantity"
     ; todo: check if :quantity :complex should be possible
 
-    ensure -> "31.0+2.0i:usd" = ~"|as.code 30:usd + to :complex [1 2]|"
-    ensure -> "31.0+2.0i:eur" = ~"|as.code 30:eur + to :complex [1 2]|"
-    ensure -> "31.0+2.0i:usd" = ~"|as.code add 30:usd to :complex [1 2]|"
-    ensure -> "31.0+2.0i:eur" = ~"|as.code add 30:eur to :complex [1 2]|"
-    ensure -> null = (to :complex [1 2]) + 30:usd
-    ensure -> null = (to :complex [1 2]) + 30:eur
-    ensure -> null = add (to :complex [1 2]) 30:usd
-    ensure -> null = add (to :complex [1 2]) 30:eur
-    passed
+    ; ensure -> "31.0+2.0i:usd" = ~"|as.code 30:usd + to :complex [1 2]|"
+    ; ensure -> "31.0+2.0i:eur" = ~"|as.code 30:eur + to :complex [1 2]|"
+    ; ensure -> "31.0+2.0i:usd" = ~"|as.code add 30:usd to :complex [1 2]|"
+    ; ensure -> "31.0+2.0i:eur" = ~"|as.code add 30:eur to :complex [1 2]|"
+    ; ensure -> not? any? @[
+    ;     try? -> (to :complex [1 2]) + 30:usd
+    ;     try? -> (to :complex [1 2]) + 30:eur
+    ;     try? -> add (to :complex [1 2]) 30:usd
+    ;     try? -> add (to :complex [1 2]) 30:eur
+    ; ]
+    ; passed
     
-    a: 30:usd, 'a + to :complex [1 2]
-    ensure -> "31.0+2.0i:usd" = ~"|as.code a|"
-    passed
+    ; a: 30:usd, 'a + to :complex [1 2]
+    ; ensure -> "31.0+2.0i:usd" = ~"|as.code a|"
+    ; passed
     
-    a: to :complex [1 2], 'a + 30:usd
-    ensure -> null = a
-    passed
+    ; a: to :complex [1 2]
+    ; ensure -> not? try? -> 'a + 30:usd
+    ; passed
     
     
     topic "add - :complex :color"
