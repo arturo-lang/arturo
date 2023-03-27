@@ -163,17 +163,7 @@ func `/`*[T](x, y: VComplexObj[T]): VComplexObj[T] =
         result.im = (x.im - r * x.re) / den
 
 func `/=`*[T](x: var VComplexObj[T], y: VComplexObj[T]) =
-    var r, den: T
-    if abs(y.re) < abs(y.im):
-        r = y.re / y.im
-        den = y.im + r * y.re
-        x.re = (x.re * r + x.im) / den
-        x.im = (x.im * r - x.re) / den
-    else:
-        r = y.im / y.re
-        den = y.re + r * y.im
-        x.re = (x.re + r * x.im) / den
-        x.im = (x.im - r * x.re) / den
+    x = x / y
 
 func sqrt*[T](z: VComplexObj[T]): VComplexObj[T] =
     ## ([principal](https://en.wikipedia.org/wiki/Square_root#Principal_square_root_of_a_complex_number))
