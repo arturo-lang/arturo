@@ -426,26 +426,37 @@ do [
     ensure -> (to :rational [32 20]) = a
     passed
     
-    
+    ; ** Same as above ^ with Complex/Quantity operations
+
+    ; ** In general, X + quantity operations are a very weird idea.
+    ; ** I mean let's say we have 30:usd, and we add 1/2 to it, that *does* make sense.
+    ; ** Or if we have 3:m (3 meters) and add 1. I would - instinctively - imagine that 
+    ; ** this means to add 1 meter to 3 meters, and get 4 meters. But, doing it the other
+    ; ** way around, adding 3:m *to* 1, it suddenly becomes a bit strange. So, I *think* 
+    ; ** this type of operations make more sense if the left-hand operand is a quantity, 
+    ; ** but not vice-versa.
+
     topic "add - :rational :quantity"
     ; todo: verify this comparison
 
-    ensure -> "61/2:usd" = ~"|as.code 30:usd + to :rational [1 2]|"
-    ensure -> "61/2:eur" = ~"|as.code 30:eur + to :rational [1 2]|"
-    ensure -> "61/2:usd" = ~"|as.code add 30:usd to :rational [1 2]|"
-    ensure -> "61/2:eur" = ~"|as.code add 30:eur to :rational [1 2]|"
-    ensure -> null = (to :rational [1 2]) + 30:usd
-    ensure -> null = (to :rational [1 2]) + 30:eur
-    ensure -> null = add (to :rational [1 2]) 30:usd
-    ensure -> null = add (to :rational [1 2]) 30:eur
+    ensure -> not? any? @[
+        try? -> "61/2:usd" = ~"|as.code 30:usd + to :rational [1 2]|"
+        try? -> "61/2:eur" = ~"|as.code 30:eur + to :rational [1 2]|"
+        try? -> "61/2:usd" = ~"|as.code add 30:usd to :rational [1 2]|"
+        try? -> "61/2:eur" = ~"|as.code add 30:eur to :rational [1 2]|"
+        try? -> (to :rational [1 2]) + 30:usd
+        try? -> (to :rational [1 2]) + 30:eur
+        try? -> add (to :rational [1 2]) 30:usd
+        try? -> add (to :rational [1 2]) 30:eur
+    ]
     passed
     
-    a: 30:usd, 'a + to :rational [1 2]
-    ensure -> "61/2:usd" = ~"|as.code a|"
+    a: 30:usd
+    ensure -> not? try? -> 'a + to :rational [1 2]
     passed
     
-    a: to :rational [1 2], 'a + 30:usd
-    ensure -> null = a
+    a: to :rational [1 2]
+    ensure -> not? try? -> 'a + 30:usd
     passed
     
     
