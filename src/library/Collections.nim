@@ -496,19 +496,16 @@ proc defineSymbols*() =
             ..........
             print first.n:2 ["one" "two" "three"] ; one two
         """:
-            #=======================================================
+            #=======================================================            
             if checkAttr("n"):
                 if x.kind == String:
                     if x.s.len == 0: push(newString(""))
                     else: push(newString(x.s[0..aN.i-1]))
                 elif x.kind == Range:
-                    var res: ValueArray = newSeq[Value](aN.i)
-                    var i = 0
-                    for item in items(x.rng):
-                        res[i] = item
-                        i += 1
-                        if i == aN.i: break
-                    push(newBlock(res))
+                    if aN.i == 1 or aN.i == 0:
+                        push(x.rng[1, true])
+                    else:
+                        push(newRange(x.rng[0..aN.i, true]))
                 else:
                     if x.a.len == 0: push(newBlock())
                     else: push(newBlock(x.a[0..aN.i-1]))
