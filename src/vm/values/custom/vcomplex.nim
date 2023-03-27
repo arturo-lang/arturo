@@ -133,10 +133,7 @@ func `*`*[T](x, y: VComplexObj[T]): VComplexObj[T] =
     result.im = x.im * y.re + x.re * y.im
 
 func `*=`*[T](x: var VComplexObj[T], y: VComplexObj[T]) =
-    x.re *= y.re
-    x.re -= x.im * y.im
-    x.im *= y.re
-    x.im += x.re * y.im
+    x = x * y
 
 func `/`*[T](x: VComplexObj[T]; y: T): VComplexObj[T] =
     result.re = x.re / y
