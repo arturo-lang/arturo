@@ -346,6 +346,10 @@ proc RuntimeError_OperationNotPermitted*(operation: string) =
     panic RuntimeError,
           "unsafe operation: " & operation & ";" &
           "not permitted in online playground"
+          
+proc RuntimeError_StackUnderflow*() =
+    panic RuntimeError,
+            "stack underflow"
 
 proc RuntimeError_ConfigNotFound*(gkey: string, akey: string) =
     panic RuntimeError,
