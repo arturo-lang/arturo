@@ -47,15 +47,6 @@ import vm/values/custom/[vbinary, vrange]
 # Methods
 #=======================================
 
-# TODO(Collections) add a proper `pop` built-in method
-#  right now, `chop` works like that, kind-of, but does *not* return the
-#  removed item
-#
-#  also: Core/pop actually pop an item from the VM stack, which *is* useful,
-#  but a) not so common, b) we might need a different name for that
-#
-#  labels: library, enhancement, open discussion
-
 proc defineSymbols*() =
 
     builtin "append",
@@ -86,46 +77,46 @@ proc defineSymbols*() =
             print b                   ; [1 2 3 4]
         """:
             #=======================================================
-            if xKind == Literal:
+            if x.kind == Literal:
                 ensureInPlace()
                 if InPlaced.kind == String:
-                    if yKind == String:
+                    if y.kind == String:
                         InPlaced.s &= y.s
-                    elif yKind == Char:
+                    elif y.kind == Char:
                         InPlaced.s &= $(y.c)
                 elif InPlaced.kind == Char:
-                    if yKind == String:
+                    if y.kind == String:
                         SetInPlace(newString($(InPlaced.c) & y.s))
-                    elif yKind == Char:
+                    elif y.kind == Char:
                         SetInPlace(newString($(InPlaced.c) & $(y.c)))
                 elif InPlaced.kind == Binary:
-                    if yKind == Binary:
+                    if y.kind == Binary:
                         InPlaced.n &= y.n
-                    elif yKind == Integer:
+                    elif y.kind == Integer:
                         InPlaced.n &= numberToBinary(y.i)
                 else:
-                    if yKind == Block:
+                    if y.kind == Block:
                         InPlaced.a.add(y.a)
                     else:
                         InPlaced.a.add(y)
             else:
-                if xKind == String:
-                    if yKind == String:
+                if x.kind == String:
+                    if y.kind == String:
                         push(newString(x.s & y.s))
-                    elif yKind == Char:
+                    elif y.kind == Char:
                         push(newString(x.s & $(y.c)))
-                elif xKind == Char:
-                    if yKind == String:
+                elif x.kind == Char:
+                    if y.kind == String:
                         push(newString($(x.c) & y.s))
-                    elif yKind == Char:
+                    elif y.kind == Char:
                         push(newString($(x.c) & $(y.c)))
-                elif xKind == Binary:
-                    if yKind == Binary:
+                elif x.kind == Binary:
+                    if y.kind == Binary:
                         push(newBinary(x.n & y.n))
-                    elif yKind == Integer:
+                    elif y.kind == Integer:
                         push(newBinary(x.n & numberToBinary(y.i)))
                 else:
-                    if yKind==Block:
+                    if y.kind==Block:
                         push newBlock(x.a & y.a)
                     else:
                         push newBlock(x.a & y)
@@ -160,7 +151,7 @@ proc defineSymbols*() =
             if checkAttr("times"):
                 times = aTimes.i
 
-            if xKind == Literal:
+            if x.kind == Literal:
                 ensureInPlace()
                 if InPlaced.kind == String:
                     InPlaced.s = InPlaced.s[0..^(times + 1)]
@@ -168,9 +159,9 @@ proc defineSymbols*() =
                     if InPlaced.a.len > 0:
                         InPlaced.a = InPlaced.a[0..^(times + 1)]
             else:
-                if xKind == String:
+                if x.kind == String:
                     push(newString(x.s[0..^(times + 1)]))
-                elif xKind == Block:
+                elif x.kind == Block:
                     if x.a.len == 0: push(newBlock())
                     else: push(newBlock(x.a[0..^(times + 1)]))
 
@@ -285,11 +276,11 @@ proc defineSymbols*() =
             #=======================================================
             if checkAttr("at"):
                 let at = aAt.i
-                case xKind:
+                case x.kind:
                     of String:
-                        if yKind == Regex:
+                        if y.kind == Regex:
                             push(newLogical(x.s.contains(y.rx, at)))
-                        elif yKind == Char:
+                        elif y.kind == Char:
                             push(newLogical(toRunes(x.s)[at] == y.c))
                         else:
                             push(newLogical(x.s.continuesWith(y.s, at)))
@@ -303,11 +294,11 @@ proc defineSymbols*() =
                     else:
                         discard
             else:
-                case xKind:
+                case x.kind:
                     of String:
-                        if yKind == Regex:
+                        if y.kind == Regex:
                             push(newLogical(x.s.contains(y.rx)))
-                        elif yKind == Char:
+                        elif y.kind == Char:
                             push(newLogical($(y.c) in x.s))
                         else:
                             push(newLogical(y.s in x.s))
@@ -366,7 +357,7 @@ proc defineSymbols*() =
             ; => ["one" "two" "three"] [1 2 3]
         """:
             #=======================================================
-            if xKind == Literal:
+            if x.kind == Literal:
                 ensureInPlace()
                 let res = unzip(InPlaced.a.map((w)=>(w.a[0], w.a[1])))
                 InPlaced.a = @[newBlock(res[0]), newBlock(res[1])]
@@ -393,7 +384,7 @@ proc defineSymbols*() =
             drop 'arr 3                   ; arr: [4 5 6 7 8 9 10]
         """:
             #=======================================================
-            if xKind == Literal:
+            if x.kind == Literal:
                 ensureInPlace()
                 if InPlaced.kind == String:
                     InPlaced.s = InPlaced.s[y.i..^1]
@@ -401,9 +392,9 @@ proc defineSymbols*() =
                     if InPlaced.a.len > 0:
                         InPlaced.a = InPlaced.a[y.i..^1]
             else:
-                if xKind == String:
+                if x.kind == String:
                     push(newString(x.s[y.i..^1]))
-                elif xKind == Block:
+                elif x.kind == Block:
                     if x.a.len == 0: push(newBlock())
                     else: push(newBlock(x.a[y.i..^1]))
 
@@ -450,7 +441,7 @@ proc defineSymbols*() =
             empty? [1 "two" 3]    ; => false
         """:
             #=======================================================
-            case xKind:
+            case x.kind:
                 of Null: push(VTRUE)
                 of String: push(newLogical(x.s == ""))
                 of Block:
@@ -476,7 +467,7 @@ proc defineSymbols*() =
             ; [name:john surname:doe age:35]
         """:
             #=======================================================
-            if xKind == Literal:
+            if x.kind == Literal:
                 ensureInPlace()
                 for k, v in pairs(y.d):
                     InPlaced.d[k] = v
@@ -505,27 +496,24 @@ proc defineSymbols*() =
             ..........
             print first.n:2 ["one" "two" "three"] ; one two
         """:
-            #=======================================================
+            #=======================================================            
             if checkAttr("n"):
-                if xKind == String:
+                if x.kind == String:
                     if x.s.len == 0: push(newString(""))
                     else: push(newString(x.s[0..aN.i-1]))
-                elif xKind == Range:
-                    var res: ValueArray = newSeq[Value](aN.i)
-                    var i = 0
-                    for item in items(x.rng):
-                        res[i] = item
-                        i += 1
-                        if i == aN.i: break
-                    push(newBlock(res))
+                elif x.kind == Range:
+                    if aN.i == 1 or aN.i == 0:
+                        push(x.rng[1, true])
+                    else:
+                        push(newRange(x.rng[0..aN.i, true]))
                 else:
                     if x.a.len == 0: push(newBlock())
                     else: push(newBlock(x.a[0..aN.i-1]))
             else:
-                if xKind == String:
+                if x.kind == String:
                     if x.s.len == 0: push(VNULL)
                     else: push(newChar(x.s.runeAt(0)))
-                elif xKind == Range:
+                elif x.kind == Range:
                     push(x.rng[0])
                 else:
                     if x.a.len == 0: push(VNULL)
@@ -559,7 +547,7 @@ proc defineSymbols*() =
             ; => [1 2 3 4 [5 6]]
         """:
             #=======================================================
-            if xKind == Literal:
+            if x.kind == Literal:
                 ensureInPlace()
                 SetInPlace(InPlaced.flattened(once = hadAttr("once")))
             else:
@@ -605,9 +593,9 @@ proc defineSymbols*() =
             print str\[0..4]              ; Hello
         """:
             #=======================================================
-            case xKind:
+            case x.kind:
                 of Block:
-                    if likely(yKind==Integer):
+                    if likely(y.kind==Integer):
                         push(GetArrayIndex(x.a, y.i))
                     else:
                         let rLen = y.rng.len
@@ -618,7 +606,7 @@ proc defineSymbols*() =
                             i += 1
                         push(newBlock(res))
                 of Range:
-                    if likely(yKind==Integer):
+                    if likely(y.kind==Integer):
                         push(x.rng[y.i])
                     else:
                         let rLen = y.rng.len
@@ -639,26 +627,26 @@ proc defineSymbols*() =
                     else:
                         push(VNULL)
                 of Dictionary:
-                    case yKind:
+                    case y.kind:
                         of String, Word, Literal, Label:
                             push(GetKey(x.d, y.s))
                         else:
                             push(GetKey(x.d, $(y)))
                 of Object:
-                    case yKind:
+                    case y.kind:
                         of String, Word, Literal, Label:
                             push(GetKey(x.o, y.s))
                         else:
                             push(GetKey(x.o, $(y)))
                 of Store:
                     when not defined(WEB):
-                        case yKind:
+                        case y.kind:
                             of String, Word, Literal, Label:
                                 push(getStoreKey(x.sto, y.s))
                             else:
                                 push(getStoreKey(x.sto, $(y)))
                 of String:
-                    if likely(yKind==Integer):
+                    if likely(y.kind==Integer):
                         push(newChar(x.s.runeAtPos(y.i)))
                     else:
                         let rLen = y.rng.len
@@ -732,11 +720,11 @@ proc defineSymbols*() =
             #=======================================================
             if checkAttr("at"):
                 let at = aAt.i
-                case yKind:
+                case y.kind:
                     of String:
-                        if xKind == Regex:
+                        if x.kind == Regex:
                             push(newLogical(y.s.contains(x.rx, at)))
-                        elif xKind == Char:
+                        elif x.kind == Char:
                             push(newLogical(toRunes(y.s)[at] == x.c))
                         else:
                             push(newLogical(y.s.continuesWith(x.s, at)))
@@ -750,11 +738,11 @@ proc defineSymbols*() =
                     else:
                         discard
             else:
-                case yKind:
+                case y.kind:
                     of String:
-                        if xKind == Regex:
+                        if x.kind == Regex:
                             push(newLogical(y.s.contains(x.rx)))
-                        elif xKind == Char:
+                        elif x.kind == Char:
                             push(newLogical($(x.c) in y.s))
                         else:
                             push(newLogical(x.s in y.s))
@@ -803,7 +791,7 @@ proc defineSymbols*() =
             ; :null
         """:
             #=======================================================
-            case xKind:
+            case x.kind:
                 of String:
                     let indx = x.s.find(y.s)
                     if indx != -1: push(newInteger(indx))
@@ -860,11 +848,11 @@ proc defineSymbols*() =
             ; dict: [name: "Jane"]
         """:
             #=======================================================
-            if xKind == Literal:
+            if x.kind == Literal:
                 ensureInPlace()
                 case InPlaced.kind:
                     of String: 
-                        if zKind==String: 
+                        if z.kind==String: 
                             InPlaced.s.insert(z.s, y.i)
                         else:
                             InPlaced.s.insert($(z.c), y.i)
@@ -873,10 +861,10 @@ proc defineSymbols*() =
                         InPlaced.d[y.s] = z
                     else: discard
             else:
-                case xKind:
+                case x.kind:
                     of String:
                         var copied = x.s
-                        if zKind==String:
+                        if z.kind==String:
                             copied.insert(z.s, y.i)
                         else:
                             copied.insert($(z.c), y.i)
@@ -916,10 +904,10 @@ proc defineSymbols*() =
         """:
             #=======================================================
             var needle: string
-            if yKind == String: needle = y.s
+            if y.kind == String: needle = y.s
             else: needle = $(y)
 
-            if xKind == Dictionary:
+            if x.kind == Dictionary:
                 push(newLogical(x.d.hasKey(needle)))
             else:
                 push(newLogical(x.o.hasKey(needle)))
@@ -945,7 +933,7 @@ proc defineSymbols*() =
         """:
             #=======================================================
             var s: seq[string]
-            if xKind == Dictionary:
+            if x.kind == Dictionary:
                 s = toSeq(x.d.keys)
             else:
                 s = toSeq(x.o.keys)
@@ -972,10 +960,10 @@ proc defineSymbols*() =
         """:
             #=======================================================
             if checkAttr("n"):
-                if xKind == String:
+                if x.kind == String:
                     if x.s.len == 0: push(newString(""))
                     else: push(newString(x.s[x.s.len-aN.i..^1]))
-                elif xKind == Range:
+                elif x.kind == Range:
                     if x.rng.infinite:
                         push(newFloating(Inf))
                     else:
@@ -987,10 +975,10 @@ proc defineSymbols*() =
                     if x.a.len == 0: push(newBlock())
                     else: push(newBlock(x.a[x.a.len-aN.i..^1]))
             else:
-                if xKind == String:
+                if x.kind == String:
                     if x.s.len == 0: push(VNULL)
                     else: push(newChar(toRunes(x.s)[^1]))
-                elif xKind == Range:
+                elif x.kind == Range:
                     if x.rng.infinite:
                         push(newFloating(Inf))
                     else:
@@ -1017,7 +1005,7 @@ proc defineSymbols*() =
             #=======================================================
             let withIndex = hadAttr("index")
 
-            if xKind==Range:
+            if x.kind==Range:
                 let (maxIndex, maxElement) = max(x.rng)
                 if withIndex: push(newInteger(maxIndex))
                 else: push(maxElement)
@@ -1062,7 +1050,7 @@ proc defineSymbols*() =
             #=======================================================
             let withIndex = hadAttr("index")
 
-            if xKind==Range:
+            if x.kind==Range:
                 let (minIndex, minElement) = min(x.rng)
                 if withIndex: push(newInteger(minIndex))
                 else: push(minElement)
@@ -1115,7 +1103,7 @@ proc defineSymbols*() =
             one? ø              ; => false
         """:
             #=======================================================
-            case xKind:
+            case x.kind:
                 of Integer:
                     if x.iKind == BigInteger:
                         when defined(WEB):
@@ -1185,6 +1173,89 @@ proc defineSymbols*() =
             else:
                 push(newBlock(getPermutations(x.a, sz, doRepeat).map((
                         z)=>newBlock(z))))
+                        
+                        
+    builtin "pop",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "remove and return the last item from given collection",
+        args        = {
+            "collection": {Literal}
+        },
+        attrs       = {
+            "n"     : ({Integer}, "remove multiple items. (Must be greater than 0.)")
+        },
+        returns     = {Any},
+        example     = """
+            a: [0 1 2 3 4 5]
+            b: pop 'a
+            
+            inspect a
+            ; [ :block
+            ;         0 :integer
+            ;         1 :integer
+            ;         2 :integer
+            ;         3 :integer
+            ;         4 :integer
+            ; ]
+            inspect b     ; 5 :integer
+
+            
+            b: pop.n: 2 'a
+
+            inspect a
+            ; [ :block
+            ;         0 :integer
+            ;         1 :integer
+            ;         2 :integer
+            ; ]
+            inspect b
+            ; [ :block
+            ;         3 :integer
+            ;         4 :integer
+            ; ]
+            ..........
+            a: "Arturoo"
+            b: pop 'a
+            
+            inspect a     ; Arturo :string
+            inspect b     ; o :char
+            
+            b: pop.n: 3 'a
+
+            inspect a     ; Art :string
+            inspect b     ; uro :string
+        """:
+            #=======================================================
+            var n = 
+                if checkAttr("n"): aN.i
+                else: 1
+            
+            ensureInPlace()
+            if n == 1:
+                case InPlaced.kind:
+                of String: 
+                    push(newChar(InPlaced.s[^1]))
+                    Inplaced.s = InPlaced.s[0..^(n + 1)]
+                of Block:
+                    if InPlaced.a.len > 0:
+                        push(InPlaced.a[^1])
+                        InPlaced.a = InPlaced.a[0..^(n + 1)]
+                else: discard
+            elif n > 1:
+                case InPlaced.kind:
+                of String: 
+                    push(newString(InPlaced.s[(InPlaced.s.len-n)..^1]))
+                    InPlaced.s = InPlaced.s[0..^(n + 1)]
+                of Block:
+                    if InPlaced.a.len > 0:
+                        push(newBlock(InPlaced.a[(InPlaced.a.len-n)..^1]))
+                        InPlaced.a = InPlaced.a[0..^(n + 1)]
+                else: discard
+            else: raise newException(ValueError, "Attribute 'n can't be 0 or negative.")
+                
+
 
     builtin "prepend",
         alias       = unaliased,
@@ -1200,46 +1271,46 @@ proc defineSymbols*() =
         example     = """
         """:
             #=======================================================
-            if xKind == Literal:
+            if x.kind == Literal:
                 ensureInPlace()
                 if InPlaced.kind == String:
-                    if yKind == String:
+                    if y.kind == String:
                         InPlaced.s.insert(y.s, 0)
-                    elif yKind == Char:
+                    elif y.kind == Char:
                         InPlaced.s.insert($(y.c), 0)
                 elif InPlaced.kind == Char:
-                    if yKind == String:
+                    if y.kind == String:
                         SetInPlace(newString(y.s & $(InPlaced.c)))
-                    elif yKind == Char:
+                    elif y.kind == Char:
                         SetInPlace(newString($(y.c) & $(InPlaced.c)))
                 elif InPlaced.kind == Binary:
-                    if yKind == Binary:
+                    if y.kind == Binary:
                         InPlaced.n.insert(y.n, 0)
-                    elif yKind == Integer:
+                    elif y.kind == Integer:
                         InPlaced.n.insert(numberToBinary(y.i), 0)
                 else:
-                    if yKind == Block:
+                    if y.kind == Block:
                         InPlaced.prependInPlace(y)
                     else:
                         InPlaced.a.insert(y, 0)
             else:
-                if xKind == String:
-                    if yKind == String:
+                if x.kind == String:
+                    if y.kind == String:
                         push(newString(y.s & x.s))
-                    elif yKind == Char:
+                    elif y.kind == Char:
                         push(newString($(y.c) & x.s))
-                elif xKind == Char:
-                    if yKind == String:
+                elif x.kind == Char:
+                    if y.kind == String:
                         push(newString(y.s & $(x.c)))
-                    elif yKind == Char:
+                    elif y.kind == Char:
                         push(newString($(y.c) & $(x.c)))
-                elif xKind == Binary:
-                    if yKind == Binary:
+                elif x.kind == Binary:
+                    if y.kind == Binary:
                         push(newBinary(y.n & x.n))
-                    elif yKind == Integer:
+                    elif y.kind == Integer:
                         push(newBinary(numberToBinary(y.i) & x.n))
                 else:
-                    if yKind==Block:
+                    if y.kind==Block:
                         push newBlock(prepend(x, y))
                     else:
                         push newBlock(prepend(x, y, singleValue=true))
@@ -1286,11 +1357,11 @@ proc defineSymbols*() =
             remove.instance.once [1 [6 2] 5 3 [6 2] 4 5 6] [6 2]  ; => [1 5 3 [6 2] 4 5 6]
         """:
             #=======================================================
-            if xKind == Literal:
+            if x.kind == Literal:
                 ensureInPlace()
                 if InPlaced.kind == String:
                     if (hadAttr("once")):
-                        if yKind == String:
+                        if y.kind == String:
                             SetInPlace(newString(InPlaced.s.removeFirst(y.s)))
                         else:
                             SetInPlace(newString(InPlaced.s.removeFirst($(y.c))))
@@ -1301,7 +1372,7 @@ proc defineSymbols*() =
                     else:
                         SetInPlace(newString(InPlaced.s.removeAll(y)))
                 elif InPlaced.kind == Block:
-                    if yKind == Block and hadAttr("instance"):
+                    if y.kind == Block and hadAttr("instance"):
                         if hadAttr("once"):
                             InPlaced.a = InPlaced.a.removeFirstInstance(y)
                         else:
@@ -1324,9 +1395,9 @@ proc defineSymbols*() =
                     else:
                         SetInPlace(newDictionary(InPlaced.d.removeAll(y, key)))
             else:
-                if xKind == String:
+                if x.kind == String:
                     if (hadAttr("once")):
-                        if yKind == String:
+                        if y.kind == String:
                             push(newString(x.s.removeFirst(y.s)))
                         else:
                             push(newString(x.s.removeFirst($(y.c))))
@@ -1340,8 +1411,8 @@ proc defineSymbols*() =
                         push(newString(ret))
                     else:
                         push(newString(x.s.removeAll(y)))
-                elif xKind == Block:
-                    if yKind == Block and hadAttr("instance"):
+                elif x.kind == Block:
+                    if y.kind == Block and hadAttr("instance"):
                         if hadAttr("once"):
                             push(newBlock(x.a.removeFirstInstance(y)))
                         else:
@@ -1352,7 +1423,7 @@ proc defineSymbols*() =
                         push(newBlock(x.a.removeByIndex(y.i)))
                     else:
                         push(newBlock(x.a.removeAll(y)))
-                elif xKind == Dictionary:
+                elif x.kind == Dictionary:
                     let key = (hadAttr("key"))
                     if (hadAttr("once")):
                         push(newDictionary(x.d.removeFirst(y, key)))
@@ -1384,7 +1455,7 @@ proc defineSymbols*() =
             ; => [[1 2 3] [1 2 3] [1 2 3]]
         """:
             #=======================================================
-            if xKind == Literal:
+            if x.kind == Literal:
                 ensureInPlace()
                 if InPlaced.kind == String:
                     SetInPlace(newString(InPlaced.s.repeat(y.i)))
@@ -1393,9 +1464,9 @@ proc defineSymbols*() =
                 else:
                     SetInPlace(newBlock(InPlaced.repeat(y.i)))
             else:
-                if xKind == String:
+                if x.kind == String:
                     push(newString(x.s.repeat(y.i)))
-                elif xKind == Block:
+                elif x.kind == Block:
                     push(newBlock(safeCycle(x.a, y.i)))
                 else:
                     push(newBlock(safeRepeat(x, y.i)))
@@ -1432,7 +1503,7 @@ proc defineSymbols*() =
 
             let exact = hadAttr("exact")
 
-            if xKind == Literal:
+            if x.kind == Literal:
                 ensureInPlace()
                 if InPlaced.kind == String:
                     InPlaced.s.reverse()
@@ -1441,9 +1512,9 @@ proc defineSymbols*() =
                 else:
                     InPlaced.a.reverse()
             else:
-                if xKind == Block:
+                if x.kind == Block:
                     push(newBlock(x.a.reversed))
-                elif xKind == Range:
+                elif x.kind == Range:
                     push(newRange(x.rng.reversed(safe=exact)))
                 else:
                     push(newString(reversed(x.s)))
@@ -1470,7 +1541,7 @@ proc defineSymbols*() =
             #=======================================================
             let distance = if (not hadAttr("left")): -y.i else: y.i
 
-            if xKind == Literal:
+            if x.kind == Literal:
                 ensureInPlace()
                 if InPlaced.kind == String:
                     InPlaced.s = toSeq(runes(InPlaced.s)).map((w) => $(w))
@@ -1478,10 +1549,10 @@ proc defineSymbols*() =
                 elif InPlaced.kind == Block:
                     InPlaced.a.rotateLeft(distance)
             else:
-                if xKind == String:
+                if x.kind == String:
                     push(newString(toSeq(runes(x.s)).map((w) => $(w))
                                  .rotatedLeft(distance).join("")))
-                elif xKind == Block:
+                elif x.kind == Block:
                     push(newBlock(x.a.rotatedLeft(distance)))
 
     builtin "sample",
@@ -1500,7 +1571,7 @@ proc defineSymbols*() =
             ; apple
         """:
             #=======================================================
-            if xKind == Range:
+            if x.kind == Range:
                 let rnd = rand(0..int(x.rng.len-1))
                 push(x.rng[rnd])
             else:
@@ -1548,7 +1619,7 @@ proc defineSymbols*() =
             ; xello
         """:
             #=======================================================
-            case xKind:
+            case x.kind:
                 of Block:
                     SetArrayIndex(x.a, y.i, z)
                 of Binary:
@@ -1569,20 +1640,20 @@ proc defineSymbols*() =
                     else:
                         discard
                 of Dictionary:
-                    case yKind:
+                    case y.kind:
                         of String, Word, Literal, Label:
                             x.d[y.s] = z
                         else:
                             x.d[$(y)] = z
                 of Object:
-                    case yKind:
+                    case y.kind:
                         of String, Word, Literal, Label:
                             x.o[y.s] = z
                         else:
                             x.o[$(y)] = z
                 of Store:
                     when not defined(WEB):
-                        case yKind:
+                        case y.kind:
                             of String, Word, Literal, Label:
                                 setStoreKey(x.sto, y.s, z)
                             else:
@@ -1594,7 +1665,7 @@ proc defineSymbols*() =
                     for r in x.s.runes:
                         if idx != y.i: res.add r
                         else: 
-                            if zKind == String: res.add $(z.s[0])
+                            if z.kind == String: res.add $(z.s[0])
                             else: res.add z.c
                         idx += 1
 
@@ -1619,7 +1690,7 @@ proc defineSymbols*() =
             print arr                     ; 5 9 2
         """:
             #=======================================================
-            if xKind == Literal:
+            if x.kind == Literal:
                 ensureInPlace()
                 InPlaced.a.shuffle()
             else:
@@ -1648,17 +1719,17 @@ proc defineSymbols*() =
             print size "你好!"              ; 3
         """:
             #=======================================================
-            if xKind == String:
+            if x.kind == String:
                 push(newInteger(runeLen(x.s)))
-            elif xKind == Dictionary:
+            elif x.kind == Dictionary:
                 push(newInteger(x.d.len))
-            elif xKind == Object:
+            elif x.kind == Object:
                 push(newInteger(x.o.len))
-            elif xKind == Range:
+            elif x.kind == Range:
                 let sz = x.rng.len
                 if sz == InfiniteRange: push(newFloating(Inf))
                 else: push(newInteger(sz))
-            elif xKind == Block:
+            elif x.kind == Block:
                 push(newInteger(x.a.len))
             else: # Null
                 push(newInteger(0))
@@ -1681,7 +1752,7 @@ proc defineSymbols*() =
             print slice 1..10 3 4         ; 4 5
         """:
             #=======================================================
-            if xKind == Literal:
+            if x.kind == Literal:
                 ensureInPlace()
                 if InPlaced.kind == String:
                     if InPlaced.s.len == 0:
@@ -1692,7 +1763,7 @@ proc defineSymbols*() =
                 else:
                     if y.i >= 0 and z.i <= InPlaced.a.len-1:
                         InPlaced.a = InPlaced.a[y.i..z.i]
-            elif xKind == String:
+            elif x.kind == String:
                 if x.s.len == 0: push(newString(""))
                 else:
                     if y.i >= 0 and z.i <= x.s.runeLen:
@@ -1747,7 +1818,7 @@ proc defineSymbols*() =
             if (hadAttr("descending")):
                 sortOrdering = SortOrder.Descending
 
-            if xKind == Block:
+            if x.kind == Block:
                 if x.a.len == 0: push(newBlock())
                 else:
                     if checkAttr("by"):
@@ -1789,7 +1860,7 @@ proc defineSymbols*() =
                                     push(newBlock(x.a.sorted(
                                             order = sortOrdering)))
 
-            elif xKind == Dictionary:
+            elif x.kind == Dictionary:
                 var sorted = x.d
                 var sortAscii = (hadAttr("ascii"))
 
@@ -1979,7 +2050,7 @@ proc defineSymbols*() =
             #=======================================================
             # TODO(Collections\split) Verify it's working right
             #  labels: library, bug, unit-test, critical
-            if xKind == Literal:
+            if x.kind == Literal:
                 ensureInPlace()
                 if InPlaced.kind == String:
                     if (hadAttr("words")):
@@ -2042,7 +2113,7 @@ proc defineSymbols*() =
                         SetInPlace(newBlock(ret))
                     else: discard
 
-            elif xKind == String:
+            elif x.kind == String:
                 if (hadAttr("words")):
                     push(newStringBlock(strutils.splitWhitespace(x.s)))
                 elif (hadAttr("lines")):
@@ -2122,7 +2193,7 @@ proc defineSymbols*() =
             ; helo world
         """:
             #=======================================================
-            if xKind == Literal:
+            if x.kind == Literal:
                 ensureInPlace()
                 if InPlaced.kind == String:
                     var i = 0
@@ -2144,7 +2215,7 @@ proc defineSymbols*() =
                         i += 1
                     SetInPlace(newBlock(ret))
             else:
-                if xKind == String:
+                if x.kind == String:
                     var i = 0
                     var ret: string
                     while i < x.s.len:
@@ -2153,7 +2224,7 @@ proc defineSymbols*() =
                             i += 1
                         i += 1
                     push(newString(ret))
-                elif xKind == Block:
+                elif x.kind == Block:
                     var i = 0
                     var ret: ValueArray
                     while i < x.a.len:
@@ -2183,7 +2254,7 @@ proc defineSymbols*() =
         """:
             #=======================================================
             var upperLimit = y.i-1
-            if xKind == Literal:
+            if x.kind == Literal:
                 ensureInPlace()
                 if InPlaced.kind == String:
                     if x.s.len > 0:
@@ -2204,19 +2275,19 @@ proc defineSymbols*() =
                         if i == upperLimit+1: break
                     InPlaced = newBlock(res)
             else:
-                if xKind == String:
+                if x.kind == String:
                     if x.s.len == 0: push(newString(""))
                     else:
                         if upperLimit > x.s.len - 1:
                             upperLimit = x.s.len-1
                         push(newString(x.s[0..upperLimit]))
-                elif xKind == Block:
+                elif x.kind == Block:
                     if x.a.len == 0: push(newBlock())
                     else:
                         if upperLimit > x.a.len - 1:
                             upperLimit = x.a.len-1
                         push(newBlock(x.a[0..upperLimit]))
-                elif xKind == Range:
+                elif x.kind == Range:
                     var res: ValueArray = newSeq[Value](upperLimit+1)
                     var i = 0
                     for item in items(x.rng):
@@ -2245,7 +2316,7 @@ proc defineSymbols*() =
             #=======================================================
             var occurences = initOrderedTable[string,Value]()
 
-            if xKind == String:
+            if x.kind == String:
                 for r in runes(x.s): 
                     let str = $(r)
                     if not occurences.hasKey(str):
@@ -2289,9 +2360,9 @@ proc defineSymbols*() =
                 when not defined(WEB):
                     push newString(x.s & $(genOid()))
             else:
-                if xKind == Block:
+                if x.kind == Block:
                     push(newBlock(x.a.deduplicated()))
-                elif xKind == String:
+                elif x.kind == String:
                     push newString(toSeq(runes(x.s)).deduplicate.map((w) => $(w)).join(""))
                 else: 
                     ensureInPlace()
@@ -2320,12 +2391,12 @@ proc defineSymbols*() =
             => ["John" "Doe"]
         """:
             #=======================================================
-            if xKind == Block:
+            if x.kind == Block:
                 push x
-            elif xKind == Range:
+            elif x.kind == Range:
                 let items = toSeq(x.rng.items)
                 push(newBlock(items))
-            elif xKind == Dictionary:
+            elif x.kind == Dictionary:
                 let s = toSeq(x.d.values)
                 push(newBlock(s))
             else:
@@ -2358,7 +2429,7 @@ proc defineSymbols*() =
             zero? ø             ; => true
         """:
             #=======================================================
-            case xKind:
+            case x.kind:
                 of Integer:
                     if x.iKind == BigInteger:
                         when defined(WEB):
