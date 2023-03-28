@@ -69,14 +69,15 @@ const
     Tab                         = '\t'
     Whitespace                  = {' ', Tab}
 
-    PermittedNumbers_Start      = {'0'..'9'}
+    Numbers                     = {'0'..'9'}
+    PermittedNumbers_Start      = Numbers
     ScientificNotation          = PermittedNumbers_Start + {'+', '-'}
     ScientificNotation_Start    = {'e', 'E'}
     Symbols                     = {'~', '!', '@', '#', '$', '%', '^', '&', '*', '-', '=', '+', '<', '>', '/', '\\', '|', '?'}
     Letters                     = {'a'..'z', 'A'..'Z'}
     PermittedIdentifiers_Start  = Letters + {'_'}
-    PermittedColorChars         = Letters + {'0'..'9'}
-    PermittedIdentifiers_In     = PermittedColorChars + {'?'}
+    PermittedColorChars         = Letters + Numbers
+    PermittedIdentifiers_In     = PermittedIdentifiers_Start + Numbers + {'?'}
     
     SemVerExtra                 = Letters + PermittedNumbers_Start + {'+', '-', '.'}
 
