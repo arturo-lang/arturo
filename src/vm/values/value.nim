@@ -8,10 +8,6 @@
 
 ## Arturo's main Value object.
 
-# TODO(VM/values/value) General cleanup needed
-#  There are various pieces of commented-out code that make the final result pretty much illegible. Let's clean this up.
-#  labels: vm, values, cleanup
-
 #=======================================
 # Libraries
 #=======================================
