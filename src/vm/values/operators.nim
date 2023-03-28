@@ -110,32 +110,6 @@ template toNewBig(v: untyped): untyped =
     else:
         newInt(v)
 
-template getValuePair(): untyped =
-    let xKind {.inject.} = x.kind
-    let yKind {.inject.} = y.kind
-
-    (cast[uint32](ord(xKind)) shl 16.uint32) or 
-    (cast[uint32](ord(yKind))) or  
-    (cast[uint32](cast[uint32](xKind==Integer) * cast[uint32](x.iKind==BigInteger)) shl 31) or
-    (cast[uint32](cast[uint32](yKind==Integer) * cast[uint32](y.iKind==BigInteger)) shl 15)
-
-proc `||`(va: static[ValueKind | IntegerKind], vb: static[ValueKind | IntegerKind]): uint32 {.compileTime.}=
-    when va is ValueKind:
-        result = cast[uint32](ord(va)) shl 16
-    elif va is IntegerKind:
-        when va == NormalInteger:
-            result = cast[uint32](ord(Integer)) shl 16
-        elif va == BigInteger:
-            result = cast[uint32](ord(Integer)) shl 16 or (1.uint32 shl 31)
-
-    when vb is ValueKind:
-        result = result or cast[uint32](ord(vb))
-    elif vb is IntegerKind:
-        when vb == NormalInteger:
-            result = result or cast[uint32](ord(Integer))
-        elif vb == BigInteger:
-            result = result or cast[uint32](ord(Integer)) or (1.uint32 shl 15)
-
 template notZero(v: untyped): untyped =
     when v is VRational:
         if unlikely(v.num==0):
