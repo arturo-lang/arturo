@@ -329,6 +329,8 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                         return newComplex(y.a[0], y.a[1])
                     of Rational:
                         return newRational(y.a[0], y.a[1])
+                    of String:
+                        return newString($(y))
                     of Inline:
                         return newInline(y.a)
                     of Dictionary:
