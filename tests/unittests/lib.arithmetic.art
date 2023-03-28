@@ -355,17 +355,17 @@ do [
     topic "add - :complex :quantity"
     ; todo: check if :quantity :complex should be possible
 
-    ensure -> not? any? @[
-        try? -> "31.0+2.0i:usd" = ~"|as.code 30:usd + to :complex [1 2]|"
-        try? -> "31.0+2.0i:eur" = ~"|as.code 30:eur + to :complex [1 2]|"
-        try? -> "31.0+2.0i:usd" = ~"|as.code add 30:usd to :complex [1 2]|"
-        try? -> "31.0+2.0i:eur" = ~"|as.code add 30:eur to :complex [1 2]|"
+    ensure -> every? @[
+        -> "31.0+2.0i:usd" = ~"|as.code 30:usd + to :complex [1 2]|"
+        -> "31.0+2.0i:eur" = ~"|as.code 30:eur + to :complex [1 2]|"
+        -> "31.0+2.0i:usd" = ~"|as.code add 30:usd to :complex [1 2]|"
+        -> "31.0+2.0i:eur" = ~"|as.code add 30:eur to :complex [1 2]|"
 
-        try? -> (to :complex [1 2]) + 30:usd
-        try? -> (to :complex [1 2]) + 30:eur
-        try? -> add (to :complex [1 2]) 30:usd
-        try? -> add (to :complex [1 2]) 30:eur
-    ]
+        -> (to :complex [1 2]) + 30:usd
+        -> (to :complex [1 2]) + 30:eur
+        -> add (to :complex [1 2]) 30:usd
+        -> add (to :complex [1 2]) 30:eur
+    ] => throws?
     passed
     
     a: 30:usd
@@ -446,12 +446,12 @@ do [
         "61/2:eur" = as.code add 30:eur to :rational [1 2]
     ]
 
-    ensure -> not? any? @[
-        try? -> (to :rational [1 2]) + 30:usd
-        try? -> (to :rational [1 2]) + 30:eur
-        try? -> add (to :rational [1 2]) 30:usd
-        try? -> add (to :rational [1 2]) 30:eur
-    ]
+    ensure -> every? @[
+        -> (to :rational [1 2]) + 30:usd
+        -> (to :rational [1 2]) + 30:eur
+        -> add (to :rational [1 2]) 30:usd
+        -> add (to :rational [1 2]) 30:eur
+    ] => throws?
     passed
     
     a: 30:usd, 'a + to :rational [1 2]
@@ -466,12 +466,12 @@ do [
     topic "add - :rational :color"
     
     a: to :rational [3 5]
-    ensure -> not? any? @[
-        try? -> a + #red
-        try? -> #red + a
-        try? -> add a #red
-        try? -> add #red a
-    ]
+    ensure -> every? @[
+        -> a + #red
+        -> #red + a
+        -> add a #red
+        -> add #red a
+    ] => throws?
     passed  
     
     ; :complex :color
@@ -518,10 +518,10 @@ do [
     
     topic "add - :color :quantity"
 
-    ensure -> not? any? @[
-        try? -> #red + 30:usd
-        try? -> 30:usd + #red
-    ]
+    ensure -> every? @[
+        -> #red + 30:usd
+        -> 30:usd + #red
+    ] => throws?
     passed
     
     a: #red
@@ -956,10 +956,10 @@ do [
 
     ensure -> expected = a / b
     ensure -> expected = div a b
-    ensure -> not? any? @[
-        try? -> b / a
-        try? -> div b a
-    ]
+    ensure -> every? @[
+        -> b / a
+        -> div b a
+    ] => throws?
     passed
     
     ; :complex :rational - :rational :complex
@@ -976,16 +976,16 @@ do [
     topic "div - :complex :quantity"
     ; todo: check if :quantity :complex should be possible
 
-    ensure -> not? any? @[
-        try? -> 30:usd / to :complex [1 2]
-        try? ->  30:eur / to :complex [1 2]
-        try? -> div 30:usd to :complex [1 2]
-        try? -> div 30:eur to :complex [1 2]
-        try? -> (to :complex [1 2]) / 30:usd
-        try? -> (to :complex [1 2]) / 30:eur
-        try? -> div (to :complex [1 2]) 30:usd
-        try? -> div (to :complex [1 2]) 30:eur
-    ]
+    ensure -> every? @[
+        -> 30:usd / to :complex [1 2]
+        ->  30:eur / to :complex [1 2]
+        -> div 30:usd to :complex [1 2]
+        -> div 30:eur to :complex [1 2]
+        -> (to :complex [1 2]) / 30:usd
+        -> (to :complex [1 2]) / 30:eur
+        -> div (to :complex [1 2]) 30:usd
+        -> div (to :complex [1 2]) 30:eur
+    ] => throws?
     passed
     
     a: 30:usd
@@ -1029,12 +1029,12 @@ do [
     ensure -> "60:usd" = ~"|as.code div 30:usd to :rational [1 2]|"
     ensure -> "60:eur" = ~"|as.code div 30:eur to :rational [1 2]|"
 
-    ensure -> not? any? @[
-        try? -> (to :rational [1 2]) / 30:usd
-        try? -> (to :rational [1 2]) / 30:eur
-        try? -> div (to :rational [1 2]) 30:usd
-        try? -> div (to :rational [1 2]) 30:eur
-    ]
+    ensure -> every? @[
+        -> (to :rational [1 2]) / 30:usd
+        -> (to :rational [1 2]) / 30:eur
+        -> div (to :rational [1 2]) 30:usd
+        -> div (to :rational [1 2]) 30:eur
+    ] => throws?
     passed
     
     a: 30:usd, 'a / to :rational [1 2]
@@ -1325,12 +1325,12 @@ do [
     ensure -> "[6.0:eur 0.0:eur]" = ~"|as.code divmod 30:eur 5.0|"
     passed
     
-    ensure -> not? any? @[
-        try? -> 5.0 /% 30:usd
-        try? -> 5.0 /% 30:eur
-        try? -> divmod 5.0 30:usd
-        try? -> divmod 5.0 30:eur
-    ]
+    ensure -> every? @[
+        -> 5.0 /% 30:usd
+        -> 5.0 /% 30:eur
+        -> divmod 5.0 30:usd
+        -> divmod 5.0 30:eur
+    ] => throws?
     passed
     
     ; todo: behavior is not completelly right
@@ -1382,16 +1382,16 @@ do [
     topic "divmod - :complex :quantity"
     ; todo: check if :quantity :complex should be possible
 
-    ensure -> not? any? @[
-        try? -> 30:usd /% to :complex [1 2]
-        try? -> 30:eur /% to :complex [1 2]
-        try? -> divmod 30:usd to :complex [1 2]
-        try? -> divmod 30:eur to :complex [1 2]
-        try? -> (to :complex [1 2]) /% 30:usd
-        try? -> (to :complex [1 2]) /% 30:eur
-        try? -> divmod (to :complex [1 2]) 30:usd
-        try? -> divmod (to :complex [1 2]) 30:eur
-    ]
+    ensure -> every? @[
+        -> 30:usd /% to :complex [1 2]
+        -> 30:eur /% to :complex [1 2]
+        -> divmod 30:usd to :complex [1 2]
+        -> divmod 30:eur to :complex [1 2]
+        -> (to :complex [1 2]) /% 30:usd
+        -> (to :complex [1 2]) /% 30:eur
+        -> divmod (to :complex [1 2]) 30:usd
+        -> divmod (to :complex [1 2]) 30:eur
+    ] => throws?
     passed
     
     a: 30:usd
@@ -1726,12 +1726,12 @@ do [
     ensure -> "60/1:usd" = ~"|as.code fdiv 30:usd to :rational [1 2]|"
     ensure -> "60/1:eur" = ~"|as.code fdiv 30:eur to :rational [1 2]|"
 
-    ensure -> not? any? @[
-        try? -> (to :rational [1 2]) // 30:usd
-        try? -> (to :rational [1 2]) // 30:eur
-        try? -> fdiv (to :rational [1 2]) 30:usd
-        try? -> fdiv (to :rational [1 2]) 30:eur
-    ]
+    ensure -> every? @[
+        -> (to :rational [1 2]) // 30:usd
+        -> (to :rational [1 2]) // 30:eur
+        -> fdiv (to :rational [1 2]) 30:usd
+        -> fdiv (to :rational [1 2]) 30:eur
+    ] => throws?
     passed
     
     a: 30:usd, 'a // to :rational [1 2]
@@ -2051,12 +2051,12 @@ do [
     ensure -> 0.0:eur = mod 30:eur 5.0
     passed
     
-    ensure -> not? any? @[
-        try? -> 5.0 % 30:usd
-        try? -> 5.0 % 30:eur
-        try? -> mod 5.0 30:usd
-        try? -> mod 5.0 30:eur
-    ]
+    ensure -> every? @[
+        -> 5.0 % 30:usd
+        -> 5.0 % 30:eur
+        -> mod 5.0 30:usd
+        -> mod 5.0 30:eur
+    ] => throws?
     passed
     
     ; todo: behavior is not completelly right
@@ -2459,16 +2459,16 @@ do [
     topic "mul - :complex :quantity"
     ; todo: check if :quantity :complex should be possible
 
-    ensure -> not? any? @[
-        try? -> 30:usd * to :complex [1 2]
-        try? -> 30:eur * to :complex [1 2]
-        try? -> mul 30:usd to :complex [1 2]
-        try? -> mul 30:eur to :complex [1 2]
-        try? -> (to :complex [1 2]) * 30:usd
-        try? -> (to :complex [1 2]) * 30:eur
-        try? -> mul (to :complex [1 2]) 30:usd
-        try? -> mul (to :complex [1 2]) 30:eur
-    ]
+    ensure -> every? @[
+        -> 30:usd * to :complex [1 2]
+        -> 30:eur * to :complex [1 2]
+        -> mul 30:usd to :complex [1 2]
+        -> mul 30:eur to :complex [1 2]
+        -> (to :complex [1 2]) * 30:usd
+        -> (to :complex [1 2]) * 30:eur
+        -> mul (to :complex [1 2]) 30:usd
+        -> mul (to :complex [1 2]) 30:eur
+    ] => throws?
     passed
     
     a: 30:usd
@@ -2511,12 +2511,12 @@ do [
     ensure -> "15/1:eur" = ~"|as.code 30:eur * to :rational [1 2]|"
     ensure -> "15/1:usd" = ~"|as.code mul 30:usd to :rational [1 2]|"
     ensure -> "15/1:eur" = ~"|as.code mul 30:eur to :rational [1 2]|"
-    ensure -> not? any? @[
-        try? -> (to :rational [1 2]) * 30:usd
-        try? -> (to :rational [1 2]) * 30:eur
-        try? -> mul (to :rational [1 2]) 30:usd
-        try? -> mul (to :rational [1 2]) 30:eur
-    ]
+    ensure -> every? @[
+        -> (to :rational [1 2]) * 30:usd
+        -> (to :rational [1 2]) * 30:eur
+        -> mul (to :rational [1 2]) 30:usd
+        -> mul (to :rational [1 2]) 30:eur
+    ] => throws?
     passed
     
     a: 30:usd, 'a * to :rational [1 2]
@@ -3014,12 +3014,12 @@ do [
     
     topic "sub - :int :color"
     
-    ensure -> not? any? @[
-        try? -> 1 - #red
-        try? -> #red - 1
-        try? -> sub 1 #red
-        try? -> sub #red 1
-    ]
+    ensure -> every? @[
+        -> 1 - #red
+        -> #red - 1
+        -> sub 1 #red
+        -> sub #red 1
+    ] => throws?
     passed  
     
     ; :integer :color
@@ -3147,12 +3147,12 @@ do [
     
     topic "sub - :floating :color"
     
-    ensure -> not? any? @[
-        try? -> 1.5 - #red
-        try? -> #red - 1.5
-        try? -> sub 1.5 #red
-        try? -> sub #red 1.5
-    ]
+    ensure -> every? @[
+        -> 1.5 - #red
+        -> #red - 1.5
+        -> sub 1.5 #red
+        -> sub #red 1.5
+    ] => throws?
     passed  
     
     ; :floating :color
@@ -3220,16 +3220,16 @@ do [
     topic "sub - :complex :quantity"
     ; todo: check if :quantity :complex should be possible
 
-    ensure -> not? any? @[
-        try? -> 30:usd - to :complex [1 2]
-        try? -> 30:eur - to :complex [1 2]
-        try? -> sub 30:usd to :complex [1 2]
-        try? -> sub 30:eur to :complex [1 2]
-        try? -> (to :complex [1 2]) - 30:usd
-        try? -> (to :complex [1 2]) - 30:eur
-        try? -> sub (to :complex [1 2]) 30:usd
-        try? -> sub (to :complex [1 2]) 30:eur
-    ]
+    ensure -> every? @[
+        -> 30:usd - to :complex [1 2]
+        -> 30:eur - to :complex [1 2]
+        -> sub 30:usd to :complex [1 2]
+        -> sub 30:eur to :complex [1 2]
+        -> (to :complex [1 2]) - 30:usd
+        -> (to :complex [1 2]) - 30:eur
+        -> sub (to :complex [1 2]) 30:usd
+        -> sub (to :complex [1 2]) 30:eur
+    ] => throws?
     passed
     
     a: 30:usd
@@ -3244,12 +3244,12 @@ do [
     topic "sub - :complex :color"
     
     a: to :complex [1 2]
-    ensure -> not? any? @[
-        try? -> a - #red
-        try? -> #red - a
-        try? -> sub a #red
-        try? -> sub #red a
-    ]
+    ensure -> every? @[
+        -> a - #red
+        -> #red - a
+        -> sub a #red
+        -> sub #red a
+    ] => throws?
     passed  
     
     ; :complex :color
@@ -3298,12 +3298,12 @@ do [
     ensure -> "59/2:eur" = ~"|as.code 30:eur - to :rational [1 2]|"
     ensure -> "59/2:usd" = ~"|as.code sub 30:usd to :rational [1 2]|"
     ensure -> "59/2:eur" = ~"|as.code sub 30:eur to :rational [1 2]|"
-    ensure -> not? any? @[
-        try? -> (to :rational [1 2]) - 30:usd
-        try? -> (to :rational [1 2]) - 30:eur
-        try? -> sub (to :rational [1 2]) 30:usd
-        try? -> sub (to :rational [1 2]) 30:eur
-    ]
+    ensure -> every? @[
+        -> (to :rational [1 2]) - 30:usd
+        -> (to :rational [1 2]) - 30:eur
+        -> sub (to :rational [1 2]) 30:usd
+        -> sub (to :rational [1 2]) 30:eur
+    ] => throws?
     passed
     
     a: 30:usd, 'a - to :rational [1 2]
@@ -3318,12 +3318,12 @@ do [
     topic "sub - :rational :color"
     
     a: to :rational [3 5]
-    ensure -> not? any? @[
-        try? -> a - #red
-        try? -> #red - a
-        try? -> sub a #red
-        try? -> sub #red a
-    ]
+    ensure -> every? @[
+        -> a - #red
+        -> #red - a
+        -> sub a #red
+        -> sub #red a
+    ] => throws?
     passed  
     
     ; :complex :color
