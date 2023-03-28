@@ -433,6 +433,8 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
 
             of Store:
                 case tp:
+                    of String:
+                        return newString($(y))
                     of Dictionary:
                         ensureStoreIsLoaded(y.sto)
                         return newDictionary(y.sto.data)
