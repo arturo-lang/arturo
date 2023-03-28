@@ -52,7 +52,7 @@ proc defineSymbols*() =
         """:
             #=======================================================
             var res = F0.copyValue
-            if x.kind == Block:
+            if xKind == Block:
                 for num in x.a:
                     res += num
 

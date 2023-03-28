@@ -21,6 +21,9 @@
 
 import vm/lib
 
+when not defined(NOGMP):
+    import helpers/bignums as BignumsHelper
+
 #=======================================
 # Methods
 #=======================================
@@ -46,8 +49,7 @@ proc defineSymbols*() =
             add 'a 1           ; a: 5
         """:
             #=======================================================
-            if x.kind==Literal  : ensureInPlace(); InPlaced += y
-            else                : push(x+y)
+            generateOperationB("add", `+`, `+=`)
 
     builtin "dec",
         alias       = unaliased, 
@@ -66,8 +68,7 @@ proc defineSymbols*() =
             dec 'a             ; a: 3
         """:
             #=======================================================
-            if x.kind==Literal  : ensureInPlace(); InPlaced -= I1
-            else                : push(x-I1)
+            generateOperationA("dec", `dec`, `decI`)
         
     builtin "div",
         alias       = slash, 
@@ -88,8 +89,7 @@ proc defineSymbols*() =
             div 'a 3           ; a: 2
         """:
             #=======================================================
-            if x.kind==Literal  : ensureInPlace(); InPlaced /= y
-            else                : push(x/y)
+            generateOperationB("div", `/`, `/=`)
 
     builtin "divmod",
         alias       = slashpercent, 
@@ -112,8 +112,7 @@ proc defineSymbols*() =
             divmod 'a 4             ; a: [1, 2]
         """:
             #=======================================================
-            if x.kind==Literal  : ensureInPlace(); InPlaced /%= y
-            else                : push(x/%y)
+            generateOperationB("divmod", `/%`, `/%=`)
 
     builtin "fdiv",
         alias       = doubleslash, 
@@ -133,8 +132,7 @@ proc defineSymbols*() =
             fdiv 'a 3          ; a: 2.0
         """:
             #=======================================================
-            if x.kind==Literal  : ensureInPlace(); InPlaced //= y
-            else                : push(x//y)
+            generateOperationB("fdiv", `//`, `//=`)
 
     builtin "inc",
         alias       = unaliased, 
@@ -153,8 +151,7 @@ proc defineSymbols*() =
             inc 'a             ; a: 5
         """:
             #=======================================================
-            if x.kind==Literal  : ensureInPlace(); InPlaced += I1
-            else                : push(x+I1)
+            generateOperationA("inc", `inc`, `incI`)
 
     builtin "mod",
         alias       = percent, 
@@ -175,8 +172,7 @@ proc defineSymbols*() =
             mod 'a 3           ; a: 2
         """:
             #=======================================================
-            if x.kind==Literal  : ensureInPlace(); InPlaced %= y
-            else                : push(x%y)
+            generateOperationB("mod", `%`, `%=`)
 
     builtin "mul",
         alias       = asterisk, 
@@ -197,8 +193,7 @@ proc defineSymbols*() =
             mul 'a 2           ; a: 10
         """:
             #=======================================================
-            if x.kind==Literal  : ensureInPlace(); InPlaced *= y
-            else                : push(x*y)
+            generateOperationB("mul", `*`, `*=`)
 
     builtin "neg",
         alias       = unaliased, 
@@ -217,8 +212,7 @@ proc defineSymbols*() =
             neg 'a             ; a: -5
         """:
             #=======================================================
-            if x.kind==Literal  : ensureInPlace(); InPlaced *= I1M
-            else                : push(x * I1M)
+            generateOperationA("neg", `neg`, `negI`)
 
     builtin "pow",
         alias       = caret, 
@@ -239,8 +233,7 @@ proc defineSymbols*() =
             pow 'a 2           ; a: 25
         """:
             #=======================================================
-            if x.kind==Literal  : ensureInPlace(); InPlaced ^= y
-            else                : push(x^y)
+            generateOperationB("pow", `^`, `^=`)
 
     # TODO(Arithmetic) add `powmod` built-in function?
     #  labels: library, enhancement, open discussion
@@ -264,8 +257,7 @@ proc defineSymbols*() =
             sub 'a 2           ; a: 5
         """:
             #=======================================================
-            if x.kind==Literal  : ensureInPlace(); InPlaced -= y
-            else                : push(x-y)
+            generateOperationB("sub", `-`, `-=`)
 
 #=======================================
 # Add Library

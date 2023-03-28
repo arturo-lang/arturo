@@ -82,9 +82,16 @@ func `+`*[T](x: VComplexObj[T]; y: T): VComplexObj[T] =
     result.re = x.re + y
     result.im = x.im
 
+func `+=`*[T](x: var VComplexObj[T]; y: T) =
+    x.re += y
+
 func `+`*[T](x, y: VComplexObj[T]): VComplexObj[T] =
     result.re = x.re + y.re
     result.im = x.im + y.im
+
+func `+=`*[T](x: var VComplexObj[T], y: VComplexObj[T]) =
+    x.re += y.re
+    x.im += y.im
 
 func `-`*[T](z: VComplexObj[T]): VComplexObj[T] =
     result.re = -z.re
@@ -98,9 +105,16 @@ func `-`*[T](x: VComplexObj[T]; y: T): VComplexObj[T] =
     result.re = x.re - y
     result.im = x.im
 
+func `-=`*[T](x: var VComplexObj[T]; y: T) =
+    x.re -= y
+
 func `-`*[T](x, y: VComplexObj[T]): VComplexObj[T] =
     result.re = x.re - y.re
     result.im = x.im - y.im
+
+func `-=`*[T](x: var VComplexObj[T], y: VComplexObj[T]) =
+    x.re -= y.re
+    x.im -= y.im
 
 func `*`*[T](x: T; y: VComplexObj[T]): VComplexObj[T] =
     result.re = x * y.re
@@ -110,13 +124,24 @@ func `*`*[T](x: VComplexObj[T]; y: T): VComplexObj[T] =
     result.re = x.re * y
     result.im = x.im * y
 
+func `*=`*[T](x: var VComplexObj[T]; y: T) =
+    x.re *= y
+    x.im *= y
+
 func `*`*[T](x, y: VComplexObj[T]): VComplexObj[T] =
     result.re = x.re * y.re - x.im * y.im
     result.im = x.im * y.re + x.re * y.im
 
+func `*=`*[T](x: var VComplexObj[T], y: VComplexObj[T]) =
+    x = x * y
+
 func `/`*[T](x: VComplexObj[T]; y: T): VComplexObj[T] =
     result.re = x.re / y
     result.im = x.im / y
+    
+func `/=`*[T](x: var VComplexObj[T]; y: T) =
+    x.re /= y
+    x.im /= y
 
 func `/`*[T](x: T; y: VComplexObj[T]): VComplexObj[T] =
     result = x * inv(y)
@@ -134,20 +159,7 @@ func `/`*[T](x, y: VComplexObj[T]): VComplexObj[T] =
         result.re = (x.re + r * x.im) / den
         result.im = (x.im - r * x.re) / den
 
-func `+=`*[T](x: var VComplexObj[T]; y: VComplexObj[T]) =
-    x.re += y.re
-    x.im += y.im
-
-func `-=`*[T](x: var VComplexObj[T]; y: VComplexObj[T]) =
-    x.re -= y.re
-    x.im -= y.im
-
-func `*=`*[T](x: var VComplexObj[T]; y: VComplexObj[T]) =
-    let im = x.im * y.re + x.re * y.im
-    x.re = x.re * y.re - x.im * y.im
-    x.im = im
-
-func `/=`*[T](x: var VComplexObj[T]; y: VComplexObj[T]) =
+func `/=`*[T](x: var VComplexObj[T], y: VComplexObj[T]) =
     x = x / y
 
 func sqrt*[T](z: VComplexObj[T]): VComplexObj[T] =

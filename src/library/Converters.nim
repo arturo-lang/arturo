@@ -598,17 +598,17 @@ proc defineSymbols*() =
 
                     push newBlock(blk)
             else:
-                if x.kind==Range:
+                if xKind==Range:
                     push(newBlock(toSeq(items(x.rng))))
                 else:
-                    if x.kind==Block:
+                    if xKind==Block:
                         let stop = SP
                         execUnscoped(x)
                         let arr: ValueArray = sTopsFrom(stop)
                         SP = stop
 
                         push(newBlock(arr))
-                    elif x.kind==String:
+                    elif xKind==String:
                         let stop = SP
                         let (_{.inject.}, tp) = getSource(x.s)
 
@@ -681,9 +681,9 @@ proc defineSymbols*() =
                 )
                 push(newBlock(res))
             elif (hadAttr("data")):
-                if x.kind==Block:
+                if xKind==Block:
                     push(parseDataBlock(x))
-                elif x.kind==String:
+                elif xKind==String:
                     let (src, _) = getSource(x.s)
                     push(parseDataBlock(doParse(src, isFile=false)))
             elif (hadAttr("code")):
@@ -854,7 +854,7 @@ proc defineSymbols*() =
             #=======================================================
             var dict: ValueDict
 
-            if x.kind==Block:
+            if xKind==Block:
                 if (hadAttr("raw")):
                     dict = initOrderedTable[string,Value]()
                     var idx = 0
@@ -863,7 +863,7 @@ proc defineSymbols*() =
                         idx += 2
                 else:
                     dict = execDictionary(x)
-            elif x.kind==String:
+            elif xKind==String:
                 let (src, tp) = getSource(x.s)
 
                 if tp!=TextData:
@@ -1046,7 +1046,7 @@ proc defineSymbols*() =
             var inline = (hadAttr("inline"))
 
             let argBlock {.cursor.} =
-                if x.kind == Block: x.a
+                if xKind == Block: x.a
                 else: @[x]
 
             # TODO(Converters\function) Verify safety of implicit `.inline`s
@@ -1168,7 +1168,7 @@ proc defineSymbols*() =
         """:
             #=======================================================
             let qs = parseQuantitySpec(x.s)
-            if y.kind==Quantity:
+            if yKind==Quantity:
                 push newQuantity(convertQuantityValue(y.nm, y.unit.name, qs.name), qs)
             else:
                 push newQuantity(y, qs)
@@ -1194,15 +1194,15 @@ proc defineSymbols*() =
             var numeric = true
             var infinite = false
 
-            if x.kind == Integer: limX = x.i
+            if xKind == Integer: limX = x.i
             else:
                 numeric = false
                 limX = ord(x.c)
 
             var forward: bool
 
-            if y.kind == Integer: limY = y.i
-            elif y.kind == Floating:
+            if yKind == Integer: limY = y.i
+            elif yKind == Floating:
                 if y.f == Inf or y.f == NegInf: 
                     infinite = true
                     if y.f == Inf: forward = true
@@ -1405,18 +1405,18 @@ proc defineSymbols*() =
             ; => #5C527A
         """:
             #=======================================================
-            if x.kind==Type:
+            if xKind==Type:
                 let tp = x.t
                 push convertedValueToType(x, y, tp, popAttr("format"))
             else:
                 var ret: ValueArray
                 let tp = x.a[0].t
                     
-                if y.kind==String:
+                if yKind==String:
                     ret = toSeq(runes(y.s)).map((c) => newChar(c))
                 else:
                     let aFormat = popAttr("format")
-                    if y.kind == Block:
+                    if yKind == Block:
                         for item in y.a:
                             ret.add(convertedValueToType(x.a[0], item, tp, aFormat))
                     else:
@@ -1451,7 +1451,7 @@ proc defineSymbols*() =
         """:
             #=======================================================
             var blk: ValueArray = y.a
-            if x.kind == Literal:
+            if xKind == Literal:
                 blk.insert(FetchSym(x.s))
                 blk.insert(newLabel(x.s))
             else:

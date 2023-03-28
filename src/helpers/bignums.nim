@@ -472,6 +472,9 @@ func `div`*(z, x: Int, y: int): Int =
 func `div`*(x: Int, y: int | culong | Int): Int =
     newInt().`div`(x, y)
 
+func `divI`*(x: Int, y: int | culong | Int) = 
+    discard x.`div`(x, y)
+
 func `div`*(x: int | culong, y: Int): Int =
     newInt().`div`(newInt(x), y)
 
@@ -556,6 +559,9 @@ func `mod`*(x: Int, y: int | culong | Int): Int =
 func `mod`*(x: int | culong, y: Int): Int =
     newInt().`mod`(newInt(x), y)
 
+func `modI`*(x: Int, y: int | culong | Int) = 
+    discard x.`mod`(x, y)
+
 func modInverse*(z, g, n: Int): bool =
     mpz_invert(z[], g[], n[]) != 0
 
@@ -601,6 +607,9 @@ func pow*(z: Int, x, y: culong): Int =
 
 func pow*(x: culong | Int, y: culong): Int =
     newInt().pow(x, y)
+
+func powI*(x: Int, y: culong) =
+    mpz_pow_ui(x[], x[], y)
 
 func pow*(x: int, y: culong): Int =
     when isLLP64():
@@ -660,6 +669,12 @@ func `and`*(z, x, y: Int): Int =
 func `and`*(x, y: Int): Int =
     newInt().`and`(x, y)
 
+func `andI`*(x: Int, y: culong | int) =
+    mpz_and(x[], x[], newInt(y)[])
+
+func `andI`*(x: Int, y: Int) =
+    mpz_and(x[], x[], y[])
+
 func `and`*(x: Int, y: int | culong): Int =
     x and newInt(y)
 
@@ -672,6 +687,12 @@ func `or`*(z, x, y: Int): Int =
 
 func `or`*(x, y: Int): Int =
     newInt().`or`(x, y)
+
+func `orI`*(x: Int, y: culong | int) =
+    mpz_ior(x[], x[], newInt(y)[])
+
+func `orI`*(x: Int, y: Int) =
+    mpz_ior(x[], x[], y[])
 
 func `or`*(x: Int, y: int | culong): Int =
     x or newInt(y)
@@ -686,6 +707,12 @@ func `xor`*(z, x, y: Int): Int =
 func `xor`*(x, y: Int): Int =
     newInt().`xor`(x, y)
 
+func `xorI`*(x: Int, y: culong | int) =
+    mpz_xor(x[], x[], newInt(y)[])
+
+func `xorI`*(x: Int, y: Int) =
+    mpz_xor(x[], x[], y[])
+
 func `xor`*(x: Int, y: int | culong): Int =
     x xor newInt(y)
 
@@ -699,6 +726,9 @@ func `not`*(z, x: Int): Int =
 func `not`*(x: Int): Int =
     newInt().`not` x
 
+func `notI`*(x: Int) =
+    mpz_com(x[], x[])
+
 func `shr`*(z, x: Int, y: culong): Int =
     result = z
     mpz_fdiv_q_2exp(z[], x[], y)
@@ -706,12 +736,18 @@ func `shr`*(z, x: Int, y: culong): Int =
 func `shr`*(x: Int, y: culong): Int =
     newInt().`shr`(x, y)
 
+func `shrI`*(x: Int, y: culong) =
+    mpz_fdiv_q_2exp(x[], x[], y)
+
 func `shl`*(z, x: Int, y: culong): Int =
     result = z
     mpz_mul_2exp(z[], x[], y)
 
 func `shl`*(x: Int, y: culong): Int =
     newInt().`shl`(x, y)
+
+func `shlI`*(x: Int, y: culong) =
+    mpz_mul_2exp(x[], x[], y)
 
 #-----------------------
 # Output
@@ -792,6 +828,16 @@ func abs*(z, x: Int): Int =
 
 func abs*(x: Int): Int =
     newInt().abs(x)
+
+func neg*(z, x: Int): Int =
+    result = z
+    mpz_neg(result[], x[])
+
+func neg*(x: Int): Int =
+    newInt().neg(x)
+
+func negI*(x: Int) =
+    mpz_neg(x[], x[])
 
 func gcd*(z, x, y: Int): Int =
     result = z

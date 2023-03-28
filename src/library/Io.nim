@@ -163,8 +163,8 @@ proc defineSymbols*() =
             goto 10 ø       ; (move cursor to column 10, same line)
             """:
                 #=======================================================
-                if x.kind==Null:
-                    if y.kind==Null:
+                if xKind==Null:
+                    if yKind==Null:
                         discard
                     else:
                         when defined(windows):
@@ -172,7 +172,7 @@ proc defineSymbols*() =
                         else:
                             discard
                 else:
-                    if y.kind==Null:
+                    if yKind==Null:
                         stdout.setCursorXPos(x.i)
                     else:
                         stdout.setCursorPos(x.i, y.i)
@@ -263,7 +263,7 @@ proc defineSymbols*() =
             print "Hello world!"          ; Hello world!
         """:
             #=======================================================
-            if x.kind==Block:
+            if xKind==Block:
                 when defined(WEB):
                     stdout = ""
 
@@ -308,7 +308,7 @@ proc defineSymbols*() =
             when defined(WEB):
                 stdout = ""
 
-            if x.kind==Block:
+            if xKind==Block:
                 let xblock = doEval(x)
                 let stop = SP
                 execUnscoped(xblock)

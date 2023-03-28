@@ -555,7 +555,7 @@ proc defineSymbols*() =
                 #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("write")
 
-                if y.kind==Bytecode:
+                if yKind==Bytecode:
                     let dataS = codify(newBlock(y.trans.constants), unwrapped=true, safeStrings=true)
                     let codeS = y.trans.instructions
                     discard writeBytecode(dataS, codeS, x.s)

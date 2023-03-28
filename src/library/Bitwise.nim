@@ -51,9 +51,7 @@ proc defineSymbols*() =
             and 'a 3           ; a: 2
         """:
             #=======================================================
-            if x.kind==Literal : ensureInPlace(); InPlaced &&= y
-            else               : push(x && y)
-
+            generateOperationB("and", `&&`, `&&=`)
 
     builtin "nand",
         alias       = unaliased, 
@@ -73,8 +71,12 @@ proc defineSymbols*() =
             nand 'a 3          ; a: -3
         """:
             #=======================================================
-            if x.kind==Literal : ensureInPlace(); InPlaced &&= y; !!= InPlaced
-            else               : push(!! (x && y))
+            if xKind==Literal : 
+                ensureInPlace(); InPlaced &&= y; !!= InPlaced
+            elif normalIntegerOperation():
+                push(normalIntegerNot(normalIntegerAnd(x.i, y.i).i))
+            else:
+                push(!! (x && y))
 
     builtin "nor",
         alias       = unaliased, 
@@ -94,8 +96,12 @@ proc defineSymbols*() =
             nor 'a 3           ; a: -4
         """:
             #=======================================================
-            if x.kind==Literal : ensureInPlace(); InPlaced ||= y; !!= InPlaced
-            else               : push(!! (x || y))
+            if xKind==Literal : 
+                ensureInPlace(); InPlaced ||= y; !!= InPlaced
+            elif normalIntegerOperation():
+                push(normalIntegerNot(normalIntegerOr(x.i, y.i).i))
+            else:
+                push(!! (x || y))
 
     builtin "not",
         alias       = unaliased, 
@@ -114,8 +120,7 @@ proc defineSymbols*() =
             not 'a             ; a: -124
         """:
             #=======================================================
-            if x.kind==Literal : ensureInPlace(); !!= InPlaced 
-            else               : push(!! x)
+            generateOperationA("not", `!!`, `!!=`)
 
     builtin "or",
         alias       = unaliased, 
@@ -135,8 +140,7 @@ proc defineSymbols*() =
             or 'a 3            ; a: 3
         """:
             #=======================================================
-            if x.kind==Literal : ensureInPlace(); InPlaced ||= y
-            else               : push(x || y)
+            generateOperationB("or", `||`, `||=`)
 
     builtin "shl",
         alias       = unaliased, 
@@ -158,14 +162,18 @@ proc defineSymbols*() =
             shl 'a 3           ; a: 16
         """:
             #=======================================================
-            if x.kind==Literal : 
+            if xKind==Literal : 
                 ensureInPlace(); 
-                let valBefore = InPlaced 
+                let valBefore = InPlaced
                 InPlaced <<= y
                 if InPlaced < valBefore and (hadAttr("safe")):
                     SetInPlace(newBigInteger(valBefore.i) << y)
-                    
-            else               : 
+            elif normalIntegerOperation():
+                var res = normalIntegerShl(x.i, y.i)
+                if res < x and (hadAttr("safe")):
+                    res = newBigInteger(x.i) << y
+                push(res)
+            else:
                 var res = x << y
                 if res < x and (hadAttr("safe")):
                     res = newBigInteger(x.i) << y
@@ -189,8 +197,7 @@ proc defineSymbols*() =
             shr 'a 3           ; a: 2
         """:
             #=======================================================
-            if x.kind==Literal : ensureInPlace(); InPlaced >>= y
-            else               : push(x >> y)
+            generateOperationB("shr", `>>`, `>>=`)
 
     builtin "xnor",
         alias       = unaliased, 
@@ -210,8 +217,12 @@ proc defineSymbols*() =
             xnor 'a 3          ; a: -2
         """:
             #=======================================================
-            if x.kind==Literal : ensureInPlace(); InPlaced ^^= y; !!= InPlaced
-            else               : push(!! (x ^^ y))
+            if xKind==Literal : 
+                ensureInPlace(); InPlaced ^^= y; !!= InPlaced
+            elif normalIntegerOperation():
+                push(normalIntegerNot(normalIntegerXor(x.i, y.i).i))
+            else:
+                push(!! (x ^^ y))
         
     builtin "xor",
         alias       = unaliased, 
@@ -231,8 +242,7 @@ proc defineSymbols*() =
             xor 'a 3           ; a: 1
         """:
             #=======================================================
-            if x.kind==Literal : ensureInPlace(); InPlaced ^^= y
-            else               : push(x ^^ y)
+            generateOperationB("xor", `^^`, `^^=`)
 
 #=======================================
 # Add Library

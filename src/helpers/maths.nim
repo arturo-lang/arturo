@@ -20,6 +20,9 @@ when defined(WEB):
 elif not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
+when defined(NOGMP):
+    import vm/errors
+    
 import vm/values/value
 
 #=======================================
@@ -43,6 +46,11 @@ func mulmod*[T: SomeInteger](a, b, modulus: T): T =
         if (b_m and 1) == 1: result = addmod(result, a_m, modulus)
         a_m = (a_m shl 1) - (if a_m >= (modulus - a_m): modulus else: 0)
         b_m = b_m shr 1
+
+func divmod*[T: SomeInteger](a, b: T): array[2, T] =
+    let quot = a div b
+    let rem = a - b * quot
+    return [quot, rem]
  
 func expmod*[T: SomeInteger](base, exponent, modulus: T): T =
     result = 1
@@ -386,3 +394,27 @@ proc cartesianProduct*[T](a: varargs[seq[T]]): seq[seq[T]] =
         for x in a[0]:
             for s in cartesianProduct(a[1..^1]):
                 result.add(x & s)
+
+proc factorial*(x: int): Value =
+    if x < 21:
+        when defined(WEB):
+            if x < 13:
+                return newInteger(fac(x))
+            else:
+                let items = (toSeq(1..x)).map((w)=>newInteger(w))
+                var res = newInteger(1)
+                for item in items:
+                    res = res * item
+                return res
+        else:
+            return newInteger(fac(x))
+    else:
+        when defined(WEB):
+            let items = (toSeq(1..x)).map((w)=>newInteger(w))
+            var res = newInteger(1)
+            for item in items:
+                res = res * item
+        elif defined(NOGMP):
+            RuntimeError_NumberOutOfPermittedRange("factorial",$x, "")
+        else:
+            return newInteger(BignumsHelper.fac(x))

@@ -87,7 +87,7 @@ func getTypeString(vs: ValueSpec):string =
         return ":nothing"
 
     for s in vs:
-        specs.add(":" & ($(s)).toLowerAscii())
+        specs.add(stringify(s))
 
     return specs.join(" ")
 
@@ -255,7 +255,7 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
 
 proc printInfo*(n: string, v: Value, aliases: SymbolDict) =
     # Get type + possible module (if it's a builtin)
-    var typeStr = ":" & ($(v.kind)).toLowerAscii
+    var typeStr = valueKind(v)
     # if v.kind==Function and v.fnKind==BuiltinFunction:
     #     typeStr &= " /" & v.module.toLowerAscii()
 
