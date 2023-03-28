@@ -379,12 +379,12 @@ do [
     topic "add - :complex :color"
     
     a: to :complex [1 2]
-    ensure -> not? any? @[
-        try? -> a + #red
-        try? -> #red + a
-        try? -> add a #red
-        try? -> add #red a
-    ]
+    ensure -> every? @[
+        -> a + #red
+        -> #red + a
+        -> add a #red
+        -> add #red a
+    ] => throws?
     passed  
     
     ; :complex :color
