@@ -133,11 +133,6 @@ var
 
 func newDictionary*(d: sink ValueDict = newOrderedTable[string,Value]()): Value {.inline.}
 func valueAsString*(v: Value): string {.inline,enforceNoRaises.}
-# proc `+`*(x: Value, y: Value): Value
-# proc `-`*(x: Value, y: Value): Value
-# proc `*`*(x: Value, y: Value): Value
-# proc `/`*(x: Value, y: Value): Value
-# proc `//`*(x: Value, y: Value): Value
 func hash*(v: Value): Hash {.inline.}
 
 #=======================================
