@@ -873,4 +873,4 @@ proc generateAst*(parsed: Value, asDictionary=false, asFunction=false, reuseArit
 
     discard result.processBlock(parsed, asDictionary=asDictionary, asFunction=asFunction)
 
-    #echo dumpNode(result)
+    echo dumpNode(result)
