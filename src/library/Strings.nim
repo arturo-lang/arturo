@@ -129,7 +129,7 @@ proc defineSymbols*() =
             ascii? "Γειά!"          ; false
         """:
             #=======================================================
-            if x.kind==Char:
+            if xKind==Char:
                 push(newLogical(ord(x.c)<128))
             else:
                 var allOK = true
@@ -159,8 +159,8 @@ proc defineSymbols*() =
             capitalize 'str                     ; str: "Hello World"
         """:
             #=======================================================
-            if x.kind==String: push(newString(x.s.capitalize()))
-            elif x.kind==Char: push(newChar(x.c.toUpper()))
+            if xKind==String: push(newString(x.s.capitalize()))
+            elif xKind==Char: push(newChar(x.c.toUpper()))
             else: 
                 ensureInPlace()
                 if InPlaced.kind==String:
@@ -202,7 +202,7 @@ proc defineSymbols*() =
             ; a long &quot;string&quot; + with \diffe\rent symbols.
         """:
             #=======================================================
-            if x.kind==Literal:
+            if xKind==Literal:
                 ensureInPlace()
                 if (hadAttr("json")):
                     SetInPlace(newString(escapeJsonUnquoted(InPlaced.s)))
@@ -264,7 +264,7 @@ proc defineSymbols*() =
             if checkAttr("with"):
                 padding = aWith.s
 
-            if x.kind==Literal:
+            if xKind==Literal:
                 ensureInPlace()
                 SetInPlace(newString(indent(InPlaced.s, count, padding)))
             else:
@@ -324,7 +324,7 @@ proc defineSymbols*() =
         """:
             #=======================================================
             if (hadAttr("path")):
-                if x.kind==Literal:
+                if xKind==Literal:
                     ensureInPlace()
                     SetInPlace(newString(joinPath(InPlaced.a.map(proc (v:Value):string = $(v)))))
                 else:
@@ -334,7 +334,7 @@ proc defineSymbols*() =
                 if checkAttr("with"):
                     sep = aWith.s
 
-                if x.kind==Literal:
+                if xKind==Literal:
                     ensureInPlace()
                     SetInPlace(newString(InPlaced.a.map(proc (v:Value):string = $(v)).join(sep)))
                 else:
@@ -392,8 +392,8 @@ proc defineSymbols*() =
             ; => `a`  
         """:
             #=======================================================
-            if x.kind==String: push(newString(x.s.toLower()))
-            elif x.kind==Char: push(newChar(x.c.toLower()))
+            if xKind==String: push(newString(x.s.toLower()))
+            elif xKind==Char: push(newChar(x.c.toLower()))
             else: 
                 ensureInPlace()
                 if InPlaced.kind==String:
@@ -418,7 +418,7 @@ proc defineSymbols*() =
             lower? "hello"           ; => true
         """:
             #=======================================================
-            if x.kind==Char:
+            if xKind==Char:
                 push(newLogical(x.c.isLower()))
             else:
                 var broken = false
@@ -491,8 +491,8 @@ proc defineSymbols*() =
             """:
                 #=======================================================
                 let rgx : VRegex =
-                    if y.kind==Regex: y.rx
-                    elif y.kind==String: newRegex(y.s).rx
+                    if yKind==Regex: y.rx
+                    elif yKind==String: newRegex(y.s).rx
                     else: newRegex($(y.c)).rx
 
                 var iFrom = 0
@@ -593,7 +593,7 @@ proc defineSymbols*() =
             """:
                 #=======================================================
                 let rgx : VRegex =
-                    if y.kind==Regex: y.rx
+                    if yKind==Regex: y.rx
                     else: newRegex(y.s).rx
 
                 var iFrom = 0
@@ -633,7 +633,7 @@ proc defineSymbols*() =
         """:
             #=======================================================
             try:
-                if x.kind==Char:
+                if xKind==Char:
                     discard parseFloat($(x.c))
                 else:
                     discard x.s.parseFloat()
@@ -676,7 +676,7 @@ proc defineSymbols*() =
         """:
             #=======================================================
             var count = 0
-            if x.kind==Literal:
+            if xKind==Literal:
                 ensureInPlace()
                 count = indentation(InPlaced.s)
             else:
@@ -690,7 +690,7 @@ proc defineSymbols*() =
             if checkAttr("with"):
                 padding = aWith.s
 
-            if x.kind==Literal:
+            if xKind==Literal:
                 ensureInPlace()
                 SetInPlace(newString(unindent(InPlaced.s, count, padding)))
             else:
@@ -728,17 +728,17 @@ proc defineSymbols*() =
                 padding = aWith.c
 
             if (hadAttr("right")):
-                if x.kind==String: push(newString(unicode.alignLeft(x.s, y.i, padding=padding)))
+                if xKind==String: push(newString(unicode.alignLeft(x.s, y.i, padding=padding)))
                 else: 
                     ensureInPlace()
                     InPlaced.s = unicode.alignLeft(InPlaced.s, y.i, padding=padding)
             elif (hadAttr("center")):
-                if x.kind==String: push(newString(centerUnicode(x.s, y.i, padding=padding)))
+                if xKind==String: push(newString(centerUnicode(x.s, y.i, padding=padding)))
                 else: 
                     ensureInPlace()
                     InPlaced.s = centerUnicode(InPlaced.s, y.i, padding=padding)
             else:
-                if x.kind==String: push(newString(unicode.align(x.s, y.i, padding=padding)))
+                if xKind==String: push(newString(unicode.align(x.s, y.i, padding=padding)))
                 else: 
                     ensureInPlace()
                     InPlaced.s = unicode.align(InPlaced.s, y.i, padding=padding)
@@ -759,7 +759,7 @@ proc defineSymbols*() =
             prefix? "boom" "he"           ; => false
         """:
             #=======================================================
-            if y.kind==Regex:
+            if yKind==Regex:
                 push(newLogical(x.s.startsWith(y.rx)))
             else:
                 push(newLogical(x.s.startsWith(y.s)))
@@ -790,7 +790,7 @@ proc defineSymbols*() =
                 let recursive = not (hadAttr("once"))
                 let templated = (hadAttr("template"))
                 var res: string
-                if x.kind == Literal:
+                if xKind == Literal:
                     ensureInPlace()
                     res = InPlaced.s
                 else:
@@ -853,7 +853,7 @@ proc defineSymbols*() =
                         if recursive: keepGoing = res.find(Interpolated).isSome
                         else: keepGoing = false
 
-                if x.kind == Literal:
+                if xKind == Literal:
                     ensureInPlace()
                     SetInPlace(newString(res))
                 else:
@@ -887,14 +887,14 @@ proc defineSymbols*() =
             replace "hello" ["h" "o"] ["x" "z"]     ; => "xellz"
         """:
             #=======================================================
-            if x.kind==String:
-                if y.kind==String:
+            if xKind==String:
+                if yKind==String:
                     push(newString(x.s.replaceAll(y.s, z.s)))
-                elif y.kind==Regex:
+                elif yKind==Regex:
                     push(newString(x.s.replaceAll(y.rx, z.s)))
                 else:
                     var final = x.s
-                    if z.kind==String:
+                    if zKind==String:
                         for item in y.a:
                             replaceStrWith(final, item, z)
                     else:
@@ -906,12 +906,12 @@ proc defineSymbols*() =
                     push(newString(final))
             else:
                 ensureInPlace()
-                if y.kind==String:
+                if yKind==String:
                     InPlaced.s = InPlaced.s.replaceAll(y.s, z.s)
-                elif y.kind==Regex:
+                elif yKind==Regex:
                     InPlaced.s = InPlaced.s.replaceAll(y.rx, z.s)
                 else:
-                    if z.kind==String:
+                    if zKind==String:
                         for item in y.a:
                             replaceStrWith(InPlaced.s, item, z)
                     else:
@@ -953,7 +953,7 @@ proc defineSymbols*() =
                 leading = true
                 trailing = true
 
-            if x.kind==String: push(newString(strutils.strip(x.s, leading, trailing)))
+            if xKind==String: push(newString(strutils.strip(x.s, leading, trailing)))
             else: 
                 ensureInPlace()
                 InPlaced.s = strutils.strip(InPlaced.s, leading, trailing) 
@@ -974,7 +974,7 @@ proc defineSymbols*() =
             suffix? "boom" "lo"           ; => false
         """:
             #=======================================================
-            if y.kind==Regex:
+            if yKind==Regex:
                 push(newLogical(x.s.endsWith(y.rx)))
             else:
                 push(newLogical(x.s.endsWith(y.s)))
@@ -1002,7 +1002,7 @@ proc defineSymbols*() =
             #=======================================================
             let replacements = (toSeq(y.d.pairs)).map((w) => (w[0], w[1].s))
 
-            if x.kind==String:
+            if xKind==String:
                 push(newString(x.s.multiReplace(replacements)))
             else:
                 ensureInPlace()
@@ -1043,12 +1043,12 @@ proc defineSymbols*() =
                 with = aWith.s
 
             if (hadAttr("preserve")):
-                if x.kind==String: push(newString(truncatePreserving(x.s, y.i, with)))
+                if xKind==String: push(newString(truncatePreserving(x.s, y.i, with)))
                 else: 
                     ensureInPlace()
                     InPlaced.s = truncatePreserving(InPlaced.s, y.i, with)
             else:
-                if x.kind==String: push(newString(truncate(x.s, y.i, with)))
+                if xKind==String: push(newString(truncate(x.s, y.i, with)))
                 else: 
                     ensureInPlace()
                     InPlaced.s = truncate(InPlaced.s, y.i, with)
@@ -1074,8 +1074,8 @@ proc defineSymbols*() =
             ; => `A`                     
         """:
             #=======================================================
-            if x.kind==String: push(newString(x.s.toUpper()))
-            elif x.kind==Char: push(newChar(x.c.toUpper()))
+            if xKind==String: push(newString(x.s.toUpper()))
+            elif xKind==Char: push(newChar(x.c.toUpper()))
             else: 
                 ensureInPlace()
                 if InPlaced.kind==String:
@@ -1100,7 +1100,7 @@ proc defineSymbols*() =
             upper? "HELLO"           ; => true
         """:
             #=======================================================
-            if x.kind==Char:
+            if xKind==Char:
                 push(newLogical(x.c.isUpper()))
             else:
                 var broken = false
@@ -1148,7 +1148,7 @@ proc defineSymbols*() =
             if checkAttr("at"):
                 cutoff = aAt.i
             
-            if x.kind==Literal:
+            if xKind==Literal:
                 ensureInPlace()
                 SetInPlace(newString(wrapWords(InPlaced.s, maxLineWidth=cutoff)))
             else:

@@ -343,3 +343,46 @@ makeAccessor(funcType, bcode)
 makeAccessor(funcType, inline)
 makeAccessor(funcType, action)
 makeAccessor(funcType, op)
+
+#=======================================
+# Methods
+#=======================================
+
+template getValuePair*(): untyped =
+    ## get ValuePair value for given x and y Value objects
+    ## so that we can check against given ValuePair's inside
+    ## a case statement
+    ##
+    ## Caution: since it's a template, its value is meant to
+    ## be assigned first to a variable and *then* we may use
+    ## that variable. Doing something like `case getValuePair():`
+    ## would lead to an infinite number of code repetitions!
+    when not declared(xKind):
+        let xKind {.inject.} = x.kind
+    when not declared(yKind):
+        let yKind {.inject.} = y.kind
+
+    (cast[uint32](ord(xKind)) shl 16.uint32) or 
+    (cast[uint32](ord(yKind))) or  
+    (cast[uint32](cast[uint32](xKind==Integer) * cast[uint32](x.iKind==BigInteger)) shl 31) or
+    (cast[uint32](cast[uint32](yKind==Integer) * cast[uint32](y.iKind==BigInteger)) shl 15)
+
+proc `||`*(va: static[ValueKind | IntegerKind], vb: static[ValueKind | IntegerKind]): uint32 {.compileTime.}=
+    ## generate a ValuePair value for given va and vb Value kinds
+    ## the codes are produced statically, at compile time and are
+    ## meant to be used solely in a case statement
+    when va is ValueKind:
+        result = cast[uint32](ord(va)) shl 16
+    elif va is IntegerKind:
+        when va == NormalInteger:
+            result = cast[uint32](ord(Integer)) shl 16
+        elif va == BigInteger:
+            result = cast[uint32](ord(Integer)) shl 16 or (1.uint32 shl 31)
+
+    when vb is ValueKind:
+        result = result or cast[uint32](ord(vb))
+    elif vb is IntegerKind:
+        when vb == NormalInteger:
+            result = result or cast[uint32](ord(Integer))
+        elif vb == BigInteger:
+            result = result or cast[uint32](ord(Integer)) or (1.uint32 shl 15)

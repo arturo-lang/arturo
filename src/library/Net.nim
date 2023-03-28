@@ -261,7 +261,7 @@ proc defineSymbols*() =
                             echo "adding multipart data:" & $(k)
                             multipart[k] = $(v)
                 else:
-                    if y != VNULL and (y.kind==Dictionary and y.d.len!=0):
+                    if y != VNULL and (yKind==Dictionary and y.d.len!=0):
                         var parts: seq[string]
                         for k,v in pairs(y.d):
                             parts.add(k & "=" & urlencode($(v)))

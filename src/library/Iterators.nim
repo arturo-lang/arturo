@@ -272,7 +272,7 @@ template iterateBlockWithParams(
 template fetchParamsBlock() {.dirty.} =
     var params: seq[string]
     if hasIndex: params.add(withIndex.s)
-    if y.kind != Null:
+    if yKind != Null:
         for item in mitems(y.a):
             params.add(item.s)
 
@@ -287,7 +287,7 @@ template prepareIteration(doesAcceptLiterals=true) {.dirty.} =
     var iterable{.cursor.} = x
 
     when doesAcceptLiterals:
-        let inPlace = x.kind==Literal
+        let inPlace = xKind==Literal
         if inPlace: 
             ensureInPlace()
             iterable = InPlaced
@@ -327,7 +327,7 @@ template iterateRange(withCap:bool, withInf:bool, withCounter:bool, rolling:bool
     when withCounter:
         var cntr = 0
                 
-    if likely(y.kind==Literal):
+    if likely(yKind==Literal):
         if likely(not hasIndex):
             iterateRangeWithLiteral(rang, y.s, cap=withCap, inf=withInf):
                 act
@@ -356,7 +356,7 @@ template iterateBlock(withCap:bool, withInf:bool, withCounter:bool, rolling:bool
     when withCounter:
         var cntr = 0
 
-    if likely(y.kind==Literal):
+    if likely(yKind==Literal):
         if likely(not hasIndex):
             iterateBlockWithLiteral(blo, y.s, cap=withCap, inf=withInf):
                 act

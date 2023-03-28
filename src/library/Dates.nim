@@ -87,7 +87,7 @@ proc defineSymbols*() =
                 years=years
             )
             
-            if x.kind==Literal:
+            if xKind==Literal:
                 ensureInPlace()
                 SetInPlace(newDate(InPlaced.eobj + ti))
             else:
@@ -150,7 +150,7 @@ proc defineSymbols*() =
                 years=years
             )
             
-            if x.kind==Literal:
+            if xKind==Literal:
                 ensureInPlace()
                 SetInPlace(newDate(InPlaced.eobj - ti))
             else:
@@ -208,7 +208,7 @@ proc defineSymbols*() =
             ; false true false
         """:
             #=======================================================
-            if x.kind==Integer:
+            if xKind==Integer:
                 push(newLogical(isLeapYear(x.i)))
             else:
                 push(newLogical(isLeapYear(x.e["year"].i)))

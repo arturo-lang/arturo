@@ -339,7 +339,8 @@ proc newQuantitySpec*(un: UnitName): VQuantity {.inline.} =
 
 proc getQuantityMultiplier*(src: UnitName, tgt: UnitName, isCurrency=false): float =
     if isCurrency:
-        return getExchangeRate(src, tgt)
+        if src==tgt: return 1.0
+        else: return getExchangeRate(src, tgt)
     else:
         return ConversionRatio[src] / ConversionRatio[tgt]
 
