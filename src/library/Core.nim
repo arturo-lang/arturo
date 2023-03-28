@@ -635,6 +635,26 @@ proc defineSymbols*() =
             else:
                 execUnscoped(z)
 
+    builtin "throws?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "perform action, and return true if errors were thrown",
+        args        = {
+            "action": {Block,Bytecode}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+        """:
+            #=======================================================
+            try:
+                execUnscoped(x)
+
+                push(VFALSE)
+            except CatchableError, Defect:
+                push(VTRUE)
+
     builtin "try",
         alias       = unaliased, 
         op          = opNop,
