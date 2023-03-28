@@ -74,7 +74,7 @@ const
     ScientificNotation_Start    = {'e', 'E'}
     Symbols                     = {'~', '!', '@', '#', '$', '%', '^', '&', '*', '-', '=', '+', '<', '>', '/', '\\', '|', '?'}
     Letters                     = {'a'..'z', 'A'..'Z'}
-    PermittedIdentifiers_Start  = Letters
+    PermittedIdentifiers_Start  = Letters + {'_'}
     PermittedColorChars         = Letters + {'0'..'9'}
     PermittedIdentifiers_In     = PermittedColorChars + {'?'}
     
