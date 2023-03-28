@@ -332,7 +332,11 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                         else:
                             throwCannotConvert()
                     of Rational:
-                        return newRational(y.a[0], y.a[1])
+                        if (y.a[0].kind in {Floating, Integer} and
+                            y.a[1].kind in {Floating, Integer}):
+                            return newRational(y.a[0], y.a[1])
+                        else:
+                            throwCannotConvert()
                     of Inline:
                         return newInline(y.a)
                     of Dictionary:
