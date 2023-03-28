@@ -400,7 +400,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                         return newBytecode(evaled)
                        
                     else:
-                        discard
+                        throwCannotConvert()
 
             of Range:
                 if tp == Block:
