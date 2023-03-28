@@ -1,0 +1,10 @@
+; by @Krenium
+
+primes: select range.step:2 3 1e6 => prime?
+
+pair: couple primes drop primes 1
+    | maximum'p -> p\1 - p\0
+    | <=
+
+print "Largest prime gap under a million is:"
+print ~"|pair\1 - pair\0| between |pair\0| and |pair\1|"

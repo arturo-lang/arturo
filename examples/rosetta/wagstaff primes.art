@@ -1,0 +1,17 @@
+; by @Krenium
+
+wagstaff?: function [e][
+    and? -> prime? e -> prime? (1+2^e)/3
+]
+
+summarize: function [n][
+    n: ~"|n|"
+    s: size n
+    if s > 20 -> n: ((take n 10)++"...")++drop n s-10
+    n ++ ~" (|s| digits)"
+]
+
+exponents: select.first:24 range.step:2 1 ∞ => wagstaff?
+loop.with:'i exponents 'x -> print [
+    pad ~"|i+1|:" 3 pad ~"|x| -" 6 summarize (1+2^x)/3
+]
