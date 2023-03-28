@@ -72,7 +72,7 @@ const
     PermittedNumbers_Start      = {'0'..'9'}
     ScientificNotation          = PermittedNumbers_Start + {'+', '-'}
     ScientificNotation_Start    = {'e', 'E'}
-    Symbols                     = {'~', '!', '@', '#', '$', '%', '^', '&', '*', '-', '_', '=', '+', '<', '>', '/', '\\', '|', '?'}
+    Symbols                     = {'~', '!', '@', '#', '$', '%', '^', '&', '*', '-', '=', '+', '<', '>', '/', '\\', '|', '?'}
     Letters                     = {'a'..'z', 'A'..'Z'}
     PermittedIdentifiers_Start  = Letters
     PermittedColorChars         = Letters + {'0'..'9'}
