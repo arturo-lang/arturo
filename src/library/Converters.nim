@@ -531,7 +531,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                Any,
                Path,
                PathLabel,
-               Binary: discard
+               Binary: throwCannotConvert()
 
 #=======================================
 # Methods
