@@ -352,6 +352,11 @@ template getValuePair*(): untyped =
     ## get ValuePair value for given x and y Value objects
     ## so that we can check against given ValuePair's inside
     ## a case statement
+    ##
+    ## Caution: since it's a template, its value is meant to
+    ## be assigned first to a variable and *then* we may use
+    ## that variable. Doing something like `case getValuePair():`
+    ## would lead to an infinite number of code repetitions!
     when not declared(xKind):
         let xKind {.inject.} = x.kind
     when not declared(yKind):
