@@ -426,6 +426,8 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
             
             of Object:
                 case tp:
+                    of String:
+                        return newString($(y))
                     of Dictionary:
                         return newDictionary(y.o)
                     else:
