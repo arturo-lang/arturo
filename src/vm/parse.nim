@@ -597,7 +597,6 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
         of '^'  : p.symbol = caret
         of '&'  : p.symbol = ampersand
         of '*'  : p.symbol = asterisk
-        of '_'  : p.symbol = underscore
         of '|'  : 
             if p.buf[pos+1]=='|': 
                 inc(pos)
