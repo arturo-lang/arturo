@@ -646,6 +646,13 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
+            throws? [
+                1 + 2
+            ] 
+            ; => false
+
+            throws? -> 1/0
+            ; => false
         """:
             #=======================================================
             try:
