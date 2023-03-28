@@ -328,9 +328,9 @@ do [
     expected: to :complex [1.6 2.0]
     ensure -> all? @[
         expected = a + b
-        not? try? -> b + a
+        throws? -> b + a
         expected = add a b
-        not? try? -> add b a
+        throws? -> add b a
     ]
     passed
     
@@ -342,7 +342,7 @@ do [
     ensure -> a = to :complex [1.6 2.0]
     passed
     
-    ensure -> not? try? -> add 'b a
+    ensure -> throws? -> add 'b a
     passed
 
     ; ** I'm kind-of "disabling" this test (= checking for failure), 
@@ -369,11 +369,11 @@ do [
     passed
     
     a: 30:usd
-    ensure -> not? try? -> 'a + to :complex [1 2]
+    ensure -> throws? -> 'a + to :complex [1 2]
     passed
     
     a: to :complex [1 2]
-    ensure -> not? try? -> 'a + 30:usd
+    ensure -> throws? -> 'a + 30:usd
     passed
     
     topic "add - :complex :color"
@@ -389,18 +389,18 @@ do [
     
     ; :complex :color
     a: to :complex [1 2]
-    ensure -> not? try? -> 'a + #red
+    ensure -> throws? -> 'a + #red
     
     a: to :complex [1 2]
-    ensure -> not? try? -> add 'a #red
+    ensure -> throws? -> add 'a #red
     passed
     
     ; :color :complex
     a: #red
-    ensure -> not? try? -> 'a + to :complex [1 2]
+    ensure -> throws? -> 'a + to :complex [1 2]
     
     a: #red
-    ensure -> not? try? -> add 'a to :complex [1 2]
+    ensure -> throws? -> add 'a to :complex [1 2]
     passed
 
     
@@ -459,7 +459,7 @@ do [
     passed
     
     a: to :rational [1 2]
-    ensure -> not? try? -> 'a + 30:usd
+    ensure -> throws? -> 'a + 30:usd
     passed
     
 
@@ -476,18 +476,18 @@ do [
     
     ; :complex :color
     a: to :rational [3 5]
-    ensure -> not? try? -> 'a + #red
+    ensure -> throws? -> 'a + #red
     
     a: to :rational [3 5]
-    ensure -> not? try? -> add 'a #red
+    ensure -> throws? -> add 'a #red
     passed
     
     ; :color :complex
     a: #red
-    ensure -> not? try? -> 'a + to :rational [3 5]
+    ensure -> throws? -> 'a + to :rational [3 5]
     
     a: #red
-    ensure -> not? try? -> add 'a to :rational [3 5]
+    ensure -> throws? -> add 'a to :rational [3 5]
     passed
     
     ; ------ color
@@ -525,11 +525,11 @@ do [
     passed
     
     a: #red
-    ensure -> not? try? -> 'a + 30:usd
+    ensure -> throws? -> 'a + 30:usd
     passed
     
     a: 30:usd
-    ensure -> not? try? -> 'a + #red
+    ensure -> throws? -> 'a + #red
     passed
     
     ; ------ quantity
@@ -970,7 +970,7 @@ do [
     ensure -> a = expected
     passed
     
-    ensure -> not? try? -> div 'b a
+    ensure -> throws? -> div 'b a
     passed
     
     topic "div - :complex :quantity"
@@ -989,11 +989,11 @@ do [
     passed
     
     a: 30:usd
-    ensure -> not? try? -> 'a / to :complex [1 2]
+    ensure -> throws? -> 'a / to :complex [1 2]
     passed
     
     a: to :complex [1 2]
-    ensure -> not? try? -> 'a / 30:usd
+    ensure -> throws? -> 'a / 30:usd
     passed
     
     
@@ -1042,7 +1042,7 @@ do [
     passed
     
     a: to :rational [1 2]
-    ensure -> not? try? -> 'a / 30:usd
+    ensure -> throws? -> 'a / 30:usd
     passed
     
         
@@ -1341,7 +1341,7 @@ do [
     ; todo: compare with respective types
     ; todo: fix behavior for :int :quant
     a: 5.0
-    ensure -> not? try? -> 'a /% 30:usd
+    ensure -> throws? -> 'a /% 30:usd
     passed
     
     
@@ -1395,11 +1395,11 @@ do [
     passed
     
     a: 30:usd
-    ensure -> not? try? -> 'a /% to :complex [1 2]
+    ensure -> throws? -> 'a /% to :complex [1 2]
     passed
     
     a: to :complex [1 2]
-    ensure -> not? try? -> 'a /% 30:usd
+    ensure -> throws? -> 'a /% 30:usd
     passed
     
     
@@ -1739,7 +1739,7 @@ do [
     passed
     
     a: to :rational [1 2]
-    ensure -> not? try? -> 'a // 30:usd
+    ensure -> throws? -> 'a // 30:usd
     passed
     
         
@@ -2067,7 +2067,7 @@ do [
     ; todo: compare with respective types
     ; todo: fix behavior for :int :quant
     a: 5.0
-    ensure -> not? try? -> 'a % 30:usd
+    ensure -> throws? -> 'a % 30:usd
     passed
     
  
@@ -2439,9 +2439,9 @@ do [
     b: to :rational [3 5]
     expected: to :complex [0.6 1.2]
     ensure -> expected = a * b
-    ensure -> not? try? -> b * a
+    ensure -> throws? -> b * a
     ensure -> expected = mul a b
-    ensure -> not? try? -> mul b a
+    ensure -> throws? -> mul b a
     passed
     
     ; :complex :rational - :rational :complex
@@ -2453,7 +2453,7 @@ do [
     passed
     
     b: to :rational [3 5]
-    ensure -> not? try? -> mul 'b a
+    ensure -> throws? -> mul 'b a
     passed
     
     topic "mul - :complex :quantity"
@@ -2472,11 +2472,11 @@ do [
     passed
     
     a: 30:usd
-    ensure -> not? try? -> 'a * to :complex [1 2]
+    ensure -> throws? -> 'a * to :complex [1 2]
     passed
     
     a: to :complex [1 2]
-    ensure -> not? try? -> 'a * 30:usd
+    ensure -> throws? -> 'a * 30:usd
     passed
     
     
@@ -2524,7 +2524,7 @@ do [
     passed
     
     a: to :rational [1 2]
-    ensure -> not? try? -> 'a * 30:usd
+    ensure -> throws? -> 'a * 30:usd
     passed
     
         
@@ -3024,18 +3024,18 @@ do [
     
     ; :integer :color
     a: 1
-    ensure -> not? try? -> 'a - #red
+    ensure -> throws? -> 'a - #red
     
     a: 1
-    ensure -> not? try? -> sub 'a #red
+    ensure -> throws? -> sub 'a #red
     passed
     
     ; :color :integer
     a: #red
-    ensure -> not? try? -> 'a - 1
+    ensure -> throws? -> 'a - 1
     
     a: #red
-    ensure -> not? try? -> sub 'a 1
+    ensure -> throws? -> sub 'a 1
     passed
     
     
@@ -3157,18 +3157,18 @@ do [
     
     ; :floating :color
     a: 1.5
-    ensure -> not? try? -> 'a - #red
+    ensure -> throws? -> 'a - #red
     
     a: 1.5
-    ensure -> not? try? -> sub 'a #red
+    ensure -> throws? -> sub 'a #red
     passed
     
     ; :color :floating
     a: #red
-    ensure -> not? try? -> 'a - 1.5
+    ensure -> throws? -> 'a - 1.5
     
     a: #red
-    ensure -> not? try? -> sub 'a 1.5
+    ensure -> throws? -> sub 'a 1.5
     passed
     
     
@@ -3200,9 +3200,9 @@ do [
     b: to :rational [3 5]
     expected: to :complex [0.4 2.0]
     ensure -> expected = a - b
-    ensure -> not? try? -> b - a
+    ensure -> throws? -> b - a
     ensure -> expected = sub a b
-    ensure -> not? try? -> sub b a
+    ensure -> throws? -> sub b a
     passed
     
     ; :complex :rational - :rational :complex
@@ -3213,7 +3213,7 @@ do [
     ensure -> a = expected
     passed
     
-    ensure -> not? try? -> sub 'b a
+    ensure -> throws? -> sub 'b a
     passed
     
     
@@ -3233,11 +3233,11 @@ do [
     passed
     
     a: 30:usd
-    ensure -> not? try? -> 'a - to :complex [1 2]
+    ensure -> throws? -> 'a - to :complex [1 2]
     passed
     
     a: to :complex [1 2]
-    ensure -> not? try? -> 'a - 30:usd
+    ensure -> throws? -> 'a - 30:usd
     passed
     
     
@@ -3254,18 +3254,18 @@ do [
     
     ; :complex :color
     a: to :complex [1 2]
-    ensure -> not? try? -> 'a - #red
+    ensure -> throws? -> 'a - #red
     
     a: to :complex [1 2]
-    ensure -> not? try? -> sub 'a #red
+    ensure -> throws? -> sub 'a #red
     passed
     
     ; :color :complex
     a: #red
-    ensure -> not? try? -> 'a + to :complex [1 2]
+    ensure -> throws? -> 'a + to :complex [1 2]
     
     a: #red
-    ensure -> not? try? -> sub 'a to :complex [1 2]
+    ensure -> throws? -> sub 'a to :complex [1 2]
     passed
 
     
@@ -3311,7 +3311,7 @@ do [
     passed
     
     a: to :rational [1 2]
-    ensure -> not? try? -> 'a - 30:usd
+    ensure -> throws? -> 'a - 30:usd
     passed
     
     
@@ -3328,18 +3328,18 @@ do [
     
     ; :complex :color
     a: to :rational [3 5]
-    ensure -> not? try? -> 'a - #red
+    ensure -> throws? -> 'a - #red
     
     a: to :rational [3 5]
-    ensure -> not? try? -> sub 'a #red
+    ensure -> throws? -> sub 'a #red
     passed
     
     ; :color :complex
     a: #red
-    ensure -> not? try? -> 'a - to :rational [3 5]
+    ensure -> throws? -> 'a - to :rational [3 5]
     
     a: #red
-    ensure -> not? try? -> sub 'a to :rational [3 5]
+    ensure -> throws? -> sub 'a to :rational [3 5]
     passed
     
     ; ------ color
@@ -3370,16 +3370,16 @@ do [
     topic "sub - :color :quantity"
     ; todo: should reaise an error...
     
-    ensure -> not? try? -> #red + 30:usd
-    ensure -> not? try? -> 30:usd + #red
+    ensure -> throws? -> #red + 30:usd
+    ensure -> throws? -> 30:usd + #red
     passed
     
     a: #red
-    ensure -> not? try? -> 'a + 30:usd
+    ensure -> throws? -> 'a + 30:usd
     passed
     
     a: 30:usd
-    ensure -> not? try? -> 'a + #red
+    ensure -> throws? -> 'a + #red
     passed
     
     
