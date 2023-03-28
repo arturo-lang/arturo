@@ -481,10 +481,6 @@ proc convertQuantityValue*(nm: Value, fromU: UnitName, toU: UnitName, fromKind =
 # Overloads
 #=======================================
 
-# TODO(VM/values/value) Verify that all errors are properly thrown
-#  Various core arithmetic operations between Value values may lead to errors. Are we catching - and reporting - them all properly?
-#  labels: vm, values, error handling, unit-test
-
 proc `+`*(x: Value, y: Value): Value =
     ## add given values and return the result
 
