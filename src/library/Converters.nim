@@ -326,13 +326,15 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
             of Block:
                 case tp:
                     of Complex:
-                        if (y.a[0].kind in {Floating, Integer} and
+                        if (y.a.len == 2 and
+                            y.a[0].kind in {Floating, Integer} and
                             y.a[1].kind in {Floating, Integer}):
                             return newComplex(y.a[0], y.a[1])
                         else:
                             throwCannotConvert()
                     of Rational:
-                        if (y.a[0].kind in {Floating, Integer} and
+                        if (y.a.len == 2 and
+                            y.a[0].kind in {Floating, Integer} and
                             y.a[1].kind in {Floating, Integer}):
                             return newRational(y.a[0], y.a[1])
                         else:
