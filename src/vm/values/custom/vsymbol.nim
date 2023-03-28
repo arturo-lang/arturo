@@ -76,7 +76,6 @@ type
         asterisk                 = "*"
         minus                    = "-"
         doubleminus              = "--"
-        underscore               = "_"
         equal                    = "="
         doubleequal              = "=="
         approxequal              = "=~"
