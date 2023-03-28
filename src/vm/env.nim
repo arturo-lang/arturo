@@ -67,7 +67,7 @@ proc parseCmdlineValue(v: string): Value =
         try:
             discard parseFloat(v)
             return doParse(v, isFile=false).a[0]
-        except:
+        except CatchableError:
             return newString(v)
 
 # TODO(Env\parseCmdlineArguments) verify it's working right
@@ -137,7 +137,7 @@ proc getSystemInfo*(): ValueDict =
         let pcreVersion = ($(pcre.version())).split(" ")[0] & ".0"
         result["deps"].d["pcre"] = newVersion(pcreVersion)
         
-    except:
+    except CatchableError:
         discard
 
 proc getPathInfo*(): ValueDict =

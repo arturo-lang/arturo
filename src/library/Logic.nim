@@ -92,11 +92,11 @@ proc defineSymbols*() =
             ; yep, that's correct!
         """:
             #=======================================================
-            if x.kind==Logical and y.kind==Logical:
+            if xKind==Logical and yKind==Logical:
                 push(newLogical(And(x.b,y.b)))
             else:
-                if x.kind==Block:
-                    if y.kind==Block:
+                if xKind==Block:
+                    if yKind==Block:
                         # block block
                         execUnscoped(x)
                         if isFalse(move stack.pop()):
@@ -182,7 +182,7 @@ proc defineSymbols*() =
             print false? [1 2 3]        ; false
         """:
             #=======================================================
-            if x.kind != Logical: push(newLogical(false))
+            if xKind != Logical: push(newLogical(false))
             else: push(newLogical(Not(x.b)))
 
     constant "maybe",
@@ -215,11 +215,11 @@ proc defineSymbols*() =
             ; nope, that's not correct
         """:
             #=======================================================
-            if x.kind==Logical and y.kind==Logical:
+            if xKind==Logical and yKind==Logical:
                 push(newLogical(NAnd(x.b, y.b)))
             else:
-                if x.kind==Block:
-                    if y.kind==Block:
+                if xKind==Block:
+                    if yKind==Block:
                         # block block
                         execUnscoped(x)
                         if isFalse(move stack.pop()):
@@ -266,11 +266,11 @@ proc defineSymbols*() =
             ; nope, that's not correct
         """:
             #=======================================================
-            if x.kind==Logical and y.kind==Logical:
+            if xKind==Logical and yKind==Logical:
                 push(newLogical(Nor(x.b, y.b)))
             else:
-                if x.kind==Block:
-                    if y.kind==Block:
+                if xKind==Block:
+                    if yKind==Block:
                         # block block
                         execUnscoped(x)
                         if isTrue(move stack.pop()):
@@ -311,7 +311,7 @@ proc defineSymbols*() =
             ; we're still not ready!
         """:
             #=======================================================
-            if x.kind==Logical:
+            if xKind==Logical:
                 push(newLogical(Not(x.b)))
             else:
                 execUnscoped(x)
@@ -339,11 +339,11 @@ proc defineSymbols*() =
             ; yep, that's correct!
         """:
             #=======================================================
-            if x.kind==Logical and y.kind==Logical:
+            if xKind==Logical and yKind==Logical:
                 push(newLogical(Or(x.b, y.b)))
             else:
-                if x.kind==Block:
-                    if y.kind==Block:
+                if xKind==Block:
+                    if yKind==Block:
                         # block block
                         execUnscoped(x)
                         if isTrue(move stack.pop()):
@@ -388,7 +388,7 @@ proc defineSymbols*() =
             print true? [1 2 3]         ; false
         """:
             #=======================================================
-            if x.kind != Logical: push(newLogical(false))
+            if xKind != Logical: push(newLogical(false))
             else: push(x)
 
     builtin "xnor?",
@@ -418,13 +418,13 @@ proc defineSymbols*() =
             #=======================================================
             var a: VLogical
             var b: VLogical
-            if x.kind == Logical: 
+            if xKind == Logical: 
                 a = x.b
             else:
                 execUnscoped(x)
                 a = pop().b
 
-            if y.kind == Logical: 
+            if yKind == Logical: 
                 b = y.b
             else:
                 execUnscoped(y)
@@ -459,13 +459,13 @@ proc defineSymbols*() =
             #=======================================================
             var a: VLogical
             var b: VLogical
-            if x.kind == Logical: 
+            if xKind == Logical: 
                 a = x.b
             else:
                 execUnscoped(x)
                 a = pop().b
 
-            if y.kind == Logical: 
+            if yKind == Logical: 
                 b = y.b
             else:
                 execUnscoped(y)

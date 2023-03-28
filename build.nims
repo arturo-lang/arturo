@@ -52,7 +52,7 @@ let
 
     # configuration options
     OPTIONS = {
-        "arm"               : "--cpu:arm",
+        "arm"               : "--cpu:arm -d:bit32",
         "arm64"             : "--cpu:arm64 --gcc.path:/usr/bin --gcc.exe:aarch64-linux-gnu-gcc --gcc.linkerexe:aarch64-linux-gnu-gcc",
         "debug"             : "-d:DEBUG --debugger:on --debuginfo --linedir:on",
         "dev"               : "--embedsrc:on -d:DEV --listCmd",
@@ -80,7 +80,7 @@ let
         "safe"              : "-d:SAFE",
         "vcc"               : "",
         "web"               : "--verbosity:3 -d:WEB",
-        "x86"               : "--cpu:i386 " & (when defined(gcc): "--passC:'-m32' --passL:'-m32'" else: ""),  
+        "x86"               : "--cpu:i386 -d:bit32 " & (when defined(gcc): "--passC:'-m32' --passL:'-m32'" else: ""),  
         "amd64"             : ""
     }.toTable
 
@@ -100,7 +100,7 @@ var
     IS_DEV              = false 
     MODE                = ""       
 
-    FLAGS*              = "--verbosity:1 --hints:on --hint:ProcessingStmt:off --hint:XCannotRaiseY:off --warning:GcUnsafe:off --warning:ProveInit:off --warning:ProveField:off --warning:Uninit:off " & 
+    FLAGS*              = "--verbosity:1 --hints:on --hint:ProcessingStmt:off --hint:XCannotRaiseY:off --warning:GcUnsafe:off --warning:ProveInit:off --warning:ProveField:off --warning:Uninit:off --warning:BareExcept:off " & 
                           "--skipUserCfg:on --colors:off -d:danger " &
                           "--panics:off --mm:orc -d:useMalloc --checks:off " &
                           "--cincludes:extras --opt:speed --nimcache:.cache " & (when hostOS != "windows": "--passL:'-pthread' " else: " ") &

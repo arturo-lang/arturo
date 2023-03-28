@@ -199,6 +199,14 @@
 [+] passed!
 [+] passed!
 [+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> flatten
 [+] passed!
@@ -363,6 +371,16 @@
 [+] passed!
 [+] passed!
 [+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> max - [:integer] - .index
 [+] passed!
@@ -413,6 +431,16 @@
 [+] passed!
 [+] passed!
 [+] passed!
+[+] passed!
+[+] passed!
+
+>> pop
+
+>> pop - :block .n
+[+] passed!
+[+] passed!
+
+>> pop - :string .n
 [+] passed!
 [+] passed!
 

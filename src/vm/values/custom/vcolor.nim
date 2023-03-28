@@ -1381,6 +1381,9 @@ func `+`*(a, b: VColor): VColor =
         satPlus(A.a, B.a)
     )
 
+func `+=`*(a: var VColor, b: VColor) =
+    a = a + b
+
 func `-`*(a, b: VColor): VColor =
     let A = RGBfromColor(a)
     let B = RGBfromColor(b)
@@ -1391,6 +1394,9 @@ func `-`*(a, b: VColor): VColor =
         satMinus(A.b, B.b),
         satMinus(A.a, B.a)
     )
+
+func `-=`*(a: var VColor, b: VColor) =
+    a = a - b
 
 func `$`*(c: VColor): string =
     if (c.int and 0xff) < 0xff:
@@ -1425,7 +1431,7 @@ func parseColor*(str: string): VColor =
         elif s.len==6:  result = colorFromHex(s)
         elif s.len==8:  result = colorFromHexWithAlpha(s)
         else:           result = colorByName(s)
-    except:
+    except CatchableError:
         result = colorByName(s)
 
 #=======================================

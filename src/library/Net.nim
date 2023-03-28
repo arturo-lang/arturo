@@ -39,10 +39,10 @@ when not defined(WEB):
 
     when defined(ssl):
         import smtp
+        import helpers/stores
 
     import helpers/jsonobject
     import helpers/servers
-    import helpers/stores
     import helpers/terminal
     import helpers/url
     import helpers/webviews
@@ -261,7 +261,7 @@ proc defineSymbols*() =
                             echo "adding multipart data:" & $(k)
                             multipart[k] = $(v)
                 else:
-                    if y != VNULL and (y.kind==Dictionary and y.d.len!=0):
+                    if y != VNULL and (yKind==Dictionary and y.d.len!=0):
                         var parts: seq[string]
                         for k,v in pairs(y.d):
                             parts.add(k & "=" & urlencode($(v)))
@@ -270,11 +270,10 @@ proc defineSymbols*() =
                 var client: HttpClient
 
                 if checkAttr("certificate"):
-                    let certificate = aCertificate.s
                     when defined(ssl):
                         client = newHttpClient(
                             userAgent = agent,
-                            sslContext = newContext(certFile=certificate),
+                            sslContext = newContext(certFile=aCertificate.s),
                             proxy = proxy, 
                             timeout = timeout,
                             headers = headers
@@ -316,7 +315,7 @@ proc defineSymbols*() =
                     try:
                         let respStatus = (response.status.splitWhitespace())[0]
                         ret["status"] = newInteger(respStatus)
-                    except:
+                    except CatchableError:
                         ret["status"] = newString(response.status)
 
                     for k,v in response.headers.table:
@@ -326,7 +325,7 @@ proc defineSymbols*() =
                                 of "age","content-length": 
                                     try:
                                         val = newInteger(v[0])
-                                    except:
+                                    except CatchableError:
                                         val = newString(v[0])
                                 of "access-control-allow-credentials":
                                     val = newLogical(v[0])
@@ -337,7 +336,7 @@ proc defineSymbols*() =
                                     let timeFormat = initTimeFormat(dateFormat)
                                     try:
                                         val = newDate(parse(cleanDate, timeFormat))
-                                    except:
+                                    except CatchableError:
                                         val = newString(v[0])
                                 else:
                                     val = newString(v[0])
@@ -424,7 +423,7 @@ proc defineSymbols*() =
                         if reqAction!=HttpGet: 
                             try:
                                 reqBodyV = valueFromJson(reqBody) 
-                            except:
+                            except CatchableError:
                                 reqBodyV = newDictionary()
                                 for k,v in decodeQuery(reqBody):
                                     reqBodyV.d[k] = newString(v)

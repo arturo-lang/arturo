@@ -253,7 +253,7 @@ proc defineSymbols*() =
             print "done!"
             """:
                 #=======================================================
-                if x.kind == Integer:
+                if xKind == Integer:
                     sleep(x.i)
                 else:
                     sleep(asInt(convertQuantityValue(x.nm, x.unit.name, MS)))

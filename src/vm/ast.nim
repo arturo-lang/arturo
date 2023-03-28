@@ -28,7 +28,7 @@
 import sequtils, strutils
 import sugar, tables, unicode, std/with
 
-import vm/[globals, values/value, values/comparison, values/types]
+import vm/[globals, values/value, values/comparison, values/operators, values/types]
 import vm/values/printable
 import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vrational, vsymbol, vversion]
 
@@ -422,7 +422,7 @@ proc processBlock*(
                                 
                             else:
                                 discard
-                    except:
+                    except Defect, CatchableError:
                         discard
 
             target = target.parent

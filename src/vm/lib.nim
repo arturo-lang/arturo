@@ -15,8 +15,8 @@
 import macros, sequtils, strutils, tables
 export strutils, tables
 
-import vm/[globals, errors, opcodes, stack, values/comparison, values/printable, values/value]
-export comparison, globals, printable, opcodes, stack, value
+import vm/[globals, errors, opcodes, stack, values/comparison, values/operators, values/printable, values/value]
+export comparison, globals, opcodes, operators, printable, stack, value
 
 import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrational, vregex, vsymbol]
 export vcolor, vcomplex, vlogical, vquantity, vrational, vregex, vsymbol
@@ -210,8 +210,8 @@ proc showWrongArgumentTypeError*(name: string, pos: int, params: openArray[Value
     ## fails to validate the arguments passed to the 
     ## function
     var expectedValues = toSeq((expected[pos][1]).items)
-    let acceptedStr = expectedValues.map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
-    let actualStr = params.map(proc(x:Value):string = ":" & ($(x.kind)).toLowerAscii()).join(" ")
+    let acceptedStr = expectedValues.map(proc(x:ValueKind):string = stringify(x)).join(" ")
+    let actualStr = params.map(proc(x:Value):string = valueKind(x)).join(" ")
     var ordinalPos: string = ["first","second","third"][pos]
 
     RuntimeError_WrongArgumentType(name, actualStr, ordinalPos, acceptedStr)
@@ -220,8 +220,8 @@ proc showWrongAttributeTypeError*(fName: string, aName: string, actual:ValueKind
     ## show relevant error message in case an attribute
     ## fails to validate its argument
     var expectedValues = toSeq(expected.items)
-    let acceptedStr = expectedValues.map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
-    let actualStr = ":" & ($(actual)).toLowerAscii()
+    let acceptedStr = expectedValues.map(proc(x:ValueKind):string = stringify(x)).join(" ")
+    let actualStr = stringify(actual)
     RuntimeError_WrongAttributeType(fName, aName, actualStr, acceptedStr)
 
 template require*(name: string, spec: untyped): untyped =
@@ -235,18 +235,21 @@ template require*(name: string, spec: untyped): untyped =
 
     when (static spec.len)>=1 and spec!=NoArgs:
         let x {.inject.} = move stack.pop()
+        let xKind {.inject, used.} = x.kind
         when not (ANY in static spec[0][1]):
-            if unlikely(not (x.kind in (static spec[0][1]))):
+            if unlikely(not (xKind in (static spec[0][1]))):
                 showWrongArgumentTypeError(currentBuiltinName, 0, [x], spec)
                 
         when (static spec.len)>=2:
             let y {.inject.} = move stack.pop()
+            let yKind {.inject, used.} = y.kind
             when not (ANY in static spec[1][1]):
-                if unlikely(not (y.kind in (static spec[1][1]))):
+                if unlikely(not (yKind in (static spec[1][1]))):
                     showWrongArgumentTypeError(currentBuiltinName, 1, [x,y], spec)
                     
             when (static spec.len)>=3:
                 let z {.inject.} = move stack.pop()
+                let zKind {.inject, used.} = z.kind
                 when not (ANY in static spec[2][1]):
-                    if unlikely(not (z.kind in (static spec[2][1]))):
+                    if unlikely(not (zKind in (static spec[2][1]))):
                         showWrongArgumentTypeError(currentBuiltinName, 2, [x,y,z], spec)

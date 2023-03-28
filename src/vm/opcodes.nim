@@ -422,7 +422,7 @@ proc parseOpCode*(x: string): OpCode =
 
     try:
         return parseEnum[OpCode](str)
-    except:
+    except CatchableError:
         return opNop
 
 func stringify*(x: OpCode): string {.inline.} =

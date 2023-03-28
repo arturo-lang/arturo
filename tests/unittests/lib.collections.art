@@ -579,8 +579,60 @@ do [
 
     ensure -> 5 = first 5..10
     passed
-    ensure -> (to :block 5..7) = first.n: 3 5..10
+    ensure -> (@5..7) = @first.n: 3 5..10
     passed
+    
+    
+    ; --- New tests for range
+    a: range 0 499
+    b: range.step: 2 1 499
+    c: range.step: 3 2 499
+
+    ensure -> 0 = first a
+    ensure -> 1 = first b
+    ensure -> 2 = first c
+    passed
+
+    ensure -> [0 1 2] = @first.n: 3 a
+    ensure -> [1 3 5] = @first.n: 3 b
+    ensure -> [2 5 8] = @first.n: 3 c
+    ensure -> (0..2) = first.n: 3 a
+    ensure -> (range.step: 2 1 5) = first.n: 3 b
+    ensure -> (range.step: 3 2 8) = first.n: 3 c
+    passed
+
+
+    a: range `a` `l`
+    b: range.step: 2 `a` `l`
+
+    ensure -> `a` = first a
+    ensure -> `a` = first b
+    passed
+
+    ensure -> [`a` `b`] = @first.n: 2 a
+    ensure -> [`a` `c`] = @first.n: 2 b
+    ensure -> (`a`..`b`) = first.n: 2 a
+    ensure -> (range.step: 2 `a` `c`) = first.n: 2 b
+    passed
+
+    ensure -> 5 = first range.step: 2 5 0
+    ensure -> [5 4 3] = @first.n: 3 range 5 0
+    ensure -> [5 3] = @first.n: 2 range.step: 2 5 0
+    ensure -> (5..3) = first.n: 3 range 5 0
+    ensure -> (range.step: 2 5 3) = first.n: 2 range.step: 2 5 0
+    passed
+    
+    ensure -> 0 = first.n: 1 range 0 5
+    ensure -> 5 = first.n: 1 range 5 0
+    ensure -> 0 = first.n: 0 range 0 5
+    ensure -> 5 = first.n: 0 range 5 0
+    passed
+
+    try? -> first.n: neg 2 range 0 5
+    else -> passed
+
+    try? -> first.n: 7 range 0 5
+    else -> passed
 
 ]
 
@@ -1099,8 +1151,65 @@ do [
 
     ensure -> 10 = last 5..10
     passed
-    ensure -> (to :block 8..10) = last.n: 3 5..10
+    ensure -> (8..10) = last.n: 3 5..10
     passed
+    
+    ensure -> infinite = last 5..infinite
+    passed
+    ensure -> infinite = last.n: 2 5..infinite
+    passed
+    
+    ; --- New tests for range
+    a: range 0 499
+    b: range.step: 2 0 499
+    c: range.step: 3 0 499
+
+    ensure -> 499 = last a
+    ensure -> 498 = last b
+    ensure -> 498 = last c
+    passed
+
+    ensure -> [497, 498, 499] = @last.n: 3 a
+    ensure -> [494, 496, 498] = @last.n: 3 b
+    ensure -> [492, 495, 498] = @last.n: 3 c
+    ensure -> (497..499) = last.n: 3 a
+    ensure -> (range.step: 2 494 498) = last.n: 3 b
+    ensure -> (range.step: 3 492 498) = last.n: 3 c
+    passed
+
+
+    a: range `a` `l`
+    b: range.step: 2 `a` `l`
+
+    ensure -> `l` = last a
+    ensure -> `k` = last b
+    passed
+
+    ensure -> [`k` `l`] = @last.n: 2 a
+    ensure -> [`i` `k`] = @last.n: 2 b
+    ensure -> (`k`..`l`) = last.n: 2 a
+    ensure -> (range.step: 2 `i` `k`) = last.n: 2 b
+    passed
+
+    ensure -> 1 = last range.step: 2 5 0
+    ensure -> [2 1 0] = @last.n: 3 range 5 0
+    ensure -> [3 1] = @last.n: 2 range.step: 2 5 0
+    ensure -> (2..0) = last.n: 3 range 5 0
+    ensure -> (range.step: 2 3 1) = last.n: 2 range.step: 2 5 0
+    passed
+    
+    ensure -> 5 = last.n: 1 range 0 5
+    ensure -> 0 = last.n: 1 range 5 0
+    ensure -> 5 = last.n: 0 range 0 5
+    ensure -> 0 = last.n: 0 range 5 0
+    passed
+
+    try? -> last.n: neg 2 range 0 5
+    else -> passed
+
+    try? -> last.n: 7 range 0 5
+    else -> passed
+    
 
 ]
 
@@ -1259,6 +1368,45 @@ do [
     
 
 ]
+
+
+topic "pop"
+do [
+    
+    topic "pop - :block .n"
+    
+    a: [0 1 2 3 4 5]
+    b: pop 'a
+    
+    ensure -> [0 1 2 3 4] = a
+    ensure -> 5 = b
+    passed
+    
+    b: pop.n: 2 'a
+
+    ensure -> [0 1 2] = a
+    ensure -> [3 4] = b
+    passed
+
+
+    topic "pop - :string .n"
+    
+    a: "Arturoo"
+    b: pop 'a
+    
+    ensure -> "Arturo" = a
+    ensure -> `o` = b
+    passed
+    
+    b: pop.n: 3 'a
+
+    ensure -> "Art" = a
+    ensure -> "uro" = b
+    passed
+    
+
+]
+
 
 topic "prepend"
 do [

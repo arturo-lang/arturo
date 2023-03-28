@@ -75,9 +75,9 @@ proc defineSymbols*() =
                 prec = InfixPrecedence
 
             var sym: VSymbol
-            if x.kind==String:
+            if xKind==String:
                 sym = doParse(x.s, isFile=false).a[0].m
-            elif x.kind==Block:
+            elif xKind==Block:
                 sym = x.a[0].m
             else:
                 sym = x.m
@@ -180,7 +180,7 @@ proc defineSymbols*() =
             else:
                 var fun: Value
 
-                if x.kind in {Literal, String}:
+                if xKind in {Literal, String}:
                     fun = FetchSym(x.s)
                 else:
                     fun = x
@@ -190,7 +190,7 @@ proc defineSymbols*() =
 
                 if fun.fnKind==UserFunction:
                     var fid: Hash
-                    if x.kind in {Literal,String}:
+                    if xKind in {Literal,String}:
                         fid = hash(x.s)
                     else:
                         fid = hash(fun)
@@ -217,7 +217,7 @@ proc defineSymbols*() =
                 else       -> print "a is greater than 2"
         """:
             #=======================================================
-            if x.kind==Null:
+            if xKind==Null:
                 push(newBlock())
             else:
                 push(x)
@@ -237,7 +237,7 @@ proc defineSymbols*() =
         example     = """
         """:
             #=======================================================
-            let condition = not (x.kind==Null or isFalse(x))
+            let condition = not (xKind==Null or isFalse(x))
             if condition:
                 push(x)
             else:
@@ -338,11 +338,11 @@ proc defineSymbols*() =
                 times = aTimes.i
 
             var evaled: Translation
-            if x.kind != String:
+            if xKind != String:
                 evaled = evalOrGet(x)
 
             while currentTime < times:
-                if x.kind in {Block,Bytecode}:
+                if xKind in {Block,Bytecode}:
                     execUnscoped(evaled)
                     
                 else: # string
@@ -465,7 +465,7 @@ proc defineSymbols*() =
             ; yes, that's right!
         """:
             #=======================================================
-            let condition = not (x.kind==Null or isFalse(x))
+            let condition = not (xKind==Null or isFalse(x))
             if condition: 
                 execUnscoped(y)
 
@@ -500,7 +500,7 @@ proc defineSymbols*() =
             ]
         """:
             #=======================================================
-            let condition = not (x.kind==Null or isFalse(x))
+            let condition = not (xKind==Null or isFalse(x))
             if condition: 
                 execUnscoped(y)
 
@@ -545,8 +545,8 @@ proc defineSymbols*() =
             [d,m]: divmod 10 3      ; d: 3, m: 1
         """:
             #=======================================================
-            if x.kind==Block:
-                if y.kind==Block:
+            if xKind==Block:
+                if yKind==Block:
                     for i,w in pairs(x.a):
                         SetSym(w.s, y.a[i], safe=true)
                 else:
@@ -583,57 +583,6 @@ proc defineSymbols*() =
         alias       = slashedzero,
         description = "the NULL constant":
             VNULL
-
-    # TODO(Core/pop) should be probably renamed
-    #  `pop` could easily do what a `pop` normally does, and that would mean
-    #  a built-in method in the Collections module that pops/deletes an element from
-    #  a given block/collection and returns it
-    #
-    #  This one refers to the stack and it could be quite confusing.
-    #
-    #  So, preferrably, IMHO, this should be renamed to something like: `unstack`, `destack`, etc
-    #  label: library, enhancement, open discussion
-    builtin "pop",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "pop top <number> values from stack",
-        args        = {
-            "number"    : {Integer}
-        },
-        attrs       = {
-            "discard"   : ({Logical},"do not return anything")
-        },
-        returns     = {Any},
-        example     = """
-            1 2 3
-            a: pop 1        ; a: 3
-
-            1 2 3
-            b: pop 2        ; b: [3 2]
-            ..........
-            1 2 3
-            pop.discard 1   ; popped 3 from the stack
-        """:
-            #=======================================================
-            let doDiscard = (hadAttr("discard"))
-
-            if x.i==1:
-                if doDiscard: discard pop()
-                else: discard
-            else:
-                if doDiscard: 
-                    var i = 0
-                    while i<x.i:
-                        discard pop()
-                        i+=1
-                else:
-                    var res: ValueArray
-                    var i = 0
-                    while i<x.i:
-                        res.add pop()
-                        i+=1
-                    push(newBlock(res))
 
     builtin "return",
         alias       = unaliased, 
@@ -680,11 +629,38 @@ proc defineSymbols*() =
             ; yes, that's right!
         """:
             #=======================================================
-            let condition = not (x.kind==Null or isFalse(x))
+            let condition = not (xKind==Null or isFalse(x))
             if condition: 
                 execUnscoped(y)
             else:
                 execUnscoped(z)
+
+    builtin "throws?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "perform action, and return true if errors were thrown",
+        args        = {
+            "action": {Block,Bytecode}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            throws? [
+                1 + 2
+            ] 
+            ; => false
+
+            throws? -> 1/0
+            ; => true
+        """:
+            #=======================================================
+            try:
+                execUnscoped(x)
+
+                push(VFALSE)
+            except CatchableError, Defect:
+                push(VTRUE)
 
     builtin "try",
         alias       = unaliased, 
@@ -710,7 +686,7 @@ proc defineSymbols*() =
             let verbose = (hadAttr("verbose"))
             try:
                 execUnscoped(x)
-            except:
+            except CatchableError, Defect:
                 let e = getCurrentException()
                 if verbose:
                     showVMErrors(e)
@@ -763,7 +739,7 @@ proc defineSymbols*() =
                 execUnscoped(x)
 
                 push(VTRUE)
-            except:
+            except CatchableError, Defect:
                 let e = getCurrentException()
                 if verbose:
                     showVMErrors(e)
@@ -787,7 +763,7 @@ proc defineSymbols*() =
             ; yep, x is not 1!
         """:
             #=======================================================
-            let condition = x.kind==Null or isFalse(x)
+            let condition = xKind==Null or isFalse(x)
             if condition: 
                 execUnscoped(y)
 
@@ -822,11 +798,56 @@ proc defineSymbols*() =
             ; x was greater than z
         """:
             #=======================================================
-            let condition = x.kind==Null or isFalse(x)
+            let condition = xKind==Null or isFalse(x)
             if condition: 
                 execUnscoped(y)
 
             push(newLogical(condition))
+            
+    builtin "unstack",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "pop top <number> values from stack",
+        args        = {
+            "number"    : {Integer}
+        },
+        attrs       = {
+            "discard"   : ({Logical},"do not return anything")
+        },
+        returns     = {Any},
+        example     = """
+            1 2 3
+            a: unstack 1        ; a: 3
+
+            1 2 3
+            b: unstack 2        ; b: [3 2]
+            ..........
+            1 2 3
+            unstack.discard 1   ; popped 3 from the stack
+        """:
+            #=======================================================
+            if Stack[0..SP-1].len < x.i: RuntimeError_StackUnderflow()
+            
+            let doDiscard = (hadAttr("discard"))
+            
+            if x.i==1:
+                if doDiscard: discard pop()
+                else: discard
+            else:
+                if doDiscard: 
+                    var i = 0
+                    while i<x.i:
+                        discard pop()
+                        i+=1
+                else:
+                    var res: ValueArray
+                    var i = 0
+                    while i<x.i:
+                        res.add pop()
+                        i+=1
+                    push(newBlock(res))
+
 
     builtin "until",
         alias       = unaliased, 
@@ -970,7 +991,7 @@ proc defineSymbols*() =
             ]
         """:
             #=======================================================
-            if x.kind==Null:
+            if xKind==Null:
                 let preevaledY = evalOrGet(y)
                 while true:
                     handleBranching:

@@ -185,7 +185,7 @@ template ensureInPlace*(): untyped =
         InPlaceAddr = addr Syms[x.s]
         if unlikely(InPlaced.readonly):
             RuntimeError_CannotModifyConstant(x.s)
-    except:
+    except CatchableError:
         showInPlaceError(x.s)
 
 template SetInPlace*(v: Value, safe: static bool = false): untyped =

@@ -170,9 +170,12 @@ lookup: function [what :string :literal :regex :type][
             ]
         ]
     ]
-    
+
     PrintFList results "found"
+    unstack.discard size stack
 ]
+
+autocomplete: true
 
 ; start the REPL
 
@@ -182,11 +185,14 @@ while [true] [
 
     indentation: ""
     
-    inp: input .repl
-               .history: historyPath 
-               .complete: completions
-               .hint: hints 
-               "$> " 
+    inp: autocomplete ? -> input .repl
+                                 .history: historyPath 
+                                 .complete: completions
+                                 .hint: hints 
+                                 "$> " 
+                        -> input .repl
+                                 .history: historyPath 
+                                 "$> "
 
     while [suffix? inp " "][
         if suffix? strip inp "[" [
@@ -199,8 +205,8 @@ while [true] [
         try.verbose to :block inp
 
         StackSize: size stack
-        
-        if StackSize > 0 		[ Got: pop 1 ]
+
+        if StackSize > 0 		[ Got: unstack 1 ]
         if Got <> null 			[ print color #gray render.once "=> |Got|" ]
 
         print ""

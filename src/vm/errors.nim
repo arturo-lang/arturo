@@ -32,7 +32,7 @@ type
     ReturnTriggered* = ref object of Defect
     BreakTriggered* = ref object of Defect
     ContinueTriggered* = ref object of Defect
-    VMError* = ref object of Defect
+    VMError* = ref object of CatchableError
 
     VMErrorKind* = enum
         RuntimeError   = "Runtime"
@@ -114,7 +114,7 @@ proc showVMErrors*(e: ref Exception) =
         # if $(header) notin [RuntimeError, AssertionError, SyntaxError, ProgramError, CompilerError]:
         #     e.msg = getLineError() & "uncaught system exception:;" & e.msg
         #     header = RuntimeError
-    except:
+    except CatchableError:
         header = "HEADER"
 
     let marker = ">>"
@@ -250,11 +250,20 @@ proc RuntimeError_IncompatibleQuantityOperation*(operation: string, argA, argB, 
             "attempted: " & operation & ";" &
             "with: " & truncate(argA & " (" & kindA & ") " & argB & " (" & kindB & ")", 60)
 
+proc RuntimeError_InvalidOperation*(operation: string, argA, argB: string) =
+    panic RuntimeError,
+            "invalid operation _" & operation & "_;" &
+            (if argB!="": "between: " else: "with: ") & argA & (if argB!="": ";" & "and: " & argB else: "")
+
 proc RuntimeError_CannotConvertQuantity*(val, argA, kindA, argB, kindB: string) =
     panic RuntimeError,
           "cannot convert quantity: " & val & ";" &
           "from: " & argA & " (" & kindA & ") " & ";" &
           "to: " & argB & " (" & kindB & ")"
+
+proc RuntimeError_DivisionByZero*() =
+    panic RuntimeError,
+            "division by zero"
 
 proc RuntimeError_OutOfBounds*(indx: int, maxRange: int) =
     panic RuntimeError,
@@ -346,6 +355,10 @@ proc RuntimeError_OperationNotPermitted*(operation: string) =
     panic RuntimeError,
           "unsafe operation: " & operation & ";" &
           "not permitted in online playground"
+          
+proc RuntimeError_StackUnderflow*() =
+    panic RuntimeError,
+            "stack underflow"
 
 proc RuntimeError_ConfigNotFound*(gkey: string, akey: string) =
     panic RuntimeError,
@@ -405,5 +418,5 @@ proc ProgramError_panic*(message: string, code: int) =
 #                 ret &= ";"
 
 #         ret
-#     except:
+#     except CatchableError:
 #         ""

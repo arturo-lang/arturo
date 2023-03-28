@@ -483,7 +483,7 @@ proc defineSymbols*() =
                         "accessed": newDate(local(getLastAccessTime(x.s))),
                         "modified": newDate(local(getLastModificationTime(x.s)))
                     }.toOrderedTable)
-                except:
+                except CatchableError:
                     push VNULL
                         
         builtin "unzip",
@@ -555,7 +555,7 @@ proc defineSymbols*() =
                 #=======================================================
                 when defined(SAFE): RuntimeError_OperationNotPermitted("write")
 
-                if y.kind==Bytecode:
+                if yKind==Bytecode:
                     let dataS = codify(newBlock(y.trans.constants), unwrapped=true, safeStrings=true)
                     let codeS = y.trans.instructions
                     discard writeBytecode(dataS, codeS, x.s)
