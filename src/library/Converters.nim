@@ -410,6 +410,8 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
 
             of Dictionary:
                 case tp:
+                    of String:
+                        return newString($(y))
                     of Object:
                         if x.tpKind==UserType:
                             return generateCustomObject(x.ts, y.d)
