@@ -1,0 +1,31 @@
+topic: $[topic :string] -> print ~"\n>> |topic|"
+passed: $[] -> print "[+] passed!"
+
+topic « clamp
+do [
+    
+    ensure.that: "is inside the range" 
+    -> 1 = clamp 1 0..2
+    ensure.that: "is inside the range" 
+    -> 1 = clamp 1 2..0
+    passed
+    
+    ensure.that: "is outside and is greather than range" 
+    -> 1 = clamp 2 0..1
+    ensure.that: "is outside and is greather than range" 
+    -> 1 = clamp 2 1..0
+    passed
+    
+    ensure.that: "is outside and is greather than range" 
+    -> 1 = clamp 0 1..2
+    ensure.that: "is outside and is greather than range" 
+    -> 1 = clamp 0 2..1
+    passed
+    
+    ensure.that: "is outiside and is greather than a range with step" 
+    -> 4 = clamp 5 range.step: 2 0 5
+    ensure.that: "is outiside and is greather than a range with step" 
+    -> 5 = clamp 5 range.step: 2 5 0
+    passed
+    
+]
