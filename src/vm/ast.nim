@@ -504,7 +504,11 @@ proc processBlock*(
         when not isLabel:
             attrNode.addChild(newConstant(VTRUE))
 
-        target.addChild(attrNode)
+        if target.children.len > 0 and target.children[^1].kind in {OtherCall, BuiltinCall, SpecialCall}:
+            target.children[^1].addChild(attrNode)
+            target = target.children[^1]
+        else:
+            target.addChild(attrNode)
 
         when isLabel:
             target.rollThrough()
@@ -605,7 +609,10 @@ proc processBlock*(
                     echo "target before:"
                     echo dumpNode(target)
                     echo "target.parent before:"
-                    echo dumpNode(target.parent)
+                    if target.kind==RootNode:
+                        echo "nil"
+                    else:
+                        echo dumpNode(target.parent)
                     target.rewindCallBranches()
 
                     echo "--> rewindCallBranches"
@@ -613,7 +620,10 @@ proc processBlock*(
                     echo "target after:"
                     echo dumpNode(target)
                     echo "target.parent after:"
-                    echo dumpNode(target.parent)
+                    if target.kind==RootNode:
+                        echo "nil"
+                    else:
+                        echo dumpNode(target.parent)
 
                     var toSpot = target.children.len - 1
                     var toWrap: Node
@@ -645,7 +655,10 @@ proc processBlock*(
                     echo "target final:"
                     echo dumpNode(target)
                     echo "target.parent final:"
-                    echo dumpNode(target.parent)
+                    if target.kind==RootNode:
+                        echo "nil"
+                    else:
+                        echo dumpNode(target.parent)
 
                     echo "--> rewindCallBranches"
 
@@ -654,7 +667,10 @@ proc processBlock*(
                     echo "target final/after:"
                     echo dumpNode(target)
                     echo "target.parent final/after:"
-                    echo dumpNode(target.parent)
+                    if target.kind==RootNode:
+                        echo "nil"
+                    else:
+                        echo dumpNode(target.parent)
                     
                     added = true
 
