@@ -2096,7 +2096,7 @@ proc defineSymbols*() =
                                 $(w))))
                 else:
                     if checkAttr("at"):
-                        SetInPlace(newBlock(@[newBlock(InPlaced.a[0..aAt.i]),
+                        SetInPlace(newBlock(@[newBlock(InPlaced.a[0..aAt.i-1]),
                                 newBlock(InPlaced.a[aAt.i..^1])]))
                     elif checkAttr("every"):
                         var ret: ValueArray
