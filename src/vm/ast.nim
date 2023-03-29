@@ -127,6 +127,12 @@ func addChild*(node: Node, child: Node) {.enforceNoRaises.} =
     if node.kind in CallNode and child.kind notin {NewlineNode, AttributeNode}:
         node.params += 1
 
+func addChildToFront*(node: Node, child: Node) {.enforceNoRaises.} =
+    child.parent = node
+    node.children.insert(child, 0)
+    if node.kind in CallNode and child.kind notin {NewlineNode, AttributeNode}:
+        node.params += 1
+
 func addChildren*(node: Node, children: openArray[Node]) {.enforceNoRaises.} =
     for child in children:
         node.addChild(child)
@@ -505,8 +511,8 @@ proc processBlock*(
             attrNode.addChild(newConstant(VTRUE))
 
         if target.children.len > 0 and target.children[^1].kind in {OtherCall, BuiltinCall, SpecialCall}:
-            target.children[^1].addChild(attrNode)
-            target = target.children[^1]
+            target.children[^1].addChildToFront(attrNode)
+            target = target.children[0]
         else:
             target.addChild(attrNode)
 
