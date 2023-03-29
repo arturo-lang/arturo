@@ -395,7 +395,7 @@ proc defineSymbols*() =
     # TODO(Numbers/clamp) use a Range instead of min/max, as parameters
     #  given how elegantly Range values are used, it would be better to use e.g a `range` 
     #  Range type parameter for this one instead of a `max` and `min` parameter, so that we
-    #  we could do something along the lines of `clamp 2 1..3` (would return 2) or
+    #  we could do something along the lines of `clamp 2 1..3` (would return 2) or 
     #  `clamp 4 1..3` (would return 3) or `clamp 0 1..3` (would return 1); same as before.
     #  Also, should we reverse the order of the params, and have the range as the first one?
     #  labels: library, enhancement
