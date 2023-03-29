@@ -1,0 +1,28 @@
+topic: $[topic :string] -> print ~"\n>> |topic|"
+passed: $[] -> print "[+] passed!"
+
+
+topic "to" do
+[
+
+    topic "to - invalid operations"
+
+    ; invalid :complex operations
+    ensure -> every? @[
+        -> to :complex [neg 1 2]
+        -> to :complex [1 neg 2]
+        -> to :complex []
+        -> to :complex [1 2 3]
+    ] => throws?
+    passed
+
+    ; invalid :rational oprations
+    ensure -> every? @[
+        -> to :rational [neg 1 2]
+        -> to :rational [1 neg 2]
+        -> to :rational []
+        -> to :rational [1 2 3]
+    ] => throws?
+    passed
+
+]
