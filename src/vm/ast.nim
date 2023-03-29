@@ -434,6 +434,8 @@ proc processBlock*(
                         discard
 
             target = target.parent
+            if target.kind == RootNode:
+                PipeParent = nil
 
     template rollThrough(target: var Node): untyped =
         target = target.children[^1]
