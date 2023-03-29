@@ -79,7 +79,7 @@ So, let's get to the gist of the matter!
 
 *Words* in Arturo are pretty much like words in English: a series of characters separated by *spaces* or some [*symbol*](#symbols). E.g.: `this is a series of words` (in this case, `this`, `is`, `a`, `series`, `of`, `words` are all - well... - *words*.
 
-> 💡 In Arturo, a word can be formed by any letter + the character `?`
+> 💡 In Arturo, a word can be start with any letter or underscore followed by any letter/numbers/underscore or a question mark (`?`).
 
 As with a real (spoken) language, every word has a specific meaning. And if you don't know the meaning of a word, you'll have to look it up in the dictionary. That's pretty much the way things work in Arturo as well.
 
