@@ -69,14 +69,15 @@ const
     Tab                         = '\t'
     Whitespace                  = {' ', Tab}
 
-    PermittedNumbers_Start      = {'0'..'9'}
+    Numbers                     = {'0'..'9'}
+    PermittedNumbers_Start      = Numbers
     ScientificNotation          = PermittedNumbers_Start + {'+', '-'}
     ScientificNotation_Start    = {'e', 'E'}
-    Symbols                     = {'~', '!', '@', '#', '$', '%', '^', '&', '*', '-', '_', '=', '+', '<', '>', '/', '\\', '|', '?'}
+    Symbols                     = {'~', '!', '@', '#', '$', '%', '^', '&', '*', '-', '=', '+', '<', '>', '/', '\\', '|', '?'}
     Letters                     = {'a'..'z', 'A'..'Z'}
-    PermittedIdentifiers_Start  = Letters
-    PermittedColorChars         = Letters + {'0'..'9'}
-    PermittedIdentifiers_In     = PermittedColorChars + {'?'}
+    PermittedIdentifiers_Start  = Letters + {'_'}
+    PermittedColorChars         = Letters + Numbers
+    PermittedIdentifiers_In     = PermittedIdentifiers_Start + Numbers + {'?'}
     
     SemVerExtra                 = Letters + PermittedNumbers_Start + {'+', '-', '.'}
 
@@ -597,7 +598,6 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
         of '^'  : p.symbol = caret
         of '&'  : p.symbol = ampersand
         of '*'  : p.symbol = asterisk
-        of '_'  : p.symbol = underscore
         of '|'  : 
             if p.buf[pos+1]=='|': 
                 inc(pos)

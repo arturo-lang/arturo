@@ -2780,12 +2780,10 @@ do [
     ensure -> ["hell" "oworld"] = a
     passed
     
-    ; Not working for literals
-    ; a: ["Arturo" " Nim" " Ruby" " Python", " C", " CoffeeScript"], split.at: 4 'a
-    ; print as.code a ; => [["Arturo" " Nim" " Ruby" " Python" " C"] [" C" " CoffeeScript"]]
-    ; ensure -> [["Arturo" " Nim" " Ruby" " Python"] [" C" " CoffeeScript"]] = a
-    ; passed
-    
+    a: ["Arturo" " Nim" " Ruby" " Python", " C", " CoffeeScript"], split.at: 4 'a
+    ensure -> [["Arturo" " Nim" " Ruby" " Python"] [" C" " CoffeeScript"]] = a
+    passed
+
 ]
 
 topic "split - .path"
