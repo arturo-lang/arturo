@@ -29,6 +29,7 @@ when not defined(NOGMP):
 
 import helpers/maths
 import helpers/ranges
+import vm/values/custom/vrange
 
 import vm/errors
 
@@ -406,8 +407,7 @@ proc defineSymbols*() =
         description = "force value within given range",
         args        = {
             "number" : {Integer,Floating},
-            "min"    : {Integer,Floating},
-            "max"    : {Integer,Floating}
+            "range"  : {Range}
         },
         attrs       = NoAttrs,
         returns     = {Integer,Floating},
@@ -417,12 +417,15 @@ proc defineSymbols*() =
             clamp 4 1 3             ; 3
         """:
             #=======================================================
-            if x < y:
-                push(y)
-            elif x > z:
-                push(z)
+            if y.rng.forward:
+                if x.i < y.rng.start: push(newInteger(y.rng.start))
+                elif x.i > y.rng[y.rng.len, true].i: push(newInteger(y.rng[y.rng.len, true].i))
+                else: push(x)
             else:
-                push(x)
+                if x.i > y.rng.start: push(newInteger(y.rng.start))
+                elif x.i < y.rng[y.rng.len, true].i: push(newInteger(y.rng[y.rng.len, true].i))
+                else: push(x)
+            
 
     builtin "conj",
         alias       = unaliased, 
