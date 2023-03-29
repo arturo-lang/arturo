@@ -512,12 +512,13 @@ proc processBlock*(
 
         if target.children.len > 0 and target.children[^1].kind in {OtherCall, BuiltinCall, SpecialCall}:
             target.children[^1].addChildToFront(attrNode)
-            target = target.children[0]
+            when isLabel:
+                target = target.children[^1].children[0]
         else:
             target.addChild(attrNode)
 
-        when isLabel:
-            target.rollThrough()
+            when isLabel:
+                target.rollThrough()
 
     proc addNewline(target: var Node) =
         target.addChild(Node(kind: NewlineNode, line: currentLine))
