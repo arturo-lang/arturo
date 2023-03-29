@@ -92,6 +92,8 @@ var
     OldChild  : Node
     OldParent : Node
 
+    PipeParent : Node
+
 #=======================================
 # Constants
 #=======================================
@@ -505,15 +507,35 @@ proc processBlock*(
         target.rollThrough()
 
     proc addAttribute(target: var Node, val: Value, isLabel: static bool = false) {.enforceNoRaises.} =
+        # let attrNode = newCallNode(AttributeNode, 1, val)
+
+        # when not isLabel:
+        #     attrNode.addChild(newConstant(VTRUE))
+
+        # target.addChild(attrNode)
+
+        # when isLabel:
+        #     target.rollThrough()
+
+
         let attrNode = newCallNode(AttributeNode, 1, val)
 
         when not isLabel:
             attrNode.addChild(newConstant(VTRUE))
 
-        target.addChild(attrNode)
+        if not PipeParent.isNil:
+        #if target.children.len > 0 and target.children[^1].kind in {OtherCall, BuiltinCall, SpecialCall}:
+            PipeParent.addChildToFront(attrNode)
+            target = PipeParent
+            when isLabel:
+                target = target.children[0]
+        else:
+            target.addChild(attrNode)
 
-        when isLabel:
-            target.rollThrough()
+            when isLabel:
+                target.rollThrough()
+
+
         # let attrNode = newCallNode(AttributeNode, 1, val)
 
         # when not isLabel:
@@ -642,8 +664,10 @@ proc processBlock*(
                         let newCall = getCallNode(nextNode.s, funcArity)
                         newCall.addChild(toWrap)
 
+                        PipeParent = newCall
                         lastChild.children[0].replaceNode(newCall)
                         target = lastChild
+                    
                         target.rollThrough()
                     else:
                     
@@ -651,6 +675,7 @@ proc processBlock*(
 
                         target.addCall(nextNode.s, funcArity)
                         target.addChild(toWrap)
+                        PipeParent = target
 
                     target.rewindCallBranches()
                     
@@ -885,6 +910,8 @@ proc dumpNode*(node: Node, level = 0, single: static bool = false, showNewlines:
 
 proc generateAst*(parsed: Value, asDictionary=false, asFunction=false, reuseArities: static bool=false): Node =
     result = newRootNode()
+
+    PipeParent = nil
 
     when not reuseArities:
         TmpArities = collect:
