@@ -505,6 +505,15 @@ proc processBlock*(
         target.rollThrough()
 
     proc addAttribute(target: var Node, val: Value, isLabel: static bool = false) {.enforceNoRaises.} =
+        let attrNode = newCallNode(AttributeNode, 1, val)
+
+        when not isLabel:
+            attrNode.addChild(newConstant(VTRUE))
+
+        target.addChild(attrNode)
+
+        when isLabel:
+            target.rollThrough()
         # let attrNode = newCallNode(AttributeNode, 1, val)
 
         # when not isLabel:
