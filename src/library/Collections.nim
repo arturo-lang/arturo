@@ -2048,8 +2048,6 @@ proc defineSymbols*() =
             ; => [ [1 2 3 4] [5 6 7 8 9] ]
         """:
             #=======================================================
-            # TODO(Collections\split) Verify it's working right
-            #  labels: library, bug, unit-test, critical
             if xKind == Literal:
                 ensureInPlace()
                 if InPlaced.kind == String:
@@ -2096,7 +2094,7 @@ proc defineSymbols*() =
                                 $(w))))
                 else:
                     if checkAttr("at"):
-                        SetInPlace(newBlock(@[newBlock(InPlaced.a[0..aAt.i]),
+                        SetInPlace(newBlock(@[newBlock(InPlaced.a[0..aAt.i-1]),
                                 newBlock(InPlaced.a[aAt.i..^1])]))
                     elif checkAttr("every"):
                         var ret: ValueArray
