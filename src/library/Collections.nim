@@ -2048,8 +2048,6 @@ proc defineSymbols*() =
             ; => [ [1 2 3 4] [5 6 7 8 9] ]
         """:
             #=======================================================
-            # TODO(Collections\split) Verify it's working right
-            #  labels: library, bug, unit-test, critical
             if xKind == Literal:
                 ensureInPlace()
                 if InPlaced.kind == String:
