@@ -400,11 +400,11 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "force value within given range",
         args        = {
-            "number" : {Integer,Floating},
+            "number" : {Integer},
             "range"  : {Range}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating},
+        returns     = {Integer},
         example     = """
             clamp 2 1..3                ; 2
             clamp 0 1..3                ; 1
