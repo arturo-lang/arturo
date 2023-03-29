@@ -412,9 +412,11 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Integer,Floating},
         example     = """
-            clamp 2 1 3             ; 2
-            clamp 0 1 3             ; 1
-            clamp 4 1 3             ; 3
+            clamp 2 1..3                ; 2
+            clamp 0 1..3                ; 1
+            clamp 4 1..3                ; 3
+            clamp 4 3..1                ; 3
+            clamp 5 range.step: 2 1 5   ; 4
         """:
             #=======================================================
             if y.rng.forward:
