@@ -602,7 +602,18 @@ proc processBlock*(
             if nextNode.kind == Word:
                 if (let funcArity = TmpArities.getOrDefault(nextNode.s, -1); funcArity != -1):
                     i += 1
+                    echo "target before:"
+                    echo dumpNode(target)
+                    echo "target.parent before:"
+                    echo dumpNode(target.parent)
                     target.rewindCallBranches()
+
+                    echo "--> rewindCallBranches"
+
+                    echo "target after:"
+                    echo dumpNode(target)
+                    echo "target.parent after:"
+                    echo dumpNode(target.parent)
 
                     var toSpot = target.children.len - 1
                     var toWrap: Node
@@ -631,7 +642,19 @@ proc processBlock*(
                         target.addCall(nextNode.s, funcArity)
                         target.addChild(toWrap)
 
+                    echo "target final:"
+                    echo dumpNode(target)
+                    echo "target.parent final:"
+                    echo dumpNode(target.parent)
+
+                    echo "--> rewindCallBranches"
+
                     target.rewindCallBranches()
+
+                    echo "target final/after:"
+                    echo dumpNode(target)
+                    echo "target.parent final/after:"
+                    echo dumpNode(target.parent)
                     
                     added = true
 
