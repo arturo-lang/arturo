@@ -339,6 +339,8 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                             return newRational(y.a[0], y.a[1])
                         else:
                             throwCannotConvert()
+                    of String:
+                        return newString($(y))
                     of Inline:
                         return newInline(y.a)
                     of Dictionary:
@@ -408,7 +410,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                         return newBytecode(evaled)
                        
                     else:
-                        discard
+                        throwCannotConvert()
 
             of Range:
                 if tp == Block:
@@ -418,6 +420,8 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
 
             of Dictionary:
                 case tp:
+                    of String:
+                        return newString($(y))
                     of Object:
                         if x.tpKind==UserType:
                             return generateCustomObject(x.ts, y.d)
@@ -432,6 +436,8 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
             
             of Object:
                 case tp:
+                    of String:
+                        return newString($(y))
                     of Dictionary:
                         return newDictionary(y.o)
                     else:
@@ -439,6 +445,8 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
 
             of Store:
                 case tp:
+                    of String:
+                        return newString($(y))
                     of Dictionary:
                         ensureStoreIsLoaded(y.sto)
                         return newDictionary(y.sto.data)
@@ -537,7 +545,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                Any,
                Path,
                PathLabel,
-               Binary: discard
+               Binary: throwCannotConvert()
 
 #=======================================
 # Methods
