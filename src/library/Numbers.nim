@@ -414,7 +414,7 @@ proc defineSymbols*() =
         """:
             #=======================================================
             if not y.rng.numeric:
-                panic RuntimeError, "incompatible types, range must be numeric"
+                RuntimeError_IncompatibleValueType("clamp", valueKind(y), "numeric range")
             
             if x.kind == Integer:
                 if y.rng.forward:
