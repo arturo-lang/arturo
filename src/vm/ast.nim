@@ -511,24 +511,12 @@ proc processBlock*(
         target.rollThrough()
 
     proc addAttribute(target: var Node, val: Value, isLabel: static bool = false) {.enforceNoRaises.} =
-        # let attrNode = newCallNode(AttributeNode, 1, val)
-
-        # when not isLabel:
-        #     attrNode.addChild(newConstant(VTRUE))
-
-        # target.addChild(attrNode)
-
-        # when isLabel:
-        #     target.rollThrough()
-
-
         let attrNode = newCallNode(AttributeNode, 1, val)
 
         when not isLabel:
             attrNode.addChild(newConstant(VTRUE))
 
         if not PipeParent.isNil:
-        #if target.children.len > 0 and target.children[^1].kind in {OtherCall, BuiltinCall, SpecialCall}:
             PipeParent.addChildToFront(attrNode)
             target = PipeParent
             when isLabel:
@@ -538,22 +526,6 @@ proc processBlock*(
 
             when isLabel:
                 target.rollThrough()
-
-
-        # let attrNode = newCallNode(AttributeNode, 1, val)
-
-        # when not isLabel:
-        #     attrNode.addChild(newConstant(VTRUE))
-
-        # if target.children.len > 0 and target.children[^1].kind in {OtherCall, BuiltinCall, SpecialCall}:
-        #     target.children[^1].addChildToFront(attrNode)
-        #     when isLabel:
-        #         target = target.children[^1].children[0]
-        # else:
-        #     target.addChild(attrNode)
-
-        #     when isLabel:
-        #         target.rollThrough()
 
     proc addNewline(target: var Node) =
         target.addChild(Node(kind: NewlineNode, line: currentLine))
