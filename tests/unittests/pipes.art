@@ -71,7 +71,7 @@ check: function [block1 block2].inline[
             inspect b1
             print repeat "-" 10
             inspect b2
-            
+
             panic.code:1 "Test failed!"
       ]
 ]
@@ -516,4 +516,83 @@ section "Real-world testing"
             print ["Found" size concatPrimes "concatenations of primes below 100:"]
             loop split.every: 16 concatPrimes 'x ->
             print map x 's -> pad to :string s 4
+      ]
+
+      ; from: examples/rosetta/double twin primes.art
+      check [
+            r: range .step: 2 1 1000
+            loop select map r 'x -> @[x x+2 x+6 x+8] => [every? & => prime?] => print
+      ][
+            r: range .step: 2 1 1000
+            r | map 'x -> @[x x+2 x+6 x+8]
+              | select => [every? & => prime?]
+              | loop => print
+      ]
+
+      ; from: examples/rosetta/find squares n where n+1 is prime.art
+      check [
+            print map select 1..31 'x -> prime? 1 + x^2 'x -> x^2
+      ][
+            1..31 | select 'x -> prime? 1 + x^2
+                  | map 'x -> x^2
+                  | print
+      ]
+
+      ; from: examples/rosetta/sequence of primorial numbers.art
+      check [
+            productUpTo: #["1": 1]
+            primorials: unique map 2..4000 'x ->
+            productUpTo\[x]: <= productUpTo\[x-1] * (prime? x)? -> x -> 1
+
+            print map select.first:20 map.with:'i primorials
+                  'x -> @[i x]
+                  'x -> or? [prime? x\1 + 1][prime? x\1 - 1]
+                  'x -> x\0 + 1
+      ][
+            productUpTo: #["1": 1]
+            primorials: unique map 2..4000 'x ->
+            productUpTo\[x]: <= productUpTo\[x-1] * (prime? x)? -> x -> 1
+
+            primorials | map.with:'i 'x -> @[i x]
+                       | select.first:20 'x -> or? [prime? x\1 + 1][prime? x\1 - 1]
+                       | map 'x -> x\0 + 1
+                       | print
+      ]
+
+      ; from: examples/rosetta/left factorials.art
+      check [
+            lfactorial: function [n][
+                  if zero? n -> return 0
+                  fold 0..dec n [x y] -> x + factorial y
+            ]
+
+            print "First eleven:"
+            print map 0..10 => lfactorial
+
+            print "\n20th through 110th by tens:"
+            r: range.step: 10 20 110
+            loop map r => lfactorial => print
+
+            print "\nDigits in 1,000th through 10,000th by thousands:"
+            r: range.step: 1000 1000 10000
+            print map r 'x -> size ~"|lfactorial x|"
+      ][
+            lfactorial: function [n][
+                  if zero? n -> return 0
+                  fold 0..dec n [x y] -> x + factorial y
+            ]
+
+            print "First eleven:"
+            0..10 | map => lfactorial
+                  | print
+
+            print "\n20th through 110th by tens:"
+            r: range.step: 10 20 110
+            r | map => lfactorial
+              | loop => print
+
+            print "\nDigits in 1,000th through 10,000th by thousands:"
+            r: range.step: 1000 1000 10000
+            r | map'x -> size ~"|lfactorial x|"
+              | print
       ]
