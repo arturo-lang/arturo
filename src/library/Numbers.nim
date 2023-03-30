@@ -400,11 +400,11 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "force value within given range",
         args        = {
-            "number" : {Integer},
+            "number" : {Integer, Floating},
             "range"  : {Range}
         },
         attrs       = NoAttrs,
-        returns     = {Integer},
+        returns     = {Integer, Floating},
         example     = """
             clamp 2 1..3                ; 2
             clamp 0 1..3                ; 1
@@ -416,15 +416,25 @@ proc defineSymbols*() =
             if not y.rng.numeric:
                 panic RuntimeError, "incompatible types, range must be numeric"
             
-            if y.rng.forward:
-                if x.i < y.rng.start: push(newInteger(y.rng.start))
-                elif x.i > y.rng[y.rng.len, true].i: push(newInteger(y.rng[y.rng.len, true].i))
-                else: push(x)
+            if x.kind == Integer:
+                if y.rng.forward:
+                    if x.i < y.rng.start: push(newInteger(y.rng.start))
+                    elif x.i > y.rng[y.rng.len, true].i: push(newInteger(y.rng[y.rng.len, true].i))
+                    else: push(x)
+                else:
+                    if x.i > y.rng.start: push(newInteger(y.rng.start))
+                    elif x.i < y.rng[y.rng.len, true].i: push(newInteger(y.rng[y.rng.len, true].i))
+                    else: push(x)
             else:
-                if x.i > y.rng.start: push(newInteger(y.rng.start))
-                elif x.i < y.rng[y.rng.len, true].i: push(newInteger(y.rng[y.rng.len, true].i))
-                else: push(x)
-            
+                if y.rng.forward:
+                    if x.f < y.rng.start.toFloat: push(newInteger(y.rng.start))
+                    elif x.f > y.rng[y.rng.len, true].i.toFloat: push(newInteger(y.rng[y.rng.len, true].i))
+                    else: push(x)
+                else:
+                    if x.f > y.rng.start.toFloat: push(newInteger(y.rng.start))
+                    elif x.f < y.rng[y.rng.len, true].i.toFloat: push(newInteger(y.rng[y.rng.len, true].i))
+                    else: push(x)
+             
 
     builtin "conj",
         alias       = unaliased, 
