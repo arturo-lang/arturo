@@ -48,3 +48,13 @@ print z
 ; ...and also to:
 z: sub add 2 3 1
 print z
+
+;-----------------------------------------------------------------------------
+
+section: function [topic]-> print ["\n>>" topic]
+check: function [block1 block2][
+      ensure -> equal?
+            to.intrepid :bytecode block1
+            to.intrepid :bytecode block2
+      print "\t[+] passed!"
+]
