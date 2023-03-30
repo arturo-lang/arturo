@@ -407,7 +407,7 @@ proc processBlock*(
     # Helper Functions
     #------------------------
 
-    template rewindCallBranches(target: var Node, optimize: bool = false): untyped =
+    template rewindCallBranches(target: var Node, optimize: bool = false, clearPipes: bool = true): untyped =
         while target.kind in CallNode and target.params == target.arity:
             when optimize:
                 if target.kind == VariableStore:
@@ -434,8 +434,10 @@ proc processBlock*(
                         discard
 
             target = target.parent
-            if target.kind == RootNode:
-                PipeParent = nil
+
+            when clearPipes:
+                if target.kind == RootNode:
+                    PipeParent = nil
 
     template rollThrough(target: var Node): untyped =
         target = target.children[^1]
@@ -565,7 +567,7 @@ proc processBlock*(
             addChild(node)
 
             rewindCallBranches(optimize=true)
-
+            
     proc addTerminals(target: var Node, nodes: openArray[Node], dontOptimize: bool =false) =
         with target:
             rewindCallBranches()
@@ -679,7 +681,7 @@ proc processBlock*(
                         target.addChild(toWrap)
                         PipeParent = target
 
-                    target.rewindCallBranches()
+                    target.rewindCallBranches(clearPipes=false)
                     
                     added = true
 
