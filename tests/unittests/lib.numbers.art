@@ -30,10 +30,12 @@ do [
     
     ensure -> 4 = clamp 5 range.step: 2 0 5
     ensure -> 5 = clamp 5 range.step: 2 5 0
+    ensure -> 3 = clamp 1 range.step: 2 5 2
     passed
     
     ensure -> 4 = clamp 5.5 range.step: 2 0 5
     ensure -> 5 = clamp 5.5 range.step: 2 5 0
+    ensure -> 3 = clamp 1.2 range.step: 2 5 2
     passed
     
     ensure -> every? @[
