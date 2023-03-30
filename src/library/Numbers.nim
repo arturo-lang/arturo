@@ -410,7 +410,7 @@ proc defineSymbols*() =
             clamp 0 1..3                ; 1
             clamp 4 1..3                ; 3
             clamp 4 3..1                ; 3
-            clamp 5 range.step: 2 1 5   ; 4
+            clamp 5 range.step: 2 0 5   ; 4
         """:
             #=======================================================
             if not y.rng.numeric:
