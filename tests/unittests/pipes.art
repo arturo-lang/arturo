@@ -49,6 +49,7 @@ print z
 z: sub add 2 3 1
 print z
 
+print repeat "=" 60
 ;-----------------------------------------------------------------------------
 testNo: 0
 section: function [topic].inline[
@@ -284,5 +285,100 @@ section "Pipes + Attributes"
       ][
             print "before"
             "hello world" | split.words
+            print "after"
+      ]
+
+section "Pipes + Attributes (+ Assignment)"
+
+      check [x: split.words "hello world"][x: "hello world" | split.words]
+      check [
+            x: split.words "hello world"
+      ][
+            x:
+            "hello world" | split.words
+      ]
+      check [
+            x: split.words "hello world"
+      ][
+            x: "hello world" 
+            | split.words
+      ]
+      check [
+            x: split.words "hello world"
+      ][
+            x: "hello world" 
+            | 
+            split.words
+      ]
+      check [
+            print "before"
+            x: split.words "hello world"
+            print "after"
+      ][
+            print "before"
+            x: "hello world" | split.words
+            print "after"
+      ]
+
+section "Pipes + AttributeLabels"
+
+      check [split.every:3 "hello world"]["hello world" | split.every:3]
+      check [
+            split.every:3 "hello world"
+      ][
+            "hello world" | split.every:3
+      ]
+      check [
+            split.every:3 "hello world"
+      ][
+            "hello world" 
+            | split.every:3
+      ]
+      check [
+            split.every:3 "hello world"
+      ][
+            "hello world" 
+            | 
+            split.every:3
+      ]
+      check [
+            print "before"
+            split.every:3 "hello world"
+            print "after"
+      ][
+            print "before"
+            "hello world" | split.every:3
+            print "after"
+      ]
+
+section "Pipes + AttributeLabels (+ Assignment)"
+
+      check [x: split.every:3 "hello world"][x: "hello world" | split.every:3]
+      check [
+            x: split.every:3 "hello world"
+      ][
+            x:
+            "hello world" | split.every:3
+      ]
+      check [
+            x: split.every:3 "hello world"
+      ][
+            x: "hello world" 
+            | split.every:3
+      ]
+      check [
+            x: split.every:3 "hello world"
+      ][
+            x: "hello world" 
+            | 
+            split.every:3
+      ]
+      check [
+            print "before"
+            x: split.every:3 "hello world"
+            print "after"
+      ][
+            print "before"
+            x: "hello world" | split.every:3
             print "after"
       ]
