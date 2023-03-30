@@ -62,10 +62,18 @@ section: function [topic].inline[
 ; as the "normal" code?! :)
 check: function [block1 block2].inline[
       testNo: testNo + 1
-      ensure -> equal?
-            to.intrepid :bytecode block1
-            to.intrepid :bytecode block2
-      print [pad to :string testNo 2 ": [+] passed!"]
+      b1: to.intrepid :bytecode block1
+      b2: to.intrepid :bytecode block2
+
+      if? b1 = b2 -> print [pad to :string testNo 2 ": [+] passed!"]
+      else [
+            print [pad to :string testNo 2 ": [-] failed!"]
+            inspect b1
+            print repeat "-" 10
+            inspect b2
+            
+            panic.code:1 "Test failed!"
+      ]
 ]
 
 section "Simple call with one param"
@@ -433,4 +441,79 @@ section "Pipes + AttributeLabels (+ Assignment)"
             print "after"
             z: split.words "one two three"
             print "final"
+      ]
+
+section "Using pipes + iterators"
+
+      check [
+            print select map 1..10 'x -> x * 3 => even?
+      ][
+            1..10 | map 'x -> x * 3 
+                  | select => even?
+                  | print
+      ]
+      check [
+            print "before"
+            print select map 1..10 'x -> x * 3 => even?
+            print "after"
+      ][
+            print "before"
+            1..10 | 
+                  map 'x 
+                  -> x * 3 
+                  | 
+                  select 
+                  => even?
+                  | 
+                  print
+            print "after"
+      ]
+
+section "Real-world testing"
+
+      ; from: examples/rosetta/smarandache prime-digital sequence.art
+      check [
+            spds: select.first:100 2..∞ 'x ->
+                        and? -> prime? x
+                             -> every? digits x => prime?
+            
+            print "First 25 SPDS primes:"
+            print first.n: 25 spds
+
+            print ""
+            print ["100th SPDS prime:" last spds]
+      ][
+            spds: 2..∞ | select.first:100 'x ->
+                        and? -> prime? x
+                              -> every? digits x => prime?
+
+            print "First 25 SPDS primes:"
+            print first.n: 25 spds
+
+            print ""
+            print ["100th SPDS prime:" last spds]
+      ]
+
+      ; from: examples/rosetta/concatenate two primes is also prime.art
+      check [
+            primesBelow100: select 1..100 => prime?
+            allPossibleConcats: permutate.repeat.by:2 primesBelow100
+
+            concatPrimes: unique sort select map allPossibleConcats 'x -> to :integer (to :string x\[0]) ++ (to :string x\[1]) => prime?
+
+            print ["Found" size concatPrimes "concatenations of primes below 100:"]
+            loop split.every: 16 concatPrimes 'x ->
+            print map x 's -> pad to :string s 4
+      ][
+            primesBelow100: select 1..100 => prime?
+            allPossibleConcats: permutate.repeat.by:2 primesBelow100
+
+            concatPrimes: allPossibleConcats | map 'x -> to :integer (to :string x\[0]) ++ (to :string x\[1])
+                                             | select => prime?
+                                             | sort
+                                             | unique
+
+            print ["Found" size concatPrimes "concatenations of primes below 100:"]
+            loop split.every: 16 concatPrimes 'x ->
+            print map x 's -> pad to :string s 4
       ]
