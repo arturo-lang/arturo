@@ -417,23 +417,13 @@ proc defineSymbols*() =
                 RuntimeError_IncompatibleValueType("clamp", valueKind(y), "numeric range")
             
             if x.kind == Integer:
-                if y.rng.forward:
-                    if x.i < y.rng.start: push(newInteger(y.rng.start))
-                    elif x.i > y.rng[y.rng.len, true].i: push(newInteger(y.rng[y.rng.len, true].i))
-                    else: push(x)
-                else:
-                    if x.i > y.rng.start: push(newInteger(y.rng.start))
-                    elif x.i < y.rng[y.rng.len, true].i: push(newInteger(y.rng[y.rng.len, true].i))
-                    else: push(x)
+                if (let minElem = y.rng.min()[1]; x.i < minElem.i): push(minElem)
+                elif (let maxElem = y.rng.max()[1]; x.i > maxElem.i): push(maxElem)
+                else: push(x)
             else:
-                if y.rng.forward:
-                    if x.f < y.rng.start.toFloat: push(newInteger(y.rng.start))
-                    elif x.f > y.rng[y.rng.len, true].i.toFloat: push(newInteger(y.rng[y.rng.len, true].i))
-                    else: push(x)
-                else:
-                    if x.f > y.rng.start.toFloat: push(newInteger(y.rng.start))
-                    elif x.f < y.rng[y.rng.len, true].i.toFloat: push(newInteger(y.rng[y.rng.len, true].i))
-                    else: push(x)
+                if (let minElem = y.rng.min()[1]; x.i < minElem.i): push(minElem)
+                elif (let maxElem = y.rng.max()[1]; x.i > maxElem.i): push(maxElem)
+                else: push(x)
              
 
     builtin "conj",
