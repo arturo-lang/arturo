@@ -4,52 +4,36 @@ passed: $[] -> print "[+] passed!"
 topic « clamp
 do [
     
-    ensure.that: "is inside of the range" 
-    -> 1 = clamp 1 0..2
-    ensure.that: "is inside of a reversed range" 
-    -> 1 = clamp 1 2..0
+    ensure -> 1 = clamp 1 0..2
+    ensure -> 1 = clamp 1 2..0
     passed
     
-    ensure.that: "floating is inside of the range" 
-    -> 1.5 = clamp 1.5 0..2
-    ensure.that: "floating is inside of a reversed range" 
-    -> 1.5 = clamp 1.5 2..0
+    ensure -> 1.5 = clamp 1.5 0..2
+    ensure -> 1.5 = clamp 1.5 2..0
     passed
     
-    ensure.that: "is outside and is greather than range" 
-    -> 1 = clamp 2 0..1
-    ensure.that: "is outside and is greather than reversed range" 
-    -> 1 = clamp 2 1..0
+    ensure -> 1 = clamp 2 0..1
+    ensure -> 1 = clamp 2 1..0
     passed
     
-    ensure.that: "floating is outside and is greather than range" 
-    -> 1 = clamp 2.5 0..1
-    ensure.that: "floating is outside and is greather than reversed range" 
-    -> 1 = clamp 2.5 1..0
+    ensure -> 1 = clamp 2.5 0..1
+    ensure -> 1 = clamp 2.5 1..0
     passed
     
-    ensure.that: "is outside and is greather than range" 
-    -> 1 = clamp 0 1..2
-    ensure.that: "is outside and is greather than reversed range" 
-    -> 1 = clamp 0 2..1
+    ensure -> 1 = clamp 0 1..2
+    ensure -> 1 = clamp 0 2..1
     passed
    
-    ensure.that: "floating is outside and is greather than range" 
-    -> 1 = clamp 0.5 1..2
-    ensure.that: "floating is outside and is greather than reversed range" 
-    -> 1 = clamp 0.5 2..1
+    ensure -> 1 = clamp 0.5 1..2
+    ensure -> 1 = clamp 0.5 2..1
     passed
     
-    ensure.that: "is outiside and is greather than a range with step" 
-    -> 4 = clamp 5 range.step: 2 0 5
-    ensure.that: "is outiside and is greather than a reversed range with step" 
-    -> 5 = clamp 5 range.step: 2 5 0
+    ensure -> 4 = clamp 5 range.step: 2 0 5
+    ensure -> 5 = clamp 5 range.step: 2 5 0
     passed
     
-    ensure.that: "floating is outiside and is greather than a range with step" 
-    -> 4 = clamp 5.5 range.step: 2 0 5
-    ensure.that: "floating is outiside and is greather than a reversed range with step" 
-    -> 5 = clamp 5.5 range.step: 2 5 0
+    ensure -> 4 = clamp 5.5 range.step: 2 0 5
+    ensure -> 5 = clamp 5.5 range.step: 2 5 0
     passed
     
     ensure -> every? @[
