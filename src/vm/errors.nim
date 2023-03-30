@@ -366,6 +366,11 @@ proc RuntimeError_ConfigNotFound*(gkey: string, akey: string) =
           "you can either supply it globally via `config`;" &
           "or using the option: ." & akey
 
+proc RuntimeError_RangeWithZeroStep*() =
+    panic RuntimeError,
+          "attribute step can't be 0"
+
+
 # Program errors
 
 proc ProgramError_panic*(message: string, code: int) =
