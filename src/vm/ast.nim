@@ -521,6 +521,7 @@ proc processBlock*(
             target = PipeParent
             when isLabel:
                 target = target.children[0]
+            target.rewindCallBranches()
         else:
             target.addChild(attrNode)
 
