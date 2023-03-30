@@ -50,11 +50,183 @@ z: sub add 2 3 1
 print z
 
 ;-----------------------------------------------------------------------------
-
-section: function [topic]-> print ["\n>>" topic]
-check: function [block1 block2][
+testNo: 0
+section: function [topic].inline[
+      testNo: 0
+      print ["\n>>" topic]
+]
+check: function [block1 block2].inline[
+      testNo: testNo + 1
       ensure -> equal?
             to.intrepid :bytecode block1
             to.intrepid :bytecode block2
-      print "\t[+] passed!"
+      print [pad to :string testNo 2 ": [+] passed!"]
 ]
+
+section "Simple call with one param"
+
+      check [print 2] [2 | print]
+      ; also check the exact same thing
+      ; only with newlines in between; you never know...
+      check [
+            print 2
+      ][
+            2 | 
+            print
+      ]
+      check [
+            print
+            2
+      ][
+            2 
+            | 
+            print
+      ]
+
+section "Simple call with two params"
+
+      check [add 2 x] [2 | add x]
+      check [
+            add 2 x
+      ][
+            2 | add x
+      ]
+      check [
+            add 2 x
+      ][
+            2 
+            | add x
+      ]
+      check [
+            print
+            add
+            2
+            x
+      ][
+            2 
+            | 
+            add x
+            | print
+      ]
+
+section "Assignment with an one-param call"
+
+      check [x: even? 2][x: 2 | even?]
+      check [
+            x: even? 2
+      ][
+            x:
+            2 | even?
+      ]
+      check [
+            x: even? 2
+      ][
+            x: 2 
+            | even?
+      ]
+      check [
+            x: even? 2
+      ][
+            x: 2 
+            | 
+            even?
+      ]
+
+section "Assignment with a two-param call"
+
+      check [x: add 2 z][x: 2 | add z]
+      check [
+            x: add 2 z
+      ][
+            x:
+            2 | add z
+      ]
+      check [
+            x: add 2 z
+      ][
+            x: 2 
+            | add z
+      ]
+      check [
+            x: add 2 z
+      ][
+            x: 2 
+            | 
+            add z
+      ]
+
+section "Call as initial argument"
+
+      check [print 1..3][1..3 | print]
+      check [
+            print 1..3
+      ][
+            1..3 | print
+      ]
+      check [
+            print 1..3
+      ][
+            1..3 
+            | print
+      ]
+      check [
+            print 1..3
+      ][
+            1..3 
+            | 
+            print
+      ]
+
+section "Assignment with call as initial argument"
+
+      check [x: max 1..10][x: 1..10 | max]
+      check [
+            x: max 1..10
+      ][
+            x:
+            1..10 | max
+      ]
+      check [
+            x: max 1..10
+      ][
+            x: 1..10 
+            | max
+      ]
+      check [
+            x: max 1..10
+      ][
+            x: 1..10 
+            | 
+            max
+      ]
+
+section "Pipes + Attributes"
+
+      check [split.words "hello world"]["hello world" | split.words]
+      check [
+            split.words "hello world"
+      ][
+            "hello world" | split.words
+      ]
+      check [
+            split.words "hello world"
+      ][
+            "hello world" 
+            | split.words
+      ]
+      check [
+            split.words "hello world"
+      ][
+            "hello world" 
+            | 
+            split.words
+      ]
+      check [
+            print "before"
+            split.words "hello world"
+            print "after"
+      ][
+            print "before"
+            "hello world" | split.words
+            print "after"
+      ]
