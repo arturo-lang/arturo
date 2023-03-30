@@ -413,6 +413,9 @@ proc defineSymbols*() =
             clamp 5 range.step: 2 1 5   ; 4
         """:
             #=======================================================
+            if not y.rng.numeric:
+                panic RuntimeError, "incompatible types, range must be numeric"
+            
             if y.rng.forward:
                 if x.i < y.rng.start: push(newInteger(y.rng.start))
                 elif x.i > y.rng[y.rng.len, true].i: push(newInteger(y.rng[y.rng.len, true].i))
