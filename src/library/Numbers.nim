@@ -421,8 +421,8 @@ proc defineSymbols*() =
                 elif (let maxElem = y.rng.max()[1]; x.i > maxElem.i): push(maxElem)
                 else: push(x)
             else:
-                if (let minElem = y.rng.min()[1]; x.f < minElem.f): push(minElem)
-                elif (let maxElem = y.rng.max()[1]; x.f > maxElem.f): push(maxElem)
+                if (let minElem = y.rng.min()[1]; x.f < float(minElem.i)): push(minElem)
+                elif (let maxElem = y.rng.max()[1]; x.f > float(maxElem.i)): push(maxElem)
                 else: push(x)
              
 
