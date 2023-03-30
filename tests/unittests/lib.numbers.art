@@ -28,4 +28,10 @@ do [
     -> 5 = clamp 5 range.step: 2 5 0
     passed
     
+    ensure -> every? @[
+        -> clamp 2 `a`..`d`
+        -> clamp `b` `a`..`c`
+    ] => throws?
+    passed
+    
 ]
