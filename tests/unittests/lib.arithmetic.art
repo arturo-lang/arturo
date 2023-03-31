@@ -3310,7 +3310,6 @@ do [
     passed
     
     topic "sub - :color :quantity"
-    ; todo: should reaise an error...
     
     ensure -> throws? -> #red + 30:usd
     ensure -> throws? -> 30:usd + #red
