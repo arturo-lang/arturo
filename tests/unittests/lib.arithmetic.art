@@ -1,4 +1,12 @@
-; helper function
+
+
+;; Somtimes we use rendered strings or `greather?`/`less?` 
+;; to do floating comparisons, this is the reason:
+;; Read: "What Every Computer Scientist Should Know 
+;;       About Floating-Point Arithmetic" by Oracle [^1]
+;;  [1]: https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html
+
+; helper function 
 debug: $[variable][
     print[variable type variable]
 ]
