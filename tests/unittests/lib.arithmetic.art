@@ -969,22 +969,22 @@ do [
     
     a: to :rational [3 5]
     b: to :rational [1 2]
-    ; ensure -> (to :rational [6 5]) = a / b
-    ; ensure -> (to :rational [5 6]) = b / a
-    ; ensure -> (to :rational [6 5]) = div a b
-    ; ensure -> (to :rational [5 6]) = div b a
-    ; passed
+    ensure -> (to :rational [6 5]) = a / b
+    ensure -> (to :rational [5 6]) = b / a
+    ensure -> (to :rational [6 5]) = div a b
+    ensure -> (to :rational [5 6]) = div b a
+    passed
     
     
     a: to :rational [3 5]
     b: to :rational [1 2]
     
-    ; 'a / b
-    ; ensure -> (to :rational [6 5]) = a
-    ; div 'a b
-    ; ensure -> (to :rational [12 5]) = a
-    ; ensure -> (to :rational [24 10]) = a
-    ; passed
+    'a / b
+    ensure -> (to :rational [6 5]) = a
+    div 'a b
+    ensure -> (to :rational [12 5]) = a
+    ensure -> (to :rational [24 10]) = a
+    passed
     
     
     topic "div - :rational :quantity"
