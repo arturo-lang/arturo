@@ -2002,9 +2002,6 @@ do [
     
     
     topic "mod - :floating :quantity"
-    ; todo: compare with respective types
-    ; todo: fix behavior for :quant :float
-    ; todo: fix behavior for :float :quant
     
     ensure -> 0.0:usd = 30:usd % 5.0
     ensure -> 0.0:eur = 30:eur % 5.0
@@ -2026,13 +2023,10 @@ do [
     ] => throws?
     passed
     
-    ; todo: behavior is not completelly right
     a: 30:usd, 'a % 5.0
     ensure -> 0.0:usd = a
     passed
     
-    ; todo: compare with respective types
-    ; todo: fix behavior for :int :quant
     a: 5.0
     ensure -> throws? -> 'a % 30:usd
     passed
