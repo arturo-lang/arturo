@@ -2833,8 +2833,7 @@ do [
     ; error:
     ; >> Runtime | incompatible operation between quantities
     ;      error | attempted: pow
-    ;            | with:  (currency) 8 (:integer)
-
+    ;            | with:  (currency)  (currency)
     
     ensure -> throws? -> 2 ^ 8:usd
     passed
