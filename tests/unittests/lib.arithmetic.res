@@ -541,6 +541,7 @@
 
 >> neg - :quantity
 [+] passed!
+[+] passed!
 
 >> pow
 
@@ -593,6 +594,7 @@
 [+] passed!
 
 >> pow - :floating :quantity
+[+] passed!
 
 >> sub
 
