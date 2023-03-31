@@ -338,7 +338,6 @@ do [
     ; ** can re-enable the tests here! ;-)
 
     topic "add - :complex :quantity"
-    ; todo: check if :quantity :complex should be possible
 
     ensure -> every? @[
         -> "31.0+2.0i:usd" = ~"|as.code 30:usd + to :complex [1 2]|"
