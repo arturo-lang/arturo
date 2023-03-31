@@ -122,6 +122,7 @@
 >> dec - :quantity
 [+] passed!
 [+] passed!
+[+] passed!
 
 >> div
 
