@@ -262,6 +262,11 @@ do [
     ensure -> 35.5 = a
     passed
     
+    a: 5.5
+    ensure -> throws? -> 5.5 + 30:usd
+    ensure -> throws? -> 'a + 30:usd
+    passed
+    
     
     ; topic "add - :floating :color"
     
