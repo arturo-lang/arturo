@@ -6,6 +6,11 @@
 ;;       About Floating-Point Arithmetic" by Oracle [^1]
 ;;  [1]: https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html
 
+;; If you want to know about how should `:quantities` works, see some of these conversations
+;; https://github.com/arturo-lang/arturo/issues/1110
+;; https://github.com/arturo-lang/arturo/issues/1129
+;;   in special this comment: https://github.com/arturo-lang/arturo/issues/1129#issuecomment-1492142532
+
 ; helper function 
 debug: $[variable][
     print[variable type variable]
@@ -561,9 +566,7 @@ do [
     
     topic "dec - :floating"
     
-    ; Never do floating comparison, it can give wrong results, even rounding
-    ; Read: What Every Computer Scientist Should Know About Floating-Point Arithmetic - Oracle
-    ;       https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html
+    
     
     ensure -> 4.6 > dec 5.5
     ensure -> 4.4 < dec 5.5
