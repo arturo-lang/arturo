@@ -132,12 +132,8 @@
 [+] passed!
 [+] passed!
 [+] passed!
-[+] passed!
 
 >> div - :int :floating
-[+] passed!
-[+] passed!
-[+] passed!
 [+] passed!
 [+] passed!
 [+] passed!
@@ -154,11 +150,14 @@
 [+] passed!
 [+] passed!
 
->> div - :int :rational
+>> div - :integer :rational
+[+] passed!
 [+] passed!
 [+] passed!
 
 >> div - :integer :quantity
+[+] passed!
+[+] passed!
 [+] passed!
 [+] passed!
 
@@ -176,8 +175,10 @@
 >> div - :floating :rational
 [+] passed!
 [+] passed!
+[+] passed!
 
 >> div - :floating :quantity
+[+] passed!
 [+] passed!
 [+] passed!
 
@@ -196,6 +197,8 @@
 [+] passed!
 
 >> div - :rational :rational
+[+] passed!
+[+] passed!
 
 >> div - :rational :quantity
 [+] passed!
