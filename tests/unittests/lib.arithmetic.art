@@ -2498,11 +2498,7 @@ do [
     ; ------ quantity
      
     topic "mul - :quantity :quantity"
-    ; todo: compare with respective types
-    ; todo: how can I test it for different currencies?
-    
-    ; todo:  fix error
-        
+       
     ensure -> 0.2:m2 = 1:m * 20:cm
     ensure -> 0.2:m2 = 20:cm * 1:m
     passed
