@@ -2977,21 +2977,15 @@ do [
     ] => throws?
     passed  
     
-    ; :integer :color
     a: 1
-    ensure -> throws? -> 'a - #red
-    
-    a: 1
-    ensure -> throws? -> sub 'a #red
-    passed
-    
-    ; :color :integer
-    a: #red
-    ensure -> throws? -> 'a - 1
-    
-    a: #red
-    ensure -> throws? -> sub 'a 1
-    passed
+    b: #red
+    ensure -> every? @[
+        -> 'a - #red
+        -> 'b - 1
+        -> sub 'a #red
+        -> sub 'b 1
+    ] => throws?
+    passed  
     
     
     ; ------ floating
