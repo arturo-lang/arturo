@@ -1319,20 +1319,25 @@ do [
     
     topic "divmod - :complex :rational"
     
-    ; a: to :complex [1 2]
-    ; b: to :rational [3 5]
-    ; expected: to :rational [11 10]
-    ; passed
+    a: to :complex [3 2]
+    b: to :rational [3 2]
     
-    ; ; :complex :rational - :rational :complex
-    ; a: to :complex [1 2]
-    ; b: to :rational [3 5]
+    ensure -> every? @[
+        -> a /% b
+        -> b /% a
+        -> divmod a b
+        -> divmod b a
+    ] => throws?
+    passed
     
-    ; 'a /% b
-    ; passed
+    ensure -> every? @[
+        -> 'a /% b
+        -> 'b /% a
+        -> divmod 'a b
+        -> divmod 'b a
+    ] => throws?
+    passed
     
-    ; divmod 'b a
-    ; passed
     
     topic "divmod - :complex :quantity"
     ; todo: check if :quantity :complex should be possible
