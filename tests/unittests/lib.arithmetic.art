@@ -1,15 +1,15 @@
 
 
-;; Somtimes we use rendered strings or `greather?`/`less?` 
-;; to do floating comparisons, this is the reason:
-;; Read: "What Every Computer Scientist Should Know 
-;;       About Floating-Point Arithmetic" by Oracle [^1]
-;;  [1]: https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html
+; Somtimes we use rendered strings or `greather?`/`less?` 
+; to do floating comparisons, this is the reason:
+; Read: "What Every Computer Scientist Should Know 
+;       About Floating-Point Arithmetic" by Oracle [^1]
+;  [1]: https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html
 
-;; If you want to know about how should `:quantities` works, see some of these conversations
-;; https://github.com/arturo-lang/arturo/issues/1110
-;; https://github.com/arturo-lang/arturo/issues/1129
-;;   in special this comment: https://github.com/arturo-lang/arturo/issues/1129#issuecomment-1492142532
+; If you want to know about how should `:quantities` works, see some of these conversations
+; https://github.com/arturo-lang/arturo/issues/1110
+; https://github.com/arturo-lang/arturo/issues/1129
+;   in special this comment: https://github.com/arturo-lang/arturo/issues/1129#issuecomment-1492142532
 
 ; helper function 
 debug: $[variable][
