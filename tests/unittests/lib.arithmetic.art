@@ -847,19 +847,19 @@ do [
     
     a: to :rational [1 2]
     expected: to :rational [1 4]
-    ; ensure -> expected = a / 2.0
+    ensure -> expected = a / 2.0
     ensure -> 4.0 = 2.0 / a
-    ; ensure -> expected = div a 2.0
+    ensure -> expected = div a 2.0
     ensure -> 4.0 = div 2.0 a
     passed
     
     ; :rational :integer
-    ; a: to :rational [1 2]
-    ; 'a / 2.0
-    ; ensure -> a = to :rational [1 4]
-    ; div 'a 2.0
-    ; ensure -> a = to :rational [1 8]
-    ; passed
+    a: to :rational [1 2]
+    'a / 2.0
+    ensure -> a = to :rational [1 4]
+    div 'a 2.0
+    ensure -> a = to :rational [1 8]
+    passed
     
     ; :integer :rational
     a: 2.0
