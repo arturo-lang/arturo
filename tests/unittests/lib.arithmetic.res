@@ -263,6 +263,7 @@
 [+] passed!
 [+] passed!
 [+] passed!
+[+] passed!
 
 >> divmod - :complex :complex
 [+] passed!
@@ -383,7 +384,6 @@
 [+] passed!
 [+] passed!
 [+] passed!
-[+] passed!
 
 >> mod - :int :floating
 [+] passed!
@@ -394,11 +394,17 @@
 [+] passed!
 [+] passed!
 [+] passed!
-[+] passed!
+
+>> mod - :integer :rational
 [+] passed!
 [+] passed!
 
 >> mod - :integer :quantity
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> mod - :floating :floating
 [+] passed!
@@ -406,21 +412,28 @@
 [+] passed!
 
 >> mod - :floating :rational
+[+] passed!
+[+] passed!
 
 >> mod - :floating :quantity
 [+] passed!
 [+] passed!
 [+] passed!
 [+] passed!
+[+] passed!
 
 >> mod - :rational :rational
+[+] passed!
+[+] passed!
 
 >> mod - :rational :quantity
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> mod - :quantity :quantity
-[+] passed!
-[+] passed!
-[+] passed!
 [+] passed!
 
 >> mul
