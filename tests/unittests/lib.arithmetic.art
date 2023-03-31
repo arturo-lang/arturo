@@ -2858,8 +2858,9 @@ do [
     
     topic "pow - :floating :quantity"
     
-    ; ensure -> 256:usd = 2:usd ^ 8
-    ; passed
+    ensure -> throws? -> pow 2:usd 8
+    ensure -> throws? -> 2:usd ^ 8
+    passed
     
     ensure -> 1:m2 = pow 1:m 2
     ensure -> 1:m2 = 1:m ^ 2
