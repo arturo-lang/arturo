@@ -2869,11 +2869,6 @@ do [
     a: 1:m, 'a ^ 2
     ensure -> 1:m2 = a
     
-    ; error:
-    ; >> Runtime | incompatible operation between quantities
-    ;      error | attempted: pow
-    ;            | with:  (currency)  (currency)
-    
     ensure -> throws? -> 2 ^ 8:usd
     passed
 
