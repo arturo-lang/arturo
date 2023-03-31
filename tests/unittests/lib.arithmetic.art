@@ -1014,8 +1014,9 @@ do [
     ; ------ quantity
      
     topic "div - :quantity :quantity"
-    ; todo: compare with respective types
-    ; todo: how can I test it for different currencies?
+    
+    ; for while, I won't update this test for metric-units 
+    ; since we have an open issue to solve this
     
     ensure -> 4 = (20:usd) / (5:usd)
     ensure -> 4 = (20:eur) / (5:eur)
