@@ -521,6 +521,10 @@ do [
     ensure -> 50 = a 
     passed
     
+    a: 20:usd, 'a + 30:usd
+    ensure -> 50:usd = a 
+    passed
+    
     a: 1:m, 'a + 20:cm
     ensure -> 1.2:m = a
     passed
