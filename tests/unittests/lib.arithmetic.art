@@ -3102,21 +3102,15 @@ do [
     ] => throws?
     passed  
     
-    ; :floating :color
     a: 1.5
-    ensure -> throws? -> 'a - #red
-    
-    a: 1.5
-    ensure -> throws? -> sub 'a #red
-    passed
-    
-    ; :color :floating
-    a: #red
-    ensure -> throws? -> 'a - 1.5
-    
-    a: #red
-    ensure -> throws? -> sub 'a 1.5
-    passed
+    b: #red
+    ensure -> every? @[
+        -> 'a - #red
+        -> 'b - 1.5
+        -> sub 'a #red
+        -> sub 'b 1.5
+    ] => throws?
+    passed  
     
     
     ; ------ complex
