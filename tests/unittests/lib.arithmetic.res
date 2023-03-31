@@ -122,7 +122,6 @@
 >> dec - :quantity
 [+] passed!
 [+] passed!
-[+] passed!
 
 >> div
 
@@ -160,6 +159,7 @@
 [+] passed!
 [+] passed!
 [+] passed!
+[+] passed!
 
 >> div - :floating :floating
 [+] passed!
@@ -178,6 +178,7 @@
 [+] passed!
 
 >> div - :floating :quantity
+[+] passed!
 [+] passed!
 [+] passed!
 [+] passed!
@@ -201,6 +202,8 @@
 [+] passed!
 
 >> div - :rational :quantity
+[+] passed!
+[+] passed!
 [+] passed!
 [+] passed!
 [+] passed!
@@ -324,6 +327,8 @@
 >> fdiv - :integer :quantity
 [+] passed!
 [+] passed!
+[+] passed!
+[+] passed!
 
 >> fdiv - :floating :floating
 [+] passed!
@@ -338,12 +343,15 @@
 >> fdiv - :floating :quantity
 [+] passed!
 [+] passed!
+[+] passed!
 
 >> fdiv - :rational :rational
 [+] passed!
 [+] passed!
 
 >> fdiv - :rational :quantity
+[+] passed!
+[+] passed!
 [+] passed!
 [+] passed!
 [+] passed!
@@ -487,6 +495,7 @@
 [+] passed!
 
 >> mul - :floating :quantity
+[+] passed!
 [+] passed!
 [+] passed!
 [+] passed!
