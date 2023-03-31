@@ -604,6 +604,8 @@
 
 >> pow - :floating :quantity
 [+] passed!
+[+] passed!
+[+] passed!
 
 >> sub
 
