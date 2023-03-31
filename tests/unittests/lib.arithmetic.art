@@ -2952,10 +2952,10 @@ do [
     ensure -> 25 = sub 30:eur 5
     passed
     
-    ensure -> 25:usd = 5 - 30:usd
-    ensure -> 25:eur = 5 - 30:eur
-    ensure -> 25:usd = sub 5 30:usd
-    ensure -> 25:eur = sub 5 30:eur
+    ensure -> 25:usd = 30:usd - 5
+    ensure -> 25:eur = 30:eur - 5
+    ensure -> 25:usd = sub 30:usd 5
+    ensure -> 25:eur = sub 30:eur 5
     passed
     
     a: 30:usd, 'a - 5
