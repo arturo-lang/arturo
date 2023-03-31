@@ -988,7 +988,6 @@ do [
     
     
     topic "div - :rational :quantity"
-    ; todo: verify this comparison
 
     ensure -> "60:usd" = ~"|as.code 30:usd / to :rational [1 2]|"
     ensure -> "60:eur" = ~"|as.code 30:eur / to :rational [1 2]|"
