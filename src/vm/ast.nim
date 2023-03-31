@@ -21,6 +21,13 @@
 # TODO(VM/ast) make sure all left-right checking are not Newlines
 #  labels: vm, ast, enhancement, unit-test
 
+# TODO(VM/ast) make it so that pipes work inside arrow blocks
+#  something like this could/should be working:
+#  ```red
+#  f: function [x]-> 2..x | select => even?
+#  ```
+#  labels: vm, ast, enhancement
+
 #=======================================
 # Libraries
 #=======================================
