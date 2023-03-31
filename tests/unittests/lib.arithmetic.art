@@ -265,7 +265,7 @@ do [
     passed
     
     
-    ; topic "add - :floating :color"
+    topic "add - :floating :color"
     
     ensure -> every? @[
         -> 1.5 + #red
