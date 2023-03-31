@@ -1035,7 +1035,7 @@ do [
     topic "div - :quantity :quantity"
     
     ; for while, I won't update this test for metric-units 
-    ; since we have an open issue to solve this
+    ; since we have an open issue to solve this -> #1110
     
     ensure -> 4 = (20:usd) / (5:usd)
     ensure -> 4 = (20:eur) / (5:eur)
