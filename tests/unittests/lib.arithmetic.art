@@ -2099,7 +2099,6 @@ do [
     ; ------ quantity
      
     topic "mod - :quantity :quantity"
-    ; todo: compare with respective types
     
     ensure -> 0:usd = 20:usd % 5:usd
     ensure -> 0:usd = mod 20:usd 5:usd
