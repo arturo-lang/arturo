@@ -1930,11 +1930,6 @@ do [
     
     
     topic "mod - :integer :quantity"
-    ; todo: compare with respective types
-    ; todo: fix behavior for :quant :int
-    ; todo: fix behavior for :int :quant
-    
-    ; todo: compare with respective types
     ensure -> 0 = 30:usd % 5
     ensure -> 0 = 30:eur % 5
     ensure -> 0 = mod 30:usd 5
@@ -1955,8 +1950,6 @@ do [
     ] => throws?
     passed
     
-    ; todo: compare with respective types
-    ; todo: fix behavior for :int :quant
     a: 30:usd, 'a % 5
     ensure -> 0 = a
     ensure -> 0:usd = a
