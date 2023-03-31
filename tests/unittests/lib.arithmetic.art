@@ -240,7 +240,6 @@ do [
     
     
     topic "add - :floating :quantity"
-    ; todo: fix behavior for :float :quant
     ensure -> 35.5 = 30:usd + 5.5
     ensure -> 35.5 = 30:eur + 5.5
     ensure -> 35.5 = add 30:usd 5.5
@@ -253,23 +252,10 @@ do [
     ensure -> 35.5:eur = add 30:eur 5.5
     passed
     
-    
-    ; ensure -> 35.5 = 5.5 + 30:usd
-    ; ensure -> 35.5 = 5.5 + 30:eur
-    ; ensure -> 35.5 = add 5.5 30:usd
-    ; ensure -> 35.5 = add 5.5 30:eur
-    passed
-    
     ; todo: compare with respective types
     a: 30:usd, 'a + 5.5
     ensure -> 35.5 = a
     passed
-    
-    ; todo: compare with respective types
-    ; todo: fix behavior for :float :quant
-    ; a: 5.5, 'a + 30:usd
-    ; ensure -> 35.5 = a
-    ; passed
     
     
     ; topic "add - :floating :color"
