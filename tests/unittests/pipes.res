@@ -114,6 +114,11 @@ ONE TWO
  1 : [+] passed! 
  2 : [+] passed! 
 
+>> Pipes + Random newlines everywhere 
+ 1 : [+] passed! 
+ 2 : [+] passed! 
+ 3 : [+] passed! 
+
 >> Real-world testing 
  1 : [+] passed! 
  2 : [+] passed! 
@@ -124,5 +129,5 @@ ONE TWO
  7 : [+] passed! 
 
 ============================================================
-Tests passed: 80 / 80 
+Tests passed: 83 / 83 
 ============================================================
