@@ -2590,6 +2590,12 @@ do [
     ensure -> "-20m" = ~"|neg 20:m|"
     ensure -> "-20cm" = ~"|neg 20:cm|"
     passed
+    
+    ensure -> (neg 20) = neg 20:usd
+    ensure -> (neg 20) = neg 20:eur
+    ensure -> (neg 20) = neg 20:m
+    ensure -> (neg 20) = neg 20:cm
+    passed
 
 ]
 
