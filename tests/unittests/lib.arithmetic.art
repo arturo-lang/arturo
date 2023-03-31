@@ -1797,10 +1797,6 @@ do [
     
     topic "inc - :floating"
     
-    ; Never do floating comparison, it can give wrong results, even rounding
-    ; Read: What Every Computer Scientist Should Know About Floating-Point Arithmetic - Oracle
-    ;       https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html
-    
     ensure -> 6.6 > inc 5.5
     ensure -> 6.4 < inc 5.5
     ensure -> 2.1 > inc 1.0 
