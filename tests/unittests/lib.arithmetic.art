@@ -373,19 +373,14 @@ do [
     
     ; :complex :color
     a: to :complex [1 2]
-    ensure -> throws? -> 'a + #red
-    
-    a: to :complex [1 2]
-    ensure -> throws? -> add 'a #red
-    passed
-    
-    ; :color :complex
-    a: #red
-    ensure -> throws? -> 'a + to :complex [1 2]
-    
-    a: #red
-    ensure -> throws? -> add 'a to :complex [1 2]
-    passed
+    b: #red
+    ensure -> every? @[
+        -> add 'a #red
+        -> 'a + #red
+        -> add 'b a
+        -> 'b + a
+    ] => throws?
+    passed  
 
     
     ; ------ rational
