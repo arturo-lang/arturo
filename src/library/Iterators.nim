@@ -1265,6 +1265,18 @@ proc defineSymbols*() =
                         if unlikely(inPlace): RawInPlaced = newBlock(selected)
                         else: push(newBlock(selected))
 
+    # TODO(Iterators/select) should `.first` & `.last` just one element?
+    #  Right now, they both return a block with this one element inside. 
+    #  The original idea was that since `.first` can either be a switch-type of 
+    #  attribute or an attributeLabel (that is: taking an argument), it would
+    #  make sense to always return a block for consistency.
+    # 
+    #  The problem is that having to do something like `first select.first ...`
+    #  seems a bit redundant.
+    #
+    #  P.S. This is totally *not* the case for `filter` which does something
+    #  different altogether...
+    #  labels: library, enhancement
     builtin "select",
         alias       = unaliased,
         op          = opSelect,
