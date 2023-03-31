@@ -3327,8 +3327,6 @@ do [
     ; ------ quantity
      
     topic "sub - :quantity :quantity"
-    ; todo: compare with respective types
-    ; todo: how can I test it for different currencies?
     
     ensure -> (neg 10) = 20:usd - 30:usd
     ensure -> 10 = 30:usd - 20:usd
