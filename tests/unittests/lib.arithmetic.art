@@ -2357,10 +2357,6 @@ do [
     ensure -> 15 = 30:eur * 0.5
     ensure -> 15 = mul 30:usd 0.5
     ensure -> 15 = mul 30:eur 0.5
-    ; ensure -> 15 = 0.5 * 30:usd
-    ; ensure -> 15 = 0.5 * 30:eur
-    ; ensure -> 15 = mul 0.5 30:usd
-    ; ensure -> 15 = mul 0.5 30:eur
     passed
     
     ensure -> 15:usd = 30:usd * 0.5
@@ -2377,9 +2373,6 @@ do [
     
     ; todo: compare with respective types
     ; todo: fix behavior for :float :quant
-    ; a: 0.5, 'a * 30:usd
-    ; ensure -> 15 = a
-    ; passed
     
     
     ; ------ complex
