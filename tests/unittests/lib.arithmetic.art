@@ -2351,8 +2351,6 @@ do [
     
     
     topic "mul - :floating :quantity"
-    ; todo: compare with respective types
-    ; todo: fix behavior for :float :quant
     ensure -> 15 = 30:usd * 0.5
     ensure -> 15 = 30:eur * 0.5
     ensure -> 15 = mul 30:usd 0.5
@@ -2365,14 +2363,10 @@ do [
     ensure -> 15:eur = mul 30:eur 0.5
     passed
     
-    ; todo: compare with respective types
     a: 30:usd, 'a * 0.5
     ensure -> 15:usd = a
     ensure -> 15 = a
     passed
-    
-    ; todo: compare with respective types
-    ; todo: fix behavior for :float :quant
     
     
     ; ------ complex
