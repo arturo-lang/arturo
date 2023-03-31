@@ -773,10 +773,6 @@ do [
     ensure -> 6 = 30:eur / 5
     ensure -> 6 = div 30:usd 5
     ensure -> 6 = div 30:eur 5
-    ; ensure -> 6 = 5 / 30:usd
-    ; ensure -> 6 = 5 / 30:eur
-    ; ensure -> 6 = div 5 30:usd
-    ; ensure -> 6 = div 5 30:eur
     passed
     
     ; todo: compare with respective types
