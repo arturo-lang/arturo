@@ -1227,28 +1227,25 @@ do [
     
     
     topic "divmod - :floating :complex"
-    ; side note: render is used to compare the returned value avoiding floating imprecisions
     
-    ; a: to :complex [2 5]
-    ; passed
+    a: to :complex [2 5]
+    ensure -> every? @[
+        -> 2.5 /% a
+        -> a /% 2
+        -> divmod 2.5 a
+        -> divmod a 2.5
+    ] => throws?
+    passed
     
-    ; a: to :complex [1 2]
-    ; passed
-    
-    ; ; :complex :floating
-    ; a: to :complex [2 5]
-    ; 'a /% 2.0
-    ; a: to :complex [2 5]
-    ; divmod 'a 2.0
-    ; passed
-    
-    ; ; :floating :complex
-    ; a: 1.0
-    ; 'a /% to :complex [1 2]
-    
-    ; a: 1.0
-    ; divmod 'a to :complex [1 2]
-    ; passed
+    a: to :complex [2 5]
+    b: 2.5
+    ensure -> every? @[
+        -> 'a /% b
+        -> 'b /% a
+        -> divmod 'a b
+        -> divmod 'b a
+    ] => throws?
+    passed
     
     
     topic "divmod - :floating :rational"
