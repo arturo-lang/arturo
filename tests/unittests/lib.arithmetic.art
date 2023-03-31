@@ -1130,28 +1130,26 @@ do [
     passed
     
     
-    topic "divmod - :int :complex"
+    topic "divmod - :integer :complex"
     
-    ; a: to :complex [2 5]
-    ; passed
+    a: to :complex [2 5]
+    ensure -> every? @[
+        -> 2 /% a
+        -> a /% 2
+        -> divmod 2 a
+        -> divmod a 2
+    ] => throws?
+    passed
     
-    ; a: to :complex [1 2]
-    ; passed
-    
-    ; :complex :integer
-    ; a: to :complex [2 5]
-    ; 'a /% 2
-    ; a: to :complex [2 5]
-    ; divmod 'a 2
-    ; passed
-    
-    ; :integer :complex
-    ; a: 1
-    ; 'a /% to :complex [1 2]
-    
-    ; a: 1
-    ; divmod 'a to :complex [1 2]
-    ; passed
+    a: to :complex [2 5]
+    b: 2
+    ensure -> every? @[
+        -> 'a /% b
+        -> 'b /% a
+        -> divmod 'a b
+        -> divmod 'b a
+    ] => throws?
+    passed
     
     
     topic "divmod - :int :rational"
