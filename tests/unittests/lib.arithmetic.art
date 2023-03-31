@@ -2394,6 +2394,11 @@ do [
     ensure -> 15 = a
     passed
     
+    a: 0.5
+    ensure -> throws? -> 0.5 * 30:usd
+    ensure -> throws? -> 'a * 30:usd
+    passed
+    
     
     ; ------ complex
      
