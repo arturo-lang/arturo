@@ -3091,9 +3091,9 @@ do [
     
     ; todo: compare with respective types
     ; todo: fix behavior for :float :quant
-    ; a: 5.5, 'a - 30:usd
-    ; ensure -> 24.5 = a
-    ; passed
+    a: 5.5
+    ensure -> throws? -> 'a - 30:usd
+    passed
     
     
     topic "sub - :floating :color"
