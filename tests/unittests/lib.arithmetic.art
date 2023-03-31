@@ -738,23 +738,23 @@ do [
     passed
     
     
-    topic "div - :int :rational"
+    topic "div - :integer :rational"
     
     a: to :rational [1 2]
     expected: to :rational [1 4]
-    ; ensure -> expected = a / 2
+    ensure -> expected = a / 2
     ensure -> 4 = 2 / a
-    ; ensure -> expected = div a 2
+    ensure -> expected = div a 2
     ensure -> 4 = div 2 a
     passed
     
     ; :rational :integer
-    ; a: to :rational [1 2]
-    ; 'a / 2
-    ; ensure -> a = to :rational [1 4]
-    ; div 'a 2
-    ; ensure -> a = to :rational [1 8]
-    ; passed
+    a: to :rational [1 2]
+    'a / 2
+    ensure -> a = to :rational [1 4]
+    div 'a 2
+    ensure -> a = to :rational [1 8]
+    passed
     
     ; :integer :rational
     a: 2
