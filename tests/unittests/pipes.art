@@ -499,6 +499,21 @@ section "Pipes + multiple attributes"
             .in:0..20 
             {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
       ]
+      check [
+            print "before"
+            match.capture.named.in:0..20 "x: 123, y: 456 - z: 789, w: 012" {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
+            print "after"
+      ][
+            print "before"
+            "x: 123, y: 456 - z: 789, w: 012" 
+            | 
+            match
+            .capture
+            .named
+            .in:0..20 
+            {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
+            print "after"
+      ]
 
 section "Pipes + multiple attributes (+ assignments)"
 
@@ -551,6 +566,21 @@ section "Pipes + multiple attributes (+ assignments)"
             .named
             .in:0..20 
             {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
+      ]
+      check [
+            print "before"
+            y: match.capture.named.in:0..20 "x: 123, y: 456 - z: 789, w: 012" {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
+            print "after"
+      ][
+            print "before"
+            y: "x: 123, y: 456 - z: 789, w: 012" 
+            | 
+            match
+            .capture
+            .named
+            .in:0..20 
+            {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
+            print "after"
       ]
 
 section "Using pipes + iterators"
