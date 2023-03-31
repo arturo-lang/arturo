@@ -49,13 +49,15 @@ print z
 z: sub add 2 3 1
 print z
 
-print "\n" ++ repeat "=" 60
-
 ;-----------------------------------------------------------------------------
 ; More advanced tests
 ;-----------------------------------------------------------------------------
 
+horizLine: repeat "=" 60
+print "\n" ++ horizLine
+
 testNo: 0
+totalNo: 0
 section: function [topic].inline[
       testNo: 0
       print ["\n>>" topic]
@@ -66,6 +68,7 @@ section: function [topic].inline[
 ; as the "normal" code?! :)
 check: function [block1 block2].inline[
       testNo: testNo + 1
+      totalNo: totalNo + 1
       b1: to.intrepid :bytecode block1
       b2: to.intrepid :bytecode block2
 
@@ -801,3 +804,9 @@ section "Real-world testing"
             count: range .step: 2 3 1e6 | enumerate => ormiston?
             print ~"\n|count| ormiston pairs less than a million"
       ]
+
+;;;;;;;;
+
+print "\n" ++ horizLine
+print ["Tests passed:" totalNo "/" totalNo]
+print horizLine
