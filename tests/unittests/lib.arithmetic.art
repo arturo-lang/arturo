@@ -1809,7 +1809,6 @@ do [
     
     
     topic "inc - :quantity"
-    ; todo: compare with respective types
     
     ensure -> 30 = inc 29:usd
     ensure -> 30 = inc 29:eur
