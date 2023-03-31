@@ -416,7 +416,6 @@ do [
     ; ** but not vice-versa.
 
     topic "add - :rational :quantity"
-    ; todo: verify this comparison
 
     ensure -> all? @[
         "61/2:usd" = as.code 30:usd + to :rational [1 2]
