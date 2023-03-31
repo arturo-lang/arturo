@@ -786,6 +786,10 @@ do [
     ensure -> 6 = a
     passed
     
+    a: 30:usd, 'a / 5
+    ensure -> 6:usd = a
+    passed
+    
     ; ------ floating
     
     topic "div - :floating :floating"
