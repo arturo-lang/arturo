@@ -61,6 +61,7 @@ jobs:
         uses: jiro4989/setup-nim-action@v1
         with:
           nim-version: 'stable'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Verify dependecies
         run: |

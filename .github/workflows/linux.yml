@@ -79,6 +79,7 @@ jobs:
         uses: jiro4989/setup-nim-action@v1
         with:
           nim-version: 'stable'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install dependencies (mini / x86)
         if: matrix.version == 'mini' && matrix.arch != 'arm' && matrix.arch != 'arm64'
