@@ -1388,35 +1388,39 @@ do [
     
     topic "divmod - :rational :quantity"
     ; todo: fix error raise
-
-    ; ensure -> "[60:usd to :rational [0 1]]" = ~"|as.code 30:usd /% to :rational [1 2]|"
-    ; ensure -> "[60:eur to :rational [0 1]]" = ~"|as.code 30:eur /% to :rational [1 2]|"
-    ; ensure -> "[60:usd to :rational [0 1]]" = ~"|as.code divmod 30:usd to :rational [1 2]|"
-    ; ensure -> "[60:eur to :rational [0 1]]" = ~"|as.code divmod 30:eur to :rational [1 2]|"
     
-    ; error:
-    ; >> Runtime | incompatible operation between quantities
-    ;      error | attempted: mod
-    ;            | with:  (currency) 1/2 (area)
+    a: to :rational [1 2]
     
-    ; ensure -> "[0 to :rational [1 2]]" = ~"|as.code (to :rational [1 2]) /% 30:usd"
-    ; ensure -> "[0 to :rational [1 2]]" = ~"|as.code (to :rational [1 2]) /% 30:eur"
-    ; ensure -> "[0 to :rational [1 2]]" = ~"|as.code divmod  (to :rational [1 2]) 30:usd"
-    ; ensure -> "[0 to :rational [1 2]]" = ~"|as.code divmod  (to :rational [1 2]) 30:eur"
-    ; passed
+    ensure -> [60 0.0] = 30:usd /% a
+    ensure -> [60 0.0] = 30:eur /% a
+    ensure -> [60 0.0] = divmod 30:usd a
+    ensure -> [60 0.0] = divmod 30:eur a
+    passed
     
-    ; error:
-    ; >> Runtime | incompatible operation between quantities
-    ;      error | attempted: mod
-    ;            | with: 1/2 (area)  (currency)
+    ensure -> [60:usd 0.0:usd] = 30:usd /% a
+    ensure -> [60:eur 0.0:eur] = 30:eur /% a
+    ensure -> [60:usd 0.0:usd] = divmod 30:usd a
+    ensure -> [60:eur 0.0:eur] = divmod 30:eur a
+    passed
     
-    ; a: 30:usd, 'a /% to :rational [1 2]
-    ; ensure -> "[60:eur to :rational [0 1]]" = ~"|as.code a|"
-    ; passed
+    a: to :rational [1 2]
     
-    ; a: to :rational [1 2], 'a /% 30:usd
-    ; ensure -> "[0 to :rational [1 2]]" = ~"|ac.code a|"
-    ; passed
+    ensure -> every? @[
+        -> a /% 30:usd
+        -> a /% 30:eur
+        -> divmod a 30:usd
+        -> divmod a 30:eur
+    ] => throws?
+    passed
+    
+    a: 30:usd, 'a /% to :rational [1 2]
+    ensure -> [60:usd 0.0:usd] = a
+    ensure -> [60 0] = a
+    passed
+    
+    a: to :rational [1 2]
+    ensure -> throws? -> 'a /% 30:usd
+    passed
     
         
     ; ------ quantity
