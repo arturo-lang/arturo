@@ -467,6 +467,8 @@
 >> mul - :integer :quantity
 [+] passed!
 [+] passed!
+[+] passed!
+[+] passed!
 
 >> mul - :floating :floating
 [+] passed!
@@ -485,6 +487,7 @@
 [+] passed!
 
 >> mul - :floating :quantity
+[+] passed!
 [+] passed!
 [+] passed!
 
@@ -510,8 +513,11 @@
 [+] passed!
 [+] passed!
 [+] passed!
+[+] passed!
+[+] passed!
 
 >> mul - :quantity :quantity
+[+] passed!
 [+] passed!
 [+] passed!
 
