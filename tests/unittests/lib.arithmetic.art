@@ -1909,21 +1909,24 @@ do [
     passed
     
     
-    ; topic "mod - :int :rational"
+    topic "mod - :integer :rational"
     
-    ; a: to :rational [1 2]
-    ; passed
+    a: to :rational [1 2]
+    ensure -> 0 = 2 % a
+    ensure -> 0.5 = a % 2
+    ensure -> 0 = mod 2 a
+    ensure -> 0.5 = mod a 2
+    passed
     
-    ; :rational :integer
-    ; a: to :rational [1 2]
-    ; passed
+    a: to :rational [1 2]
+    b: 2
     
-    ; :integer :rational
-    ; a: 2
-    ; 'a % to :rational [1 2]
-    ; a: 2
-    ; mod 'a to :rational [1 2]
-    ; passed
+    'a % 2
+    'b % to :rational [1 2]
+    
+    ensure -> 0.5 = a
+    ensure -> 0 = b
+    passed
     
     
     topic "mod - :integer :quantity"
