@@ -2465,12 +2465,19 @@ do [
     
     
     topic "mul - :rational :quantity"
-    ; todo: verify this comparison
 
-    ensure -> "15/1:usd" = ~"|as.code 30:usd * to :rational [1 2]|"
-    ensure -> "15/1:eur" = ~"|as.code 30:eur * to :rational [1 2]|"
-    ensure -> "15/1:usd" = ~"|as.code mul 30:usd to :rational [1 2]|"
-    ensure -> "15/1:eur" = ~"|as.code mul 30:eur to :rational [1 2]|"
+    ensure -> 15 = 30:usd * to :rational [1 2]
+    ensure -> 15 = 30:eur * to :rational [1 2]
+    ensure -> 15 = mul 30:usd to :rational [1 2]
+    ensure -> 15 = mul 30:eur to :rational [1 2]
+    passed
+    
+    ensure -> 15:usd = 30:usd * to :rational [1 2]
+    ensure -> 15:eur = 30:eur * to :rational [1 2]
+    ensure -> 15:usd = mul 30:usd to :rational [1 2]
+    ensure -> 15:eur = mul 30:eur to :rational [1 2]
+    passed
+    
     ensure -> every? @[
         -> (to :rational [1 2]) * 30:usd
         -> (to :rational [1 2]) * 30:eur
@@ -2480,7 +2487,7 @@ do [
     passed
     
     a: 30:usd, 'a * to :rational [1 2]
-    ensure -> "15/1:usd" = ~"|as.code a|"
+    ensure -> 15 = a
     passed
     
     a: to :rational [1 2]
