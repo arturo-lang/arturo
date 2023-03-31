@@ -252,7 +252,10 @@ do [
     ensure -> 35.5:eur = add 30:eur 5.5
     passed
     
-    ; todo: compare with respective types
+    a: 30:usd, 'a + 5.5
+    ensure -> 35.5:usd = a
+    passed
+    
     a: 30:usd, 'a + 5.5
     ensure -> 35.5 = a
     passed
