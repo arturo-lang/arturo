@@ -2835,8 +2835,9 @@ do [
     ;      error | attempted: pow
     ;            | with:  (currency) 8 (:integer)
 
-    ; try -> 2 ^ 8:usd
-    ; else -> passed
+    
+    ensure -> throws? -> 2 ^ 8:usd
+    passed
 
 ]
 
