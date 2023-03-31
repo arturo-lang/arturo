@@ -767,8 +767,7 @@ do [
     
     
     topic "div - :integer :quantity"
-    ; todo: compare with respective types
-    ; todo: fix behavior for :int :quant
+
     ensure -> 6 = 30:usd / 5
     ensure -> 6 = 30:eur / 5
     ensure -> 6 = div 30:usd 5
@@ -781,7 +780,6 @@ do [
     ensure -> 6:eur = div 30:eur 5
     passed
     
-    ; todo: compare with respective types
     a: 30:usd, 'a / 5
     ensure -> 6 = a
     passed
