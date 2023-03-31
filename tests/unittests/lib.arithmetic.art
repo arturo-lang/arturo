@@ -240,12 +240,20 @@ do [
     
     
     topic "add - :floating :quantity"
-    ; todo: compare with respective types
     ; todo: fix behavior for :float :quant
     ensure -> 35.5 = 30:usd + 5.5
     ensure -> 35.5 = 30:eur + 5.5
     ensure -> 35.5 = add 30:usd 5.5
     ensure -> 35.5 = add 30:eur 5.5
+    passed
+    
+    ensure -> 35.5:usd = 30:usd + 5.5
+    ensure -> 35.5:eur = 30:eur + 5.5
+    ensure -> 35.5:usd = add 30:usd 5.5
+    ensure -> 35.5:eur = add 30:eur 5.5
+    passed
+    
+    
     ; ensure -> 35.5 = 5.5 + 30:usd
     ; ensure -> 35.5 = 5.5 + 30:eur
     ; ensure -> 35.5 = add 5.5 30:usd
