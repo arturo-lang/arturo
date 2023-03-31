@@ -2065,34 +2065,38 @@ do [
     topic "mod - :rational :quantity"
     ; todo: fix error raise
 
-    ; ensure -> (to :rational [0 1]) = 30:usd % to :rational [1 2]
-    ; ensure -> (to :rational [0 1]) = 30:eur % to :rational [1 2]
-    ; ensure -> (to :rational [0 1]) = mod 30:usd to :rational [1 2]
-    ; ensure -> (to :rational [0 1]) = mod 30:eur to :rational [1 2]
+    a: to :rational [1 2]
     
-    ; error:
-    ; >> Runtime | incompatible operation between quantities
-    ;      error | attempted: mod
-    ;            | with:  (currency) 1/2 (area)
+    ensure -> 0.0 = 30:usd % a
+    ensure -> 0.0 = 30:eur % a
+    ensure -> 0.0 = mod 30:usd a
+    ensure -> 0.0 = mod 30:eur a
+    passed
     
-    ; ensure -> (to :rational [1 2]) = (to :rational [1 2]) % 30:usd
-    ; ensure -> (to :rational [1 2]) = (to :rational [1 2]) % 30:eur
-    ; ensure -> (to :rational [1 2]) = mod (to :rational [1 2]) 30:usd
-    ; ensure -> (to :rational [1 2]) = mod (to :rational [1 2]) 30:eur
-    ; passed
+    ensure -> 0.0:usd = 30:usd % a
+    ensure -> 0.0:eur = 30:eur % a
+    ensure -> 0.0:usd = mod 30:usd a
+    ensure -> 0.0:eur = mod 30:eur a
+    passed
     
-    ; error:
-    ; >> Runtime | incompatible operation between quantities
-    ;      error | attempted: mod
-    ;            | with: 1/2 (area)  (currency)
+    a: to :rational [1 2]
     
-    ; a: 30:usd, 'a % to :rational [1 2]
-    ; ensure -> (to :rational [0 1]) = a
-    ; passed
+    ensure -> every? @[
+        -> a % 30:usd
+        -> a % 30:eur
+        -> mod a 30:usd
+        -> mod a 30:eur
+    ] => throws?
+    passed
     
-    ; a: to :rational [1 2], 'a % 30:usd
-    ; ensure -> (to :rational [1 2]) = a
-    ; passed
+    a: 30:usd, 'a % to :rational [1 2]
+    ensure -> 0.0:usd = a
+    ensure -> 0 = a
+    passed
+    
+    a: to :rational [1 2]
+    ensure -> throws? -> 'a % 30:usd
+    passed
     
         
     ; ------ quantity
