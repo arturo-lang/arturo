@@ -880,6 +880,12 @@ do [
     ensure -> 60 = div 30:eur 0.5
     passed
     
+    ensure -> 60:usd = 30:usd / 0.5
+    ensure -> 60:eur = 30:eur / 0.5
+    ensure -> 60:usd = div 30:usd 0.5
+    ensure -> 60:eur = div 30:eur 0.5
+    passed
+    
     ; todo: compare with respective types
     a: 30:usd, 'a / 0.5
     ensure -> 60 = a
