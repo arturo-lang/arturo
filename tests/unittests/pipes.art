@@ -50,7 +50,11 @@ z: sub add 2 3 1
 print z
 
 print repeat "=" 60
+
 ;-----------------------------------------------------------------------------
+; More advanced tests
+;-----------------------------------------------------------------------------
+
 testNo: 0
 section: function [topic].inline[
       testNo: 0
@@ -488,6 +492,59 @@ section "Pipes + multiple attributes"
             match.capture.named.in:0..20 "x: 123, y: 456 - z: 789, w: 012" {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
       ][
             "x: 123, y: 456 - z: 789, w: 012" 
+            | 
+            match
+            .capture
+            .named
+            .in:0..20 
+            {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
+      ]
+
+section "Pipes + multiple attributes (+ assignments)"
+
+      check [
+            z: sort.descending.by:'name @[#[name:"John" surname: "Doe"] #[name:"Jane" surname: "Doe"]]
+      ][
+            z: @[#[name:"John" surname: "Doe"] #[name:"Jane" surname: "Doe"]] | sort.descending.by:'name
+      ]
+      check [
+            w: sort.descending.by:'name @[#[name:"John" surname: "Doe"] #[name:"Jane" surname: "Doe"]]
+      ][
+            w: @[
+                  #[name:"John" surname: "Doe"] 
+                  #[name:"Jane" surname: "Doe"]
+            ] | 
+            sort.descending.by:'name
+      ]
+      check [
+            y: sort.descending.by:'name @[#[name:"John" surname: "Doe"] #[name:"Jane" surname: "Doe"]]
+      ][
+            y: @[
+                  #[name:"John" surname: "Doe"] 
+                  #[name:"Jane" surname: "Doe"]
+            ] 
+            | 
+            sort
+            .descending
+            .by:'name
+      ]
+      check [
+            z: match.capture.named.in:0..20 "x: 123, y: 456 - z: 789, w: 012" {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
+      ][
+            z: "x: 123, y: 456 - z: 789, w: 012" | match.capture.named.in:0..20 {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
+      ]
+      check [
+            w: match.capture.named.in:0..20 "x: 123, y: 456 - z: 789, w: 012" {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
+      ][
+            w: "x: 123, y: 456 - z: 789, w: 012" 
+            | 
+            match.capture.named.in:0..20 
+            {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
+      ]
+      check [
+            y: match.capture.named.in:0..20 "x: 123, y: 456 - z: 789, w: 012" {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
+      ][
+            y: "x: 123, y: 456 - z: 789, w: 012" 
             | 
             match
             .capture
