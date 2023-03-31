@@ -1705,10 +1705,17 @@ do [
     topic "fdiv - :rational :quantity"
     ; todo: verify this comparison
 
-    ensure -> "60/1:usd" = ~"|as.code 30:usd // to :rational [1 2]|"
-    ensure -> "60/1:eur" = ~"|as.code 30:eur // to :rational [1 2]|"
-    ensure -> "60/1:usd" = ~"|as.code fdiv 30:usd to :rational [1 2]|"
-    ensure -> "60/1:eur" = ~"|as.code fdiv 30:eur to :rational [1 2]|"
+    ensure -> 60:usd = 30:usd // to :rational [1 2]
+    ensure -> 60:eur = 30:eur // to :rational [1 2]
+    ensure -> 60:usd = fdiv 30:usd to :rational [1 2]
+    ensure -> 60:eur = fdiv 30:eur to :rational [1 2]
+    passed
+    
+    ensure -> 60 = 30:usd // to :rational [1 2]
+    ensure -> 60 = 30:eur // to :rational [1 2]
+    ensure -> 60 = fdiv 30:usd to :rational [1 2]
+    ensure -> 60 = fdiv 30:eur to :rational [1 2]
+    passed
 
     ensure -> every? @[
         -> (to :rational [1 2]) // 30:usd
@@ -1719,7 +1726,7 @@ do [
     passed
     
     a: 30:usd, 'a // to :rational [1 2]
-    ensure -> "60/1:usd" = ~"|as.code a|"
+    ensure -> 60:usd = a
     passed
     
     a: to :rational [1 2]
