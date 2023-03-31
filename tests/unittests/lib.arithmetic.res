@@ -71,7 +71,6 @@
 >> add - :complex :color
 [+] passed!
 [+] passed!
-[+] passed!
 
 >> add - :rational :rational
 [+] passed!
@@ -83,7 +82,6 @@
 [+] passed!
 
 >> add - :rational :color
-[+] passed!
 [+] passed!
 [+] passed!
 
@@ -98,6 +96,7 @@
 [+] passed!
 
 >> add - :quantity :quantity
+[+] passed!
 [+] passed!
 [+] passed!
 [+] passed!
