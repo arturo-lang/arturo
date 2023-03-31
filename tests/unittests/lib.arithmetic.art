@@ -1587,8 +1587,7 @@ do [
     
     
     topic "fdiv - :integer :quantity"
-    ; todo: compare with respective types
-    ; todo: fix behavior for :int :quant
+    
     ensure -> 6 = 30:usd // 5
     ensure -> 6 = 30:eur // 5
     ensure -> 6 = fdiv 30:usd 5
@@ -1601,13 +1600,10 @@ do [
     ensure -> 6:eur = fdiv 30:eur 5
     passed
     
-    ; todo: compare with respective types
     a: 30:usd, 'a // 5
     ensure -> 6 = a
     passed
     
-    ; todo: compare with respective types
-    ; todo: fix behavior for :int :quant
     a: 5
     ensure -> throws? -> 5 // 30:usd
     ensure -> throws? -> 'a // 30:usd
