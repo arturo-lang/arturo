@@ -1676,9 +1676,10 @@ do [
     
     ; todo: compare with respective types
     ; todo: fix behavior for :float :quant
-    ; a: 0.5, 'a // 30:usd
-    ; ensure -> 60 = a
-    ; passed
+    a: 0.5
+    ensure -> throws? -> 0.5 // 30:usd
+    ensure -> throws? -> 'a // 30:usd
+    passed
     
     
     ; ------ rational
