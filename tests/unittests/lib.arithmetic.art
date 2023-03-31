@@ -1737,26 +1737,34 @@ do [
     ; ------ quantity
      
     topic "fdiv - :quantity :quantity"
-    ; todo: compare with respective types
-    ; todo: how can I test it for different currencies?
     
     ensure -> 4 = (20:usd) // (5:usd)
     ensure -> 4 = (20:eur) // (5:eur)
     ensure -> 0.05 = 1:m // 20:cm
     ensure -> 0.05 = 1:m // 20:cm
+    ensure -> 4:usd = (20:usd) // (5:usd)
+    ensure -> 4:eur = (20:eur) // (5:eur)
+    ensure -> 0.05:m = 1:m // 20:cm
+    ensure -> 0.05:m = 1:m // 20:cm
     passed
     
     ensure -> 4 = fdiv (20:usd) (5:usd)
     ensure -> 4 = fdiv (20:eur) (5:eur)
     ensure -> 0.05 = fdiv 1:m 20:cm
     ensure -> 0.05 = fdiv 1:m 20:cm
+    ensure -> 4:usd = fdiv (20:usd) (5:usd)
+    ensure -> 4:eur = fdiv (20:eur) (5:eur)
+    ensure -> 0.05:m = fdiv 1:m 20:cm
+    ensure -> 0.05:m = fdiv 1:m 20:cm
     passed
     
     a: 20:usd, 'a // 5:usd
+    ensure -> 4:usd = a
     ensure -> 4 = a
     passed
     
     a: 1:m, 'a // 20:cm
+    ensure -> 0.05:m = a
     ensure -> 0.05 = a
     passed
     
