@@ -1173,9 +1173,6 @@ do [
     
     
     topic "divmod - :integer :quantity"
-    ; todo: compare with respective types
-    ; todo: fix behavior for :quant :int
-    ; todo: fix behavior for :int :quant
     
     ensure -> [6 0] = 30:usd /% 5
     ensure -> [6 0] = 30:eur /% 5
@@ -1197,14 +1194,11 @@ do [
     ] => throws?
     passed
     
-    ; todo: compare with respective types
     a: 30:usd, 'a /% 5
     ensure -> [6 0] = a
     ensure -> [6:usd 0:usd] = a
     passed
     
-    ; todo: compare with respective types
-    ; todo: fix behavior for :int :quant
     a: 5, ensure -> throws? -> 'a /% 30:usd
     passed
     
