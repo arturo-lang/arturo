@@ -1152,23 +1152,24 @@ do [
     passed
     
     
-    topic "divmod - :int :rational"
+    topic "divmod - :integer :rational"
     
     a: to :rational [1 2]
-    ; passed
+    ensure -> [4 0] = 2 /% a
+    ensure -> [0.25 0.5] = a /% 2
+    ensure -> [4 0] = divmod 2 a
+    ensure -> [0.25 0.5] = divmod a 2
+    passed
     
-    ; ; :rational :integer
-    ; a: to :rational [1 2]
-    ; 'a /% 2
-    ; divmod 'a 2
-    ; passed
+    a: to :rational [1 2]
+    b: 2
     
-    ; ; :integer :rational
-    ; a: 2
-    ; 'a /% to :rational [1 2]
-    ; a: 2
-    ; divmod 'a to :rational [1 2]
-    ; passed
+    'a /% 2
+    'b /% to :rational [1 2]
+    
+    ensure -> [0.25 0.5] = a
+    ensure -> [4 0] = b
+    passed
     
     
     topic "divmod - :integer :quantity"
