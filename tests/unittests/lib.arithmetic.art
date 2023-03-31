@@ -1021,7 +1021,8 @@ do [
     passed
     
     a: 30:usd, 'a / to :rational [1 2]
-    ensure -> "60:usd" = ~"|as.code a|"
+    ensure -> 60:usd = a
+    ensure -> 60 = a
     passed
     
     a: to :rational [1 2]
