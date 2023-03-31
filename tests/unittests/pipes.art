@@ -309,7 +309,7 @@ section "Pipes + Attributes"
             print "final"
       ]
 
-section "Pipes + Attributes (+ Assignment)"
+section "Pipes + Attributes (+ assignments)"
 
       check [x: split.words "hello world"][x: "hello world" | split.words]
       check [
@@ -398,7 +398,7 @@ section "Pipes + AttributeLabels"
             print "final"
       ]
 
-section "Pipes + AttributeLabels (+ Assignment)"
+section "Pipes + AttributeLabels (+ assignments)"
 
       check [x: split.every:3 "hello world"][x: "hello world" | split.every:3]
       check [
