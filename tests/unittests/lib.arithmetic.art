@@ -135,6 +135,10 @@ do [
     
     ; todo: compare with respective types
     a: 30:usd, 'a + 5
+    ensure -> 35:usd = a
+    passed
+    
+    a: 30:usd, 'a + 5
     ensure -> 35 = a
     passed
     
