@@ -401,6 +401,20 @@ section "Pipes + AttributeLabels"
             z: split.words "one two three"
             print "final"
       ]
+      check [
+            print split.every:3 "abcde fghijklmnop qrstuvwxyz"
+      ][
+            "abcde fghijklmnop qrstuvwxyz" | split.every:3 | print
+      ]
+      check [
+            print "before"
+            print split.every:3 "abcde fghijklmnop qrstuvwxyz"
+            print "after"
+      ][
+            print "before"
+            "abcde fghijklmnop qrstuvwxyz" | split.every:3 | print
+            print "after"
+      ]
 
 section "Pipes + AttributeLabels (+ assignments)"
 
@@ -445,6 +459,20 @@ section "Pipes + AttributeLabels (+ assignments)"
             print "after"
             z: split.words "one two three"
             print "final"
+      ]
+      check [
+            components: split.every:3 "abcde fghijklmnop qrstuvwxyz"
+      ][
+            components: "abcde fghijklmnop qrstuvwxyz" | split.every:3
+      ]
+      check [
+            print "before"
+            components: split.every:3 "abcde fghijklmnop qrstuvwxyz"
+            print "after"
+      ][
+            print "before"
+            components: "abcde fghijklmnop qrstuvwxyz" | split.every:3
+            print "after"
       ]
 
 section "Pipes + multiple attributes"
