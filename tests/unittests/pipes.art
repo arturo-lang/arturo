@@ -640,6 +640,59 @@ section "Using pipes + iterators"
             print "after"
       ]
 
+section "Pipes + Random newlines everywhere"
+
+      check [
+            print map select.first:10 1..∞ => prime? 'x -> 2 * x
+      ][
+            1..∞ | select.first:10 => prime?
+                 | map 'x -> 2 * x
+                 | print
+      ]
+      check [
+            print map select.first:10 1..∞ => prime? 'x -> 2 * x
+      ][
+            1..∞ 
+            | select.first:10 => prime?
+            
+            | map 'x 
+            
+            -> 2 * x
+                 
+                 
+            | 
+            print
+      ]
+            check [
+            print map select.first:10 1..∞ => prime? 'x -> 2 * x
+      ][
+            1..
+            ∞ 
+            
+            
+            | 
+            
+            select.first:10 
+            
+            => prime?
+            
+            | 
+            
+            map 
+            
+            'x 
+            
+            -> 
+            
+            2 * x
+                 
+                 
+            | 
+
+
+            print
+      ]
+
 section "Real-world testing"
 
       ; from: examples/rosetta/smarandache prime-digital sequence.art
