@@ -2101,26 +2101,19 @@ do [
     topic "mod - :quantity :quantity"
     ; todo: compare with respective types
     
-    ensure -> 0 = (20:usd) % (5:usd)
-    ensure -> 0 = (20:usd) % (5:usd)
-    ; BUG!!!!
-    ; ensure -> "0.2m" = ~"|1:m % 20:cm|"
-    ; ensure -> "0.2m" = ~"|1:m % 20:cm|"
-    passed
-    
-    ensure -> 0 = mod (20:usd) (5:usd)
-    ensure -> 0 = mod (20:usd) (5:usd)
-    ; ensure -> "0.2m" = ~"|mod 1:m 20:cm|"
-    ; ensure -> "0.2m" = ~"|mod 1:m 20:cm|"
+    ensure -> 0:usd = 20:usd % 5:usd
+    ensure -> 0:usd = mod 20:usd 5:usd
+    ensure -> 0 = 20:usd % 5:usd
+    ensure -> 0 = mod 20:usd 5:usd
     passed
     
     a: 20:usd, 'a % 5:usd
     ensure -> 0 = a
-    passed
+    ensure -> 0:usd = a
     
-    a: 1:m, 'a % 20:cm
-    ;ensure -> "0.2m" = ~"|a|"
-    passed
+    a: 20:usd, mod 'a 5:usd
+    ensure -> 0 = a
+    ensure -> 0:usd = a
     
 ]
 
