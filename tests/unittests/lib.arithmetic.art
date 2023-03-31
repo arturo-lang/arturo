@@ -2963,6 +2963,7 @@ do [
     ensure -> 25 = a
     passed
     
+    a: 60
     ensure -> throws? -> 'a - 30:usd
     passed
     
