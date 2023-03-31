@@ -1297,17 +1297,24 @@ do [
      
     topic "divmod - :complex :complex"
     
-    ; a: to :complex [3 2]
-    ; b: to :complex @[3 neg 2]
-    ; passed
+    a: to :complex [3 2]
+    b: to :complex @[3 neg 2]
     
-    ; a: to :complex [3 2]
-    ; b: to :complex @[3 neg 2]
-    ; 'a /% b
-    ; a: to :complex [3 2]
-    ; b: to :complex @[3 neg 2]
-    ; divmod 'a b
-    ; passed
+    ensure -> every? @[
+        -> a /% b
+        -> b /% a
+        -> divmod a b
+        -> divmod b a
+    ] => throws?
+    passed
+    
+    ensure -> every? @[
+        -> 'a /% b
+        -> 'b /% a
+        -> divmod 'a b
+        -> divmod 'b a
+    ] => throws?
+    passed
     
     
     topic "divmod - :complex :rational"
