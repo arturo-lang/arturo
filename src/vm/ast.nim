@@ -528,7 +528,7 @@ proc processBlock*(
             attrNode.addChild(newConstant(VTRUE))
 
         if not PipeParent.isNil:
-            let injectionIndex = PipeParent.addChildToFront(attrNode)
+            let injectionIndex {.used.} = PipeParent.addChildToFront(attrNode)
             target = PipeParent
             when isLabel:
                 target = target.children[injectionIndex]
