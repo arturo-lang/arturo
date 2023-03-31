@@ -1,3 +1,7 @@
+; Some comments were added at the start of the file 
+; because were considered very important to this one itself,
+; others were placed in their specific sections since 
+; are related just to their specific scope
 
 
 ; Somtimes we use rendered strings or `greather?`/`less?` 
