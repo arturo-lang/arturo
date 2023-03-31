@@ -2043,16 +2043,24 @@ do [
      
     topic "mod - :rational :rational"
     
-    ; a: to :rational [3 5]
-    ; b: to :rational [1 2]
-    ; passed
+    a: to :rational [1 2]
+    b: to :rational [5 2]
     
+    ensure -> 0 = b % a
+    ensure -> 0.5 = a % b
+    ensure -> 0 = mod b a
+    ensure -> 0.5 = mod a b
+    passed
     
-    ; a: to :rational [3 5]
-    ; b: to :rational [1 2]
+    a: to :rational [1 2]
+    b: to :rational [5 2]
     
-    ; 'a % b
-    ; passed
+    'a % to :rational [5 2]
+    'b % to :rational [1 2]
+    
+    ensure -> 0.5 = a
+    ensure -> 0 = b
+    passed
     
     
     topic "mod - :rational :quantity"
