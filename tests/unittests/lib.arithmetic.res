@@ -1,3 +1,4 @@
+
 >> add
 
 >> add - :integer :integer
@@ -21,6 +22,8 @@
 [+] passed!
 
 >> add - :integer :quantity
+[+] passed!
+[+] passed!
 [+] passed!
 [+] passed!
 
