@@ -1667,10 +1667,6 @@ do [
     ensure -> 60 = 30:eur // 0.5
     ensure -> 60 = fdiv 30:usd 0.5
     ensure -> 60 = fdiv 30:eur 0.5
-    ; ensure -> 60 = 0.5 // 30:usd
-    ; ensure -> 60 = 0.5 // 30:eur
-    ; ensure -> 60 = fdiv 0.5 30:usd
-    ; ensure -> 60 = fdiv 0.5 30:eur
     passed
     
     ; todo: compare with respective types
