@@ -49,6 +49,8 @@
 >> add - :floating :quantity
 [+] passed!
 [+] passed!
+[+] passed!
+[+] passed!
 
 >> add - :complex :complex
 [+] passed!
