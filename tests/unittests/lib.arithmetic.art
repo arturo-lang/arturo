@@ -3233,7 +3233,6 @@ do [
     
     
     topic "sub - :rational :quantity"
-    ; todo: verify this comparison
 
     ensure -> (59/2):usd = 30:usd - to :rational [1 2]
     ensure -> (59/2):eur = 30:eur - to :rational [1 2]
