@@ -119,6 +119,13 @@ do [
     ensure -> 35 = add 30:eur 5
     passed
     
+    ; :quantity = :quantity + :integer
+    ensure -> 35:usd = 30:usd + 5
+    ensure -> 35:eur = 30:eur + 5
+    ensure -> 35:usd = add 30:usd 5
+    ensure -> 35:eur = add 30:eur 5
+    passed
+    
     ; :integer = :integer + :quantity
     ; ensure -> 35 = 5 + 30:usd
     ; ensure -> 35 = 5 + 30:eur
