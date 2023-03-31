@@ -786,13 +786,6 @@ do [
     ensure -> 6 = a
     passed
     
-    ; todo: compare with respective types
-    ; todo: fix behavior for :int :quant
-    ; a: 5, 'a / 30:usd
-    ; ensure -> 6 = a
-    ; passed
-    
-    
     ; ------ floating
     
     topic "div - :floating :floating"
