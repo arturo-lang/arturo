@@ -2568,10 +2568,6 @@ do [
     
     topic "neg - :floating"
     
-    ; Never do floating comparison, it can give wrong results, even rounding
-    ; Read: What Every Computer Scientist Should Know About Floating-Point Arithmetic - Oracle
-    ;       https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html
-    
     ensure -> ((5.5 * neg 1) + 0.1) > neg 5.5
     ensure -> ((5.5 * neg 1) - 0.1) < neg 5.5
     ensure -> ((1 * neg 1) + 0.1) > neg 1.0 
