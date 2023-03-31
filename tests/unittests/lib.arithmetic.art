@@ -3070,8 +3070,7 @@ do [
     
     
     topic "sub - :floating :quantity"
-    ; todo: compare with respective types
-    ; todo: fix behavior for :float :quant
+    
     ensure -> 24.5 = 30:usd - 5.5
     ensure -> 24.5 = 30:eur - 5.5
     ensure -> 24.5 = sub 30:usd 5.5
@@ -3084,13 +3083,10 @@ do [
     ensure -> 24.5:eur = sub 30:eur 5.5
     passed
     
-    ; todo: compare with respective types
     a: 30:usd, 'a - 5.5
     ensure -> 24.5 = a
     passed
     
-    ; todo: compare with respective types
-    ; todo: fix behavior for :float :quant
     a: 5.5
     ensure -> throws? -> 'a - 30:usd
     passed
