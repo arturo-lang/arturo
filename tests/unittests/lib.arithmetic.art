@@ -611,6 +611,10 @@ do [
     ensure -> 30 = a
     passed
     
+    a: 31:usd, dec 'a
+    ensure -> 30:usd = a
+    passed
+    
 
 ]
 
