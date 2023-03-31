@@ -111,10 +111,15 @@ do [
     topic "add - :integer :quantity"
     ; todo: compare with respective types
     ; todo: fix behavior for :int :quant
+    
+    ; :integer = :quantity + :integer
     ensure -> 35 = 30:usd + 5
     ensure -> 35 = 30:eur + 5
     ensure -> 35 = add 30:usd 5
     ensure -> 35 = add 30:eur 5
+    passed
+    
+    ; :integer = :integer + :quantity
     ; ensure -> 35 = 5 + 30:usd
     ; ensure -> 35 = 5 + 30:eur
     ; ensure -> 35 = add 5 30:usd
