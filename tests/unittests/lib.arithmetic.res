@@ -26,6 +26,8 @@
 [+] passed!
 [+] passed!
 [+] passed!
+
+>> add - :integer :color
 [+] passed!
 [+] passed!
 
@@ -51,6 +53,8 @@
 [+] passed!
 [+] passed!
 [+] passed!
+
+>> add - :floating :color
 [+] passed!
 [+] passed!
 
