@@ -136,9 +136,13 @@ func addChild*(node: Node, child: Node) {.enforceNoRaises.} =
     if node.kind in CallNode and child.kind notin {NewlineNode, AttributeNode}:
         node.params += 1
 
-func addChildToFront*(node: Node, child: Node) {.enforceNoRaises.} =
+func addChildToFront*(node: Node, child: Node): int {.enforceNoRaises.} =
+    result = 0
+    while node.children[result].kind==AttributeNode:
+        result += 1
+
     child.parent = node
-    node.children.insert(child, 0)
+    node.children.insert(child, result)
     if node.kind in CallNode and child.kind notin {NewlineNode, AttributeNode}:
         node.params += 1
 
@@ -524,11 +528,11 @@ proc processBlock*(
             attrNode.addChild(newConstant(VTRUE))
 
         if not PipeParent.isNil:
-            PipeParent.addChildToFront(attrNode)
+            let injectionIndex = PipeParent.addChildToFront(attrNode)
             target = PipeParent
             when isLabel:
-                target = target.children[0]
-            target.rewindCallBranches()
+                target = target.children[injectionIndex]
+            target.rewindCallBranches(clearPipes=false)
         else:
             target.addChild(attrNode)
 
