@@ -135,7 +135,7 @@ do [
     passed
     
     
-    ; topic "add - :integer :color"
+    topic "add - :integer :color"
     
     ensure -> every? @[
         -> 1 + #red
