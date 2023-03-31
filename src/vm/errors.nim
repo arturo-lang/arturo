@@ -249,6 +249,12 @@ proc RuntimeError_IncompatibleQuantityOperation*(operation: string, argA, argB, 
             "incompatible operation between quantities" & ";" &
             "attempted: " & operation & ";" &
             "with: " & truncate(argA & " (" & kindA & ") " & argB & " (" & kindB & ")", 60)
+            
+proc RuntimeError_IncompatibleValueType*(functionName: string, tp: string, expected: string) =
+    panic RuntimeError,
+          "cannot perform _" & (functionName) & "_;" &
+          "incompatible value type for " & tp & ";" &
+          "expected: " & expected
 
 proc RuntimeError_InvalidOperation*(operation: string, argA, argB: string) =
     panic RuntimeError,
