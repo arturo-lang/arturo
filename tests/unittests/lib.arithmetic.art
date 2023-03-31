@@ -3337,6 +3337,7 @@ do [
     passed
     
     a: 20:usd, 'a - neg 30:usd
+    ensure -> 50:usd = a 
     ensure -> 50 = a 
     passed
     
