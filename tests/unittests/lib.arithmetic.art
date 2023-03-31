@@ -1983,21 +1983,22 @@ do [
     
     topic "mod - :floating :rational"
     
-    ; a: to :rational [1 2]
-    ; passed
+    a: to :rational [1 2]
+    ensure -> 0 = 2.5 % a
+    ensure -> 0.5 = a % 2.5
+    ensure -> 0 = mod 2.5 a
+    ensure -> 0.5 = mod a 2.5
+    passed
     
-    ; :rational :integer
-    ; a: to :rational [1 2]
-    ; 'a % 2.0
-    ; mod 'a 2.0
-    ; passed
+    a: to :rational [1 2]
+    b: 2.5
     
-    ; :integer :rational
-    ; a: 2.0
-    ; 'a % to :rational [1 2]
-    ; a: 2.0
-    ; mod 'a to :rational [1 2]
-    ; passed
+    'a % 2.5
+    'b % to :rational [1 2]
+    
+    ensure -> 0.5 = a
+    ensure -> 0 = b
+    passed
     
     
     topic "mod - :floating :quantity"
