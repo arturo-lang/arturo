@@ -1000,10 +1000,17 @@ do [
     
     topic "div - :rational :quantity"
 
-    ensure -> "60:usd" = ~"|as.code 30:usd / to :rational [1 2]|"
-    ensure -> "60:eur" = ~"|as.code 30:eur / to :rational [1 2]|"
-    ensure -> "60:usd" = ~"|as.code div 30:usd to :rational [1 2]|"
-    ensure -> "60:eur" = ~"|as.code div 30:eur to :rational [1 2]|"
+    ensure -> 60:usd = 30:usd / to :rational [1 2]
+    ensure -> 60:eur = 30:eur / to :rational [1 2]
+    ensure -> 60:usd = div 30:usd to :rational [1 2]
+    ensure -> 60:eur = div 30:eur to :rational [1 2]
+    passed
+    
+    ensure -> 60 = 30:usd / to :rational [1 2]
+    ensure -> 60 = 30:eur / to :rational [1 2]
+    ensure -> 60 = div 30:usd to :rational [1 2]
+    ensure -> 60 = div 30:eur to :rational [1 2]
+    passed
 
     ensure -> every? @[
         -> (to :rational [1 2]) / 30:usd
