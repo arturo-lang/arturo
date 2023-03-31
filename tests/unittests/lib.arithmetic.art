@@ -508,9 +508,9 @@ do [
     ; ------ quantity
      
     topic "add - :quantity :quantity"
-    ; todo: compare with respective types
-    ; todo: how can I test it for different currencies?
     
+    ensure -> 50:usd = 20:usd + 30:usd
+    ensure -> 50:usd = 30:usd + 20:usd
     ensure -> 50 = 20:usd + 30:usd
     ensure -> 50 = 30:usd + 20:usd
     ensure -> 1.2:m = 1:m + 20:cm
