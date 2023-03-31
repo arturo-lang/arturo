@@ -471,6 +471,30 @@ section "Pipes + multiple attributes"
             .descending
             .by:'name
       ]
+      check [
+            match.capture.named.in:0..20 "x: 123, y: 456 - z: 789, w: 012" {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
+      ][
+            "x: 123, y: 456 - z: 789, w: 012" | match.capture.named.in:0..20 {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
+      ]
+      check [
+            match.capture.named.in:0..20 "x: 123, y: 456 - z: 789, w: 012" {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
+      ][
+            "x: 123, y: 456 - z: 789, w: 012" 
+            | 
+            match.capture.named.in:0..20 
+            {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
+      ]
+      check [
+            match.capture.named.in:0..20 "x: 123, y: 456 - z: 789, w: 012" {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
+      ][
+            "x: 123, y: 456 - z: 789, w: 012" 
+            | 
+            match
+            .capture
+            .named
+            .in:0..20 
+            {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
+      ]
 
 section "Using pipes + iterators"
 
