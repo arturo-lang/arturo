@@ -263,31 +263,25 @@ do [
     
     ; topic "add - :floating :color"
     
-    ; ensure -> null = 1.5 + #red
-    ; ensure -> null = #red + 1.5
-    ; ensure -> null = add 1.5 #red
-    ; ensure -> null = add #red 1.5
-    ; passed  
+    ensure -> every? @[
+        -> 1.5 + #red
+        -> #red + 1.5
+        -> add 1.5 #red
+        -> add #red 1.5
+    ] => throws?
+    passed
     
-    ; ; :floating :color
-    ; a: 1.5
-    ; 'a + #red
-    ; ensure -> a = null
+    ; with :literal s
+    a: 1.5
+    b: #red
     
-    ; a: 1.5
-    ; add 'a #red
-    ; ensure -> a = null
-    ; passed
-    
-    ; ; :color :floating
-    ; a: #red
-    ; 'a + 1.5
-    ; ensure -> a = null
-    
-    ; a: #red
-    ; add 'a 1.5
-    ; ensure -> a = null
-    ; passed
+    ensure -> every? @[
+        -> add 'a #red
+        -> 'a + #red
+        -> add 'b 1.5
+        -> add 'b + 1.5 
+    ] => throws?
+    passed
     
     
     ; ------ complex
