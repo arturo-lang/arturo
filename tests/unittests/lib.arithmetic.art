@@ -667,17 +667,13 @@ do [
     ensure -> (div 0 1.0) = div 0.0 1
     passed
     
-    try? -> 1 / 0.0
-    else -> passed
-
-    try? -> 1.0 / 0
-    else -> passed
-    
-    try? -> div 1.0 0
-    else -> passed
-
-    try? -> div 1.0 0
-    else -> passed
+    ensure -> every? @[
+        -> 1 / 0.0
+        -> 1.0 / 0
+        -> div 1.0 0
+        -> div 1.0 0
+    ] => throws?
+    passed
     
     ensure -> 2.0 = 1 / 0.5
     ensure -> 0.5 = 1.0 / 2
