@@ -618,12 +618,13 @@
 [+] passed!
 [+] passed!
 
->> sub - :int :quantity
+>> sub - :integer :quantity
+[+] passed!
+[+] passed!
 [+] passed!
 [+] passed!
 
 >> sub - :int :color
-[+] passed!
 [+] passed!
 [+] passed!
 
@@ -646,9 +647,10 @@
 >> sub - :floating :quantity
 [+] passed!
 [+] passed!
+[+] passed!
+[+] passed!
 
 >> sub - :floating :color
-[+] passed!
 [+] passed!
 [+] passed!
 
@@ -676,6 +678,7 @@
 [+] passed!
 
 >> sub - :rational :quantity
+[+] passed!
 [+] passed!
 [+] passed!
 [+] passed!
