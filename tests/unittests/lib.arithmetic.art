@@ -1432,8 +1432,6 @@ do [
     ; ------ quantity
      
     topic "divmod - :quantity :quantity"
-    ; ; todo: compare with respective types
-    ; ; todo: how can I test it for different currencies?
     
     ensure -> [4:usd 0:usd] = 20:usd /% 5:usd
     ensure -> [4:usd 0:usd] = divmod 20:usd 5:usd
