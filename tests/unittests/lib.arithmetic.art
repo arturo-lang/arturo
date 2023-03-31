@@ -3159,7 +3159,6 @@ do [
     
     
     topic "sub - :complex :quantity"
-    ; todo: check if :quantity :complex should be possible
 
     ensure -> every? @[
         -> 30:usd - to :complex [1 2]
