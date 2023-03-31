@@ -631,11 +631,11 @@ do [
     ensure -> 0 = div 0 1
     passed
     
-    try? -> 1 / 0
-    else -> passed
-    
-    try? -> div 1 0
-    else -> passed
+    ensure -> every? @[
+        -> div 1 0
+        -> 1 / 0
+    ] => throws?
+    passed
     
     ensure -> 0 = 1 / 2
     ensure -> 2 = 2 / 1
