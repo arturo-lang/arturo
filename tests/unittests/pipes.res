@@ -12,6 +12,7 @@ ONE TWO
 4
 4
 4
+
 ============================================================
 
 >> Simple call with one param 
@@ -63,7 +64,7 @@ ONE TWO
  5 : [+] passed! 
  6 : [+] passed! 
 
->> Pipes + Attributes (+ Assignment) 
+>> Pipes + Attributes (+ assignments) 
  1 : [+] passed! 
  2 : [+] passed! 
  3 : [+] passed! 
@@ -78,14 +79,36 @@ ONE TWO
  4 : [+] passed! 
  5 : [+] passed! 
  6 : [+] passed! 
+ 7 : [+] passed! 
+ 8 : [+] passed! 
 
->> Pipes + AttributeLabels (+ Assignment) 
+>> Pipes + AttributeLabels (+ assignments) 
  1 : [+] passed! 
  2 : [+] passed! 
  3 : [+] passed! 
  4 : [+] passed! 
  5 : [+] passed! 
  6 : [+] passed! 
+ 7 : [+] passed! 
+ 8 : [+] passed! 
+
+>> Pipes + multiple attributes 
+ 1 : [+] passed! 
+ 2 : [+] passed! 
+ 3 : [+] passed! 
+ 4 : [+] passed! 
+ 5 : [+] passed! 
+ 6 : [+] passed! 
+ 7 : [+] passed! 
+
+>> Pipes + multiple attributes (+ assignments) 
+ 1 : [+] passed! 
+ 2 : [+] passed! 
+ 3 : [+] passed! 
+ 4 : [+] passed! 
+ 5 : [+] passed! 
+ 6 : [+] passed! 
+ 7 : [+] passed! 
 
 >> Using pipes + iterators 
  1 : [+] passed! 
@@ -97,4 +120,9 @@ ONE TWO
  3 : [+] passed! 
  4 : [+] passed! 
  5 : [+] passed! 
- 6 : [+] passed!
+ 6 : [+] passed! 
+ 7 : [+] passed! 
+
+============================================================
+Tests passed: 80 / 80 
+============================================================
