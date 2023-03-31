@@ -129,6 +129,11 @@ do [
     ensure -> 35 = a
     passed
     
+    a: 5
+    ensure -> throws? -> 5 + 35:usd
+    ensure -> throws? -> 'a + 35:usd
+    passed
+    
     
     ; topic "add - :integer :color"
     
