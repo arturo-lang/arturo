@@ -3076,10 +3076,6 @@ do [
     ensure -> 24.5 = 30:eur - 5.5
     ensure -> 24.5 = sub 30:usd 5.5
     ensure -> 24.5 = sub 30:eur 5.5
-    ; ensure -> 24.5 = 5.5 - 30:usd
-    ; ensure -> 24.5 = 5.5 - 30:eur
-    ; ensure -> 24.5 = sub 5.5 30:usd
-    ; ensure -> 24.5 = sub 5.5 30:eur
     passed
     
     ; todo: compare with respective types
