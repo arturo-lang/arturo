@@ -2063,7 +2063,6 @@ do [
     
     
     topic "mod - :rational :quantity"
-    ; todo: fix error raise
 
     a: to :rational [1 2]
     
