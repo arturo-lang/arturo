@@ -1250,24 +1250,22 @@ do [
     
     topic "divmod - :floating :rational"
     
-    ; a: to :rational [1 2]
-    ; expected: to :rational [1 4]
-    ; passed
+    a: to :rational [1 2]
+    ensure -> [5 0] = 2.5 /% a
+    ensure -> [0.2 0.5] = a /% 2.5
+    ensure -> [5 0] = divmod 2.5 a
+    ensure -> [0.2 0.5] = divmod a 2.5
+    passed
     
-    ; ; :rational :integer
-    ; a: to :rational [1 2]
-    ; 'a /% 2.0
-    ; ensure -> a = to :rational [1 4]
-    ; divmod 'a 2.0
-    ; ensure -> a = to :rational [1 8]
-    ; passed
+    a: to :rational [1 2]
+    b: 2.5
     
-    ; ; :integer :rational
-    ; a: 2.0
-    ; 'a /% to :rational [1 2]
-    ; a: 2.0
-    ; divmod 'a to :rational [1 2]
-    ; passed
+    'a /% 2.5
+    'b /% to :rational [1 2]
+    
+    ensure -> [0.2 0.5] = a
+    ensure -> [5 0] = b
+    passed
     
     
     topic "divmod - :floating :quantity"
