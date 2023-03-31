@@ -443,6 +443,35 @@ section "Pipes + AttributeLabels (+ Assignment)"
             print "final"
       ]
 
+section "Pipes + multiple attributes"
+
+      check [
+            sort.descending.by:'name @[#[name:"John" surname: "Doe"] #[name:"Jane" surname: "Doe"]]
+      ][
+            @[#[name:"John" surname: "Doe"] #[name:"Jane" surname: "Doe"]] | sort.descending.by:'name
+      ]
+      check [
+            sort.descending.by:'name @[#[name:"John" surname: "Doe"] #[name:"Jane" surname: "Doe"]]
+      ][
+            @[
+                  #[name:"John" surname: "Doe"] 
+                  #[name:"Jane" surname: "Doe"]
+            ] | 
+            sort.descending.by:'name
+      ]
+      check [
+            sort.descending.by:'name @[#[name:"John" surname: "Doe"] #[name:"Jane" surname: "Doe"]]
+      ][
+            @[
+                  #[name:"John" surname: "Doe"] 
+                  #[name:"Jane" surname: "Doe"]
+            ] 
+            | 
+            sort
+            .descending
+            .by:'name
+      ]
+
 section "Using pipes + iterators"
 
       check [
@@ -467,14 +496,6 @@ section "Using pipes + iterators"
                   | 
                   print
             print "after"
-      ]
-
-section "Multiple attributes"
-
-      check [
-            sort.descending.by:'name @[#[name:"John" surname: "Doe"] #[name:"Jane" surname: "Doe"]]
-      ][
-            @[#[name:"John" surname: "Doe"] #[name:"Jane" surname: "Doe"]] | sort.descending.by:'name
       ]
 
 section "Real-world testing"
