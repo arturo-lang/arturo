@@ -469,6 +469,14 @@ section "Using pipes + iterators"
             print "after"
       ]
 
+section "Multiple attributes"
+
+      check [
+            sort.descending.by:'name @[#[name:"John" surname: "Doe"] #[name:"Jane" surname: "Doe"]]
+      ][
+            @[#[name:"John" surname: "Doe"] #[name:"Jane" surname: "Doe"]] | sort.descending.by:'name
+      ]
+
 section "Real-world testing"
 
       ; from: examples/rosetta/smarandache prime-digital sequence.art
