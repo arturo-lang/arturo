@@ -1019,12 +1019,11 @@ do [
     
     ensure -> 4 = (20:usd) / (5:usd)
     ensure -> 4 = (20:eur) / (5:eur)
-    ensure -> 0 = 1:m / 20:cm
-    ensure -> 0 = 1:m / 20:cm
-    passed
-    
     ensure -> 4 = div (20:usd) (5:usd)
     ensure -> 4 = div (20:eur) (5:eur)
+    
+    ensure -> 0 = 1:m / 20:cm
+    ensure -> 0 = 1:m / 20:cm
     ensure -> 0 = div 1:m 20:cm
     ensure -> 0 = div 1:m 20:cm
     passed
