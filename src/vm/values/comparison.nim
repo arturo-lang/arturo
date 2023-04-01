@@ -20,7 +20,7 @@ when defined(WEB):
 when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
-import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vversion]
+import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vregex, vversion]
 import vm/values/value
 import vm/values/operators
 
@@ -111,10 +111,12 @@ proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
                Literal,
                Attribute,
                AttributeLabel: return x.s == y.s
+            of Path,
+               PathLabel: return x.p == y.p
             of Symbol: return x.m == y.m
             of Regex: return x.rx == y.rx
             of Binary: return x.n == y.n
-            of Bytecode: return x.trans == y.trans
+            of Bytecode: return x.trans[] == y.trans[]
             of Inline,
                Block:
 
