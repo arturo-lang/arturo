@@ -1,4 +1,21 @@
-; helper function
+; Some comments were added at the start of the file 
+; because were considered very important to this one itself,
+; others were placed in their specific sections since 
+; are related just to their specific scope
+
+
+; Somtimes we use rendered strings or `greather?`/`less?` 
+; to do floating comparisons, this is the reason:
+; Read: "What Every Computer Scientist Should Know 
+;       About Floating-Point Arithmetic" by Oracle [^1]
+;  [1]: https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html
+
+; If you want to know about how should `:quantities` works, see some of these conversations
+; https://github.com/arturo-lang/arturo/issues/1110
+; https://github.com/arturo-lang/arturo/issues/1129
+;   in special this comment: https://github.com/arturo-lang/arturo/issues/1129#issuecomment-1492142532
+
+; helper function 
 debug: $[variable][
     print[variable type variable]
 ]
@@ -109,57 +126,53 @@ do [
     
     
     topic "add - :integer :quantity"
-    ; todo: compare with respective types
-    ; todo: fix behavior for :int :quant
+    
+    ; :integer = :quantity + :integer
     ensure -> 35 = 30:usd + 5
     ensure -> 35 = 30:eur + 5
     ensure -> 35 = add 30:usd 5
     ensure -> 35 = add 30:eur 5
-    ; ensure -> 35 = 5 + 30:usd
-    ; ensure -> 35 = 5 + 30:eur
-    ; ensure -> 35 = add 5 30:usd
-    ; ensure -> 35 = add 5 30:eur
     passed
     
-    ; todo: compare with respective types
+    ; :quantity = :quantity + :integer
+    ensure -> 35:usd = 30:usd + 5
+    ensure -> 35:eur = 30:eur + 5
+    ensure -> 35:usd = add 30:usd 5
+    ensure -> 35:eur = add 30:eur 5
+    passed
+    
     a: 30:usd, 'a + 5
+    ensure -> 35:usd = a
     ensure -> 35 = a
     passed
     
-    ; todo: compare with respective types
-    ; todo: fix behavior for :int :quant
-    ; a: 5, 'a + 30:usd
-    ; ensure -> 35 = a
-    ; passed
+    a: 5
+    ensure -> throws? -> 5 + 35:usd
+    ensure -> throws? -> 'a + 35:usd
+    passed
     
     
-    ; topic "add - :int :color"
+    topic "add - :integer :color"
     
-    ; ensure -> null = 1 + #red
-    ; ensure -> null = #red + 1
-    ; ensure -> null = add 1 #red
-    ; ensure -> null = add #red 1
-    ; passed  
+    ensure -> every? @[
+        -> 1 + #red
+        -> #red + 1
+        -> add 1 #red
+        -> add #red 1
+    ] => throws?
+    passed
     
-    ; ; :integer :color
-    ; a: 1
-    ; 'a + #red
-    ; ensure -> a = null
+    ; :integer :color
+    a: 1
+    b: #red
     
-    ; a: 1
-    ; add 'a #red
-    ; ensure -> a = null
-    ; passed
-    
-    ; ; :color :integer
-    ; a: #red
-    ; 'a + 1
-    ; ensure -> a = null
-    
-    ; a: #red
-    ; add 'a 1
-    ; ensure -> a = null
-    ; passed
+    ensure -> every? @[
+        -> 'a + #red
+        -> add 'a + red
+        -> 'b + 1
+        -> add 'b 1
+    ] => throws?
+    passed
     
     
     ; ------ floating
@@ -246,57 +259,50 @@ do [
     
     
     topic "add - :floating :quantity"
-    ; todo: compare with respective types
-    ; todo: fix behavior for :float :quant
     ensure -> 35.5 = 30:usd + 5.5
     ensure -> 35.5 = 30:eur + 5.5
     ensure -> 35.5 = add 30:usd 5.5
     ensure -> 35.5 = add 30:eur 5.5
-    ; ensure -> 35.5 = 5.5 + 30:usd
-    ; ensure -> 35.5 = 5.5 + 30:eur
-    ; ensure -> 35.5 = add 5.5 30:usd
-    ; ensure -> 35.5 = add 5.5 30:eur
     passed
     
-    ; todo: compare with respective types
+    ensure -> 35.5:usd = 30:usd + 5.5
+    ensure -> 35.5:eur = 30:eur + 5.5
+    ensure -> 35.5:usd = add 30:usd 5.5
+    ensure -> 35.5:eur = add 30:eur 5.5
+    passed
+    
     a: 30:usd, 'a + 5.5
+    ensure -> 35.5:usd = a
     ensure -> 35.5 = a
     passed
     
-    ; todo: compare with respective types
-    ; todo: fix behavior for :float :quant
-    ; a: 5.5, 'a + 30:usd
-    ; ensure -> 35.5 = a
-    ; passed
+    a: 5.5
+    ensure -> throws? -> 5.5 + 30:usd
+    ensure -> throws? -> 'a + 30:usd
+    passed
     
     
-    ; topic "add - :floating :color"
+    topic "add - :floating :color"
     
-    ; ensure -> null = 1.5 + #red
-    ; ensure -> null = #red + 1.5
-    ; ensure -> null = add 1.5 #red
-    ; ensure -> null = add #red 1.5
-    ; passed  
+    ensure -> every? @[
+        -> 1.5 + #red
+        -> #red + 1.5
+        -> add 1.5 #red
+        -> add #red 1.5
+    ] => throws?
+    passed
     
-    ; ; :floating :color
-    ; a: 1.5
-    ; 'a + #red
-    ; ensure -> a = null
+    ; with :literal s
+    a: 1.5
+    b: #red
     
-    ; a: 1.5
-    ; add 'a #red
-    ; ensure -> a = null
-    ; passed
-    
-    ; ; :color :floating
-    ; a: #red
-    ; 'a + 1.5
-    ; ensure -> a = null
-    
-    ; a: #red
-    ; add 'a 1.5
-    ; ensure -> a = null
-    ; passed
+    ensure -> every? @[
+        -> add 'a #red
+        -> 'a + #red
+        -> add 'b 1.5
+        -> add 'b + 1.5 
+    ] => throws?
+    passed
     
     
     ; ------ complex
@@ -353,7 +359,6 @@ do [
     ; ** can re-enable the tests here! ;-)
 
     topic "add - :complex :quantity"
-    ; todo: check if :quantity :complex should be possible
 
     ensure -> every? @[
         -> "31.0+2.0i:usd" = ~"|as.code 30:usd + to :complex [1 2]|"
@@ -389,19 +394,14 @@ do [
     
     ; :complex :color
     a: to :complex [1 2]
-    ensure -> throws? -> 'a + #red
-    
-    a: to :complex [1 2]
-    ensure -> throws? -> add 'a #red
-    passed
-    
-    ; :color :complex
-    a: #red
-    ensure -> throws? -> 'a + to :complex [1 2]
-    
-    a: #red
-    ensure -> throws? -> add 'a to :complex [1 2]
-    passed
+    b: #red
+    ensure -> every? @[
+        -> add 'a #red
+        -> 'a + #red
+        -> add 'b a
+        -> 'b + a
+    ] => throws?
+    passed  
 
     
     ; ------ rational
@@ -437,7 +437,6 @@ do [
     ; ** but not vice-versa.
 
     topic "add - :rational :quantity"
-    ; todo: verify this comparison
 
     ensure -> all? @[
         "61/2:usd" = as.code 30:usd + to :rational [1 2]
@@ -474,21 +473,16 @@ do [
     ] => throws?
     passed  
     
-    ; :complex :color
+    ; with :literal s
     a: to :rational [3 5]
-    ensure -> throws? -> 'a + #red
-    
-    a: to :rational [3 5]
-    ensure -> throws? -> add 'a #red
-    passed
-    
-    ; :color :complex
-    a: #red
-    ensure -> throws? -> 'a + to :rational [3 5]
-    
-    a: #red
-    ensure -> throws? -> add 'a to :rational [3 5]
-    passed
+    b: #red
+    ensure -> every? @[
+        -> add 'a b
+        -> 'a + b
+        -> add 'b a
+        -> 'b + a
+    ] => throws?
+    passed 
     
     ; ------ color
      
@@ -535,9 +529,9 @@ do [
     ; ------ quantity
      
     topic "add - :quantity :quantity"
-    ; todo: compare with respective types
-    ; todo: how can I test it for different currencies?
     
+    ensure -> 50:usd = 20:usd + 30:usd
+    ensure -> 50:usd = 30:usd + 20:usd
     ensure -> 50 = 20:usd + 30:usd
     ensure -> 50 = 30:usd + 20:usd
     ensure -> 1.2:m = 1:m + 20:cm
@@ -546,6 +540,10 @@ do [
     
     a: 20:usd, 'a + 30:usd
     ensure -> 50 = a 
+    passed
+    
+    a: 20:usd, 'a + 30:usd
+    ensure -> 50:usd = a 
     passed
     
     a: 1:m, 'a + 20:cm
@@ -572,9 +570,7 @@ do [
     
     topic "dec - :floating"
     
-    ; Never do floating comparison, it can give wrong results, even rounding
-    ; Read: What Every Computer Scientist Should Know About Floating-Point Arithmetic - Oracle
-    ;       https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html
+    
     
     ensure -> 4.6 > dec 5.5
     ensure -> 4.4 < dec 5.5
@@ -621,17 +617,17 @@ do [
     
     
     topic "dec - :quantity"
-    ; todo: compare with respective types
     
     ensure -> 30 = dec 31:usd
     ensure -> 30 = dec 31:eur
-    ; ensure -> 30:usd = dec 31:usd
-    ; ensure -> 30:eur = dec 31:eur
+    ensure -> 30:usd = dec 31:usd
+    ensure -> 30:eur = dec 31:eur
     ensure -> 0:m = dec 1:m
     ensure -> (neg 1:m) = dec 0:m
     passed
     
     a: 31:usd, dec 'a
+    ensure -> 30:usd = a
     ensure -> 30 = a
     passed
     
@@ -651,11 +647,11 @@ do [
     ensure -> 0 = div 0 1
     passed
     
-    try? -> 1 / 0
-    else -> passed
-    
-    try? -> div 1 0
-    else -> passed
+    ensure -> every? @[
+        -> div 1 0
+        -> 1 / 0
+    ] => throws?
+    passed
     
     ensure -> 0 = 1 / 2
     ensure -> 2 = 2 / 1
@@ -687,17 +683,13 @@ do [
     ensure -> (div 0 1.0) = div 0.0 1
     passed
     
-    try? -> 1 / 0.0
-    else -> passed
-
-    try? -> 1.0 / 0
-    else -> passed
-    
-    try? -> div 1.0 0
-    else -> passed
-
-    try? -> div 1.0 0
-    else -> passed
+    ensure -> every? @[
+        -> 1 / 0.0
+        -> 1.0 / 0
+        -> div 1.0 0
+        -> div 1.0 0
+    ] => throws?
+    passed
     
     ensure -> 2.0 = 1 / 0.5
     ensure -> 0.5 = 1.0 / 2
@@ -730,8 +722,6 @@ do [
     
     topic "div - :int :complex"
     
-    ; side note: render is used to compare the returned value avoiding floating imprecisions
-    
     a: to :complex [2 5]
     ensure -> "1.0+2.5i" = ~"|a / 2|"
     ensure -> "1.0+2.5i" = ~"|div a 2|"
@@ -762,23 +752,23 @@ do [
     passed
     
     
-    topic "div - :int :rational"
+    topic "div - :integer :rational"
     
     a: to :rational [1 2]
     expected: to :rational [1 4]
-    ; ensure -> expected = a / 2
+    ensure -> expected = a / 2
     ensure -> 4 = 2 / a
-    ; ensure -> expected = div a 2
+    ensure -> expected = div a 2
     ensure -> 4 = div 2 a
     passed
     
     ; :rational :integer
-    ; a: to :rational [1 2]
-    ; 'a / 2
-    ; ensure -> a = to :rational [1 4]
-    ; div 'a 2
-    ; ensure -> a = to :rational [1 8]
-    ; passed
+    a: to :rational [1 2]
+    'a / 2
+    ensure -> a = to :rational [1 4]
+    div 'a 2
+    ensure -> a = to :rational [1 8]
+    passed
     
     ; :integer :rational
     a: 2
@@ -791,29 +781,31 @@ do [
     
     
     topic "div - :integer :quantity"
-    ; todo: compare with respective types
-    ; todo: fix behavior for :int :quant
+
     ensure -> 6 = 30:usd / 5
     ensure -> 6 = 30:eur / 5
     ensure -> 6 = div 30:usd 5
     ensure -> 6 = div 30:eur 5
-    ; ensure -> 6 = 5 / 30:usd
-    ; ensure -> 6 = 5 / 30:eur
-    ; ensure -> 6 = div 5 30:usd
-    ; ensure -> 6 = div 5 30:eur
     passed
     
-    ; todo: compare with respective types
+    ensure -> 6:usd = 30:usd / 5
+    ensure -> 6:eur = 30:eur / 5
+    ensure -> 6:usd = div 30:usd 5
+    ensure -> 6:eur = div 30:eur 5
+    passed
+    
     a: 30:usd, 'a / 5
     ensure -> 6 = a
     passed
     
-    ; todo: compare with respective types
-    ; todo: fix behavior for :int :quant
-    ; a: 5, 'a / 30:usd
-    ; ensure -> 6 = a
-    ; passed
+    a: 30:usd, 'a / 5
+    ensure -> 6:usd = a
+    passed
     
+    a: 1
+    ensure -> throws? -> 1 / 1:usd
+    ensure -> throws? -> 'a / 1:usd
+    passed
     
     ; ------ floating
     
@@ -838,7 +830,6 @@ do [
     
     
     topic "div - :floating :complex"
-    ; side note: render is used to compare the returned value avoiding floating imprecisions
     
     a: to :complex [2 5]
     ensure -> "1.0+2.5i" = ~"|a / 2.0|"
@@ -874,19 +865,19 @@ do [
     
     a: to :rational [1 2]
     expected: to :rational [1 4]
-    ; ensure -> expected = a / 2.0
+    ensure -> expected = a / 2.0
     ensure -> 4.0 = 2.0 / a
-    ; ensure -> expected = div a 2.0
+    ensure -> expected = div a 2.0
     ensure -> 4.0 = div 2.0 a
     passed
     
     ; :rational :integer
-    ; a: to :rational [1 2]
-    ; 'a / 2.0
-    ; ensure -> a = to :rational [1 4]
-    ; div 'a 2.0
-    ; ensure -> a = to :rational [1 8]
-    ; passed
+    a: to :rational [1 2]
+    'a / 2.0
+    ensure -> a = to :rational [1 4]
+    div 'a 2.0
+    ensure -> a = to :rational [1 8]
+    passed
     
     ; :integer :rational
     a: 2.0
@@ -899,28 +890,27 @@ do [
     
     
     topic "div - :floating :quantity"
-    ; todo: compare with respective types
-    ; todo: fix behavior for :float :quant
+
     ensure -> 60 = 30:usd / 0.5
     ensure -> 60 = 30:eur / 0.5
     ensure -> 60 = div 30:usd 0.5
     ensure -> 60 = div 30:eur 0.5
-    ; ensure -> 60 = 0.5 / 30:usd
-    ; ensure -> 60 = 0.5 / 30:eur
-    ; ensure -> 60 = div 0.5 30:usd
-    ; ensure -> 60 = div 0.5 30:eur
     passed
     
-    ; todo: compare with respective types
+    ensure -> 60:usd = 30:usd / 0.5
+    ensure -> 60:eur = 30:eur / 0.5
+    ensure -> 60:usd = div 30:usd 0.5
+    ensure -> 60:eur = div 30:eur 0.5
+    passed
+    
     a: 30:usd, 'a / 0.5
     ensure -> 60 = a
     passed
     
-    ; todo: compare with respective types
-    ; todo: fix behavior for :float :quant
-    ; a: 0.5, 'a / 30:usd
-    ; ensure -> 60 = a
-    ; passed
+    a: 0.5
+    ensure -> throws? -> 0.5 / 30:usd
+    ensure -> throws? -> 'a / 30:usd
+    passed
     
     
     ; ------ complex
@@ -974,7 +964,6 @@ do [
     passed
     
     topic "div - :complex :quantity"
-    ; todo: check if :quantity :complex should be possible
 
     ensure -> every? @[
         -> 30:usd / to :complex [1 2]
@@ -1003,31 +992,37 @@ do [
     
     a: to :rational [3 5]
     b: to :rational [1 2]
-    ; ensure -> (to :rational [6 5]) = a / b
-    ; ensure -> (to :rational [5 6]) = b / a
-    ; ensure -> (to :rational [6 5]) = div a b
-    ; ensure -> (to :rational [5 6]) = div b a
-    ; passed
+    ensure -> (to :rational [6 5]) = a / b
+    ensure -> (to :rational [5 6]) = b / a
+    ensure -> (to :rational [6 5]) = div a b
+    ensure -> (to :rational [5 6]) = div b a
+    passed
     
     
     a: to :rational [3 5]
     b: to :rational [1 2]
     
-    ; 'a / b
-    ; ensure -> (to :rational [6 5]) = a
-    ; div 'a b
-    ; ensure -> (to :rational [12 5]) = a
-    ; ensure -> (to :rational [24 10]) = a
-    ; passed
+    'a / b
+    ensure -> (to :rational [6 5]) = a
+    div 'a b
+    ensure -> (to :rational [12 5]) = a
+    ensure -> (to :rational [24 10]) = a
+    passed
     
     
     topic "div - :rational :quantity"
-    ; todo: verify this comparison
 
-    ensure -> "60:usd" = ~"|as.code 30:usd / to :rational [1 2]|"
-    ensure -> "60:eur" = ~"|as.code 30:eur / to :rational [1 2]|"
-    ensure -> "60:usd" = ~"|as.code div 30:usd to :rational [1 2]|"
-    ensure -> "60:eur" = ~"|as.code div 30:eur to :rational [1 2]|"
+    ensure -> 60:usd = 30:usd / to :rational [1 2]
+    ensure -> 60:eur = 30:eur / to :rational [1 2]
+    ensure -> 60:usd = div 30:usd to :rational [1 2]
+    ensure -> 60:eur = div 30:eur to :rational [1 2]
+    passed
+    
+    ensure -> 60 = 30:usd / to :rational [1 2]
+    ensure -> 60 = 30:eur / to :rational [1 2]
+    ensure -> 60 = div 30:usd to :rational [1 2]
+    ensure -> 60 = div 30:eur to :rational [1 2]
+    passed
 
     ensure -> every? @[
         -> (to :rational [1 2]) / 30:usd
@@ -1038,7 +1033,8 @@ do [
     passed
     
     a: 30:usd, 'a / to :rational [1 2]
-    ensure -> "60:usd" = ~"|as.code a|"
+    ensure -> 60:usd = a
+    ensure -> 60 = a
     passed
     
     a: to :rational [1 2]
@@ -1049,17 +1045,23 @@ do [
     ; ------ quantity
      
     topic "div - :quantity :quantity"
-    ; todo: compare with respective types
-    ; todo: how can I test it for different currencies?
+    
+    ; for while, I won't update this test for metric-units 
+    ; since we have an open issue to solve this -> #1110
     
     ensure -> 4 = (20:usd) / (5:usd)
     ensure -> 4 = (20:eur) / (5:eur)
-    ensure -> 0 = 1:m / 20:cm
-    ensure -> 0 = 1:m / 20:cm
-    passed
-    
     ensure -> 4 = div (20:usd) (5:usd)
     ensure -> 4 = div (20:eur) (5:eur)
+    
+    ensure -> 4:usd = (20:usd) / (5:usd)
+    ensure -> 4:eur = (20:eur) / (5:eur)
+    ensure -> 4:usd = div (20:usd) (5:usd)
+    ensure -> 4:eur = div (20:eur) (5:eur)
+    passed
+    
+    ensure -> 0 = 1:m / 20:cm
+    ensure -> 0 = 1:m / 20:cm
     ensure -> 0 = div 1:m 20:cm
     ensure -> 0 = div 1:m 20:cm
     passed
@@ -1086,11 +1088,11 @@ do [
     ensure -> [0, 0] = divmod 0 1
     passed
     
-    try? -> 1 /% 0
-    else -> passed
-    
-    try? -> divmod 1 0
-    else -> passed
+    ensure -> every? @[
+        -> 1 /% 0
+        -> divmod 1 0
+    ] => throws?
+    passed
     
     ensure -> [0, 1] = 1 /% 2
     ensure -> [2, 0] = 2 /% 1
@@ -1124,17 +1126,13 @@ do [
     ensure -> (divmod 0 1.0) = divmod 0.0 1
     passed
     
-    try? -> 1 /% 0.0
-    else -> passed
-
-    try? -> 1.0 /% 0
-    else -> passed
-    
-    try? -> divmod 1.0 0
-    else -> passed
-
-    try? -> divmod 1.0 0
-    else -> passed
+    ensure -> every? @[
+        -> 1 /% 0.0
+        -> 1.0 /% 0
+        -> divmod 1 0.0
+        -> divmod 1.0 0
+    ] => throws?
+    passed
     
     ensure -> [2.0, 0] = 1 /% 0.5
     ensure -> [0.5, 1] = 1.0 /% 2
@@ -1163,85 +1161,77 @@ do [
     passed
     
     
-    topic "divmod - :int :complex"
+    topic "divmod - :integer :complex"
     
-    ; a: to :complex [2 5]
-    ; passed
+    a: to :complex [2 5]
+    ensure -> every? @[
+        -> 2 /% a
+        -> a /% 2
+        -> divmod 2 a
+        -> divmod a 2
+    ] => throws?
+    passed
     
-    ; a: to :complex [1 2]
-    ; passed
-    
-    ; :complex :integer
-    ; a: to :complex [2 5]
-    ; 'a /% 2
-    ; a: to :complex [2 5]
-    ; divmod 'a 2
-    ; passed
-    
-    ; :integer :complex
-    ; a: 1
-    ; 'a /% to :complex [1 2]
-    
-    ; a: 1
-    ; divmod 'a to :complex [1 2]
-    ; passed
+    a: to :complex [2 5]
+    b: 2
+    ensure -> every? @[
+        -> 'a /% b
+        -> 'b /% a
+        -> divmod 'a b
+        -> divmod 'b a
+    ] => throws?
+    passed
     
     
-    topic "divmod - :int :rational"
+    topic "divmod - :integer :rational"
     
     a: to :rational [1 2]
-    ; passed
+    ensure -> [4 0] = 2 /% a
+    ensure -> [0.25 0.5] = a /% 2
+    ensure -> [4 0] = divmod 2 a
+    ensure -> [0.25 0.5] = divmod a 2
+    passed
     
-    ; ; :rational :integer
-    ; a: to :rational [1 2]
-    ; 'a /% 2
-    ; divmod 'a 2
-    ; passed
+    a: to :rational [1 2]
+    b: 2
     
-    ; ; :integer :rational
-    ; a: 2
-    ; 'a /% to :rational [1 2]
-    ; a: 2
-    ; divmod 'a to :rational [1 2]
-    ; passed
+    'a /% 2
+    'b /% to :rational [1 2]
+    
+    ensure -> [0.25 0.5] = a
+    ensure -> [4 0] = b
+    passed
     
     
     topic "divmod - :integer :quantity"
-    ; todo: compare with respective types
-    ; todo: fix behavior for :quant :int
-    ; todo: fix behavior for :int :quant
     
-    ; ensure -> [6:usd 0:usd] = 30:usd /% 5
-    ; ensure -> [6:usd 0:usd] = 30:eur /% 5
-    ; ensure -> [6:usd 0:usd] = divmod 30:usd 5
-    ; ensure -> [6:usd 0:usd] = divmod 30:eur 5
+    ensure -> [6 0] = 30:usd /% 5
+    ensure -> [6 0] = 30:eur /% 5
+    ensure -> [6 0] = divmod 30:usd 5
+    ensure -> [6 0] = divmod 30:eur 5
+    passed
     
-    ; error:
-    ; >> Runtime | incompatible operation between quantities
-    ;      error | attempted: mod
-    ;            | with:  (currency) 5 (energy)
+    ensure -> [6:usd 0:usd] = 30:usd /% 5
+    ensure -> [6:eur 0:eur] = 30:eur /% 5
+    ensure -> [6:usd 0:usd] = divmod 30:usd 5
+    ensure -> [6:eur 0:eur] = divmod 30:eur 5
+    passed
     
-    ; ensure -> [0 5] = 5 /% 30:usd
-    ; ensure -> [0 5] = 5 /% 30:eur
-    ; ensure -> [0 5] = divmod 5 30:usd
-    ; ensure -> [0 5] = divmod 5 30:eur
-    ; passed
+    ensure -> every? @[
+        -> 5 /% 30:usd
+        -> 5 /% 30:eur
+        -> divmod 5 30:usd
+        -> divmod 5 30:eur
+    ] => throws?
+    passed
     
-    ; error:
-    ; >> Runtime | incompatible operation between quantities
-    ;      error | attempted: mod
-    ;            | with: 5 (energy)  (currency)
+    a: 30:usd, 'a /% 5
+    ensure -> [6 0] = a
+    ensure -> [6:usd 0:usd] = a
+    passed
     
-    ; todo: compare with respective types
-    ; a: 30:usd, 'a /% 5
-    ; ensure -> [6:usd 0:usd] = a
-    ; passed
-    
-    ; todo: compare with respective types
-    ; todo: fix behavior for :int :quant
-    ; a: 5, 'a /% 30:usd
-    ; ensure -> [0 5] = a
-    ; passed
+    a: 5, ensure -> throws? -> 'a /% 30:usd
+    passed
     
     
     ; ------ floating
@@ -1268,61 +1258,59 @@ do [
     
     
     topic "divmod - :floating :complex"
-    ; side note: render is used to compare the returned value avoiding floating imprecisions
     
-    ; a: to :complex [2 5]
-    ; passed
+    a: to :complex [2 5]
+    ensure -> every? @[
+        -> 2.5 /% a
+        -> a /% 2
+        -> divmod 2.5 a
+        -> divmod a 2.5
+    ] => throws?
+    passed
     
-    ; a: to :complex [1 2]
-    ; passed
-    
-    ; ; :complex :floating
-    ; a: to :complex [2 5]
-    ; 'a /% 2.0
-    ; a: to :complex [2 5]
-    ; divmod 'a 2.0
-    ; passed
-    
-    ; ; :floating :complex
-    ; a: 1.0
-    ; 'a /% to :complex [1 2]
-    
-    ; a: 1.0
-    ; divmod 'a to :complex [1 2]
-    ; passed
+    a: to :complex [2 5]
+    b: 2.5
+    ensure -> every? @[
+        -> 'a /% b
+        -> 'b /% a
+        -> divmod 'a b
+        -> divmod 'b a
+    ] => throws?
+    passed
     
     
     topic "divmod - :floating :rational"
     
-    ; a: to :rational [1 2]
-    ; expected: to :rational [1 4]
-    ; passed
+    a: to :rational [1 2]
+    ensure -> [5 0] = 2.5 /% a
+    ensure -> [0.2 0.5] = a /% 2.5
+    ensure -> [5 0] = divmod 2.5 a
+    ensure -> [0.2 0.5] = divmod a 2.5
+    passed
     
-    ; ; :rational :integer
-    ; a: to :rational [1 2]
-    ; 'a /% 2.0
-    ; ensure -> a = to :rational [1 4]
-    ; divmod 'a 2.0
-    ; ensure -> a = to :rational [1 8]
-    ; passed
+    a: to :rational [1 2]
+    b: 2.5
     
-    ; ; :integer :rational
-    ; a: 2.0
-    ; 'a /% to :rational [1 2]
-    ; a: 2.0
-    ; divmod 'a to :rational [1 2]
-    ; passed
+    'a /% 2.5
+    'b /% to :rational [1 2]
+    
+    ensure -> [0.2 0.5] = a
+    ensure -> [5 0] = b
+    passed
     
     
     topic "divmod - :floating :quantity"
-    ; todo: compare with respective types
-    ; todo: fix behavior for :quant :float
-    ; todo: fix behavior for :float :quant
     
-    ensure -> "[6.0:usd 0.0:usd]" = ~"|as.code 30:usd /% 5.0|"
-    ensure -> "[6.0:eur 0.0:eur]" = ~"|as.code 30:eur /% 5.0|"
-    ensure -> "[6.0:usd 0.0:usd]" = ~"|as.code divmod 30:usd 5.0|"
-    ensure -> "[6.0:eur 0.0:eur]" = ~"|as.code divmod 30:eur 5.0|"
+    ensure -> [6.0:usd 0.0:usd] = 30:usd /% 5.0
+    ensure -> [6.0:eur 0.0:eur] = 30:eur /% 5.0
+    ensure -> [6.0:usd 0.0:usd] = divmod 30:usd 5.0
+    ensure -> [6.0:eur 0.0:eur] = divmod 30:eur 5.0
+    passed
+    
+    ensure -> [6.0 0.0] = 30:usd /% 5.0
+    ensure -> [6.0 0.0] = 30:eur /% 5.0
+    ensure -> [6.0 0.0] = divmod 30:usd 5.0
+    ensure -> [6.0 0.0] = divmod 30:eur 5.0
     passed
     
     ensure -> every? @[
@@ -1333,13 +1321,11 @@ do [
     ] => throws?
     passed
     
-    ; todo: behavior is not completelly right
     a: 30:usd, 'a /% 5.0
-    ensure -> "[6.0:usd 0.0:usd]" = ~"|as.code a|"
+    ensure -> [6.0:usd 0.0:usd] = a
+    ensure -> [6.0 0.0] = a
     passed
     
-    ; todo: compare with respective types
-    ; todo: fix behavior for :int :quant
     a: 5.0
     ensure -> throws? -> 'a /% 30:usd
     passed
@@ -1349,38 +1335,49 @@ do [
      
     topic "divmod - :complex :complex"
     
-    ; a: to :complex [3 2]
-    ; b: to :complex @[3 neg 2]
-    ; passed
+    a: to :complex [3 2]
+    b: to :complex @[3 neg 2]
     
-    ; a: to :complex [3 2]
-    ; b: to :complex @[3 neg 2]
-    ; 'a /% b
-    ; a: to :complex [3 2]
-    ; b: to :complex @[3 neg 2]
-    ; divmod 'a b
-    ; passed
+    ensure -> every? @[
+        -> a /% b
+        -> b /% a
+        -> divmod a b
+        -> divmod b a
+    ] => throws?
+    passed
+    
+    ensure -> every? @[
+        -> 'a /% b
+        -> 'b /% a
+        -> divmod 'a b
+        -> divmod 'b a
+    ] => throws?
+    passed
     
     
     topic "divmod - :complex :rational"
     
-    ; a: to :complex [1 2]
-    ; b: to :rational [3 5]
-    ; expected: to :rational [11 10]
-    ; passed
+    a: to :complex [3 2]
+    b: to :rational [3 2]
     
-    ; ; :complex :rational - :rational :complex
-    ; a: to :complex [1 2]
-    ; b: to :rational [3 5]
+    ensure -> every? @[
+        -> a /% b
+        -> b /% a
+        -> divmod a b
+        -> divmod b a
+    ] => throws?
+    passed
     
-    ; 'a /% b
-    ; passed
+    ensure -> every? @[
+        -> 'a /% b
+        -> 'b /% a
+        -> divmod 'a b
+        -> divmod 'b a
+    ] => throws?
+    passed
     
-    ; divmod 'b a
-    ; passed
     
     topic "divmod - :complex :quantity"
-    ; todo: check if :quantity :complex should be possible
 
     ensure -> every? @[
         -> 30:usd /% to :complex [1 2]
@@ -1407,72 +1404,79 @@ do [
      
     topic "divmod - :rational :rational"
     
-    ; a: to :rational [3 5]
-    ; b: to :rational [1 2]
-    ; passed
+    a: to :rational [1 2]
+    b: to :rational [5 2]
     
+    ensure -> [5 0] = b /% a
+    ensure -> [0.2 0.5] = a /% b
+    ensure -> [5 0] = divmod b a
+    ensure -> [0.2 0.5] = divmod a b
+    passed
     
-    ; a: to :rational [3 5]
-    ; b: to :rational [1 2]
+    a: to :rational [1 2]
+    b: to :rational [5 2]
     
-    ; 'a /% b
-    ; divmod 'a b
-    ; passed
+    'a /% to :rational [5 2]
+    'b /% to :rational [1 2]
+    
+    ensure -> [0.2 0.5] = a
+    ensure -> [5 0] = b
+    passed
     
     
     topic "divmod - :rational :quantity"
-    ; todo: fix error raise
-
-    ; ensure -> "[60:usd to :rational [0 1]]" = ~"|as.code 30:usd /% to :rational [1 2]|"
-    ; ensure -> "[60:eur to :rational [0 1]]" = ~"|as.code 30:eur /% to :rational [1 2]|"
-    ; ensure -> "[60:usd to :rational [0 1]]" = ~"|as.code divmod 30:usd to :rational [1 2]|"
-    ; ensure -> "[60:eur to :rational [0 1]]" = ~"|as.code divmod 30:eur to :rational [1 2]|"
     
-    ; error:
-    ; >> Runtime | incompatible operation between quantities
-    ;      error | attempted: mod
-    ;            | with:  (currency) 1/2 (area)
+    a: to :rational [1 2]
     
-    ; ensure -> "[0 to :rational [1 2]]" = ~"|as.code (to :rational [1 2]) /% 30:usd"
-    ; ensure -> "[0 to :rational [1 2]]" = ~"|as.code (to :rational [1 2]) /% 30:eur"
-    ; ensure -> "[0 to :rational [1 2]]" = ~"|as.code divmod  (to :rational [1 2]) 30:usd"
-    ; ensure -> "[0 to :rational [1 2]]" = ~"|as.code divmod  (to :rational [1 2]) 30:eur"
-    ; passed
+    ensure -> [60 0.0] = 30:usd /% a
+    ensure -> [60 0.0] = 30:eur /% a
+    ensure -> [60 0.0] = divmod 30:usd a
+    ensure -> [60 0.0] = divmod 30:eur a
+    passed
     
-    ; error:
-    ; >> Runtime | incompatible operation between quantities
-    ;      error | attempted: mod
-    ;            | with: 1/2 (area)  (currency)
+    ensure -> [60:usd 0.0:usd] = 30:usd /% a
+    ensure -> [60:eur 0.0:eur] = 30:eur /% a
+    ensure -> [60:usd 0.0:usd] = divmod 30:usd a
+    ensure -> [60:eur 0.0:eur] = divmod 30:eur a
+    passed
     
-    ; a: 30:usd, 'a /% to :rational [1 2]
-    ; ensure -> "[60:eur to :rational [0 1]]" = ~"|as.code a|"
-    ; passed
+    a: to :rational [1 2]
     
-    ; a: to :rational [1 2], 'a /% 30:usd
-    ; ensure -> "[0 to :rational [1 2]]" = ~"|ac.code a|"
-    ; passed
+    ensure -> every? @[
+        -> a /% 30:usd
+        -> a /% 30:eur
+        -> divmod a 30:usd
+        -> divmod a 30:eur
+    ] => throws?
+    passed
+    
+    a: 30:usd, 'a /% to :rational [1 2]
+    ensure -> [60:usd 0.0:usd] = a
+    ensure -> [60 0] = a
+    passed
+    
+    a: to :rational [1 2]
+    ensure -> throws? -> 'a /% 30:usd
+    passed
     
         
     ; ------ quantity
      
-    ; topic "divmod - :quantity :quantity"
-    ; ; todo: compare with respective types
-    ; ; todo: how can I test it for different currencies?
+    topic "divmod - :quantity :quantity"
     
-    ; ensure -> "[4 0]" = ~"|as.code (20:usd) /% (5:usd)|"
-    ; ensure -> "[4 0]" = ~"|as.code (20:usd) /% (5:usd)|"
-    ; ;; BUG!!! This is not right!!
-    ; ensure -> "[0 0.2]" = ~"|as.code 1:m /% 20:cm|"
-    ; ensure -> "[0 0.2]" = ~"|as.code 1:m /% 20:cm|"
-    ; passed
+    ensure -> [4:usd 0:usd] = 20:usd /% 5:usd
+    ensure -> [4:usd 0:usd] = divmod 20:usd 5:usd
+    ensure -> [4 0] = 20:usd /% 5:usd
+    ensure -> [4 0] = divmod 20:usd 5:usd
+    passed
     
-    ; a: 20:usd, 'a /% 5:usd
-    ; ensure -> "[4 0]" = ~"|as.code a|" 
-    ; passed
+    a: 20:usd, 'a /% 5:usd
+    ensure -> [4 0] = a
+    ensure -> [4:usd 0:usd] = a
     
-    ; a: 1:m, 'a /% 20:cm
-    ; ensure -> "[0 0.2]" = ~"|as.code a|"
-    ; passed
+    a: 20:usd, divmod 'a 5:usd
+    ensure -> [4 0] = a
+    ensure -> [4:usd 0:usd] = a
     
 ]
 
@@ -1595,28 +1599,27 @@ do [
     
     
     topic "fdiv - :integer :quantity"
-    ; todo: compare with respective types
-    ; todo: fix behavior for :int :quant
+    
     ensure -> 6 = 30:usd // 5
     ensure -> 6 = 30:eur // 5
     ensure -> 6 = fdiv 30:usd 5
     ensure -> 6 = fdiv 30:eur 5
-    ; ensure -> 6 = 5 // 30:usd
-    ; ensure -> 6 = 5 // 30:eur
-    ; ensure -> 6 = fdiv 5 30:usd
-    ; ensure -> 6 = fdiv 5 30:eur
     passed
     
-    ; todo: compare with respective types
+    ensure -> 6:usd = 30:usd // 5
+    ensure -> 6:eur = 30:eur // 5
+    ensure -> 6:usd = fdiv 30:usd 5
+    ensure -> 6:eur = fdiv 30:eur 5
+    passed
+    
     a: 30:usd, 'a // 5
     ensure -> 6 = a
     passed
     
-    ; todo: compare with respective types
-    ; todo: fix behavior for :int :quant
-    ; a: 5, 'a // 30:usd
-    ; ensure -> 6 = a
-    ; passed
+    a: 5
+    ensure -> throws? -> 5 // 30:usd
+    ensure -> throws? -> 'a // 30:usd
+    passed
     
     
     ; ------ floating
@@ -1670,28 +1673,21 @@ do [
     
     
     topic "fdiv - :floating :quantity"
-    ; todo: compare with respective types
-    ; todo: fix behavior for :float :quant
+
     ensure -> 60 = 30:usd // 0.5
     ensure -> 60 = 30:eur // 0.5
     ensure -> 60 = fdiv 30:usd 0.5
     ensure -> 60 = fdiv 30:eur 0.5
-    ; ensure -> 60 = 0.5 // 30:usd
-    ; ensure -> 60 = 0.5 // 30:eur
-    ; ensure -> 60 = fdiv 0.5 30:usd
-    ; ensure -> 60 = fdiv 0.5 30:eur
     passed
     
-    ; todo: compare with respective types
     a: 30:usd, 'a // 0.5
     ensure -> 60 = a
     passed
     
-    ; todo: compare with respective types
-    ; todo: fix behavior for :float :quant
-    ; a: 0.5, 'a // 30:usd
-    ; ensure -> 60 = a
-    ; passed
+    a: 0.5
+    ensure -> throws? -> 0.5 // 30:usd
+    ensure -> throws? -> 'a // 30:usd
+    passed
     
     
     ; ------ rational
@@ -1719,12 +1715,18 @@ do [
     
     
     topic "fdiv - :rational :quantity"
-    ; todo: verify this comparison
 
-    ensure -> "60/1:usd" = ~"|as.code 30:usd // to :rational [1 2]|"
-    ensure -> "60/1:eur" = ~"|as.code 30:eur // to :rational [1 2]|"
-    ensure -> "60/1:usd" = ~"|as.code fdiv 30:usd to :rational [1 2]|"
-    ensure -> "60/1:eur" = ~"|as.code fdiv 30:eur to :rational [1 2]|"
+    ensure -> 60:usd = 30:usd // to :rational [1 2]
+    ensure -> 60:eur = 30:eur // to :rational [1 2]
+    ensure -> 60:usd = fdiv 30:usd to :rational [1 2]
+    ensure -> 60:eur = fdiv 30:eur to :rational [1 2]
+    passed
+    
+    ensure -> 60 = 30:usd // to :rational [1 2]
+    ensure -> 60 = 30:eur // to :rational [1 2]
+    ensure -> 60 = fdiv 30:usd to :rational [1 2]
+    ensure -> 60 = fdiv 30:eur to :rational [1 2]
+    passed
 
     ensure -> every? @[
         -> (to :rational [1 2]) // 30:usd
@@ -1735,7 +1737,7 @@ do [
     passed
     
     a: 30:usd, 'a // to :rational [1 2]
-    ensure -> "60/1:usd" = ~"|as.code a|"
+    ensure -> 60:usd = a
     passed
     
     a: to :rational [1 2]
@@ -1746,26 +1748,34 @@ do [
     ; ------ quantity
      
     topic "fdiv - :quantity :quantity"
-    ; todo: compare with respective types
-    ; todo: how can I test it for different currencies?
     
     ensure -> 4 = (20:usd) // (5:usd)
     ensure -> 4 = (20:eur) // (5:eur)
     ensure -> 0.05 = 1:m // 20:cm
     ensure -> 0.05 = 1:m // 20:cm
+    ensure -> 4:usd = (20:usd) // (5:usd)
+    ensure -> 4:eur = (20:eur) // (5:eur)
+    ensure -> 0.05:m = 1:m // 20:cm
+    ensure -> 0.05:m = 1:m // 20:cm
     passed
     
     ensure -> 4 = fdiv (20:usd) (5:usd)
     ensure -> 4 = fdiv (20:eur) (5:eur)
     ensure -> 0.05 = fdiv 1:m 20:cm
     ensure -> 0.05 = fdiv 1:m 20:cm
+    ensure -> 4:usd = fdiv (20:usd) (5:usd)
+    ensure -> 4:eur = fdiv (20:eur) (5:eur)
+    ensure -> 0.05:m = fdiv 1:m 20:cm
+    ensure -> 0.05:m = fdiv 1:m 20:cm
     passed
     
     a: 20:usd, 'a // 5:usd
+    ensure -> 4:usd = a
     ensure -> 4 = a
     passed
     
     a: 1:m, 'a // 20:cm
+    ensure -> 0.05:m = a
     ensure -> 0.05 = a
     passed
     
@@ -1790,10 +1800,6 @@ do [
 
     
     topic "inc - :floating"
-    
-    ; Never do floating comparison, it can give wrong results, even rounding
-    ; Read: What Every Computer Scientist Should Know About Floating-Point Arithmetic - Oracle
-    ;       https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html
     
     ensure -> 6.6 > inc 5.5
     ensure -> 6.4 < inc 5.5
@@ -1840,16 +1846,16 @@ do [
     
     
     topic "inc - :quantity"
-    ; todo: compare with respective types
     
     ensure -> 30 = inc 29:usd
     ensure -> 30 = inc 29:eur
-    ; ensure -> 30:usd = inc 29:usd
-    ; ensure -> 30:eur = inc 29:eur
+    ensure -> 30:usd = inc 29:usd
+    ensure -> 30:eur = inc 29:eur
     ensure -> 0:m = inc (neg 1:m)
     passed
     
     a: 29:usd, inc 'a
+    ensure -> 30:usd = a
     ensure -> 30 = a
     passed
     
@@ -1868,11 +1874,11 @@ do [
     ensure -> 0 = mod 0 1
     passed
     
-    try? -> 1 % 0
-    else -> passed
-    
-    try? -> mod 1 0
-    else -> passed
+    ensure -> every? @[
+        -> 1 % 0
+        -> mod 1 0
+    ] => throws?
+    passed
     
     ensure -> 1 = 1 % 2
     ensure -> 0 = 2 % 1
@@ -1905,17 +1911,13 @@ do [
     ensure -> (mod 0 1.0) = mod 0.0 1
     passed
     
-    try? -> 1 % 0.0
-    else -> passed
-
-    try? -> 1.0 % 0
-    else -> passed
-    
-    try? -> mod 1.0 0
-    else -> passed
-
-    try? -> mod 1.0 0
-    else -> passed
+    ensure -> every? @[
+        -> 1 % 0.0
+        -> 1.0 % 0
+        -> mod 1 0.0
+        -> mod 1.0 0
+    ] => throws?
+    passed
     
     ensure -> 0 = 1 % 0.5
     ensure -> 1 = 1.0 % 2
@@ -1944,59 +1946,54 @@ do [
     passed
     
     
-    ; topic "mod - :int :rational"
+    topic "mod - :integer :rational"
     
-    ; a: to :rational [1 2]
-    ; passed
+    a: to :rational [1 2]
+    ensure -> 0 = 2 % a
+    ensure -> 0.5 = a % 2
+    ensure -> 0 = mod 2 a
+    ensure -> 0.5 = mod a 2
+    passed
     
-    ; :rational :integer
-    ; a: to :rational [1 2]
-    ; passed
+    a: to :rational [1 2]
+    b: 2
     
-    ; :integer :rational
-    ; a: 2
-    ; 'a % to :rational [1 2]
-    ; a: 2
-    ; mod 'a to :rational [1 2]
-    ; passed
+    'a % 2
+    'b % to :rational [1 2]
+    
+    ensure -> 0.5 = a
+    ensure -> 0 = b
+    passed
     
     
     topic "mod - :integer :quantity"
-    ; todo: compare with respective types
-    ; todo: fix behavior for :quant :int
-    ; todo: fix behavior for :int :quant
+    ensure -> 0 = 30:usd % 5
+    ensure -> 0 = 30:eur % 5
+    ensure -> 0 = mod 30:usd 5
+    ensure -> 0 = mod 30:eur 5
+    passed
     
-    ; ensure -> 0:usd = 30:usd % 5
-    ; ensure -> 0:eur = 30:eur % 5
-    ; ensure -> 0:usd = mod 30:usd 5
-    ; ensure -> 0:eur = mod 30:eur 5
+    ensure -> 0:usd = 30:usd % 5
+    ensure -> 0:eur = 30:eur % 5
+    ensure -> 0:usd = mod 30:usd 5
+    ensure -> 0:eur = mod 30:eur 5
+    passed
     
-    ; error:
-    ; >> Runtime | incompatible operation between quantities
-    ;      error | attempted: mod
-    ;            | with:  (currency) 5 (energy)
+    ensure -> every? @[
+        -> 5 % 30:usd
+        -> 5 % 30:eur
+        -> mod 5 30:usd
+        -> mod 5 30:eur
+    ] => throws?
+    passed
     
-    ; ensure -> 5:usd = 5 % 30:usd
-    ; ensure -> 5:eur = 5 % 30:eur
-    ; ensure -> 5:usd = mod 5 30:usd
-    ; ensure -> 5:eur = mod 5 30:eur
-    ; passed
+    a: 30:usd, 'a % 5
+    ensure -> 0 = a
+    ensure -> 0:usd = a
+    passed
     
-    ; error:
-    ; >> Runtime | incompatible operation between quantities
-    ;      error | attempted: mod
-    ;            | with: 5 (energy)  (currency)
-    
-    ; todo: compare with respective types
-    ; a: 30:usd, 'a % 5
-    ; ensure -> 0:usd = a
-    ; passed
-    
-    ; todo: compare with respective types
-    ; todo: fix behavior for :int :quant
-    ; a: 5, 'a % 30:usd
-    ; ensure -> 5:usd = a
-    ; passed
+    a: 5, ensure -> throws? -> 'a % 30:usd
+    passed
     
     
     ; ------ floating
@@ -2023,32 +2020,36 @@ do [
     
     topic "mod - :floating :rational"
     
-    ; a: to :rational [1 2]
-    ; passed
+    a: to :rational [1 2]
+    ensure -> 0 = 2.5 % a
+    ensure -> 0.5 = a % 2.5
+    ensure -> 0 = mod 2.5 a
+    ensure -> 0.5 = mod a 2.5
+    passed
     
-    ; :rational :integer
-    ; a: to :rational [1 2]
-    ; 'a % 2.0
-    ; mod 'a 2.0
-    ; passed
+    a: to :rational [1 2]
+    b: 2.5
     
-    ; :integer :rational
-    ; a: 2.0
-    ; 'a % to :rational [1 2]
-    ; a: 2.0
-    ; mod 'a to :rational [1 2]
-    ; passed
+    'a % 2.5
+    'b % to :rational [1 2]
+    
+    ensure -> 0.5 = a
+    ensure -> 0 = b
+    passed
     
     
     topic "mod - :floating :quantity"
-    ; todo: compare with respective types
-    ; todo: fix behavior for :quant :float
-    ; todo: fix behavior for :float :quant
     
     ensure -> 0.0:usd = 30:usd % 5.0
     ensure -> 0.0:eur = 30:eur % 5.0
     ensure -> 0.0:usd = mod 30:usd 5.0
     ensure -> 0.0:eur = mod 30:eur 5.0
+    passed
+    
+    ensure -> 0.0 = 30:usd % 5.0
+    ensure -> 0.0 = 30:eur % 5.0
+    ensure -> 0.0 = mod 30:usd 5.0
+    ensure -> 0.0 = mod 30:eur 5.0
     passed
     
     ensure -> every? @[
@@ -2059,13 +2060,10 @@ do [
     ] => throws?
     passed
     
-    ; todo: behavior is not completelly right
     a: 30:usd, 'a % 5.0
     ensure -> 0.0:usd = a
     passed
     
-    ; todo: compare with respective types
-    ; todo: fix behavior for :int :quant
     a: 5.0
     ensure -> throws? -> 'a % 30:usd
     passed
@@ -2075,76 +2073,79 @@ do [
      
     topic "mod - :rational :rational"
     
-    ; a: to :rational [3 5]
-    ; b: to :rational [1 2]
-    ; passed
+    a: to :rational [1 2]
+    b: to :rational [5 2]
     
+    ensure -> 0 = b % a
+    ensure -> 0.5 = a % b
+    ensure -> 0 = mod b a
+    ensure -> 0.5 = mod a b
+    passed
     
-    ; a: to :rational [3 5]
-    ; b: to :rational [1 2]
+    a: to :rational [1 2]
+    b: to :rational [5 2]
     
-    ; 'a % b
-    ; passed
+    'a % to :rational [5 2]
+    'b % to :rational [1 2]
+    
+    ensure -> 0.5 = a
+    ensure -> 0 = b
+    passed
     
     
     topic "mod - :rational :quantity"
-    ; todo: fix error raise
 
-    ; ensure -> (to :rational [0 1]) = 30:usd % to :rational [1 2]
-    ; ensure -> (to :rational [0 1]) = 30:eur % to :rational [1 2]
-    ; ensure -> (to :rational [0 1]) = mod 30:usd to :rational [1 2]
-    ; ensure -> (to :rational [0 1]) = mod 30:eur to :rational [1 2]
+    a: to :rational [1 2]
     
-    ; error:
-    ; >> Runtime | incompatible operation between quantities
-    ;      error | attempted: mod
-    ;            | with:  (currency) 1/2 (area)
+    ensure -> 0.0 = 30:usd % a
+    ensure -> 0.0 = 30:eur % a
+    ensure -> 0.0 = mod 30:usd a
+    ensure -> 0.0 = mod 30:eur a
+    passed
     
-    ; ensure -> (to :rational [1 2]) = (to :rational [1 2]) % 30:usd
-    ; ensure -> (to :rational [1 2]) = (to :rational [1 2]) % 30:eur
-    ; ensure -> (to :rational [1 2]) = mod (to :rational [1 2]) 30:usd
-    ; ensure -> (to :rational [1 2]) = mod (to :rational [1 2]) 30:eur
-    ; passed
+    ensure -> 0.0:usd = 30:usd % a
+    ensure -> 0.0:eur = 30:eur % a
+    ensure -> 0.0:usd = mod 30:usd a
+    ensure -> 0.0:eur = mod 30:eur a
+    passed
     
-    ; error:
-    ; >> Runtime | incompatible operation between quantities
-    ;      error | attempted: mod
-    ;            | with: 1/2 (area)  (currency)
+    a: to :rational [1 2]
     
-    ; a: 30:usd, 'a % to :rational [1 2]
-    ; ensure -> (to :rational [0 1]) = a
-    ; passed
+    ensure -> every? @[
+        -> a % 30:usd
+        -> a % 30:eur
+        -> mod a 30:usd
+        -> mod a 30:eur
+    ] => throws?
+    passed
     
-    ; a: to :rational [1 2], 'a % 30:usd
-    ; ensure -> (to :rational [1 2]) = a
-    ; passed
+    a: 30:usd, 'a % to :rational [1 2]
+    ensure -> 0.0:usd = a
+    ensure -> 0 = a
+    passed
+    
+    a: to :rational [1 2]
+    ensure -> throws? -> 'a % 30:usd
+    passed
     
         
     ; ------ quantity
      
     topic "mod - :quantity :quantity"
-    ; todo: compare with respective types
     
-    ensure -> 0 = (20:usd) % (5:usd)
-    ensure -> 0 = (20:usd) % (5:usd)
-    ; BUG!!!!
-    ; ensure -> "0.2m" = ~"|1:m % 20:cm|"
-    ; ensure -> "0.2m" = ~"|1:m % 20:cm|"
-    passed
-    
-    ensure -> 0 = mod (20:usd) (5:usd)
-    ensure -> 0 = mod (20:usd) (5:usd)
-    ; ensure -> "0.2m" = ~"|mod 1:m 20:cm|"
-    ; ensure -> "0.2m" = ~"|mod 1:m 20:cm|"
+    ensure -> 0:usd = 20:usd % 5:usd
+    ensure -> 0:usd = mod 20:usd 5:usd
+    ensure -> 0 = 20:usd % 5:usd
+    ensure -> 0 = mod 20:usd 5:usd
     passed
     
     a: 20:usd, 'a % 5:usd
     ensure -> 0 = a
-    passed
+    ensure -> 0:usd = a
     
-    a: 1:m, 'a % 20:cm
-    ;ensure -> "0.2m" = ~"|a|"
-    passed
+    a: 20:usd, mod 'a 5:usd
+    ensure -> 0 = a
+    ensure -> 0:usd = a
     
 ]
 
@@ -2277,28 +2278,27 @@ do [
     
     
     topic "mul - :integer :quantity"
-    ; todo: compare with respective types
-    ; todo: fix behavior for :int :quant
     ensure -> 150 = 30:usd * 5
     ensure -> 150 = 30:eur * 5
     ensure -> 150 = mul 30:usd 5
     ensure -> 150 = mul 30:eur 5
-    ; ensure -> 150 = 5 * 30:usd
-    ; ensure -> 150 = 5 * 30:eur
-    ; ensure -> 150 = mul 5 30:usd
-    ; ensure -> 150 = mul 5 30:eur
     passed
     
-    ; todo: compare with respective types
+    ensure -> 150:usd = 5 * 30:usd
+    ensure -> 150:eur = 5 * 30:eur
+    ensure -> 150:usd = mul 5 30:usd
+    ensure -> 150:eur = mul 5 30:eur
+    passed
+    
     a: 30:usd, 'a * 5
+    ensure -> 150:usd = a
     ensure -> 150 = a
     passed
     
-    ; todo: compare with respective types
-    ; todo: fix behavior for :int :quant
-    ; a: 5, 'a * 30:usd
-    ; ensure -> 150 = a
-    ; passed
+    a: 5, 'a * 30:usd
+    ensure -> 150:usd = a
+    ensure -> 150 = a
+    passed
     
     
     ; ------ floating
@@ -2384,28 +2384,27 @@ do [
     
     
     topic "mul - :floating :quantity"
-    ; todo: compare with respective types
-    ; todo: fix behavior for :float :quant
     ensure -> 15 = 30:usd * 0.5
     ensure -> 15 = 30:eur * 0.5
     ensure -> 15 = mul 30:usd 0.5
     ensure -> 15 = mul 30:eur 0.5
-    ; ensure -> 15 = 0.5 * 30:usd
-    ; ensure -> 15 = 0.5 * 30:eur
-    ; ensure -> 15 = mul 0.5 30:usd
-    ; ensure -> 15 = mul 0.5 30:eur
     passed
     
-    ; todo: compare with respective types
+    ensure -> 15:usd = 30:usd * 0.5
+    ensure -> 15:eur = 30:eur * 0.5
+    ensure -> 15:usd = mul 30:usd 0.5
+    ensure -> 15:eur = mul 30:eur 0.5
+    passed
+    
     a: 30:usd, 'a * 0.5
+    ensure -> 15:usd = a
     ensure -> 15 = a
     passed
     
-    ; todo: compare with respective types
-    ; todo: fix behavior for :float :quant
-    ; a: 0.5, 'a * 30:usd
-    ; ensure -> 15 = a
-    ; passed
+    a: 0.5
+    ensure -> throws? -> 0.5 * 30:usd
+    ensure -> throws? -> 'a * 30:usd
+    passed
     
     
     ; ------ complex
@@ -2457,7 +2456,6 @@ do [
     passed
     
     topic "mul - :complex :quantity"
-    ; todo: check if :quantity :complex should be possible
 
     ensure -> every? @[
         -> 30:usd * to :complex [1 2]
@@ -2505,12 +2503,19 @@ do [
     
     
     topic "mul - :rational :quantity"
-    ; todo: verify this comparison
 
-    ensure -> "15/1:usd" = ~"|as.code 30:usd * to :rational [1 2]|"
-    ensure -> "15/1:eur" = ~"|as.code 30:eur * to :rational [1 2]|"
-    ensure -> "15/1:usd" = ~"|as.code mul 30:usd to :rational [1 2]|"
-    ensure -> "15/1:eur" = ~"|as.code mul 30:eur to :rational [1 2]|"
+    ensure -> 15 = 30:usd * to :rational [1 2]
+    ensure -> 15 = 30:eur * to :rational [1 2]
+    ensure -> 15 = mul 30:usd to :rational [1 2]
+    ensure -> 15 = mul 30:eur to :rational [1 2]
+    passed
+    
+    ensure -> 15:usd = 30:usd * to :rational [1 2]
+    ensure -> 15:eur = 30:eur * to :rational [1 2]
+    ensure -> 15:usd = mul 30:usd to :rational [1 2]
+    ensure -> 15:eur = mul 30:eur to :rational [1 2]
+    passed
+    
     ensure -> every? @[
         -> (to :rational [1 2]) * 30:usd
         -> (to :rational [1 2]) * 30:eur
@@ -2520,7 +2525,7 @@ do [
     passed
     
     a: 30:usd, 'a * to :rational [1 2]
-    ensure -> "15/1:usd" = ~"|as.code a|"
+    ensure -> 15 = a
     passed
     
     a: to :rational [1 2]
@@ -2531,30 +2536,14 @@ do [
     ; ------ quantity
      
     topic "mul - :quantity :quantity"
-    ; todo: compare with respective types
-    ; todo: how can I test it for different currencies?
-    
-    ; todo:  fix error
-        
-    ; ensure -> 60 = 20:usd * 30:usd
-    ; ensure -> 60 = 30:usd * 20:usd
-    ; passed
-    
-    ; error:
-    ; >> Runtime | File: lib.arithmetic.art
-    ;      error | Line: 2474
-    ;            |
-    ;            | incompatible operation between quantities
-    ;            | attempted: mul
-    ;            | with:  (currency)  (currency)
-    
+       
     ensure -> 0.2:m2 = 1:m * 20:cm
     ensure -> 0.2:m2 = 20:cm * 1:m
     passed
     
-    ; a: 20:usd, 'a * 30:usd
-    ; ensure -> 60 = a 
-    ; passed
+    a: 20:usd
+    ensure -> throws? -> 'a * 3:usd
+    passed
     
     a: 1:m, 'a * 20:cm
     ensure -> 0.2:m2 = a
@@ -2582,10 +2571,6 @@ do [
 
     
     topic "neg - :floating"
-    
-    ; Never do floating comparison, it can give wrong results, even rounding
-    ; Read: What Every Computer Scientist Should Know About Floating-Point Arithmetic - Oracle
-    ;       https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html
     
     ensure -> ((5.5 * neg 1) + 0.1) > neg 5.5
     ensure -> ((5.5 * neg 1) - 0.1) < neg 5.5
@@ -2638,6 +2623,12 @@ do [
     ensure -> "-20EUR" = ~"|neg 20:eur|"
     ensure -> "-20m" = ~"|neg 20:m|"
     ensure -> "-20cm" = ~"|neg 20:cm|"
+    passed
+    
+    ensure -> (neg 20) = neg 20:usd
+    ensure -> (neg 20) = neg 20:eur
+    ensure -> (neg 20) = neg 20:m
+    ensure -> (neg 20) = neg 20:cm
     passed
 
 ]
@@ -2870,16 +2861,19 @@ do [
     
     topic "pow - :floating :quantity"
     
-    ; ensure -> 256:usd = 2:usd ^ 8
-    ; passed
+    ensure -> throws? -> pow 2:usd 8
+    ensure -> throws? -> 2:usd ^ 8
+    passed
     
-    ; error:
-    ; >> Runtime | incompatible operation between quantities
-    ;      error | attempted: pow
-    ;            | with:  (currency) 8 (:integer)
-
-    ; try -> 2 ^ 8:usd
-    ; else -> passed
+    ensure -> 1:m2 = pow 1:m 2
+    ensure -> 1:m2 = 1:m ^ 2
+    passed
+    
+    a: 1:m, 'a ^ 2
+    ensure -> 1:m2 = a
+    
+    ensure -> throws? -> 2 ^ 8:usd
+    passed
 
 ]
 
@@ -2987,29 +2981,28 @@ do [
     passed
     
     
-    topic "sub - :int :quantity"
-    ; todo: compare with respective types
-    ; todo: fix behavior for :int :quant
+    topic "sub - :integer :quantity"
+    
     ensure -> 25 = 30:usd - 5
     ensure -> 25 = 30:eur - 5
     ensure -> 25 = sub 30:usd 5
     ensure -> 25 = sub 30:eur 5
-    ; ensure -> 25 = 5 - 30:usd
-    ; ensure -> 25 = 5 - 30:eur
-    ; ensure -> 25 = sub 5 30:usd
-    ; ensure -> 25 = sub 5 30:eur
     passed
     
-    ; todo: compare with respective types
+    ensure -> 25:usd = 30:usd - 5
+    ensure -> 25:eur = 30:eur - 5
+    ensure -> 25:usd = sub 30:usd 5
+    ensure -> 25:eur = sub 30:eur 5
+    passed
+    
     a: 30:usd, 'a - 5
+    ensure -> 25:usd = a
     ensure -> 25 = a
     passed
     
-    ; todo: compare with respective types
-    ; todo: fix behavior for :int :quant
-    ; a: 5, 'a - 30:usd
-    ; ensure -> 25 = a
-    ; passed
+    a: 60
+    ensure -> throws? -> 'a - 30:usd
+    passed
     
     
     topic "sub - :int :color"
@@ -3022,21 +3015,15 @@ do [
     ] => throws?
     passed  
     
-    ; :integer :color
     a: 1
-    ensure -> throws? -> 'a - #red
-    
-    a: 1
-    ensure -> throws? -> sub 'a #red
-    passed
-    
-    ; :color :integer
-    a: #red
-    ensure -> throws? -> 'a - 1
-    
-    a: #red
-    ensure -> throws? -> sub 'a 1
-    passed
+    b: #red
+    ensure -> every? @[
+        -> 'a - #red
+        -> 'b - 1
+        -> sub 'a #red
+        -> sub 'b 1
+    ] => throws?
+    passed  
     
     
     ; ------ floating
@@ -3121,28 +3108,26 @@ do [
     
     
     topic "sub - :floating :quantity"
-    ; todo: compare with respective types
-    ; todo: fix behavior for :float :quant
+    
     ensure -> 24.5 = 30:usd - 5.5
     ensure -> 24.5 = 30:eur - 5.5
     ensure -> 24.5 = sub 30:usd 5.5
     ensure -> 24.5 = sub 30:eur 5.5
-    ; ensure -> 24.5 = 5.5 - 30:usd
-    ; ensure -> 24.5 = 5.5 - 30:eur
-    ; ensure -> 24.5 = sub 5.5 30:usd
-    ; ensure -> 24.5 = sub 5.5 30:eur
     passed
     
-    ; todo: compare with respective types
+    ensure -> 24.5:usd = 30:usd - 5.5
+    ensure -> 24.5:eur = 30:eur - 5.5
+    ensure -> 24.5:usd = sub 30:usd 5.5
+    ensure -> 24.5:eur = sub 30:eur 5.5
+    passed
+    
     a: 30:usd, 'a - 5.5
     ensure -> 24.5 = a
     passed
     
-    ; todo: compare with respective types
-    ; todo: fix behavior for :float :quant
-    ; a: 5.5, 'a - 30:usd
-    ; ensure -> 24.5 = a
-    ; passed
+    a: 5.5
+    ensure -> throws? -> 'a - 30:usd
+    passed
     
     
     topic "sub - :floating :color"
@@ -3155,21 +3140,15 @@ do [
     ] => throws?
     passed  
     
-    ; :floating :color
     a: 1.5
-    ensure -> throws? -> 'a - #red
-    
-    a: 1.5
-    ensure -> throws? -> sub 'a #red
-    passed
-    
-    ; :color :floating
-    a: #red
-    ensure -> throws? -> 'a - 1.5
-    
-    a: #red
-    ensure -> throws? -> sub 'a 1.5
-    passed
+    b: #red
+    ensure -> every? @[
+        -> 'a - #red
+        -> 'b - 1.5
+        -> sub 'a #red
+        -> sub 'b 1.5
+    ] => throws?
+    passed  
     
     
     ; ------ complex
@@ -3218,7 +3197,6 @@ do [
     
     
     topic "sub - :complex :quantity"
-    ; todo: check if :quantity :complex should be possible
 
     ensure -> every? @[
         -> 30:usd - to :complex [1 2]
@@ -3292,12 +3270,13 @@ do [
     
     
     topic "sub - :rational :quantity"
-    ; todo: verify this comparison
 
-    ensure -> "59/2:usd" = ~"|as.code 30:usd - to :rational [1 2]|"
-    ensure -> "59/2:eur" = ~"|as.code 30:eur - to :rational [1 2]|"
-    ensure -> "59/2:usd" = ~"|as.code sub 30:usd to :rational [1 2]|"
-    ensure -> "59/2:eur" = ~"|as.code sub 30:eur to :rational [1 2]|"
+    ensure -> (59/2):usd = 30:usd - to :rational [1 2]
+    ensure -> (59/2):eur = 30:eur - to :rational [1 2]
+    ensure -> (59/2):usd = sub 30:usd to :rational [1 2]
+    ensure -> (59/2):eur = sub 30:eur to :rational [1 2]
+    passed
+    
     ensure -> every? @[
         -> (to :rational [1 2]) - 30:usd
         -> (to :rational [1 2]) - 30:eur
@@ -3307,7 +3286,7 @@ do [
     passed
     
     a: 30:usd, 'a - to :rational [1 2]
-    ensure -> "59/2:usd" = ~"|as.code a|"
+    ensure -> (59/2):usd = a
     passed
     
     a: to :rational [1 2]
@@ -3368,7 +3347,6 @@ do [
     passed
     
     topic "sub - :color :quantity"
-    ; todo: should reaise an error...
     
     ensure -> throws? -> #red + 30:usd
     ensure -> throws? -> 30:usd + #red
@@ -3386,8 +3364,6 @@ do [
     ; ------ quantity
      
     topic "sub - :quantity :quantity"
-    ; todo: compare with respective types
-    ; todo: how can I test it for different currencies?
     
     ensure -> (neg 10) = 20:usd - 30:usd
     ensure -> 10 = 30:usd - 20:usd
@@ -3396,6 +3372,7 @@ do [
     passed
     
     a: 20:usd, 'a - neg 30:usd
+    ensure -> 50:usd = a 
     ensure -> 50 = a 
     passed
     
