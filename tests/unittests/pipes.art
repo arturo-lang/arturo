@@ -48,3 +48,818 @@ print z
 ; ...and also to:
 z: sub add 2 3 1
 print z
+
+;-----------------------------------------------------------------------------
+; More advanced tests
+;-----------------------------------------------------------------------------
+
+horizLine: repeat "=" 60
+print "\n" ++ horizLine
+
+testNo: 0
+totalNo: 0
+section: function [topic].inline[
+      testNo: 0
+      print ["\n>>" topic]
+]
+
+; what's the best way to verify the pipe transformations work, 
+; other than that they produce the exact same bytecode
+; as the "normal" code?! :)
+check: function [block1 block2].inline[
+      testNo: testNo + 1
+      totalNo: totalNo + 1
+      b1: to.intrepid :bytecode block1
+      b2: to.intrepid :bytecode block2
+
+      if? b1 = b2 -> print [pad to :string testNo 2 ": [+] passed!"]
+      else [
+            print [pad to :string testNo 2 ": [-] failed!"]
+            inspect b1
+            print repeat "-" 10
+            inspect b2
+
+            panic.code:1 "Test failed!"
+      ]
+]
+
+section "Simple call with one param"
+
+      check [print 2] [2 | print]
+      ; also check the exact same thing
+      ; only with newlines in between; you never know...
+      check [
+            print 2
+      ][
+            2 | 
+            print
+      ]
+      check [
+            print
+            2
+      ][
+            2 
+            | 
+            print
+      ]
+      check [
+            print "before"
+            print 2
+            print "after"
+      ][
+            print "before"
+            2 | print
+            print "after"
+      ]
+
+section "Simple call with two params"
+
+      check [add 2 x] [2 | add x]
+      check [
+            add 2 x
+      ][
+            2 | add x
+      ]
+      check [
+            add 2 x
+      ][
+            2 
+            | add x
+      ]
+      check [
+            add
+            2
+            x
+      ][
+            2 
+            | 
+            add x
+      ]
+      check [
+            print "before"
+            add 2 x
+            print "after"
+      ][
+            print "before"
+            2 | add x
+            print "after"
+      ]
+
+section "Assignment with an one-param call"
+
+      check [x: even? 2][x: 2 | even?]
+      check [
+            x: even? 2
+      ][
+            x:
+            2 | even?
+      ]
+      check [
+            x: even? 2
+      ][
+            x: 2 
+            | even?
+      ]
+      check [
+            x: even? 2
+      ][
+            x: 2 
+            | 
+            even?
+      ]
+      check [
+            print "before"
+            x: even? 2
+            print "after"
+      ][
+            print "before"
+            x: 2 | even?
+            print "after"
+      ]
+
+section "Assignment with a two-param call"
+
+      check [x: add 2 z][x: 2 | add z]
+      check [
+            x: add 2 z
+      ][
+            x:
+            2 | add z
+      ]
+      check [
+            x: add 2 z
+      ][
+            x: 2 
+            | add z
+      ]
+      check [
+            x: add 2 z
+      ][
+            x: 2 
+            | 
+            add z
+      ]
+      check [
+            print "before"
+            x: add 2 z
+            print "after"
+      ][
+            print "before"
+            x: 2 | add z
+            print "after"
+      ]
+
+section "Call as initial argument"
+
+      check [print 1..3][1..3 | print]
+      check [
+            print 1..3
+      ][
+            1..3 | print
+      ]
+      check [
+            print 1..3
+      ][
+            1..3 
+            | print
+      ]
+      check [
+            print 1..3
+      ][
+            1..3 
+            | 
+            print
+      ]
+      check [
+            print "before"
+            print 1..3
+            print "after"
+      ][
+            print "before"
+            1..3 | print
+            print "after"
+      ]
+
+section "Assignment with call as initial argument"
+
+      check [x: max 1..10][x: 1..10 | max]
+      check [
+            x: max 1..10
+      ][
+            x:
+            1..10 | max
+      ]
+      check [
+            x: max 1..10
+      ][
+            x: 1..10 
+            | max
+      ]
+      check [
+            x: max 1..10
+      ][
+            x: 1..10 
+            | 
+            max
+      ]
+      check [
+            print "before"
+            x: max 1..10
+            print "after"
+      ][
+            print "before"
+            x: 1..10 | max
+            print "after"
+      ]
+
+section "Pipes + Attributes"
+
+      check [split.words "hello world"]["hello world" | split.words]
+      check [
+            split.words "hello world"
+      ][
+            "hello world" | split.words
+      ]
+      check [
+            split.words "hello world"
+      ][
+            "hello world" 
+            | split.words
+      ]
+      check [
+            split.words "hello world"
+      ][
+            "hello world" 
+            | 
+            split.words
+      ]
+      check [
+            print "before"
+            split.words "hello world"
+            print "after"
+      ][
+            print "before"
+            "hello world" | split.words
+            print "after"
+      ]
+      check [
+            print "before"
+            split.words "hello world"
+            print "after"
+            z: split.words "one two three"
+            print "final"
+      ][
+            print "before"
+            "hello world" | split.words
+            print "after"
+            z: split.words "one two three"
+            print "final"
+      ]
+
+section "Pipes + Attributes (+ assignments)"
+
+      check [x: split.words "hello world"][x: "hello world" | split.words]
+      check [
+            x: split.words "hello world"
+      ][
+            x:
+            "hello world" | split.words
+      ]
+      check [
+            x: split.words "hello world"
+      ][
+            x: "hello world" 
+            | split.words
+      ]
+      check [
+            x: split.words "hello world"
+      ][
+            x: "hello world" 
+            | 
+            split.words
+      ]
+      check [
+            print "before"
+            x: split.words "hello world"
+            print "after"
+      ][
+            print "before"
+            x: "hello world" | split.words
+            print "after"
+      ]
+      check [
+            print "before"
+            x: split.words "hello world"
+            print "after"
+            z: split.words "one two three"
+            print "final"
+      ][
+            print "before"
+            x: "hello world" | split.words
+            print "after"
+            z: split.words "one two three"
+            print "final"
+      ]
+
+section "Pipes + AttributeLabels"
+
+      check [split.every:3 "hello world"]["hello world" | split.every:3]
+      check [
+            split.every:3 "hello world"
+      ][
+            "hello world" | split.every:3
+      ]
+      check [
+            split.every:3 "hello world"
+      ][
+            "hello world" 
+            | split.every:3
+      ]
+      check [
+            split.every:3 "hello world"
+      ][
+            "hello world" 
+            | 
+            split.every:3
+      ]
+      check [
+            print "before"
+            split.every:3 "hello world"
+            print "after"
+      ][
+            print "before"
+            "hello world" | split.every:3
+            print "after"
+      ]
+      check [
+            print "before"
+            split.every:3 "hello world"
+            print "after"
+            z: split.words "one two three"
+            print "final"
+      ][
+            print "before"
+            "hello world" | split.every:3
+            print "after"
+            z: split.words "one two three"
+            print "final"
+      ]
+      check [
+            print split.every:3 "abcde fghijklmnop qrstuvwxyz"
+      ][
+            "abcde fghijklmnop qrstuvwxyz" | split.every:3 | print
+      ]
+      check [
+            print "before"
+            print split.every:3 "abcde fghijklmnop qrstuvwxyz"
+            print "after"
+      ][
+            print "before"
+            "abcde fghijklmnop qrstuvwxyz" | split.every:3 | print
+            print "after"
+      ]
+
+section "Pipes + AttributeLabels (+ assignments)"
+
+      check [x: split.every:3 "hello world"][x: "hello world" | split.every:3]
+      check [
+            x: split.every:3 "hello world"
+      ][
+            x:
+            "hello world" | split.every:3
+      ]
+      check [
+            x: split.every:3 "hello world"
+      ][
+            x: "hello world" 
+            | split.every:3
+      ]
+      check [
+            x: split.every:3 "hello world"
+      ][
+            x: "hello world" 
+            | 
+            split.every:3
+      ]
+      check [
+            print "before"
+            x: split.every:3 "hello world"
+            print "after"
+      ][
+            print "before"
+            x: "hello world" | split.every:3
+            print "after"
+      ]
+      check [
+            print "before"
+            x: split.every:3 "hello world"
+            print "after"
+            z: split.words "one two three"
+            print "final"
+      ][
+            print "before"
+            x: "hello world" | split.every:3
+            print "after"
+            z: split.words "one two three"
+            print "final"
+      ]
+      check [
+            components: split.every:3 "abcde fghijklmnop qrstuvwxyz"
+      ][
+            components: "abcde fghijklmnop qrstuvwxyz" | split.every:3
+      ]
+      check [
+            print "before"
+            components: split.every:3 "abcde fghijklmnop qrstuvwxyz"
+            print "after"
+      ][
+            print "before"
+            components: "abcde fghijklmnop qrstuvwxyz" | split.every:3
+            print "after"
+      ]
+
+section "Pipes + multiple attributes"
+
+      check [
+            sort.descending.by:'name @[#[name:"John" surname: "Doe"] #[name:"Jane" surname: "Doe"]]
+      ][
+            @[#[name:"John" surname: "Doe"] #[name:"Jane" surname: "Doe"]] | sort.descending.by:'name
+      ]
+      check [
+            sort.descending.by:'name @[#[name:"John" surname: "Doe"] #[name:"Jane" surname: "Doe"]]
+      ][
+            @[
+                  #[name:"John" surname: "Doe"] 
+                  #[name:"Jane" surname: "Doe"]
+            ] | 
+            sort.descending.by:'name
+      ]
+      check [
+            sort.descending.by:'name @[#[name:"John" surname: "Doe"] #[name:"Jane" surname: "Doe"]]
+      ][
+            @[
+                  #[name:"John" surname: "Doe"] 
+                  #[name:"Jane" surname: "Doe"]
+            ] 
+            | 
+            sort
+            .descending
+            .by:'name
+      ]
+      check [
+            match.capture.named.in:0..20 "x: 123, y: 456 - z: 789, w: 012" {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
+      ][
+            "x: 123, y: 456 - z: 789, w: 012" | match.capture.named.in:0..20 {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
+      ]
+      check [
+            match.capture.named.in:0..20 "x: 123, y: 456 - z: 789, w: 012" {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
+      ][
+            "x: 123, y: 456 - z: 789, w: 012" 
+            | 
+            match.capture.named.in:0..20 
+            {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
+      ]
+      check [
+            match.capture.named.in:0..20 "x: 123, y: 456 - z: 789, w: 012" {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
+      ][
+            "x: 123, y: 456 - z: 789, w: 012" 
+            | 
+            match
+            .capture
+            .named
+            .in:0..20 
+            {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
+      ]
+      check [
+            print "before"
+            match.capture.named.in:0..20 "x: 123, y: 456 - z: 789, w: 012" {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
+            print "after"
+      ][
+            print "before"
+            "x: 123, y: 456 - z: 789, w: 012" 
+            | 
+            match
+            .capture
+            .named
+            .in:0..20 
+            {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
+            print "after"
+      ]
+
+section "Pipes + multiple attributes (+ assignments)"
+
+      check [
+            z: sort.descending.by:'name @[#[name:"John" surname: "Doe"] #[name:"Jane" surname: "Doe"]]
+      ][
+            z: @[#[name:"John" surname: "Doe"] #[name:"Jane" surname: "Doe"]] | sort.descending.by:'name
+      ]
+      check [
+            w: sort.descending.by:'name @[#[name:"John" surname: "Doe"] #[name:"Jane" surname: "Doe"]]
+      ][
+            w: @[
+                  #[name:"John" surname: "Doe"] 
+                  #[name:"Jane" surname: "Doe"]
+            ] | 
+            sort.descending.by:'name
+      ]
+      check [
+            y: sort.descending.by:'name @[#[name:"John" surname: "Doe"] #[name:"Jane" surname: "Doe"]]
+      ][
+            y: @[
+                  #[name:"John" surname: "Doe"] 
+                  #[name:"Jane" surname: "Doe"]
+            ] 
+            | 
+            sort
+            .descending
+            .by:'name
+      ]
+      check [
+            z: match.capture.named.in:0..20 "x: 123, y: 456 - z: 789, w: 012" {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
+      ][
+            z: "x: 123, y: 456 - z: 789, w: 012" | match.capture.named.in:0..20 {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
+      ]
+      check [
+            w: match.capture.named.in:0..20 "x: 123, y: 456 - z: 789, w: 012" {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
+      ][
+            w: "x: 123, y: 456 - z: 789, w: 012" 
+            | 
+            match.capture.named.in:0..20 
+            {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
+      ]
+      check [
+            y: match.capture.named.in:0..20 "x: 123, y: 456 - z: 789, w: 012" {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
+      ][
+            y: "x: 123, y: 456 - z: 789, w: 012" 
+            | 
+            match
+            .capture
+            .named
+            .in:0..20 
+            {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
+      ]
+      check [
+            print "before"
+            y: match.capture.named.in:0..20 "x: 123, y: 456 - z: 789, w: 012" {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
+            print "after"
+      ][
+            print "before"
+            y: "x: 123, y: 456 - z: 789, w: 012" 
+            | 
+            match
+            .capture
+            .named
+            .in:0..20 
+            {/\w: (?<numA>\d+), \w: (?<numB>\d+)/}
+            print "after"
+      ]
+
+section "Using pipes + iterators"
+
+      check [
+            print select map 1..10 'x -> x * 3 => even?
+      ][
+            1..10 | map 'x -> x * 3 
+                  | select => even?
+                  | print
+      ]
+      check [
+            print "before"
+            print select map 1..10 'x -> x * 3 => even?
+            print "after"
+      ][
+            print "before"
+            1..10 | 
+                  map 'x 
+                  -> x * 3 
+                  | 
+                  select 
+                  => even?
+                  | 
+                  print
+            print "after"
+      ]
+
+section "Pipes + Random newlines everywhere"
+
+      check [
+            print map select.first:10 1..∞ => prime? 'x -> 2 * x
+      ][
+            1..∞ | select.first:10 => prime?
+                 | map 'x -> 2 * x
+                 | print
+      ]
+      check [
+            print map select.first:10 1..∞ => prime? 'x -> 2 * x
+      ][
+            1..∞ 
+            | select.first:10 => prime?
+            
+            | map 'x 
+            
+            -> 2 * x
+                 
+                 
+            | 
+            print
+      ]
+            check [
+            print map select.first:10 1..∞ => prime? 'x -> 2 * x
+      ][
+            1..
+            ∞ 
+            
+            
+            | 
+            
+            select.first:10 
+            
+            => prime?
+            
+            | 
+            
+            map 
+            
+            'x 
+            
+            -> 
+            
+            2 * x
+                 
+                 
+            | 
+
+
+            print
+      ]
+
+section "Real-world testing"
+
+      ; from: examples/rosetta/smarandache prime-digital sequence.art
+      check [
+            spds: select.first:100 2..∞ 'x ->
+                        and? -> prime? x
+                             -> every? digits x => prime?
+            
+            print "First 25 SPDS primes:"
+            print first.n: 25 spds
+
+            print ""
+            print ["100th SPDS prime:" last spds]
+      ][
+            spds: 2..∞ | select.first:100 'x ->
+                        and? -> prime? x
+                             -> every? digits x => prime?
+
+            print "First 25 SPDS primes:"
+            print first.n: 25 spds
+
+            print ""
+            print ["100th SPDS prime:" last spds]
+      ]
+
+      ; from: examples/rosetta/concatenate two primes is also prime.art
+      check [
+            primesBelow100: select 1..100 => prime?
+            allPossibleConcats: permutate.repeat.by:2 primesBelow100
+
+            concatPrimes: unique sort select map allPossibleConcats 'x -> to :integer (to :string x\[0]) ++ (to :string x\[1]) => prime?
+
+            print ["Found" size concatPrimes "concatenations of primes below 100:"]
+            loop split.every: 16 concatPrimes 'x ->
+            print map x 's -> pad to :string s 4
+      ][
+            primesBelow100: select 1..100 => prime?
+            allPossibleConcats: permutate.repeat.by:2 primesBelow100
+
+            concatPrimes: allPossibleConcats | map 'x -> to :integer (to :string x\[0]) ++ (to :string x\[1])
+                                             | select => prime?
+                                             | sort
+                                             | unique
+
+            print ["Found" size concatPrimes "concatenations of primes below 100:"]
+            loop split.every: 16 concatPrimes 'x ->
+            print map x 's -> pad to :string s 4
+      ]
+
+      ; from: examples/rosetta/double twin primes.art
+      check [
+            r: range .step: 2 1 1000
+            loop select map r 'x -> @[x x+2 x+6 x+8] => [every? & => prime?] => print
+      ][
+            r: range .step: 2 1 1000
+            r | map 'x -> @[x x+2 x+6 x+8]
+              | select => [every? & => prime?]
+              | loop => print
+      ]
+
+      ; from: examples/rosetta/find squares n where n+1 is prime.art
+      check [
+            print map select 1..31 'x -> prime? 1 + x^2 'x -> x^2
+      ][
+            1..31 | select 'x -> prime? 1 + x^2
+                  | map 'x -> x^2
+                  | print
+      ]
+
+      ; from: examples/rosetta/sequence of primorial numbers.art
+      check [
+            productUpTo: #["1": 1]
+            primorials: unique map 2..4000 'x ->
+            productUpTo\[x]: <= productUpTo\[x-1] * (prime? x)? -> x -> 1
+
+            print map select.first:20 map.with:'i primorials
+                  'x -> @[i x]
+                  'x -> or? [prime? x\1 + 1][prime? x\1 - 1]
+                  'x -> x\0 + 1
+      ][
+            productUpTo: #["1": 1]
+            primorials: unique map 2..4000 'x ->
+            productUpTo\[x]: <= productUpTo\[x-1] * (prime? x)? -> x -> 1
+
+            primorials | map.with:'i 'x -> @[i x]
+                       | select.first:20 'x -> or? [prime? x\1 + 1][prime? x\1 - 1]
+                       | map 'x -> x\0 + 1
+                       | print
+      ]
+
+      ; from: examples/rosetta/left factorials.art
+      check [
+            lfactorial: function [n][
+                  if zero? n -> return 0
+                  fold 0..dec n [x y] -> x + factorial y
+            ]
+
+            print "First eleven:"
+            print map 0..10 => lfactorial
+
+            print "\n20th through 110th by tens:"
+            r: range.step: 10 20 110
+            loop map r => lfactorial => print
+
+            print "\nDigits in 1,000th through 10,000th by thousands:"
+            r: range.step: 1000 1000 10000
+            print map r 'x -> size ~"|lfactorial x|"
+      ][
+            lfactorial: function [n][
+                  if zero? n -> return 0
+                  fold 0..dec n [x y] -> x + factorial y
+            ]
+
+            print "First eleven:"
+            0..10 | map => lfactorial
+                  | print
+
+            print "\n20th through 110th by tens:"
+            r: range.step: 10 20 110
+            r | map => lfactorial
+              | loop => print
+
+            print "\nDigits in 1,000th through 10,000th by thousands:"
+            r: range.step: 1000 1000 10000
+            r | map'x -> size ~"|lfactorial x|"
+              | print
+      ]
+
+      ; from: examples/rosetta/ormiston pairs.art
+      check [
+            nextPrime: $[n][
+                  ensure -> and? n > 2 odd? n
+                  range .step:2 2+n ∞ | select.first => prime?
+                                      | last
+            ]
+
+            anagrams?: $[a b] [equal? tally to :string a tally to :string b]
+
+            ormiston?: $[n] [and? -> prime? n -> anagrams? n nextPrime n]
+
+            print "First 30 Ormiston pairs:"
+            loop map select.first:30 range.step:2 3 ∞ => ormiston? 'x -> @[x nextPrime x] [a b c d e] -> print [a b c d e]
+
+            count: enumerate range .step: 2 3 1e6 => ormiston?
+            print ~"\n|count| ormiston pairs less than a million"
+      ][
+            nextPrime: $[n][
+                  ensure -> and? n > 2 odd? n
+                  range .step:2 2+n ∞ | select.first => prime?
+                                      | last
+            ]
+
+            anagrams?: $[a b] [equal? tally to :string a tally to :string b]
+
+            ormiston?: $[n] [and? -> prime? n -> anagrams? n nextPrime n]
+
+            print "First 30 Ormiston pairs:"
+            range .step: 2 3 ∞ | select .first:30 => ormiston?
+                               | map 'x -> @[x nextPrime x]
+                               | loop [a b c d e] -> print [a b c d e]
+
+            count: range .step: 2 3 1e6 | enumerate => ormiston?
+            print ~"\n|count| ormiston pairs less than a million"
+      ]
+
+;;;;;;;;
+
+print "\n" ++ horizLine
+print ["Tests passed:" totalNo "/" totalNo]
+print horizLine

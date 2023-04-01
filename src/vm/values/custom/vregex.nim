@@ -154,3 +154,9 @@ proc hash*(rx: VRegex): Hash =
         hash($(rx))
     else:
         hash(rx.pattern)
+
+func `==`*(a, b: VRegex): bool =
+    when defined(WEB):
+        $(a) == $(b)
+    else:
+        a.pattern == b.pattern
