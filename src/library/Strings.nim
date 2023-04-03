@@ -50,6 +50,8 @@ when not defined(WEB):
 #=======================================
 
 template replaceStrWith(str: var string, src: Value, dst: Value): untyped =
+    requireValue(src, {String,Regex})
+    requireValue(dst, {String})
     if src.kind==String:
         str = str.replaceAll(src.s, dst.s)
     elif src.kind==Regex:
