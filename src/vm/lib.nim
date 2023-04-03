@@ -232,7 +232,7 @@ proc showWrongValueTypeError*(fName: string, actual: Value, expected: set[ValueK
         else:
             expected
 
-    RuntimeError_IncompatibleBlockValue("gcd", actualStr, acceptedStr)
+    RuntimeError_IncompatibleBlockValue(fName, actualStr, acceptedStr)
 
 template require*(name: string, spec: untyped): untyped =
     ## make sure that the given arguments match the given spec, 
