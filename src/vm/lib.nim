@@ -224,6 +224,16 @@ proc showWrongAttributeTypeError*(fName: string, aName: string, actual:ValueKind
     let actualStr = stringify(actual)
     RuntimeError_WrongAttributeType(fName, aName, actualStr, acceptedStr)
 
+proc showWrongValueTypeError*(fName: string, actual: Value, expected: set[ValueKind] | string) =
+    let actualStr = valueKind(actual)#$(actual) & " (" & valueKind(actual) & ")"
+    let acceptedStr = 
+        when expected is set[ValueKind]:
+            (toSeq(expected.items)).map(proc(x:ValueKind):string = stringify(x)).join(" ")
+        else:
+            expected
+
+    RuntimeError_IncompatibleBlockValue("gcd", actualStr, acceptedStr)
+
 template require*(name: string, spec: untyped): untyped =
     ## make sure that the given arguments match the given spec, 
     ## before passing the control to the function
@@ -253,3 +263,10 @@ template require*(name: string, spec: untyped): untyped =
                 when not (ANY in static spec[2][1]):
                     if unlikely(not (zKind in (static spec[2][1]))):
                         showWrongArgumentTypeError(currentBuiltinName, 2, [x,y,z], spec)
+
+template requireValue*(v: Value, expected: set[ValueKind], message: set[ValueKind] | string = {}): untyped = 
+    if unlikely(v.kind notin expected):
+        when message is string:
+            showWrongValueTypeError(currentBuiltinName, v, message)
+        else:
+            showWrongValueTypeError(currentBuiltinName, v, expected)
