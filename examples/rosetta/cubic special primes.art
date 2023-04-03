@@ -1,0 +1,11 @@
+[p n]: [2 1]
+prints -> 2
+
+until -> 15000 =< p + n^3 [
+    if? prime? p + n^3 [
+        'p + n^3
+        n: 1
+        prints -> p
+    ]
+    else -> 'n+1
+]
