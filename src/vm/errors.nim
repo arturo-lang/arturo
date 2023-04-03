@@ -256,6 +256,12 @@ proc RuntimeError_IncompatibleValueType*(functionName: string, tp: string, expec
           "incompatible value type for " & tp & ";" &
           "expected: " & expected
 
+proc RuntimeError_IncompatibleBlockValue*(functionName: string, val: string, expected: string) =
+    panic RuntimeError,
+          "cannot perform _" & (functionName) & "_;" &
+          "incompatible value in block argument: " & val & ";" &
+          "expected: " & expected
+
 proc RuntimeError_InvalidOperation*(operation: string, argA, argB: string) =
     panic RuntimeError,
             "invalid operation _" & operation & "_;" &
