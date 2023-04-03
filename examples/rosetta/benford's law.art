@@ -1,0 +1,15 @@
+; by @Krenium
+
+fib: [a b]: <= [0 1]
+do.times:998 -> [a b]: @[b 'fib ++ <= a+b]
+
+leading: fib | map 'x -> first ~"|x|"
+             | tally
+
+print "digit    actual    expected"
+loop 1..9 'd ->
+    print [
+        pad.right ~"|d|" 8
+        pad.right ~"|leading\[d] // 1000|" 9
+        log 1 + 1//d 10
+    ]
