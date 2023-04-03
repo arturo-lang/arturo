@@ -225,7 +225,7 @@ proc showWrongAttributeTypeError*(fName: string, aName: string, actual:ValueKind
     RuntimeError_WrongAttributeType(fName, aName, actualStr, acceptedStr)
 
 proc showWrongValueTypeError*(fName: string, actual: Value, expected: set[ValueKind] | string) =
-    let actualStr = valueKind(actual)#$(actual) & " (" & valueKind(actual) & ")"
+    let actualStr = valueKind(actual)
     let acceptedStr = 
         when expected is set[ValueKind]:
             (toSeq(expected.items)).map(proc(x:ValueKind):string = stringify(x)).join(" ")
@@ -270,3 +270,4 @@ template requireValue*(v: Value, expected: set[ValueKind], message: set[ValueKin
             showWrongValueTypeError(currentBuiltinName, v, message)
         else:
             showWrongValueTypeError(currentBuiltinName, v, expected)
+    v
