@@ -1,3 +1,5 @@
+; by @Krenium
+
 words: read.lines relative "unixdict.txt" | select => [match? & {/^[a-z]+$/}]
 
 nums: "22233344455566677778889999"
