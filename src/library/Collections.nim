@@ -2435,9 +2435,9 @@ proc defineSymbols*() =
                         elif not defined(NOGMP):
                             push(newLogical(isZero(x.bi)))
                     else:
-                        push(newLogical(x == I0))
+                        push(newLogical(x.i == 0))
                 of Floating:
-                    push(newLogical(x == F0))
+                    push(newLogical(x.f == 0.0))
                 of String:
                     push(newLogical(runeLen(x.s) == 0))
                 of Block:
