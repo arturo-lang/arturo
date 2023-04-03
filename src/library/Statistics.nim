@@ -213,9 +213,9 @@ proc defineSymbols*() =
         """:
             #=======================================================
             if (hadAttr("sample")):
-                push newFloating(varianceS(x.a.map((z)=>asFloat(z))))
+                push newFloating(varianceS(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
             else:
-                push newFloating(variance(x.a.map((z)=>asFloat(z))))
+                push newFloating(variance(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
 
 #=======================================
 # Add Library
