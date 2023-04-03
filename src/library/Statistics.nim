@@ -185,9 +185,9 @@ proc defineSymbols*() =
         """:
             #=======================================================
             if (hadAttr("sample")):
-                push newFloating(skewnessS(x.a.map((z)=>asFloat(z))))
+                push newFloating(skewnessS(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
             else:
-                push newFloating(skewness(x.a.map((z)=>asFloat(z))))
+                push newFloating(skewness(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
 
     builtin "variance",
         alias       = unaliased,
