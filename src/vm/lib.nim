@@ -264,10 +264,9 @@ template require*(name: string, spec: untyped): untyped =
                     if unlikely(not (zKind in (static spec[2][1]))):
                         showWrongArgumentTypeError(currentBuiltinName, 2, [x,y,z], spec)
 
-template requireValue*(v: Value, expected: set[ValueKind], message: set[ValueKind] | string = {}): untyped = 
+template requireValue*(v: Value, expected: set[ValueKind], message: set[ValueKind] | string = {}) = 
     if unlikely(v.kind notin expected):
         when message is string:
             showWrongValueTypeError(currentBuiltinName, v, message)
         else:
             showWrongValueTypeError(currentBuiltinName, v, expected)
-    v
