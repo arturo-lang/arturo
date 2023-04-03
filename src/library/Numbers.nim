@@ -796,15 +796,13 @@ proc defineSymbols*() =
             print gcd [48 60 120]         ; 12
         """:
             #=======================================================
-            var current = x.a[0]
-            requireValue(current, {Integer})
+            var current = requireValue(x.a[0], {Integer})
 
             var i = 1
             # TODO(Numbers\gcd) not working for Web builds
             # labels: web,enhancement
             while i<x.a.len:
-                let elem {.cursor.} = x.a[i]
-                requireValue(elem, {Integer})
+                let elem {.cursor.} = requireValue(x.a[i], {Integer})
 
                 if current.iKind==NormalInteger:
                     if elem.iKind==BigInteger:
