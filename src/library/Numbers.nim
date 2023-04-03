@@ -797,23 +797,27 @@ proc defineSymbols*() =
         """:
             #=======================================================
             var current = x.a[0]
+            requireValue(current, {Integer})
 
             var i = 1
             # TODO(Numbers\gcd) not working for Web builds
             # labels: web,enhancement
             while i<x.a.len:
+                let elem {.cursor.} = x.a[i]
+                requireValue(elem, {Integer})
+
                 if current.iKind==NormalInteger:
-                    if x.a[i].iKind==BigInteger:
+                    if elem.iKind==BigInteger:
                         when not defined(NOGMP):
-                            current = newInteger(gcd(current.i, x.a[i].bi))
+                            current = newInteger(gcd(current.i, elem.bi))
                     else:
-                        current = newInteger(gcd(current.i, x.a[i].i))
+                        current = newInteger(gcd(current.i, elem.i))
                 else:
                     when not defined(NOGMP):
-                        if x.a[i].iKind==BigInteger:
-                            current = newInteger(gcd(current.bi, x.a[i].bi))
+                        if elem.iKind==BigInteger:
+                            current = newInteger(gcd(current.bi, elem.bi))
                         else:
-                            current = newInteger(gcd(current.bi, x.a[i].i))
+                            current = newInteger(gcd(current.bi, elem.i))
                 inc(i)
 
             push(current)
