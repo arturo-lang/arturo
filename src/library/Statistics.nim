@@ -89,9 +89,9 @@ proc defineSymbols*() =
         """:
             #=======================================================
             if (hadAttr("sample")):
-                push newFloating(standardDeviationS(x.a.map((z)=>asFloat(z))))
+                push newFloating(standardDeviationS(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
             else:
-                push newFloating(standardDeviation(x.a.map((z)=>asFloat(z))))
+                push newFloating(standardDeviation(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
 
     builtin "kurtosis",
         alias       = unaliased,
