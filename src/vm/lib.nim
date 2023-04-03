@@ -265,8 +265,9 @@ template require*(name: string, spec: untyped): untyped =
                         showWrongArgumentTypeError(currentBuiltinName, 2, [x,y,z], spec)
 
 template requireValue*(v: Value, expected: set[ValueKind], message: set[ValueKind] | string = {}) = 
-    if unlikely(v.kind notin expected):
-        when message is string:
-            showWrongValueTypeError(currentBuiltinName, v, message)
-        else:
-            showWrongValueTypeError(currentBuiltinName, v, expected)
+    when not defined(PORTABLE):
+        if unlikely(v.kind notin expected):
+            when message is string:
+                showWrongValueTypeError(currentBuiltinName, v, message)
+            else:
+                showWrongValueTypeError(currentBuiltinName, v, expected)
