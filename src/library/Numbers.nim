@@ -29,6 +29,7 @@ when not defined(NOGMP):
 
 import helpers/maths
 import helpers/ranges
+import vm/values/custom/vrange
 
 import vm/errors
 
@@ -392,30 +393,38 @@ proc defineSymbols*() =
             #=======================================================
             push(newInteger(int(ceil(asFloat(x)))))
 
+
     builtin "clamp",
         alias       = unaliased, 
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "force value within given range",
         args        = {
-            "number" : {Integer,Floating},
-            "min"    : {Integer,Floating},
-            "max"    : {Integer,Floating}
+            "number" : {Integer, Floating},
+            "range"  : {Range}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating},
+        returns     = {Integer, Floating},
         example     = """
-            clamp 2 1 3             ; 2
-            clamp 0 1 3             ; 1
-            clamp 4 1 3             ; 3
+            clamp 2 1..3                ; 2
+            clamp 0 1..3                ; 1
+            clamp 4 1..3                ; 3
+            clamp 4 3..1                ; 3
+            clamp 5 range.step: 2 0 5   ; 4
         """:
             #=======================================================
-            if x < y:
-                push(y)
-            elif x > z:
-                push(z)
+            if not y.rng.numeric:
+                RuntimeError_IncompatibleValueType("clamp", valueKind(y), "numeric range")
+            
+            if x.kind == Integer:
+                if (let minElem = y.rng.min()[1]; x.i < minElem.i): push(minElem)
+                elif (let maxElem = y.rng.max()[1]; x.i > maxElem.i): push(maxElem)
+                else: push(x)
             else:
-                push(x)
+                if (let minElem = y.rng.min()[1]; x.f < float(minElem.i)): push(minElem)
+                elif (let maxElem = y.rng.max()[1]; x.f > float(maxElem.i)): push(maxElem)
+                else: push(x)
+             
 
     builtin "conj",
         alias       = unaliased, 

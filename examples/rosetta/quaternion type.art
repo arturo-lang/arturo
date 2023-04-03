@@ -1,0 +1,42 @@
+; by @Krenium
+
+qnorm: $ => [sqrt fold & [x y] -> x + y*y]
+
+qneg: $ => [map & => neg]
+
+qconj: $[q] [@[q\0] ++ qneg drop q 1]
+
+qaddr: function [q r][
+    [a b c d]: q
+    @[a+r b c d]
+]
+
+qadd: $ => [map couple & & => sum]
+
+qmulr: $[q r] [map q'x -> x*r]
+
+qmul: function [q1 q2][
+    [a1 b1 c1 d1]: q1
+    [a2 b2 c2 d2]: q2
+    @[
+        (((a1*a2) - b1*b2) - c1*c2) - d1*d2,
+        (((a1*b2) + b1*a2) + c1*d2) - d1*c2,
+        (((a1*c2) - b1*d2) + c1*a2) + d1*b2,
+        (((a1*d2) + b1*c2) - c1*b2) + d1*a2
+    ]
+]
+
+; --- test quaternions ---
+q:  [1 2 3 4]
+q1: [2 3 4 5]
+q2: [3 4 5 6]
+r: 7
+
+print ['qnorm q '= qnorm q]
+print ['qneg q '= qneg q]
+print ['qconj q '= qconj q]
+print ['qaddr q r '= qaddr q r]
+print ['qmulr q r '= qmulr q r]
+print ['qadd q1 q2 '= qadd q1 q2]
+print ['qmul q1 q2 '= qmul q1 q2]
+print ['qmul q2 q1 '= qmul q2 q1]

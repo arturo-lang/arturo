@@ -6,7 +6,7 @@
 # @file: library/Converters.nim
 #=======================================================
 
-## The main Converters module 
+## The main Converters module
 ## (part of the standard library)
 
 #=======================================
@@ -65,7 +65,7 @@ proc generateCustomObject(prot: Prototype, arguments: ValueArray | ValueDict): V
             # callFunction(initMethod)
     )
 
-template throwCannotConvert(): untyped = 
+template throwCannotConvert(): untyped =
     RuntimeError_CannotConvert(codify(y), $(y.kind), (if x.tpKind==UserType: x.ts.name else: $(x.t)))
 
 template throwConversionFailed(): untyped =
@@ -108,8 +108,8 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                     of Floating: return newFloating(float(y.i))
                     of Rational: return newRational(y.i)
                     of Char: return newChar(toUTF8(Rune(y.i)))
-                    of String: 
-                        if y.iKind==NormalInteger: 
+                    of String:
+                        if y.iKind==NormalInteger:
                             if (not aFormat.isNil):
                                 try:
                                     var ret: string
@@ -120,7 +120,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                             else:
                                 return newString($(y.i))
                         else:
-                            when not defined(NOGMP): 
+                            when not defined(NOGMP):
                                 return newString($(y.bi))
                     of Quantity:
                         if checkAttr("unit", doValidate=false):
@@ -142,7 +142,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                     of Integer: return newInteger(int(y.f))
                     of Rational: return newRational(y.f)
                     of Char: return newChar(chr(int(y.f)))
-                    of String: 
+                    of String:
                         if (not aFormat.isNil):
                             try:
                                 var ret: string
@@ -163,7 +163,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
 
             of Complex:
                 case tp:
-                    of String: 
+                    of String:
                         if (not aFormat.isNil):
                             try:
                                 var ret: string
@@ -189,7 +189,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                         return newInteger(toInt(y.rat))
                     of Floating:
                         return newFloating(toFloat(y.rat))
-                    of String: 
+                    of String:
                         return newString($(y))
                     of Block:
                         return newBlock(@[
@@ -216,7 +216,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
 
             of String:
                 case tp:
-                    of Logical: 
+                    of Logical:
                         if y.s=="true": return VTRUE
                         elif y.s=="false": return VFALSE
                         else: throwConversionFailed()
@@ -278,7 +278,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                         var dateFormat = "yyyy-MM-dd'T'HH:mm:sszzz"
                         if (not aFormat.isNil):
                             dateFormat = aFormat.s
-                        
+
                         let timeFormat = initTimeFormat(dateFormat)
                         try:
                             return newDate(parse(y.s, timeFormat))
@@ -287,11 +287,11 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                     else:
                         throwCannotConvert()
 
-            of Literal, 
+            of Literal,
                Word,
                Label:
                 case tp:
-                    of String: 
+                    of String:
                         return newString(y.s)
                     of Literal:
                         return newLiteral(y.s)
@@ -303,7 +303,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
             of Attribute,
                AttributeLabel:
                 case tp:
-                    of String: 
+                    of String:
                         return newString(y.s)
                     of Literal:
                         return newLiteral(y.s)
@@ -326,9 +326,21 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
             of Block:
                 case tp:
                     of Complex:
-                        return newComplex(y.a[0], y.a[1])
+                        if (y.a.len == 2 and
+                            y.a[0].kind in {Floating, Integer} and
+                            y.a[1].kind in {Floating, Integer}):
+                            return newComplex(y.a[0], y.a[1])
+                        else:
+                            throwCannotConvert()
                     of Rational:
-                        return newRational(y.a[0], y.a[1])
+                        if (y.a.len == 2 and
+                            y.a[0].kind in {Floating, Integer} and
+                            y.a[1].kind in {Floating, Integer}):
+                            return newRational(y.a[0], y.a[1])
+                        else:
+                            throwCannotConvert()
+                    of String:
+                        return newString($(y))
                     of Inline:
                         return newInline(y.a)
                     of Dictionary:
@@ -389,16 +401,16 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                                 res &= numberToBinary(item.i)
                             else:
                                 res &= numberToBinary(item.f)
-                        
+
                         return newBinary(res)
 
                     of Bytecode:
                         var evaled = doEval(y, omitNewlines=hadAttr("intrepid"))
 
                         return newBytecode(evaled)
-                       
+
                     else:
-                        discard
+                        throwCannotConvert()
 
             of Range:
                 if tp == Block:
@@ -408,6 +420,8 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
 
             of Dictionary:
                 case tp:
+                    of String:
+                        return newString($(y))
                     of Object:
                         if x.tpKind==UserType:
                             return generateCustomObject(x.ts, y.d)
@@ -419,9 +433,11 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                         return newBytecode(evaled)
                     else:
                         throwCannotConvert()
-            
+
             of Object:
                 case tp:
+                    of String:
+                        return newString($(y))
                     of Dictionary:
                         return newDictionary(y.o)
                     else:
@@ -429,6 +445,8 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
 
             of Store:
                 case tp:
+                    of String:
+                        return newString($(y))
                     of Dictionary:
                         ensureStoreIsLoaded(y.sto)
                         return newDictionary(y.sto.data)
@@ -505,14 +523,14 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                         var dateFormat = "yyyy-MM-dd'T'HH:mm:sszzz"
                         if (not aFormat.isNil):
                             dateFormat = aFormat.s
-                        
+
                         try:
                             return newString(format(y.eobj, dateFormat))
                         except CatchableError:
                             throwConversionFailed()
-                    else: 
+                    else:
                         throwCannotConvert()
-            
+
             of Color:
                 case tp:
                     of String:
@@ -527,7 +545,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                Any,
                Path,
                PathLabel,
-               Binary: discard
+               Binary: throwCannotConvert()
 
 #=======================================
 # Methods
@@ -541,7 +559,7 @@ proc defineSymbols*() =
     #  labels: library, enhancement, open discussion, documentation
 
     builtin "array",
-        alias       = at, 
+        alias       = at,
         op          = opArray,
         rule        = PrefixPrecedence,
         description = "create array from given block, by reducing/calculating all internal values",
@@ -555,10 +573,10 @@ proc defineSymbols*() =
         example     = """
             none: @[]               ; none: []
             a: @[1 2 3]             ; a: [1 2 3]
-            
+
             b: 5
             c: @[b b+1 b+2]         ; c: [5 6 7]
-            
+
             d: @[
                 3+1
                 print "we are in the block"
@@ -626,14 +644,14 @@ proc defineSymbols*() =
     # TODO(Converters/as) is `.unwrapped` working as expected?
     #  labels: library, bug
     builtin "as",
-        alias       = unaliased, 
+        alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "format given value as implied type",
         args        = {
             "value" : {Any}
         },
-        attrs       = 
+        attrs       =
         when not defined(NOASCIIDECODE):
             {
                 "binary"    : ({Logical},"format integer as binary"),
@@ -697,10 +715,10 @@ proc defineSymbols*() =
                 else:
                     push(x)
 
-    # TODO(Converters/define) not defined inheritance behavior when using `.as` 
+    # TODO(Converters/define) not defined inheritance behavior when using `.as`
     #  labels: library, enhancement
     builtin "define",
-        alias       = dollar, 
+        alias       = dollar,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "define new type with given prototype",
@@ -714,7 +732,7 @@ proc defineSymbols*() =
         },
         returns     = {Nothing},
         example     = """
-            define :person [name surname age][  
+            define :person [name surname age][
 
                 ; magic method to be executed
                 ; after a new object has been created
@@ -751,9 +769,9 @@ proc defineSymbols*() =
             ; NAME: Jane, SURNAME: Doe, AGE: 33
 
             sayHello a
-            ; Hello John 
+            ; Hello John
 
-            a > b 
+            a > b
             ; => true (a\age > b\age)
 
             print join.with:"\n" sort @[a b]
@@ -813,7 +831,7 @@ proc defineSymbols*() =
                     stack.pop().i
 
     builtin "dictionary",
-        alias       = sharp, 
+        alias       = sharp,
         op          = opDict,
         rule        = PrefixPrecedence,
         description = "create dictionary from given block or file, by getting all internal symbols",
@@ -831,9 +849,9 @@ proc defineSymbols*() =
             a: #[
                 name: "John"
                 age: 34
-            ]             
+            ]
             ; a: [name: "John", age: 34]
-            
+
             d: #[
                 name: "John"
                 print "we are in the block"
@@ -880,7 +898,7 @@ proc defineSymbols*() =
                 dict = initOrderedTable[string,Value]()
                 for k,v in pairs(oldDict):
                     dict[k.toLower()] = v
-                    
+
             push(newDictionary(dict))
 
     # TODO(Converters\from) Do we really need this?
@@ -891,7 +909,7 @@ proc defineSymbols*() =
     # TODO(Converters/from) revise use of `.opcode`
     #  labels: library, enhancement, open discussion
     builtin "from",
-        alias       = unaliased, 
+        alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "get value from string, using given representation",
@@ -935,7 +953,7 @@ proc defineSymbols*() =
                 push(x)
 
     builtin "function",
-        alias       = dollar, 
+        alias       = dollar,
         op          = opFunc,
         rule        = PrefixPrecedence,
         description = "create function with given arguments and body",
@@ -953,7 +971,7 @@ proc defineSymbols*() =
         example     = """
             f: function [x][ x + 2 ]
             print f 10                ; 12
-            
+
             f: $[x][x+2]
             print f 10                ; 12
             ..........
@@ -994,7 +1012,7 @@ proc defineSymbols*() =
             ]
 
             info'addThem
-            
+
             ; |--------------------------------------------------------------------------------
             ; |        addThem  :function                                          0x10EF0E528
             ; |--------------------------------------------------------------------------------
@@ -1012,10 +1030,10 @@ proc defineSymbols*() =
                 print ["z =>" z]
                 x: 5
             ]
-            
+
             publicF 10
             ; z => 10
-            
+
             print x
             ; 5
             ..........
@@ -1041,7 +1059,7 @@ proc defineSymbols*() =
 
             if checkAttr("export"):
                 exports = aExport
-                
+
             var memoize = (hadAttr("memoize"))
             var inline = (hadAttr("inline"))
 
@@ -1061,7 +1079,7 @@ proc defineSymbols*() =
             if argBlock.countIt(it.kind == Type) > 0:
                 var args: seq[string]
                 var body: ValueArray
-                
+
                 var i = 0
                 while i < argBlock.len:
                     let varName = argBlock[i]
@@ -1089,7 +1107,7 @@ proc defineSymbols*() =
                     else:
                         argTypes[varName.s].incl(Any)
                     i += 1
-                
+
                 var mainBody: ValueArray = y.a
                 mainBody.insert(body)
 
@@ -1103,7 +1121,7 @@ proc defineSymbols*() =
                 ret = newFunction(argBlock.map((w)=>w.s),y,imports,exports,memoize,inline)
 
             ret.info = ValueInfo(kind: Function)
-            
+
             if not y.data.isNil:
                 if y.data.kind==Dictionary:
 
@@ -1143,13 +1161,13 @@ proc defineSymbols*() =
                     when defined(DOCGEN):
                         if (let exampleData = y.data.d.getOrDefault("example", nil); not exampleData.isNil):
                             ret.info.example = exampleData.s
-    
+
             ret.info.args = argTypes
-            
+
             push(ret)
 
     builtin "in",
-        alias       = unaliased, 
+        alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "convert quantity to given unit",
@@ -1172,9 +1190,9 @@ proc defineSymbols*() =
                 push newQuantity(convertQuantityValue(y.nm, y.unit.name, qs.name), qs)
             else:
                 push newQuantity(y, qs)
-                
+
     builtin "range",
-        alias       = ellipsis, 
+        alias       = ellipsis,
         op          = opRange,
         rule        = InfixPrecedence,
         description = "get list of values in given range (inclusive)",
@@ -1203,7 +1221,7 @@ proc defineSymbols*() =
 
             if yKind == Integer: limY = y.i
             elif yKind == Floating:
-                if y.f == Inf or y.f == NegInf: 
+                if y.f == Inf or y.f == NegInf:
                     infinite = true
                     if y.f == Inf: forward = true
                     else: forward = false
@@ -1218,8 +1236,7 @@ proc defineSymbols*() =
                 if step < 0:
                     step = -step
                 elif step == 0:
-                    step = 1
-                    # preferrably show error message?
+                    RuntimeError_RangeWithZeroStep()
 
             if not infinite:
                 forward = limX < limY
@@ -1228,7 +1245,7 @@ proc defineSymbols*() =
 
     when not defined(WEB):
         builtin "store",
-            alias       = unaliased, 
+            alias       = unaliased,
             op          = opNop,
             rule        = PrefixPrecedence,
             description = "create or load a persistent store on disk",
@@ -1275,9 +1292,9 @@ proc defineSymbols*() =
             ; data can be as complicated as in any normal dictionary
             da\people: da\people ++ #[name: "John" surname: "Doe"]
 
-            ; check some specific store value 
+            ; check some specific store value
             da\people\0\name
-            ; => "John" 
+            ; => "John"
             ..........
             ; create a new deferred store with the name `mystore`
             ; it will be automatically saved in a file in the same folder
@@ -1322,11 +1339,11 @@ proc defineSymbols*() =
                     autosave = isAutosave,
                     kind = storeKind
                 )
-                
+
                 push newStore(store)
 
     builtin "to",
-        alias       = unaliased, 
+        alias       = unaliased,
         op          = opTo,
         rule        = PrefixPrecedence,
         description = "convert value to given type",
@@ -1344,21 +1361,21 @@ proc defineSymbols*() =
         returns     = {Any},
         example     = """
             to :integer "2020"            ; 2020
-            
+
             to :integer `A`               ; 65
             to :char 65                   ; `A`
-            
+
             to :integer 4.3               ; 4
             to :floating 4                ; 4.0
 
             to :complex [1 2]             ; 1.0+2.0i
-            
+
             ; make sure you're using the `array` (`@`) converter here, since `neg` must be evaluated first
             to :complex @[2.3 neg 4.5]    ; 2.3-4.5i
-            
+
             to :rational [1 2]            ; 1/2
             to :rational @[neg 3 5]       ; -3/5
-            
+
             to :boolean 0                 ; false
             to :boolean 1                 ; true
             to :boolean "true"            ; true
@@ -1368,7 +1385,7 @@ proc defineSymbols*() =
             to :string 2020               ; "2020"
             to :string 'symbol            ; "symbol"
             to :string :word              ; "word"
-        
+
             to :string .format:"dd/MM/yy" now
             ; 22/03/21
 
@@ -1387,7 +1404,7 @@ proc defineSymbols*() =
             to :date .format:"dd/MM/yyyy" "22/03/2021"
             ; 2021-03-22T00:00:00+01:00
             ..........
-            to [:string] [1 2 3 4]         
+            to [:string] [1 2 3 4]
             ; ["1" "2" "3" "4"]
 
             to [:char] "hello"
@@ -1411,7 +1428,7 @@ proc defineSymbols*() =
             else:
                 var ret: ValueArray
                 let tp = x.a[0].t
-                    
+
                 if yKind==String:
                     ret = toSeq(runes(y.s)).map((c) => newChar(c))
                 else:
@@ -1424,10 +1441,10 @@ proc defineSymbols*() =
                             ret.add(convertedValueToType(x.a[0], item, tp, aFormat))
 
                 push newBlock(ret)
-        
+
 
     builtin "with",
-        alias       = unaliased, 
+        alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
         description = "create closure-style block by embedding given words",
@@ -1438,16 +1455,16 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Block},
         example     = """
-            f: function [x][ 
-                with [x][ 
-                    "the multiple of" x "is" 2*x 
-                ] 
+            f: function [x][
+                with [x][
+                    "the multiple of" x "is" 2*x
+                ]
             ]
 
             multiplier: f 10
 
             print multiplier
-            ; the multiple of 10 is 20 
+            ; the multiple of 10 is 20
         """:
             #=======================================================
             var blk: ValueArray = y.a

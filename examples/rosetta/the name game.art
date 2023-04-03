@@ -1,0 +1,23 @@
+; by @Krenium
+
+nameGame: function [Name][
+    L: take Name 1
+    name: lower Name
+    unless in? L "AEIOU" -> drop 'name 1
+    [B F M]: ["b" "f" "m"]
+
+    if L="B" -> B: ""
+    if L="F" -> F: ""
+    if L="M" -> M: ""
+
+    ~{
+        |Name|, |Name|, bo-|B||name|
+        Banana-fana fo-|F||name|
+        Fee-fi-mo-|M||name|
+        |Name|!
+    }
+]
+
+["Gary" "Earl" "Billy" "Felicia" "Marissa" "Sarah"]
+    | map => nameGame
+    | loop => [print & ++ "\n"]

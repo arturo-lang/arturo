@@ -249,6 +249,12 @@ proc RuntimeError_IncompatibleQuantityOperation*(operation: string, argA, argB, 
             "incompatible operation between quantities" & ";" &
             "attempted: " & operation & ";" &
             "with: " & truncate(argA & " (" & kindA & ") " & argB & " (" & kindB & ")", 60)
+            
+proc RuntimeError_IncompatibleValueType*(functionName: string, tp: string, expected: string) =
+    panic RuntimeError,
+          "cannot perform _" & (functionName) & "_;" &
+          "incompatible value type for " & tp & ";" &
+          "expected: " & expected
 
 proc RuntimeError_InvalidOperation*(operation: string, argA, argB: string) =
     panic RuntimeError,
@@ -365,6 +371,11 @@ proc RuntimeError_ConfigNotFound*(gkey: string, akey: string) =
           "configuration not found for: " & gkey & ";" &
           "you can either supply it globally via `config`;" &
           "or using the option: ." & akey
+
+proc RuntimeError_RangeWithZeroStep*() =
+    panic RuntimeError,
+          "attribute step can't be 0"
+
 
 # Program errors
 

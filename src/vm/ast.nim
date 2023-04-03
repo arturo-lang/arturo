@@ -21,6 +21,13 @@
 # TODO(VM/ast) make sure all left-right checking are not Newlines
 #  labels: vm, ast, enhancement, unit-test
 
+# TODO(VM/ast) make it so that pipes work inside arrow blocks
+#  something like this could/should be working:
+#  ```red
+#  f: function [x]-> 2..x | select => even?
+#  ```
+#  labels: vm, ast, enhancement
+
 #=======================================
 # Libraries
 #=======================================
@@ -92,6 +99,8 @@ var
     OldChild  : Node
     OldParent : Node
 
+    PipeParent : Node
+
 #=======================================
 # Constants
 #=======================================
@@ -124,6 +133,16 @@ func setOnlyChild(node: Node, child: Node) {.enforceNoRaises.} =
 func addChild*(node: Node, child: Node) {.enforceNoRaises.} =
     child.parent = node
     node.children.add(child)
+    if node.kind in CallNode and child.kind notin {NewlineNode, AttributeNode}:
+        node.params += 1
+
+func addChildToFront*(node: Node, child: Node): int {.enforceNoRaises.} =
+    result = 0
+    while node.children[result].kind==AttributeNode:
+        result += 1
+
+    child.parent = node
+    node.children.insert(child, result)
     if node.kind in CallNode and child.kind notin {NewlineNode, AttributeNode}:
         node.params += 1
 
@@ -399,7 +418,7 @@ proc processBlock*(
     # Helper Functions
     #------------------------
 
-    template rewindCallBranches(target: var Node, optimize: bool = false): untyped =
+    template rewindCallBranches(target: var Node, optimize: bool = false, clearPipes: bool = true): untyped =
         while target.kind in CallNode and target.params == target.arity:
             when optimize:
                 if target.kind == VariableStore:
@@ -426,6 +445,10 @@ proc processBlock*(
                         discard
 
             target = target.parent
+
+            when clearPipes:
+                if target.kind == RootNode:
+                    PipeParent = nil
 
     template rollThrough(target: var Node): untyped =
         target = target.children[^1]
@@ -504,10 +527,17 @@ proc processBlock*(
         when not isLabel:
             attrNode.addChild(newConstant(VTRUE))
 
-        target.addChild(attrNode)
+        if not PipeParent.isNil:
+            let injectionIndex {.used.} = PipeParent.addChildToFront(attrNode)
+            target = PipeParent
+            when isLabel:
+                target = target.children[injectionIndex]
+            target.rewindCallBranches(clearPipes=false)
+        else:
+            target.addChild(attrNode)
 
-        when isLabel:
-            target.rollThrough()
+            when isLabel:
+                target.rollThrough()
 
     proc addNewline(target: var Node) =
         target.addChild(Node(kind: NewlineNode, line: currentLine))
@@ -521,7 +551,7 @@ proc processBlock*(
             addChild(node)
 
             rewindCallBranches(optimize=true)
-
+            
     proc addTerminals(target: var Node, nodes: openArray[Node], dontOptimize: bool =false) =
         with target:
             rewindCallBranches()
@@ -602,6 +632,7 @@ proc processBlock*(
             if nextNode.kind == Word:
                 if (let funcArity = TmpArities.getOrDefault(nextNode.s, -1); funcArity != -1):
                     i += 1
+
                     target.rewindCallBranches()
 
                     var toSpot = target.children.len - 1
@@ -621,8 +652,10 @@ proc processBlock*(
                         let newCall = getCallNode(nextNode.s, funcArity)
                         newCall.addChild(toWrap)
 
+                        PipeParent = newCall
                         lastChild.children[0].replaceNode(newCall)
                         target = lastChild
+                    
                         target.rollThrough()
                     else:
                     
@@ -630,8 +663,9 @@ proc processBlock*(
 
                         target.addCall(nextNode.s, funcArity)
                         target.addChild(toWrap)
+                        PipeParent = target
 
-                    target.rewindCallBranches()
+                    target.rewindCallBranches(clearPipes=false)
                     
                     added = true
 
@@ -864,6 +898,8 @@ proc dumpNode*(node: Node, level = 0, single: static bool = false, showNewlines:
 
 proc generateAst*(parsed: Value, asDictionary=false, asFunction=false, reuseArities: static bool=false): Node =
     result = newRootNode()
+
+    PipeParent = nil
 
     when not reuseArities:
         TmpArities = collect:

@@ -26,6 +26,7 @@ canExecute?: function [scri][
 
             "ackermann function"
             "arbitrary-precision integers - included"
+            "benford's law"
             "combinations and permutations"
             "curzon numbers"
             "hamming numbers"
@@ -43,6 +44,7 @@ canExecute?: function [scri][
             "pell's equation"
             "penta-power prime seeds"
             "permutations - derangements"
+            "primorial numbers"
             "quad-power prime seeds"
             "repunit primes"
             "sequence of primorial primes"
