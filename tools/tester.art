@@ -26,6 +26,7 @@ canExecute?: function [scri][
 
             "ackermann function"
             "arbitrary-precision integers - included"
+            "benford's law"
             "combinations and permutations"
             "curzon numbers"
             "hamming numbers"
