@@ -1,0 +1,27 @@
+words: read.lines relative "unixdict.txt" | select => [match? & {/^[a-z]+$/}]
+
+nums: "22233344455566677778889999"
+
+phone: $ => [
+    join map &'c -> nums\[sub to :integer c 97]
+]
+
+textonyms: #[]
+tcount: 0
+
+loop words 'w [
+    p: phone w
+    if? key? textonyms p [
+        textonyms\[p]: textonyms\[p] ++ w
+        if 2 = size textonyms\[p] -> 'tcount + 1
+    ]
+    else -> textonyms\[p]: @[w]
+]
+
+print ~{
+    There are |size words| words in unixdict.txt which can be represented by the digit key mapping.
+    They require |size keys textonyms| digit combinations to represent them.
+    |tcount| digit combinations represent Textonyms.
+
+    7325 -> |textonyms\["7325"]|
+}
