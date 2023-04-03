@@ -359,10 +359,10 @@ proc defineSymbols*() =
             #=======================================================
             if xKind == Literal:
                 ensureInPlace()
-                let res = unzip(InPlaced.a.map((w)=>(w.a[0], w.a[1])))
+                let res = unzip(InPlaced.a.map((w)=>(requireValue(w,{Block,Inline});(w.a[0], w.a[1]))))
                 InPlaced.a = @[newBlock(res[0]), newBlock(res[1])]
             else:
-                let res = unzip(x.a.map((z)=>(z.a[0], z.a[1])))
+                let res = unzip(x.a.map((z)=>(requireValue(z,{Block,Inline});(z.a[0], z.a[1]))))
                 push(newBlock(@[newBlock(res[0]), newBlock(res[1])]))
 
     builtin "drop",
