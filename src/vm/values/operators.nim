@@ -466,7 +466,7 @@ proc convertQuantityValue*(nm: Value, fromU: UnitName, toU: UnitName, fromKind =
 
     if unlikely(fromK!=toK):
         when not defined(WEB):
-            RuntimeError_CannotConvertQuantity(valueAsString(nm), stringify(fromU), stringify(fromK), stringify(toU), stringify(toK))
+            RuntimeError_CannotConvertQuantity($(nm), stringify(fromU), stringify(fromK), stringify(toU), stringify(toK))
     
     if toK == TemperatureUnit:
         return convertToTemperatureUnit(nm, fromU, toU)
@@ -750,7 +750,7 @@ proc `*`*(x: Value, y: Value): Value =
             let finalSpec = getFinalUnitAfterOperation("mul", x.unit, y.unit)
             if unlikely(finalSpec == ErrorQuantity):
                 when not defined(WEB):
-                    RuntimeError_IncompatibleQuantityOperation("mul", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
+                    RuntimeError_IncompatibleQuantityOperation("mul", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
             else:
                 return newQuantity(x.nm * convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
         else:
@@ -796,7 +796,7 @@ proc `*=`*(x: var Value, y: Value) =
             let finalSpec = getFinalUnitAfterOperation("mul", x.unit, y.unit)
             if unlikely(finalSpec == ErrorQuantity):
                 when not defined(WEB):
-                    RuntimeError_IncompatibleQuantityOperation("mul", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
+                    RuntimeError_IncompatibleQuantityOperation("mul", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
             else:
                 x = newQuantity(x.nm * convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
         else:
@@ -869,7 +869,7 @@ proc `/`*(x: Value, y: Value): Value =
             let finalSpec = getFinalUnitAfterOperation("div", x.unit, y.unit)
             if unlikely(finalSpec == ErrorQuantity):
                 when not defined(WEB):
-                    RuntimeError_IncompatibleQuantityOperation("div", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
+                    RuntimeError_IncompatibleQuantityOperation("div", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
             elif finalSpec == NumericQuantity:
                 return x.nm / y.nm
             else:
@@ -916,7 +916,7 @@ proc `/=`*(x: var Value, y: Value) =
             let finalSpec = getFinalUnitAfterOperation("div", x.unit, y.unit)
             if unlikely(finalSpec == ErrorQuantity):
                 when not defined(WEB):
-                    RuntimeError_IncompatibleQuantityOperation("div", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
+                    RuntimeError_IncompatibleQuantityOperation("div", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
             elif finalSpec == NumericQuantity:
                 x.nm /= y.nm
             else:
@@ -951,7 +951,7 @@ proc `//`*(x: Value, y: Value): Value =
             let finalSpec = getFinalUnitAfterOperation("fdiv", x.unit, y.unit)
             if unlikely(finalSpec == ErrorQuantity):
                 when not defined(WEB):
-                    RuntimeError_IncompatibleQuantityOperation("fdiv", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
+                    RuntimeError_IncompatibleQuantityOperation("fdiv", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
             elif finalSpec == NumericQuantity:
                 return x.nm // y.nm
             else:
@@ -989,7 +989,7 @@ proc `//=`*(x: var Value, y: Value) =
             let finalSpec = getFinalUnitAfterOperation("fdiv", x.unit, y.unit)
             if unlikely(finalSpec == ErrorQuantity):
                 when not defined(WEB):
-                    RuntimeError_IncompatibleQuantityOperation("fdiv", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
+                    RuntimeError_IncompatibleQuantityOperation("fdiv", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
             elif finalSpec == NumericQuantity:
                 x.nm //= y.nm
             else:
@@ -1024,7 +1024,7 @@ proc `%`*(x: Value, y: Value): Value =
             let finalSpec = getFinalUnitAfterOperation("mod", x.unit, y.unit)
             if unlikely(finalSpec == ErrorQuantity):
                 when not defined(WEB):
-                    RuntimeError_IncompatibleQuantityOperation("mod", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
+                    RuntimeError_IncompatibleQuantityOperation("mod", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
             elif finalSpec == NumericQuantity:
                 return x.nm % y.nm
             else:
@@ -1062,7 +1062,7 @@ proc `%=`*(x: var Value, y: Value) =
             let finalSpec = getFinalUnitAfterOperation("mod", x.unit, y.unit)
             if unlikely(finalSpec == ErrorQuantity):
                 when not defined(WEB):
-                    RuntimeError_IncompatibleQuantityOperation("mod", valueAsString(x), valueAsString(y), stringify(x.unit.kind), stringify(y.unit.kind))
+                    RuntimeError_IncompatibleQuantityOperation("mod", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
             elif finalSpec == NumericQuantity:
                 x.nm %= y.nm
             else:
@@ -1137,21 +1137,28 @@ proc `^`*(x: Value, y: Value): Value =
         of Complex    || Complex        :   return newComplex(pow(x.z, y.z))
         
         of Quantity   || Integer        :   
-            case y.i:
-                of 0: return newInteger(1)
-                of 1: return x
-                of 2: return x * x
-                of 3: return x * x * x
-                else:
-                    RuntimeError_IncompatibleQuantityOperation("pow", valueAsString(x), valueAsString(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
+            try:
+                case y.i:
+                    of 0: return newInteger(1)
+                    of 1: return x
+                    of 2: return x * x
+                    of 3: return x * x * x
+                    else:
+                        RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
+            except CatchableError:
+                RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
+
         of Quantity   || Floating       :
-            case y.f:
-                of 0.0: return newInteger(1)
-                of 1.0: return x
-                of 2.0: return x * x
-                of 3.0: return x * x * x
-                else:
-                    RuntimeError_IncompatibleQuantityOperation("pow", valueAsString(x), valueAsString(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
+            try:
+                case y.f:
+                    of 0.0: return newInteger(1)
+                    of 1.0: return x
+                    of 2.0: return x * x
+                    of 3.0: return x * x * x
+                    else:
+                        RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
+            except CatchableError:
+                RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
         else:
             return invalidOperation("pow")
 
@@ -1180,21 +1187,27 @@ proc `^=`*(x: var Value, y: Value) =
         of Complex    || Complex        :   x.z = pow(x.z, y.z)
         
         of Quantity   || Integer        :   
-            case y.i:
-                of 0: x = newInteger(1)
-                of 1: discard
-                of 2: x *= x
-                of 3: x *= x * x
-                else:
-                    RuntimeError_IncompatibleQuantityOperation("pow", valueAsString(x), valueAsString(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
+            try:
+                case y.i:
+                    of 0: x = newInteger(1)
+                    of 1: discard
+                    of 2: x *= x
+                    of 3: x *= x * x
+                    else:
+                        RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
+            except CatchableError:
+                RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
         of Quantity   || Floating       :
-            case y.f:
-                of 0.0: x = newInteger(1)
-                of 1.0: discard
-                of 2.0: x *= x
-                of 3.0: x *= x * x
-                else:
-                    RuntimeError_IncompatibleQuantityOperation("pow", valueAsString(x), valueAsString(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
+            try:
+                case y.f:
+                    of 0.0: x = newInteger(1)
+                    of 1.0: discard
+                    of 2.0: x *= x
+                    of 3.0: x *= x * x
+                    else:
+                        RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
+            except CatchableError:
+                RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
         else:
             discard invalidOperation("pow")
 
