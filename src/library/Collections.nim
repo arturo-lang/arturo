@@ -1111,9 +1111,9 @@ proc defineSymbols*() =
                         elif not defined(NOGMP):
                             push(newLogical(x.bi==newInt(1)))
                     else:
-                        push(newLogical(x == I1))
+                        push(newLogical(x.i == 1))
                 of Floating:
-                    push(newLogical(x == F1))
+                    push(newLogical(x.f == 1.0))
                 of String:
                     push(newLogical(runeLen(x.s) == 1))
                 of Block:
