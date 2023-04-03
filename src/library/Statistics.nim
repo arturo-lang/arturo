@@ -117,9 +117,9 @@ proc defineSymbols*() =
         """:
             #=======================================================
             if (hadAttr("sample")):
-                push newFloating(kurtosisS(x.a.map((z)=>asFloat(z))))
+                push newFloating(kurtosisS(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
             else:
-                push newFloating(kurtosis(x.a.map((z)=>asFloat(z))))
+                push newFloating(kurtosis(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
 
     builtin "median",
         alias       = unaliased,
