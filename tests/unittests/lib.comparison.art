@@ -226,6 +226,22 @@ do [
     ensure -> not? equal? [word] [.word: word]
     passed
     
+    ensure -> equal? [label: value] [label: value]
+    ensure -> not? equal? [label: value] [label: value2]
+    ensure -> not? equal? [label: value] [label2: value]
+    ensure -> not? equal? [label: value] ["label"]
+    ensure -> not? equal? ["label": value] ["label"]
+    ensure -> not? equal? [label: value] ["value"]
+    ensure -> not? equal? [label: "value"] ["value"]
+    ensure -> not? equal? [label: 'world] ['label]
+    ensure -> not? equal? [label: 'world] ['word]
+    ensure -> not? equal? [label: .attr] [.label]
+    ensure -> not? equal? [label: .attr] [.attr]
+    ; ensure -> not? equal? [label: .attr: "a"] [.label: .attr: "a"]
+    ensure -> not? equal? [label: .attr: "a"] [.label: "a"]
+    ensure -> not? equal? [label: .attr: "a"] [.attr: "a"]
+    passed
+    
 ]
 
 ; integer comparisons
