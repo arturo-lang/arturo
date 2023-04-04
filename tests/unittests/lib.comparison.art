@@ -175,6 +175,11 @@ do [
     ensure -> not? 1.2.3 = 1.2.3-pre
     ensure -> not? 1.2.3 = 1.2.3-dev
     passed
+    
+    ensure -> equal? :string type "a"
+    ensure -> equal? :integer type 1
+    ensure -> equal? :floating type 1.5
+    passed
 ]
 
 ; integer comparisons
