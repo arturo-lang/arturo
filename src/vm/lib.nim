@@ -264,6 +264,11 @@ template require*(name: string, spec: untyped): untyped =
                     if unlikely(not (zKind in (static spec[2][1]))):
                         showWrongArgumentTypeError(currentBuiltinName, 2, [x,y,z], spec)
 
+template requireBlockSize*(v: Value, expected: int) =
+    when not defined(PORTABLE):
+        if unlikely(v.a.len != expected):
+            RuntimeError_IncompatibleBlockSize(currentBuiltinName, v.a.len, expected)
+
 template requireValue*(v: Value, expected: set[ValueKind], message: set[ValueKind] | string = {}) = 
     when not defined(PORTABLE):
         if unlikely(v.kind notin expected):

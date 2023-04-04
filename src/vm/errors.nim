@@ -262,6 +262,12 @@ proc RuntimeError_IncompatibleBlockValue*(functionName: string, val: string, exp
           "incompatible value in block parameter" & ";" &
           "expected " & expected
 
+proc RuntimeError_IncompatibleBlockSize*(functionName: string, got: int, expected: int) =
+    panic RuntimeError,
+          "cannot perform _" & (functionName) & ";" &
+          "incompatible block size: " & $(got) & ";" &
+          "expected: " & $(expected)
+
 proc RuntimeError_InvalidOperation*(operation: string, argA, argB: string) =
     panic RuntimeError,
             "invalid operation _" & operation & "_;" &
