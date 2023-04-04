@@ -14,40 +14,46 @@
 [+] passed!
 [+] passed!
 
->> topic « equal? - :null
+>> equal? - :null
 [+] passed!
 
->> topic « equal? - :logical
+>> equal? - :logical
 [+] passed!
 
->> topic « equal? - :complex
+>> equal? - :complex
 [+] passed!
 
->> topic « equal? - :version
+>> equal? - :version
 [+] passed!
 
->> topic « equal? - :type
+>> equal? - :type
 [+] passed!
 
->> topic « equal? - :char
+>> equal? - :char
 [+] passed!
 
->> topic « equal? - :string
+>> equal? - :string
 [+] passed!
 
->> topic « equal? - :word
+>> equal? - :word
 [+] passed!
 
->> topic « equal? - :label
+>> equal? - :label
 [+] passed!
 
->> topic « equal? - :literal
+>> equal? - :literal
 [+] passed!
 
->> topic « equal? - :attribute
+>> equal? - :attribute
 [+] passed!
 
->> topic « equal? - :attributeLabel
+>> equal? - :attributeLabel
+[+] passed!
+
+>> equal? - :path
+[+] passed!
+
+>> equal? - :pathLabel
 [+] passed!
 true
 true
