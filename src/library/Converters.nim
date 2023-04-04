@@ -39,6 +39,13 @@ import vm/[bytecode, errors, eval, exec, opcodes, parse]
 import vm/values/custom/[vbinary, vrange]
 
 #=======================================
+# Variables
+#=======================================
+
+var
+    currentBuiltinName: string
+
+#=======================================
 # Helpers
 #=======================================
 
@@ -326,17 +333,22 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
             of Block:
                 case tp:
                     of Complex:
-                        if (y.a.len == 2 and
-                            y.a[0].kind in {Floating, Integer} and
-                            y.a[1].kind in {Floating, Integer}):
-                            return newComplex(y.a[0], y.a[1])
+                        
+                        if y.a.len == 2:
+                            let firstElem {.cursor} = y.a[0]
+                            let secondElem {.cursor} = y.a[1]
+                            requireValue(firstElem, {Floating, Integer})
+                            requireValue(secondElem, {Floating, Integer})
+                            return newComplex(firstElem, secondElem)
                         else:
                             throwCannotConvert()
                     of Rational:
-                        if (y.a.len == 2 and
-                            y.a[0].kind in {Floating, Integer} and
-                            y.a[1].kind in {Floating, Integer}):
-                            return newRational(y.a[0], y.a[1])
+                        if y.a.len == 2:
+                            let firstElem {.cursor} = y.a[0]
+                            let secondElem {.cursor} = y.a[1]
+                            requireValue(firstElem, {Floating, Integer})
+                            requireValue(secondElem, {Floating, Integer})
+                            return newRational(firstElem, secondElem)
                         else:
                             throwCannotConvert()
                     of String:
@@ -372,23 +384,39 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                             throwCannotConvert()
 
                     of Quantity:
-                        return newQuantity(y.a[0], parseQuantitySpec(y.a[1].s))
+                        if y.a.len == 2:
+                            let firstElem {.cursor} = y.a[0]
+                            let secondElem {.cursor} = y.a[1]
+                            requireValue(firstElem, {Integer, Floating})
+                            requireValue(secondElem, {Word, Literal, String})
+                            return newQuantity(firstElem, parseQuantitySpec(secondElem.s))
+                        else:
+                            throwCannotConvert()
 
                     of Color:
                         if y.a.len < 3 or y.a.len > 4:
                             echo "wrong number of attributes"
                         else:
                             if (hadAttr("hsl")):
+                                requireValue(y.a[0], {Integer})
+                                requireValue(y.a[1], {Floating})
+                                requireValue(y.a[2], {Floating})
                                 if y.a.len==3:
                                     return newColor(HSLtoRGB((y.a[0].i, y.a[1].f, y.a[2].f, 1.0)))
                                 elif y.a.len==4:
+                                    requireValue(y.a[3], {Floating})
                                     return newColor(HSLtoRGB((y.a[0].i, y.a[1].f, y.a[2].f, y.a[3].f)))
                             elif (hadAttr("hsv")):
+                                requireValue(y.a[0], {Integer})
+                                requireValue(y.a[1], {Floating})
+                                requireValue(y.a[2], {Floating})
                                 if y.a.len==3:
                                     return newColor(HSVtoRGB((y.a[0].i, y.a[1].f, y.a[2].f, 1.0)))
                                 elif y.a.len==4:
+                                    requireValue(y.a[3], {Floating})
                                     return newColor(HSVtoRGB((y.a[0].i, y.a[1].f, y.a[2].f, y.a[3].f)))
                             else:
+                                requireValueBlock(y, {Integer})
                                 if y.a.len==3:
                                     return newColor((y.a[0].i, y.a[1].i, y.a[2].i, 255))
                                 elif y.a.len==4:
@@ -397,6 +425,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                     of Binary:
                         var res: VBinary
                         for item in y.a:
+                            requireValue(item, {Integer, Floating})
                             if item.kind==Integer:
                                 res &= numberToBinary(item.i)
                             else:
@@ -1429,6 +1458,9 @@ proc defineSymbols*() =
             ; => #5C527A
         """:
             #=======================================================
+            if y.kind == Block:
+                Converters.currentBuiltinName = currentBuiltinName
+
             if xKind==Type:
                 let tp = x.t
                 push convertedValueToType(x, y, tp, popAttr("format"))
