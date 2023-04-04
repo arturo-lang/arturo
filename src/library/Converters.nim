@@ -1482,6 +1482,7 @@ proc defineSymbols*() =
                 blk.insert(newLabel(x.s))
             else:
                 for item in x.a:
+                    requireValue(item, {Word,Literal})
                     blk.insert(FetchSym(item.s))
                     blk.insert(newLabel(item.s))
 
