@@ -2070,7 +2070,7 @@ proc defineSymbols*() =
                             SetInPlace(newStringBlock(InPlaced.s.split(aBy.rx)))
                         else:
                             SetInPlace(newStringBlock(toSeq(
-                                    InPlaced.s.tokenize(aBy.a.map((k)=>k.s)))))
+                                    InPlaced.s.tokenize(aBy.a.map((k)=>(requireAttrValue("by",k,{String});k.s))))))
                     elif checkAttr("at"):
                         SetInPlace(newStringBlock(@[InPlaced.s[0..aAt.i-1],
                                 InPlaced.s[aAt.i..^1]]))
@@ -2130,7 +2130,7 @@ proc defineSymbols*() =
                     elif aBy.kind == Regex:
                         push(newStringBlock(x.s.split(aBy.rx)))
                     else:
-                        push(newStringBlock(toSeq(x.s.tokenize(aBy.a.map((k)=>k.s)))))
+                        push(newStringBlock(toSeq(x.s.tokenize(aBy.a.map((k)=>(requireAttrValue("by",k,{String});k.s))))))
                 elif checkAttr("at"):
                     push(newStringBlock(@[x.s[0..aAt.i-1], x.s[aAt.i..^1]]))
                 elif checkAttr("every"):
