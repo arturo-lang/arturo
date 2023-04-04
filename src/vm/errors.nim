@@ -258,9 +258,15 @@ proc RuntimeError_IncompatibleValueType*(functionName: string, tp: string, expec
 
 proc RuntimeError_IncompatibleBlockValue*(functionName: string, val: string, expected: string) =
     panic RuntimeError,
-          "cannot perform _" & (functionName) & "_ -> [" & val & " ...];" &
-          "incompatible value in block parameter" & ";" &
+          "cannot perform _" & (functionName) & "_ -> " & val & ";" &
+          "incompatible value inside block parameter" & ";" &
           "expected " & expected
+
+proc RuntimeError_IncompatibleBlockValueAttribute*(functionName: string, attributeName: string, val: string, expected: string) =
+    panic RuntimeError, 
+          "cannot perform _" & (functionName) & "_;" &
+          "incompatible value inside block for _" & (attributeName) & "_ -> " & val & ";" &
+          "accepts " & expected
 
 proc RuntimeError_IncompatibleBlockSize*(functionName: string, got: int, expected: string) =
     panic RuntimeError,
