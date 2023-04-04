@@ -304,6 +304,22 @@ do [
     ensure -> not? equal? [.attr: value] [.attr: other]
     passed
     
+    topic « equal? - :path
+    
+    a: #[name: "John", surname: "Doe"]
+    b: @["Joe" "Jane" "Jesse"]
+    
+    ensure -> equal? a\name "John" 
+    ensure -> equal? a\surname "Doe" 
+    ensure -> not? equal? a\name "Jane" 
+    ensure -> not? equal? a\name 1
+    
+    ensure -> equal? b\0 "Joe" 
+    ensure -> equal? b\1 "Jane" 
+    ensure -> equal? b\2 "Jesse" 
+    ensure -> not? equal? b\2 "Walter" 
+    passed
+    
 ]
 
 ; integer comparisons
