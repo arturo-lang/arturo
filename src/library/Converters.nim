@@ -39,6 +39,13 @@ import vm/[bytecode, errors, eval, exec, opcodes, parse]
 import vm/values/custom/[vbinary, vrange]
 
 #=======================================
+# Variables
+#=======================================
+
+var
+    currentBuiltinName: string
+
+#=======================================
 # Helpers
 #=======================================
 
@@ -326,19 +333,23 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
             of Block:
                 case tp:
                     of Complex:
-                        if (y.a.len == 2 and
-                            y.a[0].kind in {Floating, Integer} and
-                            y.a[1].kind in {Floating, Integer}):
-                            return newComplex(y.a[0], y.a[1])
-                        else:
-                            throwCannotConvert()
+                        requireBlockSize(y, 2)
+
+                        let firstElem {.cursor} = y.a[0]
+                        let secondElem {.cursor} = y.a[1]
+                        requireValue(firstElem, {Floating, Integer})
+                        requireValue(secondElem, {Floating, Integer})
+                        
+                        return newComplex(firstElem, secondElem)
                     of Rational:
-                        if (y.a.len == 2 and
-                            y.a[0].kind in {Floating, Integer} and
-                            y.a[1].kind in {Floating, Integer}):
-                            return newRational(y.a[0], y.a[1])
-                        else:
-                            throwCannotConvert()
+                        requireBlockSize(y, 2)
+                        
+                        let firstElem {.cursor} = y.a[0]
+                        let secondElem {.cursor} = y.a[1]
+                        requireValue(firstElem, {Floating, Integer})
+                        requireValue(secondElem, {Floating, Integer})
+                        
+                        return newRational(firstElem, secondElem)
                     of String:
                         return newString($(y))
                     of Inline:
@@ -372,31 +383,47 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                             throwCannotConvert()
 
                     of Quantity:
-                        return newQuantity(y.a[0], parseQuantitySpec(y.a[1].s))
+                        requireBlockSize(y, 2)
+                        
+                        let firstElem {.cursor} = y.a[0]
+                        let secondElem {.cursor} = y.a[1]
+                        requireValue(firstElem, {Integer, Floating})
+                        requireValue(secondElem, {Word, Literal, String})
+                        
+                        return newQuantity(firstElem, parseQuantitySpec(secondElem.s))
 
                     of Color:
-                        if y.a.len < 3 or y.a.len > 4:
-                            echo "wrong number of attributes"
+                        requireBlockSize(y, 3, 4)
+
+                        if (hadAttr("hsl")):
+                            requireValue(y.a[0], {Integer})
+                            requireValue(y.a[1], {Floating})
+                            requireValue(y.a[2], {Floating})
+                            if y.a.len==3:
+                                return newColor(HSLtoRGB((y.a[0].i, y.a[1].f, y.a[2].f, 1.0)))
+                            elif y.a.len==4:
+                                requireValue(y.a[3], {Floating})
+                                return newColor(HSLtoRGB((y.a[0].i, y.a[1].f, y.a[2].f, y.a[3].f)))
+                        elif (hadAttr("hsv")):
+                            requireValue(y.a[0], {Integer})
+                            requireValue(y.a[1], {Floating})
+                            requireValue(y.a[2], {Floating})
+                            if y.a.len==3:
+                                return newColor(HSVtoRGB((y.a[0].i, y.a[1].f, y.a[2].f, 1.0)))
+                            elif y.a.len==4:
+                                requireValue(y.a[3], {Floating})
+                                return newColor(HSVtoRGB((y.a[0].i, y.a[1].f, y.a[2].f, y.a[3].f)))
                         else:
-                            if (hadAttr("hsl")):
-                                if y.a.len==3:
-                                    return newColor(HSLtoRGB((y.a[0].i, y.a[1].f, y.a[2].f, 1.0)))
-                                elif y.a.len==4:
-                                    return newColor(HSLtoRGB((y.a[0].i, y.a[1].f, y.a[2].f, y.a[3].f)))
-                            elif (hadAttr("hsv")):
-                                if y.a.len==3:
-                                    return newColor(HSVtoRGB((y.a[0].i, y.a[1].f, y.a[2].f, 1.0)))
-                                elif y.a.len==4:
-                                    return newColor(HSVtoRGB((y.a[0].i, y.a[1].f, y.a[2].f, y.a[3].f)))
-                            else:
-                                if y.a.len==3:
-                                    return newColor((y.a[0].i, y.a[1].i, y.a[2].i, 255))
-                                elif y.a.len==4:
-                                    return newColor((y.a[0].i, y.a[1].i, y.a[2].i, y.a[3].i))
+                            requireValueBlock(y, {Integer})
+                            if y.a.len==3:
+                                return newColor((y.a[0].i, y.a[1].i, y.a[2].i, 255))
+                            elif y.a.len==4:
+                                return newColor((y.a[0].i, y.a[1].i, y.a[2].i, y.a[3].i))
 
                     of Binary:
                         var res: VBinary
                         for item in y.a:
+                            requireValue(item, {Integer, Floating})
                             if item.kind==Integer:
                                 res &= numberToBinary(item.i)
                             else:
@@ -611,6 +638,7 @@ proc defineSymbols*() =
                     var blk: ValueArray
 
                     for item in aOf.a.reversed:
+                        requireValue(item, {Integer})
                         blk = safeRepeat(val, item.i)
                         val = newBlock(blk.map((v)=>copyValue(v)))
 
@@ -783,6 +811,7 @@ proc defineSymbols*() =
             ; NAME: Jane, SURNAME: Doe, AGE: 33
         """:
             #=======================================================
+            requireValueBlock(y, {Word,Literal})
             x.ts.fields = y.a
 
             if checkAttr("as"):
@@ -891,6 +920,7 @@ proc defineSymbols*() =
 
             if checkAttr("with"):
                 for x in aWith.a:
+                    requireValue(x, {Word,Literal})
                     dict[x.s] = FetchSym(x.s)
 
             if (hadAttr("lower")):
@@ -1052,19 +1082,23 @@ proc defineSymbols*() =
             if checkAttr("import"):
                 var ret = initOrderedTable[string,Value]()
                 for item in aImport.a:
+                    requireAttrValue("import", item, {Word, Literal})
                     ret[item.s] = FetchSym(item.s)
                 imports = newDictionary(ret)
 
             var exports: Value = nil
 
             if checkAttr("export"):
+                requireAttrValueBlock("export", aExport, {Word, Literal})
                 exports = aExport
 
             var memoize = (hadAttr("memoize"))
             var inline = (hadAttr("inline"))
 
             let argBlock {.cursor.} =
-                if xKind == Block: x.a
+                if xKind == Block: 
+                    requireValueBlock(x, {Word, Literal, Type})
+                    x.a
                 else: @[x]
 
             # TODO(Converters\function) Verify safety of implicit `.inline`s
@@ -1422,12 +1456,17 @@ proc defineSymbols*() =
             ; => #5C527A
         """:
             #=======================================================
+            if y.kind == Block:
+                Converters.currentBuiltinName = currentBuiltinName
+
             if xKind==Type:
                 let tp = x.t
                 push convertedValueToType(x, y, tp, popAttr("format"))
             else:
                 var ret: ValueArray
-                let tp = x.a[0].t
+                let elem {.cursor.} = x.a[0]
+                requireValue(elem, {Type})
+                let tp = elem.t
 
                 if yKind==String:
                     ret = toSeq(runes(y.s)).map((c) => newChar(c))
@@ -1435,10 +1474,10 @@ proc defineSymbols*() =
                     let aFormat = popAttr("format")
                     if yKind == Block:
                         for item in y.a:
-                            ret.add(convertedValueToType(x.a[0], item, tp, aFormat))
+                            ret.add(convertedValueToType(elem, item, tp, aFormat))
                     else:
                         for item in items(y.rng):
-                            ret.add(convertedValueToType(x.a[0], item, tp, aFormat))
+                            ret.add(convertedValueToType(elem, item, tp, aFormat))
 
                 push newBlock(ret)
 
@@ -1473,6 +1512,7 @@ proc defineSymbols*() =
                 blk.insert(newLabel(x.s))
             else:
                 for item in x.a:
+                    requireValue(item, {Word,Literal})
                     blk.insert(FetchSym(item.s))
                     blk.insert(newLabel(item.s))
 
