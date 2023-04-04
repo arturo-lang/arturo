@@ -196,6 +196,35 @@ do [
     ensure -> not? `b` = `a`
     ensure -> not?  1  = `1`
     passed 
+    
+    ensure -> equal? "Art" "Arturo" -- "uro"
+    ensure -> not? equal? "a"    `a` 
+    ensure -> not? equal? "10"   10 
+    ensure -> not? equal? "10"   10
+    ensure -> not? equal? ["help"] [help]
+    ensure -> not? equal? ["a"]    [a: "a"]
+    ensure -> not? equal? "help"   'help
+    ensure -> not? equal? ["help"] [.help]
+    ensure -> not? equal? ["help"] ['help: "help"]
+    ensure -> "Art" = "Arturo" -- "uro"
+    ensure -> not? "a"      = `a` 
+    ensure -> not? "10"     = 10 
+    ensure -> not? "10"     = 10
+    ensure -> not? ["help"] = [help]
+    ensure -> not? ["a"]    = [a: "a"]
+    ensure -> not? "help"   = 'help
+    ensure -> not? ["help"] = [.help]
+    ensure -> not? ["help"] = ['help: "help"]
+    passed
+    
+    ensure -> not? equal? [help]          ["help"]
+    ensure -> not? equal? [a: "a"]        ["a"] 
+    ensure -> not? equal? 'help           "help" 
+    ensure -> not? equal? [.help]         ["help"]
+    ensure -> not? equal? ['help: "help"] ["help"]
+    passed
+    
+    
 ]
 
 ; integer comparisons
