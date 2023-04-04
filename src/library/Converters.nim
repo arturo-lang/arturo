@@ -394,7 +394,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
 
                     of Color:
                         requireBlockSize(y, 3, 4)
-                        
+
                         if (hadAttr("hsl")):
                             requireValue(y.a[0], {Integer})
                             requireValue(y.a[1], {Floating})
@@ -1082,14 +1082,14 @@ proc defineSymbols*() =
             if checkAttr("import"):
                 var ret = initOrderedTable[string,Value]()
                 for item in aImport.a:
-                    requireValue(item, {Word, Literal})
+                    requireAttrValue("import", item, {Word, Literal})
                     ret[item.s] = FetchSym(item.s)
                 imports = newDictionary(ret)
 
             var exports: Value = nil
 
             if checkAttr("export"):
-                requireValueBlock(aExport, {Word, Literal})
+                requireAttrValueBlock("export", aExport, {Word, Literal})
                 exports = aExport
 
             var memoize = (hadAttr("memoize"))
