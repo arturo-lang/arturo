@@ -265,6 +265,23 @@ do [
     ensure -> not? equal? [.attr] [.attr: .attr]
     passed
     
+    ensure -> equal? [.attr: value] [.attr: value]
+    ensure -> not? equal? [.attr: value] ["attr"]
+    ensure -> not? equal? [.attr: value] ["value"]
+    ensure -> not? equal? [.attr: value] ["attr" "value"]
+    ; ensure -> not? equal? [.attr: value] [attr]
+    ensure -> not? equal? [.attr: value] [attr: .attr:]
+    ; ensure -> not? equal? [.attr: value] [attr: value]
+    ensure -> not? equal? [.attr: value] [attr: .attr: value]
+    ensure -> not? equal? [.attr: value] ['attr]
+    ensure -> not? equal? [.attr: value] ['value]
+    ensure -> not? equal? [.attr: value] ['attr 'value]
+    ensure -> not? equal? [.attr: value] [.attr]
+    ensure -> not? equal? [.attr: value] [.value]
+    ensure -> not? equal? [.attr: value] [.other: value]
+    ensure -> not? equal? [.attr: value] [.attr: other]
+    passed
+    
 ]
 
 ; integer comparisons
