@@ -180,6 +180,22 @@ do [
     ensure -> equal? :integer type 1
     ensure -> equal? :floating type 1.5
     passed
+    
+    ensure -> equal? `a` `a`
+    ensure -> not? equal? `a` "a" 
+    ensure -> not? equal? `a` `b`
+    ensure -> not? equal? `1` 1
+    ensure -> not? equal? "a" `a` 
+    ensure -> not? equal? `b` `a`
+    ensure -> not? equal? 1   `1`
+    ensure -> `a` = `a`
+    ensure -> not? `a` = "a" 
+    ensure -> not? `a` = `b`
+    ensure -> not? `1` =  1
+    ensure -> not? "a" = `a` 
+    ensure -> not? `b` = `a`
+    ensure -> not?  1  = `1`
+    passed 
 ]
 
 ; integer comparisons
