@@ -1,12 +1,12 @@
 
 >> equal?
 
->> :integer :floating :rational
+>> equal? - :integer :floating :rational
 [+] passed!
 [+] passed!
 [+] passed!
 
->> :quantity
+>> equal? - :quantity
 [+] passed!
 [+] passed!
 [+] passed!
@@ -14,14 +14,40 @@
 [+] passed!
 [+] passed!
 
->> other types
+>> topic « equal? - :null
 [+] passed!
+
+>> topic « equal? - :logical
 [+] passed!
+
+>> topic « equal? - :complex
 [+] passed!
+
+>> topic « equal? - :version
 [+] passed!
+
+>> topic « equal? - :type
 [+] passed!
+
+>> topic « equal? - :char
 [+] passed!
+
+>> topic « equal? - :string
 [+] passed!
+
+>> topic « equal? - :word
+[+] passed!
+
+>> topic « equal? - :label
+[+] passed!
+
+>> topic « equal? - :literal
+[+] passed!
+
+>> topic « equal? - :attribute
+[+] passed!
+
+>> topic « equal? - :attributeLabel
 [+] passed!
 true
 true
