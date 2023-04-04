@@ -12,7 +12,7 @@ passed: $[] -> print "[+] passed!"
 topic « equal?
 do [
     
-    topic « :integer :floating :rational
+    topic « equal? - :integer :floating :rational
     
     ensure -> equal? 1 1
     ensure -> equal? 1 1.0
@@ -42,7 +42,7 @@ do [
     ensure -> (to :rational @[5 5]) = to :rational @[1 1]
     passed
     
-    topic « :quantity
+    topic « equal? - :quantity
     
     ensure -> equal? 1:usd 1
     ensure -> equal? 1:m   1
