@@ -1065,7 +1065,9 @@ proc defineSymbols*() =
             var inline = (hadAttr("inline"))
 
             let argBlock {.cursor.} =
-                if xKind == Block: x.a
+                if xKind == Block: 
+                    requireValueBlock(x, {Word, Literal, Type})
+                    x.a
                 else: @[x]
 
             # TODO(Converters\function) Verify safety of implicit `.inline`s
