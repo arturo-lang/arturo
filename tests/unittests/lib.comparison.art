@@ -217,7 +217,14 @@ do [
     ensure -> not? ["help"] = ['help: "help"]
     passed
     
-    
+    ensure -> equal? [word] [word]
+    ensure -> not? equal? [word] [otherWord]
+    ensure -> not? equal? [word] ["word"]
+    ensure -> not? equal? [word] [word: word]
+    ensure -> not? equal? [word] ['word]
+    ; ensure -> not? equal? [word] [.word]
+    ensure -> not? equal? [word] [.word: word]
+    passed
     
 ]
 
