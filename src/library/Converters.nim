@@ -333,24 +333,23 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
             of Block:
                 case tp:
                     of Complex:
+                        requireBlockSize(y, 2)
+
+                        let firstElem {.cursor} = y.a[0]
+                        let secondElem {.cursor} = y.a[1]
+                        requireValue(firstElem, {Floating, Integer})
+                        requireValue(secondElem, {Floating, Integer})
                         
-                        if y.a.len == 2:
-                            let firstElem {.cursor} = y.a[0]
-                            let secondElem {.cursor} = y.a[1]
-                            requireValue(firstElem, {Floating, Integer})
-                            requireValue(secondElem, {Floating, Integer})
-                            return newComplex(firstElem, secondElem)
-                        else:
-                            throwCannotConvert()
+                        return newComplex(firstElem, secondElem)
                     of Rational:
-                        if y.a.len == 2:
-                            let firstElem {.cursor} = y.a[0]
-                            let secondElem {.cursor} = y.a[1]
-                            requireValue(firstElem, {Floating, Integer})
-                            requireValue(secondElem, {Floating, Integer})
-                            return newRational(firstElem, secondElem)
-                        else:
-                            throwCannotConvert()
+                        requireBlockSize(y, 2)
+                        
+                        let firstElem {.cursor} = y.a[0]
+                        let secondElem {.cursor} = y.a[1]
+                        requireValue(firstElem, {Floating, Integer})
+                        requireValue(secondElem, {Floating, Integer})
+                        
+                        return newRational(firstElem, secondElem)
                     of String:
                         return newString($(y))
                     of Inline:
@@ -384,43 +383,42 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                             throwCannotConvert()
 
                     of Quantity:
-                        if y.a.len == 2:
-                            let firstElem {.cursor} = y.a[0]
-                            let secondElem {.cursor} = y.a[1]
-                            requireValue(firstElem, {Integer, Floating})
-                            requireValue(secondElem, {Word, Literal, String})
-                            return newQuantity(firstElem, parseQuantitySpec(secondElem.s))
-                        else:
-                            throwCannotConvert()
+                        requireBlockSize(y, 2)
+                        
+                        let firstElem {.cursor} = y.a[0]
+                        let secondElem {.cursor} = y.a[1]
+                        requireValue(firstElem, {Integer, Floating})
+                        requireValue(secondElem, {Word, Literal, String})
+                        
+                        return newQuantity(firstElem, parseQuantitySpec(secondElem.s))
 
                     of Color:
-                        if y.a.len < 3 or y.a.len > 4:
-                            echo "wrong number of attributes"
+                        requireBlockSize(y, 3, 4)
+                        
+                        if (hadAttr("hsl")):
+                            requireValue(y.a[0], {Integer})
+                            requireValue(y.a[1], {Floating})
+                            requireValue(y.a[2], {Floating})
+                            if y.a.len==3:
+                                return newColor(HSLtoRGB((y.a[0].i, y.a[1].f, y.a[2].f, 1.0)))
+                            elif y.a.len==4:
+                                requireValue(y.a[3], {Floating})
+                                return newColor(HSLtoRGB((y.a[0].i, y.a[1].f, y.a[2].f, y.a[3].f)))
+                        elif (hadAttr("hsv")):
+                            requireValue(y.a[0], {Integer})
+                            requireValue(y.a[1], {Floating})
+                            requireValue(y.a[2], {Floating})
+                            if y.a.len==3:
+                                return newColor(HSVtoRGB((y.a[0].i, y.a[1].f, y.a[2].f, 1.0)))
+                            elif y.a.len==4:
+                                requireValue(y.a[3], {Floating})
+                                return newColor(HSVtoRGB((y.a[0].i, y.a[1].f, y.a[2].f, y.a[3].f)))
                         else:
-                            if (hadAttr("hsl")):
-                                requireValue(y.a[0], {Integer})
-                                requireValue(y.a[1], {Floating})
-                                requireValue(y.a[2], {Floating})
-                                if y.a.len==3:
-                                    return newColor(HSLtoRGB((y.a[0].i, y.a[1].f, y.a[2].f, 1.0)))
-                                elif y.a.len==4:
-                                    requireValue(y.a[3], {Floating})
-                                    return newColor(HSLtoRGB((y.a[0].i, y.a[1].f, y.a[2].f, y.a[3].f)))
-                            elif (hadAttr("hsv")):
-                                requireValue(y.a[0], {Integer})
-                                requireValue(y.a[1], {Floating})
-                                requireValue(y.a[2], {Floating})
-                                if y.a.len==3:
-                                    return newColor(HSVtoRGB((y.a[0].i, y.a[1].f, y.a[2].f, 1.0)))
-                                elif y.a.len==4:
-                                    requireValue(y.a[3], {Floating})
-                                    return newColor(HSVtoRGB((y.a[0].i, y.a[1].f, y.a[2].f, y.a[3].f)))
-                            else:
-                                requireValueBlock(y, {Integer})
-                                if y.a.len==3:
-                                    return newColor((y.a[0].i, y.a[1].i, y.a[2].i, 255))
-                                elif y.a.len==4:
-                                    return newColor((y.a[0].i, y.a[1].i, y.a[2].i, y.a[3].i))
+                            requireValueBlock(y, {Integer})
+                            if y.a.len==3:
+                                return newColor((y.a[0].i, y.a[1].i, y.a[2].i, 255))
+                            elif y.a.len==4:
+                                return newColor((y.a[0].i, y.a[1].i, y.a[2].i, y.a[3].i))
 
                     of Binary:
                         var res: VBinary
