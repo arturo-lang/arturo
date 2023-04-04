@@ -1434,7 +1434,9 @@ proc defineSymbols*() =
                 push convertedValueToType(x, y, tp, popAttr("format"))
             else:
                 var ret: ValueArray
-                let tp = x.a[0].t
+                let elem {.cursor.} = x.a[0]
+                requireValue(elem, {Type})
+                let tp = elem.t
 
                 if yKind==String:
                     ret = toSeq(runes(y.s)).map((c) => newChar(c))
@@ -1442,10 +1444,10 @@ proc defineSymbols*() =
                     let aFormat = popAttr("format")
                     if yKind == Block:
                         for item in y.a:
-                            ret.add(convertedValueToType(x.a[0], item, tp, aFormat))
+                            ret.add(convertedValueToType(elem, item, tp, aFormat))
                     else:
                         for item in items(y.rng):
-                            ret.add(convertedValueToType(x.a[0], item, tp, aFormat))
+                            ret.add(convertedValueToType(elem, item, tp, aFormat))
 
                 push newBlock(ret)
 
