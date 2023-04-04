@@ -158,6 +158,15 @@ do [
     ensure -> not? true = false
     passed
     
+    ensure -> equal? to :complex [0 2] ((to :complex [1 2]) - 1) 
+    ensure -> not? equal? to :complex [1 2] to :complex @[neg 1 2] 
+    ensure -> not? equal? to :complex [1 2] 1
+    ensure -> not? equal? 1 to :complex [1 2]
+    ensure -> (to :complex [0 2]) = ((to :complex [1 2]) - 1) 
+    ensure -> not? (to :complex [1 2]) = to :complex @[neg 1 2] 
+    ensure -> not? (to :complex [1 2]) = 1
+    ensure -> not? 1 = to :complex [1 2]
+    passed
 ]
 
 ; integer comparisons
