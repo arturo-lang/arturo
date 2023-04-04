@@ -224,8 +224,8 @@ proc showWrongAttributeTypeError*(fName: string, aName: string, actual:ValueKind
     let actualStr = stringify(actual)
     RuntimeError_WrongAttributeType(fName, aName, actualStr, acceptedStr)
 
-proc showWrongValueTypeError*(fName: string, actual: Value, expected: set[ValueKind] | string) =
-    let actualStr = valueKind(actual)
+proc showWrongValueTypeError*(fName: string, actual: Value, pre: string, expected: set[ValueKind] | string) =
+    let actualStr = pre & "[" & valueKind(actual) & "...]"
     let acceptedStr = 
         when expected is set[ValueKind]:
             (toSeq(expected.items)).map(proc(x:ValueKind):string = stringify(x)).join(" ")
@@ -233,6 +233,16 @@ proc showWrongValueTypeError*(fName: string, actual: Value, expected: set[ValueK
             expected
 
     RuntimeError_IncompatibleBlockValue(fName, actualStr, acceptedStr)
+
+proc showWrongValueTypeError*(fName: string, attr: string, actual: Value, pre: string, expected: set[ValueKind] | string) =
+    let actualStr = "[" & valueKind(actual) & "...]"
+    let acceptedStr = 
+        when expected is set[ValueKind]:
+            (toSeq(expected.items)).map(proc(x:ValueKind):string = stringify(x)).join(" ")
+        else:
+            expected
+
+    RuntimeError_IncompatibleBlockValueAttribute(fName, attr, actualStr, acceptedStr)
 
 template require*(name: string, spec: untyped): untyped =
     ## make sure that the given arguments match the given spec, 
@@ -273,14 +283,35 @@ template requireBlockSize*(v: Value, expected: int, maxExpected: int = 0) =
             if unlikely(v.a.len < expected or v.a.len > maxExpected):
                 RuntimeError_IncompatibleBlockSize(currentBuiltinName, v.a.len, $(expected) & ".." & $(maxExpected))
 
-template requireValue*(v: Value, expected: set[ValueKind], message: set[ValueKind] | string = {}) = 
+
+template requireValue*(v: Value, expected: set[ValueKind], position: int = 1, message: set[ValueKind] | string = {}) = 
+    when not defined(PORTABLE):
+        template pre(): untyped = 
+            when position == 2:
+                valueKind(x) & " "
+            elif position == 3:
+                valueKind(x) & " " & valueKind(y) & " "
+            else:
+                ""
+
+        if unlikely(v.kind notin expected):
+            when message is string:
+                showWrongValueTypeError(currentBuiltinName, v, pre, message)
+            else:
+                showWrongValueTypeError(currentBuiltinName, v, pre, expected)
+
+template requireValueBlock*(v: Value, expected: set[ValueKind], position: int = 1, message: set[ValueKind] | string = {}) = 
+    for item in v.a:
+        requireValue(item, expected, position, message)
+
+template requireAttrValue*(attr: string, v: Value, expected: set[ValueKind], message: set[ValueKind] | string = {}) =
     when not defined(PORTABLE):
         if unlikely(v.kind notin expected):
             when message is string:
-                showWrongValueTypeError(currentBuiltinName, v, message)
+                showWrongValueAttrTypeError(currentBuiltinName, attr, v, message)
             else:
-                showWrongValueTypeError(currentBuiltinName, v, expected)
+                showWrongValueAttrTypeError(currentBuiltinName, attr, v, expected)
 
-template requireValueBlock*(v: Value, expected: set[ValueKind], message: set[ValueKind] | string = {}) = 
+template requireAttrValueBlock*(attr: string, v: Value, expected: set[ValueKind], message: set[ValueKind] | string = {}) = 
     for item in v.a:
-        requireValue(item, expected, message)
+        requireAttrValue(attr, item, expected, message)
