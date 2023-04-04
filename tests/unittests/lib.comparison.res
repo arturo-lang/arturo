@@ -1,3 +1,28 @@
+
+>> equal?
+
+>> :integer :floating :rational
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> :quantity
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> other types
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 true
 true
 false
