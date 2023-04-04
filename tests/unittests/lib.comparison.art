@@ -9,6 +9,41 @@ passed: $[] -> print "[+] passed!"
 
 ; ==> Tests
 
+topic « equal?
+do [
+    
+    topic « :integer :floating :rational
+    
+    ensure -> equal? 1 1
+    ensure -> equal? 1 1.0
+    ensure -> equal? 1 to :rational @[1 1]
+    ensure -> equal? 1 to :rational @[5 5]
+    ensure -> 1 = 1
+    ensure -> 1 = 1.0
+    ensure -> 1 = to :rational @[1 1]
+    ensure -> 1 = to :rational @[5 5]
+    passed
+    
+    ensure -> equal? 1.0 1
+    ensure -> equal? 1.0 1.0
+    ensure -> equal? 1.0 to :rational @[1 1]
+    ensure -> equal? 1.0 to :rational @[5 5]
+    ensure -> 1.0 = 1
+    ensure -> 1.0 = 1.0
+    ensure -> 1.0 = to :rational @[1 1]
+    ensure -> 1.0 = to :rational @[5 5]
+    passed
+    
+    ensure -> equal? to :rational @[5 5] 1
+    ensure -> equal? to :rational @[5 5] 1.0
+    ensure -> equal? to :rational @[5 5] to :rational @[1 1]
+    ensure -> (to :rational @[5 5]) = 1
+    ensure -> (to :rational @[5 5]) = 1.0
+    ensure -> (to :rational @[5 5]) = to :rational @[1 1]
+    passed
+    
+    
+]
 
 ; integer comparisons
 
