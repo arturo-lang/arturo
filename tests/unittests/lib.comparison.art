@@ -247,6 +247,15 @@ do [
     ensure -> not? equal? [label: .attr: "a"] [.attr: "a"]
     passed
     
+    ensure -> equal? 'literal 'literal
+    ensure -> not? equal? 'literal 'other
+    ensure -> not? equal? 'literal "literal"
+    ensure -> not? equal? ['literal] ["literal"]
+    ensure -> not? equal? ['literal] [literal]
+    ensure -> not? equal? ['literal] [.literal]
+    ensure -> not? equal? ['literal] [literal: 'literal]
+    passed
+    
 ]
 
 ; integer comparisons
