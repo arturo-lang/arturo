@@ -318,6 +318,11 @@ do [
     ensure -> equal? b\1 "Jane" 
     ensure -> equal? b\2 "Jesse" 
     ensure -> not? equal? b\2 "Walter" 
+    
+    ensure -> equal? [b\0] [b\0]
+    ensure -> equal? [a\name] [a\name]
+    ensure -> not? equal? [b\0] [b\1]
+    ensure -> not? equal? [a\name] [a\surname]
     passed
     
     topic « equal? - :pathLabel
