@@ -148,6 +148,15 @@ do [
     ensure -> not? ø = `ø`
     passed
     
+    ensure -> equal? true true
+    ensure -> equal? true (1 > 0)
+    ensure -> not? equal? true maybe
+    ensure -> not? equal? true false
+    ensure -> true = true
+    ensure -> true = (1 > 0)
+    ensure -> not? true = maybe
+    ensure -> not? true = false
+    passed
     
 ]
 
