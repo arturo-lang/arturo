@@ -129,6 +129,7 @@ do [
     passed
     
     topic « other types
+    topic « topic « equal? - :null
     
     ensure -> equal? null null
     ensure -> equal? null ø
@@ -148,6 +149,8 @@ do [
     ensure -> not? ø = `ø`
     passed
     
+    topic « topic « equal? - :logical
+    
     ensure -> equal? true true
     ensure -> equal? true (1 > 0)
     ensure -> not? equal? true maybe
@@ -157,6 +160,8 @@ do [
     ensure -> not? true = maybe
     ensure -> not? true = false
     passed
+    
+    topic « topic « equal? - :complex
     
     ensure -> equal? to :complex [0 2] ((to :complex [1 2]) - 1) 
     ensure -> not? equal? to :complex [1 2] to :complex @[neg 1 2] 
@@ -168,6 +173,8 @@ do [
     ensure -> not? 1 = to :complex [1 2]
     passed
     
+    topic « topic « equal? - :version
+    
     ensure -> equal? 1.2.3 1.2.3
     ensure -> not? equal? 1.2.3 1.2.3-pre
     ensure -> not? equal? 1.2.3 1.2.3-dev
@@ -176,10 +183,14 @@ do [
     ensure -> not? 1.2.3 = 1.2.3-dev
     passed
     
+    topic « topic « equal? - :type
+    
     ensure -> equal? :string type "a"
     ensure -> equal? :integer type 1
     ensure -> equal? :floating type 1.5
     passed
+    
+    topic « topic « equal? - :char
     
     ensure -> equal? `a` `a`
     ensure -> not? equal? `a` "a" 
@@ -196,6 +207,8 @@ do [
     ensure -> not? `b` = `a`
     ensure -> not?  1  = `1`
     passed 
+    
+    topic « topic « equal? - :string
     
     ensure -> equal? "Art" "Arturo" -- "uro"
     ensure -> not? equal? "a"    `a` 
@@ -217,6 +230,8 @@ do [
     ensure -> not? ["help"] = ['help: "help"]
     passed
     
+    topic « topic « equal? - :word
+    
     ensure -> equal? [word] [word]
     ensure -> not? equal? [word] [otherWord]
     ensure -> not? equal? [word] ["word"]
@@ -225,6 +240,8 @@ do [
     ; ensure -> not? equal? [word] [.word]
     ensure -> not? equal? [word] [.word: word]
     passed
+    
+    topic « topic « equal? - :label
     
     ensure -> equal? [label: value] [label: value]
     ensure -> not? equal? [label: value] [label: value2]
@@ -247,6 +264,8 @@ do [
     ensure -> not? equal? [label: .attr: "a"] [.attr: "a"]
     passed
     
+    topic « topic « equal? - :literal
+    
     ensure -> equal? 'literal 'literal
     ensure -> not? equal? 'literal 'other
     ensure -> not? equal? 'literal "literal"
@@ -256,6 +275,8 @@ do [
     ensure -> not? equal? ['literal] [literal: 'literal]
     passed
     
+    topic « topic « equal? - :attribute
+    
     ensure -> equal? [.attr] [.attr]
     ensure -> not? equal? [.attr] ["attr"]
     ; ensure -> not? equal? [.attr] [attr]
@@ -264,6 +285,8 @@ do [
     ensure -> not? equal? [.attr] [.other]
     ensure -> not? equal? [.attr] [.attr: .attr]
     passed
+    
+    topic « topic « equal? - :attributeLabel
     
     ensure -> equal? [.attr: value] [.attr: value]
     ensure -> not? equal? [.attr: value] ["attr"]
