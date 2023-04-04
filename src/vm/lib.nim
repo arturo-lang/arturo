@@ -271,3 +271,7 @@ template requireValue*(v: Value, expected: set[ValueKind], message: set[ValueKin
                 showWrongValueTypeError(currentBuiltinName, v, message)
             else:
                 showWrongValueTypeError(currentBuiltinName, v, expected)
+
+template requireValueBlock*(v: Value, expected: set[ValueKind], message: set[ValueKind] | string = {}) = 
+    for item in v.a:
+        requireValue(item, expected, message)
