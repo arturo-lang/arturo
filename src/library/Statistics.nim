@@ -89,9 +89,9 @@ proc defineSymbols*() =
         """:
             #=======================================================
             if (hadAttr("sample")):
-                push newFloating(standardDeviationS(x.a.map((z)=>asFloat(z))))
+                push newFloating(standardDeviationS(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
             else:
-                push newFloating(standardDeviation(x.a.map((z)=>asFloat(z))))
+                push newFloating(standardDeviation(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
 
     builtin "kurtosis",
         alias       = unaliased,
@@ -117,9 +117,9 @@ proc defineSymbols*() =
         """:
             #=======================================================
             if (hadAttr("sample")):
-                push newFloating(kurtosisS(x.a.map((z)=>asFloat(z))))
+                push newFloating(kurtosisS(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
             else:
-                push newFloating(kurtosis(x.a.map((z)=>asFloat(z))))
+                push newFloating(kurtosis(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
 
     builtin "median",
         alias       = unaliased,
@@ -185,9 +185,9 @@ proc defineSymbols*() =
         """:
             #=======================================================
             if (hadAttr("sample")):
-                push newFloating(skewnessS(x.a.map((z)=>asFloat(z))))
+                push newFloating(skewnessS(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
             else:
-                push newFloating(skewness(x.a.map((z)=>asFloat(z))))
+                push newFloating(skewness(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
 
     builtin "variance",
         alias       = unaliased,
@@ -213,9 +213,9 @@ proc defineSymbols*() =
         """:
             #=======================================================
             if (hadAttr("sample")):
-                push newFloating(varianceS(x.a.map((z)=>asFloat(z))))
+                push newFloating(varianceS(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
             else:
-                push newFloating(variance(x.a.map((z)=>asFloat(z))))
+                push newFloating(variance(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
 
 #=======================================
 # Add Library

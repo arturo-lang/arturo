@@ -128,7 +128,7 @@ proc defineSymbols*() =
                 var cmd = x.s
                 var args: seq[string]
                 if checkAttr("args"):
-                    args = aArgs.a.map((x) => x.s)
+                    args = aArgs.a.map((x) => (requireAttrValue("args", x, {String}); x.s))
                 let code = (hadAttr("code"))
                 let directly = (hadAttr("directly"))
 

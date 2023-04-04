@@ -359,10 +359,10 @@ proc defineSymbols*() =
             #=======================================================
             if xKind == Literal:
                 ensureInPlace()
-                let res = unzip(InPlaced.a.map((w)=>(w.a[0], w.a[1])))
+                let res = unzip(InPlaced.a.map((w)=>(requireValue(w,{Block,Inline});(w.a[0], w.a[1]))))
                 InPlaced.a = @[newBlock(res[0]), newBlock(res[1])]
             else:
-                let res = unzip(x.a.map((z)=>(z.a[0], z.a[1])))
+                let res = unzip(x.a.map((z)=>(requireValue(z,{Block,Inline});(z.a[0], z.a[1]))))
                 push(newBlock(@[newBlock(res[0]), newBlock(res[1])]))
 
     builtin "drop",
@@ -1111,9 +1111,9 @@ proc defineSymbols*() =
                         elif not defined(NOGMP):
                             push(newLogical(x.bi==newInt(1)))
                     else:
-                        push(newLogical(x == I1))
+                        push(newLogical(x.i == 1))
                 of Floating:
-                    push(newLogical(x == F1))
+                    push(newLogical(x.f == 1.0))
                 of String:
                     push(newLogical(runeLen(x.s) == 1))
                 of Block:
@@ -2070,7 +2070,7 @@ proc defineSymbols*() =
                             SetInPlace(newStringBlock(InPlaced.s.split(aBy.rx)))
                         else:
                             SetInPlace(newStringBlock(toSeq(
-                                    InPlaced.s.tokenize(aBy.a.map((k)=>k.s)))))
+                                    InPlaced.s.tokenize(aBy.a.map((k)=>(requireAttrValue("by",k,{String});k.s))))))
                     elif checkAttr("at"):
                         SetInPlace(newStringBlock(@[InPlaced.s[0..aAt.i-1],
                                 InPlaced.s[aAt.i..^1]]))
@@ -2130,7 +2130,7 @@ proc defineSymbols*() =
                     elif aBy.kind == Regex:
                         push(newStringBlock(x.s.split(aBy.rx)))
                     else:
-                        push(newStringBlock(toSeq(x.s.tokenize(aBy.a.map((k)=>k.s)))))
+                        push(newStringBlock(toSeq(x.s.tokenize(aBy.a.map((k)=>(requireAttrValue("by",k,{String});k.s))))))
                 elif checkAttr("at"):
                     push(newStringBlock(@[x.s[0..aAt.i-1], x.s[aAt.i..^1]]))
                 elif checkAttr("every"):
@@ -2435,9 +2435,9 @@ proc defineSymbols*() =
                         elif not defined(NOGMP):
                             push(newLogical(isZero(x.bi)))
                     else:
-                        push(newLogical(x == I0))
+                        push(newLogical(x.i == 0))
                 of Floating:
-                    push(newLogical(x == F0))
+                    push(newLogical(x.f == 0.0))
                 of String:
                     push(newLogical(runeLen(x.s) == 0))
                 of Block:
