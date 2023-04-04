@@ -320,6 +320,14 @@ do [
     ensure -> not? equal? b\2 "Walter" 
     passed
     
+    topic « equal? - :pathLabel
+       
+    ensure -> equal? [a\name: "John"] [a\name: "John"]
+    ensure -> not? equal? [a\surname: "Doe"] [b\surname: "Doe" ]
+    ensure -> not? equal? [a\name: "John"] [b\name: "Jane"]
+    ensure -> not? equal? [a\name: "John"] [b\name: "John"]
+    passed
+    
 ]
 
 ; integer comparisons
