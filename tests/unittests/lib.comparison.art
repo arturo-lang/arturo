@@ -42,6 +42,94 @@ do [
     ensure -> (to :rational @[5 5]) = to :rational @[1 1]
     passed
     
+    topic « :quantity
+    
+    ensure -> equal? 1:usd 1
+    ensure -> equal? 1:m   1
+    ensure -> equal? 1:m2  1
+    ensure -> equal? 1:m3  1
+    ensure -> equal? 1:c   1
+    ensure -> equal? 1:f   1
+    ensure -> 1:usd = 1
+    ensure -> 1:m   = 1
+    ensure -> 1:m2  = 1
+    ensure -> 1:m3  = 1
+    ensure -> 1:c   = 1
+    ensure -> 1:f   = 1
+    passed
+    
+    ensure -> equal? 1 1:usd
+    ensure -> equal? 1 1:m
+    ensure -> equal? 1 1:m2
+    ensure -> equal? 1 1:m3
+    ensure -> equal? 1 1:c
+    ensure -> equal? 1 1:f
+    ensure -> 1 = 1:usd
+    ensure -> 1 = 1:m
+    ensure -> 1 = 1:m2
+    ensure -> 1 = 1:m3
+    ensure -> 1 = 1:c
+    ensure -> 1 = 1:f
+    passed
+    
+    ensure -> equal? 1:usd 1.0
+    ensure -> equal? 1:m   1.0
+    ensure -> equal? 1:m2  1.0
+    ensure -> equal? 1:m3  1.0
+    ensure -> equal? 1:c   1.0
+    ensure -> equal? 1:f   1.0
+    ensure -> 1:usd = 1.0
+    ensure -> 1:m   = 1.0
+    ensure -> 1:m2  = 1.0
+    ensure -> 1:m3  = 1.0
+    ensure -> 1:c   = 1.0
+    ensure -> 1:f   = 1.0
+    passed
+    
+    ensure -> equal? 1.0 1:usd
+    ensure -> equal? 1.0 1:m
+    ensure -> equal? 1.0 1:m2
+    ensure -> equal? 1.0 1:m3
+    ensure -> equal? 1.0 1:c
+    ensure -> equal? 1.0 1:f
+    ensure -> 1.0 = 1:usd
+    ensure -> 1.0 = 1:m
+    ensure -> 1.0 = 1:m2
+    ensure -> 1.0 = 1:m3
+    ensure -> 1.0 = 1:c
+    ensure -> 1.0 = 1:f
+    passed
+    
+    ensure -> equal? 1:usd to :rational @[5 5]
+    ensure -> equal? 1:m   to :rational @[5 5]
+    ensure -> equal? 1:m2  to :rational @[5 5]
+    ensure -> equal? 1:m3  to :rational @[5 5]
+    ensure -> equal? 1:c   to :rational @[5 5]
+    ensure -> equal? 1:f   to :rational @[5 5]
+    ensure -> 1:usd = to :rational @[5 5]
+    ensure -> 1:m   = to :rational @[5 5]
+    ensure -> 1:m2  = to :rational @[5 5]
+    ensure -> 1:m3  = to :rational @[5 5]
+    ensure -> 1:c   = to :rational @[5 5]
+    ensure -> 1:f   = to :rational @[5 5]
+    passed
+    
+    ensure -> equal? to :rational @[5 5] 1:usd
+    ensure -> equal? to :rational @[5 5] 1:m
+    ensure -> equal? to :rational @[5 5] 1:m2
+    ensure -> equal? to :rational @[5 5] 1:m3
+    ensure -> equal? to :rational @[5 5] 1:c
+    ensure -> equal? to :rational @[5 5] 1:f
+    ensure -> (to :rational @[5 5]) = 1:usd
+    ensure -> (to :rational @[5 5]) = 1:m
+    ensure -> (to :rational @[5 5]) = 1:m2
+    ensure -> (to :rational @[5 5]) = 1:m3
+    ensure -> (to :rational @[5 5]) = 1:c
+    ensure -> (to :rational @[5 5]) = 1:f
+    passed
+    
+    
+    
     
 ]
 
