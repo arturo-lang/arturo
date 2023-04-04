@@ -264,10 +264,14 @@ template require*(name: string, spec: untyped): untyped =
                     if unlikely(not (zKind in (static spec[2][1]))):
                         showWrongArgumentTypeError(currentBuiltinName, 2, [x,y,z], spec)
 
-template requireBlockSize*(v: Value, expected: int) =
+template requireBlockSize*(v: Value, expected: int, maxExpected: int = 0) =
     when not defined(PORTABLE):
-        if unlikely(v.a.len != expected):
-            RuntimeError_IncompatibleBlockSize(currentBuiltinName, v.a.len, expected)
+        when maxExpected == 0:
+            if unlikely(v.a.len != expected):
+                RuntimeError_IncompatibleBlockSize(currentBuiltinName, v.a.len, $(expected))
+        else:
+            if unlikely(v.a.len < expected or v.a.len > maxExpected):
+                RuntimeError_IncompatibleBlockSize(currentBuiltinName, v.a.len, $(expected) & ".." & $(maxExpected))
 
 template requireValue*(v: Value, expected: set[ValueKind], message: set[ValueKind] | string = {}) = 
     when not defined(PORTABLE):
