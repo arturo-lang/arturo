@@ -1055,12 +1055,14 @@ proc defineSymbols*() =
             if checkAttr("import"):
                 var ret = initOrderedTable[string,Value]()
                 for item in aImport.a:
+                    requireValue(item, {Word, Literal})
                     ret[item.s] = FetchSym(item.s)
                 imports = newDictionary(ret)
 
             var exports: Value = nil
 
             if checkAttr("export"):
+                requireValueBlock(aExport, {Word, Literal})
                 exports = aExport
 
             var memoize = (hadAttr("memoize"))
