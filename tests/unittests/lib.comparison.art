@@ -1,3 +1,15 @@
+; helper function
+debug: $[variable][
+    print[variable type variable]
+]
+
+topic: $[topic :string] -> print ~"\n>> |topic|"
+passed: $[] -> print "[+] passed!"
+
+
+; ==> Tests
+
+
 ; integer comparisons
 
 print equal? 1 1
