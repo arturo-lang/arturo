@@ -256,6 +256,15 @@ do [
     ensure -> not? equal? ['literal] [literal: 'literal]
     passed
     
+    ensure -> equal? [.attr] [.attr]
+    ensure -> not? equal? [.attr] ["attr"]
+    ; ensure -> not? equal? [.attr] [attr]
+    ensure -> not? equal? [.attr] [attr: .attr]
+    ensure -> not? equal? [.attr] ['attr]
+    ensure -> not? equal? [.attr] [.other]
+    ensure -> not? equal? [.attr] [.attr: .attr]
+    passed
+    
 ]
 
 ; integer comparisons
