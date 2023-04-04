@@ -611,6 +611,7 @@ proc defineSymbols*() =
                     var blk: ValueArray
 
                     for item in aOf.a.reversed:
+                        requireValue(item, {Integer})
                         blk = safeRepeat(val, item.i)
                         val = newBlock(blk.map((v)=>copyValue(v)))
 
