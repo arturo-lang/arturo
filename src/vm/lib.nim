@@ -222,7 +222,7 @@ proc showWrongAttributeTypeError*(fName: string, aName: string, actual:ValueKind
     var expectedValues = toSeq(expected.items)
     let acceptedStr = expectedValues.map(proc(x:ValueKind):string = stringify(x)).join(" ")
     let actualStr = stringify(actual)
-    RuntimeError_WrongAttributeType(fName, aName, actualStr, acceptedStr)
+    RuntimeError_WrongAttributeType(fName, "." & aName, actualStr, acceptedStr)
 
 proc showWrongValueTypeError*(fName: string, actual: Value, pre: string, expected: set[ValueKind] | string) =
     let actualStr = pre & "[" & valueKind(actual) & "...]"
