@@ -234,7 +234,7 @@ proc showWrongValueTypeError*(fName: string, actual: Value, pre: string, expecte
 
     RuntimeError_IncompatibleBlockValue(fName, actualStr, acceptedStr)
 
-proc showWrongValueTypeError*(fName: string, attr: string, actual: Value, pre: string, expected: set[ValueKind] | string) =
+proc showWrongValueAttrTypeError*(fName: string, attr: string, actual: Value, pre: string, expected: set[ValueKind] | string) =
     let actualStr = "[" & valueKind(actual) & "...]"
     let acceptedStr = 
         when expected is set[ValueKind]:
