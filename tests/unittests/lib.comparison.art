@@ -167,6 +167,14 @@ do [
     ensure -> not? (to :complex [1 2]) = 1
     ensure -> not? 1 = to :complex [1 2]
     passed
+    
+    ensure -> equal? 1.2.3 1.2.3
+    ensure -> not? equal? 1.2.3 1.2.3-pre
+    ensure -> not? equal? 1.2.3 1.2.3-dev
+    ensure -> 1.2.3 = 1.2.3
+    ensure -> not? 1.2.3 = 1.2.3-pre
+    ensure -> not? 1.2.3 = 1.2.3-dev
+    passed
 ]
 
 ; integer comparisons
