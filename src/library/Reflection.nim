@@ -532,7 +532,10 @@ proc defineSymbols*() =
                     else:
                         push(newLogical(x.t == yKind))
                 else:
-                    let tp = x.a[0].t
+                    let elem {.cursor.} = x.a[0]
+                    requireValue(elem, {Type})
+
+                    let tp = elem.t
                     var res = true
                     if tp != Any:
                         if yKind != Block: 
