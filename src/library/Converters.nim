@@ -784,7 +784,7 @@ proc defineSymbols*() =
             ; NAME: Jane, SURNAME: Doe, AGE: 33
         """:
             #=======================================================
-            requireValueBlock(y.a, {Word,Literal})
+            requireValueBlock(y, {Word,Literal})
             x.ts.fields = y.a
 
             if checkAttr("as"):
