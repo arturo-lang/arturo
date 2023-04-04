@@ -893,6 +893,7 @@ proc defineSymbols*() =
 
             if checkAttr("with"):
                 for x in aWith.a:
+                    requireValue(x, {Word,Literal})
                     dict[x.s] = FetchSym(x.s)
 
             if (hadAttr("lower")):
