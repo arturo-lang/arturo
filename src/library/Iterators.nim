@@ -269,6 +269,8 @@ template iterateBlockWithParams(
 
     finalizeLeakless()
 
+# TODO(Iterators) we should make sure that params block is either literals or words
+#  labels: library, enhancement, error handling, performance
 template fetchParamsBlock() {.dirty.} =
     var params: seq[string]
     if hasIndex: params.add(withIndex.s)

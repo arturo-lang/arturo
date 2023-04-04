@@ -78,7 +78,10 @@ proc defineSymbols*() =
             if xKind==String:
                 sym = doParse(x.s, isFile=false).a[0].m
             elif xKind==Block:
-                sym = x.a[0].m
+                let elem {.cursor.} = x.a[0]
+                requireValue(elem, {Symbol, SymbolLiteral})
+
+                sym = elem.m
             else:
                 sym = x.m
 

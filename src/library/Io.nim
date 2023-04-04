@@ -229,6 +229,7 @@ proc defineSymbols*() =
                         historyPath = aHistory.s
 
                     if checkAttr("complete"):
+                        requireAttrValueBlock("complete", aComplete, {String,Word,Literal})
                         completionsArray = aComplete.a
 
                     if checkAttr("hint"):
