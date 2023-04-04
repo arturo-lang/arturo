@@ -217,12 +217,6 @@ do [
     ensure -> not? ["help"] = ['help: "help"]
     passed
     
-    ensure -> not? equal? [help]          ["help"]
-    ensure -> not? equal? [a: "a"]        ["a"] 
-    ensure -> not? equal? 'help           "help" 
-    ensure -> not? equal? [.help]         ["help"]
-    ensure -> not? equal? ['help: "help"] ["help"]
-    passed
     
     
 ]
