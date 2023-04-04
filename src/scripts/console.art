@@ -175,7 +175,7 @@ lookup: function [what :string :literal :regex :type][
     unstack.discard size stack
 ]
 
-autocomplete: true
+auto: #[complete: true, hints: true]
 
 ; start the REPL
 
@@ -185,14 +185,12 @@ while [true] [
 
     indentation: ""
     
-    inp: autocomplete ? -> input .repl
-                                 .history: historyPath 
-                                 .complete: completions
-                                 .hint: hints 
-                                 "$> " 
-                        -> input .repl
-                                 .history: historyPath 
-                                 "$> "
+    command: [input.repl .history: historyPath]
+    if auto\complete -> append 'command [.complete: completions]
+    if auto\hints -> append 'command [.hint: hints]
+    append 'command ["$> "]
+
+    inp: do command
 
     while [suffix? inp " "][
         if suffix? strip inp "[" [
