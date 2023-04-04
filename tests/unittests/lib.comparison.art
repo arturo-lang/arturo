@@ -128,7 +128,6 @@ do [
     ensure -> (to :rational @[5 5]) = 1:f
     passed
     
-    topic « other types
     topic « topic « equal? - :null
     
     ensure -> equal? null null
