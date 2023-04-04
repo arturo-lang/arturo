@@ -130,6 +130,23 @@ do [
     
     topic « other types
     
+    ensure -> equal? null null
+    ensure -> equal? null ø
+    ensure -> equal? ø ø
+    ensure -> equal? ø null
+    ensure -> not? equal? ø 1
+    ensure -> not? equal? ø 1.0
+    ensure -> not? equal? ø "ø"
+    ensure -> not? equal? ø `ø`
+    ensure -> null = null
+    ensure -> null = ø
+    ensure -> ø = ø
+    ensure -> ø = null
+    ensure -> not? ø = 1
+    ensure -> not? ø = 1.0
+    ensure -> not? ø = "ø"
+    ensure -> not? ø = `ø`
+    passed
     
     
 ]
