@@ -65,6 +65,9 @@
 >> equal? - :binary
 [+] passed!
 
+>> equal? - :bytecode
+[+] passed!
+
 >> equal? - :inline
 [+] passed!
 
@@ -72,6 +75,21 @@
 [+] passed!
 
 >> equal? :range
+[+] passed!
+
+>> equal? :dictionary
+[+] passed!
+[+] passed!
+
+>> equal? - :object
+[+] passed!
+[+] passed!
+
+>> equal? - :color
+[+] passed!
+
+>> equal? - :function
+[+] passed!
 [+] passed!
 true
 true
