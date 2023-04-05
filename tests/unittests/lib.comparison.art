@@ -446,6 +446,15 @@ do [
     ensure -> equal? a to :person ["Jane" 32]
     passed
 
+    topic « equal? - :color
+    
+    ensure -> equal? #000 #black
+    ensure -> equal? #fff #white
+    ensure -> equal? #white #white
+    ensure -> not? equal? #black #white
+    ensure -> not? equal? #white #black
+    passed
+
 ]
 
 ; integer comparisons
