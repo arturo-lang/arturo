@@ -345,6 +345,15 @@ do [
     ensure -> not? equal? [+] ['+]
     passed
     
+    topic « equal? - :regex
+    
+    ensure -> regex? {/[A-Z]/}
+    ensure -> equal? {/[A-Z]/} {/[A-Z]/} 
+    ensure -> not? equal? {/[A-Z]/} {/[ABCDEFGHIJKLMNOPQRSTUVWXYZ]/}
+    ensure -> not? equal? {/[A-Z]/} {[A-Z]}
+    ensure -> not? equal? {/[A-Z]/} "/[A-Z]/"
+    passed
+
 ]
 
 ; integer comparisons
