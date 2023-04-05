@@ -455,6 +455,23 @@ do [
     ensure -> not? equal? #white #black
     passed
 
+    topic « equal? - :function
+    
+    ensure -> equal? var 'print var 'print
+    ensure -> not? equal? var 'inspect var 'print
+    passed
+    
+    a: $[name surname][]
+    A: $[name][]
+    b: $[name][]
+    c: $[name surname][]
+    
+    ensure -> equal? ~"|var 'a|" ~"|$[name surname][]|"
+    ensure -> equal? ~"|var 'a|" ~"|var 'c|"
+    ensure -> not? equal? ~"|var 'a|" ~"|var 'A|"
+    ensure -> not? equal? ~"|var 'a|" ~"|var 'b|"
+    passed
+
 ]
 
 ; integer comparisons
