@@ -390,6 +390,14 @@ do [
     ensure -> not? equal? a [1 ++ 1]
     passed
     
+    topic « equal? :range
+    
+    ensure -> equal? [0 1 2 3 4 5] @0..5
+    ensure -> equal? [0 2 4] @0.. .step: 2 5
+    ensure -> equal? @range.step: 2 0 5 @range.step: 2 0 4
+    ensure -> not? equal? range.step: 2 0 5 range.step: 2 0 4
+    passed
+
 ]
 
 ; integer comparisons
