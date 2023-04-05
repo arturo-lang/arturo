@@ -55,6 +55,24 @@
 
 >> equal? - :pathLabel
 [+] passed!
+
+>> equal? - :symbol
+[+] passed!
+
+>> equal? - :regex
+[+] passed!
+
+>> equal? - :binary
+[+] passed!
+
+>> equal? - :inline
+[+] passed!
+
+>> equal? - :block
+[+] passed!
+
+>> equal? :range
+[+] passed!
 true
 true
 false
