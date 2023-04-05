@@ -472,6 +472,23 @@ do [
     ensure -> not? equal? ~"|var 'a|" ~"|var 'b|"
     passed
 
+    topic « equal? - :date
+    
+    a: to :date .format: "MMM dd" "Jan 15"
+    b: to :date .format: "MMM dd" "Jan 15"
+    c: to :date .format: "YYYY MMM dd" "2023 Jan 15"
+    d: now
+    
+    ensure -> equal? a b 
+    ensure -> not? equal? a c 
+    ensure -> not? equal? a d
+    passed 
+    
+    ensure -> equal? a\day c\day
+    ensure -> equal? a\month c\month
+    ensure -> not? equal? a\year c\year
+    passed
+
 ]
 
 ; integer comparisons
