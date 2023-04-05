@@ -85,10 +85,18 @@
 [+] passed!
 [+] passed!
 
+>> equal? - :store
+
 >> equal? - :color
 [+] passed!
 
 >> equal? - :function
+[+] passed!
+[+] passed!
+
+>> equal? - :database
+
+>> equal? - :date
 [+] passed!
 [+] passed!
 true
