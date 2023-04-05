@@ -366,6 +366,15 @@ do [
     ensure -> not? equal? a 0
     passed
 
+    topic « equal? - :bytecode
+    
+    x: to :bytecode [["print"][1 112 155]]
+    
+    ensure -> equal? x to :bytecode [["print"][1 112 155]]
+    ensure -> not? equal? x to :bytecode [["print"][2 112 155]]
+    ensure -> not? equal? x [["print"][2 112 155]]
+    passed
+
     topic « equal? - :inline
     
     a: [(1 + 1)], b: [(1 + 1)] 
