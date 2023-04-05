@@ -398,6 +398,21 @@ do [
     ensure -> not? equal? range.step: 2 0 5 range.step: 2 0 4
     passed
 
+    topic « equal? :dictionary
+    
+    a: #[name: "Walter" surname: "Pinkman"]
+    
+    ensure -> equal? a #[name: "Walter" surname: "Pinkman"]
+    ensure -> not? equal? a #[name: "Jesse" surname: "Pinkman"]
+    ensure -> not? equal? a #[name "Jesse" surname "Pinkman"]
+    ensure -> not? equal? a [name "Jesse" surname "Pinkman"]
+    passed
+    
+    ensure -> equal? a\name "Walter"
+    ensure -> equal? a\surname "Pinkman"
+    ensure -> not? equal? a\surname "White"
+    passed
+
 ]
 
 ; integer comparisons
