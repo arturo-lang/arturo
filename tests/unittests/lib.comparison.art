@@ -413,6 +413,30 @@ do [
     ensure -> not? equal? a\surname "White"
     passed
 
+    topic « equal? - :object
+    
+    define :person [name age][  
+        init: -> this\name: capitalize this\name
+        print: -> 
+            render "NAME: |this\name|, AGE: |this\age|"
+    ]
+    
+    define.as: :person :student [name age id][  
+        init: -> this\name: capitalize this\name
+        print: -> 
+            render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
+    ]
+    
+    a: to :person ["Joe" 32]
+    ensure -> equal? a to :person ["Joe" 32]
+    ensure -> not? equal? to :person ["Joe" 32] #[name: "Joe" age: 32]
+    ensure -> not? equal? to :person ["Joe" 32] to :student ["Joe" 32 15]
+    passed
+    
+    a\name: "Jane"
+    ensure -> equal? a to :person ["Jane" 32]
+    passed
+
 ]
 
 ; integer comparisons
