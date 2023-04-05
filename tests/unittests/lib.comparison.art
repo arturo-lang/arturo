@@ -354,6 +354,18 @@ do [
     ensure -> not? equal? {/[A-Z]/} "/[A-Z]/"
     passed
 
+    topic « equal? - :binary
+    
+    ensure -> equal? "48 65 6C 6C 6F 20 77 6F 72 6C 64"
+        ~{|to :binary "Hello world"|}
+    ensure -> equal? "00" ~{|to :binary 0|}
+    ensure -> equal? "01" ~{|to :binary 1|}
+    ensure -> equal? "0A" ~{|to :binary 10|}
+    ensure -> equal? "05" ~{|to :binary 5|}
+    a: to :binary 0
+    ensure -> not? equal? a 0
+    passed
+
 ]
 
 ; integer comparisons
