@@ -381,6 +381,15 @@ do [
     ensure -> not? equal? a\0 2
     passed
 
+    topic « equal? - :block
+    
+    a: [1 + 1]
+    ensure -> equal? a [1 + 1]
+    ensure -> not? equal? a [2]
+    ensure -> not? equal? a 2
+    ensure -> not? equal? a [1 ++ 1]
+    passed
+    
 ]
 
 ; integer comparisons
