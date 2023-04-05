@@ -333,6 +333,18 @@ do [
     ensure -> not? equal? [a\name: "John"] [b\name: "John"]
     passed
     
+    topic « equal? - :symbol
+    
+    ensure -> equal? [+] [+]
+    ensure -> not? equal? [+] [-]
+    ensure -> not? equal? [+] [++]
+    ensure -> not? equal? [+] [`+`]
+    ensure -> not? equal? [+] [{+}]
+    ensure -> not? equal? [+] ["+"]
+    ensure -> not? equal? [+] [plus]
+    ensure -> not? equal? [+] ['+]
+    passed
+    
 ]
 
 ; integer comparisons
