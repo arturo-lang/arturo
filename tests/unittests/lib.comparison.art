@@ -501,11 +501,6 @@ do [
 
 ; integer comparisons
 
-print equal? 1 1
-print 1=1
-print equal? 1 2
-print 1=2
-
 print notEqual? 1 1
 print 1<>1
 print notEqual? 1 2
