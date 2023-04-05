@@ -99,10 +99,6 @@
 >> equal? - :date
 [+] passed!
 [+] passed!
-true
-true
-false
-false
 false
 false
 true
