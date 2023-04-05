@@ -445,6 +445,10 @@ do [
     a\name: "Jane"
     ensure -> equal? a to :person ["Jane" 32]
     passed
+    
+    topic « equal? - :store
+    
+    ; todo: test this
 
     topic « equal? - :color
     
@@ -471,6 +475,10 @@ do [
     ensure -> not? equal? ~"|var 'a|" ~"|var 'A|"
     ensure -> not? equal? ~"|var 'a|" ~"|var 'b|"
     passed
+
+    topic « equal? - :database
+    
+    ; todo: test this
 
     topic « equal? - :date
     
