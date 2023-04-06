@@ -795,7 +795,7 @@ do [
         -> equal? "floating" :floating              -> equal? ":floating" :floating
         -> equal? "1.0" :floating                   -> equal? ["a"] [a\a]
         -> equal? ["a"] [a\a:]                      -> equal? ["a" "a"] [a\a: "a"]
-        -> equal? [""] [+]                          -> equal? "a" {/a/}
+        -> equal? ["+"] [+]                         -> equal? "a" {/a/}
         -> equal? "01" to :binary 1                 -> equal? "1" to :binary 1
         -> equal? [""] [("")]                       -> equal? "" [""]
         -> equal? "1" 1..1                          -> equal? "a" #[a: "a"]
@@ -804,34 +804,32 @@ do [
     ] passed
     
     ; for :word
-    ensure -> not? all? @[
-        -> equal? [one]      @[1]                       -> equal? [one]     @[1.0]           
-        -> equal? [rational] @[to :rational [1 1]]      -> equal? [one]     @[to :rational [1 1]]
+    ensure -> not? all? @[        
+        -> equal? [rational] @[to :rational [1 1]]      
         -> equal? [null]     @[null]                    -> equal? [true]    @[true]                       
         -> equal? [false]    @[false]                   -> equal? [complex] @[to :complex [1.0 1.0]]      
-        -> equal? [one]      @[to :complex [1.0 1.0]]   -> equal? [type]    @[:floating]  
+                                                        -> equal? [type]    @[:floating]  
         -> equal? [floating] @[:floating]               -> equal? [a]       @[a\a]                   
-        -> equal? [a]        @[a\a:]                    -> equal? [a a]     @[a\a: a]          
-        -> equal? [plus]     @[+]                       -> equal? [a]       @[{/a/}]                      
+        -> equal? [a]        [a\a:]         
+                                                        -> equal? [a]       @[{/a/}]                      
         -> equal? [binary]   @[to :binary 1]            -> equal? [one]     @[to :binary 1]              
         -> equal? [word]     @[(word)]                  -> equal? [word]    @[[word]]                      
-        -> equal? [one]      @[1..1]                    -> equal? [range]   @[1..1]          
+                                                        -> equal? [range]   @[range 1 1]          
         -> equal? [a]        @[#[a: `a`]]               -> equal? [black]   @[#black ]       
         -> equal? [word]     @[var 'word?]              -> equal? [var]     @[var 'word?]
     ] passed
     
     ; for :label
     ensure -> not? all? @[
-        -> equal? [one:]      [1]                       -> equal? [one:]      [1.0]
-        -> equal? [rational:] @[to :rational [1 1]]     -> equal? [one:]      @[to :rational [1 1]]
-        -> equal? [one:]      @[to :complex [1.0 1.0]]  -> equal? [null:]     @[null]                                                        
+        -> equal? [rational:] @[to :rational [1 1]]     
+                                                        -> equal? [null:]     @[null]                                                        
         -> equal? [true:]     @[true]                   -> equal? [false:]    @[false]                   
         -> equal? [complex:]  @[to :complex [1.0 1.0]]  -> equal? [floating:] @[:floating]
-        -> equal? [type:]     @[:floating]              -> equal? [a:]        @[a\a]                     
-        -> equal? [a: `a`]    @[a\a: `a`]               -> equal? [plus:]     @[+]                       
+        -> equal? [type:]     @[:floating]              -> equal? [a:]         [a\a]                     
+        -> equal? [a:]         [a\a:]                                      
         -> equal? [a:]        @[{/a:/}]                 -> equal? [binary:]   @[to :binary 1]                     
         -> equal? [word:]     @[(word:)]                -> equal? [label:]    @[[label:]]                      
-        -> equal? [one:]      @[1..1]                   -> equal? [a:]        @[#[a: `a`]]               
+                                                        -> equal? [a:]        @[#[a: `a`]]               
         -> equal? [black:]    @[#black ]                -> equal? [var:]      @[var 'word?]
         -> equal? [word:]     @[var 'word?]
     ] passed
@@ -839,45 +837,42 @@ do [
     ; for :literal
     ; NOTE: technically, '+ is not a :literal, but a :symbolLiteral type ;)
     ensure -> not? all? @[
-        -> equal? 'one      1                       -> equal? 'one     1.0
+        -> equal? 'integer      1                   -> equal? 'floating     1.0
         -> equal? 'rational to :rational [1 1]      -> equal? 'one     to :rational [1 1]
         -> equal? 'null     null                    -> equal? 'true    true    
         -> equal? 'false    false                   -> equal? 'complex to :complex [1.0 1.0]    
-        -> equal? 'one      to :complex [1.0 1.0]   -> equal? 'type    :floating
+                                                    -> equal? 'type    :floating
         -> equal? 'floating :floating               -> equal? 'a       a\a      
-        -> equal? 'a        a\a: 'a                 -> equal? '+        +                       
+                                                    -> equal? '+        +                       
         -> equal? 'a       {/a/}                    -> equal? 'binary   to :binary 1            
-        -> equal? 'one     to :binary 1             -> equal? 'word     (word)                  
-        -> equal? 'word    ['word]                  -> equal? 'one      1..1                    
+                                                    -> equal? 'word     ('word)                  
+        -> equal? 'word    ['word]                                     
         -> equal? 'range   1..1                     -> equal? 'a        #[a: 'a]                
-        -> equal? 'black   #black                   -> equal? 'word     var 'word?              
+        -> equal? 'black   #black                   -> equal? 'word?    var 'word?              
         -> equal? 'var     var 'var
     ] passed
     
     ; for :attribute
-    ensure -> not? all? @[ 
-        -> equal? [.one]      @[1]                     -> equal? [.one]      @[1.0]           
+    ensure -> not? all? @[           
         -> equal? [.rational] @[to :rational [1 1]]    -> equal? [.null]     @[null]                  
         -> equal? [.true]     @[true]                  -> equal? [.false]    @[false]                 
-        -> equal? [.complex]  @[to :complex [1.0 1.0]] -> equal? [.floating] @[:floating]             
-        -> equal? [.a]        @[a\a]                   -> equal? [.a]        @[a\a:]              
-        -> equal? [.plus]     @[+]                     -> equal? [.a]        @[{/a:/}]                
-        -> equal? [.binary]   @[to :binary 1]          -> equal? [.word]     @[(word:)]               
-        -> equal? [.label]    @[[.label]]              -> equal? [.one]      @[1..1]                  
+        -> equal? [.complex]  @[to :complex [1.0 1.0]] -> equal? [.floating] @[:floating]                          
+                                                       -> equal? [.a]        @[{/a:/}]                
+        -> equal? [.binary]   @[to :binary 1]          -> equal? [.word]     @[(.word:)]               
+        -> equal? [.label]    @[[.label]]                               
         -> equal? [.a]        @[#[a: `a`]]             -> equal? [.black]    @[#black]                
         -> equal? [.var]      @[var 'word?]            -> equal? [.word]     @[var 'word?]
     ] passed
     
     ; for :attributeLabel
-    ensure -> not? all? @[ 
-        -> equal? [.one:]      @[1]                     -> equal? [.one:]      @[1.0]           
+    ensure -> not? all? @[           
         -> equal? [.rational:] @[to :rational [1 1]]    -> equal? [.null:]     @[null]                  
         -> equal? [.true:]     @[true]                  -> equal? [.false:]    @[false]                 
         -> equal? [.complex:]  @[to :complex [1.0 1.0]] -> equal? [.floating:] @[:floating]             
         -> equal? [.a:]        @[a\a]                   -> equal? [.a: `a`]    @[a\a: `a`]              
         -> equal? [.plus:]     @[+]                     -> equal? [.a:]        @[{/a:/}]                
         -> equal? [.binary:]   @[to :binary 1]          -> equal? [.word:]     @[(.word:)]               
-        -> equal? [.label:]    @[[label:]]              -> equal? [.one:]      @[1..1]                  
+        -> equal? [.label:]    @[[label:]]                            
         -> equal? [.a:]        @[#[a: `a`]]             -> equal? [.black:]    @[#black]                
         -> equal? [.var:]      @[var 'word?]            -> equal? [.word:]     @[var 'word?]
     ] passed
