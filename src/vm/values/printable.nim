@@ -152,13 +152,13 @@ proc `$`*(v: Value): string {.inline.} =
             result = ""
             if v.fnKind==UserFunction:
                 result &= "<function>" & $(newWordBlock(v.params))
-                result &= "(" & fmt("{cast[ByteAddress](v.main):#X}") & ")"
+                result &= "(" & fmt("{cast[uint](v.main):#X}") & ")"
             else:
                 result &= "<function:builtin>" 
 
         of Database:
             when not defined(NOSQLITE):
-                if v.dbKind==SqliteDatabase: result = fmt("<database>({cast[ByteAddress](v.sqlitedb):#X})")
+                if v.dbKind==SqliteDatabase: result = fmt("<database>({cast[uint](v.sqlitedb):#X})")
                 #elif v.dbKind==MysqlDatabase: result = fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
         
         of Socket:
@@ -166,7 +166,7 @@ proc `$`*(v: Value): string {.inline.} =
                 result = $(v.sock)
 
         of Bytecode:
-            result = "<bytecode>" & "(" & fmt("{cast[ByteAddress](v):#X}") & ")"
+            result = "<bytecode>" & "(" & fmt("{cast[uint](v):#X}") & ")"
             
         of Nothing: discard
         of ANY: discard
@@ -389,7 +389,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
 
         of Database     :
             when not defined(NOSQLITE):
-                if v.dbKind==SqliteDatabase: stdout.write fmt("[sqlite db] {cast[ByteAddress](v.sqlitedb):#X}")
+                if v.dbKind==SqliteDatabase: stdout.write fmt("[sqlite db] {cast[uint](v.sqlitedb):#X}")
                 #elif v.dbKind==MysqlDatabase: stdout.write fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
 
         of Socket       : 
