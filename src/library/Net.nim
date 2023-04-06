@@ -38,7 +38,7 @@ when not defined(WEB):
     import strutils, times, uri
 
     when defined(ssl):
-        import smtp
+        import extras/smtp
         import helpers/stores
 
     import helpers/jsonobject
