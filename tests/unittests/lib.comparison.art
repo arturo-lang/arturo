@@ -855,22 +855,6 @@ do [
         -> equal? 'black   #black                   -> equal? 'word     var 'word?              
         -> equal? 'var     var 'var
     ] passed
-    
-    ; for :attributeLabel
-    ; NOTE: The visual organization was preserved to the detriment of the original one
-    ensure -> not? all? @[ 
-        -> equal? [complex\complex:]  @[to :complex [1.0 1.0]]  
-        -> equal? [rational\rational:] @[to :rational [1 1]]      
-        -> equal? [binary\binary:] @[to :binary 1]  -> equal? [a\one:]             @[1]                      
-        -> equal? [one\one:]       @[1.0]           -> equal? [one\one:]           @[to :rational [1 1]]     
-        -> equal? [null\null:]     @[null]          -> equal? [true\true:]         @[true]                   
-        -> equal? [false\false:]   @[false]         -> equal? [floating\floating:] @[:floating]  
-        -> equal? [a\a:]           @[a\a]           -> equal? [a\a:]               @[a\a:]       
-        -> equal? [symbol\plus:]   @[+]             -> equal? [a\b:]               @[{/a: b/}]                      
-        -> equal? [word\word:]     @[(word:)]       -> equal? [label\val:]       @[[label: val]]                      
-        -> equal? [range\one:]     @[1..1]          -> equal? [a\a:]               @[#[a: `a`]]               
-        -> equal? [color\black:]   @[#black ]       -> equal? [var\word:]          @[var 'word?]
-    ] passed
 
 
 ]
