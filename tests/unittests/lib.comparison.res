@@ -99,6 +99,11 @@
 >> equal? - :date
 [+] passed!
 [+] passed!
+
+>> equal? - incompatible types
+[+] passed!
+[+] passed!
+[+] passed!
 false
 false
 true
