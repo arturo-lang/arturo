@@ -894,7 +894,22 @@ do [
         -> equal? {/regex?/} var 'regex?
     ] passed
     
-    
+    ; for :binary
+    ensure -> not? all? @[
+        -> equal? to :binary 1 1                    -> equal? to :binary 1 1.0                
+        -> equal? to :binary 1 to :rational [1 1]   -> equal? to :binary 1 1:usd                
+        -> equal? to :binary 1 1:m                  -> equal? to :binary 1 1:m3                 
+        -> equal? to :binary 1 1:c                  -> equal? to :binary 0 null                 
+        -> equal? to :binary 0 true                 -> equal? to :binary 0 false                
+        -> equal? to :binary 0 maybe                -> equal? to :binary 1 to :complex [1 1]                  
+        -> equal? to :binary 1 1.0.0                -> equal? to :binary 1 :type              
+        -> equal? to :binary 1 :binary              -> equal? to :binary 1 `1`                  
+        -> equal? to :binary "a" `a`                -> equal? to :binary 1 "01"                 
+        -> equal? to :binary 1 "1"                  -> equal? @[to :binary 1] [binary]          
+        -> equal? @[to :binary 1] [one]             -> equal? @[to :binary 1] [binary:]         
+        -> equal? @[to :binary 1][.binary]          -> equal? @[to :binary 1] [.binary:]        
+        -> equal? to :binary 1 {/01/}               -> equal? to :binary 1    {/1/}
+    ] passed
 ]
 
 ; integer comparisons
