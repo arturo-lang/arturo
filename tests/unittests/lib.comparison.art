@@ -865,9 +865,9 @@ do [
         -> equal? [.a:]        @[a\a]                   -> equal? [.a: `a`]    @[a\a: `a`]              
         -> equal? [.plus:]     @[+]                     -> equal? [.a:]        @[{/a:/}]                
         -> equal? [.binary:]   @[to :binary 1]          -> equal? [.word:]     @[(.word:)]               
-        -> equal? [.label:]    @[[label:]]                            
-        -> equal? [.a:]        @[#[a: `a`]]             -> equal? [.black:]    @[#black]                
-        -> equal? [.var:]      @[var 'word?]            -> equal? [.word:]     @[var 'word?]
+        -> equal? [.label:]    @[[label:]]              -> equal? [.a:]        @[#[a: `a`]]             
+        -> equal? [.black:]    @[#black]                -> equal? [.var:]      @[var 'word?]            
+        -> equal? [.word:]     @[var 'word?]
     ] passed
 
 ]
