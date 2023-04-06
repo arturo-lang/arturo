@@ -25,6 +25,16 @@ import vm/values/value
 import vm/values/operators
 
 #=======================================
+# Helpers
+#=======================================
+
+proc `==`*(x: ValueArray, y: ValueArray): bool {.inline, enforceNoRaises.} =
+    if x.len != y.len: return false
+    for i,child in x:
+        if not (child==y[i]): return false
+    return true
+
+#=======================================
 # Methods
 #=======================================
 
