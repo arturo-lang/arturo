@@ -554,6 +554,76 @@ do [
         -> equal? a 1..1                    -> equal? a #[one: 1]
         -> equal? to :rational [0 0] #black -> equal? a var 'one?
     ] passed
+    
+    ; for :quantity
+    ensure -> not? all? @[
+        -> equal? 1:usd null                    -> equal? 1:usd true
+        -> equal? 1:usd false                   -> equal? 1:usd to :complex [1 1]
+        -> equal? 1:usd 1.0.0                   -> equal? 1:usd :integer
+        -> equal? 1:usd `1`                     -> equal? 1:usd "1USD"
+        -> equal? [1:usd] [one]                 -> equal? [1:usd] [one: 1:usd]
+        -> equal? [1:usd 1:usd] [one: 1:usd]    -> equal? 1:usd '1
+        -> equal? [1:usd] [.1]                  -> equal? [1:usd] [.1: 1:usd]
+        -> equal? [1:usd 1:usd] [.1: 1:usd]     -> equal? [1:usd] [one\1]
+        -> equal? [1:usd] [one\1: 1:usd]        -> equal? [1:usd 1:usd] [one\1: 1:usd]
+        -> equal? [1:usd] [+]                   -> equal? 1:usd {/1/}
+        -> equal? 1:usd to :binary 1            -> equal? 1:usd to :binary 1
+        -> equal? [1:usd] [(1)]                 -> equal? 1:usd [1:usd]
+        -> equal? 1:usd 1..1                    -> equal? 1:usd #[one: 1:usd]
+        -> equal? 0:usd #black                  -> equal? 1:usd var 'one?
+    ] passed
+    
+    ensure -> not? all? @[ 
+        -> equal? 1:m null              -> equal? 1:m true
+        -> equal? 1:m false             -> equal? 1:m to :complex [1 1]
+        -> equal? 1:m 1.0.0             -> equal? 1:m :integer
+        -> equal? 1:m `1`               -> equal? 1:m "1m"
+        -> equal? [1:m] [one]           -> equal? [1:m] [one: 1:m]
+        -> equal? [1:m 1:m] [one: 1:m]  -> equal? 1:m '1
+        -> equal? [1:m] [.1]            -> equal? [1:m] [.1: 1:m]
+        -> equal? [1:m 1:m] [.1: 1:m]   -> equal? [1:m] [one\1]
+        -> equal? [1:m] [one\1: 1:m]    -> equal? [1:m 1:m] [one\1: 1:m]
+        -> equal? [1:m] [+]             -> equal? 1:m {/1/}
+        -> equal? 1:m to :binary 1      -> equal? 1:m to :binary 1
+        -> equal? [1:m] [(1)]           -> equal? 1:m [1:m]
+        -> equal? 1:m 1..1              -> equal? 1:m #[one: 1:m]
+        -> equal? 0:m #black            -> equal? 1:m var 'one?
+    ] passed
+    
+    ensure -> not? all? @[ 
+        -> equal? 1:m3 null                 -> equal? 1:m3 true
+        -> equal? 1:m3 false                -> equal? 1:m3 to :complex [1 1]
+        -> equal? 1:m3 1.0.0                -> equal? 1:m3 :integer
+        -> equal? 1:m3 `1`                  -> equal? 1:m3 "1m²"
+        -> equal? [1:m3] [one]              -> equal? [1:m3] [one: 1:m3]
+        -> equal? [1:m3 1:m3] [one: 1:m3]   -> equal? 1:m3 '1
+        -> equal? [1:m3] [.1]               -> equal? [1:m3] [.1: 1:m3]
+        -> equal? [1:m3 1:m3] [.1: 1:m3]    -> equal? [1:m3] [one\1]
+        -> equal? [1:m3] [one\1: 1:m3]      -> equal? [1:m3 1:m3] [one\1: 1:m3]
+        -> equal? [1:m3] [+]                -> equal? 1:m3 {/1/}
+        -> equal? 1:m3 to :binary 1         -> equal? 1:m3 to :binary 1
+        -> equal? [1:m3] [(1)]              -> equal? 1:m3 [1:m3]
+        -> equal? 1:m3 1..1                 -> equal? 1:m3 #[one: 1:m3]
+        -> equal? 0:m3 #black               -> equal? 1:m3 var 'one?
+    ] passed
+    
+    ensure -> not? all? @[ 
+        -> equal? 1:c null              -> equal? 1:c true
+        -> equal? 1:c false             -> equal? 1:c to :complex [1 1]
+        -> equal? 1:c 1.0.0             -> equal? 1:c :integer
+        -> equal? 1:c `1`               -> equal? 1:c "1m²"
+        -> equal? [1:c] [one]           -> equal? [1:c] [one: 1:c]
+        -> equal? [1:c 1:c] [one: 1:c]  -> equal? 1:c '1
+        -> equal? [1:c] [.1]            -> equal? [1:c] [.1: 1:c]
+        -> equal? [1:c 1:c] [.1: 1:c]   -> equal? [1:c] [one\1]
+        -> equal? [1:c] [one\1: 1:c]    -> equal? [1:c 1:c] [one\1: 1:c]
+        -> equal? [1:c] [+]             -> equal? 1:c {/1/}
+        -> equal? 1:c to :binary 1      -> equal? 1:c to :binary 1
+        -> equal? [1:c] [(1)]           -> equal? 1:c [1:c]
+        -> equal? 1:c 1..1              -> equal? 1:c #[one: 1:c]
+        -> equal? 0:c #black            -> equal? 1:c var 'one?
+    ] passed
+
 
 ]
 
