@@ -283,22 +283,21 @@ template requireBlockSize*(v: Value, expected: int, maxExpected: int = 0) =
             if unlikely(v.a.len < expected or v.a.len > maxExpected):
                 RuntimeError_IncompatibleBlockSize(currentBuiltinName, v.a.len, $(expected) & ".." & $(maxExpected))
 
+template showcaseBlockValues(): untyped = 
+    when position == 2:
+        valueKind(x) & " "
+    elif position == 3:
+        valueKind(x) & " " & valueKind(y) & " "
+    else:
+        ""
 
 template requireValue*(v: Value, expected: set[ValueKind], position: int = 1, message: set[ValueKind] | string = {}) = 
     when not defined(PORTABLE):
-        template pre(): untyped = 
-            when position == 2:
-                valueKind(x) & " "
-            elif position == 3:
-                valueKind(x) & " " & valueKind(y) & " "
-            else:
-                ""
-
         if unlikely(v.kind notin expected):
             when message is string:
-                showWrongValueTypeError(currentBuiltinName, v, pre, message)
+                showWrongValueTypeError(currentBuiltinName, v, showcaseBlockValues, message)
             else:
-                showWrongValueTypeError(currentBuiltinName, v, pre, expected)
+                showWrongValueTypeError(currentBuiltinName, v, showcaseBlockValues, expected)
 
 template requireValueBlock*(v: Value, expected: set[ValueKind], position: int = 1, message: set[ValueKind] | string = {}) = 
     for item in v.a:
