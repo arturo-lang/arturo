@@ -854,6 +854,20 @@ do [
         -> equal? 'var     var 'var
     ] passed
     
+    ; for :attribute
+    ensure -> not? all? @[ 
+        -> equal? [.one]      @[1]                     -> equal? [.one]      @[1.0]           
+        -> equal? [.rational] @[to :rational [1 1]]    -> equal? [.null]     @[null]                  
+        -> equal? [.true]     @[true]                  -> equal? [.false]    @[false]                 
+        -> equal? [.complex]  @[to :complex [1.0 1.0]] -> equal? [.floating] @[:floating]             
+        -> equal? [.a]        @[a\a]                   -> equal? [.a]        @[a\a:]              
+        -> equal? [.plus]     @[+]                     -> equal? [.a]        @[{/a:/}]                
+        -> equal? [.binary]   @[to :binary 1]          -> equal? [.word]     @[(word:)]               
+        -> equal? [.label]    @[[.label]]              -> equal? [.one]      @[1..1]                  
+        -> equal? [.a]        @[#[a: `a`]]             -> equal? [.black]    @[#black]                
+        -> equal? [.var]      @[var 'word?]            -> equal? [.word]     @[var 'word?]
+    ] passed
+    
     ; for :attributeLabel
     ensure -> not? all? @[ 
         -> equal? [.one:]      @[1]                     -> equal? [.one:]      @[1.0]           
