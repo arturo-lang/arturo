@@ -10,10 +10,11 @@
 # Libraries
 #=======================================
 
-import sequtils, sqlite3, strutils
+import sequtils, strutils
 
 #import db_mysql as mysql
-import db_sqlite as sqlite
+import extras/db_connector/sqlite3
+import extras/db_connector/db_sqlite as sqlite
 
 import vm/values/value
 
