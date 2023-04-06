@@ -869,7 +869,15 @@ do [
         -> equal? [.black:]    @[#black]                -> equal? [.var:]      @[var 'word?]            
         -> equal? [.word:]     @[var 'word?]
     ] passed
+    
+    ; for :path & :pathLabel
+    ensure -> not? all? @[
+        -> equal? [a\b:] [a\b]
+        -> equal? [a\b] [a\b:]
+    ] passed
 
+    
+    
 ]
 
 ; integer comparisons
