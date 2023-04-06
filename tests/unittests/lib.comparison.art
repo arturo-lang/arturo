@@ -763,7 +763,7 @@ do [
         -> equal? :block [:type]                    -> equal? :type 1..1                        
         -> equal? :range 1..1                       -> equal? :type #[type: :type]
         -> equal? :dictionary #[type: :type]        -> equal? :type #black                      
-        -> equal? :color #black                     -> equal? :type var 'one?
+        -> equal? :color #black                     -> equal? :type var 'type?
         -> equal? :function var 'one?
     ] passed
     
