@@ -820,6 +820,24 @@ do [
         -> equal? [word]     @[var 'word?]              -> equal? [var]     @[var 'word?]
     ] passed
     
+    ; for :label
+    ; NOTE: The visual organization was preserved to the detriment of the original one
+    ensure -> not? all? @[
+        -> equal? [one: to :complex [1.0 1.0]] @[to :complex [1.0 1.0]]   
+        -> equal? [rational: to :rational [1 1]] @[to :rational [1 1]]      
+        -> equal? [binary: to :binary 1]   @[to :binary 1]             
+        -> equal? [floating: :floating] @[:floating]               
+        -> equal? [one: 1]        @[1]                      -> equal? [one]          @[1.0]           
+        -> equal? [one]           @[to :rational [1 1]]     -> equal? [null: null]   @[null]                    
+        -> equal? [true]          @[true]                   -> equal? [false: false] @[false]                   
+        -> equal? [complex]       @[to :complex [1.0 1.0]]  -> equal? [type]         @[:floating]  
+        -> equal? [a: a]          @[a\a]                    -> equal? [a: `a`]       @[a\a: `a`]       
+        -> equal? [plus: '+]      @[+]                      -> equal? [a: b]         @[{/a: b/}]                      
+        -> equal? [word: word]    @[(word: word)]           -> equal? [label: val ]  @[[label: val]]                      
+        -> equal? [one: 1..1]     @[1..1]                   -> equal? [a: `a`]       @[#[a: `a`]]               
+        -> equal? [black: #black] @[#black ]                -> equal? [var: word]    @[var 'word?]
+    ] passed
+    
     ; for :literal
     ; NOTE: technically, '+ is not a :literal, but a :symbolLiteral type ;)
     ensure -> not? all? @[
