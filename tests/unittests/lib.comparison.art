@@ -497,6 +497,8 @@ do [
     ensure -> not? equal? a\year c\year
     passed
 
+
+    topic « equal? - incompatible types
 ]
 
 ; integer comparisons
