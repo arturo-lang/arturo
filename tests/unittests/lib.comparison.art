@@ -448,7 +448,26 @@ do [
     
     topic « equal? - :store
     
-    ; todo: test this
+    a: store "test.db"
+    a\name: "John" a\surname: "Doe"
+    b: store "test.db"
+    b\name: "John" b\surname: "Doe"
+    c: store "test2.db"
+    c\name: "John" c\surname: "Doe"
+    d: store "test3.db"
+    d\name: "Jane" d\surname: "Doe"
+    
+    ensure -> equal? a a
+    ensure -> equal? a b
+    ensure -> equal? b a
+    ensure -> not? equal? a c 
+    ensure -> not? equal? c a 
+    ensure -> not? equal? a d 
+    ensure -> not? equal? d a 
+    ensure -> not? equal? c d 
+    ensure -> not? equal? d c 
+    passed
+    
 
     topic « equal? - :color
     
