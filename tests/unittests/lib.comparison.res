@@ -86,6 +86,7 @@
 [+] passed!
 
 >> equal? - :store
+[+] passed!
 
 >> equal? - :color
 [+] passed!
