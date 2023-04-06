@@ -25,6 +25,12 @@ import vm/values/value
 import vm/values/operators
 
 #=======================================
+# Forward declarations
+#=======================================
+
+proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}
+
+#=======================================
 # Helpers
 #=======================================
 
@@ -41,7 +47,7 @@ proc `==`*(x: ValueArray, y: ValueArray): bool {.inline, enforceNoRaises.} =
 # TODO(VM/values/comparison) Verify all value types are properly handled by all overloads
 #  labels: vm, values, enhancement, unit-test
 
-proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
+proc `==`*(x: Value, y: Value): bool =
     if x.kind in {Integer, Floating, Rational} and y.kind in {Integer, Floating, Rational}:
         if x.kind==Integer:
             if y.kind==Integer: 
@@ -126,8 +132,7 @@ proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
             of Symbol: return x.m == y.m
             of Regex: return x.rx == y.rx
             of Binary: return x.n == y.n
-            of Bytecode: 
-                return x.trans.instructions == x.trans.instructions and x.trans.constants == y.trans.constants
+            of Bytecode: return x.trans[] == y.trans[]
             of Inline,
                Block:
 
