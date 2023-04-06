@@ -870,7 +870,7 @@ do [
         -> equal? [.one:]      @[1..1]                  -> equal? [.a:]       @[#[a: `a`]]             
         -> equal? [.black:]    @[#black]                -> equal? [.var:]     @[var 'word?]            
         -> equal? [.word:]     @[var 'word?]
-    ] passe
+    ] passed
 
 ]
 
