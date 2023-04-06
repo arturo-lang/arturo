@@ -126,7 +126,8 @@ proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
             of Symbol: return x.m == y.m
             of Regex: return x.rx == y.rx
             of Binary: return x.n == y.n
-            of Bytecode: return x.trans[] == y.trans[]
+            of Bytecode: 
+                return x.trans.instructions == x.trans.instructions and x.trans.constants == y.trans.constants
             of Inline,
                Block:
 
