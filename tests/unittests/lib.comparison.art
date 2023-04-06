@@ -925,6 +925,19 @@ do [
         -> equal? 1..1 {/1/}
     ] passed
     
+    ; for :dictionary, :object & :date
+    define :person [name surname][]
+    
+    a: to :person ["Walter" "Pinkman"]
+    b: to :date .format: "YYYY MMM dd" "2023 Jan 15"
+    
+    ensure -> not? all? @[
+        -> equal? #[name: "Walter" surname: "Pinkman"] a
+        -> equal? a #[name: "Walter" surname: "Pinkman"]
+        -> equal? #[year: 2023 day: 15 Month: "January"] b
+        -> equal? b #[year: 2023 day: 15 Month: "January"]
+    ] passed
+    
 ]
 
 ; integer comparisons
