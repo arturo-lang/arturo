@@ -910,6 +910,21 @@ do [
         -> equal? @[to :binary 1][.binary]          -> equal? @[to :binary 1] [.binary:]        
         -> equal? to :binary 1 {/01/}               -> equal? to :binary 1    {/1/}
     ] passed
+    
+    ; for :range
+    ensure -> not? all? @[
+        -> equal? 1..1 1                        -> equal? 1..1 1.0
+        -> equal? 1..1 a: to :rational [1 1]    -> equal? 1..1 1:usd
+        -> equal? 1..1 1:m                      -> equal? 1..1 1:m3  
+        -> equal? 1..1 1:c                      -> equal? 0..0 null 
+        -> equal? 0..0 true                     -> equal? 0..0 false
+        -> equal? 0..0 maybe                    -> equal? 1..1 to :complex [1 1]
+        -> equal? 1..1 1.0.0                    -> equal? 1..1 :type                        
+        -> equal? 1..1 :range                   -> equal? 1..1 `1` 
+        -> equal? 1..1 "1"                      -> equal? 1..1 'range  
+        -> equal? 1..1 {/1/}
+    ] passed
+    
 ]
 
 ; integer comparisons
