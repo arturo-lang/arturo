@@ -724,7 +724,7 @@ do [
         -> equal? 1.0.0 1                           -> equal? 1.0.0 1.0          
         -> equal? 1.0.0 to :rational [1 1]          -> equal? 1.0.0 null                    
         -> equal? 1.0.0 true                        -> equal? 1.0.0 false                   
-        -> equal? 1.0.0 to :complex [1.0.0 1.0.0]   -> equal? 1.0.0 :floating
+        -> equal? 1.0.0 to :complex [1.0 1.0]       -> equal? 1.0.0 :floating
         -> equal? 1.0.0 `1`                         -> equal? 1.0.0 "1.0.0"
         -> equal? [1.0.0] [one]                     -> equal? [1.0.0] [one: 1.0.0]
         -> equal? [1.0.0 1.0.0] [one: 1.0.0]        -> equal? 1.0.0 '1
