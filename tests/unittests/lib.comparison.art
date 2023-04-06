@@ -802,6 +802,23 @@ do [
         -> equal? "#000000" #black                  -> equal? "000000" #black              
         -> equal? "" var 'char?
     ] passed
+    
+    ; for :word
+    ensure -> not? all? @[
+        -> equal? [one]      @[1]                       -> equal? [one]     @[1.0]           
+        -> equal? [rational] @[to :rational [1 1]]      -> equal? [one]     @[to :rational [1 1]]
+        -> equal? [null]     @[null]                    -> equal? [true]    @[true]                       
+        -> equal? [false]    @[false]                   -> equal? [complex] @[to :complex [1.0 1.0]]      
+        -> equal? [one]      @[to :complex [1.0 1.0]]   -> equal? [type]    @[:floating]  
+        -> equal? [floating] @[:floating]               -> equal? [a]       @[a\a]                   
+        -> equal? [a]        @[a\a: `a`]                -> equal? [a a]     @[a\a: `a`]          
+        -> equal? [plus]     @[+]                       -> equal? [a]       @[{/a/}]                      
+        -> equal? [binary]   @[to :binary 1]            -> equal? [one]     @[to :binary 1]              
+        -> equal? [word]     @[(word)]                  -> equal? [word]    @[[word]]                      
+        -> equal? [one]      @[1..1]                    -> equal? [range]   @[1..1]          
+        -> equal? [a]        @[#[a: `a`]]               -> equal? [black]   @[#black ]       
+        -> equal? [word]     @[var 'word?]              -> equal? [var]     @[var 'word?]
+    ] passed
 
 
 ]
