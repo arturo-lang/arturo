@@ -1,0 +1,17 @@
+; by @Krenium
+
+prints "First 50 numbers which are the cube root of the product of their proper divisors:"
+
+[i n]: [0 0]
+while -> i < 50000 [
+    if or? 1=n 8=size factors n [
+        if i < 50 [
+            if zero? i % 10 -> prints "\n"
+            prints pad ~"|n|" 4
+        ]
+        if 50=i -> print "\n"
+        if in? i [499 4999 49999] -> print [pad ~"|i+1|th:" 8 n]
+        'i+1
+    ]
+    'n+1
+]
