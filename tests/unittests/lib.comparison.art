@@ -542,6 +542,8 @@ do [
     ensure -> equal? a a
     ensure -> equal? a b
     ensure -> equal? b a
+    passed
+    
     ensure -> not? equal? a c 
     ensure -> not? equal? c a 
     ensure -> not? equal? a d 
@@ -1612,6 +1614,8 @@ do [
     ensure -> not? notEqual? a a
     ensure -> not? notEqual? a b
     ensure -> not? notEqual? b a
+    passed
+    
     ensure -> notEqual? a c 
     ensure -> notEqual? c a 
     ensure -> notEqual? a d 
