@@ -1509,6 +1509,28 @@ do [
     ensure -> not? notEqual? a to :person ["Jane" 32]
     passed
     
+    topic « notEqual? - :store
+    
+    a: store "test.db"
+    a\name: "John" a\surname: "Doe"
+    b: store "test.db"
+    b\name: "John" b\surname: "Doe"
+    c: store "test2.db"
+    c\name: "John" c\surname: "Doe"
+    d: store "test3.db"
+    d\name: "Jane" d\surname: "Doe"
+    
+    ensure -> not? notEqual? a a
+    ensure -> not? notEqual? a b
+    ensure -> not? notEqual? b a
+    ensure -> notEqual? a c 
+    ensure -> notEqual? c a 
+    ensure -> notEqual? a d 
+    ensure -> notEqual? d a 
+    ensure -> notEqual? c d 
+    ensure -> notEqual? d c 
+    passed
+    
     
 ]
 
