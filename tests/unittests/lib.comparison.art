@@ -1367,6 +1367,27 @@ do [
     ensure -> notEqual? [.attr: value] [.attr: other]
     passed
     
+    topic « notEqual? - :path
+    
+    a: #[name: "John", surname: "Doe"]
+    b: @["Joe" "Jane" "Jesse"]
+    
+    ensure -> not? notEqual? a\name "John" 
+    ensure -> not? notEqual? a\surname "Doe" 
+    ensure -> notEqual? a\name "Jane" 
+    ensure -> notEqual? a\name 1
+    
+    ensure -> not? notEqual? b\0 "Joe" 
+    ensure -> not? notEqual? b\1 "Jane" 
+    ensure -> not? notEqual? b\2 "Jesse" 
+    ensure -> notEqual? b\2 "Walter" 
+    
+    ensure -> not? notEqual? [b\0] [b\0]
+    ensure -> not? notEqual? [a\name] [a\name]
+    ensure -> notEqual? [b\0] [b\1]
+    ensure -> notEqual? [a\name] [a\surname]
+    passed
+    
     
 ]
 
