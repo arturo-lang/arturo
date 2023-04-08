@@ -1933,6 +1933,17 @@ do [
         -> notEqual? 'var      var 'var
     ] passed
     
+    ; for :attribute
+    ensure -> all? @[           
+        -> notEqual? [.rational] @[to :rational [1 1]]      -> notEqual? [.null]     @[null]                  
+        -> notEqual? [.true]     @[true]                    -> notEqual? [.false]    @[false]                 
+        -> notEqual? [.complex]  @[to :complex [1.0 1.0]]   -> notEqual? [.floating] @[:floating]                          
+        -> notEqual? [.a]        @[{/a:/}]                  -> notEqual? [.binary]   @[to :binary 1]          
+        -> notEqual? [.word]     [(.word)]                  -> notEqual? [.label]    @[[.label]]                               
+        -> notEqual? [.a]        @[#[a: `a`]]               -> notEqual? [.black]    @[#black]                
+        -> notEqual? [.var]      @[var 'word?]              -> notEqual? [.word]     @[var 'word?]
+    ] passed
+    
 ]
 
 ; integer comparisons
