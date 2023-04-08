@@ -1001,7 +1001,35 @@ do [
 topic « notEqual?
 do [
     
+    topic « notEqual? - :integer :floating :rational
     
+    ensure -> not? notEqual? 1 1
+    ensure -> not? notEqual? 1 1.0
+    ensure -> not? notEqual? 1 to :rational @[1 1]
+    ensure -> not? notEqual? 1 to :rational @[5 5]
+    ensure -> not? 1 <> 1
+    ensure -> not? 1 <> 1.0
+    ensure -> not? 1 <> to :rational @[1 1]
+    ensure -> not? 1 <> to :rational @[5 5]
+    passed
+    
+    ensure -> not? notEqual? 1.0 1
+    ensure -> not? notEqual? 1.0 1.0
+    ensure -> not? notEqual? 1.0 to :rational @[1 1]
+    ensure -> not? notEqual? 1.0 to :rational @[5 5]
+    ensure -> not? 1.0 <> 1
+    ensure -> not? 1.0 <> 1.0
+    ensure -> not? 1.0 <> to :rational @[1 1]
+    ensure -> not? 1.0 <> to :rational @[5 5]
+    passed
+    
+    ensure -> not? notEqual? to :rational @[5 5] 1
+    ensure -> not? notEqual? to :rational @[5 5] 1.0
+    ensure -> not? notEqual? to :rational @[5 5] to :rational @[1 1]
+    ensure -> not? (to :rational @[5 5]) <> 1
+    ensure -> not? (to :rational @[5 5]) <> 1.0
+    ensure -> not? (to :rational @[5 5]) <> to :rational @[1 1]
+    passed
     
 ]
 
