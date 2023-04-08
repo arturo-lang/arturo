@@ -1231,6 +1231,18 @@ do [
     ensure -> 1.2.3 <> 1.2.3-dev
     passed
     
+    topic « notEqual? - :type
+    
+    ensure -> not? notEqual? :string type "a"
+    ensure -> not? notEqual? :integer type 1
+    ensure -> not? notEqual? :floating type 1.5
+    passed
+    
+    ensure -> notEqual? :string :integer
+    ensure -> notEqual? :string :char
+    ensure -> notEqual? :integer :floating
+    passed
+    
     
 ]
 
