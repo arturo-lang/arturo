@@ -1540,6 +1540,23 @@ do [
     ensure -> notEqual? #white #black
     passed
     
+    topic « notEqual? - :function
+    
+    ensure -> not? notEqual? var 'print var 'print
+    ensure -> notEqual? var 'inspect var 'print
+    passed
+    
+    a: $[name surname][]
+    A: $[name][]
+    b: $[name][]
+    c: $[name surname][]
+    
+    ensure -> not? notEqual? ~"|var 'a|" ~"|$[name surname][]|"
+    ensure -> not? notEqual? ~"|var 'a|" ~"|var 'c|"
+    ensure -> notEqual? ~"|var 'a|" ~"|var 'A|"
+    ensure -> notEqual? ~"|var 'a|" ~"|var 'b|"
+    passed
+    
     
 ]
 
