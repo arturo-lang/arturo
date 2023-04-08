@@ -998,6 +998,13 @@ do [
     
 ]
 
+topic « notEqual?
+do [
+    
+    
+    
+]
+
 ; integer comparisons
 
 print notEqual? 1 1
