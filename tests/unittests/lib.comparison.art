@@ -1957,6 +1957,12 @@ do [
         -> notEqual? [.word:]     @[var 'word?]
     ] passed
     
+    ; for :path & :pathLabel
+    ensure -> all? @[
+        -> notEqual? [a\b:] [a\b]
+        -> notEqual? [a\b] [a\b:]
+    ] passed
+    
     
     
 ]
