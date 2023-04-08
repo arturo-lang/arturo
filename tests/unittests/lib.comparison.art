@@ -1470,6 +1470,21 @@ do [
     ensure -> notEqual? range.step: 2 0 5 range.step: 2 0 4
     passed
     
+    topic « notEqual? :dictionary
+    
+    a: #[name: "Walter" surname: "Pinkman"]
+    
+    ensure -> not? notEqual? a #[name: "Walter" surname: "Pinkman"]
+    ensure -> notEqual? a #[name: "Jesse" surname: "Pinkman"]
+    ensure -> notEqual? a #[name "Jesse" surname "Pinkman"]
+    ensure -> notEqual? a [name "Jesse" surname "Pinkman"]
+    passed
+    
+    ensure -> not? notEqual? a\name "Walter"
+    ensure -> not? notEqual? a\surname "Pinkman"
+    ensure -> notEqual? a\surname "White"
+    passed
+    
     
 ]
 
