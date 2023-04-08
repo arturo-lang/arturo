@@ -1079,7 +1079,7 @@ do [
     ensure -> (to :rational @[5 5]) <> to :rational @[1 2]
     passed
     
-    topic « equal? - :quantity
+    topic « notEqual? - :quantity
     
     ensure -> not? notEqual? 1:usd 1
     ensure -> not? notEqual? 1:m   1
