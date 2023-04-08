@@ -1854,6 +1854,24 @@ do [
         -> notEqual? :function var 'one?
     ] passed
     
+    ; for :char
+    ensure -> all? @[
+        -> notEqual? `1` 1.0          
+        -> notEqual? `1` to :rational [1 1]    -> notEqual? `ø` null                    
+        -> notEqual? `t` true                  -> notEqual? `f` false                   
+        -> notEqual? `1` to :complex [1.0 1.0] -> notEqual? `T` :floating
+        -> notEqual? [`a`] [one]               -> notEqual? [`a`] [a: `a`]
+        -> notEqual? [`a` `a`] [a: `a`]        -> notEqual? `a` 'a
+        -> notEqual? [`a`] [.1]                -> notEqual? [`a`] [.a:]
+        -> notEqual? [`a` `a`] [.a: `a`]       -> notEqual? [`a`] [a\a]
+        -> notEqual? [`a`] [a\a:]              -> notEqual? [`a` `a`] [a\a: `a`]
+        -> notEqual? [`+`] [+]                 -> notEqual? `a` {/a/}
+        -> notEqual? `1` to :binary 1          -> notEqual? `a` to :binary 1
+        -> notEqual? [`1`] [(`1`)]             -> notEqual? `a` [`a`]
+        -> notEqual? `1` 1..1                  -> notEqual? `a` #[a: `a`]
+        -> notEqual? `1` #black                -> notEqual? `a` var 'char?
+    ] passed
+    
 ]
 
 ; integer comparisons
