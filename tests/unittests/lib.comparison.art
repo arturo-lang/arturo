@@ -1337,6 +1337,17 @@ do [
     ensure -> notEqual? ['literal] [literal: 'literal]
     passed
     
+    topic « notEqual? - :attribute
+    
+    ensure -> not? notEqual? [.attr] [.attr]
+    ensure -> notEqual? [.attr] ["attr"]
+    ; ensure -> notEqual? [.attr] [attr]
+    ensure -> notEqual? [.attr] [attr: .attr]
+    ensure -> notEqual? [.attr] ['attr]
+    ensure -> notEqual? [.attr] [.other]
+    ensure -> notEqual? [.attr] [.attr: .attr]
+    passed
+    
     
 ]
 
