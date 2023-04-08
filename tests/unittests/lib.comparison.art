@@ -1607,6 +1607,26 @@ do [
         -> notEqual? 0 #black       -> notEqual? 1 var 'one?
     ] passed
     
+    ; for :floating
+    ensure -> all? @[
+        -> notEqual? 1.0 null               -> notEqual? 1.0 true
+        -> notEqual? 1.0 false              -> notEqual? 1.0 to :complex [1.0 1.0]
+        -> notEqual? 1.0 1.0.0              -> notEqual? 1.0 :floating
+        -> notEqual? 1.0 `1`                -> notEqual? 1.0 "1.0"
+        -> notEqual? [1.0] [one]            -> notEqual? [1.0] [one: 1.0]
+        -> notEqual? [1.0 1.0] [one: 1.0]   -> notEqual? 1.0 '1
+        -> notEqual? [1.0] [.1]             -> notEqual? [1.0] [.1:]
+        -> notEqual? [1.0 1.0] [.1: 1.0]    -> notEqual? [1.0] [one\1]
+        -> notEqual? [1.0] [one\1:]         -> notEqual? [1.0 1.0] [one\1: 1.0]
+        -> notEqual? [1.0] [+]              -> notEqual? 1.0 {/1.0/}
+        -> notEqual? 1.0 to :binary 1.0     -> notEqual? 1.0 to :binary 1.0
+        -> notEqual? [1.0] [(1.0)]          -> notEqual? 1.0 [1]
+        -> notEqual? 1.0 1..1               -> notEqual? 1.0 #[one: 1.0]
+        -> notEqual? 0.0 #black             -> notEqual? 1.0 var 'one?
+    ] passed
+    
+    
+    
 ]
 
 ; integer comparisons
