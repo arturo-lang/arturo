@@ -1292,6 +1292,17 @@ do [
     ensure -> ["help"] <> ['help: "help"]
     passed
     
+    topic « notEqual? - :word
+    
+    ensure -> not? notEqual? [word] [word]
+    ensure -> notEqual? [word] [otherWord]
+    ensure -> notEqual? [word] ["word"]
+    ensure -> notEqual? [word] [word: word]
+    ensure -> notEqual? [word] ['word]
+    ; ensure -> notEqual? [word] [.word]
+    ensure -> notEqual? [word] [.word: word]
+    passed
+    
     
 ]
 
