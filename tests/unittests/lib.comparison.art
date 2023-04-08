@@ -1388,6 +1388,14 @@ do [
     ensure -> notEqual? [a\name] [a\surname]
     passed
     
+    topic « notEqual? - :pathLabel
+       
+    ensure -> not? notEqual? [a\name: "John"] [a\name: "John"]
+    ensure -> notEqual? [a\surname: "Doe"] [b\surname: "Doe" ]
+    ensure -> notEqual? [a\name: "John"] [b\name: "Jane"]
+    ensure -> notEqual? [a\name: "John"] [b\name: "John"]
+    passed
+    
     
 ]
 
