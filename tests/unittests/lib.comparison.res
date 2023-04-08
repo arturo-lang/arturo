@@ -18,14 +18,18 @@
 
 >> equal? - :null
 [+] passed!
+[+] passed!
 
 >> equal? - :logical
+[+] passed!
 [+] passed!
 
 >> equal? - :complex
 [+] passed!
+[+] passed!
 
 >> equal? - :version
+[+] passed!
 [+] passed!
 
 >> equal? - :type
@@ -34,14 +38,22 @@
 
 >> equal? - :char
 [+] passed!
+[+] passed!
 
 >> equal? - :string
+[+] passed!
+[+] passed!
 [+] passed!
 
 >> equal? - :word
 [+] passed!
 
 >> equal? - :label
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 [+] passed!
 
 >> equal? - :literal
@@ -52,8 +64,14 @@
 
 >> equal? - :attributeLabel
 [+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> equal? - :path
+[+] passed!
+[+] passed!
 [+] passed!
 
 >> equal? - :pathLabel
@@ -67,11 +85,15 @@
 
 >> equal? - :binary
 [+] passed!
+[+] passed!
 
 >> equal? - :bytecode
 [+] passed!
 
 >> equal? - :inline
+[+] passed!
+[+] passed!
+[+] passed!
 [+] passed!
 
 >> equal? - :block
@@ -153,14 +175,18 @@
 
 >> notEqual? - :null
 [+] passed!
+[+] passed!
 
 >> notEqual? - :logical
+[+] passed!
 [+] passed!
 
 >> notEqual? - :complex
 [+] passed!
+[+] passed!
 
 >> notEqual? - :version
+[+] passed!
 [+] passed!
 
 >> notEqual? - :type
@@ -169,14 +195,22 @@
 
 >> notEqual? - :char
 [+] passed!
+[+] passed!
 
 >> notEqual? - :string
+[+] passed!
+[+] passed!
 [+] passed!
 
 >> notEqual? - :word
 [+] passed!
 
 >> notEqual? - :label
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 [+] passed!
 
 >> notEqual? - :literal
@@ -187,8 +221,14 @@
 
 >> notEqual? - :attributeLabel
 [+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> notEqual? - :path
+[+] passed!
+[+] passed!
 [+] passed!
 
 >> notEqual? - :pathLabel
@@ -202,11 +242,15 @@
 
 >> notEqual? - :binary
 [+] passed!
+[+] passed!
 
 >> notEqual? - :bytecode
 [+] passed!
 
 >> notEqual? - :inline
+[+] passed!
+[+] passed!
+[+] passed!
 [+] passed!
 
 >> notEqual? - :block
