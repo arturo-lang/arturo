@@ -146,6 +146,18 @@ do [
     ensure -> (to :rational @[5 5]) = 1:f
     passed
     
+    ensure -> not? equal? 2:usd 1
+    ensure -> not? equal? 2 1:usd
+    ensure -> not? equal? 2:usd 1.0
+    ensure -> not? equal? 2.0 1:usd
+    ensure -> not? equal? 2:usd to :rational @[5 5]
+    ensure -> not? equal? to :rational @[2 5] 1:usd
+    passed
+    
+    ensure -> equal? 1.5:m 150:cm 
+    ensure -> not? equal? 2:m 2:cm
+    passed 
+    
     topic « equal? - :null
     
     ensure -> equal? null null
