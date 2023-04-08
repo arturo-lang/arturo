@@ -1733,6 +1733,59 @@ do [
         -> notEqual? null var 'null?
     ] passed
     
+    ; for :logical
+    ensure -> all? @[
+        -> notEqual? true 0                     -> notEqual? true 0.0            
+        -> notEqual? true to :rational [1 1]    -> notEqual? true to :complex [1 1]
+        -> notEqual? true 0.0.0                 -> notEqual? true :true
+        -> notEqual? true `0`                   -> notEqual? true "true"
+        -> notEqual? @[true] [true]             -> notEqual? @[true] [true: true]
+        -> notEqual? @[true true] [true: true]  -> notEqual? true 'true
+        -> notEqual? @[true] [.true]            -> notEqual? @[true] [.true:]
+        -> notEqual? @[true true] [.true: true] -> notEqual? @[true] [true\true]
+        -> notEqual? @[true] [true\true:]       -> notEqual? @[true true] [true\true: true]
+        -> notEqual? @[true] [ø]                -> notEqual? true {/true/}
+        -> notEqual? true to :binary 0          -> notEqual? true to :binary 0             
+        -> notEqual? @[true] [(true)]           -> notEqual? true [true]                   
+        -> notEqual? true 0..0                  -> notEqual? true #[true: true]            
+        -> notEqual? true #black                -> notEqual? true var 'true?
+    ] passed
+    
+    ensure -> all? @[
+        -> notEqual? false 0                        -> notEqual? false 0.0            
+        -> notEqual? false to :rational [1 1]       -> notEqual? false to :complex [1 1]
+        -> notEqual? false 0.0.0                    -> notEqual? false :false
+        -> notEqual? false `0`                      -> notEqual? false "false"
+        -> notEqual? @[false] [false]               -> notEqual? @[false] [false:]
+        -> notEqual? @[false false] [false: false]  -> notEqual? false 'false
+        -> notEqual? @[false] [.false]              -> notEqual? @[false] [.false:]
+        -> notEqual? @[false false] [.false: false] -> notEqual? @[false] [false\false]
+        -> notEqual? @[false] [false\false:]        -> notEqual? @[false false] [false\false: false]
+        -> notEqual? @[false] [ø]                   -> notEqual? false {/false/}
+        -> notEqual? false to :binary 0             -> notEqual? false to :binary 0                
+        -> notEqual? @[false] [(false)]             -> notEqual? false [false]                     
+        -> notEqual? false 0..0                     -> notEqual? false #[false: false]             
+        -> notEqual? false #black                   -> notEqual? false var 'false?
+    ] passed
+    
+    ensure -> all? @[
+        -> notEqual? maybe 0                        -> notEqual? maybe 0.0            
+        -> notEqual? maybe to :rational [1 1]       -> notEqual? maybe to :complex [1 1]
+        -> notEqual? maybe 0.0.0                    -> notEqual? maybe :maybe
+        -> notEqual? maybe `0`                      -> notEqual? maybe "maybe"
+        -> notEqual? @[maybe] [maybe]               -> notEqual? @[maybe] [maybe:]
+        -> notEqual? @[maybe maybe] [maybe: maybe]  -> notEqual? maybe 'maybe
+        -> notEqual? @[maybe] [.maybe]              -> notEqual? @[maybe] [.maybe:]
+        -> notEqual? @[maybe maybe] [.maybe: maybe] -> notEqual? @[maybe] [maybe\maybe]
+        -> notEqual? @[maybe] [maybe\maybe:]        -> notEqual? @[maybe maybe] [maybe\maybe: maybe]
+        -> notEqual? @[maybe] [ø]                   -> notEqual? maybe {/maybe/}
+        -> notEqual? maybe to :binary 0             -> notEqual? maybe to :binary 0
+        -> notEqual? @[maybe] [(maybe)]             -> notEqual? maybe [maybe]
+        -> notEqual? maybe 0..0                     -> notEqual? maybe #[maybe: maybe]             
+        -> notEqual? maybe #black                   
+        ; -> notEqual? maybe var 'maybe?
+    ] passed
+    
     
 ]
 
