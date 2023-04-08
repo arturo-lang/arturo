@@ -1589,8 +1589,23 @@ do [
     ;     improbable to happen, even with a future rewrite of 
     ;     the Comparison module
     
-    
-    
+    ; for :integer
+    ensure -> all? @[
+        -> notEqual? 1 null         -> notEqual? 1 true
+        -> notEqual? 1 false        -> notEqual? 1 to :complex [1 1]
+        -> notEqual? 1 1.0.0        -> notEqual? 1 :integer
+        -> notEqual? 1 `1`          -> notEqual? 1 "1"
+        -> notEqual? [1] [one]      -> notEqual? [1] [one:]
+        -> notEqual? [1 1] [one: 1] -> notEqual? 1 '1
+        -> notEqual? [1] [.1]       -> notEqual? [1] [.1:]
+        -> notEqual? [1 1] [.1: 1]  -> notEqual? [1] [one\1]
+        -> notEqual? [1] [one\1:]   -> notEqual? [1 1] [one\1: 1]
+        -> notEqual? [1] [+]        -> notEqual? 1 {/1/}
+        -> notEqual? 1 to :binary 1 -> notEqual? 1 to :binary 1
+        -> notEqual? [1] [(1)]      -> notEqual? 1 [1]
+        -> notEqual? 1 1..1         -> notEqual? 1 #[one: 1]
+        -> notEqual? 0 #black       -> notEqual? 1 var 'one?
+    ] passed
     
 ]
 
