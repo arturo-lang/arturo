@@ -1197,6 +1197,18 @@ do [
     ensure -> ø <> `ø`
     passed
     
+    topic « notEqual? - :logical
+    
+    ensure -> not? notEqual? true true
+    ensure -> not? notEqual? true (1 > 0)
+    ensure -> notEqual? true maybe
+    ensure -> notEqual? true false
+    ensure -> not? true <> true
+    ensure -> not? true <> (1 > 0)
+    ensure -> true <> maybe
+    ensure -> true <> false
+    passed
+    
 ]
 
 ; integer comparisons
