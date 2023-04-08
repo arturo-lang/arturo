@@ -861,7 +861,7 @@ do [
         -> equal? [:type :type] [type: :type]       -> equal? :1 '1
         -> equal? :literal '1                       -> equal? [:type] [.type]                      
         -> equal? [:attribute] [.type]              -> equal? [:type] [.type:]
-        -> equal? [:attributeLabel] [.type: :type]  -> equal? [:type :type] [.type: :type]         
+        -> equal? [:attributeLabel] [.type:]        -> equal? [:type :type] [.type: :type]         
         -> equal? [:type] [type\type]               -> equal? [:path] [type\type]
         -> equal? [:type] [type\type:]              -> equal? [:pathLabel] [type\type:]            
         -> equal? [:type :type] [type\type: :type]  -> equal? [:type] [+]                       
@@ -1929,7 +1929,7 @@ do [
         -> notEqual? [:type :type] [type: :type]       -> notEqual? :1 '1
         -> notEqual? :literal '1                       -> notEqual? [:type] [.type]                      
         -> notEqual? [:attribute] [.type]              -> notEqual? [:type] [.type:]
-        -> notEqual? [:attributeLabel] [.type: :type]  -> notEqual? [:type :type] [.type: :type]         
+        -> notEqual? [:attributeLabel] [.type:]        -> notEqual? [:type :type] [.type: :type]         
         -> notEqual? [:type] [type\type]               -> notEqual? [:path] [type\type]
         -> notEqual? [:type] [type\type:]              -> notEqual? [:pathLabel] [type\type:]            
         -> notEqual? [:type :type] [type\type: :type]  -> notEqual? [:type] [+]                       
