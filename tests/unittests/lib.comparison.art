@@ -255,8 +255,13 @@ do [
     topic « equal? - :string
     
     ensure -> equal? "Art" "Arturo" -- "uro"
+    ensure -> "Art" = "Arturo" -- "uro"
+    passed
+    
     ensure -> not? equal? "A" "B"
     ensure -> not? equal? "Art" "Bob"
+    passed
+    
     ensure -> not? equal? "a"    `a` 
     ensure -> not? equal? "10"   10 
     ensure -> not? equal? "10"   10
@@ -265,7 +270,6 @@ do [
     ensure -> not? equal? "help"   'help
     ensure -> not? equal? ["help"] [.help]
     ensure -> not? equal? ["help"] ['help: "help"]
-    ensure -> "Art" = "Arturo" -- "uro"
     ensure -> not? "a"      = `a` 
     ensure -> not? "10"     = 10 
     ensure -> not? "10"     = 10
@@ -1291,8 +1295,13 @@ do [
     topic « notEqual? - :string
     
     ensure -> not? notEqual? "Art" "Arturo" -- "uro"
+    ensure -> not? "Art" <> "Arturo" -- "uro"
+    passed
+    
     ensure -> notEqual? "A" "B"
     ensure -> notEqual? "Art" "Bob"
+    passed
+    
     ensure -> notEqual? "a"    `a` 
     ensure -> notEqual? "10"   10 
     ensure -> notEqual? "10"   10
@@ -1301,7 +1310,6 @@ do [
     ensure -> notEqual? "help"   'help
     ensure -> notEqual? ["help"] [.help]
     ensure -> notEqual? ["help"] ['help: "help"]
-    ensure -> not? "Art" <> "Arturo" -- "uro"
     ensure -> "a"      <> `a` 
     ensure -> "10"     <> 10 
     ensure -> "10"     <> 10
