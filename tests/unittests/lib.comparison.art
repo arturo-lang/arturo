@@ -1408,6 +1408,15 @@ do [
     ensure -> notEqual? [+] ['+]
     passed
     
+    topic « notEqual? - :regex
+    
+    ensure -> regex? {/[A-Z]/}
+    ensure -> not? notEqual? {/[A-Z]/} {/[A-Z]/} 
+    ensure -> notEqual? {/[A-Z]/} {/[ABCDEFGHIJKLMNOPQRSTUVWXYZ]/}
+    ensure -> notEqual? {/[A-Z]/} {[A-Z]}
+    ensure -> notEqual? {/[A-Z]/} "/[A-Z]/"
+    passed
+    
     
 ]
 
