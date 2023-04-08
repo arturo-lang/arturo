@@ -382,11 +382,13 @@ do [
     ensure -> equal? a\surname "Doe" 
     ensure -> not? equal? a\name "Jane" 
     ensure -> not? equal? a\name 1
+    passed
     
     ensure -> equal? b\0 "Joe" 
     ensure -> equal? b\1 "Jane" 
     ensure -> equal? b\2 "Jesse" 
     ensure -> not? equal? b\2 "Walter" 
+    passed
     
     ensure -> equal? [b\0] [b\0]
     ensure -> equal? [a\name] [a\name]
@@ -1440,11 +1442,13 @@ do [
     ensure -> not? notEqual? a\surname "Doe" 
     ensure -> notEqual? a\name "Jane" 
     ensure -> notEqual? a\name 1
+    passed
     
     ensure -> not? notEqual? b\0 "Joe" 
     ensure -> not? notEqual? b\1 "Jane" 
     ensure -> not? notEqual? b\2 "Jesse" 
     ensure -> notEqual? b\2 "Walter" 
+    passed
     
     ensure -> not? notEqual? [b\0] [b\0]
     ensure -> not? notEqual? [a\name] [a\name]
