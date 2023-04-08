@@ -164,14 +164,16 @@ do [
     ensure -> equal? null ø
     ensure -> equal? ø ø
     ensure -> equal? ø null
-    ensure -> not? equal? ø 1
-    ensure -> not? equal? ø 1.0
-    ensure -> not? equal? ø "ø"
-    ensure -> not? equal? ø `ø`
     ensure -> null = null
     ensure -> null = ø
     ensure -> ø = ø
     ensure -> ø = null
+    passed
+    
+    ensure -> not? equal? ø 1
+    ensure -> not? equal? ø 1.0
+    ensure -> not? equal? ø "ø"
+    ensure -> not? equal? ø `ø`
     ensure -> not? ø = 1
     ensure -> not? ø = 1.0
     ensure -> not? ø = "ø"
@@ -1190,14 +1192,16 @@ do [
     ensure -> not? notEqual? null ø
     ensure -> not? notEqual? ø ø
     ensure -> not? notEqual? ø null
-    ensure -> notEqual? ø 1
-    ensure -> notEqual? ø 1.0
-    ensure -> notEqual? ø "ø"
-    ensure -> notEqual? ø `ø`
     ensure -> not? null <> null
     ensure -> not? null <> ø
     ensure -> not? ø <> ø
     ensure -> not? ø <> null
+    passed
+    
+    ensure -> notEqual? ø 1
+    ensure -> notEqual? ø 1.0
+    ensure -> notEqual? ø "ø"
+    ensure -> notEqual? ø `ø`
     ensure -> ø <> 1
     ensure -> ø <> 1.0
     ensure -> ø <> "ø"
