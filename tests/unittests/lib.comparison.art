@@ -1561,6 +1561,23 @@ do [
     
     ; todo: test this
     
+    topic « notEqual? - :date
+    
+    a: to :date .format: "MMM dd" "Jan 15"
+    b: to :date .format: "MMM dd" "Jan 15"
+    c: to :date .format: "YYYY MMM dd" "2023 Jan 15"
+    d: now
+    
+    ensure -> not? notEqual? a b 
+    ensure -> notEqual? a c 
+    ensure -> notEqual? a d
+    passed 
+    
+    ensure -> not? notEqual? a\day c\day
+    ensure -> not? notEqual? a\month c\month
+    ensure -> notEqual? a\year c\year
+    passed
+    
     
 ]
 
