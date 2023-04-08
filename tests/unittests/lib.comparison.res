@@ -238,6 +238,19 @@
 >> notEqual? - :date
 [+] passed!
 [+] passed!
+
+>> notEqual? - incompatible types
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 false
 false
 true
