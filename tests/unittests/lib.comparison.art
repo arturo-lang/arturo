@@ -1890,6 +1890,20 @@ do [
         -> notEqual? "" var 'char?
     ] passed
     
+    ; for :word
+    ensure -> all? @[        
+        -> notEqual? [rational] @[to :rational [1 1]]      -> notEqual? [null]  @[null]                    
+        -> notEqual? [true]     @[true]                    -> notEqual? [false] @[false]                   
+        -> notEqual? [complex]  @[to :complex [1.0 1.0]]   -> notEqual? [type]  @[:floating]  
+        -> notEqual? [floating] @[:floating]               -> notEqual? [a]     [a\a]                   
+        -> notEqual? [a]         [a\a:]                    -> notEqual? [a]     [{/a/}]                      
+        -> notEqual? [binary]   @[to :binary 1]            -> notEqual? [one]   @[to :binary 1]              
+        -> notEqual? [word]     [(word)]                   -> notEqual? [word]  [[word]]                      
+        -> notEqual? [range]    @[range 1 1]               -> notEqual? [a]     @[#[a: `a`]]               
+        -> notEqual? [black]    @[#black ]                 -> notEqual? [word]  @[var 'word?]              
+        -> notEqual? [var]      @[var 'word?]
+    ] passed
+    
 ]
 
 ; integer comparisons
