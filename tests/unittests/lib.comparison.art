@@ -294,19 +294,29 @@ do [
     topic « equal? - :label
     
     ensure -> equal? [label: value] [label: value]
+    passed
+    
     ensure -> not? equal? [label: value] [label: value2]
     ensure -> not? equal? [label: value] [label2: value]
+    passed
+    
     ensure -> not? equal? [label: value] ["label"]
     ensure -> not? equal? ["label": value] ["label"]
     ensure -> not? equal? [label: value] ["value"]
     ensure -> not? equal? [label: "value"] ["value"]
     ensure -> not? equal? [label: "value"] ["label" "value"]
+    passed
+    
     ensure -> not? equal? [label: "value"] [label]
     ensure -> not? equal? [label: "value"] [value]
     ensure -> not? equal? [label: "value"] [label value]
+    passed
+    
     ensure -> not? equal? [label: 'world] ['label]
     ensure -> not? equal? [label: 'world] ['word]
     ensure -> not? equal? [label: 'world] ['label 'word]
+    passed
+    
     ensure -> not? equal? [label: .attr] [.label]
     ensure -> not? equal? [label: .attr] [.attr]
     ; ensure -> not? equal? [label: .attr: "a"] [.label: .attr: "a"]
@@ -1334,19 +1344,29 @@ do [
     topic « notEqual? - :label
     
     ensure -> not? notEqual? [label: value] [label: value]
+    passed
+    
     ensure -> notEqual? [label: value] [label: value2]
     ensure -> notEqual? [label: value] [label2: value]
+    passed
+    
     ensure -> notEqual? [label: value] ["label"]
     ensure -> notEqual? ["label": value] ["label"]
     ensure -> notEqual? [label: value] ["value"]
     ensure -> notEqual? [label: "value"] ["value"]
     ensure -> notEqual? [label: "value"] ["label" "value"]
+    passed
+    
     ensure -> notEqual? [label: "value"] [label]
     ensure -> notEqual? [label: "value"] [value]
     ensure -> notEqual? [label: "value"] [label value]
+    passed
+    
     ensure -> notEqual? [label: 'world] ['label]
     ensure -> notEqual? [label: 'world] ['word]
     ensure -> notEqual? [label: 'world] ['label 'word]
+    passed
+    
     ensure -> notEqual? [label: .attr] [.label]
     ensure -> notEqual? [label: .attr] [.attr]
     ; ensure -> notEqual? [label: .attr: "a"] [.label: .attr: "a"]
