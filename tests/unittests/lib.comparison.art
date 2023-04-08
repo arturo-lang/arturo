@@ -245,6 +245,8 @@ do [
     topic « equal? - :string
     
     ensure -> equal? "Art" "Arturo" -- "uro"
+    ensure -> not? equal? "A" "B"
+    ensure -> not? equal? "Art" "Bob"
     ensure -> not? equal? "a"    `a` 
     ensure -> not? equal? "10"   10 
     ensure -> not? equal? "10"   10
