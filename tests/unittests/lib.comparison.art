@@ -1326,6 +1326,17 @@ do [
     ensure -> notEqual? [label: .attr: "a"] [.attr: "a"]
     passed
     
+    topic « notEqual? - :literal
+    
+    ensure -> not? notEqual? 'literal 'literal
+    ensure -> notEqual? 'literal 'other
+    ensure -> notEqual? 'literal "literal"
+    ensure -> notEqual? ['literal] ["literal"]
+    ensure -> notEqual? ['literal] [literal]
+    ensure -> notEqual? ['literal] [.literal]
+    ensure -> notEqual? ['literal] [literal: 'literal]
+    passed
+    
     
 ]
 
