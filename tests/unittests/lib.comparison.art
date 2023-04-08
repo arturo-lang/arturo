@@ -1557,6 +1557,10 @@ do [
     ensure -> notEqual? ~"|var 'a|" ~"|var 'b|"
     passed
     
+    topic « notEqual? - :database
+    
+    ; todo: test this
+    
     
 ]
 
