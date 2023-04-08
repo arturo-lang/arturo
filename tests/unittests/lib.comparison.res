@@ -112,6 +112,7 @@
 
 >> equal? - :store
 [+] passed!
+[+] passed!
 
 >> equal? - :color
 [+] passed!
@@ -268,6 +269,7 @@
 [+] passed!
 
 >> notEqual? - :store
+[+] passed!
 [+] passed!
 
 >> notEqual? - :color
