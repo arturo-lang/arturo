@@ -947,9 +947,9 @@ do [
         -> equal? 'null     null                -> equal? 'true     true    
         -> equal? 'false    false               -> equal? 'complex  to :complex [1.0 1.0]    
         -> equal? 'type     :floating           -> equal? 'floating :floating               
-        -> equal? 'a        a\a                 -> equal? '+        +                       
+        -> equal? ['a]        [a\a]             -> equal? ['+]      [+]                       
         -> equal? 'a        {/a/}               -> equal? 'binary   to :binary 1            
-        -> equal? 'word     ('word)             -> equal? 'word     ['word]                                     
+        -> equal? ['word]   [('word)]           -> equal? 'word     ['word]                                     
         -> equal? 'range    1..1                -> equal? 'a        #[a: 'a]                
         -> equal? 'black    #black              -> equal? 'word?    var 'word?              
         -> equal? 'var      var 'var
@@ -2017,7 +2017,7 @@ do [
         -> notEqual? 'type     :floating           -> notEqual? 'floating :floating               
         -> notEqual? ['a]      [a\a]               -> notEqual? ['+]      [+]                       
         -> notEqual? 'a        {/a/}               -> notEqual? 'binary   to :binary 1            
-        -> notEqual? ['word]     [('word)]         -> notEqual? 'word     ['word]                                     
+        -> notEqual? ['word]   [('word)]           -> notEqual? 'word     ['word]                                     
         -> notEqual? 'range    1..1                -> notEqual? 'a        #[a: 'a]                
         -> notEqual? 'black    #black              -> notEqual? 'word?    var 'word?              
         -> notEqual? 'var      var 'var
