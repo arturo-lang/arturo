@@ -1453,6 +1453,15 @@ do [
     ensure -> notEqual? a\0 2
     passed
     
+    topic « notEqual? - :block
+    
+    a: [1 + 1]
+    ensure -> not? notEqual? a [1 + 1]
+    ensure -> notEqual? a [2]
+    ensure -> notEqual? a 2
+    ensure -> notEqual? a [1 ++ 1]
+    passed
+    
     
 ]
 
