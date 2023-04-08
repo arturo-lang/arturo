@@ -433,8 +433,13 @@ do [
     ensure -> equal? "01" ~{|to :binary 1|}
     ensure -> equal? "0A" ~{|to :binary 10|}
     ensure -> equal? "05" ~{|to :binary 5|}
+    passed
+    
     a: to :binary 0
+    
     ensure -> not? equal? a 0
+    ensure -> not? equal? "49 65 6C 6C 6F 20 77 6F 72 6C 64"
+        ~{|to :binary "Hello world"|}
     passed
 
     topic « equal? - :bytecode
@@ -1493,8 +1498,13 @@ do [
     ensure -> not? notEqual? "01" ~{|to :binary 1|}
     ensure -> not? notEqual? "0A" ~{|to :binary 10|}
     ensure -> not? notEqual? "05" ~{|to :binary 5|}
+    passed
+    
     a: to :binary 0
+    
     ensure -> notEqual? a 0
+    ensure -> notEqual? "49 65 6C 6C 6F 20 77 6F 72 6C 64"
+        ~{|to :binary "Hello world"|}
     passed
     
     topic « notEqual? - :bytecode
