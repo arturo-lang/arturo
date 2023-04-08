@@ -187,6 +187,53 @@
 
 >> notEqual? - :attributeLabel
 [+] passed!
+
+>> notEqual? - :path
+[+] passed!
+
+>> notEqual? - :pathLabel
+[+] passed!
+
+>> notEqual? - :symbol
+[+] passed!
+
+>> notEqual? - :regex
+[+] passed!
+
+>> notEqual? - :binary
+[+] passed!
+
+>> notEqual? - :bytecode
+[+] passed!
+
+>> notEqual? - :inline
+[+] passed!
+
+>> notEqual? - :block
+[+] passed!
+
+>> notEqual? :range
+[+] passed!
+
+>> notEqual? :dictionary
+[+] passed!
+[+] passed!
+
+>> notEqual? - :object
+[+] passed!
+[+] passed!
+
+>> notEqual? - :store
+[+] passed!
+
+>> notEqual? - :color
+[+] passed!
+
+>> notEqual? - :function
+[+] passed!
+[+] passed!
+
+>> notEqual? - :database
 false
 false
 true
