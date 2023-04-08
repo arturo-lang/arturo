@@ -1462,6 +1462,14 @@ do [
     ensure -> notEqual? a [1 ++ 1]
     passed
     
+    topic « notEqual? :range
+    
+    ensure -> not? notEqual? [0 1 2 3 4 5] @0..5
+    ensure -> not? notEqual? [0 2 4] @0.. .step: 2 5
+    ensure -> not? notEqual? @range.step: 2 0 5 @range.step: 2 0 4
+    ensure -> notEqual? range.step: 2 0 5 range.step: 2 0 4
+    passed
+    
     
 ]
 
