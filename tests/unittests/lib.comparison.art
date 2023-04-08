@@ -1079,6 +1079,104 @@ do [
     ensure -> (to :rational @[5 5]) <> to :rational @[1 2]
     passed
     
+    topic « equal? - :quantity
+    
+    ensure -> not? notEqual? 1:usd 1
+    ensure -> not? notEqual? 1:m   1
+    ensure -> not? notEqual? 1:m2  1
+    ensure -> not? notEqual? 1:m3  1
+    ensure -> not? notEqual? 1:c   1
+    ensure -> not? notEqual? 1:f   1
+    ensure -> not? 1:usd <> 1
+    ensure -> not? 1:m   <> 1
+    ensure -> not? 1:m2  <> 1
+    ensure -> not? 1:m3  <> 1
+    ensure -> not? 1:c   <> 1
+    ensure -> not? 1:f   <> 1
+    passed
+    
+    ensure -> not? notEqual? 1 1:usd
+    ensure -> not? notEqual? 1 1:m
+    ensure -> not? notEqual? 1 1:m2
+    ensure -> not? notEqual? 1 1:m3
+    ensure -> not? notEqual? 1 1:c
+    ensure -> not? notEqual? 1 1:f
+    ensure -> not? 1 <> 1:usd
+    ensure -> not? 1 <> 1:m
+    ensure -> not? 1 <> 1:m2
+    ensure -> not? 1 <> 1:m3
+    ensure -> not? 1 <> 1:c
+    ensure -> not? 1 <> 1:f
+    passed
+    
+    ensure -> not? notEqual? 1:usd 1.0
+    ensure -> not? notEqual? 1:m   1.0
+    ensure -> not? notEqual? 1:m2  1.0
+    ensure -> not? notEqual? 1:m3  1.0
+    ensure -> not? notEqual? 1:c   1.0
+    ensure -> not? notEqual? 1:f   1.0
+    ensure -> not? 1:usd <> 1.0
+    ensure -> not? 1:m   <> 1.0
+    ensure -> not? 1:m2  <> 1.0
+    ensure -> not? 1:m3  <> 1.0
+    ensure -> not? 1:c   <> 1.0
+    ensure -> not? 1:f   <> 1.0
+    passed
+    
+    ensure -> not? notEqual? 1.0 1:usd
+    ensure -> not? notEqual? 1.0 1:m
+    ensure -> not? notEqual? 1.0 1:m2
+    ensure -> not? notEqual? 1.0 1:m3
+    ensure -> not? notEqual? 1.0 1:c
+    ensure -> not? notEqual? 1.0 1:f
+    ensure -> not? 1.0 <> 1:usd
+    ensure -> not? 1.0 <> 1:m
+    ensure -> not? 1.0 <> 1:m2
+    ensure -> not? 1.0 <> 1:m3
+    ensure -> not? 1.0 <> 1:c
+    ensure -> not? 1.0 <> 1:f
+    passed
+    
+    ensure -> not? notEqual? 1:usd to :rational @[5 5]
+    ensure -> not? notEqual? 1:m   to :rational @[5 5]
+    ensure -> not? notEqual? 1:m2  to :rational @[5 5]
+    ensure -> not? notEqual? 1:m3  to :rational @[5 5]
+    ensure -> not? notEqual? 1:c   to :rational @[5 5]
+    ensure -> not? notEqual? 1:f   to :rational @[5 5]
+    ensure -> not? 1:usd <> to :rational @[5 5]
+    ensure -> not? 1:m   <> to :rational @[5 5]
+    ensure -> not? 1:m2  <> to :rational @[5 5]
+    ensure -> not? 1:m3  <> to :rational @[5 5]
+    ensure -> not? 1:c   <> to :rational @[5 5]
+    ensure -> not? 1:f   <> to :rational @[5 5]
+    passed
+    
+    ensure -> not? notEqual? to :rational @[5 5] 1:usd
+    ensure -> not? notEqual? to :rational @[5 5] 1:m
+    ensure -> not? notEqual? to :rational @[5 5] 1:m2
+    ensure -> not? notEqual? to :rational @[5 5] 1:m3
+    ensure -> not? notEqual? to :rational @[5 5] 1:c
+    ensure -> not? notEqual? to :rational @[5 5] 1:f
+    ensure -> not? (to :rational @[5 5]) <> 1:usd
+    ensure -> not? (to :rational @[5 5]) <> 1:m
+    ensure -> not? (to :rational @[5 5]) <> 1:m2
+    ensure -> not? (to :rational @[5 5]) <> 1:m3
+    ensure -> not? (to :rational @[5 5]) <> 1:c
+    ensure -> not? (to :rational @[5 5]) <> 1:f
+    passed
+    
+    ensure -> notEqual? 2:usd 1
+    ensure -> notEqual? 2 1:usd
+    ensure -> notEqual? 2:usd 1.0
+    ensure -> notEqual? 2.0 1:usd
+    ensure -> notEqual? 2:usd to :rational @[5 5]
+    ensure -> notEqual? to :rational @[2 5] 1:usd
+    passed
+    
+    ensure -> not? notEqual? 1.5:m 150:cm 
+    ensure -> notEqual? 2:m 2:cm
+    passed 
+    
 ]
 
 ; integer comparisons
