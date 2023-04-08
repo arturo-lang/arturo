@@ -961,7 +961,7 @@ do [
         -> equal? [.true]     @[true]                  -> equal? [.false]    @[false]                 
         -> equal? [.complex]  @[to :complex [1.0 1.0]] -> equal? [.floating] @[:floating]                          
         -> equal? [.a]        @[{/a:/}]                -> equal? [.binary]   @[to :binary 1]          
-        -> equal? [.word]     @[(.word:)]              -> equal? [.label]    @[[.label]]                               
+        -> equal? [.word]      [(.word:)]              -> equal? [.label]    @[[.label]]                               
         -> equal? [.a]        @[#[a: `a`]]             -> equal? [.black]    @[#black]                
         -> equal? [.var]      @[var 'word?]            -> equal? [.word]     @[var 'word?]
     ] passed
@@ -2029,7 +2029,7 @@ do [
         -> notEqual? [.true]     @[true]                    -> notEqual? [.false]    @[false]                 
         -> notEqual? [.complex]  @[to :complex [1.0 1.0]]   -> notEqual? [.floating] @[:floating]                          
         -> notEqual? [.a]        @[{/a:/}]                  -> notEqual? [.binary]   @[to :binary 1]          
-        -> notEqual? [.word]     [(.word)]                  -> notEqual? [.label]    @[[.label]]                               
+        -> notEqual? [.word]      [(.word)]                 -> notEqual? [.label]    @[[.label]]                               
         -> notEqual? [.a]        @[#[a: `a`]]               -> notEqual? [.black]    @[#black]                
         -> notEqual? [.var]      @[var 'word?]              -> notEqual? [.word]     @[var 'word?]
     ] passed
