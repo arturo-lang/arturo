@@ -349,16 +349,24 @@ do [
     topic « equal? - :attributeLabel
     
     ensure -> equal? [.attr: value] [.attr: value]
+    passed
+    
     ensure -> not? equal? [.attr: value] ["attr"]
     ensure -> not? equal? [.attr: value] ["value"]
     ensure -> not? equal? [.attr: value] ["attr" "value"]
+    passed
+    
     ; ensure -> not? equal? [.attr: value] [attr]
     ensure -> not? equal? [.attr: value] [attr: .attr:]
     ; ensure -> not? equal? [.attr: value] [attr: value]
     ensure -> not? equal? [.attr: value] [attr: .attr: value]
+    passed
+    
     ensure -> not? equal? [.attr: value] ['attr]
     ensure -> not? equal? [.attr: value] ['value]
     ensure -> not? equal? [.attr: value] ['attr 'value]
+    passed
+    
     ensure -> not? equal? [.attr: value] [.attr]
     ensure -> not? equal? [.attr: value] [.value]
     ensure -> not? equal? [.attr: value] [.other: value]
@@ -1399,16 +1407,24 @@ do [
     topic « notEqual? - :attributeLabel
     
     ensure -> not? notEqual? [.attr: value] [.attr: value]
+    passed
+    
     ensure -> notEqual? [.attr: value] ["attr"]
     ensure -> notEqual? [.attr: value] ["value"]
     ensure -> notEqual? [.attr: value] ["attr" "value"]
+    passed
+    
     ; ensure -> notEqual? [.attr: value] [attr]
     ensure -> notEqual? [.attr: value] [attr: .attr:]
     ; ensure -> notEqual? [.attr: value] [attr: value]
     ensure -> notEqual? [.attr: value] [attr: .attr: value]
+    passed
+    
     ensure -> notEqual? [.attr: value] ['attr]
     ensure -> notEqual? [.attr: value] ['value]
     ensure -> notEqual? [.attr: value] ['attr 'value]
+    passed
+    
     ensure -> notEqual? [.attr: value] [.attr]
     ensure -> notEqual? [.attr: value] [.value]
     ensure -> notEqual? [.attr: value] [.other: value]
