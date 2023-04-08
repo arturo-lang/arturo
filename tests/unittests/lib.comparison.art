@@ -211,9 +211,11 @@ do [
     topic « equal? - :version
     
     ensure -> equal? 1.2.3 1.2.3
+    ensure -> 1.2.3 = 1.2.3
+    passed
+    
     ensure -> not? equal? 1.2.3 1.2.3-pre
     ensure -> not? equal? 1.2.3 1.2.3-dev
-    ensure -> 1.2.3 = 1.2.3
     ensure -> not? 1.2.3 = 1.2.3-pre
     ensure -> not? 1.2.3 = 1.2.3-dev
     passed
@@ -1243,9 +1245,11 @@ do [
     topic « notEqual? - :version
     
     ensure -> not? notEqual? 1.2.3 1.2.3
+    ensure -> not? 1.2.3 <> 1.2.3
+    passed
+    
     ensure -> notEqual? 1.2.3 1.2.3-pre
     ensure -> notEqual? 1.2.3 1.2.3-dev
-    ensure -> not? 1.2.3 <> 1.2.3
     ensure -> 1.2.3 <> 1.2.3-pre
     ensure -> 1.2.3 <> 1.2.3-dev
     passed
