@@ -1221,6 +1221,17 @@ do [
     ensure -> 1 <> to :complex [1 2]
     passed
     
+    topic « notEqual? - :version
+    
+    ensure -> not? notEqual? 1.2.3 1.2.3
+    ensure -> notEqual? 1.2.3 1.2.3-pre
+    ensure -> notEqual? 1.2.3 1.2.3-dev
+    ensure -> not? 1.2.3 <> 1.2.3
+    ensure -> 1.2.3 <> 1.2.3-pre
+    ensure -> 1.2.3 <> 1.2.3-dev
+    passed
+    
+    
 ]
 
 ; integer comparisons
