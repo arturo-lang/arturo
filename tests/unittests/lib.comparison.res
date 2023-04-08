@@ -13,6 +13,8 @@
 [+] passed!
 [+] passed!
 [+] passed!
+[+] passed!
+[+] passed!
 
 >> equal? - :null
 [+] passed!
@@ -27,6 +29,7 @@
 [+] passed!
 
 >> equal? - :type
+[+] passed!
 [+] passed!
 
 >> equal? - :char
@@ -129,6 +132,60 @@
 [+] passed!
 [+] passed!
 [+] passed!
+[+] passed!
+
+>> notEqual?
+
+>> notEqual? - :integer :floating :rational
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> notEqual? - :quantity
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> notEqual? - :null
+[+] passed!
+
+>> notEqual? - :logical
+[+] passed!
+
+>> notEqual? - :complex
+[+] passed!
+
+>> notEqual? - :version
+[+] passed!
+
+>> notEqual? - :type
+[+] passed!
+[+] passed!
+
+>> notEqual? - :char
+[+] passed!
+
+>> notEqual? - :string
+[+] passed!
+
+>> notEqual? - :word
+[+] passed!
+
+>> notEqual? - :label
+[+] passed!
+
+>> notEqual? - :literal
+[+] passed!
+
+>> notEqual? - :attribute
+[+] passed!
+
+>> notEqual? - :attributeLabel
 [+] passed!
 false
 false
