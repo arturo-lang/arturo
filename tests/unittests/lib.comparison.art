@@ -1429,6 +1429,15 @@ do [
     ensure -> notEqual? a 0
     passed
     
+    topic « notEqual? - :bytecode
+    
+    x: to :bytecode [["print"][1 112 155]]
+    
+    ensure -> not? notEqual? x to :bytecode [["print"][1 112 155]]
+    ensure -> notEqual? x to :bytecode [["print"][2 112 155]]
+    ensure -> notEqual? x [["print"][2 112 155]]
+    passed
+    
     
 ]
 
