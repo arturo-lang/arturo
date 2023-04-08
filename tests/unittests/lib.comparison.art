@@ -1963,6 +1963,24 @@ do [
         -> notEqual? [a\b] [a\b:]
     ] passed
     
+    ; for :regex
+    ensure -> all? @[
+        -> notEqual? {/1/} 1                               -> notEqual? {/1/1/} to :rational [1 1]          
+        -> notEqual? {/1.0/} 1.0                           -> notEqual? {/null/} null                    
+        -> notEqual? {//} null                             -> notEqual? {/true/} true                  
+        -> notEqual? {//} false                            -> notEqual? {/false/} false                   
+        -> notEqual? {/1.0+1.0i/} to :complex [1.0 1.0]    -> notEqual? {/type/} :floating
+        -> notEqual? {/floating/} :floating                -> notEqual? {/:floating/} :floating
+        -> notEqual? {/1.0/} :floating                     -> notEqual? [{/a/}] [a\a]
+        -> notEqual? [{/a/}] [a\a:]                        -> notEqual? [{/a/} {/a/}] [a\a: {/a/}]
+        -> notEqual? [{/\+/}] [+]                          -> notEqual? {/01/} to :binary 1                 
+        -> notEqual? {/1/} to :binary 1                    -> notEqual? [{//}] [({//})]                     
+        -> notEqual? {//} [""]                             -> notEqual? {/1/} 1..1                          
+        -> notEqual? {/a/} #[a: "a"]                       -> notEqual? {/#000000/} #black                  
+        -> notEqual? {/000000/} #black                     -> notEqual? {/var/} var 'regex?
+        -> notEqual? {/regex?/} var 'regex?
+    ] passed
+    
     
     
 ]
