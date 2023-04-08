@@ -197,6 +197,8 @@ do [
     topic « equal? - :complex
     
     ensure -> equal? to :complex [0 2] ((to :complex [1 2]) - 1) 
+    passed
+    
     ensure -> not? equal? to :complex [1 2] to :complex @[neg 1 2] 
     ensure -> not? equal? to :complex [1 2] 1
     ensure -> not? equal? 1 to :complex [1 2]
@@ -1227,6 +1229,8 @@ do [
     topic « notEqual? - :complex
     
     ensure -> not? notEqual? to :complex [0 2] ((to :complex [1 2]) - 1) 
+    passed
+    
     ensure -> notEqual? to :complex [1 2] to :complex @[neg 1 2] 
     ensure -> notEqual? to :complex [1 2] 1
     ensure -> notEqual? 1 to :complex [1 2]
