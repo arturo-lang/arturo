@@ -1981,6 +1981,23 @@ do [
         -> notEqual? {/regex?/} var 'regex?
     ] passed
     
+    ; for :binary
+    ensure -> all? @[
+        -> notEqual? to :binary 1 1                    -> notEqual? to :binary 1 1.0                
+        -> notEqual? to :binary 1 to :rational [1 1]   -> notEqual? to :binary 1 1:usd                
+        -> notEqual? to :binary 1 1:m                  -> notEqual? to :binary 1 1:m3                 
+        -> notEqual? to :binary 1 1:c                  -> notEqual? to :binary 0 null                 
+        -> notEqual? to :binary 0 true                 -> notEqual? to :binary 0 false                
+        -> notEqual? to :binary 0 maybe                -> notEqual? to :binary 1 to :complex [1 1]                  
+        -> notEqual? to :binary 1 1.0.0                -> notEqual? to :binary 1 :type              
+        -> notEqual? to :binary 1 :binary              -> notEqual? to :binary 1 `1`                  
+        -> notEqual? to :binary "a" `a`                -> notEqual? to :binary 1 "01"                 
+        -> notEqual? to :binary 1 "1"                  -> notEqual? @[to :binary 1] [binary]          
+        -> notEqual? @[to :binary 1] [one]             -> notEqual? @[to :binary 1] [binary:]         
+        -> notEqual? @[to :binary 1][.binary]          -> notEqual? @[to :binary 1] [.binary:]        
+        -> notEqual? to :binary 1 {/01/}               -> notEqual? to :binary 1    {/1/}
+    ] passed
+    
     
     
 ]
