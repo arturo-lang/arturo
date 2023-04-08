@@ -2012,6 +2012,19 @@ do [
         -> notEqual? 1..1 {/1/}
     ] passed
     
+    ; for :dictionary, :object & :date
+    define :person [name surname][]
+    
+    a: to :person ["Walter" "Pinkman"]
+    b: to :date .format: "YYYY MMM dd" "2023 Jan 15"
+    
+    ensure -> all? @[
+        -> notEqual? #[name: "Walter" surname: "Pinkman"] a
+        -> notEqual? a #[name: "Walter" surname: "Pinkman"]
+        -> notEqual? #[year: 2023 day: 15 Month: "January"] b
+        -> notEqual? b #[year: 2023 day: 15 Month: "January"]
+    ] passed
+    
     
     
 ]
