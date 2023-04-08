@@ -1713,6 +1713,26 @@ do [
         -> notEqual? 0:c #black            -> notEqual? 1:c var 'one?
     ] passed
     
+    ; for :null
+    ensure -> all? @[
+        -> notEqual? null 0                        -> notEqual? null 0.0            
+        -> notEqual? null to :rational [1 1]       -> notEqual? null true
+        -> notEqual? null false                    -> notEqual? null to :complex [0 0]
+        -> notEqual? null 0.0.0                    -> notEqual? null :null
+        -> notEqual? null `ø`                      -> notEqual? null "null"
+        -> notEqual? @[null] [null]                -> notEqual? @[null] [null:]
+        -> notEqual? @[null null] [null: null]     -> notEqual? null 'null
+        -> notEqual? @[null] [.null]               -> notEqual? @[null] [.null:]
+        -> notEqual? @[null null] [.null: null]    -> notEqual? @[null] [null\null]
+        -> notEqual? @[null] [null\null:]          -> notEqual? @[null null] [null\null: null]
+        -> notEqual? @[null] [ø]                   -> notEqual? null {/null/}
+        -> notEqual? null {/ø/}                    -> notEqual? null to :binary 0   
+        -> notEqual? null to :binary 0             -> notEqual? @[null] [(null)]         
+        -> notEqual? null [null]                   -> notEqual? null 0..0            
+        -> notEqual? null #[null: null]            -> notEqual? null #black          
+        -> notEqual? null var 'null?
+    ] passed
+    
     
 ]
 
