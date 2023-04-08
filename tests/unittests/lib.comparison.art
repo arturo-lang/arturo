@@ -455,12 +455,18 @@ do [
     
     a: [(1 + 1)], b: [(1 + 1)] 
     ensure -> equal? a\0 b\0
+    passed
+    
     c: [(2 + 1)] 
     ensure -> not? equal? a\0 c\0
+    passed
+    
     d: [(3 - 1)] 
     ensure -> not? equal? a\0 d\0   ; even the calc (3-1) and (1+1) being 2, 
-                                    ; they are different inlines 
+    passed                          ; they are different inlines 
                                     ; with the same result when evaluated
+    
+    
     e: [(1 + 2 - 1)]
     ensure -> not? equal? a\0 e\0
     ensure -> not? equal? a\0 2
@@ -1520,12 +1526,17 @@ do [
     
     a: [(1 + 1)], b: [(1 + 1)] 
     ensure -> not? notEqual? a\0 b\0
+    passed
+    
     c: [(2 + 1)] 
     ensure -> notEqual? a\0 c\0
+    passed
+    
     d: [(3 - 1)] 
     ensure -> notEqual? a\0 d\0 ; even the calc (3-1) and (1+1) being 2, 
-                                ; they are different inlines 
+    passed                      ; they are different inlines 
                                 ; with the same result when evaluated
+    
     e: [(1 + 2 - 1)]
     ensure -> notEqual? a\0 e\0
     ensure -> notEqual? a\0 2
