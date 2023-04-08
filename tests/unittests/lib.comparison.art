@@ -1825,6 +1825,34 @@ do [
         -> notEqual? 0.0.0 #black                   -> notEqual? 1.0.0 var 'version?
     ] passed
     
+    ; for :type
+    ensure -> all? @[
+        -> notEqual? :1 1                              -> notEqual? :1 1.0          
+        -> notEqual? :integer 1                        -> notEqual? :floating 1.0          
+        -> notEqual? :rational to :rational [1 1]      -> notEqual? :null null                    
+        -> notEqual? :true true                        -> notEqual? :false false                   
+        -> notEqual? :logical false                    -> notEqual? :complex to :complex [1 1]   
+        -> notEqual? :version 1.0.0                    -> notEqual? :T `T`                         
+        -> notEqual? :char `T`                         -> notEqual? :string ":type"
+        -> notEqual? [:type] [type]                    -> notEqual? [:word] [word]                     
+        -> notEqual? [:type] [type:]                   -> notEqual? [:label] [label:]
+        -> notEqual? [:type :type] [type: :type]       -> notEqual? :1 '1
+        -> notEqual? :literal '1                       -> notEqual? [:type] [.type]                      
+        -> notEqual? [:attribute] [.type]              -> notEqual? [:type] [.type:]
+        -> notEqual? [:attributeLabel] [.type: :type]  -> notEqual? [:type :type] [.type: :type]         
+        -> notEqual? [:type] [type\type]               -> notEqual? [:path] [type\type]
+        -> notEqual? [:type] [type\type:]              -> notEqual? [:pathLabel] [type\type:]            
+        -> notEqual? [:type :type] [type\type: :type]  -> notEqual? [:type] [+]                       
+        -> notEqual? [:symbol] [+]                     -> notEqual? :type {/:type/}
+        -> notEqual? :regex {/:type/}                  -> notEqual? :type to :binary 1.0              
+        -> notEqual? :binary to :binary 1.0            -> notEqual? [:type] [(:type)]                 
+        -> notEqual? [:inline] [(:type)]               -> notEqual? :type [:type]
+        -> notEqual? :block [:type]                    -> notEqual? :type 1..1                        
+        -> notEqual? :range 1..1                       -> notEqual? :type #[type: :type]
+        -> notEqual? :dictionary #[type: :type]        -> notEqual? :type #black                      
+        -> notEqual? :color #black                     -> notEqual? :type var 'type?
+        -> notEqual? :function var 'one?
+    ] passed
     
 ]
 
