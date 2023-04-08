@@ -1578,6 +1578,9 @@ do [
     ensure -> notEqual? a\year c\year
     passed
     
+    topic « notEqual? - incompatible types
+    
+    
     
 ]
 
