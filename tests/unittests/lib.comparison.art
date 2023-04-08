@@ -1917,6 +1917,22 @@ do [
         -> notEqual? [word:]     @[var 'word?]
     ] passed
     
+    ; for :literal
+    ; NOTE: technically, '+ is not a :literal, but a :symbolLiteral type ;)
+    ensure -> all? @[
+        -> notEqual? 'integer  1                   -> notEqual? 'floating 1.0
+        -> notEqual? 'rational to :rational [1 1]  -> notEqual? 'one      to :rational [1 1]
+        -> notEqual? 'null     null                -> notEqual? 'true     true    
+        -> notEqual? 'false    false               -> notEqual? 'complex  to :complex [1.0 1.0]    
+        -> notEqual? 'type     :floating           -> notEqual? 'floating :floating               
+        -> notEqual? ['a]      [a\a]               -> notEqual? ['+]      [+]                       
+        -> notEqual? 'a        {/a/}               -> notEqual? 'binary   to :binary 1            
+        -> notEqual? ['word]     [('word)]         -> notEqual? 'word     ['word]                                     
+        -> notEqual? 'range    1..1                -> notEqual? 'a        #[a: 'a]                
+        -> notEqual? 'black    #black              -> notEqual? 'word?    var 'word?              
+        -> notEqual? 'var      var 'var
+    ] passed
+    
 ]
 
 ; integer comparisons
