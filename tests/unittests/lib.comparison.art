@@ -235,13 +235,15 @@ do [
     topic « equal? - :char
     
     ensure -> equal? `a` `a`
+    ensure -> `a` = `a`
+    passed
+    
     ensure -> not? equal? `a` "a" 
     ensure -> not? equal? `a` `b`
     ensure -> not? equal? `1` 1
     ensure -> not? equal? "a" `a` 
     ensure -> not? equal? `b` `a`
     ensure -> not? equal? 1   `1`
-    ensure -> `a` = `a`
     ensure -> not? `a` = "a" 
     ensure -> not? `a` = `b`
     ensure -> not? `1` =  1
@@ -1269,13 +1271,15 @@ do [
     topic « notEqual? - :char
     
     ensure -> not? notEqual? `a` `a`
+    ensure -> not? `a` <> `a`
+    passed
+    
     ensure -> notEqual? `a` "a" 
     ensure -> notEqual? `a` `b`
     ensure -> notEqual? `1` 1
     ensure -> notEqual? "a" `a` 
     ensure -> notEqual? `b` `a`
     ensure -> notEqual? 1   `1`
-    ensure -> not? `a` <> `a`
     ensure -> `a` <> "a" 
     ensure -> `a` <> `b`
     ensure -> `1` <>  1
