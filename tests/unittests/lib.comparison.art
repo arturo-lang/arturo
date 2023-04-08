@@ -1348,6 +1348,25 @@ do [
     ensure -> notEqual? [.attr] [.attr: .attr]
     passed
     
+    topic « notEqual? - :attributeLabel
+    
+    ensure -> not? notEqual? [.attr: value] [.attr: value]
+    ensure -> notEqual? [.attr: value] ["attr"]
+    ensure -> notEqual? [.attr: value] ["value"]
+    ensure -> notEqual? [.attr: value] ["attr" "value"]
+    ; ensure -> notEqual? [.attr: value] [attr]
+    ensure -> notEqual? [.attr: value] [attr: .attr:]
+    ; ensure -> notEqual? [.attr: value] [attr: value]
+    ensure -> notEqual? [.attr: value] [attr: .attr: value]
+    ensure -> notEqual? [.attr: value] ['attr]
+    ensure -> notEqual? [.attr: value] ['value]
+    ensure -> notEqual? [.attr: value] ['attr 'value]
+    ensure -> notEqual? [.attr: value] [.attr]
+    ensure -> notEqual? [.attr: value] [.value]
+    ensure -> notEqual? [.attr: value] [.other: value]
+    ensure -> notEqual? [.attr: value] [.attr: other]
+    passed
+    
     
 ]
 
