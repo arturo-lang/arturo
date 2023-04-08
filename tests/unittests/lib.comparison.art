@@ -1786,6 +1786,26 @@ do [
         ; -> notEqual? maybe var 'maybe?
     ] passed
     
+    ; for :complex
+    a: to :complex [1 1]
+    ensure -> all? @[
+        -> notEqual? a 1                        -> notEqual? a 1.0            
+        -> notEqual? a to :rational [1 1]       -> notEqual? a null                    
+        -> notEqual? a true                     -> notEqual? a false
+        -> notEqual? a 1.0.0                    -> notEqual? a :rational
+        -> notEqual? a `1`                      -> notEqual? a "1.0+1.0i"
+        -> notEqual? @[a] [one]                 -> notEqual? @[a] [one: 1]
+        -> notEqual? @[a a] [one: 1]            -> notEqual? 1 '1
+        -> notEqual? @[a] [.1]                  -> notEqual? @[a] [.1:]
+        -> notEqual? @[a a] [.1: 1]             -> notEqual? @[a] [one\1]
+        -> notEqual? @[a] [one\1:]              -> notEqual? @[a a] [one\1: 1]
+        -> notEqual? @[a] [+]                   -> notEqual? a {/1.0+1.0i/}
+        -> notEqual? a to :binary 1             -> notEqual? a to :binary 1
+        -> notEqual? @[a] [(1)]                 -> notEqual? a [1]
+        -> notEqual? a 1..1                     -> notEqual? a #[one: 1]
+        -> notEqual? to :complex [0 0] #black   -> notEqual? a var 'one?
+    ] passed
+    
     
 ]
 
