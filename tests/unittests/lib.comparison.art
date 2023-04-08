@@ -1266,6 +1266,30 @@ do [
     ensure ->  1  <> `1`
     passed 
     
+    topic « notEqual? - :string
+    
+    ensure -> not? notEqual? "Art" "Arturo" -- "uro"
+    ensure -> notEqual? "A" "B"
+    ensure -> notEqual? "Art" "Bob"
+    ensure -> notEqual? "a"    `a` 
+    ensure -> notEqual? "10"   10 
+    ensure -> notEqual? "10"   10
+    ensure -> notEqual? ["help"] [help]
+    ensure -> notEqual? ["a"]    [a: "a"]
+    ensure -> notEqual? "help"   'help
+    ensure -> notEqual? ["help"] [.help]
+    ensure -> notEqual? ["help"] ['help: "help"]
+    ensure -> not? "Art" <> "Arturo" -- "uro"
+    ensure -> "a"      <> `a` 
+    ensure -> "10"     <> 10 
+    ensure -> "10"     <> 10
+    ensure -> ["help"] <> [help]
+    ensure -> ["a"]    <> [a: "a"]
+    ensure -> "help"   <> 'help
+    ensure -> ["help"] <> [.help]
+    ensure -> ["help"] <> ['help: "help"]
+    passed
+    
     
 ]
 
