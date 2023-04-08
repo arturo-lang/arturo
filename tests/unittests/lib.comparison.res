@@ -234,6 +234,10 @@
 [+] passed!
 
 >> notEqual? - :database
+
+>> notEqual? - :date
+[+] passed!
+[+] passed!
 false
 false
 true
