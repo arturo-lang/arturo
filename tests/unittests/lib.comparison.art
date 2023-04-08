@@ -1248,6 +1248,24 @@ do [
     ensure -> notEqual? :integer :floating
     passed
     
+    topic « notEqual? - :char
+    
+    ensure -> not? notEqual? `a` `a`
+    ensure -> notEqual? `a` "a" 
+    ensure -> notEqual? `a` `b`
+    ensure -> notEqual? `1` 1
+    ensure -> notEqual? "a" `a` 
+    ensure -> notEqual? `b` `a`
+    ensure -> notEqual? 1   `1`
+    ensure -> not? `a` <> `a`
+    ensure -> `a` <> "a" 
+    ensure -> `a` <> `b`
+    ensure -> `1` <>  1
+    ensure -> "a" <> `a` 
+    ensure -> `b` <> `a`
+    ensure ->  1  <> `1`
+    passed 
+    
     
 ]
 
