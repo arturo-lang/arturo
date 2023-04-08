@@ -2041,6 +2041,20 @@ do [
         -> notEqual? #black{/000000/} 
     ] passed
     
+    ; for :function
+    ensure -> all? @[
+        -> notEqual? var 'null?     null       -> notEqual? var 'true?    true  
+        -> notEqual? var 'false?    false
+        -> notEqual? var 'version?  1.0.0      -> notEqual? var 'type?    :type 
+        -> notEqual? var 'function? :function  -> notEqual? var 'char?    `a` 
+        -> notEqual? @[var 'word?]  [word]     -> notEqual? @[var 'word?] [var]      
+        -> notEqual? @[var 'word?]  [var:]     -> notEqual? @[var 'word?] [word:]    
+        -> notEqual? var 'word?     'word?     -> notEqual? var 'var      'var       
+        -> notEqual? @[var 'word?]  [.var]     -> notEqual? @[var 'word?] [.word]    
+        -> notEqual? @[var 'word?]  [.var:]    -> notEqual? @[var 'word?] [.word:]   
+        -> notEqual? var 'regex?    {/var/}    -> notEqual? var 'regex?   {/regex?/} 
+    ] passed
+    
     
     
 ]
