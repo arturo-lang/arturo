@@ -219,6 +219,11 @@ do [
     ensure -> equal? :floating type 1.5
     passed
     
+    ensure -> not? equal? :string :integer
+    ensure -> not? equal? :string :char
+    ensure -> not? equal? :integer :floating
+    passed
+    
     topic « equal? - :char
     
     ensure -> equal? `a` `a`
