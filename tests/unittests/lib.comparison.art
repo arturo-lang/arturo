@@ -2025,6 +2025,22 @@ do [
         -> notEqual? b #[year: 2023 day: 15 Month: "January"]
     ] passed
     
+    ; for :color
+    ensure -> all? @[
+        -> notEqual? #black 0                  -> notEqual? #black 0.0
+        -> notEqual? #black to :rational [1 1] -> notEqual? #black 0:usd 
+        -> notEqual? #black 0:m                -> notEqual? #black 0:m3
+        -> notEqual? #black 0:c                -> notEqual? #black null 
+        -> notEqual? #black true               -> notEqual? #black false 
+        -> notEqual? #black maybe              -> notEqual? #black to :complex [0 0]
+        -> notEqual? #black 0.0.0              -> notEqual? #black :color
+        -> notEqual? #black `1`                -> notEqual? #black "#000000"
+        -> notEqual? #black "000000"           -> notEqual? [#black] [black] 
+        -> notEqual? #black 'black             -> notEqual? [#black] [.black]
+        -> notEqual? [#black] [.black:]        -> notEqual? #black  {/#000000/}                 
+        -> notEqual? #black{/000000/} 
+    ] passed
+    
     
     
 ]
