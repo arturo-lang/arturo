@@ -1177,6 +1177,26 @@ do [
     ensure -> notEqual? 2:m 2:cm
     passed 
     
+    topic « notEqual? - :null
+    
+    ensure -> not? notEqual? null null
+    ensure -> not? notEqual? null ø
+    ensure -> not? notEqual? ø ø
+    ensure -> not? notEqual? ø null
+    ensure -> notEqual? ø 1
+    ensure -> notEqual? ø 1.0
+    ensure -> notEqual? ø "ø"
+    ensure -> notEqual? ø `ø`
+    ensure -> not? null <> null
+    ensure -> not? null <> ø
+    ensure -> not? ø <> ø
+    ensure -> not? ø <> null
+    ensure -> ø <> 1
+    ensure -> ø <> 1.0
+    ensure -> ø <> "ø"
+    ensure -> ø <> `ø`
+    passed
+    
 ]
 
 ; integer comparisons
