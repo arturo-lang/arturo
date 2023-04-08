@@ -1531,6 +1531,15 @@ do [
     ensure -> notEqual? d c 
     passed
     
+    topic « notEqual? - :color
+    
+    ensure -> not? notEqual? #000 #black
+    ensure -> not? notEqual? #fff #white
+    ensure -> not? notEqual? #white #white
+    ensure -> notEqual? #black #white
+    ensure -> notEqual? #white #black
+    passed
+    
     
 ]
 
