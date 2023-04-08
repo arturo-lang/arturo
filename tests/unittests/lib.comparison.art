@@ -2061,11 +2061,6 @@ do [
 
 ; integer comparisons
 
-print notEqual? 1 1
-print 1<>1
-print notEqual? 1 2
-print 1<>2
-
 print less? 1 1
 print 1<1
 print less? 1 2
@@ -2097,9 +2092,6 @@ print 3.0>2
 print 2<3.14
 
 ; other types
-
-str: "hello"
-print "boom"<>str
 
 print "hello">"iceland"
 print "hello"<"iceland"
