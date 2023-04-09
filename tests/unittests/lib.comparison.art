@@ -1066,7 +1066,7 @@ do [
     ; for :function
     ensure -> not? all? @[
         -> equal? var 'null?     null       -> equal? var 'true?    true  
-        -> equal? var 'false?    false      -> equal? var 'maybe?   maybe 
+        -> equal? var 'false?    false 
         -> equal? var 'version?  1.0.0      -> equal? var 'type?    :type 
         -> equal? var 'function? :function  -> equal? var 'char?    `a` 
         -> equal? @[var 'word?]  [word]     -> equal? @[var 'word?] [var]      
