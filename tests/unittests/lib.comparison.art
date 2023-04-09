@@ -1685,6 +1685,11 @@ do [
     ;     the Comparison module
     
     ; for :integer
+    
+    ensure -> every? @[
+        -> notEqual? 1 1
+    ] => not?
+    
     ensure -> not? every? @[
         -> notEqual? 1 null         -> notEqual? 1 true
         -> notEqual? 1 false        -> notEqual? 1 to :complex [1 1]
