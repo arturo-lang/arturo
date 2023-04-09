@@ -1685,7 +1685,7 @@ do [
     ;     the Comparison module
     
     ; for :integer
-    ensure -> all? @[
+    ensure -> not? every? @[
         -> notEqual? 1 null         -> notEqual? 1 true
         -> notEqual? 1 false        -> notEqual? 1 to :complex [1 1]
         -> notEqual? 1 1.0.0        -> notEqual? 1 :integer
@@ -1700,10 +1700,10 @@ do [
         -> notEqual? [1] [(1)]      -> notEqual? 1 [1]
         -> notEqual? 1 1..1         -> notEqual? 1 #[one: 1]
         -> notEqual? 0 #black       -> notEqual? 1 var 'one?
-    ] passed
+    ] => not? passed
     
     ; for :floating
-    ensure -> all? @[
+    ensure -> not? every? @[
         -> notEqual? 1.0 null               -> notEqual? 1.0 true
         -> notEqual? 1.0 false              -> notEqual? 1.0 to :complex [1.0 1.0]
         -> notEqual? 1.0 1.0.0              -> notEqual? 1.0 :floating
@@ -1718,11 +1718,11 @@ do [
         -> notEqual? [1.0] [(1.0)]          -> notEqual? 1.0 [1]
         -> notEqual? 1.0 1..1               -> notEqual? 1.0 #[one: 1.0]
         -> notEqual? 0.0 #black             -> notEqual? 1.0 var 'one?
-    ] passed
+    ] => not? passed
     
     ; for :rational
     a: to :rational [1 1]
-    ensure -> all? @[
+    ensure -> not? every? @[
         -> notEqual? a null                     -> notEqual? a true
         -> notEqual? a false                    -> notEqual? a to :complex [1 1]
         -> notEqual? a 1.0.0                    -> notEqual? a :rational
@@ -1737,10 +1737,10 @@ do [
         -> notEqual? @[a] [(1)]                 -> notEqual? a [1]
         -> notEqual? a 1..1                     -> notEqual? a #[one: 1]
         -> notEqual? to :rational [1 1] #black  -> notEqual? a var 'one?
-    ] passed
+    ] => not? passed
     
     ; for :quantity
-    ensure -> all? @[
+    ensure -> not? every? @[
         -> notEqual? 1:usd null                    -> notEqual? 1:usd true
         -> notEqual? 1:usd false                   -> notEqual? 1:usd to :complex [1 1]
         -> notEqual? 1:usd 1.0.0                   -> notEqual? 1:usd :quantity
@@ -1755,9 +1755,9 @@ do [
         -> notEqual? [1:usd] [(1)]                 -> notEqual? 1:usd [1:usd]
         -> notEqual? 1:usd 1..1                    -> notEqual? 1:usd #[one: 1:usd]
         -> notEqual? 0:usd #black                  -> notEqual? 1:usd var 'one?
-    ] passed
+    ] => not? passed
     
-    ensure -> all? @[ 
+    ensure -> not? every? @[ 
         -> notEqual? 1:m null              -> notEqual? 1:m true
         -> notEqual? 1:m false             -> notEqual? 1:m to :complex [1 1]
         -> notEqual? 1:m 1.0.0             -> notEqual? 1:m :quantity
@@ -1772,9 +1772,9 @@ do [
         -> notEqual? [1:m] [(1)]           -> notEqual? 1:m [1:m]
         -> notEqual? 1:m 1..1              -> notEqual? 1:m #[one: 1:m]
         -> notEqual? 0:m #black            -> notEqual? 1:m var 'one?
-    ] passed
+    ] => not? passed
     
-    ensure -> all? @[ 
+    ensure -> not? every? @[ 
         -> notEqual? 1:m3 null                 -> notEqual? 1:m3 true
         -> notEqual? 1:m3 false                -> notEqual? 1:m3 to :complex [1 1]
         -> notEqual? 1:m3 1.0.0                -> notEqual? 1:m3 :quantity
@@ -1789,9 +1789,9 @@ do [
         -> notEqual? [1:m3] [(1)]              -> notEqual? 1:m3 [1:m3]
         -> notEqual? 1:m3 1..1                 -> notEqual? 1:m3 #[one: 1:m3]
         -> notEqual? 0:m3 #black               -> notEqual? 1:m3 var 'one?
-    ] passed
+    ] => not? passed
     
-    ensure -> all? @[ 
+    ensure -> not? every? @[ 
         -> notEqual? 1:c null              -> notEqual? 1:c true
         -> notEqual? 1:c false             -> notEqual? 1:c to :complex [1 1]
         -> notEqual? 1:c 1.0.0             -> notEqual? 1:c :quantity
@@ -1806,10 +1806,10 @@ do [
         -> notEqual? [1:c] [(1)]           -> notEqual? 1:c [1:c]
         -> notEqual? 1:c 1..1              -> notEqual? 1:c #[one: 1:c]
         -> notEqual? 0:c #black            -> notEqual? 1:c var 'one?
-    ] passed
+    ] => not? passed
     
     ; for :null
-    ensure -> all? @[
+    ensure -> not? every? @[
         -> notEqual? null 0                        -> notEqual? null 0.0            
         -> notEqual? null to :rational [1 1]       -> notEqual? null true
         -> notEqual? null false                    -> notEqual? null to :complex [0 0]
@@ -1826,10 +1826,10 @@ do [
         -> notEqual? null [null]                   -> notEqual? null 0..0            
         -> notEqual? null #[null: null]            -> notEqual? null #black          
         -> notEqual? null var 'null?
-    ] passed
+    ] => not? passed
     
     ; for :logical
-    ensure -> all? @[
+    ensure -> not? every? @[
         -> notEqual? true 0                     -> notEqual? true 0.0            
         -> notEqual? true to :rational [1 1]    -> notEqual? true to :complex [1 1]
         -> notEqual? true 0.0.0                 -> notEqual? true :true
@@ -1844,9 +1844,9 @@ do [
         -> notEqual? @[true] [(true)]           -> notEqual? true [true]                   
         -> notEqual? true 0..0                  -> notEqual? true #[true: true]            
         -> notEqual? true #black                -> notEqual? true var 'true?
-    ] passed
+    ] => not? passed
     
-    ensure -> all? @[
+    ensure -> not? every? @[
         -> notEqual? false 0                        -> notEqual? false 0.0            
         -> notEqual? false to :rational [1 1]       -> notEqual? false to :complex [1 1]
         -> notEqual? false 0.0.0                    -> notEqual? false :false
@@ -1861,9 +1861,9 @@ do [
         -> notEqual? @[false] [(false)]             -> notEqual? false [false]                     
         -> notEqual? false 0..0                     -> notEqual? false #[false: false]             
         -> notEqual? false #black                   -> notEqual? false var 'false?
-    ] passed
+    ] => not? passed
     
-    ensure -> all? @[
+    ensure -> not? every? @[
         -> notEqual? maybe 0                        -> notEqual? maybe 0.0            
         -> notEqual? maybe to :rational [1 1]       -> notEqual? maybe to :complex [1 1]
         -> notEqual? maybe 0.0.0                    -> notEqual? maybe :maybe
@@ -1878,11 +1878,11 @@ do [
         -> notEqual? @[maybe] [(maybe)]             -> notEqual? maybe [maybe]
         -> notEqual? maybe 0..0                     -> notEqual? maybe #[maybe: maybe]             
         -> notEqual? maybe #black                   
-    ] passed
+    ] => not? passed
     
     ; for :complex
     a: to :complex [1 1]
-    ensure -> all? @[
+    ensure -> not? every? @[
         -> notEqual? a 1                        -> notEqual? a 1.0            
         -> notEqual? a to :rational [1 1]       -> notEqual? a null                    
         -> notEqual? a true                     -> notEqual? a false
@@ -1898,10 +1898,10 @@ do [
         -> notEqual? @[a] [(1)]                 -> notEqual? a [1]
         -> notEqual? a 1..1                     -> notEqual? a #[one: 1]
         -> notEqual? to :complex [0 0] #black   -> notEqual? a var 'one?
-    ] passed
+    ] => not? passed
     
     ; for :version
-    ensure -> all? @[
+    ensure -> not? every? @[
         -> notEqual? 1.0.0 1                        -> notEqual? 1.0.0 1.0          
         -> notEqual? 1.0.0 to :rational [1 1]       -> notEqual? 1.0.0 null                    
         -> notEqual? 1.0.0 true                     -> notEqual? 1.0.0 false                   
@@ -1917,10 +1917,10 @@ do [
         -> notEqual? [1.0.0] [(1.0.0)]              -> notEqual? 1.0.0 [1.0.0]
         -> notEqual? 1.0.0 1..1                     -> notEqual? 1.0.0 #[one: 1.0.0]
         -> notEqual? 0.0.0 #black                   -> notEqual? 1.0.0 var 'version?
-    ] passed
+    ] => not? passed
     
     ; for :type
-    ensure -> all? @[
+    ensure -> not? every? @[
         -> notEqual? :1 1                              -> notEqual? :1 1.0          
         -> notEqual? :integer 1                        -> notEqual? :floating 1.0          
         -> notEqual? :rational to :rational [1 1]      -> notEqual? :null null                    
@@ -1946,10 +1946,10 @@ do [
         -> notEqual? :dictionary #[type: :type]        -> notEqual? :type #black                      
         -> notEqual? :color #black                     -> notEqual? :type var 'type?
         -> notEqual? :function var 'one?
-    ] passed
+    ] => not? passed
     
     ; for :char
-    ensure -> all? @[
+    ensure -> not? every? @[
         -> notEqual? `1` 1.0          
         -> notEqual? `1` to :rational [1 1]    -> notEqual? `ø` null                    
         -> notEqual? `t` true                  -> notEqual? `f` false                   
@@ -1964,10 +1964,10 @@ do [
         -> notEqual? [`1`] [(`1`)]             -> notEqual? `a` [`a`]
         -> notEqual? `1` 1..1                  -> notEqual? `a` #[a: `a`]
         -> notEqual? `1` #black                -> notEqual? `a` var 'char?
-    ] passed
+    ] => not? passed
     
     ; for :string
-    ensure -> all? @[
+    ensure -> not? every? @[
         -> notEqual? "1" 1                             -> notEqual? "1/1" to :rational [1 1]          
         -> notEqual? "1.0" 1.0                         -> notEqual? "null" null                    
         -> notEqual? "" null                           -> notEqual? "true" true                  
@@ -1982,10 +1982,10 @@ do [
         -> notEqual? "1" 1..1                          -> notEqual? "a" #[a: "a"]
         -> notEqual? "#000000" #black                  -> notEqual? "000000" #black              
         -> notEqual? "" var 'char?
-    ] passed
+    ] => not? passed
     
     ; for :word
-    ensure -> all? @[        
+    ensure -> not? every? @[        
         -> notEqual? [rational] @[to :rational [1 1]]      -> notEqual? [null]  @[null]                    
         -> notEqual? [true]     @[true]                    -> notEqual? [false] @[false]                   
         -> notEqual? [complex]  @[to :complex [1.0 1.0]]   -> notEqual? [type]  @[:floating]  
@@ -1996,10 +1996,10 @@ do [
         -> notEqual? [range]    @[range 1 1]               -> notEqual? [a]     @[#[a: `a`]]               
         -> notEqual? [black]    @[#black ]                 -> notEqual? [word]  @[var 'word?]              
         -> notEqual? [var]      @[var 'word?]
-    ] passed
+    ] => not? passed
     
     ; for :label
-    ensure -> all? @[
+    ensure -> not? every? @[
         -> notEqual? [rational:] @[to :rational [1 1]]      -> notEqual? [null:]     @[null]                                                        
         -> notEqual? [true:]     @[true]                    -> notEqual? [false:]    @[false]                   
         -> notEqual? [complex:]  @[to :complex [1.0 1.0]]   -> notEqual? [floating:]  [:floating]
@@ -2009,11 +2009,11 @@ do [
         -> notEqual? [label:]     [[label:]]                -> notEqual? [a:]        @[#[a: `a`]]               
         -> notEqual? [black:]     [#black ]                 -> notEqual? [var:]      @[var 'word?]
         -> notEqual? [word:]     @[var 'word?]
-    ] passed
+    ] => not? passed
     
     ; for :literal
     ; NOTE: technically, '+ is not a :literal, but a :symbolLiteral type ;)
-    ensure -> all? @[
+    ensure -> not? every? @[
         -> notEqual? 'integer  1                   -> notEqual? 'floating 1.0
         -> notEqual? 'rational to :rational [1 1]  -> notEqual? 'one      to :rational [1 1]
         -> notEqual? 'null     null                -> notEqual? 'true     true    
@@ -2025,10 +2025,10 @@ do [
         -> notEqual? 'range    1..1                -> notEqual? 'a        #[a: 'a]                
         -> notEqual? 'black    #black              -> notEqual? 'word?    var 'word?              
         -> notEqual? 'var      var 'var
-    ] passed
+    ] => not? passed
     
     ; for :attribute
-    ensure -> all? @[           
+    ensure -> not? every? @[           
         -> notEqual? [.rational] @[to :rational [1 1]]      -> notEqual? [.null]     @[null]                  
         -> notEqual? [.true]     @[true]                    -> notEqual? [.false]    @[false]                 
         -> notEqual? [.complex]  @[to :complex [1.0 1.0]]   -> notEqual? [.floating] @[:floating]                          
@@ -2036,10 +2036,10 @@ do [
         -> notEqual? [.word]      [(.word)]                 -> notEqual? [.label]    @[[.label]]                               
         -> notEqual? [.a]        @[#[a: `a`]]               -> notEqual? [.black]    @[#black]                
         -> notEqual? [.var]      @[var 'word?]              -> notEqual? [.word]     @[var 'word?]
-    ] passed
+    ] => not? passed
     
     ; for :attributeLabel
-    ensure -> all? @[           
+    ensure -> not? every? @[           
         -> notEqual? [.rational:] @[to :rational [1 1]]    -> notEqual? [.null:]     @[null]                  
         -> notEqual? [.true:]     @[true]                  -> notEqual? [.false:]    @[false]                 
         -> notEqual? [.complex:]  @[to :complex [1.0 1.0]] -> notEqual? [.floating:]  [:floating]             
@@ -2049,16 +2049,16 @@ do [
         -> notEqual? [.label:]    @[[label:]]              -> notEqual? [.a:]        @[#[a: `a`]]             
         -> notEqual? [.black:]     [#black]                -> notEqual? [.var:]      @[var 'word?]            
         -> notEqual? [.word:]     @[var 'word?]
-    ] passed
+    ] => not? passed
     
     ; for :path & :pathLabel
-    ensure -> all? @[
+    ensure -> not? every? @[
         -> notEqual? [a\b:] [a\b]
         -> notEqual? [a\b] [a\b:]
-    ] passed
+    ] => not? passed
     
     ; for :regex
-    ensure -> all? @[
+    ensure -> not? every? @[
         -> notEqual? {/1/} 1                               -> notEqual? {/1/1/} to :rational [1 1]          
         -> notEqual? {/1.0/} 1.0                           -> notEqual? {/null/} null                    
         -> notEqual? {//} null                             -> notEqual? {/true/} true                  
@@ -2073,10 +2073,10 @@ do [
         -> notEqual? {/a/} #[a: "a"]                       -> notEqual? {/#000000/} #black                  
         -> notEqual? {/000000/} #black                     -> notEqual? {/var/} var 'regex?
         -> notEqual? {/regex?/} var 'regex?
-    ] passed
+    ] => not? passed
     
     ; for :binary
-    ensure -> all? @[
+    ensure -> not? every? @[
         -> notEqual? to :binary 1 1                    -> notEqual? to :binary 1 1.0                
         -> notEqual? to :binary 1 to :rational [1 1]   -> notEqual? to :binary 1 1:usd                
         -> notEqual? to :binary 1 1:m                  -> notEqual? to :binary 1 1:m3                 
@@ -2090,10 +2090,10 @@ do [
         -> notEqual? @[to :binary 1] [one]             -> notEqual? @[to :binary 1] [binary:]         
         -> notEqual? @[to :binary 1][.binary]          -> notEqual? @[to :binary 1] [.binary:]        
         -> notEqual? to :binary 1 {/01/}               -> notEqual? to :binary 1    {/1/}
-    ] passed
+    ] => not? passed
     
     ; for :range
-    ensure -> all? @[
+    ensure -> not? every? @[
         -> notEqual? 1..1 1                        -> notEqual? 1..1 1.0
         -> notEqual? 1..1 a: to :rational [1 1]    -> notEqual? 1..1 1:usd
         -> notEqual? 1..1 1:m                      -> notEqual? 1..1 1:m3  
@@ -2104,7 +2104,7 @@ do [
         -> notEqual? 1..1 :range                   -> notEqual? 1..1 `1` 
         -> notEqual? 1..1 "1"                      -> notEqual? 1..1 'range  
         -> notEqual? 1..1 {/1/}
-    ] passed
+    ] => not? passed
     
     ; for :dictionary, :object & :date
     define :person [name surname][]
@@ -2112,15 +2112,15 @@ do [
     a: to :person ["Walter" "Pinkman"]
     b: to :date .format: "YYYY MMM dd" "2023 Jan 15"
     
-    ensure -> all? @[
+    ensure -> not? every? @[
         -> notEqual? #[name: "Walter" surname: "Pinkman"] a
         -> notEqual? a #[name: "Walter" surname: "Pinkman"]
         -> notEqual? #[year: 2023 day: 15 Month: "January"] b
         -> notEqual? b #[year: 2023 day: 15 Month: "January"]
-    ] passed
+    ] => not? passed
     
     ; for :color
-    ensure -> all? @[
+    ensure -> not? every? @[
         -> notEqual? #black 0                  -> notEqual? #black 0.0
         -> notEqual? #black to :rational [1 1] -> notEqual? #black 0:usd 
         -> notEqual? #black 0:m                -> notEqual? #black 0:m3
@@ -2133,10 +2133,10 @@ do [
         -> notEqual? #black 'black             -> notEqual? [#black] [.black]
         -> notEqual? [#black] [.black:]        -> notEqual? #black  {/#000000/}                 
         -> notEqual? #black{/000000/} 
-    ] passed
+    ] => not? passed
     
     ; for :function
-    ensure -> all? @[
+    ensure -> not? every? @[
         -> notEqual? var 'null?     null       -> notEqual? var 'true?    true  
         -> notEqual? var 'false?    false
         -> notEqual? var 'version?  1.0.0      -> notEqual? var 'type?    :type 
@@ -2147,7 +2147,7 @@ do [
         -> notEqual? @[var 'word?]  [.var]     -> notEqual? @[var 'word?] [.word]    
         -> notEqual? @[var 'word?]  [.var:]    -> notEqual? @[var 'word?] [.word:]   
         -> notEqual? var 'regex?    {/var/}    -> notEqual? var 'regex?   {/regex?/} 
-    ] passed
+    ] => not? passed
     
     
     
