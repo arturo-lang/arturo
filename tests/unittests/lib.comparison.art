@@ -613,25 +613,30 @@ do [
     ;     the Comparison module
     
     ; for :integer
-    ensure -> not? all? @[
-        -> equal? 1 null            -> equal? 1 true
-        -> equal? 1 false           -> equal? 1 to :complex [1 1]
-        -> equal? 1 1.0.0           -> equal? 1 :integer
-        -> equal? 1 `1`             -> equal? 1 "1"
-        -> equal? [1] [one]         -> equal? [1] [one:]
-        -> equal? [1 1] [one: 1]    -> equal? 1 '1
-        -> equal? [1] [.1]          -> equal? [1] [.1:]
-        -> equal? [1 1] [.1: 1]     -> equal? [1] [one\1]
-        -> equal? [1] [one\1:]    -> equal? [1 1] [one\1: 1]
-        -> equal? [1] [+]           -> equal? 1 {/1/}
-        -> equal? 1 to :binary 1    -> equal? 1 to :binary 1
-        -> equal? [1] [(1)]         -> equal? 1 [1]
-        -> equal? 1 1..1            -> equal? 1 #[one: 1]
-        -> equal? 0 #black          -> equal? 1 var 'one?
-    ] passed
+    
+    ensure -> not? every? @[
+        -> equal? 1 1
+    ] => not?
+    
+    ensure -> every? @[
+        -> equal? 1 null           -> equal? 1 true
+        -> equal? 1 false          -> equal? 1 to :complex [1 1]
+        -> equal? 1 1.0.0          -> equal? 1 :integer
+        -> equal? 1 `1`            -> equal? 1 "1"
+        -> equal? [1] [one]        -> equal? [1] [one:]
+        -> equal? [1 1] [one: 1]   -> equal? 1 '1
+        -> equal? [1] [.1]         -> equal? [1] [.1:]
+        -> equal? [1 1] [.1: 1]    -> equal? [1] [one\1]
+        -> equal? [1] [one\1:]     -> equal? [1 1] [one\1: 1]
+        -> equal? [1] [+]          -> equal? 1 {/1/}
+        -> equal? 1 to :binary 1   -> equal? 1 to :binary 1
+        -> equal? [1] [(1)]        -> equal? 1 [1]
+        -> equal? 1 1..1           -> equal? 1 #[one: 1]
+        -> equal? 0 #black         -> equal? 1 var 'one?
+    ] => not? passed
     
     ; for :floating
-    ensure -> not? all? @[
+    ensure -> every? @[
         -> equal? 1.0 null              -> equal? 1.0 true
         -> equal? 1.0 false             -> equal? 1.0 to :complex [1.0 1.0]
         -> equal? 1.0 1.0.0             -> equal? 1.0 :floating
@@ -646,11 +651,11 @@ do [
         -> equal? [1.0] [(1.0)]         -> equal? 1.0 [1]
         -> equal? 1.0 1..1              -> equal? 1.0 #[one: 1.0]
         -> equal? 0.0 #black            -> equal? 1.0 var 'one?
-    ] passed
+    ] => not? passed
     
     ; for :rational
     a: to :rational [1 1]
-    ensure -> not? all? @[
+    ensure -> every? @[
         -> equal? a null                    -> equal? a true
         -> equal? a false                   -> equal? a to :complex [1 1]
         -> equal? a 1.0.0                   -> equal? a :rational
@@ -665,10 +670,10 @@ do [
         -> equal? @[a] [(1)]                -> equal? a [1]
         -> equal? a 1..1                    -> equal? a #[one: 1]
         -> equal? to :rational [1 1] #black -> equal? a var 'one?
-    ] passed
+    ] => not? passed
     
     ; for :quantity
-    ensure -> not? all? @[
+    ensure -> every? @[
         -> equal? 1:usd null                    -> equal? 1:usd true
         -> equal? 1:usd false                   -> equal? 1:usd to :complex [1 1]
         -> equal? 1:usd 1.0.0                   -> equal? 1:usd :quantity
@@ -683,9 +688,9 @@ do [
         -> equal? [1:usd] [(1)]                 -> equal? 1:usd [1:usd]
         -> equal? 1:usd 1..1                    -> equal? 1:usd #[one: 1:usd]
         -> equal? 0:usd #black                  -> equal? 1:usd var 'one?
-    ] passed
+    ] => not? passed
     
-    ensure -> not? all? @[ 
+    ensure -> every? @[ 
         -> equal? 1:m null              -> equal? 1:m true
         -> equal? 1:m false             -> equal? 1:m to :complex [1 1]
         -> equal? 1:m 1.0.0             -> equal? 1:m :quantity
@@ -700,9 +705,9 @@ do [
         -> equal? [1:m] [(1)]           -> equal? 1:m [1:m]
         -> equal? 1:m 1..1              -> equal? 1:m #[one: 1:m]
         -> equal? 0:m #black            -> equal? 1:m var 'one?
-    ] passed
+    ] => not? passed
     
-    ensure -> not? all? @[ 
+    ensure -> every? @[ 
         -> equal? 1:m3 null                 -> equal? 1:m3 true
         -> equal? 1:m3 false                -> equal? 1:m3 to :complex [1 1]
         -> equal? 1:m3 1.0.0                -> equal? 1:m3 :quantity
@@ -717,9 +722,9 @@ do [
         -> equal? [1:m3] [(1)]              -> equal? 1:m3 [1:m3]
         -> equal? 1:m3 1..1                 -> equal? 1:m3 #[one: 1:m3]
         -> equal? 0:m3 #black               -> equal? 1:m3 var 'one?
-    ] passed
+    ] => not? passed
     
-    ensure -> not? all? @[ 
+    ensure -> every? @[ 
         -> equal? 1:c null              -> equal? 1:c true
         -> equal? 1:c false             -> equal? 1:c to :complex [1 1]
         -> equal? 1:c 1.0.0             -> equal? 1:c :quantity
@@ -734,10 +739,10 @@ do [
         -> equal? [1:c] [(1)]           -> equal? 1:c [1:c]
         -> equal? 1:c 1..1              -> equal? 1:c #[one: 1:c]
         -> equal? 0:c #black            -> equal? 1:c var 'one?
-    ] passed
+    ] => not? passed
     
     ; for :null
-    ensure -> not? all? @[
+    ensure -> every? @[
         -> equal? null 0                        -> equal? null 0.0            
         -> equal? null to :rational [1 1]       -> equal? null true
         -> equal? null false                    -> equal? null to :complex [0 0]
@@ -754,10 +759,10 @@ do [
         -> equal? null [null]                   -> equal? null 0..0            
         -> equal? null #[null: null]            -> equal? null #black          
         -> equal? null var 'null?
-    ] passed
+    ] => not? passed
     
     ; for :logical
-    ensure -> not? all? @[
+    ensure -> every? @[
         -> equal? true 0                        -> equal? true 0.0            
         -> equal? true to :rational [1 1]       -> equal? true to :complex [0 0]
         -> equal? true 0.0.0                    -> equal? true :true
@@ -772,9 +777,9 @@ do [
         -> equal? @[true] [(true)]              -> equal? true [true]                   
         -> equal? true 0..0                     -> equal? true #[true: true]            
         -> equal? true #black                   -> equal? true var 'true?
-    ] passed
+    ] => not? passed
     
-    ensure -> not? all? @[
+    ensure -> every? @[
         -> equal? false 0                           -> equal? false 0.0            
         -> equal? false to :rational [1 1]          -> equal? false to :complex [0 0]
         -> equal? false 0.0.0                       -> equal? false :false
@@ -789,9 +794,9 @@ do [
         -> equal? @[false] [(false)]                -> equal? false [false]                     
         -> equal? false 0..0                        -> equal? false #[false: false]             
         -> equal? false #black                      -> equal? false var 'false?
-    ] passed
+    ] => not? passed
     
-    ensure -> not? all? @[
+    ensure -> every? @[
         -> equal? maybe 0                           -> equal? maybe 0.0            
         -> equal? maybe to :rational [1 1]          -> equal? maybe to :complex [0 0]
         -> equal? maybe 0.0.0                       -> equal? maybe :maybe
@@ -805,12 +810,12 @@ do [
         -> equal? maybe to :binary 0                -> equal? maybe to :binary 0
         -> equal? @[maybe] [(maybe)]                -> equal? maybe [maybe]
         -> equal? maybe 0..0                        -> equal? maybe #[maybe: maybe]             
-        -> equal? maybe #black                      -> equal? maybe var 'maybe?
-    ] passed
+        -> equal? maybe #black                      
+    ] => not? passed
     
     ; for :complex
     a: to :complex [1 1]
-    ensure -> not? all? @[
+    ensure -> every? @[
         -> equal? a 1                       -> equal? a 1.0            
         -> equal? a to :rational [1 1]      -> equal? a null                    
         -> equal? a true                    -> equal? a false
@@ -826,10 +831,10 @@ do [
         -> equal? @[a] [(1)]                -> equal? a [1]
         -> equal? a 1..1                    -> equal? a #[one: 1]
         -> equal? to :complex [0 0] #black  -> equal? a var 'one?
-    ] passed
+    ] => not? passed
     
     ; for :version
-    ensure -> not? all? @[
+    ensure -> every? @[
         -> equal? 1.0.0 1                       -> equal? 1.0.0 1.0          
         -> equal? 1.0.0 to :rational [1 1]      -> equal? 1.0.0 null                    
         -> equal? 1.0.0 true                    -> equal? 1.0.0 false                   
@@ -845,10 +850,10 @@ do [
         -> equal? [1.0.0] [(1.0.0)]             -> equal? 1.0.0 [1.0.0]
         -> equal? 1.0.0 1..1                    -> equal? 1.0.0 #[one: 1.0.0]
         -> equal? 0.0.0 #black                  -> equal? 1.0.0 var 'version?
-    ] passed
+    ] => not? passed
     
     ; for :type
-    ensure -> not? all? @[
+    ensure -> every? @[
         -> equal? :1 1                              -> equal? :1 1.0          
         -> equal? :integer 1                        -> equal? :floating 1.0          
         -> equal? :rational to :rational [1 1]      -> equal? :null null                    
@@ -874,10 +879,10 @@ do [
         -> equal? :dictionary #[type: :type]        -> equal? :type #black                      
         -> equal? :color #black                     -> equal? :type var 'type?
         -> equal? :function var 'one?
-    ] passed
+    ] => not? passed
     
     ; for :char
-    ensure -> not? all? @[
+    ensure -> every? @[
         -> equal? `1` 1.0          
         -> equal? `1` to :rational [1 1]    -> equal? `ø` null                    
         -> equal? `t` true                  -> equal? `f` false                   
@@ -892,10 +897,10 @@ do [
         -> equal? [`1`] [(`1`)]             -> equal? `a` [`a`]
         -> equal? `1` 1..1                  -> equal? `a` #[a: `a`]
         -> equal? `1` #black                -> equal? `a` var 'char?
-    ] passed
+    ] => not? passed
     
     ; for :string
-    ensure -> not? all? @[
+    ensure -> every? @[
         -> equal? "1" 1                             -> equal? "1/1" to :rational [1 1]          
         -> equal? "1.0" 1.0                         -> equal? "null" null                    
         -> equal? "" null                           -> equal? "true" true                  
@@ -910,10 +915,10 @@ do [
         -> equal? "1" 1..1                          -> equal? "a" #[a: "a"]
         -> equal? "#000000" #black                  -> equal? "000000" #black              
         -> equal? "" var 'char?
-    ] passed
+    ] => not? passed
     
     ; for :word
-    ensure -> not? all? @[        
+    ensure -> every? @[        
         -> equal? [rational] @[to :rational [1 1]]      -> equal? [null]  @[null]                    
         -> equal? [true]     @[true]                    -> equal? [false] @[false]                   
         -> equal? [complex]  @[to :complex [1.0 1.0]]   -> equal? [type]  @[:floating]  
@@ -924,10 +929,10 @@ do [
         -> equal? [range]    @[range 1 1]               -> equal? [a]     @[#[a: `a`]]               
         -> equal? [black]    @[#black ]                 -> equal? [word]  @[var 'word?]              
         -> equal? [var]      @[var 'word?]
-    ] passed
+    ] => not? passed
     
     ; for :label
-    ensure -> not? all? @[
+    ensure -> every? @[
         -> equal? [rational:] @[to :rational [1 1]]     -> equal? [null:]     @[null]                                                        
         -> equal? [true:]     @[true]                   -> equal? [false:]    @[false]                   
         -> equal? [complex:]  @[to :complex [1.0 1.0]]  -> equal? [floating:] @[:floating]
@@ -937,11 +942,11 @@ do [
         -> equal? [label:]    @[[label:]]               -> equal? [a:]        @[#[a: `a`]]               
         -> equal? [black:]    @[#black ]                -> equal? [var:]      @[var 'word?]
         -> equal? [word:]     @[var 'word?]
-    ] passed
+    ] => not? passed
     
     ; for :literal
     ; NOTE: technically, '+ is not a :literal, but a :symbolLiteral type ;)
-    ensure -> not? all? @[
+    ensure -> every? @[
         -> equal? 'integer  1                   -> equal? 'floating 1.0
         -> equal? 'rational to :rational [1 1]  -> equal? 'one      to :rational [1 1]
         -> equal? 'null     null                -> equal? 'true     true    
@@ -953,10 +958,10 @@ do [
         -> equal? 'range    1..1                -> equal? 'a        #[a: 'a]                
         -> equal? 'black    #black              -> equal? 'word?    var 'word?              
         -> equal? 'var      var 'var
-    ] passed
+    ] => not? passed
     
     ; for :attribute
-    ensure -> not? all? @[           
+    ensure -> every? @[           
         -> equal? [.rational] @[to :rational [1 1]]    -> equal? [.null]     @[null]                  
         -> equal? [.true]     @[true]                  -> equal? [.false]    @[false]                 
         -> equal? [.complex]  @[to :complex [1.0 1.0]] -> equal? [.floating] @[:floating]                          
@@ -964,10 +969,10 @@ do [
         -> equal? [.word]      [(.word:)]              -> equal? [.label]    @[[.label]]                               
         -> equal? [.a]        @[#[a: `a`]]             -> equal? [.black]    @[#black]                
         -> equal? [.var]      @[var 'word?]            -> equal? [.word]     @[var 'word?]
-    ] passed
+    ] => not? passed
     
     ; for :attributeLabel
-    ensure -> not? all? @[           
+    ensure -> every? @[           
         -> equal? [.rational:] @[to :rational [1 1]]    -> equal? [.null:]     @[null]                  
         -> equal? [.true:]     @[true]                  -> equal? [.false:]    @[false]                 
         -> equal? [.complex:]  @[to :complex [1.0 1.0]] -> equal? [.floating:] @[:floating]             
@@ -977,16 +982,16 @@ do [
         -> equal? [.label:]    @[[label:]]              -> equal? [.a:]        @[#[a: `a`]]             
         -> equal? [.black:]    @[#black]                -> equal? [.var:]      @[var 'word?]            
         -> equal? [.word:]     @[var 'word?]
-    ] passed
+    ] => not? passed
     
     ; for :path & :pathLabel
-    ensure -> not? all? @[
+    ensure -> every? @[
         -> equal? [a\b:] [a\b]
         -> equal? [a\b] [a\b:]
-    ] passed
+    ] => not? passed
 
     ; for :regex
-    ensure -> not? all? @[
+    ensure -> every? @[
         -> equal? {/1/} 1                               -> equal? {/1/1/} to :rational [1 1]          
         -> equal? {/1.0/} 1.0                           -> equal? {/null/} null                    
         -> equal? {//} null                             -> equal? {/true/} true                  
@@ -1001,10 +1006,10 @@ do [
         -> equal? {/a/} #[a: "a"]                       -> equal? {/#000000/} #black                  
         -> equal? {/000000/} #black                     -> equal? {/var/} var 'regex?
         -> equal? {/regex?/} var 'regex?
-    ] passed
+    ] => not? passed
     
     ; for :binary
-    ensure -> not? all? @[
+    ensure -> every? @[
         -> equal? to :binary 1 1                    -> equal? to :binary 1 1.0                
         -> equal? to :binary 1 to :rational [1 1]   -> equal? to :binary 1 1:usd                
         -> equal? to :binary 1 1:m                  -> equal? to :binary 1 1:m3                 
@@ -1018,10 +1023,10 @@ do [
         -> equal? @[to :binary 1] [one]             -> equal? @[to :binary 1] [binary:]         
         -> equal? @[to :binary 1][.binary]          -> equal? @[to :binary 1] [.binary:]        
         -> equal? to :binary 1 {/01/}               -> equal? to :binary 1    {/1/}
-    ] passed
+    ] => not? passed
     
     ; for :range
-    ensure -> not? all? @[
+    ensure -> every? @[
         -> equal? 1..1 1                        -> equal? 1..1 1.0
         -> equal? 1..1 a: to :rational [1 1]    -> equal? 1..1 1:usd
         -> equal? 1..1 1:m                      -> equal? 1..1 1:m3  
@@ -1032,7 +1037,7 @@ do [
         -> equal? 1..1 :range                   -> equal? 1..1 `1` 
         -> equal? 1..1 "1"                      -> equal? 1..1 'range  
         -> equal? 1..1 {/1/}
-    ] passed
+    ] => not? passed
     
     ; for :dictionary, :object & :date
     define :person [name surname][]
@@ -1040,15 +1045,15 @@ do [
     a: to :person ["Walter" "Pinkman"]
     b: to :date .format: "YYYY MMM dd" "2023 Jan 15"
     
-    ensure -> not? all? @[
+    ensure -> every? @[
         -> equal? #[name: "Walter" surname: "Pinkman"] a
         -> equal? a #[name: "Walter" surname: "Pinkman"]
         -> equal? #[year: 2023 day: 15 Month: "January"] b
         -> equal? b #[year: 2023 day: 15 Month: "January"]
-    ] passed
+    ] => not? passed
     
     ; for :color
-    ensure -> not? all? @[
+    ensure -> every? @[
         -> equal? #black 0                  -> equal? #black 0.0
         -> equal? #black to :rational [1 1] -> equal? #black 0:usd 
         -> equal? #black 0:m                -> equal? #black 0:m3
@@ -1061,10 +1066,10 @@ do [
         -> equal? #black 'black             -> equal? [#black] [.black]
         -> equal? [#black] [.black:]        -> equal? #black  {/#000000/}                 
         -> equal? #black{/000000/} 
-    ] passed
+    ] => not? passed
     
     ; for :function
-    ensure -> not? all? @[
+    ensure -> every? @[
         -> equal? var 'null?     null       -> equal? var 'true?    true  
         -> equal? var 'false?    false 
         -> equal? var 'version?  1.0.0      -> equal? var 'type?    :type 
@@ -1075,7 +1080,7 @@ do [
         -> equal? @[var 'word?]  [.var]     -> equal? @[var 'word?] [.word]    
         -> equal? @[var 'word?]  [.var:]    -> equal? @[var 'word?] [.word:]   
         -> equal? var 'regex?    {/var/}    -> equal? var 'regex?   {/regex?/} 
-    ] passed
+    ] => not? passed
     
 ]
 
@@ -1873,7 +1878,6 @@ do [
         -> notEqual? @[maybe] [(maybe)]             -> notEqual? maybe [maybe]
         -> notEqual? maybe 0..0                     -> notEqual? maybe #[maybe: maybe]             
         -> notEqual? maybe #black                   
-        ; -> notEqual? maybe var 'maybe?
     ] passed
     
     ; for :complex
