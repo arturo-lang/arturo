@@ -126,11 +126,11 @@ proc `==`*(a, b: VUnit): bool {.borrow.}
 # Compile-time helpers
 #=======================================
 
-proc Define*(tp: UnitType, al: string, rat: float = 1.0, sym: string | UnitSymbolKind = Lowercase): (UnitType, UnitSpec) {.compileTime.} =
+proc Define*(unit: UnitType, al: string, rat: float = 1.0, sym: string | UnitSymbolKind = Lowercase): (UnitType, UnitSpec) {.compileTime.} =
     when sym is UnitSymbolKind:
-        return (tp, UnitSpec(alias: al.toUpperAscii(), symbolKind: sym, ratio: rat))
+        return (unit, UnitSpec(alias: al.toUpperAscii(), symbolKind: sym, ratio: rat))
     elif sym is string:
-        return (tp, UnitSpec(alias: al.toUpperAscii(), symbolKind: Custom, symbol: sym, ratio: rat))
+        return (unit, UnitSpec(alias: al.toUpperAscii(), symbolKind: Custom, symbol: sym, ratio: rat))
 
 proc `||`(a, b: static[UnitType]): uint32 {.compileTime.}=
     result = (cast[uint32](ord(a)) shl 16) or
@@ -181,7 +181,7 @@ template getUnitPair(a, b: UnitType): untyped =
 template getUnitSpec(vu: UnitType): UnitSpec =
     UnitSpecs[vu]
 
-func getUnitKind*(unit: UnitType): UnitKind {.enforceNoRaises.} =
+func resolveUnitKind*(unit: UnitType): UnitKind {.enforceNoRaises.} =
     case unit:
         of AED..ZMW     :   Currency
         of M..NMI       :   Length
@@ -203,7 +203,7 @@ func getUnitKind*(unit: UnitType): UnitKind {.enforceNoRaises.} =
 func `~>`*(unit: UnitType): VUnit {.inline,enforceNoRaises.} =
     result = VUnit(
         (cast[uint32](ord(unit))) or
-        (cast[uint32](ord(getUnitKind(unit))) shl 16)
+        (cast[uint32](ord(resolveUnitKind(unit))) shl 16)
     )
 
 template unit*(vunit: VUnit): UnitType =
