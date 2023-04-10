@@ -2318,6 +2318,16 @@ do [
     ensure -> not? same? maybe false
     passed
     
+    topic « same? - :complex
+    
+    ensure -> same? to :complex [0 2] ((to :complex [1 2]) - 1) 
+    passed
+    
+    ensure -> not? same? to :complex [1 2] to :complex @[neg 1 2] 
+    ensure -> not? same? to :complex [1 2] 1
+    ensure -> not? same? 1 to :complex [1 2]
+    passed
+    
     
 ]
 
