@@ -2349,6 +2349,19 @@ do [
     ensure -> not? same? :integer :floating
     passed
     
+    topic « same? - :char
+    
+    ensure -> same? `a` `a`
+    passed
+    
+    ensure -> not? same? `a` "a" 
+    ensure -> not? same? `a` `b`
+    ensure -> not? same? `1` 1
+    ensure -> not? same? "a" `a` 
+    ensure -> not? same? `b` `a`
+    ensure -> not? same? 1   `1`
+    passed 
+    
     
 ]
 
