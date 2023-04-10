@@ -2287,6 +2287,19 @@ do [
     ensure -> not? same? 1:f 1:m2
     passed
     
+    topic « same? - :null
+    
+    ensure -> same? null null
+    ensure -> same? null ø
+    ensure -> same? ø ø
+    ensure -> same? ø null
+    passed
+    
+    ensure -> not? same? ø 1
+    ensure -> not? same? ø 1.0
+    ensure -> not? same? ø "ø"
+    ensure -> not? same? ø `ø`
+    passed
     
 ]
 
