@@ -2162,7 +2162,33 @@ topic « same?
 do [
     
     
+    topic « same? - :integer :floating :rational
     
+    ensure -> same? 1 1
+    passed
+    
+    ensure -> not? same? 1 2
+    ensure -> not? same? 1 1.0
+    ensure -> not? same? 1 to :rational @[1 1]
+    ensure -> not? same? 1 to :rational @[5 5]
+    passed
+    
+    ensure -> same? 1.0 1.0
+    passed
+    
+    ensure -> not? same? 1.0 2.0
+    ensure -> not? same? 1.0 2
+    ensure -> not? same? 1.0 to :rational @[1 1]
+    ensure -> not? same? 1.0 to :rational @[5 5]
+    passed
+    
+    ensure -> same? to :rational @[5 5] to :rational @[1 1]
+    passed
+    
+    ensure -> not? same? to :rational @[5 5] to :rational @[1 2]
+    ensure -> not? same? to :rational @[5 5] 1
+    ensure -> not? same? to :rational @[5 5] 1.0
+    passed
     
     
 ]
