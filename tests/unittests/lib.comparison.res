@@ -355,6 +355,97 @@
 >> same? - :type
 [+] passed!
 [+] passed!
+
+>> same? - :char
+[+] passed!
+[+] passed!
+
+>> same? - :string
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> same? - :word
+[+] passed!
+
+>> same? - :label
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> same? - :literal
+[+] passed!
+
+>> same? - :attribute
+[+] passed!
+
+>> same? - :attributeLabel
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> same? - :path
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> same? - :pathLabel
+[+] passed!
+
+>> same? - :symbol
+[+] passed!
+
+>> same? - :regex
+[+] passed!
+
+>> same? - :binary
+[+] passed!
+[+] passed!
+
+>> same? - :bytecode
+[+] passed!
+
+>> same? - :inline
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> same? - :block
+[+] passed!
+
+>> same? :range
+[+] passed!
+
+>> same? :dictionary
+[+] passed!
+[+] passed!
+
+>> same? - :object
+[+] passed!
+[+] passed!
+
+>> same? - :store
+[+] passed!
+[+] passed!
+
+>> same? - :color
+[+] passed!
+
+>> same? - :function
+[+] passed!
+[+] passed!
+
+>> same? - :database
+
+>> same? - :date
+[+] passed!
+[+] passed!
 false
 false
 true
