@@ -2526,6 +2526,23 @@ do [
     ensure -> not? same? {/[A-Z]/} "/[A-Z]/"
     passed
     
+    topic « same? - :binary
+    
+    ensure -> same? "48 65 6C 6C 6F 20 77 6F 72 6C 64"
+        ~{|to :binary "Hello world"|}
+    ensure -> same? "00" ~{|to :binary 0|}
+    ensure -> same? "01" ~{|to :binary 1|}
+    ensure -> same? "0A" ~{|to :binary 10|}
+    ensure -> same? "05" ~{|to :binary 5|}
+    passed
+    
+    a: to :binary 0
+    
+    ensure -> not? same? a 0
+    ensure -> not? same? "49 65 6C 6C 6F 20 77 6F 72 6C 64"
+        ~{|to :binary "Hello world"|}
+    passed
+    
     
 ]
 
