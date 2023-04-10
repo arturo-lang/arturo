@@ -2158,6 +2158,15 @@ do [
     
 ]
 
+topic « same?
+do [
+    
+    
+    
+    
+    
+]
+
 ; integer comparisons
 
 print less? 1 1
