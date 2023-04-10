@@ -60,6 +60,7 @@ do [
     ensure -> not? (to :rational @[5 5]) = to :rational @[1 2]
     passed
     
+    
     topic « equal? - :quantity
     
     ensure -> equal? 1:usd 1
@@ -158,6 +159,7 @@ do [
     ensure -> not? equal? 2:m 2:cm
     passed 
     
+    
     topic « equal? - :null
     
     ensure -> equal? null null
@@ -180,6 +182,7 @@ do [
     ensure -> not? ø = `ø`
     passed
     
+    
     topic « equal? - :logical
     
     ensure -> equal? true true
@@ -193,6 +196,7 @@ do [
     ensure -> not? true = maybe
     ensure -> not? true = false
     passed
+    
     
     topic « equal? - :complex
     
@@ -208,6 +212,7 @@ do [
     ensure -> not? 1 = to :complex [1 2]
     passed
     
+    
     topic « equal? - :version
     
     ensure -> equal? 1.2.3 1.2.3
@@ -220,6 +225,7 @@ do [
     ensure -> not? 1.2.3 = 1.2.3-dev
     passed
     
+    
     topic « equal? - :type
     
     ensure -> equal? :string type "a"
@@ -231,6 +237,7 @@ do [
     ensure -> not? equal? :string :char
     ensure -> not? equal? :integer :floating
     passed
+    
     
     topic « equal? - :char
     
@@ -251,6 +258,7 @@ do [
     ensure -> not? `b` = `a`
     ensure -> not?  1  = `1`
     passed 
+    
     
     topic « equal? - :string
     
@@ -280,6 +288,7 @@ do [
     ensure -> not? ["help"] = ['help: "help"]
     passed
     
+    
     topic « equal? - :word
     
     ensure -> equal? [word] [word]
@@ -290,6 +299,7 @@ do [
     ; ensure -> not? equal? [word] [.word]
     ensure -> not? equal? [word] [.word: word]
     passed
+    
     
     topic « equal? - :label
     
@@ -324,6 +334,7 @@ do [
     ensure -> not? equal? [label: .attr: "a"] [.attr: "a"]
     passed
     
+    
     topic « equal? - :literal
     
     ensure -> equal? 'literal 'literal
@@ -335,6 +346,7 @@ do [
     ensure -> not? equal? ['literal] [literal: 'literal]
     passed
     
+    
     topic « equal? - :attribute
     
     ensure -> equal? [.attr] [.attr]
@@ -345,6 +357,7 @@ do [
     ensure -> not? equal? [.attr] [.other]
     ensure -> not? equal? [.attr] [.attr: .attr]
     passed
+    
     
     topic « equal? - :attributeLabel
     
@@ -373,6 +386,7 @@ do [
     ensure -> not? equal? [.attr: value] [.attr: other]
     passed
     
+    
     topic « equal? - :path
     
     a: #[name: "John", surname: "Doe"]
@@ -396,6 +410,7 @@ do [
     ensure -> not? equal? [a\name] [a\surname]
     passed
     
+    
     topic « equal? - :pathLabel
        
     ensure -> equal? [a\name: "John"] [a\name: "John"]
@@ -403,6 +418,7 @@ do [
     ensure -> not? equal? [a\name: "John"] [b\name: "Jane"]
     ensure -> not? equal? [a\name: "John"] [b\name: "John"]
     passed
+    
     
     topic « equal? - :symbol
     
@@ -416,6 +432,7 @@ do [
     ensure -> not? equal? [+] ['+]
     passed
     
+    
     topic « equal? - :regex
     
     ensure -> regex? {/[A-Z]/}
@@ -424,6 +441,7 @@ do [
     ensure -> not? equal? {/[A-Z]/} {[A-Z]}
     ensure -> not? equal? {/[A-Z]/} "/[A-Z]/"
     passed
+
 
     topic « equal? - :binary
     
@@ -442,6 +460,7 @@ do [
         ~{|to :binary "Hello world"|}
     passed
 
+
     topic « equal? - :bytecode
     
     x: to :bytecode [["print"][1 112 155]]
@@ -450,6 +469,7 @@ do [
     ensure -> not? equal? x to :bytecode [["print"][2 112 155]]
     ensure -> not? equal? x [["print"][2 112 155]]
     passed
+
 
     topic « equal? - :inline
     
@@ -472,6 +492,7 @@ do [
     ensure -> not? equal? a\0 2
     passed
 
+
     topic « equal? - :block
     
     a: [1 + 1]
@@ -481,6 +502,7 @@ do [
     ensure -> not? equal? a [1 ++ 1]
     passed
     
+    
     topic « equal? :range
     
     ensure -> equal? [0 1 2 3 4 5] @0..5
@@ -488,6 +510,7 @@ do [
     ensure -> equal? @range.step: 2 0 5 @range.step: 2 0 4
     ensure -> not? equal? range.step: 2 0 5 range.step: 2 0 4
     passed
+
 
     topic « equal? :dictionary
     
@@ -503,6 +526,7 @@ do [
     ensure -> equal? a\surname "Pinkman"
     ensure -> not? equal? a\surname "White"
     passed
+
 
     topic « equal? - :object
     
@@ -527,6 +551,7 @@ do [
     a\name: "Jane"
     ensure -> equal? a to :person ["Jane" 32]
     passed
+    
     
     topic « equal? - :store
     
@@ -562,6 +587,7 @@ do [
     ensure -> not? equal? #white #black
     passed
 
+
     topic « equal? - :function
     
     ensure -> equal? var 'print var 'print
@@ -579,9 +605,10 @@ do [
     ensure -> not? equal? ~"|var 'a|" ~"|var 'b|"
     passed
 
+
     topic « equal? - :database
-    
     ; todo: test this
+
 
     topic « equal? - :date
     
@@ -1087,6 +1114,7 @@ do [
 topic « notEqual?
 do [
     
+    
     topic « notEqual? - :integer :floating :rational
     
     ensure -> not? notEqual? 1 1
@@ -1134,6 +1162,7 @@ do [
     ensure -> (to :rational @[5 5]) <> 2.0
     ensure -> (to :rational @[5 5]) <> to :rational @[1 2]
     passed
+    
     
     topic « notEqual? - :quantity
     
@@ -1233,6 +1262,7 @@ do [
     ensure -> notEqual? 2:m 2:cm
     passed 
     
+    
     topic « notEqual? - :null
     
     ensure -> not? notEqual? null null
@@ -1255,6 +1285,7 @@ do [
     ensure -> ø <> `ø`
     passed
     
+    
     topic « notEqual? - :logical
     
     ensure -> not? notEqual? true true
@@ -1268,6 +1299,7 @@ do [
     ensure -> true <> maybe
     ensure -> true <> false
     passed
+    
     
     topic « notEqual? - :complex
     
@@ -1283,6 +1315,7 @@ do [
     ensure -> 1 <> to :complex [1 2]
     passed
     
+    
     topic « notEqual? - :version
     
     ensure -> not? notEqual? 1.2.3 1.2.3
@@ -1295,6 +1328,7 @@ do [
     ensure -> 1.2.3 <> 1.2.3-dev
     passed
     
+    
     topic « notEqual? - :type
     
     ensure -> not? notEqual? :string type "a"
@@ -1306,6 +1340,7 @@ do [
     ensure -> notEqual? :string :char
     ensure -> notEqual? :integer :floating
     passed
+    
     
     topic « notEqual? - :char
     
@@ -1326,6 +1361,7 @@ do [
     ensure -> `b` <> `a`
     ensure ->  1  <> `1`
     passed 
+    
     
     topic « notEqual? - :string
     
@@ -1355,6 +1391,7 @@ do [
     ensure -> ["help"] <> ['help: "help"]
     passed
     
+    
     topic « notEqual? - :word
     
     ensure -> not? notEqual? [word] [word]
@@ -1365,6 +1402,7 @@ do [
     ; ensure -> notEqual? [word] [.word]
     ensure -> notEqual? [word] [.word: word]
     passed
+    
     
     topic « notEqual? - :label
     
@@ -1399,6 +1437,7 @@ do [
     ensure -> notEqual? [label: .attr: "a"] [.attr: "a"]
     passed
     
+    
     topic « notEqual? - :literal
     
     ensure -> not? notEqual? 'literal 'literal
@@ -1410,6 +1449,7 @@ do [
     ensure -> notEqual? ['literal] [literal: 'literal]
     passed
     
+    
     topic « notEqual? - :attribute
     
     ensure -> not? notEqual? [.attr] [.attr]
@@ -1420,6 +1460,7 @@ do [
     ensure -> notEqual? [.attr] [.other]
     ensure -> notEqual? [.attr] [.attr: .attr]
     passed
+    
     
     topic « notEqual? - :attributeLabel
     
@@ -1448,6 +1489,7 @@ do [
     ensure -> notEqual? [.attr: value] [.attr: other]
     passed
     
+    
     topic « notEqual? - :path
     
     a: #[name: "John", surname: "Doe"]
@@ -1471,6 +1513,7 @@ do [
     ensure -> notEqual? [a\name] [a\surname]
     passed
     
+    
     topic « notEqual? - :pathLabel
        
     ensure -> not? notEqual? [a\name: "John"] [a\name: "John"]
@@ -1478,6 +1521,7 @@ do [
     ensure -> notEqual? [a\name: "John"] [b\name: "Jane"]
     ensure -> notEqual? [a\name: "John"] [b\name: "John"]
     passed
+    
     
     topic « notEqual? - :symbol
     
@@ -1491,6 +1535,7 @@ do [
     ensure -> notEqual? [+] ['+]
     passed
     
+    
     topic « notEqual? - :regex
     
     ensure -> regex? {/[A-Z]/}
@@ -1499,6 +1544,7 @@ do [
     ensure -> notEqual? {/[A-Z]/} {[A-Z]}
     ensure -> notEqual? {/[A-Z]/} "/[A-Z]/"
     passed
+    
     
     topic « notEqual? - :binary
     
@@ -1517,6 +1563,7 @@ do [
         ~{|to :binary "Hello world"|}
     passed
     
+    
     topic « notEqual? - :bytecode
     
     x: to :bytecode [["print"][1 112 155]]
@@ -1525,6 +1572,7 @@ do [
     ensure -> notEqual? x to :bytecode [["print"][2 112 155]]
     ensure -> notEqual? x [["print"][2 112 155]]
     passed
+    
     
     topic « notEqual? - :inline
     
@@ -1546,6 +1594,7 @@ do [
     ensure -> notEqual? a\0 2
     passed
     
+    
     topic « notEqual? - :block
     
     a: [1 + 1]
@@ -1555,6 +1604,7 @@ do [
     ensure -> notEqual? a [1 ++ 1]
     passed
     
+    
     topic « notEqual? :range
     
     ensure -> not? notEqual? [0 1 2 3 4 5] @0..5
@@ -1562,6 +1612,7 @@ do [
     ensure -> not? notEqual? @range.step: 2 0 5 @range.step: 2 0 4
     ensure -> notEqual? range.step: 2 0 5 range.step: 2 0 4
     passed
+    
     
     topic « notEqual? :dictionary
     
@@ -1577,6 +1628,7 @@ do [
     ensure -> not? notEqual? a\surname "Pinkman"
     ensure -> notEqual? a\surname "White"
     passed
+    
     
     topic « notEqual? - :object
     
@@ -1602,6 +1654,7 @@ do [
     ensure -> not? notEqual? a to :person ["Jane" 32]
     passed
     
+    
     topic « notEqual? - :store
     
     a: store "test.db"
@@ -1626,6 +1679,7 @@ do [
     ensure -> notEqual? d c 
     passed
     
+    
     topic « notEqual? - :color
     
     ensure -> not? notEqual? #000 #black
@@ -1634,6 +1688,7 @@ do [
     ensure -> notEqual? #black #white
     ensure -> notEqual? #white #black
     passed
+    
     
     topic « notEqual? - :function
     
@@ -1652,9 +1707,10 @@ do [
     ensure -> notEqual? ~"|var 'a|" ~"|var 'b|"
     passed
     
-    topic « notEqual? - :database
     
+    topic « notEqual? - :database
     ; todo: test this
+    
     
     topic « notEqual? - :date
     
@@ -1672,6 +1728,7 @@ do [
     ensure -> not? notEqual? a\month c\month
     ensure -> notEqual? a\year c\year
     passed
+    
     
     topic « notEqual? - incompatible types
     
@@ -2152,9 +2209,7 @@ do [
         -> notEqual? @[var 'word?]  [.var]     -> notEqual? @[var 'word?] [.word]    
         -> notEqual? @[var 'word?]  [.var:]    -> notEqual? @[var 'word?] [.word:]   
         -> notEqual? var 'regex?    {/var/}    -> notEqual? var 'regex?   {/regex?/} 
-    ] => not? passed
-    
-    
+    ] => not? passed  
     
 ]
 
@@ -2190,6 +2245,7 @@ do [
     ensure -> not? same? to :rational @[5 5] 1.0
     passed
     
+    
     topic « same? - :quantity
     
     ensure -> same? 1:usd 1:usd
@@ -2199,7 +2255,6 @@ do [
     ; ensure -> same? 1:c   1:c
     ; ensure -> same? 1:f   1:f
     passed
-    
     
     ensure -> not? same? 1:usd 1
     ensure -> not? same? 1:m   1
@@ -2287,6 +2342,7 @@ do [
     ensure -> not? same? 1:f 1:m2
     passed
     
+    
     topic « same? - :null
     
     ensure -> same? null null
@@ -2300,6 +2356,7 @@ do [
     ensure -> not? same? ø "ø"
     ensure -> not? same? ø `ø`
     passed
+    
     
     topic « same? - :logical
     
@@ -2318,6 +2375,7 @@ do [
     ensure -> not? same? maybe false
     passed
     
+    
     topic « same? - :complex
     
     ensure -> same? to :complex [0 2] ((to :complex [1 2]) - 1) 
@@ -2328,6 +2386,7 @@ do [
     ensure -> not? same? 1 to :complex [1 2]
     passed
     
+    
     topic « same? - :version
     
     ensure -> same? 1.2.3 1.2.3
@@ -2336,6 +2395,7 @@ do [
     ensure -> not? same? 1.2.3 1.2.3-pre
     ensure -> not? same? 1.2.3 1.2.3-dev
     passed
+    
     
     topic « same? - :type
     
@@ -2349,6 +2409,7 @@ do [
     ensure -> not? same? :integer :floating
     passed
     
+    
     topic « same? - :char
     
     ensure -> same? `a` `a`
@@ -2361,6 +2422,7 @@ do [
     ensure -> not? same? `b` `a`
     ensure -> not? same? 1   `1`
     passed 
+    
     
     topic « same? - :string
     
@@ -2381,6 +2443,7 @@ do [
     ensure -> not? same? ["help"] ['help: "help"]
     passed
     
+    
     topic « same? - :word
     
     ensure -> same? [word] [word]
@@ -2391,6 +2454,7 @@ do [
     ; ensure -> not? same? [word] [.word]
     ensure -> not? same? [word] [.word: word]
     passed
+    
     
     topic « same? - :label
     
@@ -2425,6 +2489,7 @@ do [
     ensure -> not? same? [label: .attr: "a"] [.attr: "a"]
     passed
     
+    
     topic « same? - :literal
     
     ensure -> same? 'literal 'literal
@@ -2436,6 +2501,7 @@ do [
     ensure -> not? same? ['literal] [literal: 'literal]
     passed
     
+    
     topic « same? - :attribute
     
     ensure -> same? [.attr] [.attr]
@@ -2446,6 +2512,7 @@ do [
     ensure -> not? same? [.attr] [.other]
     ensure -> not? same? [.attr] [.attr: .attr]
     passed
+    
     
     topic « same? - :attributeLabel
     
@@ -2474,6 +2541,7 @@ do [
     ensure -> not? same? [.attr: value] [.attr: other]
     passed
     
+    
     topic « same? - :path
     
     a: #[name: "John", surname: "Doe"]
@@ -2497,6 +2565,7 @@ do [
     ensure -> not? same? [a\name] [a\surname]
     passed
     
+    
     topic « same? - :pathLabel
        
     ensure -> same? [a\name: "John"] [a\name: "John"]
@@ -2504,6 +2573,7 @@ do [
     ensure -> not? same? [a\name: "John"] [b\name: "Jane"]
     ensure -> not? same? [a\name: "John"] [b\name: "John"]
     passed
+    
     
     topic « same? - :symbol
     
@@ -2517,6 +2587,7 @@ do [
     ensure -> not? same? [+] ['+]
     passed
     
+    
     topic « same? - :regex
     
     ensure -> regex? {/[A-Z]/}
@@ -2525,6 +2596,7 @@ do [
     ensure -> not? same? {/[A-Z]/} {[A-Z]}
     ensure -> not? same? {/[A-Z]/} "/[A-Z]/"
     passed
+    
     
     topic « same? - :binary
     
@@ -2542,6 +2614,7 @@ do [
     ensure -> not? same? "49 65 6C 6C 6F 20 77 6F 72 6C 64"
         ~{|to :binary "Hello world"|}
     passed
+    
     
     topic « same? - :bytecode
     
@@ -2584,6 +2657,7 @@ do [
     ensure -> not? same? a [1 ++ 1]
     passed
     
+    
     topic « same? :range
     
     ensure -> same? [0 1 2 3 4 5] @0..5
@@ -2591,6 +2665,7 @@ do [
     ensure -> same? @range.step: 2 0 5 @range.step: 2 0 4
     ensure -> not? same? range.step: 2 0 5 range.step: 2 0 4
     passed
+    
     
     topic « same? :dictionary
     
@@ -2606,6 +2681,7 @@ do [
     ensure -> same? a\surname "Pinkman"
     ensure -> not? same? a\surname "White"
     passed
+    
     
     topic « same? - :object
     
@@ -2631,6 +2707,7 @@ do [
     ensure -> same? a to :person ["Jane" 32]
     passed
     
+    
     topic « same? - :store
     
     a: store "test.db"
@@ -2654,6 +2731,7 @@ do [
     ensure -> not? same? c d 
     ensure -> not? same? d c 
     passed
+    
     
     topic « same? - :color
     
@@ -2682,8 +2760,10 @@ do [
     ensure -> not? same? ~"|var 'a|" ~"|var 'b|"
     passed
     
+    
     topic « same? - :database
     ; todo: test this
+    
     
     topic « same? - :date
     
