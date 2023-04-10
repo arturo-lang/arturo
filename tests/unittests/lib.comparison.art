@@ -2543,6 +2543,15 @@ do [
         ~{|to :binary "Hello world"|}
     passed
     
+    topic « same? - :bytecode
+    
+    x: to :bytecode [["print"][1 112 155]]
+    
+    ensure -> same? x to :bytecode [["print"][1 112 155]]
+    ensure -> not? same? x to :bytecode [["print"][2 112 155]]
+    ensure -> not? same? x [["print"][2 112 155]]
+    passed
+    
     
 ]
 
