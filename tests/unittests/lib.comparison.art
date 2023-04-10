@@ -2655,6 +2655,15 @@ do [
     ensure -> not? same? d c 
     passed
     
+    topic « same? - :color
+    
+    ensure -> same? #000 #black
+    ensure -> same? #fff #white
+    ensure -> same? #white #white
+    ensure -> not? same? #black #white
+    ensure -> not? same? #white #black
+    passed
+    
     
 ]
 
