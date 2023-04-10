@@ -2474,6 +2474,29 @@ do [
     ensure -> not? same? [.attr: value] [.attr: other]
     passed
     
+    topic « same? - :path
+    
+    a: #[name: "John", surname: "Doe"]
+    b: @["Joe" "Jane" "Jesse"]
+    
+    ensure -> same? a\name "John" 
+    ensure -> same? a\surname "Doe" 
+    ensure -> not? same? a\name "Jane" 
+    ensure -> not? same? a\name 1
+    passed
+    
+    ensure -> same? b\0 "Joe" 
+    ensure -> same? b\1 "Jane" 
+    ensure -> same? b\2 "Jesse" 
+    ensure -> not? same? b\2 "Walter" 
+    passed
+    
+    ensure -> same? [b\0] [b\0]
+    ensure -> same? [a\name] [a\name]
+    ensure -> not? same? [b\0] [b\1]
+    ensure -> not? same? [a\name] [a\surname]
+    passed
+    
     
 ]
 
