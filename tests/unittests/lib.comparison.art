@@ -2631,6 +2631,30 @@ do [
     ensure -> same? a to :person ["Jane" 32]
     passed
     
+    topic « same? - :store
+    
+    a: store "test.db"
+    a\name: "John" a\surname: "Doe"
+    b: store "test.db"
+    b\name: "John" b\surname: "Doe"
+    c: store "test2.db"
+    c\name: "John" c\surname: "Doe"
+    d: store "test3.db"
+    d\name: "Jane" d\surname: "Doe"
+    
+    ensure -> same? a a
+    ensure -> same? a b
+    ensure -> same? b a
+    passed
+    
+    ensure -> not? same? a c 
+    ensure -> not? same? c a 
+    ensure -> not? same? a d 
+    ensure -> not? same? d a 
+    ensure -> not? same? c d 
+    ensure -> not? same? d c 
+    passed
+    
     
 ]
 
