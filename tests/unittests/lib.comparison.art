@@ -2301,6 +2301,24 @@ do [
     ensure -> not? same? ø `ø`
     passed
     
+    topic « same? - :logical
+    
+    ensure -> same? true true
+    ensure -> same? true (1 > 0)
+    ensure -> same? false false
+    ensure -> same? false (1 < 0)
+    ensure -> same? maybe maybe
+    passed
+    
+    ensure -> not? same? true maybe
+    ensure -> not? same? true false
+    ensure -> not? same? false true
+    ensure -> not? same? false maybe
+    ensure -> not? same? maybe true
+    ensure -> not? same? maybe false
+    passed
+    
+    
 ]
 
 ; integer comparisons
