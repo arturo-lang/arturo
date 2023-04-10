@@ -2425,6 +2425,17 @@ do [
     ensure -> not? same? [label: .attr: "a"] [.attr: "a"]
     passed
     
+    topic « same? - :literal
+    
+    ensure -> same? 'literal 'literal
+    ensure -> not? same? 'literal 'other
+    ensure -> not? same? 'literal "literal"
+    ensure -> not? same? ['literal] ["literal"]
+    ensure -> not? same? ['literal] [literal]
+    ensure -> not? same? ['literal] [.literal]
+    ensure -> not? same? ['literal] [literal: 'literal]
+    passed
+    
     
 ]
 
