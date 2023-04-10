@@ -2592,6 +2592,21 @@ do [
     ensure -> not? same? range.step: 2 0 5 range.step: 2 0 4
     passed
     
+    topic « same? :dictionary
+    
+    a: #[name: "Walter" surname: "Pinkman"]
+    
+    ensure -> same? a #[name: "Walter" surname: "Pinkman"]
+    ensure -> not? same? a #[name: "Jesse" surname: "Pinkman"]
+    ensure -> not? same? a #[name "Jesse" surname "Pinkman"]
+    ensure -> not? same? a [name "Jesse" surname "Pinkman"]
+    passed
+    
+    ensure -> same? a\name "Walter"
+    ensure -> same? a\surname "Pinkman"
+    ensure -> not? same? a\surname "White"
+    passed
+    
     
 ]
 
