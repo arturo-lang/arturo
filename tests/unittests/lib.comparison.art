@@ -2665,6 +2665,24 @@ do [
     passed
     
     
+    topic « same? - :function
+    
+    ensure -> same? var 'print var 'print
+    ensure -> not? same? var 'inspect var 'print
+    passed
+    
+    a: $[name surname][]
+    A: $[name][]
+    b: $[name][]
+    c: $[name surname][]
+    
+    ensure -> same? ~"|var 'a|" ~"|$[name surname][]|"
+    ensure -> same? ~"|var 'a|" ~"|var 'c|"
+    ensure -> not? same? ~"|var 'a|" ~"|var 'A|"
+    ensure -> not? same? ~"|var 'a|" ~"|var 'b|"
+    passed
+    
+    
 ]
 
 ; integer comparisons
