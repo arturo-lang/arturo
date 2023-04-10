@@ -2337,6 +2337,18 @@ do [
     ensure -> not? same? 1.2.3 1.2.3-dev
     passed
     
+    topic « same? - :type
+    
+    ensure -> same? :string type "a"
+    ensure -> same? :integer type 1
+    ensure -> same? :floating type 1.5
+    passed
+    
+    ensure -> not? same? :string :integer
+    ensure -> not? same? :string :char
+    ensure -> not? same? :integer :floating
+    passed
+    
     
 ]
 
