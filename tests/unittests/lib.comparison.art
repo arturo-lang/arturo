@@ -2381,6 +2381,17 @@ do [
     ensure -> not? same? ["help"] ['help: "help"]
     passed
     
+    topic « same? - :word
+    
+    ensure -> same? [word] [word]
+    ensure -> not? same? [word] [otherWord]
+    ensure -> not? same? [word] ["word"]
+    ensure -> not? same? [word] [word: word]
+    ensure -> not? same? [word] ['word]
+    ; ensure -> not? same? [word] [.word]
+    ensure -> not? same? [word] [.word: word]
+    passed
+    
     
 ]
 
