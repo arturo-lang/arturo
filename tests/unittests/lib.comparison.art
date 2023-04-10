@@ -2505,6 +2505,18 @@ do [
     ensure -> not? same? [a\name: "John"] [b\name: "John"]
     passed
     
+    topic « same? - :symbol
+    
+    ensure -> same? [+] [+]
+    ensure -> not? same? [+] [-]
+    ensure -> not? same? [+] [++]
+    ensure -> not? same? [+] [`+`]
+    ensure -> not? same? [+] [{+}]
+    ensure -> not? same? [+] ["+"]
+    ensure -> not? same? [+] [plus]
+    ensure -> not? same? [+] ['+]
+    passed
+    
     
 ]
 
