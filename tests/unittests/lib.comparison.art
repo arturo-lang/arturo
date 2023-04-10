@@ -2362,6 +2362,25 @@ do [
     ensure -> not? same? 1   `1`
     passed 
     
+    topic « same? - :string
+    
+    ensure -> same? "Art" "Arturo" -- "uro"
+    passed
+    
+    ensure -> not? same? "A" "B"
+    ensure -> not? same? "Art" "Bob"
+    passed
+    
+    ensure -> not? same? "a"    `a` 
+    ensure -> not? same? "10"   10 
+    ensure -> not? same? "10"   10
+    ensure -> not? same? ["help"] [help]
+    ensure -> not? same? ["a"]    [a: "a"]
+    ensure -> not? same? "help"   'help
+    ensure -> not? same? ["help"] [.help]
+    ensure -> not? same? ["help"] ['help: "help"]
+    passed
+    
     
 ]
 
