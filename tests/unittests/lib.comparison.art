@@ -2685,6 +2685,23 @@ do [
     topic « same? - :database
     ; todo: test this
     
+    topic « same? - :date
+    
+    a: to :date .format: "MMM dd" "Jan 15"
+    b: to :date .format: "MMM dd" "Jan 15"
+    c: to :date .format: "YYYY MMM dd" "2023 Jan 15"
+    d: now
+    
+    ensure -> same? a b 
+    ensure -> not? same? a c 
+    ensure -> not? same? a d
+    passed 
+    
+    ensure -> same? a\day c\day
+    ensure -> same? a\month c\month
+    ensure -> not? same? a\year c\year
+    passed
+    
     
 ]
 
