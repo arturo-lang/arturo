@@ -2575,6 +2575,16 @@ do [
     passed
     
     
+    topic « same? - :block
+    
+    a: [1 + 1]
+    ensure -> same? a [1 + 1]
+    ensure -> not? same? a [2]
+    ensure -> not? same? a 2
+    ensure -> not? same? a [1 ++ 1]
+    passed
+    
+    
 ]
 
 ; integer comparisons
