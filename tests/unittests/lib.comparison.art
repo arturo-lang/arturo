@@ -2328,6 +2328,15 @@ do [
     ensure -> not? same? 1 to :complex [1 2]
     passed
     
+    topic « same? - :version
+    
+    ensure -> same? 1.2.3 1.2.3
+    passed
+    
+    ensure -> not? same? 1.2.3 1.2.3-pre
+    ensure -> not? same? 1.2.3 1.2.3-dev
+    passed
+    
     
 ]
 
