@@ -2497,6 +2497,14 @@ do [
     ensure -> not? same? [a\name] [a\surname]
     passed
     
+    topic « same? - :pathLabel
+       
+    ensure -> same? [a\name: "John"] [a\name: "John"]
+    ensure -> not? same? [a\surname: "Doe"] [b\surname: "Doe" ]
+    ensure -> not? same? [a\name: "John"] [b\name: "Jane"]
+    ensure -> not? same? [a\name: "John"] [b\name: "John"]
+    passed
+    
     
 ]
 
