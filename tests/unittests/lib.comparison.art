@@ -2436,6 +2436,17 @@ do [
     ensure -> not? same? ['literal] [literal: 'literal]
     passed
     
+    topic « same? - :attribute
+    
+    ensure -> same? [.attr] [.attr]
+    ensure -> not? same? [.attr] ["attr"]
+    ; ensure -> not? same? [.attr] [attr]
+    ensure -> not? same? [.attr] [attr: .attr]
+    ensure -> not? same? [.attr] ['attr]
+    ensure -> not? same? [.attr] [.other]
+    ensure -> not? same? [.attr] [.attr: .attr]
+    passed
+    
     
 ]
 
