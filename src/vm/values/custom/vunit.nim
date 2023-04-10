@@ -14,18 +14,22 @@
 
 import std/enumutils, strutils, tables
 
+when not defined(WEB):
+    import asyncdispatch, httpClient, std/json, strformat
+
 #=======================================
 # Types
 #=======================================
 
 type
-    UnitFamily* = enum
+    UnitKind* = enum
         Currency
         Length
         Area
         Volume
         Pressure
         Energy
+        Power
         Force
         Radioactivity
         Angle
@@ -35,6 +39,8 @@ type
         Time
         Temperature
 
+        Invalid
+
     UnitSymbolKind* = enum
         Lowercase
         Uppercase
@@ -43,7 +49,6 @@ type
 
     UnitSpec* = object
         alias: string
-        kind: UnitFamily
         case symbolKind: UnitSymbolKind:
             of Custom:
                 symbol: string
@@ -109,39 +114,27 @@ type
 
         UnitError
 
-    VUnit* = distinct UnitType
+    VUnit* = distinct uint32
 
 #=======================================
 # Borrows
 #=======================================
 
-proc `==`*(x, y: VUnit): bool {.borrow.}
-proc symbolName*(x: VUnit): string {.borrow.}
+proc `==`*(a, b: VUnit): bool {.borrow.}
 
 #=======================================
 # Compile-time helpers
 #=======================================
 
-proc getUnitFamily*(vu: UnitType): UnitFamily {.compileTime.} =
-    result = 
-        case vu:
-            of M..NMI: Length
-            of M2: Area
-            of M3: Volume
-            else: Temperature
-
-proc Unit*(vu: UnitType, al: string, rat: float = 1.0, sym: string | UnitSymbolKind = Lowercase): (VUnit, UnitSpec) {.compileTime.} =
+proc Define*(tp: UnitType, al: string, rat: float = 1.0, sym: string | UnitSymbolKind = Lowercase): (UnitType, UnitSpec) {.compileTime.} =
     when sym is UnitSymbolKind:
-        return (VUnit(vu), UnitSpec(alias: al, kind: getUnitFamily(vu), symbolKind: sym, ratio: rat))
+        return (tp, UnitSpec(alias: al.toUpperAscii(), symbolKind: sym, ratio: rat))
     elif sym is string:
-        return (VUnit(vu), UnitSpec(alias: al, kind: getUnitFamily(vu), symbolKind: Custom, symbol: sym, ratio: rat))
+        return (tp, UnitSpec(alias: al.toUpperAscii(), symbolKind: Custom, symbol: sym, ratio: rat))
 
 proc `||`(a, b: static[UnitType]): uint32 {.compileTime.}=
     result = (cast[uint32](ord(a)) shl 16) or
              (cast[uint32](ord(b)))
-
-proc `~>`*(a: UnitType): VUnit {.compileTime.} =
-    VUnit(a)
 
 #=======================================
 # Constants
@@ -150,53 +143,85 @@ proc `~>`*(a: UnitType): VUnit {.compileTime.} =
 const 
     UnitSpecs* = [
         # Length
-        Unit(M,         "meter"),
-        Unit(DM,        "decimeter",        0.1,),
-        Unit(CM,        "centimeter",       0.01),
-        Unit(MM,        "millimeter",       0.001),
-        Unit(MIM,       "micrometer",       1e-6,               "μm"),
-        Unit(NM,        "nanometer",        1e-9),
-        Unit(PM,        "picometer",        1e-12),
-        Unit(KM,        "kilometer",        1000.0),
-        Unit(IN,        "inch",             0.0254),
-        Unit(FT,        "feet",             0.3048),
-        Unit(FM,        "fathom",           1.8288),
-        Unit(YD,        "yard",             0.9144),
-        Unit(ANG,       "angstrom",         1e-10,              "Å"),
-        Unit(LY,        "lightyear",        9.461e+15),
-        Unit(PC,        "parsec",           3.086e+16),
-        Unit(AU,        "",                 1.496e+11),
-        Unit(CHAIN,     "",                 20.1168),
-        Unit(ROD,       "",                 5.0292),
-        Unit(FUR,       "furlong",          201.168),
-        Unit(MI,        "mile",             1609.34),
-        Unit(NMI,       "",                 1852.0),
+        Define(M,         "meter"),
+        Define(DM,        "decimeter",        0.1,),
+        Define(CM,        "centimeter",       0.01),
+        Define(MM,        "millimeter",       0.001),
+        Define(MIM,       "micrometer",       1e-6,               "μm"),
+        Define(NM,        "nanometer",        1e-9),
+        Define(PM,        "picometer",        1e-12),
+        Define(KM,        "kilometer",        1000.0),
+        Define(IN,        "inch",             0.0254),
+        Define(FT,        "feet",             0.3048),
+        Define(FM,        "fathom",           1.8288),
+        Define(YD,        "yard",             0.9144),
+        Define(ANG,       "angstrom",         1e-10,              "Å"),
+        Define(LY,        "lightyear",        9.461e+15),
+        Define(PC,        "parsec",           3.086e+16),
+        Define(AU,        "",                 1.496e+11),
+        Define(CHAIN,     "",                 20.1168),
+        Define(ROD,       "",                 5.0292),
+        Define(FUR,       "furlong",          201.168),
+        Define(MI,        "mile",             1609.34),
+        Define(NMI,       "",                 1852.0),
 
         # Area
-        Unit(M2, "squareMeter"),
-        Unit(M3, "cubicMeter"),
+        Define(M2, "squareMeter"),
+        Define(M3, "cubicMeter"),
     ].toTable
 
 #=======================================
 # Helpers
 #=======================================
 
-template getUnitPair(a, b: VUnit): untyped = 
+template getUnitPair(a, b: UnitType): untyped = 
     (cast[uint32](ord(a)) shl 16.uint32) or 
     (cast[uint32](ord(b))) 
 
-template getUnitSpec(vu: VUnit): UnitSpec =
+template getUnitSpec(vu: UnitType): UnitSpec =
     UnitSpecs[vu]
 
-proc parseUnit*(str: string): VUnit =
-    try:
-        return VUnit(parseEnum[UnitType](str))
-    except ValueError:
-        for vunit,vspec in UnitSpecs:
-            if vspec.alias == str or (vspec.alias & "s") == str:
-                return vunit
+func getUnitKind*(unit: UnitType): UnitKind {.enforceNoRaises.} =
+    case unit:
+        of AED..ZMW     :   Currency
+        of M..NMI       :   Length
+        of M2..HA       :   Area
+        of M3..GAL      :   Volume
+        of ATM..PA      :   Pressure
+        of DEG..RAD     :   Angle
+        of J..ERG       :   Energy
+        of W..HP        :   Power
+        of N..KIP       :   Force
+        of BQ..RD       :   Radioactivity
+        of KPH..KN      :   Speed
+        of G..LBT       :   Weight
+        of BIT..TIB     :   Information
+        of MIN..NS      :   Time
+        of C..R         :   Temperature
+        of UnitError    :   Invalid
 
-    raise newException(ValueError, "unknown unit: " & str)
+func `~>`*(unit: UnitType): VUnit {.inline,enforceNoRaises.} =
+    result = VUnit(
+        (cast[uint32](ord(unit))) or
+        (cast[uint32](ord(getUnitKind(unit))) shl 16)
+    )
+
+template unit*(vunit: VUnit): UnitType =
+    UnitType(cast[uint32](vunit) and 0xFFFF)
+
+template kind*(vunit: VUnit): UnitKind =
+    UnitKind(cast[uint32](vunit) shr 16)
+
+proc getExchangeRate(src: VUnit, tgt: VUnit): float =
+    when not defined(WEB):
+        let s = toLowerAscii($(src.unit))
+        let t = toLowerAscii($(tgt.unit))
+        let url = "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/{s}/{t}.json".fmt
+        let content = waitFor (newAsyncHttpClient().getContent(url))
+        let response = parseJson(content)
+        return response[t].fnum
+    else:
+        return 1.0
 
 #=======================================
 # Overloads
@@ -205,7 +230,7 @@ proc parseUnit*(str: string): VUnit =
 # operations
 
 func `*`*(a, b: VUnit): VUnit =
-    let qp = getUnitPair(a, b)
+    let qp = getUnitPair(a.unit, b.unit)
     result = 
         case qp:
             of M || M: ~> M2
@@ -215,23 +240,67 @@ func `*`*(a, b: VUnit): VUnit =
 # output
 
 proc `$`*(vu: VUnit): string {.inline.} =
-    let spec = getUnitSpec(vu)
+    let unit = vu.unit
+    let spec = getUnitSpec(unit)
     result = 
         case spec.symbolKind:
             of Uppercase:
-                (vu.symbolName).toUpperAscii()
+                ($(unit)).toUpperAscii()
             of Lowercase:
-                (vu.symbolName).toLowerAscii()
+                ($(unit)).toLowerAscii()
             of Capitalized:
-                (vu.symbolName).capitalizeAscii()
+                ($(unit)).capitalizeAscii()
             else:
                 spec.symbol
 
     result = result.replace("2","²").replace("3","³")
 
+#=======================================
+# Methods
+#=======================================
+
+proc parseUnit*(str: string): VUnit =
+    try:
+        return ~> parseEnum[UnitType](str.toUpperAscii())
+    except ValueError:
+        let s = str.toUpperAscii()
+        for unit,vspec in UnitSpecs:
+            if vspec.alias == s or (vspec.alias & "S") == s:
+                return ~> unit
+
+    raise newException(ValueError, "unknown unit: " & str)
+
+proc getRatio*(unitFrom: VUnit, unitTo: VUnit): float {.inline.} =
+    if unitFrom==unitTo: return 1.0
+    if unitFrom.kind != unitTo.kind: return 0.0
+
+    if unitFrom.kind == Currency:
+        return getExchangeRate(unitFrom, unitTo)
+    else:
+        return getUnitSpec(unitFrom.unit).ratio / getUnitSpec(unitTo.unit).ratio
+
+import helpers/benchmark
+import strutils, tables
+
+template bmark(ttl:string, action:untyped):untyped =
+    echo "----------------------"
+    echo ttl
+    echo "----------------------"
+    benchmark "":
+        for i in 1..1_000_000:
+            action
+
 when isMainModule:
     let v = parseUnit("M")
+    let x = parseUnit("M3")
 
-    echo $(typeof(v))
+    echo "$: " & $(v)
+    echo ".unit: " & $(v.unit)
+    echo ".kind: " & $(v.kind)
+    echo ".ratio: " & $(getRatio(v, ~> KM))
 
-    echo $(v)
+    var vu: VUnit
+    bmark "parseUnit":
+        vu = parseUnit("M")
+        vu = parseUnit("m2")
+        vu = parseUnit("meters")
