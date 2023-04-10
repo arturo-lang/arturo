@@ -2190,6 +2190,103 @@ do [
     ensure -> not? same? to :rational @[5 5] 1.0
     passed
     
+    topic « same? - :quantity
+    
+    ensure -> same? 1:usd 1:usd
+    ensure -> same? 1:m   1:m
+    ensure -> same? 1:m2  1:m2
+    ensure -> same? 1:m3  1:m3
+    ; ensure -> same? 1:c   1:c
+    ; ensure -> same? 1:f   1:f
+    passed
+    
+    
+    ensure -> not? same? 1:usd 1
+    ensure -> not? same? 1:m   1
+    ensure -> not? same? 1:m2  1
+    ensure -> not? same? 1:m3  1
+    ensure -> not? same? 1:c   1
+    ensure -> not? same? 1:f   1
+    passed
+    
+    ensure -> not? same? 1 1:usd
+    ensure -> not? same? 1 1:m
+    ensure -> not? same? 1 1:m2
+    ensure -> not? same? 1 1:m3
+    ensure -> not? same? 1 1:c
+    ensure -> not? same? 1 1:f
+    passed
+    
+    ensure -> not? same? 1:usd 1.0
+    ensure -> not? same? 1:m   1.0
+    ensure -> not? same? 1:m2  1.0
+    ensure -> not? same? 1:m3  1.0
+    ensure -> not? same? 1:c   1.0
+    ensure -> not? same? 1:f   1.0
+    passed
+    
+    ensure -> not? same? 1.0 1:usd
+    ensure -> not? same? 1.0 1:m
+    ensure -> not? same? 1.0 1:m2
+    ensure -> not? same? 1.0 1:m3
+    ensure -> not? same? 1.0 1:c
+    ensure -> not? same? 1.0 1:f
+    passed
+    
+    ensure -> not? same? 1:usd to :rational @[5 5]
+    ensure -> not? same? 1:m   to :rational @[5 5]
+    ensure -> not? same? 1:m2  to :rational @[5 5]
+    ensure -> not? same? 1:m3  to :rational @[5 5]
+    ensure -> not? same? 1:c   to :rational @[5 5]
+    ensure -> not? same? 1:f   to :rational @[5 5]
+    passed
+    
+    ensure -> not? same? to :rational @[5 5] 1:usd
+    ensure -> not? same? to :rational @[5 5] 1:m
+    ensure -> not? same? to :rational @[5 5] 1:m2
+    ensure -> not? same? to :rational @[5 5] 1:m3
+    ensure -> not? same? to :rational @[5 5] 1:c
+    ensure -> not? same? to :rational @[5 5] 1:f
+    passed
+    
+    ensure -> not? same? 2:usd 1
+    ensure -> not? same? 2 1:usd
+    ensure -> not? same? 2:usd 1.0
+    ensure -> not? same? 2.0 1:usd
+    ensure -> not? same? 2:usd to :rational @[5 5]
+    ensure -> not? same? to :rational @[2 5] 1:usd
+    passed
+    
+    ensure -> not? same? 1.5:m 150:cm 
+    ensure -> not? same? 2:m 2:cm
+    ensure -> not? same? 1:m 1:usd
+    ensure -> not? same? 1:m 1:m2
+    ensure -> not? same? 1:m 1:m3
+    ensure -> not? same? 1:m 1:c
+    ensure -> not? same? 1:m 1:f
+    ensure -> not? same? 1:usd 1:m
+    ensure -> not? same? 1:usd 1:m2
+    ensure -> not? same? 1:usd 1:m3
+    ensure -> not? same? 1:usd 1:c
+    ensure -> not? same? 1:usd 1:f
+    ensure -> not? same? 2:m2 2:cm
+    ensure -> not? same? 1:m2 1:usd
+    ensure -> not? same? 1:m2 1:m
+    ensure -> not? same? 1:m2 1:m3
+    ensure -> not? same? 1:m2 1:c
+    ensure -> not? same? 1:m2 1:f
+    ensure -> not? same? 1:c 1:usd
+    ensure -> not? same? 1:c 1:m2
+    ensure -> not? same? 1:c 1:m3
+    ensure -> not? same? 1:c 1:m
+    ensure -> not? same? 1:c 1:f
+    ensure -> not? same? 1:f 1:usd
+    ensure -> not? same? 1:f 1:m
+    ensure -> not? same? 1:f 1:m3
+    ensure -> not? same? 1:f 1:c
+    ensure -> not? same? 1:f 1:m2
+    passed
+    
     
 ]
 
