@@ -2447,6 +2447,33 @@ do [
     ensure -> not? same? [.attr] [.attr: .attr]
     passed
     
+    topic « same? - :attributeLabel
+    
+    ensure -> same? [.attr: value] [.attr: value]
+    passed
+    
+    ensure -> not? same? [.attr: value] ["attr"]
+    ensure -> not? same? [.attr: value] ["value"]
+    ensure -> not? same? [.attr: value] ["attr" "value"]
+    passed
+    
+    ensure -> not? same? [.attr: value] [attr]
+    ensure -> not? same? [.attr: value] [attr: .attr:]
+    ; ensure -> not? same? [.attr: value] [attr: value]
+    ensure -> not? same? [.attr: value] [attr: .attr: value]
+    passed
+    
+    ensure -> not? same? [.attr: value] ['attr]
+    ensure -> not? same? [.attr: value] ['value]
+    ensure -> not? same? [.attr: value] ['attr 'value]
+    passed
+    
+    ensure -> not? same? [.attr: value] [.attr]
+    ensure -> not? same? [.attr: value] [.value]
+    ensure -> not? same? [.attr: value] [.other: value]
+    ensure -> not? same? [.attr: value] [.attr: other]
+    passed
+    
     
 ]
 
