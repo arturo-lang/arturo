@@ -2584,6 +2584,14 @@ do [
     ensure -> not? same? a [1 ++ 1]
     passed
     
+    topic « same? :range
+    
+    ensure -> same? [0 1 2 3 4 5] @0..5
+    ensure -> same? [0 2 4] @0.. .step: 2 5
+    ensure -> same? @range.step: 2 0 5 @range.step: 2 0 4
+    ensure -> not? same? range.step: 2 0 5 range.step: 2 0 4
+    passed
+    
     
 ]
 
