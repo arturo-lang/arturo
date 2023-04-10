@@ -2517,6 +2517,15 @@ do [
     ensure -> not? same? [+] ['+]
     passed
     
+    topic « same? - :regex
+    
+    ensure -> regex? {/[A-Z]/}
+    ensure -> same? {/[A-Z]/} {/[A-Z]/} 
+    ensure -> not? same? {/[A-Z]/} {/[ABCDEFGHIJKLMNOPQRSTUVWXYZ]/}
+    ensure -> not? same? {/[A-Z]/} {[A-Z]}
+    ensure -> not? same? {/[A-Z]/} "/[A-Z]/"
+    passed
+    
     
 ]
 
