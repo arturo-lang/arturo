@@ -314,6 +314,47 @@
 [+] passed!
 [+] passed!
 [+] passed!
+
+>> same?
+
+>> same? - :integer :floating :rational
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> same? - :quantity
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> same? - :null
+[+] passed!
+[+] passed!
+
+>> same? - :logical
+[+] passed!
+[+] passed!
+
+>> same? - :complex
+[+] passed!
+[+] passed!
+
+>> same? - :version
+[+] passed!
+[+] passed!
+
+>> same? - :type
+[+] passed!
+[+] passed!
 false
 false
 true
