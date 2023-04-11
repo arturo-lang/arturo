@@ -1530,6 +1530,34 @@ do [
     ensure -> not?  1  =< `1`
     passed 
     
+    
+    topic « lessOrEqual? - :string
+    
+    ensure -> lessOrEqual? "Art" "Arturo" -- "uro"
+    ensure -> "Art" =< "Arturo" -- "uro"
+    passed
+    
+    ensure -> lessOrEqual? "A" "B"
+    ensure -> lessOrEqual? "Art" "Bob"
+    ensure -> lessOrEqual? "Art" "Artu"
+    passed
+    
+    ensure -> not? lessOrEqual? "a"    `a` 
+    ensure -> not? lessOrEqual? "10"   10 
+    ensure -> not? lessOrEqual? "10"   10
+    ensure -> not? lessOrEqual? ["help"] [help]
+    ensure -> not? lessOrEqual? ["a"]    [a:]
+    ensure -> not? lessOrEqual? "help"   'help
+    ensure -> not? lessOrEqual? ["help"] [.help]
+    ensure -> not? "a"      =< `a` 
+    ensure -> not? "10"     =< 10 
+    ensure -> not? "10"     =< 10
+    ensure -> not? ["help"] =< [help]
+    ensure -> not? ["a"]    =< [a:]
+    ensure -> not? "help"   =< 'help
+    ensure -> not? ["help"] =< [.help]
+    passed
+    
 ]
 
 
