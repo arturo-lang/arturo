@@ -1218,6 +1218,7 @@ do [
     
     
     topic « less? - :logical
+    ; always returns `false`
     
     ensure -> not? less? true true
     ensure -> not? less? true (1 > 0)
