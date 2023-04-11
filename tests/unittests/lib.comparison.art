@@ -1253,6 +1253,31 @@ do [
     passed
     
     
+    ensure -> lessOrEqual? to :rational @[1 1] 2
+    ensure -> lessOrEqual? to :rational @[1 1] 2.0
+    ensure -> lessOrEqual? to :rational @[1 1] to :rational @[2 1]
+    ensure -> (to :rational @[1 1]) =< 2
+    ensure -> (to :rational @[1 1]) =< 2.0
+    ensure -> (to :rational @[1 1]) =< to :rational @[2 1]
+    passed
+    
+    ensure -> lessOrEqual? to :rational @[1 1] 1
+    ensure -> lessOrEqual? to :rational @[1 1] 1.0
+    ensure -> lessOrEqual? to :rational @[1 1] to :rational @[1 1]
+    ensure -> (to :rational @[1 1]) =< 1
+    ensure -> (to :rational @[1 1]) =< 1.0
+    ensure -> (to :rational @[1 1]) =< to :rational @[1 1]
+    passed
+    
+    ensure -> not? lessOrEqual? to :rational @[2 1] 1
+    ensure -> not? lessOrEqual? to :rational @[2 1] 1.0
+    ensure -> not? lessOrEqual? to :rational @[2 1] to :rational @[1 1]
+    ensure -> not? (to :rational @[2 1]) =< 1
+    ensure -> not? (to :rational @[2 1]) =< 1.0
+    ensure -> not? (to :rational @[2 1]) =< :rational @[1 1]
+    passed
+    
+    
 ]
 
 
