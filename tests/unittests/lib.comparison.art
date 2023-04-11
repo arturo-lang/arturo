@@ -1116,7 +1116,7 @@ topic « less?
 do [
     
     
-    
+    topic « less? - :integer :floating :rational
     
     
 ]
