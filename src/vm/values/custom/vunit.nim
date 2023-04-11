@@ -12,7 +12,7 @@
 # Libraries
 #=======================================
 
-import std/enumutils, strutils, tables
+import std/enumutils, macros, strutils, tables
 
 when not defined(WEB):
     import asyncdispatch, httpClient, std/json, strformat
@@ -20,6 +20,23 @@ when not defined(WEB):
 #=======================================
 # Types
 #=======================================
+
+const 
+    Prefixes = {
+        "T"     : (1e+12, "tera"),
+        "G"     : (1e+9, "giga"),
+        "M"     : (1e+6, "mega"),
+        "k"     : (1e+3, "kilo"),
+        "h"     : (1e+2, "hecto"),
+        "da"    : (1e+1, "deca"),
+        "d"     : (1e-1, "deci"),
+        "c"     : (1e-2, "centi"),
+        "m"     : (1e-3, "milli"),
+        "μ"     : (1e-6, "micro"),
+        "n"     : (1e-9, "nano"),
+        "p"     : (1e-12, "pico"),
+        "f"     : (1e-15, "femto")
+    }
 
 type
     UnitKind* = enum
@@ -49,11 +66,7 @@ type
 
     UnitSpec* = object
         alias: string
-        case symbolKind: UnitSymbolKind:
-            of Custom:
-                symbol: string
-            else:
-                discard
+        symbol: string
         ratio: float
 
     UnitType* = enum
@@ -69,16 +82,22 @@ type
         ZMW
 
         # Length
-        M, DM, CM, MM, MIM, NM, PM, KM, IN, FT, FM, YD, ANG, LY, PC, AU, CHAIN, ROD, FUR, MI, NMI
+        M, TM, GM, KM, HM, DAM, DM, CM, MM, UM, NM, PM, FM
+        IN, FT, FTM, YD, ANG, LY, PC, AU, CHAIN, ROD, FUR, MI, NMI
 
         # Area
-        M2, DM2, CM2, MM2, MIM2, NM2, KM2, IN2, FT2, YD2, ANG2, MI2, AC, A, HA
+        M2, TM2, GM2, KM2, HM2, DAM2, DM2, CM2, MM2, UM2, NM2, PM2, FM2
+        IN2, FT2, FTM2, YD2, ANG2, LY2, PC2, AU2, CHAIN2, ROD2, FUR2, MI2, NMI2, AC, ARE, HA
 
         # Volume
-        M3, DM3, CM3, MM3, MIM3, NM3, KM3, IN3, FT3, YD3, ANG3, MI3, L, DL, CL, ML, FLOZ, TSP, TBSP, CP, PT, QT, GAL
+        M3, TM3, GM3, KM3, HM3, DAM3, DM3, CM3, MM3, UM3, NM3, PM3, FM3
+        IN3, FT3, FTM3, YD3, ANG3, LY3, PC3, AU3, CHAIN3, ROD3, FUR3, MI3, NMI3
+        L, HL, DAL, DL, CL, ML
+        FLOZ, TSP, TBSP, CUP, PT, QT, GAL
 
         # Pressure
-        ATM, BAR, PA
+        PA, TPA, GPA, KPA, HPA, DAPA, DPA, CPA, MPA, UPA, NPA, PPA, FPA
+        ATM, BAR, TORR, PSI, MMHG, INHG, MMH2O, INH2O
 
         # Energy
         J, KJ, MJ, CAL, KCAL, WH, KWH, ERG
@@ -132,6 +151,9 @@ proc Define*(unit: UnitType, al: string, rat: float = 1.0, sym: string | UnitSym
     elif sym is string:
         return (unit, UnitSpec(alias: al.toUpperAscii(), symbolKind: Custom, symbol: sym, ratio: rat))
 
+proc Derivative*(unit: UnitType, prefix: string, sym: string | UnitSymbolKind = Lowercase): (UnitType, UnitSpec) {.compileTime.} =
+    return (unit, UnitSpec(alias: prefix & unit.name.toUpperAscii(), symbolKind: Custom, symbol: prefix & unit.name, ratio: Prefixes[prefix]))
+
 proc `||`(a, b: static[UnitType]): uint32 {.compileTime.}=
     result = (cast[uint32](ord(a)) shl 16) or
              (cast[uint32](ord(b)))
@@ -140,46 +162,320 @@ proc `||`(a, b: static[UnitType]): uint32 {.compileTime.}=
 # Constants
 #=======================================
 
-const 
-    UnitSpecs* = [
-        # Length
-        Define(M,         "meter"),
-        Define(DM,        "decimeter",        0.1,),
-        Define(CM,        "centimeter",       0.01),
-        Define(MM,        "millimeter",       0.001),
-        Define(MIM,       "micrometer",       1e-6,               "μm"),
-        Define(NM,        "nanometer",        1e-9),
-        Define(PM,        "picometer",        1e-12),
-        Define(KM,        "kilometer",        1000.0),
-        Define(IN,        "inch",             0.0254),
-        Define(FT,        "feet",             0.3048),
-        Define(FM,        "fathom",           1.8288),
-        Define(YD,        "yard",             0.9144),
-        Define(ANG,       "angstrom",         1e-10,              "Å"),
-        Define(LY,        "lightyear",        9.461e+15),
-        Define(PC,        "parsec",           3.086e+16),
-        Define(AU,        "",                 1.496e+11),
-        Define(CHAIN,     "",                 20.1168),
-        Define(ROD,       "",                 5.0292),
-        Define(FUR,       "furlong",          201.168),
-        Define(MI,        "mile",             1609.34),
-        Define(NMI,       "",                 1852.0),
+# Area
+#         M2: 1.0, 
+#         DM2: 0.01,
+#         CM2: 0.0001, 
+#         MM2: 1e-6,
+#         MIM2: 1e-12,
+#         NM2: 1e-18,
+#         KM2: 1000000.0,
+#         IN2: 0.00064516,
+#         FT2: 0.092903,
+#         YD2: 0.836127,
+#         ANG2: 1e-20,
+#         MI2: 2592931.2786432, 
+#         AC: 4046.86,
+#         A: 100.0,
+#         HA: 10000.0,
 
+#         # Volume
+#         M3: 1.0, 
+#         DM3: 0.001,
+#         CM3: 1e-6,
+#         MM3: 1e-9,
+#         MIM3: 1e-18,
+#         NM3: 1e-27,
+#         KM3: 1e+9,
+#         IN3: 1.63871e-5,
+#         FT3: 0.0283168, 
+#         YD3: 0.764555, 
+#         ANG3: 1e-30,
+#         MI3: 4.168e+9, 
+#         L: 0.001,
+#         DL: 0.0001,
+#         CL: 1e-5,
+#         ML: 1e-6, 
+#         FLOZ: 2.95735e-5,
+#         PT: 0.000473, 
+#         TSP: 4.9289e-6,
+#         TBSP: 1.47868e-5,
+#         CP: 0.000236588,
+#         QT: 0.000946353, 
+#         GAL: 0.00378541,
+
+#         # Pressure
+#         ATM: 1.0,
+#         BAR: 0.986923,
+#         PA: 9.86923e-6,
+
+#         # Energy
+#         J: 1.0,
+#         KJ: 1000.0,
+#         MJ: 1000000.0,
+#         CAL: 4.184,
+#         KCAL: 4184.0,
+#         WH: 3600.0,
+#         KWH: 3.6e+6,
+#         ERG: 1e-7,
+
+#         # Power
+#         W: 1.0,
+#         KW: 1000.0, 
+#         HP: 735.499,
+
+#         # Force
+#         N: 1.0, 
+#         DYN: 1e-5, 
+#         KGF: 9.80665, 
+#         LBF: 8.89644, 
+#         PDL: 0.138255, 
+#         KIP: 4448.22,
+
+#         # Radioactivity
+#         BQ: 1.0,
+#         CI: 3.7e+10,
+#         RD: 1000000.0,
+
+#         # Angle
+#         DEG: 1.0,
+#         RAD: 57.2958,
+
+#         # Speed
+#         KPH: 1.0,
+#         MPS: 3.6,
+#         MPH: 1.60934,
+#         KN: 1.85,
+
+#         # Weight
+#         G: 1.0, 
+#         MG: 0.001, 
+#         KG: 1000.0, 
+#         T: 1000000.0, 
+#         ST: 6350.29, 
+#         OZ: 28.3495, 
+#         LB: 453.592,
+#         CT: 0.2,
+#         OZT: 31.1035,
+#         LBT: 373.242,
+
+#         # Capacity
+#         BIT: 1.0, 
+#         B: 8.0, 
+#         KB: 8.0 * 1000, 
+#         MB: 8.0 * 1000 * 1000, 
+#         GB: 8.0 * 1000 * 1000 * 1000, 
+#         TB: 8.0 * 1000 * 1000 * 1000,
+#         KIB: 8.0 * 1024, 
+#         MIB: 8.0 * 1024 * 1024, 
+#         GIB: 8.0 * 1024 * 1024 * 1024, 
+#         TIB: 8.0 * 1024 * 1024 * 1024,
+
+#         # Time
+#         MIN: 1.0, 
+#         H: 60.0, 
+#         D: 1440.0,
+#         WK: 10080.0,
+#         MO: 43800.0,
+#         YR: 526000.0,
+#         S: 0.0166667,
+#         MS: 1.66667e-5, 
+#         NS: 1.66667e-11
+
+type
+    UnitDef = (UnitType,string,string,float,seq[string])
+
+macro generateUnits*(units: static[openArray[UnitDef]]): untyped =
+    var group = nnkBracket.newTree()
+
+    for def in units:
+        let name = def[0]
+        let symbol = def[1]
+        let alias = def[2]
+        let ratio = def[3]
+        let derived = def[4]
+
+        group.add nnkTupleConstr.newTree(
+            newLit(name),
+            nnkObjConstr.newTree(
+                newIdentNode("UnitSpec"),
+                nnkExprColonExpr.newTree(
+                    newIdentNode("alias"),
+                    newLit(alias)
+                ),
+                nnkExprColonExpr.newTree(
+                    newIdentNode("symbol"),
+                    newLit(symbol)
+                ),
+                nnkExprColonExpr.newTree(
+                    newIdentNode("ratio"),
+                    newLit(ratio)
+                )
+            )
+        )
+
+        if derived != @[]:
+            for pref in Prefixes:
+                let shortPref = pref[0]
+                let longPref = pref[1][1]
+                let rat = pref[1][0]
+
+                if shortPref notin derived:
+                    continue
+
+                let newAlias = 
+                    if alias == "":
+                        ""
+                    else:
+                        longPref & alias
+
+                let newSymbol = 
+                    if symbol == "":
+                        ""
+                    else:
+                        shortPref & symbol
+
+                var enumNode: NimNode
+                if shortPref == "μ":
+                    enumNode = newIdentNode("U" & $(name))
+                else:
+                    enumNode = newIdentNode((shortPref).toUpperAscii() & $(name))
+
+                group.add nnkTupleConstr.newTree(
+                    enumNode,
+                    nnkObjConstr.newTree(
+                        newIdentNode("UnitSpec"),
+                        nnkExprColonExpr.newTree(
+                            newIdentNode("alias"),
+                            newLit(newAlias)
+                        ),
+                        nnkExprColonExpr.newTree(
+                            newIdentNode("symbol"),
+                            newLit(newSymbol)
+                        ),
+                        nnkExprColonExpr.newTree(
+                            newIdentNode("ratio"),
+                            newLit(ratio * rat)
+                        )
+                    )
+                )
+
+    result = nnkStmtList.newTree()
+    result.add group
+
+template Base(n: UnitType, alias: string = "", derive: seq[string] | bool = true, symbol: string = ""): UnitDef =
+    var symb = 
+        if symbol == "":
+            ($(n)).toLowerAscii()
+        else:
+            symbol
+    
+    symb = symb.replace("2","²").replace("3","³")
+    when derive is bool:
+        var toDerive: seq[string]
+        for pref in Prefixes:
+            toDerive.add pref[0]
+        (n, symb, alias, 1.0, toDerive)
+    else:
+        (n, symb, alias, 1.0, derive)
+
+template Derived(n: UnitType, alias: string, ratio: float, symbol: string = ""): UnitDef =
+    var symb = 
+        if symbol == "":
+            ($(n)).toLowerAscii()
+        else:
+            symbol
+    
+    symb = symb.replace("2","²").replace("3","³")
+    (n, symb, alias, ratio, @[])
+
+const 
+    UnitSpecs* = (generateUnits [
+        #---------------------
+        # Length
+        #---------------------
+           Base(    M,          "meter",                                    ),
+        Derived(    IN,         "inch",             0.0254,                 ),
+        Derived(    FT,         "feet",             0.3048,                 ),
+        Derived(    FTM,        "fathom",           1.8288,                 ),
+        Derived(    YD,         "yard",             0.9144,                 ),
+        Derived(    ANG,        "angstrom",         1e-10,                  "Å"),
+        Derived(    LY,         "lightyear",        9.461e+15,              ),
+        Derived(    PC,         "parsec",           3.086e+16,              ),
+        Derived(    AU,         "",                 1.496e+11,              ),
+        Derived(    CHAIN,      "",                 20.1168,                ),
+        Derived(    ROD,        "",                 5.0292,                 ),
+        Derived(    FUR,        "",                 201.168,                ),
+        Derived(    MI,         "mile",             1609.34,                ),
+        Derived(    NMI,        "nauticalMile",     1852.0,                 ),
+
+        #---------------------
         # Area
-        Define(M2, "squareMeter"),
-        Define(M3, "cubicMeter"),
-    ].toTable
+        #---------------------
+           Base(    M2,         "meter2",                                   ),    
+        Derived(    IN2,        "inch2",            6.4516e-4,              ),
+        Derived(    FT2,        "feet2",            0.092903,               ),
+        Derived(    FTM2,       "fathom2",          3.3058,                 ),
+        Derived(    YD2,        "yard2",            0.836127,               ),
+        Derived(   ANG2,        "angstrom2",        1e-20,                  "Å2"),
+        Derived(    LY2,        "lightyear2",       8.95054e+31,            ),
+        Derived(    PC2,        "parsec2",          9.537e+32,              ),
+        Derived(    AU2,        "",                 2.247e+22,              ),
+        Derived(    CHAIN2,     "",                 404.687,                ),
+        Derived(    ROD2,       "",                 25.2929,                ),
+        Derived(    FUR2,       "furlong2",         40468.7,                ),
+        Derived(    MI2,        "mile2",            2.58999e+6,             ),
+        Derived(    NMI2,       "nauticalMile2",    3.452e+6,               ),
+        Derived(    AC,         "acre",             4046.87,                ),
+        Derived(    ARE,        "",                 100.0,                  ),
+        Derived(    HA,         "hectare",          10000.0,                ),
+
+        #---------------------
+        # Volume
+        #---------------------
+           Base(    M3,         "meter3",                                   ),
+        Derived(    IN3,        "inch3",            1.6387e-5,              ),
+        Derived(    FT3,        "feet3",            0.0283168,              ),
+        Derived(    FTM3,       "fathom3",          0.546807,               ),
+        Derived(    YD3,        "yard3",            0.764555,               ),
+        Derived(    ANG3,       "angstrom3",        1e-30,                  "Å3"),
+        Derived(    LY3,        "lightyear3",       8.95054e+47,            ),
+        Derived(    PC3,        "parsec3",          9.537e+48,              ),
+        Derived(    AU3,        "",                 1.148e+38,              ),
+        Derived(    CHAIN3,     "",                 8093.74,                ),
+        Derived(    ROD3,       "",                 508.929,                ),
+        Derived(    FUR3,       "furlong3",         809373.0,               ),
+        Derived(    MI3,        "mile3",            4.168e+9,               ),
+        Derived(    NMI3,       "nauticalMile3",    6.854e+9,               ),
+           Base(    L,          "liter",            @["m", "c", "d", "da", "h"]),
+        Derived(    FLOZ,       "fluidOunce",       2.9574e-5,              ),
+        Derived(    TSP,        "teaspoon",         4.9289e-6,              ),
+        Derived(    TBSP,       "tablespoon",       1.4787e-5,              ),
+        Derived(    CUP,        "",                 2.3659e-4,              ),
+        Derived(    PT,         "pint",             4.7318e-4,              ),
+        Derived(    QT,         "quart",            9.4635e-4,              ),
+        Derived(    GAL,        "gallon",           3.7854e-3,              ),
+
+        #---------------------
+        # Pressure
+        #---------------------
+           Base(    PA,         "pascal",           true,                   "Pa"),
+        Derived(    ATM,        "atmosphere",       101325.0,               ),
+        Derived(    BAR,        "bar",              100000.0,               ),
+        Derived(    TORR,       "torr",             133.322,                "Torr"),
+        Derived(    PSI,        "",                 6894.76,                ),
+        Derived(    MMHG,       "",                 133.322,                "mmHg"),
+        Derived(    INHG,       "",                 3386.39,                "inHg"),
+        Derived(    MMH2O,      "",                 9.80665,                "mmH₂O"),
+        Derived(    INH2O,      "",                 249.082,                "inH₂O")
+
+    ]).toTable
 
 #=======================================
 # Helpers
 #=======================================
 
-template getUnitPair(a, b: UnitType): untyped = 
-    (cast[uint32](ord(a)) shl 16.uint32) or 
-    (cast[uint32](ord(b))) 
-
-template getUnitSpec(vu: UnitType): UnitSpec =
-    UnitSpecs[vu]
+# Constructor & accesors
 
 func resolveUnitKind*(unit: UnitType): UnitKind {.enforceNoRaises.} =
     case unit:
@@ -187,7 +483,7 @@ func resolveUnitKind*(unit: UnitType): UnitKind {.enforceNoRaises.} =
         of M..NMI       :   Length
         of M2..HA       :   Area
         of M3..GAL      :   Volume
-        of ATM..PA      :   Pressure
+        of PA..INH2O    :   Pressure
         of DEG..RAD     :   Angle
         of J..ERG       :   Energy
         of W..HP        :   Power
@@ -211,6 +507,14 @@ template unit*(vunit: VUnit): UnitType =
 
 template kind*(vunit: VUnit): UnitKind =
     UnitKind(cast[uint32](vunit) shr 16)
+
+# Matching
+
+template getUnitPair(a, b: UnitType): untyped = 
+    (cast[uint32](ord(a)) shl 16.uint32) or 
+    (cast[uint32](ord(b))) 
+
+# Conversion
 
 proc getExchangeRate(src: VUnit, tgt: VUnit): float =
     when not defined(WEB):
@@ -240,20 +544,8 @@ func `*`*(a, b: VUnit): VUnit =
 # output
 
 proc `$`*(vu: VUnit): string {.inline.} =
-    let unit = vu.unit
-    let spec = getUnitSpec(unit)
-    result = 
-        case spec.symbolKind:
-            of Uppercase:
-                ($(unit)).toUpperAscii()
-            of Lowercase:
-                ($(unit)).toLowerAscii()
-            of Capitalized:
-                ($(unit)).capitalizeAscii()
-            else:
-                spec.symbol
-
-    result = result.replace("2","²").replace("3","³")
+    let spec = UnitSpecs[vu.unit]
+    result = spec.symbol
 
 #=======================================
 # Methods
@@ -277,18 +569,18 @@ proc getRatio*(unitFrom: VUnit, unitTo: VUnit): float {.inline.} =
     if unitFrom.kind == Currency:
         return getExchangeRate(unitFrom, unitTo)
     else:
-        return getUnitSpec(unitFrom.unit).ratio / getUnitSpec(unitTo.unit).ratio
+        return UnitSpecs[unitFrom.unit].ratio / UnitSpecs[unitTo.unit].ratio
 
-import helpers/benchmark
-import strutils, tables
+# import helpers/benchmark
+# import strutils, tables
 
-template bmark(ttl:string, action:untyped):untyped =
-    echo "----------------------"
-    echo ttl
-    echo "----------------------"
-    benchmark "":
-        for i in 1..1_000_000:
-            action
+# template bmark(ttl:string, action:untyped):untyped =
+#     echo "----------------------"
+#     echo ttl
+#     echo "----------------------"
+#     benchmark "":
+#         for i in 1..1_000_000:
+#             action
 
 when isMainModule:
     let v = parseUnit("M")
@@ -299,8 +591,9 @@ when isMainModule:
     echo ".kind: " & $(v.kind)
     echo ".ratio: " & $(getRatio(v, ~> KM))
 
-    var vu: VUnit
-    bmark "parseUnit":
-        vu = parseUnit("M")
-        vu = parseUnit("m2")
-        vu = parseUnit("meters")
+    echo $(UnitSpecs)
+    # var vu: VUnit
+    # bmark "parseUnit":
+    #     vu = parseUnit("M")
+    #     vu = parseUnit("m2")
+    #     vu = parseUnit("meters")
