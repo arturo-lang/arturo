@@ -391,11 +391,7 @@ proc find*(a: openArray[Value], item: Value): int {.inline.}=
     for i in items(a):
         if i == item: return
         inc(result)
-    result = -1
-
-# TODO(Comparison/same?) not working right for Temperature values
-#  see also: https://github.com/arturo-lang/arturo/pull/1139#issuecomment-1502378287
-#  labels: library, values, bug    
+    result = -1  
 
 proc identical*(x: Value, y: Value): bool {.inline.} =
     if x == y and x.kind == y.kind:
