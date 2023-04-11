@@ -1363,6 +1363,15 @@ do [
     passed
     
     
+    topic « less? - :pathLabel
+       
+    ensure -> not? less? [a\name: "John"]   [a\name: "John"]
+    ensure -> not? less? [a\surname: "Doe"] [b\surname: "Doe" ]
+    ensure -> not? less? [a\name: "John"]   [b\name: "Jane"]
+    ensure -> not? less? [a\name: "John"]   [b\name: "John"]
+    passed
+    
+    
 ]
 
 
