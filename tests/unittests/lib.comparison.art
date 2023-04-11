@@ -1308,6 +1308,34 @@ do [
     passed 
     
     
+    topic « less? - :string
+    
+    ensure -> not? less? "Art" "Arturo" -- "uro"
+    ensure -> not? "Art" < "Arturo" -- "uro"
+    passed
+    
+    ensure -> less? "A" "B"
+    ensure -> less? "Art" "Bob"
+    ensure -> less? "Art" "Artu"
+    passed
+    
+    ensure -> not? less? "a"    `a` 
+    ensure -> not? less? "10"   10 
+    ensure -> not? less? "10"   10
+    ensure -> not? less? ["help"] [help]
+    ensure -> not? less? ["a"]    [a:]
+    ensure -> not? less? "help"   'help
+    ensure -> not? less? ["help"] [.help]
+    ensure -> not? "a"      < `a` 
+    ensure -> not? "10"     < 10 
+    ensure -> not? "10"     < 10
+    ensure -> not? ["help"] < [help]
+    ensure -> not? ["a"]    < [a:]
+    ensure -> not? "help"   < 'help
+    ensure -> not? ["help"] < [.help]
+    passed
+    
+    
 ]
 
 
