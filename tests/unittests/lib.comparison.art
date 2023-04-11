@@ -1232,6 +1232,22 @@ do [
     ensure -> not? true < false
     passed
     
+    
+    topic « less? - :complex
+    ; always returns `false`
+    
+    ensure -> not? less? to :complex [0 2] ((to :complex [1 2]) - 1) 
+    passed
+    
+    ensure -> not? less? to :complex [1 2] to :complex @[neg 1 2] 
+    ensure -> not? less? to :complex [1 2] 1
+    ensure -> not? less? 1 to :complex [1 2]
+    ensure -> not? (to :complex [0 2]) < ((to :complex [1 2]) - 1) 
+    ensure -> not? (to :complex [1 2]) < to :complex @[neg 1 2] 
+    ensure -> not? (to :complex [1 2]) < 1
+    ensure -> not? 1 < to :complex [1 2]
+    passed
+    
 ]
 
 
