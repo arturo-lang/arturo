@@ -1267,6 +1267,24 @@ do [
     ensure -> not? 1.2.3-release < 1.2.3-dev
     passed
     
+    
+    topic « less? - :type
+    ; always returns `false`
+    
+    ensure -> not? less? :char :char
+    ensure -> not? less? :string type "a"
+    ensure -> not? less? :integer type 1
+    ensure -> not? less? :floating type 1.5
+    passed
+    
+    ensure -> not? less? :char :string
+    ensure -> not? less? :integer :string
+    ensure -> not? less? :floating :integer   
+    ensure -> not? less? :string :integer
+    ensure -> not? less? :string :char
+    ensure -> not? less? :integer :floating
+    passed
+    
 ]
 
 
