@@ -393,7 +393,7 @@ proc find*(a: openArray[Value], item: Value): int {.inline.}=
         inc(result)
     result = -1
 
-# TODO(Comparison/same?) not working right for Temperature-type Quantity values
+# TODO(Comparison/same?) not working right for Temperature values
 #  see also: https://github.com/arturo-lang/arturo/pull/1139#issuecomment-1502378287
 #  labels: library, values, bug    
 
