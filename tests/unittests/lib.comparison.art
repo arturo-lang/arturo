@@ -1193,6 +1193,28 @@ do [
     passed
     
     
+    topic « less? - :null
+    ; always returns `false`
+    
+    ensure -> not? less? null null
+    ensure -> not? less? null ø
+    ensure -> not? less? ø ø
+    ensure -> not? less? ø null
+    ensure -> not? null < null
+    ensure -> not? null < ø
+    ensure -> not? ø < ø
+    ensure -> not? ø < null
+    passed
+    
+    ensure -> not? less? ø 1
+    ensure -> not? less? ø 1.0
+    ensure -> not? less? ø "ø"
+    ensure -> not? less? ø `ø`
+    ensure -> not? ø < 1
+    ensure -> not? ø < 1.0
+    ensure -> not? ø < "ø"
+    ensure -> not? ø < `ø`
+    passed
     
 ]
 
