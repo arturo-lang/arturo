@@ -170,6 +170,32 @@
 [+] passed!
 [+] passed!
 
+>> less? - :null
+[+] passed!
+[+] passed!
+
+>> less? - :logical
+[+] passed!
+[+] passed!
+
+>> less? - :complex
+[+] passed!
+[+] passed!
+
+>> less? - :version
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> less? - :type
+[+] passed!
+[+] passed!
+
+>> less? - :char
+[+] passed!
+[+] passed!
+[+] passed!
+
 >> lessOrEqual?
 
 >> lessOrEqual? - :integer :floating :rational
@@ -179,6 +205,32 @@
 [+] passed!
 [+] passed!
 [+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> lessOrEqual? - :null
+[+] passed!
+[+] passed!
+
+>> lessOrEqual? - :logical
+[+] passed!
+[+] passed!
+
+>> lessOrEqual? - :complex
+[+] passed!
+[+] passed!
+
+>> lessOrEqual? - :version
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> lessOrEqual? - :type
+[+] passed!
+[+] passed!
+
+>> lessOrEqual? - :char
 [+] passed!
 [+] passed!
 [+] passed!
