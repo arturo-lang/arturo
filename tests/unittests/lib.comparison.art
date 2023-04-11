@@ -1585,6 +1585,35 @@ do [
     ensure -> not? ["help"] =< [.help]
     passed
     
+    
+    topic « lessOrEqual? - :path
+    
+    a: #[name: "John", surname: "Doe"]
+    b: @["Joe" "Jane" "Jesse"]
+    
+    ensure -> lessOrEqual? a\name "John" 
+    ensure -> lessOrEqual? a\surname "Doe" 
+    ensure -> not? lessOrEqual? a\name "Jane" 
+    ensure -> not? lessOrEqual? a\name 1
+    passed
+    
+    ensure -> lessOrEqual? a\name "Kennedy" 
+    ensure -> lessOrEqual? a\surname "Moe" 
+    ensure -> lessOrEqual? a\name "Payne" 
+    ensure -> lessOrEqual? b\2 "Walter" 
+    passed
+    
+    ensure -> lessOrEqual? b\0 "Joe" 
+    ensure -> lessOrEqual? b\1 "Jane" 
+    ensure -> lessOrEqual? b\2 "Jesse" 
+    passed
+    
+    ensure -> lessOrEqual? [b\0] [b\0]
+    ensure -> lessOrEqual? [a\name] [a\name]
+    ensure -> not? lessOrEqual? [b\0] [b\1]
+    ensure -> not? lessOrEqual? [a\name] [a\surname]
+    passed
+    
 ]
 
 
