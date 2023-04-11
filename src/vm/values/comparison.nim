@@ -25,13 +25,29 @@ import vm/values/value
 import vm/values/operators
 
 #=======================================
+# Forward declarations
+#=======================================
+
+proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}
+
+#=======================================
+# Helpers
+#=======================================
+
+proc `==`*(x: ValueArray, y: ValueArray): bool {.inline, enforceNoRaises.} =
+    if x.len != y.len: return false
+    for i,child in x:
+        if not (child==y[i]): return false
+    return true
+
+#=======================================
 # Methods
 #=======================================
 
 # TODO(VM/values/comparison) Verify all value types are properly handled by all overloads
 #  labels: vm, values, enhancement, unit-test
 
-proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
+proc `==`*(x: Value, y: Value): bool =
     if x.kind in {Integer, Floating, Rational} and y.kind in {Integer, Floating, Rational}:
         if x.kind==Integer:
             if y.kind==Integer: 
@@ -162,7 +178,7 @@ proc `==`*(x: Value, y: Value): bool {.inline, enforceNoRaises.}=
             of Database:
                 if x.dbKind != y.dbKind: return false
                 when not defined(NOSQLITE):
-                    if x.dbKind==SqliteDatabase: return cast[ByteAddress](x.sqlitedb) == cast[ByteAddress](y.sqlitedb)
+                    if x.dbKind==SqliteDatabase: return cast[uint](x.sqlitedb) == cast[uint](y.sqlitedb)
                     #elif x.dbKind==MysqlDatabase: return cast[ByteAddress](x.mysqldb) == cast[ByteAddress](y.mysqldb)
             of Date:
                 return x.eobj[] == y.eobj[]
@@ -375,7 +391,7 @@ proc find*(a: openArray[Value], item: Value): int {.inline.}=
     for i in items(a):
         if i == item: return
         inc(result)
-    result = -1
+    result = -1  
 
 proc identical*(x: Value, y: Value): bool {.inline.} =
     if x == y and x.kind == y.kind:
