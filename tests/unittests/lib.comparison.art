@@ -1116,7 +1116,7 @@ topic « lessOrEqual?
 do [
     
     
-    
+    topic « lessOrEqual? - :integer :floating :rational
     
     
 ]
