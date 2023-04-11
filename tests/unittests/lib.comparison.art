@@ -1480,6 +1480,28 @@ do [
     ensure -> not? lessOrEqual? :integer :floating
     passed
     
+    topic « lessOrEqual? - :char
+    
+    ensure -> lessOrEqual? `a` `a`
+    ensure -> `a` =< `a`
+    passed
+    
+    ensure -> `a` =< `b`
+    ensure -> `a` =< `z`
+    passed
+    
+    ensure -> not? lessOrEqual? `a` "a" 
+    ensure -> not? lessOrEqual? `1` 1
+    ensure -> not? lessOrEqual? "a" `a` 
+    ensure -> not? lessOrEqual? `b` `a`
+    ensure -> not? lessOrEqual? 1   `1`
+    ensure -> not? `a` =< "a" 
+    ensure -> not? `1` =<  1
+    ensure -> not? "a" =< `a` 
+    ensure -> not? `b` =< `a`
+    ensure -> not?  1  =< `1`
+    passed 
+    
 ]
 
 
