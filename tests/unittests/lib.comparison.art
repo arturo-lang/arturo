@@ -1111,6 +1111,17 @@ do [
     
 ]
 
+
+topic « lessOrEqual?
+do [
+    
+    
+    
+    
+    
+]
+
+
 topic « notEqual?
 do [
     
