@@ -82,49 +82,60 @@ type
         ZMW
 
         # Length
-        M, TM, GM, KM, HM, DAM, DM, CM, MM, UM, NM, PM, FM
+        M, TM, GM, MM, kM, hM, daM, dM, cM, mM, uM, nM, pM, fM
         IN, FT, FTM, YD, ANG, LY, PC, AU, CHAIN, ROD, FUR, MI, NMI
 
         # Area
-        M2, TM2, GM2, KM2, HM2, DAM2, DM2, CM2, MM2, UM2, NM2, PM2, FM2
+        M2, TM2, GM2, MM2, kM2, hM2, daM2, dM2, cM2, mM2, uM2, nM2, pM2, fM2
         IN2, FT2, FTM2, YD2, ANG2, LY2, PC2, AU2, CHAIN2, ROD2, FUR2, MI2, NMI2, AC, ARE, HA
 
         # Volume
-        M3, TM3, GM3, KM3, HM3, DAM3, DM3, CM3, MM3, UM3, NM3, PM3, FM3
+        M3, TM3, GM3, MM3, kM3, hM3, daM3, dM3, cM3, mM3, uM3, nM3, pM3, fM3
         IN3, FT3, FTM3, YD3, ANG3, LY3, PC3, AU3, CHAIN3, ROD3, FUR3, MI3, NMI3
-        L, HL, DAL, DL, CL, ML
+        L, hL, daL, dL, cL, mL
         FLOZ, TSP, TBSP, CUP, PT, QT, GAL
 
         # Pressure
-        PA, TPA, GPA, KPA, HPA, DAPA, DPA, CPA, MPA, UPA, NPA, PPA, FPA
+        PA, TPA, GPA, MPA, kPA, hPA, daPA, dPA, cPA, mPA, uPA, nPA, pPA, fPA
         ATM, BAR, TORR, PSI, MMHG, INHG, MMH2O, INH2O
 
         # Energy
-        J, KJ, MJ, CAL, KCAL, WH, KWH, ERG
+        J, TJ, GJ, MJ, kJ, hJ, daJ, dJ, cJ, mJ, uJ, nJ, pJ, fJ,
+        CAL, TCAL, GCAL, MCAL, kCAL, hCAL, daCAL, dCAL, cCAL, mCAL, uCAL, nCAL, pCAL, fCAL,
+        BTU,
+        WH, TWH, GWH, MWH, kWH, hWH, daWH, dWH, cWH, mWH, uWH, nWH, pWH, fWH,
+        ERG, EV
 
         # Power
-        W, KW, HP
+        W, TW, GW, MW, kW, hW, daW, dW, cW, mW, uW, nW, pW, fW,
+        hP, BTUH
 
         # Force
-        N, DYN, KGF, LBF, PDL, KIP
+        N, TN, GN, MN, kN, hN, daN, dN, cN, mN, uN, nN, pN, fN,
+        DYN, LBF, KGF, PDL, KIP
 
         # Radioactivity
-        BQ, CI, RD
-
-        # Angle
-        DEG, RAD
+        BQ, TBQ, GBQ, MBQ, kBQ, hBQ, daBQ, dBQ, cBQ, mBQ, uBQ, nBQ, pBQ, fBQ,
+        CI, RD
 
         # Speed
-        KPH, MPS, MPH, KN
+        MPS, TMPS, GMPS, MMPS, kMPS, hMPS, daMPS, dMPS, cMPS, mMPS, uMPS, nMPS, pMPS, fMPS
+        MPH, TMPH, GMPH, MMPH, kMPH, hMPH, daMPH, dMPH, cMPH, mMPH, uMPH, nMPH, pMPH, fMPH
+        FPS, MIPH, KN
+
+        # Angle
+        RAD, mRAD, 
+        DEG, GON, TR, 
 
         # Weight
-        G, MG, KG, T, ST, OZ, LB, CT, OZT, LBT
+        G, TG, GG, MG, kG, hG, daG, dG, cG, mG, uG, nG, pG, fG
+        T, ST, OZ, LB, CT, OZT, LBT
 
         # Information
         BIT, B, KB, MB, GB, TB, KIB, MIB, GIB, TIB, 
 
         # Time
-        MIN, H, D, WK, MO, YR, S, MS, NS
+        MIN, h, D, WK, MO, YR, S, MS, NS
 
         # Temperature
         C, F, K, R
@@ -135,6 +146,37 @@ type
 
     VUnit* = distinct uint32
 
+    VUnitFlag = enum
+        IsSimple,
+        IsCompound,
+        IsPrefixed
+
+    VUnitFlags = set[VUnitFlag]
+
+    VUnitObjRef* = ref VUnitObj
+    VUnitObj* = object
+        #flags: VUnitFlags
+        prefix: UnitType
+        expo: UnitType
+        unit: UnitType
+        series: seq[VUnitObjRef]
+        # case prefixed: bool:
+        #     of true: prefix: string
+        #     else: discard
+        # case compound: bool:
+        #     of true: 
+        #         series: seq[VUnitObjRef]
+        #     else: 
+        #         unit: UnitType
+        # unit: VUnit
+        # flags: VUnitFlags
+        # ratio: float
+    
+
+# Benchmarking
+{.hints: on.} # Apparently we cannot disable just `Name` hints?
+{.hint: "VUnit's inner type is currently " & $sizeof(VUnitObj) & ".".}
+{.hints: off.}
 #=======================================
 # Borrows
 #=======================================
@@ -177,7 +219,7 @@ proc `||`(a, b: static[UnitType]): uint32 {.compileTime.}=
 #         MI2: 2592931.2786432, 
 #         AC: 4046.86,
 #         A: 100.0,
-#         HA: 10000.0,
+#         hA: 10000.0,
 
 #         # Volume
 #         M3: 1.0, 
@@ -222,7 +264,7 @@ proc `||`(a, b: static[UnitType]): uint32 {.compileTime.}=
 #         # Power
 #         W: 1.0,
 #         KW: 1000.0, 
-#         HP: 735.499,
+#         hP: 735.499,
 
 #         # Force
 #         N: 1.0, 
@@ -273,7 +315,7 @@ proc `||`(a, b: static[UnitType]): uint32 {.compileTime.}=
 
 #         # Time
 #         MIN: 1.0, 
-#         H: 60.0, 
+#         h: 60.0, 
 #         D: 1440.0,
 #         WK: 10080.0,
 #         MO: 43800.0,
@@ -337,9 +379,9 @@ macro generateUnits*(units: static[openArray[UnitDef]]): untyped =
 
                 var enumNode: NimNode
                 if shortPref == "μ":
-                    enumNode = newIdentNode("U" & $(name))
+                    enumNode = newIdentNode("u" & $(name))
                 else:
-                    enumNode = newIdentNode((shortPref).toUpperAscii() & $(name))
+                    enumNode = newIdentNode((shortPref) & $(name))
 
                 group.add nnkTupleConstr.newTree(
                     enumNode,
@@ -378,6 +420,22 @@ template Base(n: UnitType, alias: string = "", derive: seq[string] | bool = true
         (n, symb, alias, 1.0, toDerive)
     else:
         (n, symb, alias, 1.0, derive)
+
+template DBase(n: UnitType, alias: string = "", ratio: float, derive: seq[string] | bool = true, symbol: string = ""): UnitDef =
+    var symb = 
+        if symbol == "":
+            ($(n)).toLowerAscii()
+        else:
+            symbol
+    
+    symb = symb.replace("2","²").replace("3","³")
+    when derive is bool:
+        var toDerive: seq[string]
+        for pref in Prefixes:
+            toDerive.add pref[0]
+        (n, symb, alias, ratio, toDerive)
+    else:
+        (n, symb, alias, ratio, derive)
 
 template Derived(n: UnitType, alias: string, ratio: float, symbol: string = ""): UnitDef =
     var symb = 
@@ -447,7 +505,7 @@ const
         Derived(    FUR3,       "furlong3",         809373.0,               ),
         Derived(    MI3,        "mile3",            4.168e+9,               ),
         Derived(    NMI3,       "nauticalMile3",    6.854e+9,               ),
-           Base(    L,          "liter",            @["m", "c", "d", "da", "h"]),
+          DBase(    L,          "liter",            0.001,                  @["m", "c", "d", "da", "h"]),
         Derived(    FLOZ,       "fluidOunce",       2.9574e-5,              ),
         Derived(    TSP,        "teaspoon",         4.9289e-6,              ),
         Derived(    TBSP,       "tablespoon",       1.4787e-5,              ),
@@ -467,12 +525,71 @@ const
         Derived(    MMHG,       "",                 133.322,                "mmHg"),
         Derived(    INHG,       "",                 3386.39,                "inHg"),
         Derived(    MMH2O,      "",                 9.80665,                "mmH₂O"),
-        Derived(    INH2O,      "",                 249.082,                "inH₂O")
+        Derived(    INH2O,      "",                 249.082,                "inH₂O"),
+
+        #---------------------
+        # Energy
+        #---------------------
+           Base(    J,          "joule",            true,                   "J"),
+          DBase(    CAL,        "calorie",          4.184,                  ),
+        Derived(    BTU,        "",                 1055.06,                "BTU"),
+          DBase(    WH,         "wattHour",         3600.0,                 true, "Wh"),
+        Derived(    ERG,        "",                 1e-7,                   ),
+        Derived(    EV,         "electronVolt",     1.60218e-19,            ),
+
+        #---------------------
+        # Power
+        #---------------------
+           Base(    W,          "watt",             true,                   "W"),
+        Derived(    hP,         "horsepower",       745.699,                ),
+        Derived(    BTUH,       "",                 0.293071,               "BTU/h"),
+
+        #---------------------
+        # Force
+        #---------------------
+           Base(    N,          "newton",           true,                   "N"),
+        Derived(    DYN,        "dyne",             1e-5,                   ),
+        Derived(    LBF,        "poundForce",       4.44822,                ),
+        Derived(    KGF,        "kilogramForce",    9.80665,                ),
+        Derived(    PDL,        "poundal",          0.138255,               ),
+        Derived(    KIP,        "",                 4448.22,                ),
+
+        #---------------------
+        # Radioactivity
+        #---------------------
+           Base(    BQ,         "becquerel",        true,                   "Bq"),
+        Derived(    CI,         "curie",            3.7e+10,                ),
+        Derived(    RD,         "rutherford",       2.58e-4,                ),
+
+        #---------------------
+        # Speed
+        #---------------------
+           Base(    MPS,        "",                 true,                   "m/s"),
+          DBase(    MPH,        "",                 0.0002777778,           true, "m/h"),
+        Derived(    FPS,        "",                 0.3048,                 "ft/s"),
+        Derived(    MIPH,       "mph",              0.44704,                "mph"),
+        Derived(    KN,         "knot",             0.514444,               ),
+
+        #---------------------
+        # Angle
+        #---------------------
+        Derived(    RAD,        "radian",           1.0),
+        Derived(    mRAD,       "milliradian",      1e-3                    ),
+        Derived(    DEG,        "degree",           0.0174533,              "°"),
+        Derived(    GON,        "gradian",          0.015708,               ),
+        Derived(    TR,         "turn",             6.28319,                "tr"),
+
+
+        #---------------------
+        # Weight
+        #---------------------
+           Base(    G,          "gram",             true,                   ),
+
 
     ]).toTable
 
 #=======================================
-# Helpers
+# helpers
 #=======================================
 
 # Constructor & accesors
@@ -484,12 +601,12 @@ func resolveUnitKind*(unit: UnitType): UnitKind {.enforceNoRaises.} =
         of M2..HA       :   Area
         of M3..GAL      :   Volume
         of PA..INH2O    :   Pressure
-        of DEG..RAD     :   Angle
-        of J..ERG       :   Energy
-        of W..HP        :   Power
+        of J..EV        :   Energy
+        of W..BTUH      :   Power
         of N..KIP       :   Force
         of BQ..RD       :   Radioactivity
-        of KPH..KN      :   Speed
+        of MPS..KN      :   Speed
+        of RAD..TR      :   Angle
         of G..LBT       :   Weight
         of BIT..TIB     :   Information
         of MIN..NS      :   Time
@@ -589,7 +706,7 @@ when isMainModule:
     echo "$: " & $(v)
     echo ".unit: " & $(v.unit)
     echo ".kind: " & $(v.kind)
-    echo ".ratio: " & $(getRatio(v, ~> KM))
+    echo ".ratio: " & $(getRatio(v, ~> kM))
 
     echo $(UnitSpecs)
     # var vu: VUnit
