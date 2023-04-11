@@ -5,23 +5,15 @@ on:
       - 'master'
     tags-ignore:
       - '**'
-  workflow_dispatch:
-    inputs:
-        MANUAL_COMMIT_REF:
-            description: "The SHA of the commit to get the diff for"
-            required: true
-        MANUAL_BASE_REF:
-            description: "By default, the commit entered above is compared to the one directly before it; to go back further, enter an earlier SHA here"
-            required: false
 jobs:
   build:
     runs-on: "ubuntu-latest"
     steps:
       - uses: "actions/checkout@master"
       - name: "TODO to Issue generator"
-        uses: "arturo-lang/todo-to-issue-action@v1"
+        uses: "alstr/todo-to-issue-action@v2.4.1"
         id: "todo"
         with:
           AUTO_P: false
-          ISSUE_TEMPLATE: "**Description:**\n\n{{ body }}\n\n**Code:**\n\n{{ url }}\n\n{{ snippet }}"
+          #ISSUE_TEMPLATE: "**Description:**\n\n{{ body }}\n\n**Code:**\n\n{{ url }}\n\n{{ snippet }}"
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
