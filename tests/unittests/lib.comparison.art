@@ -1336,6 +1336,33 @@ do [
     passed
     
     
+    topic « less? - :path
+    
+    a: #[name: "John", surname: "Doe"]
+    b: @["Joe" "Jane" "Jesse"]
+    
+    ensure -> not? less? a\name "John" 
+    ensure -> not? less? a\surname "Doe" 
+    ensure -> not? less? a\name "Jane" 
+    ensure -> not? less? a\name 1
+    passed
+    
+    ensure -> less? a\name "Kennedy" 
+    ensure -> less? a\surname "Moe" 
+    ensure -> less? a\name "Payne" 
+    ensure -> less? b\2 "Walter" 
+    passed
+    
+    ensure -> not? less? b\0 "Joe" 
+    ensure -> not? less? b\1 "Jane" 
+    ensure -> not? less? b\2 "Jesse" 
+    passed
+    
+    ensure -> not? less? [b\0] [b\1]
+    ensure -> not? less? [a\name] [a\surname]
+    passed
+    
+    
 ]
 
 
