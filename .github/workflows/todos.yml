@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: "actions/checkout@master"
       - name: "TODO to Issue generator"
-        uses: "alstr/todo-to-issue-action@v2.4.1"
+        uses: "alstr/todo-to-issue-action@v4"
         id: "todo"
         with:
           AUTO_P: false
