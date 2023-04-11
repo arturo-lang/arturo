@@ -1403,6 +1403,25 @@ do [
     ensure -> not? 1 =< to :complex [1 2]
     passed
     
+    
+    topic « lessOrEqual? - :version
+    
+    ensure -> lessOrEqual? 1.2.2 1.2.3
+    ensure -> 1.2.2 =< 1.2.3
+    passed
+    
+    ensure -> lessOrEqual? 1.2.3 1.2.3
+    ensure -> 1.2.3 =< 1.2.3
+    passed
+    
+    ensure -> not? lessOrEqual? 1.2.3 1.2.3-pre
+    ensure -> not? lessOrEqual? 1.2.3 1.2.3-dev
+    ensure -> not? lessOrEqual? 1.2.3-release 1.2.3-dev
+    ensure -> not? 1.2.3 =< 1.2.3-pre
+    ensure -> not? 1.2.3 =< 1.2.3-dev
+    ensure -> not? 1.2.3-release =< 1.2.3-dev
+    passed
+    
 ]
 
 
