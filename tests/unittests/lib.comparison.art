@@ -1337,6 +1337,21 @@ do [
     ensure -> not? ø =< `ø`
     passed
     
+    
+    topic « lessOrEqual? - :logical
+    
+    ensure -> lessOrEqual? true true
+    ensure -> lessOrEqual? true (1 > 0)
+    ensure -> true =< true
+    ensure -> true =< (1 > 0)
+    passed
+    
+    ensure -> not? lessOrEqual? true maybe
+    ensure -> not? lessOrEqual? true false
+    ensure -> not? true =< maybe
+    ensure -> not? true =< false
+    passed
+    
 ]
 
 
