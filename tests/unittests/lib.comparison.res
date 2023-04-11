@@ -157,6 +157,32 @@
 [+] passed!
 [+] passed!
 
+>> less?
+
+>> less? - :integer :floating :rational
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> lessOrEqual?
+
+>> lessOrEqual? - :integer :floating :rational
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
 >> notEqual?
 
 >> notEqual? - :integer :floating :rational
