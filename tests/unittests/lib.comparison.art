@@ -1112,6 +1112,16 @@ do [
 ]
 
 
+topic « less?
+do [
+    
+    
+    
+    
+    
+]
+
+
 topic « lessOrEqual?
 do [
     
