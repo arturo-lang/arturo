@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: "actions/checkout@master"
       - name: "TODO to Issue generator"
-        uses: "alstr/todo-to-issue-action@v4"
+        uses: "arturo-lang/todo-to-issue-action@v1"
         id: "todo"
         with:
           AUTO_P: false
