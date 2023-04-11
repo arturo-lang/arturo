@@ -1300,6 +1300,28 @@ do [
     passed
     
     
+    topic « lessOrEqual? - :null
+    
+    ensure -> lessOrEqual? null null
+    ensure -> lessOrEqual? null ø
+    ensure -> lessOrEqual? ø ø
+    ensure -> lessOrEqual? ø null
+    ensure -> null =< null
+    ensure -> null =< ø
+    ensure -> ø =< ø
+    ensure -> ø =< null
+    passed
+    
+    ensure -> not? lessOrEqual? ø 1
+    ensure -> not? lessOrEqual? ø 1.0
+    ensure -> not? lessOrEqual? ø "ø"
+    ensure -> not? lessOrEqual? ø `ø`
+    ensure -> not? ø =< 1
+    ensure -> not? ø =< 1.0
+    ensure -> not? ø =< "ø"
+    ensure -> not? ø =< `ø`
+    passed
+    
 ]
 
 
