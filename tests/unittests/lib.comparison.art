@@ -1118,6 +1118,31 @@ do [
     
     topic « less? - :integer :floating :rational
     
+    ensure -> less? 1 2
+    ensure -> less? 1 2.0
+    ensure -> less? 1 to :rational @[2 1]
+    ensure -> 1 < 2
+    ensure -> 1 < 2.0
+    ensure -> 1 < to :rational @[2 1]
+    passed
+    
+    ensure -> not? less? 1 1
+    ensure -> not? less? 1 1.0
+    ensure -> not? less? 1 to :rational @[1 1]
+    ensure -> not? 1 < 1
+    ensure -> not? 1 < 1.0
+    ensure -> not? 1 < to :rational @[1 1]
+    passed
+    
+    ensure -> not? less? 2 1
+    ensure -> not? less? 2 1.0
+    ensure -> not? less? 2 to :rational @[1 1]
+    ensure -> not? 2 < 1
+    ensure -> not? 2 < 1.0
+    ensure -> not? 2 < :rational @[1 1]
+    passed
+    
+    
     
 ]
 
