@@ -1440,6 +1440,23 @@ do [
     ensure -> not? 1.2.3-release =< 1.2.3-dev
     passed
     
+    
+    topic « lessOrEqual? - :type
+    
+    ensure -> lessOrEqual? :char :char
+    ensure -> lessOrEqual? :string type "a"
+    ensure -> lessOrEqual? :integer type 1
+    ensure -> lessOrEqual? :floating type 1.5
+    passed
+    
+    ensure -> not? lessOrEqual? :char :string
+    ensure -> not? lessOrEqual? :integer :string
+    ensure -> not? lessOrEqual? :floating :integer   
+    ensure -> not? lessOrEqual? :string :integer
+    ensure -> not? lessOrEqual? :string :char
+    ensure -> not? lessOrEqual? :integer :floating
+    passed
+    
 ]
 
 
