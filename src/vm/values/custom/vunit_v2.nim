@@ -2,7 +2,7 @@
 # Libraries
 #=======================================
 
-import macros, math, sequtils, strutils, tables, unicode
+import macros, math, sequtils, strutils, tables
 
 import vm/values/custom/vrational
 
@@ -118,6 +118,10 @@ type
 
     VFamily = (UnitFamily, openArray[FamilyComponent])
 
+#=======================================
+# Compile-time helpers
+#=======================================
+
 func codi(fc: FamilyComponent): uint8 =
     let (e, f) = fc
     result = (abs(ord(e)) shl 5).uint8 or f.uint8
@@ -136,7 +140,11 @@ template `^`(uf: UnitFamily, ue: int): FamilyComponent =
 template xx(): FamilyComponent =
     (EError, FError)
 
-let 
+#=======================================
+# Definitions
+#=======================================
+
+let
     Rules = {
         codify(FLength^2): FArea,
         codify(FLength^3): FVolume,
@@ -144,17 +152,6 @@ let
         codify(FLength^1, FTime^(-2)): FAccel,
         codify(FWeight^1, FLength^(-2)): FForce
     }
-
-#=======================================
-# Definitions
-#=======================================
-
-let
-    DAcceleration   = (FAccel,  [FLength^1, FTime^(-2)])
-    DArea           = (FArea,   [FLength^2])
-    DVolume         = (FVolume, [FLength^3])
-    DSpeed          = (FSpeed,  [FLength^1, FTime^(-1)])
-    DForce          = (FForce,  [FWeight^1, FLength^(-2)])
 
     Ratios = {
         M: 1 // 1,
@@ -165,24 +162,6 @@ let
         S: 1 // 1,
         HR: 3600 // 1
     }.toTable
-
-    # Rules = {
-    #     FLength^1: {
-    #         FTime^(-1): FSpeed,
-    #         FTime^(-2): FAccel
-    #     }.toTable,
-    #     FLength^2: FArea,
-    #     FLength^3: Volume,
-    #     FWeight^1: {
-    #         FLength^(-2): FForce
-    #     }.toTable
-    # }.toTable
-    # Rules = @[
-    #     [FLength^1, [[(), FError]]],
-    #     [FLength^2, [[]]],
-    #     [Flength^3, [[]]],
-    #     [FWeight^1, [[FLength^(-2), FForce]]]
-    # ]
 
 #=======================================
 # Macros
@@ -506,92 +485,3 @@ when isMainModule:
     echo "2m + 1yd = " & $(Q(2, xM) + Q(1, xYD))
     echo "2m/s + 3m/s = " & $(Q(2, xM, perS) + Q(3, xM, perS))
     echo "2m/s + 3m/hr = " & $(Q(2, xM, perS) + Q(3, xM, perHR))
-
-
-
-    # let qu1 = Quantity(value: toRational(1.24), unit: @[UnitComponent(p: PCenti, e: EPlus2, t: M)])
-    # echo "qu1: " & $(qu1)
-
-    # let qu2 = Quantity(value: toRational(2), unit: @[UnitComponent(p: PNone, e: EPlus1, t: M)])
-    # echo "qu2: " & $(qu2)
-
-    # let qu3 = qu1 * qu2
-    # echo "qu3 = qu1 * qu2 = " & $(qu3)
-
-    # let qu4 = Quantity(value: toRational(3), unit: @[UnitComponent(p: PNone, e: EPlus1, t: S)])
-
-    # echo "qu1: " & $(qu1)
-    # echo "qu2: " & $(qu2)
-    # echo "qu3: " & $(qu3)
-    # echo "qu4: " & $(qu4)
-
-    # echo "qu3 / qu2 = " & $(qu3 / qu2)
-    # echo "qu3 / qu1 = " & $(qu3 / qu1)
-    # echo "qu2 / qu1 = " & $(qu2 / qu1)
-    # echo "qu1 / qu2 = " & $(qu1 / qu2)
-    # echo "qu1 / qu3 = " & $(qu1 / qu3)
-    # echo "qu2 / qu3 = " & $(qu2 / qu3)
-    # echo "qu2 / qu2 = " & $(qu2 / qu2)
-    # echo "qu2 / qu4 = " & $(qu2 / qu4)
-    # echo "qu2 / qu1 = " & $(qu2 / qu1)
-    # echo "qu1 / qu4 = " & $(qu1 / qu4)
-
-    # echo "(qu2 / qu1) * (qu1 / qu4) = " & $((qu2 / qu1) * (qu1 / qu4))
-
-    # let mkgs = Quantity(value: toRational(3), unit: @[UnitComponent(p: PNone, e: EPlus1, t: M)]) / Quantity(value: toRational(2), unit: @[UnitComponent(p: PKilo, e: EPlus1, t: G)])
-    # echo "3m / 2kg = " & $(mkgs)
-
-    # echo $(ord(FCurrency))
-    # echo $(ord(FError))
-
-    # echo $(FCurrency.uint8)
-    # echo $(FError.uint8)
-
-    # echo $(ord(EMinus2))
-    # echo $(ord(EPlus2))
-    # # echo $(Eminus2.uint8)
-    # # echo $(Eplus2.uint8)
-
-    # echo "FLength ^ 2 => " & $(codify((EPlus2, FLength)))
-    # echo "FLength ^ -2 => " & $(codify((EMinus2, FLength)))
-
-    # echo "qu1 + qu1 = " & $(qu1 + qu1)
-    # #echo "mkgs + mkgs = " & $(mkgs + mkgs)
-    # # echo "qu1 + qu2 = " & $(qu1 + qu2)
-    # # echo "qu2 + qu1 = " & $(qu2 + qu1)
-    # # echo "qu2 + qu2 = " & $(qu2 + qu2)
-    # # echo "qu2 + qu4 = " & $(qu2 + qu4)
-
-    # echo $((Q(3, PNone, M, EPlus1) / Q(1, PNone, S, EPlus1)) * (Q(5, PKilo, G, EPlus1) / Q(1, PNone, M, EPlus2)))
-
-    # echo $(Q(3, PNone, M, EPlus1) + Q(2, PCenti, M, EPlus1))
-
-    # echo $(Q(3, PNone, M, EPlus1) + Q(2, PNone, YD, EPlus1))
-
-    # let OneKm = UnitComponent(p: PKilo, e: EPlus1, t: M)
-    # let PerHour = UnitComponent(p: PNone, e: EMinus1, t: HR)
-    # let OneYd = UnitComponent(p: PNone, e: EPlus1, t: YD)
-    # let PerSec = UnitComponent(p: PNone, e: EMinus1, t: S)
-
-    # let OneKmPerHour = Quantity(value: static toRational(1), unit: @[OneKm, PerHour])
-    # let OneYdPerSec = Quantity(value: toRational(1), unit: @[OneYd, PerSec])
-
-    # let OneKMQ = Quantity(value: toRational(1), unit: @[OneKm])
-    # let OneM = UnitComponent(p: PNone, e: EPlus1, t: M)
-    # let OneMQ = Quantity(value: toRational(1), unit: @[OneM])
-
-    # echo "one meter to kilometers: " & $(convert(OneMQ, VUnit(@[OneKm])))
-    # echo "one kilometer to meters: " & $(convert(OneKMQ, VUnit(@[OneM])))
-
-    # echo "one meter to yards: " & $(convert(OneMQ, VUnit(@[OneYd])))
-    # echo "one yard to meters: " & $(convert(Quantity(value: toRational(1), unit: @[OneYd]), VUnit(@[OneM])))
-
-    # echo "one kilometer to yards: " & $(convert(OneKMQ, VUnit(@[OneYd])))
-    # echo "one yard to kilometers: " & $(convert(Quantity(value: toRational(1), unit: @[OneYd]), VUnit(@[OneKm])))
-
-    # echo "one km/h to km/s: " & $(convert(OneKmPerHour, VUnit(@[OneKm, PerSec])))
-
-    # echo "one km/h to yd/s: " & $(convert(OneKmPerHour, VUnit(@[OneYd, PerSec])))
-
-    # echo $(convert(Quantity(value: 1, unit: @[OneKm]), VUnit(@[OneYd])))
-    # echo $(convert(OneKmPerHour, VUnit(@[OneYd, PerSec])))
