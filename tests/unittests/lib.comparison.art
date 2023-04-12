@@ -1691,6 +1691,18 @@ do [
     passed
     
     
+    topic « lessOrEqual? - :binary
+    
+    ensure -> not? lessOrEqual? 
+        to :binary "Arturo"
+        to :binary "Hello world"
+    ensure -> not? lessOrEqual? to :binary 1 to :binary 0
+    ensure -> lessOrEqual? to :binary 1 to :binary 1
+    ensure -> not? lessOrEqual? to :binary 1 to :binary 10
+    ensure -> not? lessOrEqual? to :binary 1 to :binary 5
+    passed
+    
+    
 ]
 
 
