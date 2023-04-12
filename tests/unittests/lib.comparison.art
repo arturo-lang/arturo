@@ -2087,6 +2087,18 @@ do [
     passed
     
     
+    topic « lessOrEqual? - :word
+    
+    ensure -> lessOrEqual? [word] [word]
+    ensure -> not? lessOrEqual? [word] [otherWord]
+    ensure -> not? lessOrEqual? [word] ["word"]
+    ; ensure -> not? lessOrEqual? [word] [word:]
+    ensure -> not? lessOrEqual? [word] ['word]
+    ; ensure -> not? lessOrEqual? [word] [.word]
+    ; ensure -> not? lessOrEqual? [word] [.word:]
+    passed
+    
+    
     topic « lessOrEqual? - :path
     
     a: #[name: "John", surname: "Doe"]
