@@ -1433,6 +1433,18 @@ do [
     ; passed
     
 
+    topic « less? - :block
+    
+    a: [1 + 1]
+    ensure -> not? less? a [1 + 1]
+    ensure -> less? [1] [1 1]
+    ensure -> not? less? a [2]
+    ensure -> not? less? a 2
+    ensure -> not? less? a [1 ++ 1]
+    ensure -> not? less? [2] [1]
+    ensure -> not? less? [1] [2]
+    passed
+    
     
 ]
 
