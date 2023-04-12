@@ -1407,6 +1407,16 @@ do [
     passed
     
     
+    topic « less? - :bytecode
+    
+    x: to :bytecode [["print"][1 112 155]]
+    
+    ensure -> not? less? x to :bytecode [["print"][1 112 155]]
+    ensure -> not? less? x to :bytecode [["print"][2 112 155]]
+    ensure -> not? less? x [["print"][2 112 155]]
+    passed
+    
+    
 ]
 
 
