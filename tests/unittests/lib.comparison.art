@@ -1492,6 +1492,32 @@ do [
     
     ; todo: [unittests\comparison\less?] add test when `less?` with `:object` parameters returns true
     
+    
+    topic « less? - :store
+    
+    a: store "test.db"
+    a\name: "John" a\surname: "Doe"
+    b: store "test.db"
+    b\name: "John" b\surname: "Doe"
+    c: store "test2.db"
+    c\name: "John" c\surname: "Doe"
+    d: store "test3.db"
+    d\name: "Jane" d\surname: "Doe"
+    
+    ensure -> not? less? a a
+    ensure -> not? less? a b
+    ensure -> not? less? b a
+    passed
+    
+    ensure -> not? less? a c 
+    ensure -> not? less? c a 
+    ensure -> not? less? a d 
+    ensure -> not? less? d a 
+    ensure -> not? less? c d 
+    ensure -> not? less? d c 
+    passed
+    
+    
 ]
 
 
