@@ -1496,6 +1496,10 @@ do [
     
     topic « less? - :label
     
+    ; ensure -> less? [a:] [b:]
+    a: [a:]
+    b: [b:]
+    ensure -> less? a\0 b\0
     ensure -> not? less? [label: value] [label: value]
     passed
     
@@ -2156,6 +2160,10 @@ do [
     
     topic « lessOrEqual? - :label
     
+    ; ensure -> lessOrEqual? [a:] [b:]
+    a: [a:]
+    b: [b:]
+    ensure -> lessOrEqual? a\0 b\0
     ensure -> lessOrEqual? [label: value] [label: value]
     passed
     
