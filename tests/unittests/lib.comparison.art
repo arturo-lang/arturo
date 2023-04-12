@@ -2007,6 +2007,24 @@ do [
     ; note: implement this test
     
     
+    topic « lessOrEqual? - :date
+    
+    a: to :date .format: "MMM dd" "Jan 15"
+    b: to :date .format: "MMM dd" "Jan 15"
+    c: to :date .format: "YYYY MMM dd" "2023 Jan 15"
+    d: to :date .format: "MMM dd" "Jan 14"
+    e: now
+    
+    ensure -> lessOrEqual? d a
+    ensure -> lessOrEqual? a e
+    ensure -> lessOrEqual? a c 
+    passed
+    
+    ensure -> lessOrEqual? a b 
+    ensure -> not? lessOrEqual? a d
+    passed 
+    
+    
 ]
 
 
