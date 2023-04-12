@@ -1794,6 +1794,148 @@ do [
     passed
     
     
+    topic « lessOrEqual? - :quantity
+    
+    ; equal to
+    
+    ensure -> lessOrEqual? 1:usd 1
+    ensure -> lessOrEqual? 1:m   1
+    ensure -> lessOrEqual? 1:m2  1
+    ensure -> lessOrEqual? 1:m3  1
+    ensure -> lessOrEqual? 1:c   1
+    ensure -> lessOrEqual? 1:f   1
+    ensure -> lessOrEqual? 1 1:usd
+    ensure -> lessOrEqual? 1 1:m
+    ensure -> lessOrEqual? 1 1:m2
+    ensure -> lessOrEqual? 1 1:m3
+    ensure -> lessOrEqual? 1 1:c
+    ensure -> lessOrEqual? 1 1:f
+    passed
+    
+    ensure -> lessOrEqual? 1:usd 1.0
+    ensure -> lessOrEqual? 1:m   1.0
+    ensure -> lessOrEqual? 1:m2  1.0
+    ensure -> lessOrEqual? 1:m3  1.0
+    ensure -> lessOrEqual? 1:c   1.0
+    ensure -> lessOrEqual? 1:f   1.0
+    ensure -> lessOrEqual? 1.0 1:usd
+    ensure -> lessOrEqual? 1.0 1:m
+    ensure -> lessOrEqual? 1.0 1:m2
+    ensure -> lessOrEqual? 1.0 1:m3
+    ensure -> lessOrEqual? 1.0 1:c
+    ensure -> lessOrEqual? 1.0 1:f
+    passed
+    
+    ensure -> lessOrEqual? 1:usd to :rational @[5 5]
+    ensure -> lessOrEqual? 1:m   to :rational @[5 5]
+    ensure -> lessOrEqual? 1:m2  to :rational @[5 5]
+    ensure -> lessOrEqual? 1:m3  to :rational @[5 5]
+    ensure -> lessOrEqual? 1:c   to :rational @[5 5]
+    ensure -> lessOrEqual? 1:f   to :rational @[5 5] 
+    ensure -> lessOrEqual? to :rational @[5 5] 1:usd
+    ensure -> lessOrEqual? to :rational @[5 5] 1:m
+    ensure -> lessOrEqual? to :rational @[5 5] 1:m2
+    ensure -> lessOrEqual? to :rational @[5 5] 1:m3
+    ensure -> lessOrEqual? to :rational @[5 5] 1:c
+    ensure -> lessOrEqual? to :rational @[5 5] 1:f
+    passed
+    
+    
+    ; less than
+    
+    ensure -> lessOrEqual? 1:usd 2
+    ensure -> lessOrEqual? 1:m   2
+    ensure -> lessOrEqual? 1:m2  2
+    ensure -> lessOrEqual? 1:m3  2
+    ensure -> lessOrEqual? 1:c   2
+    ensure -> lessOrEqual? 1:f   2
+    ensure -> lessOrEqual? 1 2:usd
+    ensure -> lessOrEqual? 1 2:m
+    ensure -> lessOrEqual? 1 2:m2
+    ensure -> lessOrEqual? 1 2:m3
+    ensure -> lessOrEqual? 1 2:c
+    ensure -> lessOrEqual? 1 2:f
+    passed
+    
+    ensure -> lessOrEqual? 1:usd 2.0
+    ensure -> lessOrEqual? 1:m   2.0
+    ensure -> lessOrEqual? 1:m2  2.0
+    ensure -> lessOrEqual? 1:m3  2.0
+    ensure -> lessOrEqual? 1:c   2.0
+    ensure -> lessOrEqual? 1:f   2.0
+    ensure -> lessOrEqual? 1.0 2:usd
+    ensure -> lessOrEqual? 1.0 2:m
+    ensure -> lessOrEqual? 1.0 2:m2
+    ensure -> lessOrEqual? 1.0 2:m3
+    ensure -> lessOrEqual? 1.0 2:c
+    ensure -> lessOrEqual? 1.0 2:f
+    passed
+    
+    ensure -> lessOrEqual? 1:usd to :rational @[2 1]
+    ensure -> lessOrEqual? 1:m   to :rational @[2 1]
+    ensure -> lessOrEqual? 1:m2  to :rational @[2 1]
+    ensure -> lessOrEqual? 1:m3  to :rational @[2 1]
+    ensure -> lessOrEqual? 1:c   to :rational @[2 1]
+    ensure -> lessOrEqual? 1:f   to :rational @[2 1] 
+    ensure -> lessOrEqual? to :rational @[1 1] 2:usd
+    ensure -> lessOrEqual? to :rational @[1 1] 2:m
+    ensure -> lessOrEqual? to :rational @[1 1] 2:m2
+    ensure -> lessOrEqual? to :rational @[1 1] 2:m3
+    ensure -> lessOrEqual? to :rational @[1 1] 2:c
+    ensure -> lessOrEqual? to :rational @[1 1] 2:f
+    passed
+    
+    
+    ; greater than
+    
+    ensure -> not? lessOrEqual? 2:usd 1
+    ensure -> not? lessOrEqual? 2:m   1
+    ensure -> not? lessOrEqual? 2:m2  1
+    ensure -> not? lessOrEqual? 2:m3  1
+    ensure -> not? lessOrEqual? 2:c   1
+    ensure -> not? lessOrEqual? 2:f   1
+    ensure -> not? lessOrEqual? 2 1:usd
+    ensure -> not? lessOrEqual? 2 1:m
+    ensure -> not? lessOrEqual? 2 1:m2
+    ensure -> not? lessOrEqual? 2 1:m3
+    ensure -> not? lessOrEqual? 2 1:c
+    ensure -> not? lessOrEqual? 2 1:f
+    passed
+    
+    ensure -> not? lessOrEqual? 2:usd 1.0
+    ensure -> not? lessOrEqual? 2:m   1.0
+    ensure -> not? lessOrEqual? 2:m2  1.0
+    ensure -> not? lessOrEqual? 2:m3  1.0
+    ensure -> not? lessOrEqual? 2:c   1.0
+    ensure -> not? lessOrEqual? 2:f   1.0
+    ensure -> not? lessOrEqual? 2.0 1:usd
+    ensure -> not? lessOrEqual? 2.0 1:m
+    ensure -> not? lessOrEqual? 2.0 1:m2
+    ensure -> not? lessOrEqual? 2.0 1:m3
+    ensure -> not? lessOrEqual? 2.0 1:c
+    ensure -> not? lessOrEqual? 2.0 1:f
+    passed
+    
+    ensure -> not? lessOrEqual? 2:usd to :rational @[5 5]
+    ensure -> not? lessOrEqual? 2:m   to :rational @[5 5]
+    ensure -> not? lessOrEqual? 2:m2  to :rational @[5 5]
+    ensure -> not? lessOrEqual? 2:m3  to :rational @[5 5]
+    ensure -> not? lessOrEqual? 2:c   to :rational @[5 5]
+    ensure -> not? lessOrEqual? 2:f   to :rational @[5 5] 
+    ensure -> not? lessOrEqual? to :rational @[2 1] 1:usd
+    ensure -> not? lessOrEqual? to :rational @[2 1] 1:m
+    ensure -> not? lessOrEqual? to :rational @[2 1] 1:m2
+    ensure -> not? lessOrEqual? to :rational @[2 1] 1:m3
+    ensure -> not? lessOrEqual? to :rational @[2 1] 1:c
+    ensure -> not? lessOrEqual? to :rational @[2 1] 1:f
+    passed
+    
+    
+    ensure -> lessOrEqual? 1.5:m 150:cm 
+    ensure -> not? lessOrEqual? 2:m 2:cm
+    passed 
+    
+    
     topic « lessOrEqual? - :null
     
     ensure -> lessOrEqual? null null
