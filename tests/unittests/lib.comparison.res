@@ -196,6 +196,29 @@
 [+] passed!
 [+] passed!
 
+>> less? - :string
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> less? - :path
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> less? - :pathLabel
+[+] passed!
+
+>> less? - :symbol
+[+] passed!
+
+>> less? - :regex
+[+] passed!
+
+>> less? - :binary
+[+] passed!
+
 >> lessOrEqual?
 
 >> lessOrEqual? - :integer :floating :rational
@@ -233,6 +256,29 @@
 >> lessOrEqual? - :char
 [+] passed!
 [+] passed!
+[+] passed!
+
+>> lessOrEqual? - :string
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> lessOrEqual? - :path
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> lessOrEqual? - :pathLabel
+[+] passed!
+
+>> lessOrEqual? - :symbol
+[+] passed!
+
+>> lessOrEqual? - :regex
+[+] passed!
+
+>> lessOrEqual? - :binary
 [+] passed!
 
 >> notEqual?
