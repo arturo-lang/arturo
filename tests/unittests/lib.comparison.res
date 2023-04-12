@@ -219,6 +219,19 @@
 >> less? - :binary
 [+] passed!
 
+>> less? - :bytecode
+[+] passed!
+
+>> less? - :inline
+[+] passed!
+[+] passed!
+
+>> less? - :block
+[+] passed!
+
+>> less? :range
+[+] passed!
+
 >> lessOrEqual?
 
 >> lessOrEqual? - :integer :floating :rational
@@ -279,6 +292,19 @@
 [+] passed!
 
 >> lessOrEqual? - :binary
+[+] passed!
+
+>> lessOrEqual? - :bytecode
+[+] passed!
+
+>> lessOrEqual? - :inline
+[+] passed!
+[+] passed!
+
+>> lessOrEqual? - :block
+[+] passed!
+
+>> lessOrEqual? :range
 [+] passed!
 
 >> notEqual?
