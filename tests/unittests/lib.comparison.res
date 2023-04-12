@@ -213,6 +213,20 @@
 [+] passed!
 [+] passed!
 
+>> less? - :word
+[+] passed!
+
+>> less? - :label
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> less? - :literal
+[+] passed!
+
 >> less? - :path
 [+] passed!
 [+] passed!
@@ -220,6 +234,16 @@
 [+] passed!
 
 >> less? - :pathLabel
+[+] passed!
+
+>> less? - :attribute
+[+] passed!
+
+>> less? - :attributeLabel
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 [+] passed!
 
 >> less? - :symbol
@@ -324,6 +348,20 @@
 [+] passed!
 [+] passed!
 
+>> lessOrEqual? - :word
+[+] passed!
+
+>> lessOrEqual? - :label
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> lessOrEqual? - :literal
+[+] passed!
+
 >> lessOrEqual? - :path
 [+] passed!
 [+] passed!
@@ -331,6 +369,16 @@
 [+] passed!
 
 >> lessOrEqual? - :pathLabel
+[+] passed!
+
+>> lessOrEqual? - :attribute
+[+] passed!
+
+>> lessOrEqual? - :attributeLabel
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 [+] passed!
 
 >> lessOrEqual? - :symbol
