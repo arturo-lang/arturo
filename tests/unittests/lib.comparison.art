@@ -1988,6 +1988,10 @@ do [
     passed
     
     
+    topic « lessOrEqual? - :database
+    ; note: implement this test
+    
+    
 ]
 
 
