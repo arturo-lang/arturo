@@ -2283,6 +2283,44 @@ do [
     passed
     
     
+    topic « lessOrEqual? - :attribute
+    
+    ensure -> lessOrEqual? [.attr] [.attr]
+    ensure -> not? lessOrEqual? [.attr] ["attr"]
+    ; ensure -> not? lessOrEqual? [.attr] [attr]
+    ensure -> not? lessOrEqual? [.attr] ['attr]
+    ensure -> not? lessOrEqual? [.attr] [.other]
+    passed
+    
+    
+    topic « lessOrEqual? - :attributeLabel
+    
+    ensure -> lessOrEqual? [.attr: value] [.attr: value]
+    passed
+    
+    ensure -> not? lessOrEqual? [.attr:] ["attr"]
+    ensure -> not? lessOrEqual? [.attr:] ["value"]
+    ensure -> not? lessOrEqual? [.attr: value] ["attr" "value"]
+    passed
+    
+    ; ensure -> not? lessOrEqual? [.attr:] [attr]
+    ensure -> not? lessOrEqual? [.attr: value] [attr: .attr:]
+    ; ensure -> not? lessOrEqual? [.attr: value] [attr: value]
+    ensure -> not? lessOrEqual? [.attr: value] [attr: .attr:]
+    passed
+    
+    ensure -> not? lessOrEqual? [.attr:] ['attr]
+    ensure -> not? lessOrEqual? [.attr:] ['value]
+    ensure -> not? lessOrEqual? [.attr: value] ['attr 'value]
+    passed
+    
+    ; ensure -> not? lessOrEqual? [.attr:] [.attr]
+    ensure -> not? lessOrEqual? [.attr:] [.value]
+    ensure -> not? lessOrEqual? [.attr: value] [.other: value]
+    ensure -> not? lessOrEqual? [.attr: value] [.attr: other]
+    passed
+    
+    
     topic « lessOrEqual? - :symbol
     
     ensure -> lessOrEqual? [+] [+]
