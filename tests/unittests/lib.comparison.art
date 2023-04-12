@@ -2180,6 +2180,19 @@ do [
     passed
     
     
+    topic « lessOrEqual? - :literal
+    
+    ensure -> lessOrEqual? 'a 'b
+    ensure -> lessOrEqual? 'literal 'literal
+    ensure -> lessOrEqual? 'literal 'other
+    ensure -> not? lessOrEqual? 'literal "literal"
+    ensure -> not? lessOrEqual? ['literal] ["literal"]
+    ensure -> not? lessOrEqual? ['literal] [literal]
+    ensure -> not? lessOrEqual? ['literal] [.literal]
+    ensure -> not? lessOrEqual? ['literal] [literal:]
+    passed
+    
+    
     topic « lessOrEqual? - :path
     
     a: #[name: "John", surname: "Doe"]
