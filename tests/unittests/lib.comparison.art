@@ -1899,6 +1899,31 @@ do [
     passed
     
     
+    topic « lessOrEqual? - :store
+    
+    a: store "test.db"
+    a\name: "John" a\surname: "Doe"
+    b: store "test.db"
+    b\name: "John" b\surname: "Doe"
+    c: store "test2.db"
+    c\name: "John" c\surname: "Doe"
+    d: store "test3.db"
+    d\name: "Jane" d\surname: "Doe"
+    
+    ensure -> lessOrEqual? a a
+    ensure -> lessOrEqual? a b
+    ensure -> lessOrEqual? b a
+    passed
+    
+    ensure -> not? lessOrEqual? a c 
+    ensure -> not? lessOrEqual? c a 
+    ensure -> not? lessOrEqual? a d 
+    ensure -> not? lessOrEqual? d a 
+    ensure -> not? lessOrEqual? c d 
+    ensure -> not? lessOrEqual? d c 
+    passed
+    
+    
 ]
 
 
