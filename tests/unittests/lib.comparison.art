@@ -1455,6 +1455,18 @@ do [
     passed
     
     
+    topic « less? :dictionary
+    
+    a: #[name: "Walter" surname: "Pinkman"]
+    
+    ensure -> not? less? a #[name: "Walter" surname: "Pinkman"]
+    ensure -> not? less? a #[name: "Jesse" surname: "Pinkman"]
+    ensure -> not? less? a #[name "Jesse" surname "Pinkman"]
+    ensure -> not? less? a [name "Jesse" surname "Pinkman"]
+    passed
+
+    
+    
 ]
 
 
