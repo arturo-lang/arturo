@@ -1580,6 +1580,42 @@ do [
     ensure -> not? less? [a\name: "John"]   [b\name: "John"]
     passed
     
+    topic « less? - :attribute
+    
+    ensure -> not? less? [.attr] [.attr]
+    ensure -> not? less? [.attr] ["attr"]
+    ensure -> not? less? [.attr] [attr]
+    ensure -> not? less? [.attr] ['attr]
+    ensure -> not? less? [.attr] [.other]
+    passed
+    
+    
+    topic « less? - :attributeLabel
+    
+    ensure -> not? less? [.attr: value] [.attr: value]
+    passed
+    
+    ensure -> not? less? [.attr:] ["attr"]
+    ensure -> not? less? [.attr:] ["value"]
+    ensure -> not? less? [.attr: value] ["attr" "value"]
+    passed
+    
+    ensure -> not? less? [.attr:] [attr]
+    ensure -> not? less? [.attr: value] [attr: .attr:]
+    ensure -> not? less? [.attr: value] [attr: value]
+    passed
+    
+    ensure -> not? less? [.attr:] ['attr]
+    ensure -> not? less? [.attr:] ['value]
+    ensure -> not? less? [.attr: value] ['attr 'value]
+    passed
+    
+    ensure -> not? less? [.attr:] [.attr]
+    ensure -> not? less? [.attr:] [.value]
+    ensure -> not? less? [.attr: value] [.other: value]
+    ensure -> not? less? [.attr: value] [.attr: other]
+    passed
+    
     
     topic « less? - :symbol
     
