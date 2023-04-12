@@ -1550,7 +1550,22 @@ do [
     ; note: implement this test
 
 
+    topic « less? - :date
     
+    a: to :date .format: "MMM dd" "Jan 15"
+    b: to :date .format: "MMM dd" "Jan 15"
+    c: to :date .format: "YYYY MMM dd" "2023 Jan 15"
+    d: to :date .format: "MMM dd" "Jan 14"
+    e: now
+    
+    ensure -> less? d a
+    ensure -> less? a e
+    ensure -> less? a c 
+    passed
+    
+    ensure -> not? less? a b
+    ensure -> not? less? a d
+    passed 
     
     
 ]
