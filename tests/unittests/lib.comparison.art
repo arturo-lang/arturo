@@ -1962,6 +1962,25 @@ do [
     passed
     
     
+    topic « lessOrEqual? - :function
+    
+    ensure -> lessOrEqual? var 'print var 'print
+    ensure -> not? lessOrEqual? var 'inspect var 'print
+    passed
+    
+    a: $[name surname][]
+    A: $[name][]
+    b: $[name][]
+    c: $[name surname][]
+    
+    ; note: I commented these, because they return SigSegv
+    ; ensure -> lessOrEqual? (var 'a) ($[name surname][])
+    ; ensure -> lessOrEqual? (var 'a) (var 'c)
+    ensure -> not? lessOrEqual? (var 'a) (var 'A)
+    ensure -> not? lessOrEqual? (var 'a) (var 'b)
+    passed
+    
+    
 ]
 
 
