@@ -1518,6 +1518,16 @@ do [
     passed
     
     
+    topic « less? - :color
+    
+    ensure -> not? less? #000 #black
+    ensure -> not? less? #fff #white
+    ensure -> not? less? #white #white
+    ensure -> not? less? #black #white
+    ensure -> not? less? #white #black
+    passed
+    
+    
 ]
 
 
