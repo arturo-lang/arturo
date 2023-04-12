@@ -1790,6 +1790,16 @@ do [
     passed
     
     
+    topic « lessOrEqual? :range
+    
+    ensure -> lessOrEqual? 0..5 0..5
+    ensure -> lessOrEqual? [0 1 2 3 4 5] @0..5
+    ensure -> lessOrEqual? [0 2 4] @0.. .step: 2 5
+    ensure -> lessOrEqual? @range.step: 2 0 5 @range.step: 2 0 4
+    ensure -> not? lessOrEqual? range.step: 2 0 5 range.step: 2 0 4
+    passed
+    
+    
 ]
 
 
