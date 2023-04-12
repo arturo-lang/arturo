@@ -1740,6 +1740,22 @@ do [
     passed
     
     
+    topic « lessOrEqual? - :inline
+    
+    ensure -> lessOrEqual? [(2 + 2)] [(2 + 2)]
+    ensure -> lessOrEqual? [(2 3 4 5)] [(2 3 4 5)]
+    passed
+    
+    ensure -> not? lessOrEqual? [(2 + 2)] [(2 + 1)]
+    ensure -> not? lessOrEqual? [(2 3 4 5)] [(2 1 4 5)]
+    passed
+
+    ; note: should compare the lenght
+    ; ensure -> lessOrEqual? [(2)] [(2 + 1)]
+    ; ensure -> lessOrEqual? [(2 3 4)] [(2 1 4 5)]
+    ; passed
+    
+    
 ]
 
 
