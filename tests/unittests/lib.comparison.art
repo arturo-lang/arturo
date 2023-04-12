@@ -1528,6 +1528,24 @@ do [
     passed
     
     
+    topic « less? - :function
+    
+    ensure -> not? less? var 'print var 'print
+    ensure -> not? less? var 'inspect var 'print
+    passed
+    
+    a: $[name surname][]
+    A: $[name][]
+    b: $[name][]
+    c: $[name surname][]
+    
+    ensure -> not? less? (var 'a) ($[name surname][])
+    ensure -> not? less? (var 'a) (var 'c)
+    ensure -> not? less? (var 'a) (var 'A)
+    ensure -> not? less? (var 'a) (var 'b)
+    passed
+    
+    
 ]
 
 
