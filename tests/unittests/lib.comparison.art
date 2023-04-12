@@ -1934,6 +1934,16 @@ do [
     passed
     
     
+    topic « lessOrEqual? - :color
+    
+    ensure -> lessOrEqual? #000 #black
+    ensure -> lessOrEqual? #fff #white
+    ensure -> lessOrEqual? #white #white
+    ensure -> not? lessOrEqual? #black #white
+    ensure -> not? lessOrEqual? #white #black
+    passed
+    
+    
 ]
 
 
