@@ -1524,6 +1524,19 @@ do [
     passed
     
     
+    topic « less? - :literal
+    
+    ensure -> less? 'a 'b
+    ensure -> not? less? 'literal 'literal
+    ensure -> less? 'literal 'other
+    ensure -> not? less? 'literal "literal"
+    ensure -> not? less? ['literal] ["literal"]
+    ensure -> not? less? ['literal] [literal]
+    ensure -> not? less? ['literal] [.literal]
+    ensure -> not? less? ['literal] [literal:]
+    passed
+    
+    
     topic « less? - :path
     
     a: #[name: "John", surname: "Doe"]
