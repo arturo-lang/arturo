@@ -1645,6 +1645,20 @@ do [
     ensure -> not? lessOrEqual? [a\name: "John"]   [b\name: "John"]
     passed
     
+    
+    topic « lessOrEqual? - :symbol
+    
+    ensure -> lessOrEqual? [+] [+]
+    ensure -> not? lessOrEqual? [+] [-]
+    ensure -> not? lessOrEqual? [+] [++]
+    ensure -> not? lessOrEqual? [+] [`+`]
+    ensure -> not? lessOrEqual? [+] [{+}]
+    ensure -> not? lessOrEqual? [+] ["+"]
+    ensure -> not? lessOrEqual? [+] [plus]
+    ensure -> not? lessOrEqual? [+] ['+]
+    passed
+    
+    
 ]
 
 
