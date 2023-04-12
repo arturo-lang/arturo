@@ -1713,6 +1713,16 @@ do [
     passed
     
     
+    topic « lessOrEqual? - :bytecode
+    
+    x: to :bytecode [["print"][1 112 155]]
+    
+    ensure -> lessOrEqual? x to :bytecode [["print"][1 112 155]]
+    ensure -> not? lessOrEqual? x to :bytecode [["print"][2 112 155]]
+    ensure -> not? lessOrEqual? x [["print"][2 112 155]]
+    passed
+    
+    
 ]
 
 
