@@ -1490,6 +1490,40 @@ do [
     passed
     
     
+    topic « less? - :label
+    
+    ensure -> not? less? [label: value] [label: value]
+    passed
+    
+    ensure -> not? less? [label: value] [label: value2]
+    ensure -> not? less? [label: value] [label2: value]
+    passed
+    
+    ensure -> not? less? [label: value] ["label"]
+    ensure -> not? less? ["label": value] ["label"]
+    ensure -> not? less? [label: value] ["value"]
+    ensure -> not? less? [label: "value"] ["value"]
+    ensure -> not? less? [label: "value"] ["label" "value"]
+    passed
+    
+    ensure -> not? less? [label: "value"] [label]
+    ensure -> not? less? [label: "value"] [value]
+    ensure -> not? less? [label: "value"] [label value]
+    passed
+    
+    ensure -> not? less? [label: 'world] ['label]
+    ensure -> not? less? [label: 'world] ['word]
+    ensure -> not? less? [label: 'world] ['label 'word]
+    passed
+    
+    ensure -> not? less? [label: .attr] [.label]
+    ensure -> not? less? [label: .attr] [.attr]
+    ensure -> not? less? [label: .attr: "a"] [.label: .attr: "a"]
+    ensure -> not? less? [label: .attr: "a"] [.label: "a"]
+    ensure -> not? less? [label: .attr: "a"] [.attr: "a"]
+    passed
+    
+    
     topic « less? - :path
     
     a: #[name: "John", surname: "Doe"]
