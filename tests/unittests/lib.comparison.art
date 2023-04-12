@@ -1480,6 +1480,7 @@ do [
     
     topic « less? - :word
     
+    ; ensure -> less? [a] [b]
     ensure -> not? less? [word] [word]
     ensure -> not? less? [word] [otherWord]
     ensure -> not? less? [word] ["word"]
@@ -2136,6 +2137,7 @@ do [
     
     topic « lessOrEqual? - :word
     
+    ; ensure -> lessOrEqual? [a] [b]
     ensure -> lessOrEqual? [word] [word]
     ensure -> not? lessOrEqual? [word] [otherWord]
     ensure -> not? lessOrEqual? [word] ["word"]
