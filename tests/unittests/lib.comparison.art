@@ -1446,6 +1446,15 @@ do [
     passed
     
     
+    topic « less? :range
+    
+    ensure -> not? less? [0 1 2 3 4 5] @0..5
+    ensure -> not? less? [0 2 4] @0.. .step: 2 5
+    ensure -> not? less? @range.step: 2 0 5 @range.step: 2 0 4
+    ensure -> not? less? range.step: 2 0 5 range.step: 2 0 4
+    passed
+    
+    
 ]
 
 
