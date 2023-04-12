@@ -170,6 +170,18 @@
 [+] passed!
 [+] passed!
 
+>> less? - :quantity
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
 >> less? - :null
 [+] passed!
 [+] passed!
@@ -250,9 +262,27 @@
 [+] passed!
 [+] passed!
 
+>> less? - :database
+
+>> less? - :date
+[+] passed!
+[+] passed!
+
 >> lessOrEqual?
 
 >> lessOrEqual? - :integer :floating :rational
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> lessOrEqual? - :quantity
+[+] passed!
 [+] passed!
 [+] passed!
 [+] passed!
@@ -340,6 +370,12 @@
 [+] passed!
 
 >> lessOrEqual? - :function
+[+] passed!
+[+] passed!
+
+>> lessOrEqual? - :database
+
+>> lessOrEqual? - :date
 [+] passed!
 [+] passed!
 
