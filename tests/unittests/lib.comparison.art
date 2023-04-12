@@ -1372,6 +1372,19 @@ do [
     passed
     
     
+    topic « less? - :symbol
+    
+    ensure -> not? less? [+] [+]
+    ensure -> not? less? [+] [-]
+    ensure -> not? less? [+] [++]
+    ensure -> not? less? [+] [`+`]
+    ensure -> not? less? [+] [{+}]
+    ensure -> not? less? [+] ["+"]
+    ensure -> not? less? [+] [plus]
+    ensure -> not? less? [+] ['+]
+    passed
+    
+    
 ]
 
 
