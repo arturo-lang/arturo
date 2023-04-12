@@ -1545,6 +1545,13 @@ do [
     ensure -> not? less? (var 'a) (var 'b)
     passed
     
+
+    topic « less? - :database
+    ; note: implement this test
+
+
+    
+    
     
 ]
 
