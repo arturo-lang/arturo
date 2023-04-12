@@ -1417,6 +1417,23 @@ do [
     passed
     
     
+    topic « less? - :inline
+    
+    ensure -> not? less? [(2 + 2)] [(2 + 2)]
+    ensure -> not? less? [(2 3 4 5)] [(2 3 4 5)]
+    passed
+    
+    ensure -> not? less? [(2 + 2)] [(2 + 1)]
+    ensure -> not? less? [(2 3 4 5)] [(2 1 4 5)]
+    passed
+
+    ; note: should compare the lenght
+    ; ensure -> less? [(2)] [(2 + 1)]
+    ; ensure -> less? [(2 3 4)] [(2 1 4 5)]
+    ; passed
+    
+
+    
 ]
 
 
