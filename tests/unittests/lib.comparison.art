@@ -1812,6 +1812,17 @@ do [
     passed
     
     
+    topic « lessOrEqual? :dictionary
+    
+    a: #[name: "Walter" surname: "Pinkman"]
+    
+    ensure -> lessOrEqual? a #[name: "Walter" surname: "Pinkman"]
+    ensure -> not? lessOrEqual? a #[name: "Jesse" surname: "Pinkman"]
+    ensure -> not? lessOrEqual? a #[name "Jesse" surname "Pinkman"]
+    ensure -> not? lessOrEqual? a [name "Jesse" surname "Pinkman"]
+    passed
+    
+    
 ]
 
 
