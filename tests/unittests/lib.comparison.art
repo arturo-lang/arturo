@@ -1385,6 +1385,16 @@ do [
     passed
     
     
+    topic « less? - :regex
+    
+    ensure -> regex? {/[A-Z]/}
+    ensure -> not? less? {/[A-Z]/} {/[A-Z]/} 
+    ensure -> not? less? {/[A-Z]/} {/[ABCDEFGHIJKLMNOPQRSTUVWXYZ]/}
+    ensure -> not? less? {/[A-Z]/} {[A-Z]}
+    ensure -> not? less? {/[A-Z]/} "/[A-Z]/"
+    passed
+    
+    
 ]
 
 
