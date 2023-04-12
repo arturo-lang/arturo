@@ -2133,6 +2133,40 @@ do [
     passed
     
     
+    topic « lessOrEqual? - :label
+    
+    ensure -> lessOrEqual? [label: value] [label: value]
+    passed
+    
+    ensure -> not? lessOrEqual? [label: value] [label: value2]
+    ensure -> not? lessOrEqual? [label: value] [label2: value]
+    passed
+    
+    ensure -> not? lessOrEqual? [label: value] ["label"]
+    ensure -> not? lessOrEqual? ["label": value] ["label"]
+    ensure -> not? lessOrEqual? [label: value] ["value"]
+    ensure -> not? lessOrEqual? [label: "value"] ["value"]
+    ensure -> not? lessOrEqual? [label: "value"] ["label" "value"]
+    passed
+    
+    ensure -> not? lessOrEqual? [label: "value"] [label]
+    ensure -> not? lessOrEqual? [label: "value"] [value]
+    ensure -> not? lessOrEqual? [label: "value"] [label value]
+    passed
+    
+    ensure -> not? lessOrEqual? [label: 'world] ['label]
+    ensure -> not? lessOrEqual? [label: 'world] ['word]
+    ensure -> not? lessOrEqual? [label: 'world] ['label 'word]
+    passed
+    
+    ensure -> not? lessOrEqual? [label: .attr] [.label]
+    ensure -> not? lessOrEqual? [label: .attr] [.attr]
+    ; ensure -> not? lessOrEqual? [label: .attr: "a"] [.label: .attr: "a"]
+    ensure -> not? lessOrEqual? [label: .attr: "a"] [.label: "a"]
+    ensure -> not? lessOrEqual? [label: .attr: "a"] [.attr: "a"]
+    passed
+    
+    
     topic « lessOrEqual? - :path
     
     a: #[name: "John", surname: "Doe"]
