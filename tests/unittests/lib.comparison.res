@@ -232,6 +232,24 @@
 >> less? :range
 [+] passed!
 
+>> less? :dictionary
+[+] passed!
+
+>> less? - :object
+[+] passed!
+[+] passed!
+
+>> less? - :store
+[+] passed!
+[+] passed!
+
+>> less? - :color
+[+] passed!
+
+>> less? - :function
+[+] passed!
+[+] passed!
+
 >> lessOrEqual?
 
 >> lessOrEqual? - :integer :floating :rational
@@ -305,6 +323,24 @@
 [+] passed!
 
 >> lessOrEqual? :range
+[+] passed!
+
+>> lessOrEqual? :dictionary
+[+] passed!
+
+>> lessOrEqual? - :object
+[+] passed!
+[+] passed!
+
+>> lessOrEqual? - :store
+[+] passed!
+[+] passed!
+
+>> lessOrEqual? - :color
+[+] passed!
+
+>> lessOrEqual? - :function
+[+] passed!
 [+] passed!
 
 >> notEqual?
