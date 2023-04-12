@@ -1478,6 +1478,18 @@ do [
     passed
     
     
+    topic « less? - :word
+    
+    ensure -> not? less? [word] [word]
+    ensure -> not? less? [word] [otherWord]
+    ensure -> not? less? [word] ["word"]
+    ensure -> not? less? [word] [word:]
+    ensure -> not? less? [word] ['word]
+    ; ensure -> not? less? [word] [.word]
+    ensure -> not? less? [word] [.word:]
+    passed
+    
+    
     topic « less? - :path
     
     a: #[name: "John", surname: "Doe"]
