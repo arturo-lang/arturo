@@ -4081,11 +4081,9 @@ do [
         -> notEqual? 1.0 false              -> notEqual? 1.0 to :complex [1.0 1.0]
         -> notEqual? 1.0 1.0.0              -> notEqual? 1.0 :floating
         -> notEqual? 1.0 `1`                -> notEqual? 1.0 "1.0"
-        -> notEqual? [1.0] [one]          
-                                            -> notEqual? 1.0 '1
+        -> notEqual? [1.0] [one]            -> notEqual? 1.0 '1
         -> notEqual? [1.0] [.1]             -> notEqual? [1.0] [.1:]
-                                            -> notEqual? [1.0] [one\1]
-        -> notEqual? [1.0] [one\1:]         
+        -> notEqual? [1.0] [one\1]          -> notEqual? [1.0] [one\1:]         
         -> notEqual? [1.0] [+]              -> notEqual? 1.0 {/1.0/}
         -> notEqual? 1.0 to :binary 1.0     -> notEqual? 1.0 to :binary 1.0
         -> notEqual? [1.0] [(1.0)]          -> notEqual? 1.0 [1]
@@ -4101,9 +4099,8 @@ do [
         -> notEqual? a 1.0.0                    -> notEqual? a :rational
         -> notEqual? a `1`                      -> notEqual? a "1/1"
         -> notEqual? @[a] [one]                 -> notEqual? @[a] [one:]
-                                                -> notEqual? 1 '1
-        -> notEqual? @[a] [.1]                  -> notEqual? @[a] [.1:]
-                                                -> notEqual? @[a] [one\1]
+        -> notEqual? 1 '1                       -> notEqual? @[a] [.1]                  
+        -> notEqual? @[a] [.1:]                 -> notEqual? @[a] [one\1]
         -> notEqual? @[a] [+]                   -> notEqual? a {/1/1/}
         -> notEqual? a to :binary 1             -> notEqual? a to :binary 1
         -> notEqual? @[a] [(1)]                 -> notEqual? a [1]
@@ -4113,54 +4110,51 @@ do [
     
     ; for :quantity
     ensure -> not? every? @[
-        -> notEqual? 1:usd null                    -> notEqual? 1:usd true
-        -> notEqual? 1:usd false                   -> notEqual? 1:usd to :complex [1 1]
-        -> notEqual? 1:usd 1.0.0                   -> notEqual? 1:usd :quantity
-        -> notEqual? 1:usd `1`                     -> notEqual? 1:usd "1USD"
-        -> notEqual? [1:usd] [one]                 -> notEqual? [1:usd] [one:]
-                                                   -> notEqual? 1:usd '1
-        -> notEqual? [1:usd] [.1]                  -> notEqual? [1:usd] [.1:]
-                                                   -> notEqual? [1:usd] [one\1]
-        -> notEqual? [1:usd] [one\1:]              
-        -> notEqual? [1:usd] [+]                   -> notEqual? 1:usd {/1USD/}
-        -> notEqual? 1:usd to :binary 1            -> notEqual? 1:usd to :binary 1
-        -> notEqual? [1:usd] [(1)]                 -> notEqual? 1:usd [1:usd]
-        -> notEqual? 1:usd 1..1                    -> notEqual? 1:usd #[one: 1:usd]
-        -> notEqual? 0:usd #black                  -> notEqual? 1:usd var 'one?
+        -> notEqual? 1:usd null             -> notEqual? 1:usd true
+        -> notEqual? 1:usd false            -> notEqual? 1:usd to :complex [1 1]
+        -> notEqual? 1:usd 1.0.0            -> notEqual? 1:usd :quantity
+        -> notEqual? 1:usd `1`              -> notEqual? 1:usd "1USD"
+        -> notEqual? [1:usd] [one]          -> notEqual? [1:usd] [one:]
+        -> notEqual? 1:usd '1               -> notEqual? [1:usd] [.1]                  
+        -> notEqual? [1:usd] [.1:]          -> notEqual? [1:usd] [one\1]
+        -> notEqual? [1:usd] [one\1:]       -> notEqual? [1:usd] [+]                   
+        -> notEqual? 1:usd {/1USD/}         -> notEqual? 1:usd to :binary 1            
+        -> notEqual? 1:usd to :binary 1     -> notEqual? [1:usd] [(1)]                 
+        -> notEqual? 1:usd [1:usd]          -> notEqual? 1:usd 1..1                    
+        -> notEqual? 1:usd #[one: 1:usd]    -> notEqual? 0:usd #black                  
+        -> notEqual? 1:usd var 'one?
     ] => not? passed
     
     ensure -> not? every? @[ 
-        -> notEqual? 1:m null              -> notEqual? 1:m true
-        -> notEqual? 1:m false             -> notEqual? 1:m to :complex [1 1]
-        -> notEqual? 1:m 1.0.0             -> notEqual? 1:m :quantity
-        -> notEqual? 1:m `1`               -> notEqual? 1:m "1m"
-        -> notEqual? [1:m] [one]           -> notEqual? [1:m] [one:]
-                                           -> notEqual? 1:m '1
-        -> notEqual? [1:m] [.1]            -> notEqual? [1:m] [.1: 1:m]
-                                           -> notEqual? [1:m] [one\1]
-        -> notEqual? [1:m] [one\1:]        
-        -> notEqual? [1:m] [+]             -> notEqual? 1:m {/1m/}
-        -> notEqual? 1:m to :binary 1      -> notEqual? 1:m to :binary 1
-        -> notEqual? [1:m] [(1)]           -> notEqual? 1:m [1:m]
-        -> notEqual? 1:m 1..1              -> notEqual? 1:m #[one: 1:m]
-        -> notEqual? 0:m #black            -> notEqual? 1:m var 'one?
+        -> notEqual? 1:m null           -> notEqual? 1:m true
+        -> notEqual? 1:m false          -> notEqual? 1:m to :complex [1 1]
+        -> notEqual? 1:m 1.0.0          -> notEqual? 1:m :quantity
+        -> notEqual? 1:m `1`            -> notEqual? 1:m "1m"
+        -> notEqual? [1:m] [one]        -> notEqual? [1:m] [one:]
+        -> notEqual? 1:m '1             -> notEqual? [1:m] [.1]            
+        -> notEqual? [1:m] [.1: 1:m]    -> notEqual? [1:m] [one\1]
+        -> notEqual? [1:m] [one\1:]     -> notEqual? [1:m] [+]              
+        -> notEqual? 1:m {/1m/}         -> notEqual? 1:m to :binary 1       
+        -> notEqual? 1:m to :binary 1   -> notEqual? [1:m] [(1)]            
+        -> notEqual? 1:m [1:m]          -> notEqual? 1:m 1..1               
+        -> notEqual? 1:m #[one: 1:m]    -> notEqual? 0:m #black             
+        -> notEqual? 1:m var 'one?
     ] => not? passed
     
     ensure -> not? every? @[ 
-        -> notEqual? 1:m3 null                 -> notEqual? 1:m3 true
-        -> notEqual? 1:m3 false                -> notEqual? 1:m3 to :complex [1 1]
-        -> notEqual? 1:m3 1.0.0                -> notEqual? 1:m3 :quantity
-        -> notEqual? 1:m3 `1`                  -> notEqual? 1:m3 "1m³"
-        -> notEqual? [1:m3] [one]              -> notEqual? [1:m3] [one:]
-                                               -> notEqual? 1:m3 '1
-        -> notEqual? [1:m3] [.1]               -> notEqual? [1:m3] [.1:]
-                                               -> notEqual? [1:m3] [one\1]
-        -> notEqual? [1:m3] [one\1:]           
-        -> notEqual? [1:m3] [+]                -> notEqual? 1:m3 {/1m³/}
-        -> notEqual? 1:m3 to :binary 1         -> notEqual? 1:m3 to :binary 1
-        -> notEqual? [1:m3] [(1)]              -> notEqual? 1:m3 [1:m3]
-        -> notEqual? 1:m3 1..1                 -> notEqual? 1:m3 #[one: 1:m3]
-        -> notEqual? 0:m3 #black               -> notEqual? 1:m3 var 'one?
+        -> notEqual? 1:m3 null                  -> notEqual? 1:m3 true
+        -> notEqual? 1:m3 false                 -> notEqual? 1:m3 to :complex [1 1]
+        -> notEqual? 1:m3 1.0.0                 -> notEqual? 1:m3 :quantity
+        -> notEqual? 1:m3 `1`                   -> notEqual? 1:m3 "1m³"
+        -> notEqual? [1:m3] [one]               -> notEqual? [1:m3] [one:]
+        -> notEqual? 1:m3 '1                    -> notEqual? [1:m3] [.1]               
+        -> notEqual? [1:m3] [.1:]               -> notEqual? [1:m3] [one\1]
+        -> notEqual? [1:m3] [one\1:]            -> notEqual? [1:m3] [+]                
+        -> notEqual? 1:m3 {/1m³/}               -> notEqual? 1:m3 to :binary 1         
+        -> notEqual? 1:m3 to :binary 1          -> notEqual? [1:m3] [(1)]              
+        -> notEqual? 1:m3 [1:m3]                -> notEqual? 1:m3 1..1                 
+        -> notEqual? 1:m3 #[one: 1:m3]          -> notEqual? 0:m3 #black               
+        -> notEqual? 1:m3 var 'one?
     ] => not? passed
     
     ensure -> not? every? @[ 
@@ -4169,35 +4163,32 @@ do [
         -> notEqual? 1:c 1.0.0             -> notEqual? 1:c :quantity
         -> notEqual? 1:c `1`               -> notEqual? 1:c "1°C"
         -> notEqual? [1:c] [one]           -> notEqual? [1:c] [one:]
-                                           -> notEqual? 1:c '1
-        -> notEqual? [1:c] [.1]            -> notEqual? [1:c] [.1:]
-                                           -> notEqual? [1:c] [one\1]
-        -> notEqual? [1:c] [one\1:]        
-        -> notEqual? [1:c] [+]             -> notEqual? 1:c {/1°C/}
-        -> notEqual? 1:c to :binary 1      -> notEqual? 1:c to :binary 1
-        -> notEqual? [1:c] [(1)]           -> notEqual? 1:c [1:c]
-        -> notEqual? 1:c 1..1              -> notEqual? 1:c #[one: 1:c]
-        -> notEqual? 0:c #black            -> notEqual? 1:c var 'one?
+        -> notEqual? 1:c '1.0i             -> notEqual? [1:c] [.1]            
+        -> notEqual? [1:c] [.1:]           -> notEqual? [1:c] [one\1]         
+        -> notEqual? [1:c] [one\1:]        -> notEqual? [1:c] [+]             
+        -> notEqual? 1:c {/1°C/}           -> notEqual? 1:c to :binary 1      
+        -> notEqual? 1:c to :binary 1      -> notEqual? [1:c] [(1)]           
+        -> notEqual? 1:c [1:c]             -> notEqual? 1:c 1..1              
+        -> notEqual? 1:c #[one: 1:c]       -> notEqual? 0:c #black            
+        -> notEqual? 1:c var 'one?
     ] => not? passed
     
     ; for :null
     ensure -> not? every? @[
-        -> notEqual? null 0                        -> notEqual? null 0.0            
-        -> notEqual? null to :rational [1 1]       -> notEqual? null true
-        -> notEqual? null false                    -> notEqual? null to :complex [0 0]
-        -> notEqual? null 0.0.0                    -> notEqual? null :null
-        -> notEqual? null `ø`                      -> notEqual? null "null"
-        -> notEqual? @[null] [null]                -> notEqual? @[null] [null:]
-                                                   -> notEqual? null 'null
-        -> notEqual? @[null] [.null]               -> notEqual? @[null] [.null:]
-                                                   -> notEqual? @[null] [null\null]
-        -> notEqual? @[null] [null\null:]          
-        -> notEqual? @[null] [ø]                   -> notEqual? null {/null/}
-        -> notEqual? null {/ø/}                    -> notEqual? null to :binary 0   
-        -> notEqual? null to :binary 0             -> notEqual? @[null] [(null)]         
-        -> notEqual? null [null]                   -> notEqual? null 0..0            
-        -> notEqual? null #[null: null]            -> notEqual? null #black          
-        -> notEqual? null var 'null?
+        -> notEqual? null 0                         -> notEqual? null 0.0            
+        -> notEqual? null to :rational [1 1]        -> notEqual? null true
+        -> notEqual? null false                     -> notEqual? null to :complex [0 0]
+        -> notEqual? null 0.0.0                     -> notEqual? null :null
+        -> notEqual? null `ø`                       -> notEqual? null "null"
+        -> notEqual? @[null] [null]                 -> notEqual? @[null] [null:]
+        -> notEqual? null 'null                     -> notEqual? @[null] [.null]               
+        -> notEqual? @[null] [.null:]               -> notEqual? @[null] [null\null]
+        -> notEqual? @[null] [null\null:]           -> notEqual? @[null] [ø]                   
+        -> notEqual? null {/null/}                  -> notEqual? null {/ø/}                    
+        -> notEqual? null to :binary 0              -> notEqual? null to :binary 0             
+        -> notEqual? @[null] [(null)]               -> notEqual? null [null]                   
+        -> notEqual? null 0..0                      -> notEqual? null #[null: null]            
+        -> notEqual? null #black                    -> notEqual? null var 'null?
     ] => not? passed
     
     ; for :logical
@@ -4206,11 +4197,9 @@ do [
         -> notEqual? true to :rational [1 1]    -> notEqual? true to :complex [1 1]
         -> notEqual? true 0.0.0                 -> notEqual? true :true
         -> notEqual? true `0`                   -> notEqual? true "true"
-        -> notEqual? @[true] [true]             
-                                                -> notEqual? true 'true
+        -> notEqual? @[true] [true]             -> notEqual? true 'true
         -> notEqual? @[true] [.true]            -> notEqual? @[true] [.true:]
-                                                -> notEqual? @[true] [true\true]
-        -> notEqual? @[true] [true\true:]       
+        -> notEqual? @[true] [true\true]        -> notEqual? @[true] [true\true:]       
         -> notEqual? @[true] [ø]                -> notEqual? true {/true/}
         -> notEqual? true to :binary 0          -> notEqual? true to :binary 0             
         -> notEqual? @[true] [(true)]           -> notEqual? true [true]                   
@@ -4224,15 +4213,14 @@ do [
         -> notEqual? false 0.0.0                    -> notEqual? false :false
         -> notEqual? false `0`                      -> notEqual? false "false"
         -> notEqual? @[false] [false]               -> notEqual? @[false] [false:]
-                                                    -> notEqual? false 'false
-        -> notEqual? @[false] [.false]              -> notEqual? @[false] [.false:]
-                                                    -> notEqual? @[false] [false\false]
-        -> notEqual? @[false] [false\false:]        
-        -> notEqual? @[false] [ø]                   -> notEqual? false {/false/}
-        -> notEqual? false to :binary 0             -> notEqual? false to :binary 0                
-        -> notEqual? @[false] [(false)]             -> notEqual? false [false]                     
-        -> notEqual? false 0..0                     -> notEqual? false #[false: false]             
-        -> notEqual? false #black                   -> notEqual? false var 'false?
+        -> notEqual? false 'false                   -> notEqual? @[false] [.false]              
+        -> notEqual? @[false] [.false:]             -> notEqual? @[false] [false\false]
+        -> notEqual? @[false] [false\false:]        -> notEqual? @[false] [ø]                   
+        -> notEqual? false {/false/}                -> notEqual? false to :binary 0             
+        -> notEqual? false to :binary 0             -> notEqual? @[false] [(false)]             
+        -> notEqual? false [false]                  -> notEqual? false 0..0                     
+        -> notEqual? false #[false: false]          -> notEqual? false #black                   
+        -> notEqual? false var 'false?
     ] => not? passed
     
     ensure -> not? every? @[
@@ -4241,15 +4229,13 @@ do [
         -> notEqual? maybe 0.0.0                    -> notEqual? maybe :maybe
         -> notEqual? maybe `0`                      -> notEqual? maybe "maybe"
         -> notEqual? @[maybe] [maybe]               -> notEqual? @[maybe] [maybe:]
-                                                    -> notEqual? maybe 'maybe
-        -> notEqual? @[maybe] [.maybe]              -> notEqual? @[maybe] [.maybe:]
-                                                    -> notEqual? @[maybe] [maybe\maybe]
-        -> notEqual? @[maybe] [maybe\maybe:]        
-        -> notEqual? @[maybe] [ø]                   -> notEqual? maybe {/maybe/}
-        -> notEqual? maybe to :binary 0             -> notEqual? maybe to :binary 0
-        -> notEqual? @[maybe] [(maybe)]             -> notEqual? maybe [maybe]
-        -> notEqual? maybe 0..0                     -> notEqual? maybe #[maybe: maybe]             
-        -> notEqual? maybe #black                   
+        -> notEqual? maybe 'maybe                   -> notEqual? @[maybe] [.maybe]              
+        -> notEqual? @[maybe] [.maybe:]             -> notEqual? @[maybe] [maybe\maybe]
+        -> notEqual? @[maybe] [maybe\maybe:]        -> notEqual? @[maybe] [ø]                   
+        -> notEqual? maybe {/maybe/}                -> notEqual? maybe to :binary 0             
+        -> notEqual? maybe to :binary 0             -> notEqual? @[maybe] [(maybe)]             
+        -> notEqual? maybe [maybe]                  -> notEqual? maybe 0..0                     
+        -> notEqual? maybe #[maybe: maybe]          -> notEqual? maybe #black                   
     ] => not? passed
     
     ; for :complex
@@ -4261,15 +4247,14 @@ do [
         -> notEqual? a 1.0.0                    -> notEqual? a :rational
         -> notEqual? a `1`                      -> notEqual? a "1.0+1.0i"
         -> notEqual? @[a] [one]                 -> notEqual? @[a] [one:]
-                                                -> notEqual? 1 '1
-        -> notEqual? @[a] [.1]                  -> notEqual? @[a] [.1:]
-                                                -> notEqual? @[a] [one\1]
-        -> notEqual? @[a] [one\1:]              
-        -> notEqual? @[a] [+]                   -> notEqual? a {/1.0+1.0i/}
-        -> notEqual? a to :binary 1             -> notEqual? a to :binary 1
-        -> notEqual? @[a] [(1)]                 -> notEqual? a [1]
-        -> notEqual? a 1..1                     -> notEqual? a #[one: 1]
-        -> notEqual? to :complex [0 0] #black   -> notEqual? a var 'one?
+        -> notEqual? 1 '1                       -> notEqual? @[a] [.1]                  
+        -> notEqual? @[a] [.1:]                 -> notEqual? @[a] [one\1]
+        -> notEqual? @[a] [one\1:]              -> notEqual? @[a] [+]                   
+        -> notEqual? a {/1.0+1.0i/}             -> notEqual? a to :binary 1             
+        -> notEqual? a to :binary 1             -> notEqual? @[a] [(1)]                 
+        -> notEqual? a [1]                      -> notEqual? a 1..1                     
+        -> notEqual? a #[one: 1]                -> notEqual? to :complex [0 0] #black   
+        -> notEqual? a var 'one?
     ] => not? passed
     
     ; for :version
@@ -4280,15 +4265,14 @@ do [
         -> notEqual? 1.0.0 to :complex [1.0 1.0]    -> notEqual? 1.0.0 :floating
         -> notEqual? 1.0.0 `1`                      -> notEqual? 1.0.0 "1.0.0"
         -> notEqual? [1.0.0] [one]                  -> notEqual? [1.0.0] [one:]
-                                                    -> notEqual? 1.0.0 '1
-        -> notEqual? [1.0.0] [.1]                   -> notEqual? [1.0.0] [.1:]
-                                                    -> notEqual? [1.0.0] [one\1]
-        -> notEqual? [1.0.0] [one\1:]              
-        -> notEqual? [1.0.0] [+]                    -> notEqual? 1.0.0 {/1.0.0/}
-        -> notEqual? 1.0.0 to :binary 1.0           -> notEqual? 1.0.0 to :binary 1.0
-        -> notEqual? [1.0.0] [(1.0.0)]              -> notEqual? 1.0.0 [1.0.0]
-        -> notEqual? 1.0.0 1..1                     -> notEqual? 1.0.0 #[one: 1.0.0]
-        -> notEqual? 0.0.0 #black                   -> notEqual? 1.0.0 var 'version?
+        -> notEqual? 1.0.0 '1                       -> notEqual? [1.0.0] [.1]                   
+        -> notEqual? [1.0.0] [.1:]                  -> notEqual? [1.0.0] [one\1]                
+        -> notEqual? [1.0.0] [one\1:]               -> notEqual? [1.0.0] [+]                    
+        -> notEqual? 1.0.0 {/1.0.0/}                -> notEqual? 1.0.0 to :binary 1.0           
+        -> notEqual? 1.0.0 to :binary 1.0           -> notEqual? [1.0.0] [(1.0.0)]              
+        -> notEqual? 1.0.0 [1.0.0]                  -> notEqual? 1.0.0 1..1                     
+        -> notEqual? 1.0.0 #[one: 1.0.0]            -> notEqual? 0.0.0 #black                   
+        -> notEqual? 1.0.0 var 'version?
     ] => not? passed
     
     ; for :type
@@ -4302,22 +4286,20 @@ do [
         -> notEqual? :char `T`                         -> notEqual? :string ":type"
         -> notEqual? [:type] [type]                    -> notEqual? [:word] [word]                     
         -> notEqual? [:type] [type:]                   -> notEqual? [:label] [label:]
-                                                       -> notEqual? :1 '1
-        -> notEqual? :literal '1                       -> notEqual? [:type] [.type]                      
-        -> notEqual? [:attribute] [.type]              -> notEqual? [:type] [.type:]
-        -> notEqual? [:attributeLabel] [.type:]             
+        -> notEqual? :1 '1                             -> notEqual? :literal '1                       
+        -> notEqual? [:type] [.type]                   -> notEqual? [:attribute] [.type]              
+        -> notEqual? [:type] [.type:]                  -> notEqual? [:attributeLabel] [.type:]             
         -> notEqual? [:type] [type\type]               -> notEqual? [:path] [type\type]
         -> notEqual? [:type] [type\type:]              -> notEqual? [:pathLabel] [type\type:]            
-                                                       -> notEqual? [:type] [+]                       
-        -> notEqual? [:symbol] [+]                     -> notEqual? :type {/:type/}
-        -> notEqual? :regex {/:type/}                  -> notEqual? :type to :binary 1.0              
-        -> notEqual? :binary to :binary 1.0            -> notEqual? [:type] [(:type)]                 
-        -> notEqual? [:inline] [(:type)]               -> notEqual? :type [:type]
-        -> notEqual? :block [:type]                    -> notEqual? :type 1..1                        
-        -> notEqual? :range 1..1                       -> notEqual? :type #[type: :type]
-        -> notEqual? :dictionary #[type: :type]        -> notEqual? :type #black                      
-        -> notEqual? :color #black                     -> notEqual? :type var 'type?
-        -> notEqual? :function var 'one?
+        -> notEqual? [:type] [+]                       -> notEqual? [:symbol] [+]                     
+        -> notEqual? :type {/:type/}                   -> notEqual? :regex {/:type/}                  
+        -> notEqual? :type to :binary 1.0              -> notEqual? :binary to :binary 1.0            
+        -> notEqual? [:type] [(:type)]                 -> notEqual? [:inline] [(:type)]               
+        -> notEqual? :type [:type]                     -> notEqual? :block [:type]                    
+        -> notEqual? :type 1..1                        -> notEqual? :range 1..1                       
+        -> notEqual? :type #[type: :type]              -> notEqual? :dictionary #[type: :type]        
+        -> notEqual? :type #black                      -> notEqual? :color #black                     
+        -> notEqual? :type var 'type?                  -> notEqual? :function var 'one?
     ] => not? passed
     
     ; for :char
@@ -4327,15 +4309,14 @@ do [
         -> notEqual? `t` true                  -> notEqual? `f` false                   
         -> notEqual? `1` to :complex [1.0 1.0] -> notEqual? `T` :floating
         -> notEqual? [`a`] [one]               -> notEqual? [`a`] [a: `a`]
-                                               -> notEqual? `a` 'a
-        -> notEqual? [`a`] [.1]                -> notEqual? [`a`] [.a:]
-                                               -> notEqual? [`a`] [a\a]
-        -> notEqual? [`a`] [a\a:]              
-        -> notEqual? [`+`] [+]                 -> notEqual? `a` {/a/}
-        -> notEqual? `1` to :binary 1          -> notEqual? `a` to :binary 1
-        -> notEqual? [`1`] [(`1`)]             -> notEqual? `a` [`a`]
-        -> notEqual? `1` 1..1                  -> notEqual? `a` #[a: `a`]
-        -> notEqual? `1` #black                -> notEqual? `a` var 'char?
+        -> notEqual? `a` 'a                    -> notEqual? [`a`] [.1]                
+        -> notEqual? [`a`] [.a:]               -> notEqual? [`a`] [a\a]
+        -> notEqual? [`a`] [a\a:]              -> notEqual? [`+`] [+]                 
+        -> notEqual? `a` {/a/}                 -> notEqual? `1` to :binary 1          
+        -> notEqual? `a` to :binary 1          -> notEqual? [`1`] [(`1`)]             
+        -> notEqual? `a` [`a`]                 -> notEqual? `1` 1..1                  
+        -> notEqual? `a` #[a: `a`]             -> notEqual? `1` #black                
+        -> notEqual? `a` var 'char?
     ] => not? passed
     
     ; for :string
@@ -4347,12 +4328,12 @@ do [
         -> notEqual? "1.0+1.0i" to :complex [1.0 1.0]  -> notEqual? "type" :floating
         -> notEqual? "floating" :floating              -> notEqual? ":floating" :floating
         -> notEqual? "1.0" :floating                   -> notEqual? ["a"] [a\a]
-        -> notEqual? ["a"] [a\a:]                  
-        -> notEqual? ["+"] [+]                         -> notEqual? "a" {/a/}
-        -> notEqual? "01" to :binary 1                 -> notEqual? "1" to :binary 1
-        -> notEqual? [""] [("")]                       -> notEqual? "" [""]
-        -> notEqual? "1" 1..1                          -> notEqual? "a" #[a: "a"]
-        -> notEqual? "#000000" #black                  -> notEqual? "000000" #black              
+        -> notEqual? ["a"] [a\a:]                      -> notEqual? ["+"] [+]                         
+        -> notEqual? "a" {/a/}                         -> notEqual? "01" to :binary 1                 
+        -> notEqual? "1" to :binary 1                  -> notEqual? [""] [("")]                       
+        -> notEqual? "" [""]                           -> notEqual? "1" 1..1                          
+        -> notEqual? "a" #[a: "a"]                     -> notEqual? "#000000" #black                  
+        -> notEqual? "000000" #black              
         -> notEqual? "" var 'char?
     ] => not? passed
     
