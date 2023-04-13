@@ -2922,6 +2922,19 @@ do [
         -> lessOrEqual? to :binary 1 {/01/}               -> lessOrEqual? to :binary 1    {/1/}
     ] => not? passed
     
+    ; for :range
+    ensure -> every? @[
+        -> lessOrEqual? 1..1 1                        -> lessOrEqual? 1..1 1.0
+        -> lessOrEqual? 1..1 a: to :rational [1 1]    -> lessOrEqual? 1..1 1:usd
+        -> lessOrEqual? 1..1 1:m                      -> lessOrEqual? 1..1 1:m3  
+        -> lessOrEqual? 1..1 1:c                      -> lessOrEqual? 0..0 null 
+        -> lessOrEqual? 0..0 true                     -> lessOrEqual? 0..0 false
+        -> lessOrEqual? 0..0 maybe                    -> lessOrEqual? 1..1 to :complex [1 1]
+        -> lessOrEqual? 1..1 1.0.0                    -> lessOrEqual? 1..1 :type                        
+        -> lessOrEqual? 1..1 :range                   -> lessOrEqual? 1..1 `1` 
+        -> lessOrEqual? 1..1 "1"                      -> lessOrEqual? 1..1 'range  
+        -> lessOrEqual? 1..1 {/1/}
+    ] => not? passed
 ]
 
 
