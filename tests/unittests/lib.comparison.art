@@ -2904,6 +2904,24 @@ do [
         -> lessOrEqual? {/000000/} #black                     -> lessOrEqual? {/var/} var 'regex?
         -> lessOrEqual? {/regex?/} var 'regex?
     ] => not? passed
+    
+    ; for :binary
+    ensure -> every? @[
+        -> lessOrEqual? to :binary 1 1                    -> lessOrEqual? to :binary 1 1.0                
+        -> lessOrEqual? to :binary 1 to :rational [1 1]   -> lessOrEqual? to :binary 1 1:usd                
+        -> lessOrEqual? to :binary 1 1:m                  -> lessOrEqual? to :binary 1 1:m3                 
+        -> lessOrEqual? to :binary 1 1:c                  -> lessOrEqual? to :binary 0 null                 
+        -> lessOrEqual? to :binary 0 true                 -> lessOrEqual? to :binary 0 false                
+        -> lessOrEqual? to :binary 0 maybe                -> lessOrEqual? to :binary 1 to :complex [1 1]                  
+        -> lessOrEqual? to :binary 1 1.0.0                -> lessOrEqual? to :binary 1 :type              
+        -> lessOrEqual? to :binary 1 :binary              -> lessOrEqual? to :binary 1 `1`                  
+        -> lessOrEqual? to :binary "a" `a`                -> lessOrEqual? to :binary 1 "01"                 
+        -> lessOrEqual? to :binary 1 "1"                  -> lessOrEqual? @[to :binary 1] [binary]          
+        -> lessOrEqual? @[to :binary 1] [one]             -> lessOrEqual? @[to :binary 1] [binary:]         
+        -> lessOrEqual? @[to :binary 1][.binary]          -> lessOrEqual? @[to :binary 1] [.binary:]        
+        -> lessOrEqual? to :binary 1 {/01/}               -> lessOrEqual? to :binary 1    {/1/}
+    ] => not? passed
+    
 ]
 
 
