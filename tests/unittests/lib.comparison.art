@@ -2668,6 +2668,54 @@ do [
         -> lessOrEqual? null #black          
         -> lessOrEqual? null var 'null?
     ] => not? passed
+    
+    ; for :logical
+    ensure -> every? @[
+        -> lessOrEqual? true 0                  -> lessOrEqual? true 0.0            
+        -> lessOrEqual? true to :rational [1 1] -> lessOrEqual? true to :complex [0 0]
+        -> lessOrEqual? true 0.0.0              -> lessOrEqual? true :true
+        -> lessOrEqual? true `0`                -> lessOrEqual? true "true"
+        -> lessOrEqual? @[true] [true]          -> lessOrEqual? @[true] [true:]
+        -> lessOrEqual? true 'true              -> lessOrEqual? @[true] [.true]               
+        -> lessOrEqual? @[true] [.true:]        -> lessOrEqual? @[true] [true\true]
+        -> lessOrEqual? @[true] [true\true:]    -> lessOrEqual? @[true] [ø]                   
+        -> lessOrEqual? true {/true/}           -> lessOrEqual? true to :binary 0             
+        -> lessOrEqual? true to :binary 0       -> lessOrEqual? @[true] [(true)]              
+        -> lessOrEqual? true [true]             -> lessOrEqual? true 0..0                     
+        -> lessOrEqual? true #[true: true]      -> lessOrEqual? true #black                   
+        -> lessOrEqual? true var 'true?
+    ] => not? passed
+    
+    ensure -> every? @[
+        -> lessOrEqual? false 0                     -> lessOrEqual? false 0.0            
+        -> lessOrEqual? false to :rational [1 1]    -> lessOrEqual? false to :complex [0 0]
+        -> lessOrEqual? false 0.0.0                 -> lessOrEqual? false :false
+        -> lessOrEqual? false `0`                   -> lessOrEqual? false "false"
+        -> lessOrEqual? @[false] [false]            -> lessOrEqual? @[false] [false:]
+        -> lessOrEqual? false 'false                -> lessOrEqual? @[false] [.false]                 
+        -> lessOrEqual? @[false] [.false:]          -> lessOrEqual? @[false] [false\false]
+        -> lessOrEqual? @[false] [false\false:]     -> lessOrEqual? @[false] [ø]                      
+        -> lessOrEqual? false {/false/}             -> lessOrEqual? false to :binary 0                
+        -> lessOrEqual? false to :binary 0          -> lessOrEqual? @[false] [(false)]                
+        -> lessOrEqual? false [false]               -> lessOrEqual? false 0..0                        
+        -> lessOrEqual? false #[false: false]       -> lessOrEqual? false #black                      
+        -> lessOrEqual? false var 'false?
+    ] => not? passed
+    
+    ensure -> every? @[
+        -> lessOrEqual? maybe 0                     -> lessOrEqual? maybe 0.0            
+        -> lessOrEqual? maybe to :rational [1 1]    -> lessOrEqual? maybe to :complex [0 0]
+        -> lessOrEqual? maybe 0.0.0                 -> lessOrEqual? maybe :maybe
+        -> lessOrEqual? maybe `0`                   -> lessOrEqual? maybe "maybe"
+        -> lessOrEqual? @[maybe] [maybe]            -> lessOrEqual? @[maybe] [maybe:]
+        -> lessOrEqual? maybe 'maybe                -> lessOrEqual? @[maybe] [.maybe]                 
+        -> lessOrEqual? @[maybe] [.maybe:]          -> lessOrEqual? @[maybe] [maybe\maybe]
+        -> lessOrEqual? @[maybe] [maybe\maybe:]     -> lessOrEqual? @[maybe] [ø]                      
+        -> lessOrEqual? maybe {/maybe/}             -> lessOrEqual? maybe to :binary 0                
+        -> lessOrEqual? maybe to :binary 0A         -> lessOrEqual? @[maybe] [(maybe)]                
+        -> lessOrEqual? maybe [maybe]               -> lessOrEqual? maybe 0..0                        
+        -> lessOrEqual? maybe #[maybe: maybe]       -> lessOrEqual? maybe #black                      
+    ] => not? passed
 ]
 
 
