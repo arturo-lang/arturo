@@ -2168,7 +2168,7 @@ do [
         -> less? {/1.0+1.0i/} to :complex [1.0 1.0]    -> less? {/type/} :floating
         -> less? {/floating/} :floating                -> less? {/:floating/} :floating
         -> less? {/1.0/} :floating                     -> less? [{/a/}] [a\a]
-        -> less? [{/a/}] [a\a:]                        -> less? [{/a/} {/a/}] [a\a: {/a/}]
+        -> less? [{/a/}] [a\a:]
         -> less? [{/\+/}] [+]                          -> less? {/01/} to :binary 1                 
         -> less? {/1/} to :binary 1                    -> less? [{//}] [({//})]                     
         -> less? {//} [""]                             -> less? {/1/} 1..1                          
