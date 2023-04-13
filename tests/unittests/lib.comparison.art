@@ -2649,6 +2649,25 @@ do [
         -> lessOrEqual? 1:c #[one: 1:c]     -> lessOrEqual? 0:c #black          
         -> lessOrEqual? 1:c var 'one?
     ] => not? passed
+    
+    ; for :null
+    ensure -> every? @[
+        -> lessOrEqual? null 0                  -> lessOrEqual? null 0.0            
+        -> lessOrEqual? null to :rational [1 1] -> lessOrEqual? null true
+        -> lessOrEqual? null false              -> lessOrEqual? null to :complex [0 0]
+        -> lessOrEqual? null 0.0.0              -> lessOrEqual? null :null
+        -> lessOrEqual? null `ø`                -> lessOrEqual? null "null"
+        -> lessOrEqual? @[null] [null]          -> lessOrEqual? @[null] [null:]
+        -> lessOrEqual? null 'null              -> lessOrEqual? @[null] [.null]               
+        -> lessOrEqual? @[null] [.null:]        -> lessOrEqual? @[null] [null\null]
+        -> lessOrEqual? @[null] [null\null:]    -> lessOrEqual? @[null] [ø]                   
+        -> lessOrEqual? null {/null/}           -> lessOrEqual? null {/ø/}                    
+        -> lessOrEqual? null to :binary 0       -> lessOrEqual? null to :binary 0             
+        -> lessOrEqual? @[null] [(null)]        -> lessOrEqual? null [null]                   
+        -> lessOrEqual? null 0..0               -> lessOrEqual? null #[null: null]            
+        -> lessOrEqual? null #black          
+        -> lessOrEqual? null var 'null?
+    ] => not? passed
 ]
 
 
