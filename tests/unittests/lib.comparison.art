@@ -2948,6 +2948,22 @@ do [
         -> lessOrEqual? #[year: 2023 day: 15 Month: "January"] b
         -> lessOrEqual? b #[year: 2023 day: 15 Month: "January"]
     ] => not? passed
+    
+    ; for :color
+    ensure -> every? @[
+        -> lessOrEqual? #black 0                  -> lessOrEqual? #black 0.0
+        -> lessOrEqual? #black to :rational [1 1] -> lessOrEqual? #black 0:usd 
+        -> lessOrEqual? #black 0:m                -> lessOrEqual? #black 0:m3
+        -> lessOrEqual? #black 0:c                -> lessOrEqual? #black null 
+        -> lessOrEqual? #black true               -> lessOrEqual? #black false 
+        -> lessOrEqual? #black maybe              -> lessOrEqual? #black to :complex [0 0]
+        -> lessOrEqual? #black 0.0.0              -> lessOrEqual? #black :color
+        -> lessOrEqual? #black `1`                -> lessOrEqual? #black "#000000"
+        -> lessOrEqual? #black "000000"           -> lessOrEqual? [#black] [black] 
+        -> lessOrEqual? #black 'black             -> lessOrEqual? [#black] [.black]
+        -> lessOrEqual? [#black] [.black:]        -> lessOrEqual? #black  {/#000000/}                 
+        -> lessOrEqual? #black{/000000/} 
+    ] => not? passed
 ]
 
 
