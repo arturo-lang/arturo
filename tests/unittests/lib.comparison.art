@@ -2584,6 +2584,71 @@ do [
         -> lessOrEqual? a #[one: 1]     -> lessOrEqual? to :rational [1 1] #black    
         -> lessOrEqual? a var 'one?
     ] => not? passed
+    
+    ; for :quantity
+    ensure -> every? @[
+        -> lessOrEqual? 1:usd null          -> lessOrEqual? 1:usd true
+        -> lessOrEqual? 1:usd false         -> lessOrEqual? 1:usd to :complex [1 1]
+        -> lessOrEqual? 1:usd 1.0.0         -> lessOrEqual? 1:usd :quantity
+        -> lessOrEqual? 1:usd `1`           -> lessOrEqual? 1:usd "1USD"
+        -> lessOrEqual? [1:usd] [one]       -> lessOrEqual? [1:usd] [one:]
+        -> lessOrEqual? 1:usd '1.0i         -> lessOrEqual? [1:usd] [.1]                  
+        -> lessOrEqual? [1:usd] [.1:]       -> lessOrEqual? [1:usd] [one\1]
+        -> lessOrEqual? [1:usd] [one\1:]    -> lessOrEqual? [1:usd] [+]         
+        -> lessOrEqual? 1:usd {/1USD/}      -> lessOrEqual? 1:usd to :binary 1  
+        -> lessOrEqual? 1:usd to :binary 1  -> lessOrEqual? [1:usd] [(1)]       
+        -> lessOrEqual? 1:usd [1:usd]       -> lessOrEqual? 1:usd 1..1          
+        -> lessOrEqual? 1:usd #[one: 1:usd] -> lessOrEqual? 0:usd #black        
+        -> lessOrEqual? 1:usd var 'one?
+    ] => not? passed
+    
+    ensure -> every? @[ 
+        -> lessOrEqual? 1:m null            -> lessOrEqual? 1:m true
+        -> lessOrEqual? 1:m false           -> lessOrEqual? 1:m to :complex [1 1]
+        -> lessOrEqual? 1:m 1.0.0           -> lessOrEqual? 1:m :quantity
+        -> lessOrEqual? 1:m `1`             -> lessOrEqual? 1:m "1m"
+        -> lessOrEqual? [1:m] [one]         -> lessOrEqual? [1:m] [one:]
+        -> lessOrEqual? 1:m '1              -> lessOrEqual? [1:m] [.1]            
+        -> lessOrEqual? [1:m] [.1:]         -> lessOrEqual? [1:m] [one\1]
+        -> lessOrEqual? [1:m] [one\1:]      -> lessOrEqual? [1:m] [+]             
+        -> lessOrEqual? 1:m {/1m/}          -> lessOrEqual? 1:m to :binary 1      
+        -> lessOrEqual? 1:m to :binary 1    -> lessOrEqual? [1:m] [(1)]           
+        -> lessOrEqual? 1:m [1:m]           -> lessOrEqual? 1:m 1..1              
+        -> lessOrEqual? 1:m #[one: 1:m]     -> lessOrEqual? 0:m #black            
+        -> lessOrEqual? 1:m var 'one?
+    ] => not? passed
+    
+    ensure -> every? @[ 
+        -> lessOrEqual? 1:m3 null           -> lessOrEqual? 1:m3 true
+        -> lessOrEqual? 1:m3 false          -> lessOrEqual? 1:m3 to :complex [1 1]
+        -> lessOrEqual? 1:m3 1.0.0          -> lessOrEqual? 1:m3 :quantity
+        -> lessOrEqual? 1:m3 `1`            -> lessOrEqual? 1:m3 "1m³"
+        -> lessOrEqual? [1:m3] [one]        -> lessOrEqual? [1:m3] [one:]
+        -> lessOrEqual? 1:m3 '1             -> lessOrEqual? [1:m3] [.1]              
+        -> lessOrEqual? [1:m3] [.1:]        -> lessOrEqual? [1:m3] [one\1]
+        -> lessOrEqual? [1:m3] [one\1:]     -> lessOrEqual? [1:m3] [+]                
+        -> lessOrEqual? 1:m3 {/1m³/}        -> lessOrEqual? 1:m3 to :binary 1         
+        -> lessOrEqual? 1:m3 to :binary 1   -> lessOrEqual? [1:m3] [(1)]              
+        -> lessOrEqual? 1:m3 [1:m3]         -> lessOrEqual? 1:m3 1..1                 
+        -> lessOrEqual? 1:m3 #[one: 1:m3]   -> lessOrEqual? 0:m3 #black               
+        -> lessOrEqual? 1:m3 var 'one?
+    ] => not? passed
+    
+    ensure -> every? @[ 
+        -> lessOrEqual? 1:c null            -> lessOrEqual? 1:c true
+        -> lessOrEqual? 1:c false           -> lessOrEqual? 1:c to :complex [1 1]
+        -> lessOrEqual? 1:c 1.0.0           -> lessOrEqual? 1:c :quantity
+        -> lessOrEqual? 1:c `1`             -> lessOrEqual? 1:c "1°C"
+        -> lessOrEqual? [1:c] [one]         -> lessOrEqual? [1:c] [one:]
+        -> lessOrEqual? 1:c '1.0i           -> lessOrEqual? [1:c] [.1]            
+        -> lessOrEqual? [1:c] [.1:]         -> lessOrEqual? [1:c] [one\1]       
+        -> lessOrEqual? [1:c] [one\1:]      -> lessOrEqual? [1:c] [+]           
+        -> lessOrEqual? 1:c {/1°C/}         -> lessOrEqual? 1:c to :binary 1    
+        -> lessOrEqual? 1:c to :binary 1    -> lessOrEqual? [1:c] [(1)]         
+        -> lessOrEqual? 1:c [1:c]           -> lessOrEqual? 1:c 1..1            
+        -> lessOrEqual? 1:c #[one: 1:c]     -> lessOrEqual? 0:c #black          
+        -> lessOrEqual? 1:c var 'one?
+    ] => not? passed
 ]
 
 
