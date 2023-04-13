@@ -2735,6 +2735,24 @@ do [
         -> lessOrEqual? a #[one: 1]             -> lessOrEqual? to :complex [0 0] #black  
         -> lessOrEqual? a var 'one?
     ] => not? passed
+    
+    ; for :version
+    ensure -> every? @[
+        -> lessOrEqual? 1.0.0 1                     -> lessOrEqual? 1.0.0 1.0          
+        -> lessOrEqual? 1.0.0 to :rational [1 1]    -> lessOrEqual? 1.0.0 null                    
+        -> lessOrEqual? 1.0.0 true                  -> lessOrEqual? 1.0.0 false                   
+        -> lessOrEqual? 1.0.0 to :complex [1.0 1.0] -> lessOrEqual? 1.0.0 :floating
+        -> lessOrEqual? 1.0.0 `1`                   -> lessOrEqual? 1.0.0 "1.0.0"
+        -> lessOrEqual? [1.0.0] [one]               -> lessOrEqual? [1.0.0] [one:]
+        -> lessOrEqual? 1.0.0 '1                    -> lessOrEqual? [1.0.0] [.1]                  
+        -> lessOrEqual? [1.0.0] [.1:]               -> lessOrEqual? [1.0.0] [one\1]
+        -> lessOrEqual? [1.0.0] [one\1:]            -> lessOrEqual? [1.0.0] [+]                   
+        -> lessOrEqual? 1.0.0 {/1.0.0/}             -> lessOrEqual? 1.0.0 to :binary 1.0          
+        -> lessOrEqual? 1.0.0 to :binary 1.0        -> lessOrEqual? [1.0.0] [(1.0.0)]             
+        -> lessOrEqual? 1.0.0 [1.0.0]               -> lessOrEqual? 1.0.0 1..1                    
+        -> lessOrEqual? 1.0.0 #[one: 1.0.0]         -> lessOrEqual? 0.0.0 #black                  
+        -> lessOrEqual? 1.0.0 var 'version?
+    ] => not? passed
 ]
 
 
