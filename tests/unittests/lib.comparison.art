@@ -2566,6 +2566,24 @@ do [
         -> lessOrEqual? 1.0 #[one: 1.0]     -> lessOrEqual? 0.0 #black          
         -> lessOrEqual? 1.0 var 'one?
     ] => not? passed
+    
+    ; for :rational
+    a: to :rational [1 1]
+    ensure -> every? @[
+        -> lessOrEqual? a null          -> lessOrEqual? a true
+        -> lessOrEqual? a false         -> lessOrEqual? a to :complex [1 1]
+        -> lessOrEqual? a 1.0.0         -> lessOrEqual? a :rational
+        -> lessOrEqual? a `1`           -> lessOrEqual? a "1/1"
+        -> lessOrEqual? @[a] [one]      -> lessOrEqual? @[a] [one:]
+        -> lessOrEqual? 1 '1            -> lessOrEqual? @[a] [.1]                 
+        -> lessOrEqual? @[a] [.1:]      -> lessOrEqual? @[a] [one\1]
+        -> lessOrEqual? @[a] [one\1:]   -> lessOrEqual? @[a] [+]                  
+        -> lessOrEqual? a {/1/1/}       -> lessOrEqual? a to :binary 1            
+        -> lessOrEqual? a to :binary 1  -> lessOrEqual? @[a] [(1)]                
+        -> lessOrEqual? a [1]           -> lessOrEqual? a 1..1                    
+        -> lessOrEqual? a #[one: 1]     -> lessOrEqual? to :rational [1 1] #black    
+        -> lessOrEqual? a var 'one?
+    ] => not? passed
 ]
 
 
