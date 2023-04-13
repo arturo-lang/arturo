@@ -5111,125 +5111,116 @@ do [
     ] => not?
     
     ensure -> every? @[
-        -> same? 1 null           -> same? 1 true
-        -> same? 1 false          -> same? 1 to :complex [1 1]
-        -> same? 1 1.0.0          -> same? 1 :integer
-        -> same? 1 `1`            -> same? 1 "1"
-        -> same? [1] [one]        -> same? [1] [one:]
-                                  -> same? 1 '1
-        -> same? [1] [.1]         -> same? [1] [.1:]
-                                  -> same? [1] [one\1]
-        -> same? [1] [one\1:]     
-        -> same? [1] [+]          -> same? 1 {/1/}
-        -> same? 1 to :binary 1   -> same? 1 to :binary 1
-        -> same? [1] [(1)]        -> same? 1 [1]
-        -> same? 1 1..1           -> same? 1 #[one: 1]
-        -> same? 0 #black         -> same? 1 var 'one?
+        -> same? 1 null         -> same? 1 true
+        -> same? 1 false        -> same? 1 to :complex [1 1]
+        -> same? 1 1.0.0        -> same? 1 :integer
+        -> same? 1 `1`          -> same? 1 "1"
+        -> same? [1] [one]      -> same? [1] [one:]
+        -> same? 1 '1           -> same? [1] [.1]         
+        -> same? [1] [.1:]      -> same? [1] [one\1]
+        -> same? [1] [one\1:]   -> same? [1] [+]        
+        -> same? 1 {/1/}        -> same? 1 to :binary 1 
+        -> same? 1 to :binary 1 -> same? [1] [(1)]      
+        -> same? 1 [1]          -> same? 1 1..1         
+        -> same? 1 #[one: 1]    -> same? 0 #black       
+        -> same? 1 var 'one?
     ] => not? passed
     
     ; for :floating
     ensure -> every? @[
-        -> same? 1.0 null              -> same? 1.0 true
-        -> same? 1.0 false             -> same? 1.0 to :complex [1.0 1.0]
-        -> same? 1.0 1.0.0             -> same? 1.0 :floating
-        -> same? 1.0 `1`               -> same? 1.0 "1.0"
-        -> same? [1.0] [one]           
-                                       -> same? 1.0 '1
-        -> same? [1.0] [.1]            -> same? [1.0] [.1:]
-                                       -> same? [1.0] [one\1]
-        -> same? [1.0] [one\1:]        
-        -> same? [1.0] [+]             -> same? 1.0 {/1.0/}
-        -> same? 1.0 to :binary 1.0    -> same? 1.0 to :binary 1.0
-        -> same? [1.0] [(1.0)]         -> same? 1.0 [1]
-        -> same? 1.0 1..1              -> same? 1.0 #[one: 1.0]
-        -> same? 0.0 #black            -> same? 1.0 var 'one?
+        -> same? 1.0 null               -> same? 1.0 true
+        -> same? 1.0 false              -> same? 1.0 to :complex [1.0 1.0]
+        -> same? 1.0 1.0.0              -> same? 1.0 :floating
+        -> same? 1.0 `1`                -> same? 1.0 "1.0"
+        -> same? [1.0] [one]            -> same? 1.0 '1                 
+        -> same? [1.0] [.1]             -> same? [1.0] [.1:]            
+        -> same? [1.0] [one\1]          -> same? [1.0] [one\1:]        
+        -> same? [1.0] [+]              -> same? 1.0 {/1.0/}
+        -> same? 1.0 to :binary 1.0     -> same? 1.0 to :binary 1.0
+        -> same? [1.0] [(1.0)]          -> same? 1.0 [1]
+        -> same? 1.0 1..1               -> same? 1.0 #[one: 1.0]
+        -> same? 0.0 #black             -> same? 1.0 var 'one?
     ] => not? passed
     
     ; for :rational
     a: to :rational [1 1]
     ensure -> every? @[
-        -> same? a null                    -> same? a true
-        -> same? a false                   -> same? a to :complex [1 1]
-        -> same? a 1.0.0                   -> same? a :rational
-        -> same? a `1`                     -> same? a "1/1"
-        -> same? @[a] [one]                -> same? @[a] [one:]
-                                           -> same? 1 '1
-        -> same? @[a] [.1]                 -> same? @[a] [.1:]
-                                           -> same? @[a] [one\1]
-        -> same? @[a] [+]                  -> same? a {/1/1/}
-        -> same? a to :binary 1            -> same? a to :binary 1
-        -> same? @[a] [(1)]                -> same? a [1]
-        -> same? a 1..1                    -> same? a #[one: 1]
-        -> same? to :rational [1 1] #black -> same? a var 'one?
+        -> same? a null                     -> same? a true
+        -> same? a false                    -> same? a to :complex [1 1]
+        -> same? a 1.0.0                    -> same? a :rational
+        -> same? a `1`                      -> same? a "1/1"
+        -> same? @[a] [one]                 -> same? @[a] [one:]
+        -> same? 1 '1                       -> same? @[a] [.1]                 
+        -> same? @[a] [.1:]                 -> same? @[a] [one\1]
+        -> same? @[a] [+]                   -> same? a {/1/1/}
+        -> same? a to :binary 1             -> same? a to :binary 1
+        -> same? @[a] [(1)]                 -> same? a [1]
+        -> same? a 1..1                     -> same? a #[one: 1]
+        -> same? to :rational [1 1] #black  -> same? a var 'one?
     ] => not? passed
     
     ; for :quantity
     ensure -> every? @[
-        -> same? 1:usd null                    -> same? 1:usd true
-        -> same? 1:usd false                   -> same? 1:usd to :complex [1 1]
-        -> same? 1:usd 1.0.0                   -> same? 1:usd :quantity
-        -> same? 1:usd `1`                     -> same? 1:usd "1USD"
-        -> same? [1:usd] [one]                 -> same? [1:usd] [one:]
-                                               -> same? 1:usd '1
-        -> same? [1:usd] [.1]                  -> same? [1:usd] [.1:]
-                                               -> same? [1:usd] [one\1]
-        -> same? [1:usd] [one\1:]              
-        -> same? [1:usd] [+]                   -> same? 1:usd {/1USD/}
-        -> same? 1:usd to :binary 1            -> same? 1:usd to :binary 1
-        -> same? [1:usd] [(1)]                 -> same? 1:usd [1:usd]
-        -> same? 1:usd 1..1                    -> same? 1:usd #[one: 1:usd]
-        -> same? 0:usd #black                  -> same? 1:usd var 'one?
+        -> same? 1:usd null             -> same? 1:usd true
+        -> same? 1:usd false            -> same? 1:usd to :complex [1 1]
+        -> same? 1:usd 1.0.0            -> same? 1:usd :quantity
+        -> same? 1:usd `1`              -> same? 1:usd "1USD"
+        -> same? [1:usd] [one]          -> same? [1:usd] [one:]
+        -> same? 1:usd '1               -> same? [1:usd] [.1]                  
+        -> same? [1:usd] [.1:]          -> same? [1:usd] [one\1]
+        -> same? [1:usd] [one\1:]       -> same? [1:usd] [+]        
+        -> same? 1:usd {/1USD/}         -> same? 1:usd to :binary 1 
+        -> same? 1:usd to :binary 1     -> same? [1:usd] [(1)]      
+        -> same? 1:usd [1:usd]          -> same? 1:usd 1..1         
+        -> same? 1:usd #[one: 1:usd]    -> same? 0:usd #black       
+        -> same? 1:usd var 'one?
     ] => not? passed
     
     ensure -> every? @[ 
-        -> same? 1:m null              -> same? 1:m true
-        -> same? 1:m false             -> same? 1:m to :complex [1 1]
-        -> same? 1:m 1.0.0             -> same? 1:m :quantity
-        -> same? 1:m `1`               -> same? 1:m "1m"
-        -> same? [1:m] [one]           -> same? [1:m] [one:]
-                                       -> same? 1:m '1
-        -> same? [1:m] [.1]            
-                                       -> same? [1:m] [one\1]
-        -> same? [1:m] [one\1:]        
-        -> same? [1:m] [+]             -> same? 1:m {/1m/}
-        -> same? 1:m to :binary 1      -> same? 1:m to :binary 1
-        -> same? [1:m] [(1)]           -> same? 1:m [1:m]
-        -> same? 1:m 1..1              -> same? 1:m #[one: 1:m]
-        -> same? 0:m #black            -> same? 1:m var 'one?
+        -> same? 1:m null           -> same? 1:m true
+        -> same? 1:m false          -> same? 1:m to :complex [1 1]
+        -> same? 1:m 1.0.0          -> same? 1:m :quantity
+        -> same? 1:m `1`            -> same? 1:m "1m"
+        -> same? [1:m] [one]        -> same? [1:m] [one:]
+        -> same? 1:m '1             -> same? [1:m] [.1]            
+        -> same? [1:m] [one\1]      -> same? [1:m] [one\1:]        
+        -> same? [1:m] [+]          -> same? 1:m {/1m/}
+        -> same? 1:m to :binary 1   -> same? 1:m to :binary 1
+        -> same? [1:m] [(1)]        -> same? 1:m [1:m]
+        -> same? 1:m 1..1           -> same? 1:m #[one: 1:m]
+        -> same? 0:m #black         -> same? 1:m var 'one?
     ] => not? passed
     
     ensure -> every? @[ 
-        -> same? 1:m3 null                 -> same? 1:m3 true
-        -> same? 1:m3 false                -> same? 1:m3 to :complex [1 1]
-        -> same? 1:m3 1.0.0                -> same? 1:m3 :quantity
-        -> same? 1:m3 `1`                  -> same? 1:m3 "1m³"
-        -> same? [1:m3] [one]              -> same? [1:m3] [one:]
-                                           -> same? 1:m3 '1
-        -> same? [1:m3] [.1]               -> same? [1:m3] [.1:]
-                                           -> same? [1:m3] [one\1]
-        -> same? [1:m3] [one\1:]           
-        -> same? [1:m3] [+]                -> same? 1:m3 {/1m³/}
-        -> same? 1:m3 to :binary 1         -> same? 1:m3 to :binary 1
-        -> same? [1:m3] [(1)]              -> same? 1:m3 [1:m3]
-        -> same? 1:m3 1..1                 -> same? 1:m3 #[one: 1:m3]
-        -> same? 0:m3 #black               -> same? 1:m3 var 'one?
+        -> same? 1:m3 null              -> same? 1:m3 true
+        -> same? 1:m3 false             -> same? 1:m3 to :complex [1 1]
+        -> same? 1:m3 1.0.0             -> same? 1:m3 :quantity
+        -> same? 1:m3 `1`               -> same? 1:m3 "1m³"
+        -> same? [1:m3] [one]           -> same? [1:m3] [one:]
+        -> same? 1:m3 '1                -> same? [1:m3] [.1]               
+        -> same? [1:m3] [.1:]           -> same? [1:m3] [one\1]
+        -> same? [1:m3] [one\1:]        -> same? [1:m3] [+]             
+        -> same? 1:m3 {/1m³/}           -> same? 1:m3 to :binary 1      
+        -> same? 1:m3 to :binary 1      -> same? [1:m3] [(1)]           
+        -> same? 1:m3 [1:m3]            -> same? 1:m3 1..1              
+        -> same? 1:m3 #[one: 1:m3]      -> same? 0:m3 #black            
+        -> same? 1:m3 var 'one?
     ] => not? passed
     
     ensure -> every? @[ 
-        -> same? 1:c null              -> same? 1:c true
-        -> same? 1:c false             -> same? 1:c to :complex [1 1]
-        -> same? 1:c 1.0.0             -> same? 1:c :quantity
-        -> same? 1:c `1`               -> same? 1:c "1°C"
-        -> same? [1:c] [one]           -> same? [1:c] [one:]
-                                       -> same? 1:c '1
-        -> same? [1:c] [.1]            -> same? [1:c] [.1:]
-                                       -> same? [1:c] [one\1]
-        -> same? [1:c] [one\1:]        
-        -> same? [1:c] [+]             -> same? 1:c {/1°C/}
-        -> same? 1:c to :binary 1      -> same? 1:c to :binary 1
-        -> same? [1:c] [(1)]           -> same? 1:c [1:c]
-        -> same? 1:c 1..1              -> same? 1:c #[one: 1:c]
-        -> same? 0:c #black            -> same? 1:c var 'one?
+        -> same? 1:c null           -> same? 1:c true
+        -> same? 1:c false          -> same? 1:c to :complex [1 1]
+        -> same? 1:c 1.0.0          -> same? 1:c :quantity
+        -> same? 1:c `1`            -> same? 1:c "1°C"
+        -> same? [1:c] [one]        -> same? [1:c] [one:]
+        -> same? 1:c '1             -> same? [1:c] [.1]            
+        -> same? [1:c] [.1:]        -> same? [1:c] [one\1]
+        -> same? [1:c] [one\1:]     -> same? [1:c] [+]          
+        -> same? 1:c {/1°C/}        -> same? 1:c to :binary 1   
+        -> same? 1:c to :binary 1   -> same? [1:c] [(1)]        
+        -> same? 1:c [1:c]          -> same? 1:c 1..1           
+        -> same? 1:c #[one: 1:c]    -> same? 0:c #black         
+        -> same? 1:c var 'one?
     ] => not? passed
     
     ; for :null
@@ -5322,8 +5313,8 @@ do [
         -> same? 1.0.0 to :complex [1.0 1.0]   -> same? 1.0.0 :floating
         -> same? 1.0.0 `1`                     -> same? 1.0.0 "1.0.0"
         -> same? [1.0.0] [one]                 -> same? [1.0.0] [one:]
-        -> same? 1.0.0 '1.0i                    -> same? [1.0.0] [.1]                  
-        -> same? [1.0.0] [.1:]                  -> same? [1.0.0] [one\1]
+        -> same? 1.0.0 '1.0i                   -> same? [1.0.0] [.1]                  
+        -> same? [1.0.0] [.1:]                 -> same? [1.0.0] [one\1]
         -> same? [1.0.0] [one\1:]              -> same? [1.0.0 1.0.0] [one\1: 1.0.0]
         -> same? [1.0.0] [+]                   -> same? 1.0.0 {/1.0.0/}
         -> same? 1.0.0 to :binary 1.0          -> same? 1.0.0 to :binary 1.0
@@ -5362,17 +5353,17 @@ do [
     ; for :char
     ensure -> every? @[
         -> same? `1` 1.0          
-        -> same? `1` to :rational [1 1]    -> same? `ø` null                    
-        -> same? `t` true                  -> same? `f` false                   
-        -> same? `1` to :complex [1.0 1.0] -> same? `T` :floating
-        -> same? [`a`] [one]               -> same? `a` 'a
-        -> same? [`a`] [.1]                -> same? [`a`] [.a:]
+        -> same? `1` to :rational [1 1]     -> same? `ø` null                    
+        -> same? `t` true                   -> same? `f` false                   
+        -> same? `1` to :complex [1.0 1.0]  -> same? `T` :floating
+        -> same? [`a`] [one]                -> same? `a` 'a
+        -> same? [`a`] [.1]                 -> same? [`a`] [.a:]
         -> same? [`a`] [a\a]                -> same? [`a`] [a\a:]              
-        -> same? [`+`] [+]                 -> same? `a` {/a/}
-        -> same? `1` to :binary 1          -> same? `a` to :binary 1
-        -> same? [`1`] [(`1`)]             -> same? `a` [`a`]
-        -> same? `1` 1..1                  -> same? `a` #[a: `a`]
-        -> same? `1` #black                -> same? `a` var 'char?
+        -> same? [`+`] [+]                  -> same? `a` {/a/}
+        -> same? `1` to :binary 1           -> same? `a` to :binary 1
+        -> same? [`1`] [(`1`)]              -> same? `a` [`a`]
+        -> same? `1` 1..1                   -> same? `a` #[a: `a`]
+        -> same? `1` #black                 -> same? `a` var 'char?
     ] => not? passed
     
     ; for :string
