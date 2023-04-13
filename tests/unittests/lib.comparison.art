@@ -2964,6 +2964,22 @@ do [
         -> lessOrEqual? [#black] [.black:]        -> lessOrEqual? #black  {/#000000/}                 
         -> lessOrEqual? #black{/000000/} 
     ] => not? passed
+    
+    ; for :function
+    ensure -> every? @[
+        -> lessOrEqual? var 'null?     null       -> lessOrEqual? var 'true?    true  
+        -> lessOrEqual? var 'false?    false 
+        -> lessOrEqual? var 'version?  1.0.0      -> lessOrEqual? var 'type?    :type 
+        -> lessOrEqual? var 'function? :function  -> lessOrEqual? var 'char?    `a` 
+        -> lessOrEqual? @[var 'word?]  [word]     -> lessOrEqual? @[var 'word?] [var]      
+        -> lessOrEqual? @[var 'word?]  [var:]     -> lessOrEqual? @[var 'word?] [word:]    
+        -> lessOrEqual? var 'word?     'word?     -> lessOrEqual? var 'var      'var       
+        -> lessOrEqual? @[var 'word?]  [.var]     -> lessOrEqual? @[var 'word?] [.word]    
+        -> lessOrEqual? @[var 'word?]  [.var:]    -> lessOrEqual? @[var 'word?] [.word:]   
+        -> lessOrEqual? var 'regex?    {/var/}    -> lessOrEqual? var 'regex?   {/regex?/} 
+    ] => not? passed
+    
+    
 ]
 
 
