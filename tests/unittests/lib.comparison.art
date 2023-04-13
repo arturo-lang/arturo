@@ -5235,24 +5235,35 @@ do [
     ] => not? passed
     
     ; for :null
-    ensure -> every? @[
-        -> same? null 0                        -> same? null 0.0            
-        -> same? null to :rational [1 1]       -> same? null true
-        -> same? null false                    -> same? null to :complex [0 0]
-        -> same? null 0.0.0                    -> same? null :null
-        -> same? null `ø`                      -> same? null "null"
-        -> same? @[null] [null]                -> same? @[null] [null:]
-        -> same? @[null null] [null: null]     -> same? null 'null
-        -> same? @[null] [.null]               -> same? @[null] [.null:]
-        -> same? @[null null] [.null: null]    -> same? @[null] [null\null]
-        -> same? @[null] [null\null:]          -> same? @[null null] [null\null: null]
-        -> same? @[null] [ø]                   -> same? null {/null/}
-        -> same? null {/ø/}                    -> same? null to :binary 0   
-        -> same? null to :binary 0             -> same? @[null] [(null)]         
-        -> same? null [null]                   -> same? null 0..0            
-        -> same? null #[null: null]            -> same? null #black          
-        -> same? null var 'null?
-    ] => not? passed
+    ; ensure -> every? @[
+        ; -> same? null 0                        
+        ; -> same? null 0.0            
+        ; -> same? null to :rational [1 1]       
+        ; -> same? null true
+        ; -> same? null false                    
+        ; -> same? null to :complex [0 0]
+        ; -> same? null 0.0.0                    
+        ; -> same? null :null
+        ; -> same? null `ø`                      
+        ; -> same? null "null"
+        ; -> same? @[null] [null]                
+        ; -> same? @[null] [null:]
+        ; -> same? null 'null
+        ; -> same? @[null] [.null]               
+        ; -> same? @[null] [.null:]
+        ; -> same? @[null] [null\null]
+        ; -> same? @[null] [null\null:]          
+        ; -> same? @[null] [ø]                   
+        ; -> same? null {/null/}
+        ; -> same? null {/ø/}                    
+        ; -> same? null to :binary 0               
+        ; -> same? @[null] [(null)]         
+        ; -> same? null [null]                   
+        ; -> same? null 0..0            
+        ; -> same? null #[null: null]            
+        ; -> same? null #black          
+        ; -> same? null var 'null?
+    ; ] => not? passed
     
     ; for :logical
     ensure -> every? @[
