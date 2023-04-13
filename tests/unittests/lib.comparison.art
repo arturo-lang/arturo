@@ -2840,6 +2840,22 @@ do [
         -> lessOrEqual? [black:]    @[#black ]                -> lessOrEqual? [var:]      @[var 'word?]
         -> lessOrEqual? [word:]     @[var 'word?]
     ] => not? passed
+    
+    ; for :literal
+    ; NOTE: technically, '+ is not a :literal, but a :symbolLiteral type ;)
+    ensure -> every? @[
+        -> lessOrEqual? 'integer  1                   -> lessOrEqual? 'floating 1.0
+        -> lessOrEqual? 'rational to :rational [1 1]  -> lessOrEqual? 'one      to :rational [1 1]
+        -> lessOrEqual? 'null     null                -> lessOrEqual? 'true     true    
+        -> lessOrEqual? 'false    false               -> lessOrEqual? 'complex  to :complex [1.0 1.0]    
+        -> lessOrEqual? 'type     :floating           -> lessOrEqual? 'floating :floating               
+        -> lessOrEqual? ['a]        [a\a]             -> lessOrEqual? ['+]      [+]                       
+        -> lessOrEqual? 'a        {/a/}               -> lessOrEqual? 'binary   to :binary 1            
+        -> lessOrEqual? ['word]   [('word)]           -> lessOrEqual? 'word     ['word]                                     
+        -> lessOrEqual? 'range    1..1                -> lessOrEqual? 'a        #[a: 'a]                
+        -> lessOrEqual? 'black    #black              -> lessOrEqual? 'word?    var 'word?              
+        -> lessOrEqual? 'var      var 'var
+    ] => not? passed
 ]
 
 
