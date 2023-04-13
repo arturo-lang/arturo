@@ -2716,6 +2716,25 @@ do [
         -> lessOrEqual? maybe [maybe]               -> lessOrEqual? maybe 0..0                        
         -> lessOrEqual? maybe #[maybe: maybe]       -> lessOrEqual? maybe #black                      
     ] => not? passed
+    
+    ; for :complex
+    a: to :complex [1 1]
+    ensure -> every? @[
+        -> lessOrEqual? a 1                     -> lessOrEqual? a 1.0            
+        -> lessOrEqual? a to :rational [1 1]    -> lessOrEqual? a null                    
+        -> lessOrEqual? a true                  -> lessOrEqual? a false
+        -> lessOrEqual? a 1.0.0                 -> lessOrEqual? a :rational
+        -> lessOrEqual? a `1`                   -> lessOrEqual? a "1.0+1.0i"
+        -> lessOrEqual? @[a] [one]              -> lessOrEqual? @[a] [one:]
+        -> lessOrEqual? 1 '1                    -> lessOrEqual? @[a] [.1]                 
+        -> lessOrEqual? @[a] [.1:]              -> lessOrEqual? @[a] [one\1]
+        -> lessOrEqual? @[a] [one\1:]           -> lessOrEqual? @[a] [+]                  
+        -> lessOrEqual? a {/1.0+1.0i/}          -> lessOrEqual? a to :binary 1            
+        -> lessOrEqual? a to :binary 1          -> lessOrEqual? @[a] [(1)]                
+        -> lessOrEqual? a [1]                   -> lessOrEqual? a 1..1                    
+        -> lessOrEqual? a #[one: 1]             -> lessOrEqual? to :complex [0 0] #black  
+        -> lessOrEqual? a var 'one?
+    ] => not? passed
 ]
 
 
