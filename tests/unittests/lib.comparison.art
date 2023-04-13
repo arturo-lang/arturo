@@ -2813,6 +2813,20 @@ do [
         -> lessOrEqual? "a" #[a: "a"]                       -> lessOrEqual? "#000000" #black                  
         -> lessOrEqual? "000000" #black                     -> lessOrEqual? "" var 'char?
     ] => not? passed
+    
+    ; for :word
+    ensure -> every? @[        
+        -> lessOrEqual? [rational] @[to :rational [1 1]]      -> lessOrEqual? [null]  @[null]                    
+        -> lessOrEqual? [true]     @[true]                    -> lessOrEqual? [false] @[false]                   
+        -> lessOrEqual? [complex]  @[to :complex [1.0 1.0]]   -> lessOrEqual? [type]  @[:floating]  
+        -> lessOrEqual? [floating] @[:floating]               -> lessOrEqual? [a]      [a\a]                   
+        -> lessOrEqual? [a]         [a\a:]                    -> lessOrEqual? [a]     @[{/a/}]                      
+        -> lessOrEqual? [binary]   @[to :binary 1]            -> lessOrEqual? [one]   @[to :binary 1]              
+        -> lessOrEqual? [word]      [(word)]                  -> lessOrEqual? [word]  @[[word]]                      
+        -> lessOrEqual? [range]    @[range 1 1]               -> lessOrEqual? [a]     @[#[a: `a`]]               
+        -> lessOrEqual? [black]    @[#black ]                 -> lessOrEqual? [word]  @[var 'word?]              
+        -> lessOrEqual? [var]      @[var 'word?]
+    ] => not? passed
 ]
 
 
