@@ -2796,6 +2796,23 @@ do [
         -> lessOrEqual? `1` 1..1                    -> lessOrEqual? `a` #[a: `a`]               
         -> lessOrEqual? `1` #black                  -> lessOrEqual? `a` var 'char?
     ] => not? passed
+    
+    ; for :string
+    ensure -> every? @[
+        -> lessOrEqual? "1" 1                               -> lessOrEqual? "1/1" to :rational [1 1]          
+        -> lessOrEqual? "1.0" 1.0                           -> lessOrEqual? "null" null                    
+        -> lessOrEqual? "" null                             -> lessOrEqual? "true" true                  
+        -> lessOrEqual? "" false                            -> lessOrEqual? "false" false                   
+        -> lessOrEqual? "1.0+1.0i" to :complex [1.0 1.0]    -> lessOrEqual? "type" :floating
+        -> lessOrEqual? "floating" :floating                -> lessOrEqual? ":floating" :floating
+        -> lessOrEqual? "1.0" :floating                     -> lessOrEqual? ["a"] [a\a]
+        -> lessOrEqual? ["a"] [a\a:]                        -> lessOrEqual? ["+"] [+]                         
+        -> lessOrEqual? "a" {/a/}                           -> lessOrEqual? "01" to :binary 1                 
+        -> lessOrEqual? "1" to :binary 1                    -> lessOrEqual? [""] [("")]                       
+        -> lessOrEqual? "" [""]                             -> lessOrEqual? "1" 1..1                          
+        -> lessOrEqual? "a" #[a: "a"]                       -> lessOrEqual? "#000000" #black                  
+        -> lessOrEqual? "000000" #black                     -> lessOrEqual? "" var 'char?
+    ] => not? passed
 ]
 
 
