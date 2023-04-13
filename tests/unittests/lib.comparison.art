@@ -651,10 +651,10 @@ do [
         -> equal? 1 1.0.0          -> equal? 1 :integer
         -> equal? 1 `1`            -> equal? 1 "1"
         -> equal? [1] [one]        -> equal? [1] [one:]
-        -> equal? [1 1] [one: 1]   -> equal? 1 '1
+                                   -> equal? 1 '1
         -> equal? [1] [.1]         -> equal? [1] [.1:]
-        -> equal? [1 1] [.1: 1]    -> equal? [1] [one\1]
-        -> equal? [1] [one\1:]     -> equal? [1 1] [one\1: 1]
+                                   -> equal? [1] [one\1]
+        -> equal? [1] [one\1:]     
         -> equal? [1] [+]          -> equal? 1 {/1/}
         -> equal? 1 to :binary 1   -> equal? 1 to :binary 1
         -> equal? [1] [(1)]        -> equal? 1 [1]
@@ -668,11 +668,11 @@ do [
         -> equal? 1.0 false             -> equal? 1.0 to :complex [1.0 1.0]
         -> equal? 1.0 1.0.0             -> equal? 1.0 :floating
         -> equal? 1.0 `1`               -> equal? 1.0 "1.0"
-        -> equal? [1.0] [one]           -> equal? [1.0] [one: 1.0]
-        -> equal? [1.0 1.0] [one: 1.0]  -> equal? 1.0 '1
+        -> equal? [1.0] [one]           
+                                        -> equal? 1.0 '1
         -> equal? [1.0] [.1]            -> equal? [1.0] [.1:]
-        -> equal? [1.0 1.0] [.1: 1.0]   -> equal? [1.0] [one\1]
-        -> equal? [1.0] [one\1:]        -> equal? [1.0 1.0] [one\1: 1.0]
+                                        -> equal? [1.0] [one\1]
+        -> equal? [1.0] [one\1:]        
         -> equal? [1.0] [+]             -> equal? 1.0 {/1.0/}
         -> equal? 1.0 to :binary 1.0    -> equal? 1.0 to :binary 1.0
         -> equal? [1.0] [(1.0)]         -> equal? 1.0 [1]
@@ -688,10 +688,9 @@ do [
         -> equal? a 1.0.0                   -> equal? a :rational
         -> equal? a `1`                     -> equal? a "1/1"
         -> equal? @[a] [one]                -> equal? @[a] [one:]
-        -> equal? @[a a] [one: 1]           -> equal? 1 '1
+                                            -> equal? 1 '1
         -> equal? @[a] [.1]                 -> equal? @[a] [.1:]
-        -> equal? @[a a] [.1: 1]            -> equal? @[a] [one\1]
-        -> equal? @[a] [one\1: 1]           -> equal? @[a a] [one\1: 1]
+                                            -> equal? @[a] [one\1]          
         -> equal? @[a] [+]                  -> equal? a {/1/1/}
         -> equal? a to :binary 1            -> equal? a to :binary 1
         -> equal? @[a] [(1)]                -> equal? a [1]
@@ -706,10 +705,10 @@ do [
         -> equal? 1:usd 1.0.0                   -> equal? 1:usd :quantity
         -> equal? 1:usd `1`                     -> equal? 1:usd "1USD"
         -> equal? [1:usd] [one]                 -> equal? [1:usd] [one:]
-        -> equal? [1:usd 1:usd] [one: 1:usd]    -> equal? 1:usd '1
+                                                -> equal? 1:usd '1
         -> equal? [1:usd] [.1]                  -> equal? [1:usd] [.1:]
-        -> equal? [1:usd 1:usd] [.1: 1:usd]     -> equal? [1:usd] [one\1]
-        -> equal? [1:usd] [one\1:]              -> equal? [1:usd 1:usd] [one\1: 1:usd]
+                                                -> equal? [1:usd] [one\1]
+        -> equal? [1:usd] [one\1:]              
         -> equal? [1:usd] [+]                   -> equal? 1:usd {/1USD/}
         -> equal? 1:usd to :binary 1            -> equal? 1:usd to :binary 1
         -> equal? [1:usd] [(1)]                 -> equal? 1:usd [1:usd]
@@ -723,10 +722,10 @@ do [
         -> equal? 1:m 1.0.0             -> equal? 1:m :quantity
         -> equal? 1:m `1`               -> equal? 1:m "1m"
         -> equal? [1:m] [one]           -> equal? [1:m] [one:]
-        -> equal? [1:m 1:m] [one: 1:m]  -> equal? 1:m '1
-        -> equal? [1:m] [.1]            -> equal? [1:m] [.1: 1:m]
-        -> equal? [1:m 1:m] [.1: 1:m]   -> equal? [1:m] [one\1]
-        -> equal? [1:m] [one\1:]        -> equal? [1:m 1:m] [one\1: 1:m]
+                                        -> equal? 1:m '1
+        -> equal? [1:m] [.1]            
+                                        -> equal? [1:m] [one\1]
+        -> equal? [1:m] [one\1:]        
         -> equal? [1:m] [+]             -> equal? 1:m {/1m/}
         -> equal? 1:m to :binary 1      -> equal? 1:m to :binary 1
         -> equal? [1:m] [(1)]           -> equal? 1:m [1:m]
@@ -740,10 +739,10 @@ do [
         -> equal? 1:m3 1.0.0                -> equal? 1:m3 :quantity
         -> equal? 1:m3 `1`                  -> equal? 1:m3 "1m³"
         -> equal? [1:m3] [one]              -> equal? [1:m3] [one:]
-        -> equal? [1:m3 1:m3] [one: 1:m3]   -> equal? 1:m3 '1
+                                            -> equal? 1:m3 '1
         -> equal? [1:m3] [.1]               -> equal? [1:m3] [.1:]
-        -> equal? [1:m3 1:m3] [.1: 1:m3]    -> equal? [1:m3] [one\1]
-        -> equal? [1:m3] [one\1:]           -> equal? [1:m3 1:m3] [one\1: 1:m3]
+                                            -> equal? [1:m3] [one\1]
+        -> equal? [1:m3] [one\1:]           
         -> equal? [1:m3] [+]                -> equal? 1:m3 {/1m³/}
         -> equal? 1:m3 to :binary 1         -> equal? 1:m3 to :binary 1
         -> equal? [1:m3] [(1)]              -> equal? 1:m3 [1:m3]
@@ -757,10 +756,10 @@ do [
         -> equal? 1:c 1.0.0             -> equal? 1:c :quantity
         -> equal? 1:c `1`               -> equal? 1:c "1°C"
         -> equal? [1:c] [one]           -> equal? [1:c] [one:]
-        -> equal? [1:c 1:c] [one: 1:c]  -> equal? 1:c '1
+                                        -> equal? 1:c '1
         -> equal? [1:c] [.1]            -> equal? [1:c] [.1:]
-        -> equal? [1:c 1:c] [.1: 1:c]   -> equal? [1:c] [one\1]
-        -> equal? [1:c] [one\1:]        -> equal? [1:c 1:c] [one\1: 1:c]
+                                        -> equal? [1:c] [one\1]
+        -> equal? [1:c] [one\1:]       
         -> equal? [1:c] [+]             -> equal? 1:c {/1°C/}
         -> equal? 1:c to :binary 1      -> equal? 1:c to :binary 1
         -> equal? [1:c] [(1)]           -> equal? 1:c [1:c]
@@ -776,10 +775,10 @@ do [
         -> equal? null 0.0.0                    -> equal? null :null
         -> equal? null `ø`                      -> equal? null "null"
         -> equal? @[null] [null]                -> equal? @[null] [null:]
-        -> equal? @[null null] [null: null]     -> equal? null 'null
+                                                -> equal? null 'null
         -> equal? @[null] [.null]               -> equal? @[null] [.null:]
-        -> equal? @[null null] [.null: null]    -> equal? @[null] [null\null]
-        -> equal? @[null] [null\null:]          -> equal? @[null null] [null\null: null]
+                                                -> equal? @[null] [null\null]
+        -> equal? @[null] [null\null:]           
         -> equal? @[null] [ø]                   -> equal? null {/null/}
         -> equal? null {/ø/}                    -> equal? null to :binary 0   
         -> equal? null to :binary 0             -> equal? @[null] [(null)]         
@@ -794,11 +793,11 @@ do [
         -> equal? true to :rational [1 1]       -> equal? true to :complex [0 0]
         -> equal? true 0.0.0                    -> equal? true :true
         -> equal? true `0`                      -> equal? true "true"
-        -> equal? @[true] [true]                -> equal? @[true] [true: true]
-        -> equal? @[true true] [true: true]     -> equal? true 'true
+        -> equal? @[true] [true]               
+                                                -> equal? true 'true
         -> equal? @[true] [.true]               -> equal? @[true] [.true:]
-        -> equal? @[true true] [.true: true]    -> equal? @[true] [true\true]
-        -> equal? @[true] [true\true:]          -> equal? @[true true] [true\true: true]
+                                                -> equal? @[true] [true\true]
+        -> equal? @[true] [true\true:]         
         -> equal? @[true] [ø]                   -> equal? true {/true/}
         -> equal? true to :binary 0             -> equal? true to :binary 0             
         -> equal? @[true] [(true)]              -> equal? true [true]                   
@@ -812,10 +811,10 @@ do [
         -> equal? false 0.0.0                       -> equal? false :false
         -> equal? false `0`                         -> equal? false "false"
         -> equal? @[false] [false]                  -> equal? @[false] [false:]
-        -> equal? @[false false] [false: false]     -> equal? false 'false
+                                                    -> equal? false 'false
         -> equal? @[false] [.false]                 -> equal? @[false] [.false:]
-        -> equal? @[false false] [.false: false]    -> equal? @[false] [false\false]
-        -> equal? @[false] [false\false:]           -> equal? @[false false] [false\false: false]
+                                                    -> equal? @[false] [false\false]
+        -> equal? @[false] [false\false:]           
         -> equal? @[false] [ø]                      -> equal? false {/false/}
         -> equal? false to :binary 0                -> equal? false to :binary 0                
         -> equal? @[false] [(false)]                -> equal? false [false]                     
@@ -829,10 +828,10 @@ do [
         -> equal? maybe 0.0.0                       -> equal? maybe :maybe
         -> equal? maybe `0`                         -> equal? maybe "maybe"
         -> equal? @[maybe] [maybe]                  -> equal? @[maybe] [maybe:]
-        -> equal? @[maybe maybe] [maybe: maybe]     -> equal? maybe 'maybe
+                                                    -> equal? maybe 'maybe
         -> equal? @[maybe] [.maybe]                 -> equal? @[maybe] [.maybe:]
-        -> equal? @[maybe maybe] [.maybe: maybe]    -> equal? @[maybe] [maybe\maybe]
-        -> equal? @[maybe] [maybe\maybe:]           -> equal? @[maybe maybe] [maybe\maybe: maybe]
+                                                    -> equal? @[maybe] [maybe\maybe]
+        -> equal? @[maybe] [maybe\maybe:]           
         -> equal? @[maybe] [ø]                      -> equal? maybe {/maybe/}
         -> equal? maybe to :binary 0                -> equal? maybe to :binary 0
         -> equal? @[maybe] [(maybe)]                -> equal? maybe [maybe]
@@ -849,10 +848,10 @@ do [
         -> equal? a 1.0.0                   -> equal? a :rational
         -> equal? a `1`                     -> equal? a "1.0+1.0i"
         -> equal? @[a] [one]                -> equal? @[a] [one:]
-        -> equal? @[a a] [one: 1]           -> equal? 1 '1
+                                            -> equal? 1 '1
         -> equal? @[a] [.1]                 -> equal? @[a] [.1:]
         -> equal? @[a a] [.1: 1]            -> equal? @[a] [one\1]
-        -> equal? @[a] [one\1:]             -> equal? @[a a] [one\1: 1]
+        -> equal? @[a] [one\1:]            
         -> equal? @[a] [+]                  -> equal? a {/1.0+1.0i/}
         -> equal? a to :binary 1            -> equal? a to :binary 1
         -> equal? @[a] [(1)]                -> equal? a [1]
@@ -868,10 +867,10 @@ do [
         -> equal? 1.0.0 to :complex [1.0 1.0]   -> equal? 1.0.0 :floating
         -> equal? 1.0.0 `1`                     -> equal? 1.0.0 "1.0.0"
         -> equal? [1.0.0] [one]                 -> equal? [1.0.0] [one:]
-        -> equal? [1.0.0 1.0.0] [one: 1.0.0]    -> equal? 1.0.0 '1
+                                                -> equal? 1.0.0 '1
         -> equal? [1.0.0] [.1]                  -> equal? [1.0.0] [.1:]
-        -> equal? [1.0.0 1.0.0] [.1: 1.0.0]     -> equal? [1.0.0] [one\1]
-        -> equal? [1.0.0] [one\1:]              -> equal? [1.0.0 1.0.0] [one\1: 1.0.0]
+                                                -> equal? [1.0.0] [one\1]
+        -> equal? [1.0.0] [one\1:]              
         -> equal? [1.0.0] [+]                   -> equal? 1.0.0 {/1.0.0/}
         -> equal? 1.0.0 to :binary 1.0          -> equal? 1.0.0 to :binary 1.0
         -> equal? [1.0.0] [(1.0.0)]             -> equal? 1.0.0 [1.0.0]
@@ -890,13 +889,13 @@ do [
         -> equal? :char `T`                         -> equal? :string ":type"
         -> equal? [:type] [type]                    -> equal? [:word] [word]                     
         -> equal? [:type] [type:]                   -> equal? [:label] [label:]
-        -> equal? [:type :type] [type: :type]       -> equal? :1 '1
+                                                    -> equal? :1 '1
         -> equal? :literal '1                       -> equal? [:type] [.type]                      
         -> equal? [:attribute] [.type]              -> equal? [:type] [.type:]
         -> equal? [:attributeLabel] [.type:]        -> equal? [:type :type] [.type: :type]         
         -> equal? [:type] [type\type]               -> equal? [:path] [type\type]
         -> equal? [:type] [type\type:]              -> equal? [:pathLabel] [type\type:]            
-        -> equal? [:type :type] [type\type: :type]  -> equal? [:type] [+]                       
+                                                    -> equal? [:type] [+]                       
         -> equal? [:symbol] [+]                     -> equal? :type {/:type/}
         -> equal? :regex {/:type/}                  -> equal? :type to :binary 1.0              
         -> equal? :binary to :binary 1.0            -> equal? [:type] [(:type)]                 
@@ -914,11 +913,11 @@ do [
         -> equal? `1` to :rational [1 1]    -> equal? `ø` null                    
         -> equal? `t` true                  -> equal? `f` false                   
         -> equal? `1` to :complex [1.0 1.0] -> equal? `T` :floating
-        -> equal? [`a`] [one]               -> equal? [`a`] [a: `a`]
-        -> equal? [`a` `a`] [a: `a`]        -> equal? `a` 'a
+        -> equal? [`a`] [one]               
+                                            -> equal? `a` 'a
         -> equal? [`a`] [.1]                -> equal? [`a`] [.a:]
-        -> equal? [`a` `a`] [.a: `a`]       -> equal? [`a`] [a\a]
-        -> equal? [`a`] [a\a:]              -> equal? [`a` `a`] [a\a: `a`]
+                                            -> equal? [`a`] [a\a]
+        -> equal? [`a`] [a\a:]              
         -> equal? [`+`] [+]                 -> equal? `a` {/a/}
         -> equal? `1` to :binary 1          -> equal? `a` to :binary 1
         -> equal? [`1`] [(`1`)]             -> equal? `a` [`a`]
@@ -935,7 +934,7 @@ do [
         -> equal? "1.0+1.0i" to :complex [1.0 1.0]  -> equal? "type" :floating
         -> equal? "floating" :floating              -> equal? ":floating" :floating
         -> equal? "1.0" :floating                   -> equal? ["a"] [a\a]
-        -> equal? ["a"] [a\a:]                      -> equal? ["a" "a"] [a\a: "a"]
+        -> equal? ["a"] [a\a:]                      
         -> equal? ["+"] [+]                         -> equal? "a" {/a/}
         -> equal? "01" to :binary 1                 -> equal? "1" to :binary 1
         -> equal? [""] [("")]                       -> equal? "" [""]
@@ -1026,7 +1025,7 @@ do [
         -> equal? {/1.0+1.0i/} to :complex [1.0 1.0]    -> equal? {/type/} :floating
         -> equal? {/floating/} :floating                -> equal? {/:floating/} :floating
         -> equal? {/1.0/} :floating                     -> equal? [{/a/}] [a\a]
-        -> equal? [{/a/}] [a\a:]                        -> equal? [{/a/} {/a/}] [a\a: {/a/}]
+        -> equal? [{/a/}] [a\a:]                      
         -> equal? [{/\+/}] [+]                          -> equal? {/01/} to :binary 1                 
         -> equal? {/1/} to :binary 1                    -> equal? [{//}] [({//})]                     
         -> equal? {//} [""]                             -> equal? {/1/} 1..1                          
