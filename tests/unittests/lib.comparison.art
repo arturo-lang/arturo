@@ -1813,6 +1813,471 @@ do [
     passed 
     
     
+    topic « less? - incompatible types
+    
+    ; NOTES: 
+    ; - to avoid repetition some tests may be not explicitly included
+    ; - this test part tries to cover the most of possible behaviors,
+    ;     including the possility of the Comparison module be rewritten, 
+    ;     avoiding future broken changes
+    ; - some combinations were not made, because it's considered very
+    ;     improbable to happen, even with a future rewrite of 
+    ;     the Comparison module
+    
+    ; for :integer
+    
+    ensure -> not? every? @[
+        -> less? 1 2
+        -> less? [a] [a a]
+    ] => not?
+    
+    ensure -> every? @[
+        -> less? 1 null          -> less? 1 true
+        -> less? 1 false         -> less? 1 to :complex [1 1]
+        -> less? 1 1.0.0         -> less? 1 :integer
+        -> less? 1 `1`           -> less? 1 "1"
+        -> less? [1] [one]       -> less? [1] [one:]
+        -> less? 1 '1            -> less? [1] [.1]         
+        -> less? [1] [.1:]       -> less? [1] [one\1]
+        -> less? [1] [one\1:]    -> less? [1] [+]          
+        -> less? 1 {/1/}         -> less? 1 to :binary 1   
+        -> less? 1 to :binary 1  -> less? [1] [(1)]        
+        -> less? 1 [1]           -> less? 1 1..1           
+        -> less? 1 #[one: 1]     -> less? 0 #black         
+        -> less? 1 var 'one?
+    ] => not? passed
+    
+    ; for :floating
+    ensure -> every? @[
+        -> less? 1.0 null            -> less? 1.0 true
+        -> less? 1.0 false           -> less? 1.0 to :complex [1.0 1.0]
+        -> less? 1.0 1.0.0           -> less? 1.0 :floating
+        -> less? 1.0 `1`             -> less? 1.0 "1.0"
+        -> less? [1.0] [one]         -> less? [1.0] [one:]
+        -> less? 1.0 '1.0i           -> less? [1.0] [.1]            
+        -> less? [1.0] [.1:]         -> less? [1.0] [one\1]
+        -> less? [1.0] [one\1:]      -> less? [1.0] [+]           
+        -> less? 1.0 {/1.0/}         -> less? 1.0 to :binary 1.0  
+        -> less? 1.0 to :binary 1.0  -> less? [1.0] [(1.0)]       
+        -> less? 1.0 [1]             -> less? 1.0 1..1            
+        -> less? 1.0 #[one: 1.0]     -> less? 0.0 #black          
+        -> less? 1.0 var 'one?
+    ] => not? passed
+    
+    ; for :rational
+    a: to :rational [1 1]
+    ensure -> every? @[
+        -> less? a null          -> less? a true
+        -> less? a false         -> less? a to :complex [1 1]
+        -> less? a 1.0.0         -> less? a :rational
+        -> less? a `1`           -> less? a "1/1"
+        -> less? @[a] [one]      -> less? @[a] [one:]
+        -> less? 1 '1            -> less? @[a] [.1]                 
+        -> less? @[a] [.1:]      -> less? @[a] [one\1]
+        -> less? @[a] [one\1:]   -> less? @[a] [+]                  
+        -> less? a {/1/1/}       -> less? a to :binary 1            
+        -> less? a to :binary 1  -> less? @[a] [(1)]                
+        -> less? a [1]           -> less? a 1..1                    
+        -> less? a #[one: 1]     -> less? to :rational [1 1] #black    
+        -> less? a var 'one?
+    ] => not? passed
+    
+    ; for :quantity
+    ensure -> every? @[
+        -> less? 1:usd null          -> less? 1:usd true
+        -> less? 1:usd false         -> less? 1:usd to :complex [1 1]
+        -> less? 1:usd 1.0.0         -> less? 1:usd :quantity
+        -> less? 1:usd `1`           -> less? 1:usd "1USD"
+        -> less? [1:usd] [one]       -> less? [1:usd] [one:]
+        -> less? 1:usd '1.0i         -> less? [1:usd] [.1]                  
+        -> less? [1:usd] [.1:]       -> less? [1:usd] [one\1]
+        -> less? [1:usd] [one\1:]    -> less? [1:usd] [+]         
+        -> less? 1:usd {/1USD/}      -> less? 1:usd to :binary 1  
+        -> less? 1:usd to :binary 1  -> less? [1:usd] [(1)]       
+        -> less? 1:usd [1:usd]       -> less? 1:usd 1..1          
+        -> less? 1:usd #[one: 1:usd] -> less? 0:usd #black        
+        -> less? 1:usd var 'one?
+    ] => not? passed
+    
+    ensure -> every? @[ 
+        -> less? 1:m null            -> less? 1:m true
+        -> less? 1:m false           -> less? 1:m to :complex [1 1]
+        -> less? 1:m 1.0.0           -> less? 1:m :quantity
+        -> less? 1:m `1`             -> less? 1:m "1m"
+        -> less? [1:m] [one]         -> less? [1:m] [one:]
+        -> less? 1:m '1              -> less? [1:m] [.1]            
+        -> less? [1:m] [.1:]         -> less? [1:m] [one\1]
+        -> less? [1:m] [one\1:]      -> less? [1:m] [+]             
+        -> less? 1:m {/1m/}          -> less? 1:m to :binary 1      
+        -> less? 1:m to :binary 1    -> less? [1:m] [(1)]           
+        -> less? 1:m [1:m]           -> less? 1:m 1..1              
+        -> less? 1:m #[one: 1:m]     -> less? 0:m #black            
+        -> less? 1:m var 'one?
+    ] => not? passed
+    
+    ensure -> every? @[ 
+        -> less? 1:m3 null           -> less? 1:m3 true
+        -> less? 1:m3 false          -> less? 1:m3 to :complex [1 1]
+        -> less? 1:m3 1.0.0          -> less? 1:m3 :quantity
+        -> less? 1:m3 `1`            -> less? 1:m3 "1m³"
+        -> less? [1:m3] [one]        -> less? [1:m3] [one:]
+        -> less? 1:m3 '1             -> less? [1:m3] [.1]              
+        -> less? [1:m3] [.1:]        -> less? [1:m3] [one\1]
+        -> less? [1:m3] [one\1:]     -> less? [1:m3] [+]                
+        -> less? 1:m3 {/1m³/}        -> less? 1:m3 to :binary 1         
+        -> less? 1:m3 to :binary 1   -> less? [1:m3] [(1)]              
+        -> less? 1:m3 [1:m3]         -> less? 1:m3 1..1                 
+        -> less? 1:m3 #[one: 1:m3]   -> less? 0:m3 #black               
+        -> less? 1:m3 var 'one?
+    ] => not? passed
+    
+    ensure -> every? @[ 
+        -> less? 1:c null            -> less? 1:c true
+        -> less? 1:c false           -> less? 1:c to :complex [1 1]
+        -> less? 1:c 1.0.0           -> less? 1:c :quantity
+        -> less? 1:c `1`             -> less? 1:c "1°C"
+        -> less? [1:c] [one]         -> less? [1:c] [one:]
+        -> less? 1:c '1.0i           -> less? [1:c] [.1]            
+        -> less? [1:c] [.1:]         -> less? [1:c] [one\1]       
+        -> less? [1:c] [one\1:]      -> less? [1:c] [+]           
+        -> less? 1:c {/1°C/}         -> less? 1:c to :binary 1    
+        -> less? 1:c to :binary 1    -> less? [1:c] [(1)]         
+        -> less? 1:c [1:c]           -> less? 1:c 1..1            
+        -> less? 1:c #[one: 1:c]     -> less? 0:c #black          
+        -> less? 1:c var 'one?
+    ] => not? passed
+    
+    ; for :null
+    ensure -> every? @[
+        -> less? null 0                  -> less? null 0.0            
+        -> less? null to :rational [1 1] -> less? null true
+        -> less? null false              -> less? null to :complex [0 0]
+        -> less? null 0.0.0              -> less? null :null
+        -> less? null `ø`                -> less? null "null"
+        -> less? @[null] [null]          -> less? @[null] [null:]
+        -> less? null 'null              -> less? @[null] [.null]               
+        -> less? @[null] [.null:]        -> less? @[null] [null\null]
+        -> less? @[null] [null\null:]    -> less? @[null] [ø]                   
+        -> less? null {/null/}           -> less? null {/ø/}                    
+        -> less? null to :binary 0       -> less? null to :binary 0             
+        -> less? @[null] [(null)]        -> less? null [null]                   
+        -> less? null 0..0               -> less? null #[null: null]            
+        -> less? null #black          
+        -> less? null var 'null?
+    ] => not? passed
+    
+    ; for :logical
+    ensure -> every? @[
+        -> less? true 0                  -> less? true 0.0            
+        -> less? true to :rational [1 1] -> less? true to :complex [0 0]
+        -> less? true 0.0.0              -> less? true :true
+        -> less? true `0`                -> less? true "true"
+        -> less? @[true] [true]          -> less? @[true] [true:]
+        -> less? true 'true              -> less? @[true] [.true]               
+        -> less? @[true] [.true:]        -> less? @[true] [true\true]
+        -> less? @[true] [true\true:]    -> less? @[true] [ø]                   
+        -> less? true {/true/}           -> less? true to :binary 0             
+        -> less? true to :binary 0       -> less? @[true] [(true)]              
+        -> less? true [true]             -> less? true 0..0                     
+        -> less? true #[true: true]      -> less? true #black                   
+        -> less? true var 'true?
+    ] => not? passed
+    
+    ensure -> every? @[
+        -> less? false 0                     -> less? false 0.0            
+        -> less? false to :rational [1 1]    -> less? false to :complex [0 0]
+        -> less? false 0.0.0                 -> less? false :false
+        -> less? false `0`                   -> less? false "false"
+        -> less? @[false] [false]            -> less? @[false] [false:]
+        -> less? false 'false                -> less? @[false] [.false]                 
+        -> less? @[false] [.false:]          -> less? @[false] [false\false]
+        -> less? @[false] [false\false:]     -> less? @[false] [ø]                      
+        -> less? false {/false/}             -> less? false to :binary 0                
+        -> less? false to :binary 0          -> less? @[false] [(false)]                
+        -> less? false [false]               -> less? false 0..0                        
+        -> less? false #[false: false]       -> less? false #black                      
+        -> less? false var 'false?
+    ] => not? passed
+    
+    ensure -> every? @[
+        -> less? maybe 0                     -> less? maybe 0.0            
+        -> less? maybe to :rational [1 1]    -> less? maybe to :complex [0 0]
+        -> less? maybe 0.0.0                 -> less? maybe :maybe
+        -> less? maybe `0`                   -> less? maybe "maybe"
+        -> less? @[maybe] [maybe]            -> less? @[maybe] [maybe:]
+        -> less? maybe 'maybe                -> less? @[maybe] [.maybe]                 
+        -> less? @[maybe] [.maybe:]          -> less? @[maybe] [maybe\maybe]
+        -> less? @[maybe] [maybe\maybe:]     -> less? @[maybe] [ø]                      
+        -> less? maybe {/maybe/}             -> less? maybe to :binary 0                
+        -> less? maybe to :binary 0A         -> less? @[maybe] [(maybe)]                
+        -> less? maybe [maybe]               -> less? maybe 0..0                        
+        -> less? maybe #[maybe: maybe]       -> less? maybe #black                      
+    ] => not? passed
+    
+    ; for :complex
+    a: to :complex [1 1]
+    ensure -> every? @[
+        -> less? a 1                     -> less? a 1.0            
+        -> less? a to :rational [1 1]    -> less? a null                    
+        -> less? a true                  -> less? a false
+        -> less? a 1.0.0                 -> less? a :rational
+        -> less? a `1`                   -> less? a "1.0+1.0i"
+        -> less? @[a] [one]              -> less? @[a] [one:]
+        -> less? 1 '1                    -> less? @[a] [.1]                 
+        -> less? @[a] [.1:]              -> less? @[a] [one\1]
+        -> less? @[a] [one\1:]           -> less? @[a] [+]                  
+        -> less? a {/1.0+1.0i/}          -> less? a to :binary 1            
+        -> less? a to :binary 1          -> less? @[a] [(1)]                
+        -> less? a [1]                   -> less? a 1..1                    
+        -> less? a #[one: 1]             -> less? to :complex [0 0] #black  
+        -> less? a var 'one?
+    ] => not? passed
+    
+    ; for :version
+    ensure -> every? @[
+        -> less? 1.0.0 1                     -> less? 1.0.0 1.0          
+        -> less? 1.0.0 to :rational [1 1]    -> less? 1.0.0 null                    
+        -> less? 1.0.0 true                  -> less? 1.0.0 false                   
+        -> less? 1.0.0 to :complex [1.0 1.0] -> less? 1.0.0 :floating
+        -> less? 1.0.0 `1`                   -> less? 1.0.0 "1.0.0"
+        -> less? [1.0.0] [one]               -> less? [1.0.0] [one:]
+        -> less? 1.0.0 '1                    -> less? [1.0.0] [.1]                  
+        -> less? [1.0.0] [.1:]               -> less? [1.0.0] [one\1]
+        -> less? [1.0.0] [one\1:]            -> less? [1.0.0] [+]                   
+        -> less? 1.0.0 {/1.0.0/}             -> less? 1.0.0 to :binary 1.0          
+        -> less? 1.0.0 to :binary 1.0        -> less? [1.0.0] [(1.0.0)]             
+        -> less? 1.0.0 [1.0.0]               -> less? 1.0.0 1..1                    
+        -> less? 1.0.0 #[one: 1.0.0]         -> less? 0.0.0 #black                  
+        -> less? 1.0.0 var 'version?
+    ] => not? passed
+    
+    ; for :type
+    ensure -> every? @[
+        -> less? :1 1                            -> less? :1 1.0          
+        -> less? :integer 1                      -> less? :floating 1.0          
+        -> less? :rational to :rational [1 1]    -> less? :null null                    
+        -> less? :true true                      -> less? :false false                   
+        -> less? :logical false                  -> less? :complex to :complex [1 1]   
+        -> less? :version 1.0.0                  -> less? :T `T`                         
+        -> less? :char `T`                       -> less? :string ":type"
+        -> less? [:type] [type]                  -> less? [:word] [word]                     
+        -> less? [:type] [type:]                 -> less? [:label] [label:]
+        -> less? :1 '1.                          -> less? :literal '1                       
+        -> less? [:type] [.type]                 -> less? [:attribute] [.type]              
+        -> less? [:type] [.type:]                -> less? [:attributeLabel] [.type:]                
+        -> less? [:type] [type\type]             -> less? [:path] [type\type]
+        -> less? [:type] [type\type:]            -> less? [:pathLabel] [type\type:]            
+        -> less? [:type] [+]                     -> less? [:symbol] [+]                     
+        -> less? :type {/:type/}                 -> less? :regex {/:type/}                  
+        -> less? :type to :binary 1.0            -> less? :binary to :binary 1.0            
+        -> less? [:type] [(:type)]               -> less? [:inline] [(:type)]               
+        -> less? :type [:type]                   -> less? :block [:type]                    
+        -> less? :type 1..1                      -> less? :range 1..1                       
+        -> less? :type #[type: :type]            -> less? :dictionary #[type: :type]        
+        -> less? :type #black                    -> less? :color #black                     
+        -> less? :type var 'type?                -> less? :function var 'one?
+    ] => not? passed
+    
+    ; for :char
+    ensure -> every? @[
+        -> less? `1` 1.0          
+        -> less? `1` to :rational [1 1]      -> less? `ø` null                    
+        -> less? `t` true                    -> less? `f` false                   
+        -> less? `1` to :complex [1.0 1.0]   -> less? `T` :floating
+        -> less? [`a`] [one]                 -> less? `a` 'A                      
+        -> less? [`a`] [.1]                  -> less? [`a`] [.a:]                 
+        -> less? [`a`] [a\a]                 -> less? [`a`] [a\a:]                
+        -> less? [`+`] [+]                   -> less? `a` {/a/}                   
+        -> less? `1` to :binary 1            -> less? `a` to :binary 1            
+        -> less? [`1`] [(`1`)]               -> less? `a` [`a`]                   
+        -> less? `1` 1..1                    -> less? `a` #[a: `a`]               
+        -> less? `1` #black                  -> less? `a` var 'char?
+    ] => not? passed
+    
+    ; for :string
+    ensure -> every? @[
+        -> less? "1" 1                               -> less? "1/1" to :rational [1 1]          
+        -> less? "1.0" 1.0                           -> less? "null" null                    
+        -> less? "" null                             -> less? "true" true                  
+        -> less? "" false                            -> less? "false" false                   
+        -> less? "1.0+1.0i" to :complex [1.0 1.0]    -> less? "type" :floating
+        -> less? "floating" :floating                -> less? ":floating" :floating
+        -> less? "1.0" :floating                     -> less? ["a"] [a\a]
+        -> less? ["a"] [a\a:]                        -> less? ["+"] [+]                         
+        -> less? "a" {/a/}                           -> less? "01" to :binary 1                 
+        -> less? "1" to :binary 1                    -> less? [""] [("")]                       
+        -> less? "" [""]                             -> less? "1" 1..1                          
+        -> less? "a" #[a: "a"]                       -> less? "#000000" #black                  
+        -> less? "000000" #black                     -> less? "" var 'char?
+    ] => not? passed
+    
+    ; for :word
+    ensure -> every? @[        
+        -> less? [rational] @[to :rational [1 1]]      -> less? [null]  @[null]                    
+        -> less? [true]     @[true]                    -> less? [false] @[false]                   
+        -> less? [complex]  @[to :complex [1.0 1.0]]   -> less? [type]  @[:floating]  
+        -> less? [floating] @[:floating]               -> less? [a]      [a\a]                   
+        -> less? [a]         [a\a:]                    -> less? [a]     @[{/a/}]                      
+        -> less? [binary]   @[to :binary 1]            -> less? [one]   @[to :binary 1]              
+        -> less? [word]      [(word)]                  -> less? [word]  @[[word]]                      
+        -> less? [range]    @[range 1 1]               -> less? [a]     @[#[a: `a`]]               
+        -> less? [black]    @[#black ]                 -> less? [word]  @[var 'word?]              
+        -> less? [var]      @[var 'word?]
+    ] => not? passed
+    
+    ; for :label
+    ensure -> every? @[
+        -> less? [rational:] @[to :rational [1 1]]     -> less? [null:]     @[null]                                                        
+        -> less? [true:]     @[true]                   -> less? [false:]    @[false]                   
+        -> less? [complex:]  @[to :complex [1.0 1.0]]  -> less? [floating:] @[:floating]
+        -> less? [type:]     @[:floating]              -> less? [a:]         [a\a]                     
+        -> less? [a:]         [a\a:]                   -> less? [a:]        @[{/a:/}]                 
+        -> less? [binary:]   @[to :binary 1]           -> less? [word:]      [(word:)]                
+        -> less? [label:]    @[[label:]]               -> less? [a:]        @[#[a: `a`]]               
+        -> less? [black:]    @[#black ]                -> less? [var:]      @[var 'word?]
+        -> less? [word:]     @[var 'word?]
+    ] => not? passed
+    
+    ; for :literal
+    ; NOTE: technically, '+ is not a :literal, but a :symbolLiteral type ;)
+    ensure -> every? @[
+        -> less? 'integer  1                   -> less? 'floating 1.0
+        -> less? 'rational to :rational [1 1]  -> less? 'one      to :rational [1 1]
+        -> less? 'null     null                -> less? 'true     true    
+        -> less? 'false    false               -> less? 'complex  to :complex [1.0 1.0]    
+        -> less? 'type     :floating           -> less? 'floating :floating               
+        -> less? ['a]        [a\a]             -> less? ['+]      [+]                       
+        -> less? 'a        {/a/}               -> less? 'binary   to :binary 1            
+        -> less? ['word]   [('word)]           -> less? 'word     ['word]                                     
+        -> less? 'range    1..1                -> less? 'a        #[a: 'a]                
+        -> less? 'black    #black              -> less? 'word?    var 'word?              
+        -> less? 'var      var 'var
+    ] => not? passed
+    
+    ; for :attribute
+    ensure -> every? @[           
+        -> less? [.rational] @[to :rational [1 1]]    -> less? [.null]     @[null]                  
+        -> less? [.true]     @[true]                  -> less? [.false]    @[false]                 
+        -> less? [.complex]  @[to :complex [1.0 1.0]] -> less? [.floating] @[:floating]                          
+        -> less? [.a]        @[{/a:/}]                -> less? [.binary]   @[to :binary 1]          
+        -> less? [.word]      [(.word:)]              -> less? [.label]    @[[.label]]                               
+        -> less? [.a]        @[#[a: `a`]]             -> less? [.black]    @[#black]                
+        -> less? [.var]      @[var 'word?]            -> less? [.word]     @[var 'word?]
+    ] => not? passed
+    
+    ; for :attributeLabel
+    ensure -> every? @[           
+        -> less? [.rational:] @[to :rational [1 1]]    -> less? [.null:]     @[null]                  
+        -> less? [.true:]     @[true]                  -> less? [.false:]    @[false]                 
+        -> less? [.complex:]  @[to :complex [1.0 1.0]] -> less? [.floating:] @[:floating]             
+        -> less? [.a:]         [a\a]                   -> less? [.a: `a`]     [a\a: `a`]              
+        -> less? [.plus:]      [+]                     -> less? [.a:]        @[{/a:/}]                
+        -> less? [.binary:]   @[to :binary 1]          -> less? [.word:]      [(.word:)]               
+        -> less? [.label:]    @[[label:]]              -> less? [.a:]        @[#[a: `a`]]             
+        -> less? [.black:]    @[#black]                -> less? [.var:]      @[var 'word?]            
+        -> less? [.word:]     @[var 'word?]
+    ] => not? passed
+    
+    ; for :path & :pathLabel
+    ensure -> every? @[
+        -> less? [a\b:] [a\b]
+        -> less? [a\b] [a\b:]
+    ] => not? passed
+
+    ; for :regex
+    ensure -> every? @[
+        -> less? {/1/} 1                               -> less? {/1/1/} to :rational [1 1]          
+        -> less? {/1.0/} 1.0                           -> less? {/null/} null                    
+        -> less? {//} null                             -> less? {/true/} true                  
+        -> less? {//} false                            -> less? {/false/} false                   
+        -> less? {/1.0+1.0i/} to :complex [1.0 1.0]    -> less? {/type/} :floating
+        -> less? {/floating/} :floating                -> less? {/:floating/} :floating
+        -> less? {/1.0/} :floating                     -> less? [{/a/}] [a\a]
+        -> less? [{/a/}] [a\a:]                        -> less? [{/a/} {/a/}] [a\a: {/a/}]
+        -> less? [{/\+/}] [+]                          -> less? {/01/} to :binary 1                 
+        -> less? {/1/} to :binary 1                    -> less? [{//}] [({//})]                     
+        -> less? {//} [""]                             -> less? {/1/} 1..1                          
+        -> less? {/a/} #[a: "a"]                       -> less? {/#000000/} #black                  
+        -> less? {/000000/} #black                     -> less? {/var/} var 'regex?
+        -> less? {/regex?/} var 'regex?
+    ] => not? passed
+    
+    ; for :binary
+    ensure -> every? @[
+        -> less? to :binary 1 1                    -> less? to :binary 1 1.0                
+        -> less? to :binary 1 to :rational [1 1]   -> less? to :binary 1 1:usd                
+        -> less? to :binary 1 1:m                  -> less? to :binary 1 1:m3                 
+        -> less? to :binary 1 1:c                  -> less? to :binary 0 null                 
+        -> less? to :binary 0 true                 -> less? to :binary 0 false                
+        -> less? to :binary 0 maybe                -> less? to :binary 1 to :complex [1 1]                  
+        -> less? to :binary 1 1.0.0                -> less? to :binary 1 :type              
+        -> less? to :binary 1 :binary              -> less? to :binary 1 `1`                  
+        -> less? to :binary "a" `a`                -> less? to :binary 1 "01"                 
+        -> less? to :binary 1 "1"                  -> less? @[to :binary 1] [binary]          
+        -> less? @[to :binary 1] [one]             -> less? @[to :binary 1] [binary:]         
+        -> less? @[to :binary 1][.binary]          -> less? @[to :binary 1] [.binary:]        
+        -> less? to :binary 1 {/01/}               -> less? to :binary 1    {/1/}
+    ] => not? passed
+    
+    ; for :range
+    ensure -> every? @[
+        -> less? 1..1 1                        -> less? 1..1 1.0
+        -> less? 1..1 a: to :rational [1 1]    -> less? 1..1 1:usd
+        -> less? 1..1 1:m                      -> less? 1..1 1:m3  
+        -> less? 1..1 1:c                      -> less? 0..0 null 
+        -> less? 0..0 true                     -> less? 0..0 false
+        -> less? 0..0 maybe                    -> less? 1..1 to :complex [1 1]
+        -> less? 1..1 1.0.0                    -> less? 1..1 :type                        
+        -> less? 1..1 :range                   -> less? 1..1 `1` 
+        -> less? 1..1 "1"                      -> less? 1..1 'range  
+        -> less? 1..1 {/1/}
+    ] => not? passed
+    
+    ; for :dictionary, :object & :date
+    define :person [name surname][]
+    
+    a: to :person ["Walter" "Pinkman"]
+    b: to :date .format: "YYYY MMM dd" "2023 Jan 15"
+    
+    ensure -> every? @[
+        -> less? #[name: "Walter" surname: "Pinkman"] a
+        -> less? a #[name: "Walter" surname: "Pinkman"]
+        -> less? #[year: 2023 day: 15 Month: "January"] b
+        -> less? b #[year: 2023 day: 15 Month: "January"]
+    ] => not? passed
+    
+    ; for :color
+    ensure -> every? @[
+        -> less? #black 0                  -> less? #black 0.0
+        -> less? #black to :rational [1 1] -> less? #black 0:usd 
+        -> less? #black 0:m                -> less? #black 0:m3
+        -> less? #black 0:c                -> less? #black null 
+        -> less? #black true               -> less? #black false 
+        -> less? #black maybe              -> less? #black to :complex [0 0]
+        -> less? #black 0.0.0              -> less? #black :color
+        -> less? #black `1`                -> less? #black "#000000"
+        -> less? #black "000000"           -> less? [#black] [black] 
+        -> less? #black 'black             -> less? [#black] [.black]
+        -> less? [#black] [.black:]        -> less? #black  {/#000000/}                 
+        -> less? #black{/000000/} 
+    ] => not? passed
+    
+    ; for :function
+    ensure -> every? @[
+        -> less? var 'null?     null       -> less? var 'true?    true  
+        -> less? var 'false?    false 
+        -> less? var 'version?  1.0.0      -> less? var 'type?    :type 
+        -> less? var 'function? :function  -> less? var 'char?    `a` 
+        -> less? @[var 'word?]  [word]     -> less? @[var 'word?] [var]      
+        -> less? @[var 'word?]  [var:]     -> less? @[var 'word?] [word:]    
+        -> less? var 'word?     'word?     -> less? var 'var      'var       
+        -> less? @[var 'word?]  [.var]     -> less? @[var 'word?] [.word]    
+        -> less? @[var 'word?]  [.var:]    -> less? @[var 'word?] [.word:]   
+        -> less? var 'regex?    {/var/}    -> less? var 'regex?   {/regex?/} 
+    ] => not? passed
+
+    
+    
 ]
 
 
