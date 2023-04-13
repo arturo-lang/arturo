@@ -2517,6 +2517,16 @@ do [
     passed 
     
     
+    topic « lessOrEqual? - incompatible types
+    
+    ; NOTES: 
+    ; - to avoid repetition some tests may be not explicitly included
+    ; - this test part tries to cover the most of possible behaviors,
+    ;     including the possility of the Comparison module be rewritten, 
+    ;     avoiding future broken changes
+    ; - some combinations were not made, because it's considered very
+    ;     improbable to happen, even with a future rewrite of 
+    ;     the Comparison module
 ]
 
 
