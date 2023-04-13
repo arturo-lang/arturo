@@ -2935,6 +2935,19 @@ do [
         -> lessOrEqual? 1..1 "1"                      -> lessOrEqual? 1..1 'range  
         -> lessOrEqual? 1..1 {/1/}
     ] => not? passed
+    
+    ; for :dictionary, :object & :date
+    define :person [name surname][]
+    
+    a: to :person ["Walter" "Pinkman"]
+    b: to :date .format: "YYYY MMM dd" "2023 Jan 15"
+    
+    ensure -> every? @[
+        -> lessOrEqual? #[name: "Walter" surname: "Pinkman"] a
+        -> lessOrEqual? a #[name: "Walter" surname: "Pinkman"]
+        -> lessOrEqual? #[year: 2023 day: 15 Month: "January"] b
+        -> lessOrEqual? b #[year: 2023 day: 15 Month: "January"]
+    ] => not? passed
 ]
 
 
