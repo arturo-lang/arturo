@@ -2880,6 +2880,12 @@ do [
         -> lessOrEqual? [.black:]    @[#black]                -> lessOrEqual? [.var:]      @[var 'word?]            
         -> lessOrEqual? [.word:]     @[var 'word?]
     ] => not? passed
+    
+    ; for :path & :pathLabel
+    ensure -> every? @[
+        -> lessOrEqual? [a\b:] [a\b]
+        -> lessOrEqual? [a\b] [a\b:]
+    ] => not? passed
 ]
 
 
