@@ -6,6 +6,8 @@ debug: $[variable][
 topic: $[topic :string] -> print ~"\n>> |topic|"
 passed: $[] -> print "[+] passed!"
 
+print "break CI"
+
 
 ; ==> Tests
 
