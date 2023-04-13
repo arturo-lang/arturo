@@ -2753,6 +2753,34 @@ do [
         -> lessOrEqual? 1.0.0 #[one: 1.0.0]         -> lessOrEqual? 0.0.0 #black                  
         -> lessOrEqual? 1.0.0 var 'version?
     ] => not? passed
+    
+    ; for :type
+    ensure -> every? @[
+        -> lessOrEqual? :1 1                            -> lessOrEqual? :1 1.0          
+        -> lessOrEqual? :integer 1                      -> lessOrEqual? :floating 1.0          
+        -> lessOrEqual? :rational to :rational [1 1]    -> lessOrEqual? :null null                    
+        -> lessOrEqual? :true true                      -> lessOrEqual? :false false                   
+        -> lessOrEqual? :logical false                  -> lessOrEqual? :complex to :complex [1 1]   
+        -> lessOrEqual? :version 1.0.0                  -> lessOrEqual? :T `T`                         
+        -> lessOrEqual? :char `T`                       -> lessOrEqual? :string ":type"
+        -> lessOrEqual? [:type] [type]                  -> lessOrEqual? [:word] [word]                     
+        -> lessOrEqual? [:type] [type:]                 -> lessOrEqual? [:label] [label:]
+        -> lessOrEqual? :1 '1.                          -> lessOrEqual? :literal '1                       
+        -> lessOrEqual? [:type] [.type]                 -> lessOrEqual? [:attribute] [.type]              
+        -> lessOrEqual? [:type] [.type:]                -> lessOrEqual? [:attributeLabel] [.type:]                
+        -> lessOrEqual? [:type] [type\type]             -> lessOrEqual? [:path] [type\type]
+        -> lessOrEqual? [:type] [type\type:]            -> lessOrEqual? [:pathLabel] [type\type:]            
+        -> lessOrEqual? [:type] [+]                     -> lessOrEqual? [:symbol] [+]                     
+        -> lessOrEqual? :type {/:type/}                 -> lessOrEqual? :regex {/:type/}                  
+        -> lessOrEqual? :type to :binary 1.0            -> lessOrEqual? :binary to :binary 1.0            
+        -> lessOrEqual? [:type] [(:type)]               -> lessOrEqual? [:inline] [(:type)]               
+        -> lessOrEqual? :type [:type]                   -> lessOrEqual? :block [:type]                    
+        -> lessOrEqual? :type 1..1                      -> lessOrEqual? :range 1..1                       
+        -> lessOrEqual? :type #[type: :type]            -> lessOrEqual? :dictionary #[type: :type]        
+        -> lessOrEqual? :type #black                    -> lessOrEqual? :color #black                     
+        -> lessOrEqual? :type var 'type?                -> lessOrEqual? :function var 'one?
+    ] => not? passed
+    
 ]
 
 
