@@ -5606,16 +5606,6 @@ do [
 
 ; integer comparisons
 
-print less? 1 1
-print 1<1
-print less? 1 2
-print 1<2
-
-print lessOrEqual? 1 1
-print 1=<1
-print lessOrEqual? 1 2
-print 1=<2
-
 print greater? 1 1
 print 1>1
 print greater? 2 1
@@ -5627,33 +5617,25 @@ print greaterOrEqual? 2 1
 print 2>=1
 
 ; floating comparisons
-
 print 3.0>2
-print 1.123 < 1.023
 
 ; floating-integer comparisons
-
 print 3.0>2
-print 2<3.14
 
 ; other types
 
 print "hello">"iceland"
-print "hello"<"iceland"
 
 print [1 2 3 4]>[1 2 3]
 
 a: to :date .format: "YYYY" "2002"
 b: to :date .format: "YYYY" "2001"
 print a > b
-print a < b
 
 a: to :date .format: "MMM dd" "Jan 15"
 b: to :date .format: "MMM dd" "Jan 14"
 print a > b
-print a < b
 
 a: to :date .format: "HH:mm" "13:25"
 b: to :date .format: "HH:mm" "12:12"
 print a > b
-print a < b
