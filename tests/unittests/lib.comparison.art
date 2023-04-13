@@ -2161,20 +2161,19 @@ do [
 
     ; for :regex
     ensure -> every? @[
-        -> less? {/1/} 1                               -> less? {/1/1/} to :rational [1 1]          
-        -> less? {/1.0/} 1.0                           -> less? {/null/} null                    
-        -> less? {//} null                             -> less? {/true/} true                  
-        -> less? {//} false                            -> less? {/false/} false                   
-        -> less? {/1.0+1.0i/} to :complex [1.0 1.0]    -> less? {/type/} :floating
-        -> less? {/floating/} :floating                -> less? {/:floating/} :floating
-        -> less? {/1.0/} :floating                     -> less? [{/a/}] [a\a]
-        -> less? [{/a/}] [a\a:]
-        -> less? [{/\+/}] [+]                          -> less? {/01/} to :binary 1                 
-        -> less? {/1/} to :binary 1                    -> less? [{//}] [({//})]                     
-        -> less? {//} [""]                             -> less? {/1/} 1..1                          
-        -> less? {/a/} #[a: "a"]                       -> less? {/#000000/} #black                  
-        -> less? {/000000/} #black                     -> less? {/var/} var 'regex?
-        -> less? {/regex?/} var 'regex?
+        -> less? {/1/} 1                            -> less? {/1/1/} to :rational [1 1]          
+        -> less? {/1.0/} 1.0                        -> less? {/null/} null                    
+        -> less? {//} null                          -> less? {/true/} true                  
+        -> less? {//} false                         -> less? {/false/} false                   
+        -> less? {/1.0+1.0i/} to :complex [1.0 1.0] -> less? {/type/} :floating
+        -> less? {/floating/} :floating             -> less? {/:floating/} :floating
+        -> less? {/1.0/} :floating                  -> less? [{/a/}] [a\a]
+        -> less? [{/a/}] [a\a:]                     -> less? [{/\+/}] [+]                          
+        -> less? {/01/} to :binary 1                -> less? {/1/} to :binary 1                    
+        -> less? [{//}] [({//})]                    -> less? {//} [""]                             
+        -> less? {/1/} 1..1                         -> less? {/a/} #[a: "a"]                       
+        -> less? {/#000000/} #black                 -> less? {/000000/} #black                     
+        -> less? {/var/} var 'regex?                -> less? {/regex?/} var 'regex?
     ] => not? passed
     
     ; for :binary
