@@ -2781,6 +2781,21 @@ do [
         -> lessOrEqual? :type var 'type?                -> lessOrEqual? :function var 'one?
     ] => not? passed
     
+    ; for :char
+    ensure -> every? @[
+        -> lessOrEqual? `1` 1.0          
+        -> lessOrEqual? `1` to :rational [1 1]      -> lessOrEqual? `ø` null                    
+        -> lessOrEqual? `t` true                    -> lessOrEqual? `f` false                   
+        -> lessOrEqual? `1` to :complex [1.0 1.0]   -> lessOrEqual? `T` :floating
+        -> lessOrEqual? [`a`] [one]                 -> lessOrEqual? `a` 'A                      
+        -> lessOrEqual? [`a`] [.1]                  -> lessOrEqual? [`a`] [.a:]                 
+        -> lessOrEqual? [`a`] [a\a]                 -> lessOrEqual? [`a`] [a\a:]                
+        -> lessOrEqual? [`+`] [+]                   -> lessOrEqual? `a` {/a/}                   
+        -> lessOrEqual? `1` to :binary 1            -> lessOrEqual? `a` to :binary 1            
+        -> lessOrEqual? [`1`] [(`1`)]               -> lessOrEqual? `a` [`a`]                   
+        -> lessOrEqual? `1` 1..1                    -> lessOrEqual? `a` #[a: `a`]               
+        -> lessOrEqual? `1` #black                  -> lessOrEqual? `a` var 'char?
+    ] => not? passed
 ]
 
 
