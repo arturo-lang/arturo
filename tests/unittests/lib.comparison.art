@@ -2277,6 +2277,98 @@ do [
     passed
     
     
+    topic « greaterOrEqual? :dictionary
+    
+    a: #[name: "Walter" surname: "Pinkman"]
+    
+    ensure -> greaterOrEqual? a #[name: "Walter" surname: "Pinkman"]
+    ensure -> not? greaterOrEqual? a #[name: "Jesse" surname: "Pinkman"]
+    ensure -> not? greaterOrEqual? a #[name "Jesse" surname "Pinkman"]
+    ensure -> not? greaterOrEqual? a [name "Jesse" surname "Pinkman"]
+    passed
+    
+    
+    topic « greaterOrEqual? - :object
+    
+    define :person [name age][  
+        init: -> this\name: capitalize this\name
+        print: -> 
+            render "NAME: |this\name|, AGE: |this\age|"
+    ]
+    
+    define.as: :person :student [name age id][  
+        init: -> this\name: capitalize this\name
+        print: -> 
+            render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
+    ]
+    
+    a: to :person ["Joe" 32]
+    ensure -> greaterOrEqual? a to :person ["Joe" 32]
+    ensure -> not? greaterOrEqual? to :person ["Joe" 32] #[name: "Joe" age: 32]
+    ensure -> not? greaterOrEqual? to :person ["Joe" 32] to :student ["Joe" 32 15]
+    passed
+    
+    a\name: "Jane"
+    ensure -> greaterOrEqual? a to :person ["Jane" 32]
+    passed
+    
+    define :person [name age][  
+        init: -> this\name: capitalize this\name
+        print: -> 
+            render "NAME: |this\name|, AGE: |this\age|"
+        compare: [
+            if this\age > that\age -> return 1
+            if this\age = that\age -> return 0
+            if this\age < that\age -> return neg 1
+        ]   
+    ]
+    
+    define.as: :person :student [name age id][  
+        init: -> this\name: capitalize this\name
+        print: -> 
+            render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
+        compare: [
+            if this\age > that\age -> return 1
+            if this\age = that\age -> return 0
+            if this\age < that\age -> return neg 1
+        ]
+    ]
+    
+    a: to :person ["John" 16]
+    b: to :student ["Jane" 16 100]
+    c: to :person ["John" 15]
+    d: to :student ["Jane" 16 100]
+    ensure -> greaterOrEqual? a b
+    ensure -> greaterOrEqual? b a
+    ensure -> not? greaterOrEqual? c d
+    ensure -> greaterOrEqual? d c
+    
+    
+    topic « greaterOrEqual? - :store
+    
+    a: store "test.db"
+    a\name: "John" a\surname: "Doe"
+    b: store "test.db"
+    b\name: "John" b\surname: "Doe"
+    c: store "test2.db"
+    c\name: "John" c\surname: "Doe"
+    d: store "test3.db"
+    d\name: "Jane" d\surname: "Doe"
+    
+    ensure -> greaterOrEqual? a a
+    ensure -> greaterOrEqual? a b
+    ensure -> greaterOrEqual? b a
+    passed
+    
+    ensure -> not? greaterOrEqual? a c 
+    ensure -> not? greaterOrEqual? c a 
+    ensure -> not? greaterOrEqual? a d 
+    ensure -> not? greaterOrEqual? d a 
+    ensure -> not? greaterOrEqual? c d 
+    ensure -> not? greaterOrEqual? d c 
+    passed
+    
+    
 ]
 
 
