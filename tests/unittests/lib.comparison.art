@@ -1119,6 +1119,13 @@ do [
     
 ]
 
+topic « greater?
+do [
+    
+    
+    
+]
+
 
 topic « less?
 do [
