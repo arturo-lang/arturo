@@ -1414,6 +1414,23 @@ do [
     passed
     
     
+    topic « greater? - :type
+    
+    ensure -> not? greater? :char :char
+    ensure -> not? greater? :string type "a"
+    ensure -> not? greater? :integer type 1
+    ensure -> not? greater? :floating type 1.5
+    passed
+    
+    ensure -> not? greater? :char :string
+    ensure -> not? greater? :integer :string
+    ensure -> not? greater? :floating :integer   
+    ensure -> not? greater? :string :integer
+    ensure -> not? greater? :string :char
+    ensure -> not? greater? :integer :floating
+    passed
+    
+    
 ]
 
 
