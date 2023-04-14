@@ -2199,6 +2199,45 @@ do [
     passed
     
     
+    topic « greaterOrEqual? - :inline
+    
+    ensure -> greaterOrEqual? [(2 + 2)] [(2 + 2)]
+    ensure -> greaterOrEqual? [(2 3 4 5)] [(2 3 4 5)]
+    passed
+    
+    ensure -> not? greaterOrEqual? [(2 + 2)] [(2 + 1)]
+    ensure -> not? greaterOrEqual? [(2 3 4 5)] [(2 1 4 5)]
+    passed
+
+    a: [(2 1 4 5)]
+    b: [(2 3 4)] 
+    ensure -> greaterOrEqual? a\0 b\0
+    passed
+    
+    
+    topic « greaterOrEqual? - :block
+    
+    a: [1 + 1]
+    ensure -> greaterOrEqual? a [1 + 1]
+    ensure -> greaterOrEqual? [1 1] [1]
+    ensure -> greaterOrEqual? a [2]
+    ensure -> not? greaterOrEqual? a 2
+    ensure -> not? greaterOrEqual? a [1 ++ 1]
+    ensure -> not? greaterOrEqual? [2] [1]
+    ensure -> not? greaterOrEqual? [1] [2]
+    passed
+    
+    
+    topic « greaterOrEqual? :range
+    
+    ensure -> greaterOrEqual? 0..5 0..5
+    ensure -> greaterOrEqual? [0 1 2 3 4 5] @0..5
+    ensure -> greaterOrEqual? [0 2 4] @0.. .step: 2 5
+    ensure -> greaterOrEqual? @range.step: 2 0 5 @range.step: 2 0 4
+    ensure -> not? greaterOrEqual? range.step: 2 0 5 range.step: 2 0 4
+    passed
+    
+    
 ]
 
 
