@@ -1685,6 +1685,98 @@ do [
     passed
     
     
+    topic « greater? :dictionary
+    
+    a: #[name: "Walter" surname: "Pinkman"]
+    
+    ensure -> not? greater? a #[name: "Walter" surname: "Pinkman"]
+    ensure -> not? greater? a #[name: "Jesse" surname: "Pinkman"]
+    ensure -> not? greater? a #[name "Jesse" surname "Pinkman"]
+    ensure -> not? greater? a [name "Jesse" surname "Pinkman"]
+    passed
+    
+    
+    topic « greater? - :object
+    
+    define :person [name age][  
+        init: -> this\name: capitalize this\name
+        print: -> 
+            render "NAME: |this\name|, AGE: |this\age|"
+    ]
+    
+    define.as: :person :student [name age id][  
+        init: -> this\name: capitalize this\name
+        print: -> 
+            render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
+    ]
+    
+    a: to :person ["Joe" 32]
+    ensure -> not? greater? a to :person ["Joe" 32]
+    ensure -> not? greater? to :person ["Joe" 32] #[name: "Joe" age: 32]
+    ensure -> not? greater? to :person ["Joe" 32] to :student ["Joe" 32 15]
+    passed
+    
+    a\name: "Jane"
+    ensure -> not? greater? a to :person ["Jane" 32]
+    passed
+    
+    define :person [name age][  
+        init: -> this\name: capitalize this\name
+        print: -> 
+            render "NAME: |this\name|, AGE: |this\age|"
+        compare: [
+            if this\age > that\age -> return 1
+            if this\age = that\age -> return 0
+            if this\age < that\age -> return neg 1
+        ]   
+    ]
+    
+    define.as: :person :student [name age id][  
+        init: -> this\name: capitalize this\name
+        print: -> 
+            render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
+        compare: [
+            if this\age > that\age -> return 1
+            if this\age = that\age -> return 0
+            if this\age < that\age -> return neg 1
+        ]
+    ]
+    
+    a: to :person ["John" 16]
+    b: to :student ["Jane" 16 100]
+    c: to :person ["John" 15]
+    d: to :student ["Jane" 16 100]
+    ensure -> not? greater? a b
+    ensure -> not? greater? b a
+    ensure -> not? greater? c d
+    ensure -> greater? d c
+    
+    
+    topic « greaterOrEqual? - :store
+    
+    a: store "test.db"
+    a\name: "John" a\surname: "Doe"
+    b: store "test.db"
+    b\name: "John" b\surname: "Doe"
+    c: store "test2.db"
+    c\name: "John" c\surname: "Doe"
+    d: store "test3.db"
+    d\name: "Jane" d\surname: "Doe"
+    
+    ensure -> not? greater? a a
+    ensure -> not? greater? a b
+    ensure -> not? greater? b a
+    passed
+    
+    ensure -> not? greater? a c 
+    ensure -> not? greater? c a 
+    ensure -> not? greater? a d 
+    ensure -> not? greater? d a 
+    ensure -> not? greater? c d 
+    ensure -> not? greater? d c 
+    passed
+    
+    
 ]
 
 
