@@ -2179,6 +2179,16 @@ do [
     passed
     
     
+    topic « greaterOrEqual? - :bytecode
+    
+    x: to :bytecode [["print"][1 112 155]]
+    
+    ensure -> greaterOrEqual? x to :bytecode [["print"][1 112 155]]
+    ensure -> not? greaterOrEqual? x to :bytecode [["print"][2 112 155]]
+    ensure -> not? greaterOrEqual? x [["print"][2 112 155]]
+    passed
+    
+    
 ]
 
 
