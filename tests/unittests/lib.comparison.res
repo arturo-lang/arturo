@@ -242,6 +242,29 @@
 [+] passed!
 [+] passed!
 
+>> greater? - :symbol
+[+] passed!
+
+>> greater? - :regex
+[+] passed!
+
+>> greater? - :binary
+[+] passed!
+
+>> greater? - :bytecode
+[+] passed!
+
+>> greater? - :inline
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> greater? - :block
+[+] passed!
+
+>> greater? :range
+[+] passed!
+
 >> greaterOrEqual?
 
 >> greaterOrEqual? - :integer :floating :rational
@@ -329,6 +352,29 @@
 [+] passed!
 [+] passed!
 [+] passed!
+[+] passed!
+
+>> greaterOrEqual? - :symbol
+[+] passed!
+
+>> greaterOrEqual? - :regex
+[+] passed!
+
+>> greaterOrEqual? - :binary
+[+] passed!
+
+>> greaterOrEqual? - :bytecode
+[+] passed!
+
+>> greaterOrEqual? - :inline
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> greaterOrEqual? - :block
+[+] passed!
+
+>> greaterOrEqual? :range
 [+] passed!
 
 >> less?
