@@ -557,7 +557,9 @@ do [
         print: -> 
             render "NAME: |this\name|, AGE: |this\age|"
         compare: [
+            if this\age > that\age -> return 1
             if this\age = that\age -> return 0
+            if this\age < that\age -> return neg 1
         ]   
     ]
     
@@ -566,14 +568,21 @@ do [
         print: -> 
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
         compare: [
+            if this\age > that\age -> return 1
             if this\age = that\age -> return 0
+            if this\age < that\age -> return neg 1
         ]
     ]
     
     a: to :person ["John" 16]
     b: to :student ["Jane" 16 100]
+    c: to :person ["John" 15]
+    d: to :student ["Jane" 16 100]
     ensure -> equal? a b
     ensure -> equal? b a
+    ensure -> not? equal? c d
+    ensure -> not? equal? d c
+    passed
     
     
     
