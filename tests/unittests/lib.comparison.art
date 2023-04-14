@@ -1855,6 +1855,41 @@ do [
     ; ensure -> not? greaterOrEqual? [word] [.word:]
     passed
     
+    
+    topic « greaterOrEqual? - :label
+    
+    ensure -> not? greaterOrEqual? [a:] [b:]
+    ensure -> not? greaterOrEqual? [b:] [a:]
+    a: [a:]
+    b: [b:]
+    ; ensure -> greaterOrEqual? a\0 b\0
+    ensure -> greaterOrEqual? [label: value] [label: value]
+    passed
+    
+    ensure -> not? greaterOrEqual? [label: value] [label: value2]
+    ensure -> not? greaterOrEqual? [label: value] [label2: value]
+    passed
+    
+    ensure -> not? greaterOrEqual? [label:] ["label"]
+    ensure -> not? greaterOrEqual? ["label":] ["label"]
+    ensure -> not? greaterOrEqual? [label:] ["value"]
+    ensure -> not? greaterOrEqual? [label:] ["value"]
+    ensure -> not? greaterOrEqual? [label: "value"] ["label" "value"]
+    passed
+    
+    ; ensure -> not? greaterOrEqual? [label:] [label]
+    ensure -> not? greaterOrEqual? [label:] [value]
+    ensure -> not? greaterOrEqual? [label: "value"] [label value]
+    passed
+    
+    ensure -> not? greaterOrEqual? [label:] ['label]
+    ensure -> not? greaterOrEqual? [label: 'world] ['label 'word]
+    passed
+    
+    ; ensure -> not? greaterOrEqual? [label: .attr] [.label .attr]
+    ; ensure -> not? greaterOrEqual? [label: .attr: "a"] [.label: .attr: "a"]
+    passed
+    
 ]
 
 
