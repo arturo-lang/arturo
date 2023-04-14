@@ -1509,6 +1509,20 @@ do [
     passed
     
     
+    topic « greater? - :literal
+    
+    ensure -> not? greater? 'a 'b
+    ensure -> greater? 'b 'a
+    ensure -> not? greater? 'literal 'literal
+    ensure -> greater? 'other 'literal
+    ensure -> not? greater? 'literal "literal"
+    ensure -> not? greater? ['literal] ["literal"]
+    ensure -> not? greater? ['literal] [literal]
+    ensure -> not? greater? ['literal] [.literal]
+    ensure -> not? greater? ['literal] [literal:]
+    passed
+    
+    
 ]
 
 
