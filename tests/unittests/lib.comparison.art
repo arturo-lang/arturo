@@ -1777,6 +1777,57 @@ do [
     passed
     
     
+    topic « greater? - :color
+    
+    ensure -> not? greater? #000   #black
+    ensure -> not? greater? #fff   #white
+    ensure -> not? greater? #white #white
+    ensure -> not? greater? #black #white
+    ensure -> not? greater? #white #black
+    passed
+    
+    
+    topic « greater? - :function
+    
+    ensure -> not? greater? var 'print var 'print
+    ensure -> not? greater? var 'inspect var 'print
+    passed
+    
+    a: $[name surname][]
+    A: $[name][]
+    b: $[name][]
+    c: $[name surname][]
+    
+    ; note: I commented these, because they return SigSegv
+    ; ensure -> not? greater? (var 'a) ($[name surname][])
+    ; ensure -> not? greater? (var 'a) (var 'c)
+    ensure -> not? greater? (var 'a) (var 'A)
+    ensure -> not? greater? (var 'a) (var 'b)
+    passed
+    
+    
+    topic « greater? - :database
+    ; note: implement this test
+    
+    
+    topic « greater? - :date
+    
+    a: to :date .format: "MMM dd" "Jan 15"
+    b: to :date .format: "MMM dd" "Jan 15"
+    c: to :date .format: "YYYY MMM dd" "2023 Jan 15"
+    d: to :date .format: "MMM dd" "Jan 16"
+    e: now
+    
+    ensure -> greater? d a
+    ensure -> greater? e a
+    ensure -> greater? c a
+    passed
+    
+    ensure -> not? greater? a b 
+    ensure -> not? greater? a d
+    passed 
+    
+    
 ]
 
 
