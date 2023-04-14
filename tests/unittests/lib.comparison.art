@@ -1954,6 +1954,44 @@ do [
     passed
     
     
+    topic « greaterOrEqual? - :path
+    
+    a: #[name: "John", surname: "Doe"]
+    b: @["Joe" "Jane" "Jesse"]
+    
+    ensure -> greaterOrEqual? a\name "John" 
+    ensure -> greaterOrEqual? a\surname "Doe" 
+    ensure -> greaterOrEqual? a\name "Jane" 
+    ensure -> not? greaterOrEqual? a\name 1 
+    passed
+    
+    ensure -> not? greaterOrEqual? a\name "Kennedy" 
+    ensure -> not? greaterOrEqual? a\surname "Moe" 
+    ensure -> not? greaterOrEqual? a\name "Payne" 
+    ensure -> not? greaterOrEqual? b\2 "Walter" 
+    passed
+    
+    ensure -> greaterOrEqual? b\0 "Joe" 
+    ensure -> greaterOrEqual? b\1 "Jane" 
+    ensure -> greaterOrEqual? b\2 "Jesse" 
+    passed
+    
+    ensure -> greaterOrEqual? [b\0] [b\0]
+    ensure -> greaterOrEqual? [a\name] [a\name]
+    ensure -> not? greaterOrEqual? [b\0] [b\1]
+    ; ensure -> greaterOrEqual? [a\name] [a\surname]
+    passed
+    
+    
+    topic « greaterOrEqual? - :pathLabel
+       
+    ensure -> greaterOrEqual? [a\name: "John"]   [a\name: "John"]
+    ensure -> not? greaterOrEqual? [a\surname: "Doe"] [b\surname: "Doe" ]
+    ensure -> not? greaterOrEqual? [a\name: "John"]   [b\name: "Jane"]
+    ensure -> not? greaterOrEqual? [a\name: "John"]   [b\name: "John"]
+    passed
+    
+    
 ]
 
 
