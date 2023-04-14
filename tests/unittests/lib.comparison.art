@@ -1743,11 +1743,13 @@ do [
     ensure -> not? less? a to :person ["Jane" 32]
     passed
     
-    define :person [name age][  
+   define :person [name age][  
         init: -> this\name: capitalize this\name
         print: -> 
             render "NAME: |this\name|, AGE: |this\age|"
         compare: [
+            if this\age > that\age -> return 1
+            if this\age = that\age -> return 0
             if this\age < that\age -> return neg 1
         ]   
     ]
@@ -1757,6 +1759,8 @@ do [
         print: -> 
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
         compare: [
+            if this\age > that\age -> return 1
+            if this\age = that\age -> return 0
             if this\age < that\age -> return neg 1
         ]
     ]
@@ -1769,6 +1773,7 @@ do [
     ensure -> not? less? b a
     ensure -> less? c d
     ensure -> not? less? d c
+    passed
     
     
     topic « less? - :store
