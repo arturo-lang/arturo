@@ -1283,6 +1283,147 @@ do [
     ensure -> not? (to :rational @[1 1]) >= :rational @[2 1]
     passed
     
+    topic « greaterOrEqual? - :quantity
+    
+    ; equal to
+    
+    ensure -> greaterOrEqual? 1:usd 1
+    ensure -> greaterOrEqual? 1:m   1
+    ensure -> greaterOrEqual? 1:m2  1
+    ensure -> greaterOrEqual? 1:m3  1
+    ensure -> greaterOrEqual? 1:c   1
+    ensure -> greaterOrEqual? 1:f   1
+    ensure -> greaterOrEqual? 1 1:usd
+    ensure -> greaterOrEqual? 1 1:m
+    ensure -> greaterOrEqual? 1 1:m2
+    ensure -> greaterOrEqual? 1 1:m3
+    ensure -> greaterOrEqual? 1 1:c
+    ensure -> greaterOrEqual? 1 1:f
+    passed
+    
+    ensure -> greaterOrEqual? 1:usd 1.0
+    ensure -> greaterOrEqual? 1:m   1.0
+    ensure -> greaterOrEqual? 1:m2  1.0
+    ensure -> greaterOrEqual? 1:m3  1.0
+    ensure -> greaterOrEqual? 1:c   1.0
+    ensure -> greaterOrEqual? 1:f   1.0
+    ensure -> greaterOrEqual? 1.0 1:usd
+    ensure -> greaterOrEqual? 1.0 1:m
+    ensure -> greaterOrEqual? 1.0 1:m2
+    ensure -> greaterOrEqual? 1.0 1:m3
+    ensure -> greaterOrEqual? 1.0 1:c
+    ensure -> greaterOrEqual? 1.0 1:f
+    passed
+    
+    ensure -> greaterOrEqual? 1:usd to :rational @[5 5]
+    ensure -> greaterOrEqual? 1:m   to :rational @[5 5]
+    ensure -> greaterOrEqual? 1:m2  to :rational @[5 5]
+    ensure -> greaterOrEqual? 1:m3  to :rational @[5 5]
+    ensure -> greaterOrEqual? 1:c   to :rational @[5 5]
+    ensure -> greaterOrEqual? 1:f   to :rational @[5 5] 
+    ensure -> greaterOrEqual? to :rational @[5 5] 1:usd
+    ensure -> greaterOrEqual? to :rational @[5 5] 1:m
+    ensure -> greaterOrEqual? to :rational @[5 5] 1:m2
+    ensure -> greaterOrEqual? to :rational @[5 5] 1:m3
+    ensure -> greaterOrEqual? to :rational @[5 5] 1:c
+    ensure -> greaterOrEqual? to :rational @[5 5] 1:f
+    passed
+    
+    
+    ; less than
+    
+    ensure -> not? greaterOrEqual? 1:usd 2
+    ensure -> not? greaterOrEqual? 1:m   2
+    ensure -> not? greaterOrEqual? 1:m2  2
+    ensure -> not? greaterOrEqual? 1:m3  2
+    ensure -> not? greaterOrEqual? 1:c   2
+    ensure -> not? greaterOrEqual? 1:f   2
+    ensure -> not? greaterOrEqual? 1 2:usd
+    ensure -> not? greaterOrEqual? 1 2:m
+    ensure -> not? greaterOrEqual? 1 2:m2
+    ensure -> not? greaterOrEqual? 1 2:m3
+    ensure -> not? greaterOrEqual? 1 2:c
+    ensure -> not? greaterOrEqual? 1 2:f
+    passed
+    
+    ensure -> not? greaterOrEqual? 1:usd 2.0
+    ensure -> not? greaterOrEqual? 1:m   2.0
+    ensure -> not? greaterOrEqual? 1:m2  2.0
+    ensure -> not? greaterOrEqual? 1:m3  2.0
+    ensure -> not? greaterOrEqual? 1:c   2.0
+    ensure -> not? greaterOrEqual? 1:f   2.0
+    ensure -> not? greaterOrEqual? 1.0 2:usd
+    ensure -> not? greaterOrEqual? 1.0 2:m
+    ensure -> not? greaterOrEqual? 1.0 2:m2
+    ensure -> not? greaterOrEqual? 1.0 2:m3
+    ensure -> not? greaterOrEqual? 1.0 2:c
+    ensure -> not? greaterOrEqual? 1.0 2:f
+    passed
+    
+    ensure -> not? greaterOrEqual? 1:usd to :rational @[2 1]
+    ensure -> not? greaterOrEqual? 1:m   to :rational @[2 1]
+    ensure -> not? greaterOrEqual? 1:m2  to :rational @[2 1]
+    ensure -> not? greaterOrEqual? 1:m3  to :rational @[2 1]
+    ensure -> not? greaterOrEqual? 1:c   to :rational @[2 1]
+    ensure -> not? greaterOrEqual? 1:f   to :rational @[2 1] 
+    ensure -> not? greaterOrEqual? to :rational @[1 1] 2:usd
+    ensure -> not? greaterOrEqual? to :rational @[1 1] 2:m
+    ensure -> not? greaterOrEqual? to :rational @[1 1] 2:m2
+    ensure -> not? greaterOrEqual? to :rational @[1 1] 2:m3
+    ensure -> not? greaterOrEqual? to :rational @[1 1] 2:c
+    ensure -> not? greaterOrEqual? to :rational @[1 1] 2:f
+    passed
+    
+    
+    ; greater than
+    
+    ensure -> greaterOrEqual? 2:usd 1
+    ensure -> greaterOrEqual? 2:m   1
+    ensure -> greaterOrEqual? 2:m2  1
+    ensure -> greaterOrEqual? 2:m3  1
+    ensure -> greaterOrEqual? 2:c   1
+    ensure -> greaterOrEqual? 2:f   1
+    ensure -> greaterOrEqual? 2 1:usd
+    ensure -> greaterOrEqual? 2 1:m
+    ensure -> greaterOrEqual? 2 1:m2
+    ensure -> greaterOrEqual? 2 1:m3
+    ensure -> greaterOrEqual? 2 1:c
+    ensure -> greaterOrEqual? 2 1:f
+    passed
+    
+    ensure -> greaterOrEqual? 2:usd 1.0
+    ensure -> greaterOrEqual? 2:m   1.0
+    ensure -> greaterOrEqual? 2:m2  1.0
+    ensure -> greaterOrEqual? 2:m3  1.0
+    ensure -> greaterOrEqual? 2:c   1.0
+    ensure -> greaterOrEqual? 2:f   1.0
+    ensure -> greaterOrEqual? 2.0 1:usd
+    ensure -> greaterOrEqual? 2.0 1:m
+    ensure -> greaterOrEqual? 2.0 1:m2
+    ensure -> greaterOrEqual? 2.0 1:m3
+    ensure -> greaterOrEqual? 2.0 1:c
+    ensure -> greaterOrEqual? 2.0 1:f
+    passed
+    
+    ensure -> greaterOrEqual? 2:usd to :rational @[5 5]
+    ensure -> greaterOrEqual? 2:m   to :rational @[5 5]
+    ensure -> greaterOrEqual? 2:m2  to :rational @[5 5]
+    ensure -> greaterOrEqual? 2:m3  to :rational @[5 5]
+    ensure -> greaterOrEqual? 2:c   to :rational @[5 5]
+    ensure -> greaterOrEqual? 2:f   to :rational @[5 5] 
+    ensure -> greaterOrEqual? to :rational @[2 1] 1:usd
+    ensure -> greaterOrEqual? to :rational @[2 1] 1:m
+    ensure -> greaterOrEqual? to :rational @[2 1] 1:m2
+    ensure -> greaterOrEqual? to :rational @[2 1] 1:m3
+    ensure -> greaterOrEqual? to :rational @[2 1] 1:c
+    ensure -> greaterOrEqual? to :rational @[2 1] 1:f
+    passed
+    
+    
+    ensure -> greaterOrEqual? 1.5:m 150:cm 
+    ensure -> greaterOrEqual? 2:m 2:cm
+    passed 
+    
     
 ]
 
