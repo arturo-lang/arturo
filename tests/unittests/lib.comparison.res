@@ -265,6 +265,30 @@
 >> greater? :range
 [+] passed!
 
+>> greater? :dictionary
+[+] passed!
+
+>> greater? - :object
+[+] passed!
+[+] passed!
+
+>> greaterOrEqual? - :store
+[+] passed!
+[+] passed!
+
+>> greater? - :color
+[+] passed!
+
+>> greater? - :function
+[+] passed!
+[+] passed!
+
+>> greater? - :database
+
+>> greater? - :date
+[+] passed!
+[+] passed!
+
 >> greaterOrEqual?
 
 >> greaterOrEqual? - :integer :floating :rational
@@ -375,6 +399,30 @@
 [+] passed!
 
 >> greaterOrEqual? :range
+[+] passed!
+
+>> greaterOrEqual? :dictionary
+[+] passed!
+
+>> greaterOrEqual? - :object
+[+] passed!
+[+] passed!
+
+>> greaterOrEqual? - :store
+[+] passed!
+[+] passed!
+
+>> greaterOrEqual? - :color
+[+] passed!
+
+>> greaterOrEqual? - :function
+[+] passed!
+[+] passed!
+
+>> greaterOrEqual? - :database
+
+>> greaterOrEqual? - :date
+[+] passed!
 [+] passed!
 
 >> less?
