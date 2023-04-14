@@ -200,6 +200,26 @@
 [+] passed!
 [+] passed!
 
+>> greater? - :type
+[+] passed!
+[+] passed!
+
+>> greater? - :string
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> greater? - :word
+[+] passed!
+
+>> Equal? - :label
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
 >> greaterOrEqual?
 
 >> greaterOrEqual? - :integer :floating :rational
@@ -238,6 +258,31 @@
 [+] passed!
 
 >> greaterOrEqual? - :version
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> greaterOrEqual? - :type
+[+] passed!
+[+] passed!
+
+>> greaterOrEqual? - :char
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> greaterOrEqual? - :string
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> greaterOrEqual? - :word
+[+] passed!
+
+>> greaterOrEqual? - :label
+[+] passed!
+[+] passed!
+[+] passed!
 [+] passed!
 [+] passed!
 [+] passed!
