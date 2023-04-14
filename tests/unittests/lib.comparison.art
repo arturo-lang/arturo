@@ -1342,6 +1342,44 @@ do [
     passed 
     
     
+    topic « greater? - :null
+    
+    ensure -> not? greater? null null
+    ensure -> not? greater? null ø
+    ensure -> not? greater? ø ø
+    ensure -> not? greater? ø null
+    ensure -> not? null > null
+    ensure -> not? null > ø
+    ensure -> not? ø > ø
+    ensure -> not? ø > null
+    passed
+    
+    ensure -> not? greater? ø 1
+    ensure -> not? greater? ø 1.0
+    ensure -> not? greater? ø "ø"
+    ensure -> not? greater? ø `ø`
+    ensure -> not? ø > 1
+    ensure -> not? ø > 1.0
+    ensure -> not? ø > "ø"
+    ensure -> not? ø > `ø`
+    passed
+    
+    
+    topic « greater? - :logical
+    
+    ensure -> not? greater? true true
+    ensure -> not? greater? true (1 > 0)
+    ensure -> not? true > true
+    ensure -> not? true > (1 > 0)
+    passed
+    
+    ensure -> not? greater? true maybe
+    ensure -> not? greater? true false
+    ensure -> not? true > maybe
+    ensure -> not? true > false
+    passed
+    
+    
 ]
 
 
