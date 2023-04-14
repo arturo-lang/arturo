@@ -1474,6 +1474,41 @@ do [
     passed
     
     
+    topic « Equal? - :label
+    
+    ensure -> not? greater? [a:] [b:]
+    ; ensure -> greater? [b:] [a:]
+    a: [a:]
+    b: [b:]
+    ; ensure -> greater? a\0 b\0
+    ensure -> not? greater? [label: value] [label: value]
+    passed
+    
+    ensure -> not? greater? [label: value] [label: value2]
+    ensure -> not? greater? [label: value] [label2: value]
+    passed
+    
+    ensure -> not? greater? [label:] ["label"]
+    ensure -> not? greater? ["label":] ["label"]
+    ensure -> not? greater? [label:] ["value"]
+    ensure -> not? greater? [label:] ["value"]
+    ensure -> not? greater? [label: "value"] ["label" "value"]
+    passed
+    
+    ; ensure -> not? greater? [label:] [label]
+    ensure -> not? greater? [label:] [value]
+    ensure -> not? greater? [label: "value"] [label value]
+    passed
+    
+    ensure -> not? greater? [label:] ['label]
+    ensure -> not? greater? [label: 'world] ['label 'word]
+    passed
+    
+    ; ensure -> not? greater? [label: .attr] [.label .attr]
+    ; ensure -> not? greater? [label: .attr: "a"] [.label: .attr: "a"]
+    passed
+    
+    
 ]
 
 
