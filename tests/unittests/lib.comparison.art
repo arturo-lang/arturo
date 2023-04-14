@@ -1380,6 +1380,22 @@ do [
     passed
     
     
+    topic « greater? - :complex
+    
+    ; ensure -> greater? to :complex [1 1] to :complex [0 1]
+    ensure -> not? greater? to :complex [0 2] ((to :complex [1 2]) - 1) 
+    passed
+    
+    ensure -> not? greater? to :complex [1 2] to :complex @[neg 1 2] 
+    ensure -> not? greater? to :complex [1 2] 1
+    ensure -> not? greater? 1 to :complex [1 2]
+    ensure -> not? (to :complex [0 2]) > ((to :complex [1 2]) - 1) 
+    ensure -> not? (to :complex [1 2]) > to :complex @[neg 1 2] 
+    ensure -> not? (to :complex [1 2]) > 1
+    ensure -> not? 1 > to :complex [1 2]
+    passed
+    
+    
 ]
 
 
