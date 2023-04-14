@@ -1431,6 +1431,34 @@ do [
     passed
     
     
+    topic « greater? - :string
+    
+    ensure -> not? greater? "Art" "Arturo" -- "uro"
+    ensure -> not? "Art" > "Arturo" -- "uro"
+    passed
+    
+    ensure -> greater? "B" "A"  
+    ensure -> greater? "Bob" "Art"
+    ensure -> greater? "Artu" "Art"
+    passed
+    
+    ensure -> not? greater? "a"    `a` 
+    ensure -> not? greater? "10"   10 
+    ensure -> not? greater? "10"   10
+    ensure -> not? greater? ["help"] [help]
+    ensure -> not? greater? ["a"]    [a:]
+    ensure -> not? greater? "help"   'help
+    ensure -> not? greater? ["help"] [.help]
+    ensure -> not? "a"      > `a` 
+    ensure -> not? "10"     > 10 
+    ensure -> not? "10"     > 10
+    ensure -> not? ["help"] > [help]
+    ensure -> not? ["a"]    > [a:]
+    ensure -> not? "help"   > 'help
+    ensure -> not? ["help"] > [.help]
+    passed
+    
+    
 ]
 
 
