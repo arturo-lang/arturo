@@ -109,6 +109,7 @@
 >> equal? - :object
 [+] passed!
 [+] passed!
+[+] passed!
 
 >> equal? - :store
 [+] passed!
@@ -272,6 +273,7 @@
 [+] passed!
 
 >> less? - :object
+[+] passed!
 [+] passed!
 [+] passed!
 
@@ -597,6 +599,7 @@
 >> notEqual? - :object
 [+] passed!
 [+] passed!
+[+] passed!
 
 >> notEqual? - :store
 [+] passed!
@@ -757,6 +760,7 @@
 [+] passed!
 
 >> same? - :object
+[+] passed!
 [+] passed!
 [+] passed!
 
