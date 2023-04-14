@@ -1601,6 +1601,41 @@ do [
     passed
     
     
+    topic « greater? - :symbol
+    
+    ensure -> not? greater? [+] [+]
+    ensure -> not? greater? [+] [-]
+    ensure -> not? greater? [+] [++]
+    ensure -> not? greater? [+] [`+`]
+    ensure -> not? greater? [+] [{+}]
+    ensure -> not? greater? [+] ["+"]
+    ensure -> not? greater? [+] [plus]
+    ensure -> not? greater? [+] ['+]
+    passed
+    
+    
+    topic « greater? - :regex
+    
+    ensure -> regex? {/[A-Z]/}
+    ensure -> not? greater? {/[A-Z]/} {/[A-Z]/} 
+    ensure -> not? greater? {/[A-Z]/} {/[ABCDEFGHIJKLMNOPQRSTUVWXYZ]/}
+    ensure -> not? greater? {/[A-Z]/} {[A-Z]}
+    ensure -> not? greater? {/[A-Z]/} "/[A-Z]/"
+    passed
+    
+    
+    topic « greater? - :binary
+    
+    ensure -> not? greater? 
+        to :binary "Arturo"
+        to :binary "Hello world"
+    ensure -> not? greater? to :binary 1 to :binary 0
+    ensure -> not? greater? to :binary 1 to :binary 1
+    ensure -> not? greater? to :binary 1 to :binary 10
+    ensure -> not? greater? to :binary 1 to :binary 5
+    passed
+    
+    
 ]
 
 
