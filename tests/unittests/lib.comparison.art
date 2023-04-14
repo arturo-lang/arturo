@@ -2030,6 +2030,45 @@ do [
     passed
     
     
+    topic « greaterOrEqual? - :attribute
+    
+    ensure -> greaterOrEqual? [.attr] [.attr]
+    ensure -> not? greaterOrEqual? [.attr] ["attr"]
+    ; ensure -> not? greaterOrEqual? [.attr] [attr]
+    ensure -> not? greaterOrEqual? [.attr] ['attr]
+    ensure -> not? greaterOrEqual? [.attr] [.other]
+    passed
+    
+    
+    topic « greaterOrEqual? - :attributeLabel
+    
+    ensure -> greaterOrEqual? [.attr: value] [.attr: value]
+    ; ensure -> greaterOrEqual? [.b:] [.a:]
+    passed
+    
+    ensure -> not? greaterOrEqual? [.attr:] ["attr"]
+    ensure -> not? greaterOrEqual? [.attr:] ["value"]
+    ensure -> not? greaterOrEqual? [.attr: value] ["attr" "value"]
+    passed
+    
+    ; ensure -> not? greaterOrEqual? [.attr:] [attr]
+    ensure -> not? greaterOrEqual? [.attr: value] [attr: .attr:]
+    ; ensure -> not? greaterOrEqual? [.attr: value] [attr: value]
+    ensure -> not? greaterOrEqual? [.attr: value] [attr: .attr:]
+    passed
+    
+    ensure -> not? greaterOrEqual? [.attr:] ['attr]
+    ensure -> not? greaterOrEqual? [.attr:] ['value]
+    ensure -> not? greaterOrEqual? [.attr: value] ['attr 'value]
+    passed
+    
+    ; ensure -> not? greaterOrEqual? [.attr:] [.attr]
+    ensure -> not? greaterOrEqual? [.attr:] [.value]
+    ensure -> not? greaterOrEqual? [.attr: value] [.other: value]
+    ensure -> not? greaterOrEqual? [.attr: value] [.attr: other]
+    passed
+    
+    
 ]
 
 
