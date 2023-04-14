@@ -1746,6 +1746,57 @@ do [
     passed
     
     
+    topic « greaterOrEqual? - :char
+    
+    ensure -> greaterOrEqual? `a` `a`
+    ensure -> `a` >= `a`
+    passed
+    
+    ensure -> `b` >= `a`  
+    ensure -> `z` >= `a`  
+    passed
+    
+    ensure -> not? greaterOrEqual? `a` "a" 
+    ensure -> not? greaterOrEqual? `1`  1
+    ensure -> not? greaterOrEqual? "a" `a` 
+    ensure -> not? greaterOrEqual? `a` `b`
+    ensure -> not? greaterOrEqual?  1  `1`
+    ensure -> not? `a` >= "a" 
+    ensure -> not? `1` >=  1
+    ensure -> not? "a" >= `a` 
+    ensure -> not? `a` >= `b`
+    ensure -> not?  1  >= `1`
+    passed 
+    
+    
+    topic « greaterOrEqual? - :string
+    
+    ensure -> greaterOrEqual? "Art" "Arturo" -- "uro"
+    ensure -> "Art" >= "Arturo" -- "uro"
+    passed
+    
+    ensure -> greaterOrEqual? "B" "A"  
+    ensure -> greaterOrEqual? "Bob" "Art"
+    ensure -> greaterOrEqual? "Artu" "Art"
+    passed
+    
+    ensure -> not? greaterOrEqual? "a"    `a` 
+    ensure -> not? greaterOrEqual? "10"   10 
+    ensure -> not? greaterOrEqual? "10"   10
+    ensure -> not? greaterOrEqual? ["help"] [help]
+    ensure -> not? greaterOrEqual? ["a"]    [a:]
+    ensure -> not? greaterOrEqual? "help"   'help
+    ensure -> not? greaterOrEqual? ["help"] [.help]
+    ensure -> not? "a"      >= `a` 
+    ensure -> not? "10"     >= 10 
+    ensure -> not? "10"     >= 10
+    ensure -> not? ["help"] >= [help]
+    ensure -> not? ["a"]    >= [a:]
+    ensure -> not? "help"   >= 'help
+    ensure -> not? ["help"] >= [.help]
+    passed
+    
+    
 ]
 
 
