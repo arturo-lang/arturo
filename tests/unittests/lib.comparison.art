@@ -1643,6 +1643,22 @@ do [
     passed
     
     
+    topic « greaterOrEqual? - :complex
+    
+    ; ensure -> greaterOrEqual? to :complex [1 2] to :complex [0 2]
+    ensure -> greaterOrEqual? to :complex [0 2] ((to :complex [1 2]) - 1) 
+    passed
+    
+    ensure -> not? greaterOrEqual? to :complex [1 2] to :complex @[neg 1 2] 
+    ensure -> not? greaterOrEqual? to :complex [1 2] 1
+    ensure -> not? greaterOrEqual? 1 to :complex [1 2]
+    ensure -> (to :complex [0 2]) >= ((to :complex [1 2]) - 1) 
+    ensure -> not? (to :complex [1 2]) >= to :complex @[neg 1 2] 
+    ensure -> not? (to :complex [1 2]) >= 1
+    ensure -> not? 1 >= to :complex [1 2]
+    passed
+    
+    
 ]
 
 
