@@ -1523,6 +1523,44 @@ do [
     passed
     
     
+    topic « greater? - :path
+    
+    a: #[name: "John", surname: "Doe"]
+    b: @["Joe" "Jane" "Jesse"]
+    
+    ensure -> not? greater? a\name "John" 
+    ensure -> not? greater? a\surname "Doe" 
+    ensure -> greater? a\name "Jane" 
+    ensure -> not? greater? a\name 1 
+    passed
+    
+    ensure -> not? greater? a\name "Kennedy" 
+    ensure -> not? greater? a\surname "Moe" 
+    ensure -> not? greater? a\name "Payne" 
+    ensure -> not? greater? b\2 "Walter" 
+    passed
+    
+    ensure -> not? greater? b\0 "Joe" 
+    ensure -> not? greater? b\1 "Jane" 
+    ensure -> not? greater? b\2 "Jesse" 
+    passed
+    
+    ensure -> not? greater? [b\0] [b\0]
+    ensure -> not? greater? [a\name] [a\name]
+    ensure -> not? greater? [b\0] [b\1]
+    ; ensure -> greater? [a\name] [a\surname]
+    passed
+    
+    
+    topic « greater? - :pathLabel
+       
+    ensure -> not? greater? [a\name: "John"]   [a\name: "John"]
+    ensure -> not? greater? [a\surname: "Doe"] [b\surname: "Doe" ]
+    ensure -> not? greater? [a\name: "John"]   [b\name: "Jane"]
+    ensure -> not? greater? [a\name: "John"]   [b\name: "John"]
+    passed
+    
+    
 ]
 
 
