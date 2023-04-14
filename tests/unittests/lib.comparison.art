@@ -5108,6 +5108,38 @@ do [
     ensure -> same? a to :person ["Jane" 32]
     passed
     
+    define :person [name age][  
+        init: -> this\name: capitalize this\name
+        print: -> 
+            render "NAME: |this\name|, AGE: |this\age|"
+        compare: [
+            if this\age > that\age -> return 1
+            if this\age = that\age -> return 0
+            if this\age < that\age -> return neg 1
+        ]   
+    ]
+    
+    define.as: :person :student [name age id][  
+        init: -> this\name: capitalize this\name
+        print: -> 
+            render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
+        compare: [
+            if this\age > that\age -> return 1
+            if this\age = that\age -> return 0
+            if this\age < that\age -> return neg 1
+        ]
+    ]
+    
+    a: to :person ["John" 16]
+    b: to :student ["Jane" 16 100]
+    c: to :person ["John" 15]
+    d: to :student ["Jane" 16 100]
+    ensure -> same? a b
+    ensure -> same? b a
+    ensure -> not? same? c d
+    ensure -> not? same? d c
+    passed
+    
     
     topic « same? - :store
     
