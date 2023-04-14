@@ -1712,6 +1712,23 @@ do [
     passed
     
     
+    topic « greaterOrEqual? - :type
+    
+    ensure -> greaterOrEqual? :char :char
+    ensure -> greaterOrEqual? :string type "a"
+    ensure -> greaterOrEqual? :integer type 1
+    ensure -> greaterOrEqual? :floating type 1.5
+    passed
+    
+    ensure -> not? greaterOrEqual? :char :string
+    ensure -> not? greaterOrEqual? :integer :string
+    ensure -> not? greaterOrEqual? :floating :integer   
+    ensure -> not? greaterOrEqual? :string :integer
+    ensure -> not? greaterOrEqual? :string :char
+    ensure -> not? greaterOrEqual? :integer :floating
+    passed
+    
+    
 ]
 
 
