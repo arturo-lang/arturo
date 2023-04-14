@@ -1828,6 +1828,469 @@ do [
     passed 
     
     
+    topic « greater? - incompatible types
+    
+    ; NOTES: 
+    ; - to avoid repetition some tests may be not explicitly included
+    ; - this test part tries to cover the most of possible behaviors,
+    ;     including the possility of the Comparison module be rewritten, 
+    ;     avoiding future broken changes
+    ; - some combinations were not made, because it's considered very
+    ;     improbable to happen, even with a future rewrite of 
+    ;     the Comparison module
+    
+    ; for :integer
+    
+    ensure -> not? every? @[
+        -> greater? 2 1
+    ] => not?
+    
+    ensure -> every? @[
+        -> greater? 1 null          -> greater? 1 true
+        -> greater? 1 false         -> greater? 1 to :complex [1 1]
+        -> greater? 1 1.0.0         -> greater? 1 :integer
+        -> greater? 1 `1`           -> greater? 1 "1"
+        -> greater? [1] [one]       -> greater? [1] [one:]
+        -> greater? 1 '1            -> greater? [1] [.1]         
+        -> greater? [1] [.1:]       -> greater? [1] [one\1]
+        -> greater? [1] [one\1:]    -> greater? [1] [+]          
+        -> greater? 1 {/1/}         -> greater? 1 to :binary 1   
+        -> greater? 1 to :binary 1  -> greater? [1] [(1)]        
+        -> greater? 1 [1]           -> greater? 1 1..1           
+        -> greater? 1 #[one: 1]     -> greater? 0 #black         
+        -> greater? 1 var 'one?
+    ] => not? passed
+    
+    ; for :floating
+    ensure -> every? @[
+        -> greater? 1.0 null            -> greater? 1.0 true
+        -> greater? 1.0 false           -> greater? 1.0 to :complex [1.0 1.0]
+        -> greater? 1.0 1.0.0           -> greater? 1.0 :floating
+        -> greater? 1.0 `1`             -> greater? 1.0 "1.0"
+        -> greater? [1.0] [one]         -> greater? [1.0] [one:]
+        -> greater? 1.0 '1.0i           -> greater? [1.0] [.1]            
+        -> greater? [1.0] [.1:]         -> greater? [1.0] [one\1]
+        -> greater? [1.0] [one\1:]      -> greater? [1.0] [+]           
+        -> greater? 1.0 {/1.0/}         -> greater? 1.0 to :binary 1.0  
+        -> greater? 1.0 to :binary 1.0  -> greater? [1.0] [(1.0)]       
+        -> greater? 1.0 [1]             -> greater? 1.0 1..1            
+        -> greater? 1.0 #[one: 1.0]     -> greater? 0.0 #black          
+        -> greater? 1.0 var 'one?
+    ] => not? passed
+    
+    ; for :rational
+    a: to :rational [1 1]
+    ensure -> every? @[
+        -> greater? a null          -> greater? a true
+        -> greater? a false         -> greater? a to :complex [1 1]
+        -> greater? a 1.0.0         -> greater? a :rational
+        -> greater? a `1`           -> greater? a "1/1"
+        -> greater? @[a] [one]      -> greater? @[a] [one:]
+        -> greater? 1 '1            -> greater? @[a] [.1]                 
+        -> greater? @[a] [.1:]      -> greater? @[a] [one\1]
+        -> greater? @[a] [one\1:]   -> greater? @[a] [+]                  
+        -> greater? a {/1/1/}       -> greater? a to :binary 1            
+        -> greater? a to :binary 1  -> greater? @[a] [(1)]                
+        -> greater? a [1]           -> greater? a 1..1                    
+        -> greater? a #[one: 1]     -> greater? to :rational [1 1] #black    
+        -> greater? a var 'one?
+    ] => not? passed
+    
+    ; for :quantity
+    ensure -> every? @[
+        -> greater? 1:usd null          -> greater? 1:usd true
+        -> greater? 1:usd false         -> greater? 1:usd to :complex [1 1]
+        -> greater? 1:usd 1.0.0         -> greater? 1:usd :quantity
+        -> greater? 1:usd `1`           -> greater? 1:usd "1USD"
+        -> greater? [1:usd] [one]       -> greater? [1:usd] [one:]
+        -> greater? 1:usd '1.0i         -> greater? [1:usd] [.1]                  
+        -> greater? [1:usd] [.1:]       -> greater? [1:usd] [one\1]
+        -> greater? [1:usd] [one\1:]    -> greater? [1:usd] [+]         
+        -> greater? 1:usd {/1USD/}      -> greater? 1:usd to :binary 1  
+        -> greater? 1:usd to :binary 1  -> greater? [1:usd] [(1)]       
+        -> greater? 1:usd [1:usd]       -> greater? 1:usd 1..1          
+        -> greater? 1:usd #[one: 1:usd] -> greater? 0:usd #black        
+        -> greater? 1:usd var 'one?
+    ] => not? passed
+    
+    ensure -> every? @[ 
+        -> greater? 1:m null            -> greater? 1:m true
+        -> greater? 1:m false           -> greater? 1:m to :complex [1 1]
+        -> greater? 1:m 1.0.0           -> greater? 1:m :quantity
+        -> greater? 1:m `1`             -> greater? 1:m "1m"
+        -> greater? [1:m] [one]         -> greater? [1:m] [one:]
+        -> greater? 1:m '1              -> greater? [1:m] [.1]            
+        -> greater? [1:m] [.1:]         -> greater? [1:m] [one\1]
+        -> greater? [1:m] [one\1:]      -> greater? [1:m] [+]             
+        -> greater? 1:m {/1m/}          -> greater? 1:m to :binary 1      
+        -> greater? 1:m to :binary 1    -> greater? [1:m] [(1)]           
+        -> greater? 1:m [1:m]           -> greater? 1:m 1..1              
+        -> greater? 1:m #[one: 1:m]     -> greater? 0:m #black            
+        -> greater? 1:m var 'one?
+    ] => not? passed
+    
+    ensure -> every? @[ 
+        -> greater? 1:m3 null           -> greater? 1:m3 true
+        -> greater? 1:m3 false          -> greater? 1:m3 to :complex [1 1]
+        -> greater? 1:m3 1.0.0          -> greater? 1:m3 :quantity
+        -> greater? 1:m3 `1`            -> greater? 1:m3 "1m³"
+        -> greater? [1:m3] [one]        -> greater? [1:m3] [one:]
+        -> greater? 1:m3 '1             -> greater? [1:m3] [.1]              
+        -> greater? [1:m3] [.1:]        -> greater? [1:m3] [one\1]
+        -> greater? [1:m3] [one\1:]     -> greater? [1:m3] [+]                
+        -> greater? 1:m3 {/1m³/}        -> greater? 1:m3 to :binary 1         
+        -> greater? 1:m3 to :binary 1   -> greater? [1:m3] [(1)]              
+        -> greater? 1:m3 [1:m3]         -> greater? 1:m3 1..1                 
+        -> greater? 1:m3 #[one: 1:m3]   -> greater? 0:m3 #black               
+        -> greater? 1:m3 var 'one?
+    ] => not? passed
+    
+    ensure -> every? @[ 
+        -> greater? 1:c null            -> greater? 1:c true
+        -> greater? 1:c false           -> greater? 1:c to :complex [1 1]
+        -> greater? 1:c 1.0.0           -> greater? 1:c :quantity
+        -> greater? 1:c `1`             -> greater? 1:c "1°C"
+        -> greater? [1:c] [one]         -> greater? [1:c] [one:]
+        -> greater? 1:c '1.0i           -> greater? [1:c] [.1]            
+        -> greater? [1:c] [.1:]         -> greater? [1:c] [one\1]       
+        -> greater? [1:c] [one\1:]      -> greater? [1:c] [+]           
+        -> greater? 1:c {/1°C/}         -> greater? 1:c to :binary 1    
+        -> greater? 1:c to :binary 1    -> greater? [1:c] [(1)]         
+        -> greater? 1:c [1:c]           -> greater? 1:c 1..1            
+        -> greater? 1:c #[one: 1:c]     -> greater? 0:c #black          
+        -> greater? 1:c var 'one?
+    ] => not? passed
+    
+    ; for :null
+    ensure -> every? @[
+        -> greater? null 0                  -> greater? null 0.0            
+        -> greater? null to :rational [1 1] -> greater? null true
+        -> greater? null false              -> greater? null to :complex [0 0]
+        -> greater? null 0.0.0              -> greater? null :null
+        -> greater? null `ø`                -> greater? null "null"
+        -> greater? @[null] [null]          -> greater? @[null] [null:]
+        -> greater? null 'null              -> greater? @[null] [.null]               
+        -> greater? @[null] [.null:]        -> greater? @[null] [null\null]
+        -> greater? @[null] [null\null:]    -> greater? @[null] [ø]                   
+        -> greater? null {/null/}           -> greater? null {/ø/}                    
+        -> greater? null to :binary 0       -> greater? null to :binary 0             
+        -> greater? @[null] [(null)]        -> greater? null [null]                   
+        -> greater? null 0..0               -> greater? null #[null: null]            
+        -> greater? null #black          
+        -> greater? null var 'null?
+    ] => not? passed
+    
+    ; for :logical
+    ensure -> every? @[
+        -> greater? true 0                  -> greater? true 0.0            
+        -> greater? true to :rational [1 1] -> greater? true to :complex [0 0]
+        -> greater? true 0.0.0              -> greater? true :true
+        -> greater? true `0`                -> greater? true "true"
+        -> greater? @[true] [true]          -> greater? @[true] [true:]
+        -> greater? true 'true              -> greater? @[true] [.true]               
+        -> greater? @[true] [.true:]        -> greater? @[true] [true\true]
+        -> greater? @[true] [true\true:]    -> greater? @[true] [ø]                   
+        -> greater? true {/true/}           -> greater? true to :binary 0             
+        -> greater? true to :binary 0       -> greater? @[true] [(true)]              
+        -> greater? true [true]             -> greater? true 0..0                     
+        -> greater? true #[true: true]      -> greater? true #black                   
+        -> greater? true var 'true?
+    ] => not? passed
+    
+    ensure -> every? @[
+        -> greater? false 0                     -> greater? false 0.0            
+        -> greater? false to :rational [1 1]    -> greater? false to :complex [0 0]
+        -> greater? false 0.0.0                 -> greater? false :false
+        -> greater? false `0`                   -> greater? false "false"
+        -> greater? @[false] [false]            -> greater? @[false] [false:]
+        -> greater? false 'false                -> greater? @[false] [.false]                 
+        -> greater? @[false] [.false:]          -> greater? @[false] [false\false]
+        -> greater? @[false] [false\false:]     -> greater? @[false] [ø]                      
+        -> greater? false {/false/}             -> greater? false to :binary 0                
+        -> greater? false to :binary 0          -> greater? @[false] [(false)]                
+        -> greater? false [false]               -> greater? false 0..0                        
+        -> greater? false #[false: false]       -> greater? false #black                      
+        -> greater? false var 'false?
+    ] => not? passed
+    
+    ensure -> every? @[
+        -> greater? maybe 0                     -> greater? maybe 0.0            
+        -> greater? maybe to :rational [1 1]    -> greater? maybe to :complex [0 0]
+        -> greater? maybe 0.0.0                 -> greater? maybe :maybe
+        -> greater? maybe `0`                   -> greater? maybe "maybe"
+        -> greater? @[maybe] [maybe]            -> greater? @[maybe] [maybe:]
+        -> greater? maybe 'maybe                -> greater? @[maybe] [.maybe]                 
+        -> greater? @[maybe] [.maybe:]          -> greater? @[maybe] [maybe\maybe]
+        -> greater? @[maybe] [maybe\maybe:]     -> greater? @[maybe] [ø]                      
+        -> greater? maybe {/maybe/}             -> greater? maybe to :binary 0                
+        -> greater? maybe to :binary 0A         -> greater? @[maybe] [(maybe)]                
+        -> greater? maybe [maybe]               -> greater? maybe 0..0                        
+        -> greater? maybe #[maybe: maybe]       -> greater? maybe #black                      
+    ] => not? passed
+    
+    ; for :complex
+    a: to :complex [1 1]
+    ensure -> every? @[
+        -> greater? a 1                     -> greater? a 1.0            
+        -> greater? a to :rational [1 1]    -> greater? a null                    
+        -> greater? a true                  -> greater? a false
+        -> greater? a 1.0.0                 -> greater? a :rational
+        -> greater? a `1`                   -> greater? a "1.0+1.0i"
+        -> greater? @[a] [one]              -> greater? @[a] [one:]
+        -> greater? 1 '1                    -> greater? @[a] [.1]                 
+        -> greater? @[a] [.1:]              -> greater? @[a] [one\1]
+        -> greater? @[a] [one\1:]           -> greater? @[a] [+]                  
+        -> greater? a {/1.0+1.0i/}          -> greater? a to :binary 1            
+        -> greater? a to :binary 1          -> greater? @[a] [(1)]                
+        -> greater? a [1]                   -> greater? a 1..1                    
+        -> greater? a #[one: 1]             -> greater? to :complex [0 0] #black  
+        -> greater? a var 'one?
+    ] => not? passed
+    
+    ; for :version
+    ensure -> every? @[
+        -> greater? 1.0.0 1                     -> greater? 1.0.0 1.0          
+        -> greater? 1.0.0 to :rational [1 1]    -> greater? 1.0.0 null                    
+        -> greater? 1.0.0 true                  -> greater? 1.0.0 false                   
+        -> greater? 1.0.0 to :complex [1.0 1.0] -> greater? 1.0.0 :floating
+        -> greater? 1.0.0 `1`                   -> greater? 1.0.0 "1.0.0"
+        -> greater? [1.0.0] [one]               -> greater? [1.0.0] [one:]
+        -> greater? 1.0.0 '1                    -> greater? [1.0.0] [.1]                  
+        -> greater? [1.0.0] [.1:]               -> greater? [1.0.0] [one\1]
+        -> greater? [1.0.0] [one\1:]            -> greater? [1.0.0] [+]                   
+        -> greater? 1.0.0 {/1.0.0/}             -> greater? 1.0.0 to :binary 1.0          
+        -> greater? 1.0.0 to :binary 1.0        -> greater? [1.0.0] [(1.0.0)]             
+        -> greater? 1.0.0 [1.0.0]               -> greater? 1.0.0 1..1                    
+        -> greater? 1.0.0 #[one: 1.0.0]         -> greater? 0.0.0 #black                  
+        -> greater? 1.0.0 var 'version?
+    ] => not? passed
+    
+    ; for :type
+    ensure -> every? @[
+        -> greater? :1 1                            -> greater? :1 1.0          
+        -> greater? :integer 1                      -> greater? :floating 1.0          
+        -> greater? :rational to :rational [1 1]    -> greater? :null null                    
+        -> greater? :true true                      -> greater? :false false                   
+        -> greater? :logical false                  -> greater? :complex to :complex [1 1]   
+        -> greater? :version 1.0.0                  -> greater? :T `T`                         
+        -> greater? :char `T`                       -> greater? :string ":type"
+        -> greater? [:type] [type]                  -> greater? [:word] [word]                     
+        -> greater? [:type] [type:]                 -> greater? [:label] [label:]
+        -> greater? :1 '1.                          -> greater? :literal '1                       
+        -> greater? [:type] [.type]                 -> greater? [:attribute] [.type]              
+        -> greater? [:type] [.type:]                -> greater? [:attributeLabel] [.type:]                
+        -> greater? [:type] [type\type]             -> greater? [:path] [type\type]
+        -> greater? [:type] [type\type:]            -> greater? [:pathLabel] [type\type:]            
+        -> greater? [:type] [+]                     -> greater? [:symbol] [+]                     
+        -> greater? :type {/:type/}                 -> greater? :regex {/:type/}                  
+        -> greater? :type to :binary 1.0            -> greater? :binary to :binary 1.0            
+        -> greater? [:type] [(:type)]               -> greater? [:inline] [(:type)]               
+        -> greater? :type [:type]                   -> greater? :block [:type]                    
+        -> greater? :type 1..1                      -> greater? :range 1..1                       
+        -> greater? :type #[type: :type]            -> greater? :dictionary #[type: :type]        
+        -> greater? :type #black                    -> greater? :color #black                     
+        -> greater? :type var 'type?                -> greater? :function var 'one?
+    ] => not? passed
+    
+    ; for :char
+    ensure -> every? @[
+        -> greater? `1` 1.0          
+        -> greater? `1` to :rational [1 1]      -> greater? `ø` null                    
+        -> greater? `t` true                    -> greater? `f` false                   
+        -> greater? `1` to :complex [1.0 1.0]   -> greater? `T` :floating
+        -> greater? [`a`] [one]                 -> greater? `a` 'A                      
+        -> greater? [`a`] [.1]                  -> greater? [`a`] [.a:]                 
+        -> greater? [`a`] [a\a]                 -> greater? [`a`] [a\a:]                
+        -> greater? [`+`] [+]                   -> greater? `a` {/a/}                   
+        -> greater? `1` to :binary 1            -> greater? `a` to :binary 1            
+        -> greater? [`1`] [(`1`)]               -> greater? `a` [`a`]                   
+        -> greater? `1` 1..1                    -> greater? `a` #[a: `a`]               
+        -> greater? `1` #black                  -> greater? `a` var 'char?
+    ] => not? passed
+    
+    ; for :string
+    ensure -> every? @[
+        -> greater? "1" 1                               -> greater? "1/1" to :rational [1 1]          
+        -> greater? "1.0" 1.0                           -> greater? "null" null                    
+        -> greater? "" null                             -> greater? "true" true                  
+        -> greater? "" false                            -> greater? "false" false                   
+        -> greater? "1.0+1.0i" to :complex [1.0 1.0]    -> greater? "type" :floating
+        -> greater? "floating" :floating                -> greater? ":floating" :floating
+        -> greater? "1.0" :floating                     -> greater? ["a"] [a\a]
+        -> greater? ["a"] [a\a:]                        -> greater? ["+"] [+]                         
+        -> greater? "a" {/a/}                           -> greater? "01" to :binary 1                 
+        -> greater? "1" to :binary 1                    -> greater? [""] [("")]                       
+        -> greater? "" [""]                             -> greater? "1" 1..1                          
+        -> greater? "a" #[a: "a"]                       -> greater? "#000000" #black                  
+        -> greater? "000000" #black                     -> greater? "" var 'char?
+    ] => not? passed
+    
+    ; for :word
+    ensure -> every? @[        
+        -> greater? [rational] @[to :rational [1 1]]      -> greater? [null]  @[null]                    
+        -> greater? [true]     @[true]                    -> greater? [false] @[false]                   
+        -> greater? [complex]  @[to :complex [1.0 1.0]]   -> greater? [type]  @[:floating]  
+        -> greater? [floating] @[:floating]               -> greater? [a]      [a\a]                   
+        -> greater? [a]         [a\a:]                    -> greater? [a]     @[{/a/}]                      
+        -> greater? [binary]   @[to :binary 1]            -> greater? [one]   @[to :binary 1]              
+        -> greater? [word]      [(word)]                  -> greater? [word]  @[[word]]                      
+        -> greater? [range]    @[range 1 1]               -> greater? [a]     @[#[a: `a`]]               
+        -> greater? [black]    @[#black ]                 -> greater? [word]  @[var 'word?]              
+        -> greater? [var]      @[var 'word?]
+    ] => not? passed
+    
+    ; for :label
+    ensure -> every? @[
+        -> greater? [rational:] @[to :rational [1 1]]     -> greater? [null:]     @[null]                                                        
+        -> greater? [true:]     @[true]                   -> greater? [false:]    @[false]                   
+        -> greater? [complex:]  @[to :complex [1.0 1.0]]  -> greater? [floating:] @[:floating]
+        -> greater? [type:]     @[:floating]              -> greater? [a:]         [a\a]                     
+        -> greater? [a:]         [a\a:]                   -> greater? [a:]        @[{/a:/}]                 
+        -> greater? [binary:]   @[to :binary 1]           -> greater? [word:]      [(word:)]                
+        -> greater? [label:]    @[[label:]]               -> greater? [a:]        @[#[a: `a`]]               
+        -> greater? [black:]    @[#black ]                -> greater? [var:]      @[var 'word?]
+        -> greater? [word:]     @[var 'word?]
+    ] => not? passed
+    
+    ; for :literal
+    ; NOTE: technically, '+ is not a :literal, but a :symbolLiteral type ;)
+    ensure -> every? @[
+        -> greater? 'integer  1                   -> greater? 'floating 1.0
+        -> greater? 'rational to :rational [1 1]  -> greater? 'one      to :rational [1 1]
+        -> greater? 'null     null                -> greater? 'true     true    
+        -> greater? 'false    false               -> greater? 'complex  to :complex [1.0 1.0]    
+        -> greater? 'type     :floating           -> greater? 'floating :floating               
+        -> greater? ['a]        [a\a]             -> greater? ['+]      [+]                       
+        -> greater? 'a        {/a/}               -> greater? 'binary   to :binary 1            
+        -> greater? ['word]   [('word)]           -> greater? 'word     ['word]                                     
+        -> greater? 'range    1..1                -> greater? 'a        #[a: 'a]                
+        -> greater? 'black    #black              -> greater? 'word?    var 'word?              
+        -> greater? 'var      var 'var
+    ] => not? passed
+    
+    ; for :attribute
+    ensure -> every? @[           
+        -> greater? [.rational] @[to :rational [1 1]]    -> greater? [.null]     @[null]                  
+        -> greater? [.true]     @[true]                  -> greater? [.false]    @[false]                 
+        -> greater? [.complex]  @[to :complex [1.0 1.0]] -> greater? [.floating] @[:floating]                          
+        -> greater? [.a]        @[{/a:/}]                -> greater? [.binary]   @[to :binary 1]          
+        -> greater? [.word]      [(.word:)]              -> greater? [.label]    @[[.label]]                               
+        -> greater? [.a]        @[#[a: `a`]]             -> greater? [.black]    @[#black]                
+        -> greater? [.var]      @[var 'word?]            -> greater? [.word]     @[var 'word?]
+    ] => not? passed
+    
+    ; for :attributeLabel
+    ensure -> every? @[           
+        -> greater? [.rational:] @[to :rational [1 1]]    -> greater? [.null:]     @[null]                  
+        -> greater? [.true:]     @[true]                  -> greater? [.false:]    @[false]                 
+        -> greater? [.complex:]  @[to :complex [1.0 1.0]] -> greater? [.floating:] @[:floating]             
+        -> greater? [.a:]         [a\a]                   -> greater? [.a: `a`]     [a\a: `a`]              
+        -> greater? [.plus:]      [+]                     -> greater? [.a:]        @[{/a:/}]                
+        -> greater? [.binary:]   @[to :binary 1]          -> greater? [.word:]      [(.word:)]               
+        -> greater? [.label:]    @[[label:]]              -> greater? [.a:]        @[#[a: `a`]]             
+        -> greater? [.black:]    @[#black]                -> greater? [.var:]      @[var 'word?]            
+        -> greater? [.word:]     @[var 'word?]
+    ] => not? passed
+    
+    ; for :path & :pathLabel
+    ensure -> every? @[
+        -> greater? [a\b:] [a\b]
+        -> greater? [a\b] [a\b:]
+    ] => not? passed
+
+    ; for :regex
+    ensure -> every? @[
+        -> greater? {/1/} 1                               -> greater? {/1/1/} to :rational [1 1]          
+        -> greater? {/1.0/} 1.0                           -> greater? {/null/} null                    
+        -> greater? {//} null                             -> greater? {/true/} true                  
+        -> greater? {//} false                            -> greater? {/false/} false                   
+        -> greater? {/1.0+1.0i/} to :complex [1.0 1.0]    -> greater? {/type/} :floating
+        -> greater? {/floating/} :floating                -> greater? {/:floating/} :floating
+        -> greater? {/1.0/} :floating                     -> greater? [{/a/}] [a\a]
+        -> greater? [{/a/}] [a\a:]
+        -> greater? [{/\+/}] [+]                          -> greater? {/01/} to :binary 1                 
+        -> greater? {/1/} to :binary 1                    -> greater? [{//}] [({//})]                     
+        -> greater? {//} [""]                             -> greater? {/1/} 1..1                          
+        -> greater? {/a/} #[a: "a"]                       -> greater? {/#000000/} #black                  
+        -> greater? {/000000/} #black                     -> greater? {/var/} var 'regex?
+        -> greater? {/regex?/} var 'regex?
+    ] => not? passed
+    
+    ; for :binary
+    ensure -> every? @[
+        -> greater? to :binary 1 1                    -> greater? to :binary 1 1.0                
+        -> greater? to :binary 1 to :rational [1 1]   -> greater? to :binary 1 1:usd                
+        -> greater? to :binary 1 1:m                  -> greater? to :binary 1 1:m3                 
+        -> greater? to :binary 1 1:c                  -> greater? to :binary 0 null                 
+        -> greater? to :binary 0 true                 -> greater? to :binary 0 false                
+        -> greater? to :binary 0 maybe                -> greater? to :binary 1 to :complex [1 1]                  
+        -> greater? to :binary 1 1.0.0                -> greater? to :binary 1 :type              
+        -> greater? to :binary 1 :binary              -> greater? to :binary 1 `1`                  
+        -> greater? to :binary "a" `a`                -> greater? to :binary 1 "01"                 
+        -> greater? to :binary 1 "1"                  -> greater? @[to :binary 1] [binary]          
+        -> greater? @[to :binary 1] [one]             -> greater? @[to :binary 1] [binary:]         
+        -> greater? @[to :binary 1][.binary]          -> greater? @[to :binary 1] [.binary:]        
+        -> greater? to :binary 1 {/01/}               -> greater? to :binary 1    {/1/}
+    ] => not? passed
+    
+    ; for :range
+    ensure -> every? @[
+        -> greater? 1..1 1                        -> greater? 1..1 1.0
+        -> greater? 1..1 a: to :rational [1 1]    -> greater? 1..1 1:usd
+        -> greater? 1..1 1:m                      -> greater? 1..1 1:m3  
+        -> greater? 1..1 1:c                      -> greater? 0..0 null 
+        -> greater? 0..0 true                     -> greater? 0..0 false
+        -> greater? 0..0 maybe                    -> greater? 1..1 to :complex [1 1]
+        -> greater? 1..1 1.0.0                    -> greater? 1..1 :type                        
+        -> greater? 1..1 :range                   -> greater? 1..1 `1` 
+        -> greater? 1..1 "1"                      -> greater? 1..1 'range  
+        -> greater? 1..1 {/1/}
+    ] => not? passed
+    
+    ; for :dictionary, :object & :date
+    define :person [name surname][]
+    
+    a: to :person ["Walter" "Pinkman"]
+    b: to :date .format: "YYYY MMM dd" "2023 Jan 15"
+    
+    ensure -> every? @[
+        -> greater? #[name: "Walter" surname: "Pinkman"] a
+        -> greater? a #[name: "Walter" surname: "Pinkman"]
+        -> greater? #[year: 2023 day: 15 Month: "January"] b
+        -> greater? b #[year: 2023 day: 15 Month: "January"]
+    ] => not? passed
+    
+    ; for :color
+    ensure -> every? @[
+        -> greater? #black 0                  -> greater? #black 0.0
+        -> greater? #black to :rational [1 1] -> greater? #black 0:usd 
+        -> greater? #black 0:m                -> greater? #black 0:m3
+        -> greater? #black 0:c                -> greater? #black null 
+        -> greater? #black true               -> greater? #black false 
+        -> greater? #black maybe              -> greater? #black to :complex [0 0]
+        -> greater? #black 0.0.0              -> greater? #black :color
+        -> greater? #black `1`                -> greater? #black "#000000"
+        -> greater? #black "000000"           -> greater? [#black] [black] 
+        -> greater? #black 'black             -> greater? [#black] [.black]
+        -> greater? [#black] [.black:]        -> greater? #black  {/#000000/}                 
+        -> greater? #black{/000000/} 
+    ] => not? passed
+    
+    ; for :function
+    ensure -> every? @[
+        -> greater? var 'null?     null       -> greater? var 'true?    true  
+        -> greater? var 'false?    false 
+        -> greater? var 'version?  1.0.0      -> greater? var 'type?    :type 
+        -> greater? var 'function? :function  -> greater? var 'char?    `a` 
+        -> greater? @[var 'word?]  [word]     -> greater? @[var 'word?] [var]      
+        -> greater? @[var 'word?]  [var:]     -> greater? @[var 'word?] [word:]    
+        -> greater? var 'word?     'word?     -> greater? var 'var      'var       
+        -> greater? @[var 'word?]  [.var]     -> greater? @[var 'word?] [.word]    
+        -> greater? @[var 'word?]  [.var:]    -> greater? @[var 'word?] [.word:]   
+        -> greater? var 'regex?    {/var/}    -> greater? var 'regex?   {/regex?/} 
+    ] => not? passed
+    
+    
 ]
 
 
