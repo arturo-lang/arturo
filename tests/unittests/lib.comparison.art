@@ -1561,6 +1561,46 @@ do [
     passed
     
     
+    topic « greater? - :attribute
+    
+    ensure -> not? greater? [.attr] [.attr]
+    ensure -> not? greater? [.a] [.b]
+    ensure -> not? greater? [.attr] ["attr"]
+    ; ensure -> not? greater? [.attr] [attr]
+    ensure -> not? greater? [.attr] ['attr]
+    ensure -> not? greater? [.attr] [.other]
+    passed
+    
+    
+    topic « greaterOrEqual? - :attributeLabel
+    
+    ensure -> not? greater? [.attr: value] [.attr: value]
+    ; ensure -> greater? [.b:] [.a:]
+    passed
+    
+    ensure -> not? greater? [.attr:] ["attr"]
+    ensure -> not? greater? [.attr:] ["value"]
+    ensure -> not? greater? [.attr: value] ["attr" "value"]
+    passed
+    
+    ; ensure -> not? greater? [.attr:] [attr]
+    ensure -> not? greater? [.attr: value] [attr: .attr:]
+    ; ensure -> not? greater? [.attr: value] [attr: value]
+    ensure -> not? greater? [.attr: value] [attr: .attr:]
+    passed
+    
+    ensure -> not? greater? [.attr:] ['attr]
+    ensure -> not? greater? [.attr:] ['value]
+    ensure -> not? greater? [.attr: value] ['attr 'value]
+    passed
+    
+    ; ensure -> not? greater? [.attr:] [.attr]
+    ensure -> not? greater? [.attr:] [.value]
+    ensure -> not? greater? [.attr: value] [.other: value]
+    ensure -> not? greater? [.attr: value] [.attr: other]
+    passed
+    
+    
 ]
 
 
