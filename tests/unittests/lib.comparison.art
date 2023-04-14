@@ -1646,6 +1646,45 @@ do [
     passed
     
     
+    topic « greater? - :inline
+    
+    ensure -> not? greater? [(2 + 2)] [(2 + 2)]
+    ensure -> not? greater? [(2 3 4 5)] [(2 3 4 5)]
+    passed
+    
+    ensure -> not? greater? [(2 + 2)] [(2 + 1)]
+    ensure -> not? greater? [(2 3 4 5)] [(2 1 4 5)]
+    passed
+
+    a: [(2 1 4 5)]
+    b: [(2 3 4)] 
+    ensure -> greater? a\0 b\0
+    passed
+    
+    
+    topic « greater? - :block
+    
+    a: [1 + 1]
+    ensure -> not? greater? a [1 + 1]
+    ensure -> greater? [1 1] [1]
+    ensure -> greater? a [2]
+    ensure -> not? greater? a 2
+    ensure -> not? greater? a [1 ++ 1]
+    ensure -> not? greater? [2] [1]
+    ensure -> not? greater? [1] [2]
+    passed
+    
+    
+    topic « greater? :range
+    
+    ensure -> not? greater? 0..5 0..5
+    ensure -> not? greater? [0 1 2 3 4 5] @0..5
+    ensure -> not? greater? [0 2 4] @0.. .step: 2 5
+    ensure -> not? greater? @range.step: 2 0 5 @range.step: 2 0 4
+    ensure -> not? greater? range.step: 2 0 5 range.step: 2 0 4
+    passed
+    
+    
 ]
 
 
