@@ -1925,6 +1925,21 @@ do [
     ; ensure -> not? greaterOrEqual? [label: .attr: "a"] [.label: .attr: "a"]
     passed
     
+    
+    topic « greaterOrEqual? - :literal
+    
+    ensure -> not? greaterOrEqual? 'a 'b
+    ensure -> greaterOrEqual? 'b 'a
+    ensure -> greaterOrEqual? 'literal 'literal
+    ensure -> greaterOrEqual? 'other 'literal
+    ensure -> not? greaterOrEqual? 'literal "literal"
+    ensure -> not? greaterOrEqual? ['literal] ["literal"]
+    ensure -> not? greaterOrEqual? ['literal] [literal]
+    ensure -> not? greaterOrEqual? ['literal] [.literal]
+    ensure -> not? greaterOrEqual? ['literal] [literal:]
+    passed
+    
+    
 ]
 
 
