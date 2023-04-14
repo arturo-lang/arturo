@@ -1636,6 +1636,16 @@ do [
     passed
     
     
+    topic « greater? - :bytecode
+    
+    x: to :bytecode [["print"][1 112 155]]
+    
+    ensure -> not? greater? x to :bytecode [["print"][1 112 155]]
+    ensure -> not? greater? x to :bytecode [["print"][2 112 155]]
+    ensure -> not? greater? x [["print"][2 112 155]]
+    passed
+    
+    
 ]
 
 
