@@ -220,6 +220,28 @@
 [+] passed!
 [+] passed!
 
+>> greater? - :literal
+[+] passed!
+
+>> greater? - :path
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> greater? - :pathLabel
+[+] passed!
+
+>> greater? - :attribute
+[+] passed!
+
+>> greaterOrEqual? - :attributeLabel
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
 >> greaterOrEqual?
 
 >> greaterOrEqual? - :integer :floating :rational
@@ -281,6 +303,28 @@
 
 >> greaterOrEqual? - :label
 [+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> greaterOrEqual? - :literal
+[+] passed!
+
+>> greaterOrEqual? - :path
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> greaterOrEqual? - :pathLabel
+[+] passed!
+
+>> greaterOrEqual? - :attribute
+[+] passed!
+
+>> greaterOrEqual? - :attributeLabel
 [+] passed!
 [+] passed!
 [+] passed!
