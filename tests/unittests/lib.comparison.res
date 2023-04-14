@@ -158,6 +158,90 @@
 [+] passed!
 [+] passed!
 
+>> greater?
+
+>> greater? - :integer :floating :rational
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> greater? - :quantity
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> greater? - :null
+[+] passed!
+[+] passed!
+
+>> greater? - :logical
+[+] passed!
+[+] passed!
+
+>> greater? - :complex
+[+] passed!
+[+] passed!
+
+>> greater? - :version
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> greaterOrEqual?
+
+>> greaterOrEqual? - :integer :floating :rational
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> greaterOrEqual? - :quantity
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> greaterOrEqual? - :null
+[+] passed!
+[+] passed!
+
+>> greaterOrEqual? - :logical
+[+] passed!
+[+] passed!
+
+>> greaterOrEqual? - :complex
+[+] passed!
+[+] passed!
+
+>> greaterOrEqual? - :version
+[+] passed!
+[+] passed!
+[+] passed!
+
 >> less?
 
 >> less? - :integer :floating :rational
