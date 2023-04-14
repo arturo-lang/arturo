@@ -1158,12 +1158,12 @@ do [
     passed
     
     
-    ensure -> greaterOrEqual? 2.0 2
-    ensure -> greaterOrEqual? 2.0 2.0
+    ensure -> greaterOrEqual? 2.0 1
+    ensure -> greaterOrEqual? 2.0 1.0
     ensure -> greaterOrEqual? 2.0 to :rational @[1 1]
-    ensure -> 2.0 >= 2
-    ensure -> 2.0 >= 2.0
-    ensure -> 2.0 >= to :rational @[2 1]
+    ensure -> 2.0 >= 1
+    ensure -> 2.0 >= 1.0
+    ensure -> 2.0 >= to :rational @[1 1]
     passed
     
     ensure -> greaterOrEqual? 1.0 1
