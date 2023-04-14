@@ -2947,8 +2947,9 @@ do [
         print: -> 
             render "NAME: |this\name|, AGE: |this\age|"
         compare: [
-            if this\age < that\age -> return neg 1
+            if this\age > that\age -> return 1
             if this\age = that\age -> return 0
+            if this\age < that\age -> return neg 1
         ]   
     ]
     
@@ -2957,8 +2958,9 @@ do [
         print: -> 
             render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
         compare: [
-            if this\age < that\age -> return neg 1
+            if this\age > that\age -> return 1
             if this\age = that\age -> return 0
+            if this\age < that\age -> return neg 1
         ]
     ]
     
