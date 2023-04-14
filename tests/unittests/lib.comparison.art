@@ -1825,6 +1825,21 @@ do [
     passed
     
     
+    topic « greaterOrEqual? - :word
+    
+    ; ensure -> greaterOrEqual? [a] [b]
+    a: [a]
+    b: [b]
+    ensure -> greaterOrEqual? b\0 a\0
+    ensure -> greaterOrEqual? [word] [word]
+    ; ensure -> greaterOrEqual? [word] [otherWord]
+    ensure -> not? greaterOrEqual? [word] ["word"]
+    ; ensure -> not? greaterOrEqual? [word] [word:]
+    ensure -> not? greaterOrEqual? [word] ['word]
+    ; ensure -> not? greaterOrEqual? [word] [.word]
+    ; ensure -> not? greaterOrEqual? [word] [.word:]
+    passed
+    
 ]
 
 
