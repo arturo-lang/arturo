@@ -289,6 +289,36 @@
 [+] passed!
 [+] passed!
 
+>> greater? - incompatible types
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
 >> greaterOrEqual?
 
 >> greaterOrEqual? - :integer :floating :rational
@@ -422,6 +452,36 @@
 >> greaterOrEqual? - :database
 
 >> greaterOrEqual? - :date
+[+] passed!
+[+] passed!
+
+>> greaterOrEqual? - incompatible types
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 [+] passed!
 [+] passed!
 
