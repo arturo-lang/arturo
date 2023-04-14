@@ -1827,7 +1827,7 @@ do [
     
     topic « greaterOrEqual? - :word
     
-    ; ensure -> greaterOrEqual? [a] [b]
+    ensure -> not? greaterOrEqual? [a] [b]
     a: [a]
     b: [b]
     ensure -> greaterOrEqual? b\0 a\0
