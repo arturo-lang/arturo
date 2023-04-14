@@ -1123,6 +1123,82 @@ topic « greater?
 do [
     
     
+    topic « greater? - :integer :floating :rational
+    
+    ensure -> greater? 2 1
+    ensure -> greater? 2 1.0
+    ensure -> greater? 2 to :rational @[1 1]
+    ensure -> 2 > 1
+    ensure -> 2 > 1.0
+    ensure -> 2 > to :rational @[1 1]
+    passed
+    
+    ensure -> not? greater? 1 1
+    ensure -> not? greater? 1 1.0
+    ensure -> not? greater? 1 to :rational @[1 1]
+    ensure -> not? 1 > 1
+    ensure -> not? 1 > 1.0
+    ensure -> not? 1 > to :rational @[1 1]
+    passed
+    
+    ensure -> not? greater? 1 2
+    ensure -> not? greater? 1 2.0
+    ensure -> not? greater? 1 to :rational @[2 1]
+    ensure -> not? 1 > 2
+    ensure -> not? 1 > 2.0
+    ensure -> not? 1 > :rational @[2 1]
+    passed
+    
+    
+    ensure -> greater? 2.0 1
+    ensure -> greater? 2.0 1.0
+    ensure -> greater? 2.0 to :rational @[1 1]
+    ensure -> 2.0 > 1
+    ensure -> 2.0 > 1.0
+    ensure -> 2.0 > to :rational @[1 1]
+    passed
+    
+    ensure -> not? greater? 1.0 1
+    ensure -> not? greater? 1.0 1.0
+    ensure -> not? greater? 1.0 to :rational @[1 1]
+    ensure -> not? 1.0 > 1
+    ensure -> not? 1.0 > 1.0
+    ensure -> not? 1.0 > to :rational @[1 1]
+    passed
+    
+    ensure -> not? greater? 1.0 2
+    ensure -> not? greater? 1.0 2.0
+    ensure -> not? greater? 1.0 to :rational @[2 1]
+    ensure -> not? 1.0 > 2
+    ensure -> not? 1.0 > 2.0
+    ensure -> not? 1.0 > :rational @[2 1]
+    passed
+    
+    
+    ensure -> greater? to :rational @[2 1] 1
+    ensure -> greater? to :rational @[2 1] 1.0
+    ensure -> greater? to :rational @[2 1] to :rational @[1 1]
+    ensure -> (to :rational @[2 1]) > 1
+    ensure -> (to :rational @[2 1]) > 1.0
+    ensure -> (to :rational @[2 1]) > to :rational @[1 1]
+    passed
+    
+    ensure -> not? greater? to :rational @[1 1] 1
+    ensure -> not? greater? to :rational @[1 1] 1.0
+    ensure -> not? greater? to :rational @[1 1] to :rational @[1 1]
+    ensure -> not? (to :rational @[1 1]) > 1
+    ensure -> not? (to :rational @[1 1]) > 1.0
+    ensure -> not? (to :rational @[1 1]) > to :rational @[1 1]
+    passed
+    
+    ensure -> not? greater? to :rational @[1 1] 2
+    ensure -> not? greater? to :rational @[1 1] 2.0
+    ensure -> not? greater? to :rational @[1 1] to :rational @[2 1]
+    ensure -> not? (to :rational @[1 1]) > 2
+    ensure -> not? (to :rational @[1 1]) > 2.0
+    ensure -> not? (to :rational @[1 1]) > :rational @[2 1]
+    passed
+    
     
 ]
 
