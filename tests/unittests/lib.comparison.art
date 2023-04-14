@@ -1458,6 +1458,21 @@ do [
     ensure -> not? ["help"] > [.help]
     passed
     
+    topic « greater? - :word
+    
+    ensure -> not? greater? [a] [b]
+    a: [a]
+    b: [b]
+    ensure -> greater? b\0 a\0
+    ; ensure -> greater? [word] [otherWord]
+    ensure -> not? greater? [word] [word]
+    ensure -> not? greater? [word] ["word"]
+    ; ensure -> not? greater? [word] [word:]
+    ensure -> not? greater? [word] ['word]
+    ; ensure -> not? greater? [word] [.word]
+    ; ensure -> not? greater? [word] [.word:]
+    passed
+    
     
 ]
 
