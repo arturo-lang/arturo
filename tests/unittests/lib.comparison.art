@@ -8061,39 +8061,3 @@ do [
     
     
 ]
-
-; integer comparisons
-
-print greater? 1 1
-print 1>1
-print greater? 2 1
-print 2>1
-
-print greaterOrEqual? 1 1
-print 1>=1
-print greaterOrEqual? 2 1
-print 2>=1
-
-; floating comparisons
-print 3.0>2
-
-; floating-integer comparisons
-print 3.0>2
-
-; other types
-
-print "hello">"iceland"
-
-print [1 2 3 4]>[1 2 3]
-
-a: to :date .format: "YYYY" "2002"
-b: to :date .format: "YYYY" "2001"
-print a > b
-
-a: to :date .format: "MMM dd" "Jan 15"
-b: to :date .format: "MMM dd" "Jan 14"
-print a > b
-
-a: to :date .format: "HH:mm" "13:25"
-b: to :date .format: "HH:mm" "12:12"
-print a > b
