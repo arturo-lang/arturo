@@ -1567,6 +1567,44 @@ do [
     passed 
     
     
+    topic « greaterOrEqual? - :null
+    
+    ensure -> greaterOrEqual? null null
+    ensure -> greaterOrEqual? null ø
+    ensure -> greaterOrEqual? ø ø
+    ensure -> greaterOrEqual? ø null
+    ensure -> null >= null
+    ensure -> null >= ø
+    ensure -> ø >= ø
+    ensure -> ø >= null
+    passed
+    
+    ensure -> not? greaterOrEqual? ø 1
+    ensure -> not? greaterOrEqual? ø 1.0
+    ensure -> not? greaterOrEqual? ø "ø"
+    ensure -> not? greaterOrEqual? ø `ø`
+    ensure -> not? ø >= 1
+    ensure -> not? ø >= 1.0
+    ensure -> not? ø >= "ø"
+    ensure -> not? ø >= `ø`
+    passed
+    
+    
+    topic « greaterOrEqual? - :logical
+    
+    ensure -> greaterOrEqual? true true
+    ensure -> greaterOrEqual? true (1 > 0)
+    ensure -> true >= true
+    ensure -> true >= (1 > 0)
+    passed
+    
+    ensure -> not? greaterOrEqual? true maybe
+    ensure -> not? greaterOrEqual? true false
+    ensure -> not? true >= maybe
+    ensure -> not? true >= false
+    passed
+    
+    
 ]
 
 
