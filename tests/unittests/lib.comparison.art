@@ -326,7 +326,7 @@ do [
     ensure -> not? between? to :rational [0 1] to :rational [1 1] 2.0:usd
     passed
     
-    
+    ; -----------------------------------------------
     
     ensure -> not? between? 3 1 2
     ensure -> not? between? 3 1 2.0
