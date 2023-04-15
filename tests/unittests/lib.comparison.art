@@ -239,6 +239,14 @@ do [
     passed
     
     
+    topic « compare - :char
+    
+    ensure -> 0 = compare `a` `a`
+    ensure -> (neg 1) = compare `a` `b`
+    ensure -> 1 = compare `b` `a`
+    passed
+    
+    
 ]
 
 topic « equal?
