@@ -11,7 +11,114 @@ passed: $[] -> print "[+] passed!"
 
 
 topic « between?
-do []
+do [
+    
+    
+    topic « between? - :integer :floating :rational
+    
+    ensure -> between? 1 1 2
+    ensure -> between? 1 1 2.0
+    ensure -> between? 1 1 to :rational [2 1]
+    ensure -> between? 1 1.0 2
+    ensure -> between? 1 1.0 2.0
+    ensure -> between? 1 1.0 to :rational [2 1]
+    ensure -> between? 1 to :rational [1 1] 2
+    ensure -> between? 1 to :rational [1 1] 2.0
+    ensure -> between? 1 to :rational [1 1] to :rational [2 1]
+    passed
+    
+    ensure -> between? 1.0 1 2
+    ensure -> between? 1.0 1 2.0
+    ensure -> between? 1.0 1 to :rational [2 1]
+    ensure -> between? 1.0 1.0 2
+    ensure -> between? 1.0 1.0 2.0
+    ensure -> between? 1.0 1.0 to :rational [2 1]
+    ensure -> between? 1.0 to :rational [1 1] 2
+    ensure -> between? 1.0 to :rational [1 1] 2.0
+    ensure -> between? 1.0 to :rational [1 1] to :rational [2 1]
+    passed
+    
+    ensure -> between? to :rational [1 1] 1 2
+    ensure -> between? to :rational [1 1] 1 2.0
+    ensure -> between? to :rational [1 1] 1 to :rational [2 1]
+    ensure -> between? to :rational [1 1] 1.0 2
+    ensure -> between? to :rational [1 1] 1.0 2.0
+    ensure -> between? to :rational [1 1] 1.0 to :rational [2 1]
+    ensure -> between? to :rational [1 1] to :rational [1 1] 2
+    ensure -> between? to :rational [1 1] to :rational [1 1] 2.0
+    ensure -> between? to :rational [1 1] to :rational [1 1] to :rational [2 1]
+    passed
+    
+    
+    ensure -> not? between? 0 1 2
+    ensure -> not? between? 0 1 2.0
+    ensure -> not? between? 0 1 to :rational [2 1]
+    ensure -> not? between? 0 1.0 2
+    ensure -> not? between? 0 1.0 2.0
+    ensure -> not? between? 0 1.0 to :rational [2 1]
+    ensure -> not? between? 0 to :rational [1 1] 2
+    ensure -> not? between? 0 to :rational [1 1] 2.0
+    ensure -> not? between? 0 to :rational [1 1] to :rational [2 1]
+    passed
+    
+    ensure -> not? between? 0.0 1 2
+    ensure -> not? between? 0.0 1 2.0
+    ensure -> not? between? 0.0 1 to :rational [2 1]
+    ensure -> not? between? 0.0 1.0 2
+    ensure -> not? between? 0.0 1.0 2.0
+    ensure -> not? between? 0.0 1.0 to :rational [2 1]
+    ensure -> not? between? 0.0 to :rational [1 1] 2
+    ensure -> not? between? 0.0 to :rational [1 1] 2.0
+    ensure -> not? between? 0.0 to :rational [1 1] to :rational [2 1]
+    passed
+    
+    ensure -> not? between? to :rational [0 1] 1 2
+    ensure -> not? between? to :rational [0 1] 1 2.0
+    ensure -> not? between? to :rational [0 1] 1 to :rational [2 1]
+    ensure -> not? between? to :rational [0 1] 1.0 2
+    ensure -> not? between? to :rational [0 1] 1.0 2.0
+    ensure -> not? between? to :rational [0 1] 1.0 to :rational [2 1]
+    ensure -> not? between? to :rational [0 1] to :rational [1 1] 2
+    ensure -> not? between? to :rational [0 1] to :rational [1 1] 2.0
+    ensure -> not? between? to :rational [0 1] to :rational [1 1] to :rational [2 1]
+    passed
+    
+    
+    ensure -> not? between? 3 1 2
+    ensure -> not? between? 3 1 2.0
+    ensure -> not? between? 3 1 to :rational [2 1]
+    ensure -> not? between? 3 1.0 2
+    ensure -> not? between? 3 1.0 2.0
+    ensure -> not? between? 3 1.0 to :rational [2 1]
+    ensure -> not? between? 3 to :rational [1 1] 2
+    ensure -> not? between? 3 to :rational [1 1] 2.0
+    ensure -> not? between? 3 to :rational [1 1] to :rational [2 1]
+    passed
+    
+    ensure -> not? between? 3.0 1 2
+    ensure -> not? between? 3.0 1 2.0
+    ensure -> not? between? 3.0 1 to :rational [2 1]
+    ensure -> not? between? 3.0 1.0 2
+    ensure -> not? between? 3.0 1.0 2.0
+    ensure -> not? between? 3.0 1.0 to :rational [2 1]
+    ensure -> not? between? 3.0 to :rational [1 1] 2
+    ensure -> not? between? 3.0 to :rational [1 1] 2.0
+    ensure -> not? between? 3.0 to :rational [1 1] to :rational [2 1]
+    passed
+    
+    ensure -> not? between? to :rational [3 1] 1 2
+    ensure -> not? between? to :rational [3 1] 1 2.0
+    ensure -> not? between? to :rational [3 1] 1 to :rational [2 1]
+    ensure -> not? between? to :rational [3 1] 1.0 2
+    ensure -> not? between? to :rational [3 1] 1.0 2.0
+    ensure -> not? between? to :rational [3 1] 1.0 to :rational [2 1]
+    ensure -> not? between? to :rational [3 1] to :rational [1 1] 2
+    ensure -> not? between? to :rational [3 1] to :rational [1 1] 2.0
+    ensure -> not? between? to :rational [3 1] to :rational [1 1] to :rational [2 1]
+    passed
+    
+    
+]
 
 
 topic « compare
