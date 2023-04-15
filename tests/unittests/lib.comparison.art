@@ -507,6 +507,14 @@ do [
     passed
     
     
+    topic « between? - :word
+    
+    ensure -> between? to :word "C" to :word "Arturo" to :word "Ruby"
+    ensure -> not? between? to :word "C" to :word "Arturo" to :word "Barry"
+    ensure -> not? between? to :word "C" to :word "Python" to :word "Ruby"
+    passed
+    
+    
 ]
 
 
