@@ -53,6 +53,39 @@
 [+] passed!
 [+] passed!
 
+>> between? - :complex
+[+] passed!
+
+>> between? - :version
+[+] passed!
+
+>> between? - :char
+[+] passed!
+
+>> between? - :string
+[+] passed!
+
+>> between? - :word
+[+] passed!
+
+>> between? - :label
+[+] passed!
+
+>> between? - :literal
+[+] passed!
+
+>> between? - :attribute
+[+] passed!
+
+>> between? - :attributeLabel
+[+] passed!
+
+>> between? - :inline
+[+] passed!
+
+>> between? - :block
+[+] passed!
+
 >> compare
 
 >> compare - :integer :floating :rational
