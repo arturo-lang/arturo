@@ -462,7 +462,33 @@ do [
     
     topic « compare - :database
     ; todo: test this
- 
+    
+    
+    topic « less? - :date
+    
+    a: to :date .format: "MMM dd" "Jan 15"
+    b: to :date .format: "MMM dd" "Jan 15"
+    c: to :date .format: "YYYY MMM dd" "2023 Jan 15"
+    d: to :date .format: "MMM dd" "Jan 14"
+    e: now
+    
+    ensure -> 0 = compare a a
+    ensure -> 0 = compare b b
+    ensure -> 0 = compare a b 
+    ensure -> 0 = compare b a 
+    passed
+    
+    ensure -> (neg 1) = compare a c
+    ensure -> (neg 1) = compare a e
+    ensure -> (neg 1) = compare d a
+    ensure -> (neg 1) = compare d e
+    passed
+    
+    ensure -> 1 = compare c a
+    ensure -> 1 = compare e a
+    ensure -> 1 = compare a d
+    ensure -> 1 = compare e d
+    passed
     
 ]
 
