@@ -523,6 +523,14 @@ do [
     passed
     
     
+    topic « between? - :literal
+    
+    ensure -> between? to :literal "C" to :literal "Arturo" to :literal "Ruby"
+    ensure -> not? between? to :literal "C" to :literal "Arturo" to :literal "Barry"
+    ensure -> not? between? to :literal "C" to :literal "Python" to :literal "Ruby"
+    passed
+    
+    
 ]
 
 
