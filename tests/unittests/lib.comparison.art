@@ -223,6 +223,14 @@ do [
     passed
     
     
+    topic « compare - :version
+    
+    ensure -> 0 = compare 1.2.3 1.2.3
+    ensure -> (neg 1) = compare 1.2.2 1.2.3
+    ensure -> 1 = compare 1.2.3 1.2.2
+    passed
+    
+    
 ]
 
 topic « equal?
