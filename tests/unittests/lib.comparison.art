@@ -352,6 +352,14 @@ do [
     passed
     
     
+    topic « compare - :bytecode
+    
+    x: to :bytecode [["print"][1 112 155]]
+    
+    ensure -> 0 = compare x to :bytecode [["print"][1 112 155]]
+    passed
+    
+    
 ]
 
 topic « equal?
