@@ -231,6 +231,14 @@ do [
     passed
     
     
+    topic « compare - :type
+    
+    ensure -> 0 = compare :string type "a"
+    ensure -> 0 = compare :integer type 1
+    ensure -> 0 = compare :floating type 1.5
+    passed
+    
+    
 ]
 
 topic « equal?
