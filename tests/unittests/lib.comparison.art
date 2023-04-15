@@ -515,6 +515,14 @@ do [
     passed
     
     
+    topic « between? - :label
+    
+    ensure -> between? to :label "C" to :label "Arturo" to :label "Ruby"
+    ensure -> not? between? to :label "C" to :label "Arturo" to :label "Barry"
+    ensure -> not? between? to :label "C" to :label "Python" to :label "Ruby"
+    passed
+    
+    
 ]
 
 
