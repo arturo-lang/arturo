@@ -265,6 +265,17 @@ do [
     ensure -> 1 = compare a\0 b\0
     passed
     
+    
+    topic « compare - :label
+    
+    a: [a:] b: [b:]
+    
+    ensure -> 0 = compare a\0 a\0
+    ensure -> 0 = compare b\0 b\0
+    ensure -> (neg 1) = compare a\0 b\0 
+    ensure -> 1 = compare b\0 a\0
+    passed
+    
 ]
 
 topic « equal?
