@@ -329,6 +329,11 @@ do [
     passed
     
     
+    topic « compare - :symbol
+    
+    ensure -> 0 = compare [+] [+]
+    ; ensure -> 1 = compare [+] [-]
+    passed
  
     
 ]
