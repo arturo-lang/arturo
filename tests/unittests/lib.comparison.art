@@ -334,7 +334,14 @@ do [
     ensure -> 0 = compare [+] [+]
     ; ensure -> 1 = compare [+] [-]
     passed
- 
+    
+    
+    topic « compare - :regex
+    
+    ensure -> 0 = compare {/[A-Z]/} {/[A-Z]/} 
+    ; ensure -> (neg 1) = compare {/[A]/} {/[Z]/} 
+    ensure -> 1 = compare {/[Z]/} {/[A]/} 
+    passed
     
 ]
 
