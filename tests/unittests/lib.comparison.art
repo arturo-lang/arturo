@@ -491,6 +491,14 @@ do [
     passed
     
     
+    topic « between? - :char
+    
+    ensure -> between? `f` `a` `z`
+    ensure -> not? between? `f` `k` `z`
+    ensure -> not? between? `f` `a` `c`
+    passed
+    
+    
 ]
 
 
