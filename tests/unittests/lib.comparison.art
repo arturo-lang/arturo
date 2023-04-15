@@ -247,6 +247,15 @@ do [
     passed
     
     
+    topic « compare - :string
+    
+    ensure -> 0 = compare "Arturo" "Arturo"
+    ensure -> (neg 1) = compare "Arturo" "Ruby"
+    ensure -> 1 = compare "Python" "Arturo"
+    passed
+    
+    
+    
 ]
 
 topic « equal?
