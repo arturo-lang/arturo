@@ -65,6 +65,137 @@ do [
     passed
     
     
+    topic « compare - :quantity
+    
+    ensure -> 0 = compare 1:usd 1
+    ensure -> 0 = compare 1:m   1
+    ensure -> 0 = compare 1:m2  1
+    ensure -> 0 = compare 1:m3  1
+    ensure -> 0 = compare 1:c   1
+    ensure -> 0 = compare 1:f   1
+    ensure -> 0 = compare 1 1:usd
+    ensure -> 0 = compare 1 1:m
+    ensure -> 0 = compare 1 1:m2
+    ensure -> 0 = compare 1 1:m3
+    ensure -> 0 = compare 1 1:c
+    ensure -> 0 = compare 1 1:f
+    passed
+    
+    ensure -> 0 = compare 1:usd 1.0
+    ensure -> 0 = compare 1:m   1.0
+    ensure -> 0 = compare 1:m2  1.0
+    ensure -> 0 = compare 1:m3  1.0
+    ensure -> 0 = compare 1:c   1.0
+    ensure -> 0 = compare 1:f   1.0
+    ensure -> 0 = compare 1.0 1:usd
+    ensure -> 0 = compare 1.0 1:m
+    ensure -> 0 = compare 1.0 1:m2
+    ensure -> 0 = compare 1.0 1:m3
+    ensure -> 0 = compare 1.0 1:c
+    ensure -> 0 = compare 1.0 1:f
+    passed
+    
+    ensure -> 0 = compare 1:usd to :rational @[5 5]
+    ensure -> 0 = compare 1:m   to :rational @[5 5]
+    ensure -> 0 = compare 1:m2  to :rational @[5 5]
+    ensure -> 0 = compare 1:m3  to :rational @[5 5]
+    ensure -> 0 = compare 1:c   to :rational @[5 5]
+    ensure -> 0 = compare 1:f   to :rational @[5 5]
+    ensure -> 0 = compare to :rational @[5 5] 1:usd
+    ensure -> 0 = compare to :rational @[5 5] 1:m
+    ensure -> 0 = compare to :rational @[5 5] 1:m2
+    ensure -> 0 = compare to :rational @[5 5] 1:m3
+    ensure -> 0 = compare to :rational @[5 5] 1:c
+    ensure -> 0 = compare to :rational @[5 5] 1:f
+    passed
+    
+    
+    ensure -> 1 = compare 2:usd 1
+    ensure -> 1 = compare 2:m   1
+    ensure -> 1 = compare 2:m2  1
+    ensure -> 1 = compare 2:m3  1
+    ensure -> 1 = compare 2:c   1
+    ensure -> 1 = compare 2:f   1
+    ensure -> 1 = compare 2 1:usd
+    ensure -> 1 = compare 2 1:m
+    ensure -> 1 = compare 2 1:m2
+    ensure -> 1 = compare 2 1:m3
+    ensure -> 1 = compare 2 1:c
+    ensure -> 1 = compare 2 1:f
+    passed
+    
+    ensure -> 1 = compare 2:usd 1.0
+    ensure -> 1 = compare 2:m   1.0
+    ensure -> 1 = compare 2:m2  1.0
+    ensure -> 1 = compare 2:m3  1.0
+    ensure -> 1 = compare 2:c   1.0
+    ensure -> 1 = compare 2:f   1.0
+    ensure -> 1 = compare 2.0 1:usd
+    ensure -> 1 = compare 2.0 1:m
+    ensure -> 1 = compare 2.0 1:m2
+    ensure -> 1 = compare 2.0 1:m3
+    ensure -> 1 = compare 2.0 1:c
+    ensure -> 1 = compare 2.0 1:f
+    passed
+    
+    ensure -> 1 = compare 2:usd to :rational @[5 5]
+    ensure -> 1 = compare 2:m   to :rational @[5 5]
+    ensure -> 1 = compare 2:m2  to :rational @[5 5]
+    ensure -> 1 = compare 2:m3  to :rational @[5 5]
+    ensure -> 1 = compare 2:c   to :rational @[5 5]
+    ensure -> 1 = compare 2:f   to :rational @[5 5] 
+    ensure -> 1 = compare to :rational @[2 1] 1:usd
+    ensure -> 1 = compare to :rational @[2 1] 1:m
+    ensure -> 1 = compare to :rational @[2 1] 1:m2
+    ensure -> 1 = compare to :rational @[2 1] 1:m3
+    ensure -> 1 = compare to :rational @[2 1] 1:c
+    ensure -> 1 = compare to :rational @[2 1] 1:f
+    passed
+    
+    
+    ensure -> (neg 1) = compare 1:usd 2
+    ensure -> (neg 1) = compare 1:m   2
+    ensure -> (neg 1) = compare 1:m2  2
+    ensure -> (neg 1) = compare 1:m3  2
+    ensure -> (neg 1) = compare 1:c   2
+    ensure -> (neg 1) = compare 1:f   2
+    ensure -> (neg 1) = compare 1 2:usd
+    ensure -> (neg 1) = compare 1 2:m
+    ensure -> (neg 1) = compare 1 2:m2
+    ensure -> (neg 1) = compare 1 2:m3
+    ensure -> (neg 1) = compare 1 2:c
+    ensure -> (neg 1) = compare 1 2:f
+    passed
+    
+    ensure -> (neg 1) = compare 1:usd 2.0
+    ensure -> (neg 1) = compare 1:m   2.0
+    ensure -> (neg 1) = compare 1:m2  2.0
+    ensure -> (neg 1) = compare 1:m3  2.0
+    ensure -> (neg 1) = compare 1:c   2.0
+    ensure -> (neg 1) = compare 1:f   2.0
+    ensure -> (neg 1) = compare 1.0 2:usd
+    ensure -> (neg 1) = compare 1.0 2:m
+    ensure -> (neg 1) = compare 1.0 2:m2
+    ensure -> (neg 1) = compare 1.0 2:m3
+    ensure -> (neg 1) = compare 1.0 2:c
+    ensure -> (neg 1) = compare 1.0 2:f
+    passed
+    
+    ensure -> (neg 1) = compare 1:usd to :rational @[2 1]
+    ensure -> (neg 1) = compare 1:m   to :rational @[2 1]
+    ensure -> (neg 1) = compare 1:m2  to :rational @[2 1]
+    ensure -> (neg 1) = compare 1:m3  to :rational @[2 1]
+    ensure -> (neg 1) = compare 1:c   to :rational @[2 1]
+    ensure -> (neg 1) = compare 1:f   to :rational @[2 1] 
+    ensure -> (neg 1) = compare to :rational @[1 1] 2:usd
+    ensure -> (neg 1) = compare to :rational @[1 1] 2:m
+    ensure -> (neg 1) = compare to :rational @[1 1] 2:m2
+    ensure -> (neg 1) = compare to :rational @[1 1] 2:m3
+    ensure -> (neg 1) = compare to :rational @[1 1] 2:c
+    ensure -> (neg 1) = compare to :rational @[1 1] 2:f
+    passed
+    
+    
 ]
 
 topic « equal?
