@@ -311,7 +311,10 @@ func checkIfBase(units: Units): bool =
 
     return true
 
-func newDerivedQuantity(v: float, units: Units): Quantity =
+var
+    derivedQuantities {.compileTime.}: Table[Unit, Quantity]
+
+proc newDerivedQuantity(v: float, units: Units): Quantity =
     result = (
         value: v,
         converted: v,
@@ -319,8 +322,16 @@ func newDerivedQuantity(v: float, units: Units): Quantity =
         units: units,
         base: checkIfBase(units)
     )
+    if not result.base:
+        for unit in units.n:
+            if derivedQuantities.contains(unit):
+                result.converted *= derivedQuantities[unit].converted
 
-func derived(s: string): Quantity =
+        for unit in units.d:
+            if derivedQuantities.contains(unit):
+                result.converted /= derivedQuantities[unit].converted
+
+proc derived(s: string): Quantity =
     let parts = s.split(" ")
     if parts.len == 2:
         let numparts = parts[0].split("/")
@@ -337,12 +348,65 @@ func derived(s: string): Quantity =
         let units = parseUnits(s)
         result = newDerivedQuantity(Unity, units)
 
+var
+    CTBaseUnits {.compileTime.}: seq[string]
+    CTUnitList {.compileTime.}: seq[(string,string)]
+    CTUnitAliases {.compileTime.}: Table[string, string]
+    CTUnitKinds {.compileTime.}: Table[string, UnitKind]
+    CTDerivedUnits {.compileTime.}: Table[string, Quantity]
+
+proc define(unit: string, name: string, aliases: seq[string], definition: UnitKind | string) {.compileTime.} =
+    CTUnitList.add(("U" & unit, name))
+
+    for alias in aliases:
+        CTUnitAliases[alias] = unit
+
+    when definition is UnitKind:
+        CTBaseUnits.add(unit)
+        CTUnitKinds[unit] = definition
+    else:
+        CTDerivedUnits[unit] = derived(definition)
+
+static:
+    define("M", "m", @["meter", "metre", "meters", "metres"], KLength)
+    define("G", "g", @["gram", "grams"], KMass)
+    define("S", "s", @["second", "seconds"], KTime)
+    define("A", "A", @["ampere", "amperes", "amp", "amps"], KCurrent)
+    define("K", "K", @["kelvin", "kelvins"], KTemperature)
+    define("MOL", "mol", @["mole", "moles"], KSubstance)
+    define("CD", "cd", @["candela", "candelas"], KLuminosity)
+
+    define("IN", "in", @["inch", "inches"], "127/5000 m")
+    define("FT", "ft", @["foot", "feet"], "12 in")
+    define("HR", "hr", @["hour", "hours"], "3600 s")
+
+    echo $(CTDerivedUnits)
+
+macro getUnits(): untyped =
+    result = nnkEnumTy.newTree(
+        newEmptyNode()
+    )
+
+    for (un, name) in CTUnitList:
+        result.add nnkEnumFieldDef.newTree(
+            newIdentNode(un),
+            newLit(name)
+        )
+
+type
+    CTUnit = getUnits()
+
+template defineU(unit: Unit, definition: string): (Unit, Quantity) =
+    let res = derived(definition)
+    derivedQuantities[unit] = res
+    (unit, res)
+
 const
-    UnitDefinitions = {
-        IN: derived("127/5000 m"),
-        FT: derived("12 in"),
-        HR: derived("3600 s")
-    }.toTable
+    UnitDefinitions = [
+        defineU(IN, "127/5000 m"),
+        defineU(FT, "12 in"),
+        defineU(HR, "3600 s")
+    ].toTable
 
 func newQuantity(v: float, tp: QuantityType, units: Units, base: bool): Quantity =
     result = (
@@ -494,3 +558,6 @@ when isMainModule:
     debugAdd "3 m/s", "1270 m/hr"
     echo $(parseQuantity("5 ft"))
     debugAdd "3 m", "5 ft"
+
+    for ctunit in items(CTUnit):
+        echo $(ctunit)
