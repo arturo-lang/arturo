@@ -404,6 +404,41 @@ do [
     passed
     
     
+    topic « compare - :object
+    
+    define :person [name age][  
+        init: -> this\name: capitalize this\name
+        print: -> 
+            render "NAME: |this\name|, AGE: |this\age|"
+        compare: [
+            if this\age > that\age -> return 1
+            if this\age = that\age -> return 0
+            if this\age < that\age -> return neg 1
+        ]   
+    ]
+    
+    define.as: :person :student [name age id][  
+        init: -> this\name: capitalize this\name
+        print: -> 
+            render "NAME: |this\name|, AGE: |this\age|, ID: |this\id|"
+        compare: [
+            if this\age > that\age -> return 1
+            if this\age = that\age -> return 0
+            if this\age < that\age -> return neg 1
+        ]
+    ]
+    
+    a: to :person ["John" 16]
+    b: to :student ["Jane" 16 100]
+    c: to :person ["John" 15]
+    d: to :student ["Jane" 16 100]
+    ensure -> 0 = compare a b
+    ensure -> 0 = compare b a
+    ensure -> (neg 1) = compare c d
+    ensure -> 1 = compare d c
+    passed
+    
+    
 ]
 
 topic « equal?
