@@ -41,6 +41,48 @@
 >> compare - :char
 [+] passed!
 
+>> compare - :string
+[+] passed!
+
+>> compare - :word
+[+] passed!
+
+>> compare - :label
+[+] passed!
+
+>> compare - :literal
+[+] passed!
+
+>> compare - :attribute
+[+] passed!
+
+>> compare - :attributeLabel
+[+] passed!
+
+>> compare - :path
+[+] passed!
+
+>> compare - :pathLabel
+[+] passed!
+
+>> compare - :symbol
+[+] passed!
+
+>> compare - :regex
+[+] passed!
+
+>> compare - :binary
+[+] passed!
+
+>> compare - :bytecode
+[+] passed!
+
+>> compare - :inline
+[+] passed!
+
+>> compare - :block
+[+] passed!
+
 >> equal?
 
 >> equal? - :integer :floating :rational
