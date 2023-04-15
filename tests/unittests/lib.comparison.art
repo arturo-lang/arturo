@@ -439,6 +439,19 @@ do [
     passed
     
     
+    topic « compare - :store
+    
+    a: store "test.db"
+    a\name: "John" a\surname: "Doe"
+    b: store "test.db"
+    b\name: "John" b\surname: "Doe"
+    
+    ensure -> 0 = compare a a
+    ensure -> 0 = compare a b
+    ensure -> 0 = compare b a
+    passed
+    
+    
 ]
 
 topic « equal?
