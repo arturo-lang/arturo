@@ -343,6 +343,15 @@ do [
     ensure -> 1 = compare {/[Z]/} {/[A]/} 
     passed
     
+    
+    topic « compare - :binary
+    
+    ensure -> 0 = compare to :binary 0 to :binary 0
+    ; ensure -> (neg 1) = compare to :binary 0 to :binary 1
+    ensure -> 1 = compare to :binary 1 to :binary 0
+    passed
+    
+    
 ]
 
 topic « equal?
