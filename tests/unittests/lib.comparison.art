@@ -152,6 +152,8 @@ do [
     ensure -> between? to :rational [1 1] to :rational [1 1] 2.0
     ensure -> between? to :rational [1 1] to :rational [1 1] to :rational [2 1]
     passed
+    
+    ; -----------------------------------------------
 
     ensure -> not? between? 0 1 2
     ensure -> not? between? 0 1 2.0
