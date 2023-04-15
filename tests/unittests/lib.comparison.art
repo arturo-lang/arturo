@@ -275,6 +275,17 @@ do [
     ensure -> (neg 1) = compare a\0 b\0 
     ensure -> 1 = compare b\0 a\0
     passed
+
+    
+    topic « compare - :literal
+    
+    ensure -> 0 = compare 'arturo 'arturo   
+    ensure -> (neg 1) = compare 'arturo 'barry  
+    ensure -> 1 = compare 'barry 'arturo   
+    passed
+    
+    
+ 
     
 ]
 
