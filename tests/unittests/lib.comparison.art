@@ -458,6 +458,11 @@ do [
     ensure -> 0 = compare #fff #white
     ensure -> 0 = compare #white #white
     passed
+ 
+    
+    topic « compare - :database
+    ; todo: test this
+ 
     
 ]
 
