@@ -382,6 +382,17 @@ do [
     passed
     
     
+    topic « compare - :range
+    
+    a: 1..10 b: 10..30
+    
+    ensure -> 0 = compare a a
+    ensure -> 0 = compare b b
+    ; ensure -> (neg 1) = compare a b
+    ; ensure -> 1 = compare b a
+    passed
+    
+    
     
 ]
 
