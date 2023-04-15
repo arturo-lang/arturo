@@ -83,6 +83,28 @@
 >> compare - :block
 [+] passed!
 
+>> compare - :range
+[+] passed!
+
+>> compare :dictionary
+[+] passed!
+
+>> compare - :object
+[+] passed!
+
+>> compare - :store
+[+] passed!
+
+>> compare - :color
+[+] passed!
+
+>> compare - :database
+
+>> less? - :date
+[+] passed!
+[+] passed!
+[+] passed!
+
 >> equal?
 
 >> equal? - :integer :floating :rational
