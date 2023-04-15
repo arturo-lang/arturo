@@ -538,11 +538,21 @@ do [
     ; ensure -> not? between? to :attribute "C" to :attribute "Python" to :attribute "Ruby"
     passed
     
+    
     topic « between? - :attributeLabel
     
     ensure -> between? to :attributeLabel "C" to :attributeLabel "Arturo" to :attributeLabel "Ruby"
     ; ensure -> not? between? to :attributeLabel "C" to :attributeLabel "Arturo" to :attributeLabel "Barry"
     ; ensure -> not? between? to :attributeLabel "C" to :attributeLabel "Python" to :attributeLabel "Ruby"
+    passed
+    
+    
+    topic « between? - :inline
+    
+    a: [(1)] b: [(1 1)] 
+    ensure -> between? a\0 a\0 b\0
+    ensure -> not? between? b\0 a\0 a\0
+    ensure -> not? between? a\0 b\0 b\0
     passed
     
     
