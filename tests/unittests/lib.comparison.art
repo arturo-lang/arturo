@@ -13,7 +13,56 @@ topic « compare
 do [
     
     
+    topic « compare - :integer :floating :rational
     
+    ensure -> 0 = compare 1 1
+    ensure -> 0 = compare 1 1.0
+    ensure -> 0 = compare 1 to :rational @[1 1]
+    ensure -> 0 = compare 1 to :rational @[5 5]
+    passed
+    
+    ensure -> (neg 1) = compare 1 2
+    ensure -> (neg 1) = compare 1 2.0
+    ensure -> (neg 1) = compare 1 to :rational @[2 1]
+    passed
+    
+    ensure -> 1 = compare 2 1
+    ensure -> 1 = compare 2 1.0
+    ensure -> 1 = compare 2 to :rational @[1 1]
+    passed
+    
+    
+    ensure -> 0 = compare 1.0 1.0
+    ensure -> 0 = compare 1.0 1
+    ensure -> 0 = compare 1.0 to :rational @[1 1]
+    ensure -> 0 = compare 1.0 to :rational @[5 5]
+    passed
+    
+    ensure -> (neg 1) = compare 1.0 2.0
+    ensure -> (neg 1) = compare 1.0 2
+    ensure -> (neg 1) = compare 1.0 to :rational @[2 1]
+    passed
+    
+    ensure -> 1 = compare 2.0 1.0
+    ensure -> 1 = compare 2.0 1
+    ensure -> 1 = compare 2.0 to :rational @[1 1]
+    passed
+    
+    
+    ensure -> 0 = compare to :rational @[1 1] to :rational @[5 5]
+    ensure -> 0 = compare to :rational @[1 1] 1
+    ensure -> 0 = compare to :rational @[1 1] 1.0
+    passed
+    
+    ensure -> (neg 1) = compare to :rational @[1 1] to :rational @[2 1]
+    ensure -> (neg 1) = compare to :rational @[1 1] 2
+    ensure -> (neg 1) = compare to :rational @[1 1] 2.0
+    passed
+    
+    ensure -> 1 = compare to :rational @[2 1] to :rational @[5 5]
+    ensure -> 1 = compare to :rational @[2 1] 1
+    ensure -> 1 = compare to :rational @[2 1] 1.0
+    passed
     
     
 ]
