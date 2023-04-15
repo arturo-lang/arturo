@@ -369,6 +369,17 @@ do [
     ensure -> (neg 1) = compare a\0 b\0
     ensure -> 1 = compare b\0 a\0
     passed
+
+    
+    topic « compare - :block
+    
+    a: [1] b: [1 2]
+    
+    ensure -> 0 = compare a a
+    ensure -> 0 = compare b b
+    ensure -> (neg 1) = compare a b
+    ensure -> 1 = compare b a
+    passed
     
     
     
