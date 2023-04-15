@@ -1,4 +1,17 @@
 
+>> between?
+
+>> between? - :integer :floating :rational
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
 >> compare
 
 >> compare - :integer :floating :rational
