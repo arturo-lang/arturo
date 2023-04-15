@@ -215,6 +215,14 @@ do [
     passed
     
     
+    topic « compare - :complex
+    
+    ensure -> 0 = compare to :complex [0 2] ((to :complex [1 2]) - 1)
+    ; ensure -> 1 = compare to :complex [1 2] to :complex [0 2] 
+    ; ensure -> (neg 1) = compare to :complex [0 2] to :complex [1 2] 
+    passed
+    
+    
 ]
 
 topic « equal?
