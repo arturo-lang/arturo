@@ -499,6 +499,14 @@ do [
     passed
     
     
+    topic « between? - :string
+    
+    ensure -> between? "C" "Arturo" "Ruby"
+    ensure -> not? between? "C" "Arturo" "Barry"
+    ensure -> not? between? "C" "Python" "Ruby"
+    passed
+    
+    
 ]
 
 
