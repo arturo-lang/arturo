@@ -339,6 +339,50 @@ do [
     ensure -> not? between? 3 to :rational [1 1] to :rational [2 1]
     passed
     
+    
+    ensure -> not? between? 3 1 2:usd
+    ensure -> not? between? 3 1 2.0:usd
+    ensure -> not? between? 3 1.0 2:usd
+    ensure -> not? between? 3 1.0 2.0:usd
+    ensure -> not? between? 3 to :rational [1 1] 2:usd
+    ensure -> not? between? 3 to :rational [1 1] 2.0:usd
+    passed
+    
+    ensure -> not? between? 3 1:usd 2
+    ensure -> not? between? 3 1:usd 2.0
+    ensure -> not? between? 3 1:usd to :rational [2 1]
+    ensure -> not? between? 3 1.0:usd 2
+    ensure -> not? between? 3 1.0:usd 2.0
+    ensure -> not? between? 3 1.0:usd to :rational [2 1]
+    passed
+    
+    ensure -> not? between? 3:usd 1 2
+    ensure -> not? between? 3:usd 1 2.0
+    ensure -> not? between? 3:usd 1 to :rational [2 1]
+    ensure -> not? between? 3:usd 1.0 2
+    ensure -> not? between? 3:usd 1.0 2.0
+    ensure -> not? between? 3:usd 1.0 to :rational [2 1]
+    ensure -> not? between? 3:usd to :rational [1 1] 2
+    ensure -> not? between? 3:usd to :rational [1 1] 2.0
+    ensure -> not? between? 3:usd to :rational [1 1] to :rational [2 1]
+    passed
+    
+    ensure -> not? between? 3:usd 1 2:usd
+    ensure -> not? between? 3:usd 1 2.0:usd
+    ensure -> not? between? 3:usd 1.0 2:usd
+    ensure -> not? between? 3:usd 1.0 2.0:usd
+    ensure -> not? between? 3:usd to :rational [1 1] 2:usd
+    ensure -> not? between? 3:usd to :rational [1 1] 2.0:usd
+    passed
+    
+    ensure -> not? between? 3:usd 1:usd 2:usd
+    ensure -> not? between? 3:usd 1:usd 2.0:usd
+    ensure -> not? between? 3:usd 1.0:usd 2:usd
+    ensure -> not? between? 3:usd 1.0:usd 2.0:usd
+    passed
+    
+    
+    
     ensure -> not? between? 3.0 1 2
     ensure -> not? between? 3.0 1 2.0
     ensure -> not? between? 3.0 1 to :rational [2 1]
