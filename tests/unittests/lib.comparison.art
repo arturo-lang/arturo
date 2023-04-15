@@ -556,6 +556,14 @@ do [
     passed
     
     
+    topic « between? - :block
+    
+    ensure -> between? [a b] [a] [a b c]
+    ensure -> not? between? [] [a] [a b]
+    ensure -> not? between? [a b c] [a] [a b]
+    passed
+    
+    
 ]
 
 
