@@ -9,6 +9,15 @@ passed: $[] -> print "[+] passed!"
 
 ; ==> Tests
 
+topic « compare
+do [
+    
+    
+    
+    
+    
+]
+
 topic « equal?
 do [
     
