@@ -452,6 +452,13 @@ do [
     passed
     
     
+    topic « compare - :color
+    
+    ensure -> 0 = compare #000 #black
+    ensure -> 0 = compare #fff #white
+    ensure -> 0 = compare #white #white
+    passed
+    
 ]
 
 topic « equal?
