@@ -531,6 +531,21 @@ do [
     passed
     
     
+    topic « between? - :attribute
+    
+    ensure -> between? to :attribute "C" to :attribute "Arturo" to :attribute "Ruby"
+    ; ensure -> not? between? to :attribute "C" to :attribute "Arturo" to :attribute "Barry"
+    ; ensure -> not? between? to :attribute "C" to :attribute "Python" to :attribute "Ruby"
+    passed
+    
+    topic « between? - :attributeLabel
+    
+    ensure -> between? to :attributeLabel "C" to :attributeLabel "Arturo" to :attributeLabel "Ruby"
+    ; ensure -> not? between? to :attributeLabel "C" to :attributeLabel "Arturo" to :attributeLabel "Barry"
+    ; ensure -> not? between? to :attributeLabel "C" to :attributeLabel "Python" to :attributeLabel "Ruby"
+    passed
+    
+    
 ]
 
 
