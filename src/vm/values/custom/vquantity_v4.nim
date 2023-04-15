@@ -117,6 +117,9 @@ type
 {.hint: "Quantity's inner type is currently " & $sizeof(Quantity) & ".".}
 {.hints: off.}
 
+{.compileTime.}:
+    echo "done"
+
 const
     BaseUnits = [M, S]
     QuantityTypeSignatures = {
