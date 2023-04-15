@@ -34,6 +34,7 @@ type
         S = "s",
         HR = "hr",
         IN = "in",
+        FT = "ft",
         UError = "unit-error"
 
     UnitKind = enum
@@ -172,6 +173,7 @@ const
     UnitKinds = {
         M: KLength,
         IN: KLength,
+        FT: KLength,
         S: KTime,
         HR: KTime,
     }.toTable
@@ -338,6 +340,7 @@ func derived(s: string): Quantity =
 const
     UnitDefinitions = {
         IN: derived("127/5000 m"),
+        FT: derived("12 in"),
         HR: derived("3600 s")
     }.toTable
 
@@ -489,3 +492,5 @@ when isMainModule:
     echo $(parseQuantity("5000 in"))
     debugAdd "3 m/s", "50000 in/hr"
     debugAdd "3 m/s", "1270 m/hr"
+    echo $(parseQuantity("5 ft"))
+    debugAdd "3 m", "5 ft"
