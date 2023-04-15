@@ -393,6 +393,16 @@ do [
     passed
     
     
+    topic « compare :dictionary
+    
+    a: #[name: "Walter" surname: "Pinkman"]
+    
+    ensure -> 0 = compare a #[name: "Walter" surname: "Pinkman"]
+    ; ensure -> 1 = compare a #[name: "Jesse" surname: "Pinkman"]
+    ; ensure -> (neg 1) = compare a #[name: "Walter" surname: "Pinkman" age: 35]
+    ; ensure -> (neg 1) = compare a #[name: "Zalter" surname: "Rinkman"]
+    passed
+    
     
 ]
 
