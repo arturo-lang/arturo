@@ -23,6 +23,24 @@
 [+] passed!
 [+] passed!
 
+>> compare - :null
+[+] passed!
+
+>> compare - :logical
+[+] passed!
+
+>> compare - :complex
+[+] passed!
+
+>> compare - :version
+[+] passed!
+
+>> compare - :type
+[+] passed!
+
+>> compare - :char
+[+] passed!
+
 >> equal?
 
 >> equal? - :integer :floating :rational
