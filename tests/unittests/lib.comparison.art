@@ -196,6 +196,25 @@ do [
     passed
     
     
+    topic « compare - :null
+    
+    ensure -> 0 = compare null null
+    ensure -> 0 = compare null ø
+    ensure -> 0 = compare ø ø
+    ensure -> 0 = compare ø null
+    passed
+    
+    
+    topic « compare - :logical
+    
+    ensure -> 0 = compare true true
+    ensure -> 0 = compare true (1 > 0)
+    ensure -> 0 = compare false false
+    ensure -> 0 = compare false (1 < 0)
+    ensure -> 0 = compare maybe maybe
+    passed
+    
+    
 ]
 
 topic « equal?
