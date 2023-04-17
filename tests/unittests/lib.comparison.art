@@ -539,11 +539,11 @@ do [
     passed
     
     
-    topic « between? - :attributeLabel
+    topic « between? - :attributelabel
     
-    ensure -> between? to :attributeLabel "C" to :attributeLabel "Arturo" to :attributeLabel "Ruby"
-    ; ensure -> not? between? to :attributeLabel "C" to :attributeLabel "Arturo" to :attributeLabel "Barry"
-    ; ensure -> not? between? to :attributeLabel "C" to :attributeLabel "Python" to :attributeLabel "Ruby"
+    ensure -> between? to :attributelabel "C" to :attributelabel "Arturo" to :attributelabel "Ruby"
+    ; ensure -> not? between? to :attributelabel "C" to :attributelabel "Arturo" to :attributelabel "Barry"
+    ; ensure -> not? between? to :attributelabel "C" to :attributelabel "Python" to :attributelabel "Ruby"
     passed
     
     
@@ -1385,7 +1385,7 @@ do [
     ensure -> not? equal? "a" 'a
     ensure -> not? equal? "a" to :label "a"
     ensure -> not? equal? "a" to :attribute "a"
-    ensure -> not? equal? "a" to :attributeLabel "a"
+    ensure -> not? equal? "a" to :attributelabel "a"
     ensure -> not? equal? "string" to :type "string"
     passed
     
@@ -1401,7 +1401,7 @@ do [
     ensure -> not? equal? to :word "a" 'a
     ensure -> not? equal? to :word "a" to :label "a"
     ensure -> not? equal? to :word "a" to :attribute "a"
-    ensure -> not? equal? to :word "a" to :attributeLabel "a"
+    ensure -> not? equal? to :word "a" to :attributelabel "a"
     ensure -> not? equal? to :word "word" to :type "word"
     passed
     
@@ -1417,7 +1417,7 @@ do [
     ensure -> not? equal? to :label "a" 'a
     ensure -> not? equal? to :label "a" to :word "a"
     ensure -> not? equal? to :label "a" to :attribute "a"
-    ensure -> not? equal? to :label "a" to :attributeLabel "a"
+    ensure -> not? equal? to :label "a" to :attributelabel "a"
     ensure -> not? equal? to :label "label" to :type "label"
     passed
     
@@ -1433,7 +1433,7 @@ do [
     ensure -> not? equal? 'a to :label "a"
     ensure -> not? equal? 'a to :word "a"
     ensure -> not? equal? 'a to :attribute "a"
-    ensure -> not? equal? 'a to :attributeLabel "a"
+    ensure -> not? equal? 'a to :attributelabel "a"
     ensure -> not? equal? to :literal "literal" to :type "literal"
     passed
 
@@ -1450,24 +1450,24 @@ do [
     ensure -> not? equal? to :attribute "a" 'a
     ensure -> not? equal? to :attribute "a" to :word "a"
     ensure -> not? equal? to :attribute "a" to :label "a"
-    ensure -> not? equal? to :attribute "a" to :attributeLabel "a"
+    ensure -> not? equal? to :attribute "a" to :attributelabel "a"
     ensure -> not? equal? to :attribute "label" to :type "label"
     passed
     
     
-    topic « equal? - :attributeLabel
+    topic « equal? - :attributelabel
     
-    ensure -> equal? to :attributeLabel "a" to :attributeLabel "a"
-    ensure -> not? equal? to :attributeLabel "a" to :attributeLabel "b"
+    ensure -> equal? to :attributelabel "a" to :attributelabel "a"
+    ensure -> not? equal? to :attributelabel "a" to :attributelabel "b"
     passed
     
-    ensure -> not? equal? to :attributeLabel "a" "a"
-    ensure -> not? equal? to :attributeLabel "a" `a`
-    ensure -> not? equal? to :attributeLabel "a" 'a
-    ensure -> not? equal? to :attributeLabel "a" to :word "a"
-    ensure -> not? equal? to :attributeLabel "a" to :label "a"
-    ensure -> not? equal? to :attributeLabel "a" to :attribute "a"
-    ensure -> not? equal? to :attributeLabel "label" to :type "label"
+    ensure -> not? equal? to :attributelabel "a" "a"
+    ensure -> not? equal? to :attributelabel "a" `a`
+    ensure -> not? equal? to :attributelabel "a" 'a
+    ensure -> not? equal? to :attributelabel "a" to :word "a"
+    ensure -> not? equal? to :attributelabel "a" to :label "a"
+    ensure -> not? equal? to :attributelabel "a" to :attribute "a"
+    ensure -> not? equal? to :attributelabel "label" to :type "label"
     passed
     
     
@@ -1990,7 +1990,7 @@ do [
         -> equal? [:type] [type:]                   -> equal? [:label] [label:]
         -> equal? :1 '1                             -> equal? :literal '1                       
         -> equal? [:type] [.type]                   -> equal? [:attribute] [.type]              
-        -> equal? [:type] [.type:]                  -> equal? [:attributeLabel] [.type:]               
+        -> equal? [:type] [.type:]                  -> equal? [:attributelabel] [.type:]               
         -> equal? [:type] [type\type]               -> equal? [:path] [type\type]
         -> equal? [:type] [type\type:]              -> equal? [:pathLabel] [type\type:]            
         -> equal? [:type] [+]                       -> equal? [:symbol] [+]                     
@@ -2091,7 +2091,7 @@ do [
         -> equal? [.var]      @[var 'word?]            -> equal? [.word]     @[var 'word?]
     ] => not? passed
     
-    ; for :attributeLabel
+    ; for :attributelabel
     ensure -> every? @[           
         -> equal? [.rational:] @[to :rational [1 1]]    -> equal? [.null:]     @[null]                  
         -> equal? [.true:]     @[true]                  -> equal? [.false:]    @[false]                 
@@ -2541,7 +2541,7 @@ do [
     ensure -> not? greater? "b" to :word "a"
     ensure -> not? greater? "b" to :label "a"
     ensure -> not? greater? "b" to :attribute "a"
-    ensure -> not? greater? "b" to :attributeLabel "a"
+    ensure -> not? greater? "b" to :attributelabel "a"
     ensure -> not? greater? "b" to :type "a"
     passed
     
@@ -2557,7 +2557,7 @@ do [
     ensure -> not? greater? to :word "b" 'a
     ensure -> not? greater? to :word "b" to :label "a"
     ensure -> not? greater? to :word "b" to :attribute "a"
-    ensure -> not? greater? to :word "b" to :attributeLabel "a"
+    ensure -> not? greater? to :word "b" to :attributelabel "a"
     ensure -> not? greater? to :word "b" to :type "a"
     passed
     
@@ -2574,7 +2574,7 @@ do [
     ensure -> not? greater? to :label "b" 'a
     ensure -> not? greater? to :label "b" to :word "a"
     ensure -> not? greater? to :label "b" to :attribute "a"
-    ensure -> not? greater? to :label "b" to :attributeLabel "a"
+    ensure -> not? greater? to :label "b" to :attributelabel "a"
     ensure -> not? greater? to :label "b" to :type "a"
     passed
     
@@ -2591,7 +2591,7 @@ do [
     ensure -> not? greater? 'b to :word "a"
     ensure -> not? greater? 'b to :label "a"
     ensure -> not? greater? 'b to :attribute "a"
-    ensure -> not? greater? 'b to :attributeLabel "a"
+    ensure -> not? greater? 'b to :attributelabel "a"
     ensure -> not? greater? 'b to :type "a"
     passed
     
@@ -2646,25 +2646,25 @@ do [
     ensure -> not? greater? to :attribute "b" 'a
     ensure -> not? greater? to :attribute "b" to :word "a"
     ensure -> not? greater? to :attribute "b" to :label "a"
-    ensure -> not? greater? to :attribute "b" to :attributeLabel "a"
+    ensure -> not? greater? to :attribute "b" to :attributelabel "a"
     ensure -> not? greater? to :attribute "b" to :type "a"
     passed
 
     
-    topic « greater? - :attributeLabel
+    topic « greater? - :attributelabel
     
-    ; ensure -> greater? to :attributeLabel "b" to :attributeLabel "a"
-    ensure -> not? greater? to :attributeLabel "a" to :attributeLabel "a"
-    ensure -> not? greater? to :attributeLabel "a" to :attributeLabel "b"
+    ; ensure -> greater? to :attributelabel "b" to :attributelabel "a"
+    ensure -> not? greater? to :attributelabel "a" to :attributelabel "a"
+    ensure -> not? greater? to :attributelabel "a" to :attributelabel "b"
     passed
     
-    ensure -> not? greater? to :attributeLabel "less" "a"
-    ensure -> not? greater? to :attributeLabel "less" `a`
-    ensure -> not? greater? to :attributeLabel "less" 'a
-    ensure -> not? greater? to :attributeLabel "less" to :word "a"
-    ensure -> not? greater? to :attributeLabel "less" to :label "a"
-    ensure -> not? greater? to :attributeLabel "less" to :attribute "a"
-    ensure -> not? greater? to :attributeLabel "b" 
+    ensure -> not? greater? to :attributelabel "less" "a"
+    ensure -> not? greater? to :attributelabel "less" `a`
+    ensure -> not? greater? to :attributelabel "less" 'a
+    ensure -> not? greater? to :attributelabel "less" to :word "a"
+    ensure -> not? greater? to :attributelabel "less" to :label "a"
+    ensure -> not? greater? to :attributelabel "less" to :attribute "a"
+    ensure -> not? greater? to :attributelabel "b" 
                             to :type "a"
     passed
     
@@ -3146,7 +3146,7 @@ do [
         -> greater? [:type] [type:]                 -> greater? [:label] [label:]
         -> greater? :1 '1.                          -> greater? :literal '1                       
         -> greater? [:type] [.type]                 -> greater? [:attribute] [.type]              
-        -> greater? [:type] [.type:]                -> greater? [:attributeLabel] [.type:]                
+        -> greater? [:type] [.type:]                -> greater? [:attributelabel] [.type:]                
         -> greater? [:type] [type\type]             -> greater? [:path] [type\type]
         -> greater? [:type] [type\type:]            -> greater? [:pathLabel] [type\type:]            
         -> greater? [:type] [+]                     -> greater? [:symbol] [+]                     
@@ -3247,7 +3247,7 @@ do [
         -> greater? [.var]      @[var 'word?]            -> greater? [.word]     @[var 'word?]
     ] => not? passed
     
-    ; for :attributeLabel
+    ; for :attributelabel
     ensure -> every? @[           
         -> greater? [.rational:] @[to :rational [1 1]]    -> greater? [.null:]     @[null]                  
         -> greater? [.true:]     @[true]                  -> greater? [.false:]    @[false]                 
@@ -3718,8 +3718,8 @@ do [
     ensure -> not? greaterOrEqual? "b" to :label "b"
     ensure -> not? greaterOrEqual? "b" to :attribute "a"
     ensure -> not? greaterOrEqual? "b" to :attribute "b"
-    ensure -> not? greaterOrEqual? "b" to :attributeLabel "a"
-    ensure -> not? greaterOrEqual? "b" to :attributeLabel "b"
+    ensure -> not? greaterOrEqual? "b" to :attributelabel "a"
+    ensure -> not? greaterOrEqual? "b" to :attributelabel "b"
     ensure -> not? greaterOrEqual? "b" to :type "a"
     ensure -> not? greaterOrEqual? "b" to :type "b"
     passed
@@ -3743,8 +3743,8 @@ do [
     ensure -> not? greaterOrEqual? to :word "b" to :label "b"
     ensure -> not? greaterOrEqual? to :word "b" to :attribute "a"
     ensure -> not? greaterOrEqual? to :word "b" to :attribute "b"
-    ensure -> not? greaterOrEqual? to :word "b" to :attributeLabel "a"
-    ensure -> not? greaterOrEqual? to :word "b" to :attributeLabel "b"
+    ensure -> not? greaterOrEqual? to :word "b" to :attributelabel "a"
+    ensure -> not? greaterOrEqual? to :word "b" to :attributelabel "b"
     ensure -> not? greaterOrEqual? to :word "b" to :type "a"
     ensure -> not? greaterOrEqual? to :word "b" to :type "b"
     passed
@@ -3768,8 +3768,8 @@ do [
     ensure -> not? greaterOrEqual? to :label "b" to :word "b"
     ensure -> not? greaterOrEqual? to :label "b" to :attribute "a"
     ensure -> not? greaterOrEqual? to :label "b" to :attribute "b"
-    ensure -> not? greaterOrEqual? to :label "b" to :attributeLabel "a"
-    ensure -> not? greaterOrEqual? to :label "b" to :attributeLabel "b"
+    ensure -> not? greaterOrEqual? to :label "b" to :attributelabel "a"
+    ensure -> not? greaterOrEqual? to :label "b" to :attributelabel "b"
     ensure -> not? greaterOrEqual? to :label "b" to :type "a"
     ensure -> not? greaterOrEqual? to :label "b" to :type "b"
     passed
@@ -3793,8 +3793,8 @@ do [
     ensure -> not? greaterOrEqual? 'b to :label "b"
     ensure -> not? greaterOrEqual? 'b to :attribute "a"
     ensure -> not? greaterOrEqual? 'b to :attribute "b"
-    ensure -> not? greaterOrEqual? 'b to :attributeLabel "a"
-    ensure -> not? greaterOrEqual? 'b to :attributeLabel "b"
+    ensure -> not? greaterOrEqual? 'b to :attributelabel "a"
+    ensure -> not? greaterOrEqual? 'b to :attributelabel "b"
     ensure -> not? greaterOrEqual? 'b to :type "a"
     ensure -> not? greaterOrEqual? 'b to :type "b"
     passed
@@ -3856,8 +3856,8 @@ do [
     ensure -> not? greaterOrEqual? to :attribute "b" to :word "b"
     ensure -> not? greaterOrEqual? to :attribute "b" to :label "a"
     ensure -> not? greaterOrEqual? to :attribute "b" to :label "b"
-    ensure -> not? greaterOrEqual? to :attribute "b" to :attributeLabel "a"
-    ensure -> not? greaterOrEqual? to :attribute "b" to :attributeLabel "b"
+    ensure -> not? greaterOrEqual? to :attribute "b" to :attributelabel "a"
+    ensure -> not? greaterOrEqual? to :attribute "b" to :attributelabel "b"
     ensure -> not? greaterOrEqual? to :attribute "b" to :type "a"
     ensure -> not? greaterOrEqual? to :attribute "b" to :type "b"
     passed
@@ -4366,7 +4366,7 @@ do [
         -> greaterOrEqual? [:type] [type:]                 -> greaterOrEqual? [:label] [label:]
         -> greaterOrEqual? :1 '1.                          -> greaterOrEqual? :literal '1                       
         -> greaterOrEqual? [:type] [.type]                 -> greaterOrEqual? [:attribute] [.type]              
-        -> greaterOrEqual? [:type] [.type:]                -> greaterOrEqual? [:attributeLabel] [.type:]                
+        -> greaterOrEqual? [:type] [.type:]                -> greaterOrEqual? [:attributelabel] [.type:]                
         -> greaterOrEqual? [:type] [type\type]             -> greaterOrEqual? [:path] [type\type]
         -> greaterOrEqual? [:type] [type\type:]            -> greaterOrEqual? [:pathLabel] [type\type:]            
         -> greaterOrEqual? [:type] [+]                     -> greaterOrEqual? [:symbol] [+]                     
@@ -4467,7 +4467,7 @@ do [
         -> greaterOrEqual? [.var]      @[var 'word?]            -> greaterOrEqual? [.word]     @[var 'word?]
     ] => not? passed
     
-    ; for :attributeLabel
+    ; for :attributelabel
     ensure -> every? @[           
         -> greaterOrEqual? [.rational:] @[to :rational [1 1]]    -> greaterOrEqual? [.null:]     @[null]                  
         -> greaterOrEqual? [.true:]     @[true]                  -> greaterOrEqual? [.false:]    @[false]                 
@@ -4936,7 +4936,7 @@ do [
     ensure -> not? less? "a" to :word "b"
     ensure -> not? less? "a" to :label "b"
     ensure -> not? less? "a" to :attribute "b"
-    ensure -> not? less? "a" to :attributeLabel "b"
+    ensure -> not? less? "a" to :attributelabel "b"
     ensure -> not? less? "a" to :type "b"
     passed
     
@@ -4953,7 +4953,7 @@ do [
     ensure -> not? less? to :word "a" 'b
     ensure -> not? less? to :word "a" to :label "b"
     ensure -> not? less? to :word "a" to :attribute "b"
-    ensure -> not? less? to :word "a" to :attributeLabel "b"
+    ensure -> not? less? to :word "a" to :attributelabel "b"
     ensure -> not? less? to :word "word" to :type "z"
     passed
     
@@ -4971,7 +4971,7 @@ do [
     ensure -> not? less? to :label "a" 'b
     ensure -> not? less? to :label "a" to :word "b"
     ensure -> not? less? to :label "a" to :attribute "b"
-    ensure -> not? less? to :label "a" to :attributeLabel "b"
+    ensure -> not? less? to :label "a" to :attributelabel "b"
     ensure -> not? less? to :label "a" to :type "b"
     passed
     
@@ -4989,7 +4989,7 @@ do [
     ensure -> not? less? 'a to :word "b"
     ensure -> not? less? 'a to :label "b"
     ensure -> not? less? 'a to :attribute "b"
-    ensure -> not? less? 'a to :attributeLabel "b"
+    ensure -> not? less? 'a to :attributelabel "b"
     ensure -> not? less? 'a to :type "b"
     passed
     
@@ -5042,7 +5042,7 @@ do [
     ensure -> not? less? to :attribute "a" 'b
     ensure -> not? less? to :attribute "a" to :word "b"
     ensure -> not? less? to :attribute "a" to :label "b"
-    ensure -> not? less? to :attribute "a" to :attributeLabel "b"
+    ensure -> not? less? to :attribute "a" to :attributelabel "b"
     ensure -> not? less? to :attribute "a" to :type "b"
     passed
     
@@ -5542,7 +5542,7 @@ do [
         -> less? [:type] [type:]                 -> less? [:label] [label:]
         -> less? :1 '1.                          -> less? :literal '1                       
         -> less? [:type] [.type]                 -> less? [:attribute] [.type]              
-        -> less? [:type] [.type:]                -> less? [:attributeLabel] [.type:]                
+        -> less? [:type] [.type:]                -> less? [:attributelabel] [.type:]                
         -> less? [:type] [type\type]             -> less? [:path] [type\type]
         -> less? [:type] [type\type:]            -> less? [:pathLabel] [type\type:]            
         -> less? [:type] [+]                     -> less? [:symbol] [+]                     
@@ -5643,7 +5643,7 @@ do [
         -> less? [.var]      @[var 'word?]            -> less? [.word]     @[var 'word?]
     ] => not? passed
     
-    ; for :attributeLabel
+    ; for :attributelabel
     ensure -> every? @[           
         -> less? [.rational:] @[to :rational [1 1]]    -> less? [.null:]     @[null]                  
         -> less? [.true:]     @[true]                  -> less? [.false:]    @[false]                 
@@ -6113,8 +6113,8 @@ do [
     ensure -> not? lessOrEqual? "a" to :label "b"
     ensure -> not? lessOrEqual? "a" to :attribute "a"
     ensure -> not? lessOrEqual? "a" to :attribute "b"
-    ensure -> not? lessOrEqual? "a" to :attributeLabel "a"
-    ensure -> not? lessOrEqual? "a" to :attributeLabel "b"
+    ensure -> not? lessOrEqual? "a" to :attributelabel "a"
+    ensure -> not? lessOrEqual? "a" to :attributelabel "b"
     ensure -> not? lessOrEqual? "a" to :type "a"
     ensure -> not? lessOrEqual? "a" to :type "b"
     passed
@@ -6138,8 +6138,8 @@ do [
     ensure -> not? lessOrEqual? to :word "a" to :label "b"
     ensure -> not? lessOrEqual? to :word "a" to :attribute "a"
     ensure -> not? lessOrEqual? to :word "a" to :attribute "b"
-    ensure -> not? lessOrEqual? to :word "a" to :attributeLabel "a"
-    ensure -> not? lessOrEqual? to :word "a" to :attributeLabel "b"
+    ensure -> not? lessOrEqual? to :word "a" to :attributelabel "a"
+    ensure -> not? lessOrEqual? to :word "a" to :attributelabel "b"
     ensure -> not? lessOrEqual? to :word "a" to :type "a"
     ensure -> not? lessOrEqual? to :word "a" to :type "b"
     passed
@@ -6163,8 +6163,8 @@ do [
     ensure -> not? lessOrEqual? to :label "a" to :word "b"
     ensure -> not? lessOrEqual? to :label "a" to :attribute "a"
     ensure -> not? lessOrEqual? to :label "a" to :attribute "b"
-    ensure -> not? lessOrEqual? to :label "a" to :attributeLabel "a"
-    ensure -> not? lessOrEqual? to :label "a" to :attributeLabel "b"
+    ensure -> not? lessOrEqual? to :label "a" to :attributelabel "a"
+    ensure -> not? lessOrEqual? to :label "a" to :attributelabel "b"
     ensure -> not? lessOrEqual? to :label "a" to :type "a"
     ensure -> not? lessOrEqual? to :label "a" to :type "b"
     passed
@@ -6188,8 +6188,8 @@ do [
     ensure -> not? lessOrEqual? 'a to :label "b"
     ensure -> not? lessOrEqual? 'a to :attribute "a"
     ensure -> not? lessOrEqual? 'a to :attribute "b"
-    ensure -> not? lessOrEqual? 'a to :attributeLabel "a"
-    ensure -> not? lessOrEqual? 'a to :attributeLabel "b"
+    ensure -> not? lessOrEqual? 'a to :attributelabel "a"
+    ensure -> not? lessOrEqual? 'a to :attributelabel "b"
     ensure -> not? lessOrEqual? 'a to :type "a"
     ensure -> not? lessOrEqual? 'a to :type "b"
     passed
@@ -6251,8 +6251,8 @@ do [
     ensure -> not? lessOrEqual? to :attribute "a" to :word "b"
     ensure -> not? lessOrEqual? to :attribute "a" to :label "a"
     ensure -> not? lessOrEqual? to :attribute "a" to :label "b"
-    ensure -> not? lessOrEqual? to :attribute "a" to :attributeLabel "a"
-    ensure -> not? lessOrEqual? to :attribute "a" to :attributeLabel "b"
+    ensure -> not? lessOrEqual? to :attribute "a" to :attributelabel "a"
+    ensure -> not? lessOrEqual? to :attribute "a" to :attributelabel "b"
     ensure -> not? lessOrEqual? to :attribute "a" to :type "a"
     ensure -> not? lessOrEqual? to :attribute "a" to :type "b"
     passed
@@ -6760,7 +6760,7 @@ do [
         -> lessOrEqual? [:type] [type:]                 -> lessOrEqual? [:label] [label:]
         -> lessOrEqual? :1 '1.                          -> lessOrEqual? :literal '1                       
         -> lessOrEqual? [:type] [.type]                 -> lessOrEqual? [:attribute] [.type]              
-        -> lessOrEqual? [:type] [.type:]                -> lessOrEqual? [:attributeLabel] [.type:]                
+        -> lessOrEqual? [:type] [.type:]                -> lessOrEqual? [:attributelabel] [.type:]                
         -> lessOrEqual? [:type] [type\type]             -> lessOrEqual? [:path] [type\type]
         -> lessOrEqual? [:type] [type\type:]            -> lessOrEqual? [:pathLabel] [type\type:]            
         -> lessOrEqual? [:type] [+]                     -> lessOrEqual? [:symbol] [+]                     
@@ -6861,7 +6861,7 @@ do [
         -> lessOrEqual? [.var]      @[var 'word?]            -> lessOrEqual? [.word]     @[var 'word?]
     ] => not? passed
     
-    ; for :attributeLabel
+    ; for :attributelabel
     ensure -> every? @[           
         -> lessOrEqual? [.rational:] @[to :rational [1 1]]    -> lessOrEqual? [.null:]     @[null]                  
         -> lessOrEqual? [.true:]     @[true]                  -> lessOrEqual? [.false:]    @[false]                 
@@ -7242,7 +7242,7 @@ do [
     ensure -> notEqual? "b" 'a
     ensure -> notEqual? "b" to :label "a"
     ensure -> notEqual? "b" to :attribute "a"
-    ensure -> notEqual? "b" to :attributeLabel "a"
+    ensure -> notEqual? "b" to :attributelabel "a"
     ensure -> notEqual? "text" to :type "string"
     passed
     
@@ -7258,7 +7258,7 @@ do [
     ensure -> notEqual? to :word "b" 'a
     ensure -> notEqual? to :word "b" to :label "a"
     ensure -> notEqual? to :word "b" to :attribute "a"
-    ensure -> notEqual? to :word "b" to :attributeLabel "a"
+    ensure -> notEqual? to :word "b" to :attributelabel "a"
     ensure -> notEqual? to :word "text" to :type "word"
     passed
     
@@ -7286,7 +7286,7 @@ do [
     ensure -> notEqual? 'b to :label "a"
     ensure -> notEqual? 'b to :word "a"
     ensure -> notEqual? 'b to :attribute "a"
-    ensure -> notEqual? 'b to :attributeLabel "a"
+    ensure -> notEqual? 'b to :attributelabel "a"
     ensure -> notEqual? to :literal "text" to :type "literal"
     passed
     
@@ -7302,7 +7302,7 @@ do [
     ensure -> notEqual? to :attribute "b" 'a
     ensure -> notEqual? to :attribute "b" to :word "a"
     ensure -> notEqual? to :attribute "b" to :label "a"
-    ensure -> notEqual? to :attribute "b" to :attributeLabel "a"
+    ensure -> notEqual? to :attribute "b" to :attributelabel "a"
     ensure -> notEqual? to :attribute "text" to :type "label"
     passed
     
@@ -7842,7 +7842,7 @@ do [
         -> notEqual? [:type] [type:]                   -> notEqual? [:label] [label:]
         -> notEqual? :1 '1                             -> notEqual? :literal '1                       
         -> notEqual? [:type] [.type]                   -> notEqual? [:attribute] [.type]              
-        -> notEqual? [:type] [.type:]                  -> notEqual? [:attributeLabel] [.type:]             
+        -> notEqual? [:type] [.type:]                  -> notEqual? [:attributelabel] [.type:]             
         -> notEqual? [:type] [type\type]               -> notEqual? [:path] [type\type]
         -> notEqual? [:type] [type\type:]              -> notEqual? [:pathLabel] [type\type:]            
         -> notEqual? [:type] [+]                       -> notEqual? [:symbol] [+]                     
@@ -7945,7 +7945,7 @@ do [
         -> notEqual? [.var]      @[var 'word?]              -> notEqual? [.word]     @[var 'word?]
     ] => not? passed
     
-    ; for :attributeLabel
+    ; for :attributelabel
     ensure -> not? every? @[           
         -> notEqual? [.rational:] @[to :rational [1 1]]    -> notEqual? [.null:]     @[null]                  
         -> notEqual? [.true:]     @[true]                  -> notEqual? [.false:]    @[false]                 
@@ -8359,7 +8359,7 @@ do [
     passed
     
     
-    topic « same? - :attributeLabel
+    topic « same? - :attributelabel
     
     ensure -> same? [.attr: value] [.attr: value]
     passed
@@ -8903,7 +8903,7 @@ do [
         -> same? [:type] [type:]                -> same? [:label] [label:]
         -> same? :1 '1                          -> same? :literal '1                       
         -> same? [:type] [.type]                -> same? [:attribute] [.type]              
-        -> same? [:type] [.type:]               -> same? [:attributeLabel] [.type:]                
+        -> same? [:type] [.type:]               -> same? [:attributelabel] [.type:]                
         -> same? [:type] [type\type]            -> same? [:path] [type\type]
         -> same? [:type] [type\type:]           -> same? [:pathLabel] [type\type:]            
         -> same? [:type] [+]                    -> same? [:symbol] [+]                     
@@ -9005,7 +9005,7 @@ do [
         -> same? [.var]      @[var 'word?]            -> same? [.word]     @[var 'word?]
     ] => not? passed
     
-    ; for :attributeLabel
+    ; for :attributelabel
     ensure -> every? @[           
         -> same? [.rational:] @[to :rational [1 1]]    -> same? [.null:]     @[null]                  
         -> same? [.true:]     @[true]                  -> same? [.false:]    @[false]                 
