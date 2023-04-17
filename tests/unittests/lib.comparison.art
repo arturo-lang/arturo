@@ -7273,35 +7273,17 @@ do [
     
     topic « notEqual? - :label
     
-    ensure -> not? notEqual? [label: value] [label: value]
+    ensure -> notEqual? to :label "a" to :label "b"
+    ensure -> not? notEqual? to :label "a" to :label "a"
     passed
     
-    ensure -> notEqual? [label: value] [label: value2]
-    ensure -> notEqual? [label: value] [label2: value]
-    passed
-    
-    ensure -> notEqual? [label: value] ["label"]
-    ensure -> notEqual? ["label": value] ["label"]
-    ensure -> notEqual? [label: value] ["value"]
-    ensure -> notEqual? [label: "value"] ["value"]
-    ensure -> notEqual? [label: "value"] ["label" "value"]
-    passed
-    
-    ensure -> notEqual? [label: "value"] [label]
-    ensure -> notEqual? [label: "value"] [value]
-    ensure -> notEqual? [label: "value"] [label value]
-    passed
-    
-    ensure -> notEqual? [label: 'world] ['label]
-    ensure -> notEqual? [label: 'world] ['word]
-    ensure -> notEqual? [label: 'world] ['label 'word]
-    passed
-    
-    ensure -> notEqual? [label: .attr] [.label]
-    ensure -> notEqual? [label: .attr] [.attr]
-    ; ensure -> notEqual? [label: .attr: "a"] [.label: .attr: "a"]
-    ensure -> notEqual? [label: .attr: "a"] [.label: "a"]
-    ensure -> notEqual? [label: .attr: "a"] [.attr: "a"]
+    ensure -> notEqual? to :label "a" "a"
+    ensure -> notEqual? to :label "a" `a`
+    ensure -> notEqual? to :label "a" 'a
+    ensure -> notEqual? to :label "a" to :word "a"
+    ensure -> notEqual? to :label "a" to :attribute "a"
+    ensure -> notEqual? to :label "a" to :attributelabel "a"
+    ensure -> notEqual? to :label "label" to :type "label"
     passed
     
     
