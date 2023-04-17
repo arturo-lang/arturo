@@ -1514,14 +1514,14 @@ do [
     
     topic « equal? - :symbol
     
-    ensure -> equal? [+] [+]
-    ensure -> not? equal? [+] [-]
-    ensure -> not? equal? [+] [++]
-    ensure -> not? equal? [+] [`+`]
-    ensure -> not? equal? [+] [{+}]
-    ensure -> not? equal? [+] ["+"]
-    ensure -> not? equal? [+] [plus]
-    ensure -> not? equal? [+] ['+]
+    ensure -> equal? to :symbol "+" to :symbol "+"
+    ensure -> not? equal? to :symbol "+" to :symbol "-"
+    ensure -> not? equal? to :symbol "+" "++"
+    ensure -> not? equal? to :symbol "+" `+`
+    ensure -> not? equal? to :symbol "+" {+}
+    ensure -> not? equal? to :symbol "+" "+"
+    ensure -> not? equal? to :symbol "+" to :word "plus"
+    ensure -> not? equal? to :symbol "+" '+
     passed
     
     
