@@ -6293,14 +6293,14 @@ do [
     
     topic « lessOrEqual? - :symbol
     
-    ensure -> lessOrEqual? [+] [+]
-    ensure -> not? lessOrEqual? [+] [-]
-    ensure -> not? lessOrEqual? [+] [++]
-    ensure -> not? lessOrEqual? [+] [`+`]
-    ensure -> not? lessOrEqual? [+] [{+}]
-    ensure -> not? lessOrEqual? [+] ["+"]
-    ensure -> not? lessOrEqual? [+] [plus]
-    ensure -> not? lessOrEqual? [+] ['+]
+    ensure -> lessOrEqual? to :symbol "+" to :symbol "+"
+    ensure -> not? lessOrEqual? to :symbol "+" to :symbol "-"
+    ensure -> not? lessOrEqual? to :symbol "+" to :symbol "++"
+    ensure -> not? lessOrEqual? to :symbol "+" `+`
+    ensure -> not? lessOrEqual? to :symbol "+" {+}
+    ensure -> not? lessOrEqual? to :symbol "+" "+"
+    ensure -> not? lessOrEqual? to :symbol "+" to :word "plus"
+    ensure -> not? lessOrEqual? to :symbol "+" '+
     passed
     
     
