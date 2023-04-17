@@ -8305,35 +8305,17 @@ do [
     
     topic « same? - :label
     
-    ensure -> same? [label: value] [label: value]
+    ensure -> same? to :label "a" to :label "a"
+    ensure -> not? same? to :label "a" to :label "b"
     passed
     
-    ensure -> not? same? [label: value] [label: value2]
-    ensure -> not? same? [label: value] [label2: value]
-    passed
-    
-    ensure -> not? same? [label: value] ["label"]
-    ensure -> not? same? ["label": value] ["label"]
-    ensure -> not? same? [label: value] ["value"]
-    ensure -> not? same? [label: "value"] ["value"]
-    ensure -> not? same? [label: "value"] ["label" "value"]
-    passed
-    
-    ensure -> not? same? [label: "value"] [label]
-    ensure -> not? same? [label: "value"] [value]
-    ensure -> not? same? [label: "value"] [label value]
-    passed
-    
-    ensure -> not? same? [label: 'world] ['label]
-    ensure -> not? same? [label: 'world] ['word]
-    ensure -> not? same? [label: 'world] ['label 'word]
-    passed
-    
-    ensure -> not? same? [label: .attr] [.label]
-    ensure -> not? same? [label: .attr] [.attr]
-    ; ensure -> not? same? [label: .attr: "a"] [.label: .attr: "a"]
-    ensure -> not? same? [label: .attr: "a"] [.label: "a"]
-    ensure -> not? same? [label: .attr: "a"] [.attr: "a"]
+    ensure -> not? same? to :label "a" "a"
+    ensure -> not? same? to :label "a" `a`
+    ensure -> not? same? to :label "a" 'a
+    ensure -> not? same? to :label "a" to :word "a"
+    ensure -> not? same? to :label "a" to :attribute "a"
+    ensure -> not? same? to :label "a" to :attributelabel "a"
+    ensure -> not? same? to :label "label" to :type "label"
     passed
     
     
