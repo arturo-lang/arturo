@@ -8402,14 +8402,14 @@ do [
     
     topic « same? - :symbol
     
-    ensure -> same? [+] [+]
-    ensure -> not? same? [+] [-]
-    ensure -> not? same? [+] [++]
-    ensure -> not? same? [+] [`+`]
-    ensure -> not? same? [+] [{+}]
-    ensure -> not? same? [+] ["+"]
-    ensure -> not? same? [+] [plus]
-    ensure -> not? same? [+] ['+]
+    ensure -> same? to :symbol "+" to :symbol "+"
+    ensure -> not? same? to :symbol "+" to :symbol "-"
+    ensure -> not? same? to :symbol "+" "++"
+    ensure -> not? same? to :symbol "+" `+`
+    ensure -> not? same? to :symbol "+" {+}
+    ensure -> not? same? to :symbol "+" "+"
+    ensure -> not? same? to :symbol "+" to :word "plus"
+    ensure -> not? same? to :symbol "+" '+
     passed
     
     
