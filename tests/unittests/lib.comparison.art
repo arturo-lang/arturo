@@ -564,7 +564,7 @@ do [
     passed
     
     
-    topic « between? :dictionary
+    topic « between? - :dictionary
     
     a: #[name: "Walter" surname: "Pinkman"]
     
@@ -1024,7 +1024,7 @@ do [
     passed
     
     
-    topic « compare :dictionary
+    topic « compare - :dictionary
     
     a: #[name: "Walter" surname: "Pinkman"]
     
@@ -1595,7 +1595,7 @@ do [
     passed
     
     
-    topic « equal? :range
+    topic « equal? - :range
     
     ensure -> equal? [0 1 2 3 4 5] @0..5
     ensure -> equal? [0 2 4] @0.. .step: 2 5
@@ -1604,7 +1604,7 @@ do [
     passed
 
 
-    topic « equal? :dictionary
+    topic « equal? - :dictionary
     
     a: #[name: "Walter" surname: "Pinkman"]
     
@@ -2767,7 +2767,7 @@ do [
     passed
     
     
-    topic « greater? :range
+    topic « greater? - :range
     
     ensure -> not? greater? 0..5 0..5
     ensure -> not? greater? [0 1 2 3 4 5] @0..5
@@ -2777,7 +2777,7 @@ do [
     passed
     
     
-    topic « greater? :dictionary
+    topic « greater? - :dictionary
     
     a: #[name: "Walter" surname: "Pinkman"]
     
@@ -3965,7 +3965,7 @@ do [
     passed
     
     
-    topic « greaterOrEqual? :range
+    topic « greaterOrEqual? - :range
     
     ensure -> greaterOrEqual? 0..5 0..5
     ensure -> greaterOrEqual? [0 1 2 3 4 5] @0..5
@@ -3975,7 +3975,7 @@ do [
     passed
     
     
-    topic « greaterOrEqual? :dictionary
+    topic « greaterOrEqual? - :dictionary
     
     a: #[name: "Walter" surname: "Pinkman"]
     
@@ -5164,7 +5164,7 @@ do [
     passed
     
     
-    topic « less? :range
+    topic « less? - :range
     
     ensure -> not? less? [0 1 2 3 4 5] @0..5
     ensure -> not? less? [0 2 4] @0.. .step: 2 5
@@ -5173,7 +5173,7 @@ do [
     passed
     
     
-    topic « less? :dictionary
+    topic « less? - :dictionary
     
     a: #[name: "Walter" surname: "Pinkman"]
     
@@ -6362,7 +6362,7 @@ do [
     passed
     
     
-    topic « lessOrEqual? :range
+    topic « lessOrEqual? - :range
     
     ensure -> lessOrEqual? 0..5 0..5
     ensure -> lessOrEqual? [0 1 2 3 4 5] @0..5
@@ -6372,7 +6372,7 @@ do [
     passed
     
     
-    topic « lessOrEqual? :dictionary
+    topic « lessOrEqual? - :dictionary
     
     a: #[name: "Walter" surname: "Pinkman"]
     
@@ -7475,7 +7475,7 @@ do [
     passed
     
     
-    topic « notEqual? :range
+    topic « notEqual? - :range
     
     ensure -> not? notEqual? [0 1 2 3 4 5] @0..5
     ensure -> not? notEqual? [0 2 4] @0.. .step: 2 5
@@ -7484,7 +7484,7 @@ do [
     passed
     
     
-    topic « notEqual? :dictionary
+    topic « notEqual? - :dictionary
     
     a: #[name: "Walter" surname: "Pinkman"]
     
@@ -8540,7 +8540,7 @@ do [
     passed
     
     
-    topic « same? :range
+    topic « same? - :range
     
     ensure -> same? [0 1 2 3 4 5] @0..5
     ensure -> same? [0 2 4] @0.. .step: 2 5
@@ -8549,7 +8549,7 @@ do [
     passed
     
     
-    topic « same? :dictionary
+    topic « same? - :dictionary
     
     a: #[name: "Walter" surname: "Pinkman"]
     
