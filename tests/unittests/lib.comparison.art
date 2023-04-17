@@ -914,12 +914,10 @@ do [
     
     topic « compare - :attribute
     
-    a: [.attr], b: [.other]
-    
-    ensure -> 0 = compare a\0 a\0
-    ensure -> 0 = compare b\0 b\0
-    ; ensure -> (neg 1) = compare a\0 b\0 
-    ensure -> 1 = compare b\0 a\0
+    ensure -> 1 = compare to :attribute "b" to :attribute "a"
+    ensure -> 0 = compare to :attribute "a" to :attribute "a"
+    ensure -> 0 = compare to :attribute "b" to :attribute "b"
+    ; ensure -> (neg 1) = compare to :attribute "a" to :attribute "b"
     passed
     
     
