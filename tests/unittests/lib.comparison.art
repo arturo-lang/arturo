@@ -2574,7 +2574,7 @@ do [
     ensure -> not? greater? to :label "a" to :word "a"
     ensure -> not? greater? to :label "a" to :attribute "a"
     ensure -> not? greater? to :label "a" to :attributeLabel "a"
-    ensure -> not? greater? to :label "word" to :type "word"
+    ensure -> not? greater? to :label "label" to :type "label"
     passed
     
     
@@ -2591,7 +2591,7 @@ do [
     ensure -> not? greater? 'a to :label "a"
     ensure -> not? greater? 'a to :attribute "a"
     ensure -> not? greater? 'a to :attributeLabel "a"
-    ensure -> not? greater? 'word to :type "word"
+    ensure -> not? greater? 'literal to :type "literal"
     passed
     
     
@@ -2646,7 +2646,7 @@ do [
     ensure -> not? greater? to :attribute "a" to :word "a"
     ensure -> not? greater? to :attribute "a" to :label "a"
     ensure -> not? greater? to :attribute "a" to :attributeLabel "a"
-    ensure -> not? greater? to :attribute "word" to :type "word"
+    ensure -> not? greater? to :attribute "attribute" to :type "attribute"
     passed
 
     
@@ -2663,7 +2663,8 @@ do [
     ensure -> not? greater? to :attributeLabel "a" to :word "a"
     ensure -> not? greater? to :attributeLabel "a" to :label "a"
     ensure -> not? greater? to :attributeLabel "a" to :attribute "a"
-    ensure -> not? greater? to :attributeLabel "word" to :type "word"
+    ensure -> not? greater? to :attributeLabel "attributeLabel" 
+                            to :type "attributeLabel"
     passed
     
     
