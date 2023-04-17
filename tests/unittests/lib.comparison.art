@@ -8353,29 +8353,17 @@ do [
     
     topic « same? - :attributelabel
     
-    ensure -> same? [.attr: value] [.attr: value]
+    ensure -> same? to :attributelabel "a" to :attributelabel "a"
+    ensure -> not? same? to :attributelabel "a" to :attributelabel "b"
     passed
     
-    ensure -> not? same? [.attr: value] ["attr"]
-    ensure -> not? same? [.attr: value] ["value"]
-    ensure -> not? same? [.attr: value] ["attr" "value"]
-    passed
-    
-    ensure -> not? same? [.attr: value] [attr]
-    ensure -> not? same? [.attr: value] [attr: .attr:]
-    ; ensure -> not? same? [.attr: value] [attr: value]
-    ensure -> not? same? [.attr: value] [attr: .attr: value]
-    passed
-    
-    ensure -> not? same? [.attr: value] ['attr]
-    ensure -> not? same? [.attr: value] ['value]
-    ensure -> not? same? [.attr: value] ['attr 'value]
-    passed
-    
-    ensure -> not? same? [.attr: value] [.attr]
-    ensure -> not? same? [.attr: value] [.value]
-    ensure -> not? same? [.attr: value] [.other: value]
-    ensure -> not? same? [.attr: value] [.attr: other]
+    ensure -> not? same? to :attributelabel "a" "a"
+    ensure -> not? same? to :attributelabel "a" `a`
+    ensure -> not? same? to :attributelabel "a" 'a
+    ensure -> not? same? to :attributelabel "a" to :word "a"
+    ensure -> not? same? to :attributelabel "a" to :label "a"
+    ensure -> not? same? to :attributelabel "a" to :attribute "a"
+    ensure -> not? same? to :attributelabel "label" to :type "label"
     passed
     
     
