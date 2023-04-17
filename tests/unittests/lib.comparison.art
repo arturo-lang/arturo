@@ -2544,13 +2544,13 @@ do [
     ensure -> greater? "Artu" "Art"
     passed
     
-    ensure -> not? greater? "a" `a`
-    ensure -> not? greater? "a" 'a
-    ensure -> not? greater? "a" to :word "a"
-    ensure -> not? greater? "a" to :label "a"
-    ensure -> not? greater? "a" to :attribute "a"
-    ensure -> not? greater? "a" to :attributeLabel "a"
-    ensure -> not? greater? "string" to :type "string"
+    ensure -> not? greater? "b" `a`
+    ensure -> not? greater? "b" 'a
+    ensure -> not? greater? "b" to :word "a"
+    ensure -> not? greater? "b" to :label "a"
+    ensure -> not? greater? "b" to :attribute "a"
+    ensure -> not? greater? "b" to :attributeLabel "a"
+    ensure -> not? greater? "b" to :type "a"
     passed
     passed
     
@@ -2561,13 +2561,13 @@ do [
     ensure -> not? greater? to :word "a" to :word "b"
     passed
     
-    ensure -> not? greater? to :word "a" "a"
-    ensure -> not? greater? to :word "a" `a`
-    ensure -> not? greater? to :word "a" 'a
-    ensure -> not? greater? to :word "a" to :label "a"
-    ensure -> not? greater? to :word "a" to :attribute "a"
-    ensure -> not? greater? to :word "a" to :attributeLabel "a"
-    ensure -> not? greater? to :word "word" to :type "word"
+    ensure -> not? greater? to :word "b" "a"
+    ensure -> not? greater? to :word "b" `a`
+    ensure -> not? greater? to :word "b" 'a
+    ensure -> not? greater? to :word "b" to :label "a"
+    ensure -> not? greater? to :word "b" to :attribute "a"
+    ensure -> not? greater? to :word "b" to :attributeLabel "a"
+    ensure -> not? greater? to :word "b" to :type "a"
     passed
     
     
@@ -2578,13 +2578,13 @@ do [
     ensure -> not? greater? to :label "a" to :label "b"
     passed
     
-    ensure -> not? greater? to :label "a" "a"
-    ensure -> not? greater? to :label "a" `a`
-    ensure -> not? greater? to :label "a" 'a
-    ensure -> not? greater? to :label "a" to :word "a"
-    ensure -> not? greater? to :label "a" to :attribute "a"
-    ensure -> not? greater? to :label "a" to :attributeLabel "a"
-    ensure -> not? greater? to :label "label" to :type "label"
+    ensure -> not? greater? to :label "b" "a"
+    ensure -> not? greater? to :label "b" `a`
+    ensure -> not? greater? to :label "b" 'a
+    ensure -> not? greater? to :label "b" to :word "a"
+    ensure -> not? greater? to :label "b" to :attribute "a"
+    ensure -> not? greater? to :label "b" to :attributeLabel "a"
+    ensure -> not? greater? to :label "b" to :type "a"
     passed
     
     
@@ -2595,13 +2595,13 @@ do [
     ensure -> not? greater? 'a 'b
     passed
     
-    ensure -> not? greater? 'a "a"
-    ensure -> not? greater? 'a `a`
-    ensure -> not? greater? 'a to :word "a"
-    ensure -> not? greater? 'a to :label "a"
-    ensure -> not? greater? 'a to :attribute "a"
-    ensure -> not? greater? 'a to :attributeLabel "a"
-    ensure -> not? greater? 'literal to :type "literal"
+    ensure -> not? greater? 'b "a"
+    ensure -> not? greater? 'b `a`
+    ensure -> not? greater? 'b to :word "a"
+    ensure -> not? greater? 'b to :label "a"
+    ensure -> not? greater? 'b to :attribute "a"
+    ensure -> not? greater? 'b to :attributeLabel "a"
+    ensure -> not? greater? 'b to :type "a"
     passed
     
     
@@ -2650,13 +2650,13 @@ do [
     ensure -> not? greater? to :attribute "a" to :attribute "b"
     passed
     
-    ensure -> not? greater? to :attribute "a" "a"
-    ensure -> not? greater? to :attribute "a" `a`
-    ensure -> not? greater? to :attribute "a" 'a
-    ensure -> not? greater? to :attribute "a" to :word "a"
-    ensure -> not? greater? to :attribute "a" to :label "a"
-    ensure -> not? greater? to :attribute "a" to :attributeLabel "a"
-    ensure -> not? greater? to :attribute "attribute" to :type "attribute"
+    ensure -> not? greater? to :attribute "b" "a"
+    ensure -> not? greater? to :attribute "b" `a`
+    ensure -> not? greater? to :attribute "b" 'a
+    ensure -> not? greater? to :attribute "b" to :word "a"
+    ensure -> not? greater? to :attribute "b" to :label "a"
+    ensure -> not? greater? to :attribute "b" to :attributeLabel "a"
+    ensure -> not? greater? to :attribute "b" to :type "a"
     passed
 
     
@@ -2667,14 +2667,14 @@ do [
     ensure -> not? greater? to :attributeLabel "a" to :attributeLabel "b"
     passed
     
-    ensure -> not? greater? to :attributeLabel "a" "a"
-    ensure -> not? greater? to :attributeLabel "a" `a`
-    ensure -> not? greater? to :attributeLabel "a" 'a
-    ensure -> not? greater? to :attributeLabel "a" to :word "a"
-    ensure -> not? greater? to :attributeLabel "a" to :label "a"
-    ensure -> not? greater? to :attributeLabel "a" to :attribute "a"
-    ensure -> not? greater? to :attributeLabel "attributeLabel" 
-                            to :type "attributeLabel"
+    ensure -> not? greater? to :attributeLabel "less" "a"
+    ensure -> not? greater? to :attributeLabel "less" `a`
+    ensure -> not? greater? to :attributeLabel "less" 'a
+    ensure -> not? greater? to :attributeLabel "less" to :word "a"
+    ensure -> not? greater? to :attributeLabel "less" to :label "a"
+    ensure -> not? greater? to :attributeLabel "less" to :attribute "a"
+    ensure -> not? greater? to :attributeLabel "b" 
+                            to :type "a"
     passed
     
     
