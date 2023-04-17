@@ -7301,19 +7301,17 @@ do [
     
     topic « notEqual? - :attribute
     
-    ensure -> not? notEqual? [.attr] [.attr]
-    ensure -> notEqual? [.attr] ["attr"]
-    ; ensure -> notEqual? [.attr] [attr]
-    ensure -> notEqual? [.attr] [attr: .attr]
-    ensure -> notEqual? [.attr] ['attr]
-    ensure -> notEqual? [.attr] [.other]
-    ensure -> notEqual? [.attr] [.attr: .attr]
+    ensure -> notEqual? to :attribute "a" to :attribute "b"
+    ensure -> not? notEqual? to :attribute "a" to :attribute "a"
     passed
     
-    
-    topic « notEqual? - :attributeLabel
-    
-    ensure -> not? notEqual? [.attr: value] [.attr: value]
+    ensure -> notEqual? to :attribute "b" "a"
+    ensure -> notEqual? to :attribute "b" `a`
+    ensure -> notEqual? to :attribute "b" 'a
+    ensure -> notEqual? to :attribute "b" to :word "a"
+    ensure -> notEqual? to :attribute "b" to :label "a"
+    ensure -> notEqual? to :attribute "b" to :attributeLabel "a"
+    ensure -> notEqual? to :attribute "text" to :type "label"
     passed
     
     ensure -> notEqual? [.attr: value] ["attr"]
