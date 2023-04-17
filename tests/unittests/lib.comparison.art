@@ -1465,29 +1465,17 @@ do [
     
     topic « equal? - :attributeLabel
     
-    ensure -> equal? [.attr: value] [.attr: value]
+    ensure -> equal? to :attributeLabel "a" to :attributeLabel "a"
+    ensure -> not? equal? to :attributeLabel "a" to :attributeLabel "b"
     passed
     
-    ensure -> not? equal? [.attr: value] ["attr"]
-    ensure -> not? equal? [.attr: value] ["value"]
-    ensure -> not? equal? [.attr: value] ["attr" "value"]
-    passed
-    
-    ; ensure -> not? equal? [.attr: value] [attr]
-    ensure -> not? equal? [.attr: value] [attr: .attr:]
-    ; ensure -> not? equal? [.attr: value] [attr: value]
-    ensure -> not? equal? [.attr: value] [attr: .attr: value]
-    passed
-    
-    ensure -> not? equal? [.attr: value] ['attr]
-    ensure -> not? equal? [.attr: value] ['value]
-    ensure -> not? equal? [.attr: value] ['attr 'value]
-    passed
-    
-    ensure -> not? equal? [.attr: value] [.attr]
-    ensure -> not? equal? [.attr: value] [.value]
-    ensure -> not? equal? [.attr: value] [.other: value]
-    ensure -> not? equal? [.attr: value] [.attr: other]
+    ensure -> not? equal? to :attributeLabel "a" "a"
+    ensure -> not? equal? to :attributeLabel "a" `a`
+    ensure -> not? equal? to :attributeLabel "a" 'a
+    ensure -> not? equal? to :attributeLabel "a" to :word "a"
+    ensure -> not? equal? to :attributeLabel "a" to :label "a"
+    ensure -> not? equal? to :attributeLabel "a" to :attribute "a"
+    ensure -> not? equal? to :attributeLabel "label" to :type "label"
     passed
     
     
