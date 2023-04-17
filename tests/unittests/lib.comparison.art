@@ -7366,14 +7366,14 @@ do [
     
     topic « notEqual? - :symbol
     
-    ensure -> not? notEqual? [+] [+]
-    ensure -> notEqual? [+] [-]
-    ensure -> notEqual? [+] [++]
-    ensure -> notEqual? [+] [`+`]
-    ensure -> notEqual? [+] [{+}]
-    ensure -> notEqual? [+] ["+"]
-    ensure -> notEqual? [+] [plus]
-    ensure -> notEqual? [+] ['+]
+    ensure -> not? notEqual? to :symbol "+" to :symbol "+"
+    ensure -> notEqual? to :symbol "+" to :symbol "-"
+    ensure -> notEqual? to :symbol "+" "++"
+    ensure -> notEqual? to :symbol "+" `+`
+    ensure -> notEqual? to :symbol "+" {+}
+    ensure -> notEqual? to :symbol "+" "+"
+    ensure -> notEqual? to :symbol "+" to :word "plus"
+    ensure -> notEqual? to :symbol "+" '+
     passed
     
     
