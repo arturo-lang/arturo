@@ -3888,14 +3888,14 @@ do [
     
     topic « greaterOrEqual? - :symbol
     
-    ensure -> greaterOrEqual? [+] [+]
-    ensure -> not? greaterOrEqual? [+] [-]
-    ensure -> not? greaterOrEqual? [+] [++]
-    ensure -> not? greaterOrEqual? [+] [`+`]
-    ensure -> not? greaterOrEqual? [+] [{+}]
-    ensure -> not? greaterOrEqual? [+] ["+"]
-    ensure -> not? greaterOrEqual? [+] [plus]
-    ensure -> not? greaterOrEqual? [+] ['+]
+    ensure -> greaterOrEqual? to :symbol "+" to :symbol "+"
+    ensure -> not? greaterOrEqual? to :symbol "+" to :symbol "-"
+    ensure -> not? greaterOrEqual? to :symbol "+" to :symbol "++"
+    ensure -> not? greaterOrEqual? to :symbol "+" `+`
+    ensure -> not? greaterOrEqual? to :symbol "+" {+}
+    ensure -> not? greaterOrEqual? to :symbol "+" "+"
+    ensure -> not? greaterOrEqual? to :symbol "+" to :word "plus"
+    ensure -> not? greaterOrEqual? to :symbol "+" '+
     passed
     
     
