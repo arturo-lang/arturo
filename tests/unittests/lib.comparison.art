@@ -1449,13 +1449,17 @@ do [
     
     topic « equal? - :attribute
     
-    ensure -> equal? [.attr] [.attr]
-    ensure -> not? equal? [.attr] ["attr"]
-    ; ensure -> not? equal? [.attr] [attr]
-    ensure -> not? equal? [.attr] [attr: .attr]
-    ensure -> not? equal? [.attr] ['attr]
-    ensure -> not? equal? [.attr] [.other]
-    ensure -> not? equal? [.attr] [.attr: .attr]
+    ensure -> equal? to :attribute "a" to :attribute "a"
+    ensure -> not? equal? to :attribute "a" to :attribute "b"
+    passed
+    
+    ensure -> not? equal? to :attribute "a" "a"
+    ensure -> not? equal? to :attribute "a" `a`
+    ensure -> not? equal? to :attribute "a" 'a
+    ensure -> not? equal? to :attribute "a" to :word "a"
+    ensure -> not? equal? to :attribute "a" to :label "a"
+    ensure -> not? equal? to :attribute "a" to :attributeLabel "a"
+    ensure -> not? equal? to :attribute "label" to :type "label"
     passed
     
     
