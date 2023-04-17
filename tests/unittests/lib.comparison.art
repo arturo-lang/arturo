@@ -2523,6 +2523,15 @@ do [
     passed
     
     
+    topic « greater? - :char
+    
+    ensure -> greater? `b` `a`
+    ensure -> not? greater? `a` `b`
+    ensure -> not? greater? `a` "a"
+    ensure -> not? greater? `1` 1
+    passed
+    
+    
     topic « greater? - :string
     
     ensure -> not? greater? "Art" "Arturo" -- "uro"
