@@ -7314,26 +7314,20 @@ do [
     ensure -> notEqual? to :attribute "text" to :type "label"
     passed
     
-    ensure -> notEqual? [.attr: value] ["attr"]
-    ensure -> notEqual? [.attr: value] ["value"]
-    ensure -> notEqual? [.attr: value] ["attr" "value"]
+
+    topic « notEqual? - :attributelabel
+    
+    ensure -> notEqual? to :attributelabel "a" to :attributelabel "b"
+    ensure -> not? notEqual? to :attributelabel "a" to :attributelabel "a"
     passed
     
-    ; ensure -> notEqual? [.attr: value] [attr]
-    ensure -> notEqual? [.attr: value] [attr: .attr:]
-    ; ensure -> notEqual? [.attr: value] [attr: value]
-    ensure -> notEqual? [.attr: value] [attr: .attr: value]
-    passed
-    
-    ensure -> notEqual? [.attr: value] ['attr]
-    ensure -> notEqual? [.attr: value] ['value]
-    ensure -> notEqual? [.attr: value] ['attr 'value]
-    passed
-    
-    ensure -> notEqual? [.attr: value] [.attr]
-    ensure -> notEqual? [.attr: value] [.value]
-    ensure -> notEqual? [.attr: value] [.other: value]
-    ensure -> notEqual? [.attr: value] [.attr: other]
+    ensure -> notEqual? to :attributelabel "b" "a"
+    ensure -> notEqual? to :attributelabel "b" `a`
+    ensure -> notEqual? to :attributelabel "b" 'a
+    ensure -> notEqual? to :attributelabel "b" to :word "a"
+    ensure -> notEqual? to :attributelabel "b" to :label "a"
+    ensure -> notEqual? to :attributelabel "b" to :attribute "a"
+    ensure -> notEqual? to :attributelabel "text" to :type "label"
     passed
     
     
