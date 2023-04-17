@@ -8321,13 +8321,17 @@ do [
     
     topic « same? - :literal
     
-    ensure -> same? 'literal 'literal
-    ensure -> not? same? 'literal 'other
-    ensure -> not? same? 'literal "literal"
-    ensure -> not? same? ['literal] ["literal"]
-    ensure -> not? same? ['literal] [literal]
-    ensure -> not? same? ['literal] [.literal]
-    ensure -> not? same? ['literal] [literal: 'literal]
+    ensure -> same? 'a 'a
+    ensure -> not? same? 'a 'b
+    passed
+    
+    ensure -> not? same? 'a "a"
+    ensure -> not? same? 'a `a`
+    ensure -> not? same? 'a to :label "a"
+    ensure -> not? same? 'a to :word "a"
+    ensure -> not? same? 'a to :attribute "a"
+    ensure -> not? same? 'a to :attributelabel "a"
+    ensure -> not? same? to :literal "literal" to :type "literal"
     passed
     
     
