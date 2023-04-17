@@ -921,14 +921,12 @@ do [
     passed
     
     
-    topic « compare - :attributeLabel
+    topic « compare - :attributelabel
     
-    a: [.attr:], b: [.other:]
-    
-    ensure -> 0 = compare a\0 a\0
-    ensure -> 0 = compare b\0 b\0
-    ; ensure -> (neg 1) = compare a\0 b\0 
-    ensure -> 1 = compare b\0 a\0
+    ensure -> 1 = compare to :attributelabel "b" to :attributelabel "a"
+    ensure -> 0 = compare to :attributelabel "a" to :attributelabel "a"
+    ensure -> 0 = compare to :attributelabel "b" to :attributelabel "b"
+    ; ensure -> (neg 1) = compare to :attributelabel "a" to :attributelabel "b"
     passed
     
     
