@@ -4937,17 +4937,18 @@ do [
     
     topic « less? - :word
     
-    ; ensure -> less? [a] [b]
-    a: [a]
-    b: [b]
-    ensure -> less? a\0 b\0
-    ensure -> not? less? [word] [word]
-    ensure -> not? less? [word] [otherWord]
-    ensure -> not? less? [word] ["word"]
-    ensure -> not? less? [word] [word:]
-    ensure -> not? less? [word] ['word]
-    ; ensure -> not? less? [word] [.word]
-    ensure -> not? less? [word] [.word:]
+    ensure -> less? to :word "a" to :word "b"
+    ensure -> not? less? to :word "a" to :word "a"
+    ensure -> not? less? to :word "b" to :word "a"
+    passed
+    
+    ensure -> not? less? to :word "a" "b"
+    ensure -> not? less? to :word "a" `b`
+    ensure -> not? less? to :word "a" 'b
+    ensure -> not? less? to :word "a" to :label "b"
+    ensure -> not? less? to :word "a" to :attribute "b"
+    ensure -> not? less? to :word "a" to :attributeLabel "b"
+    ensure -> not? less? to :word "word" to :type "z"
     passed
     
     
