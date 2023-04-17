@@ -1405,13 +1405,17 @@ do [
     
     topic « equal? - :word
     
-    ensure -> equal? [word] [word]
-    ensure -> not? equal? [word] [otherWord]
-    ensure -> not? equal? [word] ["word"]
-    ensure -> not? equal? [word] [word: word]
-    ensure -> not? equal? [word] ['word]
-    ; ensure -> not? equal? [word] [.word]
-    ensure -> not? equal? [word] [.word: word]
+    ensure -> equal? to :word "a" to :word "a"
+    ensure -> not? equal? to :word "a" to :word "b"
+    passed
+    
+    ensure -> not? equal? to :word "a" "a"
+    ensure -> not? equal? to :word "a" `a`
+    ensure -> not? equal? to :word "a" 'a
+    ensure -> not? equal? to :word "a" to :label "a"
+    ensure -> not? equal? to :word "a" to :attribute "a"
+    ensure -> not? equal? to :word "a" to :attributeLabel "a"
+    ensure -> not? equal? to :word "word" to :type "word"
     passed
     
     
