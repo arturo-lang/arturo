@@ -6266,7 +6266,7 @@ do [
     passed
     
     
-    topic « lessOrEqual? - :attributeLabel
+    topic « lessOrEqual? - :attributelabel
     
     ; ensure -> lessOrEqual? to :attributelabel "a" to :attributelabel "b"
     ensure -> lessOrEqual? to :attributelabel "a" to :attributelabel "a"
