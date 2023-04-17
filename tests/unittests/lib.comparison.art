@@ -2586,15 +2586,18 @@ do [
     
     topic « greater? - :literal
     
-    ensure -> not? greater? 'a 'b
     ensure -> greater? 'b 'a
-    ensure -> not? greater? 'literal 'literal
-    ensure -> greater? 'other 'literal
-    ensure -> not? greater? 'literal "literal"
-    ensure -> not? greater? ['literal] ["literal"]
-    ensure -> not? greater? ['literal] [literal]
-    ensure -> not? greater? ['literal] [.literal]
-    ensure -> not? greater? ['literal] [literal:]
+    ensure -> not? greater? 'a 'a
+    ensure -> not? greater? 'a 'b
+    passed
+    
+    ensure -> not? greater? 'a "a"
+    ensure -> not? greater? 'a `a`
+    ensure -> not? greater? 'a to :word "a"
+    ensure -> not? greater? 'a to :label "a"
+    ensure -> not? greater? 'a to :attribute "a"
+    ensure -> not? greater? 'a to :attributeLabel "a"
+    ensure -> not? greater? 'word to :type "word"
     passed
     
     
