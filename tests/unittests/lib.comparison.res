@@ -152,7 +152,7 @@
 >> compare - :attribute
 [+] passed!
 
->> compare - :attributeLabel
+>> compare - :attributelabel
 [+] passed!
 
 >> compare - :path
