@@ -4939,20 +4939,13 @@ do [
     ensure -> less? "Art" "Artu"
     passed
     
-    ensure -> not? less? "a"    `a` 
-    ensure -> not? less? "10"   10 
-    ensure -> not? less? "10"   10
-    ensure -> not? less? ["help"] [help]
-    ensure -> not? less? ["a"]    [a:]
-    ensure -> not? less? "help"   'help
-    ensure -> not? less? ["help"] [.help]
-    ensure -> not? "a"      < `a` 
-    ensure -> not? "10"     < 10 
-    ensure -> not? "10"     < 10
-    ensure -> not? ["help"] < [help]
-    ensure -> not? ["a"]    < [a:]
-    ensure -> not? "help"   < 'help
-    ensure -> not? ["help"] < [.help]
+    ensure -> not? less? "a" `b`
+    ensure -> not? less? "a" 'b
+    ensure -> not? less? "a" to :word "b"
+    ensure -> not? less? "a" to :label "b"
+    ensure -> not? less? "a" to :attribute "b"
+    ensure -> not? less? "a" to :attributeLabel "b"
+    ensure -> not? less? "a" to :type "b"
     passed
     
     
