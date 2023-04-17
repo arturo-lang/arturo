@@ -3861,32 +3861,28 @@ do [
     passed
     
     
-    topic « greaterOrEqual? - :attributeLabel
+    topic « greaterOrEqual? - :attributelabel
     
-    ensure -> greaterOrEqual? [.attr: value] [.attr: value]
-    ; ensure -> greaterOrEqual? [.b:] [.a:]
+    ; ensure -> greaterOrEqual? to :attributelabel "b" to :attributelabel "a"
+    ensure -> greaterOrEqual? to :attributelabel "a" to :attributelabel "a"
+    ensure -> greaterOrEqual? to :attributelabel "b" to :attributelabel "b"
+    ensure -> not? greaterOrEqual? to :attributelabel "a" to :attributelabel "b"
     passed
     
-    ensure -> not? greaterOrEqual? [.attr:] ["attr"]
-    ensure -> not? greaterOrEqual? [.attr:] ["value"]
-    ensure -> not? greaterOrEqual? [.attr: value] ["attr" "value"]
-    passed
-    
-    ; ensure -> not? greaterOrEqual? [.attr:] [attr]
-    ensure -> not? greaterOrEqual? [.attr: value] [attr: .attr:]
-    ; ensure -> not? greaterOrEqual? [.attr: value] [attr: value]
-    ensure -> not? greaterOrEqual? [.attr: value] [attr: .attr:]
-    passed
-    
-    ensure -> not? greaterOrEqual? [.attr:] ['attr]
-    ensure -> not? greaterOrEqual? [.attr:] ['value]
-    ensure -> not? greaterOrEqual? [.attr: value] ['attr 'value]
-    passed
-    
-    ; ensure -> not? greaterOrEqual? [.attr:] [.attr]
-    ensure -> not? greaterOrEqual? [.attr:] [.value]
-    ensure -> not? greaterOrEqual? [.attr: value] [.other: value]
-    ensure -> not? greaterOrEqual? [.attr: value] [.attr: other]
+    ensure -> not? greaterOrEqual? to :attributelabel "b" "a"
+    ensure -> not? greaterOrEqual? to :attributelabel "b" "b"
+    ensure -> not? greaterOrEqual? to :attributelabel "b" `a`
+    ensure -> not? greaterOrEqual? to :attributelabel "b" `b`
+    ensure -> not? greaterOrEqual? to :attributelabel "b" 'a
+    ensure -> not? greaterOrEqual? to :attributelabel "b" 'b
+    ensure -> not? greaterOrEqual? to :attributelabel "b" to :word "a"
+    ensure -> not? greaterOrEqual? to :attributelabel "b" to :word "b"
+    ensure -> not? greaterOrEqual? to :attributelabel "b" to :label "a"
+    ensure -> not? greaterOrEqual? to :attributelabel "b" to :label "b"
+    ensure -> not? greaterOrEqual? to :attributelabel "b" to :attribute "a"
+    ensure -> not? greaterOrEqual? to :attributelabel "b" to :attribute "b"
+    ensure -> not? greaterOrEqual? to :attributelabel "b" to :type "a"
+    ensure -> not? greaterOrEqual? to :attributelabel "b" to :type "b"
     passed
     
     
