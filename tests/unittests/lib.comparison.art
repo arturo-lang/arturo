@@ -5039,11 +5039,19 @@ do [
     
     topic « less? - :attribute
     
-    ensure -> not? less? [.attr] [.attr]
-    ensure -> not? less? [.attr] ["attr"]
-    ensure -> not? less? [.attr] [attr]
-    ensure -> not? less? [.attr] ['attr]
-    ensure -> not? less? [.attr] [.other]
+    ; ensure -> less? to :attribute "a" to :attribute "b"
+    ensure -> not? less? to :attribute "a" to :attribute "a"
+    ensure -> not? less? to :attribute "b" to :attribute "b"
+    ensure -> not? greaterOrEqual? to :attribute "b" to :attribute "a"
+    passed
+    
+    ensure -> not? less? to :attribute "a" "b"
+    ensure -> not? less? to :attribute "a" `b`
+    ensure -> not? less? to :attribute "a" 'b
+    ensure -> not? less? to :attribute "a" to :word "b"
+    ensure -> not? less? to :attribute "a" to :label "b"
+    ensure -> not? less? to :attribute "a" to :attributeLabel "b"
+    ensure -> not? less? to :attribute "a" to :type "b"
     passed
     
     
