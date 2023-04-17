@@ -6268,29 +6268,26 @@ do [
     
     topic « lessOrEqual? - :attributeLabel
     
-    ensure -> lessOrEqual? [.attr: value] [.attr: value]
+    ; ensure -> lessOrEqual? to :attributelabel "a" to :attributelabel "b"
+    ensure -> lessOrEqual? to :attributelabel "a" to :attributelabel "a"
+    ensure -> lessOrEqual? to :attributelabel "b" to :attributelabel "b"
+    ensure -> not? lessOrEqual? to :attributelabel "b" to :attributelabel "a"
     passed
     
-    ensure -> not? lessOrEqual? [.attr:] ["attr"]
-    ensure -> not? lessOrEqual? [.attr:] ["value"]
-    ensure -> not? lessOrEqual? [.attr: value] ["attr" "value"]
-    passed
-    
-    ; ensure -> not? lessOrEqual? [.attr:] [attr]
-    ensure -> not? lessOrEqual? [.attr: value] [attr: .attr:]
-    ; ensure -> not? lessOrEqual? [.attr: value] [attr: value]
-    ensure -> not? lessOrEqual? [.attr: value] [attr: .attr:]
-    passed
-    
-    ensure -> not? lessOrEqual? [.attr:] ['attr]
-    ensure -> not? lessOrEqual? [.attr:] ['value]
-    ensure -> not? lessOrEqual? [.attr: value] ['attr 'value]
-    passed
-    
-    ; ensure -> not? lessOrEqual? [.attr:] [.attr]
-    ensure -> not? lessOrEqual? [.attr:] [.value]
-    ensure -> not? lessOrEqual? [.attr: value] [.other: value]
-    ensure -> not? lessOrEqual? [.attr: value] [.attr: other]
+    ensure -> not? lessOrEqual? to :attributelabel "a" "a"
+    ensure -> not? lessOrEqual? to :attributelabel "a" "b"
+    ensure -> not? lessOrEqual? to :attributelabel "a" `a`
+    ensure -> not? lessOrEqual? to :attributelabel "a" `b`
+    ensure -> not? lessOrEqual? to :attributelabel "a" 'a
+    ensure -> not? lessOrEqual? to :attributelabel "a" 'b
+    ensure -> not? lessOrEqual? to :attributelabel "a" to :word "a"
+    ensure -> not? lessOrEqual? to :attributelabel "a" to :word "b"
+    ensure -> not? lessOrEqual? to :attributelabel "a" to :label "a"
+    ensure -> not? lessOrEqual? to :attributelabel "a" to :label "b"
+    ensure -> not? lessOrEqual? to :attributelabel "a" to :attribute "a"
+    ensure -> not? lessOrEqual? to :attributelabel "a" to :attribute "b"
+    ensure -> not? lessOrEqual? to :attributelabel "a" to :type "a"
+    ensure -> not? lessOrEqual? to :attributelabel "a" to :type "b"
     passed
     
     
