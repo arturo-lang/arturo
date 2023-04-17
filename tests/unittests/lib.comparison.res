@@ -403,23 +403,25 @@
 [+] passed!
 [+] passed!
 
+>> greater? - :char
+[+] passed!
+
 >> greater? - :string
+[+] passed!
 [+] passed!
 [+] passed!
 [+] passed!
 
 >> greater? - :word
 [+] passed!
+[+] passed!
 
->> Equal? - :label
-[+] passed!
-[+] passed!
-[+] passed!
-[+] passed!
+>> greater? - :label
 [+] passed!
 [+] passed!
 
 >> greater? - :literal
+[+] passed!
 [+] passed!
 
 >> greater? - :path
@@ -433,11 +435,9 @@
 
 >> greater? - :attribute
 [+] passed!
+[+] passed!
 
->> greaterOrEqual? - :attributeLabel
-[+] passed!
-[+] passed!
-[+] passed!
+>> greater? - :attributeLabel
 [+] passed!
 [+] passed!
 
@@ -471,7 +471,7 @@
 [+] passed!
 [+] passed!
 
->> greaterOrEqual? - :store
+>> greater? - :store
 [+] passed!
 [+] passed!
 
