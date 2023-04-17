@@ -8291,13 +8291,17 @@ do [
     
     topic « same? - :word
     
-    ensure -> same? [word] [word]
-    ensure -> not? same? [word] [otherWord]
-    ensure -> not? same? [word] ["word"]
-    ensure -> not? same? [word] [word: word]
-    ensure -> not? same? [word] ['word]
-    ; ensure -> not? same? [word] [.word]
-    ensure -> not? same? [word] [.word: word]
+    ensure -> same? to :word "a" to :word "a"
+    ensure -> not? same? to :word "a" to :word "b"
+    passed
+    
+    ensure -> not? same? to :word "a" "a"
+    ensure -> not? same? to :word "a" `a`
+    ensure -> not? same? to :word "a" 'a
+    ensure -> not? same? to :word "a" to :label "a"
+    ensure -> not? same? to :word "a" to :attribute "a"
+    ensure -> not? same? to :word "a" to :attributelabel "a"
+    ensure -> not? same? to :word "word" to :type "word"
     passed
     
     
