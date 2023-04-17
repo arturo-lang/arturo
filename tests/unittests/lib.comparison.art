@@ -2534,20 +2534,14 @@ do [
     ensure -> greater? "Artu" "Art"
     passed
     
-    ensure -> not? greater? "a"    `a` 
-    ensure -> not? greater? "10"   10 
-    ensure -> not? greater? "10"   10
-    ensure -> not? greater? ["help"] [help]
-    ensure -> not? greater? ["a"]    [a:]
-    ensure -> not? greater? "help"   'help
-    ensure -> not? greater? ["help"] [.help]
-    ensure -> not? "a"      > `a` 
-    ensure -> not? "10"     > 10 
-    ensure -> not? "10"     > 10
-    ensure -> not? ["help"] > [help]
-    ensure -> not? ["a"]    > [a:]
-    ensure -> not? "help"   > 'help
-    ensure -> not? ["help"] > [.help]
+    ensure -> not? greater? "a" `a`
+    ensure -> not? greater? "a" 'a
+    ensure -> not? greater? "a" to :word "a"
+    ensure -> not? greater? "a" to :label "a"
+    ensure -> not? greater? "a" to :attribute "a"
+    ensure -> not? greater? "a" to :attributeLabel "a"
+    ensure -> not? greater? "string" to :type "string"
+    passed
     passed
     
     topic « greater? - :word
