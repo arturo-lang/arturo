@@ -3716,20 +3716,20 @@ do [
     ensure -> greaterOrEqual? "Artu" "Art"
     passed
     
-    ensure -> not? greater? "b" `a`
-    ensure -> not? greater? "b" `b`
-    ensure -> not? greater? "b" 'a
-    ensure -> not? greater? "b" 'b
-    ensure -> not? greater? "b" to :word "a"
-    ensure -> not? greater? "b" to :word "b"
-    ensure -> not? greater? "b" to :label "a"
-    ensure -> not? greater? "b" to :label "b"
-    ensure -> not? greater? "b" to :attribute "a"
-    ensure -> not? greater? "b" to :attribute "b"
-    ensure -> not? greater? "b" to :attributeLabel "a"
-    ensure -> not? greater? "b" to :attributeLabel "b"
-    ensure -> not? greater? "b" to :type "a"
-    ensure -> not? greater? "b" to :type "b"
+    ensure -> not? greaterOrEqual? "b" `a`
+    ensure -> not? greaterOrEqual? "b" `b`
+    ensure -> not? greaterOrEqual? "b" 'a
+    ensure -> not? greaterOrEqual? "b" 'b
+    ensure -> not? greaterOrEqual? "b" to :word "a"
+    ensure -> not? greaterOrEqual? "b" to :word "b"
+    ensure -> not? greaterOrEqual? "b" to :label "a"
+    ensure -> not? greaterOrEqual? "b" to :label "b"
+    ensure -> not? greaterOrEqual? "b" to :attribute "a"
+    ensure -> not? greaterOrEqual? "b" to :attribute "b"
+    ensure -> not? greaterOrEqual? "b" to :attributeLabel "a"
+    ensure -> not? greaterOrEqual? "b" to :attributeLabel "b"
+    ensure -> not? greaterOrEqual? "b" to :type "a"
+    ensure -> not? greaterOrEqual? "b" to :type "b"
     passed
     
     
