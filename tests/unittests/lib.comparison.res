@@ -246,28 +246,25 @@
 [+] passed!
 [+] passed!
 [+] passed!
+[+] passed!
 
 >> equal? - :word
+[+] passed!
 [+] passed!
 
 >> equal? - :label
 [+] passed!
 [+] passed!
-[+] passed!
-[+] passed!
-[+] passed!
-[+] passed!
 
 >> equal? - :literal
+[+] passed!
 [+] passed!
 
 >> equal? - :attribute
 [+] passed!
+[+] passed!
 
 >> equal? - :attributeLabel
-[+] passed!
-[+] passed!
-[+] passed!
 [+] passed!
 [+] passed!
 
