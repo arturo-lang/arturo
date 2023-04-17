@@ -2650,7 +2650,7 @@ do [
     passed
 
     
-    topic « greaterOrEqual? - :attributeLabel
+    topic « greater? - :attributeLabel
     
     ; ensure -> greater? to :attributeLabel "b" to :attributeLabel "a"
     ensure -> not? greater? to :attributeLabel "a" to :attributeLabel "a"
@@ -2819,7 +2819,7 @@ do [
     ensure -> greater? d c
     
     
-    topic « greaterOrEqual? - :store
+    topic « greater? - :store
     
     a: store "test.db"
     a\name: "John" a\surname: "Doe"
