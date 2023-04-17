@@ -25,13 +25,14 @@ proc define*(unit: string, name: string, definition: string, aliases: varargs[st
     for alias in aliases:
         CTUnitAliases[alias] = $(unit)
 
-    if definition[0] in 'A'..'Z':
-        CTBaseUnits.add("U" & unit)
-        let enumKindName = "K" & definition
-        CTUnitKindList.add((enumKindName, definition))
-        CTUnitKinds[unit] = enumKindName
-    elif definition is string:
-        CTDerivedUnits[unit] = definition
+    if definition != "":
+        if definition[0] in 'A'..'Z':
+            CTBaseUnits.add("U" & unit)
+            let enumKindName = "K" & definition
+            CTUnitKindList.add((enumKindName, definition))
+            CTUnitKinds[unit] = enumKindName
+        elif definition is string:
+            CTDerivedUnits[unit] = definition
 
 macro generateEnum*(tlist: static[seq[(string,string)]], errorPrefix: static[string] = ""): untyped =
     result = nnkEnumTy.newTree(
