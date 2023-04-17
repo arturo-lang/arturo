@@ -6180,14 +6180,26 @@ do [
     
     topic « lessOrEqual? - :literal
     
+    ensure -> lessOrEqual? 'a 'a
+    ensure -> lessOrEqual? 'b 'b
     ensure -> lessOrEqual? 'a 'b
-    ensure -> lessOrEqual? 'literal 'literal
-    ensure -> lessOrEqual? 'literal 'other
-    ensure -> not? lessOrEqual? 'literal "literal"
-    ensure -> not? lessOrEqual? ['literal] ["literal"]
-    ensure -> not? lessOrEqual? ['literal] [literal]
-    ensure -> not? lessOrEqual? ['literal] [.literal]
-    ensure -> not? lessOrEqual? ['literal] [literal:]
+    ensure -> not? lessOrEqual? 'b 'a
+    passed
+    
+    ensure -> not? lessOrEqual? 'a "a"
+    ensure -> not? lessOrEqual? 'a "b"
+    ensure -> not? lessOrEqual? 'a `a`
+    ensure -> not? lessOrEqual? 'a `b`
+    ensure -> not? lessOrEqual? 'a to :word "a"
+    ensure -> not? lessOrEqual? 'a to :word "b"
+    ensure -> not? lessOrEqual? 'a to :label "a"
+    ensure -> not? lessOrEqual? 'a to :label "b"
+    ensure -> not? lessOrEqual? 'a to :attribute "a"
+    ensure -> not? lessOrEqual? 'a to :attribute "b"
+    ensure -> not? lessOrEqual? 'a to :attributeLabel "a"
+    ensure -> not? lessOrEqual? 'a to :attributeLabel "b"
+    ensure -> not? lessOrEqual? 'a to :type "a"
+    ensure -> not? lessOrEqual? 'a to :type "b"
     passed
     
     
