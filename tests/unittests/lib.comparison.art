@@ -616,6 +616,27 @@ do [
     ; ensure -> not? between? to :person ["John" 17] c a
     passed
     
+    
+    topic « between? - :date
+    
+    a: to :date .format: "MMM dd" "Jan 15"
+    b: to :date .format: "MMM dd" "Jan 17"
+    c: to :date .format: "YYYY MMM dd" "2023 Jan 15"
+    d: to :date .format: "MMM dd" "Jan 14"
+    e: now
+    
+    ensure -> between? to :date .format: "MMM dd" "Jan 15"
+            to :date .format: "MMM dd" "Jan 14"
+            to :date .format: "MMM dd" "Jan 16"
+    ensure -> not? between? to :date .format: "MMM dd" "Jan 17"
+            to :date .format: "MMM dd" "Jan 14"
+            to :date .format: "MMM dd" "Jan 16"
+    ensure -> not? between? to :date .format: "MMM dd" "Jan 13"
+            to :date .format: "MMM dd" "Jan 14"
+            to :date .format: "MMM dd" "Jan 16"
+    passed
+    
+    
 ]
 
 
