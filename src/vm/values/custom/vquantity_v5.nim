@@ -73,6 +73,28 @@ static:
     defineQuantity "Yank",                  7941
 
     #----------------------------------------------------------------------------------------------------
+    # Prefixes
+    #----------------------------------------------------------------------------------------------------
+    #            name       symbol      definition 
+    #----------------------------------------------------------------------------------------------------
+    definePrefix "a",       "a",        "1e-18"
+    definePrefix "f",       "f",        "1e-15"
+    definePrefix "p",       "p",        "1e-12"
+    definePrefix "n",       "n",        "1e-9"
+    definePrefix "u",       "μ",        "1e-6"
+    definePrefix "m",       "m",        "1e-3"
+    definePrefix "c",       "c",        "1e-2"
+    definePrefix "d",       "d",        "1e-1"
+    definePrefix "da",      "da",       "1e1"
+    definePrefix "h",       "h",        "1e2"
+    definePrefix "k",       "k",        "1e3"
+    definePrefix "M",       "M",        "1e6"
+    definePrefix "G",       "G",        "1e9"
+    definePrefix "T",       "T",        "1e12"
+    definePrefix "P",       "P",        "1e15"
+    definePrefix "E",       "E",        "1e18"
+
+    #----------------------------------------------------------------------------------------------------
     # Base units
     #----------------------------------------------------------------------------------------------------
     #      name         symbol      unit kind                   aliases
