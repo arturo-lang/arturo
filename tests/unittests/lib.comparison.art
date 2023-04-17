@@ -2641,14 +2641,20 @@ do [
     
     topic « greater? - :attribute
     
-    ensure -> not? greater? [.attr] [.attr]
-    ensure -> not? greater? [.a] [.b]
-    ensure -> not? greater? [.attr] ["attr"]
-    ; ensure -> not? greater? [.attr] [attr]
-    ensure -> not? greater? [.attr] ['attr]
-    ensure -> not? greater? [.attr] [.other]
+    ; ensure -> greater? to :attribute "b" to :attribute "a"
+    ensure -> not? greater? to :attribute "a" to :attribute "a"
+    ensure -> not? greater? to :attribute "a" to :attribute "b"
     passed
     
+    ensure -> not? greater? to :attribute "a" "a"
+    ensure -> not? greater? to :attribute "a" `a`
+    ensure -> not? greater? to :attribute "a" 'a
+    ensure -> not? greater? to :attribute "a" to :word "a"
+    ensure -> not? greater? to :attribute "a" to :label "a"
+    ensure -> not? greater? to :attribute "a" to :attributeLabel "a"
+    ensure -> not? greater? to :attribute "word" to :type "word"
+    passed
+
     
     topic « greaterOrEqual? - :attributeLabel
     
