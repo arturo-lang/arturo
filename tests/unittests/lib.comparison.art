@@ -1410,7 +1410,7 @@ do [
     ensure -> not? equal? to :word "a" to :label "a"
     ensure -> not? equal? to :word "a" to :attribute "a"
     ensure -> not? equal? to :word "a" to :attributeLabel "a"
-    ensure -> not? equal? "string" to :type "string"
+    ensure -> not? equal? to :word "word" to :type "word"
     passed
     
     
