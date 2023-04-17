@@ -2567,38 +2567,20 @@ do [
     passed
     
     
-    topic « Equal? - :label
+    topic « greater? - :label
     
-    ensure -> not? greater? [a:] [b:]
-    ; ensure -> greater? [b:] [a:]
-    a: [a:]
-    b: [b:]
-    ; ensure -> greater? a\0 b\0
-    ensure -> not? greater? [label: value] [label: value]
+    ensure -> greater? to :label "b" to :label "a"
+    ensure -> not? greater? to :label "a" to :label "a"
+    ensure -> not? greater? to :label "a" to :label "b"
     passed
     
-    ensure -> not? greater? [label: value] [label: value2]
-    ensure -> not? greater? [label: value] [label2: value]
-    passed
-    
-    ensure -> not? greater? [label:] ["label"]
-    ensure -> not? greater? ["label":] ["label"]
-    ensure -> not? greater? [label:] ["value"]
-    ensure -> not? greater? [label:] ["value"]
-    ensure -> not? greater? [label: "value"] ["label" "value"]
-    passed
-    
-    ; ensure -> not? greater? [label:] [label]
-    ensure -> not? greater? [label:] [value]
-    ensure -> not? greater? [label: "value"] [label value]
-    passed
-    
-    ensure -> not? greater? [label:] ['label]
-    ensure -> not? greater? [label: 'world] ['label 'word]
-    passed
-    
-    ; ensure -> not? greater? [label: .attr] [.label .attr]
-    ; ensure -> not? greater? [label: .attr: "a"] [.label: .attr: "a"]
+    ensure -> not? greater? to :label "a" "a"
+    ensure -> not? greater? to :label "a" `a`
+    ensure -> not? greater? to :label "a" 'a
+    ensure -> not? greater? to :label "a" to :word "a"
+    ensure -> not? greater? to :label "a" to :attribute "a"
+    ensure -> not? greater? to :label "a" to :attributeLabel "a"
+    ensure -> not? greater? to :label "word" to :type "word"
     passed
     
     
