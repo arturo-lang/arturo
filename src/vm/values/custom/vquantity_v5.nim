@@ -77,81 +77,257 @@ static:
     #----------------------------------------------------------------------------------------------------
     #      name         symbol      unit kind                   aliases
     #----------------------------------------------------------------------------------------------------
-    define "M",         "m",        "Length",                   "meter", "metre", "meters", "metres"
-    define "S",         "s",        "Time",                     "second", "seconds"
+    define "m",         "m",        "Length",                   "meter", "metre", "meters", "metres"
+    define "s",         "s",        "Time",                     "second", "seconds"
     define "K",         "K",        "Temperature",              "kelvin", "kelvins"
-    define "G",         "g",        "Mass",                     "gram", "grams"
+    define "g",         "g",        "Mass",                     "gram", "grams"
     define "A",         "A",        "Current",                  "amp", "amps", "ampere", "amperes"
-    define "MOL",       "mol",      "Substance",                "mole", "moles"
-    define "CD",        "cd",       "Luminosity",               "candela", "candelas"
-    define "USD",       "usd",      "Currency",                 "dollar", "dollars"
+    define "mol",       "mol",      "Substance",                "mole", "moles"
+    define "cd",        "cd",       "Luminosity",               "candela", "candelas"
+    define "usd",       "usd",      "Currency",                 "dollar", "dollars"
     define "B",         "B",        "Information",              "byte", "bytes"
-    define "RAD",       "rad",      "Angle",                    "radian", "radians"
+    define "rad",       "rad",      "Angle",                    "radian", "radians"
 
     #----------------------------------------------------------------------------------------------------
     # Length units (base: m)
     #----------------------------------------------------------------------------------------------------
     #      name         symbol      definition                  aliases
     #----------------------------------------------------------------------------------------------------
-    define "IN",        "in",       "127/5000 m",               "inch", "inches"
-    define "FT",        "ft",       "12 in",                    "foot", "feet"
-    define "YD",        "yd",       "3 ft",                     "yard", "yards"
-    define "MI",        "mi",       "5280 ft",                  "mile", "miles"
-    define "NMI",       "nmi",      "1852 m",                   "nauticalMile", "nauticalMiles"
-    define "AU",        "au",       "149597870700 m",           "astronomicalUnit", "astronomicalUnits"
-    define "LY",        "ly",       "9460730472580800 m",       "lightYear", "lightYears"
-    define "PC",        "pc",       "3.26156 ly",               "parsec", "parsecs"
+    define "in",        "in",       "127/5000 m",               "inch", "inches"
+    define "ft",        "ft",       "12 in",                    "foot", "feet"
+    define "yd",        "yd",       "3 ft",                     "yard", "yards"
+    define "ftm",       "ftm",      "1 yd",                     "fathom", "fathoms"
+    define "rod",       "rod",      "5.5 yd",                   "rods"
+    define "mi",        "mi",       "5280 ft",                  "mile", "miles"
+    define "fur",       "fur",      "1/8 mi",                   "furlong", "furlongs"
+    define "nmi",       "nmi",      "1852 m",                   "nauticalMile", "nauticalMiles"
+    define "ang",       "Å",        "1e-10 m",                  "angstrom", "angstroms"
+    define "au",        "au",       "149597870700 m",           "astronomicalUnit", "astronomicalUnits"
+    define "ly",        "ly",       "9460730472580800 m",       "lightYear", "lightYears"
+    define "pc",        "pc",       "3.26156 ly",               "parsec", "parsecs"
 
     #----------------------------------------------------------------------------------------------------
     # Area units (base: m^2)
     #----------------------------------------------------------------------------------------------------
     #      name         symbol      definition                  aliases
     #----------------------------------------------------------------------------------------------------
-    define "AC",        "ac",       "4840 yd2",                 "acre", "acres"
-    define "ARE",       "are",      "100 m2",                   "are", "ares"
-    define "HA",        "ha",       "100 are",                  "hectare", "hectares"
+    define "ac",        "ac",       "4840 yd2",                 "acre", "acres"
+    define "are",       "are",      "100 m2",                   "are", "ares"
+    define "ha",        "ha",       "100 are",                  "hectare", "hectares"
 
     #----------------------------------------------------------------------------------------------------
     # Volume units (base: m^3)
     #----------------------------------------------------------------------------------------------------
     #      name         symbol      definition                  aliases
     #----------------------------------------------------------------------------------------------------
-    define "L",         "l",        "1000 cm3",                 "liter", "liters"
-    define "TSP",       "tsp",      "5 mL",                     "teaspoon", "teaspoons"
-    define "TBS",       "tbs",      "3 tsp",                    "tablespoon", "tablespoons"
-    define "FLOZ",      "floz",     "2 tbs",                    "fluidOunce", "fluidOunces"
-    define "CUP",       "cup",      "8 floz",                   "cup", "cups"
-    define "PT",        "pt",       "2 cup",                    "pint", "pints"
-    define "QT",        "qt",       "2 pt",                     "quart", "quarts"
-    define "GAL",       "gal",      "4 qt",                     "gallon", "gallons"
-    define "BARREL",    "bbl",      "42 gal",                   "barrel", "barrels"
+    define "l",         "l",        "1000 cm3",                 "liter", "liters"
+    define "tsp",       "tsp",      "5 mL",                     "teaspoon", "teaspoons"
+    define "tbsp",      "tbsp",     "3 tsp",                    "tablespoon", "tablespoons"
+    define "floz",      "floz",     "2 tbsp",                   "fluidOunce", "fluidOunces"
+    define "cup",       "cup",      "8 floz",                   "cup", "cups"
+    define "pt",        "pt",       "2 cup",                    "pint", "pints"
+    define "qt",        "qt",       "2 pt",                     "quart", "quarts"
+    define "gal",       "gal",      "4 qt",                     "gallon", "gallons"
+    define "bbl",       "bbl",      "42 gal",                   "barrel", "barrels"
     
     #----------------------------------------------------------------------------------------------------
     # Time units (base: s)
     #----------------------------------------------------------------------------------------------------
     #      name         symbol      definition                  aliases
     #----------------------------------------------------------------------------------------------------
-    define "MIN",       "min",      "60 s",                     "minute", "minutes"
-    define "HR",        "hr",       "60 min",                   "hour", "hours"
-    define "DAY",       "day",      "24 hr",                    "day", "days"
-    define "WK",        "wk",       "7 day",                    "week", "weeks"
-    define "MO",        "mo",       "2629746 s",                "month", "months"
-    define "YR",        "yr",       "31556952 s",               "year", "years"
-    define "DECADE",    "decade",   "10 yr",                    "decade", "decades"
-    define "CENTURY",   "century",  "100 yr",                   "century", "centuries"
+    define "min",       "min",      "60 s",                     "minute", "minutes"
+    define "hr",        "hr",       "60 min",                   "hour", "hours"
+    define "day",       "day",      "24 hr",                    "day", "days"
+    define "wk",        "wk",       "7 day",                    "week", "weeks"
+    define "mo",        "mo",       "2629746 s",                "month", "months"
+    define "yr",        "yr",       "31556952 s",               "year", "years"
 
     #----------------------------------------------------------------------------------------------------
     # Mass units (base: g)
     #----------------------------------------------------------------------------------------------------
     #      name         symbol      definition                  aliases
     #----------------------------------------------------------------------------------------------------
-    define "LB",        "lb",       "45359237/100000000 g",     "pound", "pounds"
-    define "OZ",        "oz",       "1/16 lb",                  "ounce", "ounces"
-    define "TON",       "ton",      "2000 lb",                  "ton", "tons"
-    define "ST",        "st",       "14 lb",                    "stone", "stones"
+    define "lb",        "lb",       "45359237/100000000 g",     "pound", "pounds"
+    define "oz",        "oz",       "1/16 lb",                  "ounce", "ounces"
+    define "ct",        "ct",       "1/5 g",                    "carat", "carats"
+    define "ton",       "ton",      "2000 lb",                  "ton", "tons"
+    define "st",        "st",       "14 lb",                    "stone", "stones"
     
-    
+    #----------------------------------------------------------------------------------------------------
+    # Speed units (base: m/s)
+    #----------------------------------------------------------------------------------------------------
+    #      name         symbol      definition                  aliases
+    #----------------------------------------------------------------------------------------------------
+    define "mps",       "m/s",      "1 m/s",                    "meterPerSecond", "metersPerSecond"
+    define "kph",       "km/h",     "1000/3600 m/s",            "kilometerPerHour", "kilometersPerHour"
+    define "mph",       "mph",      "5280/3600 ft/s",           "milePerHour", "milesPerHour"
+    define "kn",        "kn",       "1852/3600 m/s",            "knot", "knots"
+    define "fps",       "ft/s",     "1/3600 ft/s",              "footPerSecond", "feetPerSecond"
+    define "mach",      "mach",     "340.29 m/s",               "mach", "machs"
 
+    #----------------------------------------------------------------------------------------------------
+    # Force units (base: N = 1 kg.m/s2)
+    #----------------------------------------------------------------------------------------------------
+    #      name         symbol      definition                  aliases
+    #----------------------------------------------------------------------------------------------------
+    define "N",         "N",        "1 kg.m/s2",                "newton", "newtons"
+    define "dyn",       "dyn",      "1e-5 N",                   "dyne", "dynes"
+    define "lbf",       "lbf",      "4.44822 N",                "poundsForce"
+    define "kgf",       "kgf",      "9.80665 N",                "kilogramsForce"
+    define "pdl",       "pdl",      "1 lb.ft/s2",               "poundal", "poundals"
+
+    #----------------------------------------------------------------------------------------------------
+    # Pressure units (base: Pa = 1 N/m2)
+    #----------------------------------------------------------------------------------------------------
+    #      name         symbol      definition                  aliases
+    #----------------------------------------------------------------------------------------------------
+    define "Pa",        "Pa",       "1 N/m2",                   "pascal", "pascals"
+    define "atm",       "atm",      "101325 Pa",                "atmosphere", "atmospheres"
+    define "bar",       "bar",      "100000 Pa",                "bar", "bars"
+    define "mmHg",      "mmHg",     "133.3223684 Pa",           "millimeterOfMercury", "millimetersOfMercury"
+    define "psi",       "psi",      "6894.757293 Pa",           "poundPerSquareInch", "poundsPerSquareInch"
+    define "Torr",      "Torr",     "133.3223684 Pa",           "torr", "torrs"
+
+    #----------------------------------------------------------------------------------------------------
+    # Energy units (base: J = 1 N.m)
+    #----------------------------------------------------------------------------------------------------
+    #      name         symbol      definition                  aliases
+    #----------------------------------------------------------------------------------------------------
+    define "J",         "J",        "1 N.m",                    "joule", "joules"
+    define "cal",       "cal",      "4.184 J",                  "calorie", "calories"
+    define "BTU",       "BTU",      "1055.05585262 J",          "britishThermalUnit", "britishThermalUnits"
+    define "eV",        "eV",       "1.602176565e-19 J",        "electronVolt", "electronVolts"
+    define "erg",       "erg",      "1e-7 J",                   "erg", "ergs"
+
+    #----------------------------------------------------------------------------------------------------
+    # Power units (base: W = 1 J/s)
+    #----------------------------------------------------------------------------------------------------
+    #      name         symbol      definition                  aliases
+    #----------------------------------------------------------------------------------------------------
+    define "W",         "W",        "1 J/s",                    "watt", "watts"
+    define "hp",        "hp",       "745.69987158227 W",        "horsepower"
+
+    #----------------------------------------------------------------------------------------------------
+    # Potential units (base: V = 1 W/A)
+    #----------------------------------------------------------------------------------------------------
+    #      name         symbol      definition                  aliases
+    #----------------------------------------------------------------------------------------------------
+    define "V",         "V",        "1 W/A",                    "volt", "volts"
+
+    #----------------------------------------------------------------------------------------------------
+    # Resistance units (base: Ohm = 1 V/A)
+    #----------------------------------------------------------------------------------------------------
+    #      name         symbol      definition                  aliases
+    #----------------------------------------------------------------------------------------------------
+    define "Ohm",       "Ω",      "1 V/A",                    "ohm", "ohms"
+
+    #----------------------------------------------------------------------------------------------------
+    # Conductance units (base: S = 1 A/V)
+    #----------------------------------------------------------------------------------------------------
+    #      name         symbol      definition                  aliases
+    #----------------------------------------------------------------------------------------------------
+    define "S",         "S",        "1 A/V",                    "siemens"
+
+    #----------------------------------------------------------------------------------------------------
+    # Charge units (base: C = 1 A.s)
+    #----------------------------------------------------------------------------------------------------
+    #      name         symbol      definition                  aliases
+    #----------------------------------------------------------------------------------------------------
+    define "C",         "C",        "1 A.s",                    "coulomb", "coulombs"
+
+    #----------------------------------------------------------------------------------------------------
+    # Capacitance units (base: F = 1 C/V)
+    #----------------------------------------------------------------------------------------------------
+    #      name         symbol      definition                  aliases
+    #----------------------------------------------------------------------------------------------------
+    define "F",         "F",        "1 C/V",                    "farad", "farads"
+
+    #----------------------------------------------------------------------------------------------------
+    # Inductance units (base: H = 1 V.s/A)
+    #----------------------------------------------------------------------------------------------------
+    #      name         symbol      definition                  aliases
+    #----------------------------------------------------------------------------------------------------
+    define "H",         "H",        "1 V.s/A",                  "henry", "henrys"
+
+    #----------------------------------------------------------------------------------------------------
+    # Magnetic flux units (base: Wb = 1 V.s)
+    #----------------------------------------------------------------------------------------------------
+    #      name         symbol      definition                  aliases
+    #----------------------------------------------------------------------------------------------------
+    define "Wb",        "Wb",       "1 V.s",                    "weber", "webers"
+    define "Mx",        "Mx",       "1e-8 Wb",                  "maxwell", "maxwells"
+
+    #----------------------------------------------------------------------------------------------------
+    # Magnetic flux density units (base: T = 1 Wb/m2)
+    #----------------------------------------------------------------------------------------------------
+    #      name         symbol      definition                  aliases
+    #----------------------------------------------------------------------------------------------------
+    define "T",         "T",        "1 Wb/m2",                  "tesla", "teslas"
+    define "G",         "G",        "1e-4 T",                   "gauss", "gauss"
+
+    #----------------------------------------------------------------------------------------------------
+    # Temperature units (base: K)
+    #----------------------------------------------------------------------------------------------------
+    #      name         symbol      definition                  aliases
+    #----------------------------------------------------------------------------------------------------
+    define "degC",      "°C",       "",                         "celsius"
+    define "degF",      "°F",       "",                         "fahrenheit"
+    define "degR",      "°R",       "",                         "rankine"
+
+    #----------------------------------------------------------------------------------------------------
+    # Angle units (base: rad)
+    #----------------------------------------------------------------------------------------------------
+    #      name         symbol      definition                  aliases
+    #----------------------------------------------------------------------------------------------------
+    define "deg",       "°",        "pi/180 rad",               "degree", "degrees"
+    define "grad",      "grad",     "pi/200 rad",               "gradian", "gradians"
+    define "arcmin",    "'",        "pi/10800 rad",             "arcminute", "arcminutes"
+    define "arcsec",    "''",       "pi/648000 rad",            "arcsecond", "arcseconds"
+
+    #----------------------------------------------------------------------------------------------------
+    # Catalytic activity units (base: mol/s)
+    #----------------------------------------------------------------------------------------------------
+    #      name         symbol      definition                  aliases
+    #----------------------------------------------------------------------------------------------------
+    define "kat",       "kat",      "1 mol/s",                  "katal", "katals"
+
+    #----------------------------------------------------------------------------------------------------
+    # Frequency units (base: Hz = 1/s)
+    #----------------------------------------------------------------------------------------------------
+    #      name         symbol      definition                  aliases
+    #----------------------------------------------------------------------------------------------------
+    define "Hz",        "Hz",       "1 1/s",                    "hertz"
+
+    #----------------------------------------------------------------------------------------------------
+    # Radiation units (base: Bq = 1/s)
+    #----------------------------------------------------------------------------------------------------
+    #      name         symbol      definition                  aliases
+    #----------------------------------------------------------------------------------------------------
+    define "Bq",        "Bq",       "1 1/s",                    "becquerel", "becquerels"
+    define "Ci",        "Ci",       "3.7e10 Bq",                "curie", "curies"
+
+    #----------------------------------------------------------------------------------------------------
+    # Radiation exposure units (base: Gy = J/kg)
+    #----------------------------------------------------------------------------------------------------
+    #      name         symbol      definition                  aliases
+    #----------------------------------------------------------------------------------------------------
+    define "Gy",        "Gy",       "1 J/kg",                   "gray", "grays"
+    define "Sv",        "Sv",       "1 J/kg",                   "sievert", "sieverts"
+    define "R",         "R",        "1e-2 Gy",                  "roentgen", "roentgens"
+
+    #----------------------------------------------------------------------------------------------------
+    # Viscosity units (base: Pa.s)
+    #----------------------------------------------------------------------------------------------------
+    #      name         symbol      definition                  aliases
+    #----------------------------------------------------------------------------------------------------
+    define "P",         "P",        "1 dPa.s",                  "poise", "poises"
+
+    #----------------------------------------------------------------------------------------------------
+    # Illuminance units (base: lx = cd/m2)
+    #----------------------------------------------------------------------------------------------------
+    #      name         symbol      definition                  aliases
+    #----------------------------------------------------------------------------------------------------
+    define "lx",        "lx",       "1 cd/m2",                  "lux", "luxes"
 
 #=======================================
 # Types
