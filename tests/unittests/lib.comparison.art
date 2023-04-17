@@ -3786,15 +3786,26 @@ do [
     
     topic « greaterOrEqual? - :literal
     
-    ensure -> not? greaterOrEqual? 'a 'b
     ensure -> greaterOrEqual? 'b 'a
-    ensure -> greaterOrEqual? 'literal 'literal
-    ensure -> greaterOrEqual? 'other 'literal
-    ensure -> not? greaterOrEqual? 'literal "literal"
-    ensure -> not? greaterOrEqual? ['literal] ["literal"]
-    ensure -> not? greaterOrEqual? ['literal] [literal]
-    ensure -> not? greaterOrEqual? ['literal] [.literal]
-    ensure -> not? greaterOrEqual? ['literal] [literal:]
+    ensure -> greaterOrEqual? 'a 'a
+    ensure -> greaterOrEqual? 'b 'b
+    ensure -> not? greaterOrEqual? 'a 'b
+    passed
+    
+    ensure -> not? greaterOrEqual? 'b "a"
+    ensure -> not? greaterOrEqual? 'b "b"
+    ensure -> not? greaterOrEqual? 'b `a`
+    ensure -> not? greaterOrEqual? 'b `b`
+    ensure -> not? greaterOrEqual? 'b to :word "a"
+    ensure -> not? greaterOrEqual? 'b to :word "b"
+    ensure -> not? greaterOrEqual? 'b to :label "a"
+    ensure -> not? greaterOrEqual? 'b to :label "b"
+    ensure -> not? greaterOrEqual? 'b to :attribute "a"
+    ensure -> not? greaterOrEqual? 'b to :attribute "b"
+    ensure -> not? greaterOrEqual? 'b to :attributeLabel "a"
+    ensure -> not? greaterOrEqual? 'b to :attributeLabel "b"
+    ensure -> not? greaterOrEqual? 'b to :type "a"
+    ensure -> not? greaterOrEqual? 'b to :type "b"
     passed
     
     
