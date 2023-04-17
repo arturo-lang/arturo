@@ -5075,14 +5075,14 @@ do [
     
     topic « less? - :symbol
     
-    ensure -> not? less? [+] [+]
-    ensure -> not? less? [+] [-]
-    ensure -> not? less? [+] [++]
-    ensure -> not? less? [+] [`+`]
-    ensure -> not? less? [+] [{+}]
-    ensure -> not? less? [+] ["+"]
-    ensure -> not? less? [+] [plus]
-    ensure -> not? less? [+] ['+]
+    ensure -> not? less? to :symbol "+" to :symbol "+"
+    ensure -> not? less? to :symbol "+" to :symbol "-"
+    ensure -> not? less? to :symbol "+" to :symbol "++"
+    ensure -> not? less? to :symbol "+" `+`
+    ensure -> not? less? to :symbol "+" {+}
+    ensure -> not? less? to :symbol "+" "+"
+    ensure -> not? less? to :symbol "+" to :word "plus"
+    ensure -> not? less? to :symbol "+" '+
     passed
     
     
