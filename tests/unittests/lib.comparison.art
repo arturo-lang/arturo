@@ -564,6 +564,22 @@ do [
     passed
     
     
+    topic « between? :dictionary
+    
+    a: #[name: "Walter" surname: "Pinkman"]
+    
+    ensure -> between? a a #[name: "Walter" surname: "Pinkman"]
+    ensure -> between? a a #[name: "Jesse" surname: "Pinkman"]
+    ensure -> between? a a #[name: "Walter" surname: "Pinkman" age: 35]
+    ensure -> between? a a #[name: "Zalter" surname: "Rinkman"]
+    ensure -> between? #[name: "Walter"] 
+        a #[name: "Walter" surname: "Pinkman" age: 35]
+    ensure -> between? a #[name: "Jesse" surname: "Pinkman"] #[name: "Zalter" surname: "Rinkman"]
+    ; ensure -> between? #[name: "Zalter" surname: "Rinkman"] 
+    ;     #[name: "Jesse" surname: "Pinkman"] #[name: "Walter" surname: "Pinkman"]
+    passed
+    
+    
 ]
 
 
