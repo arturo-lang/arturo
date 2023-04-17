@@ -2552,17 +2552,18 @@ do [
     
     topic « greater? - :word
     
-    ensure -> not? greater? [a] [b]
-    a: [a]
-    b: [b]
-    ensure -> greater? b\0 a\0
-    ; ensure -> greater? [word] [otherWord]
-    ensure -> not? greater? [word] [word]
-    ensure -> not? greater? [word] ["word"]
-    ; ensure -> not? greater? [word] [word:]
-    ensure -> not? greater? [word] ['word]
-    ; ensure -> not? greater? [word] [.word]
-    ; ensure -> not? greater? [word] [.word:]
+    ensure -> greater? to :word "b" to :word "a"
+    ensure -> not? greater? to :word "a" to :word "a"
+    ensure -> not? greater? to :word "a" to :word "b"
+    passed
+    
+    ensure -> not? greater? to :word "a" "a"
+    ensure -> not? greater? to :word "a" `a`
+    ensure -> not? greater? to :word "a" 'a
+    ensure -> not? greater? to :word "a" to :label "a"
+    ensure -> not? greater? to :word "a" to :attribute "a"
+    ensure -> not? greater? to :word "a" to :attributeLabel "a"
+    ensure -> not? greater? to :word "word" to :type "word"
     passed
     
     
