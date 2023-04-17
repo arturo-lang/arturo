@@ -6111,20 +6111,20 @@ do [
     ensure -> lessOrEqual? "Art" "Artu"
     passed
     
-    ensure -> not? lessOrEqual? "a"    `a` 
-    ensure -> not? lessOrEqual? "10"   10 
-    ensure -> not? lessOrEqual? "10"   10
-    ensure -> not? lessOrEqual? ["help"] [help]
-    ensure -> not? lessOrEqual? ["a"]    [a:]
-    ensure -> not? lessOrEqual? "help"   'help
-    ensure -> not? lessOrEqual? ["help"] [.help]
-    ensure -> not? "a"      =< `a` 
-    ensure -> not? "10"     =< 10 
-    ensure -> not? "10"     =< 10
-    ensure -> not? ["help"] =< [help]
-    ensure -> not? ["a"]    =< [a:]
-    ensure -> not? "help"   =< 'help
-    ensure -> not? ["help"] =< [.help]
+    ensure -> not? lessOrEqual? "a" `a`
+    ensure -> not? lessOrEqual? "a" `b`
+    ensure -> not? lessOrEqual? "a" 'a
+    ensure -> not? lessOrEqual? "a" 'b
+    ensure -> not? lessOrEqual? "a" to :word "a"
+    ensure -> not? lessOrEqual? "a" to :word "b"
+    ensure -> not? lessOrEqual? "a" to :label "a"
+    ensure -> not? lessOrEqual? "a" to :label "b"
+    ensure -> not? lessOrEqual? "a" to :attribute "a"
+    ensure -> not? lessOrEqual? "a" to :attribute "b"
+    ensure -> not? lessOrEqual? "a" to :attributeLabel "a"
+    ensure -> not? lessOrEqual? "a" to :attributeLabel "b"
+    ensure -> not? lessOrEqual? "a" to :type "a"
+    ensure -> not? lessOrEqual? "a" to :type "b"
     passed
     
     
