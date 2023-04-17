@@ -77,7 +77,7 @@
 >> between? - :attribute
 [+] passed!
 
->> between? - :attributeLabel
+>> between? - :attributelabel
 [+] passed!
 
 >> between? - :inline
@@ -264,7 +264,7 @@
 [+] passed!
 [+] passed!
 
->> equal? - :attributeLabel
+>> equal? - :attributelabel
 [+] passed!
 [+] passed!
 
@@ -436,7 +436,7 @@
 [+] passed!
 [+] passed!
 
->> greater? - :attributeLabel
+>> greater? - :attributelabel
 [+] passed!
 [+] passed!
 
@@ -1208,25 +1208,21 @@
 
 >> same? - :word
 [+] passed!
+[+] passed!
 
 >> same? - :label
-[+] passed!
-[+] passed!
-[+] passed!
-[+] passed!
 [+] passed!
 [+] passed!
 
 >> same? - :literal
 [+] passed!
+[+] passed!
 
 >> same? - :attribute
 [+] passed!
+[+] passed!
 
->> same? - :attributeLabel
-[+] passed!
-[+] passed!
-[+] passed!
+>> same? - :attributelabel
 [+] passed!
 [+] passed!
 
