@@ -86,6 +86,15 @@
 >> between? - :block
 [+] passed!
 
+>> between? :dictionary
+[+] passed!
+
+>> between? - :object
+[+] passed!
+
+>> between? - :date
+[+] passed!
+
 >> compare
 
 >> compare - :integer :floating :rational
