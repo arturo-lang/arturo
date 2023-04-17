@@ -7289,13 +7289,13 @@ do [
     
     topic « notEqual? - :literal
     
-    ensure -> not? notEqual? 'literal 'literal
-    ensure -> notEqual? 'literal 'other
-    ensure -> notEqual? 'literal "literal"
-    ensure -> notEqual? ['literal] ["literal"]
-    ensure -> notEqual? ['literal] [literal]
-    ensure -> notEqual? ['literal] [.literal]
-    ensure -> notEqual? ['literal] [literal: 'literal]
+    ensure -> notEqual? 'b "a"
+    ensure -> notEqual? 'b `a`
+    ensure -> notEqual? 'b to :label "a"
+    ensure -> notEqual? 'b to :word "a"
+    ensure -> notEqual? 'b to :attribute "a"
+    ensure -> notEqual? 'b to :attributeLabel "a"
+    ensure -> notEqual? to :literal "text" to :type "literal"
     passed
     
     
