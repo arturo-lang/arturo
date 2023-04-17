@@ -3838,11 +3838,26 @@ do [
     
     topic « greaterOrEqual? - :attribute
     
-    ensure -> greaterOrEqual? [.attr] [.attr]
-    ensure -> not? greaterOrEqual? [.attr] ["attr"]
-    ; ensure -> not? greaterOrEqual? [.attr] [attr]
-    ensure -> not? greaterOrEqual? [.attr] ['attr]
-    ensure -> not? greaterOrEqual? [.attr] [.other]
+    ; ensure -> greaterOrEqual? to :attribute "b" to :attribute "a"
+    ensure -> greaterOrEqual? to :attribute "a" to :attribute "a"
+    ensure -> greaterOrEqual? to :attribute "b" to :attribute "b"
+    ensure -> not? greaterOrEqual? to :attribute "a" to :attribute "b"
+    passed
+    
+    ensure -> not? greaterOrEqual? to :attribute "b" "a"
+    ensure -> not? greaterOrEqual? to :attribute "b" "b"
+    ensure -> not? greaterOrEqual? to :attribute "b" `a`
+    ensure -> not? greaterOrEqual? to :attribute "b" `b`
+    ensure -> not? greaterOrEqual? to :attribute "b" 'a
+    ensure -> not? greaterOrEqual? to :attribute "b" 'b
+    ensure -> not? greaterOrEqual? to :attribute "b" to :word "a"
+    ensure -> not? greaterOrEqual? to :attribute "b" to :word "b"
+    ensure -> not? greaterOrEqual? to :attribute "b" to :label "a"
+    ensure -> not? greaterOrEqual? to :attribute "b" to :label "b"
+    ensure -> not? greaterOrEqual? to :attribute "b" to :attributeLabel "a"
+    ensure -> not? greaterOrEqual? to :attribute "b" to :attributeLabel "b"
+    ensure -> not? greaterOrEqual? to :attribute "b" to :type "a"
+    ensure -> not? greaterOrEqual? to :attribute "b" to :type "b"
     passed
     
     
