@@ -410,7 +410,6 @@
 [+] passed!
 [+] passed!
 [+] passed!
-[+] passed!
 
 >> greater? - :word
 [+] passed!
@@ -576,16 +575,14 @@
 
 >> greaterOrEqual? - :word
 [+] passed!
+[+] passed!
 
 >> greaterOrEqual? - :label
 [+] passed!
 [+] passed!
-[+] passed!
-[+] passed!
-[+] passed!
-[+] passed!
 
 >> greaterOrEqual? - :literal
+[+] passed!
 [+] passed!
 
 >> greaterOrEqual? - :path
@@ -599,11 +596,9 @@
 
 >> greaterOrEqual? - :attribute
 [+] passed!
+[+] passed!
 
->> greaterOrEqual? - :attributeLabel
-[+] passed!
-[+] passed!
-[+] passed!
+>> greaterOrEqual? - :attributelabel
 [+] passed!
 [+] passed!
 
@@ -742,16 +737,14 @@
 
 >> less? - :word
 [+] passed!
+[+] passed!
 
 >> less? - :label
 [+] passed!
 [+] passed!
-[+] passed!
-[+] passed!
-[+] passed!
-[+] passed!
 
 >> less? - :literal
+[+] passed!
 [+] passed!
 
 >> less? - :path
@@ -765,11 +758,9 @@
 
 >> less? - :attribute
 [+] passed!
+[+] passed!
 
->> less? - :attributeLabel
-[+] passed!
-[+] passed!
-[+] passed!
+>> less? - :attributelabel
 [+] passed!
 [+] passed!
 
@@ -908,16 +899,14 @@
 
 >> lessOrEqual? - :word
 [+] passed!
+[+] passed!
 
 >> lessOrEqual? - :label
 [+] passed!
 [+] passed!
-[+] passed!
-[+] passed!
-[+] passed!
-[+] passed!
 
 >> lessOrEqual? - :literal
+[+] passed!
 [+] passed!
 
 >> lessOrEqual? - :path
@@ -931,11 +920,9 @@
 
 >> lessOrEqual? - :attribute
 [+] passed!
+[+] passed!
 
->> lessOrEqual? - :attributeLabel
-[+] passed!
-[+] passed!
-[+] passed!
+>> lessOrEqual? - :attributelabel
 [+] passed!
 [+] passed!
 
