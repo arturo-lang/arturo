@@ -897,12 +897,10 @@ do [
     
     topic « compare - :label
     
-    a: [a:] b: [b:]
-    
-    ensure -> 0 = compare a\0 a\0
-    ensure -> 0 = compare b\0 b\0
-    ensure -> (neg 1) = compare a\0 b\0 
-    ensure -> 1 = compare b\0 a\0
+    ensure -> 1 = compare to :label "b" to :label "a"
+    ensure -> 0 = compare to :label "a" to :label "a"
+    ensure -> 0 = compare to :label "b" to :label "b"
+    ensure -> (neg 1) = compare to :label "a" to :label "b"
     passed
 
     
