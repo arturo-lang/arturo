@@ -8337,13 +8337,17 @@ do [
     
     topic « same? - :attribute
     
-    ensure -> same? [.attr] [.attr]
-    ensure -> not? same? [.attr] ["attr"]
-    ; ensure -> not? same? [.attr] [attr]
-    ensure -> not? same? [.attr] [attr: .attr]
-    ensure -> not? same? [.attr] ['attr]
-    ensure -> not? same? [.attr] [.other]
-    ensure -> not? same? [.attr] [.attr: .attr]
+    ensure -> same? to :attribute "a" to :attribute "a"
+    ensure -> not? same? to :attribute "a" to :attribute "b"
+    passed
+    
+    ensure -> not? same? to :attribute "a" "a"
+    ensure -> not? same? to :attribute "a" `a`
+    ensure -> not? same? to :attribute "a" 'a
+    ensure -> not? same? to :attribute "a" to :word "a"
+    ensure -> not? same? to :attribute "a" to :label "a"
+    ensure -> not? same? to :attribute "a" to :attributelabel "a"
+    ensure -> not? same? to :attribute "label" to :type "label"
     passed
     
     
