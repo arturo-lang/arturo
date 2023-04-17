@@ -1050,12 +1050,9 @@
 
 >> notEqual? - :word
 [+] passed!
+[+] passed!
 
 >> notEqual? - :label
-[+] passed!
-[+] passed!
-[+] passed!
-[+] passed!
 [+] passed!
 [+] passed!
 
@@ -1064,11 +1061,9 @@
 
 >> notEqual? - :attribute
 [+] passed!
+[+] passed!
 
->> notEqual? - :attributeLabel
-[+] passed!
-[+] passed!
-[+] passed!
+>> notEqual? - :attributelabel
 [+] passed!
 [+] passed!
 
