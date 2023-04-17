@@ -5055,30 +5055,21 @@ do [
     passed
     
     
-    topic « less? - :attributeLabel
+    topic « less? - :attributelabel
     
-    ensure -> not? less? [.attr: value] [.attr: value]
+    ; ensure -> less? to :attributelabel "a" to :attributelabel "b"
+    ensure -> not? less? to :attributelabel "a" to :attributelabel "a"
+    ensure -> not? less? to :attributelabel "b" to :attributelabel "b"
+    ensure -> not? less? to :attributelabel "b" to :attributelabel "a"
     passed
     
-    ensure -> not? less? [.attr:] ["attr"]
-    ensure -> not? less? [.attr:] ["value"]
-    ensure -> not? less? [.attr: value] ["attr" "value"]
-    passed
-    
-    ensure -> not? less? [.attr:] [attr]
-    ensure -> not? less? [.attr: value] [attr: .attr:]
-    ensure -> not? less? [.attr: value] [attr: value]
-    passed
-    
-    ensure -> not? less? [.attr:] ['attr]
-    ensure -> not? less? [.attr:] ['value]
-    ensure -> not? less? [.attr: value] ['attr 'value]
-    passed
-    
-    ensure -> not? less? [.attr:] [.attr]
-    ensure -> not? less? [.attr:] [.value]
-    ensure -> not? less? [.attr: value] [.other: value]
-    ensure -> not? less? [.attr: value] [.attr: other]
+    ensure -> not? less? to :attributelabel "a" "b"
+    ensure -> not? less? to :attributelabel "a" `b`
+    ensure -> not? less? to :attributelabel "a" 'b
+    ensure -> not? less? to :attributelabel "a" to :word "b"
+    ensure -> not? less? to :attributelabel "a" to :label "b"
+    ensure -> not? less? to :attributelabel "a" to :attribute "b"
+    ensure -> not? less? to :attributelabel "a" to :type "b"
     passed
     
     
