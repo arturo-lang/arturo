@@ -3736,17 +3736,26 @@ do [
     
     topic « greaterOrEqual? - :word
     
-    ensure -> not? greaterOrEqual? [a] [b]
-    a: [a]
-    b: [b]
-    ensure -> greaterOrEqual? b\0 a\0
-    ensure -> greaterOrEqual? [word] [word]
-    ; ensure -> greaterOrEqual? [word] [otherWord]
-    ensure -> not? greaterOrEqual? [word] ["word"]
-    ; ensure -> not? greaterOrEqual? [word] [word:]
-    ensure -> not? greaterOrEqual? [word] ['word]
-    ; ensure -> not? greaterOrEqual? [word] [.word]
-    ; ensure -> not? greaterOrEqual? [word] [.word:]
+    ensure -> greaterOrEqual? to :word "b" to :word "a"
+    ensure -> greaterOrEqual? to :word "a" to :word "a"
+    ensure -> greaterOrEqual? to :word "b" to :word "b"
+    ensure -> not? greaterOrEqual? to :word "a" to :word "b"
+    passed
+    
+    ensure -> not? greaterOrEqual? to :word "b" "a"
+    ensure -> not? greaterOrEqual? to :word "b" "b"
+    ensure -> not? greaterOrEqual? to :word "b" `a`
+    ensure -> not? greaterOrEqual? to :word "b" `b`
+    ensure -> not? greaterOrEqual? to :word "b" 'a
+    ensure -> not? greaterOrEqual? to :word "b" 'b
+    ensure -> not? greaterOrEqual? to :word "b" to :label "a"
+    ensure -> not? greaterOrEqual? to :word "b" to :label "b"
+    ensure -> not? greaterOrEqual? to :word "b" to :attribute "a"
+    ensure -> not? greaterOrEqual? to :word "b" to :attribute "b"
+    ensure -> not? greaterOrEqual? to :word "b" to :attributeLabel "a"
+    ensure -> not? greaterOrEqual? to :word "b" to :attributeLabel "b"
+    ensure -> not? greaterOrEqual? to :word "b" to :type "a"
+    ensure -> not? greaterOrEqual? to :word "b" to :type "b"
     passed
     
     
