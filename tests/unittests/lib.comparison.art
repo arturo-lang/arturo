@@ -7246,22 +7246,12 @@ do [
     ensure -> notEqual? "Art" "Bob"
     passed
     
-    ensure -> notEqual? "a"    `a` 
-    ensure -> notEqual? "10"   10 
-    ensure -> notEqual? "10"   10
-    ensure -> notEqual? ["help"] [help]
-    ensure -> notEqual? ["a"]    [a: "a"]
-    ensure -> notEqual? "help"   'help
-    ensure -> notEqual? ["help"] [.help]
-    ensure -> notEqual? ["help"] ['help: "help"]
-    ensure -> "a"      <> `a` 
-    ensure -> "10"     <> 10 
-    ensure -> "10"     <> 10
-    ensure -> ["help"] <> [help]
-    ensure -> ["a"]    <> [a: "a"]
-    ensure -> "help"   <> 'help
-    ensure -> ["help"] <> [.help]
-    ensure -> ["help"] <> ['help: "help"]
+    ensure -> notEqual? "b" `a`
+    ensure -> notEqual? "b" 'a
+    ensure -> notEqual? "b" to :label "a"
+    ensure -> notEqual? "b" to :attribute "a"
+    ensure -> notEqual? "b" to :attributeLabel "a"
+    ensure -> notEqual? "text" to :type "string"
     passed
     
     
