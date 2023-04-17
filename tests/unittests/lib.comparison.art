@@ -2675,14 +2675,14 @@ do [
     
     topic « greater? - :symbol
     
-    ensure -> not? greater? [+] [+]
-    ensure -> not? greater? [+] [-]
-    ensure -> not? greater? [+] [++]
-    ensure -> not? greater? [+] [`+`]
-    ensure -> not? greater? [+] [{+}]
-    ensure -> not? greater? [+] ["+"]
-    ensure -> not? greater? [+] [plus]
-    ensure -> not? greater? [+] ['+]
+    ensure -> not? greater? to :symbol "+" to :symbol "+"
+    ensure -> not? greater? to :symbol "+" to :symbol "-"
+    ensure -> not? greater? to :symbol "+" to :symbol "++"
+    ensure -> not? greater? to :symbol "+" `+`
+    ensure -> not? greater? to :symbol "+" {+}
+    ensure -> not? greater? to :symbol "+" "+"
+    ensure -> not? greater? to :symbol "+" to :word "plus"
+    ensure -> not? greater? to :symbol "+" '+
     passed
     
     
