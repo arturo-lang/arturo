@@ -2508,6 +2508,7 @@ do [
     
     topic « greater? - :type
     
+    ensure -> not? greater? :a :b
     ensure -> not? greater? :char :char
     ensure -> not? greater? :string type "a"
     ensure -> not? greater? :integer type 1
