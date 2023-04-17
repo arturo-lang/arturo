@@ -86,7 +86,7 @@
 >> between? - :block
 [+] passed!
 
->> between? :dictionary
+>> between? - :dictionary
 [+] passed!
 
 >> between? - :object
@@ -182,7 +182,7 @@
 >> compare - :range
 [+] passed!
 
->> compare :dictionary
+>> compare - :dictionary
 [+] passed!
 
 >> compare - :object
@@ -298,10 +298,10 @@
 >> equal? - :block
 [+] passed!
 
->> equal? :range
+>> equal? - :range
 [+] passed!
 
->> equal? :dictionary
+>> equal? - :dictionary
 [+] passed!
 [+] passed!
 
@@ -461,10 +461,10 @@
 >> greater? - :block
 [+] passed!
 
->> greater? :range
+>> greater? - :range
 [+] passed!
 
->> greater? :dictionary
+>> greater? - :dictionary
 [+] passed!
 
 >> greater? - :object
@@ -627,10 +627,10 @@
 >> greaterOrEqual? - :block
 [+] passed!
 
->> greaterOrEqual? :range
+>> greaterOrEqual? - :range
 [+] passed!
 
->> greaterOrEqual? :dictionary
+>> greaterOrEqual? - :dictionary
 [+] passed!
 
 >> greaterOrEqual? - :object
@@ -792,10 +792,10 @@
 >> less? - :block
 [+] passed!
 
->> less? :range
+>> less? - :range
 [+] passed!
 
->> less? :dictionary
+>> less? - :dictionary
 [+] passed!
 
 >> less? - :object
@@ -958,10 +958,10 @@
 >> lessOrEqual? - :block
 [+] passed!
 
->> lessOrEqual? :range
+>> lessOrEqual? - :range
 [+] passed!
 
->> lessOrEqual? :dictionary
+>> lessOrEqual? - :dictionary
 [+] passed!
 
 >> lessOrEqual? - :object
@@ -1115,10 +1115,10 @@
 >> notEqual? - :block
 [+] passed!
 
->> notEqual? :range
+>> notEqual? - :range
 [+] passed!
 
->> notEqual? :dictionary
+>> notEqual? - :dictionary
 [+] passed!
 [+] passed!
 
@@ -1278,10 +1278,10 @@
 >> same? - :block
 [+] passed!
 
->> same? :range
+>> same? - :range
 [+] passed!
 
->> same? :dictionary
+>> same? - :dictionary
 [+] passed!
 [+] passed!
 
