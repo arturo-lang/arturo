@@ -7261,13 +7261,13 @@ do [
     ensure -> not? notEqual? to :word "a" to :word "a"
     passed
     
-    ensure -> notEqual? to :word "a" "a"
-    ensure -> notEqual? to :word "a" `a`
-    ensure -> notEqual? to :word "a" 'a
-    ensure -> notEqual? to :word "a" to :label "a"
-    ensure -> notEqual? to :word "a" to :attribute "a"
-    ensure -> notEqual? to :word "a" to :attributeLabel "a"
-    ensure -> notEqual? to :word "word" to :type "word"
+    ensure -> notEqual? to :word "b" "a"
+    ensure -> notEqual? to :word "b" `a`
+    ensure -> notEqual? to :word "b" 'a
+    ensure -> notEqual? to :word "b" to :label "a"
+    ensure -> notEqual? to :word "b" to :attribute "a"
+    ensure -> notEqual? to :word "b" to :attributeLabel "a"
+    ensure -> notEqual? to :word "text" to :type "word"
     passed
     
     
@@ -7277,13 +7277,13 @@ do [
     ensure -> not? notEqual? to :label "a" to :label "a"
     passed
     
-    ensure -> notEqual? to :label "a" "a"
-    ensure -> notEqual? to :label "a" `a`
-    ensure -> notEqual? to :label "a" 'a
-    ensure -> notEqual? to :label "a" to :word "a"
-    ensure -> notEqual? to :label "a" to :attribute "a"
-    ensure -> notEqual? to :label "a" to :attributelabel "a"
-    ensure -> notEqual? to :label "label" to :type "label"
+    ensure -> notEqual? to :label "b" "a"
+    ensure -> notEqual? to :label "b" `a`
+    ensure -> notEqual? to :label "b" 'a
+    ensure -> notEqual? to :label "b" to :word "a"
+    ensure -> notEqual? to :label "b" to :attribute "a"
+    ensure -> notEqual? to :label "b" to :attributelabel "a"
+    ensure -> notEqual? to :label "text" to :type "label"
     passed
     
     
