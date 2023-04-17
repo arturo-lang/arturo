@@ -8278,14 +8278,12 @@ do [
     ensure -> not? same? "Art" "Bob"
     passed
     
-    ensure -> not? same? "a"    `a` 
-    ensure -> not? same? "10"   10 
-    ensure -> not? same? "10"   10
-    ensure -> not? same? ["help"] [help]
-    ensure -> not? same? ["a"]    [a: "a"]
-    ensure -> not? same? "help"   'help
-    ensure -> not? same? ["help"] [.help]
-    ensure -> not? same? ["help"] ['help: "help"]
+    ensure -> not? same? "a" `a`
+    ensure -> not? same? "a" 'a
+    ensure -> not? same? "a" to :label "a"
+    ensure -> not? same? "a" to :attribute "a"
+    ensure -> not? same? "a" to :attributelabel "a"
+    ensure -> not? same? "string" to :type "string"
     passed
     
     
