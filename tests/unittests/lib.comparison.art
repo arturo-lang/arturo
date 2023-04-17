@@ -6243,11 +6243,26 @@ do [
     
     topic « lessOrEqual? - :attribute
     
-    ensure -> lessOrEqual? [.attr] [.attr]
-    ensure -> not? lessOrEqual? [.attr] ["attr"]
-    ; ensure -> not? lessOrEqual? [.attr] [attr]
-    ensure -> not? lessOrEqual? [.attr] ['attr]
-    ensure -> not? lessOrEqual? [.attr] [.other]
+    ; ensure -> lessOrEqual? to :attribute "a" to :attribute "b"
+    ensure -> lessOrEqual? to :attribute "a" to :attribute "a"
+    ensure -> lessOrEqual? to :attribute "b" to :attribute "b"
+    ensure -> not? lessOrEqual? to :attribute "b" to :attribute "a"
+    passed
+    
+    ensure -> not? lessOrEqual? to :attribute "a" "a"
+    ensure -> not? lessOrEqual? to :attribute "a" "b"
+    ensure -> not? lessOrEqual? to :attribute "a" `a`
+    ensure -> not? lessOrEqual? to :attribute "a" `b`
+    ensure -> not? lessOrEqual? to :attribute "a" 'a
+    ensure -> not? lessOrEqual? to :attribute "a" 'b
+    ensure -> not? lessOrEqual? to :attribute "a" to :word "a"
+    ensure -> not? lessOrEqual? to :attribute "a" to :word "b"
+    ensure -> not? lessOrEqual? to :attribute "a" to :label "a"
+    ensure -> not? lessOrEqual? to :attribute "a" to :label "b"
+    ensure -> not? lessOrEqual? to :attribute "a" to :attributeLabel "a"
+    ensure -> not? lessOrEqual? to :attribute "a" to :attributeLabel "b"
+    ensure -> not? lessOrEqual? to :attribute "a" to :type "a"
+    ensure -> not? lessOrEqual? to :attribute "a" to :type "b"
     passed
     
     
