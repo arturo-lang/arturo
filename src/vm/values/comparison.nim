@@ -363,7 +363,9 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
             of String,
                Word,
                Label,
-               Literal: return x.s < y.s
+               Literal,
+               Attribute,
+               AttributeLabel: return x.s < y.s
             of Symbol: return false
             of Inline,
                Block:
