@@ -44,6 +44,20 @@ proc `==`*(x: ValueArray, y: ValueArray): bool {.inline, enforceNoRaises.} =
 # Methods
 #=======================================
 
+# TODO(VM/values/comparison) Should we throw errors in case of incompatible pairs?
+#  For example, if we try to compare a string with a number, should we throw an error?
+#  Or should we simply return false?
+#  Also, this should affect `<` and `>`, more than `==` since - at least IMHO - something
+#  like `2 = "hello"` still *does* make sense (it may be obviously false, but it does). 
+#  `2 < "hello"`, for example, does *not*.
+#  see also: https://github.com/arturo-lang/arturo/pull/1139
+#  labels: enhancement,values,error handling,open discussion
+
+# TODO(VM/value/comparison) rewrite all `==`, `<`, `>` methods to use `getValuePair`?
+#  This would follow closely the implementations found in VM/values/operators
+#  This could be a good idea for cleaner code, but we should thoroughly benchmark it before!
+#  labels: enhancement, cleanup, benchmark,performance, values
+
 # TODO(VM/values/comparison) Verify all value types are properly handled by all overloads
 #  labels: vm, values, enhancement, unit-test
 
@@ -214,14 +228,14 @@ proc `==`*(x: Value, y: Value): bool =
 #  error message (e.g. "cannot compare Dictionary values"), along with an appropriate
 #  (new) error template at VM/errors
 #  see also: https://github.com/arturo-lang/arturo/pull/1139
-#  labels: enhancement,values,open discussion
+#  labels: enhancement,values,error handling,open discussion
 
 # TODO(VM/values/comparison) how should we handle Object values?
 #  right now, Object make feature a custom `compare` method which is called an used
 #  for the comparison. However, if there is no such method, we end up having the exact
 #  same issues we have with Dictionaries. So, how is that to be dealt with?
 #  see also: https://github.com/arturo-lang/arturo/pull/1139
-#  labels: enhancement,values,open discussion
+#  labels: enhancement,values,error handling,open discussion
 
 # TODO(VM/values/comparison) add `<`/`>` support for Path values?
 #  currently, `=` is supported but not `<` and `>`!
@@ -264,6 +278,19 @@ proc `==`*(x: Value, y: Value): bool =
 #  see also: https://github.com/arturo-lang/arturo/pull/1139
 #  labels: bug,values,open discussion
 
+# TODO(VM/values/comparison) add `<`/`>` support for Inline values?
+#  currently, `=` is supported but not `<` and `>`!
+#  since Inline values are pretty much identical to Block values - internally -
+#  comparison operators should work for them in an identical fashion.
+#  The question is: when is Inline A smaller than Inline B? How do other
+#  languages handle this?
+#  see also: https://github.com/arturo-lang/arturo/pull/1139
+#  labels: bug,values,open discussion
+
+# TODO(VM/values/comparison) Re-visit/test handling of Block comparisons
+#  How do other languages (e.g. Python, Ruby, etc) handle comparisons between blocks/arrays?
+#  Do they even support it? If so, how?
+#  labels: enhancement,values,open discussion,unit-test
 
 proc `<`*(x: Value, y: Value): bool {.inline.}=
     if x.kind in {Integer, Floating, Rational} and y.kind in {Integer, Floating, Rational}:
@@ -446,6 +473,10 @@ proc `<=`*(x: Value, y: Value): bool {.inline.}=
 
 proc `>=`*(x: Value, y: Value): bool {.inline.}=
     x > y or x == y
+
+# TODO(VM/values/comparison) Should we convert `!=` into a template?
+#  Does it make sense performance/binarysize-wise?
+#  labels: enhancement, performance, benchmark, open-discussion
 
 proc `!=`*(x: Value, y: Value): bool {.inline.}=
     not (x == y)
