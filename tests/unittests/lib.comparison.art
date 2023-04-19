@@ -5031,7 +5031,7 @@ do [
     
     topic « less? - :attribute
     
-    ; ensure -> less? to :attribute "a" to :attribute "b"
+    ensure -> less? to :attribute "a" to :attribute "b"
     ensure -> not? less? to :attribute "a" to :attribute "a"
     ensure -> not? less? to :attribute "b" to :attribute "b"
     ensure -> not? less? to :attribute "b" to :attribute "a"
