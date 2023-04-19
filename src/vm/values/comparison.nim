@@ -185,9 +185,10 @@ proc `==`*(x: Value, y: Value): bool =
             else:
                 return false
 
-# TODO(VM/values/comparison) add `<` support for Date values
+# TODO(VM/values/comparison) add `<`/`>` support for Complex values
 #  currently, `=` is support but not `<` and `>`!
 #  labels: critical,bug,values
+
 proc `<`*(x: Value, y: Value): bool {.inline.}=
     if x.kind in {Integer, Floating, Rational} and y.kind in {Integer, Floating, Rational}:
         if x.kind==Integer:
