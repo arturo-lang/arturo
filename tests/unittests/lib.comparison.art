@@ -3840,7 +3840,7 @@ do [
     
     topic « greaterOrEqual? - :attribute
     
-    ; ensure -> greaterOrEqual? to :attribute "b" to :attribute "a"
+    ensure -> greaterOrEqual? to :attribute "b" to :attribute "a"
     ensure -> greaterOrEqual? to :attribute "a" to :attribute "a"
     ensure -> greaterOrEqual? to :attribute "b" to :attribute "b"
     ensure -> not? greaterOrEqual? to :attribute "a" to :attribute "b"
