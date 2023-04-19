@@ -5034,7 +5034,7 @@ do [
     ; ensure -> less? to :attribute "a" to :attribute "b"
     ensure -> not? less? to :attribute "a" to :attribute "a"
     ensure -> not? less? to :attribute "b" to :attribute "b"
-    ensure -> not? greaterOrEqual? to :attribute "b" to :attribute "a"
+    ensure -> not? less? to :attribute "b" to :attribute "a"
     passed
     
     ensure -> not? less? to :attribute "a" "b"
