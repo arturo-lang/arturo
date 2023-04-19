@@ -6235,7 +6235,7 @@ do [
     
     topic « lessOrEqual? - :attribute
     
-    ; ensure -> lessOrEqual? to :attribute "a" to :attribute "b"
+    ensure -> lessOrEqual? to :attribute "a" to :attribute "b"
     ensure -> lessOrEqual? to :attribute "a" to :attribute "a"
     ensure -> lessOrEqual? to :attribute "b" to :attribute "b"
     ensure -> not? lessOrEqual? to :attribute "b" to :attribute "a"
