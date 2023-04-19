@@ -191,19 +191,19 @@ proc `==`*(x: Value, y: Value): bool =
 #  the ideal implementation would be done there (adding a `>` and `<` operator to VComplex)
 #  and then link the method here :-)
 #  see also: https://github.com/arturo-lang/arturo/pull/1139
-#  labels: critical,bug,values
+#  labels: critical,bug,values,easy
 
 # TODO(VM/values/comparison) add `<`/`>` support for Attribute values
 #  currently, `=` is supported but not `<` and `>`!
 #  the logic should be the same as with normal strings/words/etc
 #  see also: https://github.com/arturo-lang/arturo/pull/1139
-#  labels: bug,values
+#  labels: bug,values,easy
 
 # TODO(VM/values/comparison) add `<`/`>` support for AttributeLabel values
 #  currently, `=` is supported but not `<` and `>`!
 #  the logic should be the same as with normal strings/words/etc
 #  see also: https://github.com/arturo-lang/arturo/pull/1139
-#  labels: bug,values
+#  labels: bug,values,easy
 
 # TODO(VM/values/comparison) how should we handle Dictionary values?
 #  right now, both `<` and `>` simply return false
@@ -253,7 +253,7 @@ proc `==`*(x: Value, y: Value): bool =
 #  Preferrably, the implementation should go to values/custom/vbinary
 #  and then integrate it here.
 #  see also: https://github.com/arturo-lang/arturo/pull/1139
-#  labels: bug,values
+#  labels: bug,values,easy
 
 # TODO(VM/values/comparison) add `<`/`>` support for Range values
 #  currently, `=` is supported but not `<` and `>`!
