@@ -186,9 +186,35 @@ proc `==`*(x: Value, y: Value): bool =
                 return false
 
 # TODO(VM/values/comparison) add `<`/`>` support for Complex values
-#  currently, `=` is support but not `<` and `>`!
+#  currently, `=` is supported but not `<` and `>`!
+#  Since Complex values encapsulate a VComplex object (from values/custom/vcomplex)
+#  the ideal implementation would be done there (adding a `>` and `<` operator to VComplex)
+#  and then link the method here :-)
 #  see also: https://github.com/arturo-lang/arturo/pull/1139
 #  labels: critical,bug,values
+
+# TODO(VM/values/comparison) add `<`/`>` support for Attribute values
+#  currently, `=` is supported but not `<` and `>`!
+#  the logic should be the same as with normal strings/words/etc
+#  see also: https://github.com/arturo-lang/arturo/pull/1139
+#  labels: bug,values
+
+# TODO(VM/values/comparison) add `<`/`>` support for AttributeLabel values
+#  currently, `=` is supported but not `<` and `>`!
+#  the logic should be the same as with normal strings/words/etc
+#  see also: https://github.com/arturo-lang/arturo/pull/1139
+#  labels: bug,values
+
+# TODO(VM/values/comparison) how should we handle Dictionary values?
+#  right now, both `<` and `>` simply return false
+#  but is it even a normal idea to compare a Dictionary with something else, or
+#  another dictionary for that matter?
+#  How do other languages (e.g. Ruby, Python) handle this?
+#  If the final decision is to not support this, then we should throw an appropriate
+#  error message (e.g. "cannot compare Dictionary values"), along with an appropriate
+#  (new) error template at VM/errors
+#  see also: https://github.com/arturo-lang/arturo/pull/1139
+#  labels: enhancement,values,open discussion
 
 proc `<`*(x: Value, y: Value): bool {.inline.}=
     if x.kind in {Integer, Floating, Rational} and y.kind in {Integer, Floating, Rational}:
