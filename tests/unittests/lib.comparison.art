@@ -917,7 +917,7 @@ do [
     ensure -> 1 = compare to :attribute "b" to :attribute "a"
     ensure -> 0 = compare to :attribute "a" to :attribute "a"
     ensure -> 0 = compare to :attribute "b" to :attribute "b"
-    ; ensure -> (neg 1) = compare to :attribute "a" to :attribute "b"
+    ensure -> (neg 1) = compare to :attribute "a" to :attribute "b"
     passed
     
     
