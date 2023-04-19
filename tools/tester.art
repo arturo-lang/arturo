@@ -21,6 +21,7 @@ canExecute?: function [scri][
 
             "branching"
             "lib.collections"
+            "lib.comparison"
             "lib.files"
             "sorting"
 
