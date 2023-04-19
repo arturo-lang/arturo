@@ -36,6 +36,7 @@ proc defineSymbols*() =
     #  since `between?` takes two values, we could in theory support any two values, regardless of their order.
     #  right now, the two values `rangeFrom` and `rangeTo` have to be in order, that is rangeFrom < rangeTo.
     #  It doesn't make too much sense for the purpose of this function, I think!
+    #  see also: https://github.com/arturo-lang/arturo/pull/1139
     #  labels: library, enhancement, open discussion
     builtin "between?",
         alias       = thickarrowboth, 
