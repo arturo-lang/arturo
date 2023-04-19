@@ -28,6 +28,10 @@
 #  ```
 #  labels: vm, ast, enhancement
 
+# TODO(VM/ast) Are inline function declarations properly handled?
+#  see also: https://github.com/arturo-lang/arturo/blob/9fa7828494bb84a986ecf5fe1d31c8270ff115b8/tests/unittests/lib.comparison.art#L4089
+#  labels: vm, ast, enhancement, unit-test
+
 #=======================================
 # Libraries
 #=======================================
