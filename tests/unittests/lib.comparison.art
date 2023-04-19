@@ -542,8 +542,8 @@ do [
     topic « between? - :attributelabel
     
     ensure -> between? to :attributelabel "C" to :attributelabel "Arturo" to :attributelabel "Ruby"
-    ; ensure -> not? between? to :attributelabel "C" to :attributelabel "Arturo" to :attributelabel "Barry"
-    ; ensure -> not? between? to :attributelabel "C" to :attributelabel "Python" to :attributelabel "Ruby"
+    ensure -> not? between? to :attributelabel "C" to :attributelabel "Arturo" to :attributelabel "Barry"
+    ensure -> not? between? to :attributelabel "C" to :attributelabel "Python" to :attributelabel "Ruby"
     passed
     
     
