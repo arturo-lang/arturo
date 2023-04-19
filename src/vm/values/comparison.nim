@@ -187,6 +187,7 @@ proc `==`*(x: Value, y: Value): bool =
 
 # TODO(VM/values/comparison) add `<`/`>` support for Complex values
 #  currently, `=` is support but not `<` and `>`!
+#  see also: https://github.com/arturo-lang/arturo/pull/1139
 #  labels: critical,bug,values
 
 proc `<`*(x: Value, y: Value): bool {.inline.}=
