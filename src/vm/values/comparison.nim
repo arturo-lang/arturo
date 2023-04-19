@@ -216,6 +216,55 @@ proc `==`*(x: Value, y: Value): bool =
 #  see also: https://github.com/arturo-lang/arturo/pull/1139
 #  labels: enhancement,values,open discussion
 
+# TODO(VM/values/comparison) how should we handle Object values?
+#  right now, Object make feature a custom `compare` method which is called an used
+#  for the comparison. However, if there is no such method, we end up having the exact
+#  same issues we have with Dictionaries. So, how is that to be dealt with?
+#  see also: https://github.com/arturo-lang/arturo/pull/1139
+#  labels: enhancement,values,open discussion
+
+# TODO(VM/values/comparison) add `<`/`>` support for Path values?
+#  currently, `=` is supported but not `<` and `>`!
+#  the logic should be the same as with blocks, as it's - internally -
+#  technically the exact same thing.
+#  But then again, it seems a bit weird as a notion. Any ideas?
+#  see also: https://github.com/arturo-lang/arturo/pull/1139
+#  labels: bug,values,open discussion
+
+# TODO(VM/values/comparison) add `<`/`>` support for PathLabel values?
+#  currently, `=` is supported but not `<` and `>`!
+#  the logic should be the same as with blocks, as it's - internally -
+#  technically the exact same thing.
+#  But then again, it seems a bit weird as a notion. Any ideas?
+#  see also: https://github.com/arturo-lang/arturo/pull/1139
+#  labels: bug,values,open discussion
+
+# TODO(VM/values/comparison) add `<`/`>` support for Regex values?
+#  currently, `=` is supported but not `<` and `>`!
+#  Another tricky one: the logic should be either the same as with strings,
+#  or disallow comparison altogether and throw an error.
+#  In the first case, since Regex values encapsulate a VRegex object (from values/custom/vregex)
+#  the ideal implementation would be done there (adding a `>` and `<` operator to VRegex)
+#  and then link the method here :-)
+#  labels: bug,values,open discussion
+
+# TODO(VM/values/comparison) add `<`/`>` support for Binary values
+#  currently, `=` is supported but not `<` and `>`!
+#  Preferrably, the implementation should go to values/custom/vbinary
+#  and then integrate it here.
+#  see also: https://github.com/arturo-lang/arturo/pull/1139
+#  labels: bug,values
+
+# TODO(VM/values/comparison) add `<`/`>` support for Range values
+#  currently, `=` is supported but not `<` and `>`!
+#  Preferrably, the implementation should go to values/custom/vrange
+#  and then integrate it here.
+#  The question is: when is range A smaller than range B? How do other
+#  languages handle this?
+#  see also: https://github.com/arturo-lang/arturo/pull/1139
+#  labels: bug,values,open discussion
+
+
 proc `<`*(x: Value, y: Value): bool {.inline.}=
     if x.kind in {Integer, Floating, Rational} and y.kind in {Integer, Floating, Rational}:
         if x.kind==Integer:
