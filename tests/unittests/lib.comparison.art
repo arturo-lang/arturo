@@ -5049,7 +5049,7 @@ do [
     
     topic « less? - :attributelabel
     
-    ; ensure -> less? to :attributelabel "a" to :attributelabel "b"
+    ensure -> less? to :attributelabel "a" to :attributelabel "b"
     ensure -> not? less? to :attributelabel "a" to :attributelabel "a"
     ensure -> not? less? to :attributelabel "b" to :attributelabel "b"
     ensure -> not? less? to :attributelabel "b" to :attributelabel "a"
