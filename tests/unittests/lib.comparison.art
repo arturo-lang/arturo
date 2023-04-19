@@ -6260,7 +6260,7 @@ do [
     
     topic « lessOrEqual? - :attributelabel
     
-    ; ensure -> lessOrEqual? to :attributelabel "a" to :attributelabel "b"
+    ensure -> lessOrEqual? to :attributelabel "a" to :attributelabel "b"
     ensure -> lessOrEqual? to :attributelabel "a" to :attributelabel "a"
     ensure -> lessOrEqual? to :attributelabel "b" to :attributelabel "b"
     ensure -> not? lessOrEqual? to :attributelabel "b" to :attributelabel "a"
