@@ -2653,7 +2653,7 @@ do [
     
     topic « greater? - :attributelabel
     
-    ; ensure -> greater? to :attributelabel "b" to :attributelabel "a"
+    ensure -> greater? to :attributelabel "b" to :attributelabel "a"
     ensure -> not? greater? to :attributelabel "a" to :attributelabel "a"
     ensure -> not? greater? to :attributelabel "a" to :attributelabel "b"
     passed
