@@ -926,7 +926,7 @@ do [
     ensure -> 1 = compare to :attributelabel "b" to :attributelabel "a"
     ensure -> 0 = compare to :attributelabel "a" to :attributelabel "a"
     ensure -> 0 = compare to :attributelabel "b" to :attributelabel "b"
-    ; ensure -> (neg 1) = compare to :attributelabel "a" to :attributelabel "b"
+    ensure -> (neg 1) = compare to :attributelabel "a" to :attributelabel "b"
     passed
     
     
