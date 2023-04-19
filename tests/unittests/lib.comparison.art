@@ -2636,7 +2636,7 @@ do [
     
     topic « greater? - :attribute
     
-    ; ensure -> greater? to :attribute "b" to :attribute "a"
+    ensure -> greater? to :attribute "b" to :attribute "a"
     ensure -> not? greater? to :attribute "a" to :attribute "a"
     ensure -> not? greater? to :attribute "a" to :attribute "b"
     passed
