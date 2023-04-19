@@ -3865,7 +3865,7 @@ do [
     
     topic « greaterOrEqual? - :attributelabel
     
-    ; ensure -> greaterOrEqual? to :attributelabel "b" to :attributelabel "a"
+    ensure -> greaterOrEqual? to :attributelabel "b" to :attributelabel "a"
     ensure -> greaterOrEqual? to :attributelabel "a" to :attributelabel "a"
     ensure -> greaterOrEqual? to :attributelabel "b" to :attributelabel "b"
     ensure -> not? greaterOrEqual? to :attributelabel "a" to :attributelabel "b"
