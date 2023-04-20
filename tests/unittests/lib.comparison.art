@@ -534,16 +534,16 @@ do [
     topic « between? - :attribute
     
     ensure -> between? to :attribute "C" to :attribute "Arturo" to :attribute "Ruby"
-    ; ensure -> not? between? to :attribute "C" to :attribute "Arturo" to :attribute "Barry"
-    ; ensure -> not? between? to :attribute "C" to :attribute "Python" to :attribute "Ruby"
+    ensure -> not? between? to :attribute "C" to :attribute "Arturo" to :attribute "Barry"
+    ensure -> not? between? to :attribute "C" to :attribute "Python" to :attribute "Ruby"
     passed
     
     
     topic « between? - :attributelabel
     
     ensure -> between? to :attributelabel "C" to :attributelabel "Arturo" to :attributelabel "Ruby"
-    ; ensure -> not? between? to :attributelabel "C" to :attributelabel "Arturo" to :attributelabel "Barry"
-    ; ensure -> not? between? to :attributelabel "C" to :attributelabel "Python" to :attributelabel "Ruby"
+    ensure -> not? between? to :attributelabel "C" to :attributelabel "Arturo" to :attributelabel "Barry"
+    ensure -> not? between? to :attributelabel "C" to :attributelabel "Python" to :attributelabel "Ruby"
     passed
     
     
@@ -917,7 +917,7 @@ do [
     ensure -> 1 = compare to :attribute "b" to :attribute "a"
     ensure -> 0 = compare to :attribute "a" to :attribute "a"
     ensure -> 0 = compare to :attribute "b" to :attribute "b"
-    ; ensure -> (neg 1) = compare to :attribute "a" to :attribute "b"
+    ensure -> (neg 1) = compare to :attribute "a" to :attribute "b"
     passed
     
     
@@ -926,7 +926,7 @@ do [
     ensure -> 1 = compare to :attributelabel "b" to :attributelabel "a"
     ensure -> 0 = compare to :attributelabel "a" to :attributelabel "a"
     ensure -> 0 = compare to :attributelabel "b" to :attributelabel "b"
-    ; ensure -> (neg 1) = compare to :attributelabel "a" to :attributelabel "b"
+    ensure -> (neg 1) = compare to :attributelabel "a" to :attributelabel "b"
     passed
     
     
@@ -2636,7 +2636,7 @@ do [
     
     topic « greater? - :attribute
     
-    ; ensure -> greater? to :attribute "b" to :attribute "a"
+    ensure -> greater? to :attribute "b" to :attribute "a"
     ensure -> not? greater? to :attribute "a" to :attribute "a"
     ensure -> not? greater? to :attribute "a" to :attribute "b"
     passed
@@ -2653,7 +2653,7 @@ do [
     
     topic « greater? - :attributelabel
     
-    ; ensure -> greater? to :attributelabel "b" to :attributelabel "a"
+    ensure -> greater? to :attributelabel "b" to :attributelabel "a"
     ensure -> not? greater? to :attributelabel "a" to :attributelabel "a"
     ensure -> not? greater? to :attributelabel "a" to :attributelabel "b"
     passed
@@ -3840,7 +3840,7 @@ do [
     
     topic « greaterOrEqual? - :attribute
     
-    ; ensure -> greaterOrEqual? to :attribute "b" to :attribute "a"
+    ensure -> greaterOrEqual? to :attribute "b" to :attribute "a"
     ensure -> greaterOrEqual? to :attribute "a" to :attribute "a"
     ensure -> greaterOrEqual? to :attribute "b" to :attribute "b"
     ensure -> not? greaterOrEqual? to :attribute "a" to :attribute "b"
@@ -3865,7 +3865,7 @@ do [
     
     topic « greaterOrEqual? - :attributelabel
     
-    ; ensure -> greaterOrEqual? to :attributelabel "b" to :attributelabel "a"
+    ensure -> greaterOrEqual? to :attributelabel "b" to :attributelabel "a"
     ensure -> greaterOrEqual? to :attributelabel "a" to :attributelabel "a"
     ensure -> greaterOrEqual? to :attributelabel "b" to :attributelabel "b"
     ensure -> not? greaterOrEqual? to :attributelabel "a" to :attributelabel "b"
@@ -5031,10 +5031,10 @@ do [
     
     topic « less? - :attribute
     
-    ; ensure -> less? to :attribute "a" to :attribute "b"
+    ensure -> less? to :attribute "a" to :attribute "b"
     ensure -> not? less? to :attribute "a" to :attribute "a"
     ensure -> not? less? to :attribute "b" to :attribute "b"
-    ensure -> not? greaterOrEqual? to :attribute "b" to :attribute "a"
+    ensure -> not? less? to :attribute "b" to :attribute "a"
     passed
     
     ensure -> not? less? to :attribute "a" "b"
@@ -5049,7 +5049,7 @@ do [
     
     topic « less? - :attributelabel
     
-    ; ensure -> less? to :attributelabel "a" to :attributelabel "b"
+    ensure -> less? to :attributelabel "a" to :attributelabel "b"
     ensure -> not? less? to :attributelabel "a" to :attributelabel "a"
     ensure -> not? less? to :attributelabel "b" to :attributelabel "b"
     ensure -> not? less? to :attributelabel "b" to :attributelabel "a"
@@ -6235,7 +6235,7 @@ do [
     
     topic « lessOrEqual? - :attribute
     
-    ; ensure -> lessOrEqual? to :attribute "a" to :attribute "b"
+    ensure -> lessOrEqual? to :attribute "a" to :attribute "b"
     ensure -> lessOrEqual? to :attribute "a" to :attribute "a"
     ensure -> lessOrEqual? to :attribute "b" to :attribute "b"
     ensure -> not? lessOrEqual? to :attribute "b" to :attribute "a"
@@ -6260,7 +6260,7 @@ do [
     
     topic « lessOrEqual? - :attributelabel
     
-    ; ensure -> lessOrEqual? to :attributelabel "a" to :attributelabel "b"
+    ensure -> lessOrEqual? to :attributelabel "a" to :attributelabel "b"
     ensure -> lessOrEqual? to :attributelabel "a" to :attributelabel "a"
     ensure -> lessOrEqual? to :attributelabel "b" to :attributelabel "b"
     ensure -> not? lessOrEqual? to :attributelabel "b" to :attributelabel "a"
