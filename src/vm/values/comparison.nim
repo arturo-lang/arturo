@@ -207,18 +207,6 @@ proc `==`*(x: Value, y: Value): bool =
 #  see also: https://github.com/arturo-lang/arturo/pull/1139
 #  labels: critical,bug,values,easy
 
-# TODO(VM/values/comparison) add `<`/`>` support for Attribute values
-#  currently, `=` is supported but not `<` and `>`!
-#  the logic should be the same as with normal strings/words/etc
-#  see also: https://github.com/arturo-lang/arturo/pull/1139
-#  labels: bug,values,easy
-
-# TODO(VM/values/comparison) add `<`/`>` support for AttributeLabel values
-#  currently, `=` is supported but not `<` and `>`!
-#  the logic should be the same as with normal strings/words/etc
-#  see also: https://github.com/arturo-lang/arturo/pull/1139
-#  labels: bug,values,easy
-
 # TODO(VM/values/comparison) how should we handle Dictionary values?
 #  right now, both `<` and `>` simply return false
 #  but is it even a normal idea to compare a Dictionary with something else, or
@@ -363,7 +351,9 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
             of String,
                Word,
                Label,
-               Literal: return x.s < y.s
+               Literal,
+               Attribute,
+               AttributeLabel: return x.s < y.s
             of Symbol: return false
             of Inline,
                Block:
@@ -451,7 +441,9 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
             of String,
                Word,
                Label,
-               Literal: return x.s > y.s
+               Literal,
+               Attribute,
+               AttributeLabel: return x.s > y.s
             of Symbol: return false
             of Inline,
                Block:
