@@ -1,0 +1,12 @@
+; by @Krenium
+
+ngrams: function [s :string n :integer][
+    0..sub size s n | map 'i -> slice upper s i i+n-1
+                    | tally
+]
+
+loop [2 3 4] 'n [
+    print ~"|n|-grams:"
+    loop ngrams "Live and let live" n [k v] -> print [~{"|k|"} v]
+    print ""
+]
