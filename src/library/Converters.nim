@@ -1225,6 +1225,9 @@ proc defineSymbols*() =
             else:
                 push newQuantity(y, qs)
 
+    # TODO(Converters/range) add documentation examples
+    #  See also: https://discord.com/channels/765519132186640445/829324913097048065/1100099906376581182
+    #  labels: library, documentation, easy
     builtin "range",
         alias       = ellipsis,
         op          = opRange,
