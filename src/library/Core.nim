@@ -509,7 +509,7 @@ proc defineSymbols*() =
 
             push(newLogical(condition))
 
-    # TODO(Core/let) make sure that block-assignment handle readonly Value's properly
+    # TODO(Core/let) make sure that block-assignment handles readonly Value's properly
     #  Basically, `[a b]: [1 2]` should be equivalent to:
     #  ```
     #   a: 1
