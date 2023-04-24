@@ -509,10 +509,11 @@ proc defineSymbols*() =
 
             push(newLogical(condition))
 
-    # TODO(Core/let) make sure that block-assignment handles readonly Value's properly
-    #  Basically, `[a b]: [1 2]` should be the same as assigning each value one by one,
-    #  which means that there should be an *implicit* new Value created for readonly value.
-    #  Apparently, `setSym` in VM/globals doesn't handle this properly; but it should.
+    # TODO(Core/let) block assignments should properly handle readonly Values
+    #  In a few words: we should make sure that `[a b]: [1 2]` is the same as 
+    #  assigning each value one by one, which means that there should be an *implicit* 
+    #  new Value created for readonly value. Apparently, `setSym` in VM/globals 
+    #  doesn't handle this properly; but it should.
     #  See also: https://discord.com/channels/765519132186640445/829324913097048065/1099426535569633401
     #  labels: library, bug, critical
 
