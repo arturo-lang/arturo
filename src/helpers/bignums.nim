@@ -147,7 +147,7 @@ func newRat*(x: int = 0): Rat =
             mpq_set_ui(result[], x.culong, 1)
         else:
             mpq_set_ui(result[], (x shr 32).uint32, 1)
-            mpq_mul_2exp(result[], result[], 32, 1)
+            mpq_mul_2exp(result[], result[], 32)
             mpq_add(result[], result[], newInt(x.uint32))
     else:
         mpq_set_si(result[], x.clong, 1)
@@ -795,6 +795,9 @@ func `shlI`*(x: Int, y: culong) =
 func digits*(z: Int, base: range[(2.cint) .. (62.cint)] = 10): csize_t =
     mpz_sizeinbase(z[], base)
 
+func digits*(z: mpz_ptr, base: range[(2.cint) .. (62.cint)] = 10): csize_t =
+    mpz_sizeinbase(z, base)
+
 func numerator*(x: Rat): Int =
     result = newInt()
     mpq_get_num(result[], x[])
@@ -810,7 +813,7 @@ func `$`*(z: Int, base: cint = 10): string =
 
 func `$`*(z: Rat, base: range[(2.cint) .. (62.cint)] = 10): string =
     validBase(base)
-    result = newString(digits(numerator(z), base) + digits(denominator(z), base) + 3)
+    result = newString(digits(mpq_numref(z[]), base) + digits(mpq_denref(z[]), base) + 3)
     result.setLen(mpq_get_str(cstring(result), base, z[]).len)
 
 #=======================================
