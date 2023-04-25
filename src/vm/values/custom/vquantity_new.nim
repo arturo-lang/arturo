@@ -622,7 +622,7 @@ func isUnitless(q: Quantity): bool {.inline.} =
 proc getPrimitive(unit: PrefixedUnit): Quantity =
     result = Quantities[unit.u]
 
-    result.value *= pow(float(10), float(ord(unit.p)))
+    result.value *= toRational(pow(float(10), float(ord(unit.p))))
 
 proc getSignature(atoms: Atoms): QuantitySignature =
     for atom in atoms:
