@@ -59,12 +59,12 @@ proc getDefined*(str: string): Quantity =
         result.value *= prefixes[pref].val
         result.original *= prefixes[pref].val
 
-proc getConverted(q: Quantity): float =
+proc getConverted(q: Quantity): VRational =
     result = q.value
     if not q.base:
         for atom in q.atoms:
             let atomUnit = getDefined(atom.kind)
-            result *= pow(atomUnit.value, float(atom.expo))
+            result *= atomUnit.value ^ atom.expo
 
 proc newQuantity(v: float, atoms: seq[Atom], base: static bool = false): Quantity =
     result.original = v
