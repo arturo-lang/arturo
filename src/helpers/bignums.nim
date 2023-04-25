@@ -229,7 +229,7 @@ func set*(z: Rat, s: string, base: cint = 10): Rat =
     if mpq_set_str(result[], s, base) == -1:
         raise newException(ValueError, "String not in correct base")
     canonicalize(result)
-    
+
 #=======================================
 # Converters
 #=======================================
@@ -365,6 +365,13 @@ func cmp*(x: Float, y: int): cint =
     # else:
     result = mpfr_cmp_si(x[], y.clong)
 
+    if result < 0:
+        result = -1
+    elif result > 0:
+        result = 1
+
+func cmp*(x: Rat, y: Rat): cint =
+    result = mpq_cmp(x[], y[])
     if result < 0:
         result = -1
     elif result > 0:
