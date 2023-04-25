@@ -195,6 +195,14 @@ func `/=`*[T](x: var VRationalObj[T], y: T) =
     x.den *= y
     reduce(x)
 
+func `^`*[T](x: VRationalObj[T], y: int): VRationalObj[T] =
+    if y < 0:
+        result.num = x.den ^ -y
+        result.den = x.num ^ -y
+    else:
+        result.num = x.num ^ y
+        result.den = x.den ^ y
+
 func cmp*(x, y: VRationalObj): int =
     (x - y).num
 
