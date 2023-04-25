@@ -1,5 +1,7 @@
 import macros, math, std/rationals, sequtils, strscans, strutils, tables
 
+import vm/values/custom/vrational
+
 type
     Atom = tuple
         kind: string
@@ -15,7 +17,7 @@ type
 var
     baseUnits {.compileTime.}: seq[string]
     dimensions {.compileTime.}: OrderedTable[int64,string]
-    prefixes {.compileTime.}: OrderedTable[string, tuple[sym: string, val: float]]
+    prefixes {.compileTime.}: OrderedTable[string, tuple[sym: string, val: VRational]]
     defs {.compileTime.}: OrderedTable[string, Quantity]
     units {.compileTime.}: OrderedTable[string, string]
 
