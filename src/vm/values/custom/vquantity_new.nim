@@ -622,6 +622,7 @@ func isUnitless(q: Quantity): bool {.inline.} =
 proc getPrimitive(unit: PrefixedUnit): Quantity =
     result = Quantities[unit.u]
 
+    # Warning: This may be losing information for too-low or too-high values!
     result.value *= toRational(pow(float(10), float(ord(unit.p))))
 
 proc getSignature(atoms: Atoms): QuantitySignature =
@@ -708,7 +709,8 @@ proc newQuantity*(v: VRational, atoms: Atoms): Quantity =
 proc newQuantity*(str: string): Quantity =
     let parts = str.split(" ")
 
-    let value = parseFloat(parts[0])
+    # Warning: we should be able to parse rational numbers as well!
+    let value = toRational(parseFloat(parts[0]))
     let atoms = parseAtoms(parts[1])
 
     result = newQuantity(value, atoms)
