@@ -99,23 +99,23 @@ static:
     #----------------------------------------------------------------------------------------------------
     #          name         symbol      definition 
     #----------------------------------------------------------------------------------------------------
-    defPrefix "a",          "a",        "1e-18"
-    defPrefix "f",          "f",        "1e-15"
-    defPrefix "p",          "p",        "1e-12"
-    defPrefix "n",          "n",        "1e-9"
-    defPrefix "u",          "μ",        "1e-6"
-    defPrefix "m",          "m",        "1e-3"
-    defPrefix "c",          "c",        "1e-2"
-    defPrefix "d",          "d",        "1e-1"
-    defPrefix "No",         "",         "1"
-    defPrefix "da",         "da",       "1e1"
-    defPrefix "h",          "h",        "1e2"
-    defPrefix "k",          "k",        "1e3"
-    defPrefix "M",          "M",        "1e6"
-    defPrefix "G",          "G",        "1e9"
-    defPrefix "T",          "T",        "1e12"
-    defPrefix "P",          "P",        "1e15"
-    defPrefix "E",          "E",        "1e18"
+    defPrefix "a",          "a",        -18
+    defPrefix "f",          "f",        -15
+    defPrefix "p",          "p",        -12
+    defPrefix "n",          "n",        -9
+    defPrefix "u",          "μ",        -6
+    defPrefix "m",          "m",        -3
+    defPrefix "c",          "c",        -2
+    defPrefix "d",          "d",        -1
+    defPrefix "No",         "",         0
+    defPrefix "da",         "da",       1
+    defPrefix "h",          "h",        2
+    defPrefix "k",          "k",        3
+    defPrefix "M",          "M",        6
+    defPrefix "G",          "G",        9
+    defPrefix "T",          "T",        12
+    defPrefix "P",          "P",        15
+    defPrefix "E",          "E",        18
 
     #----------------------------------------------------------------------------------------------------
     # Currencies
