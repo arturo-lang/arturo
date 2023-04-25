@@ -69,6 +69,9 @@ proc fitsDouble*(x: Float): bool =
 func sign*(x: Int): cint =
     mpz_sgn(x[])
 
+func canonicalize*(x: Rat) =
+    mpq_canonicalize(x[])
+
 #=======================================
 # Constructors
 #=======================================
@@ -129,6 +132,39 @@ func newFloat*(s: string, base: cint = 10): Float =
     if mpfr_set_str(result[], s, base, MPFR_RNDN) == -1:
         raise newException(ValueError, "String not in correct base")
 
+func newRat*(x: culong): Rat =
+    new(result, finalizeRat)
+    mpq_init(result[])
+    mpq_set_ui(result[], x, 1)
+
+func newRat*(x: int = 0): Rat =
+    new(result, finalizeRat)
+    mpq_init(result[])
+    when isLLP64():
+        if x.fitsLLP64Long:
+            mpq_set_si(result[], x.clong, 1)
+        elif x.fitsLLP64ULong:
+            mpq_set_ui(result[], x.culong, 1)
+        else:
+            mpq_set_ui(result[], (x shr 32).uint32, 1)
+            mpq_mul_2exp(result[], result[], 32)
+            mpq_add(result[], result[], newRat(x.uint32)[])
+    else:
+        mpq_set_si(result[], x.clong, 1)
+
+func newRat*(x: float): Rat =
+    new(result,finalizeRat)
+    mpq_init(result[])
+    mpq_set_d(result[], x)
+
+func newRat*(s: string, base: cint = 10): Rat =
+    validBase(base)
+    new(result, finalizeRat)
+    mpq_init(result[])
+    if mpq_set_str(result[], s, base) == -1:
+        raise newException(ValueError, "String not in correct base")
+    canonicalize(result)
+
 #=======================================
 # Setters
 #=======================================
@@ -161,6 +197,39 @@ func set*(z: Int, s: string, base: cint = 10): Int =
     if mpz_set_str(result[], s, base) == -1:
         raise newException(ValueError, "String not in correct base")
 
+func set*(z, x: Rat): Rat =
+    result = z
+    mpq_set(result[], x[])
+
+func set*(z: Rat, x: culong): Rat =
+    result = z
+    mpq_set_ui(result[], x, 1)
+
+func set*(z: Rat, x: int): Rat =
+    result = z
+    when isLLP64():
+        if x.fitsLLP64Long:
+            mpq_set_si(result[], x.clong, 1)
+        elif x.fitsLLP64ULong:
+            mpq_set_ui(result[], x.culong, 1)
+        else:
+            mpq_set_ui(result[], (x shr 32).uint32, 1)
+            mpq_mul_2exp(result[], result[], 32)
+            mpq_add(result[], result[], newRat(x.uint32)[])
+    else:
+        mpq_set_si(result[], x.clong, 1)
+
+func set*(z: Rat, x: float): Rat =
+    result = z
+    mpq_set_d(result[], x)
+
+func set*(z: Rat, s: string, base: cint = 10): Rat =
+    validBase(base)
+    result = z
+    if mpq_set_str(result[], s, base) == -1:
+        raise newException(ValueError, "String not in correct base")
+    canonicalize(result)
+
 #=======================================
 # Converters
 #=======================================
@@ -170,6 +239,9 @@ func toCLong*(x: Int): clong =
 
 func toCDouble*(x: Float): cdouble =
     return mpfr_get_d(x[], MPFR_RNDN)
+
+func toCDouble*(x: Rat): cdouble =
+    return mpq_get_d(x[])
 
 #=======================================
 # Overloads
@@ -298,6 +370,13 @@ func cmp*(x: Float, y: int): cint =
     elif result > 0:
         result = 1
 
+func cmp*(x: Rat, y: Rat): cint =
+    result = mpq_cmp(x[], y[])
+    if result < 0:
+        result = -1
+    elif result > 0:
+        result = 1
+
 func `==`*(x: Int, y: int | culong | Int): bool =
     cmp(x, y) == 0
 
@@ -310,11 +389,17 @@ func `==`*(x: Float, y: int | float | culong | Float): bool =
 func `==`*(x: float | int | culong, y: Float): bool =
     cmp(y, x) == 0
 
+func `==`*(x, y: Rat): bool =
+    cmp(x, y) == 0
+
 func `<`*(x: Int, y: int | culong | Int): bool =
     cmp(x, y) == -1
 
 func `<`*(x: int | culong, y: Int): bool =
     cmp(y, x) == 1
+
+func `<`*(x, y: Rat): bool =
+    cmp(x, y) == -1
 
 func `<=`*(x: Int, y: int | culong | Int): bool =
     let c = cmp(x, y)
@@ -323,6 +408,10 @@ func `<=`*(x: Int, y: int | culong | Int): bool =
 func `<=`*(x: int | culong, y: Int): bool =
     let c = cmp(y, x)
     c == 0 or c == 1
+
+func `<=`*(x, y: Rat): bool =
+    let c = cmp(x, y)
+    c == 0 or c == -1
 
 #-----------------------
 # Arithmetic operators
@@ -342,6 +431,10 @@ func add*(z, x: Int, y: int): Int =
     else:
         if y >= 0: z.add(x, y.culong) else: z.add(x, newInt(y))
 
+func add*(z, x, y: Rat): Rat =
+    result = z
+    mpq_add(result[], x[], y[])
+
 func inc*(z: Int, x: int | culong | Int) =
     discard z.add(z, x)
 
@@ -360,6 +453,9 @@ func `+`*(x:Int, y: float): float =
     let res = newFloat()
     mpfr_add_d(res[], newFloat(x)[], y, MPFR_RNDN)
     result = toCDouble(res)
+
+func `+`*(x: Rat, y: Rat): Rat =
+    newRat().add(x, y)
 
 func `+=`*(z: Int, x: int | culong | Int) =
     z.inc(x)
@@ -388,6 +484,10 @@ func sub*(z: Int, x: int, y: Int): Int =
     else:
         if x >= 0: z.sub(x.culong, y) else: z.sub(newInt(x), y)
 
+func sub*(z, x, y: Rat): Rat =
+    result = z
+    mpq_sub(result[], x[], y[])
+
 func dec*(z: Int, x: int | culong | Int) =
     discard z.sub(z, x)
 
@@ -406,6 +506,9 @@ func `-`*(x:Int, y: float): float =
     let res = newFloat()
     mpfr_sub_d(res[], newFloat(x)[], y, MPFR_RNDN)
     result = toCDouble(res)
+
+func `-`*(x: Rat, y: Rat): Rat =
+    newRat().sub(x, y)
 
 func `-=`*(z: Int, x: int | culong | Int) =
     z.dec(x)
@@ -434,6 +537,10 @@ func mul*(z, x: Int, y: int): Int =
     else:
         mpz_mul_si(result[], x[], y.clong)
 
+func mul*(z, x, y: Rat): Rat =
+    result = z
+    mpq_mul(result[], x[], y[])
+
 func `*`*(x: Int, y: int | culong | Int): Int =
     newInt().mul(x, y)
 
@@ -449,6 +556,9 @@ func `*`*(x:Int, y: float): float =
     let res = newFloat()
     mpfr_mul_d(res[], newFloat(x)[], y, MPFR_RNDN)
     result = toCDouble(res)
+
+func `*`*(x: Rat, y: Rat): Rat =
+    newRat().mul(x, y)
 
 func `*=`*(z: Int, x: int | culong | Int) =
     discard z.mul(z, x)
@@ -471,6 +581,10 @@ func `div`*(z, x: Int, y: int): Int =
 
 func `div`*(x: Int, y: int | culong | Int): Int =
     newInt().`div`(x, y)
+
+func `div`*(z, x, y: Rat): Rat =
+    result = z
+    mpq_div(result[], x[], y[])
 
 func `divI`*(x: Int, y: int | culong | Int) = 
     discard x.`div`(x, y)
@@ -756,10 +870,31 @@ func `shlI`*(x: Int, y: culong) =
 func digits*(z: Int, base: range[(2.cint) .. (62.cint)] = 10): csize_t =
     mpz_sizeinbase(z[], base)
 
+func digits*(z: mpz_ptr, base: range[(2.cint) .. (62.cint)] = 10): csize_t =
+    mpz_sizeinbase(z, base)
+
+func numerator*(x: Rat): Int =
+    result = newInt()
+    mpq_get_num(result[], x[])
+    
+func denominator*(x: Rat): Int =
+    result = newInt()
+    mpq_get_den(result[], x[])
+
 func `$`*(z: Int, base: cint = 10): string =
     validBase(base)
     result = newString(digits(z, base) + 2)
     result.setLen(mpz_get_str(cstring(result), base, z[]).len)
+
+func `$`*(z: Float): string =
+    result = newString(32)
+    var exp = 0
+    result.setLen(mpfr_get_str(cstring(result), exp, 10, 0, z[], MPFR_RNDN).len)
+
+func `$`*(z: Rat, base: range[(2.cint) .. (62.cint)] = 10): string =
+    validBase(base)
+    result = newString(digits(mpq_numref(z[]), base) + digits(mpq_denref(z[]), base) + 3)
+    result.setLen(mpq_get_str(cstring(result), base, z[]).len)
 
 #=======================================
 # Methods
