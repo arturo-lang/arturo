@@ -1,4 +1,4 @@
-import macros, math, std/rationals, sequtils, strscans, strutils, tables
+import macros, math, sequtils, strscans, strutils, tables
 
 import vm/values/custom/vrational
 
@@ -202,8 +202,11 @@ proc defDimension*(quantity: string, formula: string = "") =
         raise newException(ValueError, "Dimension already defined: " & quantity & " => " & dimensions[signature])
     dimensions[signature] = quantity
 
-proc defPrefix*(prefix, symbol, value: string) =
-    prefixes[prefix] = (sym: symbol, val: parseFloat(value))
+proc defPrefix*(prefix, symbol: string, value: int) =
+    var prefVal = toRational(pow(10.0, abs(float(value))))
+    if value < 0:
+        prefVal = reciprocal(prefVal)
+    prefixes[prefix] = (sym: symbol, val: prefVal)
 
 proc defUnit*(unit: string, symbol: string, prefixed: bool, definition: string, aliases: varargs[string]) =
     echo "defining: " & unit
