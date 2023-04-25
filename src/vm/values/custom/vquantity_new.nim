@@ -701,7 +701,7 @@ proc newQuantity*(v: float, atoms: Atoms): Quantity =
         let prim = getPrimitive(atom.unit)
 
         result.signature += prim.signature * atom.power
-        result.value *= pow(prim.value, float(atom.power))
+        result.value *= prim.value ^ atom.power
 
         result.atoms.add(atom)
 
