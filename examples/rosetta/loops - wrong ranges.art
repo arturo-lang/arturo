@@ -1,0 +1,21 @@
+; by @Krenium
+
+print "start   stop    increment"
+
+loop @[
+    0-2 2   1
+    0-2 2   0
+    0-2 2   0-1
+    0-2 2   10
+      2 0-2 1
+      2 2   1
+      2 2   0-1
+      2 2   0
+      0 0   0
+] [start stop increment] ->
+    print [
+        pad ~"|start|" 2 pad ~"|stop|" 7 pad ~"|increment|" 7
+        pad "->" 9
+        (zero? increment)? -> "[]"
+                           -> @range.step: increment start stop
+    ]
