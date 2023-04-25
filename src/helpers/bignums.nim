@@ -788,6 +788,14 @@ func `shlI`*(x: Int, y: culong) =
 func digits*(z: Int, base: range[(2.cint) .. (62.cint)] = 10): csize_t =
     mpz_sizeinbase(z[], base)
 
+func numerator*(x: Rat): Int =
+    result = newInt()
+    mpq_get_num(result[], x[])
+    
+func denominator*(x: Rat): Int =
+    result = newInt()
+    mpq_get_den(result[], x[])
+
 func `$`*(z: Int, base: cint = 10): string =
     validBase(base)
     result = newString(digits(z, base) + 2)
@@ -795,11 +803,8 @@ func `$`*(z: Int, base: cint = 10): string =
 
 func `$`*(z: Rat, base: range[(2.cint) .. (62.cint)] = 10): string =
     validBase(base)
-    result = newString()
-    let strL = mpq_get_str(cstring(result), base, z[])
-    result.setLen(strL)
-    # result = newString(100)
-    # result.setLen(mpq_get_str(cstring(result), base, z[]).len)
+    result = newString(digits(numerator(z), base) + digits(denominator(z), base) + 3)
+    result.setLen(mpq_get_str(cstring(result), base, z[]).len)
 
 #=======================================
 # Methods
