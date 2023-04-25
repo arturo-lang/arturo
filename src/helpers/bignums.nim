@@ -69,6 +69,9 @@ proc fitsDouble*(x: Float): bool =
 func sign*(x: Int): cint =
     mpz_sgn(x[])
 
+func canonicalize*(x: Rat) =
+    mpq_canonicalize(x[])
+
 #=======================================
 # Constructors
 #=======================================
@@ -160,6 +163,7 @@ func newRat*(s: string, base: cint = 10): Rat =
     mpq_init(result[])
     if mpq_set_str(result[], s, base) == -1:
         raise newException(ValueError, "String not in correct base")
+    canonicalize(result)
 
 #=======================================
 # Setters
