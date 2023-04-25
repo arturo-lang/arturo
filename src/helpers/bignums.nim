@@ -142,13 +142,13 @@ func newRat*(x: int = 0): Rat =
     mpq_init(result[])
     when isLLP64():
         if x.fitsLLP64Long:
-            mp1_set_si(result[], x.clong, 1)
+            mpq_set_si(result[], x.clong, 1)
         elif x.fitsLLP64ULong:
-            mp1_set_ui(result[], x.culong, 1)
+            mpq_set_ui(result[], x.culong, 1)
         else:
             mpq_set_ui(result[], (x shr 32).uint32, 1)
             mpq_mul_2exp(result[], result[], 32, 1)
-            mpq_add_ui(result[], result[], (x.uint32))
+            mpq_add(result[], result[], newInt(x.uint32))
     else:
         mpq_set_si(result[], x.clong, 1)
 
