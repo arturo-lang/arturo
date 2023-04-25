@@ -214,7 +214,7 @@ proc defUnit*(unit: string, symbol: string, prefixed: bool, definition: string, 
     if definition != "":
         if definition[0] in 'A'..'Z':
             baseUnits.add(unit)
-            defs[unit] = newQuantity(1.0, @[(kind: unit, expo: 1)], base=true)
+            defs[unit] = newQuantity(1//1, @[(kind: unit, expo: 1)], base=true)
 
             if unit=="USD":
                 currencyUnits.add(unit)
