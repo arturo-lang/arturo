@@ -8,8 +8,8 @@ type
         expo: int
 
     Quantity = tuple
-        original: float
-        value: float
+        original: VRational
+        value: VRational
         signature: int64
         atoms: seq[Atom]
         base: bool
