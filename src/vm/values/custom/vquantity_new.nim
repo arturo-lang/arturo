@@ -1069,7 +1069,7 @@ when isMainModule:
     # inspect (newQuantity("3 m3")) / (newQuantity("3 m"))
 
     # echo "dividing 3m3 and 3m2"
-    # inspect (newQuantity("3 m3")) / (newQuantity("3 m2"))
+    inspect (newQuantity("3 m3")) / (newQuantity("3 m2"))
 
     defineNewUserUnit("zf", "Zf", "1 bit/m.s")
 
