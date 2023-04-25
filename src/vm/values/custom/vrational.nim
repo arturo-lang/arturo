@@ -38,7 +38,7 @@ type
 # Methods
 #=======================================
 
-func reduce*[T: SomeInteger](x: var VRationalObj[T]) =
+func reduce*(x: var VRational) =
     let common = gcd(x.num, x.den)
     if x.den > 0:
         x.num = x.num div common
@@ -49,22 +49,22 @@ func reduce*[T: SomeInteger](x: var VRationalObj[T]) =
     else:
         raise newException(DivByZeroDefect, "division by zero")
 
-func initRational*[T: SomeInteger](num, den: T): VRationalObj[T] =
+func initRational*(num, den: int): VRational =
     result.num = num
     result.den = den
     reduce(result)
 
-func `//`*[T](num, den: T): VRationalObj[T] =
-    initRational[T](num, den)
+func `//`*(num, den: int): VRational =
+    initRational(num, den)
 
-func `$`*[T](x: VRationalObj[T]): string =
+func `$`*(x: VRational): string =
     result = $x.num & "/" & $x.den
 
-func toRational*[T: SomeInteger](x: T): VRationalObj[T] =
+func toRational*(x: int): VRational =
     result.num = x
     result.den = 1
 
-func toRational*(x: float, n: int = high(int) shr (sizeof(int) div 2 * 8)): VRationalObj[int] =
+func toRational*(x: float, n: int = high(int) shr (sizeof(int) div 2 * 8)): VRational =
     var
         m11, m22 = 1
         m12, m21 = 0
@@ -81,87 +81,87 @@ func toRational*(x: float, n: int = high(int) shr (sizeof(int) div 2 * 8)): VRat
         ai = int(x)
     result = m11 // m21
 
-func toFloat*[T](x: VRationalObj[T]): float =
+func toFloat*(x: VRational): float =
     x.num / x.den
 
-func toInt*[T](x: VRationalObj[T]): int =
+func toInt*(x: VRational): int =
     x.num div x.den
 
-func `+`*[T](x, y: VRationalObj[T]): VRationalObj[T] =
+func `+`*(x, y: VRational): VRational =
     let common = lcm(x.den, y.den)
     result.num = common div x.den * x.num + common div y.den * y.num
     result.den = common
     reduce(result)
 
-func `+`*[T](x: VRationalObj[T], y: T): VRationalObj[T] =
+func `+`*(x: VRational, y: int): VRational =
     result.num = x.num + y * x.den
     result.den = x.den
 
-func `+`*[T](x: T, y: VRationalObj[T]): VRationalObj[T] =
+func `+`*(x: int, y: VRational): VRational =
     result.num = x * y.den + y.num
     result.den = y.den
 
-func `+=`*[T](x: var VRationalObj[T], y: VRationalObj[T]) =
+func `+=`*(x: var VRational, y: VRational) =
     let common = lcm(x.den, y.den)
     x.num = common div x.den * x.num + common div y.den * y.num
     x.den = common
     reduce(x)
 
-func `+=`*[T](x: var VRationalObj[T], y: T) =
+func `+=`*(x: var VRational, y: int) =
     x.num += y * x.den
 
-func `-`*[T](x: VRationalObj[T]): VRationalObj[T] =
+func `-`*(x: VRational): VRational =
     result.num = -x.num
     result.den = x.den
 
-func `-`*[T](x, y: VRationalObj[T]): VRationalObj[T] =
+func `-`*(x, y: VRational): VRational =
     let common = lcm(x.den, y.den)
     result.num = common div x.den * x.num - common div y.den * y.num
     result.den = common
     reduce(result)
 
-func `-`*[T](x: VRationalObj[T], y: T): VRationalObj[T] =
+func `-`*(x: VRational, y: int): VRational =
     result.num = x.num - y * x.den
     result.den = x.den
 
-func `-`*[T](x: T, y: VRationalObj[T]): VRationalObj[T] =
+func `-`*(x: int, y: VRational): VRational =
     result.num = x * y.den - y.num
     result.den = y.den
 
-func `-=`*[T](x: var VRationalObj[T], y: VRationalObj[T]) =
+func `-=`*(x: var VRational, y: VRational) =
     let common = lcm(x.den, y.den)
     x.num = common div x.den * x.num - common div y.den * y.num
     x.den = common
     reduce(x)
 
-func `-=`*[T](x: var VRationalObj[T], y: T) =
+func `-=`*(x: var VRational, y: int) =
     x.num -= y * x.den
 
-func `*`*[T](x, y: VRationalObj[T]): VRationalObj[T] =
+func `*`*(x, y: VRational): VRational =
     result.num = x.num * y.num
     result.den = x.den * y.den
     reduce(result)
 
-func `*`*[T](x: VRationalObj[T], y: T): VRationalObj[T] =
+func `*`*(x: VRational, y: int): VRational =
     result.num = x.num * y
     result.den = x.den
     reduce(result)
 
-func `*`*[T](x: T, y: VRationalObj[T]): VRationalObj[T] =
+func `*`*(x: int, y: VRational): VRational =
     result.num = x * y.num
     result.den = y.den
     reduce(result)
 
-func `*=`*[T](x: var VRationalObj[T], y: VRationalObj[T]) =
+func `*=`*(x: var VRational, y: VRational) =
     x.num *= y.num
     x.den *= y.den
     reduce(x)
 
-func `*=`*[T](x: var VRationalObj[T], y: T) =
+func `*=`*(x: var VRational, y: int) =
     x.num *= y
     reduce(x)
 
-func reciprocal*[T](x: VRationalObj[T]): VRationalObj[T] =
+func reciprocal*(x: VRational): VRational =
     if x.num > 0:
         result.num = x.den
         result.den = x.num
@@ -171,31 +171,31 @@ func reciprocal*[T](x: VRationalObj[T]): VRationalObj[T] =
     else:
         raise newException(DivByZeroDefect, "division by zero")
 
-func `/`*[T](x, y: VRationalObj[T]): VRationalObj[T] =
+func `/`*(x, y: VRational): VRational =
     result.num = x.num * y.den
     result.den = x.den * y.num
     reduce(result)
 
-func `/`*[T](x: VRationalObj[T], y: T): VRationalObj[T] =
+func `/`*(x: VRational, y: int): VRational =
     result.num = x.num
     result.den = x.den * y
     reduce(result)
 
-func `/`*[T](x: T, y: VRationalObj[T]): VRationalObj[T] =
+func `/`*(x: int, y: VRational): VRational =
     result.num = x * y.den
     result.den = y.num
     reduce(result)
 
-func `/=`*[T](x: var VRationalObj[T], y: VRationalObj[T]) =
+func `/=`*(x: var VRational, y: VRational) =
     x.num *= y.den
     x.den *= y.num
     reduce(x)
 
-func `/=`*[T](x: var VRationalObj[T], y: T) =
+func `/=`*(x: var VRational, y: int) =
     x.den *= y
     reduce(x)
 
-func `^`*[T](x: VRationalObj[T], y: int): VRationalObj[T] =
+func `^`*(x: VRational, y: int): VRational =
     if y < 0:
         result.num = x.den ^ -y
         result.den = x.num ^ -y
@@ -203,37 +203,37 @@ func `^`*[T](x: VRationalObj[T], y: int): VRationalObj[T] =
         result.num = x.num ^ y
         result.den = x.den ^ y
 
-func cmp*(x, y: VRationalObj): int =
+func cmp*(x, y: VRational): int =
     (x - y).num
 
-func `<`*(x, y: VRationalObj): bool =
+func `<`*(x, y: VRational): bool =
     (x - y).num < 0
 
-func `<=`*(x, y: VRationalObj): bool =
+func `<=`*(x, y: VRational): bool =
     (x - y).num <= 0
 
-func `==`*(x, y: VRationalObj): bool =
+func `==`*(x, y: VRational): bool =
     (x - y).num == 0
 
-func abs*[T](x: VRationalObj[T]): VRationalObj[T] =
+func abs*(x: VRational): VRational =
     result.num = abs x.num
     result.den = abs x.den
 
-func `div`*[T: SomeInteger](x, y: VRationalObj[T]): T =
+func `div`*(x, y: VRational): int =
     (x.num * y.den) div (y.num * x.den)
 
-func `mod`*[T: SomeInteger](x, y: VRationalObj[T]): VRationalObj[T] =
+func `mod`*(x, y: VRational): VRational =
     result = ((x.num * y.den) mod (y.num * x.den)) // (x.den * y.den)
     reduce(result)
 
-func floorDiv*[T: SomeInteger](x, y: VRationalObj[T]): T =
+func floorDiv*(x, y: VRational): int =
     floorDiv(x.num * y.den, y.num * x.den)
 
-func floorMod*[T: SomeInteger](x, y: VRationalObj[T]): VRationalObj[T] =
+func floorMod*(x, y: VRational): VRational =
     result = floorMod(x.num * y.den, y.num * x.den) // (x.den * y.den)
     reduce(result)
 
-func hash*[T](x: VRationalObj[T]): Hash =
+func hash*[T](x: VRational): Hash =
     var copy = x
     reduce(copy)
 
