@@ -147,21 +147,39 @@ func `+`*(x, y: VRational): VRational =
             )
 
 func `+`*(x: VRational, y: int): VRational =
-    result.num = x.num + y * x.den
-    result.den = x.den
+    if x.rKind == NormalRational:
+        result.r.num = x.r.num + y * x.r.den
+        result.r.den = x.r.den
+    else:
+        result = x + toBigRational(y)
 
 func `+`*(x: int, y: VRational): VRational =
-    result.num = x * y.den + y.num
-    result.den = y.den
+    if y.rKind == NormalRational:
+        result.r.num = y.r.num + x * y.r.den
+        result.r.den = y.r.den
+    else:
+        result = toBigRational(x) + y
 
 func `+=`*(x: var VRational, y: VRational) =
-    let common = lcm(x.den, y.den)
-    x.num = common div x.den * x.num + common div y.den * y.num
-    x.den = common
-    reduce(x)
+    if x.rKind == NormalRational:
+        if y.rKind == NormalRational:
+            let common = lcm(x.r.den, y.r.den)
+            x.r.num = common div x.r.den * x.r.num + common div y.r.den * y.r.num
+            x.r.den = common
+            reduce(x)
+        else:
+            x += toBigRational(y)
+    else:
+        if y.rKind == NormalRational:
+            x = toBigRational(x) + y
+        else:
+            x.br += y.br
 
 func `+=`*(x: var VRational, y: int) =
-    x.num += y * x.den
+    if x.rKind == NormalRational:
+        x.r.num += y * x.r.den
+    else:
+        x += toBigRational(y)
 
 func `-`*(x: VRational): VRational =
     result.num = -x.num
