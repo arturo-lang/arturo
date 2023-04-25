@@ -148,7 +148,7 @@ func newRat*(x: int = 0): Rat =
         else:
             mpq_set_ui(result[], (x shr 32).uint32, 1)
             mpq_mul_2exp(result[], result[], 32)
-            mpq_add(result[], result[], newInt(x.uint32))
+            mpq_add(result[], result[], newRat(x.uint32))
     else:
         mpq_set_si(result[], x.clong, 1)
 
