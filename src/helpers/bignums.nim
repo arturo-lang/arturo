@@ -207,6 +207,9 @@ func toCLong*(x: Int): clong =
 func toCDouble*(x: Float): cdouble =
     return mpfr_get_d(x[], MPFR_RNDN)
 
+func toCDouble*(x: Rat): cdouble =
+    return mpq_get_d(x[])
+
 #=======================================
 # Overloads
 #=======================================
