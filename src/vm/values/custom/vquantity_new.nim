@@ -310,6 +310,10 @@ static:
     defUnit "lt",       "LT",       false,      "2240 lb",                  "longTon", "longTons"
     defUnit "st",       "st",       false,      "14 lb",                    "stone", "stones"
     defUnit "Da",       "Da",       false,      "1.66053906660e-27 kg",     "dalton", "daltons", "AMU"
+    defUnit "gr",       "gr",       false,      "64.79891 mg",              "grain", "grains"
+    defUnit "dwt",      "dwt",      false,      "24 gr",                    "pennyweight", "pennyweights"
+    defUnit "ozt",      "ozt",      false,      "20 dwt",                   "troyOunce", "troyOunces"
+    defUnit "lbt",      "lbt",      false,      "12 ozt",                   "troyPound", "troyPounds"
     
     #---------------------------------------------------------------------------------------------------------------------------
     # Speed units (base: m/s)
@@ -1090,6 +1094,8 @@ when isMainModule:
     echo $(newQuantity("3 days") + newQuantity("1 week"))
 
     echo $(newQuantity("15 km/hr") * newQuantity("30 min"))
+
+    echo $(newQuantity("0 g") + newQuantity("1 ozt"))
 
     # proc getSign1(x: float): float {.inline.} =
     #     if x < 12:
