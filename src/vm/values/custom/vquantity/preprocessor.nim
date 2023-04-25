@@ -66,7 +66,7 @@ proc getConverted(q: Quantity): VRational =
             let atomUnit = getDefined(atom.kind)
             result *= atomUnit.value ^ atom.expo
 
-proc newQuantity(v: float, atoms: seq[Atom], base: static bool = false): Quantity =
+proc newQuantity(v: VRational, atoms: seq[Atom], base: static bool = false): Quantity =
     result.original = v
     result.value = v
     result.atoms = atoms
