@@ -16,6 +16,6 @@ loop @[
     print [
         pad ~"|start|" 2 pad ~"|stop|" 7 pad ~"|increment|" 7
         pad "->" 9
-        (zero? increment)? -> "[]"
-                           -> @range.step: increment start stop
+        try? -> @range.step: increment start stop
+        else -> "Error"
     ]
