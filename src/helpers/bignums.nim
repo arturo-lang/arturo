@@ -886,6 +886,11 @@ func `$`*(z: Int, base: cint = 10): string =
     result = newString(digits(z, base) + 2)
     result.setLen(mpz_get_str(cstring(result), base, z[]).len)
 
+func `$`*(z: Float): string =
+    result = newString(32)
+    var exp = 0
+    result.setLen(mpfr_get_str(cstring(result), exp, 10, 0, z[], MPFR_RNDN).len)
+
 func `$`*(z: Rat, base: range[(2.cint) .. (62.cint)] = 10): string =
     validBase(base)
     result = newString(digits(mpq_numref(z[]), base) + digits(mpq_denref(z[]), base) + 3)
