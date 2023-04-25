@@ -125,12 +125,12 @@ proc `$`*(q: Quantity): string =
         result &= "/" & den.join("·")
 
 proc parseQuantity*(s: string): Quantity =
-    proc parseValue(str: string): float =
+    proc parseValue(str: string): VRational =
         if str.contains("/"):
             let parts = str.replace("pi", $(PI)).split("/")
-            return parseFloat(parts[0]) / parseFloat(parts[1])
+            return toRational(parseFloat(parts[0]) / parseFloat(parts[1]))
         else:
-            return parseFloat(str)
+            return toRational(parseFloat(str))
 
     proc parseAtoms(str: string): seq[Atom] =
         proc parseAtom(atstr: string, denominator: static bool=false): Atom =
