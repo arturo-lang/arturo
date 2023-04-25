@@ -793,6 +793,14 @@ func `$`*(z: Int, base: cint = 10): string =
     result = newString(digits(z, base) + 2)
     result.setLen(mpz_get_str(cstring(result), base, z[]).len)
 
+func `$`*(z: Rat, base: range[(2.cint) .. (62.cint)] = 10): string =
+    validBase(base)
+    result = newString()
+    let strL = mpq_get_str(cstring(result), base, z[])
+    result.setLen(strL)
+    # result = newString(100)
+    # result.setLen(mpq_get_str(cstring(result), base, z[]).len)
+
 #=======================================
 # Methods
 #=======================================
