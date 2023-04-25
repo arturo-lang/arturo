@@ -478,6 +478,9 @@ func `+`*(x:Int, y: float): float =
 func `+`*(x: Rat, y: Rat): Rat =
     newRat().add(x, y)
 
+func `+=`*(x, y: Rat) =
+    discard z.add(x, y)
+
 func `+=`*(z: Int, x: int | culong | Int) =
     z.inc(x)
 
