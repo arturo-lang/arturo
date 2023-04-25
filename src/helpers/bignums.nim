@@ -389,11 +389,17 @@ func `==`*(x: Float, y: int | float | culong | Float): bool =
 func `==`*(x: float | int | culong, y: Float): bool =
     cmp(y, x) == 0
 
+func `==`*(x, y: Rat): bool =
+    cmp(x, y) == 0
+
 func `<`*(x: Int, y: int | culong | Int): bool =
     cmp(x, y) == -1
 
 func `<`*(x: int | culong, y: Int): bool =
     cmp(y, x) == 1
+
+func `<`*(x, y: Rat): bool =
+    cmp(x, y) == -1
 
 func `<=`*(x: Int, y: int | culong | Int): bool =
     let c = cmp(x, y)
@@ -402,6 +408,10 @@ func `<=`*(x: Int, y: int | culong | Int): bool =
 func `<=`*(x: int | culong, y: Int): bool =
     let c = cmp(y, x)
     c == 0 or c == 1
+
+func `<=`*(x, y: Rat): bool =
+    let c = cmp(x, y)
+    c == 0 or c == -1
 
 #-----------------------
 # Arithmetic operators
@@ -421,6 +431,10 @@ func add*(z, x: Int, y: int): Int =
     else:
         if y >= 0: z.add(x, y.culong) else: z.add(x, newInt(y))
 
+func add*(z, x, y: Rat): Rat =
+    result = z
+    mpq_add(result[], x[], y[])
+
 func inc*(z: Int, x: int | culong | Int) =
     discard z.add(z, x)
 
@@ -439,6 +453,9 @@ func `+`*(x:Int, y: float): float =
     let res = newFloat()
     mpfr_add_d(res[], newFloat(x)[], y, MPFR_RNDN)
     result = toCDouble(res)
+
+func `+`*(x: Rat, y: Rat): Rat =
+    newRat().add(x, y)
 
 func `+=`*(z: Int, x: int | culong | Int) =
     z.inc(x)
@@ -467,6 +484,10 @@ func sub*(z: Int, x: int, y: Int): Int =
     else:
         if x >= 0: z.sub(x.culong, y) else: z.sub(newInt(x), y)
 
+func sub*(z, x, y: Rat): Rat =
+    result = z
+    mpq_sub(result[], x[], y[])
+
 func dec*(z: Int, x: int | culong | Int) =
     discard z.sub(z, x)
 
@@ -485,6 +506,9 @@ func `-`*(x:Int, y: float): float =
     let res = newFloat()
     mpfr_sub_d(res[], newFloat(x)[], y, MPFR_RNDN)
     result = toCDouble(res)
+
+func `-`*(x: Rat, y: Rat): Rat =
+    newRat().sub(x, y)
 
 func `-=`*(z: Int, x: int | culong | Int) =
     z.dec(x)
@@ -513,6 +537,10 @@ func mul*(z, x: Int, y: int): Int =
     else:
         mpz_mul_si(result[], x[], y.clong)
 
+func mul*(z, x, y: Rat): Rat =
+    result = z
+    mpq_mul(result[], x[], y[])
+
 func `*`*(x: Int, y: int | culong | Int): Int =
     newInt().mul(x, y)
 
@@ -528,6 +556,9 @@ func `*`*(x:Int, y: float): float =
     let res = newFloat()
     mpfr_mul_d(res[], newFloat(x)[], y, MPFR_RNDN)
     result = toCDouble(res)
+
+func `*`*(x: Rat, y: Rat): Rat =
+    newRat().mul(x, y)
 
 func `*=`*(z: Int, x: int | culong | Int) =
     discard z.mul(z, x)
@@ -550,6 +581,10 @@ func `div`*(z, x: Int, y: int): Int =
 
 func `div`*(x: Int, y: int | culong | Int): Int =
     newInt().`div`(x, y)
+
+func `div`*(z, x, y: Rat): Rat =
+    result = z
+    mpq_div(result[], x[], y[])
 
 func `divI`*(x: Int, y: int | culong | Int) = 
     discard x.`div`(x, y)
