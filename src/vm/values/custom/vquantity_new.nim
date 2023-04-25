@@ -543,7 +543,7 @@ static:
 
 type
     AtomExponent        = -5..5
-    QuantityValue       = float
+    QuantityValue       = VRational
     QuantitySignature   = int64
 
     Prefix          = generatePrefixDefinitions()
