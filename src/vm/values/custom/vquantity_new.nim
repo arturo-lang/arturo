@@ -693,7 +693,7 @@ proc parseAtoms*(str: string): Atoms =
 # Constructors
 #=======================================
 
-proc newQuantity*(v: float, atoms: Atoms): Quantity =
+proc newQuantity*(v: VRational, atoms: Atoms): Quantity =
     result.original = v
     result.value = v
 
