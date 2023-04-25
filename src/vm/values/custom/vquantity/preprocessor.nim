@@ -279,7 +279,7 @@ macro generatePrefixDefinitions*(): untyped =
 
     for (prefix, content) in pairs(prefixes):
         let (symbol, value) = content
-        let exponent = log10(value).int
+        let exponent = value
         res.add nnkEnumFieldDef.newTree(
             newIdentNode(prefixId(prefix)),
             nnkTupleConstr.newTree(
