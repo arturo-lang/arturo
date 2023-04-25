@@ -14,6 +14,7 @@
 
 import algorithm, math, parseutils, sequtils, strutils, sugar, tables
 
+import vm/values/custom/vrational
 import vquantity/preprocessor
 
 #=======================================
