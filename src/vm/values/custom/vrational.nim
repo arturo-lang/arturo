@@ -19,6 +19,9 @@
 
 import math, hashes
 
+when not defined(NOGMP):
+    import helpers/bignums
+
 #=======================================
 # Types
 #=======================================
@@ -32,37 +35,62 @@ type
         num*: T
         den*: T
 
-    VRational* = VRationalObj[int]
+    RationalKind = enum
+        NormalRational,
+        BigRational
+
+    VRational* = object
+        case rKind*: RationalKind:
+            of NormalRational:
+                r*: VRationalObj[int]
+            of BigRational:
+                when not defined(NOGMP):
+                    br*: Rat
 
 #=======================================
 # Methods
 #=======================================
 
 func reduce*(x: var VRational) =
-    let common = gcd(x.num, x.den)
-    if x.den > 0:
-        x.num = x.num div common
-        x.den = x.den div common
-    elif x.den < 0:
-        x.num = -x.num div common
-        x.den = -x.den div common
+    let common = gcd(x.r.num, x.r.den)
+    if x.r.den > 0:
+        x.r.num = x.r.num div common
+        x.r.den = x.r.den div common
+    elif x.r.den < 0:
+        x.r.num = -x.r.num div common
+        x.r.den = -x.r.den div common
     else:
         raise newException(DivByZeroDefect, "division by zero")
 
 func initRational*(num, den: int): VRational =
-    result.num = num
-    result.den = den
+    result.rKind = NormalRational
+    result.r.num = num
+    result.r.den = den
     reduce(result)
 
 func `//`*(num, den: int): VRational =
     initRational(num, den)
 
 func `$`*(x: VRational): string =
-    result = $x.num & "/" & $x.den
+    if x.rKind == NormalRational:
+        result = $x.r.num & "/" & $x.r.den
+    else:
+        when not defined(NOGMP):
+            result = $x.br
 
 func toRational*(x: int): VRational =
-    result.num = x
-    result.den = 1
+    result.rKind = NormalRational
+    result.r.num = x
+    result.r.den = 1
+
+when not defined(NOGMP):
+    func toBigRational*(x: int | float): VRational =
+        result.rKind = BigRational
+        result.br = newRat(x)
+
+    func toBigRational*(x: VRational): VRational =
+        result.rKind = BigRational
+        result.br = newRat(x.r.num, x.r.den)
 
 func toRational*(x: float, n: int = high(int) shr (sizeof(int) div 2 * 8)): VRational =
     var
@@ -77,21 +105,46 @@ func toRational*(x: float, n: int = high(int) shr (sizeof(int) div 2 * 8)): VRat
         m21 = m22 * ai + m21
         if x == float(ai): break # division by zero
         x = 1 / (x - float(ai))
-        if x > float(high(int32)): break # representation failure
+        if x > float(high(int32)): 
+            when not defined(NOGMP):
+                return toBigRational(x)
+            else:
+                break # representation failure; should throw error!
         ai = int(x)
     result = m11 // m21
 
 func toFloat*(x: VRational): float =
-    x.num / x.den
+    if x.rKind == NormalRational:
+        result = x.r.num / x.r.den
+    else:
+        when not defined(NOGMP):
+            result = toCDouble(x.br)
 
 func toInt*(x: VRational): int =
-    x.num div x.den
+    if x.rKind == NormalRational:
+        result = x.r.num div x.r.den
+    else:
+        discard
+        # show error
 
 func `+`*(x, y: VRational): VRational =
-    let common = lcm(x.den, y.den)
-    result.num = common div x.den * x.num + common div y.den * y.num
-    result.den = common
-    reduce(result)
+    if x.rKind == NormalRational:
+        if y.rKind == NormalRational:
+            let common = lcm(x.r.den, y.r.den)
+            result.rKind = NormalRational
+            result.r.num = common div x.r.den * x.r.num + common div y.r.den * y.r.num
+            result.r.den = common
+            reduce(result)
+        else:
+            result = x + toBigRational(y)
+    else:
+        if y.rKind == NormalRational:
+            result = toBigRational(x) + y
+        else:
+            result = VRational(
+                rKind: BigRational,
+                br: x.br + y.br
+            )
 
 func `+`*(x: VRational, y: int): VRational =
     result.num = x.num + y * x.den
@@ -233,7 +286,7 @@ func floorMod*(x, y: VRational): VRational =
     result = floorMod(x.num * y.den, y.num * x.den) // (x.den * y.den)
     reduce(result)
 
-func hash*[T](x: VRational): Hash =
+func hash*(x: VRational): Hash =
     var copy = x
     reduce(copy)
 
