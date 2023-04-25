@@ -129,6 +129,38 @@ func newFloat*(s: string, base: cint = 10): Float =
     if mpfr_set_str(result[], s, base, MPFR_RNDN) == -1:
         raise newException(ValueError, "String not in correct base")
 
+func newRat*(x: culong): Rat =
+    new(result, finalizeRat)
+    mpq_init(result[])
+    mpq_set_ui(result[], x, 1)
+
+func newRat*(x: int = 0): Rat =
+    new(result, finalizeRat)
+    mpq_init(result[])
+    when isLLP64():
+        if x.fitsLLP64Long:
+            mp1_set_si(result[], x.clong, 1)
+        elif x.fitsLLP64ULong:
+            mp1_set_ui(result[], x.culong, 1)
+        else:
+            mpq_set_ui(result[], (x shr 32).uint32, 1)
+            mpq_mul_2exp(result[], result[], 32, 1)
+            mpq_add_ui(result[], result[], (x.uint32))
+    else:
+        mpq_set_si(result[], x.clong, 1)
+
+func newRat*(x: float): Rat =
+    new(result,finalizeRat)
+    mpq_init(result[])
+    mpq_set_d(result[], x)
+
+func newRat*(s: string, base: cint = 10): Rat =
+    validBase(base)
+    new(result, finalizeRat)
+    mpq_init(result[])
+    if mpq_set_str(result[], s, base) == -1:
+        raise newException(ValueError, "String not in correct base")
+
 #=======================================
 # Setters
 #=======================================
