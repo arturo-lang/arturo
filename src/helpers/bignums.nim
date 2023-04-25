@@ -197,6 +197,39 @@ func set*(z: Int, s: string, base: cint = 10): Int =
     if mpz_set_str(result[], s, base) == -1:
         raise newException(ValueError, "String not in correct base")
 
+func set*(z, x: Rat): Rat =
+    result = z
+    mpq_set(result[], x[])
+
+func set*(z: Rat, x: culong): Rat =
+    result = z
+    mpq_set_ui(result[], x, 1)
+
+func set*(z: Rat, x: int): Rat =
+    result = z
+    when isLLP64():
+        if x.fitsLLP64Long:
+            mpq_set_si(result[], x.clong, 1)
+        elif x.fitsLLP64ULong:
+            mpq_set_ui(result[], x.culong, 1)
+        else:
+            mpq_set_ui(result[], (x shr 32).uint32, 1)
+            mpq_mul_2exp(result[], result[], 32)
+            mpq_add(result[], result[], newRat(x.uint32)[])
+    else:
+        mpq_set_si(result[], x.clong, 1)
+
+func set*(z: Rat, x: float): Rat =
+    result = z
+    mpq_set_d(result[], x)
+
+func set*(z: Rat, s: string, base: cint = 10): Rat =
+    validBase(base)
+    result = z
+    if mpq_set_str(result[], s, base) == -1:
+        raise newException(ValueError, "String not in correct base")
+    canonicalize(result)
+    
 #=======================================
 # Converters
 #=======================================
