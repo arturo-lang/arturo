@@ -137,6 +137,11 @@ func newRat*(x: culong): Rat =
     mpq_init(result[])
     mpq_set_ui(result[], x, 1)
 
+func newRat*(x, y: culong): Rat =
+    new(result,finalizeRat)
+    mpq_init(result[])
+    mpq_set_ui(result[], x, y)
+
 func newRat*(x: int = 0): Rat =
     new(result, finalizeRat)
     mpq_init(result[])
@@ -151,6 +156,22 @@ func newRat*(x: int = 0): Rat =
             mpq_add(result[], result[], newRat(x.uint32)[])
     else:
         mpq_set_si(result[], x.clong, 1)
+
+func newRat*(x, y: int): Rat =
+    new(result, finalizeRat)
+    mpq_init(result[])
+    when isLLP64():
+        if x.fitsLLP64Long:
+            mpq_set_si(result[], x.clong, y.clong)
+        elif x.fitsLLP64ULong:
+            mpq_set_ui(result[], x.culong, y.culong)
+        else:
+            # needs fix!
+            mpq_set_ui(result[], (x shr 32).uint32, 1)
+            mpq_mul_2exp(result[], result[], 32)
+            mpq_add(result[], result[], newRat(x.uint32)[])
+    else:
+        mpq_set_si(result[], x.clong, y.culong)
 
 func newRat*(x: float): Rat =
     new(result,finalizeRat)
