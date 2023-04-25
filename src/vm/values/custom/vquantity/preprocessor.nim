@@ -17,7 +17,7 @@ type
 var
     baseUnits {.compileTime.}: seq[string]
     dimensions {.compileTime.}: OrderedTable[int64,string]
-    prefixes {.compileTime.}: OrderedTable[string, tuple[sym: string, val: VRational]]
+    prefixes {.compileTime.}: OrderedTable[string, tuple[sym: string, val: int]]
     defs {.compileTime.}: OrderedTable[string, Quantity]
     units {.compileTime.}: OrderedTable[string, string]
 
@@ -56,8 +56,12 @@ proc getDefined*(str: string): Quantity =
     result = defs[unit]
 
     if pref != "No":
-        result.value *= prefixes[pref].val
-        result.original *= prefixes[pref].val
+        var prefVal = toRational(pow(10.0, abs(float(prefixes[pref].val))))
+        if prefixes[pref].val < 0:
+            prefVal = reciprocal(prefVal)
+
+        result.value *= prefVal
+        result.original *= prefVal
 
 proc getConverted(q: Quantity): VRational =
     result = q.value
@@ -203,10 +207,7 @@ proc defDimension*(quantity: string, formula: string = "") =
     dimensions[signature] = quantity
 
 proc defPrefix*(prefix, symbol: string, value: int) =
-    var prefVal = toRational(pow(10.0, abs(float(value))))
-    if value < 0:
-        prefVal = reciprocal(prefVal)
-    prefixes[prefix] = (sym: symbol, val: prefVal)
+    prefixes[prefix] = (sym: symbol, val: value)
 
 proc defUnit*(unit: string, symbol: string, prefixed: bool, definition: string, aliases: varargs[string]) =
     echo "defining: " & unit
@@ -279,11 +280,7 @@ macro generatePrefixDefinitions*(): untyped =
 
     for (prefix, content) in pairs(prefixes):
         let (symbol, value) = content
-        var exponent: int
-        if value.num == 1:
-            exponent = -int(log10(float(value.den)))
-        else:
-            exponent = int(log10(float(value.num)))
+        var exponent = value
 
         res.add nnkEnumFieldDef.newTree(
             newIdentNode(prefixId(prefix)),
