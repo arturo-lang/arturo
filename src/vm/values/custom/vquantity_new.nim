@@ -630,10 +630,10 @@ proc getSignature(atoms: Atoms): QuantitySignature =
         result += prim.signature * atom.power
 
 proc getValue(atoms: Atoms): QuantityValue =
-    result = 1.0
+    result = 1//1
     for atom in atoms:
         let prim = getPrimitive(atom.unit)
-        result *= pow(prim.value, float(atom.power))
+        result *= prim.value ^ atom.power
 
 proc flatten*(atoms: Atoms): Atoms =
     var cnts: OrderedTable[PrefixedUnit, int]
