@@ -551,6 +551,13 @@ static:
     #---------------------------------------------------------------------------------------------------------------------------
     defUnit "lm",       "lm",       true,       "1 cd.sr",                  "lumen", "lumens"
 
+    #----------------------------------------------------------------------------------------------------
+    # Constants
+    #----------------------------------------------------------------------------------------------------
+    #           name                        pre-calculate?      definition
+    #----------------------------------------------------------------------------------------------------
+    defConstant "speedOfLight",             true,               "299792458 m/s"
+
 #=======================================
 # Types
 #=======================================
@@ -625,6 +632,12 @@ var
     Dimensions          : Table[QuantitySignature, string]
     Quantities          : Table[Unit, Quantity]
     UserUnits           : Table[string,string]
+
+#=======================================
+# Useful Constants
+#=======================================
+
+generateConstantDefinitions()
 
 #=======================================
 # Helpers
@@ -720,24 +733,24 @@ proc newQuantity*(v: VRational, atoms: Atoms): Quantity =
 
         result.atoms.add(atom)
 
-proc newQuantity*(str: string): Quantity =
-    proc parseValue(s: string): VRational =
-        if s.contains("."):
-            result = toRational(parseFloat(s))
-        elif s.contains("/"):
-            let ratParts = s.split("/")
-            try:
-                result = initRational(parseInt(ratparts[0]), parseInt(ratparts[1]))
-            except ValueError:
-                when not defined(NOGMP):
-                    result = initRational(newInt(ratparts[0]), newInt(ratparts[1]))
-        else:
-            try:
-                result = toRational(parseInt(s))
-            except ValueError:
-                when not defined(NOGMP):
-                    result = toRational(newInt(s))
+proc parseValue(s: string): VRational =
+    if s.contains("."):
+        result = toRational(parseFloat(s))
+    elif s.contains("/"):
+        let ratParts = s.split("/")
+        try:
+            result = initRational(parseInt(ratparts[0]), parseInt(ratparts[1]))
+        except ValueError:
+            when not defined(NOGMP):
+                result = initRational(newInt(ratparts[0]), newInt(ratparts[1]))
+    else:
+        try:
+            result = toRational(parseInt(s))
+        except ValueError:
+            when not defined(NOGMP):
+                result = toRational(newInt(s))
 
+proc newQuantity*(str: string): Quantity =
     let parts = str.split(" ")
 
     # Warning: we should be able to parse rational numbers as well!
@@ -918,19 +931,16 @@ proc defineNewUserUnit*(name: string, symbol: string, definition: string) =
     Quantities[Unit(kind: User, name: name)] = newQuantity(definition)
 
 #=======================================
-# Useful Constants
-#=======================================
-
-# var
-#     planckMass = newQuantity(2.176434e-8, Atoms(@[Atom(Unit(kind: Core, core: Mass), 1.int64)]))
-
-#=======================================
 # Setup
 #=======================================
 
 proc initQuantities*() =
     Dimensions = generateDimensions()
     Quantities = generateQuantities()
+
+    generateConstants()
+
+    # planckMass = newQuantity(parseValue("2.176434e-8"), parseAtoms("1/kg"))
 
 #=======================================
 # Testing
@@ -1171,3 +1181,4 @@ when isMainModule:
     #         i = getSign3(j)
 
     # echo "i = ", i
+    echo $(speedOfLight)

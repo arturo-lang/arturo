@@ -16,12 +16,18 @@ type
         atoms: seq[Atom]
         base: bool
 
+    Constant = tuple
+        definition: string
+        value: Quantity
+        precalculated: bool
+
 var
     baseUnits {.compileTime.}: seq[string]
     dimensions {.compileTime.}: OrderedTable[int64,string]
     prefixes {.compileTime.}: OrderedTable[string, tuple[sym: string, val: int]]
     defs {.compileTime.}: OrderedTable[string, Quantity]
     units {.compileTime.}: OrderedTable[string, string]
+    constants {.compileTime.}: OrderedTable[string,Constant]
 
     parsable {.compileTime.}: OrderedTable[string, (string, string)]
     currencyUnits {.compileTime.}: seq[string]
@@ -245,6 +251,20 @@ proc defUnit*(unit: string, symbol: string, prefixed: bool, definition: string, 
     else:
         temperatureUnits.add(unit)
 
+proc defConstant*(name: string, precalculated: bool, definition: string) =
+    if precalculated:
+        constants[name] = (
+            definition: definition, 
+            value: parseQuantity(definition),
+            precalculated: precalculated
+        )
+    else:
+        constants[name] = (
+            definition: definition, 
+            value: newQuantity(1//1, @[(kind: name, expo: 1)], base=true),
+            precalculated: precalculated
+        )
+
 proc defCurrency*(currency: string, symbol: string) =
     currencyUnits.add(currency)
     defUnit(currency, symbol, false, "")
@@ -269,6 +289,8 @@ proc printUnits*() =
         echo "\t.atoms = " & $(quantity.atoms)
         echo "\t.base = " & $(quantity.base)
         echo ""
+
+    echo $(constants)
 
     # echo $(parsable)
 
@@ -317,6 +339,18 @@ macro generateUnitDefinitions*(): untyped =
         newIdentNode("No_Unit"),
         newLit("")
     )
+
+    res
+
+macro generateConstantDefinitions*(): untyped =
+    let res = nnkVarSection.newTree()
+
+    for (name, content) in pairs(constants):
+        res.add nnkIdentDefs.newTree(
+            newIdentNode(name),
+            newIdentNode("Quantity"),
+            newEmptyNode()
+        )
 
     res
 
@@ -485,38 +519,41 @@ proc newLit(ct: CTRational): NimNode =
         )
     )
 
+proc getAtomsSeq*(q: Quantity): NimNode =
+    var atoms = nnkBracket.newTree()
+    for atom in q.atoms:
+        let (expo, kind) = parsable[atom.kind]
+        atoms.add nnkTupleConstr.newTree(
+            nnkTupleConstr.newTree(
+                newIdentNode(prefixId(expo)),
+                nnkObjConstr.newTree(
+                    newIdentNode("Unit"),
+                    nnkExprColonExpr.newTree(
+                        newIdentNode("kind"),
+                        newIdentNode("Core")
+                    ),
+                    nnkExprColonExpr.newTree(
+                        newIdentNode("core"),
+                        newIdentNode(unitId(kind))
+                    )
+                )
+            ),
+            nnkCall.newTree(
+                newIdentNode("AtomExponent"),
+                newLit(atom.expo)
+            )
+        )
+
+    result = nnkPrefix.newTree(
+        newIdentNode("@"),
+        atoms
+    )
+
 macro generateQuantities*(): untyped =
     let items = nnkTableConstr.newTree()
 
     for (unit,quantity) in pairs(defs):
-        var atoms = nnkBracket.newTree()
-        for atom in quantity.atoms:
-            let (expo, kind) = parsable[atom.kind]
-            atoms.add nnkTupleConstr.newTree(
-                nnkTupleConstr.newTree(
-                    newIdentNode(prefixId(expo)),
-                    nnkObjConstr.newTree(
-                        newIdentNode("Unit"),
-                        nnkExprColonExpr.newTree(
-                            newIdentNode("kind"),
-                            newIdentNode("Core")
-                        ),
-                        nnkExprColonExpr.newTree(
-                            newIdentNode("core"),
-                            newIdentNode(unitId(kind))
-                        )
-                    )
-                ),
-                nnkCall.newTree(
-                    newIdentNode("AtomExponent"),
-                    newLit(atom.expo)
-                )
-            )
-
-        let atomsSeq = nnkPrefix.newTree(
-            newIdentNode("@"),
-            atoms
-        )
+        var atomsSeq = getAtomsSeq(quantity)
 
         var flags = nnkCurly.newTree()
         if quantity.base:
@@ -554,6 +591,24 @@ macro generateQuantities*(): untyped =
         newIdentNode("toTable")
     )
 
+macro generateConstants*(): untyped =
+    let res = nnkStmtList.newTree()
+    for (name, content) in pairs(constants):
+        let (definition, quantity, precalculated) = content
+
+        if precalculated:
+            res.add nnkAsgn.newTree(
+                newIdentNode(name),
+                nnkTupleConstr.newTree(
+                    newLit(quantity.original),
+                    newLit(quantity.value),
+                    newLit(quantity.signature),
+                    getAtomsSeq(quantity),
+                    nnkCurly.newTree()
+                )
+            )
+    res
+
 dumpAstGen:
     (VQuantity)(1)
     @[(one,two), (three,four)]
@@ -581,3 +636,11 @@ dumpAstGen:
     initRational(1, 2)
 
     VRational(rKind: NormalRational, r: VRationalObj[int](num: 123, den: 456))
+
+    var
+        planckMass: Quantity
+        planckLength: Quantity
+
+dumpAstGen:
+    speedOfLight = 1
+    sp = 2
