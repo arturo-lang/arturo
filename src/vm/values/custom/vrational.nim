@@ -71,13 +71,6 @@ func initRational*(num, den: int): VRational =
 func `//`*(num, den: int): VRational =
     initRational(num, den)
 
-func `$`*(x: VRational): string =
-    if x.rKind == NormalRational:
-        result = $x.r.num & "/" & $x.r.den
-    else:
-        when not defined(NOGMP):
-            result = $x.br
-
 func toRational*(x: int): VRational =
     result.rKind = NormalRational
     result.r.num = x
@@ -500,3 +493,10 @@ func codify*(x: VRational): string =
             result = fmt("to :rational @[neg {num * -1} {den}]")
         else:
             result = fmt("to :rational [{num} {den}]")
+
+func `$`*(x: VRational): string =
+    if x.rKind == NormalRational:
+        result = $x.r.num & "/" & $x.r.den
+    else:
+        when not defined(NOGMP):
+            result = $x.br
