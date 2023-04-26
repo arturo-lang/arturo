@@ -136,11 +136,13 @@ func newRat*(x: culong): Rat =
     new(result, finalizeRat)
     mpq_init(result[])
     mpq_set_ui(result[], x, 1)
+    canonicalize(result)
 
 func newRat*(x, y: culong): Rat =
     new(result,finalizeRat)
     mpq_init(result[])
     mpq_set_ui(result[], x, y)
+    canonicalize(result)
 
 func newRat*(x: int = 0): Rat =
     new(result, finalizeRat)
@@ -156,6 +158,7 @@ func newRat*(x: int = 0): Rat =
             mpq_add(result[], result[], newRat(x.uint32)[])
     else:
         mpq_set_si(result[], x.clong, 1)
+    canonicalize(result)
 
 func newRat*(x, y: int): Rat =
     new(result, finalizeRat)
@@ -172,11 +175,27 @@ func newRat*(x, y: int): Rat =
             mpq_add(result[], result[], newRat(x.uint32)[])
     else:
         mpq_set_si(result[], x.clong, y.culong)
+    canonicalize(result)
+
+func newRat*(x, y: Int): Rat =
+    new(result,finalizeRat)
+    mpq_init(result[])
+    mpq_set_num(result[], x[])
+    mpq_set_den(result[], y[])
+    canonicalize(result)
 
 func newRat*(x: float): Rat =
     new(result,finalizeRat)
+    debugEcho "newRat with float"
     mpq_init(result[])
     mpq_set_d(result[], x)
+    canonicalize(result)
+
+func newRat*(x: Int): Rat =
+    new(result,finalizeRat)
+    mpq_init(result[])
+    mpq_set_z(result[], x[])
+    canonicalize(result)
 
 func newRat*(s: string, base: cint = 10): Rat =
     validBase(base)
