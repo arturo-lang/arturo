@@ -6,7 +6,7 @@
 # @file: helpers/bignums.nim
 #=======================================================
 
-# Code based on Nim GMP wrapper
+# Code initially based on Nim GMP wrapper
 # (c) Copyright 2014 Will Szumski
 
 # TODO(Helper/bignums) Is there any way *not* to use the GMP/MPFR library?
