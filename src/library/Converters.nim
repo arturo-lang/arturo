@@ -200,8 +200,8 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                         return newString($(y))
                     of Block:
                         return newBlock(@[
-                            newInteger(y.rat.num),
-                            newInteger(y.rat.den)
+                            newInteger(getNumerator(y.rat)),
+                            newInteger(getDenominator(y.rat))
                         ])
                     else: throwCannotConvert()
 
