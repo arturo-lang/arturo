@@ -597,7 +597,10 @@ proc defineSymbols*() =
             else:
                 rat = toRational(x.f)
 
-            push(newInteger(rat.den))
+            if rat.rKind == NormalRational:
+                push(newInteger(getDenominator(rat)))
+            else:
+                push(newInteger(getDenominator(rat, big=true)))
 
     builtin "digits",
         alias       = unaliased, 
