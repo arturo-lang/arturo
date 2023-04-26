@@ -83,6 +83,10 @@ func initRational*(num, den: int): VRational =
 func initRational*(num: Int, den: Int): VRational =
     result.rKind = BigRational
     result.br = newRat(num, den)
+    let numer = numerator(result.br)
+    let denom = denominator(result.br)
+    if fitsInt(numer) and fitsInt(denom):
+        result = initRational(getInt(numer), getInt(denom))
 
 func initRational*(num: int, den: Int): VRational =
     result.rKind = BigRational
