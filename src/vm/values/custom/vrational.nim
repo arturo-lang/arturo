@@ -369,6 +369,15 @@ func `^`*(x: VRational, y: int): VRational =
             br: x.br ^ y
         )
 
+func `^`*(x: VRational, y: float): VRational =
+    if x.rKind == NormalRational:
+        result = toBigRational(x) ^ y
+    else:
+        result = VRational(
+            rKind: BigRational,
+            br: x.br ^ y
+        )
+
 func cmp*(x, y: VRational): int =
     if x.rKind == NormalRational:
         if y.rKind == NormalRational:
