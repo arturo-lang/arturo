@@ -110,6 +110,10 @@ func toRational*(x: int): VRational =
     result.r.num = x
     result.r.den = 1
 
+func toRational*(x: Int): VRational = 
+    result.rKind = BigRational
+    result.br = newRat(x)
+
 when not defined(NOGMP):
     func toBigRational*(x: int | Int | float): VRational =
         result.rKind = BigRational
