@@ -425,28 +425,64 @@ func `==`*(x, y: VRational): bool =
             result = x.br == y.br
 
 func abs*(x: VRational): VRational =
-    result.num = abs x.num
-    result.den = abs x.den
+    if x.rKind == NormalRational:
+        result.rKind = NormalRational
+        result.r.num = abs x.r.num
+        result.r.den = abs x.r.den
+    else:
+        result.rKind = BigRational
+        result.br = abs(x.br)
 
 func `div`*(x, y: VRational): int =
-    (x.num * y.den) div (y.num * x.den)
+    if x.rKind == NormalRational:
+        if y.rKind == NormalRational:
+            result = x.r.num * y.r.den div y.r.num * x.r.den
+        else:
+            raise newException(DivByZeroDefect, "div not supported")
+    else:
+        raise newException(DivByZeroDefect, "div not supported")
 
 func `mod`*(x, y: VRational): VRational =
-    result = ((x.num * y.den) mod (y.num * x.den)) // (x.den * y.den)
-    reduce(result)
+    if x.rKind == NormalRational:
+        if y.rKind == NormalRational:
+            result.rKind = NormalRational
+            result.r.num = (x.r.num * y.r.den) mod (y.r.num * x.r.den)
+            result.r.den = x.r.den * y.r.den
+            reduce(result)
+        else:
+            raise newException(DivByZeroDefect, "mod not supported")
+    else:
+        raise newException(DivByZeroDefect, "mod not supported")
 
 func floorDiv*(x, y: VRational): int =
-    floorDiv(x.num * y.den, y.num * x.den)
+    if x.rKind == NormalRational:
+        if y.rKind == NormalRational:
+            result = floorDiv(x.r.num * y.r.den, y.r.num * x.r.den)
+        else:
+            raise newException(DivByZeroDefect, "floorDiv not supported")
+    else:
+        raise newException(DivByZeroDefect, "floorDiv not supported")
 
 func floorMod*(x, y: VRational): VRational =
-    result = floorMod(x.num * y.den, y.num * x.den) // (x.den * y.den)
-    reduce(result)
+    if x.rKind == NormalRational:
+        if y.rKind == NormalRational:
+            result.rKind = NormalRational
+            result.r.num = floorMod(x.r.num * y.r.den, y.r.num * x.r.den)
+            result.r.den = x.r.den * y.r.den
+            reduce(result)
+        else:
+            raise newException(DivByZeroDefect, "floorMod not supported")
+    else:
+        raise newException(DivByZeroDefect, "floorMod not supported")
 
 func hash*(x: VRational): Hash =
-    var copy = x
-    reduce(copy)
+    if x.rKind == NormalRational:
+        var copy = x
+        reduce(copy)
 
-    var h: Hash = 0
-    h = h !& hash(copy.num)
-    h = h !& hash(copy.den)
-    result = !$h
+        var h: Hash = 0
+        h = h !& hash(copy.r.num)
+        h = h !& hash(copy.r.den)
+        result = !$h
+    else:
+        result = hash(x.br[])
