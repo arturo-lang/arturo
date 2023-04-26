@@ -559,7 +559,7 @@ static:
     #           name                            pre-calculate?      definition
     #----------------------------------------------------------------------------------------------------
     defConstant "atomicMass",                   false,              "1.660538921e-27 kg"
-    defConstant "avogadroConstant",             false,              "6.02214129e23 1/mol"
+    defConstant "avogadroConstant",             false,              "6.02214129e23 1/mol"       # avogadro
     defConstant "bohrRadius",                   false,              "5.2917721092e-11 m"
     defConstant "boltzmannConstant",            false,              "1.3806488e-23 J/K"
     defConstant "classicalElectronRadius",      false,              "2.8179403267e-15 m"
@@ -587,7 +587,7 @@ static:
     defConstant "protonMass",                   false,              "1.672621777e-27 kg"
     defConstant "protonMassEnergy",             false,              "1.503277484e-10 J"
     defConstant "reducedPlanckConstant",        false,              "1.054571726e-34 J.s"
-    defConstant "rydbergConstant",              true,               "10973731.56853955 1/m"
+    defConstant "rydbergConstant",              true,               "10973731.56853955 1/m"     # rydberg
     defConstant "speedOfLight",                 true,               "299792458 m/s"
     defConstant "standardGasVolume",            true,               "22.41410e-3 m3/mol"
     defConstant "standardPressure",             true,               "100 kPa"
@@ -597,7 +597,7 @@ static:
     defConstant "tritonMass",                   false,              "5.007356665e-27 kg"
     defConstant "unifiedMass",                  false,              "1.660538921e-27 kg"
     defConstant "vacuumPermeability",           true,               "1.2566370614e-6 N/A2"
-    defConstant "vacuumPermittivity",           false,              "8.854187817e-12 F/m"
+    defConstant "vacuumPermittivity",           false,              "8.854187817e-12 F/m"       # epsilon0
     defConstant "vonKlitzingConstant",          true,               "25812.8074434 ohm"    
 
 #=======================================
