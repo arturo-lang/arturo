@@ -80,6 +80,18 @@ func initRational*(num, den: int): VRational =
     result.r.den = den
     reduce(result)
 
+func initRational*(num: Int, den: Int): VRational =
+    result.rKind = BigRational
+    result.br = newRat(num, den)
+
+func initRational*(num: int, den: Int): VRational =
+    result.rKind = BigRational
+    result.br = newRat(newInt(num), den)
+
+func initRational*(num: Int, den: int): VRational =
+    result.rKind = BigRational
+    result.br = newRat(num, newInt(den))
+
 func `//`*(num, den: int): VRational =
     initRational(num, den)
 
@@ -89,7 +101,7 @@ func toRational*(x: int): VRational =
     result.r.den = 1
 
 when not defined(NOGMP):
-    func toBigRational*(x: int | float): VRational =
+    func toBigRational*(x: int | Int | float): VRational =
         result.rKind = BigRational
         result.br = newRat(x)
 
@@ -110,15 +122,15 @@ func toRational*(x: float, n: int = high(int) shr (sizeof(int) div 2 * 8)): VRat
         m11 = m12 * ai + m11
         m21 = m22 * ai + m21
         if x == float(ai): 
-            #debugEcho "reached here"
+            debugEcho "reached here"
             break # division by zero
         x = 1 / (x - float(ai))
         if x > float(high(int32)): 
-            # debugEcho "reached there"
-            # when not defined(NOGMP):
-            #     return toBigRational(initial)
-            # else:
-            break # representation failure; should throw error?
+            debugEcho "reached there"
+            when not defined(NOGMP):
+                return toBigRational(initial)
+            else:
+                break # representation failure; should throw error?
         ai = int(x)
     result = m11 // m21
 
