@@ -134,14 +134,11 @@ func toRational*(x: float, n: int = high(int) shr (sizeof(int) div 2 * 8)): VRat
         m11 = m12 * ai + m11
         m21 = m22 * ai + m21
         if x == float(ai): 
-            #debugEcho "reached here"
             break # division by zero
         x = 1 / (x - float(ai))
         if x > float(high(int32)): 
-            #debugEcho "reached there"
             when not defined(NOGMP):
-                #debugEcho "converting to bigRational"
-                if m11 == 0: 
+                if m11 == 0 or m21 == 0: 
                     return toBigRational(initial)
                 else: 
                     break
