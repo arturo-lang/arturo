@@ -52,14 +52,14 @@ type
 #=======================================
 
 template getNumerator*(x: VRational): untyped =
-    when x.rKind == NormalRational:
+    if x.rKind == NormalRational:
         x.r.num
     else:
         when not defined(NOGMP):
             numerator(x.br)
 
 template getDenominator*(x: VRational): untyped =
-    when x.rKind == NormalRational:
+    if x.rKind == NormalRational:
         x.r.den
     else:
         when not defined(NOGMP):
