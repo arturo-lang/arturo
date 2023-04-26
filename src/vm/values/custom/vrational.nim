@@ -495,6 +495,18 @@ func isZero*(x: VRational): bool =
     else:
         result = numerator(x.br) == 0
 
+func isNegative*(x: VRational): bool =
+    if x.rKind == NormalRational:
+        result = x.r.num < 0
+    else:
+        result = numerator(x.br) < 0
+
+func isPositive*(x: VRational): bool =
+    if x.rKind == NormalRational:
+        result = x.r.num > 0
+    else:
+        result = numerator(x.br) > 0
+
 func hash*(x: VRational): Hash =
     if x.rKind == NormalRational:
         var copy = x
