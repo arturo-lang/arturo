@@ -17,7 +17,7 @@
 # Libraries
 #=======================================
 
-import math, hashes
+import hashes, math, strformat
 
 when not defined(NOGMP):
     import helpers/bignums
@@ -486,3 +486,17 @@ func hash*(x: VRational): Hash =
         result = !$h
     else:
         result = hash(x.br[])
+
+func codify*(x: VRational): string =
+    if x.rKind == NormalRational:
+        if x.r.num < 0:
+            result = fmt("to :rational @[neg {x.r.num * -1} {x.r.den}]")
+        else:
+            result = fmt("to :rational [{x.r.num} {x.r.den}]")
+    else:
+        let num = numerator(x.br)
+        let den = denominator(x.br)
+        if num < 0:
+            result = fmt("to :rational @[neg {num * -1} {den}]")
+        else:
+            result = fmt("to :rational [{num} {den}]")
