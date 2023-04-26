@@ -113,7 +113,12 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                 case tp:
                     of Logical: return newLogical(y.i!=0)
                     of Floating: return newFloating(float(y.i))
-                    of Rational: return newRational(y.i)
+                    of Rational: 
+                        if y.iKind == NormalInteger:
+                            return newRational(y.i)
+                        else:
+                            when not defined(NOGMP):
+                                return newRational(y.bi)
                     of Char: return newChar(toUTF8(Rune(y.i)))
                     of String:
                         if y.iKind==NormalInteger:
