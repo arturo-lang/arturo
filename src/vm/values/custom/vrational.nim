@@ -84,12 +84,10 @@ func initRational*(num: Int, den: Int): VRational =
     result.rKind = BigRational
     result.br = newRat(num, den)
 
-func simplifyRational*(x: var VRational): VRational =
+func simplifyRational*(x: var VRational) =
     if x.rKind == BigRational:
-        let numer = numerator(result.br)
-        let denom = denominator(result.br)
-        if fitsInt(numer) and fitsInt(denom):
-            x = initRational(getInt(numer), getInt(denom))
+        if canBeSimplified(x.br):
+            x = initRational(getInt(numerator(x.br)), getInt(denominator(x.br)))
 
 func initRational*(num: int, den: Int): VRational =
     result.rKind = BigRational
