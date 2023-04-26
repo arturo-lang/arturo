@@ -18,7 +18,7 @@
 # Libraries
 #=======================================
 
-import os
+import math, os
 
 import extras/gmp
 import extras/mpfr
@@ -789,10 +789,17 @@ func pow*(x: Rat, y: int): Rat =
     for i in 1 ..< y:
         discard result.mul(result, x)
 
+func pow*(x: Rat, y: float): Rat =
+    let res = pow(float(toCDouble(x)), y)
+    result = newRat(res)
+
 func `^`*(x: int | culong | Int, y: culong): Int =
     pow(x, y)
 
 func `^`*(x: Rat, y: int): Rat =
+    pow(x, y)
+
+func `^`*(x: Rat, y: float): Rat =
     pow(x, y)
 
 func exp*(z, x: Int, y: culong, m: Int): Int =
