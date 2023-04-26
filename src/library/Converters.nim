@@ -36,7 +36,7 @@ when not defined(WEB):
 import vm/lib
 import vm/[bytecode, errors, eval, exec, opcodes, parse]
 
-import vm/values/custom/[vbinary, vrange]
+import vm/values/custom/[vbinary, vrange, vrational]
 
 #=======================================
 # Variables
