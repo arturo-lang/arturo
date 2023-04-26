@@ -51,19 +51,17 @@ type
 # Methods
 #=======================================
 
-template getNumerator*(x: VRational): untyped =
-    if x.rKind == NormalRational:
+template getNumerator*(x: VRational, big: bool = false): untyped =
+    when big:
+        numerator(x.br)
+    else:
         x.r.num
-    else:
-        when not defined(NOGMP):
-            numerator(x.br)
 
-template getDenominator*(x: VRational): untyped =
-    if x.rKind == NormalRational:
-        x.r.den
+template getDenominator*(x: VRational, big: bool = false): untyped =
+    when big:
+        denominator(x.br)
     else:
-        when not defined(NOGMP):
-            denominator(x.br)
+        x.r.den
 
 func reduce*(x: var VRational) =
     let common = gcd(x.r.num, x.r.den)
