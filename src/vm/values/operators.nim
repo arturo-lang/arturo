@@ -1179,8 +1179,8 @@ proc `^=`*(x: var Value, y: Value) =
         of Floating   || BigInteger     :   (when GMP: x = newFloating(pow(x.f, y.bi)))
         of Floating   || Floating       :   x.f = pow(x.f, y.f)
 
-        of Rational   || Integer        :   x = newRational(normalIntegerPow(x.rat.num, y.i), normalIntegerPow(x.rat.den, y.i))
-        of Rational   || Floating       :   x = newRational(pow(float(x.rat.num), y.f) / pow(float(x.rat.den), y.f))
+        of Rational   || Integer        :   x = newRational(x.rat ^ y.i)
+        of Rational   || Floating       :   x = newRational(x.rat ^ y.f)
 
         of Complex    || Integer        :   x.z = pow(x.z, float(y.i))
         of Complex    || Floating       :   x.z = pow(x.z, y.f)
