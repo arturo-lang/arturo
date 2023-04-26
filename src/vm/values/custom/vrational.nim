@@ -102,19 +102,23 @@ func toRational*(x: float, n: int = high(int) shr (sizeof(int) div 2 * 8)): VRat
         m11, m22 = 1
         m12, m21 = 0
         ai = int(x)
+        initial = x
         x = x
     while m21 * ai + m22 <= n:
         swap m12, m11
         swap m22, m21
         m11 = m12 * ai + m11
         m21 = m22 * ai + m21
-        if x == float(ai): break # division by zero
+        if x == float(ai): 
+            #debugEcho "reached here"
+            break # division by zero
         x = 1 / (x - float(ai))
         if x > float(high(int32)): 
-            when not defined(NOGMP):
-                return toBigRational(x)
-            else:
-                break # representation failure; should throw error!
+            # debugEcho "reached there"
+            # when not defined(NOGMP):
+            #     return toBigRational(initial)
+            # else:
+            break # representation failure; should throw error?
         ai = int(x)
     result = m11 // m21
 
