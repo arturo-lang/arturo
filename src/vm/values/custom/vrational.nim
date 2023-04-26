@@ -313,48 +313,116 @@ func reciprocal*(x: VRational): VRational =
         result.br = inv(x.br)
 
 func `/`*(x, y: VRational): VRational =
-    result.num = x.num * y.den
-    result.den = x.den * y.num
-    reduce(result)
+    if x.rKind == NormalRational:
+        if y.rKind == NormalRational:
+            result.r.num = x.r.num * y.r.den
+            result.r.den = x.r.den * y.r.num
+            reduce(result)
+        else:
+            result = toBigRational(x) / y
+    else:
+        if y.rKind == NormalRational:
+            result = x / toBigRational(y)
+        else:
+            result = VRational(
+                rKind: BigRational,
+                br: x.br / y.br
+            )
 
 func `/`*(x: VRational, y: int): VRational =
-    result.num = x.num
-    result.den = x.den * y
-    reduce(result)
+    if x.rKind == NormalRational:
+        result.rKind = NormalRational
+        result.r.num = x.r.num
+        result.r.den = x.r.den * y
+        reduce(result)
+    else:
+        result = x / toBigRational(y)
 
 func `/`*(x: int, y: VRational): VRational =
-    result.num = x * y.den
-    result.den = y.num
-    reduce(result)
+    if y.rKind == NormalRational:
+        result.rKind = NormalRational
+        result.r.num = x * y.r.den
+        result.r.den = y.r.num
+        reduce(result)
+    else:
+        result = toBigRational(x) / y
 
 func `/=`*(x: var VRational, y: VRational) =
-    x.num *= y.den
-    x.den *= y.num
-    reduce(x)
+    if x.rKind == NormalRational:
+        x.r.num *= y.r.den
+        x.r.den *= y.r.num
+        reduce(x)
+    else:
+        x.br /= y.br
 
 func `/=`*(x: var VRational, y: int) =
-    x.den *= y
-    reduce(x)
+    if x.rKind == NormalRational:
+        x.r.den *= y
+        reduce(x)
+    else:
+        x /= toBigRational(y)
 
 func `^`*(x: VRational, y: int): VRational =
-    if y < 0:
-        result.num = x.den ^ -y
-        result.den = x.num ^ -y
+    if x.rKind == NormalRational:
+        if y < 0:
+            result.r.num = x.r.den ^ -y
+            result.r.den = x.r.num ^ -y
+        else:
+            result.r.num = x.r.num ^ y
+            result.r.den = x.r.den ^ y
     else:
-        result.num = x.num ^ y
-        result.den = x.den ^ y
+        result = VRational(
+            rKind: BigRational,
+            br: x.br ^ y
+        )
 
 func cmp*(x, y: VRational): int =
-    (x - y).num
+    if x.rKind == NormalRational:
+        if y.rKind == NormalRational:
+            result = (x - y).r.num
+        else:
+            result = cmp(toBigRational(x), y)
+    else:
+        if y.rKind == NormalRational:
+            result = cmp(x, toBigRational(y))
+        else:
+            result = cmp(x.br, y.br)
 
 func `<`*(x, y: VRational): bool =
-    (x - y).num < 0
+    if x.rKind == NormalRational:
+        if y.rKind == NormalRational:
+            result = (x - y).r.num < 0
+        else:
+            result = toBigRational(x) < y
+    else:
+        if y.rKind == NormalRational:
+            result = x < toBigRational(y)
+        else:
+            result = x.br < y.br
 
 func `<=`*(x, y: VRational): bool =
-    (x - y).num <= 0
+    if x.rKind == NormalRational:
+        if y.rKind == NormalRational:
+            result = (x - y).r.num <= 0
+        else:
+            result = toBigRational(x) <= y
+    else:
+        if y.rKind == NormalRational:
+            result = x <= toBigRational(y)
+        else:
+            result = x.br <= y.br
 
 func `==`*(x, y: VRational): bool =
-    (x - y).num == 0
+    if x.rKind == NormalRational:
+        if y.rKind == NormalRational:
+            result = (x - y).r.num == 0
+        else:
+            result = toBigRational(x) == y
+    else:
+        if y.rKind == NormalRational:
+            result = x == toBigRational(y)
+        else:
+            result = x.br == y.br
 
 func abs*(x: VRational): VRational =
     result.num = abs x.num
