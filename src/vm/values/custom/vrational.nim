@@ -83,20 +83,19 @@ func initRational*(num, den: int): VRational =
 func initRational*(num: Int, den: Int): VRational =
     result.rKind = BigRational
     result.br = newRat(num, den)
-    let numer = numerator(result.br)
-    let denom = denominator(result.br)
-    debugEcho "in initRational with num,den"
-    if fitsInt(numer) and fitsInt(denom):
-        debugEcho "fitted int"
-        result = initRational(getInt(numer), getInt(denom))
-    else:
-        debugEcho "not fitting int"
-        debugEcho $(numer)
-        debugEcho $(denom)
+
+func simplifyRational*(x: var VRational): VRational =
+    if x.rKind == BigRational:
+        let numer = numerator(result.br)
+        let denom = denominator(result.br)
+        if fitsInt(numer) and fitsInt(denom):
+            x = initRational(getInt(numer), getInt(denom))
 
 func initRational*(num: int, den: Int): VRational =
     result.rKind = BigRational
     result.br = newRat(newInt(num), den)
+    
+    simplifyRational(result)
 
 func initRational*(num: Int, den: int): VRational =
     result.rKind = BigRational
@@ -114,6 +113,8 @@ when not defined(NOGMP):
     func toBigRational*(x: int | Int | float): VRational =
         result.rKind = BigRational
         result.br = newRat(x)
+        
+        simplifyRational(result)
 
     func toBigRational*(x: VRational): VRational =
         result.rKind = BigRational
