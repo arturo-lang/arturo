@@ -554,10 +554,49 @@ static:
     #----------------------------------------------------------------------------------------------------
     # Constants
     #----------------------------------------------------------------------------------------------------
-    #           name                        pre-calculate?      definition
+    #           name                            pre-calculate?      definition
     #----------------------------------------------------------------------------------------------------
-    defConstant "speedOfLight",             true,               "299792458 m/s"
-    defConstant "gravitationalConstant",    false,              "6.6743e-11 m3/kg.s2"
+    defConstant "speedOfLight",                 true,               "299792458 m/s"
+    defConstant "gravitationalConstant",        false,              "6.6743e-11 m3/kg.s2"
+    defConstant "planckConstant",               false,              "6.62606957e-34 J.s"
+    defConstant "planckLength",                 false,              "1.616199e-35 m"
+    defConstant "planckMass",                   false,              "2.17651e-8 kg"
+    defConstant "planckTime",                   false,              "5.39116e-44 s"
+    defConstant "planckTemperature",            false,              "1.416833e32 K"
+    defConstant "reducedPlanckConstant",        false,              "1.054571726e-34 J.s"
+    defConstant "avogadroConstant",             false,              "6.02214129e23 1/mol"
+    defConstant "boltzmannConstant",            false,              "1.3806488e-23 J/K"
+    defConstant "molarGasConstant",             true,               "8.3144621 J/mol.K"
+    defConstant "standardGasVolume",            true,               "22.41410e-3 m3/mol"
+    defConstant "standardTemperature",          true,               "273.15 K"
+    defConstant "standardPressure",             true,               "100 kPa"
+    defConstant "electronMass",                 false,              "9.10938215e-31 kg"
+    defConstant "protonMass",                   false,              "1.672621777e-27 kg"
+    defConstant "neutronMass",                  false,              "1.674927351e-27 kg"
+    defConstant "atomicMass",                   false,              "1.660538921e-27 kg"
+    defConstant "unifiedMass",                  false,              "1.660538921e-27 kg"
+    defConstant "electronCharge",               false,              "1.602176565e-19 C"
+    defConstant "vacuumPermittivity",           false,              "8.854187817e-12 F/m"
+    defConstant "vacuumPermeability",           true,               "1.2566370614e-6 N/A2"
+    defConstant "impedanceOfVacuum",            true,               "376.730313461 ohm"
+    defConstant "elementaryCharge",             false,              "1.602176565e-19 C"
+    defConstant "magneticFluxQuantum",          false,              "2.067833758e-15 Wb"
+    defConstant "conductanceQuantum",           true,               "7.7480917346e-5 S"
+    defConstant "inverseConductanceQuantum",    false,              "12906.4037217 ohm"
+    defConstant "josephsonConstant",            true,               "483597.891e9 Hz/V"
+    defConstant "vonKlitzingConstant",          true,               "25812.8074434 ohm"
+    defConstant "bohrRadius",                   false,              "5.2917721092e-11 m"
+    defConstant "classicalElectronRadius",      false,              "2.8179403267e-15 m"
+    defConstant "electronMassEnergy",           false,              "8.18710506e-14 J"
+    defConstant "hartreeEnergy",                false,              "4.35974434e-18 J"
+    defConstant "protonMassEnergy",             false,              "1.503277484e-10 J"
+    defConstant "rydbergConstant",              true,               "10973731.56853955 1/m"
+    defConstant "thomsonCrossSection",          false,              "6.652458734e-29 m2"
+    defConstant "deuteronMass",                 false,              "3.3435830926e-27 kg"
+    defConstant "tritonMass",                   false,              "5.007356665e-27 kg"
+    defConstant "helionMass",                   false,              "5.00641234e-27 kg"
+    defConstant "muonMass",                     false,              "1.883531475e-28 kg"
+    defConstant "tauMass",                      false,              "3.16747e-27 kg"
 
 #=======================================
 # Types
@@ -760,6 +799,7 @@ proc newQuantity*(str: string): Quantity =
     result = newQuantity(value, atoms)
 
 proc newQuantity*(vstr: string, atoms: Atoms): Quantity =
+    echo "defining ---> " & $(vstr)
     result = newQuantity(parseValue(vstr), atoms)
 
 #=======================================
