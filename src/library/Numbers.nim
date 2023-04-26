@@ -1064,7 +1064,7 @@ proc defineSymbols*() =
             elif xKind==Floating:
                 push(newLogical(x.f > 0.0))
             elif xKind==Rational:
-                push(newLogical(x.rat.num > 0)):
+                push(newLogical(isPositive(x.rat))):
             elif xKind==Complex:
                 push(newLogical(x.z.re > 0.0 or (x.z.re == 0.0 and x.z.im > 0.0)))
     
