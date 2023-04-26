@@ -557,6 +557,7 @@ static:
     #           name                        pre-calculate?      definition
     #----------------------------------------------------------------------------------------------------
     defConstant "speedOfLight",             true,               "299792458 m/s"
+    defConstant "gravitationalConstant",    false,              "6.6743e-11 m3/kg.s2"
 
 #=======================================
 # Types
@@ -727,7 +728,6 @@ proc newQuantity*(v: VRational, atoms: Atoms): Quantity =
 
     for atom in atoms:
         let prim = getPrimitive(atom.unit)
-
         result.signature += prim.signature * atom.power
         result.value *= prim.value ^ atom.power
 
@@ -758,6 +758,9 @@ proc newQuantity*(str: string): Quantity =
     let atoms = parseAtoms(parts[1])
 
     result = newQuantity(value, atoms)
+
+proc newQuantity*(vstr: string, atoms: Atoms): Quantity =
+    result = newQuantity(parseValue(vstr), atoms)
 
 #=======================================
 # Methods
@@ -938,7 +941,9 @@ proc initQuantities*() =
     Dimensions = generateDimensions()
     Quantities = generateQuantities()
 
+    echo "BEFORE"
     generateConstants()
+    echo "AFTER"
 
     # planckMass = newQuantity(parseValue("2.176434e-8"), parseAtoms("1/kg"))
 
@@ -1182,3 +1187,4 @@ when isMainModule:
 
     # echo "i = ", i
     echo $(speedOfLight)
+    echo $(gravitationalConstant)
