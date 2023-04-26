@@ -28,8 +28,6 @@ import helpers/terminal as TerminalHelper
 import vm/lib
 import vm/[env, errors, eval, exec]
 
-import vm/values/custom/[vrational]
-
 #=======================================
 # Methods
 #=======================================
@@ -797,7 +795,7 @@ proc defineSymbols*() =
         """:
             #=======================================================
             if (hadAttr("big")):
-                push(newLogical(xKind==Rational and x.rKind==BigRational))
+                push(newLogical(xKind==Rational and x.rat.rKind==BigRational))
             else:
                 push(newLogical(xKind==Rational))
 
