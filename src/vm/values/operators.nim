@@ -1130,7 +1130,7 @@ proc `^`*(x: Value, y: Value): Value =
         of Floating   || Floating       :   return newFloating(pow(x.f, y.f))
 
         of Rational   || Integer        :   return newRational(x.rat ^ y.i)
-        of Rational   || Floating       :   discard notZero(x.rat.den); return newRational(x.rat ^ y.f)
+        of Rational   || Floating       :   discard notZero(x.rat); return newRational(x.rat ^ y.f)
 
         of Complex    || Integer        :   return newComplex(pow(x.z, float(y.i)))
         of Complex    || Floating       :   return newComplex(pow(x.z, y.f))
