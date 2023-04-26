@@ -144,6 +144,31 @@ proc `$`*(q: Quantity): string =
     if den.len > 0:
         result &= "/" & den.join("·")
 
+proc parseAtoms(str: string): seq[Atom] =
+    proc parseAtom(atstr: string, denominator: static bool=false): Atom =
+        var i = 0
+        while i < atstr.len and atstr[i] notin '2'..'9':
+            result.kind.add atstr[i]
+            inc i
+
+        if i < atstr.len:
+            result.expo = parseInt(atstr[i..^1])
+        else:
+            result.expo = 1
+
+        when denominator:
+            result.expo = -result.expo
+
+    let parts = str.split("/")
+
+    for part in parts[0].split("."):
+        if part != "1":
+            result.add parseAtom(part)
+
+    if parts.len > 1:
+        for part in parts[1].split("."):
+            result.add parseAtom(part, denominator=true)
+
 proc parseQuantity*(s: string): Quantity =
     proc parseValue(str: string): CTRational =
         if str.contains("/"):
@@ -151,31 +176,6 @@ proc parseQuantity*(s: string): Quantity =
             return toRational(parseFloat(parts[0]) / parseFloat(parts[1]))
         else:
             return toRational(parseFloat(str))
-
-    proc parseAtoms(str: string): seq[Atom] =
-        proc parseAtom(atstr: string, denominator: static bool=false): Atom =
-            var i = 0
-            while i < atstr.len and atstr[i] notin '2'..'9':
-                result.kind.add atstr[i]
-                inc i
-
-            if i < atstr.len:
-                result.expo = parseInt(atstr[i..^1])
-            else:
-                result.expo = 1
-
-            when denominator:
-                result.expo = -result.expo
-
-        let parts = str.split("/")
-
-        for part in parts[0].split("."):
-            if part != "1":
-                result.add parseAtom(part)
-
-        if parts.len > 1:
-            for part in parts[1].split("."):
-                result.add parseAtom(part, denominator=true)
 
     var components = s.split(" ")
 
@@ -519,9 +519,9 @@ proc newLit(ct: CTRational): NimNode =
         )
     )
 
-proc getAtomsSeq*(q: Quantity): NimNode =
+proc getAtomsSeq*(ats: seq[Atom]): NimNode =
     var atoms = nnkBracket.newTree()
-    for atom in q.atoms:
+    for atom in ats:
         let (expo, kind) = parsable[atom.kind]
         atoms.add nnkTupleConstr.newTree(
             nnkTupleConstr.newTree(
@@ -553,7 +553,7 @@ macro generateQuantities*(): untyped =
     let items = nnkTableConstr.newTree()
 
     for (unit,quantity) in pairs(defs):
-        var atomsSeq = getAtomsSeq(quantity)
+        var atomsSeq = getAtomsSeq(quantity.atoms)
 
         var flags = nnkCurly.newTree()
         if quantity.base:
@@ -603,10 +603,20 @@ macro generateConstants*(): untyped =
                     newLit(quantity.original),
                     newLit(quantity.value),
                     newLit(quantity.signature),
-                    getAtomsSeq(quantity),
+                    getAtomsSeq(quantity.atoms),
                     nnkCurly.newTree()
                 )
             )
+        else:
+            res.add nnkAsgn.newTree(
+                newIdentNode(name),
+                nnkCall.newTree(
+                    newIdentNode("newQuantity"),
+                    newLit(definition.split(" ")[0]),
+                    getAtomsSeq(parseAtoms(definition.split(" ")[1]))
+                )
+            )
+
     res
 
 dumpAstGen:
@@ -644,3 +654,5 @@ dumpAstGen:
 dumpAstGen:
     speedOfLight = 1
     sp = 2
+
+    newQuantity("str", @[])
