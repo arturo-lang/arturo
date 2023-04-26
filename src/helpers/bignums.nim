@@ -590,8 +590,14 @@ func `*`*(x: Rat, y: Rat): Rat =
 func `*=`*(z: Int, x: int | culong | Int) =
     discard z.mul(z, x)
 
+func `*=`*(x, y: Rat) =
+    discard x.mul(x, y)
+
 func neg*(x: Rat): Rat =
     mpq_neg(result[], x[])
+
+func inv*(x: Rat): Rat =
+    mpq_inv(result[], x[])
 
 func `div`*(z, x, y: Int): Int =
     if y == 0: raise newException(DivByZeroDefect, "Division by zero")
