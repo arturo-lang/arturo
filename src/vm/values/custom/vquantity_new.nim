@@ -75,6 +75,7 @@ static:
     defDimension "Moment of Inertia",           "L²·M"
     defDimension "Momentum",                    "L·M·T⁻¹"
     defDimension "Permeability",                "L·M·T⁻²·I⁻²"
+    defDimension "Permittivity",                "L⁻³·M⁻¹·T⁴·I²"
     defDimension "Potential",                   "L²·M·T⁻³·I⁻¹"
     defDimension "Power",                       "L²·M·T⁻³"
     defDimension "Pressure",                    "L⁻¹·M·T⁻²"
