@@ -247,38 +247,70 @@ func `-=`*(x: var VRational, y: int) =
         x -= toBigRational(y)
 
 func `*`*(x, y: VRational): VRational =
-    result.num = x.num * y.num
-    result.den = x.den * y.den
-    reduce(result)
-
+    if x.rKind == NormalRational:
+        if y.rKind == NormalRational:
+            result.rKind = NormalRational
+            result.r.num = x.r.num * y.r.num
+            result.r.den = x.r.den * y.r.den
+            reduce(result)
+        else:
+            result = toBigRational(x) * y
+    else:
+        if y.rKind == NormalRational:
+            result = x * toBigRational(y)
+        else:
+            result = VRational(
+                rKind: BigRational,
+                br: x.br * y.br
+            )
+    
 func `*`*(x: VRational, y: int): VRational =
-    result.num = x.num * y
-    result.den = x.den
-    reduce(result)
+    if x.rKind == NormalRational:
+        result.rKind = NormalRational
+        result.r.num = x.r.num * y
+        result.r.den = x.r.den
+        reduce(result)
+    else:
+        result = x * toBigRational(y)
 
 func `*`*(x: int, y: VRational): VRational =
-    result.num = x * y.num
-    result.den = y.den
-    reduce(result)
+    if y.rKind == NormalRational:
+        result.rKind = NormalRational
+        result.r.num = x * y.r.num
+        result.r.den = y.r.den
+        reduce(result)
+    else:
+        result = toBigRational(x) * y
 
 func `*=`*(x: var VRational, y: VRational) =
-    x.num *= y.num
-    x.den *= y.den
-    reduce(x)
+    if x.rKind == NormalRational:
+        x.r.num *= y.r.num
+        x.r.den *= y.r.den
+        reduce(x)
+    else:
+        x *= toBigRational(y)
 
 func `*=`*(x: var VRational, y: int) =
-    x.num *= y
-    reduce(x)
+    if x.rKind == NormalRational:
+        x.r.num *= y
+        reduce(x)
+    else:
+        x *= toBigRational(y)
 
 func reciprocal*(x: VRational): VRational =
-    if x.num > 0:
-        result.num = x.den
-        result.den = x.num
-    elif x.num < 0:
-        result.num = -x.den
-        result.den = -x.num
+    if x.rKind == NormalRational:
+        result.rKind = NormalRational
+        if x.r.num > 0:
+            result.r.num = x.r.den
+            result.r.den = x.r.num
+        elif x.r.num < 0:
+            result.r.num = -x.r.den
+            result.r.den = -x.r.num
+        else:
+            raise newException(DivByZeroDefect, "division by zero")
     else:
-        raise newException(DivByZeroDefect, "division by zero")
+        result.rKind = BigRational
+        result.br = inv(x.br)
 
 func `/`*(x, y: VRational): VRational =
     result.num = x.num * y.den
