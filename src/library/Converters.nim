@@ -199,10 +199,16 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                     of String:
                         return newString($(y))
                     of Block:
-                        return newBlock(@[
-                            newInteger(getNumerator(y.rat)),
-                            newInteger(getDenominator(y.rat))
-                        ])
+                        if y.rat.rKind == NormalRational:
+                            return newBlock(@[
+                                newInteger(getNumerator(y.rat)),
+                                newInteger(getDenominator(y.rat))
+                            ])
+                        else:
+                            return newBlock(@[
+                                newInteger(getNumerator(y.rat, big=true)),
+                                newInteger(getDenominator(y.rat, big=true))
+                            ])
                     else: throwCannotConvert()
 
             of Version:
