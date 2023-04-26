@@ -112,7 +112,7 @@ template toNewBig(v: untyped): untyped =
 
 template notZero(v: untyped): untyped =
     when v is VRational:
-        if unlikely(v.num==0):
+        if unlikely(isZero(v)):
             RuntimeError_DivisionByZero()
     elif v is VComplex:
         if unlikely(v.re==0 and v.im==0):
