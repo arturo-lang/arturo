@@ -141,7 +141,10 @@ func toRational*(x: float, n: int = high(int) shr (sizeof(int) div 2 * 8)): VRat
             #debugEcho "reached there"
             when not defined(NOGMP):
                 #debugEcho "converting to bigRational"
-                return toBigRational(initial)
+                if m11 == 0: 
+                    return toBigRational(initial)
+                else: 
+                    break
             else:
                 break # representation failure; should throw error?
         ai = int(x)
