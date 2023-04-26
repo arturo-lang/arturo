@@ -85,8 +85,14 @@ func initRational*(num: Int, den: Int): VRational =
     result.br = newRat(num, den)
     let numer = numerator(result.br)
     let denom = denominator(result.br)
+    debugEcho "in initRational with num,den"
     if fitsInt(numer) and fitsInt(denom):
+        debugEcho "fitted int"
         result = initRational(getInt(numer), getInt(denom))
+    else:
+        debugEcho "not fitting int"
+        debugEcho $(numer)
+        debugEcho $(denom)
 
 func initRational*(num: int, den: Int): VRational =
     result.rKind = BigRational
