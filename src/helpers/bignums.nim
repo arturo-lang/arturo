@@ -479,7 +479,7 @@ func `+`*(x: Rat, y: Rat): Rat =
     newRat().add(x, y)
 
 func `+=`*(x, y: Rat) =
-    discard z.add(x, y)
+    discard x.add(x, y)
 
 func `+=`*(z: Int, x: int | culong | Int) =
     z.inc(x)
@@ -536,6 +536,9 @@ func `-`*(x: Rat, y: Rat): Rat =
 
 func `-=`*(z: Int, x: int | culong | Int) =
     z.dec(x)
+
+func `-=`*(x, y: Rat) =
+    discard x.sub(x, y)
 
 func mul*(z, x, y: Int): Int =
     result = z
