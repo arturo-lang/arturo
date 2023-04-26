@@ -64,7 +64,7 @@ proc getInt*(x: Int): int =
     return int(mpz_get_ui(x[]))
 
 proc fitsInt*(x: Int): bool =
-    return mpz_fits_ulong_p(x[]) == 0
+    return mpz_fits_ulong_p(x[]) != 0
 
 proc fitsDouble*(x: Float): bool =
     if mpfr_fits_uint_p(x[], MPFR_RNDN)==0:
