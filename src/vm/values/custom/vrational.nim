@@ -35,7 +35,7 @@ type
         num*: T
         den*: T
 
-    RationalKind = enum
+    RationalKind* = enum
         NormalRational,
         BigRational
 
