@@ -468,6 +468,12 @@ func floorMod*(x, y: VRational): VRational =
     else:
         raise newException(DivByZeroDefect, "floorMod not supported")
 
+func isZero*(x: VRational): bool =
+    if x.rKind == NormalRational:
+        result = x.r.num == 0
+    else:
+        result = numerator(x.br) == 0
+
 func hash*(x: VRational): Hash =
     if x.rKind == NormalRational:
         var copy = x
