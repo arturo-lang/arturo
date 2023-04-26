@@ -2849,12 +2849,12 @@ do [
     
     
     ; :rational :floating
-    a: to :rational [3 5]
+    a: to :rational [1 2]
     'a ^ 2.0
-    ensure -> a = to :rational [9 25]
-    a: to :rational [3 5]
+    ensure -> a = to :rational [1 4]
+    a: to :rational [1 2]
     pow 'a 2.0
-    ensure -> a = to :rational [9 25]
+    ensure -> a = to :rational [1 4]
     passed
 
     
