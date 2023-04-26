@@ -72,6 +72,9 @@ proc fitsDouble*(x: Float): bool =
     else:
         return true
 
+proc canBeSimplified*(x: Rat): bool =
+    return mpz_fits_ulong_p(mpq_numref(x[])) != 0 and mpz_fits_ulong_p(mpq_denref(x[])) != 0
+
 func sign*(x: Int): cint =
     mpz_sgn(x[])
 
