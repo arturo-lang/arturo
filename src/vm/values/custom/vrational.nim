@@ -122,8 +122,11 @@ when not defined(NOGMP):
         simplifyRational(result)
 
     func toBigRational*(x: VRational): VRational =
-        result.rKind = BigRational
-        result.br = newRat(x.r.num, x.r.den)
+        if x.rKind == BigRational:
+            result = x
+        else:
+            result.rKind = BigRational
+            result.br = newRat(x.r.num, x.r.den)
 
 func toRational*(x: float, n: int = high(int) shr (sizeof(int) div 2 * 8)): VRational =
     var
@@ -208,10 +211,10 @@ func `+=`*(x: var VRational, y: VRational) =
             x.r.den = common
             reduce(x)
         else:
-            x += toBigRational(y)
+            x = toBigRational(x) + y
     else:
         if y.rKind == NormalRational:
-            x = toBigRational(x) + y
+            x += toBigRational(y)
         else:
             x.br += y.br
 
@@ -271,10 +274,10 @@ func `-=`*(x: var VRational, y: VRational) =
             x.r.den = common
             reduce(x)
         else:
-            x -= toBigRational(y)
+            x = toBigRational(x) + y
     else:
         if y.rKind == NormalRational:
-            x = toBigRational(x) - y
+            x += toBigRational(y)
         else:
             x.br -= y.br
     
@@ -322,11 +325,17 @@ func `*`*(x: int, y: VRational): VRational =
 
 func `*=`*(x: var VRational, y: VRational) =
     if x.rKind == NormalRational:
-        x.r.num *= y.r.num
-        x.r.den *= y.r.den
-        reduce(x)
+        if y.rKind == NormalRational:
+            x.r.num *= y.r.num
+            x.r.den *= y.r.den
+            reduce(x)
+        else:
+            x = toBigRational(x) * y
     else:
-        x *= toBigRational(y)
+        if y.rKind == NormalRational:
+            x *= toBigRational(y)
+        else:
+            x.br *= y.br
 
 func `*=`*(x: var VRational, y: int) =
     if x.rKind == NormalRational:
@@ -387,11 +396,17 @@ func `/`*(x: int, y: VRational): VRational =
 
 func `/=`*(x: var VRational, y: VRational) =
     if x.rKind == NormalRational:
-        x.r.num *= y.r.den
-        x.r.den *= y.r.num
-        reduce(x)
+        if y.rKind == NormalRational:
+            x.r.num *= y.r.den
+            x.r.den *= y.r.num
+            reduce(x)
+        else:
+            x = toBigRational(x) / y
     else:
-        x.br /= y.br
+        if y.rKind == NormalRational:
+            x /= toBigRational(y)
+        else:
+            x.br /= y.br
 
 func `/=`*(x: var VRational, y: int) =
     if x.rKind == NormalRational:
