@@ -560,6 +560,8 @@ static:
     #----------------------------------------------------------------------------------------------------
     #           name                            pre-calculate?      definition
     #----------------------------------------------------------------------------------------------------
+    defConstant "alphaParticleMass",            false,              "6.64465675e-27 kg"
+    defConstant "angstromStar",                 false,              "1e-10 m"
     defConstant "atomicMass",                   false,              "1.660538921e-27 kg"
     defConstant "avogadroConstant",             false,              "6.02214129e23 1/mol"       # avogadro
     defConstant "bohrRadius",                   false,              "5.2917721092e-11 m"
