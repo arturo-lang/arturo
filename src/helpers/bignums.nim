@@ -1015,6 +1015,13 @@ func abs*(z, x: Int): Int =
 func abs*(x: Int): Int =
     newInt().abs(x)
 
+func abs*(z, x: Rat): Rat =
+    result = z
+    mpq_abs(result[], x[])
+
+func abs*(x: Rat): Rat =
+    newRat().abs(x)
+
 func neg*(z, x: Int): Int =
     result = z
     mpz_neg(result[], x[])
