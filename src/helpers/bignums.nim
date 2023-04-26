@@ -587,6 +587,9 @@ func `*`*(x: Rat, y: Rat): Rat =
 func `*=`*(z: Int, x: int | culong | Int) =
     discard z.mul(z, x)
 
+func neg*(x: Rat): Rat =
+    mpq_neg(result[], x[])
+
 func `div`*(z, x, y: Int): Int =
     if y == 0: raise newException(DivByZeroDefect, "Division by zero")
     result = z
