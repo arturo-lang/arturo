@@ -687,6 +687,12 @@ func `/`*(x: Int, y: float): float =
     mpfr_div_d(res[], newFloat(x)[], y, MPFR_RNDN)
     result = toCDouble(res)
 
+func `/`*(x: Rat, y: Rat): Rat =
+    newRat().div(x, y)
+
+func `/=`*(x, y: Rat) =
+    discard x.div(x, y)
+
 func `mod`*(z, x, y: Int): Int =
     if y == 0: raise newException(DivByZeroDefect, "Division by zero")
     result = z
@@ -777,7 +783,16 @@ func pow*(x: Int, y: float): float =
     mpfr_pow(res[], newFloat(x)[], newFloat(y)[], MPFR_RNDN)
     result = toCDouble(res)
 
+func pow*(x: Rat, y: int): Rat =
+    result = newRat()
+    discard result.set(x)
+    for i in 1 ..< y:
+        discard result.mul(result, x)
+
 func `^`*(x: int | culong | Int, y: culong): Int =
+    pow(x, y)
+
+func `^`*(x: Rat, y: int): Rat =
     pow(x, y)
 
 func exp*(z, x: Int, y: culong, m: Int): Int =
