@@ -195,7 +195,6 @@ func newRat*(x, y: Int): Rat =
 
 func newRat*(x: float): Rat =
     new(result,finalizeRat)
-    debugEcho "newRat with float"
     mpq_init(result[])
     mpq_set_d(result[], x)
     canonicalize(result)
