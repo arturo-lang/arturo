@@ -1,15 +1,17 @@
 import macros, math, sequtils, strscans, strutils, tables
 
-import vm/values/custom/vrational
+import std/rationals
 
 type
     Atom = tuple
         kind: string
         expo: int
 
+    CTRational = Rational[int]
+
     Quantity = tuple
-        original: VRational
-        value: VRational
+        original: CTRational
+        value: CTRational
         signature: int64
         atoms: seq[Atom]
         base: bool
@@ -51,6 +53,14 @@ template unitId(str: string): string =
 template getDimension(q: Quantity): string =
     dimensions.getOrDefault(q.signature, "NOT FOUND!")
 
+func `^`*(x: CTRational, y: int): CTRational =
+    if y < 0:
+        result.num = x.den ^ -y
+        result.den = x.num ^ -y
+    else:
+        result.num = x.num ^ y
+        result.den = x.den ^ y
+
 proc getDefined*(str: string): Quantity =
     let (pref, unit) = parsable[str]
     result = defs[unit]
@@ -63,14 +73,14 @@ proc getDefined*(str: string): Quantity =
         result.value *= prefVal
         result.original *= prefVal
 
-proc getConverted(q: Quantity): VRational =
+proc getConverted(q: Quantity): CTRational =
     result = q.value
     if not q.base:
         for atom in q.atoms:
             let atomUnit = getDefined(atom.kind)
             result *= atomUnit.value ^ atom.expo
 
-proc newQuantity(v: VRational, atoms: seq[Atom], base: static bool = false): Quantity =
+proc newQuantity(v: CTRational, atoms: seq[Atom], base: static bool = false): Quantity =
     result.original = v
     result.value = v
     result.atoms = atoms
@@ -129,7 +139,7 @@ proc `$`*(q: Quantity): string =
         result &= "/" & den.join("·")
 
 proc parseQuantity*(s: string): Quantity =
-    proc parseValue(str: string): VRational =
+    proc parseValue(str: string): CTRational =
         if str.contains("/"):
             let parts = str.replace("pi", $(PI)).split("/")
             return toRational(parseFloat(parts[0]) / parseFloat(parts[1]))
@@ -449,6 +459,32 @@ macro generateUnitParser*(): untyped =
         )
     )
 
+proc newLit(ct: CTRational): NimNode =
+    nnkObjConstr.newTree(
+        newIdentNode("VRational"),
+        nnkExprColonExpr.newTree(
+            newIdentNode("rKind"),
+            newIdentNode("NormalRational")
+        ),
+        nnkExprColonExpr.newTree(
+            newIdentNode("r"),
+            nnkObjConstr.newTree(
+                nnkBracketExpr.newTree(
+                    newIdentNode("VRationalObj"),
+                    newIdentNode("int")
+                ),
+                nnkExprColonExpr.newTree(
+                    newIdentNode("num"),
+                    newLit(ct.num)
+                ),
+                nnkExprColonExpr.newTree(
+                    newIdentNode("den"),
+                    newLit(ct.den)
+                )
+            )
+        )
+    )
+
 macro generateQuantities*(): untyped =
     let items = nnkTableConstr.newTree()
 
@@ -540,3 +576,8 @@ dumpAstGen:
         result = Unit(kind: User, name: str)
     else:
         result = Unit(kind: CoreUnit, core: No_Unit)
+
+dumpAstGen:
+    initRational(1, 2)
+
+    VRational(rKind: NormalRational, r: VRationalObj[int](num: 123, den: 456))
