@@ -1009,7 +1009,10 @@ proc defineSymbols*() =
             else:
                 rat = toRational(x.f)
 
-            push(newInteger(rat.num))
+            if rat.rKind == NormalRational:
+                push(newInteger(getNumerator(rat)))
+            else:
+                push(newInteger(getNumerator(rat, big=true)))
 
     builtin "odd?",
         alias       = unaliased, 
