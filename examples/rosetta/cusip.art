@@ -1,6 +1,6 @@
 validCUSIP?: function [cusip][
     s: 0
-    alpha: `A`..`Z`
+    alpha: 'A'..'Z'
 
     loop.with:'i chop cusip 'c [
         v: 0
@@ -8,9 +8,9 @@ validCUSIP?: function [cusip][
         case ø
             when? [numeric? c] -> v: to :integer to :string c
             when? [in? c alpha] -> v: (index alpha c) + 1 + 9
-            when? [c = `*`] -> v: 36
-            when? [c = `@`] -> v: 37
-            when? [c = `#`] -> v: 38
+            when? [c = '*'] -> v: 36
+            when? [c = '@'] -> v: 37
+            when? [c = '#'] -> v: 38
             else []
 
         if odd? i -> v: 2 * v
