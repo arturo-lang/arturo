@@ -938,7 +938,9 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                         parseAndAddSymbol(p,topBlock)
                         ReplaceLastToken(newSymbolLiteral(LastToken.m))
                     else:
-                        SyntaxError_EmptyLiteral(p.lineNumber, getContext(p, p.bufpos-1))
+                        parseString(p, stopper=BackTick)
+                    # else:
+                    #     SyntaxError_EmptyLiteral(p.lineNumber, getContext(p, p.bufpos-1))
                 else:
                     if p.buf[p.bufpos]==Tick:
                         #parseString(p, stopper=BackTick)
