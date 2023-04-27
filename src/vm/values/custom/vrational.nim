@@ -597,10 +597,11 @@ func `^`*(x: VRational, y: int): VRational =
             )
 
 func `^`*(x: VRational, y: float): VRational =
-    when not defined(NOGMP):
-        if x.rKind == NormalRational:
-            result = toBigRational(x) ^ y
-        else:
+    if x.rKind == NormalRational:
+        let res = pow(toFloat(x), y)
+        result = toRational(res)
+    else:
+        when not defined(NOGMP):
             result = VRational(
                 rKind: BigRational,
                 br: x.br ^ y
