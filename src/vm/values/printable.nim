@@ -515,7 +515,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 result &= ":"
         of Symbol       :  result &= $(v.m)
         of SymbolLiteral: result &= "'" & $(v.m)
-        of Quantity     : result &= $(v.nm) & ":" & toLowerAscii($(v.unit.name))
+        of Quantity     : result &= $(v.nm) & "`" & toLowerAscii($(v.unit.name))
         of Regex        : result &= "{/" & $(v.rx) & "/}"
         of Color        : result &= $(v.l)
 
