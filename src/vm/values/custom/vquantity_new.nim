@@ -260,7 +260,7 @@ static:
     defUnit "ang",      "Å",        false,      "1e-10 m",                  "angstrom", "angstroms"
     defUnit "au",       "au",       false,      "149597870700 m",           "astronomicalUnit", "astronomicalUnits"
     defUnit "ly",       "ly",       false,      "9460730472580800 m",       "lightYear", "lightYears"
-    #defUnit "psc",      "pc",       false,      "3.26156 ly",               "parsec", "parsecs"
+    defUnit "psc",      "pc",       false,      "3.26156 ly",               "parsec", "parsecs"
     defUnit "px",       "px",       true,       "1/96 in",                  "pixel", "pixels"
     defUnit "pt",       "pt",       true,       "1/72 in",                  "point", "points"
     defUnit "pc",       "pc",       true,       "12 pt",                    "pica", "picas"
