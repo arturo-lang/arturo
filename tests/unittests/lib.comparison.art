@@ -28,53 +28,53 @@ do [
     passed
     
     
-    ensure -> between? 1 1:usd 2
-    ensure -> between? 1 1:usd 2.0
-    ensure -> between? 1 1:usd to :rational [2 1]
-    ensure -> between? 1 1.0:usd 2
-    ensure -> between? 1 1.0:usd 2.0
-    ensure -> between? 1 1.0:usd to :rational [2 1]
+    ensure -> between? 1 1`usd 2
+    ensure -> between? 1 1`usd 2.0
+    ensure -> between? 1 1`usd to :rational [2 1]
+    ensure -> between? 1 1.0`usd 2
+    ensure -> between? 1 1.0`usd 2.0
+    ensure -> between? 1 1.0`usd to :rational [2 1]
     passed
     
-    ensure -> between? 1 1 2:usd
-    ensure -> between? 1 1 2.0:usd
-    ensure -> between? 1 1.0 2:usd
-    ensure -> between? 1 1.0 2.0:usd
-    ensure -> between? 1 to :rational [1 1] 2:usd
-    ensure -> between? 1 to :rational [1 1] 2.0:usd
+    ensure -> between? 1 1 2`usd
+    ensure -> between? 1 1 2.0`usd
+    ensure -> between? 1 1.0 2`usd
+    ensure -> between? 1 1.0 2.0`usd
+    ensure -> between? 1 to :rational [1 1] 2`usd
+    ensure -> between? 1 to :rational [1 1] 2.0`usd
     passed
     
-    ensure -> between? 1:usd 1 2
-    ensure -> between? 1:usd 1 2.0
-    ensure -> between? 1:usd 1 to :rational [2 1]
-    ensure -> between? 1:usd 1.0 2
-    ensure -> between? 1:usd 1.0 2.0
-    ensure -> between? 1:usd 1.0 to :rational [2 1]
-    ensure -> between? 1:usd to :rational [1 1] 2
-    ensure -> between? 1:usd to :rational [1 1] 2.0
-    ensure -> between? 1:usd to :rational [1 1] to :rational [2 1]
+    ensure -> between? 1`usd 1 2
+    ensure -> between? 1`usd 1 2.0
+    ensure -> between? 1`usd 1 to :rational [2 1]
+    ensure -> between? 1`usd 1.0 2
+    ensure -> between? 1`usd 1.0 2.0
+    ensure -> between? 1`usd 1.0 to :rational [2 1]
+    ensure -> between? 1`usd to :rational [1 1] 2
+    ensure -> between? 1`usd to :rational [1 1] 2.0
+    ensure -> between? 1`usd to :rational [1 1] to :rational [2 1]
     passed
     
-    ensure -> between? 1 1:usd 2
-    ensure -> between? 1 1:usd 2.0
-    ensure -> between? 1 1:usd to :rational [2 1]
-    ensure -> between? 1 1.0:usd 2
-    ensure -> between? 1 1.0:usd 2.0
-    ensure -> between? 1 1.0:usd to :rational [2 1]
+    ensure -> between? 1 1`usd 2
+    ensure -> between? 1 1`usd 2.0
+    ensure -> between? 1 1`usd to :rational [2 1]
+    ensure -> between? 1 1.0`usd 2
+    ensure -> between? 1 1.0`usd 2.0
+    ensure -> between? 1 1.0`usd to :rational [2 1]
     passed
     
-    ensure -> between? 1:usd 1 2:usd
-    ensure -> between? 1:usd 1 2.0:usd
-    ensure -> between? 1:usd 1.0 2:usd
-    ensure -> between? 1:usd 1.0 2.0:usd
-    ensure -> between? 1:usd to :rational [1 1] 2:usd
-    ensure -> between? 1:usd to :rational [1 1] 2.0:usd
+    ensure -> between? 1`usd 1 2`usd
+    ensure -> between? 1`usd 1 2.0`usd
+    ensure -> between? 1`usd 1.0 2`usd
+    ensure -> between? 1`usd 1.0 2.0`usd
+    ensure -> between? 1`usd to :rational [1 1] 2`usd
+    ensure -> between? 1`usd to :rational [1 1] 2.0`usd
     passed
     
-    ensure -> between? 1:usd 1:usd 2:usd
-    ensure -> between? 1:usd 1:usd 2.0:usd
-    ensure -> between? 1:usd 1.0:usd 2:usd
-    ensure -> between? 1:usd 1.0:usd 2.0:usd
+    ensure -> between? 1`usd 1`usd 2`usd
+    ensure -> between? 1`usd 1`usd 2.0`usd
+    ensure -> between? 1`usd 1.0`usd 2`usd
+    ensure -> between? 1`usd 1.0`usd 2.0`usd
     passed
            
             
@@ -91,53 +91,53 @@ do [
     passed
     
     
-    ensure -> between? 1.0 1:usd 2
-    ensure -> between? 1.0 1:usd 2.0
-    ensure -> between? 1.0 1:usd to :rational [2 1]
-    ensure -> between? 1.0 1.0:usd 2
-    ensure -> between? 1.0 1.0:usd 2.0
-    ensure -> between? 1.0 1.0:usd to :rational [2 1]
+    ensure -> between? 1.0 1`usd 2
+    ensure -> between? 1.0 1`usd 2.0
+    ensure -> between? 1.0 1`usd to :rational [2 1]
+    ensure -> between? 1.0 1.0`usd 2
+    ensure -> between? 1.0 1.0`usd 2.0
+    ensure -> between? 1.0 1.0`usd to :rational [2 1]
     passed
     
-    ensure -> between? 1.0 1 2:usd
-    ensure -> between? 1.0 1 2.0:usd
-    ensure -> between? 1.0 1.0 2:usd
-    ensure -> between? 1.0 1.0 2.0:usd
-    ensure -> between? 1.0 to :rational [1 1] 2:usd
-    ensure -> between? 1.0 to :rational [1 1] 2.0:usd
+    ensure -> between? 1.0 1 2`usd
+    ensure -> between? 1.0 1 2.0`usd
+    ensure -> between? 1.0 1.0 2`usd
+    ensure -> between? 1.0 1.0 2.0`usd
+    ensure -> between? 1.0 to :rational [1 1] 2`usd
+    ensure -> between? 1.0 to :rational [1 1] 2.0`usd
     passed
     
-    ensure -> between? 1.0:usd 1 2
-    ensure -> between? 1.0:usd 1 2.0
-    ensure -> between? 1.0:usd 1 to :rational [2 1]
-    ensure -> between? 1.0:usd 1.0 2
-    ensure -> between? 1.0:usd 1.0 2.0
-    ensure -> between? 1.0:usd 1.0 to :rational [2 1]
-    ensure -> between? 1.0:usd to :rational [1 1] 2
-    ensure -> between? 1.0:usd to :rational [1 1] 2.0
-    ensure -> between? 1.0:usd to :rational [1 1] to :rational [2 1]
+    ensure -> between? 1.0`usd 1 2
+    ensure -> between? 1.0`usd 1 2.0
+    ensure -> between? 1.0`usd 1 to :rational [2 1]
+    ensure -> between? 1.0`usd 1.0 2
+    ensure -> between? 1.0`usd 1.0 2.0
+    ensure -> between? 1.0`usd 1.0 to :rational [2 1]
+    ensure -> between? 1.0`usd to :rational [1 1] 2
+    ensure -> between? 1.0`usd to :rational [1 1] 2.0
+    ensure -> between? 1.0`usd to :rational [1 1] to :rational [2 1]
     passed
     
-    ensure -> between? 1.0 1:usd 2
-    ensure -> between? 1.0 1:usd 2.0
-    ensure -> between? 1.0 1:usd to :rational [2 1]
-    ensure -> between? 1.0 1.0:usd 2
-    ensure -> between? 1.0 1.0:usd 2.0
-    ensure -> between? 1.0 1.0:usd to :rational [2 1]
+    ensure -> between? 1.0 1`usd 2
+    ensure -> between? 1.0 1`usd 2.0
+    ensure -> between? 1.0 1`usd to :rational [2 1]
+    ensure -> between? 1.0 1.0`usd 2
+    ensure -> between? 1.0 1.0`usd 2.0
+    ensure -> between? 1.0 1.0`usd to :rational [2 1]
     passed
     
-    ensure -> between? 1.0:usd 1 2:usd
-    ensure -> between? 1.0:usd 1 2.0:usd
-    ensure -> between? 1.0:usd 1.0 2:usd
-    ensure -> between? 1.0:usd 1.0 2.0:usd
-    ensure -> between? 1.0:usd to :rational [1 1] 2:usd
-    ensure -> between? 1.0:usd to :rational [1 1] 2.0:usd
+    ensure -> between? 1.0`usd 1 2`usd
+    ensure -> between? 1.0`usd 1 2.0`usd
+    ensure -> between? 1.0`usd 1.0 2`usd
+    ensure -> between? 1.0`usd 1.0 2.0`usd
+    ensure -> between? 1.0`usd to :rational [1 1] 2`usd
+    ensure -> between? 1.0`usd to :rational [1 1] 2.0`usd
     passed
     
-    ensure -> between? 1.0:usd 1:usd 2:usd
-    ensure -> between? 1.0:usd 1:usd 2.0:usd
-    ensure -> between? 1.0:usd 1.0:usd 2:usd
-    ensure -> between? 1.0:usd 1.0:usd 2.0:usd
+    ensure -> between? 1.0`usd 1`usd 2`usd
+    ensure -> between? 1.0`usd 1`usd 2.0`usd
+    ensure -> between? 1.0`usd 1.0`usd 2`usd
+    ensure -> between? 1.0`usd 1.0`usd 2.0`usd
     passed
     
     
@@ -154,20 +154,20 @@ do [
     passed
     
     
-    ensure -> between? to :rational [1 1] 1:usd 2
-    ensure -> between? to :rational [1 1] 1:usd 2.0
-    ensure -> between? to :rational [1 1] 1:usd to :rational [2 1]
-    ensure -> between? to :rational [1 1] 1.0:usd 2
-    ensure -> between? to :rational [1 1] 1.0:usd 2.0
-    ensure -> between? to :rational [1 1] 1.0:usd to :rational [2 1]
+    ensure -> between? to :rational [1 1] 1`usd 2
+    ensure -> between? to :rational [1 1] 1`usd 2.0
+    ensure -> between? to :rational [1 1] 1`usd to :rational [2 1]
+    ensure -> between? to :rational [1 1] 1.0`usd 2
+    ensure -> between? to :rational [1 1] 1.0`usd 2.0
+    ensure -> between? to :rational [1 1] 1.0`usd to :rational [2 1]
     passed
     
-    ensure -> between? to :rational [1 1] 1 2:usd
-    ensure -> between? to :rational [1 1] 1 2.0:usd
-    ensure -> between? to :rational [1 1] 1.0 2:usd
-    ensure -> between? to :rational [1 1] 1.0 2.0:usd
-    ensure -> between? to :rational [1 1] to :rational [1 1] 2:usd
-    ensure -> between? to :rational [1 1] to :rational [1 1] 2.0:usd
+    ensure -> between? to :rational [1 1] 1 2`usd
+    ensure -> between? to :rational [1 1] 1 2.0`usd
+    ensure -> between? to :rational [1 1] 1.0 2`usd
+    ensure -> between? to :rational [1 1] 1.0 2.0`usd
+    ensure -> between? to :rational [1 1] to :rational [1 1] 2`usd
+    ensure -> between? to :rational [1 1] to :rational [1 1] 2.0`usd
     passed
     
     ; -----------------------------------------------
@@ -184,53 +184,53 @@ do [
     passed
     
     
-    ensure -> not? between? 0 1:usd 2
-    ensure -> not? between? 0 1:usd 2.0
-    ensure -> not? between? 0 1:usd to :rational [2 1]
-    ensure -> not? between? 0 1.0:usd 2
-    ensure -> not? between? 0 1.0:usd 2.0
-    ensure -> not? between? 0 1.0:usd to :rational [2 1]
+    ensure -> not? between? 0 1`usd 2
+    ensure -> not? between? 0 1`usd 2.0
+    ensure -> not? between? 0 1`usd to :rational [2 1]
+    ensure -> not? between? 0 1.0`usd 2
+    ensure -> not? between? 0 1.0`usd 2.0
+    ensure -> not? between? 0 1.0`usd to :rational [2 1]
     passed
     
-    ensure -> not? between? 0 1 2:usd
-    ensure -> not? between? 0 1 2.0:usd
-    ensure -> not? between? 0 1.0 2:usd
-    ensure -> not? between? 0 1.0 2.0:usd
-    ensure -> not? between? 0 to :rational [1 1] 2:usd
-    ensure -> not? between? 0 to :rational [1 1] 2.0:usd
+    ensure -> not? between? 0 1 2`usd
+    ensure -> not? between? 0 1 2.0`usd
+    ensure -> not? between? 0 1.0 2`usd
+    ensure -> not? between? 0 1.0 2.0`usd
+    ensure -> not? between? 0 to :rational [1 1] 2`usd
+    ensure -> not? between? 0 to :rational [1 1] 2.0`usd
     passed
     
-    ensure -> not? between? 0:usd 1 2
-    ensure -> not? between? 0:usd 1 2.0
-    ensure -> not? between? 0:usd 1 to :rational [2 1]
-    ensure -> not? between? 0:usd 1.0 2
-    ensure -> not? between? 0:usd 1.0 2.0
-    ensure -> not? between? 0:usd 1.0 to :rational [2 1]
-    ensure -> not? between? 0:usd to :rational [1 1] 2
-    ensure -> not? between? 0:usd to :rational [1 1] 2.0
-    ensure -> not? between? 0:usd to :rational [1 1] to :rational [2 1]
+    ensure -> not? between? 0`usd 1 2
+    ensure -> not? between? 0`usd 1 2.0
+    ensure -> not? between? 0`usd 1 to :rational [2 1]
+    ensure -> not? between? 0`usd 1.0 2
+    ensure -> not? between? 0`usd 1.0 2.0
+    ensure -> not? between? 0`usd 1.0 to :rational [2 1]
+    ensure -> not? between? 0`usd to :rational [1 1] 2
+    ensure -> not? between? 0`usd to :rational [1 1] 2.0
+    ensure -> not? between? 0`usd to :rational [1 1] to :rational [2 1]
     passed
     
-    ensure -> not? between? 0 1:usd 2
-    ensure -> not? between? 0 1:usd 2.0
-    ensure -> not? between? 0 1:usd to :rational [2 1]
-    ensure -> not? between? 0 1.0:usd 2
-    ensure -> not? between? 0 1.0:usd 2.0
-    ensure -> not? between? 0 1.0:usd to :rational [2 1]
+    ensure -> not? between? 0 1`usd 2
+    ensure -> not? between? 0 1`usd 2.0
+    ensure -> not? between? 0 1`usd to :rational [2 1]
+    ensure -> not? between? 0 1.0`usd 2
+    ensure -> not? between? 0 1.0`usd 2.0
+    ensure -> not? between? 0 1.0`usd to :rational [2 1]
     passed
     
-    ensure -> not? between? 0:usd 1 2:usd
-    ensure -> not? between? 0:usd 1 2.0:usd
-    ensure -> not? between? 0:usd 1.0 2:usd
-    ensure -> not? between? 0:usd 1.0 2.0:usd
-    ensure -> not? between? 0:usd to :rational [1 1] 2:usd
-    ensure -> not? between? 0:usd to :rational [1 1] 2.0:usd
+    ensure -> not? between? 0`usd 1 2`usd
+    ensure -> not? between? 0`usd 1 2.0`usd
+    ensure -> not? between? 0`usd 1.0 2`usd
+    ensure -> not? between? 0`usd 1.0 2.0`usd
+    ensure -> not? between? 0`usd to :rational [1 1] 2`usd
+    ensure -> not? between? 0`usd to :rational [1 1] 2.0`usd
     passed
     
-    ensure -> not? between? 0:usd 1:usd 2:usd
-    ensure -> not? between? 0:usd 1:usd 2.0:usd
-    ensure -> not? between? 0:usd 1.0:usd 2:usd
-    ensure -> not? between? 0:usd 1.0:usd 2.0:usd
+    ensure -> not? between? 0`usd 1`usd 2`usd
+    ensure -> not? between? 0`usd 1`usd 2.0`usd
+    ensure -> not? between? 0`usd 1.0`usd 2`usd
+    ensure -> not? between? 0`usd 1.0`usd 2.0`usd
     passed
     
     
@@ -247,53 +247,53 @@ do [
     passed
     
     
-    ensure -> not? between? 0.0 1:usd 2
-    ensure -> not? between? 0.0 1:usd 2.0
-    ensure -> not? between? 0.0 1:usd to :rational [2 1]
-    ensure -> not? between? 0.0 1.0:usd 2
-    ensure -> not? between? 0.0 1.0:usd 2.0
-    ensure -> not? between? 0.0 1.0:usd to :rational [2 1]
+    ensure -> not? between? 0.0 1`usd 2
+    ensure -> not? between? 0.0 1`usd 2.0
+    ensure -> not? between? 0.0 1`usd to :rational [2 1]
+    ensure -> not? between? 0.0 1.0`usd 2
+    ensure -> not? between? 0.0 1.0`usd 2.0
+    ensure -> not? between? 0.0 1.0`usd to :rational [2 1]
     passed
     
-    ensure -> not? between? 0.0 1 2:usd
-    ensure -> not? between? 0.0 1 2.0:usd
-    ensure -> not? between? 0.0 1.0 2:usd
-    ensure -> not? between? 0.0 1.0 2.0:usd
-    ensure -> not? between? 0.0 to :rational [1 1] 2:usd
-    ensure -> not? between? 0.0 to :rational [1 1] 2.0:usd
+    ensure -> not? between? 0.0 1 2`usd
+    ensure -> not? between? 0.0 1 2.0`usd
+    ensure -> not? between? 0.0 1.0 2`usd
+    ensure -> not? between? 0.0 1.0 2.0`usd
+    ensure -> not? between? 0.0 to :rational [1 1] 2`usd
+    ensure -> not? between? 0.0 to :rational [1 1] 2.0`usd
     passed
     
-    ensure -> not? between? 0.0:usd 1 2
-    ensure -> not? between? 0.0:usd 1 2.0
-    ensure -> not? between? 0.0:usd 1 to :rational [2 1]
-    ensure -> not? between? 0.0:usd 1.0 2
-    ensure -> not? between? 0.0:usd 1.0 2.0
-    ensure -> not? between? 0.0:usd 1.0 to :rational [2 1]
-    ensure -> not? between? 0.0:usd to :rational [1 1] 2
-    ensure -> not? between? 0.0:usd to :rational [1 1] 2.0
-    ensure -> not? between? 0.0:usd to :rational [1 1] to :rational [2 1]
+    ensure -> not? between? 0.0`usd 1 2
+    ensure -> not? between? 0.0`usd 1 2.0
+    ensure -> not? between? 0.0`usd 1 to :rational [2 1]
+    ensure -> not? between? 0.0`usd 1.0 2
+    ensure -> not? between? 0.0`usd 1.0 2.0
+    ensure -> not? between? 0.0`usd 1.0 to :rational [2 1]
+    ensure -> not? between? 0.0`usd to :rational [1 1] 2
+    ensure -> not? between? 0.0`usd to :rational [1 1] 2.0
+    ensure -> not? between? 0.0`usd to :rational [1 1] to :rational [2 1]
     passed
     
-    ensure -> not? between? 0.0 1:usd 2
-    ensure -> not? between? 0.0 1:usd 2.0
-    ensure -> not? between? 0.0 1:usd to :rational [2 1]
-    ensure -> not? between? 0.0 1.0:usd 2
-    ensure -> not? between? 0.0 1.0:usd 2.0
-    ensure -> not? between? 0.0 1.0:usd to :rational [2 1]
+    ensure -> not? between? 0.0 1`usd 2
+    ensure -> not? between? 0.0 1`usd 2.0
+    ensure -> not? between? 0.0 1`usd to :rational [2 1]
+    ensure -> not? between? 0.0 1.0`usd 2
+    ensure -> not? between? 0.0 1.0`usd 2.0
+    ensure -> not? between? 0.0 1.0`usd to :rational [2 1]
     passed
     
-    ensure -> not? between? 0.0:usd 1 2:usd
-    ensure -> not? between? 0.0:usd 1 2.0:usd
-    ensure -> not? between? 0.0:usd 1.0 2:usd
-    ensure -> not? between? 0.0:usd 1.0 2.0:usd
-    ensure -> not? between? 0.0:usd to :rational [1 1] 2:usd
-    ensure -> not? between? 0.0:usd to :rational [1 1] 2.0:usd
+    ensure -> not? between? 0.0`usd 1 2`usd
+    ensure -> not? between? 0.0`usd 1 2.0`usd
+    ensure -> not? between? 0.0`usd 1.0 2`usd
+    ensure -> not? between? 0.0`usd 1.0 2.0`usd
+    ensure -> not? between? 0.0`usd to :rational [1 1] 2`usd
+    ensure -> not? between? 0.0`usd to :rational [1 1] 2.0`usd
     passed
     
-    ensure -> not? between? 0.0:usd 1:usd 2:usd
-    ensure -> not? between? 0.0:usd 1:usd 2.0:usd
-    ensure -> not? between? 0.0:usd 1.0:usd 2:usd
-    ensure -> not? between? 0.0:usd 1.0:usd 2.0:usd
+    ensure -> not? between? 0.0`usd 1`usd 2`usd
+    ensure -> not? between? 0.0`usd 1`usd 2.0`usd
+    ensure -> not? between? 0.0`usd 1.0`usd 2`usd
+    ensure -> not? between? 0.0`usd 1.0`usd 2.0`usd
     passed
     
     
@@ -310,20 +310,20 @@ do [
     passed
     
     
-    ensure -> not? between? to :rational [0 1] 1:usd 2
-    ensure -> not? between? to :rational [0 1] 1:usd 2.0
-    ensure -> not? between? to :rational [0 1] 1:usd to :rational [2 1]
-    ensure -> not? between? to :rational [0 1] 1.0:usd 2
-    ensure -> not? between? to :rational [0 1] 1.0:usd 2.0
-    ensure -> not? between? to :rational [0 1] 1.0:usd to :rational [2 1]
+    ensure -> not? between? to :rational [0 1] 1`usd 2
+    ensure -> not? between? to :rational [0 1] 1`usd 2.0
+    ensure -> not? between? to :rational [0 1] 1`usd to :rational [2 1]
+    ensure -> not? between? to :rational [0 1] 1.0`usd 2
+    ensure -> not? between? to :rational [0 1] 1.0`usd 2.0
+    ensure -> not? between? to :rational [0 1] 1.0`usd to :rational [2 1]
     passed
     
-    ensure -> not? between? to :rational [0 1] 1 2:usd
-    ensure -> not? between? to :rational [0 1] 1 2.0:usd
-    ensure -> not? between? to :rational [0 1] 1.0 2:usd
-    ensure -> not? between? to :rational [0 1] 1.0 2.0:usd
-    ensure -> not? between? to :rational [0 1] to :rational [1 1] 2:usd
-    ensure -> not? between? to :rational [0 1] to :rational [1 1] 2.0:usd
+    ensure -> not? between? to :rational [0 1] 1 2`usd
+    ensure -> not? between? to :rational [0 1] 1 2.0`usd
+    ensure -> not? between? to :rational [0 1] 1.0 2`usd
+    ensure -> not? between? to :rational [0 1] 1.0 2.0`usd
+    ensure -> not? between? to :rational [0 1] to :rational [1 1] 2`usd
+    ensure -> not? between? to :rational [0 1] to :rational [1 1] 2.0`usd
     passed
     
     ; -----------------------------------------------
@@ -340,45 +340,45 @@ do [
     passed
     
     
-    ensure -> not? between? 3 1 2:usd
-    ensure -> not? between? 3 1 2.0:usd
-    ensure -> not? between? 3 1.0 2:usd
-    ensure -> not? between? 3 1.0 2.0:usd
-    ensure -> not? between? 3 to :rational [1 1] 2:usd
-    ensure -> not? between? 3 to :rational [1 1] 2.0:usd
+    ensure -> not? between? 3 1 2`usd
+    ensure -> not? between? 3 1 2.0`usd
+    ensure -> not? between? 3 1.0 2`usd
+    ensure -> not? between? 3 1.0 2.0`usd
+    ensure -> not? between? 3 to :rational [1 1] 2`usd
+    ensure -> not? between? 3 to :rational [1 1] 2.0`usd
     passed
     
-    ensure -> not? between? 3 1:usd 2
-    ensure -> not? between? 3 1:usd 2.0
-    ensure -> not? between? 3 1:usd to :rational [2 1]
-    ensure -> not? between? 3 1.0:usd 2
-    ensure -> not? between? 3 1.0:usd 2.0
-    ensure -> not? between? 3 1.0:usd to :rational [2 1]
+    ensure -> not? between? 3 1`usd 2
+    ensure -> not? between? 3 1`usd 2.0
+    ensure -> not? between? 3 1`usd to :rational [2 1]
+    ensure -> not? between? 3 1.0`usd 2
+    ensure -> not? between? 3 1.0`usd 2.0
+    ensure -> not? between? 3 1.0`usd to :rational [2 1]
     passed
     
-    ensure -> not? between? 3:usd 1 2
-    ensure -> not? between? 3:usd 1 2.0
-    ensure -> not? between? 3:usd 1 to :rational [2 1]
-    ensure -> not? between? 3:usd 1.0 2
-    ensure -> not? between? 3:usd 1.0 2.0
-    ensure -> not? between? 3:usd 1.0 to :rational [2 1]
-    ensure -> not? between? 3:usd to :rational [1 1] 2
-    ensure -> not? between? 3:usd to :rational [1 1] 2.0
-    ensure -> not? between? 3:usd to :rational [1 1] to :rational [2 1]
+    ensure -> not? between? 3`usd 1 2
+    ensure -> not? between? 3`usd 1 2.0
+    ensure -> not? between? 3`usd 1 to :rational [2 1]
+    ensure -> not? between? 3`usd 1.0 2
+    ensure -> not? between? 3`usd 1.0 2.0
+    ensure -> not? between? 3`usd 1.0 to :rational [2 1]
+    ensure -> not? between? 3`usd to :rational [1 1] 2
+    ensure -> not? between? 3`usd to :rational [1 1] 2.0
+    ensure -> not? between? 3`usd to :rational [1 1] to :rational [2 1]
     passed
     
-    ensure -> not? between? 3:usd 1 2:usd
-    ensure -> not? between? 3:usd 1 2.0:usd
-    ensure -> not? between? 3:usd 1.0 2:usd
-    ensure -> not? between? 3:usd 1.0 2.0:usd
-    ensure -> not? between? 3:usd to :rational [1 1] 2:usd
-    ensure -> not? between? 3:usd to :rational [1 1] 2.0:usd
+    ensure -> not? between? 3`usd 1 2`usd
+    ensure -> not? between? 3`usd 1 2.0`usd
+    ensure -> not? between? 3`usd 1.0 2`usd
+    ensure -> not? between? 3`usd 1.0 2.0`usd
+    ensure -> not? between? 3`usd to :rational [1 1] 2`usd
+    ensure -> not? between? 3`usd to :rational [1 1] 2.0`usd
     passed
     
-    ensure -> not? between? 3:usd 1:usd 2:usd
-    ensure -> not? between? 3:usd 1:usd 2.0:usd
-    ensure -> not? between? 3:usd 1.0:usd 2:usd
-    ensure -> not? between? 3:usd 1.0:usd 2.0:usd
+    ensure -> not? between? 3`usd 1`usd 2`usd
+    ensure -> not? between? 3`usd 1`usd 2.0`usd
+    ensure -> not? between? 3`usd 1.0`usd 2`usd
+    ensure -> not? between? 3`usd 1.0`usd 2.0`usd
     passed
     
     
@@ -395,53 +395,53 @@ do [
     passed
     
     
-    ensure -> not? between? 3.0 1:usd 2
-    ensure -> not? between? 3.0 1:usd 2.0
-    ensure -> not? between? 3.0 1:usd to :rational [2 1]
-    ensure -> not? between? 3.0 1.0:usd 2
-    ensure -> not? between? 3.0 1.0:usd 2.0
-    ensure -> not? between? 3.0 1.0:usd to :rational [2 1]
+    ensure -> not? between? 3.0 1`usd 2
+    ensure -> not? between? 3.0 1`usd 2.0
+    ensure -> not? between? 3.0 1`usd to :rational [2 1]
+    ensure -> not? between? 3.0 1.0`usd 2
+    ensure -> not? between? 3.0 1.0`usd 2.0
+    ensure -> not? between? 3.0 1.0`usd to :rational [2 1]
     passed
     
-    ensure -> not? between? 3.0 1 2:usd
-    ensure -> not? between? 3.0 1 2.0:usd
-    ensure -> not? between? 3.0 1.0 2:usd
-    ensure -> not? between? 3.0 1.0 2.0:usd
-    ensure -> not? between? 3.0 to :rational [1 1] 2:usd
-    ensure -> not? between? 3.0 to :rational [1 1] 2.0:usd
+    ensure -> not? between? 3.0 1 2`usd
+    ensure -> not? between? 3.0 1 2.0`usd
+    ensure -> not? between? 3.0 1.0 2`usd
+    ensure -> not? between? 3.0 1.0 2.0`usd
+    ensure -> not? between? 3.0 to :rational [1 1] 2`usd
+    ensure -> not? between? 3.0 to :rational [1 1] 2.0`usd
     passed
     
-    ensure -> not? between? 3.0:usd 1 2
-    ensure -> not? between? 3.0:usd 1 2.0
-    ensure -> not? between? 3.0:usd 1 to :rational [2 1]
-    ensure -> not? between? 3.0:usd 1.0 2
-    ensure -> not? between? 3.0:usd 1.0 2.0
-    ensure -> not? between? 3.0:usd 1.0 to :rational [2 1]
-    ensure -> not? between? 3.0:usd to :rational [1 1] 2
-    ensure -> not? between? 3.0:usd to :rational [1 1] 2.0
-    ensure -> not? between? 3.0:usd to :rational [1 1] to :rational [2 1]
+    ensure -> not? between? 3.0`usd 1 2
+    ensure -> not? between? 3.0`usd 1 2.0
+    ensure -> not? between? 3.0`usd 1 to :rational [2 1]
+    ensure -> not? between? 3.0`usd 1.0 2
+    ensure -> not? between? 3.0`usd 1.0 2.0
+    ensure -> not? between? 3.0`usd 1.0 to :rational [2 1]
+    ensure -> not? between? 3.0`usd to :rational [1 1] 2
+    ensure -> not? between? 3.0`usd to :rational [1 1] 2.0
+    ensure -> not? between? 3.0`usd to :rational [1 1] to :rational [2 1]
     passed
     
-    ensure -> not? between? 3.0 1:usd 2
-    ensure -> not? between? 3.0 1:usd 2.0
-    ensure -> not? between? 3.0 1:usd to :rational [2 1]
-    ensure -> not? between? 3.0 1.0:usd 2
-    ensure -> not? between? 3.0 1.0:usd 2.0
-    ensure -> not? between? 3.0 1.0:usd to :rational [2 1]
+    ensure -> not? between? 3.0 1`usd 2
+    ensure -> not? between? 3.0 1`usd 2.0
+    ensure -> not? between? 3.0 1`usd to :rational [2 1]
+    ensure -> not? between? 3.0 1.0`usd 2
+    ensure -> not? between? 3.0 1.0`usd 2.0
+    ensure -> not? between? 3.0 1.0`usd to :rational [2 1]
     passed
     
-    ensure -> not? between? 3.0:usd 1 2:usd
-    ensure -> not? between? 3.0:usd 1 2.0:usd
-    ensure -> not? between? 3.0:usd 1.0 2:usd
-    ensure -> not? between? 3.0:usd 1.0 2.0:usd
-    ensure -> not? between? 3.0:usd to :rational [1 1] 2:usd
-    ensure -> not? between? 3.0:usd to :rational [1 1] 2.0:usd
+    ensure -> not? between? 3.0`usd 1 2`usd
+    ensure -> not? between? 3.0`usd 1 2.0`usd
+    ensure -> not? between? 3.0`usd 1.0 2`usd
+    ensure -> not? between? 3.0`usd 1.0 2.0`usd
+    ensure -> not? between? 3.0`usd to :rational [1 1] 2`usd
+    ensure -> not? between? 3.0`usd to :rational [1 1] 2.0`usd
     passed
     
-    ensure -> not? between? 3.0:usd 1:usd 2:usd
-    ensure -> not? between? 3.0:usd 1:usd 2.0:usd
-    ensure -> not? between? 3.0:usd 1.0:usd 2:usd
-    ensure -> not? between? 3.0:usd 1.0:usd 2.0:usd
+    ensure -> not? between? 3.0`usd 1`usd 2`usd
+    ensure -> not? between? 3.0`usd 1`usd 2.0`usd
+    ensure -> not? between? 3.0`usd 1.0`usd 2`usd
+    ensure -> not? between? 3.0`usd 1.0`usd 2.0`usd
     passed
     
     
@@ -458,20 +458,20 @@ do [
     passed
     
     
-    ensure -> not? between? to :rational [3 1] 1:usd 2
-    ensure -> not? between? to :rational [3 1] 1:usd 2.0
-    ensure -> not? between? to :rational [3 1] 1:usd to :rational [2 1]
-    ensure -> not? between? to :rational [3 1] 1.0:usd 2
-    ensure -> not? between? to :rational [3 1] 1.0:usd 2.0
-    ensure -> not? between? to :rational [3 1] 1.0:usd to :rational [2 1]
+    ensure -> not? between? to :rational [3 1] 1`usd 2
+    ensure -> not? between? to :rational [3 1] 1`usd 2.0
+    ensure -> not? between? to :rational [3 1] 1`usd to :rational [2 1]
+    ensure -> not? between? to :rational [3 1] 1.0`usd 2
+    ensure -> not? between? to :rational [3 1] 1.0`usd 2.0
+    ensure -> not? between? to :rational [3 1] 1.0`usd to :rational [2 1]
     passed
     
-    ensure -> not? between? to :rational [3 1] 1 2:usd
-    ensure -> not? between? to :rational [3 1] 1 2.0:usd
-    ensure -> not? between? to :rational [3 1] 1.0 2:usd
-    ensure -> not? between? to :rational [3 1] 1.0 2.0:usd
-    ensure -> not? between? to :rational [3 1] to :rational [1 1] 2:usd
-    ensure -> not? between? to :rational [3 1] to :rational [1 1] 2.0:usd
+    ensure -> not? between? to :rational [3 1] 1 2`usd
+    ensure -> not? between? to :rational [3 1] 1 2.0`usd
+    ensure -> not? between? to :rational [3 1] 1.0 2`usd
+    ensure -> not? between? to :rational [3 1] 1.0 2.0`usd
+    ensure -> not? between? to :rational [3 1] to :rational [1 1] 2`usd
+    ensure -> not? between? to :rational [3 1] to :rational [1 1] 2.0`usd
     passed
     
     
@@ -698,132 +698,132 @@ do [
     
     topic « compare - :quantity
     
-    ensure -> 0 = compare 1:usd 1
-    ensure -> 0 = compare 1:m   1
-    ensure -> 0 = compare 1:m2  1
-    ensure -> 0 = compare 1:m3  1
-    ensure -> 0 = compare 1:c   1
-    ensure -> 0 = compare 1:f   1
-    ensure -> 0 = compare 1 1:usd
-    ensure -> 0 = compare 1 1:m
-    ensure -> 0 = compare 1 1:m2
-    ensure -> 0 = compare 1 1:m3
-    ensure -> 0 = compare 1 1:c
-    ensure -> 0 = compare 1 1:f
+    ensure -> 0 = compare 1`usd 1
+    ensure -> 0 = compare 1`m   1
+    ensure -> 0 = compare 1`m2  1
+    ensure -> 0 = compare 1`m3  1
+    ensure -> 0 = compare 1`c   1
+    ensure -> 0 = compare 1`f   1
+    ensure -> 0 = compare 1 1`usd
+    ensure -> 0 = compare 1 1`m
+    ensure -> 0 = compare 1 1`m2
+    ensure -> 0 = compare 1 1`m3
+    ensure -> 0 = compare 1 1`c
+    ensure -> 0 = compare 1 1`f
     passed
     
-    ensure -> 0 = compare 1:usd 1.0
-    ensure -> 0 = compare 1:m   1.0
-    ensure -> 0 = compare 1:m2  1.0
-    ensure -> 0 = compare 1:m3  1.0
-    ensure -> 0 = compare 1:c   1.0
-    ensure -> 0 = compare 1:f   1.0
-    ensure -> 0 = compare 1.0 1:usd
-    ensure -> 0 = compare 1.0 1:m
-    ensure -> 0 = compare 1.0 1:m2
-    ensure -> 0 = compare 1.0 1:m3
-    ensure -> 0 = compare 1.0 1:c
-    ensure -> 0 = compare 1.0 1:f
+    ensure -> 0 = compare 1`usd 1.0
+    ensure -> 0 = compare 1`m   1.0
+    ensure -> 0 = compare 1`m2  1.0
+    ensure -> 0 = compare 1`m3  1.0
+    ensure -> 0 = compare 1`c   1.0
+    ensure -> 0 = compare 1`f   1.0
+    ensure -> 0 = compare 1.0 1`usd
+    ensure -> 0 = compare 1.0 1`m
+    ensure -> 0 = compare 1.0 1`m2
+    ensure -> 0 = compare 1.0 1`m3
+    ensure -> 0 = compare 1.0 1`c
+    ensure -> 0 = compare 1.0 1`f
     passed
     
-    ensure -> 0 = compare 1:usd to :rational @[5 5]
-    ensure -> 0 = compare 1:m   to :rational @[5 5]
-    ensure -> 0 = compare 1:m2  to :rational @[5 5]
-    ensure -> 0 = compare 1:m3  to :rational @[5 5]
-    ensure -> 0 = compare 1:c   to :rational @[5 5]
-    ensure -> 0 = compare 1:f   to :rational @[5 5]
-    ensure -> 0 = compare to :rational @[5 5] 1:usd
-    ensure -> 0 = compare to :rational @[5 5] 1:m
-    ensure -> 0 = compare to :rational @[5 5] 1:m2
-    ensure -> 0 = compare to :rational @[5 5] 1:m3
-    ensure -> 0 = compare to :rational @[5 5] 1:c
-    ensure -> 0 = compare to :rational @[5 5] 1:f
-    passed
-    
-    
-    ensure -> 1 = compare 2:usd 1
-    ensure -> 1 = compare 2:m   1
-    ensure -> 1 = compare 2:m2  1
-    ensure -> 1 = compare 2:m3  1
-    ensure -> 1 = compare 2:c   1
-    ensure -> 1 = compare 2:f   1
-    ensure -> 1 = compare 2 1:usd
-    ensure -> 1 = compare 2 1:m
-    ensure -> 1 = compare 2 1:m2
-    ensure -> 1 = compare 2 1:m3
-    ensure -> 1 = compare 2 1:c
-    ensure -> 1 = compare 2 1:f
-    passed
-    
-    ensure -> 1 = compare 2:usd 1.0
-    ensure -> 1 = compare 2:m   1.0
-    ensure -> 1 = compare 2:m2  1.0
-    ensure -> 1 = compare 2:m3  1.0
-    ensure -> 1 = compare 2:c   1.0
-    ensure -> 1 = compare 2:f   1.0
-    ensure -> 1 = compare 2.0 1:usd
-    ensure -> 1 = compare 2.0 1:m
-    ensure -> 1 = compare 2.0 1:m2
-    ensure -> 1 = compare 2.0 1:m3
-    ensure -> 1 = compare 2.0 1:c
-    ensure -> 1 = compare 2.0 1:f
-    passed
-    
-    ensure -> 1 = compare 2:usd to :rational @[5 5]
-    ensure -> 1 = compare 2:m   to :rational @[5 5]
-    ensure -> 1 = compare 2:m2  to :rational @[5 5]
-    ensure -> 1 = compare 2:m3  to :rational @[5 5]
-    ensure -> 1 = compare 2:c   to :rational @[5 5]
-    ensure -> 1 = compare 2:f   to :rational @[5 5] 
-    ensure -> 1 = compare to :rational @[2 1] 1:usd
-    ensure -> 1 = compare to :rational @[2 1] 1:m
-    ensure -> 1 = compare to :rational @[2 1] 1:m2
-    ensure -> 1 = compare to :rational @[2 1] 1:m3
-    ensure -> 1 = compare to :rational @[2 1] 1:c
-    ensure -> 1 = compare to :rational @[2 1] 1:f
+    ensure -> 0 = compare 1`usd to :rational @[5 5]
+    ensure -> 0 = compare 1`m   to :rational @[5 5]
+    ensure -> 0 = compare 1`m2  to :rational @[5 5]
+    ensure -> 0 = compare 1`m3  to :rational @[5 5]
+    ensure -> 0 = compare 1`c   to :rational @[5 5]
+    ensure -> 0 = compare 1`f   to :rational @[5 5]
+    ensure -> 0 = compare to :rational @[5 5] 1`usd
+    ensure -> 0 = compare to :rational @[5 5] 1`m
+    ensure -> 0 = compare to :rational @[5 5] 1`m2
+    ensure -> 0 = compare to :rational @[5 5] 1`m3
+    ensure -> 0 = compare to :rational @[5 5] 1`c
+    ensure -> 0 = compare to :rational @[5 5] 1`f
     passed
     
     
-    ensure -> (neg 1) = compare 1:usd 2
-    ensure -> (neg 1) = compare 1:m   2
-    ensure -> (neg 1) = compare 1:m2  2
-    ensure -> (neg 1) = compare 1:m3  2
-    ensure -> (neg 1) = compare 1:c   2
-    ensure -> (neg 1) = compare 1:f   2
-    ensure -> (neg 1) = compare 1 2:usd
-    ensure -> (neg 1) = compare 1 2:m
-    ensure -> (neg 1) = compare 1 2:m2
-    ensure -> (neg 1) = compare 1 2:m3
-    ensure -> (neg 1) = compare 1 2:c
-    ensure -> (neg 1) = compare 1 2:f
+    ensure -> 1 = compare 2`usd 1
+    ensure -> 1 = compare 2`m   1
+    ensure -> 1 = compare 2`m2  1
+    ensure -> 1 = compare 2`m3  1
+    ensure -> 1 = compare 2`c   1
+    ensure -> 1 = compare 2`f   1
+    ensure -> 1 = compare 2 1`usd
+    ensure -> 1 = compare 2 1`m
+    ensure -> 1 = compare 2 1`m2
+    ensure -> 1 = compare 2 1`m3
+    ensure -> 1 = compare 2 1`c
+    ensure -> 1 = compare 2 1`f
     passed
     
-    ensure -> (neg 1) = compare 1:usd 2.0
-    ensure -> (neg 1) = compare 1:m   2.0
-    ensure -> (neg 1) = compare 1:m2  2.0
-    ensure -> (neg 1) = compare 1:m3  2.0
-    ensure -> (neg 1) = compare 1:c   2.0
-    ensure -> (neg 1) = compare 1:f   2.0
-    ensure -> (neg 1) = compare 1.0 2:usd
-    ensure -> (neg 1) = compare 1.0 2:m
-    ensure -> (neg 1) = compare 1.0 2:m2
-    ensure -> (neg 1) = compare 1.0 2:m3
-    ensure -> (neg 1) = compare 1.0 2:c
-    ensure -> (neg 1) = compare 1.0 2:f
+    ensure -> 1 = compare 2`usd 1.0
+    ensure -> 1 = compare 2`m   1.0
+    ensure -> 1 = compare 2`m2  1.0
+    ensure -> 1 = compare 2`m3  1.0
+    ensure -> 1 = compare 2`c   1.0
+    ensure -> 1 = compare 2`f   1.0
+    ensure -> 1 = compare 2.0 1`usd
+    ensure -> 1 = compare 2.0 1`m
+    ensure -> 1 = compare 2.0 1`m2
+    ensure -> 1 = compare 2.0 1`m3
+    ensure -> 1 = compare 2.0 1`c
+    ensure -> 1 = compare 2.0 1`f
     passed
     
-    ensure -> (neg 1) = compare 1:usd to :rational @[2 1]
-    ensure -> (neg 1) = compare 1:m   to :rational @[2 1]
-    ensure -> (neg 1) = compare 1:m2  to :rational @[2 1]
-    ensure -> (neg 1) = compare 1:m3  to :rational @[2 1]
-    ensure -> (neg 1) = compare 1:c   to :rational @[2 1]
-    ensure -> (neg 1) = compare 1:f   to :rational @[2 1] 
-    ensure -> (neg 1) = compare to :rational @[1 1] 2:usd
-    ensure -> (neg 1) = compare to :rational @[1 1] 2:m
-    ensure -> (neg 1) = compare to :rational @[1 1] 2:m2
-    ensure -> (neg 1) = compare to :rational @[1 1] 2:m3
-    ensure -> (neg 1) = compare to :rational @[1 1] 2:c
-    ensure -> (neg 1) = compare to :rational @[1 1] 2:f
+    ensure -> 1 = compare 2`usd to :rational @[5 5]
+    ensure -> 1 = compare 2`m   to :rational @[5 5]
+    ensure -> 1 = compare 2`m2  to :rational @[5 5]
+    ensure -> 1 = compare 2`m3  to :rational @[5 5]
+    ensure -> 1 = compare 2`c   to :rational @[5 5]
+    ensure -> 1 = compare 2`f   to :rational @[5 5] 
+    ensure -> 1 = compare to :rational @[2 1] 1`usd
+    ensure -> 1 = compare to :rational @[2 1] 1`m
+    ensure -> 1 = compare to :rational @[2 1] 1`m2
+    ensure -> 1 = compare to :rational @[2 1] 1`m3
+    ensure -> 1 = compare to :rational @[2 1] 1`c
+    ensure -> 1 = compare to :rational @[2 1] 1`f
+    passed
+    
+    
+    ensure -> (neg 1) = compare 1`usd 2
+    ensure -> (neg 1) = compare 1`m   2
+    ensure -> (neg 1) = compare 1`m2  2
+    ensure -> (neg 1) = compare 1`m3  2
+    ensure -> (neg 1) = compare 1`c   2
+    ensure -> (neg 1) = compare 1`f   2
+    ensure -> (neg 1) = compare 1 2`usd
+    ensure -> (neg 1) = compare 1 2`m
+    ensure -> (neg 1) = compare 1 2`m2
+    ensure -> (neg 1) = compare 1 2`m3
+    ensure -> (neg 1) = compare 1 2`c
+    ensure -> (neg 1) = compare 1 2`f
+    passed
+    
+    ensure -> (neg 1) = compare 1`usd 2.0
+    ensure -> (neg 1) = compare 1`m   2.0
+    ensure -> (neg 1) = compare 1`m2  2.0
+    ensure -> (neg 1) = compare 1`m3  2.0
+    ensure -> (neg 1) = compare 1`c   2.0
+    ensure -> (neg 1) = compare 1`f   2.0
+    ensure -> (neg 1) = compare 1.0 2`usd
+    ensure -> (neg 1) = compare 1.0 2`m
+    ensure -> (neg 1) = compare 1.0 2`m2
+    ensure -> (neg 1) = compare 1.0 2`m3
+    ensure -> (neg 1) = compare 1.0 2`c
+    ensure -> (neg 1) = compare 1.0 2`f
+    passed
+    
+    ensure -> (neg 1) = compare 1`usd to :rational @[2 1]
+    ensure -> (neg 1) = compare 1`m   to :rational @[2 1]
+    ensure -> (neg 1) = compare 1`m2  to :rational @[2 1]
+    ensure -> (neg 1) = compare 1`m3  to :rational @[2 1]
+    ensure -> (neg 1) = compare 1`c   to :rational @[2 1]
+    ensure -> (neg 1) = compare 1`f   to :rational @[2 1] 
+    ensure -> (neg 1) = compare to :rational @[1 1] 2`usd
+    ensure -> (neg 1) = compare to :rational @[1 1] 2`m
+    ensure -> (neg 1) = compare to :rational @[1 1] 2`m2
+    ensure -> (neg 1) = compare to :rational @[1 1] 2`m3
+    ensure -> (neg 1) = compare to :rational @[1 1] 2`c
+    ensure -> (neg 1) = compare to :rational @[1 1] 2`f
     passed
     
     
@@ -1169,100 +1169,100 @@ do [
     
     topic « equal? - :quantity
     
-    ensure -> equal? 1:usd 1
-    ensure -> equal? 1:m   1
-    ensure -> equal? 1:m2  1
-    ensure -> equal? 1:m3  1
-    ensure -> equal? 1:c   1
-    ensure -> equal? 1:f   1
-    ensure -> 1:usd = 1
-    ensure -> 1:m   = 1
-    ensure -> 1:m2  = 1
-    ensure -> 1:m3  = 1
-    ensure -> 1:c   = 1
-    ensure -> 1:f   = 1
+    ensure -> equal? 1`usd 1
+    ensure -> equal? 1`m   1
+    ensure -> equal? 1`m2  1
+    ensure -> equal? 1`m3  1
+    ensure -> equal? 1`c   1
+    ensure -> equal? 1`f   1
+    ensure -> 1`usd = 1
+    ensure -> 1`m   = 1
+    ensure -> 1`m2  = 1
+    ensure -> 1`m3  = 1
+    ensure -> 1`c   = 1
+    ensure -> 1`f   = 1
     passed
     
-    ensure -> equal? 1 1:usd
-    ensure -> equal? 1 1:m
-    ensure -> equal? 1 1:m2
-    ensure -> equal? 1 1:m3
-    ensure -> equal? 1 1:c
-    ensure -> equal? 1 1:f
-    ensure -> 1 = 1:usd
-    ensure -> 1 = 1:m
-    ensure -> 1 = 1:m2
-    ensure -> 1 = 1:m3
-    ensure -> 1 = 1:c
-    ensure -> 1 = 1:f
+    ensure -> equal? 1 1`usd
+    ensure -> equal? 1 1`m
+    ensure -> equal? 1 1`m2
+    ensure -> equal? 1 1`m3
+    ensure -> equal? 1 1`c
+    ensure -> equal? 1 1`f
+    ensure -> 1 = 1`usd
+    ensure -> 1 = 1`m
+    ensure -> 1 = 1`m2
+    ensure -> 1 = 1`m3
+    ensure -> 1 = 1`c
+    ensure -> 1 = 1`f
     passed
     
-    ensure -> equal? 1:usd 1.0
-    ensure -> equal? 1:m   1.0
-    ensure -> equal? 1:m2  1.0
-    ensure -> equal? 1:m3  1.0
-    ensure -> equal? 1:c   1.0
-    ensure -> equal? 1:f   1.0
-    ensure -> 1:usd = 1.0
-    ensure -> 1:m   = 1.0
-    ensure -> 1:m2  = 1.0
-    ensure -> 1:m3  = 1.0
-    ensure -> 1:c   = 1.0
-    ensure -> 1:f   = 1.0
+    ensure -> equal? 1`usd 1.0
+    ensure -> equal? 1`m   1.0
+    ensure -> equal? 1`m2  1.0
+    ensure -> equal? 1`m3  1.0
+    ensure -> equal? 1`c   1.0
+    ensure -> equal? 1`f   1.0
+    ensure -> 1`usd = 1.0
+    ensure -> 1`m   = 1.0
+    ensure -> 1`m2  = 1.0
+    ensure -> 1`m3  = 1.0
+    ensure -> 1`c   = 1.0
+    ensure -> 1`f   = 1.0
     passed
     
-    ensure -> equal? 1.0 1:usd
-    ensure -> equal? 1.0 1:m
-    ensure -> equal? 1.0 1:m2
-    ensure -> equal? 1.0 1:m3
-    ensure -> equal? 1.0 1:c
-    ensure -> equal? 1.0 1:f
-    ensure -> 1.0 = 1:usd
-    ensure -> 1.0 = 1:m
-    ensure -> 1.0 = 1:m2
-    ensure -> 1.0 = 1:m3
-    ensure -> 1.0 = 1:c
-    ensure -> 1.0 = 1:f
+    ensure -> equal? 1.0 1`usd
+    ensure -> equal? 1.0 1`m
+    ensure -> equal? 1.0 1`m2
+    ensure -> equal? 1.0 1`m3
+    ensure -> equal? 1.0 1`c
+    ensure -> equal? 1.0 1`f
+    ensure -> 1.0 = 1`usd
+    ensure -> 1.0 = 1`m
+    ensure -> 1.0 = 1`m2
+    ensure -> 1.0 = 1`m3
+    ensure -> 1.0 = 1`c
+    ensure -> 1.0 = 1`f
     passed
     
-    ensure -> equal? 1:usd to :rational @[5 5]
-    ensure -> equal? 1:m   to :rational @[5 5]
-    ensure -> equal? 1:m2  to :rational @[5 5]
-    ensure -> equal? 1:m3  to :rational @[5 5]
-    ensure -> equal? 1:c   to :rational @[5 5]
-    ensure -> equal? 1:f   to :rational @[5 5]
-    ensure -> 1:usd = to :rational @[5 5]
-    ensure -> 1:m   = to :rational @[5 5]
-    ensure -> 1:m2  = to :rational @[5 5]
-    ensure -> 1:m3  = to :rational @[5 5]
-    ensure -> 1:c   = to :rational @[5 5]
-    ensure -> 1:f   = to :rational @[5 5]
+    ensure -> equal? 1`usd to :rational @[5 5]
+    ensure -> equal? 1`m   to :rational @[5 5]
+    ensure -> equal? 1`m2  to :rational @[5 5]
+    ensure -> equal? 1`m3  to :rational @[5 5]
+    ensure -> equal? 1`c   to :rational @[5 5]
+    ensure -> equal? 1`f   to :rational @[5 5]
+    ensure -> 1`usd = to :rational @[5 5]
+    ensure -> 1`m   = to :rational @[5 5]
+    ensure -> 1`m2  = to :rational @[5 5]
+    ensure -> 1`m3  = to :rational @[5 5]
+    ensure -> 1`c   = to :rational @[5 5]
+    ensure -> 1`f   = to :rational @[5 5]
     passed
     
-    ensure -> equal? to :rational @[5 5] 1:usd
-    ensure -> equal? to :rational @[5 5] 1:m
-    ensure -> equal? to :rational @[5 5] 1:m2
-    ensure -> equal? to :rational @[5 5] 1:m3
-    ensure -> equal? to :rational @[5 5] 1:c
-    ensure -> equal? to :rational @[5 5] 1:f
-    ensure -> (to :rational @[5 5]) = 1:usd
-    ensure -> (to :rational @[5 5]) = 1:m
-    ensure -> (to :rational @[5 5]) = 1:m2
-    ensure -> (to :rational @[5 5]) = 1:m3
-    ensure -> (to :rational @[5 5]) = 1:c
-    ensure -> (to :rational @[5 5]) = 1:f
+    ensure -> equal? to :rational @[5 5] 1`usd
+    ensure -> equal? to :rational @[5 5] 1`m
+    ensure -> equal? to :rational @[5 5] 1`m2
+    ensure -> equal? to :rational @[5 5] 1`m3
+    ensure -> equal? to :rational @[5 5] 1`c
+    ensure -> equal? to :rational @[5 5] 1`f
+    ensure -> (to :rational @[5 5]) = 1`usd
+    ensure -> (to :rational @[5 5]) = 1`m
+    ensure -> (to :rational @[5 5]) = 1`m2
+    ensure -> (to :rational @[5 5]) = 1`m3
+    ensure -> (to :rational @[5 5]) = 1`c
+    ensure -> (to :rational @[5 5]) = 1`f
     passed
     
-    ensure -> not? equal? 2:usd 1
-    ensure -> not? equal? 2 1:usd
-    ensure -> not? equal? 2:usd 1.0
-    ensure -> not? equal? 2.0 1:usd
-    ensure -> not? equal? 2:usd to :rational @[5 5]
-    ensure -> not? equal? to :rational @[2 5] 1:usd
+    ensure -> not? equal? 2`usd 1
+    ensure -> not? equal? 2 1`usd
+    ensure -> not? equal? 2`usd 1.0
+    ensure -> not? equal? 2.0 1`usd
+    ensure -> not? equal? 2`usd to :rational @[5 5]
+    ensure -> not? equal? to :rational @[2 5] 1`usd
     passed
     
-    ensure -> equal? 1.5:m 150:cm 
-    ensure -> not? equal? 2:m 2:cm
+    ensure -> equal? 1.5`m 150`cm 
+    ensure -> not? equal? 2`m 2`cm
     passed 
     
     
@@ -1769,8 +1769,8 @@ do [
         -> equal? 1 '1'             -> equal? 1 "1"
         -> equal? [1] [one]         -> equal? [1] [one:]
         -> equal? 1 '1              -> equal? [1] [.1]         
-        -> equal? [1] [.1:]         -> equal? [1] [one\1]
-        -> equal? [1] [one\1:]      -> equal? [1] [+]          
+        -> equal? [1] [.1`]         -> equal? [1] [one\1]
+        -> equal? [1] [one\1`]      -> equal? [1] [+]          
         -> equal? 1 {/1/}           -> equal? 1 to :binary 1   
         -> equal? 1 to :binary 1    -> equal? [1] [(1)]        
         -> equal? 1 [1]             -> equal? 1 1..1           
@@ -1785,8 +1785,8 @@ do [
         -> equal? 1.0 1.0.0             -> equal? 1.0 :floating
         -> equal? 1.0 '1'               -> equal? 1.0 "1.0"
         -> equal? [1.0] [one]           -> equal? 1.0 '1
-        -> equal? [1.0] [.1]            -> equal? [1.0] [.1:]
-        -> equal? [1.0] [one\1]         -> equal? [1.0] [one\1:]        
+        -> equal? [1.0] [.1]            -> equal? [1.0] [.1`]
+        -> equal? [1.0] [one\1]         -> equal? [1.0] [one\1`]        
         -> equal? [1.0] [+]             -> equal? 1.0 {/1.0/}
         -> equal? 1.0 to :binary 1.0    -> equal? 1.0 to :binary 1.0
         -> equal? [1.0] [(1.0)]         -> equal? 1.0 [1]
@@ -1803,7 +1803,7 @@ do [
         -> equal? a '1'                     -> equal? a "1/1"
         -> equal? @[a] [one]                -> equal? @[a] [one:]
         -> equal? 1 '1                      -> equal? @[a] [.1]                 
-        -> equal? @[a] [.1:]                -> equal? @[a] [one\1]          
+        -> equal? @[a] [.1`]                -> equal? @[a] [one\1]          
         -> equal? @[a] [+]                  -> equal? a {/1/1/}
         -> equal? a to :binary 1            -> equal? a to :binary 1
         -> equal? @[a] [(1)]                -> equal? a [1]
@@ -1813,66 +1813,66 @@ do [
     
     ; for :quantity
     ensure -> every? @[
-        -> equal? 1:usd null            -> equal? 1:usd true
-        -> equal? 1:usd false           -> equal? 1:usd to :complex [1 1]
-        -> equal? 1:usd 1.0.0           -> equal? 1:usd :quantity
-        -> equal? 1:usd '1'             -> equal? 1:usd "1USD"
-        -> equal? [1:usd] [one]         -> equal? [1:usd] [one:]
-        -> equal? 1:usd '1              -> equal? [1:usd] [.1]                  
-        -> equal? [1:usd] [.1:]         -> equal? [1:usd] [one\1]
-        -> equal? [1:usd] [one\1:]      -> equal? [1:usd] [+]                   
-        -> equal? 1:usd {/1USD/}        -> equal? 1:usd to :binary 1            
-        -> equal? 1:usd to :binary 1    -> equal? [1:usd] [(1)]                 
-        -> equal? 1:usd [1:usd]         -> equal? 1:usd 1..1                    
-        -> equal? 1:usd #[one: 1:usd]   -> equal? 0:usd #black                  
-        -> equal? 1:usd var 'one?
+        -> equal? 1`usd null            -> equal? 1`usd true
+        -> equal? 1`usd false           -> equal? 1`usd to :complex [1 1]
+        -> equal? 1`usd 1.0.0           -> equal? 1`usd :quantity
+        -> equal? 1`usd '1'             -> equal? 1`usd "1USD"
+        -> equal? [1`usd] [one]         -> equal? [1`usd] [one:]
+        -> equal? 1`usd '1              -> equal? [1`usd] [.1]                  
+        -> equal? [1`usd] [.1`]         -> equal? [1`usd] [one\1]
+        -> equal? [1`usd] [one\1`]      -> equal? [1`usd] [+]                   
+        -> equal? 1`usd {/1USD/}        -> equal? 1`usd to :binary 1            
+        -> equal? 1`usd to :binary 1    -> equal? [1`usd] [(1)]                 
+        -> equal? 1`usd [1`usd]         -> equal? 1`usd 1..1                    
+        -> equal? 1`usd #[one: 1`usd]   -> equal? 0`usd #black                  
+        -> equal? 1`usd var 'one?
     ] => not? passed
     
     ensure -> every? @[ 
-        -> equal? 1:m null          -> equal? 1:m true
-        -> equal? 1:m false         -> equal? 1:m to :complex [1 1]
-        -> equal? 1:m 1.0.0         -> equal? 1:m :quantity
-        -> equal? 1:m '1'           -> equal? 1:m "1m"
-        -> equal? [1:m] [one]       -> equal? [1:m] [one:]
-        -> equal? 1:m '1            -> equal? [1:m] [.1]            
-        -> equal? [1:m] [one\1]     -> equal? [1:m] [one\1:]        
-        -> equal? [1:m] [+]         -> equal? 1:m {/1m/}
-        -> equal? 1:m to :binary 1  -> equal? 1:m to :binary 1
-        -> equal? [1:m] [(1)]       -> equal? 1:m [1:m]
-        -> equal? 1:m 1..1          -> equal? 1:m #[one: 1:m]
-        -> equal? 0:m #black        -> equal? 1:m var 'one?
+        -> equal? 1`m null          -> equal? 1`m true
+        -> equal? 1`m false         -> equal? 1`m to :complex [1 1]
+        -> equal? 1`m 1.0.0         -> equal? 1`m :quantity
+        -> equal? 1`m '1'           -> equal? 1`m "1m"
+        -> equal? [1`m] [one]       -> equal? [1`m] [one:]
+        -> equal? 1`m '1            -> equal? [1`m] [.1]            
+        -> equal? [1`m] [one\1]     -> equal? [1`m] [one\1`]        
+        -> equal? [1`m] [+]         -> equal? 1`m {/1m/}
+        -> equal? 1`m to :binary 1  -> equal? 1`m to :binary 1
+        -> equal? [1`m] [(1)]       -> equal? 1`m [1`m]
+        -> equal? 1`m 1..1          -> equal? 1`m #[one: 1`m]
+        -> equal? 0`m #black        -> equal? 1`m var 'one?
     ] => not? passed
     
     ensure -> every? @[ 
-        -> equal? 1:m3 null                 -> equal? 1:m3 true
-        -> equal? 1:m3 false                -> equal? 1:m3 to :complex [1 1]
-        -> equal? 1:m3 1.0.0                -> equal? 1:m3 :quantity
-        -> equal? 1:m3 '1'                  -> equal? 1:m3 "1m³"
-        -> equal? [1:m3] [one]              -> equal? [1:m3] [one:]
-        -> equal? 1:m3 '1                   -> equal? [1:m3] [.1]               
-        -> equal? [1:m3] [.1:]              -> equal? [1:m3] [one\1]
-        -> equal? [1:m3] [one\1:]           -> equal? [1:m3] [+]                
-        -> equal? 1:m3 {/1m³/}              -> equal? 1:m3 to :binary 1         
-        -> equal? 1:m3 to :binary 1         -> equal? [1:m3] [(1)]              
-        -> equal? 1:m3 [1:m3]               -> equal? 1:m3 1..1                 
-        -> equal? 1:m3 #[one: 1:m3]         -> equal? 0:m3 #black               
-        -> equal? 1:m3 var 'one?
+        -> equal? 1`m3 null                 -> equal? 1`m3 true
+        -> equal? 1`m3 false                -> equal? 1`m3 to :complex [1 1]
+        -> equal? 1`m3 1.0.0                -> equal? 1`m3 :quantity
+        -> equal? 1`m3 '1'                  -> equal? 1`m3 "1m³"
+        -> equal? [1`m3] [one]              -> equal? [1`m3] [one:]
+        -> equal? 1`m3 '1                   -> equal? [1`m3] [.1]               
+        -> equal? [1`m3] [.1`]              -> equal? [1`m3] [one\1]
+        -> equal? [1`m3] [one\1`]           -> equal? [1`m3] [+]                
+        -> equal? 1`m3 {/1m³/}              -> equal? 1`m3 to :binary 1         
+        -> equal? 1`m3 to :binary 1         -> equal? [1`m3] [(1)]              
+        -> equal? 1`m3 [1`m3]               -> equal? 1`m3 1..1                 
+        -> equal? 1`m3 #[one: 1`m3]         -> equal? 0`m3 #black               
+        -> equal? 1`m3 var 'one?
     ] => not? passed
     
     ensure -> every? @[ 
-        -> equal? 1:c null              -> equal? 1:c true
-        -> equal? 1:c false             -> equal? 1:c to :complex [1 1]
-        -> equal? 1:c 1.0.0             -> equal? 1:c :quantity
-        -> equal? 1:c '1'               -> equal? 1:c "1°C"
-        -> equal? [1:c] [one]           -> equal? [1:c] [one:]
-        -> equal? 1:c '1                -> equal? [1:c] [.1]            
-        -> equal? [1:c] [.1:]           -> equal? [1:c] [one\1]
-        -> equal? [1:c] [one\1:]        -> equal? [1:c] [+]             
-        -> equal? 1:c {/1°C/}           -> equal? 1:c to :binary 1      
-        -> equal? 1:c to :binary 1      -> equal? [1:c] [(1)]           
-        -> equal? 1:c [1:c]             -> equal? 1:c 1..1              
-        -> equal? 1:c #[one: 1:c]       -> equal? 0:c #black            
-        -> equal? 1:c var 'one?
+        -> equal? 1`c null              -> equal? 1`c true
+        -> equal? 1`c false             -> equal? 1`c to :complex [1 1]
+        -> equal? 1`c 1.0.0             -> equal? 1`c :quantity
+        -> equal? 1`c '1'               -> equal? 1`c "1°C"
+        -> equal? [1`c] [one]           -> equal? [1`c] [one:]
+        -> equal? 1`c '1                -> equal? [1`c] [.1]            
+        -> equal? [1`c] [.1`]           -> equal? [1`c] [one\1]
+        -> equal? [1`c] [one\1`]        -> equal? [1`c] [+]             
+        -> equal? 1`c {/1°C/}           -> equal? 1`c to :binary 1      
+        -> equal? 1`c to :binary 1      -> equal? [1`c] [(1)]           
+        -> equal? 1`c [1`c]             -> equal? 1`c 1..1              
+        -> equal? 1`c #[one: 1`c]       -> equal? 0`c #black            
+        -> equal? 1`c var 'one?
     ] => not? passed
     
     ; for :null
@@ -1950,8 +1950,8 @@ do [
         -> equal? a '1'                     -> equal? a "1.0+1.0i"
         -> equal? @[a] [one]                -> equal? @[a] [one:]
         -> equal? 1 '1                      -> equal? @[a] [.1]                 
-        -> equal? @[a] [.1:]                -> equal? @[a] [one\1]              
-        -> equal? @[a] [one\1:]             -> equal? @[a] [+]                  
+        -> equal? @[a] [.1`]                -> equal? @[a] [one\1]              
+        -> equal? @[a] [one\1`]             -> equal? @[a] [+]                  
         -> equal? a {/1.0+1.0i/}            -> equal? a to :binary 1            
         -> equal? a to :binary 1            -> equal? @[a] [(1)]                
         -> equal? a [1]                     -> equal? a 1..1                    
@@ -1968,8 +1968,8 @@ do [
         -> equal? 1.0.0 '1'                     -> equal? 1.0.0 "1.0.0"
         -> equal? [1.0.0] [one]                 -> equal? [1.0.0] [one:]
         -> equal? 1.0.0 '1                      -> equal? [1.0.0] [.1]                  
-        -> equal? [1.0.0] [.1:]                 -> equal? [1.0.0] [one\1]
-        -> equal? [1.0.0] [one\1:]              -> equal? [1.0.0] [+]                   
+        -> equal? [1.0.0] [.1`]                 -> equal? [1.0.0] [one\1]
+        -> equal? [1.0.0] [one\1`]              -> equal? [1.0.0] [+]                   
         -> equal? 1.0.0 {/1.0.0/}               -> equal? 1.0.0 to :binary 1.0          
         -> equal? 1.0.0 to :binary 1.0          -> equal? [1.0.0] [(1.0.0)]             
         -> equal? 1.0.0 [1.0.0]                 -> equal? 1.0.0 1..1                    
@@ -2130,9 +2130,9 @@ do [
     ; for :binary
     ensure -> every? @[
         -> equal? to :binary 1 1                    -> equal? to :binary 1 1.0                
-        -> equal? to :binary 1 to :rational [1 1]   -> equal? to :binary 1 1:usd                
-        -> equal? to :binary 1 1:m                  -> equal? to :binary 1 1:m3                 
-        -> equal? to :binary 1 1:c                  -> equal? to :binary 0 null                 
+        -> equal? to :binary 1 to :rational [1 1]   -> equal? to :binary 1 1`usd                
+        -> equal? to :binary 1 1`m                  -> equal? to :binary 1 1`m3                 
+        -> equal? to :binary 1 1`c                  -> equal? to :binary 0 null                 
         -> equal? to :binary 0 true                 -> equal? to :binary 0 false                
         -> equal? to :binary 0 maybe                -> equal? to :binary 1 to :complex [1 1]                  
         -> equal? to :binary 1 1.0.0                -> equal? to :binary 1 :type              
@@ -2147,9 +2147,9 @@ do [
     ; for :range
     ensure -> every? @[
         -> equal? 1..1 1                        -> equal? 1..1 1.0
-        -> equal? 1..1 a: to :rational [1 1]    -> equal? 1..1 1:usd
-        -> equal? 1..1 1:m                      -> equal? 1..1 1:m3  
-        -> equal? 1..1 1:c                      -> equal? 0..0 null 
+        -> equal? 1..1 a: to :rational [1 1]    -> equal? 1..1 1`usd
+        -> equal? 1..1 1`m                      -> equal? 1..1 1`m3  
+        -> equal? 1..1 1`c                      -> equal? 0..0 null 
         -> equal? 0..0 true                     -> equal? 0..0 false
         -> equal? 0..0 maybe                    -> equal? 1..1 to :complex [1 1]
         -> equal? 1..1 1.0.0                    -> equal? 1..1 :type                        
@@ -2174,9 +2174,9 @@ do [
     ; for :color
     ensure -> every? @[
         -> equal? #black 0                  -> equal? #black 0.0
-        -> equal? #black to :rational [1 1] -> equal? #black 0:usd 
-        -> equal? #black 0:m                -> equal? #black 0:m3
-        -> equal? #black 0:c                -> equal? #black null 
+        -> equal? #black to :rational [1 1] -> equal? #black 0`usd 
+        -> equal? #black 0`m                -> equal? #black 0`m3
+        -> equal? #black 0`c                -> equal? #black null 
         -> equal? #black true               -> equal? #black false 
         -> equal? #black maybe              -> equal? #black to :complex [0 0]
         -> equal? #black 0.0.0              -> equal? #black :color
@@ -2288,141 +2288,141 @@ do [
     
     ; equal to
     
-    ensure -> not? greater? 1:usd 1
-    ensure -> not? greater? 1:m   1
-    ensure -> not? greater? 1:m2  1
-    ensure -> not? greater? 1:m3  1
-    ensure -> not? greater? 1:c   1
-    ensure -> not? greater? 1:f   1
-    ensure -> not? greater? 1 1:usd
-    ensure -> not? greater? 1 1:m
-    ensure -> not? greater? 1 1:m2
-    ensure -> not? greater? 1 1:m3
-    ensure -> not? greater? 1 1:c
-    ensure -> not? greater? 1 1:f
+    ensure -> not? greater? 1`usd 1
+    ensure -> not? greater? 1`m   1
+    ensure -> not? greater? 1`m2  1
+    ensure -> not? greater? 1`m3  1
+    ensure -> not? greater? 1`c   1
+    ensure -> not? greater? 1`f   1
+    ensure -> not? greater? 1 1`usd
+    ensure -> not? greater? 1 1`m
+    ensure -> not? greater? 1 1`m2
+    ensure -> not? greater? 1 1`m3
+    ensure -> not? greater? 1 1`c
+    ensure -> not? greater? 1 1`f
     passed
     
-    ensure -> not? greater? 1:usd 1.0
-    ensure -> not? greater? 1:m   1.0
-    ensure -> not? greater? 1:m2  1.0
-    ensure -> not? greater? 1:m3  1.0
-    ensure -> not? greater? 1:c   1.0
-    ensure -> not? greater? 1:f   1.0
-    ensure -> not? greater? 1.0 1:usd
-    ensure -> not? greater? 1.0 1:m
-    ensure -> not? greater? 1.0 1:m2
-    ensure -> not? greater? 1.0 1:m3
-    ensure -> not? greater? 1.0 1:c
-    ensure -> not? greater? 1.0 1:f
+    ensure -> not? greater? 1`usd 1.0
+    ensure -> not? greater? 1`m   1.0
+    ensure -> not? greater? 1`m2  1.0
+    ensure -> not? greater? 1`m3  1.0
+    ensure -> not? greater? 1`c   1.0
+    ensure -> not? greater? 1`f   1.0
+    ensure -> not? greater? 1.0 1`usd
+    ensure -> not? greater? 1.0 1`m
+    ensure -> not? greater? 1.0 1`m2
+    ensure -> not? greater? 1.0 1`m3
+    ensure -> not? greater? 1.0 1`c
+    ensure -> not? greater? 1.0 1`f
     passed
     
-    ensure -> not? greater? 1:usd to :rational @[5 5]
-    ensure -> not? greater? 1:m   to :rational @[5 5]
-    ensure -> not? greater? 1:m2  to :rational @[5 5]
-    ensure -> not? greater? 1:m3  to :rational @[5 5]
-    ensure -> not? greater? 1:c   to :rational @[5 5]
-    ensure -> not? greater? 1:f   to :rational @[5 5] 
-    ensure -> not? greater? to :rational @[5 5] 1:usd
-    ensure -> not? greater? to :rational @[5 5] 1:m
-    ensure -> not? greater? to :rational @[5 5] 1:m2
-    ensure -> not? greater? to :rational @[5 5] 1:m3
-    ensure -> not? greater? to :rational @[5 5] 1:c
-    ensure -> not? greater? to :rational @[5 5] 1:f
+    ensure -> not? greater? 1`usd to :rational @[5 5]
+    ensure -> not? greater? 1`m   to :rational @[5 5]
+    ensure -> not? greater? 1`m2  to :rational @[5 5]
+    ensure -> not? greater? 1`m3  to :rational @[5 5]
+    ensure -> not? greater? 1`c   to :rational @[5 5]
+    ensure -> not? greater? 1`f   to :rational @[5 5] 
+    ensure -> not? greater? to :rational @[5 5] 1`usd
+    ensure -> not? greater? to :rational @[5 5] 1`m
+    ensure -> not? greater? to :rational @[5 5] 1`m2
+    ensure -> not? greater? to :rational @[5 5] 1`m3
+    ensure -> not? greater? to :rational @[5 5] 1`c
+    ensure -> not? greater? to :rational @[5 5] 1`f
     passed
     
     
     ; less than
     
-    ensure -> not? greater? 1:usd 2
-    ensure -> not? greater? 1:m   2
-    ensure -> not? greater? 1:m2  2
-    ensure -> not? greater? 1:m3  2
-    ensure -> not? greater? 1:c   2
-    ensure -> not? greater? 1:f   2
-    ensure -> not? greater? 1 2:usd
-    ensure -> not? greater? 1 2:m
-    ensure -> not? greater? 1 2:m2
-    ensure -> not? greater? 1 2:m3
-    ensure -> not? greater? 1 2:c
-    ensure -> not? greater? 1 2:f
+    ensure -> not? greater? 1`usd 2
+    ensure -> not? greater? 1`m   2
+    ensure -> not? greater? 1`m2  2
+    ensure -> not? greater? 1`m3  2
+    ensure -> not? greater? 1`c   2
+    ensure -> not? greater? 1`f   2
+    ensure -> not? greater? 1 2`usd
+    ensure -> not? greater? 1 2`m
+    ensure -> not? greater? 1 2`m2
+    ensure -> not? greater? 1 2`m3
+    ensure -> not? greater? 1 2`c
+    ensure -> not? greater? 1 2`f
     passed
     
-    ensure -> not? greater? 1:usd 2.0
-    ensure -> not? greater? 1:m   2.0
-    ensure -> not? greater? 1:m2  2.0
-    ensure -> not? greater? 1:m3  2.0
-    ensure -> not? greater? 1:c   2.0
-    ensure -> not? greater? 1:f   2.0
-    ensure -> not? greater? 1.0 2:usd
-    ensure -> not? greater? 1.0 2:m
-    ensure -> not? greater? 1.0 2:m2
-    ensure -> not? greater? 1.0 2:m3
-    ensure -> not? greater? 1.0 2:c
-    ensure -> not? greater? 1.0 2:f
+    ensure -> not? greater? 1`usd 2.0
+    ensure -> not? greater? 1`m   2.0
+    ensure -> not? greater? 1`m2  2.0
+    ensure -> not? greater? 1`m3  2.0
+    ensure -> not? greater? 1`c   2.0
+    ensure -> not? greater? 1`f   2.0
+    ensure -> not? greater? 1.0 2`usd
+    ensure -> not? greater? 1.0 2`m
+    ensure -> not? greater? 1.0 2`m2
+    ensure -> not? greater? 1.0 2`m3
+    ensure -> not? greater? 1.0 2`c
+    ensure -> not? greater? 1.0 2`f
     passed
     
-    ensure -> not? greater? 1:usd to :rational @[2 1]
-    ensure -> not? greater? 1:m   to :rational @[2 1]
-    ensure -> not? greater? 1:m2  to :rational @[2 1]
-    ensure -> not? greater? 1:m3  to :rational @[2 1]
-    ensure -> not? greater? 1:c   to :rational @[2 1]
-    ensure -> not? greater? 1:f   to :rational @[2 1] 
-    ensure -> not? greater? to :rational @[1 1] 2:usd
-    ensure -> not? greater? to :rational @[1 1] 2:m
-    ensure -> not? greater? to :rational @[1 1] 2:m2
-    ensure -> not? greater? to :rational @[1 1] 2:m3
-    ensure -> not? greater? to :rational @[1 1] 2:c
-    ensure -> not? greater? to :rational @[1 1] 2:f
+    ensure -> not? greater? 1`usd to :rational @[2 1]
+    ensure -> not? greater? 1`m   to :rational @[2 1]
+    ensure -> not? greater? 1`m2  to :rational @[2 1]
+    ensure -> not? greater? 1`m3  to :rational @[2 1]
+    ensure -> not? greater? 1`c   to :rational @[2 1]
+    ensure -> not? greater? 1`f   to :rational @[2 1] 
+    ensure -> not? greater? to :rational @[1 1] 2`usd
+    ensure -> not? greater? to :rational @[1 1] 2`m
+    ensure -> not? greater? to :rational @[1 1] 2`m2
+    ensure -> not? greater? to :rational @[1 1] 2`m3
+    ensure -> not? greater? to :rational @[1 1] 2`c
+    ensure -> not? greater? to :rational @[1 1] 2`f
     passed
     
     
     ; greater than
     
-    ensure -> greater? 2:usd 1
-    ensure -> greater? 2:m   1
-    ensure -> greater? 2:m2  1
-    ensure -> greater? 2:m3  1
-    ensure -> greater? 2:c   1
-    ensure -> greater? 2:f   1
-    ensure -> greater? 2 1:usd
-    ensure -> greater? 2 1:m
-    ensure -> greater? 2 1:m2
-    ensure -> greater? 2 1:m3
-    ensure -> greater? 2 1:c
-    ensure -> greater? 2 1:f
+    ensure -> greater? 2`usd 1
+    ensure -> greater? 2`m   1
+    ensure -> greater? 2`m2  1
+    ensure -> greater? 2`m3  1
+    ensure -> greater? 2`c   1
+    ensure -> greater? 2`f   1
+    ensure -> greater? 2 1`usd
+    ensure -> greater? 2 1`m
+    ensure -> greater? 2 1`m2
+    ensure -> greater? 2 1`m3
+    ensure -> greater? 2 1`c
+    ensure -> greater? 2 1`f
     passed
     
-    ensure -> greater? 2:usd 1.0
-    ensure -> greater? 2:m   1.0
-    ensure -> greater? 2:m2  1.0
-    ensure -> greater? 2:m3  1.0
-    ensure -> greater? 2:c   1.0
-    ensure -> greater? 2:f   1.0
-    ensure -> greater? 2.0 1:usd
-    ensure -> greater? 2.0 1:m
-    ensure -> greater? 2.0 1:m2
-    ensure -> greater? 2.0 1:m3
-    ensure -> greater? 2.0 1:c
-    ensure -> greater? 2.0 1:f
+    ensure -> greater? 2`usd 1.0
+    ensure -> greater? 2`m   1.0
+    ensure -> greater? 2`m2  1.0
+    ensure -> greater? 2`m3  1.0
+    ensure -> greater? 2`c   1.0
+    ensure -> greater? 2`f   1.0
+    ensure -> greater? 2.0 1`usd
+    ensure -> greater? 2.0 1`m
+    ensure -> greater? 2.0 1`m2
+    ensure -> greater? 2.0 1`m3
+    ensure -> greater? 2.0 1`c
+    ensure -> greater? 2.0 1`f
     passed
     
-    ensure -> greater? 2:usd to :rational @[5 5]
-    ensure -> greater? 2:m   to :rational @[5 5]
-    ensure -> greater? 2:m2  to :rational @[5 5]
-    ensure -> greater? 2:m3  to :rational @[5 5]
-    ensure -> greater? 2:c   to :rational @[5 5]
-    ensure -> greater? 2:f   to :rational @[5 5] 
-    ensure -> greater? to :rational @[2 1] 1:usd
-    ensure -> greater? to :rational @[2 1] 1:m
-    ensure -> greater? to :rational @[2 1] 1:m2
-    ensure -> greater? to :rational @[2 1] 1:m3
-    ensure -> greater? to :rational @[2 1] 1:c
-    ensure -> greater? to :rational @[2 1] 1:f
+    ensure -> greater? 2`usd to :rational @[5 5]
+    ensure -> greater? 2`m   to :rational @[5 5]
+    ensure -> greater? 2`m2  to :rational @[5 5]
+    ensure -> greater? 2`m3  to :rational @[5 5]
+    ensure -> greater? 2`c   to :rational @[5 5]
+    ensure -> greater? 2`f   to :rational @[5 5] 
+    ensure -> greater? to :rational @[2 1] 1`usd
+    ensure -> greater? to :rational @[2 1] 1`m
+    ensure -> greater? to :rational @[2 1] 1`m2
+    ensure -> greater? to :rational @[2 1] 1`m3
+    ensure -> greater? to :rational @[2 1] 1`c
+    ensure -> greater? to :rational @[2 1] 1`f
     passed
     
     
-    ensure -> not? greater? 1.5:m 150:cm 
-    ensure -> greater? 2:m 2:cm
+    ensure -> not? greater? 1.5`m 150`cm 
+    ensure -> greater? 2`m 2`cm
     passed 
     
     
@@ -2920,8 +2920,8 @@ do [
         -> greater? 1 '1'           -> greater? 1 "1"
         -> greater? [1] [one]       -> greater? [1] [one:]
         -> greater? 1 '1            -> greater? [1] [.1]         
-        -> greater? [1] [.1:]       -> greater? [1] [one\1]
-        -> greater? [1] [one\1:]    -> greater? [1] [+]          
+        -> greater? [1] [.1`]       -> greater? [1] [one\1]
+        -> greater? [1] [one\1`]    -> greater? [1] [+]          
         -> greater? 1 {/1/}         -> greater? 1 to :binary 1   
         -> greater? 1 to :binary 1  -> greater? [1] [(1)]        
         -> greater? 1 [1]           -> greater? 1 1..1           
@@ -2937,8 +2937,8 @@ do [
         -> greater? 1.0 '1'             -> greater? 1.0 "1.0"
         -> greater? [1.0] [one]         -> greater? [1.0] [one:]
         -> greater? 1.0 '1.0i           -> greater? [1.0] [.1]            
-        -> greater? [1.0] [.1:]         -> greater? [1.0] [one\1]
-        -> greater? [1.0] [one\1:]      -> greater? [1.0] [+]           
+        -> greater? [1.0] [.1`]         -> greater? [1.0] [one\1]
+        -> greater? [1.0] [one\1`]      -> greater? [1.0] [+]           
         -> greater? 1.0 {/1.0/}         -> greater? 1.0 to :binary 1.0  
         -> greater? 1.0 to :binary 1.0  -> greater? [1.0] [(1.0)]       
         -> greater? 1.0 [1]             -> greater? 1.0 1..1            
@@ -2955,8 +2955,8 @@ do [
         -> greater? a '1'           -> greater? a "1/1"
         -> greater? @[a] [one]      -> greater? @[a] [one:]
         -> greater? 1 '1            -> greater? @[a] [.1]                 
-        -> greater? @[a] [.1:]      -> greater? @[a] [one\1]
-        -> greater? @[a] [one\1:]   -> greater? @[a] [+]                  
+        -> greater? @[a] [.1`]      -> greater? @[a] [one\1]
+        -> greater? @[a] [one\1`]   -> greater? @[a] [+]                  
         -> greater? a {/1/1/}       -> greater? a to :binary 1            
         -> greater? a to :binary 1  -> greater? @[a] [(1)]                
         -> greater? a [1]           -> greater? a 1..1                    
@@ -2966,67 +2966,67 @@ do [
     
     ; for :quantity
     ensure -> every? @[
-        -> greater? 1:usd null          -> greater? 1:usd true
-        -> greater? 1:usd false         -> greater? 1:usd to :complex [1 1]
-        -> greater? 1:usd 1.0.0         -> greater? 1:usd :quantity
-        -> greater? 1:usd '1'           -> greater? 1:usd "1USD"
-        -> greater? [1:usd] [one]       -> greater? [1:usd] [one:]
-        -> greater? 1:usd '1.0i         -> greater? [1:usd] [.1]                  
-        -> greater? [1:usd] [.1:]       -> greater? [1:usd] [one\1]
-        -> greater? [1:usd] [one\1:]    -> greater? [1:usd] [+]         
-        -> greater? 1:usd {/1USD/}      -> greater? 1:usd to :binary 1  
-        -> greater? 1:usd to :binary 1  -> greater? [1:usd] [(1)]       
-        -> greater? 1:usd [1:usd]       -> greater? 1:usd 1..1          
-        -> greater? 1:usd #[one: 1:usd] -> greater? 0:usd #black        
-        -> greater? 1:usd var 'one?
+        -> greater? 1`usd null          -> greater? 1`usd true
+        -> greater? 1`usd false         -> greater? 1`usd to :complex [1 1]
+        -> greater? 1`usd 1.0.0         -> greater? 1`usd :quantity
+        -> greater? 1`usd '1'           -> greater? 1`usd "1USD"
+        -> greater? [1`usd] [one]       -> greater? [1`usd] [one:]
+        -> greater? 1`usd '1.0i         -> greater? [1`usd] [.1]                  
+        -> greater? [1`usd] [.1`]       -> greater? [1`usd] [one\1]
+        -> greater? [1`usd] [one\1`]    -> greater? [1`usd] [+]         
+        -> greater? 1`usd {/1USD/}      -> greater? 1`usd to :binary 1  
+        -> greater? 1`usd to :binary 1  -> greater? [1`usd] [(1)]       
+        -> greater? 1`usd [1`usd]       -> greater? 1`usd 1..1          
+        -> greater? 1`usd #[one: 1`usd] -> greater? 0`usd #black        
+        -> greater? 1`usd var 'one?
     ] => not? passed
     
     ensure -> every? @[ 
-        -> greater? 1:m null            -> greater? 1:m true
-        -> greater? 1:m false           -> greater? 1:m to :complex [1 1]
-        -> greater? 1:m 1.0.0           -> greater? 1:m :quantity
-        -> greater? 1:m '1'             -> greater? 1:m "1m"
-        -> greater? [1:m] [one]         -> greater? [1:m] [one:]
-        -> greater? 1:m '1              -> greater? [1:m] [.1]            
-        -> greater? [1:m] [.1:]         -> greater? [1:m] [one\1]
-        -> greater? [1:m] [one\1:]      -> greater? [1:m] [+]             
-        -> greater? 1:m {/1m/}          -> greater? 1:m to :binary 1      
-        -> greater? 1:m to :binary 1    -> greater? [1:m] [(1)]           
-        -> greater? 1:m [1:m]           -> greater? 1:m 1..1              
-        -> greater? 1:m #[one: 1:m]     -> greater? 0:m #black            
-        -> greater? 1:m var 'one?
+        -> greater? 1`m null            -> greater? 1`m true
+        -> greater? 1`m false           -> greater? 1`m to :complex [1 1]
+        -> greater? 1`m 1.0.0           -> greater? 1`m :quantity
+        -> greater? 1`m '1'             -> greater? 1`m "1m"
+        -> greater? [1`m] [one]         -> greater? [1`m] [one:]
+        -> greater? 1`m '1              -> greater? [1`m] [.1]            
+        -> greater? [1`m] [.1`]         -> greater? [1`m] [one\1]
+        -> greater? [1`m] [one\1`]      -> greater? [1`m] [+]             
+        -> greater? 1`m {/1m/}          -> greater? 1`m to :binary 1      
+        -> greater? 1`m to :binary 1    -> greater? [1`m] [(1)]           
+        -> greater? 1`m [1`m]           -> greater? 1`m 1..1              
+        -> greater? 1`m #[one: 1`m]     -> greater? 0`m #black            
+        -> greater? 1`m var 'one?
     ] => not? passed
     
     ensure -> every? @[ 
-        -> greater? 1:m3 null           -> greater? 1:m3 true
-        -> greater? 1:m3 false          -> greater? 1:m3 to :complex [1 1]
-        -> greater? 1:m3 1.0.0          -> greater? 1:m3 :quantity
-        -> greater? 1:m3 '1'            -> greater? 1:m3 "1m³"
-        -> greater? [1:m3] [one]        -> greater? [1:m3] [one:]
-        -> greater? 1:m3 '1             -> greater? [1:m3] [.1]              
-        -> greater? [1:m3] [.1:]        -> greater? [1:m3] [one\1]
-        -> greater? [1:m3] [one\1:]     -> greater? [1:m3] [+]                
-        -> greater? 1:m3 {/1m³/}        -> greater? 1:m3 to :binary 1         
-        -> greater? 1:m3 to :binary 1   -> greater? [1:m3] [(1)]              
-        -> greater? 1:m3 [1:m3]         -> greater? 1:m3 1..1                 
-        -> greater? 1:m3 #[one: 1:m3]   -> greater? 0:m3 #black               
-        -> greater? 1:m3 var 'one?
+        -> greater? 1`m3 null           -> greater? 1`m3 true
+        -> greater? 1`m3 false          -> greater? 1`m3 to :complex [1 1]
+        -> greater? 1`m3 1.0.0          -> greater? 1`m3 :quantity
+        -> greater? 1`m3 '1'            -> greater? 1`m3 "1m³"
+        -> greater? [1`m3] [one]        -> greater? [1`m3] [one:]
+        -> greater? 1`m3 '1             -> greater? [1`m3] [.1]              
+        -> greater? [1`m3] [.1`]        -> greater? [1`m3] [one\1]
+        -> greater? [1`m3] [one\1`]     -> greater? [1`m3] [+]                
+        -> greater? 1`m3 {/1m³/}        -> greater? 1`m3 to :binary 1         
+        -> greater? 1`m3 to :binary 1   -> greater? [1`m3] [(1)]              
+        -> greater? 1`m3 [1`m3]         -> greater? 1`m3 1..1                 
+        -> greater? 1`m3 #[one: 1`m3]   -> greater? 0`m3 #black               
+        -> greater? 1`m3 var 'one?
     ] => not? passed
     
     ensure -> every? @[ 
-        -> greater? 1:c null            -> greater? 1:c true
-        -> greater? 1:c false           -> greater? 1:c to :complex [1 1]
-        -> greater? 1:c 1.0.0           -> greater? 1:c :quantity
-        -> greater? 1:c '1'             -> greater? 1:c "1°C"
-        -> greater? [1:c] [one]         -> greater? [1:c] [one:]
-        -> greater? 1:c '1.0i           -> greater? [1:c] [.1]            
-        -> greater? [1:c] [.1:]         -> greater? [1:c] [one\1]       
-        -> greater? [1:c] [one\1:]      -> greater? [1:c] [+]           
-        -> greater? 1:c {/1°C/}         -> greater? 1:c to :binary 1    
-        -> greater? 1:c to :binary 1    -> greater? [1:c] [(1)]         
-        -> greater? 1:c [1:c]           -> greater? 1:c 1..1            
-        -> greater? 1:c #[one: 1:c]     -> greater? 0:c #black          
-        -> greater? 1:c var 'one?
+        -> greater? 1`c null            -> greater? 1`c true
+        -> greater? 1`c false           -> greater? 1`c to :complex [1 1]
+        -> greater? 1`c 1.0.0           -> greater? 1`c :quantity
+        -> greater? 1`c '1'             -> greater? 1`c "1°C"
+        -> greater? [1`c] [one]         -> greater? [1`c] [one:]
+        -> greater? 1`c '1.0i           -> greater? [1`c] [.1]            
+        -> greater? [1`c] [.1`]         -> greater? [1`c] [one\1]       
+        -> greater? [1`c] [one\1`]      -> greater? [1`c] [+]           
+        -> greater? 1`c {/1°C/}         -> greater? 1`c to :binary 1    
+        -> greater? 1`c to :binary 1    -> greater? [1`c] [(1)]         
+        -> greater? 1`c [1`c]           -> greater? 1`c 1..1            
+        -> greater? 1`c #[one: 1`c]     -> greater? 0`c #black          
+        -> greater? 1`c var 'one?
     ] => not? passed
     
     ; for :null
@@ -3106,8 +3106,8 @@ do [
         -> greater? a '1'                   -> greater? a "1.0+1.0i"
         -> greater? @[a] [one]              -> greater? @[a] [one:]
         -> greater? 1 '1                    -> greater? @[a] [.1]                 
-        -> greater? @[a] [.1:]              -> greater? @[a] [one\1]
-        -> greater? @[a] [one\1:]           -> greater? @[a] [+]                  
+        -> greater? @[a] [.1`]              -> greater? @[a] [one\1]
+        -> greater? @[a] [one\1`]           -> greater? @[a] [+]                  
         -> greater? a {/1.0+1.0i/}          -> greater? a to :binary 1            
         -> greater? a to :binary 1          -> greater? @[a] [(1)]                
         -> greater? a [1]                   -> greater? a 1..1                    
@@ -3124,8 +3124,8 @@ do [
         -> greater? 1.0.0 '1'                   -> greater? 1.0.0 "1.0.0"
         -> greater? [1.0.0] [one]               -> greater? [1.0.0] [one:]
         -> greater? 1.0.0 '1                    -> greater? [1.0.0] [.1]                  
-        -> greater? [1.0.0] [.1:]               -> greater? [1.0.0] [one\1]
-        -> greater? [1.0.0] [one\1:]            -> greater? [1.0.0] [+]                   
+        -> greater? [1.0.0] [.1`]               -> greater? [1.0.0] [one\1]
+        -> greater? [1.0.0] [one\1`]            -> greater? [1.0.0] [+]                   
         -> greater? 1.0.0 {/1.0.0/}             -> greater? 1.0.0 to :binary 1.0          
         -> greater? 1.0.0 to :binary 1.0        -> greater? [1.0.0] [(1.0.0)]             
         -> greater? 1.0.0 [1.0.0]               -> greater? 1.0.0 1..1                    
@@ -3287,9 +3287,9 @@ do [
     ; for :binary
     ensure -> every? @[
         -> greater? to :binary 1 1                    -> greater? to :binary 1 1.0                
-        -> greater? to :binary 1 to :rational [1 1]   -> greater? to :binary 1 1:usd                
-        -> greater? to :binary 1 1:m                  -> greater? to :binary 1 1:m3                 
-        -> greater? to :binary 1 1:c                  -> greater? to :binary 0 null                 
+        -> greater? to :binary 1 to :rational [1 1]   -> greater? to :binary 1 1`usd                
+        -> greater? to :binary 1 1`m                  -> greater? to :binary 1 1`m3                 
+        -> greater? to :binary 1 1`c                  -> greater? to :binary 0 null                 
         -> greater? to :binary 0 true                 -> greater? to :binary 0 false                
         -> greater? to :binary 0 maybe                -> greater? to :binary 1 to :complex [1 1]                  
         -> greater? to :binary 1 1.0.0                -> greater? to :binary 1 :type              
@@ -3304,9 +3304,9 @@ do [
     ; for :range
     ensure -> every? @[
         -> greater? 1..1 1                        -> greater? 1..1 1.0
-        -> greater? 1..1 a: to :rational [1 1]    -> greater? 1..1 1:usd
-        -> greater? 1..1 1:m                      -> greater? 1..1 1:m3  
-        -> greater? 1..1 1:c                      -> greater? 0..0 null 
+        -> greater? 1..1 a: to :rational [1 1]    -> greater? 1..1 1`usd
+        -> greater? 1..1 1`m                      -> greater? 1..1 1`m3  
+        -> greater? 1..1 1`c                      -> greater? 0..0 null 
         -> greater? 0..0 true                     -> greater? 0..0 false
         -> greater? 0..0 maybe                    -> greater? 1..1 to :complex [1 1]
         -> greater? 1..1 1.0.0                    -> greater? 1..1 :type                        
@@ -3331,9 +3331,9 @@ do [
     ; for :color
     ensure -> every? @[
         -> greater? #black 0                  -> greater? #black 0.0
-        -> greater? #black to :rational [1 1] -> greater? #black 0:usd 
-        -> greater? #black 0:m                -> greater? #black 0:m3
-        -> greater? #black 0:c                -> greater? #black null 
+        -> greater? #black to :rational [1 1] -> greater? #black 0`usd 
+        -> greater? #black 0`m                -> greater? #black 0`m3
+        -> greater? #black 0`c                -> greater? #black null 
         -> greater? #black true               -> greater? #black false 
         -> greater? #black maybe              -> greater? #black to :complex [0 0]
         -> greater? #black 0.0.0              -> greater? #black :color
@@ -3446,141 +3446,141 @@ do [
     
     ; equal to
     
-    ensure -> greaterOrEqual? 1:usd 1
-    ensure -> greaterOrEqual? 1:m   1
-    ensure -> greaterOrEqual? 1:m2  1
-    ensure -> greaterOrEqual? 1:m3  1
-    ensure -> greaterOrEqual? 1:c   1
-    ensure -> greaterOrEqual? 1:f   1
-    ensure -> greaterOrEqual? 1 1:usd
-    ensure -> greaterOrEqual? 1 1:m
-    ensure -> greaterOrEqual? 1 1:m2
-    ensure -> greaterOrEqual? 1 1:m3
-    ensure -> greaterOrEqual? 1 1:c
-    ensure -> greaterOrEqual? 1 1:f
+    ensure -> greaterOrEqual? 1`usd 1
+    ensure -> greaterOrEqual? 1`m   1
+    ensure -> greaterOrEqual? 1`m2  1
+    ensure -> greaterOrEqual? 1`m3  1
+    ensure -> greaterOrEqual? 1`c   1
+    ensure -> greaterOrEqual? 1`f   1
+    ensure -> greaterOrEqual? 1 1`usd
+    ensure -> greaterOrEqual? 1 1`m
+    ensure -> greaterOrEqual? 1 1`m2
+    ensure -> greaterOrEqual? 1 1`m3
+    ensure -> greaterOrEqual? 1 1`c
+    ensure -> greaterOrEqual? 1 1`f
     passed
     
-    ensure -> greaterOrEqual? 1:usd 1.0
-    ensure -> greaterOrEqual? 1:m   1.0
-    ensure -> greaterOrEqual? 1:m2  1.0
-    ensure -> greaterOrEqual? 1:m3  1.0
-    ensure -> greaterOrEqual? 1:c   1.0
-    ensure -> greaterOrEqual? 1:f   1.0
-    ensure -> greaterOrEqual? 1.0 1:usd
-    ensure -> greaterOrEqual? 1.0 1:m
-    ensure -> greaterOrEqual? 1.0 1:m2
-    ensure -> greaterOrEqual? 1.0 1:m3
-    ensure -> greaterOrEqual? 1.0 1:c
-    ensure -> greaterOrEqual? 1.0 1:f
+    ensure -> greaterOrEqual? 1`usd 1.0
+    ensure -> greaterOrEqual? 1`m   1.0
+    ensure -> greaterOrEqual? 1`m2  1.0
+    ensure -> greaterOrEqual? 1`m3  1.0
+    ensure -> greaterOrEqual? 1`c   1.0
+    ensure -> greaterOrEqual? 1`f   1.0
+    ensure -> greaterOrEqual? 1.0 1`usd
+    ensure -> greaterOrEqual? 1.0 1`m
+    ensure -> greaterOrEqual? 1.0 1`m2
+    ensure -> greaterOrEqual? 1.0 1`m3
+    ensure -> greaterOrEqual? 1.0 1`c
+    ensure -> greaterOrEqual? 1.0 1`f
     passed
     
-    ensure -> greaterOrEqual? 1:usd to :rational @[5 5]
-    ensure -> greaterOrEqual? 1:m   to :rational @[5 5]
-    ensure -> greaterOrEqual? 1:m2  to :rational @[5 5]
-    ensure -> greaterOrEqual? 1:m3  to :rational @[5 5]
-    ensure -> greaterOrEqual? 1:c   to :rational @[5 5]
-    ensure -> greaterOrEqual? 1:f   to :rational @[5 5] 
-    ensure -> greaterOrEqual? to :rational @[5 5] 1:usd
-    ensure -> greaterOrEqual? to :rational @[5 5] 1:m
-    ensure -> greaterOrEqual? to :rational @[5 5] 1:m2
-    ensure -> greaterOrEqual? to :rational @[5 5] 1:m3
-    ensure -> greaterOrEqual? to :rational @[5 5] 1:c
-    ensure -> greaterOrEqual? to :rational @[5 5] 1:f
+    ensure -> greaterOrEqual? 1`usd to :rational @[5 5]
+    ensure -> greaterOrEqual? 1`m   to :rational @[5 5]
+    ensure -> greaterOrEqual? 1`m2  to :rational @[5 5]
+    ensure -> greaterOrEqual? 1`m3  to :rational @[5 5]
+    ensure -> greaterOrEqual? 1`c   to :rational @[5 5]
+    ensure -> greaterOrEqual? 1`f   to :rational @[5 5] 
+    ensure -> greaterOrEqual? to :rational @[5 5] 1`usd
+    ensure -> greaterOrEqual? to :rational @[5 5] 1`m
+    ensure -> greaterOrEqual? to :rational @[5 5] 1`m2
+    ensure -> greaterOrEqual? to :rational @[5 5] 1`m3
+    ensure -> greaterOrEqual? to :rational @[5 5] 1`c
+    ensure -> greaterOrEqual? to :rational @[5 5] 1`f
     passed
     
     
     ; less than
     
-    ensure -> not? greaterOrEqual? 1:usd 2
-    ensure -> not? greaterOrEqual? 1:m   2
-    ensure -> not? greaterOrEqual? 1:m2  2
-    ensure -> not? greaterOrEqual? 1:m3  2
-    ensure -> not? greaterOrEqual? 1:c   2
-    ensure -> not? greaterOrEqual? 1:f   2
-    ensure -> not? greaterOrEqual? 1 2:usd
-    ensure -> not? greaterOrEqual? 1 2:m
-    ensure -> not? greaterOrEqual? 1 2:m2
-    ensure -> not? greaterOrEqual? 1 2:m3
-    ensure -> not? greaterOrEqual? 1 2:c
-    ensure -> not? greaterOrEqual? 1 2:f
+    ensure -> not? greaterOrEqual? 1`usd 2
+    ensure -> not? greaterOrEqual? 1`m   2
+    ensure -> not? greaterOrEqual? 1`m2  2
+    ensure -> not? greaterOrEqual? 1`m3  2
+    ensure -> not? greaterOrEqual? 1`c   2
+    ensure -> not? greaterOrEqual? 1`f   2
+    ensure -> not? greaterOrEqual? 1 2`usd
+    ensure -> not? greaterOrEqual? 1 2`m
+    ensure -> not? greaterOrEqual? 1 2`m2
+    ensure -> not? greaterOrEqual? 1 2`m3
+    ensure -> not? greaterOrEqual? 1 2`c
+    ensure -> not? greaterOrEqual? 1 2`f
     passed
     
-    ensure -> not? greaterOrEqual? 1:usd 2.0
-    ensure -> not? greaterOrEqual? 1:m   2.0
-    ensure -> not? greaterOrEqual? 1:m2  2.0
-    ensure -> not? greaterOrEqual? 1:m3  2.0
-    ensure -> not? greaterOrEqual? 1:c   2.0
-    ensure -> not? greaterOrEqual? 1:f   2.0
-    ensure -> not? greaterOrEqual? 1.0 2:usd
-    ensure -> not? greaterOrEqual? 1.0 2:m
-    ensure -> not? greaterOrEqual? 1.0 2:m2
-    ensure -> not? greaterOrEqual? 1.0 2:m3
-    ensure -> not? greaterOrEqual? 1.0 2:c
-    ensure -> not? greaterOrEqual? 1.0 2:f
+    ensure -> not? greaterOrEqual? 1`usd 2.0
+    ensure -> not? greaterOrEqual? 1`m   2.0
+    ensure -> not? greaterOrEqual? 1`m2  2.0
+    ensure -> not? greaterOrEqual? 1`m3  2.0
+    ensure -> not? greaterOrEqual? 1`c   2.0
+    ensure -> not? greaterOrEqual? 1`f   2.0
+    ensure -> not? greaterOrEqual? 1.0 2`usd
+    ensure -> not? greaterOrEqual? 1.0 2`m
+    ensure -> not? greaterOrEqual? 1.0 2`m2
+    ensure -> not? greaterOrEqual? 1.0 2`m3
+    ensure -> not? greaterOrEqual? 1.0 2`c
+    ensure -> not? greaterOrEqual? 1.0 2`f
     passed
     
-    ensure -> not? greaterOrEqual? 1:usd to :rational @[2 1]
-    ensure -> not? greaterOrEqual? 1:m   to :rational @[2 1]
-    ensure -> not? greaterOrEqual? 1:m2  to :rational @[2 1]
-    ensure -> not? greaterOrEqual? 1:m3  to :rational @[2 1]
-    ensure -> not? greaterOrEqual? 1:c   to :rational @[2 1]
-    ensure -> not? greaterOrEqual? 1:f   to :rational @[2 1] 
-    ensure -> not? greaterOrEqual? to :rational @[1 1] 2:usd
-    ensure -> not? greaterOrEqual? to :rational @[1 1] 2:m
-    ensure -> not? greaterOrEqual? to :rational @[1 1] 2:m2
-    ensure -> not? greaterOrEqual? to :rational @[1 1] 2:m3
-    ensure -> not? greaterOrEqual? to :rational @[1 1] 2:c
-    ensure -> not? greaterOrEqual? to :rational @[1 1] 2:f
+    ensure -> not? greaterOrEqual? 1`usd to :rational @[2 1]
+    ensure -> not? greaterOrEqual? 1`m   to :rational @[2 1]
+    ensure -> not? greaterOrEqual? 1`m2  to :rational @[2 1]
+    ensure -> not? greaterOrEqual? 1`m3  to :rational @[2 1]
+    ensure -> not? greaterOrEqual? 1`c   to :rational @[2 1]
+    ensure -> not? greaterOrEqual? 1`f   to :rational @[2 1] 
+    ensure -> not? greaterOrEqual? to :rational @[1 1] 2`usd
+    ensure -> not? greaterOrEqual? to :rational @[1 1] 2`m
+    ensure -> not? greaterOrEqual? to :rational @[1 1] 2`m2
+    ensure -> not? greaterOrEqual? to :rational @[1 1] 2`m3
+    ensure -> not? greaterOrEqual? to :rational @[1 1] 2`c
+    ensure -> not? greaterOrEqual? to :rational @[1 1] 2`f
     passed
     
     
     ; greater than
     
-    ensure -> greaterOrEqual? 2:usd 1
-    ensure -> greaterOrEqual? 2:m   1
-    ensure -> greaterOrEqual? 2:m2  1
-    ensure -> greaterOrEqual? 2:m3  1
-    ensure -> greaterOrEqual? 2:c   1
-    ensure -> greaterOrEqual? 2:f   1
-    ensure -> greaterOrEqual? 2 1:usd
-    ensure -> greaterOrEqual? 2 1:m
-    ensure -> greaterOrEqual? 2 1:m2
-    ensure -> greaterOrEqual? 2 1:m3
-    ensure -> greaterOrEqual? 2 1:c
-    ensure -> greaterOrEqual? 2 1:f
+    ensure -> greaterOrEqual? 2`usd 1
+    ensure -> greaterOrEqual? 2`m   1
+    ensure -> greaterOrEqual? 2`m2  1
+    ensure -> greaterOrEqual? 2`m3  1
+    ensure -> greaterOrEqual? 2`c   1
+    ensure -> greaterOrEqual? 2`f   1
+    ensure -> greaterOrEqual? 2 1`usd
+    ensure -> greaterOrEqual? 2 1`m
+    ensure -> greaterOrEqual? 2 1`m2
+    ensure -> greaterOrEqual? 2 1`m3
+    ensure -> greaterOrEqual? 2 1`c
+    ensure -> greaterOrEqual? 2 1`f
     passed
     
-    ensure -> greaterOrEqual? 2:usd 1.0
-    ensure -> greaterOrEqual? 2:m   1.0
-    ensure -> greaterOrEqual? 2:m2  1.0
-    ensure -> greaterOrEqual? 2:m3  1.0
-    ensure -> greaterOrEqual? 2:c   1.0
-    ensure -> greaterOrEqual? 2:f   1.0
-    ensure -> greaterOrEqual? 2.0 1:usd
-    ensure -> greaterOrEqual? 2.0 1:m
-    ensure -> greaterOrEqual? 2.0 1:m2
-    ensure -> greaterOrEqual? 2.0 1:m3
-    ensure -> greaterOrEqual? 2.0 1:c
-    ensure -> greaterOrEqual? 2.0 1:f
+    ensure -> greaterOrEqual? 2`usd 1.0
+    ensure -> greaterOrEqual? 2`m   1.0
+    ensure -> greaterOrEqual? 2`m2  1.0
+    ensure -> greaterOrEqual? 2`m3  1.0
+    ensure -> greaterOrEqual? 2`c   1.0
+    ensure -> greaterOrEqual? 2`f   1.0
+    ensure -> greaterOrEqual? 2.0 1`usd
+    ensure -> greaterOrEqual? 2.0 1`m
+    ensure -> greaterOrEqual? 2.0 1`m2
+    ensure -> greaterOrEqual? 2.0 1`m3
+    ensure -> greaterOrEqual? 2.0 1`c
+    ensure -> greaterOrEqual? 2.0 1`f
     passed
     
-    ensure -> greaterOrEqual? 2:usd to :rational @[5 5]
-    ensure -> greaterOrEqual? 2:m   to :rational @[5 5]
-    ensure -> greaterOrEqual? 2:m2  to :rational @[5 5]
-    ensure -> greaterOrEqual? 2:m3  to :rational @[5 5]
-    ensure -> greaterOrEqual? 2:c   to :rational @[5 5]
-    ensure -> greaterOrEqual? 2:f   to :rational @[5 5] 
-    ensure -> greaterOrEqual? to :rational @[2 1] 1:usd
-    ensure -> greaterOrEqual? to :rational @[2 1] 1:m
-    ensure -> greaterOrEqual? to :rational @[2 1] 1:m2
-    ensure -> greaterOrEqual? to :rational @[2 1] 1:m3
-    ensure -> greaterOrEqual? to :rational @[2 1] 1:c
-    ensure -> greaterOrEqual? to :rational @[2 1] 1:f
+    ensure -> greaterOrEqual? 2`usd to :rational @[5 5]
+    ensure -> greaterOrEqual? 2`m   to :rational @[5 5]
+    ensure -> greaterOrEqual? 2`m2  to :rational @[5 5]
+    ensure -> greaterOrEqual? 2`m3  to :rational @[5 5]
+    ensure -> greaterOrEqual? 2`c   to :rational @[5 5]
+    ensure -> greaterOrEqual? 2`f   to :rational @[5 5] 
+    ensure -> greaterOrEqual? to :rational @[2 1] 1`usd
+    ensure -> greaterOrEqual? to :rational @[2 1] 1`m
+    ensure -> greaterOrEqual? to :rational @[2 1] 1`m2
+    ensure -> greaterOrEqual? to :rational @[2 1] 1`m3
+    ensure -> greaterOrEqual? to :rational @[2 1] 1`c
+    ensure -> greaterOrEqual? to :rational @[2 1] 1`f
     passed
     
     
-    ensure -> greaterOrEqual? 1.5:m 150:cm 
-    ensure -> greaterOrEqual? 2:m 2:cm
+    ensure -> greaterOrEqual? 1.5`m 150`cm 
+    ensure -> greaterOrEqual? 2`m 2`cm
     passed 
     
     
@@ -4140,8 +4140,8 @@ do [
         -> greaterOrEqual? 1 '1'           -> greaterOrEqual? 1 "1"
         -> greaterOrEqual? [1] [one]       -> greaterOrEqual? [1] [one:]
         -> greaterOrEqual? 1 '1            -> greaterOrEqual? [1] [.1]         
-        -> greaterOrEqual? [1] [.1:]       -> greaterOrEqual? [1] [one\1]
-        -> greaterOrEqual? [1] [one\1:]    -> greaterOrEqual? [1] [+]          
+        -> greaterOrEqual? [1] [.1`]       -> greaterOrEqual? [1] [one\1]
+        -> greaterOrEqual? [1] [one\1`]    -> greaterOrEqual? [1] [+]          
         -> greaterOrEqual? 1 {/1/}         -> greaterOrEqual? 1 to :binary 1   
         -> greaterOrEqual? 1 to :binary 1  -> greaterOrEqual? [1] [(1)]        
         -> greaterOrEqual? 1 [1]           -> greaterOrEqual? 1 1..1           
@@ -4157,8 +4157,8 @@ do [
         -> greaterOrEqual? 1.0 '1'             -> greaterOrEqual? 1.0 "1.0"
         -> greaterOrEqual? [1.0] [one]         -> greaterOrEqual? [1.0] [one:]
         -> greaterOrEqual? 1.0 '1.0i           -> greaterOrEqual? [1.0] [.1]            
-        -> greaterOrEqual? [1.0] [.1:]         -> greaterOrEqual? [1.0] [one\1]
-        -> greaterOrEqual? [1.0] [one\1:]      -> greaterOrEqual? [1.0] [+]           
+        -> greaterOrEqual? [1.0] [.1`]         -> greaterOrEqual? [1.0] [one\1]
+        -> greaterOrEqual? [1.0] [one\1`]      -> greaterOrEqual? [1.0] [+]           
         -> greaterOrEqual? 1.0 {/1.0/}         -> greaterOrEqual? 1.0 to :binary 1.0  
         -> greaterOrEqual? 1.0 to :binary 1.0  -> greaterOrEqual? [1.0] [(1.0)]       
         -> greaterOrEqual? 1.0 [1]             -> greaterOrEqual? 1.0 1..1            
@@ -4175,8 +4175,8 @@ do [
         -> greaterOrEqual? a '1'           -> greaterOrEqual? a "1/1"
         -> greaterOrEqual? @[a] [one]      -> greaterOrEqual? @[a] [one:]
         -> greaterOrEqual? 1 '1            -> greaterOrEqual? @[a] [.1]                 
-        -> greaterOrEqual? @[a] [.1:]      -> greaterOrEqual? @[a] [one\1]
-        -> greaterOrEqual? @[a] [one\1:]   -> greaterOrEqual? @[a] [+]                  
+        -> greaterOrEqual? @[a] [.1`]      -> greaterOrEqual? @[a] [one\1]
+        -> greaterOrEqual? @[a] [one\1`]   -> greaterOrEqual? @[a] [+]                  
         -> greaterOrEqual? a {/1/1/}       -> greaterOrEqual? a to :binary 1            
         -> greaterOrEqual? a to :binary 1  -> greaterOrEqual? @[a] [(1)]                
         -> greaterOrEqual? a [1]           -> greaterOrEqual? a 1..1                    
@@ -4186,67 +4186,67 @@ do [
     
     ; for :quantity
     ensure -> every? @[
-        -> greaterOrEqual? 1:usd null          -> greaterOrEqual? 1:usd true
-        -> greaterOrEqual? 1:usd false         -> greaterOrEqual? 1:usd to :complex [1 1]
-        -> greaterOrEqual? 1:usd 1.0.0         -> greaterOrEqual? 1:usd :quantity
-        -> greaterOrEqual? 1:usd '1'           -> greaterOrEqual? 1:usd "1USD"
-        -> greaterOrEqual? [1:usd] [one]       -> greaterOrEqual? [1:usd] [one:]
-        -> greaterOrEqual? 1:usd '1.0i         -> greaterOrEqual? [1:usd] [.1]                  
-        -> greaterOrEqual? [1:usd] [.1:]       -> greaterOrEqual? [1:usd] [one\1]
-        -> greaterOrEqual? [1:usd] [one\1:]    -> greaterOrEqual? [1:usd] [+]         
-        -> greaterOrEqual? 1:usd {/1USD/}      -> greaterOrEqual? 1:usd to :binary 1  
-        -> greaterOrEqual? 1:usd to :binary 1  -> greaterOrEqual? [1:usd] [(1)]       
-        -> greaterOrEqual? 1:usd [1:usd]       -> greaterOrEqual? 1:usd 1..1          
-        -> greaterOrEqual? 1:usd #[one: 1:usd] -> greaterOrEqual? 0:usd #black        
-        -> greaterOrEqual? 1:usd var 'one?
+        -> greaterOrEqual? 1`usd null          -> greaterOrEqual? 1`usd true
+        -> greaterOrEqual? 1`usd false         -> greaterOrEqual? 1`usd to :complex [1 1]
+        -> greaterOrEqual? 1`usd 1.0.0         -> greaterOrEqual? 1`usd :quantity
+        -> greaterOrEqual? 1`usd '1'           -> greaterOrEqual? 1`usd "1USD"
+        -> greaterOrEqual? [1`usd] [one]       -> greaterOrEqual? [1`usd] [one:]
+        -> greaterOrEqual? 1`usd '1.0i         -> greaterOrEqual? [1`usd] [.1]                  
+        -> greaterOrEqual? [1`usd] [.1`]       -> greaterOrEqual? [1`usd] [one\1]
+        -> greaterOrEqual? [1`usd] [one\1`]    -> greaterOrEqual? [1`usd] [+]         
+        -> greaterOrEqual? 1`usd {/1USD/}      -> greaterOrEqual? 1`usd to :binary 1  
+        -> greaterOrEqual? 1`usd to :binary 1  -> greaterOrEqual? [1`usd] [(1)]       
+        -> greaterOrEqual? 1`usd [1`usd]       -> greaterOrEqual? 1`usd 1..1          
+        -> greaterOrEqual? 1`usd #[one: 1`usd] -> greaterOrEqual? 0`usd #black        
+        -> greaterOrEqual? 1`usd var 'one?
     ] => not? passed
     
     ensure -> every? @[ 
-        -> greaterOrEqual? 1:m null            -> greaterOrEqual? 1:m true
-        -> greaterOrEqual? 1:m false           -> greaterOrEqual? 1:m to :complex [1 1]
-        -> greaterOrEqual? 1:m 1.0.0           -> greaterOrEqual? 1:m :quantity
-        -> greaterOrEqual? 1:m '1'             -> greaterOrEqual? 1:m "1m"
-        -> greaterOrEqual? [1:m] [one]         -> greaterOrEqual? [1:m] [one:]
-        -> greaterOrEqual? 1:m '1              -> greaterOrEqual? [1:m] [.1]            
-        -> greaterOrEqual? [1:m] [.1:]         -> greaterOrEqual? [1:m] [one\1]
-        -> greaterOrEqual? [1:m] [one\1:]      -> greaterOrEqual? [1:m] [+]             
-        -> greaterOrEqual? 1:m {/1m/}          -> greaterOrEqual? 1:m to :binary 1      
-        -> greaterOrEqual? 1:m to :binary 1    -> greaterOrEqual? [1:m] [(1)]           
-        -> greaterOrEqual? 1:m [1:m]           -> greaterOrEqual? 1:m 1..1              
-        -> greaterOrEqual? 1:m #[one: 1:m]     -> greaterOrEqual? 0:m #black            
-        -> greaterOrEqual? 1:m var 'one?
+        -> greaterOrEqual? 1`m null            -> greaterOrEqual? 1`m true
+        -> greaterOrEqual? 1`m false           -> greaterOrEqual? 1`m to :complex [1 1]
+        -> greaterOrEqual? 1`m 1.0.0           -> greaterOrEqual? 1`m :quantity
+        -> greaterOrEqual? 1`m '1'             -> greaterOrEqual? 1`m "1m"
+        -> greaterOrEqual? [1`m] [one]         -> greaterOrEqual? [1`m] [one:]
+        -> greaterOrEqual? 1`m '1              -> greaterOrEqual? [1`m] [.1]            
+        -> greaterOrEqual? [1`m] [.1`]         -> greaterOrEqual? [1`m] [one\1]
+        -> greaterOrEqual? [1`m] [one\1`]      -> greaterOrEqual? [1`m] [+]             
+        -> greaterOrEqual? 1`m {/1m/}          -> greaterOrEqual? 1`m to :binary 1      
+        -> greaterOrEqual? 1`m to :binary 1    -> greaterOrEqual? [1`m] [(1)]           
+        -> greaterOrEqual? 1`m [1`m]           -> greaterOrEqual? 1`m 1..1              
+        -> greaterOrEqual? 1`m #[one: 1`m]     -> greaterOrEqual? 0`m #black            
+        -> greaterOrEqual? 1`m var 'one?
     ] => not? passed
     
     ensure -> every? @[ 
-        -> greaterOrEqual? 1:m3 null           -> greaterOrEqual? 1:m3 true
-        -> greaterOrEqual? 1:m3 false          -> greaterOrEqual? 1:m3 to :complex [1 1]
-        -> greaterOrEqual? 1:m3 1.0.0          -> greaterOrEqual? 1:m3 :quantity
-        -> greaterOrEqual? 1:m3 '1'            -> greaterOrEqual? 1:m3 "1m³"
-        -> greaterOrEqual? [1:m3] [one]        -> greaterOrEqual? [1:m3] [one:]
-        -> greaterOrEqual? 1:m3 '1             -> greaterOrEqual? [1:m3] [.1]              
-        -> greaterOrEqual? [1:m3] [.1:]        -> greaterOrEqual? [1:m3] [one\1]
-        -> greaterOrEqual? [1:m3] [one\1:]     -> greaterOrEqual? [1:m3] [+]                
-        -> greaterOrEqual? 1:m3 {/1m³/}        -> greaterOrEqual? 1:m3 to :binary 1         
-        -> greaterOrEqual? 1:m3 to :binary 1   -> greaterOrEqual? [1:m3] [(1)]              
-        -> greaterOrEqual? 1:m3 [1:m3]         -> greaterOrEqual? 1:m3 1..1                 
-        -> greaterOrEqual? 1:m3 #[one: 1:m3]   -> greaterOrEqual? 0:m3 #black               
-        -> greaterOrEqual? 1:m3 var 'one?
+        -> greaterOrEqual? 1`m3 null           -> greaterOrEqual? 1`m3 true
+        -> greaterOrEqual? 1`m3 false          -> greaterOrEqual? 1`m3 to :complex [1 1]
+        -> greaterOrEqual? 1`m3 1.0.0          -> greaterOrEqual? 1`m3 :quantity
+        -> greaterOrEqual? 1`m3 '1'            -> greaterOrEqual? 1`m3 "1m³"
+        -> greaterOrEqual? [1`m3] [one]        -> greaterOrEqual? [1`m3] [one:]
+        -> greaterOrEqual? 1`m3 '1             -> greaterOrEqual? [1`m3] [.1]              
+        -> greaterOrEqual? [1`m3] [.1`]        -> greaterOrEqual? [1`m3] [one\1]
+        -> greaterOrEqual? [1`m3] [one\1`]     -> greaterOrEqual? [1`m3] [+]                
+        -> greaterOrEqual? 1`m3 {/1m³/}        -> greaterOrEqual? 1`m3 to :binary 1         
+        -> greaterOrEqual? 1`m3 to :binary 1   -> greaterOrEqual? [1`m3] [(1)]              
+        -> greaterOrEqual? 1`m3 [1`m3]         -> greaterOrEqual? 1`m3 1..1                 
+        -> greaterOrEqual? 1`m3 #[one: 1`m3]   -> greaterOrEqual? 0`m3 #black               
+        -> greaterOrEqual? 1`m3 var 'one?
     ] => not? passed
     
     ensure -> every? @[ 
-        -> greaterOrEqual? 1:c null            -> greaterOrEqual? 1:c true
-        -> greaterOrEqual? 1:c false           -> greaterOrEqual? 1:c to :complex [1 1]
-        -> greaterOrEqual? 1:c 1.0.0           -> greaterOrEqual? 1:c :quantity
-        -> greaterOrEqual? 1:c '1'             -> greaterOrEqual? 1:c "1°C"
-        -> greaterOrEqual? [1:c] [one]         -> greaterOrEqual? [1:c] [one:]
-        -> greaterOrEqual? 1:c '1.0i           -> greaterOrEqual? [1:c] [.1]            
-        -> greaterOrEqual? [1:c] [.1:]         -> greaterOrEqual? [1:c] [one\1]       
-        -> greaterOrEqual? [1:c] [one\1:]      -> greaterOrEqual? [1:c] [+]           
-        -> greaterOrEqual? 1:c {/1°C/}         -> greaterOrEqual? 1:c to :binary 1    
-        -> greaterOrEqual? 1:c to :binary 1    -> greaterOrEqual? [1:c] [(1)]         
-        -> greaterOrEqual? 1:c [1:c]           -> greaterOrEqual? 1:c 1..1            
-        -> greaterOrEqual? 1:c #[one: 1:c]     -> greaterOrEqual? 0:c #black          
-        -> greaterOrEqual? 1:c var 'one?
+        -> greaterOrEqual? 1`c null            -> greaterOrEqual? 1`c true
+        -> greaterOrEqual? 1`c false           -> greaterOrEqual? 1`c to :complex [1 1]
+        -> greaterOrEqual? 1`c 1.0.0           -> greaterOrEqual? 1`c :quantity
+        -> greaterOrEqual? 1`c '1'             -> greaterOrEqual? 1`c "1°C"
+        -> greaterOrEqual? [1`c] [one]         -> greaterOrEqual? [1`c] [one:]
+        -> greaterOrEqual? 1`c '1.0i           -> greaterOrEqual? [1`c] [.1]            
+        -> greaterOrEqual? [1`c] [.1`]         -> greaterOrEqual? [1`c] [one\1]       
+        -> greaterOrEqual? [1`c] [one\1`]      -> greaterOrEqual? [1`c] [+]           
+        -> greaterOrEqual? 1`c {/1°C/}         -> greaterOrEqual? 1`c to :binary 1    
+        -> greaterOrEqual? 1`c to :binary 1    -> greaterOrEqual? [1`c] [(1)]         
+        -> greaterOrEqual? 1`c [1`c]           -> greaterOrEqual? 1`c 1..1            
+        -> greaterOrEqual? 1`c #[one: 1`c]     -> greaterOrEqual? 0`c #black          
+        -> greaterOrEqual? 1`c var 'one?
     ] => not? passed
     
     ; for :null
@@ -4326,8 +4326,8 @@ do [
         -> greaterOrEqual? a '1'                   -> greaterOrEqual? a "1.0+1.0i"
         -> greaterOrEqual? @[a] [one]              -> greaterOrEqual? @[a] [one:]
         -> greaterOrEqual? 1 '1                    -> greaterOrEqual? @[a] [.1]                 
-        -> greaterOrEqual? @[a] [.1:]              -> greaterOrEqual? @[a] [one\1]
-        -> greaterOrEqual? @[a] [one\1:]           -> greaterOrEqual? @[a] [+]                  
+        -> greaterOrEqual? @[a] [.1`]              -> greaterOrEqual? @[a] [one\1]
+        -> greaterOrEqual? @[a] [one\1`]           -> greaterOrEqual? @[a] [+]                  
         -> greaterOrEqual? a {/1.0+1.0i/}          -> greaterOrEqual? a to :binary 1            
         -> greaterOrEqual? a to :binary 1          -> greaterOrEqual? @[a] [(1)]                
         -> greaterOrEqual? a [1]                   -> greaterOrEqual? a 1..1                    
@@ -4344,8 +4344,8 @@ do [
         -> greaterOrEqual? 1.0.0 '1'                   -> greaterOrEqual? 1.0.0 "1.0.0"
         -> greaterOrEqual? [1.0.0] [one]               -> greaterOrEqual? [1.0.0] [one:]
         -> greaterOrEqual? 1.0.0 '1                    -> greaterOrEqual? [1.0.0] [.1]                  
-        -> greaterOrEqual? [1.0.0] [.1:]               -> greaterOrEqual? [1.0.0] [one\1]
-        -> greaterOrEqual? [1.0.0] [one\1:]            -> greaterOrEqual? [1.0.0] [+]                   
+        -> greaterOrEqual? [1.0.0] [.1`]               -> greaterOrEqual? [1.0.0] [one\1]
+        -> greaterOrEqual? [1.0.0] [one\1`]            -> greaterOrEqual? [1.0.0] [+]                   
         -> greaterOrEqual? 1.0.0 {/1.0.0/}             -> greaterOrEqual? 1.0.0 to :binary 1.0          
         -> greaterOrEqual? 1.0.0 to :binary 1.0        -> greaterOrEqual? [1.0.0] [(1.0.0)]             
         -> greaterOrEqual? 1.0.0 [1.0.0]               -> greaterOrEqual? 1.0.0 1..1                    
@@ -4507,9 +4507,9 @@ do [
     ; for :binary
     ensure -> every? @[
         -> greaterOrEqual? to :binary 1 1                    -> greaterOrEqual? to :binary 1 1.0                
-        -> greaterOrEqual? to :binary 1 to :rational [1 1]   -> greaterOrEqual? to :binary 1 1:usd                
-        -> greaterOrEqual? to :binary 1 1:m                  -> greaterOrEqual? to :binary 1 1:m3                 
-        -> greaterOrEqual? to :binary 1 1:c                  -> greaterOrEqual? to :binary 0 null                 
+        -> greaterOrEqual? to :binary 1 to :rational [1 1]   -> greaterOrEqual? to :binary 1 1`usd                
+        -> greaterOrEqual? to :binary 1 1`m                  -> greaterOrEqual? to :binary 1 1`m3                 
+        -> greaterOrEqual? to :binary 1 1`c                  -> greaterOrEqual? to :binary 0 null                 
         -> greaterOrEqual? to :binary 0 true                 -> greaterOrEqual? to :binary 0 false                
         -> greaterOrEqual? to :binary 0 maybe                -> greaterOrEqual? to :binary 1 to :complex [1 1]                  
         -> greaterOrEqual? to :binary 1 1.0.0                -> greaterOrEqual? to :binary 1 :type              
@@ -4524,9 +4524,9 @@ do [
     ; for :range
     ensure -> every? @[
         -> greaterOrEqual? 1..1 1                        -> greaterOrEqual? 1..1 1.0
-        -> greaterOrEqual? 1..1 a: to :rational [1 1]    -> greaterOrEqual? 1..1 1:usd
-        -> greaterOrEqual? 1..1 1:m                      -> greaterOrEqual? 1..1 1:m3  
-        -> greaterOrEqual? 1..1 1:c                      -> greaterOrEqual? 0..0 null 
+        -> greaterOrEqual? 1..1 a: to :rational [1 1]    -> greaterOrEqual? 1..1 1`usd
+        -> greaterOrEqual? 1..1 1`m                      -> greaterOrEqual? 1..1 1`m3  
+        -> greaterOrEqual? 1..1 1`c                      -> greaterOrEqual? 0..0 null 
         -> greaterOrEqual? 0..0 true                     -> greaterOrEqual? 0..0 false
         -> greaterOrEqual? 0..0 maybe                    -> greaterOrEqual? 1..1 to :complex [1 1]
         -> greaterOrEqual? 1..1 1.0.0                    -> greaterOrEqual? 1..1 :type                        
@@ -4551,9 +4551,9 @@ do [
     ; for :color
     ensure -> every? @[
         -> greaterOrEqual? #black 0                  -> greaterOrEqual? #black 0.0
-        -> greaterOrEqual? #black to :rational [1 1] -> greaterOrEqual? #black 0:usd 
-        -> greaterOrEqual? #black 0:m                -> greaterOrEqual? #black 0:m3
-        -> greaterOrEqual? #black 0:c                -> greaterOrEqual? #black null 
+        -> greaterOrEqual? #black to :rational [1 1] -> greaterOrEqual? #black 0`usd 
+        -> greaterOrEqual? #black 0`m                -> greaterOrEqual? #black 0`m3
+        -> greaterOrEqual? #black 0`c                -> greaterOrEqual? #black null 
         -> greaterOrEqual? #black true               -> greaterOrEqual? #black false 
         -> greaterOrEqual? #black maybe              -> greaterOrEqual? #black to :complex [0 0]
         -> greaterOrEqual? #black 0.0.0              -> greaterOrEqual? #black :color
@@ -4667,141 +4667,141 @@ do [
     
     ; equal to
     
-    ensure -> not? less? 1:usd 1
-    ensure -> not? less? 1:m   1
-    ensure -> not? less? 1:m2  1
-    ensure -> not? less? 1:m3  1
-    ensure -> not? less? 1:c   1
-    ensure -> not? less? 1:f   1
-    ensure -> not? less? 1 1:usd
-    ensure -> not? less? 1 1:m
-    ensure -> not? less? 1 1:m2
-    ensure -> not? less? 1 1:m3
-    ensure -> not? less? 1 1:c
-    ensure -> not? less? 1 1:f
+    ensure -> not? less? 1`usd 1
+    ensure -> not? less? 1`m   1
+    ensure -> not? less? 1`m2  1
+    ensure -> not? less? 1`m3  1
+    ensure -> not? less? 1`c   1
+    ensure -> not? less? 1`f   1
+    ensure -> not? less? 1 1`usd
+    ensure -> not? less? 1 1`m
+    ensure -> not? less? 1 1`m2
+    ensure -> not? less? 1 1`m3
+    ensure -> not? less? 1 1`c
+    ensure -> not? less? 1 1`f
     passed
     
-    ensure -> not? less? 1:usd 1.0
-    ensure -> not? less? 1:m   1.0
-    ensure -> not? less? 1:m2  1.0
-    ensure -> not? less? 1:m3  1.0
-    ensure -> not? less? 1:c   1.0
-    ensure -> not? less? 1:f   1.0
-    ensure -> not? less? 1.0 1:usd
-    ensure -> not? less? 1.0 1:m
-    ensure -> not? less? 1.0 1:m2
-    ensure -> not? less? 1.0 1:m3
-    ensure -> not? less? 1.0 1:c
-    ensure -> not? less? 1.0 1:f
+    ensure -> not? less? 1`usd 1.0
+    ensure -> not? less? 1`m   1.0
+    ensure -> not? less? 1`m2  1.0
+    ensure -> not? less? 1`m3  1.0
+    ensure -> not? less? 1`c   1.0
+    ensure -> not? less? 1`f   1.0
+    ensure -> not? less? 1.0 1`usd
+    ensure -> not? less? 1.0 1`m
+    ensure -> not? less? 1.0 1`m2
+    ensure -> not? less? 1.0 1`m3
+    ensure -> not? less? 1.0 1`c
+    ensure -> not? less? 1.0 1`f
     passed
     
-    ensure -> not? less? 1:usd to :rational @[5 5]
-    ensure -> not? less? 1:m   to :rational @[5 5]
-    ensure -> not? less? 1:m2  to :rational @[5 5]
-    ensure -> not? less? 1:m3  to :rational @[5 5]
-    ensure -> not? less? 1:c   to :rational @[5 5]
-    ensure -> not? less? 1:f   to :rational @[5 5] 
-    ensure -> not? less? to :rational @[5 5] 1:usd
-    ensure -> not? less? to :rational @[5 5] 1:m
-    ensure -> not? less? to :rational @[5 5] 1:m2
-    ensure -> not? less? to :rational @[5 5] 1:m3
-    ensure -> not? less? to :rational @[5 5] 1:c
-    ensure -> not? less? to :rational @[5 5] 1:f
+    ensure -> not? less? 1`usd to :rational @[5 5]
+    ensure -> not? less? 1`m   to :rational @[5 5]
+    ensure -> not? less? 1`m2  to :rational @[5 5]
+    ensure -> not? less? 1`m3  to :rational @[5 5]
+    ensure -> not? less? 1`c   to :rational @[5 5]
+    ensure -> not? less? 1`f   to :rational @[5 5] 
+    ensure -> not? less? to :rational @[5 5] 1`usd
+    ensure -> not? less? to :rational @[5 5] 1`m
+    ensure -> not? less? to :rational @[5 5] 1`m2
+    ensure -> not? less? to :rational @[5 5] 1`m3
+    ensure -> not? less? to :rational @[5 5] 1`c
+    ensure -> not? less? to :rational @[5 5] 1`f
     passed
     
     
     ; less than
     
-    ensure -> less? 1:usd 2
-    ensure -> less? 1:m   2
-    ensure -> less? 1:m2  2
-    ensure -> less? 1:m3  2
-    ensure -> less? 1:c   2
-    ensure -> less? 1:f   2
-    ensure -> less? 1 2:usd
-    ensure -> less? 1 2:m
-    ensure -> less? 1 2:m2
-    ensure -> less? 1 2:m3
-    ensure -> less? 1 2:c
-    ensure -> less? 1 2:f
+    ensure -> less? 1`usd 2
+    ensure -> less? 1`m   2
+    ensure -> less? 1`m2  2
+    ensure -> less? 1`m3  2
+    ensure -> less? 1`c   2
+    ensure -> less? 1`f   2
+    ensure -> less? 1 2`usd
+    ensure -> less? 1 2`m
+    ensure -> less? 1 2`m2
+    ensure -> less? 1 2`m3
+    ensure -> less? 1 2`c
+    ensure -> less? 1 2`f
     passed
     
-    ensure -> less? 1:usd 2.0
-    ensure -> less? 1:m   2.0
-    ensure -> less? 1:m2  2.0
-    ensure -> less? 1:m3  2.0
-    ensure -> less? 1:c   2.0
-    ensure -> less? 1:f   2.0
-    ensure -> less? 1.0 2:usd
-    ensure -> less? 1.0 2:m
-    ensure -> less? 1.0 2:m2
-    ensure -> less? 1.0 2:m3
-    ensure -> less? 1.0 2:c
-    ensure -> less? 1.0 2:f
+    ensure -> less? 1`usd 2.0
+    ensure -> less? 1`m   2.0
+    ensure -> less? 1`m2  2.0
+    ensure -> less? 1`m3  2.0
+    ensure -> less? 1`c   2.0
+    ensure -> less? 1`f   2.0
+    ensure -> less? 1.0 2`usd
+    ensure -> less? 1.0 2`m
+    ensure -> less? 1.0 2`m2
+    ensure -> less? 1.0 2`m3
+    ensure -> less? 1.0 2`c
+    ensure -> less? 1.0 2`f
     passed
     
-    ensure -> less? 1:usd to :rational @[2 1]
-    ensure -> less? 1:m   to :rational @[2 1]
-    ensure -> less? 1:m2  to :rational @[2 1]
-    ensure -> less? 1:m3  to :rational @[2 1]
-    ensure -> less? 1:c   to :rational @[2 1]
-    ensure -> less? 1:f   to :rational @[2 1] 
-    ensure -> less? to :rational @[1 1] 2:usd
-    ensure -> less? to :rational @[1 1] 2:m
-    ensure -> less? to :rational @[1 1] 2:m2
-    ensure -> less? to :rational @[1 1] 2:m3
-    ensure -> less? to :rational @[1 1] 2:c
-    ensure -> less? to :rational @[1 1] 2:f
+    ensure -> less? 1`usd to :rational @[2 1]
+    ensure -> less? 1`m   to :rational @[2 1]
+    ensure -> less? 1`m2  to :rational @[2 1]
+    ensure -> less? 1`m3  to :rational @[2 1]
+    ensure -> less? 1`c   to :rational @[2 1]
+    ensure -> less? 1`f   to :rational @[2 1] 
+    ensure -> less? to :rational @[1 1] 2`usd
+    ensure -> less? to :rational @[1 1] 2`m
+    ensure -> less? to :rational @[1 1] 2`m2
+    ensure -> less? to :rational @[1 1] 2`m3
+    ensure -> less? to :rational @[1 1] 2`c
+    ensure -> less? to :rational @[1 1] 2`f
     passed
     
     
     ; greater than
     
-    ensure -> not? less? 2:usd 1
-    ensure -> not? less? 2:m   1
-    ensure -> not? less? 2:m2  1
-    ensure -> not? less? 2:m3  1
-    ensure -> not? less? 2:c   1
-    ensure -> not? less? 2:f   1
-    ensure -> not? less? 2 1:usd
-    ensure -> not? less? 2 1:m
-    ensure -> not? less? 2 1:m2
-    ensure -> not? less? 2 1:m3
-    ensure -> not? less? 2 1:c
-    ensure -> not? less? 2 1:f
+    ensure -> not? less? 2`usd 1
+    ensure -> not? less? 2`m   1
+    ensure -> not? less? 2`m2  1
+    ensure -> not? less? 2`m3  1
+    ensure -> not? less? 2`c   1
+    ensure -> not? less? 2`f   1
+    ensure -> not? less? 2 1`usd
+    ensure -> not? less? 2 1`m
+    ensure -> not? less? 2 1`m2
+    ensure -> not? less? 2 1`m3
+    ensure -> not? less? 2 1`c
+    ensure -> not? less? 2 1`f
     passed
     
-    ensure -> not? less? 2:usd 1.0
-    ensure -> not? less? 2:m   1.0
-    ensure -> not? less? 2:m2  1.0
-    ensure -> not? less? 2:m3  1.0
-    ensure -> not? less? 2:c   1.0
-    ensure -> not? less? 2:f   1.0
-    ensure -> not? less? 2.0 1:usd
-    ensure -> not? less? 2.0 1:m
-    ensure -> not? less? 2.0 1:m2
-    ensure -> not? less? 2.0 1:m3
-    ensure -> not? less? 2.0 1:c
-    ensure -> not? less? 2.0 1:f
+    ensure -> not? less? 2`usd 1.0
+    ensure -> not? less? 2`m   1.0
+    ensure -> not? less? 2`m2  1.0
+    ensure -> not? less? 2`m3  1.0
+    ensure -> not? less? 2`c   1.0
+    ensure -> not? less? 2`f   1.0
+    ensure -> not? less? 2.0 1`usd
+    ensure -> not? less? 2.0 1`m
+    ensure -> not? less? 2.0 1`m2
+    ensure -> not? less? 2.0 1`m3
+    ensure -> not? less? 2.0 1`c
+    ensure -> not? less? 2.0 1`f
     passed
     
-    ensure -> not? less? 2:usd to :rational @[5 5]
-    ensure -> not? less? 2:m   to :rational @[5 5]
-    ensure -> not? less? 2:m2  to :rational @[5 5]
-    ensure -> not? less? 2:m3  to :rational @[5 5]
-    ensure -> not? less? 2:c   to :rational @[5 5]
-    ensure -> not? less? 2:f   to :rational @[5 5] 
-    ensure -> not? less? to :rational @[2 1] 1:usd
-    ensure -> not? less? to :rational @[2 1] 1:m
-    ensure -> not? less? to :rational @[2 1] 1:m2
-    ensure -> not? less? to :rational @[2 1] 1:m3
-    ensure -> not? less? to :rational @[2 1] 1:c
-    ensure -> not? less? to :rational @[2 1] 1:f
+    ensure -> not? less? 2`usd to :rational @[5 5]
+    ensure -> not? less? 2`m   to :rational @[5 5]
+    ensure -> not? less? 2`m2  to :rational @[5 5]
+    ensure -> not? less? 2`m3  to :rational @[5 5]
+    ensure -> not? less? 2`c   to :rational @[5 5]
+    ensure -> not? less? 2`f   to :rational @[5 5] 
+    ensure -> not? less? to :rational @[2 1] 1`usd
+    ensure -> not? less? to :rational @[2 1] 1`m
+    ensure -> not? less? to :rational @[2 1] 1`m2
+    ensure -> not? less? to :rational @[2 1] 1`m3
+    ensure -> not? less? to :rational @[2 1] 1`c
+    ensure -> not? less? to :rational @[2 1] 1`f
     passed
     
     
-    ensure -> not? less? 1.5:m 150:cm 
-    ensure -> not? less? 2:m 2:cm
+    ensure -> not? less? 1.5`m 150`cm 
+    ensure -> not? less? 2`m 2`cm
     passed 
     
     
@@ -5316,8 +5316,8 @@ do [
         -> less? 1 '1'           -> less? 1 "1"
         -> less? [1] [one]       -> less? [1] [one:]
         -> less? 1 '1            -> less? [1] [.1]         
-        -> less? [1] [.1:]       -> less? [1] [one\1]
-        -> less? [1] [one\1:]    -> less? [1] [+]          
+        -> less? [1] [.1`]       -> less? [1] [one\1]
+        -> less? [1] [one\1`]    -> less? [1] [+]          
         -> less? 1 {/1/}         -> less? 1 to :binary 1   
         -> less? 1 to :binary 1  -> less? [1] [(1)]        
         -> less? 1 [1]           -> less? 1 1..1           
@@ -5333,8 +5333,8 @@ do [
         -> less? 1.0 '1'             -> less? 1.0 "1.0"
         -> less? [1.0] [one]         -> less? [1.0] [one:]
         -> less? 1.0 '1.0i           -> less? [1.0] [.1]            
-        -> less? [1.0] [.1:]         -> less? [1.0] [one\1]
-        -> less? [1.0] [one\1:]      -> less? [1.0] [+]           
+        -> less? [1.0] [.1`]         -> less? [1.0] [one\1]
+        -> less? [1.0] [one\1`]      -> less? [1.0] [+]           
         -> less? 1.0 {/1.0/}         -> less? 1.0 to :binary 1.0  
         -> less? 1.0 to :binary 1.0  -> less? [1.0] [(1.0)]       
         -> less? 1.0 [1]             -> less? 1.0 1..1            
@@ -5351,8 +5351,8 @@ do [
         -> less? a '1'           -> less? a "1/1"
         -> less? @[a] [one]      -> less? @[a] [one:]
         -> less? 1 '1            -> less? @[a] [.1]                 
-        -> less? @[a] [.1:]      -> less? @[a] [one\1]
-        -> less? @[a] [one\1:]   -> less? @[a] [+]                  
+        -> less? @[a] [.1`]      -> less? @[a] [one\1]
+        -> less? @[a] [one\1`]   -> less? @[a] [+]                  
         -> less? a {/1/1/}       -> less? a to :binary 1            
         -> less? a to :binary 1  -> less? @[a] [(1)]                
         -> less? a [1]           -> less? a 1..1                    
@@ -5362,67 +5362,67 @@ do [
     
     ; for :quantity
     ensure -> every? @[
-        -> less? 1:usd null          -> less? 1:usd true
-        -> less? 1:usd false         -> less? 1:usd to :complex [1 1]
-        -> less? 1:usd 1.0.0         -> less? 1:usd :quantity
-        -> less? 1:usd '1'           -> less? 1:usd "1USD"
-        -> less? [1:usd] [one]       -> less? [1:usd] [one:]
-        -> less? 1:usd '1.0i         -> less? [1:usd] [.1]                  
-        -> less? [1:usd] [.1:]       -> less? [1:usd] [one\1]
-        -> less? [1:usd] [one\1:]    -> less? [1:usd] [+]         
-        -> less? 1:usd {/1USD/}      -> less? 1:usd to :binary 1  
-        -> less? 1:usd to :binary 1  -> less? [1:usd] [(1)]       
-        -> less? 1:usd [1:usd]       -> less? 1:usd 1..1          
-        -> less? 1:usd #[one: 1:usd] -> less? 0:usd #black        
-        -> less? 1:usd var 'one?
+        -> less? 1`usd null          -> less? 1`usd true
+        -> less? 1`usd false         -> less? 1`usd to :complex [1 1]
+        -> less? 1`usd 1.0.0         -> less? 1`usd :quantity
+        -> less? 1`usd '1'           -> less? 1`usd "1USD"
+        -> less? [1`usd] [one]       -> less? [1`usd] [one:]
+        -> less? 1`usd '1.0i         -> less? [1`usd] [.1]                  
+        -> less? [1`usd] [.1`]       -> less? [1`usd] [one\1]
+        -> less? [1`usd] [one\1`]    -> less? [1`usd] [+]         
+        -> less? 1`usd {/1USD/}      -> less? 1`usd to :binary 1  
+        -> less? 1`usd to :binary 1  -> less? [1`usd] [(1)]       
+        -> less? 1`usd [1`usd]       -> less? 1`usd 1..1          
+        -> less? 1`usd #[one: 1`usd] -> less? 0`usd #black        
+        -> less? 1`usd var 'one?
     ] => not? passed
     
     ensure -> every? @[ 
-        -> less? 1:m null            -> less? 1:m true
-        -> less? 1:m false           -> less? 1:m to :complex [1 1]
-        -> less? 1:m 1.0.0           -> less? 1:m :quantity
-        -> less? 1:m '1'             -> less? 1:m "1m"
-        -> less? [1:m] [one]         -> less? [1:m] [one:]
-        -> less? 1:m '1              -> less? [1:m] [.1]            
-        -> less? [1:m] [.1:]         -> less? [1:m] [one\1]
-        -> less? [1:m] [one\1:]      -> less? [1:m] [+]             
-        -> less? 1:m {/1m/}          -> less? 1:m to :binary 1      
-        -> less? 1:m to :binary 1    -> less? [1:m] [(1)]           
-        -> less? 1:m [1:m]           -> less? 1:m 1..1              
-        -> less? 1:m #[one: 1:m]     -> less? 0:m #black            
-        -> less? 1:m var 'one?
+        -> less? 1`m null            -> less? 1`m true
+        -> less? 1`m false           -> less? 1`m to :complex [1 1]
+        -> less? 1`m 1.0.0           -> less? 1`m :quantity
+        -> less? 1`m '1'             -> less? 1`m "1m"
+        -> less? [1`m] [one]         -> less? [1`m] [one:]
+        -> less? 1`m '1              -> less? [1`m] [.1]            
+        -> less? [1`m] [.1`]         -> less? [1`m] [one\1]
+        -> less? [1`m] [one\1`]      -> less? [1`m] [+]             
+        -> less? 1`m {/1m/}          -> less? 1`m to :binary 1      
+        -> less? 1`m to :binary 1    -> less? [1`m] [(1)]           
+        -> less? 1`m [1`m]           -> less? 1`m 1..1              
+        -> less? 1`m #[one: 1`m]     -> less? 0`m #black            
+        -> less? 1`m var 'one?
     ] => not? passed
     
     ensure -> every? @[ 
-        -> less? 1:m3 null           -> less? 1:m3 true
-        -> less? 1:m3 false          -> less? 1:m3 to :complex [1 1]
-        -> less? 1:m3 1.0.0          -> less? 1:m3 :quantity
-        -> less? 1:m3 '1'            -> less? 1:m3 "1m³"
-        -> less? [1:m3] [one]        -> less? [1:m3] [one:]
-        -> less? 1:m3 '1             -> less? [1:m3] [.1]              
-        -> less? [1:m3] [.1:]        -> less? [1:m3] [one\1]
-        -> less? [1:m3] [one\1:]     -> less? [1:m3] [+]                
-        -> less? 1:m3 {/1m³/}        -> less? 1:m3 to :binary 1         
-        -> less? 1:m3 to :binary 1   -> less? [1:m3] [(1)]              
-        -> less? 1:m3 [1:m3]         -> less? 1:m3 1..1                 
-        -> less? 1:m3 #[one: 1:m3]   -> less? 0:m3 #black               
-        -> less? 1:m3 var 'one?
+        -> less? 1`m3 null           -> less? 1`m3 true
+        -> less? 1`m3 false          -> less? 1`m3 to :complex [1 1]
+        -> less? 1`m3 1.0.0          -> less? 1`m3 :quantity
+        -> less? 1`m3 '1'            -> less? 1`m3 "1m³"
+        -> less? [1`m3] [one]        -> less? [1`m3] [one:]
+        -> less? 1`m3 '1             -> less? [1`m3] [.1]              
+        -> less? [1`m3] [.1`]        -> less? [1`m3] [one\1]
+        -> less? [1`m3] [one\1`]     -> less? [1`m3] [+]                
+        -> less? 1`m3 {/1m³/}        -> less? 1`m3 to :binary 1         
+        -> less? 1`m3 to :binary 1   -> less? [1`m3] [(1)]              
+        -> less? 1`m3 [1`m3]         -> less? 1`m3 1..1                 
+        -> less? 1`m3 #[one: 1`m3]   -> less? 0`m3 #black               
+        -> less? 1`m3 var 'one?
     ] => not? passed
     
     ensure -> every? @[ 
-        -> less? 1:c null            -> less? 1:c true
-        -> less? 1:c false           -> less? 1:c to :complex [1 1]
-        -> less? 1:c 1.0.0           -> less? 1:c :quantity
-        -> less? 1:c '1'             -> less? 1:c "1°C"
-        -> less? [1:c] [one]         -> less? [1:c] [one:]
-        -> less? 1:c '1.0i           -> less? [1:c] [.1]            
-        -> less? [1:c] [.1:]         -> less? [1:c] [one\1]       
-        -> less? [1:c] [one\1:]      -> less? [1:c] [+]           
-        -> less? 1:c {/1°C/}         -> less? 1:c to :binary 1    
-        -> less? 1:c to :binary 1    -> less? [1:c] [(1)]         
-        -> less? 1:c [1:c]           -> less? 1:c 1..1            
-        -> less? 1:c #[one: 1:c]     -> less? 0:c #black          
-        -> less? 1:c var 'one?
+        -> less? 1`c null            -> less? 1`c true
+        -> less? 1`c false           -> less? 1`c to :complex [1 1]
+        -> less? 1`c 1.0.0           -> less? 1`c :quantity
+        -> less? 1`c '1'             -> less? 1`c "1°C"
+        -> less? [1`c] [one]         -> less? [1`c] [one:]
+        -> less? 1`c '1.0i           -> less? [1`c] [.1]            
+        -> less? [1`c] [.1`]         -> less? [1`c] [one\1]       
+        -> less? [1`c] [one\1`]      -> less? [1`c] [+]           
+        -> less? 1`c {/1°C/}         -> less? 1`c to :binary 1    
+        -> less? 1`c to :binary 1    -> less? [1`c] [(1)]         
+        -> less? 1`c [1`c]           -> less? 1`c 1..1            
+        -> less? 1`c #[one: 1`c]     -> less? 0`c #black          
+        -> less? 1`c var 'one?
     ] => not? passed
     
     ; for :null
@@ -5502,8 +5502,8 @@ do [
         -> less? a '1'                   -> less? a "1.0+1.0i"
         -> less? @[a] [one]              -> less? @[a] [one:]
         -> less? 1 '1                    -> less? @[a] [.1]                 
-        -> less? @[a] [.1:]              -> less? @[a] [one\1]
-        -> less? @[a] [one\1:]           -> less? @[a] [+]                  
+        -> less? @[a] [.1`]              -> less? @[a] [one\1]
+        -> less? @[a] [one\1`]           -> less? @[a] [+]                  
         -> less? a {/1.0+1.0i/}          -> less? a to :binary 1            
         -> less? a to :binary 1          -> less? @[a] [(1)]                
         -> less? a [1]                   -> less? a 1..1                    
@@ -5520,8 +5520,8 @@ do [
         -> less? 1.0.0 '1'                   -> less? 1.0.0 "1.0.0"
         -> less? [1.0.0] [one]               -> less? [1.0.0] [one:]
         -> less? 1.0.0 '1                    -> less? [1.0.0] [.1]                  
-        -> less? [1.0.0] [.1:]               -> less? [1.0.0] [one\1]
-        -> less? [1.0.0] [one\1:]            -> less? [1.0.0] [+]                   
+        -> less? [1.0.0] [.1`]               -> less? [1.0.0] [one\1]
+        -> less? [1.0.0] [one\1`]            -> less? [1.0.0] [+]                   
         -> less? 1.0.0 {/1.0.0/}             -> less? 1.0.0 to :binary 1.0          
         -> less? 1.0.0 to :binary 1.0        -> less? [1.0.0] [(1.0.0)]             
         -> less? 1.0.0 [1.0.0]               -> less? 1.0.0 1..1                    
@@ -5682,9 +5682,9 @@ do [
     ; for :binary
     ensure -> every? @[
         -> less? to :binary 1 1                    -> less? to :binary 1 1.0                
-        -> less? to :binary 1 to :rational [1 1]   -> less? to :binary 1 1:usd                
-        -> less? to :binary 1 1:m                  -> less? to :binary 1 1:m3                 
-        -> less? to :binary 1 1:c                  -> less? to :binary 0 null                 
+        -> less? to :binary 1 to :rational [1 1]   -> less? to :binary 1 1`usd                
+        -> less? to :binary 1 1`m                  -> less? to :binary 1 1`m3                 
+        -> less? to :binary 1 1`c                  -> less? to :binary 0 null                 
         -> less? to :binary 0 true                 -> less? to :binary 0 false                
         -> less? to :binary 0 maybe                -> less? to :binary 1 to :complex [1 1]                  
         -> less? to :binary 1 1.0.0                -> less? to :binary 1 :type              
@@ -5699,9 +5699,9 @@ do [
     ; for :range
     ensure -> every? @[
         -> less? 1..1 1                        -> less? 1..1 1.0
-        -> less? 1..1 a: to :rational [1 1]    -> less? 1..1 1:usd
-        -> less? 1..1 1:m                      -> less? 1..1 1:m3  
-        -> less? 1..1 1:c                      -> less? 0..0 null 
+        -> less? 1..1 a: to :rational [1 1]    -> less? 1..1 1`usd
+        -> less? 1..1 1`m                      -> less? 1..1 1`m3  
+        -> less? 1..1 1`c                      -> less? 0..0 null 
         -> less? 0..0 true                     -> less? 0..0 false
         -> less? 0..0 maybe                    -> less? 1..1 to :complex [1 1]
         -> less? 1..1 1.0.0                    -> less? 1..1 :type                        
@@ -5726,9 +5726,9 @@ do [
     ; for :color
     ensure -> every? @[
         -> less? #black 0                  -> less? #black 0.0
-        -> less? #black to :rational [1 1] -> less? #black 0:usd 
-        -> less? #black 0:m                -> less? #black 0:m3
-        -> less? #black 0:c                -> less? #black null 
+        -> less? #black to :rational [1 1] -> less? #black 0`usd 
+        -> less? #black 0`m                -> less? #black 0`m3
+        -> less? #black 0`c                -> less? #black null 
         -> less? #black true               -> less? #black false 
         -> less? #black maybe              -> less? #black to :complex [0 0]
         -> less? #black 0.0.0              -> less? #black :color
@@ -5843,141 +5843,141 @@ do [
     
     ; equal to
     
-    ensure -> lessOrEqual? 1:usd 1
-    ensure -> lessOrEqual? 1:m   1
-    ensure -> lessOrEqual? 1:m2  1
-    ensure -> lessOrEqual? 1:m3  1
-    ensure -> lessOrEqual? 1:c   1
-    ensure -> lessOrEqual? 1:f   1
-    ensure -> lessOrEqual? 1 1:usd
-    ensure -> lessOrEqual? 1 1:m
-    ensure -> lessOrEqual? 1 1:m2
-    ensure -> lessOrEqual? 1 1:m3
-    ensure -> lessOrEqual? 1 1:c
-    ensure -> lessOrEqual? 1 1:f
+    ensure -> lessOrEqual? 1`usd 1
+    ensure -> lessOrEqual? 1`m   1
+    ensure -> lessOrEqual? 1`m2  1
+    ensure -> lessOrEqual? 1`m3  1
+    ensure -> lessOrEqual? 1`c   1
+    ensure -> lessOrEqual? 1`f   1
+    ensure -> lessOrEqual? 1 1`usd
+    ensure -> lessOrEqual? 1 1`m
+    ensure -> lessOrEqual? 1 1`m2
+    ensure -> lessOrEqual? 1 1`m3
+    ensure -> lessOrEqual? 1 1`c
+    ensure -> lessOrEqual? 1 1`f
     passed
     
-    ensure -> lessOrEqual? 1:usd 1.0
-    ensure -> lessOrEqual? 1:m   1.0
-    ensure -> lessOrEqual? 1:m2  1.0
-    ensure -> lessOrEqual? 1:m3  1.0
-    ensure -> lessOrEqual? 1:c   1.0
-    ensure -> lessOrEqual? 1:f   1.0
-    ensure -> lessOrEqual? 1.0 1:usd
-    ensure -> lessOrEqual? 1.0 1:m
-    ensure -> lessOrEqual? 1.0 1:m2
-    ensure -> lessOrEqual? 1.0 1:m3
-    ensure -> lessOrEqual? 1.0 1:c
-    ensure -> lessOrEqual? 1.0 1:f
+    ensure -> lessOrEqual? 1`usd 1.0
+    ensure -> lessOrEqual? 1`m   1.0
+    ensure -> lessOrEqual? 1`m2  1.0
+    ensure -> lessOrEqual? 1`m3  1.0
+    ensure -> lessOrEqual? 1`c   1.0
+    ensure -> lessOrEqual? 1`f   1.0
+    ensure -> lessOrEqual? 1.0 1`usd
+    ensure -> lessOrEqual? 1.0 1`m
+    ensure -> lessOrEqual? 1.0 1`m2
+    ensure -> lessOrEqual? 1.0 1`m3
+    ensure -> lessOrEqual? 1.0 1`c
+    ensure -> lessOrEqual? 1.0 1`f
     passed
     
-    ensure -> lessOrEqual? 1:usd to :rational @[5 5]
-    ensure -> lessOrEqual? 1:m   to :rational @[5 5]
-    ensure -> lessOrEqual? 1:m2  to :rational @[5 5]
-    ensure -> lessOrEqual? 1:m3  to :rational @[5 5]
-    ensure -> lessOrEqual? 1:c   to :rational @[5 5]
-    ensure -> lessOrEqual? 1:f   to :rational @[5 5] 
-    ensure -> lessOrEqual? to :rational @[5 5] 1:usd
-    ensure -> lessOrEqual? to :rational @[5 5] 1:m
-    ensure -> lessOrEqual? to :rational @[5 5] 1:m2
-    ensure -> lessOrEqual? to :rational @[5 5] 1:m3
-    ensure -> lessOrEqual? to :rational @[5 5] 1:c
-    ensure -> lessOrEqual? to :rational @[5 5] 1:f
+    ensure -> lessOrEqual? 1`usd to :rational @[5 5]
+    ensure -> lessOrEqual? 1`m   to :rational @[5 5]
+    ensure -> lessOrEqual? 1`m2  to :rational @[5 5]
+    ensure -> lessOrEqual? 1`m3  to :rational @[5 5]
+    ensure -> lessOrEqual? 1`c   to :rational @[5 5]
+    ensure -> lessOrEqual? 1`f   to :rational @[5 5] 
+    ensure -> lessOrEqual? to :rational @[5 5] 1`usd
+    ensure -> lessOrEqual? to :rational @[5 5] 1`m
+    ensure -> lessOrEqual? to :rational @[5 5] 1`m2
+    ensure -> lessOrEqual? to :rational @[5 5] 1`m3
+    ensure -> lessOrEqual? to :rational @[5 5] 1`c
+    ensure -> lessOrEqual? to :rational @[5 5] 1`f
     passed
     
     
     ; less than
     
-    ensure -> lessOrEqual? 1:usd 2
-    ensure -> lessOrEqual? 1:m   2
-    ensure -> lessOrEqual? 1:m2  2
-    ensure -> lessOrEqual? 1:m3  2
-    ensure -> lessOrEqual? 1:c   2
-    ensure -> lessOrEqual? 1:f   2
-    ensure -> lessOrEqual? 1 2:usd
-    ensure -> lessOrEqual? 1 2:m
-    ensure -> lessOrEqual? 1 2:m2
-    ensure -> lessOrEqual? 1 2:m3
-    ensure -> lessOrEqual? 1 2:c
-    ensure -> lessOrEqual? 1 2:f
+    ensure -> lessOrEqual? 1`usd 2
+    ensure -> lessOrEqual? 1`m   2
+    ensure -> lessOrEqual? 1`m2  2
+    ensure -> lessOrEqual? 1`m3  2
+    ensure -> lessOrEqual? 1`c   2
+    ensure -> lessOrEqual? 1`f   2
+    ensure -> lessOrEqual? 1 2`usd
+    ensure -> lessOrEqual? 1 2`m
+    ensure -> lessOrEqual? 1 2`m2
+    ensure -> lessOrEqual? 1 2`m3
+    ensure -> lessOrEqual? 1 2`c
+    ensure -> lessOrEqual? 1 2`f
     passed
     
-    ensure -> lessOrEqual? 1:usd 2.0
-    ensure -> lessOrEqual? 1:m   2.0
-    ensure -> lessOrEqual? 1:m2  2.0
-    ensure -> lessOrEqual? 1:m3  2.0
-    ensure -> lessOrEqual? 1:c   2.0
-    ensure -> lessOrEqual? 1:f   2.0
-    ensure -> lessOrEqual? 1.0 2:usd
-    ensure -> lessOrEqual? 1.0 2:m
-    ensure -> lessOrEqual? 1.0 2:m2
-    ensure -> lessOrEqual? 1.0 2:m3
-    ensure -> lessOrEqual? 1.0 2:c
-    ensure -> lessOrEqual? 1.0 2:f
+    ensure -> lessOrEqual? 1`usd 2.0
+    ensure -> lessOrEqual? 1`m   2.0
+    ensure -> lessOrEqual? 1`m2  2.0
+    ensure -> lessOrEqual? 1`m3  2.0
+    ensure -> lessOrEqual? 1`c   2.0
+    ensure -> lessOrEqual? 1`f   2.0
+    ensure -> lessOrEqual? 1.0 2`usd
+    ensure -> lessOrEqual? 1.0 2`m
+    ensure -> lessOrEqual? 1.0 2`m2
+    ensure -> lessOrEqual? 1.0 2`m3
+    ensure -> lessOrEqual? 1.0 2`c
+    ensure -> lessOrEqual? 1.0 2`f
     passed
     
-    ensure -> lessOrEqual? 1:usd to :rational @[2 1]
-    ensure -> lessOrEqual? 1:m   to :rational @[2 1]
-    ensure -> lessOrEqual? 1:m2  to :rational @[2 1]
-    ensure -> lessOrEqual? 1:m3  to :rational @[2 1]
-    ensure -> lessOrEqual? 1:c   to :rational @[2 1]
-    ensure -> lessOrEqual? 1:f   to :rational @[2 1] 
-    ensure -> lessOrEqual? to :rational @[1 1] 2:usd
-    ensure -> lessOrEqual? to :rational @[1 1] 2:m
-    ensure -> lessOrEqual? to :rational @[1 1] 2:m2
-    ensure -> lessOrEqual? to :rational @[1 1] 2:m3
-    ensure -> lessOrEqual? to :rational @[1 1] 2:c
-    ensure -> lessOrEqual? to :rational @[1 1] 2:f
+    ensure -> lessOrEqual? 1`usd to :rational @[2 1]
+    ensure -> lessOrEqual? 1`m   to :rational @[2 1]
+    ensure -> lessOrEqual? 1`m2  to :rational @[2 1]
+    ensure -> lessOrEqual? 1`m3  to :rational @[2 1]
+    ensure -> lessOrEqual? 1`c   to :rational @[2 1]
+    ensure -> lessOrEqual? 1`f   to :rational @[2 1] 
+    ensure -> lessOrEqual? to :rational @[1 1] 2`usd
+    ensure -> lessOrEqual? to :rational @[1 1] 2`m
+    ensure -> lessOrEqual? to :rational @[1 1] 2`m2
+    ensure -> lessOrEqual? to :rational @[1 1] 2`m3
+    ensure -> lessOrEqual? to :rational @[1 1] 2`c
+    ensure -> lessOrEqual? to :rational @[1 1] 2`f
     passed
     
     
     ; greater than
     
-    ensure -> not? lessOrEqual? 2:usd 1
-    ensure -> not? lessOrEqual? 2:m   1
-    ensure -> not? lessOrEqual? 2:m2  1
-    ensure -> not? lessOrEqual? 2:m3  1
-    ensure -> not? lessOrEqual? 2:c   1
-    ensure -> not? lessOrEqual? 2:f   1
-    ensure -> not? lessOrEqual? 2 1:usd
-    ensure -> not? lessOrEqual? 2 1:m
-    ensure -> not? lessOrEqual? 2 1:m2
-    ensure -> not? lessOrEqual? 2 1:m3
-    ensure -> not? lessOrEqual? 2 1:c
-    ensure -> not? lessOrEqual? 2 1:f
+    ensure -> not? lessOrEqual? 2`usd 1
+    ensure -> not? lessOrEqual? 2`m   1
+    ensure -> not? lessOrEqual? 2`m2  1
+    ensure -> not? lessOrEqual? 2`m3  1
+    ensure -> not? lessOrEqual? 2`c   1
+    ensure -> not? lessOrEqual? 2`f   1
+    ensure -> not? lessOrEqual? 2 1`usd
+    ensure -> not? lessOrEqual? 2 1`m
+    ensure -> not? lessOrEqual? 2 1`m2
+    ensure -> not? lessOrEqual? 2 1`m3
+    ensure -> not? lessOrEqual? 2 1`c
+    ensure -> not? lessOrEqual? 2 1`f
     passed
     
-    ensure -> not? lessOrEqual? 2:usd 1.0
-    ensure -> not? lessOrEqual? 2:m   1.0
-    ensure -> not? lessOrEqual? 2:m2  1.0
-    ensure -> not? lessOrEqual? 2:m3  1.0
-    ensure -> not? lessOrEqual? 2:c   1.0
-    ensure -> not? lessOrEqual? 2:f   1.0
-    ensure -> not? lessOrEqual? 2.0 1:usd
-    ensure -> not? lessOrEqual? 2.0 1:m
-    ensure -> not? lessOrEqual? 2.0 1:m2
-    ensure -> not? lessOrEqual? 2.0 1:m3
-    ensure -> not? lessOrEqual? 2.0 1:c
-    ensure -> not? lessOrEqual? 2.0 1:f
+    ensure -> not? lessOrEqual? 2`usd 1.0
+    ensure -> not? lessOrEqual? 2`m   1.0
+    ensure -> not? lessOrEqual? 2`m2  1.0
+    ensure -> not? lessOrEqual? 2`m3  1.0
+    ensure -> not? lessOrEqual? 2`c   1.0
+    ensure -> not? lessOrEqual? 2`f   1.0
+    ensure -> not? lessOrEqual? 2.0 1`usd
+    ensure -> not? lessOrEqual? 2.0 1`m
+    ensure -> not? lessOrEqual? 2.0 1`m2
+    ensure -> not? lessOrEqual? 2.0 1`m3
+    ensure -> not? lessOrEqual? 2.0 1`c
+    ensure -> not? lessOrEqual? 2.0 1`f
     passed
     
-    ensure -> not? lessOrEqual? 2:usd to :rational @[5 5]
-    ensure -> not? lessOrEqual? 2:m   to :rational @[5 5]
-    ensure -> not? lessOrEqual? 2:m2  to :rational @[5 5]
-    ensure -> not? lessOrEqual? 2:m3  to :rational @[5 5]
-    ensure -> not? lessOrEqual? 2:c   to :rational @[5 5]
-    ensure -> not? lessOrEqual? 2:f   to :rational @[5 5] 
-    ensure -> not? lessOrEqual? to :rational @[2 1] 1:usd
-    ensure -> not? lessOrEqual? to :rational @[2 1] 1:m
-    ensure -> not? lessOrEqual? to :rational @[2 1] 1:m2
-    ensure -> not? lessOrEqual? to :rational @[2 1] 1:m3
-    ensure -> not? lessOrEqual? to :rational @[2 1] 1:c
-    ensure -> not? lessOrEqual? to :rational @[2 1] 1:f
+    ensure -> not? lessOrEqual? 2`usd to :rational @[5 5]
+    ensure -> not? lessOrEqual? 2`m   to :rational @[5 5]
+    ensure -> not? lessOrEqual? 2`m2  to :rational @[5 5]
+    ensure -> not? lessOrEqual? 2`m3  to :rational @[5 5]
+    ensure -> not? lessOrEqual? 2`c   to :rational @[5 5]
+    ensure -> not? lessOrEqual? 2`f   to :rational @[5 5] 
+    ensure -> not? lessOrEqual? to :rational @[2 1] 1`usd
+    ensure -> not? lessOrEqual? to :rational @[2 1] 1`m
+    ensure -> not? lessOrEqual? to :rational @[2 1] 1`m2
+    ensure -> not? lessOrEqual? to :rational @[2 1] 1`m3
+    ensure -> not? lessOrEqual? to :rational @[2 1] 1`c
+    ensure -> not? lessOrEqual? to :rational @[2 1] 1`f
     passed
     
     
-    ensure -> lessOrEqual? 1.5:m 150:cm 
-    ensure -> not? lessOrEqual? 2:m 2:cm
+    ensure -> lessOrEqual? 1.5`m 150`cm 
+    ensure -> not? lessOrEqual? 2`m 2`cm
     passed 
     
     
@@ -6534,8 +6534,8 @@ do [
         -> lessOrEqual? 1 '1'           -> lessOrEqual? 1 "1"
         -> lessOrEqual? [1] [one]       -> lessOrEqual? [1] [one:]
         -> lessOrEqual? 1 '1            -> lessOrEqual? [1] [.1]         
-        -> lessOrEqual? [1] [.1:]       -> lessOrEqual? [1] [one\1]
-        -> lessOrEqual? [1] [one\1:]    -> lessOrEqual? [1] [+]          
+        -> lessOrEqual? [1] [.1`]       -> lessOrEqual? [1] [one\1]
+        -> lessOrEqual? [1] [one\1`]    -> lessOrEqual? [1] [+]          
         -> lessOrEqual? 1 {/1/}         -> lessOrEqual? 1 to :binary 1   
         -> lessOrEqual? 1 to :binary 1  -> lessOrEqual? [1] [(1)]        
         -> lessOrEqual? 1 [1]           -> lessOrEqual? 1 1..1           
@@ -6551,8 +6551,8 @@ do [
         -> lessOrEqual? 1.0 '1'             -> lessOrEqual? 1.0 "1.0"
         -> lessOrEqual? [1.0] [one]         -> lessOrEqual? [1.0] [one:]
         -> lessOrEqual? 1.0 '1.0i           -> lessOrEqual? [1.0] [.1]            
-        -> lessOrEqual? [1.0] [.1:]         -> lessOrEqual? [1.0] [one\1]
-        -> lessOrEqual? [1.0] [one\1:]      -> lessOrEqual? [1.0] [+]           
+        -> lessOrEqual? [1.0] [.1`]         -> lessOrEqual? [1.0] [one\1]
+        -> lessOrEqual? [1.0] [one\1`]      -> lessOrEqual? [1.0] [+]           
         -> lessOrEqual? 1.0 {/1.0/}         -> lessOrEqual? 1.0 to :binary 1.0  
         -> lessOrEqual? 1.0 to :binary 1.0  -> lessOrEqual? [1.0] [(1.0)]       
         -> lessOrEqual? 1.0 [1]             -> lessOrEqual? 1.0 1..1            
@@ -6569,8 +6569,8 @@ do [
         -> lessOrEqual? a '1'           -> lessOrEqual? a "1/1"
         -> lessOrEqual? @[a] [one]      -> lessOrEqual? @[a] [one:]
         -> lessOrEqual? 1 '1            -> lessOrEqual? @[a] [.1]                 
-        -> lessOrEqual? @[a] [.1:]      -> lessOrEqual? @[a] [one\1]
-        -> lessOrEqual? @[a] [one\1:]   -> lessOrEqual? @[a] [+]                  
+        -> lessOrEqual? @[a] [.1`]      -> lessOrEqual? @[a] [one\1]
+        -> lessOrEqual? @[a] [one\1`]   -> lessOrEqual? @[a] [+]                  
         -> lessOrEqual? a {/1/1/}       -> lessOrEqual? a to :binary 1            
         -> lessOrEqual? a to :binary 1  -> lessOrEqual? @[a] [(1)]                
         -> lessOrEqual? a [1]           -> lessOrEqual? a 1..1                    
@@ -6580,67 +6580,67 @@ do [
     
     ; for :quantity
     ensure -> every? @[
-        -> lessOrEqual? 1:usd null          -> lessOrEqual? 1:usd true
-        -> lessOrEqual? 1:usd false         -> lessOrEqual? 1:usd to :complex [1 1]
-        -> lessOrEqual? 1:usd 1.0.0         -> lessOrEqual? 1:usd :quantity
-        -> lessOrEqual? 1:usd '1'           -> lessOrEqual? 1:usd "1USD"
-        -> lessOrEqual? [1:usd] [one]       -> lessOrEqual? [1:usd] [one:]
-        -> lessOrEqual? 1:usd '1.0i         -> lessOrEqual? [1:usd] [.1]                  
-        -> lessOrEqual? [1:usd] [.1:]       -> lessOrEqual? [1:usd] [one\1]
-        -> lessOrEqual? [1:usd] [one\1:]    -> lessOrEqual? [1:usd] [+]         
-        -> lessOrEqual? 1:usd {/1USD/}      -> lessOrEqual? 1:usd to :binary 1  
-        -> lessOrEqual? 1:usd to :binary 1  -> lessOrEqual? [1:usd] [(1)]       
-        -> lessOrEqual? 1:usd [1:usd]       -> lessOrEqual? 1:usd 1..1          
-        -> lessOrEqual? 1:usd #[one: 1:usd] -> lessOrEqual? 0:usd #black        
-        -> lessOrEqual? 1:usd var 'one?
+        -> lessOrEqual? 1`usd null          -> lessOrEqual? 1`usd true
+        -> lessOrEqual? 1`usd false         -> lessOrEqual? 1`usd to :complex [1 1]
+        -> lessOrEqual? 1`usd 1.0.0         -> lessOrEqual? 1`usd :quantity
+        -> lessOrEqual? 1`usd '1'           -> lessOrEqual? 1`usd "1USD"
+        -> lessOrEqual? [1`usd] [one]       -> lessOrEqual? [1`usd] [one:]
+        -> lessOrEqual? 1`usd '1.0i         -> lessOrEqual? [1`usd] [.1]                  
+        -> lessOrEqual? [1`usd] [.1`]       -> lessOrEqual? [1`usd] [one\1]
+        -> lessOrEqual? [1`usd] [one\1`]    -> lessOrEqual? [1`usd] [+]         
+        -> lessOrEqual? 1`usd {/1USD/}      -> lessOrEqual? 1`usd to :binary 1  
+        -> lessOrEqual? 1`usd to :binary 1  -> lessOrEqual? [1`usd] [(1)]       
+        -> lessOrEqual? 1`usd [1`usd]       -> lessOrEqual? 1`usd 1..1          
+        -> lessOrEqual? 1`usd #[one: 1`usd] -> lessOrEqual? 0`usd #black        
+        -> lessOrEqual? 1`usd var 'one?
     ] => not? passed
     
     ensure -> every? @[ 
-        -> lessOrEqual? 1:m null            -> lessOrEqual? 1:m true
-        -> lessOrEqual? 1:m false           -> lessOrEqual? 1:m to :complex [1 1]
-        -> lessOrEqual? 1:m 1.0.0           -> lessOrEqual? 1:m :quantity
-        -> lessOrEqual? 1:m '1'             -> lessOrEqual? 1:m "1m"
-        -> lessOrEqual? [1:m] [one]         -> lessOrEqual? [1:m] [one:]
-        -> lessOrEqual? 1:m '1              -> lessOrEqual? [1:m] [.1]            
-        -> lessOrEqual? [1:m] [.1:]         -> lessOrEqual? [1:m] [one\1]
-        -> lessOrEqual? [1:m] [one\1:]      -> lessOrEqual? [1:m] [+]             
-        -> lessOrEqual? 1:m {/1m/}          -> lessOrEqual? 1:m to :binary 1      
-        -> lessOrEqual? 1:m to :binary 1    -> lessOrEqual? [1:m] [(1)]           
-        -> lessOrEqual? 1:m [1:m]           -> lessOrEqual? 1:m 1..1              
-        -> lessOrEqual? 1:m #[one: 1:m]     -> lessOrEqual? 0:m #black            
-        -> lessOrEqual? 1:m var 'one?
+        -> lessOrEqual? 1`m null            -> lessOrEqual? 1`m true
+        -> lessOrEqual? 1`m false           -> lessOrEqual? 1`m to :complex [1 1]
+        -> lessOrEqual? 1`m 1.0.0           -> lessOrEqual? 1`m :quantity
+        -> lessOrEqual? 1`m '1'             -> lessOrEqual? 1`m "1m"
+        -> lessOrEqual? [1`m] [one]         -> lessOrEqual? [1`m] [one:]
+        -> lessOrEqual? 1`m '1              -> lessOrEqual? [1`m] [.1]            
+        -> lessOrEqual? [1`m] [.1`]         -> lessOrEqual? [1`m] [one\1]
+        -> lessOrEqual? [1`m] [one\1`]      -> lessOrEqual? [1`m] [+]             
+        -> lessOrEqual? 1`m {/1m/}          -> lessOrEqual? 1`m to :binary 1      
+        -> lessOrEqual? 1`m to :binary 1    -> lessOrEqual? [1`m] [(1)]           
+        -> lessOrEqual? 1`m [1`m]           -> lessOrEqual? 1`m 1..1              
+        -> lessOrEqual? 1`m #[one: 1`m]     -> lessOrEqual? 0`m #black            
+        -> lessOrEqual? 1`m var 'one?
     ] => not? passed
     
     ensure -> every? @[ 
-        -> lessOrEqual? 1:m3 null           -> lessOrEqual? 1:m3 true
-        -> lessOrEqual? 1:m3 false          -> lessOrEqual? 1:m3 to :complex [1 1]
-        -> lessOrEqual? 1:m3 1.0.0          -> lessOrEqual? 1:m3 :quantity
-        -> lessOrEqual? 1:m3 '1'            -> lessOrEqual? 1:m3 "1m³"
-        -> lessOrEqual? [1:m3] [one]        -> lessOrEqual? [1:m3] [one:]
-        -> lessOrEqual? 1:m3 '1             -> lessOrEqual? [1:m3] [.1]              
-        -> lessOrEqual? [1:m3] [.1:]        -> lessOrEqual? [1:m3] [one\1]
-        -> lessOrEqual? [1:m3] [one\1:]     -> lessOrEqual? [1:m3] [+]                
-        -> lessOrEqual? 1:m3 {/1m³/}        -> lessOrEqual? 1:m3 to :binary 1         
-        -> lessOrEqual? 1:m3 to :binary 1   -> lessOrEqual? [1:m3] [(1)]              
-        -> lessOrEqual? 1:m3 [1:m3]         -> lessOrEqual? 1:m3 1..1                 
-        -> lessOrEqual? 1:m3 #[one: 1:m3]   -> lessOrEqual? 0:m3 #black               
-        -> lessOrEqual? 1:m3 var 'one?
+        -> lessOrEqual? 1`m3 null           -> lessOrEqual? 1`m3 true
+        -> lessOrEqual? 1`m3 false          -> lessOrEqual? 1`m3 to :complex [1 1]
+        -> lessOrEqual? 1`m3 1.0.0          -> lessOrEqual? 1`m3 :quantity
+        -> lessOrEqual? 1`m3 '1'            -> lessOrEqual? 1`m3 "1m³"
+        -> lessOrEqual? [1`m3] [one]        -> lessOrEqual? [1`m3] [one:]
+        -> lessOrEqual? 1`m3 '1             -> lessOrEqual? [1`m3] [.1]              
+        -> lessOrEqual? [1`m3] [.1`]        -> lessOrEqual? [1`m3] [one\1]
+        -> lessOrEqual? [1`m3] [one\1`]     -> lessOrEqual? [1`m3] [+]                
+        -> lessOrEqual? 1`m3 {/1m³/}        -> lessOrEqual? 1`m3 to :binary 1         
+        -> lessOrEqual? 1`m3 to :binary 1   -> lessOrEqual? [1`m3] [(1)]              
+        -> lessOrEqual? 1`m3 [1`m3]         -> lessOrEqual? 1`m3 1..1                 
+        -> lessOrEqual? 1`m3 #[one: 1`m3]   -> lessOrEqual? 0`m3 #black               
+        -> lessOrEqual? 1`m3 var 'one?
     ] => not? passed
     
     ensure -> every? @[ 
-        -> lessOrEqual? 1:c null            -> lessOrEqual? 1:c true
-        -> lessOrEqual? 1:c false           -> lessOrEqual? 1:c to :complex [1 1]
-        -> lessOrEqual? 1:c 1.0.0           -> lessOrEqual? 1:c :quantity
-        -> lessOrEqual? 1:c '1'             -> lessOrEqual? 1:c "1°C"
-        -> lessOrEqual? [1:c] [one]         -> lessOrEqual? [1:c] [one:]
-        -> lessOrEqual? 1:c '1.0i           -> lessOrEqual? [1:c] [.1]            
-        -> lessOrEqual? [1:c] [.1:]         -> lessOrEqual? [1:c] [one\1]       
-        -> lessOrEqual? [1:c] [one\1:]      -> lessOrEqual? [1:c] [+]           
-        -> lessOrEqual? 1:c {/1°C/}         -> lessOrEqual? 1:c to :binary 1    
-        -> lessOrEqual? 1:c to :binary 1    -> lessOrEqual? [1:c] [(1)]         
-        -> lessOrEqual? 1:c [1:c]           -> lessOrEqual? 1:c 1..1            
-        -> lessOrEqual? 1:c #[one: 1:c]     -> lessOrEqual? 0:c #black          
-        -> lessOrEqual? 1:c var 'one?
+        -> lessOrEqual? 1`c null            -> lessOrEqual? 1`c true
+        -> lessOrEqual? 1`c false           -> lessOrEqual? 1`c to :complex [1 1]
+        -> lessOrEqual? 1`c 1.0.0           -> lessOrEqual? 1`c :quantity
+        -> lessOrEqual? 1`c '1'             -> lessOrEqual? 1`c "1°C"
+        -> lessOrEqual? [1`c] [one]         -> lessOrEqual? [1`c] [one:]
+        -> lessOrEqual? 1`c '1.0i           -> lessOrEqual? [1`c] [.1]            
+        -> lessOrEqual? [1`c] [.1`]         -> lessOrEqual? [1`c] [one\1]       
+        -> lessOrEqual? [1`c] [one\1`]      -> lessOrEqual? [1`c] [+]           
+        -> lessOrEqual? 1`c {/1°C/}         -> lessOrEqual? 1`c to :binary 1    
+        -> lessOrEqual? 1`c to :binary 1    -> lessOrEqual? [1`c] [(1)]         
+        -> lessOrEqual? 1`c [1`c]           -> lessOrEqual? 1`c 1..1            
+        -> lessOrEqual? 1`c #[one: 1`c]     -> lessOrEqual? 0`c #black          
+        -> lessOrEqual? 1`c var 'one?
     ] => not? passed
     
     ; for :null
@@ -6720,8 +6720,8 @@ do [
         -> lessOrEqual? a '1'                   -> lessOrEqual? a "1.0+1.0i"
         -> lessOrEqual? @[a] [one]              -> lessOrEqual? @[a] [one:]
         -> lessOrEqual? 1 '1                    -> lessOrEqual? @[a] [.1]                 
-        -> lessOrEqual? @[a] [.1:]              -> lessOrEqual? @[a] [one\1]
-        -> lessOrEqual? @[a] [one\1:]           -> lessOrEqual? @[a] [+]                  
+        -> lessOrEqual? @[a] [.1`]              -> lessOrEqual? @[a] [one\1]
+        -> lessOrEqual? @[a] [one\1`]           -> lessOrEqual? @[a] [+]                  
         -> lessOrEqual? a {/1.0+1.0i/}          -> lessOrEqual? a to :binary 1            
         -> lessOrEqual? a to :binary 1          -> lessOrEqual? @[a] [(1)]                
         -> lessOrEqual? a [1]                   -> lessOrEqual? a 1..1                    
@@ -6738,8 +6738,8 @@ do [
         -> lessOrEqual? 1.0.0 '1'                   -> lessOrEqual? 1.0.0 "1.0.0"
         -> lessOrEqual? [1.0.0] [one]               -> lessOrEqual? [1.0.0] [one:]
         -> lessOrEqual? 1.0.0 '1                    -> lessOrEqual? [1.0.0] [.1]                  
-        -> lessOrEqual? [1.0.0] [.1:]               -> lessOrEqual? [1.0.0] [one\1]
-        -> lessOrEqual? [1.0.0] [one\1:]            -> lessOrEqual? [1.0.0] [+]                   
+        -> lessOrEqual? [1.0.0] [.1`]               -> lessOrEqual? [1.0.0] [one\1]
+        -> lessOrEqual? [1.0.0] [one\1`]            -> lessOrEqual? [1.0.0] [+]                   
         -> lessOrEqual? 1.0.0 {/1.0.0/}             -> lessOrEqual? 1.0.0 to :binary 1.0          
         -> lessOrEqual? 1.0.0 to :binary 1.0        -> lessOrEqual? [1.0.0] [(1.0.0)]             
         -> lessOrEqual? 1.0.0 [1.0.0]               -> lessOrEqual? 1.0.0 1..1                    
@@ -6901,9 +6901,9 @@ do [
     ; for :binary
     ensure -> every? @[
         -> lessOrEqual? to :binary 1 1                    -> lessOrEqual? to :binary 1 1.0                
-        -> lessOrEqual? to :binary 1 to :rational [1 1]   -> lessOrEqual? to :binary 1 1:usd                
-        -> lessOrEqual? to :binary 1 1:m                  -> lessOrEqual? to :binary 1 1:m3                 
-        -> lessOrEqual? to :binary 1 1:c                  -> lessOrEqual? to :binary 0 null                 
+        -> lessOrEqual? to :binary 1 to :rational [1 1]   -> lessOrEqual? to :binary 1 1`usd                
+        -> lessOrEqual? to :binary 1 1`m                  -> lessOrEqual? to :binary 1 1`m3                 
+        -> lessOrEqual? to :binary 1 1`c                  -> lessOrEqual? to :binary 0 null                 
         -> lessOrEqual? to :binary 0 true                 -> lessOrEqual? to :binary 0 false                
         -> lessOrEqual? to :binary 0 maybe                -> lessOrEqual? to :binary 1 to :complex [1 1]                  
         -> lessOrEqual? to :binary 1 1.0.0                -> lessOrEqual? to :binary 1 :type              
@@ -6918,9 +6918,9 @@ do [
     ; for :range
     ensure -> every? @[
         -> lessOrEqual? 1..1 1                        -> lessOrEqual? 1..1 1.0
-        -> lessOrEqual? 1..1 a: to :rational [1 1]    -> lessOrEqual? 1..1 1:usd
-        -> lessOrEqual? 1..1 1:m                      -> lessOrEqual? 1..1 1:m3  
-        -> lessOrEqual? 1..1 1:c                      -> lessOrEqual? 0..0 null 
+        -> lessOrEqual? 1..1 a: to :rational [1 1]    -> lessOrEqual? 1..1 1`usd
+        -> lessOrEqual? 1..1 1`m                      -> lessOrEqual? 1..1 1`m3  
+        -> lessOrEqual? 1..1 1`c                      -> lessOrEqual? 0..0 null 
         -> lessOrEqual? 0..0 true                     -> lessOrEqual? 0..0 false
         -> lessOrEqual? 0..0 maybe                    -> lessOrEqual? 1..1 to :complex [1 1]
         -> lessOrEqual? 1..1 1.0.0                    -> lessOrEqual? 1..1 :type                        
@@ -6945,9 +6945,9 @@ do [
     ; for :color
     ensure -> every? @[
         -> lessOrEqual? #black 0                  -> lessOrEqual? #black 0.0
-        -> lessOrEqual? #black to :rational [1 1] -> lessOrEqual? #black 0:usd 
-        -> lessOrEqual? #black 0:m                -> lessOrEqual? #black 0:m3
-        -> lessOrEqual? #black 0:c                -> lessOrEqual? #black null 
+        -> lessOrEqual? #black to :rational [1 1] -> lessOrEqual? #black 0`usd 
+        -> lessOrEqual? #black 0`m                -> lessOrEqual? #black 0`m3
+        -> lessOrEqual? #black 0`c                -> lessOrEqual? #black null 
         -> lessOrEqual? #black true               -> lessOrEqual? #black false 
         -> lessOrEqual? #black maybe              -> lessOrEqual? #black to :complex [0 0]
         -> lessOrEqual? #black 0.0.0              -> lessOrEqual? #black :color
@@ -7031,100 +7031,100 @@ do [
     
     topic « notEqual? - :quantity
     
-    ensure -> not? notEqual? 1:usd 1
-    ensure -> not? notEqual? 1:m   1
-    ensure -> not? notEqual? 1:m2  1
-    ensure -> not? notEqual? 1:m3  1
-    ensure -> not? notEqual? 1:c   1
-    ensure -> not? notEqual? 1:f   1
-    ensure -> not? 1:usd <> 1
-    ensure -> not? 1:m   <> 1
-    ensure -> not? 1:m2  <> 1
-    ensure -> not? 1:m3  <> 1
-    ensure -> not? 1:c   <> 1
-    ensure -> not? 1:f   <> 1
+    ensure -> not? notEqual? 1`usd 1
+    ensure -> not? notEqual? 1`m   1
+    ensure -> not? notEqual? 1`m2  1
+    ensure -> not? notEqual? 1`m3  1
+    ensure -> not? notEqual? 1`c   1
+    ensure -> not? notEqual? 1`f   1
+    ensure -> not? 1`usd <> 1
+    ensure -> not? 1`m   <> 1
+    ensure -> not? 1`m2  <> 1
+    ensure -> not? 1`m3  <> 1
+    ensure -> not? 1`c   <> 1
+    ensure -> not? 1`f   <> 1
     passed
     
-    ensure -> not? notEqual? 1 1:usd
-    ensure -> not? notEqual? 1 1:m
-    ensure -> not? notEqual? 1 1:m2
-    ensure -> not? notEqual? 1 1:m3
-    ensure -> not? notEqual? 1 1:c
-    ensure -> not? notEqual? 1 1:f
-    ensure -> not? 1 <> 1:usd
-    ensure -> not? 1 <> 1:m
-    ensure -> not? 1 <> 1:m2
-    ensure -> not? 1 <> 1:m3
-    ensure -> not? 1 <> 1:c
-    ensure -> not? 1 <> 1:f
+    ensure -> not? notEqual? 1 1`usd
+    ensure -> not? notEqual? 1 1`m
+    ensure -> not? notEqual? 1 1`m2
+    ensure -> not? notEqual? 1 1`m3
+    ensure -> not? notEqual? 1 1`c
+    ensure -> not? notEqual? 1 1`f
+    ensure -> not? 1 <> 1`usd
+    ensure -> not? 1 <> 1`m
+    ensure -> not? 1 <> 1`m2
+    ensure -> not? 1 <> 1`m3
+    ensure -> not? 1 <> 1`c
+    ensure -> not? 1 <> 1`f
     passed
     
-    ensure -> not? notEqual? 1:usd 1.0
-    ensure -> not? notEqual? 1:m   1.0
-    ensure -> not? notEqual? 1:m2  1.0
-    ensure -> not? notEqual? 1:m3  1.0
-    ensure -> not? notEqual? 1:c   1.0
-    ensure -> not? notEqual? 1:f   1.0
-    ensure -> not? 1:usd <> 1.0
-    ensure -> not? 1:m   <> 1.0
-    ensure -> not? 1:m2  <> 1.0
-    ensure -> not? 1:m3  <> 1.0
-    ensure -> not? 1:c   <> 1.0
-    ensure -> not? 1:f   <> 1.0
+    ensure -> not? notEqual? 1`usd 1.0
+    ensure -> not? notEqual? 1`m   1.0
+    ensure -> not? notEqual? 1`m2  1.0
+    ensure -> not? notEqual? 1`m3  1.0
+    ensure -> not? notEqual? 1`c   1.0
+    ensure -> not? notEqual? 1`f   1.0
+    ensure -> not? 1`usd <> 1.0
+    ensure -> not? 1`m   <> 1.0
+    ensure -> not? 1`m2  <> 1.0
+    ensure -> not? 1`m3  <> 1.0
+    ensure -> not? 1`c   <> 1.0
+    ensure -> not? 1`f   <> 1.0
     passed
     
-    ensure -> not? notEqual? 1.0 1:usd
-    ensure -> not? notEqual? 1.0 1:m
-    ensure -> not? notEqual? 1.0 1:m2
-    ensure -> not? notEqual? 1.0 1:m3
-    ensure -> not? notEqual? 1.0 1:c
-    ensure -> not? notEqual? 1.0 1:f
-    ensure -> not? 1.0 <> 1:usd
-    ensure -> not? 1.0 <> 1:m
-    ensure -> not? 1.0 <> 1:m2
-    ensure -> not? 1.0 <> 1:m3
-    ensure -> not? 1.0 <> 1:c
-    ensure -> not? 1.0 <> 1:f
+    ensure -> not? notEqual? 1.0 1`usd
+    ensure -> not? notEqual? 1.0 1`m
+    ensure -> not? notEqual? 1.0 1`m2
+    ensure -> not? notEqual? 1.0 1`m3
+    ensure -> not? notEqual? 1.0 1`c
+    ensure -> not? notEqual? 1.0 1`f
+    ensure -> not? 1.0 <> 1`usd
+    ensure -> not? 1.0 <> 1`m
+    ensure -> not? 1.0 <> 1`m2
+    ensure -> not? 1.0 <> 1`m3
+    ensure -> not? 1.0 <> 1`c
+    ensure -> not? 1.0 <> 1`f
     passed
     
-    ensure -> not? notEqual? 1:usd to :rational @[5 5]
-    ensure -> not? notEqual? 1:m   to :rational @[5 5]
-    ensure -> not? notEqual? 1:m2  to :rational @[5 5]
-    ensure -> not? notEqual? 1:m3  to :rational @[5 5]
-    ensure -> not? notEqual? 1:c   to :rational @[5 5]
-    ensure -> not? notEqual? 1:f   to :rational @[5 5]
-    ensure -> not? 1:usd <> to :rational @[5 5]
-    ensure -> not? 1:m   <> to :rational @[5 5]
-    ensure -> not? 1:m2  <> to :rational @[5 5]
-    ensure -> not? 1:m3  <> to :rational @[5 5]
-    ensure -> not? 1:c   <> to :rational @[5 5]
-    ensure -> not? 1:f   <> to :rational @[5 5]
+    ensure -> not? notEqual? 1`usd to :rational @[5 5]
+    ensure -> not? notEqual? 1`m   to :rational @[5 5]
+    ensure -> not? notEqual? 1`m2  to :rational @[5 5]
+    ensure -> not? notEqual? 1`m3  to :rational @[5 5]
+    ensure -> not? notEqual? 1`c   to :rational @[5 5]
+    ensure -> not? notEqual? 1`f   to :rational @[5 5]
+    ensure -> not? 1`usd <> to :rational @[5 5]
+    ensure -> not? 1`m   <> to :rational @[5 5]
+    ensure -> not? 1`m2  <> to :rational @[5 5]
+    ensure -> not? 1`m3  <> to :rational @[5 5]
+    ensure -> not? 1`c   <> to :rational @[5 5]
+    ensure -> not? 1`f   <> to :rational @[5 5]
     passed
     
-    ensure -> not? notEqual? to :rational @[5 5] 1:usd
-    ensure -> not? notEqual? to :rational @[5 5] 1:m
-    ensure -> not? notEqual? to :rational @[5 5] 1:m2
-    ensure -> not? notEqual? to :rational @[5 5] 1:m3
-    ensure -> not? notEqual? to :rational @[5 5] 1:c
-    ensure -> not? notEqual? to :rational @[5 5] 1:f
-    ensure -> not? (to :rational @[5 5]) <> 1:usd
-    ensure -> not? (to :rational @[5 5]) <> 1:m
-    ensure -> not? (to :rational @[5 5]) <> 1:m2
-    ensure -> not? (to :rational @[5 5]) <> 1:m3
-    ensure -> not? (to :rational @[5 5]) <> 1:c
-    ensure -> not? (to :rational @[5 5]) <> 1:f
+    ensure -> not? notEqual? to :rational @[5 5] 1`usd
+    ensure -> not? notEqual? to :rational @[5 5] 1`m
+    ensure -> not? notEqual? to :rational @[5 5] 1`m2
+    ensure -> not? notEqual? to :rational @[5 5] 1`m3
+    ensure -> not? notEqual? to :rational @[5 5] 1`c
+    ensure -> not? notEqual? to :rational @[5 5] 1`f
+    ensure -> not? (to :rational @[5 5]) <> 1`usd
+    ensure -> not? (to :rational @[5 5]) <> 1`m
+    ensure -> not? (to :rational @[5 5]) <> 1`m2
+    ensure -> not? (to :rational @[5 5]) <> 1`m3
+    ensure -> not? (to :rational @[5 5]) <> 1`c
+    ensure -> not? (to :rational @[5 5]) <> 1`f
     passed
     
-    ensure -> notEqual? 2:usd 1
-    ensure -> notEqual? 2 1:usd
-    ensure -> notEqual? 2:usd 1.0
-    ensure -> notEqual? 2.0 1:usd
-    ensure -> notEqual? 2:usd to :rational @[5 5]
-    ensure -> notEqual? to :rational @[2 5] 1:usd
+    ensure -> notEqual? 2`usd 1
+    ensure -> notEqual? 2 1`usd
+    ensure -> notEqual? 2`usd 1.0
+    ensure -> notEqual? 2.0 1`usd
+    ensure -> notEqual? 2`usd to :rational @[5 5]
+    ensure -> notEqual? to :rational @[2 5] 1`usd
     passed
     
-    ensure -> not? notEqual? 1.5:m 150:cm 
-    ensure -> notEqual? 2:m 2:cm
+    ensure -> not? notEqual? 1.5`m 150`cm 
+    ensure -> notEqual? 2`m 2`cm
     passed 
     
     
@@ -7619,9 +7619,9 @@ do [
         -> notEqual? 1 '1'          -> notEqual? 1 "1"
         -> notEqual? [1] [one]      -> notEqual? [1] [one:]
         -> notEqual? [1 1] [one: 1] -> notEqual? 1 '1
-        -> notEqual? [1] [.1]       -> notEqual? [1] [.1:]
-        -> notEqual? [1 1] [.1: 1]  -> notEqual? [1] [one\1]
-        -> notEqual? [1] [one\1:]   -> notEqual? [1 1] [one\1: 1]
+        -> notEqual? [1] [.1]       -> notEqual? [1] [.1`]
+        -> notEqual? [1 1] [.1` 1]  -> notEqual? [1] [one\1]
+        -> notEqual? [1] [one\1`]   -> notEqual? [1 1] [one\1` 1]
         -> notEqual? [1] [+]        -> notEqual? 1 {/1/}
         -> notEqual? 1 to :binary 1 -> notEqual? 1 to :binary 1
         -> notEqual? [1] [(1)]      -> notEqual? 1 [1]
@@ -7636,8 +7636,8 @@ do [
         -> notEqual? 1.0 1.0.0              -> notEqual? 1.0 :floating
         -> notEqual? 1.0 '1'                -> notEqual? 1.0 "1.0"
         -> notEqual? [1.0] [one]            -> notEqual? 1.0 '1
-        -> notEqual? [1.0] [.1]             -> notEqual? [1.0] [.1:]
-        -> notEqual? [1.0] [one\1]          -> notEqual? [1.0] [one\1:]         
+        -> notEqual? [1.0] [.1]             -> notEqual? [1.0] [.1`]
+        -> notEqual? [1.0] [one\1]          -> notEqual? [1.0] [one\1`]         
         -> notEqual? [1.0] [+]              -> notEqual? 1.0 {/1.0/}
         -> notEqual? 1.0 to :binary 1.0     -> notEqual? 1.0 to :binary 1.0
         -> notEqual? [1.0] [(1.0)]          -> notEqual? 1.0 [1]
@@ -7654,7 +7654,7 @@ do [
         -> notEqual? a '1'                      -> notEqual? a "1/1"
         -> notEqual? @[a] [one]                 -> notEqual? @[a] [one:]
         -> notEqual? 1 '1                       -> notEqual? @[a] [.1]                  
-        -> notEqual? @[a] [.1:]                 -> notEqual? @[a] [one\1]
+        -> notEqual? @[a] [.1`]                 -> notEqual? @[a] [one\1]
         -> notEqual? @[a] [+]                   -> notEqual? a {/1/1/}
         -> notEqual? a to :binary 1             -> notEqual? a to :binary 1
         -> notEqual? @[a] [(1)]                 -> notEqual? a [1]
@@ -7664,67 +7664,67 @@ do [
     
     ; for :quantity
     ensure -> not? every? @[
-        -> notEqual? 1:usd null             -> notEqual? 1:usd true
-        -> notEqual? 1:usd false            -> notEqual? 1:usd to :complex [1 1]
-        -> notEqual? 1:usd 1.0.0            -> notEqual? 1:usd :quantity
-        -> notEqual? 1:usd '1'              -> notEqual? 1:usd "1USD"
-        -> notEqual? [1:usd] [one]          -> notEqual? [1:usd] [one:]
-        -> notEqual? 1:usd '1               -> notEqual? [1:usd] [.1]                  
-        -> notEqual? [1:usd] [.1:]          -> notEqual? [1:usd] [one\1]
-        -> notEqual? [1:usd] [one\1:]       -> notEqual? [1:usd] [+]                   
-        -> notEqual? 1:usd {/1USD/}         -> notEqual? 1:usd to :binary 1            
-        -> notEqual? 1:usd to :binary 1     -> notEqual? [1:usd] [(1)]                 
-        -> notEqual? 1:usd [1:usd]          -> notEqual? 1:usd 1..1                    
-        -> notEqual? 1:usd #[one: 1:usd]    -> notEqual? 0:usd #black                  
-        -> notEqual? 1:usd var 'one?
+        -> notEqual? 1`usd null             -> notEqual? 1`usd true
+        -> notEqual? 1`usd false            -> notEqual? 1`usd to :complex [1 1]
+        -> notEqual? 1`usd 1.0.0            -> notEqual? 1`usd :quantity
+        -> notEqual? 1`usd '1'              -> notEqual? 1`usd "1USD"
+        -> notEqual? [1`usd] [one]          -> notEqual? [1`usd] [one:]
+        -> notEqual? 1`usd '1               -> notEqual? [1`usd] [.1]                  
+        -> notEqual? [1`usd] [.1`]          -> notEqual? [1`usd] [one\1]
+        -> notEqual? [1`usd] [one\1`]       -> notEqual? [1`usd] [+]                   
+        -> notEqual? 1`usd {/1USD/}         -> notEqual? 1`usd to :binary 1            
+        -> notEqual? 1`usd to :binary 1     -> notEqual? [1`usd] [(1)]                 
+        -> notEqual? 1`usd [1`usd]          -> notEqual? 1`usd 1..1                    
+        -> notEqual? 1`usd #[one: 1`usd]    -> notEqual? 0`usd #black                  
+        -> notEqual? 1`usd var 'one?
     ] => not? passed
     
     ensure -> not? every? @[ 
-        -> notEqual? 1:m null           -> notEqual? 1:m true
-        -> notEqual? 1:m false          -> notEqual? 1:m to :complex [1 1]
-        -> notEqual? 1:m 1.0.0          -> notEqual? 1:m :quantity
-        -> notEqual? 1:m '1'            -> notEqual? 1:m "1m"
-        -> notEqual? [1:m] [one]        -> notEqual? [1:m] [one:]
-        -> notEqual? 1:m '1             -> notEqual? [1:m] [.1]            
-        -> notEqual? [1:m] [.1: 1:m]    -> notEqual? [1:m] [one\1]
-        -> notEqual? [1:m] [one\1:]     -> notEqual? [1:m] [+]              
-        -> notEqual? 1:m {/1m/}         -> notEqual? 1:m to :binary 1       
-        -> notEqual? 1:m to :binary 1   -> notEqual? [1:m] [(1)]            
-        -> notEqual? 1:m [1:m]          -> notEqual? 1:m 1..1               
-        -> notEqual? 1:m #[one: 1:m]    -> notEqual? 0:m #black             
-        -> notEqual? 1:m var 'one?
+        -> notEqual? 1`m null           -> notEqual? 1`m true
+        -> notEqual? 1`m false          -> notEqual? 1`m to :complex [1 1]
+        -> notEqual? 1`m 1.0.0          -> notEqual? 1`m :quantity
+        -> notEqual? 1`m '1'            -> notEqual? 1`m "1m"
+        -> notEqual? [1`m] [one]        -> notEqual? [1`m] [one:]
+        -> notEqual? 1`m '1             -> notEqual? [1`m] [.1]            
+        -> notEqual? [1`m] [.1` 1`m]    -> notEqual? [1`m] [one\1]
+        -> notEqual? [1`m] [one\1`]     -> notEqual? [1`m] [+]              
+        -> notEqual? 1`m {/1m/}         -> notEqual? 1`m to :binary 1       
+        -> notEqual? 1`m to :binary 1   -> notEqual? [1`m] [(1)]            
+        -> notEqual? 1`m [1`m]          -> notEqual? 1`m 1..1               
+        -> notEqual? 1`m #[one: 1`m]    -> notEqual? 0`m #black             
+        -> notEqual? 1`m var 'one?
     ] => not? passed
     
     ensure -> not? every? @[ 
-        -> notEqual? 1:m3 null                  -> notEqual? 1:m3 true
-        -> notEqual? 1:m3 false                 -> notEqual? 1:m3 to :complex [1 1]
-        -> notEqual? 1:m3 1.0.0                 -> notEqual? 1:m3 :quantity
-        -> notEqual? 1:m3 '1'                   -> notEqual? 1:m3 "1m³"
-        -> notEqual? [1:m3] [one]               -> notEqual? [1:m3] [one:]
-        -> notEqual? 1:m3 '1                    -> notEqual? [1:m3] [.1]               
-        -> notEqual? [1:m3] [.1:]               -> notEqual? [1:m3] [one\1]
-        -> notEqual? [1:m3] [one\1:]            -> notEqual? [1:m3] [+]                
-        -> notEqual? 1:m3 {/1m³/}               -> notEqual? 1:m3 to :binary 1         
-        -> notEqual? 1:m3 to :binary 1          -> notEqual? [1:m3] [(1)]              
-        -> notEqual? 1:m3 [1:m3]                -> notEqual? 1:m3 1..1                 
-        -> notEqual? 1:m3 #[one: 1:m3]          -> notEqual? 0:m3 #black               
-        -> notEqual? 1:m3 var 'one?
+        -> notEqual? 1`m3 null                  -> notEqual? 1`m3 true
+        -> notEqual? 1`m3 false                 -> notEqual? 1`m3 to :complex [1 1]
+        -> notEqual? 1`m3 1.0.0                 -> notEqual? 1`m3 :quantity
+        -> notEqual? 1`m3 '1'                   -> notEqual? 1`m3 "1m³"
+        -> notEqual? [1`m3] [one]               -> notEqual? [1`m3] [one:]
+        -> notEqual? 1`m3 '1                    -> notEqual? [1`m3] [.1]               
+        -> notEqual? [1`m3] [.1`]               -> notEqual? [1`m3] [one\1]
+        -> notEqual? [1`m3] [one\1`]            -> notEqual? [1`m3] [+]                
+        -> notEqual? 1`m3 {/1m³/}               -> notEqual? 1`m3 to :binary 1         
+        -> notEqual? 1`m3 to :binary 1          -> notEqual? [1`m3] [(1)]              
+        -> notEqual? 1`m3 [1`m3]                -> notEqual? 1`m3 1..1                 
+        -> notEqual? 1`m3 #[one: 1`m3]          -> notEqual? 0`m3 #black               
+        -> notEqual? 1`m3 var 'one?
     ] => not? passed
     
     ensure -> not? every? @[ 
-        -> notEqual? 1:c null              -> notEqual? 1:c true
-        -> notEqual? 1:c false             -> notEqual? 1:c to :complex [1 1]
-        -> notEqual? 1:c 1.0.0             -> notEqual? 1:c :quantity
-        -> notEqual? 1:c '1'               -> notEqual? 1:c "1°C"
-        -> notEqual? [1:c] [one]           -> notEqual? [1:c] [one:]
-        -> notEqual? 1:c '1.0i             -> notEqual? [1:c] [.1]            
-        -> notEqual? [1:c] [.1:]           -> notEqual? [1:c] [one\1]         
-        -> notEqual? [1:c] [one\1:]        -> notEqual? [1:c] [+]             
-        -> notEqual? 1:c {/1°C/}           -> notEqual? 1:c to :binary 1      
-        -> notEqual? 1:c to :binary 1      -> notEqual? [1:c] [(1)]           
-        -> notEqual? 1:c [1:c]             -> notEqual? 1:c 1..1              
-        -> notEqual? 1:c #[one: 1:c]       -> notEqual? 0:c #black            
-        -> notEqual? 1:c var 'one?
+        -> notEqual? 1`c null              -> notEqual? 1`c true
+        -> notEqual? 1`c false             -> notEqual? 1`c to :complex [1 1]
+        -> notEqual? 1`c 1.0.0             -> notEqual? 1`c :quantity
+        -> notEqual? 1`c '1'               -> notEqual? 1`c "1°C"
+        -> notEqual? [1`c] [one]           -> notEqual? [1`c] [one:]
+        -> notEqual? 1`c '1.0i             -> notEqual? [1`c] [.1]            
+        -> notEqual? [1`c] [.1`]           -> notEqual? [1`c] [one\1]         
+        -> notEqual? [1`c] [one\1`]        -> notEqual? [1`c] [+]             
+        -> notEqual? 1`c {/1°C/}           -> notEqual? 1`c to :binary 1      
+        -> notEqual? 1`c to :binary 1      -> notEqual? [1`c] [(1)]           
+        -> notEqual? 1`c [1`c]             -> notEqual? 1`c 1..1              
+        -> notEqual? 1`c #[one: 1`c]       -> notEqual? 0`c #black            
+        -> notEqual? 1`c var 'one?
     ] => not? passed
     
     ; for :null
@@ -7802,8 +7802,8 @@ do [
         -> notEqual? a '1'                      -> notEqual? a "1.0+1.0i"
         -> notEqual? @[a] [one]                 -> notEqual? @[a] [one:]
         -> notEqual? 1 '1                       -> notEqual? @[a] [.1]                  
-        -> notEqual? @[a] [.1:]                 -> notEqual? @[a] [one\1]
-        -> notEqual? @[a] [one\1:]              -> notEqual? @[a] [+]                   
+        -> notEqual? @[a] [.1`]                 -> notEqual? @[a] [one\1]
+        -> notEqual? @[a] [one\1`]              -> notEqual? @[a] [+]                   
         -> notEqual? a {/1.0+1.0i/}             -> notEqual? a to :binary 1             
         -> notEqual? a to :binary 1             -> notEqual? @[a] [(1)]                 
         -> notEqual? a [1]                      -> notEqual? a 1..1                     
@@ -7820,8 +7820,8 @@ do [
         -> notEqual? 1.0.0 '1'                      -> notEqual? 1.0.0 "1.0.0"
         -> notEqual? [1.0.0] [one]                  -> notEqual? [1.0.0] [one:]
         -> notEqual? 1.0.0 '1                       -> notEqual? [1.0.0] [.1]                   
-        -> notEqual? [1.0.0] [.1:]                  -> notEqual? [1.0.0] [one\1]                
-        -> notEqual? [1.0.0] [one\1:]               -> notEqual? [1.0.0] [+]                    
+        -> notEqual? [1.0.0] [.1`]                  -> notEqual? [1.0.0] [one\1]                
+        -> notEqual? [1.0.0] [one\1`]               -> notEqual? [1.0.0] [+]                    
         -> notEqual? 1.0.0 {/1.0.0/}                -> notEqual? 1.0.0 to :binary 1.0           
         -> notEqual? 1.0.0 to :binary 1.0           -> notEqual? [1.0.0] [(1.0.0)]              
         -> notEqual? 1.0.0 [1.0.0]                  -> notEqual? 1.0.0 1..1                     
@@ -7985,9 +7985,9 @@ do [
     ; for :binary
     ensure -> not? every? @[
         -> notEqual? to :binary 1 1                    -> notEqual? to :binary 1 1.0                
-        -> notEqual? to :binary 1 to :rational [1 1]   -> notEqual? to :binary 1 1:usd                
-        -> notEqual? to :binary 1 1:m                  -> notEqual? to :binary 1 1:m3                 
-        -> notEqual? to :binary 1 1:c                  -> notEqual? to :binary 0 null                 
+        -> notEqual? to :binary 1 to :rational [1 1]   -> notEqual? to :binary 1 1`usd                
+        -> notEqual? to :binary 1 1`m                  -> notEqual? to :binary 1 1`m3                 
+        -> notEqual? to :binary 1 1`c                  -> notEqual? to :binary 0 null                 
         -> notEqual? to :binary 0 true                 -> notEqual? to :binary 0 false                
         -> notEqual? to :binary 0 maybe                -> notEqual? to :binary 1 to :complex [1 1]                  
         -> notEqual? to :binary 1 1.0.0                -> notEqual? to :binary 1 :type              
@@ -8002,9 +8002,9 @@ do [
     ; for :range
     ensure -> not? every? @[
         -> notEqual? 1..1 1                        -> notEqual? 1..1 1.0
-        -> notEqual? 1..1 a: to :rational [1 1]    -> notEqual? 1..1 1:usd
-        -> notEqual? 1..1 1:m                      -> notEqual? 1..1 1:m3  
-        -> notEqual? 1..1 1:c                      -> notEqual? 0..0 null 
+        -> notEqual? 1..1 a: to :rational [1 1]    -> notEqual? 1..1 1`usd
+        -> notEqual? 1..1 1`m                      -> notEqual? 1..1 1`m3  
+        -> notEqual? 1..1 1`c                      -> notEqual? 0..0 null 
         -> notEqual? 0..0 true                     -> notEqual? 0..0 false
         -> notEqual? 0..0 maybe                    -> notEqual? 1..1 to :complex [1 1]
         -> notEqual? 1..1 1.0.0                    -> notEqual? 1..1 :type                        
@@ -8029,9 +8029,9 @@ do [
     ; for :color
     ensure -> not? every? @[
         -> notEqual? #black 0                  -> notEqual? #black 0.0
-        -> notEqual? #black to :rational [1 1] -> notEqual? #black 0:usd 
-        -> notEqual? #black 0:m                -> notEqual? #black 0:m3
-        -> notEqual? #black 0:c                -> notEqual? #black null 
+        -> notEqual? #black to :rational [1 1] -> notEqual? #black 0`usd 
+        -> notEqual? #black 0`m                -> notEqual? #black 0`m3
+        -> notEqual? #black 0`c                -> notEqual? #black null 
         -> notEqual? #black true               -> notEqual? #black false 
         -> notEqual? #black maybe              -> notEqual? #black to :complex [0 0]
         -> notEqual? #black 0.0.0              -> notEqual? #black :color
@@ -8093,98 +8093,98 @@ do [
     
     topic « same? - :quantity
     
-    ensure -> same? 1:usd 1:usd
-    ensure -> same? 1:m   1:m
-    ensure -> same? 1:m2  1:m2
-    ensure -> same? 1:m3  1:m3
-    ; ensure -> same? 1:c   1:c
-    ; ensure -> same? 1:f   1:f
+    ensure -> same? 1`usd 1`usd
+    ensure -> same? 1`m   1`m
+    ensure -> same? 1`m2  1`m2
+    ensure -> same? 1`m3  1`m3
+    ; ensure -> same? 1`c   1`c
+    ; ensure -> same? 1`f   1`f
     passed
     
-    ensure -> not? same? 1:usd 1
-    ensure -> not? same? 1:m   1
-    ensure -> not? same? 1:m2  1
-    ensure -> not? same? 1:m3  1
-    ensure -> not? same? 1:c   1
-    ensure -> not? same? 1:f   1
+    ensure -> not? same? 1`usd 1
+    ensure -> not? same? 1`m   1
+    ensure -> not? same? 1`m2  1
+    ensure -> not? same? 1`m3  1
+    ensure -> not? same? 1`c   1
+    ensure -> not? same? 1`f   1
     passed
     
-    ensure -> not? same? 1 1:usd
-    ensure -> not? same? 1 1:m
-    ensure -> not? same? 1 1:m2
-    ensure -> not? same? 1 1:m3
-    ensure -> not? same? 1 1:c
-    ensure -> not? same? 1 1:f
+    ensure -> not? same? 1 1`usd
+    ensure -> not? same? 1 1`m
+    ensure -> not? same? 1 1`m2
+    ensure -> not? same? 1 1`m3
+    ensure -> not? same? 1 1`c
+    ensure -> not? same? 1 1`f
     passed
     
-    ensure -> not? same? 1:usd 1.0
-    ensure -> not? same? 1:m   1.0
-    ensure -> not? same? 1:m2  1.0
-    ensure -> not? same? 1:m3  1.0
-    ensure -> not? same? 1:c   1.0
-    ensure -> not? same? 1:f   1.0
+    ensure -> not? same? 1`usd 1.0
+    ensure -> not? same? 1`m   1.0
+    ensure -> not? same? 1`m2  1.0
+    ensure -> not? same? 1`m3  1.0
+    ensure -> not? same? 1`c   1.0
+    ensure -> not? same? 1`f   1.0
     passed
     
-    ensure -> not? same? 1.0 1:usd
-    ensure -> not? same? 1.0 1:m
-    ensure -> not? same? 1.0 1:m2
-    ensure -> not? same? 1.0 1:m3
-    ensure -> not? same? 1.0 1:c
-    ensure -> not? same? 1.0 1:f
+    ensure -> not? same? 1.0 1`usd
+    ensure -> not? same? 1.0 1`m
+    ensure -> not? same? 1.0 1`m2
+    ensure -> not? same? 1.0 1`m3
+    ensure -> not? same? 1.0 1`c
+    ensure -> not? same? 1.0 1`f
     passed
     
-    ensure -> not? same? 1:usd to :rational @[5 5]
-    ensure -> not? same? 1:m   to :rational @[5 5]
-    ensure -> not? same? 1:m2  to :rational @[5 5]
-    ensure -> not? same? 1:m3  to :rational @[5 5]
-    ensure -> not? same? 1:c   to :rational @[5 5]
-    ensure -> not? same? 1:f   to :rational @[5 5]
+    ensure -> not? same? 1`usd to :rational @[5 5]
+    ensure -> not? same? 1`m   to :rational @[5 5]
+    ensure -> not? same? 1`m2  to :rational @[5 5]
+    ensure -> not? same? 1`m3  to :rational @[5 5]
+    ensure -> not? same? 1`c   to :rational @[5 5]
+    ensure -> not? same? 1`f   to :rational @[5 5]
     passed
     
-    ensure -> not? same? to :rational @[5 5] 1:usd
-    ensure -> not? same? to :rational @[5 5] 1:m
-    ensure -> not? same? to :rational @[5 5] 1:m2
-    ensure -> not? same? to :rational @[5 5] 1:m3
-    ensure -> not? same? to :rational @[5 5] 1:c
-    ensure -> not? same? to :rational @[5 5] 1:f
+    ensure -> not? same? to :rational @[5 5] 1`usd
+    ensure -> not? same? to :rational @[5 5] 1`m
+    ensure -> not? same? to :rational @[5 5] 1`m2
+    ensure -> not? same? to :rational @[5 5] 1`m3
+    ensure -> not? same? to :rational @[5 5] 1`c
+    ensure -> not? same? to :rational @[5 5] 1`f
     passed
     
-    ensure -> not? same? 2:usd 1
-    ensure -> not? same? 2 1:usd
-    ensure -> not? same? 2:usd 1.0
-    ensure -> not? same? 2.0 1:usd
-    ensure -> not? same? 2:usd to :rational @[5 5]
-    ensure -> not? same? to :rational @[2 5] 1:usd
+    ensure -> not? same? 2`usd 1
+    ensure -> not? same? 2 1`usd
+    ensure -> not? same? 2`usd 1.0
+    ensure -> not? same? 2.0 1`usd
+    ensure -> not? same? 2`usd to :rational @[5 5]
+    ensure -> not? same? to :rational @[2 5] 1`usd
     passed
     
-    ensure -> not? same? 1.5:m 150:cm 
-    ensure -> not? same? 2:m 2:cm
-    ensure -> not? same? 1:m 1:usd
-    ensure -> not? same? 1:m 1:m2
-    ensure -> not? same? 1:m 1:m3
-    ensure -> not? same? 1:m 1:c
-    ensure -> not? same? 1:m 1:f
-    ensure -> not? same? 1:usd 1:m
-    ensure -> not? same? 1:usd 1:m2
-    ensure -> not? same? 1:usd 1:m3
-    ensure -> not? same? 1:usd 1:c
-    ensure -> not? same? 1:usd 1:f
-    ensure -> not? same? 2:m2 2:cm
-    ensure -> not? same? 1:m2 1:usd
-    ensure -> not? same? 1:m2 1:m
-    ensure -> not? same? 1:m2 1:m3
-    ensure -> not? same? 1:m2 1:c
-    ensure -> not? same? 1:m2 1:f
-    ensure -> not? same? 1:c 1:usd
-    ensure -> not? same? 1:c 1:m2
-    ensure -> not? same? 1:c 1:m3
-    ensure -> not? same? 1:c 1:m
-    ensure -> not? same? 1:c 1:f
-    ensure -> not? same? 1:f 1:usd
-    ensure -> not? same? 1:f 1:m
-    ensure -> not? same? 1:f 1:m3
-    ensure -> not? same? 1:f 1:c
-    ensure -> not? same? 1:f 1:m2
+    ensure -> not? same? 1.5`m 150`cm 
+    ensure -> not? same? 2`m 2`cm
+    ensure -> not? same? 1`m 1`usd
+    ensure -> not? same? 1`m 1`m2
+    ensure -> not? same? 1`m 1`m3
+    ensure -> not? same? 1`m 1`c
+    ensure -> not? same? 1`m 1`f
+    ensure -> not? same? 1`usd 1`m
+    ensure -> not? same? 1`usd 1`m2
+    ensure -> not? same? 1`usd 1`m3
+    ensure -> not? same? 1`usd 1`c
+    ensure -> not? same? 1`usd 1`f
+    ensure -> not? same? 2`m2 2`cm
+    ensure -> not? same? 1`m2 1`usd
+    ensure -> not? same? 1`m2 1`m
+    ensure -> not? same? 1`m2 1`m3
+    ensure -> not? same? 1`m2 1`c
+    ensure -> not? same? 1`m2 1`f
+    ensure -> not? same? 1`c 1`usd
+    ensure -> not? same? 1`c 1`m2
+    ensure -> not? same? 1`c 1`m3
+    ensure -> not? same? 1`c 1`m
+    ensure -> not? same? 1`c 1`f
+    ensure -> not? same? 1`f 1`usd
+    ensure -> not? same? 1`f 1`m
+    ensure -> not? same? 1`f 1`m3
+    ensure -> not? same? 1`f 1`c
+    ensure -> not? same? 1`f 1`m2
     passed
     
     
@@ -8664,8 +8664,8 @@ do [
         -> same? 1 '1'          -> same? 1 "1"
         -> same? [1] [one]      -> same? [1] [one:]
         -> same? 1 '1           -> same? [1] [.1]         
-        -> same? [1] [.1:]      -> same? [1] [one\1]
-        -> same? [1] [one\1:]   -> same? [1] [+]        
+        -> same? [1] [.1`]      -> same? [1] [one\1]
+        -> same? [1] [one\1`]   -> same? [1] [+]        
         -> same? 1 {/1/}        -> same? 1 to :binary 1 
         -> same? 1 to :binary 1 -> same? [1] [(1)]      
         -> same? 1 [1]          -> same? 1 1..1         
@@ -8680,8 +8680,8 @@ do [
         -> same? 1.0 1.0.0              -> same? 1.0 :floating
         -> same? 1.0 '1'                -> same? 1.0 "1.0"
         -> same? [1.0] [one]            -> same? 1.0 '1                 
-        -> same? [1.0] [.1]             -> same? [1.0] [.1:]            
-        -> same? [1.0] [one\1]          -> same? [1.0] [one\1:]        
+        -> same? [1.0] [.1]             -> same? [1.0] [.1`]            
+        -> same? [1.0] [one\1]          -> same? [1.0] [one\1`]        
         -> same? [1.0] [+]              -> same? 1.0 {/1.0/}
         -> same? 1.0 to :binary 1.0     -> same? 1.0 to :binary 1.0
         -> same? [1.0] [(1.0)]          -> same? 1.0 [1]
@@ -8698,7 +8698,7 @@ do [
         -> same? a '1'                      -> same? a "1/1"
         -> same? @[a] [one]                 -> same? @[a] [one:]
         -> same? 1 '1                       -> same? @[a] [.1]                 
-        -> same? @[a] [.1:]                 -> same? @[a] [one\1]
+        -> same? @[a] [.1`]                 -> same? @[a] [one\1]
         -> same? @[a] [+]                   -> same? a {/1/1/}
         -> same? a to :binary 1             -> same? a to :binary 1
         -> same? @[a] [(1)]                 -> same? a [1]
@@ -8708,66 +8708,66 @@ do [
     
     ; for :quantity
     ensure -> every? @[
-        -> same? 1:usd null             -> same? 1:usd true
-        -> same? 1:usd false            -> same? 1:usd to :complex [1 1]
-        -> same? 1:usd 1.0.0            -> same? 1:usd :quantity
-        -> same? 1:usd '1'              -> same? 1:usd "1USD"
-        -> same? [1:usd] [one]          -> same? [1:usd] [one:]
-        -> same? 1:usd '1               -> same? [1:usd] [.1]                  
-        -> same? [1:usd] [.1:]          -> same? [1:usd] [one\1]
-        -> same? [1:usd] [one\1:]       -> same? [1:usd] [+]        
-        -> same? 1:usd {/1USD/}         -> same? 1:usd to :binary 1 
-        -> same? 1:usd to :binary 1     -> same? [1:usd] [(1)]      
-        -> same? 1:usd [1:usd]          -> same? 1:usd 1..1         
-        -> same? 1:usd #[one: 1:usd]    -> same? 0:usd #black       
-        -> same? 1:usd var 'one?
+        -> same? 1`usd null             -> same? 1`usd true
+        -> same? 1`usd false            -> same? 1`usd to :complex [1 1]
+        -> same? 1`usd 1.0.0            -> same? 1`usd :quantity
+        -> same? 1`usd '1'              -> same? 1`usd "1USD"
+        -> same? [1`usd] [one]          -> same? [1`usd] [one:]
+        -> same? 1`usd '1               -> same? [1`usd] [.1]                  
+        -> same? [1`usd] [.1`]          -> same? [1`usd] [one\1]
+        -> same? [1`usd] [one\1`]       -> same? [1`usd] [+]        
+        -> same? 1`usd {/1USD/}         -> same? 1`usd to :binary 1 
+        -> same? 1`usd to :binary 1     -> same? [1`usd] [(1)]      
+        -> same? 1`usd [1`usd]          -> same? 1`usd 1..1         
+        -> same? 1`usd #[one: 1`usd]    -> same? 0`usd #black       
+        -> same? 1`usd var 'one?
     ] => not? passed
     
     ensure -> every? @[ 
-        -> same? 1:m null           -> same? 1:m true
-        -> same? 1:m false          -> same? 1:m to :complex [1 1]
-        -> same? 1:m 1.0.0          -> same? 1:m :quantity
-        -> same? 1:m '1'            -> same? 1:m "1m"
-        -> same? [1:m] [one]        -> same? [1:m] [one:]
-        -> same? 1:m '1             -> same? [1:m] [.1]            
-        -> same? [1:m] [one\1]      -> same? [1:m] [one\1:]        
-        -> same? [1:m] [+]          -> same? 1:m {/1m/}
-        -> same? 1:m to :binary 1   -> same? 1:m to :binary 1
-        -> same? [1:m] [(1)]        -> same? 1:m [1:m]
-        -> same? 1:m 1..1           -> same? 1:m #[one: 1:m]
-        -> same? 0:m #black         -> same? 1:m var 'one?
+        -> same? 1`m null           -> same? 1`m true
+        -> same? 1`m false          -> same? 1`m to :complex [1 1]
+        -> same? 1`m 1.0.0          -> same? 1`m :quantity
+        -> same? 1`m '1'            -> same? 1`m "1m"
+        -> same? [1`m] [one]        -> same? [1`m] [one:]
+        -> same? 1`m '1             -> same? [1`m] [.1]            
+        -> same? [1`m] [one\1]      -> same? [1`m] [one\1`]        
+        -> same? [1`m] [+]          -> same? 1`m {/1m/}
+        -> same? 1`m to :binary 1   -> same? 1`m to :binary 1
+        -> same? [1`m] [(1)]        -> same? 1`m [1`m]
+        -> same? 1`m 1..1           -> same? 1`m #[one: 1`m]
+        -> same? 0`m #black         -> same? 1`m var 'one?
     ] => not? passed
     
     ensure -> every? @[ 
-        -> same? 1:m3 null              -> same? 1:m3 true
-        -> same? 1:m3 false             -> same? 1:m3 to :complex [1 1]
-        -> same? 1:m3 1.0.0             -> same? 1:m3 :quantity
-        -> same? 1:m3 '1'               -> same? 1:m3 "1m³"
-        -> same? [1:m3] [one]           -> same? [1:m3] [one:]
-        -> same? 1:m3 '1                -> same? [1:m3] [.1]               
-        -> same? [1:m3] [.1:]           -> same? [1:m3] [one\1]
-        -> same? [1:m3] [one\1:]        -> same? [1:m3] [+]             
-        -> same? 1:m3 {/1m³/}           -> same? 1:m3 to :binary 1      
-        -> same? 1:m3 to :binary 1      -> same? [1:m3] [(1)]           
-        -> same? 1:m3 [1:m3]            -> same? 1:m3 1..1              
-        -> same? 1:m3 #[one: 1:m3]      -> same? 0:m3 #black            
-        -> same? 1:m3 var 'one?
+        -> same? 1`m3 null              -> same? 1`m3 true
+        -> same? 1`m3 false             -> same? 1`m3 to :complex [1 1]
+        -> same? 1`m3 1.0.0             -> same? 1`m3 :quantity
+        -> same? 1`m3 '1'               -> same? 1`m3 "1m³"
+        -> same? [1`m3] [one]           -> same? [1`m3] [one:]
+        -> same? 1`m3 '1                -> same? [1`m3] [.1]               
+        -> same? [1`m3] [.1`]           -> same? [1`m3] [one\1]
+        -> same? [1`m3] [one\1`]        -> same? [1`m3] [+]             
+        -> same? 1`m3 {/1m³/}           -> same? 1`m3 to :binary 1      
+        -> same? 1`m3 to :binary 1      -> same? [1`m3] [(1)]           
+        -> same? 1`m3 [1`m3]            -> same? 1`m3 1..1              
+        -> same? 1`m3 #[one: 1`m3]      -> same? 0`m3 #black            
+        -> same? 1`m3 var 'one?
     ] => not? passed
     
     ensure -> every? @[ 
-        -> same? 1:c null           -> same? 1:c true
-        -> same? 1:c false          -> same? 1:c to :complex [1 1]
-        -> same? 1:c 1.0.0          -> same? 1:c :quantity
-        -> same? 1:c '1'            -> same? 1:c "1°C"
-        -> same? [1:c] [one]        -> same? [1:c] [one:]
-        -> same? 1:c '1             -> same? [1:c] [.1]            
-        -> same? [1:c] [.1:]        -> same? [1:c] [one\1]
-        -> same? [1:c] [one\1:]     -> same? [1:c] [+]          
-        -> same? 1:c {/1°C/}        -> same? 1:c to :binary 1   
-        -> same? 1:c to :binary 1   -> same? [1:c] [(1)]        
-        -> same? 1:c [1:c]          -> same? 1:c 1..1           
-        -> same? 1:c #[one: 1:c]    -> same? 0:c #black         
-        -> same? 1:c var 'one?
+        -> same? 1`c null           -> same? 1`c true
+        -> same? 1`c false          -> same? 1`c to :complex [1 1]
+        -> same? 1`c 1.0.0          -> same? 1`c :quantity
+        -> same? 1`c '1'            -> same? 1`c "1°C"
+        -> same? [1`c] [one]        -> same? [1`c] [one:]
+        -> same? 1`c '1             -> same? [1`c] [.1]            
+        -> same? [1`c] [.1`]        -> same? [1`c] [one\1]
+        -> same? [1`c] [one\1`]     -> same? [1`c] [+]          
+        -> same? 1`c {/1°C/}        -> same? 1`c to :binary 1   
+        -> same? 1`c to :binary 1   -> same? [1`c] [(1)]        
+        -> same? 1`c [1`c]          -> same? 1`c 1..1           
+        -> same? 1`c #[one: 1`c]    -> same? 0`c #black         
+        -> same? 1`c var 'one?
     ] => not? passed
     
     ; for :null
@@ -8844,8 +8844,8 @@ do [
         -> same? a '1'                  -> same? a "1.0+1.0i"
         -> same? @[a] [one]             -> same? @[a] [one:]
         -> same? 1 '1.0i                -> same? @[a] [.1]                 
-        -> same? @[a] [.1:]             -> same? @[a] [one\1]
-        -> same? @[a] [one\1:]          -> same? @[a] [+]                  
+        -> same? @[a] [.1`]             -> same? @[a] [one\1]
+        -> same? @[a] [one\1`]          -> same? @[a] [+]                  
         -> same? a {/1.0+1.0i/}         -> same? a to :binary 1            
         -> same? a to :binary 1         -> same? @[a] [(1)]                
         -> same? a [1]                  -> same? a 1..1                    
@@ -8861,8 +8861,8 @@ do [
         -> same? 1.0.0 '1'                     -> same? 1.0.0 "1.0.0"
         -> same? [1.0.0] [one]                 -> same? [1.0.0] [one:]
         -> same? 1.0.0 '1.0i                   -> same? [1.0.0] [.1]                  
-        -> same? [1.0.0] [.1:]                 -> same? [1.0.0] [one\1]
-        -> same? [1.0.0] [one\1:]              -> same? [1.0.0 1.0.0] [one\1: 1.0.0]
+        -> same? [1.0.0] [.1`]                 -> same? [1.0.0] [one\1]
+        -> same? [1.0.0] [one\1`]              -> same? [1.0.0 1.0.0] [one\1` 1.0.0]
         -> same? [1.0.0] [+]                   -> same? 1.0.0 {/1.0.0/}
         -> same? 1.0.0 to :binary 1.0          -> same? 1.0.0 to :binary 1.0
         -> same? [1.0.0] [(1.0.0)]             -> same? 1.0.0 [1.0.0]
@@ -9024,9 +9024,9 @@ do [
     ; for :binary
     ensure -> every? @[
         -> same? to :binary 1 1                    -> same? to :binary 1 1.0                
-        -> same? to :binary 1 to :rational [1 1]   -> same? to :binary 1 1:usd                
-        -> same? to :binary 1 1:m                  -> same? to :binary 1 1:m3                 
-        -> same? to :binary 1 1:c                  -> same? to :binary 0 null                 
+        -> same? to :binary 1 to :rational [1 1]   -> same? to :binary 1 1`usd                
+        -> same? to :binary 1 1`m                  -> same? to :binary 1 1`m3                 
+        -> same? to :binary 1 1`c                  -> same? to :binary 0 null                 
         -> same? to :binary 0 true                 -> same? to :binary 0 false                
         -> same? to :binary 0 maybe                -> same? to :binary 1 to :complex [1 1]                  
         -> same? to :binary 1 1.0.0                -> same? to :binary 1 :type              
@@ -9041,9 +9041,9 @@ do [
     ; for :range
     ensure -> every? @[
         -> same? 1..1 1                        -> same? 1..1 1.0
-        -> same? 1..1 a: to :rational [1 1]    -> same? 1..1 1:usd
-        -> same? 1..1 1:m                      -> same? 1..1 1:m3  
-        -> same? 1..1 1:c                      -> same? 0..0 null 
+        -> same? 1..1 a: to :rational [1 1]    -> same? 1..1 1`usd
+        -> same? 1..1 1`m                      -> same? 1..1 1`m3  
+        -> same? 1..1 1`c                      -> same? 0..0 null 
         -> same? 0..0 true                     -> same? 0..0 false
         -> same? 0..0 maybe                    -> same? 1..1 to :complex [1 1]
         -> same? 1..1 1.0.0                    -> same? 1..1 :type                        
@@ -9068,9 +9068,9 @@ do [
     ; for :color
     ensure -> every? @[
         -> same? #black 0                  -> same? #black 0.0
-        -> same? #black to :rational [1 1] -> same? #black 0:usd 
-        -> same? #black 0:m                -> same? #black 0:m3
-        -> same? #black 0:c                -> same? #black null 
+        -> same? #black to :rational [1 1] -> same? #black 0`usd 
+        -> same? #black 0`m                -> same? #black 0`m3
+        -> same? #black 0`c                -> same? #black null 
         -> same? #black true               -> same? #black false 
         -> same? #black maybe              -> same? #black to :complex [0 0]
         -> same? #black 0.0.0              -> same? #black :color
