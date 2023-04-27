@@ -903,6 +903,7 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                     elif p.buf[p.bufpos]==Colon:
                         inc(p.bufpos)
                         let leftValue = newInteger(p.value, p.lineNumber)
+                        setLen(p.value, 0)
                         parseNumber(p)
                         if hasDot: 
                             raise newException(ValueError, "Invalid syntax for rationals")
