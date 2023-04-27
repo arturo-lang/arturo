@@ -2956,8 +2956,8 @@ do [
     topic "sub - :int :rational"
     
     a: to :rational [3 5]
-    expected1` to :rational @[(neg 2) 5]
-    expected2` to :rational @[2 5]
+    expected1: to :rational @[(neg 2) 5]
+    expected2: to :rational @[2 5]
     ensure -> expected1 = a - 1
     ensure -> expected2 = 1 - a
     ensure -> expected1 = sub a 1
