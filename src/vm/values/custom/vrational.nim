@@ -196,15 +196,17 @@ func `+`*(x, y: VRational): VRational =
                 when not defined(NOGMP):
                     result = toBigRational(x) + y
         else:
-            result = x + toBigRational(y)
+            when not defined(NOGMP):
+                result = x + toBigRational(y)
     else:
-        if y.rKind == NormalRational:
-            result = toBigRational(x) + y
-        else:
-            result = VRational(
-                rKind: BigRational,
-                br: x.br + y.br
-            )
+        when not defined(NOGMP):
+            if y.rKind == NormalRational:
+                result = toBigRational(x) + y
+            else:
+                result = VRational(
+                    rKind: BigRational,
+                    br: x.br + y.br
+                )
 
 func `+`*(x: VRational, y: int): VRational =
     if x.rKind == NormalRational:
@@ -220,7 +222,8 @@ func `+`*(x: VRational, y: int): VRational =
             when not defined(NOGMP):
                 result = toBigRational(x) + y
     else:
-        result = x + toBigRational(y)
+        when not defined(NOGMP):
+            result = x + toBigRational(y)
 
 func `+`*(x: int, y: VRational): VRational =
     if y.rKind == NormalRational:
@@ -236,7 +239,8 @@ func `+`*(x: int, y: VRational): VRational =
             when not defined(NOGMP):
                 result = toBigRational(x) + y
     else:
-        result = toBigRational(x) + y
+        when not defined(NOGMP):
+            result = toBigRational(x) + y
 
 func `+=`*(x: var VRational, y: VRational) =
     if x.rKind == NormalRational:
@@ -253,12 +257,14 @@ func `+=`*(x: var VRational, y: VRational) =
                 when not defined(NOGMP):
                     x = toBigRational(x) + y
         else:
-            x = toBigRational(x) + y
+            when not defined(NOGMP):
+                x = toBigRational(x) + y
     else:
-        if y.rKind == NormalRational:
-            x += toBigRational(y)
-        else:
-            x.br += y.br
+        when not defined(NOGMP):
+            if y.rKind == NormalRational:
+                x += toBigRational(y)
+            else:
+                x.br += y.br
 
 func `+=`*(x: var VRational, y: int) =
     if x.rKind == NormalRational:
@@ -271,15 +277,17 @@ func `+=`*(x: var VRational, y: int) =
             when not defined(NOGMP):
                 x = toBigRational(x) + y
     else:
-        x += toBigRational(y)
+        when not defined(NOGMP):
+            x += toBigRational(y)
 
 func `-`*(x: VRational): VRational =
     if x.rKind == NormalRational:
         result.r.num = -x.r.num
         result.r.den = x.r.den
     else:
-        result.rKind = BigRational
-        result.br = neg(x.br)
+        when not defined(NOGMP):
+            result.rKind = BigRational
+            result.br = neg(x.br)
 
 func `-`*(x, y: VRational): VRational =
     if x.rKind == NormalRational:
@@ -296,15 +304,17 @@ func `-`*(x, y: VRational): VRational =
                 when not defined(NOGMP):
                     result = toBigRational(x) - y
         else:
-            result = toBigRational(x) - y
+            when not defined(NOGMP):
+                result = toBigRational(x) - y
     else:
-        if y.rKind == NormalRational:
-            result = x - toBigRational(y)
-        else:
-            result = VRational(
-                rKind: BigRational,
-                br: x.br - y.br
-            )
+        when not defined(NOGMP):
+            if y.rKind == NormalRational:
+                result = x - toBigRational(y)
+            else:
+                result = VRational(
+                    rKind: BigRational,
+                    br: x.br - y.br
+                )
 
 func `-`*(x: VRational, y: int): VRational =
     if x.rKind == NormalRational:
@@ -319,7 +329,8 @@ func `-`*(x: VRational, y: int): VRational =
             when not defined(NOGMP):
                 result = toBigRational(x) - y
     else:
-        result = x - toBigRational(y)
+        when not defined(NOGMP):
+            result = x - toBigRational(y)
 
 func `-`*(x: int, y: VRational): VRational =
     if y.rKind == NormalRational:
@@ -334,7 +345,8 @@ func `-`*(x: int, y: VRational): VRational =
             when not defined(NOGMP):
                 result = x - toBigRational(y)
     else:
-        result = toBigRational(x) - y
+        when not defined(NOGMP):
+            result = toBigRational(x) - y
 
 func `-=`*(x: var VRational, y: VRational) =
     if x.rKind == NormalRational:
@@ -351,12 +363,14 @@ func `-=`*(x: var VRational, y: VRational) =
                 when not defined(NOGMP):
                     x = toBigRational(x) - y
         else:
-            x = toBigRational(x) + y
+            when not defined(NOGMP):
+                x = toBigRational(x) + y
     else:
-        if y.rKind == NormalRational:
-            x += toBigRational(y)
-        else:
-            x.br -= y.br
+        when not defined(NOGMP):
+            if y.rKind == NormalRational:
+                x += toBigRational(y)
+            else:
+                x.br -= y.br
     
 func `-=`*(x: var VRational, y: int) =
     if x.rKind == NormalRational:
@@ -369,7 +383,8 @@ func `-=`*(x: var VRational, y: int) =
             when not defined(NOGMP):
                 x = toBigRational(x) - y
     else:
-        x -= toBigRational(y)
+        when not defined(NOGMP):
+            x -= toBigRational(y)
 
 func `*`*(x, y: VRational): VRational =
     if x.rKind == NormalRational:
@@ -385,15 +400,17 @@ func `*`*(x, y: VRational): VRational =
                 when not defined(NOGMP):
                     result = toBigRational(x) * y
         else:
-            result = toBigRational(x) * y
+            when not defined(NOGMP):
+                result = toBigRational(x) * y
     else:
-        if y.rKind == NormalRational:
-            result = x * toBigRational(y)
-        else:
-            result = VRational(
-                rKind: BigRational,
-                br: x.br * y.br
-            )
+        when not defined(NOGMP):
+            if y.rKind == NormalRational:
+                result = x * toBigRational(y)
+            else:
+                result = VRational(
+                    rKind: BigRational,
+                    br: x.br * y.br
+                )
     
 func `*`*(x: VRational, y: int): VRational =
     if x.rKind == NormalRational:
@@ -407,7 +424,8 @@ func `*`*(x: VRational, y: int): VRational =
             when not defined(NOGMP):
                 result = toBigRational(x) * y
     else:
-        result = x * toBigRational(y)
+        when not defined(NOGMP):
+            result = x * toBigRational(y)
 
 func `*`*(x: int, y: VRational): VRational =
     if y.rKind == NormalRational:
@@ -421,7 +439,8 @@ func `*`*(x: int, y: VRational): VRational =
             when not defined(NOGMP):
                 result = toBigRational(x) * y
     else:
-        result = toBigRational(x) * y
+        when not defined(NOGMP):
+            result = toBigRational(x) * y
 
 func `*=`*(x: var VRational, y: VRational) =
     if x.rKind == NormalRational:
@@ -436,12 +455,14 @@ func `*=`*(x: var VRational, y: VRational) =
                 when not defined(NOGMP):
                     x = toBigRational(x) * y
         else:
-            x = toBigRational(x) * y
+            when not defined(NOGMP):
+                x = toBigRational(x) * y
     else:
-        if y.rKind == NormalRational:
-            x *= toBigRational(y)
-        else:
-            x.br *= y.br
+        when not defined(NOGMP):
+            if y.rKind == NormalRational:
+                x *= toBigRational(y)
+            else:
+                x.br *= y.br
 
 func `*=`*(x: var VRational, y: int) =
     if x.rKind == NormalRational:
@@ -452,7 +473,8 @@ func `*=`*(x: var VRational, y: int) =
         except CatchableError:
             x = toBigRational(x) * y
     else:
-        x *= toBigRational(y)
+        when not defined(NOGMP):
+            x *= toBigRational(y)
 
 func reciprocal*(x: VRational): VRational =
     if x.rKind == NormalRational:
@@ -466,8 +488,9 @@ func reciprocal*(x: VRational): VRational =
         else:
             raise newException(DivByZeroDefect, "division by zero")
     else:
-        result.rKind = BigRational
-        result.br = inv(x.br)
+        when not defined(NOGMP):
+            result.rKind = BigRational
+            result.br = inv(x.br)
 
 func `/`*(x, y: VRational): VRational =
     if x.rKind == NormalRational:
@@ -482,15 +505,17 @@ func `/`*(x, y: VRational): VRational =
                 when not defined(NOGMP):
                     result = toBigRational(x) / y
         else:
-            result = toBigRational(x) / y
+            when not defined(NOGMP):
+                result = toBigRational(x) / y
     else:
-        if y.rKind == NormalRational:
-            result = x / toBigRational(y)
-        else:
-            result = VRational(
-                rKind: BigRational,
-                br: x.br / y.br
-            )
+        when not defined(NOGMP):
+            if y.rKind == NormalRational:
+                result = x / toBigRational(y)
+            else:
+                result = VRational(
+                    rKind: BigRational,
+                    br: x.br / y.br
+                )
 
 func `/`*(x: VRational, y: int): VRational =
     if x.rKind == NormalRational:
@@ -504,7 +529,8 @@ func `/`*(x: VRational, y: int): VRational =
             when not defined(NOGMP):
                 result = toBigRational(x) / y
     else:
-        result = x / toBigRational(y)
+        when not defined(NOGMP):
+            result = x / toBigRational(y)
 
 func `/`*(x: int, y: VRational): VRational =
     if y.rKind == NormalRational:
@@ -518,7 +544,8 @@ func `/`*(x: int, y: VRational): VRational =
             when not defined(NOGMP):
                 result = toBigRational(x) / y
     else:
-        result = toBigRational(x) / y
+        when not defined(NOGMP):
+            result = toBigRational(x) / y
 
 func `/=`*(x: var VRational, y: VRational) =
     if x.rKind == NormalRational:
@@ -531,19 +558,22 @@ func `/=`*(x: var VRational, y: VRational) =
                 when not defined(NOGMP):
                     x = toBigRational(x) / y
         else:
-            x = toBigRational(x) / y
+            when not defined(NOGMP):
+                x = toBigRational(x) / y
     else:
-        if y.rKind == NormalRational:
-            x /= toBigRational(y)
-        else:
-            x.br /= y.br
+        when not defined(NOGMP):
+            if y.rKind == NormalRational:
+                x /= toBigRational(y)
+            else:
+                x.br /= y.br
 
 func `/=`*(x: var VRational, y: int) =
     if x.rKind == NormalRational:
         x.r.den *= y
         reduce(x)
     else:
-        x /= toBigRational(y)
+        when not defined(NOGMP):
+            x /= toBigRational(y)
 
 func `^`*(x: VRational, y: int): VRational =
     if x.rKind == NormalRational:
@@ -559,67 +589,77 @@ func `^`*(x: VRational, y: int): VRational =
                 result = toBigRational(x) ^ y
 
     else:
-        result = VRational(
-            rKind: BigRational,
-            br: x.br ^ y
-        )
+        when not defined(NOGMP):
+            result = VRational(
+                rKind: BigRational,
+                br: x.br ^ y
+            )
 
 func `^`*(x: VRational, y: float): VRational =
-    if x.rKind == NormalRational:
-        result = toBigRational(x) ^ y
-    else:
-        result = VRational(
-            rKind: BigRational,
-            br: x.br ^ y
-        )
+    when not defined(NOGMP):
+        if x.rKind == NormalRational:
+            result = toBigRational(x) ^ y
+        else:
+            result = VRational(
+                rKind: BigRational,
+                br: x.br ^ y
+            )
 
 func cmp*(x, y: VRational): int =
     if x.rKind == NormalRational:
         if y.rKind == NormalRational:
             result = (x - y).r.num
         else:
-            result = cmp(toBigRational(x), y)
+            when not defined(NOGMP):
+                result = cmp(toBigRational(x), y)
     else:
-        if y.rKind == NormalRational:
-            result = cmp(x, toBigRational(y))
-        else:
-            result = cmp(x.br, y.br)
+        when not defined(NOGMP):
+            if y.rKind == NormalRational:
+                result = cmp(x, toBigRational(y))
+            else:
+                result = cmp(x.br, y.br)
 
 func `<`*(x, y: VRational): bool =
     if x.rKind == NormalRational:
         if y.rKind == NormalRational:
             result = (x - y).r.num < 0
         else:
-            result = toBigRational(x) < y
+            when not defined(NOGMP):
+                result = toBigRational(x) < y
     else:
-        if y.rKind == NormalRational:
-            result = x < toBigRational(y)
-        else:
-            result = x.br < y.br
+        when not defined(NOGMP):
+            if y.rKind == NormalRational:
+                result = x < toBigRational(y)
+            else:
+                result = x.br < y.br
 
 func `<=`*(x, y: VRational): bool =
     if x.rKind == NormalRational:
         if y.rKind == NormalRational:
             result = (x - y).r.num <= 0
         else:
-            result = toBigRational(x) <= y
+            when not defined(NOGMP):
+                result = toBigRational(x) <= y
     else:
-        if y.rKind == NormalRational:
-            result = x <= toBigRational(y)
-        else:
-            result = x.br <= y.br
+        when not defined(NOGMP):
+            if y.rKind == NormalRational:
+                result = x <= toBigRational(y)
+            else:
+                result = x.br <= y.br
 
 func `==`*(x, y: VRational): bool =
     if x.rKind == NormalRational:
         if y.rKind == NormalRational:
             result = (x - y).r.num == 0
         else:
-            result = toBigRational(x) == y
+            when not defined(NOGMP):
+                result = toBigRational(x) == y
     else:
-        if y.rKind == NormalRational:
-            result = x == toBigRational(y)
-        else:
-            result = x.br == y.br
+        when not defined(NOGMP):
+            if y.rKind == NormalRational:
+                result = x == toBigRational(y)
+            else:
+                result = x.br == y.br
 
 func abs*(x: VRational): VRational =
     if x.rKind == NormalRational:
@@ -627,8 +667,9 @@ func abs*(x: VRational): VRational =
         result.r.num = abs x.r.num
         result.r.den = abs x.r.den
     else:
-        result.rKind = BigRational
-        result.br = abs(x.br)
+        when not defined(NOGMP):
+            result.rKind = BigRational
+            result.br = abs(x.br)
 
 func `div`*(x, y: VRational): int =
     if x.rKind == NormalRational:
@@ -676,19 +717,22 @@ func isZero*(x: VRational): bool =
     if x.rKind == NormalRational:
         result = x.r.num == 0
     else:
-        result = numerator(x.br) == 0
+        when not defined(NOGMP):
+            result = numerator(x.br) == 0
 
 func isNegative*(x: VRational): bool =
     if x.rKind == NormalRational:
         result = x.r.num < 0
     else:
-        result = numerator(x.br) < 0
+        when not defined(NOGMP):
+            result = numerator(x.br) < 0
 
 func isPositive*(x: VRational): bool =
     if x.rKind == NormalRational:
         result = x.r.num > 0
     else:
-        result = numerator(x.br) > 0
+        when not defined(NOGMP):
+            result = numerator(x.br) > 0
 
 func hash*(x: VRational): Hash =
     if x.rKind == NormalRational:
@@ -700,7 +744,8 @@ func hash*(x: VRational): Hash =
         h = h !& hash(copy.r.den)
         result = !$h
     else:
-        result = hash(x.br[])
+        when not defined(NOGMP):
+            result = hash(x.br[])
 
 func codify*(x: VRational): string =
     if x.rKind == NormalRational:
@@ -709,12 +754,13 @@ func codify*(x: VRational): string =
         else:
             result = fmt("to :rational [{x.r.num} {x.r.den}]")
     else:
-        let num = numerator(x.br)
-        let den = denominator(x.br)
-        if num < 0:
-            result = fmt("to :rational @[neg {num * -1} {den}]")
-        else:
-            result = fmt("to :rational [{num} {den}]")
+        when not defined(NOGMP):
+            let num = numerator(x.br)
+            let den = denominator(x.br)
+            if num < 0:
+                result = fmt("to :rational @[neg {num * -1} {den}]")
+            else:
+                result = fmt("to :rational [{num} {den}]")
 
 func `$`*(x: VRational): string =
     if x.rKind == NormalRational:
