@@ -22,6 +22,8 @@ import hashes, math, strformat
 when not defined(NOGMP):
     import helpers/bignums
 
+import helpers/intrinsics
+
 #=======================================
 # Types
 #=======================================
