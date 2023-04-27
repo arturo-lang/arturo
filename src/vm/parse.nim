@@ -885,7 +885,7 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                     if p.value.count(Dot)>1:
                         AddToken newVersion(p.value)
                     else:
-                        if p.buf[p.bufpos]==Colon:
+                        if p.buf[p.bufpos]==BackTick:
                             let pv = newFloating(p.value)
                             parseQuantity(p)
                             AddToken newQuantity(pv, parseQuantitySpec(p.value))
@@ -896,7 +896,7 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                         else:
                             AddToken newFloating(p.value)
                 else:
-                    if p.buf[p.bufpos]==Colon:
+                    if p.buf[p.bufpos]==BackTick:
                         let pv = newInteger(p.value, p.lineNumber)
                         parseQuantity(p)
                         AddToken newQuantity(pv, parseQuantitySpec(p.value))
