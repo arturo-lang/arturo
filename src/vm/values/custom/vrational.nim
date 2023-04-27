@@ -17,7 +17,10 @@
 # Libraries
 #=======================================
 
-import math, hashes
+import hashes, math, strformat
+
+when not defined(NOGMP):
+    import helpers/bignums
 
 #=======================================
 # Types
@@ -32,204 +35,555 @@ type
         num*: T
         den*: T
 
-    VRational* = VRationalObj[int]
+    RationalKind* = enum
+        NormalRational,
+        BigRational
+
+    VRational* = object
+        case rKind*: RationalKind:
+            of NormalRational:
+                r*: VRationalObj[int]
+            of BigRational:
+                when not defined(NOGMP):
+                    br*: Rat
 
 #=======================================
 # Methods
 #=======================================
 
-func reduce*[T: SomeInteger](x: var VRationalObj[T]) =
-    let common = gcd(x.num, x.den)
-    if x.den > 0:
-        x.num = x.num div common
-        x.den = x.den div common
-    elif x.den < 0:
-        x.num = -x.num div common
-        x.den = -x.den div common
+template getNumerator*(x: VRational, big: bool = false): untyped =
+    when big:
+        numerator(x.br)
+    else:
+        x.r.num
+
+template getDenominator*(x: VRational, big: bool = false): untyped =
+    when big:
+        denominator(x.br)
+    else:
+        x.r.den
+
+func reduce*(x: var VRational) =
+    let common = gcd(x.r.num, x.r.den)
+    if x.r.den > 0:
+        x.r.num = x.r.num div common
+        x.r.den = x.r.den div common
+    elif x.r.den < 0:
+        x.r.num = -x.r.num div common
+        x.r.den = -x.r.den div common
     else:
         raise newException(DivByZeroDefect, "division by zero")
 
-func initRational*[T: SomeInteger](num, den: T): VRationalObj[T] =
-    result.num = num
-    result.den = den
+func initRational*(num, den: int): VRational =
+    result.rKind = NormalRational
+    result.r.num = num
+    result.r.den = den
     reduce(result)
 
-func `//`*[T](num, den: T): VRationalObj[T] =
-    initRational[T](num, den)
+func simplifyRational*(x: var VRational) =
+    if x.rKind == BigRational and canBeSimplified(x.br):
+        x = initRational(getInt(numerator(x.br)), getInt(denominator(x.br)))
 
-func `$`*[T](x: VRationalObj[T]): string =
-    result = $x.num & "/" & $x.den
+func initRational*(num: Int, den: Int): VRational =
+    result.rKind = BigRational
+    result.br = newRat(num, den)
 
-func toRational*[T: SomeInteger](x: T): VRationalObj[T] =
-    result.num = x
-    result.den = 1
+    simplifyRational(result)
 
-func toRational*(x: float, n: int = high(int) shr (sizeof(int) div 2 * 8)): VRationalObj[int] =
+func initRational*(num: int, den: Int): VRational =
+    result.rKind = BigRational
+    result.br = newRat(newInt(num), den)
+    
+    simplifyRational(result)
+
+func initRational*(num: Int, den: int): VRational =
+    result.rKind = BigRational
+    result.br = newRat(num, newInt(den))
+
+    simplifyRational(result)
+
+func `//`*(num, den: int): VRational =
+    initRational(num, den)
+
+func toRational*(x: int): VRational =
+    result.rKind = NormalRational
+    result.r.num = x
+    result.r.den = 1
+
+func toRational*(x: Int): VRational = 
+    result.rKind = BigRational
+    result.br = newRat(x)
+
+when not defined(NOGMP):
+    func toBigRational*(x: int | Int | float): VRational =
+        result.rKind = BigRational
+        result.br = newRat(x)
+        
+        simplifyRational(result)
+
+    func toBigRational*(x: VRational): VRational =
+        if x.rKind == BigRational:
+            result = x
+        else:
+            result.rKind = BigRational
+            result.br = newRat(x.r.num, x.r.den)
+
+func toRational*(x: float, n: int = high(int) shr (sizeof(int) div 2 * 8)): VRational =
     var
         m11, m22 = 1
         m12, m21 = 0
         ai = int(x)
+        initial = x
         x = x
     while m21 * ai + m22 <= n:
         swap m12, m11
         swap m22, m21
         m11 = m12 * ai + m11
         m21 = m22 * ai + m21
-        if x == float(ai): break # division by zero
+        if x == float(ai): 
+            break # division by zero
         x = 1 / (x - float(ai))
-        if x > float(high(int32)): break # representation failure
+        if x > float(high(int32)): 
+            when not defined(NOGMP):
+                if m11 == 0 or m21 == 0: 
+                    return toBigRational(initial)
+                else: 
+                    break
+            else:
+                break # representation failure; should throw error?
         ai = int(x)
     result = m11 // m21
 
-func toFloat*[T](x: VRationalObj[T]): float =
-    x.num / x.den
-
-func toInt*[T](x: VRationalObj[T]): int =
-    x.num div x.den
-
-func `+`*[T](x, y: VRationalObj[T]): VRationalObj[T] =
-    let common = lcm(x.den, y.den)
-    result.num = common div x.den * x.num + common div y.den * y.num
-    result.den = common
-    reduce(result)
-
-func `+`*[T](x: VRationalObj[T], y: T): VRationalObj[T] =
-    result.num = x.num + y * x.den
-    result.den = x.den
-
-func `+`*[T](x: T, y: VRationalObj[T]): VRationalObj[T] =
-    result.num = x * y.den + y.num
-    result.den = y.den
-
-func `+=`*[T](x: var VRationalObj[T], y: VRationalObj[T]) =
-    let common = lcm(x.den, y.den)
-    x.num = common div x.den * x.num + common div y.den * y.num
-    x.den = common
-    reduce(x)
-
-func `+=`*[T](x: var VRationalObj[T], y: T) =
-    x.num += y * x.den
-
-func `-`*[T](x: VRationalObj[T]): VRationalObj[T] =
-    result.num = -x.num
-    result.den = x.den
-
-func `-`*[T](x, y: VRationalObj[T]): VRationalObj[T] =
-    let common = lcm(x.den, y.den)
-    result.num = common div x.den * x.num - common div y.den * y.num
-    result.den = common
-    reduce(result)
-
-func `-`*[T](x: VRationalObj[T], y: T): VRationalObj[T] =
-    result.num = x.num - y * x.den
-    result.den = x.den
-
-func `-`*[T](x: T, y: VRationalObj[T]): VRationalObj[T] =
-    result.num = x * y.den - y.num
-    result.den = y.den
-
-func `-=`*[T](x: var VRationalObj[T], y: VRationalObj[T]) =
-    let common = lcm(x.den, y.den)
-    x.num = common div x.den * x.num - common div y.den * y.num
-    x.den = common
-    reduce(x)
-
-func `-=`*[T](x: var VRationalObj[T], y: T) =
-    x.num -= y * x.den
-
-func `*`*[T](x, y: VRationalObj[T]): VRationalObj[T] =
-    result.num = x.num * y.num
-    result.den = x.den * y.den
-    reduce(result)
-
-func `*`*[T](x: VRationalObj[T], y: T): VRationalObj[T] =
-    result.num = x.num * y
-    result.den = x.den
-    reduce(result)
-
-func `*`*[T](x: T, y: VRationalObj[T]): VRationalObj[T] =
-    result.num = x * y.num
-    result.den = y.den
-    reduce(result)
-
-func `*=`*[T](x: var VRationalObj[T], y: VRationalObj[T]) =
-    x.num *= y.num
-    x.den *= y.den
-    reduce(x)
-
-func `*=`*[T](x: var VRationalObj[T], y: T) =
-    x.num *= y
-    reduce(x)
-
-func reciprocal*[T](x: VRationalObj[T]): VRationalObj[T] =
-    if x.num > 0:
-        result.num = x.den
-        result.den = x.num
-    elif x.num < 0:
-        result.num = -x.den
-        result.den = -x.num
+func toFloat*(x: VRational): float =
+    if x.rKind == NormalRational:
+        result = x.r.num / x.r.den
     else:
-        raise newException(DivByZeroDefect, "division by zero")
+        when not defined(NOGMP):
+            result = toCDouble(x.br)
 
-func `/`*[T](x, y: VRationalObj[T]): VRationalObj[T] =
-    result.num = x.num * y.den
-    result.den = x.den * y.num
-    reduce(result)
+func toInt*(x: VRational): int =
+    if x.rKind == NormalRational:
+        result = x.r.num div x.r.den
+    else:
+        discard
+        # show error
 
-func `/`*[T](x: VRationalObj[T], y: T): VRationalObj[T] =
-    result.num = x.num
-    result.den = x.den * y
-    reduce(result)
+func `+`*(x, y: VRational): VRational =
+    if x.rKind == NormalRational:
+        if y.rKind == NormalRational:
+            let common = lcm(x.r.den, y.r.den)
+            result.rKind = NormalRational
+            result.r.num = common div x.r.den * x.r.num + common div y.r.den * y.r.num
+            result.r.den = common
+            reduce(result)
+        else:
+            result = x + toBigRational(y)
+    else:
+        if y.rKind == NormalRational:
+            result = toBigRational(x) + y
+        else:
+            result = VRational(
+                rKind: BigRational,
+                br: x.br + y.br
+            )
 
-func `/`*[T](x: T, y: VRationalObj[T]): VRationalObj[T] =
-    result.num = x * y.den
-    result.den = y.num
-    reduce(result)
+func `+`*(x: VRational, y: int): VRational =
+    if x.rKind == NormalRational:
+        result.rKind = NormalRational
+        result.r.num = x.r.num + y * x.r.den
+        result.r.den = x.r.den
+    else:
+        result = x + toBigRational(y)
 
-func `/=`*[T](x: var VRationalObj[T], y: VRationalObj[T]) =
-    x.num *= y.den
-    x.den *= y.num
-    reduce(x)
+func `+`*(x: int, y: VRational): VRational =
+    if y.rKind == NormalRational:
+        result.rKind = NormalRational
+        result.r.num = y.r.num + x * y.r.den
+        result.r.den = y.r.den
+    else:
+        result = toBigRational(x) + y
 
-func `/=`*[T](x: var VRationalObj[T], y: T) =
-    x.den *= y
-    reduce(x)
+func `+=`*(x: var VRational, y: VRational) =
+    if x.rKind == NormalRational:
+        if y.rKind == NormalRational:
+            let common = lcm(x.r.den, y.r.den)
+            x.r.num = common div x.r.den * x.r.num + common div y.r.den * y.r.num
+            x.r.den = common
+            reduce(x)
+        else:
+            x = toBigRational(x) + y
+    else:
+        if y.rKind == NormalRational:
+            x += toBigRational(y)
+        else:
+            x.br += y.br
 
-func cmp*(x, y: VRationalObj): int =
-    (x - y).num
+func `+=`*(x: var VRational, y: int) =
+    if x.rKind == NormalRational:
+        x.r.num += y * x.r.den
+    else:
+        x += toBigRational(y)
 
-func `<`*(x, y: VRationalObj): bool =
-    (x - y).num < 0
+func `-`*(x: VRational): VRational =
+    if x.rKind == NormalRational:
+        result.r.num = -x.r.num
+        result.r.den = x.r.den
+    else:
+        result.rKind = BigRational
+        result.br = neg(x.br)
 
-func `<=`*(x, y: VRationalObj): bool =
-    (x - y).num <= 0
+func `-`*(x, y: VRational): VRational =
+    if x.rKind == NormalRational:
+        if y.rKind == NormalRational:
+            let common = lcm(x.r.den, y.r.den)
+            result.r.num = common div x.r.den * x.r.num - common div y.r.den * y.r.num
+            result.r.den = common
+            reduce(result)
+        else:
+            result = toBigRational(x) - y
+    else:
+        if y.rKind == NormalRational:
+            result = x - toBigRational(y)
+        else:
+            result = VRational(
+                rKind: BigRational,
+                br: x.br - y.br
+            )
 
-func `==`*(x, y: VRationalObj): bool =
-    (x - y).num == 0
+func `-`*(x: VRational, y: int): VRational =
+    if x.rKind == NormalRational:
+        result.rKind = NormalRational
+        result.r.num = x.r.num - y * x.r.den
+        result.r.den = x.r.den
+    else:
+        result = x - toBigRational(y)
 
-func abs*[T](x: VRationalObj[T]): VRationalObj[T] =
-    result.num = abs x.num
-    result.den = abs x.den
+func `-`*(x: int, y: VRational): VRational =
+    if y.rKind == NormalRational:
+        result.rKind = NormalRational
+        result.r.num = x * y.r.den - y.r.num
+        result.r.den = y.r.den
+    else:
+        result = toBigRational(x) - y
 
-func `div`*[T: SomeInteger](x, y: VRationalObj[T]): T =
-    (x.num * y.den) div (y.num * x.den)
+func `-=`*(x: var VRational, y: VRational) =
+    if x.rKind == NormalRational:
+        if y.rKind == NormalRational:
+            let common = lcm(x.r.den, y.r.den)
+            x.r.num = common div x.r.den * x.r.num - common div y.r.den * y.r.num
+            x.r.den = common
+            reduce(x)
+        else:
+            x = toBigRational(x) + y
+    else:
+        if y.rKind == NormalRational:
+            x += toBigRational(y)
+        else:
+            x.br -= y.br
+    
+func `-=`*(x: var VRational, y: int) =
+    if x.rKind == NormalRational:
+        x.r.num -= y * x.r.den
+    else:
+        x -= toBigRational(y)
 
-func `mod`*[T: SomeInteger](x, y: VRationalObj[T]): VRationalObj[T] =
-    result = ((x.num * y.den) mod (y.num * x.den)) // (x.den * y.den)
-    reduce(result)
+func `*`*(x, y: VRational): VRational =
+    if x.rKind == NormalRational:
+        if y.rKind == NormalRational:
+            result.rKind = NormalRational
+            result.r.num = x.r.num * y.r.num
+            result.r.den = x.r.den * y.r.den
+            reduce(result)
+        else:
+            result = toBigRational(x) * y
+    else:
+        if y.rKind == NormalRational:
+            result = x * toBigRational(y)
+        else:
+            result = VRational(
+                rKind: BigRational,
+                br: x.br * y.br
+            )
+    
+func `*`*(x: VRational, y: int): VRational =
+    if x.rKind == NormalRational:
+        result.rKind = NormalRational
+        result.r.num = x.r.num * y
+        result.r.den = x.r.den
+        reduce(result)
+    else:
+        result = x * toBigRational(y)
 
-func floorDiv*[T: SomeInteger](x, y: VRationalObj[T]): T =
-    floorDiv(x.num * y.den, y.num * x.den)
+func `*`*(x: int, y: VRational): VRational =
+    if y.rKind == NormalRational:
+        result.rKind = NormalRational
+        result.r.num = x * y.r.num
+        result.r.den = y.r.den
+        reduce(result)
+    else:
+        result = toBigRational(x) * y
 
-func floorMod*[T: SomeInteger](x, y: VRationalObj[T]): VRationalObj[T] =
-    result = floorMod(x.num * y.den, y.num * x.den) // (x.den * y.den)
-    reduce(result)
+func `*=`*(x: var VRational, y: VRational) =
+    if x.rKind == NormalRational:
+        if y.rKind == NormalRational:
+            x.r.num *= y.r.num
+            x.r.den *= y.r.den
+            reduce(x)
+        else:
+            x = toBigRational(x) * y
+    else:
+        if y.rKind == NormalRational:
+            x *= toBigRational(y)
+        else:
+            x.br *= y.br
 
-func hash*[T](x: VRationalObj[T]): Hash =
-    var copy = x
-    reduce(copy)
+func `*=`*(x: var VRational, y: int) =
+    if x.rKind == NormalRational:
+        x.r.num *= y
+        reduce(x)
+    else:
+        x *= toBigRational(y)
 
-    var h: Hash = 0
-    h = h !& hash(copy.num)
-    h = h !& hash(copy.den)
-    result = !$h
+func reciprocal*(x: VRational): VRational =
+    if x.rKind == NormalRational:
+        result.rKind = NormalRational
+        if x.r.num > 0:
+            result.r.num = x.r.den
+            result.r.den = x.r.num
+        elif x.r.num < 0:
+            result.r.num = -x.r.den
+            result.r.den = -x.r.num
+        else:
+            raise newException(DivByZeroDefect, "division by zero")
+    else:
+        result.rKind = BigRational
+        result.br = inv(x.br)
+
+func `/`*(x, y: VRational): VRational =
+    if x.rKind == NormalRational:
+        if y.rKind == NormalRational:
+            result.r.num = x.r.num * y.r.den
+            result.r.den = x.r.den * y.r.num
+            reduce(result)
+        else:
+            result = toBigRational(x) / y
+    else:
+        if y.rKind == NormalRational:
+            result = x / toBigRational(y)
+        else:
+            result = VRational(
+                rKind: BigRational,
+                br: x.br / y.br
+            )
+
+func `/`*(x: VRational, y: int): VRational =
+    if x.rKind == NormalRational:
+        result.rKind = NormalRational
+        result.r.num = x.r.num
+        result.r.den = x.r.den * y
+        reduce(result)
+    else:
+        result = x / toBigRational(y)
+
+func `/`*(x: int, y: VRational): VRational =
+    if y.rKind == NormalRational:
+        result.rKind = NormalRational
+        result.r.num = x * y.r.den
+        result.r.den = y.r.num
+        reduce(result)
+    else:
+        result = toBigRational(x) / y
+
+func `/=`*(x: var VRational, y: VRational) =
+    if x.rKind == NormalRational:
+        if y.rKind == NormalRational:
+            x.r.num *= y.r.den
+            x.r.den *= y.r.num
+            reduce(x)
+        else:
+            x = toBigRational(x) / y
+    else:
+        if y.rKind == NormalRational:
+            x /= toBigRational(y)
+        else:
+            x.br /= y.br
+
+func `/=`*(x: var VRational, y: int) =
+    if x.rKind == NormalRational:
+        x.r.den *= y
+        reduce(x)
+    else:
+        x /= toBigRational(y)
+
+func `^`*(x: VRational, y: int): VRational =
+    if x.rKind == NormalRational:
+        if y < 0:
+            result.r.num = x.r.den ^ -y
+            result.r.den = x.r.num ^ -y
+        else:
+            result.r.num = x.r.num ^ y
+            result.r.den = x.r.den ^ y
+    else:
+        result = VRational(
+            rKind: BigRational,
+            br: x.br ^ y
+        )
+
+func `^`*(x: VRational, y: float): VRational =
+    if x.rKind == NormalRational:
+        result = toBigRational(x) ^ y
+    else:
+        result = VRational(
+            rKind: BigRational,
+            br: x.br ^ y
+        )
+
+func cmp*(x, y: VRational): int =
+    if x.rKind == NormalRational:
+        if y.rKind == NormalRational:
+            result = (x - y).r.num
+        else:
+            result = cmp(toBigRational(x), y)
+    else:
+        if y.rKind == NormalRational:
+            result = cmp(x, toBigRational(y))
+        else:
+            result = cmp(x.br, y.br)
+
+func `<`*(x, y: VRational): bool =
+    if x.rKind == NormalRational:
+        if y.rKind == NormalRational:
+            result = (x - y).r.num < 0
+        else:
+            result = toBigRational(x) < y
+    else:
+        if y.rKind == NormalRational:
+            result = x < toBigRational(y)
+        else:
+            result = x.br < y.br
+
+func `<=`*(x, y: VRational): bool =
+    if x.rKind == NormalRational:
+        if y.rKind == NormalRational:
+            result = (x - y).r.num <= 0
+        else:
+            result = toBigRational(x) <= y
+    else:
+        if y.rKind == NormalRational:
+            result = x <= toBigRational(y)
+        else:
+            result = x.br <= y.br
+
+func `==`*(x, y: VRational): bool =
+    if x.rKind == NormalRational:
+        if y.rKind == NormalRational:
+            result = (x - y).r.num == 0
+        else:
+            result = toBigRational(x) == y
+    else:
+        if y.rKind == NormalRational:
+            result = x == toBigRational(y)
+        else:
+            result = x.br == y.br
+
+func abs*(x: VRational): VRational =
+    if x.rKind == NormalRational:
+        result.rKind = NormalRational
+        result.r.num = abs x.r.num
+        result.r.den = abs x.r.den
+    else:
+        result.rKind = BigRational
+        result.br = abs(x.br)
+
+func `div`*(x, y: VRational): int =
+    if x.rKind == NormalRational:
+        if y.rKind == NormalRational:
+            result = x.r.num * y.r.den div y.r.num * x.r.den
+        else:
+            raise newException(DivByZeroDefect, "div not supported")
+    else:
+        raise newException(DivByZeroDefect, "div not supported")
+
+func `mod`*(x, y: VRational): VRational =
+    if x.rKind == NormalRational:
+        if y.rKind == NormalRational:
+            result.rKind = NormalRational
+            result.r.num = (x.r.num * y.r.den) mod (y.r.num * x.r.den)
+            result.r.den = x.r.den * y.r.den
+            reduce(result)
+        else:
+            raise newException(DivByZeroDefect, "mod not supported")
+    else:
+        raise newException(DivByZeroDefect, "mod not supported")
+
+func floorDiv*(x, y: VRational): int =
+    if x.rKind == NormalRational:
+        if y.rKind == NormalRational:
+            result = floorDiv(x.r.num * y.r.den, y.r.num * x.r.den)
+        else:
+            raise newException(DivByZeroDefect, "floorDiv not supported")
+    else:
+        raise newException(DivByZeroDefect, "floorDiv not supported")
+
+func floorMod*(x, y: VRational): VRational =
+    if x.rKind == NormalRational:
+        if y.rKind == NormalRational:
+            result.rKind = NormalRational
+            result.r.num = floorMod(x.r.num * y.r.den, y.r.num * x.r.den)
+            result.r.den = x.r.den * y.r.den
+            reduce(result)
+        else:
+            raise newException(DivByZeroDefect, "floorMod not supported")
+    else:
+        raise newException(DivByZeroDefect, "floorMod not supported")
+
+func isZero*(x: VRational): bool =
+    if x.rKind == NormalRational:
+        result = x.r.num == 0
+    else:
+        result = numerator(x.br) == 0
+
+func isNegative*(x: VRational): bool =
+    if x.rKind == NormalRational:
+        result = x.r.num < 0
+    else:
+        result = numerator(x.br) < 0
+
+func isPositive*(x: VRational): bool =
+    if x.rKind == NormalRational:
+        result = x.r.num > 0
+    else:
+        result = numerator(x.br) > 0
+
+func hash*(x: VRational): Hash =
+    if x.rKind == NormalRational:
+        var copy = x
+        reduce(copy)
+
+        var h: Hash = 0
+        h = h !& hash(copy.r.num)
+        h = h !& hash(copy.r.den)
+        result = !$h
+    else:
+        result = hash(x.br[])
+
+func codify*(x: VRational): string =
+    if x.rKind == NormalRational:
+        if x.r.num < 0:
+            result = fmt("to :rational @[neg {x.r.num * -1} {x.r.den}]")
+        else:
+            result = fmt("to :rational [{x.r.num} {x.r.den}]")
+    else:
+        let num = numerator(x.br)
+        let den = denominator(x.br)
+        if num < 0:
+            result = fmt("to :rational @[neg {num * -1} {den}]")
+        else:
+            result = fmt("to :rational [{num} {den}]")
+
+func `$`*(x: VRational): string =
+    if x.rKind == NormalRational:
+        result = $x.r.num & "/" & $x.r.den
+    else:
+        when not defined(NOGMP):
+            result = $x.br

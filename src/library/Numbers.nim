@@ -597,7 +597,10 @@ proc defineSymbols*() =
             else:
                 rat = toRational(x.f)
 
-            push(newInteger(rat.den))
+            if rat.rKind == NormalRational:
+                push(newInteger(getDenominator(rat)))
+            else:
+                push(newInteger(getDenominator(rat, big=true)))
 
     builtin "digits",
         alias       = unaliased, 
@@ -974,7 +977,7 @@ proc defineSymbols*() =
             elif xKind==Floating:
                 push(newLogical(x.f < 0.0))
             elif xKind==Rational:
-                push(newLogical(x.rat.num < 0)):
+                push(newLogical(isNegative(x.rat))):
             elif xKind==Complex:
                 push(newLogical(x.z.re < 0.0 or (x.z.re == 0.0 and x.z.im < 0.0)))
 
@@ -1006,7 +1009,10 @@ proc defineSymbols*() =
             else:
                 rat = toRational(x.f)
 
-            push(newInteger(rat.num))
+            if rat.rKind == NormalRational:
+                push(newInteger(getNumerator(rat)))
+            else:
+                push(newInteger(getNumerator(rat, big=true)))
 
     builtin "odd?",
         alias       = unaliased, 
@@ -1058,7 +1064,7 @@ proc defineSymbols*() =
             elif xKind==Floating:
                 push(newLogical(x.f > 0.0))
             elif xKind==Rational:
-                push(newLogical(x.rat.num > 0)):
+                push(newLogical(isPositive(x.rat))):
             elif xKind==Complex:
                 push(newLogical(x.z.re > 0.0 or (x.z.re == 0.0 and x.z.im > 0.0)))
     

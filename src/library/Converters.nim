@@ -36,7 +36,7 @@ when not defined(WEB):
 import vm/lib
 import vm/[bytecode, errors, eval, exec, opcodes, parse]
 
-import vm/values/custom/[vbinary, vrange]
+import vm/values/custom/[vbinary, vrange, vrational]
 
 #=======================================
 # Variables
@@ -113,7 +113,12 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                 case tp:
                     of Logical: return newLogical(y.i!=0)
                     of Floating: return newFloating(float(y.i))
-                    of Rational: return newRational(y.i)
+                    of Rational: 
+                        if y.iKind == NormalInteger:
+                            return newRational(y.i)
+                        else:
+                            when not defined(NOGMP):
+                                return newRational(y.bi)
                     of Char: return newChar(toUTF8(Rune(y.i)))
                     of String:
                         if y.iKind==NormalInteger:
@@ -199,10 +204,16 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                     of String:
                         return newString($(y))
                     of Block:
-                        return newBlock(@[
-                            newInteger(y.rat.num),
-                            newInteger(y.rat.den)
-                        ])
+                        if y.rat.rKind == NormalRational:
+                            return newBlock(@[
+                                newInteger(getNumerator(y.rat)),
+                                newInteger(getDenominator(y.rat))
+                            ])
+                        else:
+                            return newBlock(@[
+                                newInteger(getNumerator(y.rat, big=true)),
+                                newInteger(getDenominator(y.rat, big=true))
+                            ])
                     else: throwCannotConvert()
 
             of Version:

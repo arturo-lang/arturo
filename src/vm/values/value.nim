@@ -254,9 +254,26 @@ func newRational*(num: int, den: int): Value {.inline.} =
     ## create Rational value from numerator + denominator (int)
     Value(kind: Rational, rat: initRational(num, den))
 
+func newRational*(num: int, den: Int): Value {.inline.} =
+    ## create Rational value from numerator + denominator (int, Int)
+    Value(kind: Rational, rat: initRational(num, den))
+
+func newRational*(num: Int, den: int): Value {.inline.} =
+    ## create Rational value from numerator + denominator (Int, int)
+    Value(kind: Rational, rat: initRational(num, den))
+
+func newRational*(num: Int, den: Int): Value {.inline.} =
+    ## create Rational value from numerator + denominator (Int, Int)
+    Value(kind: Rational, rat: initRational(num, den))
+
 func newRational*(n: int): Value {.inline.} =
     ## create Rational value from int
     Value(kind: Rational, rat: toRational(n))
+
+when not defined(NOGMP):
+    func newRational*(n: Int): Value {.inline.} =
+        ## create Rational value from Int
+        Value(kind: Rational, rat: toBigRational(n))
 
 func newRational*(n: float): Value {.inline.} =
     ## create Rational value from float
@@ -264,7 +281,16 @@ func newRational*(n: float): Value {.inline.} =
 
 func newRational*(num: Value, den: Value): Value {.inline, enforceNoRaises.} =
     ## create Rational value from numerator + denominator (Value)
-    newRational(num.i, den.i)
+    if num.iKind == NormalInteger:
+        if den.iKind == NormalInteger:
+            return newRational(num.i, den.i)
+        else:
+            return newRational(num.i, den.bi)
+    else:
+        if den.iKind == NormalInteger:
+            return newRational(num.bi, den.i)
+        else:
+            return newRational(num.bi, den.bi)
 
 func newVersion*(v: string): Value {.inline.} =
     ## create Version value from string

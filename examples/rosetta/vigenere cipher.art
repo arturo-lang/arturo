@@ -1,10 +1,10 @@
-Letters: (@`A`..`Z`) ++ (@`a`..`z`)
+Letters: (@'A'..'Z') ++ (@'a'..'z')
 encrypt: function [msg, key][
     pos: 0
     result: ""
     loop msg 'c ->
         if in? c Letters [
-            'result ++ to :char (((to :integer key\[pos]) + to :integer upper c) % 26) + to :integer `A`
+            'result ++ to :char (((to :integer key\[pos]) + to :integer upper c) % 26) + to :integer 'A'
             pos: (pos + 1) % size key
         ]
     return result
@@ -14,7 +14,7 @@ decrypt: function [msg, key][
     pos: 0
     result: ""
     loop msg 'c [
-        'result ++ to :char ((26 + (to :integer c) - to :integer key\[pos]) % 26) + to :integer `A`
+        'result ++ to :char ((26 + (to :integer c) - to :integer key\[pos]) % 26) + to :integer 'A'
         pos: (pos + 1) % size key
     ]
     return result

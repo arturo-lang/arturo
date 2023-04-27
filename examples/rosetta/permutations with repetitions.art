@@ -1,11 +1,11 @@
 decide: function [pc]->
-    and? pc\0 = `B`
-         pc\1 = `C`
+    and? pc\0 = 'B'
+         pc\1 = 'C'
 
 permutation: function [vals, n][
     k: size vals
     pn: array.of:n 0
-    p: array.of:n `0`
+    p: array.of:n '0'
 
     while [true][
         loop.with:'i pn 'x -> p\[i]: vals\[x]

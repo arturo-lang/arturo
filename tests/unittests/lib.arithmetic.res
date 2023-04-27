@@ -1,4 +1,3 @@
-
 >> add
 
 >> add - :integer :integer
@@ -258,10 +257,6 @@
 [+] passed!
 
 >> divmod - :floating :complex
-[+] passed!
-[+] passed!
-
->> divmod - :floating :rational
 [+] passed!
 [+] passed!
 

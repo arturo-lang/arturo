@@ -112,7 +112,7 @@ template toNewBig(v: untyped): untyped =
 
 template notZero(v: untyped): untyped =
     when v is VRational:
-        if unlikely(v.num==0):
+        if unlikely(isZero(v)):
             RuntimeError_DivisionByZero()
     elif v is VComplex:
         if unlikely(v.re==0 and v.im==0):
@@ -1129,8 +1129,8 @@ proc `^`*(x: Value, y: Value): Value =
         of Floating   || BigInteger     :   (when GMP: return newFloating(pow(x.f, y.bi)))
         of Floating   || Floating       :   return newFloating(pow(x.f, y.f))
 
-        of Rational   || Integer        :   return newRational(normalIntegerPow(x.rat.num, y.i), normalIntegerPow(x.rat.den, y.i))
-        of Rational   || Floating       :   discard notZero(x.rat.den); return newRational(pow(float(x.rat.num), y.f) / pow(float(x.rat.den), y.f))
+        of Rational   || Integer        :   return newRational(x.rat ^ y.i)
+        of Rational   || Floating       :   discard notZero(x.rat); return newRational(x.rat ^ y.f)
 
         of Complex    || Integer        :   return newComplex(pow(x.z, float(y.i)))
         of Complex    || Floating       :   return newComplex(pow(x.z, y.f))
@@ -1179,8 +1179,8 @@ proc `^=`*(x: var Value, y: Value) =
         of Floating   || BigInteger     :   (when GMP: x = newFloating(pow(x.f, y.bi)))
         of Floating   || Floating       :   x.f = pow(x.f, y.f)
 
-        of Rational   || Integer        :   x = newRational(normalIntegerPow(x.rat.num, y.i), normalIntegerPow(x.rat.den, y.i))
-        of Rational   || Floating       :   x = newRational(pow(float(x.rat.num), y.f) / pow(float(x.rat.den), y.f))
+        of Rational   || Integer        :   x = newRational(x.rat ^ y.i)
+        of Rational   || Floating       :   x = newRational(x.rat ^ y.f)
 
         of Complex    || Integer        :   x.z = pow(x.z, float(y.i))
         of Complex    || Floating       :   x.z = pow(x.z, y.f)

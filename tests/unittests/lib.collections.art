@@ -96,10 +96,10 @@ do [
     topic "append - :string < :string + :char"
     do [
 
-        ensure -> "Arturo" = append "Artur" `o`
+        ensure -> "Arturo" = append "Artur" 'o'
         passed
 
-        ensure -> "Arturo" = "Artur" ++ `o`
+        ensure -> "Arturo" = "Artur" ++ 'o'
         passed
 
     ]
@@ -108,12 +108,12 @@ do [
     do [
 
         s: "Artur"
-        append 's `o`
+        append 's 'o'
         ensure -> "Arturo" = s
         passed
 
         s: "Artur"
-        's ++ `o`
+        's ++ 'o'
         ensure -> "Arturo" = s
         passed
 
@@ -122,10 +122,10 @@ do [
     topic "append - :string < :char + :char"
     do [
 
-        ensure -> "ab" = append `a` `b`
+        ensure -> "ab" = append 'a' 'b'
         passed
         
-        ensure -> "ab" = `a` ++ `b`
+        ensure -> "ab" = 'a' ++ 'b'
         passed
 
     ]
@@ -133,13 +133,13 @@ do [
     topic "append - :string < :char (literal) + :char"
     do [
 
-        c: `a`
-        append 'c `b`
+        c: 'a'
+        append 'c 'b'
         ensure -> "ab" = c
         passed
         
-        c: `a`
-        'c ++ `b`
+        c: 'a'
+        'c ++ 'b'
         ensure -> "ab" = c
         passed
 
@@ -148,10 +148,10 @@ do [
     topic "append - :string < :char + :string"
     do [
 
-        ensure -> "Arturo" = append `A` "rturo"
+        ensure -> "Arturo" = append 'A' "rturo"
         passed
         
-        ensure -> "Arturo" = `A` ++ "rturo"
+        ensure -> "Arturo" = 'A' ++ "rturo"
         passed
 
     ]
@@ -159,12 +159,12 @@ do [
     topic "append - :string < :char (literal) + :string"
     do [
         
-        c: `A`
+        c: 'A'
         append 'c "rturo"
         ensure -> "Arturo" = c
         passed
         
-        c: `A`
+        c: 'A'
         'c ++ "rturo"
         ensure -> "Arturo" = c
         passed
@@ -342,7 +342,7 @@ do [
     str: "Arturo"
     ensure -> contains? str "Art"         ; :string
     passed
-    ensure -> contains? str `t`           ; :char
+    ensure -> contains? str 't'           ; :char
     passed
     ensure -> contains? str {/[Art]/}     ; :regex
     passed
@@ -565,7 +565,7 @@ do [
 topic "first - .n"
 do [
 
-    ensure -> `A` = first "Arturo"
+    ensure -> 'A' = first "Arturo"
     passed
     ensure -> "A" <> first "Arturo"
     passed
@@ -602,17 +602,17 @@ do [
     passed
 
 
-    a: range `a` `l`
-    b: range.step: 2 `a` `l`
+    a: range 'a' 'l'
+    b: range.step: 2 'a' 'l'
 
-    ensure -> `a` = first a
-    ensure -> `a` = first b
+    ensure -> 'a' = first a
+    ensure -> 'a' = first b
     passed
 
-    ensure -> [`a` `b`] = @first.n: 2 a
-    ensure -> [`a` `c`] = @first.n: 2 b
-    ensure -> (`a`..`b`) = first.n: 2 a
-    ensure -> (range.step: 2 `a` `c`) = first.n: 2 b
+    ensure -> ['a' 'b'] = @first.n: 2 a
+    ensure -> ['a' 'c'] = @first.n: 2 b
+    ensure -> ('a'..'b') = first.n: 2 a
+    ensure -> (range.step: 2 'a' 'c') = first.n: 2 b
     passed
 
     ensure -> 5 = first range.step: 2 5 0
@@ -663,16 +663,16 @@ do [
 topic "get - :string"
 do [
     
-    ensure -> `r` = get "Arturo" 1
+    ensure -> 'r' = get "Arturo" 1
     passed
     
     s: "Arturo"
     
-    ensure -> `r` = s\1
+    ensure -> 'r' = s\1
     passed
     
     i: 0
-    ensure -> `r` = s\[i + 1]
+    ensure -> 'r' = s\[i + 1]
     passed
     
     ensure -> "Art"    = get s 0..2
@@ -829,7 +829,7 @@ do [
     str: "Arturo"
     ensure -> in? "Art" str        ; :string
     passed
-    ensure -> in? `t` str           ; :char
+    ensure -> in? 't' str           ; :char
     passed
     ensure -> in? {/[Art]/} str     ; :regex
     passed
@@ -997,7 +997,7 @@ do [
 topic "insert - :string"
 do [
     
-    ensure -> "CPython" = insert "Python" 0 `C`
+    ensure -> "CPython" = insert "Python" 0 'C'
     passed
     ensure -> "Arturo Programming Language" 
         = insert "Arturo Language" 6 " Programming"
@@ -1008,7 +1008,7 @@ do [
 topic "insert - :string (literal)"
 do [
     
-    py: "Python", insert 'py 0 `C` 
+    py: "Python", insert 'py 0 'C' 
     art: "Arturo Language", insert 'art 6 " Programming"
     
     ensure -> "CPython" = py
@@ -1137,7 +1137,7 @@ do [
 topic "last - .n"
 do [
 
-    ensure -> `o` = last "Arturo"
+    ensure -> 'o' = last "Arturo"
     passed
     ensure -> "o" <> last "Arturo"
     passed
@@ -1178,17 +1178,17 @@ do [
     passed
 
 
-    a: range `a` `l`
-    b: range.step: 2 `a` `l`
+    a: range 'a' 'l'
+    b: range.step: 2 'a' 'l'
 
-    ensure -> `l` = last a
-    ensure -> `k` = last b
+    ensure -> 'l' = last a
+    ensure -> 'k' = last b
     passed
 
-    ensure -> [`k` `l`] = @last.n: 2 a
-    ensure -> [`i` `k`] = @last.n: 2 b
-    ensure -> (`k`..`l`) = last.n: 2 a
-    ensure -> (range.step: 2 `i` `k`) = last.n: 2 b
+    ensure -> ['k' 'l'] = @last.n: 2 a
+    ensure -> ['i' 'k'] = @last.n: 2 b
+    ensure -> ('k'..'l') = last.n: 2 a
+    ensure -> (range.step: 2 'i' 'k') = last.n: 2 b
     passed
 
     ensure -> 1 = last range.step: 2 5 0
@@ -1395,7 +1395,7 @@ do [
     b: pop 'a
     
     ensure -> "Arturo" = a
-    ensure -> `o` = b
+    ensure -> 'o' = b
     passed
     
     b: pop.n: 3 'a
@@ -1461,42 +1461,42 @@ do [
 
     topic "prepend - :string < :string + :char"
     do [
-        ensure -> "Arturo" = prepend "rturo" `A`
+        ensure -> "Arturo" = prepend "rturo" 'A'
         passed
     ]
     
     topic "prepend - :string < :string (literal) + :char"
     do [
         s: "rturo"
-        prepend 's `A`
+        prepend 's 'A'
         ensure -> "Arturo" = s
         passed
     ]
 
     topic "prepend - :string < :char + :char"
     do [
-        ensure -> "ba" = prepend `a` `b`
+        ensure -> "ba" = prepend 'a' 'b'
         passed
     ]
     
     topic "prepend - :string < :char (literal) + :char"
     do [
-        c: `a`
-        prepend 'c `b`
+        c: 'a'
+        prepend 'c 'b'
         ensure -> "ba" = c
         passed
     ]
 
     topic "prepend - :string < :char + :string"
     do [
-        ensure -> "Arturo" = prepend "rturo" `A`
+        ensure -> "Arturo" = prepend "rturo" 'A'
         passed
     ]
     
     topic "prepend - :string < :char (literal) + :string"
     do [
         c: "rturo"
-        prepend 'c `A`
+        prepend 'c 'A'
         ensure -> "Arturo" = c
         passed
     ]
@@ -1554,14 +1554,14 @@ do [
     ensure -> "Art" = "Arturo" -- "uro"
     passed
     
-    ensure -> "Artur" = remove "Arturo" `o`
-    ensure -> "Artur" = "Arturo" -- `o`
+    ensure -> "Artur" = remove "Arturo" 'o'
+    ensure -> "Artur" = "Arturo" -- 'o'
     passed
     
     ensure -> "C+" = remove.once "C++" "+"
-    ensure -> "C+" = remove.once "C++" `+`
+    ensure -> "C+" = remove.once "C++" '+'
     ensure -> "C+" = "C++" --.once "+"
-    ensure -> "C+" = "C++" --.once `+`
+    ensure -> "C+" = "C++" --.once '+'
     passed
 
     ; ensure -> "Rby" = remove.index "Ruby" 1
@@ -1589,10 +1589,10 @@ do [
     
     passed
     
-    a: "Arturo", remove 'a `o`
+    a: "Arturo", remove 'a 'o'
     ensure -> "Artur" = a
     
-    a: "Arturo", 'a -- `o`
+    a: "Arturo", 'a -- 'o'
     ensure -> "Artur" = a
     
     passed
@@ -1600,13 +1600,13 @@ do [
     a: "C++", remove.once 'a "+"
     ensure -> "C+" = a
     
-    a: "C++", remove.once 'a `+`
+    a: "C++", remove.once 'a '+'
     ensure -> "C+" = a
     
     a: "C++", 'a --.once "+"
     ensure -> "C+" = a
     
-    a: "C++", 'a --.once `+`
+    a: "C++", 'a --.once '+'
     ensure -> "C+" = a
     
     passed
@@ -1879,7 +1879,7 @@ do [
     ensure -> string? (sample a)
     passed
     
-    a: `a`..`z`
+    a: 'a'..'z'
     ensure -> in? (sample a) a
     ensure -> char? (sample a)
     passed
@@ -1890,7 +1890,7 @@ do [
 topic "set - :string"
 do [
     
-    a: "Aaturo", set a 1 `r`
+    a: "Aaturo", set a 1 'r'
     ensure -> "Arturo" = a 
     passed
     
@@ -1902,11 +1902,11 @@ do [
     ensure -> "Arturo" = a
     passed
     
-    a: "Aaturo", a\1: `r`
+    a: "Aaturo", a\1: 'r'
     ensure -> "Arturo" = a
     passed
     
-    a: "Aaturo", a\[1]: `r`
+    a: "Aaturo", a\[1]: 'r'
     ensure -> "Arturo" = a
     passed
     
