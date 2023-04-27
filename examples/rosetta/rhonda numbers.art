@@ -1,4 +1,4 @@
-digs: (@`0`..`9`) ++ @`A`..`Z`
+digs: (@'0'..'9') ++ @'A'..'Z'
 toBase: function [n,base][
     join map digits.base:base n 'x -> digs\[x]
 ]
