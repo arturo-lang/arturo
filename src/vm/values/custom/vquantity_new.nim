@@ -421,6 +421,7 @@ static:
     #---------------------------------------------------------------------------------------------------------------------------
     defUnit "C",        "C",        true,       "1 A.s",                    "coulomb", "coulombs"
     defUnit "statC",    "statC",    false,      "3.335641e-10 C",           "statcoulomb", "statcoulombs"
+    defUnit "Fr",       "Fr",       false,      "1 statC",                  "franklin", "franklins"
 
     #---------------------------------------------------------------------------------------------------------------------------
     # Capacitance units (base: F = 1 C/V)
