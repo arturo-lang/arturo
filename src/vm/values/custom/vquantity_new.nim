@@ -14,6 +14,10 @@
 
 import algorithm, math, parseutils, sequtils, strutils, sugar, tables
 
+when not defined(NOGMP):
+    import helpers/bignums as BignumsHelper
+
+import vm/values/custom/vrational
 import vquantity/preprocessor
 
 #=======================================
@@ -53,6 +57,7 @@ static:
     defDimension "Entropy",                     "L²·M·T⁻²·K⁻¹"
     defDimension "Force",                       "L·M·T⁻²"
     defDimension "Frequency",                   "T⁻¹"
+    defDimension "Heat Flux",                   "M·T⁻³"
     defDimension "Illuminance",                 "L⁻²·J"
     defDimension "Inductance",                  "L²·M·T⁻²·I⁻²"
     defDimension "Information",                 "B"
@@ -70,6 +75,9 @@ static:
     defDimension "Mole Flow Rate",              "N·T⁻¹"
     defDimension "Moment of Inertia",           "L²·M"
     defDimension "Momentum",                    "L·M·T⁻¹"
+    defDimension "Number Density",              "L⁻³"
+    defDimension "Permeability",                "L·M·T⁻²·I⁻²"
+    defDimension "Permittivity",                "L⁻³·M⁻¹·T⁴·I²"
     defDimension "Potential",                   "L²·M·T⁻³·I⁻¹"
     defDimension "Power",                       "L²·M·T⁻³"
     defDimension "Pressure",                    "L⁻¹·M·T⁻²"
@@ -98,23 +106,23 @@ static:
     #----------------------------------------------------------------------------------------------------
     #          name         symbol      definition 
     #----------------------------------------------------------------------------------------------------
-    defPrefix "a",          "a",        "1e-18"
-    defPrefix "f",          "f",        "1e-15"
-    defPrefix "p",          "p",        "1e-12"
-    defPrefix "n",          "n",        "1e-9"
-    defPrefix "u",          "μ",        "1e-6"
-    defPrefix "m",          "m",        "1e-3"
-    defPrefix "c",          "c",        "1e-2"
-    defPrefix "d",          "d",        "1e-1"
-    defPrefix "No",         "",         "1"
-    defPrefix "da",         "da",       "1e1"
-    defPrefix "h",          "h",        "1e2"
-    defPrefix "k",          "k",        "1e3"
-    defPrefix "M",          "M",        "1e6"
-    defPrefix "G",          "G",        "1e9"
-    defPrefix "T",          "T",        "1e12"
-    defPrefix "P",          "P",        "1e15"
-    defPrefix "E",          "E",        "1e18"
+    defPrefix "a",          "a",        -18
+    defPrefix "f",          "f",        -15
+    defPrefix "p",          "p",        -12
+    defPrefix "n",          "n",        -9
+    defPrefix "u",          "μ",        -6
+    defPrefix "m",          "m",        -3
+    defPrefix "c",          "c",        -2
+    defPrefix "d",          "d",        -1
+    defPrefix "No",         "",         0
+    defPrefix "da",         "da",       1
+    defPrefix "h",          "h",        2
+    defPrefix "k",          "k",        3
+    defPrefix "M",          "M",        6
+    defPrefix "G",          "G",        9
+    defPrefix "T",          "T",        12
+    defPrefix "P",          "P",        15
+    defPrefix "E",          "E",        18
 
     #----------------------------------------------------------------------------------------------------
     # Currencies
@@ -252,7 +260,7 @@ static:
     defUnit "ang",      "Å",        false,      "1e-10 m",                  "angstrom", "angstroms"
     defUnit "au",       "au",       false,      "149597870700 m",           "astronomicalUnit", "astronomicalUnits"
     defUnit "ly",       "ly",       false,      "9460730472580800 m",       "lightYear", "lightYears"
-    defUnit "psc",      "pc",       false,      "3.26156 ly",               "parsec", "parsecs"
+    #defUnit "psc",      "pc",       false,      "3.26156 ly",               "parsec", "parsecs"
     defUnit "px",       "px",       true,       "1/96 in",                  "pixel", "pixels"
     defUnit "pt",       "pt",       true,       "1/72 in",                  "point", "points"
     defUnit "pc",       "pc",       true,       "12 pt",                    "pica", "picas"
@@ -309,6 +317,10 @@ static:
     defUnit "lt",       "LT",       false,      "2240 lb",                  "longTon", "longTons"
     defUnit "st",       "st",       false,      "14 lb",                    "stone", "stones"
     defUnit "Da",       "Da",       false,      "1.66053906660e-27 kg",     "dalton", "daltons", "AMU"
+    defUnit "gr",       "gr",       false,      "64.79891 mg",              "grain", "grains"
+    defUnit "dwt",      "dwt",      false,      "24 gr",                    "pennyweight", "pennyweights"
+    defUnit "ozt",      "ozt",      false,      "20 dwt",                   "troyOunce", "troyOunces"
+    defUnit "lbt",      "lbt",      false,      "12 ozt",                   "troyPound", "troyPounds"
     
     #---------------------------------------------------------------------------------------------------------------------------
     # Speed units (base: m/s)
@@ -523,6 +535,13 @@ static:
     defUnit "rpm",      "rpm",      true,       "0.1047 rad/s",             "rpms"
 
     #---------------------------------------------------------------------------------------------------------------------------
+    # Data-transfer rate units (base: bit/s)
+    #---------------------------------------------------------------------------------------------------------------------------
+    #       name        symbol      prefix?     definition                  aliases
+    #---------------------------------------------------------------------------------------------------------------------------
+    defUnit "bps",      "bps",      true,       "1 bit/s"
+
+    #---------------------------------------------------------------------------------------------------------------------------
     # Illuminance units (base: lx = cd/m2)
     #---------------------------------------------------------------------------------------------------------------------------
     #       name        symbol      prefix?     definition                  aliases
@@ -536,13 +555,62 @@ static:
     #---------------------------------------------------------------------------------------------------------------------------
     defUnit "lm",       "lm",       true,       "1 cd.sr",                  "lumen", "lumens"
 
+    #----------------------------------------------------------------------------------------------------
+    # Constants
+    #----------------------------------------------------------------------------------------------------
+    #           name                            pre-calculate?      definition
+    #----------------------------------------------------------------------------------------------------
+    defConstant "alphaParticleMass",            false,              "6.64465675e-27 kg"
+    defConstant "angstromStar",                 false,              "1e-10 m"
+    defConstant "atomicMass",                   false,              "1.660538921e-27 kg"
+    defConstant "avogadroConstant",             false,              "6.02214129e23 1/mol"       # avogadro
+    defConstant "bohrRadius",                   false,              "5.2917721092e-11 m"
+    defConstant "boltzmannConstant",            false,              "1.3806488e-23 J/K"
+    defConstant "classicalElectronRadius",      false,              "2.8179403267e-15 m"
+    defConstant "conductanceQuantum",           true,               "7.7480917346e-5 S"
+    defConstant "deuteronMass",                 false,              "3.3435830926e-27 kg"
+    defConstant "electronCharge",               false,              "1.602176565e-19 C"
+    defConstant "electronMass",                 false,              "9.10938215e-31 kg"
+    defConstant "electronMassEnergy",           false,              "8.18710506e-14 J"
+    defConstant "elementaryCharge",             false,              "1.602176565e-19 C"
+    defConstant "gravitationalConstant",        false,              "6.6743e-11 m3/kg.s2"
+    defConstant "hartreeEnergy",                false,              "4.35974434e-18 J"
+    defConstant "helionMass",                   false,              "5.00641234e-27 kg"
+    defConstant "impedanceOfVacuum",            true,               "376.730313461 ohm"
+    defConstant "inverseConductanceQuantum",    false,              "12906.4037217 ohm"
+    defConstant "josephsonConstant",            true,               "483597.891e9 Hz/V"
+    defConstant "magneticFluxQuantum",          false,              "2.067833758e-15 Wb"
+    defConstant "molarGasConstant",             true,               "8.3144621 J/mol.K"
+    defConstant "muonMass",                     false,              "1.883531475e-28 kg"
+    defConstant "neutronMass",                  false,              "1.674927351e-27 kg"
+    defConstant "planckConstant",               false,              "6.62606957e-34 J.s"
+    defConstant "planckLength",                 false,              "1.616199e-35 m"
+    defConstant "planckMass",                   false,              "2.17651e-8 kg"
+    defConstant "planckTemperature",            false,              "1.416833e32 K"
+    defConstant "planckTime",                   false,              "5.39116e-44 s"
+    defConstant "protonMass",                   false,              "1.672621777e-27 kg"
+    defConstant "protonMassEnergy",             false,              "1.503277484e-10 J"
+    defConstant "reducedPlanckConstant",        false,              "1.054571726e-34 J.s"
+    defConstant "rydbergConstant",              true,               "10973731.56853955 1/m"     # rydberg
+    defConstant "speedOfLight",                 true,               "299792458 m/s"
+    defConstant "standardGasVolume",            true,               "22.41410e-3 m3/mol"
+    defConstant "standardPressure",             true,               "100 kPa"
+    defConstant "standardTemperature",          true,               "273.15 K"
+    defConstant "tauMass",                      false,              "3.16747e-27 kg"
+    defConstant "thomsonCrossSection",          false,              "6.652458734e-29 m2"
+    defConstant "tritonMass",                   false,              "5.007356665e-27 kg"
+    defConstant "unifiedMass",                  false,              "1.660538921e-27 kg"
+    defConstant "vacuumPermeability",           true,               "1.2566370614e-6 N/A2"
+    defConstant "vacuumPermittivity",           false,              "8.854187817e-12 F/m"       # epsilon0
+    defConstant "vonKlitzingConstant",          true,               "25812.8074434 ohm"    
+
 #=======================================
 # Types
 #=======================================
 
 type
     AtomExponent        = -5..5
-    QuantityValue       = float
+    QuantityValue       = VRational
     QuantitySignature   = int64
 
     Prefix          = generatePrefixDefinitions()
@@ -612,6 +680,12 @@ var
     UserUnits           : Table[string,string]
 
 #=======================================
+# Useful Constants
+#=======================================
+
+generateConstantDefinitions()
+
+#=======================================
 # Helpers
 #=======================================
 
@@ -621,7 +695,8 @@ func isUnitless(q: Quantity): bool {.inline.} =
 proc getPrimitive(unit: PrefixedUnit): Quantity =
     result = Quantities[unit.u]
 
-    result.value *= pow(float(10), float(ord(unit.p)))
+    # Warning: This may be losing information for too-low or too-high values!
+    result.value *= toRational(pow(float(10), float(ord(unit.p))))
 
 proc getSignature(atoms: Atoms): QuantitySignature =
     for atom in atoms:
@@ -629,10 +704,10 @@ proc getSignature(atoms: Atoms): QuantitySignature =
         result += prim.signature * atom.power
 
 proc getValue(atoms: Atoms): QuantityValue =
-    result = 1.0
+    result = 1//1
     for atom in atoms:
         let prim = getPrimitive(atom.unit)
-        result *= pow(prim.value, float(atom.power))
+        result *= prim.value ^ atom.power
 
 proc flatten*(atoms: Atoms): Atoms =
     var cnts: OrderedTable[PrefixedUnit, int]
@@ -692,25 +767,46 @@ proc parseAtoms*(str: string): Atoms =
 # Constructors
 #=======================================
 
-proc newQuantity*(v: float, atoms: Atoms): Quantity =
+proc newQuantity*(v: VRational, atoms: Atoms): Quantity =
     result.original = v
     result.value = v
 
     for atom in atoms:
         let prim = getPrimitive(atom.unit)
-
         result.signature += prim.signature * atom.power
-        result.value *= pow(prim.value, float(atom.power))
+        result.value *= prim.value ^ atom.power
 
         result.atoms.add(atom)
+
+proc parseValue(s: string): VRational =
+    if s.contains("."):
+        result = toRational(parseFloat(s))
+    elif s.contains("/"):
+        let ratParts = s.split("/")
+        try:
+            result = initRational(parseInt(ratparts[0]), parseInt(ratparts[1]))
+        except ValueError:
+            when not defined(NOGMP):
+                result = initRational(newInt(ratparts[0]), newInt(ratparts[1]))
+    else:
+        try:
+            result = toRational(parseInt(s))
+        except ValueError:
+            when not defined(NOGMP):
+                result = toRational(newInt(s))
 
 proc newQuantity*(str: string): Quantity =
     let parts = str.split(" ")
 
-    let value = parseFloat(parts[0])
+    # Warning: we should be able to parse rational numbers as well!
+    let value = parseValue(parts[0])
     let atoms = parseAtoms(parts[1])
 
     result = newQuantity(value, atoms)
+
+proc newQuantity*(vstr: string, atoms: Atoms): Quantity =
+    echo "defining ---> " & $(vstr)
+    result = newQuantity(parseValue(vstr), atoms)
 
 #=======================================
 # Methods
@@ -891,6 +987,12 @@ proc initQuantities*() =
     Dimensions = generateDimensions()
     Quantities = generateQuantities()
 
+    echo "BEFORE"
+    generateConstants()
+    echo "AFTER"
+
+    # planckMass = newQuantity(parseValue("2.176434e-8"), parseAtoms("1/kg"))
+
 #=======================================
 # Testing
 #=======================================
@@ -1066,7 +1168,7 @@ when isMainModule:
     # inspect (newQuantity("3 m3")) / (newQuantity("3 m"))
 
     # echo "dividing 3m3 and 3m2"
-    # inspect (newQuantity("3 m3")) / (newQuantity("3 m2"))
+    inspect (newQuantity("3 m3")) / (newQuantity("3 m2"))
 
     defineNewUserUnit("zf", "Zf", "1 bit/m.s")
 
@@ -1080,6 +1182,8 @@ when isMainModule:
     echo $(newQuantity("3 days") + newQuantity("1 week"))
 
     echo $(newQuantity("15 km/hr") * newQuantity("30 min"))
+
+    echo $(newQuantity("0 g") + newQuantity("1 ozt"))
 
     # proc getSign1(x: float): float {.inline.} =
     #     if x < 12:
@@ -1128,3 +1232,5 @@ when isMainModule:
     #         i = getSign3(j)
 
     # echo "i = ", i
+    echo $(speedOfLight)
+    echo $(gravitationalConstant)

@@ -1,4 +1,4 @@
-bases: [`A` `G` `C` `T`]
+bases: ['A' 'G' 'C' 'T']
 randSeq: join map 1..200 => [sample bases]
 randSub: join map 1..4 => [sample bases]
 

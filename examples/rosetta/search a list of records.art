@@ -29,5 +29,5 @@ print last find records $[c][equal? c\name "Dar Es Salaam"]
 print get first find records $[c][less? c\population 5] 'name
 
 ; Print the population of the first city starting with 'A'.
-print get first find records $[c][equal? first c\name `A`] 'population
+print get first find records $[c][equal? first c\name 'A'] 'population
 

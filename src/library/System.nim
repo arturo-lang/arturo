@@ -48,6 +48,12 @@ when not defined(WEB):
 
 proc defineSymbols*() =
 
+    # TODO(System) Convert constants to methods
+    #  None of the supposed constants here is actually a constant.
+    #  All of them return something that doesn't change on one hand,
+    #  but that doesn't mean they should be considered as such.
+    #  labels: library, enhancement
+
     constant "arg",
         alias       = unaliased,
         description = "access command-line arguments as a list":

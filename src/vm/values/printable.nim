@@ -485,18 +485,15 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 result &= fmt("to :complex @[{v.z.re} neg {v.z.im * -1}]")
             else:
                 result &= fmt("to :complex [{v.z.re} {v.z.im}]")
-        of Rational     : 
-            if v.rat.num < 0:
-                result &= fmt("to :rational @[neg {v.rat.num * -1} {v.rat.den}]")
-            else:
-                result &= fmt("to :rational [{v.rat.num} {v.rat.den}]")
+        of Rational     :
+            result &= codify(v.rat) 
         of Version      : result &= fmt("{v.major}.{v.minor}.{v.patch}{v.extra}")
         of Type         : 
             if v.tpKind==BuiltinType:
                 result &= ":" & ($v.t).toLowerAscii()
             else:
                 result &= ":" & v.ts.name
-        of Char         : result &= "`" & $(v.c) & "`"
+        of Char         : result &= "'" & $(v.c) & "'"
         of String       : 
             if safeStrings:
                 result &= "««" & v.s & "»»"
