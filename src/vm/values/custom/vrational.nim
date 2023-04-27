@@ -427,8 +427,8 @@ func `*=`*(x: var VRational, y: VRational) =
             try:
                 safeOp: mulIntWithOverflow(x.r.num, y.r.num, x.r.num)
                 safeOp: mulIntWithOverflow(x.r.den, y.r.den, x.r.den)
-                x.r.num *= y.r.num
-                x.r.den *= y.r.den
+                #x.r.num *= y.r.num
+                #x.r.den *= y.r.den
                 reduce(x)
             except CatchableError:
                 when not defined(NOGMP):
