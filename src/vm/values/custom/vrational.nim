@@ -29,10 +29,6 @@ import helpers/intrinsics
 #=======================================
 
 type 
-    VRationalObj*[T] = object
-        num*: T
-        den*: T
-
     RationalKind* = enum
         NormalRational,
         BigRational
@@ -40,7 +36,8 @@ type
     VRational* = object
         case rKind*: RationalKind:
             of NormalRational:
-                r*: VRationalObj[int]
+                num*: int
+                den*: int
             of BigRational:
                 when not defined(NOGMP):
                     br*: Rat
