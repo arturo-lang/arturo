@@ -474,7 +474,7 @@ static:
     #---------------------------------------------------------------------------------------------------------------------------
     #       name        symbol      prefix?     definition                  aliases
     #---------------------------------------------------------------------------------------------------------------------------
-    defUnit "b",        "b",        true,       "1/8 B",                    "bit", "bits"
+    defUnit "b",        "b",        true,       "1:8 B",                    "bit", "bits"
     defUnit "KiB",      "KiB",      false,      "1024 B",                   "kibibyte", "kibibytes"
     defUnit "MiB",      "MiB",      false,      "1024 KiB",                 "mebibyte", "mebibytes"
     defUnit "GiB",      "GiB",      false,      "1024 MiB",                 "gibibyte", "gibibytes"
