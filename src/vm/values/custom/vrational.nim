@@ -91,8 +91,9 @@ func initRational*(num, den: int): VRational =
     reduce(result)
 
 func simplifyRational*(x: var VRational) =
-    if x.rKind == BigRational and canBeSimplified(x.br):
-        x = initRational(getInt(numerator(x.br)), getInt(denominator(x.br)))
+    when not defined(NOGMP):
+        if x.rKind == BigRational and canBeSimplified(x.br):
+            x = initRational(getInt(numerator(x.br)), getInt(denominator(x.br)))
 
 func initRational*(num: Int, den: Int): VRational =
     result.rKind = BigRational
