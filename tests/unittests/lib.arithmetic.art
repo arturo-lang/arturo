@@ -3092,7 +3092,7 @@ do [
     
     a: to :rational [3 5]
     expected: to :rational [1 10]
-    expected2` to :rational @[(neg 1) 10]
+    expected2: to :rational @[(neg 1) 10]
     ensure -> expected = a - 0.5
     ensure -> expected2 = 0.5 - a
     ensure -> expected = sub a 0.5
