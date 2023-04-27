@@ -181,11 +181,18 @@ func toInt*(x: VRational): int =
 func `+`*(x, y: VRational): VRational =
     if x.rKind == NormalRational:
         if y.rKind == NormalRational:
-            let common = lcm(x.r.den, y.r.den)
-            result.rKind = NormalRational
-            result.r.num = common div x.r.den * x.r.num + common div y.r.den * y.r.num
-            result.r.den = common
-            reduce(result)
+            try:
+                let common = lcm(x.r.den, y.r.den)
+                result.rKind = NormalRational
+                let part1 = common div x.r.den * x.r.num
+                let part2 = common div y.r.den * y.r.num
+                safeOp: addIntWithOverflow(part1, part2, result.r.num)
+                #result.r.num = common div x.r.den * x.r.num + common div y.r.den * y.r.num
+                result.r.den = common
+                reduce(result)
+            except CatchableError:
+                when not defined(NOGMP):
+                    result = toBigRational(x) + y
         else:
             result = x + toBigRational(y)
     else:
@@ -199,27 +206,50 @@ func `+`*(x, y: VRational): VRational =
 
 func `+`*(x: VRational, y: int): VRational =
     if x.rKind == NormalRational:
-        result.rKind = NormalRational
-        result.r.num = x.r.num + y * x.r.den
-        result.r.den = x.r.den
+        try:
+            result.rKind = NormalRational
+            var m: int
+            safeOp: mulIntWithOverflow(x.r.den, y, m)
+            safeOp: addIntWithOverflow(x.r.num, m, result.r.num)
+            #result.r.num = x.r.num + y * x.r.den
+            result.r.den = x.r.den
+            reduce(result)
+        except CatchableError:
+            when not defined(NOGMP):
+                result = toBigRational(x) + y
     else:
         result = x + toBigRational(y)
 
 func `+`*(x: int, y: VRational): VRational =
     if y.rKind == NormalRational:
-        result.rKind = NormalRational
-        result.r.num = y.r.num + x * y.r.den
-        result.r.den = y.r.den
+        try:
+            result.rKind = NormalRational
+            var m: int
+            safeOp: mulIntWithOverflow(y.r.den, x, m)
+            safeOp: addIntWithOverflow(y.r.num, m, result.r.num)
+            #result.r.num = y.r.num + x * y.r.den
+            result.r.den = y.r.den
+            reduce(result)
+        except CatchableError:
+            when not defined(NOGMP):
+                result = toBigRational(x) + y
     else:
         result = toBigRational(x) + y
 
 func `+=`*(x: var VRational, y: VRational) =
     if x.rKind == NormalRational:
         if y.rKind == NormalRational:
-            let common = lcm(x.r.den, y.r.den)
-            x.r.num = common div x.r.den * x.r.num + common div y.r.den * y.r.num
-            x.r.den = common
-            reduce(x)
+            try:
+                let common = lcm(x.r.den, y.r.den)
+                let partOne = common div x.r.den * x.r.num
+                let partTwo = common div y.r.den * y.r.num
+                safeOp: addIntWithOverflow(partOne, partTwo, x.r.num)
+                #x.r.num = common div x.r.den * x.r.num + common div y.r.den * y.r.num
+                x.r.den = common
+                reduce(x)
+            except CatchableError:
+                when not defined(NOGMP):
+                    x = toBigRational(x) + y
         else:
             x = toBigRational(x) + y
     else:
@@ -230,7 +260,14 @@ func `+=`*(x: var VRational, y: VRational) =
 
 func `+=`*(x: var VRational, y: int) =
     if x.rKind == NormalRational:
-        x.r.num += y * x.r.den
+        try:
+            var m: int
+            safeOp: mulIntWithOverflow(y, x.r.den, m)
+            safeOp: addIntWithOverflow(x.r.num, m, x.r.num)
+            #x.r.num += y * x.r.den
+        except CatchableError:
+            when not defined(NOGMP):
+                x = toBigRational(x) + y
     else:
         x += toBigRational(y)
 
@@ -245,10 +282,17 @@ func `-`*(x: VRational): VRational =
 func `-`*(x, y: VRational): VRational =
     if x.rKind == NormalRational:
         if y.rKind == NormalRational:
-            let common = lcm(x.r.den, y.r.den)
-            result.r.num = common div x.r.den * x.r.num - common div y.r.den * y.r.num
-            result.r.den = common
-            reduce(result)
+            try:
+                let common = lcm(x.r.den, y.r.den)
+                let part1 = common div x.r.den * x.r.num
+                let part2 = common div y.r.den * y.r.num
+                safeOp: subIntWithOverflow(part1, part2, result.r.num)
+                #result.r.num = common div x.r.den * x.r.num - common div y.r.den * y.r.num
+                result.r.den = common
+                reduce(result)
+            except CatchableError:
+                when not defined(NOGMP):
+                    result = toBigRational(x) - y
         else:
             result = toBigRational(x) - y
     else:
@@ -262,27 +306,48 @@ func `-`*(x, y: VRational): VRational =
 
 func `-`*(x: VRational, y: int): VRational =
     if x.rKind == NormalRational:
-        result.rKind = NormalRational
-        result.r.num = x.r.num - y * x.r.den
-        result.r.den = x.r.den
+        try:
+            result.rKind = NormalRational
+            var m: int
+            safeOp: mulIntWithOverflow(y, x.r.den, m)
+            safeOp: subIntWithOverflow(x.r.num, m, result.r.num)
+            #result.r.num = x.r.num - y * x.r.den
+            result.r.den = x.r.den
+        except CatchableError:
+            when not defined(NOGMP):
+                result = toBigRational(x) - y
     else:
         result = x - toBigRational(y)
 
 func `-`*(x: int, y: VRational): VRational =
     if y.rKind == NormalRational:
-        result.rKind = NormalRational
-        result.r.num = x * y.r.den - y.r.num
-        result.r.den = y.r.den
+        try:
+            result.rKind = NormalRational
+            var m: int
+            safeOp: mulIntWithOverflow(x, y.r.den, m)
+            safeOp: subIntWithOverflow(m, y.r.num, result.r.num)
+            #result.r.num = x * y.r.den - y.r.num
+            result.r.den = y.r.den
+        except CatchableError:
+            when not defined(NOGMP):
+                result = x - toBigRational(y)
     else:
         result = toBigRational(x) - y
 
 func `-=`*(x: var VRational, y: VRational) =
     if x.rKind == NormalRational:
         if y.rKind == NormalRational:
-            let common = lcm(x.r.den, y.r.den)
-            x.r.num = common div x.r.den * x.r.num - common div y.r.den * y.r.num
-            x.r.den = common
-            reduce(x)
+            try:
+                let common = lcm(x.r.den, y.r.den)
+                let partOne = common div x.r.den * x.r.num
+                let partTwo = common div y.r.den * y.r.num
+                safeOp: subIntWithOverflow(partOne, partTwo, x.r.num)
+                #x.r.num = common div x.r.den * x.r.num - common div y.r.den * y.r.num
+                x.r.den = common
+                reduce(x)
+            except CatchableError:
+                when not defined(NOGMP):
+                    x = toBigRational(x) - y
         else:
             x = toBigRational(x) + y
     else:
@@ -293,17 +358,30 @@ func `-=`*(x: var VRational, y: VRational) =
     
 func `-=`*(x: var VRational, y: int) =
     if x.rKind == NormalRational:
-        x.r.num -= y * x.r.den
+        try:
+            var m: int
+            safeOp: mulIntWithOverflow(y, x.r.den, m)
+            safeOp: subIntWithOverflow(x.r.num, m, x.r.num)
+            # x.r.num -= y * x.r.den
+        except CatchableError:
+            when not defined(NOGMP):
+                x = toBigRational(x) - y
     else:
         x -= toBigRational(y)
 
 func `*`*(x, y: VRational): VRational =
     if x.rKind == NormalRational:
         if y.rKind == NormalRational:
-            result.rKind = NormalRational
-            result.r.num = x.r.num * y.r.num
-            result.r.den = x.r.den * y.r.den
-            reduce(result)
+            try:
+                result.rKind = NormalRational
+                safeOp: mulIntWithOverflow(x.r.num, y.r.num, result.r.num)
+                #result.r.num = x.r.num * y.r.num
+                safeOp: mulIntWithOverflow(x.r.den, y.r.den, result.r.den)
+                #result.r.den = x.r.den * y.r.den
+                reduce(result)
+            except CatchableError:
+                when not defined(NOGMP):
+                    result = toBigRational(x) * y
         else:
             result = toBigRational(x) * y
     else:
@@ -317,28 +395,44 @@ func `*`*(x, y: VRational): VRational =
     
 func `*`*(x: VRational, y: int): VRational =
     if x.rKind == NormalRational:
-        result.rKind = NormalRational
-        result.r.num = x.r.num * y
-        result.r.den = x.r.den
-        reduce(result)
+        try:
+            result.rKind = NormalRational
+            safeOp: mulIntWithOverflow(x.r.num, y, result.r.num)
+            #result.r.num = x.r.num * y
+            result.r.den = x.r.den
+            reduce(result)
+        except CatchableError:
+            when not defined(NOGMP):
+                result = toBigRational(x) * y
     else:
         result = x * toBigRational(y)
 
 func `*`*(x: int, y: VRational): VRational =
     if y.rKind == NormalRational:
-        result.rKind = NormalRational
-        result.r.num = x * y.r.num
-        result.r.den = y.r.den
-        reduce(result)
+        try:
+            result.rKind = NormalRational
+            safeOp: mulIntWithOverflow(x, y.r.num, result.r.num)
+            #result.r.num = x * y.r.num
+            result.r.den = y.r.den
+            reduce(result)
+        except CatchableError:
+            when not defined(NOGMP):
+                result = toBigRational(x) * y
     else:
         result = toBigRational(x) * y
 
 func `*=`*(x: var VRational, y: VRational) =
     if x.rKind == NormalRational:
         if y.rKind == NormalRational:
-            x.r.num *= y.r.num
-            x.r.den *= y.r.den
-            reduce(x)
+            try:
+                safeOp: mulIntWithOverflow(x.r.num, y.r.num, x.r.num)
+                safeOp: mulIntWithOverflow(x.r.den, y.r.den, x.r.den)
+                x.r.num *= y.r.num
+                x.r.den *= y.r.den
+                reduce(x)
+            except CatchableError:
+                when not defined(NOGMP):
+                    x = toBigRational(x) * y
         else:
             x = toBigRational(x) * y
     else:
@@ -349,8 +443,12 @@ func `*=`*(x: var VRational, y: VRational) =
 
 func `*=`*(x: var VRational, y: int) =
     if x.rKind == NormalRational:
-        x.r.num *= y
-        reduce(x)
+        try:
+            safeOp: mulIntWithOverflow(x.r.num, y, x.r.num)
+            #x.r.num *= y
+            reduce(x)
+        except CatchableError:
+            x = toBigRational(x) * y
     else:
         x *= toBigRational(y)
 
