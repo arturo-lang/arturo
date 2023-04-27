@@ -254,17 +254,18 @@ func newRational*(num: int, den: int): Value {.inline.} =
     ## create Rational value from numerator + denominator (int)
     Value(kind: Rational, rat: initRational(num, den))
 
-func newRational*(num: int, den: Int): Value {.inline.} =
-    ## create Rational value from numerator + denominator (int, Int)
-    Value(kind: Rational, rat: initRational(num, den))
+when not defined(NOGMP):
+    func newRational*(num: int, den: Int): Value {.inline.} =
+        ## create Rational value from numerator + denominator (int, Int)
+        Value(kind: Rational, rat: initRational(num, den))
 
-func newRational*(num: Int, den: int): Value {.inline.} =
-    ## create Rational value from numerator + denominator (Int, int)
-    Value(kind: Rational, rat: initRational(num, den))
+    func newRational*(num: Int, den: int): Value {.inline.} =
+        ## create Rational value from numerator + denominator (Int, int)
+        Value(kind: Rational, rat: initRational(num, den))
 
-func newRational*(num: Int, den: Int): Value {.inline.} =
-    ## create Rational value from numerator + denominator (Int, Int)
-    Value(kind: Rational, rat: initRational(num, den))
+    func newRational*(num: Int, den: Int): Value {.inline.} =
+        ## create Rational value from numerator + denominator (Int, Int)
+        Value(kind: Rational, rat: initRational(num, den))
 
 func newRational*(n: int): Value {.inline.} =
     ## create Rational value from int
