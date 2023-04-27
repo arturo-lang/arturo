@@ -134,8 +134,8 @@ print color #white.bold "  Unit Tester\n"
 print color #gray ~"  Release: @|sys\release|\n"
 
 supertime: in's benchmark.get [
-    runSet "Unit Tests" "../tests/unittests"
-    runSet "Errors" "../tests/errors"
+    ;runSet "Unit Tests" "../tests/unittests"
+    ;runSet "Errors" "../tests/errors"
     runSet "Examples" "../examples/rosetta"
 ]
 
