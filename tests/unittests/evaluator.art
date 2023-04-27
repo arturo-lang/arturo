@@ -383,11 +383,11 @@ supersection "SIMPLE VALUES"
     topic "Quantity"
     ;*****************************************************************
 
-        byteCode [1:EUR]
+        byteCode [1`EUR]
         ; ================================
         ;  DATA
         ; ================================
-        ; 0: 1:EUR :quantity
+        ; 0: 1`EUR :quantity
 
         ; ================================
         ;  CODE
@@ -395,11 +395,11 @@ supersection "SIMPLE VALUES"
         ; push0
         ; end
 
-        byteCode [12:m]
+        byteCode [12`m]
         ; ================================
         ;  DATA
         ; ================================
-        ; 0: 12:m :quantity
+        ; 0: 12`m :quantity
 
         ; ================================
         ;  CODE
