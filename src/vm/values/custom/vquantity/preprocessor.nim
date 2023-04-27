@@ -171,8 +171,8 @@ proc parseAtoms(str: string): seq[Atom] =
 
 proc parseQuantity*(s: string): Quantity =
     proc parseValue(str: string): CTRational =
-        if str.contains("/"):
-            let parts = str.replace("pi", $(PI)).split("/")
+        if str.contains(":"):
+            let parts = str.replace("pi", $(PI)).split(":")
             return toRational(parseFloat(parts[0]) / parseFloat(parts[1]))
         else:
             return toRational(parseFloat(str))

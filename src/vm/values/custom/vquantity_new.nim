@@ -249,20 +249,20 @@ static:
     #---------------------------------------------------------------------------------------------------------------------------
     #       name        symbol      prefix?     definition                  aliases
     #---------------------------------------------------------------------------------------------------------------------------
-    defUnit "in",       "in",       false,      "127/5000 m",               "inch", "inches"
+    defUnit "in",       "in",       false,      "127:5000 m",               "inch", "inches"
     defUnit "ft",       "ft",       false,      "12 in",                    "foot", "feet"
     defUnit "yd",       "yd",       false,      "3 ft",                     "yard", "yards"
     defUnit "ftm",      "ftm",      false,      "1 yd",                     "fathom", "fathoms"
     defUnit "rod",      "rod",      false,      "5.5 yd",                   "rods"
     defUnit "mi",       "mi",       false,      "5280 ft",                  "mile", "miles"
-    defUnit "fur",      "fur",      false,      "1/8 mi",                   "furlong", "furlongs"
+    defUnit "fur",      "fur",      false,      "1:8 mi",                   "furlong", "furlongs"
     defUnit "nmi",      "nmi",      false,      "1852 m",                   "nauticalMile", "nauticalMiles"
     defUnit "ang",      "Å",        false,      "1e-10 m",                  "angstrom", "angstroms"
     defUnit "au",       "au",       false,      "149597870700 m",           "astronomicalUnit", "astronomicalUnits"
     defUnit "ly",       "ly",       false,      "9460730472580800 m",       "lightYear", "lightYears"
     defUnit "psc",      "pc",       false,      "3.26156 ly",               "parsec", "parsecs"
-    defUnit "px",       "px",       true,       "1/96 in",                  "pixel", "pixels"
-    defUnit "pt",       "pt",       true,       "1/72 in",                  "point", "points"
+    defUnit "px",       "px",       true,       "1:96 in",                  "pixel", "pixels"
+    defUnit "pt",       "pt",       true,       "1:72 in",                  "point", "points"
     defUnit "pc",       "pc",       true,       "12 pt",                    "pica", "picas"
 
     #---------------------------------------------------------------------------------------------------------------------------
@@ -284,12 +284,12 @@ static:
     defUnit "L",        "L",        true,       "1000 cm3",                 "l", "liter", "liters"
     defUnit "gal",      "gal",      false,      "231 in3",                  "gallon", "gallons"
     defUnit "bbl",      "bbl",      false,      "42 gal",                   "barrel", "barrels"
-    defUnit "qt",       "qt",       false,      "1/4 gal",                  "quart", "quarts"
-    defUnit "pt",       "pt",       false,      "1/2 qt",                   "pint", "pints"
-    defUnit "cup",      "cup",      false,      "1/2 pt",                   "cup", "cups"
-    defUnit "floz",     "floz",     false,      "1/8 cup",                  "fluidOunce", "fluidOunces"
-    defUnit "tbsp",     "tbsp",     false,      "1/2 floz",                 "tablespoon", "tablespoons"
-    defUnit "tsp",      "tsp",      false,      "1/3 tbsp",                 "teaspoon", "teaspoons"
+    defUnit "qt",       "qt",       false,      "1:4 gal",                  "quart", "quarts"
+    defUnit "pt",       "pt",       false,      "1:2 qt",                   "pint", "pints"
+    defUnit "cup",      "cup",      false,      "1:2 pt",                   "cup", "cups"
+    defUnit "floz",     "floz",     false,      "1:8 cup",                  "fluidOunce", "fluidOunces"
+    defUnit "tbsp",     "tbsp",     false,      "1:2 floz",                 "tablespoon", "tablespoons"
+    defUnit "tsp",      "tsp",      false,      "1:3 tbsp",                 "teaspoon", "teaspoons"
     
     #---------------------------------------------------------------------------------------------------------------------------
     # Time units (base: s)
@@ -308,10 +308,10 @@ static:
     #---------------------------------------------------------------------------------------------------------------------------
     #       name        symbol      prefix?     definition                  aliases
     #---------------------------------------------------------------------------------------------------------------------------
-    defUnit "lb",       "lb",       false,      "45359237/100000 g",        "pound", "pounds"
+    defUnit "lb",       "lb",       false,      "45359237:100000 g",        "pound", "pounds"
     defUnit "slug",     "slug",     false,      "14.59390 kg",              "slugs"
-    defUnit "oz",       "oz",       false,      "1/16 lb",                  "ounce", "ounces"
-    defUnit "ct",       "ct",       false,      "1/5 g",                    "carat", "carats"
+    defUnit "oz",       "oz",       false,      "1:16 lb",                  "ounce", "ounces"
+    defUnit "ct",       "ct",       false,      "1:5 g",                    "carat", "carats"
     defUnit "t",        "t",        false,      "1000 kg",                  "tonne", "tonnes", "metricTon", "metricTons"
     defUnit "ton",      "ST",       false,      "2000 lb",                  "ton", "tons", "shortTon", "shortTons"
     defUnit "lt",       "LT",       false,      "2240 lb",                  "longTon", "longTons"
@@ -328,10 +328,10 @@ static:
     #       name        symbol      prefix?     definition                  aliases
     #---------------------------------------------------------------------------------------------------------------------------
     defUnit "mps",      "m/s",      false,      "1 m/s",                    "meterPerSecond", "metersPerSecond"
-    defUnit "kph",      "km/h",     false,      "1000/3600 m/s",            "kilometerPerHour", "kilometersPerHour"
-    defUnit "mph",      "mph",      false,      "5280/3600 ft/s",           "milePerHour", "milesPerHour"
-    defUnit "kn",       "kn",       false,      "1852/3600 m/s",            "knot", "knots"
-    defUnit "fps",      "ft/s",     false,      "1/3600 ft/s",              "footPerSecond", "feetPerSecond"
+    defUnit "kph",      "km/h",     false,      "1000:3600 m/s",            "kilometerPerHour", "kilometersPerHour"
+    defUnit "mph",      "mph",      false,      "5280:3600 ft/s",           "milePerHour", "milesPerHour"
+    defUnit "kn",       "kn",       false,      "1852:3600 m/s",            "knot", "knots"
+    defUnit "fps",      "ft/s",     false,      "1:3600 ft/s",              "footPerSecond", "feetPerSecond"
     defUnit "mach",     "mach",     false,      "340.29 m/s",               "mach", "machs"
 
     #---------------------------------------------------------------------------------------------------------------------------
@@ -488,10 +488,10 @@ static:
     #---------------------------------------------------------------------------------------------------------------------------
     #       name        symbol      prefix?     definition                  aliases
     #---------------------------------------------------------------------------------------------------------------------------
-    defUnit "deg",      "°",        false,      "pi/180 rad",               "degree", "degrees"
-    defUnit "grad",     "grad",     false,      "pi/200 rad",               "gradian", "gradians"
-    defUnit "arcmin",   "'",        false,      "pi/10800 rad",             "arcminute", "arcminutes"
-    defUnit "arcsec",   "''",       false,      "pi/648000 rad",            "arcsecond", "arcseconds"
+    defUnit "deg",      "°",        false,      "pi:180 rad",               "degree", "degrees"
+    defUnit "grad",     "grad",     false,      "pi:200 rad",               "gradian", "gradians"
+    defUnit "arcmin",   "'",        false,      "pi:10800 rad",             "arcminute", "arcminutes"
+    defUnit "arcsec",   "''",       false,      "pi:648000 rad",            "arcsecond", "arcseconds"
 
     #---------------------------------------------------------------------------------------------------------------------------
     # Catalytic activity units (base: mol/s)
@@ -792,8 +792,8 @@ proc newQuantity*(v: VRational, atoms: Atoms): Quantity =
 proc parseValue(s: string): VRational =
     if s.contains("."):
         result = toRational(parseFloat(s))
-    elif s.contains("/"):
-        let ratParts = s.split("/")
+    elif s.contains(":"):
+        let ratParts = s.split(":")
         try:
             result = initRational(parseInt(ratparts[0]), parseInt(ratparts[1]))
         except ValueError:
