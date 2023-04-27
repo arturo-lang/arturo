@@ -931,6 +931,7 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                     AddToken newWord(p.value)
             of Tick:
                 # first try parsing it as a normal :literal
+                let initialP = p.bufpos
                 parseIdentifier(p, alsoAddCurrent=false)
                 if Empty(p.value): 
                     # if it's empty, then try parsing it as :symbolLiteral
@@ -938,6 +939,10 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                         parseAndAddSymbol(p,topBlock)
                         if LastToken.m == backslash and p.buf[p.bufpos] in ['n', 'r', 't', 'b', 'f', 'v', 'a', 'e', 'x', 'u', 'U', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9']:
                             p.bufpos = p.bufpos - 2
+                            parseString(p, stopper=Tick)
+                            ReplaceLastToken newChar(p.value)
+                        elif p.buf[p.bufpos]==Tick:
+                            p.bufpos = initialP
                             parseString(p, stopper=Tick)
                             ReplaceLastToken newChar(p.value)
                         else:
