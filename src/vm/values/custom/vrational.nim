@@ -62,13 +62,13 @@ template safeOp(op: untyped): untyped =
 #=======================================
 
 template getNumerator*(x: VRational, big: bool = false): untyped =
-    when big:
+    when big and not defined(NOGMP):
         numerator(x.br)
     else:
         x.r.num
 
 template getDenominator*(x: VRational, big: bool = false): untyped =
-    when big:
+    when big and not defined(NOGMP):
         denominator(x.br)
     else:
         x.r.den
