@@ -43,16 +43,18 @@ type
                     br*: Rat
 
 #=======================================
+# Forward declarations
+#=======================================
+
+func toRational*(num, den: int): VRational
+
+#=======================================
 # Helpers
 #=======================================
 
 template safeOp(op: untyped): untyped =
     if op:
         raise newException(ValueError, "OVERFLOW!")
-
-#=======================================
-# Methods
-#=======================================
 
 template getNumerator*(x: VRational, big: bool = false): untyped =
     when big and not defined(NOGMP):
@@ -77,16 +79,24 @@ func reduce*(x: var VRational) =
     else:
         raise newException(DivByZeroDefect, "division by zero")
 
-func initRational*(num, den: int): VRational =
+func simplifyRational*(x: var VRational) =
+    when not defined(NOGMP):
+        if x.rKind == BigRational and canBeSimplified(x.br):
+            x = toRational(getInt(numerator(x.br)), getInt(denominator(x.br)))
+
+#=======================================
+# Methods
+#=======================================
+
+func toRational*(num, den: int): VRational =
+    # create VRational from numerator and denominator (both int's)
     result.rKind = NormalRational
     result.num = num
     result.den = den
     reduce(result)
 
-func simplifyRational*(x: var VRational) =
-    when not defined(NOGMP):
-        if x.rKind == BigRational and canBeSimplified(x.br):
-            x = initRational(getInt(numerator(x.br)), getInt(denominator(x.br)))
+func `//`*(num, den: int): VRational =
+    toRational(num, den)
 
 when not defined(NOGMP):
     func initRational*(num: Int, den: Int): VRational =
@@ -106,9 +116,6 @@ when not defined(NOGMP):
         result.br = newRat(num, newInt(den))
 
         simplifyRational(result)
-
-func `//`*(num, den: int): VRational =
-    initRational(num, den)
 
 func toRational*(x: int): VRational =
     result.rKind = NormalRational
