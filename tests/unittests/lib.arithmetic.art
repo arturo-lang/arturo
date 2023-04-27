@@ -128,27 +128,27 @@ do [
     topic "add - :integer :quantity"
     
     ; :integer = :quantity + :integer
-    ensure -> 35 = 30:usd + 5
-    ensure -> 35 = 30:eur + 5
-    ensure -> 35 = add 30:usd 5
-    ensure -> 35 = add 30:eur 5
+    ensure -> 35 = 30`usd + 5
+    ensure -> 35 = 30`eur + 5
+    ensure -> 35 = add 30`usd 5
+    ensure -> 35 = add 30`eur 5
     passed
     
     ; :quantity = :quantity + :integer
-    ensure -> 35:usd = 30:usd + 5
-    ensure -> 35:eur = 30:eur + 5
-    ensure -> 35:usd = add 30:usd 5
-    ensure -> 35:eur = add 30:eur 5
+    ensure -> 35`usd = 30`usd + 5
+    ensure -> 35`eur = 30`eur + 5
+    ensure -> 35`usd = add 30`usd 5
+    ensure -> 35`eur = add 30`eur 5
     passed
     
-    a: 30:usd, 'a + 5
-    ensure -> 35:usd = a
+    a: 30`usd, 'a + 5
+    ensure -> 35`usd = a
     ensure -> 35 = a
     passed
     
     a: 5
-    ensure -> throws? -> 5 + 35:usd
-    ensure -> throws? -> 'a + 35:usd
+    ensure -> throws? -> 5 + 35`usd
+    ensure -> throws? -> 'a + 35`usd
     passed
     
     
@@ -259,26 +259,26 @@ do [
     
     
     topic "add - :floating :quantity"
-    ensure -> 35.5 = 30:usd + 5.5
-    ensure -> 35.5 = 30:eur + 5.5
-    ensure -> 35.5 = add 30:usd 5.5
-    ensure -> 35.5 = add 30:eur 5.5
+    ensure -> 35.5 = 30`usd + 5.5
+    ensure -> 35.5 = 30`eur + 5.5
+    ensure -> 35.5 = add 30`usd 5.5
+    ensure -> 35.5 = add 30`eur 5.5
     passed
     
-    ensure -> 35.5:usd = 30:usd + 5.5
-    ensure -> 35.5:eur = 30:eur + 5.5
-    ensure -> 35.5:usd = add 30:usd 5.5
-    ensure -> 35.5:eur = add 30:eur 5.5
+    ensure -> 35.5`usd = 30`usd + 5.5
+    ensure -> 35.5`eur = 30`eur + 5.5
+    ensure -> 35.5`usd = add 30`usd 5.5
+    ensure -> 35.5`eur = add 30`eur 5.5
     passed
     
-    a: 30:usd, 'a + 5.5
-    ensure -> 35.5:usd = a
+    a: 30`usd, 'a + 5.5
+    ensure -> 35.5`usd = a
     ensure -> 35.5 = a
     passed
     
     a: 5.5
-    ensure -> throws? -> 5.5 + 30:usd
-    ensure -> throws? -> 'a + 30:usd
+    ensure -> throws? -> 5.5 + 30`usd
+    ensure -> throws? -> 'a + 30`usd
     passed
     
     
@@ -361,24 +361,24 @@ do [
     topic "add - :complex :quantity"
 
     ensure -> every? @[
-        -> "31.0+2.0i:usd" = ~"|as.code 30:usd + to :complex [1 2]|"
-        -> "31.0+2.0i:eur" = ~"|as.code 30:eur + to :complex [1 2]|"
-        -> "31.0+2.0i:usd" = ~"|as.code add 30:usd to :complex [1 2]|"
-        -> "31.0+2.0i:eur" = ~"|as.code add 30:eur to :complex [1 2]|"
+        -> "31.0+2.0i:usd" = ~"|as.code 30`usd + to :complex [1 2]|"
+        -> "31.0+2.0i:eur" = ~"|as.code 30`eur + to :complex [1 2]|"
+        -> "31.0+2.0i:usd" = ~"|as.code add 30`usd to :complex [1 2]|"
+        -> "31.0+2.0i:eur" = ~"|as.code add 30`eur to :complex [1 2]|"
 
-        -> (to :complex [1 2]) + 30:usd
-        -> (to :complex [1 2]) + 30:eur
-        -> add (to :complex [1 2]) 30:usd
-        -> add (to :complex [1 2]) 30:eur
+        -> (to :complex [1 2]) + 30`usd
+        -> (to :complex [1 2]) + 30`eur
+        -> add (to :complex [1 2]) 30`usd
+        -> add (to :complex [1 2]) 30`eur
     ] => throws?
     passed
     
-    a: 30:usd
+    a: 30`usd
     ensure -> throws? -> 'a + to :complex [1 2]
     passed
     
     a: to :complex [1 2]
-    ensure -> throws? -> 'a + 30:usd
+    ensure -> throws? -> 'a + 30`usd
     passed
     
     topic "add - :complex :color"
@@ -429,36 +429,36 @@ do [
     ; ** Same as above ^ with Complex/Quantity operations
 
     ; ** In general, X + quantity operations are a very weird idea.
-    ; ** I mean let's say we have 30:usd, and we add 1/2 to it, that *does* make sense.
-    ; ** Or if we have 3:m (3 meters) and add 1. I would - instinctively - imagine that 
+    ; ** I mean let's say we have 30`usd, and we add 1/2 to it, that *does* make sense.
+    ; ** Or if we have 3`m (3 meters) and add 1. I would - instinctively - imagine that 
     ; ** this means to add 1 meter to 3 meters, and get 4 meters. But, doing it the other
-    ; ** way around, adding 3:m *to* 1, it suddenly becomes a bit strange. So, I *think* 
+    ; ** way around, adding 3`m *to* 1, it suddenly becomes a bit strange. So, I *think* 
     ; ** this type of operations make more sense if the left-hand operand is a quantity, 
     ; ** but not vice-versa.
 
     topic "add - :rational :quantity"
 
     ensure -> all? @[
-        "61/2:usd" = as.code 30:usd + to :rational [1 2]
-        "61/2:eur" = as.code 30:eur + to :rational [1 2]
-        "61/2:usd" = as.code add 30:usd to :rational [1 2]
-        "61/2:eur" = as.code add 30:eur to :rational [1 2]
+        "61/2`usd" = as.code 30`usd + to :rational [1 2]
+        "61/2`eur" = as.code 30`eur + to :rational [1 2]
+        "61/2`usd" = as.code add 30`usd to :rational [1 2]
+        "61/2`eur" = as.code add 30`eur to :rational [1 2]
     ]
 
     ensure -> every? @[
-        -> (to :rational [1 2]) + 30:usd
-        -> (to :rational [1 2]) + 30:eur
-        -> add (to :rational [1 2]) 30:usd
-        -> add (to :rational [1 2]) 30:eur
+        -> (to :rational [1 2]) + 30`usd
+        -> (to :rational [1 2]) + 30`eur
+        -> add (to :rational [1 2]) 30`usd
+        -> add (to :rational [1 2]) 30`eur
     ] => throws?
     passed
     
-    a: 30:usd, 'a + to :rational [1 2]
-    ensure -> "61/2:usd" = as.code a
+    a: 30`usd, 'a + to :rational [1 2]
+    ensure -> "61/2`usd" = as.code a
     passed
     
     a: to :rational [1 2]
-    ensure -> throws? -> 'a + 30:usd
+    ensure -> throws? -> 'a + 30`usd
     passed
     
 
@@ -513,16 +513,16 @@ do [
     topic "add - :color :quantity"
 
     ensure -> every? @[
-        -> #red + 30:usd
-        -> 30:usd + #red
+        -> #red + 30`usd
+        -> 30`usd + #red
     ] => throws?
     passed
     
     a: #red
-    ensure -> throws? -> 'a + 30:usd
+    ensure -> throws? -> 'a + 30`usd
     passed
     
-    a: 30:usd
+    a: 30`usd
     ensure -> throws? -> 'a + #red
     passed
     
@@ -530,24 +530,24 @@ do [
      
     topic "add - :quantity :quantity"
     
-    ensure -> 50:usd = 20:usd + 30:usd
-    ensure -> 50:usd = 30:usd + 20:usd
-    ensure -> 50 = 20:usd + 30:usd
-    ensure -> 50 = 30:usd + 20:usd
-    ensure -> 1.2:m = 1:m + 20:cm
-    ensure -> 1.2:m = 20:cm + 1:m
+    ensure -> 50`usd = 20`usd + 30`usd
+    ensure -> 50`usd = 30`usd + 20`usd
+    ensure -> 50 = 20`usd + 30`usd
+    ensure -> 50 = 30`usd + 20`usd
+    ensure -> 1.2`m = 1`m + 20`cm
+    ensure -> 1.2`m = 20`cm + 1`m
     passed
     
-    a: 20:usd, 'a + 30:usd
+    a: 20`usd, 'a + 30`usd
     ensure -> 50 = a 
     passed
     
-    a: 20:usd, 'a + 30:usd
-    ensure -> 50:usd = a 
+    a: 20`usd, 'a + 30`usd
+    ensure -> 50`usd = a 
     passed
     
-    a: 1:m, 'a + 20:cm
-    ensure -> 1.2:m = a
+    a: 1`m, 'a + 20`cm
+    ensure -> 1.2`m = a
     passed
     
 ]
@@ -618,16 +618,16 @@ do [
     
     topic "dec - :quantity"
     
-    ensure -> 30 = dec 31:usd
-    ensure -> 30 = dec 31:eur
-    ensure -> 30:usd = dec 31:usd
-    ensure -> 30:eur = dec 31:eur
-    ensure -> 0:m = dec 1:m
-    ensure -> (neg 1:m) = dec 0:m
+    ensure -> 30 = dec 31`usd
+    ensure -> 30 = dec 31`eur
+    ensure -> 30`usd = dec 31`usd
+    ensure -> 30`eur = dec 31`eur
+    ensure -> 0`m = dec 1`m
+    ensure -> (neg 1`m) = dec 0`m
     passed
     
-    a: 31:usd, dec 'a
-    ensure -> 30:usd = a
+    a: 31`usd, dec 'a
+    ensure -> 30`usd = a
     ensure -> 30 = a
     passed
     
@@ -782,29 +782,29 @@ do [
     
     topic "div - :integer :quantity"
 
-    ensure -> 6 = 30:usd / 5
-    ensure -> 6 = 30:eur / 5
-    ensure -> 6 = div 30:usd 5
-    ensure -> 6 = div 30:eur 5
+    ensure -> 6 = 30`usd / 5
+    ensure -> 6 = 30`eur / 5
+    ensure -> 6 = div 30`usd 5
+    ensure -> 6 = div 30`eur 5
     passed
     
-    ensure -> 6:usd = 30:usd / 5
-    ensure -> 6:eur = 30:eur / 5
-    ensure -> 6:usd = div 30:usd 5
-    ensure -> 6:eur = div 30:eur 5
+    ensure -> 6`usd = 30`usd / 5
+    ensure -> 6`eur = 30`eur / 5
+    ensure -> 6`usd = div 30`usd 5
+    ensure -> 6`eur = div 30`eur 5
     passed
     
-    a: 30:usd, 'a / 5
+    a: 30`usd, 'a / 5
     ensure -> 6 = a
     passed
     
-    a: 30:usd, 'a / 5
-    ensure -> 6:usd = a
+    a: 30`usd, 'a / 5
+    ensure -> 6`usd = a
     passed
     
     a: 1
-    ensure -> throws? -> 1 / 1:usd
-    ensure -> throws? -> 'a / 1:usd
+    ensure -> throws? -> 1 / 1`usd
+    ensure -> throws? -> 'a / 1`usd
     passed
     
     ; ------ floating
@@ -891,25 +891,25 @@ do [
     
     topic "div - :floating :quantity"
 
-    ensure -> 60 = 30:usd / 0.5
-    ensure -> 60 = 30:eur / 0.5
-    ensure -> 60 = div 30:usd 0.5
-    ensure -> 60 = div 30:eur 0.5
+    ensure -> 60 = 30`usd / 0.5
+    ensure -> 60 = 30`eur / 0.5
+    ensure -> 60 = div 30`usd 0.5
+    ensure -> 60 = div 30`eur 0.5
     passed
     
-    ensure -> 60:usd = 30:usd / 0.5
-    ensure -> 60:eur = 30:eur / 0.5
-    ensure -> 60:usd = div 30:usd 0.5
-    ensure -> 60:eur = div 30:eur 0.5
+    ensure -> 60`usd = 30`usd / 0.5
+    ensure -> 60`eur = 30`eur / 0.5
+    ensure -> 60`usd = div 30`usd 0.5
+    ensure -> 60`eur = div 30`eur 0.5
     passed
     
-    a: 30:usd, 'a / 0.5
+    a: 30`usd, 'a / 0.5
     ensure -> 60 = a
     passed
     
     a: 0.5
-    ensure -> throws? -> 0.5 / 30:usd
-    ensure -> throws? -> 'a / 30:usd
+    ensure -> throws? -> 0.5 / 30`usd
+    ensure -> throws? -> 'a / 30`usd
     passed
     
     
@@ -966,23 +966,23 @@ do [
     topic "div - :complex :quantity"
 
     ensure -> every? @[
-        -> 30:usd / to :complex [1 2]
-        ->  30:eur / to :complex [1 2]
-        -> div 30:usd to :complex [1 2]
-        -> div 30:eur to :complex [1 2]
-        -> (to :complex [1 2]) / 30:usd
-        -> (to :complex [1 2]) / 30:eur
-        -> div (to :complex [1 2]) 30:usd
-        -> div (to :complex [1 2]) 30:eur
+        -> 30`usd / to :complex [1 2]
+        ->  30`eur / to :complex [1 2]
+        -> div 30`usd to :complex [1 2]
+        -> div 30`eur to :complex [1 2]
+        -> (to :complex [1 2]) / 30`usd
+        -> (to :complex [1 2]) / 30`eur
+        -> div (to :complex [1 2]) 30`usd
+        -> div (to :complex [1 2]) 30`eur
     ] => throws?
     passed
     
-    a: 30:usd
+    a: 30`usd
     ensure -> throws? -> 'a / to :complex [1 2]
     passed
     
     a: to :complex [1 2]
-    ensure -> throws? -> 'a / 30:usd
+    ensure -> throws? -> 'a / 30`usd
     passed
     
     
@@ -1012,33 +1012,33 @@ do [
     
     topic "div - :rational :quantity"
 
-    ensure -> 60:usd = 30:usd / to :rational [1 2]
-    ensure -> 60:eur = 30:eur / to :rational [1 2]
-    ensure -> 60:usd = div 30:usd to :rational [1 2]
-    ensure -> 60:eur = div 30:eur to :rational [1 2]
+    ensure -> 60`usd = 30`usd / to :rational [1 2]
+    ensure -> 60`eur = 30`eur / to :rational [1 2]
+    ensure -> 60`usd = div 30`usd to :rational [1 2]
+    ensure -> 60`eur = div 30`eur to :rational [1 2]
     passed
     
-    ensure -> 60 = 30:usd / to :rational [1 2]
-    ensure -> 60 = 30:eur / to :rational [1 2]
-    ensure -> 60 = div 30:usd to :rational [1 2]
-    ensure -> 60 = div 30:eur to :rational [1 2]
+    ensure -> 60 = 30`usd / to :rational [1 2]
+    ensure -> 60 = 30`eur / to :rational [1 2]
+    ensure -> 60 = div 30`usd to :rational [1 2]
+    ensure -> 60 = div 30`eur to :rational [1 2]
     passed
 
     ensure -> every? @[
-        -> (to :rational [1 2]) / 30:usd
-        -> (to :rational [1 2]) / 30:eur
-        -> div (to :rational [1 2]) 30:usd
-        -> div (to :rational [1 2]) 30:eur
+        -> (to :rational [1 2]) / 30`usd
+        -> (to :rational [1 2]) / 30`eur
+        -> div (to :rational [1 2]) 30`usd
+        -> div (to :rational [1 2]) 30`eur
     ] => throws?
     passed
     
-    a: 30:usd, 'a / to :rational [1 2]
-    ensure -> 60:usd = a
+    a: 30`usd, 'a / to :rational [1 2]
+    ensure -> 60`usd = a
     ensure -> 60 = a
     passed
     
     a: to :rational [1 2]
-    ensure -> throws? -> 'a / 30:usd
+    ensure -> throws? -> 'a / 30`usd
     passed
     
         
@@ -1049,28 +1049,28 @@ do [
     ; for while, I won't update this test for metric-units 
     ; since we have an open issue to solve this -> #1110
     
-    ensure -> 4 = (20:usd) / (5:usd)
-    ensure -> 4 = (20:eur) / (5:eur)
-    ensure -> 4 = div (20:usd) (5:usd)
-    ensure -> 4 = div (20:eur) (5:eur)
+    ensure -> 4 = (20`usd) / (5`usd)
+    ensure -> 4 = (20`eur) / (5`eur)
+    ensure -> 4 = div (20`usd) (5`usd)
+    ensure -> 4 = div (20`eur) (5`eur)
     
-    ensure -> 4:usd = (20:usd) / (5:usd)
-    ensure -> 4:eur = (20:eur) / (5:eur)
-    ensure -> 4:usd = div (20:usd) (5:usd)
-    ensure -> 4:eur = div (20:eur) (5:eur)
+    ensure -> 4`usd = (20`usd) / (5`usd)
+    ensure -> 4`eur = (20`eur) / (5`eur)
+    ensure -> 4`usd = div (20`usd) (5`usd)
+    ensure -> 4`eur = div (20`eur) (5`eur)
     passed
     
-    ensure -> 0 = 1:m / 20:cm
-    ensure -> 0 = 1:m / 20:cm
-    ensure -> 0 = div 1:m 20:cm
-    ensure -> 0 = div 1:m 20:cm
+    ensure -> 0 = 1`m / 20`cm
+    ensure -> 0 = 1`m / 20`cm
+    ensure -> 0 = div 1`m 20`cm
+    ensure -> 0 = div 1`m 20`cm
     passed
     
-    a: 20:usd, 'a / 5:usd
+    a: 20`usd, 'a / 5`usd
     ensure -> 4 = a
     passed
     
-    a: 1:m, 'a / 20:cm
+    a: 1`m, 'a / 20`cm
     ensure -> 0 = a
     passed
     
@@ -1205,32 +1205,32 @@ do [
     
     topic "divmod - :integer :quantity"
     
-    ensure -> [6 0] = 30:usd /% 5
-    ensure -> [6 0] = 30:eur /% 5
-    ensure -> [6 0] = divmod 30:usd 5
-    ensure -> [6 0] = divmod 30:eur 5
+    ensure -> [6 0] = 30`usd /% 5
+    ensure -> [6 0] = 30`eur /% 5
+    ensure -> [6 0] = divmod 30`usd 5
+    ensure -> [6 0] = divmod 30`eur 5
     passed
     
-    ensure -> [6:usd 0:usd] = 30:usd /% 5
-    ensure -> [6:eur 0:eur] = 30:eur /% 5
-    ensure -> [6:usd 0:usd] = divmod 30:usd 5
-    ensure -> [6:eur 0:eur] = divmod 30:eur 5
+    ensure -> [6`usd 0`usd] = 30`usd /% 5
+    ensure -> [6`eur 0`eur] = 30`eur /% 5
+    ensure -> [6`usd 0`usd] = divmod 30`usd 5
+    ensure -> [6`eur 0`eur] = divmod 30`eur 5
     passed
     
     ensure -> every? @[
-        -> 5 /% 30:usd
-        -> 5 /% 30:eur
-        -> divmod 5 30:usd
-        -> divmod 5 30:eur
+        -> 5 /% 30`usd
+        -> 5 /% 30`eur
+        -> divmod 5 30`usd
+        -> divmod 5 30`eur
     ] => throws?
     passed
     
-    a: 30:usd, 'a /% 5
+    a: 30`usd, 'a /% 5
     ensure -> [6 0] = a
-    ensure -> [6:usd 0:usd] = a
+    ensure -> [6`usd 0`usd] = a
     passed
     
-    a: 5, ensure -> throws? -> 'a /% 30:usd
+    a: 5, ensure -> throws? -> 'a /% 30`usd
     passed
     
     
@@ -1301,33 +1301,33 @@ do [
     
     topic "divmod - :floating :quantity"
     
-    ensure -> [6.0:usd 0.0:usd] = 30:usd /% 5.0
-    ensure -> [6.0:eur 0.0:eur] = 30:eur /% 5.0
-    ensure -> [6.0:usd 0.0:usd] = divmod 30:usd 5.0
-    ensure -> [6.0:eur 0.0:eur] = divmod 30:eur 5.0
+    ensure -> [6.0`usd 0.0`usd] = 30`usd /% 5.0
+    ensure -> [6.0`eur 0.0`eur] = 30`eur /% 5.0
+    ensure -> [6.0`usd 0.0`usd] = divmod 30`usd 5.0
+    ensure -> [6.0`eur 0.0`eur] = divmod 30`eur 5.0
     passed
     
-    ensure -> [6.0 0.0] = 30:usd /% 5.0
-    ensure -> [6.0 0.0] = 30:eur /% 5.0
-    ensure -> [6.0 0.0] = divmod 30:usd 5.0
-    ensure -> [6.0 0.0] = divmod 30:eur 5.0
+    ensure -> [6.0 0.0] = 30`usd /% 5.0
+    ensure -> [6.0 0.0] = 30`eur /% 5.0
+    ensure -> [6.0 0.0] = divmod 30`usd 5.0
+    ensure -> [6.0 0.0] = divmod 30`eur 5.0
     passed
     
     ensure -> every? @[
-        -> 5.0 /% 30:usd
-        -> 5.0 /% 30:eur
-        -> divmod 5.0 30:usd
-        -> divmod 5.0 30:eur
+        -> 5.0 /% 30`usd
+        -> 5.0 /% 30`eur
+        -> divmod 5.0 30`usd
+        -> divmod 5.0 30`eur
     ] => throws?
     passed
     
-    a: 30:usd, 'a /% 5.0
-    ensure -> [6.0:usd 0.0:usd] = a
+    a: 30`usd, 'a /% 5.0
+    ensure -> [6.0`usd 0.0`usd] = a
     ensure -> [6.0 0.0] = a
     passed
     
     a: 5.0
-    ensure -> throws? -> 'a /% 30:usd
+    ensure -> throws? -> 'a /% 30`usd
     passed
     
     
@@ -1380,23 +1380,23 @@ do [
     topic "divmod - :complex :quantity"
 
     ensure -> every? @[
-        -> 30:usd /% to :complex [1 2]
-        -> 30:eur /% to :complex [1 2]
-        -> divmod 30:usd to :complex [1 2]
-        -> divmod 30:eur to :complex [1 2]
-        -> (to :complex [1 2]) /% 30:usd
-        -> (to :complex [1 2]) /% 30:eur
-        -> divmod (to :complex [1 2]) 30:usd
-        -> divmod (to :complex [1 2]) 30:eur
+        -> 30`usd /% to :complex [1 2]
+        -> 30`eur /% to :complex [1 2]
+        -> divmod 30`usd to :complex [1 2]
+        -> divmod 30`eur to :complex [1 2]
+        -> (to :complex [1 2]) /% 30`usd
+        -> (to :complex [1 2]) /% 30`eur
+        -> divmod (to :complex [1 2]) 30`usd
+        -> divmod (to :complex [1 2]) 30`eur
     ] => throws?
     passed
     
-    a: 30:usd
+    a: 30`usd
     ensure -> throws? -> 'a /% to :complex [1 2]
     passed
     
     a: to :complex [1 2]
-    ensure -> throws? -> 'a /% 30:usd
+    ensure -> throws? -> 'a /% 30`usd
     passed
     
     
@@ -1428,35 +1428,35 @@ do [
     
     a: to :rational [1 2]
     
-    ensure -> [60 0.0] = 30:usd /% a
-    ensure -> [60 0.0] = 30:eur /% a
-    ensure -> [60 0.0] = divmod 30:usd a
-    ensure -> [60 0.0] = divmod 30:eur a
+    ensure -> [60 0.0] = 30`usd /% a
+    ensure -> [60 0.0] = 30`eur /% a
+    ensure -> [60 0.0] = divmod 30`usd a
+    ensure -> [60 0.0] = divmod 30`eur a
     passed
     
-    ensure -> [60:usd 0.0:usd] = 30:usd /% a
-    ensure -> [60:eur 0.0:eur] = 30:eur /% a
-    ensure -> [60:usd 0.0:usd] = divmod 30:usd a
-    ensure -> [60:eur 0.0:eur] = divmod 30:eur a
+    ensure -> [60`usd 0.0`usd] = 30`usd /% a
+    ensure -> [60`eur 0.0`eur] = 30`eur /% a
+    ensure -> [60`usd 0.0`usd] = divmod 30`usd a
+    ensure -> [60`eur 0.0`eur] = divmod 30`eur a
     passed
     
     a: to :rational [1 2]
     
     ensure -> every? @[
-        -> a /% 30:usd
-        -> a /% 30:eur
-        -> divmod a 30:usd
-        -> divmod a 30:eur
+        -> a /% 30`usd
+        -> a /% 30`eur
+        -> divmod a 30`usd
+        -> divmod a 30`eur
     ] => throws?
     passed
     
-    a: 30:usd, 'a /% to :rational [1 2]
-    ensure -> [60:usd 0.0:usd] = a
+    a: 30`usd, 'a /% to :rational [1 2]
+    ensure -> [60`usd 0.0`usd] = a
     ensure -> [60 0] = a
     passed
     
     a: to :rational [1 2]
-    ensure -> throws? -> 'a /% 30:usd
+    ensure -> throws? -> 'a /% 30`usd
     passed
     
         
@@ -1464,19 +1464,19 @@ do [
      
     topic "divmod - :quantity :quantity"
     
-    ensure -> [4:usd 0:usd] = 20:usd /% 5:usd
-    ensure -> [4:usd 0:usd] = divmod 20:usd 5:usd
-    ensure -> [4 0] = 20:usd /% 5:usd
-    ensure -> [4 0] = divmod 20:usd 5:usd
+    ensure -> [4`usd 0`usd] = 20`usd /% 5`usd
+    ensure -> [4`usd 0`usd] = divmod 20`usd 5`usd
+    ensure -> [4 0] = 20`usd /% 5`usd
+    ensure -> [4 0] = divmod 20`usd 5`usd
     passed
     
-    a: 20:usd, 'a /% 5:usd
+    a: 20`usd, 'a /% 5`usd
     ensure -> [4 0] = a
-    ensure -> [4:usd 0:usd] = a
+    ensure -> [4`usd 0`usd] = a
     
-    a: 20:usd, divmod 'a 5:usd
+    a: 20`usd, divmod 'a 5`usd
     ensure -> [4 0] = a
-    ensure -> [4:usd 0:usd] = a
+    ensure -> [4`usd 0`usd] = a
     
 ]
 
@@ -1600,25 +1600,25 @@ do [
     
     topic "fdiv - :integer :quantity"
     
-    ensure -> 6 = 30:usd // 5
-    ensure -> 6 = 30:eur // 5
-    ensure -> 6 = fdiv 30:usd 5
-    ensure -> 6 = fdiv 30:eur 5
+    ensure -> 6 = 30`usd // 5
+    ensure -> 6 = 30`eur // 5
+    ensure -> 6 = fdiv 30`usd 5
+    ensure -> 6 = fdiv 30`eur 5
     passed
     
-    ensure -> 6:usd = 30:usd // 5
-    ensure -> 6:eur = 30:eur // 5
-    ensure -> 6:usd = fdiv 30:usd 5
-    ensure -> 6:eur = fdiv 30:eur 5
+    ensure -> 6`usd = 30`usd // 5
+    ensure -> 6`eur = 30`eur // 5
+    ensure -> 6`usd = fdiv 30`usd 5
+    ensure -> 6`eur = fdiv 30`eur 5
     passed
     
-    a: 30:usd, 'a // 5
+    a: 30`usd, 'a // 5
     ensure -> 6 = a
     passed
     
     a: 5
-    ensure -> throws? -> 5 // 30:usd
-    ensure -> throws? -> 'a // 30:usd
+    ensure -> throws? -> 5 // 30`usd
+    ensure -> throws? -> 'a // 30`usd
     passed
     
     
@@ -1674,19 +1674,19 @@ do [
     
     topic "fdiv - :floating :quantity"
 
-    ensure -> 60 = 30:usd // 0.5
-    ensure -> 60 = 30:eur // 0.5
-    ensure -> 60 = fdiv 30:usd 0.5
-    ensure -> 60 = fdiv 30:eur 0.5
+    ensure -> 60 = 30`usd // 0.5
+    ensure -> 60 = 30`eur // 0.5
+    ensure -> 60 = fdiv 30`usd 0.5
+    ensure -> 60 = fdiv 30`eur 0.5
     passed
     
-    a: 30:usd, 'a // 0.5
+    a: 30`usd, 'a // 0.5
     ensure -> 60 = a
     passed
     
     a: 0.5
-    ensure -> throws? -> 0.5 // 30:usd
-    ensure -> throws? -> 'a // 30:usd
+    ensure -> throws? -> 0.5 // 30`usd
+    ensure -> throws? -> 'a // 30`usd
     passed
     
     
@@ -1716,32 +1716,32 @@ do [
     
     topic "fdiv - :rational :quantity"
 
-    ensure -> 60:usd = 30:usd // to :rational [1 2]
-    ensure -> 60:eur = 30:eur // to :rational [1 2]
-    ensure -> 60:usd = fdiv 30:usd to :rational [1 2]
-    ensure -> 60:eur = fdiv 30:eur to :rational [1 2]
+    ensure -> 60`usd = 30`usd // to :rational [1 2]
+    ensure -> 60`eur = 30`eur // to :rational [1 2]
+    ensure -> 60`usd = fdiv 30`usd to :rational [1 2]
+    ensure -> 60`eur = fdiv 30`eur to :rational [1 2]
     passed
     
-    ensure -> 60 = 30:usd // to :rational [1 2]
-    ensure -> 60 = 30:eur // to :rational [1 2]
-    ensure -> 60 = fdiv 30:usd to :rational [1 2]
-    ensure -> 60 = fdiv 30:eur to :rational [1 2]
+    ensure -> 60 = 30`usd // to :rational [1 2]
+    ensure -> 60 = 30`eur // to :rational [1 2]
+    ensure -> 60 = fdiv 30`usd to :rational [1 2]
+    ensure -> 60 = fdiv 30`eur to :rational [1 2]
     passed
 
     ensure -> every? @[
-        -> (to :rational [1 2]) // 30:usd
-        -> (to :rational [1 2]) // 30:eur
-        -> fdiv (to :rational [1 2]) 30:usd
-        -> fdiv (to :rational [1 2]) 30:eur
+        -> (to :rational [1 2]) // 30`usd
+        -> (to :rational [1 2]) // 30`eur
+        -> fdiv (to :rational [1 2]) 30`usd
+        -> fdiv (to :rational [1 2]) 30`eur
     ] => throws?
     passed
     
-    a: 30:usd, 'a // to :rational [1 2]
-    ensure -> 60:usd = a
+    a: 30`usd, 'a // to :rational [1 2]
+    ensure -> 60`usd = a
     passed
     
     a: to :rational [1 2]
-    ensure -> throws? -> 'a // 30:usd
+    ensure -> throws? -> 'a // 30`usd
     passed
     
         
@@ -1749,33 +1749,33 @@ do [
      
     topic "fdiv - :quantity :quantity"
     
-    ensure -> 4 = (20:usd) // (5:usd)
-    ensure -> 4 = (20:eur) // (5:eur)
-    ensure -> 0.05 = 1:m // 20:cm
-    ensure -> 0.05 = 1:m // 20:cm
-    ensure -> 4:usd = (20:usd) // (5:usd)
-    ensure -> 4:eur = (20:eur) // (5:eur)
-    ensure -> 0.05:m = 1:m // 20:cm
-    ensure -> 0.05:m = 1:m // 20:cm
+    ensure -> 4 = (20`usd) // (5`usd)
+    ensure -> 4 = (20`eur) // (5`eur)
+    ensure -> 0.05 = 1`m // 20`cm
+    ensure -> 0.05 = 1`m // 20`cm
+    ensure -> 4`usd = (20`usd) // (5`usd)
+    ensure -> 4`eur = (20`eur) // (5`eur)
+    ensure -> 0.05`m = 1`m // 20`cm
+    ensure -> 0.05`m = 1`m // 20`cm
     passed
     
-    ensure -> 4 = fdiv (20:usd) (5:usd)
-    ensure -> 4 = fdiv (20:eur) (5:eur)
-    ensure -> 0.05 = fdiv 1:m 20:cm
-    ensure -> 0.05 = fdiv 1:m 20:cm
-    ensure -> 4:usd = fdiv (20:usd) (5:usd)
-    ensure -> 4:eur = fdiv (20:eur) (5:eur)
-    ensure -> 0.05:m = fdiv 1:m 20:cm
-    ensure -> 0.05:m = fdiv 1:m 20:cm
+    ensure -> 4 = fdiv (20`usd) (5`usd)
+    ensure -> 4 = fdiv (20`eur) (5`eur)
+    ensure -> 0.05 = fdiv 1`m 20`cm
+    ensure -> 0.05 = fdiv 1`m 20`cm
+    ensure -> 4`usd = fdiv (20`usd) (5`usd)
+    ensure -> 4`eur = fdiv (20`eur) (5`eur)
+    ensure -> 0.05`m = fdiv 1`m 20`cm
+    ensure -> 0.05`m = fdiv 1`m 20`cm
     passed
     
-    a: 20:usd, 'a // 5:usd
-    ensure -> 4:usd = a
+    a: 20`usd, 'a // 5`usd
+    ensure -> 4`usd = a
     ensure -> 4 = a
     passed
     
-    a: 1:m, 'a // 20:cm
-    ensure -> 0.05:m = a
+    a: 1`m, 'a // 20`cm
+    ensure -> 0.05`m = a
     ensure -> 0.05 = a
     passed
     
@@ -1847,15 +1847,15 @@ do [
     
     topic "inc - :quantity"
     
-    ensure -> 30 = inc 29:usd
-    ensure -> 30 = inc 29:eur
-    ensure -> 30:usd = inc 29:usd
-    ensure -> 30:eur = inc 29:eur
-    ensure -> 0:m = inc (neg 1:m)
+    ensure -> 30 = inc 29`usd
+    ensure -> 30 = inc 29`eur
+    ensure -> 30`usd = inc 29`usd
+    ensure -> 30`eur = inc 29`eur
+    ensure -> 0`m = inc (neg 1`m)
     passed
     
-    a: 29:usd, inc 'a
-    ensure -> 30:usd = a
+    a: 29`usd, inc 'a
+    ensure -> 30`usd = a
     ensure -> 30 = a
     passed
     
@@ -1967,32 +1967,32 @@ do [
     
     
     topic "mod - :integer :quantity"
-    ensure -> 0 = 30:usd % 5
-    ensure -> 0 = 30:eur % 5
-    ensure -> 0 = mod 30:usd 5
-    ensure -> 0 = mod 30:eur 5
+    ensure -> 0 = 30`usd % 5
+    ensure -> 0 = 30`eur % 5
+    ensure -> 0 = mod 30`usd 5
+    ensure -> 0 = mod 30`eur 5
     passed
     
-    ensure -> 0:usd = 30:usd % 5
-    ensure -> 0:eur = 30:eur % 5
-    ensure -> 0:usd = mod 30:usd 5
-    ensure -> 0:eur = mod 30:eur 5
+    ensure -> 0`usd = 30`usd % 5
+    ensure -> 0`eur = 30`eur % 5
+    ensure -> 0`usd = mod 30`usd 5
+    ensure -> 0`eur = mod 30`eur 5
     passed
     
     ensure -> every? @[
-        -> 5 % 30:usd
-        -> 5 % 30:eur
-        -> mod 5 30:usd
-        -> mod 5 30:eur
+        -> 5 % 30`usd
+        -> 5 % 30`eur
+        -> mod 5 30`usd
+        -> mod 5 30`eur
     ] => throws?
     passed
     
-    a: 30:usd, 'a % 5
+    a: 30`usd, 'a % 5
     ensure -> 0 = a
-    ensure -> 0:usd = a
+    ensure -> 0`usd = a
     passed
     
-    a: 5, ensure -> throws? -> 'a % 30:usd
+    a: 5, ensure -> throws? -> 'a % 30`usd
     passed
     
     
@@ -2040,32 +2040,32 @@ do [
     
     topic "mod - :floating :quantity"
     
-    ensure -> 0.0:usd = 30:usd % 5.0
-    ensure -> 0.0:eur = 30:eur % 5.0
-    ensure -> 0.0:usd = mod 30:usd 5.0
-    ensure -> 0.0:eur = mod 30:eur 5.0
+    ensure -> 0.0`usd = 30`usd % 5.0
+    ensure -> 0.0`eur = 30`eur % 5.0
+    ensure -> 0.0`usd = mod 30`usd 5.0
+    ensure -> 0.0`eur = mod 30`eur 5.0
     passed
     
-    ensure -> 0.0 = 30:usd % 5.0
-    ensure -> 0.0 = 30:eur % 5.0
-    ensure -> 0.0 = mod 30:usd 5.0
-    ensure -> 0.0 = mod 30:eur 5.0
+    ensure -> 0.0 = 30`usd % 5.0
+    ensure -> 0.0 = 30`eur % 5.0
+    ensure -> 0.0 = mod 30`usd 5.0
+    ensure -> 0.0 = mod 30`eur 5.0
     passed
     
     ensure -> every? @[
-        -> 5.0 % 30:usd
-        -> 5.0 % 30:eur
-        -> mod 5.0 30:usd
-        -> mod 5.0 30:eur
+        -> 5.0 % 30`usd
+        -> 5.0 % 30`eur
+        -> mod 5.0 30`usd
+        -> mod 5.0 30`eur
     ] => throws?
     passed
     
-    a: 30:usd, 'a % 5.0
-    ensure -> 0.0:usd = a
+    a: 30`usd, 'a % 5.0
+    ensure -> 0.0`usd = a
     passed
     
     a: 5.0
-    ensure -> throws? -> 'a % 30:usd
+    ensure -> throws? -> 'a % 30`usd
     passed
     
  
@@ -2097,35 +2097,35 @@ do [
 
     a: to :rational [1 2]
     
-    ensure -> 0.0 = 30:usd % a
-    ensure -> 0.0 = 30:eur % a
-    ensure -> 0.0 = mod 30:usd a
-    ensure -> 0.0 = mod 30:eur a
+    ensure -> 0.0 = 30`usd % a
+    ensure -> 0.0 = 30`eur % a
+    ensure -> 0.0 = mod 30`usd a
+    ensure -> 0.0 = mod 30`eur a
     passed
     
-    ensure -> 0.0:usd = 30:usd % a
-    ensure -> 0.0:eur = 30:eur % a
-    ensure -> 0.0:usd = mod 30:usd a
-    ensure -> 0.0:eur = mod 30:eur a
+    ensure -> 0.0`usd = 30`usd % a
+    ensure -> 0.0`eur = 30`eur % a
+    ensure -> 0.0`usd = mod 30`usd a
+    ensure -> 0.0`eur = mod 30`eur a
     passed
     
     a: to :rational [1 2]
     
     ensure -> every? @[
-        -> a % 30:usd
-        -> a % 30:eur
-        -> mod a 30:usd
-        -> mod a 30:eur
+        -> a % 30`usd
+        -> a % 30`eur
+        -> mod a 30`usd
+        -> mod a 30`eur
     ] => throws?
     passed
     
-    a: 30:usd, 'a % to :rational [1 2]
-    ensure -> 0.0:usd = a
+    a: 30`usd, 'a % to :rational [1 2]
+    ensure -> 0.0`usd = a
     ensure -> 0 = a
     passed
     
     a: to :rational [1 2]
-    ensure -> throws? -> 'a % 30:usd
+    ensure -> throws? -> 'a % 30`usd
     passed
     
         
@@ -2133,19 +2133,19 @@ do [
      
     topic "mod - :quantity :quantity"
     
-    ensure -> 0:usd = 20:usd % 5:usd
-    ensure -> 0:usd = mod 20:usd 5:usd
-    ensure -> 0 = 20:usd % 5:usd
-    ensure -> 0 = mod 20:usd 5:usd
+    ensure -> 0`usd = 20`usd % 5`usd
+    ensure -> 0`usd = mod 20`usd 5`usd
+    ensure -> 0 = 20`usd % 5`usd
+    ensure -> 0 = mod 20`usd 5`usd
     passed
     
-    a: 20:usd, 'a % 5:usd
+    a: 20`usd, 'a % 5`usd
     ensure -> 0 = a
-    ensure -> 0:usd = a
+    ensure -> 0`usd = a
     
-    a: 20:usd, mod 'a 5:usd
+    a: 20`usd, mod 'a 5`usd
     ensure -> 0 = a
-    ensure -> 0:usd = a
+    ensure -> 0`usd = a
     
 ]
 
@@ -2278,25 +2278,25 @@ do [
     
     
     topic "mul - :integer :quantity"
-    ensure -> 150 = 30:usd * 5
-    ensure -> 150 = 30:eur * 5
-    ensure -> 150 = mul 30:usd 5
-    ensure -> 150 = mul 30:eur 5
+    ensure -> 150 = 30`usd * 5
+    ensure -> 150 = 30`eur * 5
+    ensure -> 150 = mul 30`usd 5
+    ensure -> 150 = mul 30`eur 5
     passed
     
-    ensure -> 150:usd = 5 * 30:usd
-    ensure -> 150:eur = 5 * 30:eur
-    ensure -> 150:usd = mul 5 30:usd
-    ensure -> 150:eur = mul 5 30:eur
+    ensure -> 150`usd = 5 * 30`usd
+    ensure -> 150`eur = 5 * 30`eur
+    ensure -> 150`usd = mul 5 30`usd
+    ensure -> 150`eur = mul 5 30`eur
     passed
     
-    a: 30:usd, 'a * 5
-    ensure -> 150:usd = a
+    a: 30`usd, 'a * 5
+    ensure -> 150`usd = a
     ensure -> 150 = a
     passed
     
-    a: 5, 'a * 30:usd
-    ensure -> 150:usd = a
+    a: 5, 'a * 30`usd
+    ensure -> 150`usd = a
     ensure -> 150 = a
     passed
     
@@ -2384,26 +2384,26 @@ do [
     
     
     topic "mul - :floating :quantity"
-    ensure -> 15 = 30:usd * 0.5
-    ensure -> 15 = 30:eur * 0.5
-    ensure -> 15 = mul 30:usd 0.5
-    ensure -> 15 = mul 30:eur 0.5
+    ensure -> 15 = 30`usd * 0.5
+    ensure -> 15 = 30`eur * 0.5
+    ensure -> 15 = mul 30`usd 0.5
+    ensure -> 15 = mul 30`eur 0.5
     passed
     
-    ensure -> 15:usd = 30:usd * 0.5
-    ensure -> 15:eur = 30:eur * 0.5
-    ensure -> 15:usd = mul 30:usd 0.5
-    ensure -> 15:eur = mul 30:eur 0.5
+    ensure -> 15`usd = 30`usd * 0.5
+    ensure -> 15`eur = 30`eur * 0.5
+    ensure -> 15`usd = mul 30`usd 0.5
+    ensure -> 15`eur = mul 30`eur 0.5
     passed
     
-    a: 30:usd, 'a * 0.5
-    ensure -> 15:usd = a
+    a: 30`usd, 'a * 0.5
+    ensure -> 15`usd = a
     ensure -> 15 = a
     passed
     
     a: 0.5
-    ensure -> throws? -> 0.5 * 30:usd
-    ensure -> throws? -> 'a * 30:usd
+    ensure -> throws? -> 0.5 * 30`usd
+    ensure -> throws? -> 'a * 30`usd
     passed
     
     
@@ -2458,23 +2458,23 @@ do [
     topic "mul - :complex :quantity"
 
     ensure -> every? @[
-        -> 30:usd * to :complex [1 2]
-        -> 30:eur * to :complex [1 2]
-        -> mul 30:usd to :complex [1 2]
-        -> mul 30:eur to :complex [1 2]
-        -> (to :complex [1 2]) * 30:usd
-        -> (to :complex [1 2]) * 30:eur
-        -> mul (to :complex [1 2]) 30:usd
-        -> mul (to :complex [1 2]) 30:eur
+        -> 30`usd * to :complex [1 2]
+        -> 30`eur * to :complex [1 2]
+        -> mul 30`usd to :complex [1 2]
+        -> mul 30`eur to :complex [1 2]
+        -> (to :complex [1 2]) * 30`usd
+        -> (to :complex [1 2]) * 30`eur
+        -> mul (to :complex [1 2]) 30`usd
+        -> mul (to :complex [1 2]) 30`eur
     ] => throws?
     passed
     
-    a: 30:usd
+    a: 30`usd
     ensure -> throws? -> 'a * to :complex [1 2]
     passed
     
     a: to :complex [1 2]
-    ensure -> throws? -> 'a * 30:usd
+    ensure -> throws? -> 'a * 30`usd
     passed
     
     
@@ -2504,32 +2504,32 @@ do [
     
     topic "mul - :rational :quantity"
 
-    ensure -> 15 = 30:usd * to :rational [1 2]
-    ensure -> 15 = 30:eur * to :rational [1 2]
-    ensure -> 15 = mul 30:usd to :rational [1 2]
-    ensure -> 15 = mul 30:eur to :rational [1 2]
+    ensure -> 15 = 30`usd * to :rational [1 2]
+    ensure -> 15 = 30`eur * to :rational [1 2]
+    ensure -> 15 = mul 30`usd to :rational [1 2]
+    ensure -> 15 = mul 30`eur to :rational [1 2]
     passed
     
-    ensure -> 15:usd = 30:usd * to :rational [1 2]
-    ensure -> 15:eur = 30:eur * to :rational [1 2]
-    ensure -> 15:usd = mul 30:usd to :rational [1 2]
-    ensure -> 15:eur = mul 30:eur to :rational [1 2]
+    ensure -> 15`usd = 30`usd * to :rational [1 2]
+    ensure -> 15`eur = 30`eur * to :rational [1 2]
+    ensure -> 15`usd = mul 30`usd to :rational [1 2]
+    ensure -> 15`eur = mul 30`eur to :rational [1 2]
     passed
     
     ensure -> every? @[
-        -> (to :rational [1 2]) * 30:usd
-        -> (to :rational [1 2]) * 30:eur
-        -> mul (to :rational [1 2]) 30:usd
-        -> mul (to :rational [1 2]) 30:eur
+        -> (to :rational [1 2]) * 30`usd
+        -> (to :rational [1 2]) * 30`eur
+        -> mul (to :rational [1 2]) 30`usd
+        -> mul (to :rational [1 2]) 30`eur
     ] => throws?
     passed
     
-    a: 30:usd, 'a * to :rational [1 2]
+    a: 30`usd, 'a * to :rational [1 2]
     ensure -> 15 = a
     passed
     
     a: to :rational [1 2]
-    ensure -> throws? -> 'a * 30:usd
+    ensure -> throws? -> 'a * 30`usd
     passed
     
         
@@ -2537,16 +2537,16 @@ do [
      
     topic "mul - :quantity :quantity"
        
-    ensure -> 0.2:m2 = 1:m * 20:cm
-    ensure -> 0.2:m2 = 20:cm * 1:m
+    ensure -> 0.2`m2 = 1`m * 20`cm
+    ensure -> 0.2`m2 = 20`cm * 1`m
     passed
     
-    a: 20:usd
-    ensure -> throws? -> 'a * 3:usd
+    a: 20`usd
+    ensure -> throws? -> 'a * 3`usd
     passed
     
-    a: 1:m, 'a * 20:cm
-    ensure -> 0.2:m2 = a
+    a: 1`m, 'a * 20`cm
+    ensure -> 0.2`m2 = a
     passed
     
 ]
@@ -2619,16 +2619,16 @@ do [
     
     topic "neg - :quantity"
     
-    ensure -> "-20USD" = ~"|neg 20:usd|"
-    ensure -> "-20EUR" = ~"|neg 20:eur|"
-    ensure -> "-20m" = ~"|neg 20:m|"
-    ensure -> "-20cm" = ~"|neg 20:cm|"
+    ensure -> "-20USD" = ~"|neg 20`usd|"
+    ensure -> "-20EUR" = ~"|neg 20`eur|"
+    ensure -> "-20m" = ~"|neg 20`m|"
+    ensure -> "-20cm" = ~"|neg 20`cm|"
     passed
     
-    ensure -> (neg 20) = neg 20:usd
-    ensure -> (neg 20) = neg 20:eur
-    ensure -> (neg 20) = neg 20:m
-    ensure -> (neg 20) = neg 20:cm
+    ensure -> (neg 20) = neg 20`usd
+    ensure -> (neg 20) = neg 20`eur
+    ensure -> (neg 20) = neg 20`m
+    ensure -> (neg 20) = neg 20`cm
     passed
 
 ]
@@ -2861,18 +2861,18 @@ do [
     
     topic "pow - :floating :quantity"
     
-    ensure -> throws? -> pow 2:usd 8
-    ensure -> throws? -> 2:usd ^ 8
+    ensure -> throws? -> pow 2`usd 8
+    ensure -> throws? -> 2`usd ^ 8
     passed
     
-    ensure -> 1:m2 = pow 1:m 2
-    ensure -> 1:m2 = 1:m ^ 2
+    ensure -> 1`m2 = pow 1`m 2
+    ensure -> 1`m2 = 1`m ^ 2
     passed
     
-    a: 1:m, 'a ^ 2
-    ensure -> 1:m2 = a
+    a: 1`m, 'a ^ 2
+    ensure -> 1`m2 = a
     
-    ensure -> throws? -> 2 ^ 8:usd
+    ensure -> throws? -> 2 ^ 8`usd
     passed
 
 ]
@@ -2956,8 +2956,8 @@ do [
     topic "sub - :int :rational"
     
     a: to :rational [3 5]
-    expected1: to :rational @[(neg 2) 5]
-    expected2: to :rational @[2 5]
+    expected1` to :rational @[(neg 2) 5]
+    expected2` to :rational @[2 5]
     ensure -> expected1 = a - 1
     ensure -> expected2 = 1 - a
     ensure -> expected1 = sub a 1
@@ -2983,25 +2983,25 @@ do [
     
     topic "sub - :integer :quantity"
     
-    ensure -> 25 = 30:usd - 5
-    ensure -> 25 = 30:eur - 5
-    ensure -> 25 = sub 30:usd 5
-    ensure -> 25 = sub 30:eur 5
+    ensure -> 25 = 30`usd - 5
+    ensure -> 25 = 30`eur - 5
+    ensure -> 25 = sub 30`usd 5
+    ensure -> 25 = sub 30`eur 5
     passed
     
-    ensure -> 25:usd = 30:usd - 5
-    ensure -> 25:eur = 30:eur - 5
-    ensure -> 25:usd = sub 30:usd 5
-    ensure -> 25:eur = sub 30:eur 5
+    ensure -> 25`usd = 30`usd - 5
+    ensure -> 25`eur = 30`eur - 5
+    ensure -> 25`usd = sub 30`usd 5
+    ensure -> 25`eur = sub 30`eur 5
     passed
     
-    a: 30:usd, 'a - 5
-    ensure -> 25:usd = a
+    a: 30`usd, 'a - 5
+    ensure -> 25`usd = a
     ensure -> 25 = a
     passed
     
     a: 60
-    ensure -> throws? -> 'a - 30:usd
+    ensure -> throws? -> 'a - 30`usd
     passed
     
     
@@ -3092,7 +3092,7 @@ do [
     
     a: to :rational [3 5]
     expected: to :rational [1 10]
-    expected2: to :rational @[(neg 1) 10]
+    expected2` to :rational @[(neg 1) 10]
     ensure -> expected = a - 0.5
     ensure -> expected2 = 0.5 - a
     ensure -> expected = sub a 0.5
@@ -3109,24 +3109,24 @@ do [
     
     topic "sub - :floating :quantity"
     
-    ensure -> 24.5 = 30:usd - 5.5
-    ensure -> 24.5 = 30:eur - 5.5
-    ensure -> 24.5 = sub 30:usd 5.5
-    ensure -> 24.5 = sub 30:eur 5.5
+    ensure -> 24.5 = 30`usd - 5.5
+    ensure -> 24.5 = 30`eur - 5.5
+    ensure -> 24.5 = sub 30`usd 5.5
+    ensure -> 24.5 = sub 30`eur 5.5
     passed
     
-    ensure -> 24.5:usd = 30:usd - 5.5
-    ensure -> 24.5:eur = 30:eur - 5.5
-    ensure -> 24.5:usd = sub 30:usd 5.5
-    ensure -> 24.5:eur = sub 30:eur 5.5
+    ensure -> 24.5`usd = 30`usd - 5.5
+    ensure -> 24.5`eur = 30`eur - 5.5
+    ensure -> 24.5`usd = sub 30`usd 5.5
+    ensure -> 24.5`eur = sub 30`eur 5.5
     passed
     
-    a: 30:usd, 'a - 5.5
+    a: 30`usd, 'a - 5.5
     ensure -> 24.5 = a
     passed
     
     a: 5.5
-    ensure -> throws? -> 'a - 30:usd
+    ensure -> throws? -> 'a - 30`usd
     passed
     
     
@@ -3199,23 +3199,23 @@ do [
     topic "sub - :complex :quantity"
 
     ensure -> every? @[
-        -> 30:usd - to :complex [1 2]
-        -> 30:eur - to :complex [1 2]
-        -> sub 30:usd to :complex [1 2]
-        -> sub 30:eur to :complex [1 2]
-        -> (to :complex [1 2]) - 30:usd
-        -> (to :complex [1 2]) - 30:eur
-        -> sub (to :complex [1 2]) 30:usd
-        -> sub (to :complex [1 2]) 30:eur
+        -> 30`usd - to :complex [1 2]
+        -> 30`eur - to :complex [1 2]
+        -> sub 30`usd to :complex [1 2]
+        -> sub 30`eur to :complex [1 2]
+        -> (to :complex [1 2]) - 30`usd
+        -> (to :complex [1 2]) - 30`eur
+        -> sub (to :complex [1 2]) 30`usd
+        -> sub (to :complex [1 2]) 30`eur
     ] => throws?
     passed
     
-    a: 30:usd
+    a: 30`usd
     ensure -> throws? -> 'a - to :complex [1 2]
     passed
     
     a: to :complex [1 2]
-    ensure -> throws? -> 'a - 30:usd
+    ensure -> throws? -> 'a - 30`usd
     passed
     
     
@@ -3271,26 +3271,26 @@ do [
     
     topic "sub - :rational :quantity"
 
-    ensure -> (59/2):usd = 30:usd - to :rational [1 2]
-    ensure -> (59/2):eur = 30:eur - to :rational [1 2]
-    ensure -> (59/2):usd = sub 30:usd to :rational [1 2]
-    ensure -> (59/2):eur = sub 30:eur to :rational [1 2]
+    ensure -> (59/2):usd = 30`usd - to :rational [1 2]
+    ensure -> (59/2):eur = 30`eur - to :rational [1 2]
+    ensure -> (59/2):usd = sub 30`usd to :rational [1 2]
+    ensure -> (59/2):eur = sub 30`eur to :rational [1 2]
     passed
     
     ensure -> every? @[
-        -> (to :rational [1 2]) - 30:usd
-        -> (to :rational [1 2]) - 30:eur
-        -> sub (to :rational [1 2]) 30:usd
-        -> sub (to :rational [1 2]) 30:eur
+        -> (to :rational [1 2]) - 30`usd
+        -> (to :rational [1 2]) - 30`eur
+        -> sub (to :rational [1 2]) 30`usd
+        -> sub (to :rational [1 2]) 30`eur
     ] => throws?
     passed
     
-    a: 30:usd, 'a - to :rational [1 2]
+    a: 30`usd, 'a - to :rational [1 2]
     ensure -> (59/2):usd = a
     passed
     
     a: to :rational [1 2]
-    ensure -> throws? -> 'a - 30:usd
+    ensure -> throws? -> 'a - 30`usd
     passed
     
     
@@ -3348,15 +3348,15 @@ do [
     
     topic "sub - :color :quantity"
     
-    ensure -> throws? -> #red + 30:usd
-    ensure -> throws? -> 30:usd + #red
+    ensure -> throws? -> #red + 30`usd
+    ensure -> throws? -> 30`usd + #red
     passed
     
     a: #red
-    ensure -> throws? -> 'a + 30:usd
+    ensure -> throws? -> 'a + 30`usd
     passed
     
-    a: 30:usd
+    a: 30`usd
     ensure -> throws? -> 'a + #red
     passed
     
@@ -3365,19 +3365,19 @@ do [
      
     topic "sub - :quantity :quantity"
     
-    ensure -> (neg 10) = 20:usd - 30:usd
-    ensure -> 10 = 30:usd - 20:usd
-    ensure -> 0.8:m = 1:m - 20:cm
-    ensure -> (neg 80:cm) = 20:cm - 1:m
+    ensure -> (neg 10) = 20`usd - 30`usd
+    ensure -> 10 = 30`usd - 20`usd
+    ensure -> 0.8`m = 1`m - 20`cm
+    ensure -> (neg 80`cm) = 20`cm - 1`m
     passed
     
-    a: 20:usd, 'a - neg 30:usd
-    ensure -> 50:usd = a 
+    a: 20`usd, 'a - neg 30`usd
+    ensure -> 50`usd = a 
     ensure -> 50 = a 
     passed
     
-    a: 1:m, 'a - neg 20:cm
-    ensure -> 1.2:m = a
+    a: 1`m, 'a - neg 20`cm
+    ensure -> 1.2`m = a
     passed
     
 ]
