@@ -286,12 +286,14 @@ func newRational*(num: Value, den: Value): Value {.inline, enforceNoRaises.} =
         if den.iKind == NormalInteger:
             return newRational(num.i, den.i)
         else:
-            return newRational(num.i, den.bi)
+            when not defined(NOGMP):
+                return newRational(num.i, den.bi)
     else:
-        if den.iKind == NormalInteger:
-            return newRational(num.bi, den.i)
-        else:
-            return newRational(num.bi, den.bi)
+        when not defined(NOGMP):
+            if den.iKind == NormalInteger:
+                return newRational(num.bi, den.i)
+            else:
+                return newRational(num.bi, den.bi)
 
 func newVersion*(v: string): Value {.inline.} =
     ## create Version value from string
