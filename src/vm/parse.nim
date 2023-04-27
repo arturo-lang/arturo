@@ -940,9 +940,10 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                     else:
                         SyntaxError_EmptyLiteral(p.lineNumber, getContext(p, p.bufpos-1))
                 else:
-                    if p.buf[p.bufpos-1]==Tick:
+                    if p.buf[p.bufpos+1]==Tick:
                         #parseString(p, stopper=BackTick)
                         AddToken newChar(p.value)
+                        inc(p.bufpos)
                     else:
                         AddToken newLiteral(p.value)
             of Dot:
