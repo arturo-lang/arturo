@@ -20,7 +20,7 @@ loop 1..100000 'i [
     t: totient i
     prime?: 1 = i - t
     if i < 26 [
-        prints ~« Φ(|pad.with:`0` to :string i 2|) = |pad to :string t 2|
+        prints ~« Φ(|pad.with:'0' to :string i 2|) = |pad to :string t 2|
         if prime? -> prints ", prime"
         print ""
     ]

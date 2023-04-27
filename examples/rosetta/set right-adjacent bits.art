@@ -7,10 +7,10 @@ setBits: function [inp, n][
     else [
         result: split inp
         loop 0..e-1 'i [
-            if inp\[i] = `1` [
+            if inp\[i] = '1' [
                 j: i + 1
                 while [and? j =< i+n j < e][
-                    result\[j]: `1`
+                    result\[j]: '1'
                     j: j + 1
                 ]
             ]

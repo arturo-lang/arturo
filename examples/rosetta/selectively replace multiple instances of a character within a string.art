@@ -15,7 +15,7 @@ multiReplace: function [str, rules][
 ]
 
 print multiReplace "abracadabra" #[
-    a: [[0 `A`][1 `B`][3 `C`][4 `D`]]
-    b: [[0 `E`]]
-    r: [[1 `F`]]
+    a: [[0 'A'][1 'B'][3 'C'][4 'D']]
+    b: [[0 'E']]
+    r: [[1 'F']]
 ]
