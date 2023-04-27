@@ -372,9 +372,15 @@ func reciprocal*(x: VRational): VRational =
 func `/`*(x, y: VRational): VRational =
     if x.rKind == NormalRational:
         if y.rKind == NormalRational:
-            result.r.num = x.r.num * y.r.den
-            result.r.den = x.r.den * y.r.num
-            reduce(result)
+            try:
+                safeOp: mulIntWithOverflow(x.r.num, y.r.den, result.r.num)
+                #result.r.num = x.r.num * y.r.den
+                safeOp: mulIntWithOverflow(x.r.den, y.r.num, result.r.den)
+                #result.r.den = x.r.den * y.r.num
+                reduce(result)
+            except CatchableError:
+                when not defined(NOGMP):
+                    result = toBigRational(x) / y
         else:
             result = toBigRational(x) / y
     else:
@@ -388,28 +394,42 @@ func `/`*(x, y: VRational): VRational =
 
 func `/`*(x: VRational, y: int): VRational =
     if x.rKind == NormalRational:
-        result.rKind = NormalRational
-        result.r.num = x.r.num
-        result.r.den = x.r.den * y
-        reduce(result)
+        try:
+            result.rKind = NormalRational
+            result.r.num = x.r.num
+            safeOp: mulIntWithOverflow(x.r.den, y, result.r.den)
+            #result.r.den = x.r.den * y
+            reduce(result)
+        except CatchableError:
+            when not defined(NOGMP):
+                result = toBigRational(x) / y
     else:
         result = x / toBigRational(y)
 
 func `/`*(x: int, y: VRational): VRational =
     if y.rKind == NormalRational:
-        result.rKind = NormalRational
-        result.r.num = x * y.r.den
-        result.r.den = y.r.num
-        reduce(result)
+        try:
+            result.rKind = NormalRational
+            safeOp: mulIntWithOverflow(x, y.r.den, result.r.num)
+            #result.r.num = x * y.r.den
+            result.r.den = y.r.num
+            reduce(result)
+        except CatchableError:
+            when not defined(NOGMP):
+                result = toBigRational(x) / y
     else:
         result = toBigRational(x) / y
 
 func `/=`*(x: var VRational, y: VRational) =
     if x.rKind == NormalRational:
         if y.rKind == NormalRational:
-            x.r.num *= y.r.den
-            x.r.den *= y.r.num
-            reduce(x)
+            try:
+                safeOp: mulIntWithOverflow(x.r.num, y.r.den, x.r.num)
+                safeOp: mulIntWithOverflow(x.r.den, y.r.num, x.r.den)
+                reduce(x)
+            except CatchableError:
+                when not defined(NOGMP):
+                    x = toBigRational(x) / y
         else:
             x = toBigRational(x) / y
     else:
