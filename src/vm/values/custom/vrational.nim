@@ -471,7 +471,8 @@ func `*=`*(x: var VRational, y: int) =
             #x.r.num *= y
             reduce(x)
         except CatchableError:
-            x = toBigRational(x) * y
+            when not defined(NOGMP):
+                x = toBigRational(x) * y
     else:
         when not defined(NOGMP):
             x *= toBigRational(y)
