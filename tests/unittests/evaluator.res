@@ -158,11 +158,11 @@
         > Quantity
         >--------------------------------------------------
 
-        input: [1:eur] 
+        input: [1`eur] 
         data: [1EUR] 
         code: [32 218] (2 bytes) 
 
-        input: [12:m] 
+        input: [12`m] 
         data: [12m] 
         code: [32 218] (2 bytes) 
 
