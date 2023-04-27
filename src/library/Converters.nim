@@ -1242,6 +1242,19 @@ proc defineSymbols*() =
         },
         returns     = {Range},
         example     = """
+            print range 0 10            ; 0..10
+            print 0..10                 ; 0..10
+            print range.step: 2 0 10    ; 0..10 (2)
+            ..........
+            print @range 1 10           ; 1 2 3 4 5 6 7 8 9 10
+            print @range 10 0           ; 10 9 8 7 6 5 4 3 2 1 0
+            print @range.step: 2 0 10   ; 0 2 4 6 8 10
+
+            ; But you can also use:
+                
+            print @1..10                ; 1 2 3 4 5 6 7 8 9 10
+            print @10..0                ; 10 9 8 7 6 5 4 3 2 1 0
+            print @0.. .step: 2 10      ; 0 2 4 6 8 10
         """:
             #=======================================================
             var limX: int
