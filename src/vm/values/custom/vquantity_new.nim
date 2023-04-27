@@ -75,7 +75,6 @@ static:
     defDimension "Mole Flow Rate",              "N·T⁻¹"
     defDimension "Moment of Inertia",           "L²·M"
     defDimension "Momentum",                    "L·M·T⁻¹"
-    defDimension "Number Density",              "L⁻³"
     defDimension "Permeability",                "L·M·T⁻²·I⁻²"
     defDimension "Permittivity",                "L⁻³·M⁻¹·T⁴·I²"
     defDimension "Potential",                   "L²·M·T⁻³·I⁻¹"
