@@ -95,23 +95,24 @@ func simplifyRational*(x: var VRational) =
         if x.rKind == BigRational and canBeSimplified(x.br):
             x = initRational(getInt(numerator(x.br)), getInt(denominator(x.br)))
 
-func initRational*(num: Int, den: Int): VRational =
-    result.rKind = BigRational
-    result.br = newRat(num, den)
+when not defined(NOGMP):
+    func initRational*(num: Int, den: Int): VRational =
+        result.rKind = BigRational
+        result.br = newRat(num, den)
 
-    simplifyRational(result)
+        simplifyRational(result)
 
-func initRational*(num: int, den: Int): VRational =
-    result.rKind = BigRational
-    result.br = newRat(newInt(num), den)
-    
-    simplifyRational(result)
+    func initRational*(num: int, den: Int): VRational =
+        result.rKind = BigRational
+        result.br = newRat(newInt(num), den)
+        
+        simplifyRational(result)
 
-func initRational*(num: Int, den: int): VRational =
-    result.rKind = BigRational
-    result.br = newRat(num, newInt(den))
+    func initRational*(num: Int, den: int): VRational =
+        result.rKind = BigRational
+        result.br = newRat(num, newInt(den))
 
-    simplifyRational(result)
+        simplifyRational(result)
 
 func `//`*(num, den: int): VRational =
     initRational(num, den)
@@ -121,11 +122,11 @@ func toRational*(x: int): VRational =
     result.r.num = x
     result.r.den = 1
 
-func toRational*(x: Int): VRational = 
-    result.rKind = BigRational
-    result.br = newRat(x)
-
 when not defined(NOGMP):
+    func toRational*(x: Int): VRational = 
+        result.rKind = BigRational
+        result.br = newRat(x)
+
     func toBigRational*(x: int | Int | float): VRational =
         result.rKind = BigRational
         result.br = newRat(x)
