@@ -420,6 +420,7 @@ static:
     #       name        symbol      prefix?     definition                  aliases
     #---------------------------------------------------------------------------------------------------------------------------
     defUnit "C",        "C",        true,       "1 A.s",                    "coulomb", "coulombs"
+    defUnit "statC",    "statC",    false,      "3.335641e-10 C",           "statcoulomb", "statcoulombs"
 
     #---------------------------------------------------------------------------------------------------------------------------
     # Capacitance units (base: F = 1 C/V)
