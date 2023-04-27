@@ -940,8 +940,7 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                     else:
                         SyntaxError_EmptyLiteral(p.lineNumber, getContext(p, p.bufpos-1))
                 else:
-                    if p.buf[p.bufpos+1]==Tick:
-                        echo "next char: |" & $p.buf[p.bufpos+1] & "|"
+                    if p.buf[p.bufpos]==Tick:
                         #parseString(p, stopper=BackTick)
                         AddToken newChar(p.value)
                         inc(p.bufpos)
