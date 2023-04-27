@@ -174,7 +174,7 @@ func newRat*(x, y: int): Rat =
     mpq_init(result[])
     when isLLP64():
         if x.fitsLLP64Long:
-            mpq_set_si(result[], x.clong, y.clong)
+            mpq_set_si(result[], x.clong, y.culong)
         elif x.fitsLLP64ULong:
             mpq_set_ui(result[], x.culong, y.culong)
         else:
