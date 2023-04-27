@@ -50,6 +50,14 @@ type
                     br*: Rat
 
 #=======================================
+# Helpers
+#=======================================
+
+template safeOp(op: untyped): untyped =
+    if op:
+        raise newException(ValueError, "OVERFLOW!")
+
+#=======================================
 # Methods
 #=======================================
 
@@ -419,12 +427,17 @@ func `/=`*(x: var VRational, y: int) =
 
 func `^`*(x: VRational, y: int): VRational =
     if x.rKind == NormalRational:
-        if y < 0:
-            result.r.num = x.r.den ^ -y
-            result.r.den = x.r.num ^ -y
-        else:
-            result.r.num = x.r.num ^ y
-            result.r.den = x.r.den ^ y
+        try:
+            if y < 0:
+                safeOp: powIntWithOverflow(x.r.den, -y, result.r.num)
+                safeOp: powIntWithOverflow(x.r.num, -y, result.r.den)
+            else:
+                safeOp: powIntWithOverflow(x.r.num, y, result.r.num)
+                safeOp: powIntWithOverflow(x.r.den, y, result.r.den)
+        except CatchableError:
+            when not defined(NOGMP):
+                result = toBigRational(x) ^ y
+
     else:
         result = VRational(
             rKind: BigRational,
