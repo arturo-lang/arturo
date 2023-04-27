@@ -56,19 +56,7 @@ template safeOp(op: untyped): untyped =
     if op:
         raise newException(ValueError, "OVERFLOW!")
 
-template getNumerator*(x: VRational, big: bool = false): untyped =
-    when big and not defined(NOGMP):
-        numerator(x.br)
-    else:
-        x.num
-
-template getDenominator*(x: VRational, big: bool = false): untyped =
-    when big and not defined(NOGMP):
-        denominator(x.br)
-    else:
-        x.den
-
-func reduce*(x: var VRational) =
+func reduce(x: var VRational) =
     let common = gcd(x.num, x.den)
     if x.den > 0:
         x.num = x.num div common
@@ -83,6 +71,22 @@ func simplifyRational*(x: var VRational) =
     when not defined(NOGMP):
         if x.rKind == BigRational and canBeSimplified(x.br):
             x = toRational(getInt(numerator(x.br)), getInt(denominator(x.br)))
+
+#=======================================
+# Templates
+#=======================================
+
+template getNumerator*(x: VRational, big: bool = false): untyped =
+    when big and not defined(NOGMP):
+        numerator(x.br)
+    else:
+        x.num
+
+template getDenominator*(x: VRational, big: bool = false): untyped =
+    when big and not defined(NOGMP):
+        denominator(x.br)
+    else:
+        x.den
 
 #=======================================
 # Methods
