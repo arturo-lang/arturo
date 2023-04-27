@@ -900,6 +900,19 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                         let pv = newInteger(p.value, p.lineNumber)
                         parseQuantity(p)
                         AddToken newQuantity(pv, parseQuantitySpec(p.value))
+                    elif p.buf[p.bufpos]==Colon:
+                        inc(p.bufpos)
+                        let leftValue = newInteger(p.value, p.lineNumber)
+                        parseNumber(p)
+                        if hasDot: 
+                            raise newException(ValueError, "Invalid syntax for rationals")
+                        else:
+                            if p.buf[p.bufpos]==BackTick:
+                                let pv = newRational(leftValue, newInteger(p.value, p.lineNumber))
+                                parseQuantity(p)
+                                AddToken newQuantity(pv, parseQuantitySpec(p.value))
+                            else:
+                                AddToken newRational(leftValue, newInteger(p.value, p.lineNumber))
                     elif p.buf[p.bufpos]=='e' and p.buf[p.bufpos+1] in ScientificNotation:
                         let pv = p.value
                         parseExponent(p)
