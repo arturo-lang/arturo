@@ -2,7 +2,7 @@ parseFasta: function [data][
     result: #[]
     current: ø
     loop split.lines data 'line [
-        if? `>` = first line [
+        if? '>' = first line [
             current: slice line 1 (size line)-1
             set result current ""
         ]

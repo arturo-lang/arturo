@@ -1,7 +1,7 @@
-ia: to :integer `a`
-iA: to :integer `A`
-lowAZ: `a`..`z`
-uppAZ: `A`..`Z`
+ia: to :integer 'a'
+iA: to :integer 'A'
+lowAZ: 'a'..'z'
+uppAZ: 'A'..'Z'
 
 caesar: function [s, xx][
     k: (not? null? attr 'decode)? -> 26-xx -> xx

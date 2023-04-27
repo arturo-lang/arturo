@@ -493,9 +493,9 @@ do [
     
     topic « between? - :char
     
-    ensure -> between? `f` `a` `z`
-    ensure -> not? between? `f` `k` `z`
-    ensure -> not? between? `f` `a` `c`
+    ensure -> between? 'f' 'a' 'z'
+    ensure -> not? between? 'f' 'k' 'z'
+    ensure -> not? between? 'f' 'a' 'c'
     passed
     
     
@@ -872,9 +872,9 @@ do [
     
     topic « compare - :char
     
-    ensure -> 0 = compare `a` `a`
-    ensure -> (neg 1) = compare `a` `b`
-    ensure -> 1 = compare `b` `a`
+    ensure -> 0 = compare 'a' 'a'
+    ensure -> (neg 1) = compare 'a' 'b'
+    ensure -> 1 = compare 'b' 'a'
     passed
     
     
@@ -1281,11 +1281,11 @@ do [
     ensure -> not? equal? ø 1
     ensure -> not? equal? ø 1.0
     ensure -> not? equal? ø "ø"
-    ensure -> not? equal? ø `ø`
+    ensure -> not? equal? ø 'ø'
     ensure -> not? ø = 1
     ensure -> not? ø = 1.0
     ensure -> not? ø = "ø"
-    ensure -> not? ø = `ø`
+    ensure -> not? ø = 'ø'
     passed
     
     
@@ -1347,22 +1347,22 @@ do [
     
     topic « equal? - :char
     
-    ensure -> equal? `a` `a`
-    ensure -> `a` = `a`
+    ensure -> equal? 'a' 'a'
+    ensure -> 'a' = 'a'
     passed
     
-    ensure -> not? equal? `a` "a" 
-    ensure -> not? equal? `a` `b`
-    ensure -> not? equal? `1` 1
-    ensure -> not? equal? "a" `a` 
-    ensure -> not? equal? `b` `a`
-    ensure -> not? equal? 1   `1`
-    ensure -> not? `a` = "a" 
-    ensure -> not? `a` = `b`
-    ensure -> not? `1` =  1
-    ensure -> not? "a" = `a` 
-    ensure -> not? `b` = `a`
-    ensure -> not?  1  = `1`
+    ensure -> not? equal? 'a' "a" 
+    ensure -> not? equal? 'a' 'b'
+    ensure -> not? equal? '1' 1
+    ensure -> not? equal? "a" 'a' 
+    ensure -> not? equal? 'b' 'a'
+    ensure -> not? equal? 1   '1'
+    ensure -> not? 'a' = "a" 
+    ensure -> not? 'a' = 'b'
+    ensure -> not? '1' =  1
+    ensure -> not? "a" = 'a' 
+    ensure -> not? 'b' = 'a'
+    ensure -> not?  1  = '1'
     passed 
     
     
@@ -1376,12 +1376,12 @@ do [
     ensure -> not? equal? "Art" "Bob"
     passed
     
-    ensure -> not? equal? "a"    `a` 
+    ensure -> not? equal? "a"    'a' 
     ensure -> not? equal? "10"   10 
     ensure -> not? equal? "10"   10
     passed
     
-    ensure -> not? equal? "a" `a`
+    ensure -> not? equal? "a" 'a'
     ensure -> not? equal? "a" 'a
     ensure -> not? equal? "a" to :label "a"
     ensure -> not? equal? "a" to :attribute "a"
@@ -1397,7 +1397,7 @@ do [
     passed
     
     ensure -> not? equal? to :word "a" "a"
-    ensure -> not? equal? to :word "a" `a`
+    ensure -> not? equal? to :word "a" 'a'
     ensure -> not? equal? to :word "a" 'a
     ensure -> not? equal? to :word "a" to :label "a"
     ensure -> not? equal? to :word "a" to :attribute "a"
@@ -1413,7 +1413,7 @@ do [
     passed
     
     ensure -> not? equal? to :label "a" "a"
-    ensure -> not? equal? to :label "a" `a`
+    ensure -> not? equal? to :label "a" 'a'
     ensure -> not? equal? to :label "a" 'a
     ensure -> not? equal? to :label "a" to :word "a"
     ensure -> not? equal? to :label "a" to :attribute "a"
@@ -1429,7 +1429,7 @@ do [
     passed
     
     ensure -> not? equal? 'a "a"
-    ensure -> not? equal? 'a `a`
+    ensure -> not? equal? 'a 'a'
     ensure -> not? equal? 'a to :label "a"
     ensure -> not? equal? 'a to :word "a"
     ensure -> not? equal? 'a to :attribute "a"
@@ -1446,7 +1446,7 @@ do [
     passed
     
     ensure -> not? equal? to :attribute "a" "a"
-    ensure -> not? equal? to :attribute "a" `a`
+    ensure -> not? equal? to :attribute "a" 'a'
     ensure -> not? equal? to :attribute "a" 'a
     ensure -> not? equal? to :attribute "a" to :word "a"
     ensure -> not? equal? to :attribute "a" to :label "a"
@@ -1462,7 +1462,7 @@ do [
     passed
     
     ensure -> not? equal? to :attributelabel "a" "a"
-    ensure -> not? equal? to :attributelabel "a" `a`
+    ensure -> not? equal? to :attributelabel "a" 'a'
     ensure -> not? equal? to :attributelabel "a" 'a
     ensure -> not? equal? to :attributelabel "a" to :word "a"
     ensure -> not? equal? to :attributelabel "a" to :label "a"
@@ -1509,7 +1509,7 @@ do [
     ensure -> equal? to :symbol "+" to :symbol "+"
     ensure -> not? equal? to :symbol "+" to :symbol "-"
     ensure -> not? equal? to :symbol "+" "++"
-    ensure -> not? equal? to :symbol "+" `+`
+    ensure -> not? equal? to :symbol "+" '+'
     ensure -> not? equal? to :symbol "+" {+}
     ensure -> not? equal? to :symbol "+" "+"
     ensure -> not? equal? to :symbol "+" to :word "plus"
@@ -1766,7 +1766,7 @@ do [
         -> equal? 1 null            -> equal? 1 true
         -> equal? 1 false           -> equal? 1 to :complex [1 1]
         -> equal? 1 1.0.0           -> equal? 1 :integer
-        -> equal? 1 `1`             -> equal? 1 "1"
+        -> equal? 1 '1'             -> equal? 1 "1"
         -> equal? [1] [one]         -> equal? [1] [one:]
         -> equal? 1 '1              -> equal? [1] [.1]         
         -> equal? [1] [.1:]         -> equal? [1] [one\1]
@@ -1783,7 +1783,7 @@ do [
         -> equal? 1.0 null              -> equal? 1.0 true
         -> equal? 1.0 false             -> equal? 1.0 to :complex [1.0 1.0]
         -> equal? 1.0 1.0.0             -> equal? 1.0 :floating
-        -> equal? 1.0 `1`               -> equal? 1.0 "1.0"
+        -> equal? 1.0 '1'               -> equal? 1.0 "1.0"
         -> equal? [1.0] [one]           -> equal? 1.0 '1
         -> equal? [1.0] [.1]            -> equal? [1.0] [.1:]
         -> equal? [1.0] [one\1]         -> equal? [1.0] [one\1:]        
@@ -1800,7 +1800,7 @@ do [
         -> equal? a null                    -> equal? a true
         -> equal? a false                   -> equal? a to :complex [1 1]
         -> equal? a 1.0.0                   -> equal? a :rational
-        -> equal? a `1`                     -> equal? a "1/1"
+        -> equal? a '1'                     -> equal? a "1/1"
         -> equal? @[a] [one]                -> equal? @[a] [one:]
         -> equal? 1 '1                      -> equal? @[a] [.1]                 
         -> equal? @[a] [.1:]                -> equal? @[a] [one\1]          
@@ -1816,7 +1816,7 @@ do [
         -> equal? 1:usd null            -> equal? 1:usd true
         -> equal? 1:usd false           -> equal? 1:usd to :complex [1 1]
         -> equal? 1:usd 1.0.0           -> equal? 1:usd :quantity
-        -> equal? 1:usd `1`             -> equal? 1:usd "1USD"
+        -> equal? 1:usd '1'             -> equal? 1:usd "1USD"
         -> equal? [1:usd] [one]         -> equal? [1:usd] [one:]
         -> equal? 1:usd '1              -> equal? [1:usd] [.1]                  
         -> equal? [1:usd] [.1:]         -> equal? [1:usd] [one\1]
@@ -1832,7 +1832,7 @@ do [
         -> equal? 1:m null          -> equal? 1:m true
         -> equal? 1:m false         -> equal? 1:m to :complex [1 1]
         -> equal? 1:m 1.0.0         -> equal? 1:m :quantity
-        -> equal? 1:m `1`           -> equal? 1:m "1m"
+        -> equal? 1:m '1'           -> equal? 1:m "1m"
         -> equal? [1:m] [one]       -> equal? [1:m] [one:]
         -> equal? 1:m '1            -> equal? [1:m] [.1]            
         -> equal? [1:m] [one\1]     -> equal? [1:m] [one\1:]        
@@ -1847,7 +1847,7 @@ do [
         -> equal? 1:m3 null                 -> equal? 1:m3 true
         -> equal? 1:m3 false                -> equal? 1:m3 to :complex [1 1]
         -> equal? 1:m3 1.0.0                -> equal? 1:m3 :quantity
-        -> equal? 1:m3 `1`                  -> equal? 1:m3 "1m³"
+        -> equal? 1:m3 '1'                  -> equal? 1:m3 "1m³"
         -> equal? [1:m3] [one]              -> equal? [1:m3] [one:]
         -> equal? 1:m3 '1                   -> equal? [1:m3] [.1]               
         -> equal? [1:m3] [.1:]              -> equal? [1:m3] [one\1]
@@ -1863,7 +1863,7 @@ do [
         -> equal? 1:c null              -> equal? 1:c true
         -> equal? 1:c false             -> equal? 1:c to :complex [1 1]
         -> equal? 1:c 1.0.0             -> equal? 1:c :quantity
-        -> equal? 1:c `1`               -> equal? 1:c "1°C"
+        -> equal? 1:c '1'               -> equal? 1:c "1°C"
         -> equal? [1:c] [one]           -> equal? [1:c] [one:]
         -> equal? 1:c '1                -> equal? [1:c] [.1]            
         -> equal? [1:c] [.1:]           -> equal? [1:c] [one\1]
@@ -1881,7 +1881,7 @@ do [
         -> equal? null to :rational [1 1]   -> equal? null true
         -> equal? null false                -> equal? null to :complex [0 0]
         -> equal? null 0.0.0                -> equal? null :null
-        -> equal? null `ø`                  -> equal? null "null"
+        -> equal? null 'ø'                  -> equal? null "null"
         -> equal? @[null] [null]            -> equal? @[null] [null:]
         -> equal? null 'null                -> equal? @[null] [.null]               
         -> equal? @[null] [.null:]          -> equal? @[null] [null\null]
@@ -1898,7 +1898,7 @@ do [
         -> equal? true 0                    -> equal? true 0.0            
         -> equal? true to :rational [1 1]   -> equal? true to :complex [0 0]
         -> equal? true 0.0.0                -> equal? true :true
-        -> equal? true `0`                  -> equal? true "true"
+        -> equal? true '0'                  -> equal? true "true"
         -> equal? @[true] [true]            -> equal? true 'true
         -> equal? @[true] [.true]           -> equal? @[true] [.true:]
         -> equal? @[true] [true\true]       -> equal? @[true] [true\true:]         
@@ -1913,7 +1913,7 @@ do [
         -> equal? false 0                   -> equal? false 0.0            
         -> equal? false to :rational [1 1]  -> equal? false to :complex [0 0]
         -> equal? false 0.0.0               -> equal? false :false
-        -> equal? false `0`                 -> equal? false "false"
+        -> equal? false '0'                 -> equal? false "false"
         -> equal? @[false] [false]          -> equal? @[false] [false:]
         -> equal? false 'false              -> equal? @[false] [.false]                 
         -> equal? @[false] [.false:]        -> equal? @[false] [false\false]
@@ -1929,7 +1929,7 @@ do [
         -> equal? maybe 0                   -> equal? maybe 0.0            
         -> equal? maybe to :rational [1 1]  -> equal? maybe to :complex [0 0]
         -> equal? maybe 0.0.0               -> equal? maybe :maybe
-        -> equal? maybe `0`                 -> equal? maybe "maybe"
+        -> equal? maybe '0'                 -> equal? maybe "maybe"
         -> equal? @[maybe] [maybe]          -> equal? @[maybe] [maybe:]
         -> equal? maybe 'maybe              -> equal? @[maybe] [.maybe]                 
         -> equal? @[maybe] [.maybe:]        -> equal? @[maybe] [maybe\maybe]
@@ -1947,7 +1947,7 @@ do [
         -> equal? a to :rational [1 1]      -> equal? a null                    
         -> equal? a true                    -> equal? a false
         -> equal? a 1.0.0                   -> equal? a :rational
-        -> equal? a `1`                     -> equal? a "1.0+1.0i"
+        -> equal? a '1'                     -> equal? a "1.0+1.0i"
         -> equal? @[a] [one]                -> equal? @[a] [one:]
         -> equal? 1 '1                      -> equal? @[a] [.1]                 
         -> equal? @[a] [.1:]                -> equal? @[a] [one\1]              
@@ -1965,7 +1965,7 @@ do [
         -> equal? 1.0.0 to :rational [1 1]      -> equal? 1.0.0 null                    
         -> equal? 1.0.0 true                    -> equal? 1.0.0 false                   
         -> equal? 1.0.0 to :complex [1.0 1.0]   -> equal? 1.0.0 :floating
-        -> equal? 1.0.0 `1`                     -> equal? 1.0.0 "1.0.0"
+        -> equal? 1.0.0 '1'                     -> equal? 1.0.0 "1.0.0"
         -> equal? [1.0.0] [one]                 -> equal? [1.0.0] [one:]
         -> equal? 1.0.0 '1                      -> equal? [1.0.0] [.1]                  
         -> equal? [1.0.0] [.1:]                 -> equal? [1.0.0] [one\1]
@@ -1984,8 +1984,8 @@ do [
         -> equal? :rational to :rational [1 1]      -> equal? :null null                    
         -> equal? :true true                        -> equal? :false false                   
         -> equal? :logical false                    -> equal? :complex to :complex [1 1]   
-        -> equal? :version 1.0.0                    -> equal? :T `T`                         
-        -> equal? :char `T`                         -> equal? :string ":type"
+        -> equal? :version 1.0.0                    -> equal? :T 'T'                         
+        -> equal? :char 'T'                         -> equal? :string ":type"
         -> equal? [:type] [type]                    -> equal? [:word] [word]                     
         -> equal? [:type] [type:]                   -> equal? [:label] [label:]
         -> equal? :1 '1                             -> equal? :literal '1                       
@@ -2006,18 +2006,18 @@ do [
     
     ; for :char
     ensure -> every? @[
-        -> equal? `1` 1.0          
-        -> equal? `1` to :rational [1 1]    -> equal? `ø` null                    
-        -> equal? `t` true                  -> equal? `f` false                   
-        -> equal? `1` to :complex [1.0 1.0] -> equal? `T` :floating
-        -> equal? [`a`] [one]               -> equal? `a` 'a
-        -> equal? [`a`] [.1]                -> equal? [`a`] [.a:]
-        -> equal? [`a`] [a\a]               -> equal? [`a`] [a\a:]              
-        -> equal? [`+`] [+]                 -> equal? `a` {/a/}
-        -> equal? `1` to :binary 1          -> equal? `a` to :binary 1
-        -> equal? [`1`] [(`1`)]             -> equal? `a` [`a`]
-        -> equal? `1` 1..1                  -> equal? `a` #[a: `a`]
-        -> equal? `1` #black                -> equal? `a` var 'char?
+        -> equal? '1' 1.0          
+        -> equal? '1' to :rational [1 1]    -> equal? 'ø' null                    
+        -> equal? 't' true                  -> equal? 'f' false                   
+        -> equal? '1' to :complex [1.0 1.0] -> equal? 'T' :floating
+        -> equal? ['a'] [one]               -> equal? 'a' 'a
+        -> equal? ['a'] [.1]                -> equal? ['a'] [.a:]
+        -> equal? ['a'] [a\a]               -> equal? ['a'] [a\a:]              
+        -> equal? ['+'] [+]                 -> equal? 'a' {/a/}
+        -> equal? '1' to :binary 1          -> equal? 'a' to :binary 1
+        -> equal? ['1'] [('1')]             -> equal? 'a' ['a']
+        -> equal? '1' 1..1                  -> equal? 'a' #[a: 'a']
+        -> equal? '1' #black                -> equal? 'a' var 'char?
     ] => not? passed
     
     ; for :string
@@ -2046,7 +2046,7 @@ do [
         -> equal? [a]         [a\a:]                    -> equal? [a]     @[{/a/}]                      
         -> equal? [binary]   @[to :binary 1]            -> equal? [one]   @[to :binary 1]              
         -> equal? [word]      [(word)]                  -> equal? [word]  @[[word]]                      
-        -> equal? [range]    @[range 1 1]               -> equal? [a]     @[#[a: `a`]]               
+        -> equal? [range]    @[range 1 1]               -> equal? [a]     @[#[a: 'a']]               
         -> equal? [black]    @[#black ]                 -> equal? [word]  @[var 'word?]              
         -> equal? [var]      @[var 'word?]
     ] => not? passed
@@ -2059,7 +2059,7 @@ do [
         -> equal? [type:]     @[:floating]              -> equal? [a:]         [a\a]                     
         -> equal? [a:]         [a\a:]                   -> equal? [a:]        @[{/a:/}]                 
         -> equal? [binary:]   @[to :binary 1]           -> equal? [word:]      [(word:)]                
-        -> equal? [label:]    @[[label:]]               -> equal? [a:]        @[#[a: `a`]]               
+        -> equal? [label:]    @[[label:]]               -> equal? [a:]        @[#[a: 'a']]               
         -> equal? [black:]    @[#black ]                -> equal? [var:]      @[var 'word?]
         -> equal? [word:]     @[var 'word?]
     ] => not? passed
@@ -2087,7 +2087,7 @@ do [
         -> equal? [.complex]  @[to :complex [1.0 1.0]] -> equal? [.floating] @[:floating]                          
         -> equal? [.a]        @[{/a:/}]                -> equal? [.binary]   @[to :binary 1]          
         -> equal? [.word]      [(.word:)]              -> equal? [.label]    @[[.label]]                               
-        -> equal? [.a]        @[#[a: `a`]]             -> equal? [.black]    @[#black]                
+        -> equal? [.a]        @[#[a: 'a']]             -> equal? [.black]    @[#black]                
         -> equal? [.var]      @[var 'word?]            -> equal? [.word]     @[var 'word?]
     ] => not? passed
     
@@ -2096,10 +2096,10 @@ do [
         -> equal? [.rational:] @[to :rational [1 1]]    -> equal? [.null:]     @[null]                  
         -> equal? [.true:]     @[true]                  -> equal? [.false:]    @[false]                 
         -> equal? [.complex:]  @[to :complex [1.0 1.0]] -> equal? [.floating:] @[:floating]             
-        -> equal? [.a:]         [a\a]                   -> equal? [.a: `a`]     [a\a: `a`]              
+        -> equal? [.a:]         [a\a]                   -> equal? [.a: 'a']     [a\a: 'a']              
         -> equal? [.plus:]      [+]                     -> equal? [.a:]        @[{/a:/}]                
         -> equal? [.binary:]   @[to :binary 1]          -> equal? [.word:]      [(.word:)]               
-        -> equal? [.label:]    @[[label:]]              -> equal? [.a:]        @[#[a: `a`]]             
+        -> equal? [.label:]    @[[label:]]              -> equal? [.a:]        @[#[a: 'a']]             
         -> equal? [.black:]    @[#black]                -> equal? [.var:]      @[var 'word?]            
         -> equal? [.word:]     @[var 'word?]
     ] => not? passed
@@ -2136,8 +2136,8 @@ do [
         -> equal? to :binary 0 true                 -> equal? to :binary 0 false                
         -> equal? to :binary 0 maybe                -> equal? to :binary 1 to :complex [1 1]                  
         -> equal? to :binary 1 1.0.0                -> equal? to :binary 1 :type              
-        -> equal? to :binary 1 :binary              -> equal? to :binary 1 `1`                  
-        -> equal? to :binary "a" `a`                -> equal? to :binary 1 "01"                 
+        -> equal? to :binary 1 :binary              -> equal? to :binary 1 '1'                  
+        -> equal? to :binary "a" 'a'                -> equal? to :binary 1 "01"                 
         -> equal? to :binary 1 "1"                  -> equal? @[to :binary 1] [binary]          
         -> equal? @[to :binary 1] [one]             -> equal? @[to :binary 1] [binary:]         
         -> equal? @[to :binary 1][.binary]          -> equal? @[to :binary 1] [.binary:]        
@@ -2153,7 +2153,7 @@ do [
         -> equal? 0..0 true                     -> equal? 0..0 false
         -> equal? 0..0 maybe                    -> equal? 1..1 to :complex [1 1]
         -> equal? 1..1 1.0.0                    -> equal? 1..1 :type                        
-        -> equal? 1..1 :range                   -> equal? 1..1 `1` 
+        -> equal? 1..1 :range                   -> equal? 1..1 '1' 
         -> equal? 1..1 "1"                      -> equal? 1..1 'range  
         -> equal? 1..1 {/1/}
     ] => not? passed
@@ -2180,7 +2180,7 @@ do [
         -> equal? #black true               -> equal? #black false 
         -> equal? #black maybe              -> equal? #black to :complex [0 0]
         -> equal? #black 0.0.0              -> equal? #black :color
-        -> equal? #black `1`                -> equal? #black "#000000"
+        -> equal? #black '1'                -> equal? #black "#000000"
         -> equal? #black "000000"           -> equal? [#black] [black] 
         -> equal? #black 'black             -> equal? [#black] [.black]
         -> equal? [#black] [.black:]        -> equal? #black  {/#000000/}                 
@@ -2192,7 +2192,7 @@ do [
         -> equal? var 'null?     null       -> equal? var 'true?    true  
         -> equal? var 'false?    false      -> equal? var 'version?  1.0.0      
         -> equal? var 'type?    :type       -> equal? var 'function? :function  
-        -> equal? var 'char?    `a`         -> equal? @[var 'word?]  [word]     
+        -> equal? var 'char?    'a'         -> equal? @[var 'word?]  [word]     
         -> equal? @[var 'word?] [var]       -> equal? @[var 'word?]  [var:]     
         -> equal? @[var 'word?] [word:]     -> equal? var 'word?     'word?     
         -> equal? var 'var      'var        -> equal? @[var 'word?]  [.var]     
@@ -2441,11 +2441,11 @@ do [
     ensure -> not? greater? ø 1
     ensure -> not? greater? ø 1.0
     ensure -> not? greater? ø "ø"
-    ensure -> not? greater? ø `ø`
+    ensure -> not? greater? ø 'ø'
     ensure -> not? ø > 1
     ensure -> not? ø > 1.0
     ensure -> not? ø > "ø"
-    ensure -> not? ø > `ø`
+    ensure -> not? ø > 'ø'
     passed
     
     
@@ -2518,10 +2518,10 @@ do [
     
     topic « greater? - :char
     
-    ensure -> greater? `b` `a`
-    ensure -> not? greater? `a` `b`
-    ensure -> not? greater? `a` "a"
-    ensure -> not? greater? `1` 1
+    ensure -> greater? 'b' 'a'
+    ensure -> not? greater? 'a' 'b'
+    ensure -> not? greater? 'a' "a"
+    ensure -> not? greater? '1' 1
     passed
     
     
@@ -2536,7 +2536,7 @@ do [
     ensure -> greater? "Artu" "Art"
     passed
     
-    ensure -> not? greater? "b" `a`
+    ensure -> not? greater? "b" 'a'
     ensure -> not? greater? "b" 'a
     ensure -> not? greater? "b" to :word "a"
     ensure -> not? greater? "b" to :label "a"
@@ -2553,7 +2553,7 @@ do [
     passed
     
     ensure -> not? greater? to :word "b" "a"
-    ensure -> not? greater? to :word "b" `a`
+    ensure -> not? greater? to :word "b" 'a'
     ensure -> not? greater? to :word "b" 'a
     ensure -> not? greater? to :word "b" to :label "a"
     ensure -> not? greater? to :word "b" to :attribute "a"
@@ -2570,7 +2570,7 @@ do [
     passed
     
     ensure -> not? greater? to :label "b" "a"
-    ensure -> not? greater? to :label "b" `a`
+    ensure -> not? greater? to :label "b" 'a'
     ensure -> not? greater? to :label "b" 'a
     ensure -> not? greater? to :label "b" to :word "a"
     ensure -> not? greater? to :label "b" to :attribute "a"
@@ -2587,7 +2587,7 @@ do [
     passed
     
     ensure -> not? greater? 'b "a"
-    ensure -> not? greater? 'b `a`
+    ensure -> not? greater? 'b 'a'
     ensure -> not? greater? 'b to :word "a"
     ensure -> not? greater? 'b to :label "a"
     ensure -> not? greater? 'b to :attribute "a"
@@ -2642,7 +2642,7 @@ do [
     passed
     
     ensure -> not? greater? to :attribute "b" "a"
-    ensure -> not? greater? to :attribute "b" `a`
+    ensure -> not? greater? to :attribute "b" 'a'
     ensure -> not? greater? to :attribute "b" 'a
     ensure -> not? greater? to :attribute "b" to :word "a"
     ensure -> not? greater? to :attribute "b" to :label "a"
@@ -2659,7 +2659,7 @@ do [
     passed
     
     ensure -> not? greater? to :attributelabel "less" "a"
-    ensure -> not? greater? to :attributelabel "less" `a`
+    ensure -> not? greater? to :attributelabel "less" 'a'
     ensure -> not? greater? to :attributelabel "less" 'a
     ensure -> not? greater? to :attributelabel "less" to :word "a"
     ensure -> not? greater? to :attributelabel "less" to :label "a"
@@ -2674,7 +2674,7 @@ do [
     ensure -> not? greater? to :symbol "+" to :symbol "+"
     ensure -> not? greater? to :symbol "+" to :symbol "-"
     ensure -> not? greater? to :symbol "+" to :symbol "++"
-    ensure -> not? greater? to :symbol "+" `+`
+    ensure -> not? greater? to :symbol "+" '+'
     ensure -> not? greater? to :symbol "+" {+}
     ensure -> not? greater? to :symbol "+" "+"
     ensure -> not? greater? to :symbol "+" to :word "plus"
@@ -2917,7 +2917,7 @@ do [
         -> greater? 1 null          -> greater? 1 true
         -> greater? 1 false         -> greater? 1 to :complex [1 1]
         -> greater? 1 1.0.0         -> greater? 1 :integer
-        -> greater? 1 `1`           -> greater? 1 "1"
+        -> greater? 1 '1'           -> greater? 1 "1"
         -> greater? [1] [one]       -> greater? [1] [one:]
         -> greater? 1 '1            -> greater? [1] [.1]         
         -> greater? [1] [.1:]       -> greater? [1] [one\1]
@@ -2934,7 +2934,7 @@ do [
         -> greater? 1.0 null            -> greater? 1.0 true
         -> greater? 1.0 false           -> greater? 1.0 to :complex [1.0 1.0]
         -> greater? 1.0 1.0.0           -> greater? 1.0 :floating
-        -> greater? 1.0 `1`             -> greater? 1.0 "1.0"
+        -> greater? 1.0 '1'             -> greater? 1.0 "1.0"
         -> greater? [1.0] [one]         -> greater? [1.0] [one:]
         -> greater? 1.0 '1.0i           -> greater? [1.0] [.1]            
         -> greater? [1.0] [.1:]         -> greater? [1.0] [one\1]
@@ -2952,7 +2952,7 @@ do [
         -> greater? a null          -> greater? a true
         -> greater? a false         -> greater? a to :complex [1 1]
         -> greater? a 1.0.0         -> greater? a :rational
-        -> greater? a `1`           -> greater? a "1/1"
+        -> greater? a '1'           -> greater? a "1/1"
         -> greater? @[a] [one]      -> greater? @[a] [one:]
         -> greater? 1 '1            -> greater? @[a] [.1]                 
         -> greater? @[a] [.1:]      -> greater? @[a] [one\1]
@@ -2969,7 +2969,7 @@ do [
         -> greater? 1:usd null          -> greater? 1:usd true
         -> greater? 1:usd false         -> greater? 1:usd to :complex [1 1]
         -> greater? 1:usd 1.0.0         -> greater? 1:usd :quantity
-        -> greater? 1:usd `1`           -> greater? 1:usd "1USD"
+        -> greater? 1:usd '1'           -> greater? 1:usd "1USD"
         -> greater? [1:usd] [one]       -> greater? [1:usd] [one:]
         -> greater? 1:usd '1.0i         -> greater? [1:usd] [.1]                  
         -> greater? [1:usd] [.1:]       -> greater? [1:usd] [one\1]
@@ -2985,7 +2985,7 @@ do [
         -> greater? 1:m null            -> greater? 1:m true
         -> greater? 1:m false           -> greater? 1:m to :complex [1 1]
         -> greater? 1:m 1.0.0           -> greater? 1:m :quantity
-        -> greater? 1:m `1`             -> greater? 1:m "1m"
+        -> greater? 1:m '1'             -> greater? 1:m "1m"
         -> greater? [1:m] [one]         -> greater? [1:m] [one:]
         -> greater? 1:m '1              -> greater? [1:m] [.1]            
         -> greater? [1:m] [.1:]         -> greater? [1:m] [one\1]
@@ -3001,7 +3001,7 @@ do [
         -> greater? 1:m3 null           -> greater? 1:m3 true
         -> greater? 1:m3 false          -> greater? 1:m3 to :complex [1 1]
         -> greater? 1:m3 1.0.0          -> greater? 1:m3 :quantity
-        -> greater? 1:m3 `1`            -> greater? 1:m3 "1m³"
+        -> greater? 1:m3 '1'            -> greater? 1:m3 "1m³"
         -> greater? [1:m3] [one]        -> greater? [1:m3] [one:]
         -> greater? 1:m3 '1             -> greater? [1:m3] [.1]              
         -> greater? [1:m3] [.1:]        -> greater? [1:m3] [one\1]
@@ -3017,7 +3017,7 @@ do [
         -> greater? 1:c null            -> greater? 1:c true
         -> greater? 1:c false           -> greater? 1:c to :complex [1 1]
         -> greater? 1:c 1.0.0           -> greater? 1:c :quantity
-        -> greater? 1:c `1`             -> greater? 1:c "1°C"
+        -> greater? 1:c '1'             -> greater? 1:c "1°C"
         -> greater? [1:c] [one]         -> greater? [1:c] [one:]
         -> greater? 1:c '1.0i           -> greater? [1:c] [.1]            
         -> greater? [1:c] [.1:]         -> greater? [1:c] [one\1]       
@@ -3035,7 +3035,7 @@ do [
         -> greater? null to :rational [1 1] -> greater? null true
         -> greater? null false              -> greater? null to :complex [0 0]
         -> greater? null 0.0.0              -> greater? null :null
-        -> greater? null `ø`                -> greater? null "null"
+        -> greater? null 'ø'                -> greater? null "null"
         -> greater? @[null] [null]          -> greater? @[null] [null:]
         -> greater? null 'null              -> greater? @[null] [.null]               
         -> greater? @[null] [.null:]        -> greater? @[null] [null\null]
@@ -3053,7 +3053,7 @@ do [
         -> greater? true 0                  -> greater? true 0.0            
         -> greater? true to :rational [1 1] -> greater? true to :complex [0 0]
         -> greater? true 0.0.0              -> greater? true :true
-        -> greater? true `0`                -> greater? true "true"
+        -> greater? true '0'                -> greater? true "true"
         -> greater? @[true] [true]          -> greater? @[true] [true:]
         -> greater? true 'true              -> greater? @[true] [.true]               
         -> greater? @[true] [.true:]        -> greater? @[true] [true\true]
@@ -3069,7 +3069,7 @@ do [
         -> greater? false 0                     -> greater? false 0.0            
         -> greater? false to :rational [1 1]    -> greater? false to :complex [0 0]
         -> greater? false 0.0.0                 -> greater? false :false
-        -> greater? false `0`                   -> greater? false "false"
+        -> greater? false '0'                   -> greater? false "false"
         -> greater? @[false] [false]            -> greater? @[false] [false:]
         -> greater? false 'false                -> greater? @[false] [.false]                 
         -> greater? @[false] [.false:]          -> greater? @[false] [false\false]
@@ -3085,7 +3085,7 @@ do [
         -> greater? maybe 0                     -> greater? maybe 0.0            
         -> greater? maybe to :rational [1 1]    -> greater? maybe to :complex [0 0]
         -> greater? maybe 0.0.0                 -> greater? maybe :maybe
-        -> greater? maybe `0`                   -> greater? maybe "maybe"
+        -> greater? maybe '0'                   -> greater? maybe "maybe"
         -> greater? @[maybe] [maybe]            -> greater? @[maybe] [maybe:]
         -> greater? maybe 'maybe                -> greater? @[maybe] [.maybe]                 
         -> greater? @[maybe] [.maybe:]          -> greater? @[maybe] [maybe\maybe]
@@ -3103,7 +3103,7 @@ do [
         -> greater? a to :rational [1 1]    -> greater? a null                    
         -> greater? a true                  -> greater? a false
         -> greater? a 1.0.0                 -> greater? a :rational
-        -> greater? a `1`                   -> greater? a "1.0+1.0i"
+        -> greater? a '1'                   -> greater? a "1.0+1.0i"
         -> greater? @[a] [one]              -> greater? @[a] [one:]
         -> greater? 1 '1                    -> greater? @[a] [.1]                 
         -> greater? @[a] [.1:]              -> greater? @[a] [one\1]
@@ -3121,7 +3121,7 @@ do [
         -> greater? 1.0.0 to :rational [1 1]    -> greater? 1.0.0 null                    
         -> greater? 1.0.0 true                  -> greater? 1.0.0 false                   
         -> greater? 1.0.0 to :complex [1.0 1.0] -> greater? 1.0.0 :floating
-        -> greater? 1.0.0 `1`                   -> greater? 1.0.0 "1.0.0"
+        -> greater? 1.0.0 '1'                   -> greater? 1.0.0 "1.0.0"
         -> greater? [1.0.0] [one]               -> greater? [1.0.0] [one:]
         -> greater? 1.0.0 '1                    -> greater? [1.0.0] [.1]                  
         -> greater? [1.0.0] [.1:]               -> greater? [1.0.0] [one\1]
@@ -3140,8 +3140,8 @@ do [
         -> greater? :rational to :rational [1 1]    -> greater? :null null                    
         -> greater? :true true                      -> greater? :false false                   
         -> greater? :logical false                  -> greater? :complex to :complex [1 1]   
-        -> greater? :version 1.0.0                  -> greater? :T `T`                         
-        -> greater? :char `T`                       -> greater? :string ":type"
+        -> greater? :version 1.0.0                  -> greater? :T 'T'                         
+        -> greater? :char 'T'                       -> greater? :string ":type"
         -> greater? [:type] [type]                  -> greater? [:word] [word]                     
         -> greater? [:type] [type:]                 -> greater? [:label] [label:]
         -> greater? :1 '1.                          -> greater? :literal '1                       
@@ -3162,18 +3162,18 @@ do [
     
     ; for :char
     ensure -> every? @[
-        -> greater? `1` 1.0          
-        -> greater? `1` to :rational [1 1]      -> greater? `ø` null                    
-        -> greater? `t` true                    -> greater? `f` false                   
-        -> greater? `1` to :complex [1.0 1.0]   -> greater? `T` :floating
-        -> greater? [`a`] [one]                 -> greater? `a` 'A                      
-        -> greater? [`a`] [.1]                  -> greater? [`a`] [.a:]                 
-        -> greater? [`a`] [a\a]                 -> greater? [`a`] [a\a:]                
-        -> greater? [`+`] [+]                   -> greater? `a` {/a/}                   
-        -> greater? `1` to :binary 1            -> greater? `a` to :binary 1            
-        -> greater? [`1`] [(`1`)]               -> greater? `a` [`a`]                   
-        -> greater? `1` 1..1                    -> greater? `a` #[a: `a`]               
-        -> greater? `1` #black                  -> greater? `a` var 'char?
+        -> greater? '1' 1.0          
+        -> greater? '1' to :rational [1 1]      -> greater? 'ø' null                    
+        -> greater? 't' true                    -> greater? 'f' false                   
+        -> greater? '1' to :complex [1.0 1.0]   -> greater? 'T' :floating
+        -> greater? ['a'] [one]                 -> greater? 'a' 'A                      
+        -> greater? ['a'] [.1]                  -> greater? ['a'] [.a:]                 
+        -> greater? ['a'] [a\a]                 -> greater? ['a'] [a\a:]                
+        -> greater? ['+'] [+]                   -> greater? 'a' {/a/}                   
+        -> greater? '1' to :binary 1            -> greater? 'a' to :binary 1            
+        -> greater? ['1'] [('1')]               -> greater? 'a' ['a']                   
+        -> greater? '1' 1..1                    -> greater? 'a' #[a: 'a']               
+        -> greater? '1' #black                  -> greater? 'a' var 'char?
     ] => not? passed
     
     ; for :string
@@ -3202,7 +3202,7 @@ do [
         -> greater? [a]         [a\a:]                    -> greater? [a]     @[{/a/}]                      
         -> greater? [binary]   @[to :binary 1]            -> greater? [one]   @[to :binary 1]              
         -> greater? [word]      [(word)]                  -> greater? [word]  @[[word]]                      
-        -> greater? [range]    @[range 1 1]               -> greater? [a]     @[#[a: `a`]]               
+        -> greater? [range]    @[range 1 1]               -> greater? [a]     @[#[a: 'a']]               
         -> greater? [black]    @[#black ]                 -> greater? [word]  @[var 'word?]              
         -> greater? [var]      @[var 'word?]
     ] => not? passed
@@ -3215,7 +3215,7 @@ do [
         -> greater? [type:]     @[:floating]              -> greater? [a:]         [a\a]                     
         -> greater? [a:]         [a\a:]                   -> greater? [a:]        @[{/a:/}]                 
         -> greater? [binary:]   @[to :binary 1]           -> greater? [word:]      [(word:)]                
-        -> greater? [label:]    @[[label:]]               -> greater? [a:]        @[#[a: `a`]]               
+        -> greater? [label:]    @[[label:]]               -> greater? [a:]        @[#[a: 'a']]               
         -> greater? [black:]    @[#black ]                -> greater? [var:]      @[var 'word?]
         -> greater? [word:]     @[var 'word?]
     ] => not? passed
@@ -3243,7 +3243,7 @@ do [
         -> greater? [.complex]  @[to :complex [1.0 1.0]] -> greater? [.floating] @[:floating]                          
         -> greater? [.a]        @[{/a:/}]                -> greater? [.binary]   @[to :binary 1]          
         -> greater? [.word]      [(.word:)]              -> greater? [.label]    @[[.label]]                               
-        -> greater? [.a]        @[#[a: `a`]]             -> greater? [.black]    @[#black]                
+        -> greater? [.a]        @[#[a: 'a']]             -> greater? [.black]    @[#black]                
         -> greater? [.var]      @[var 'word?]            -> greater? [.word]     @[var 'word?]
     ] => not? passed
     
@@ -3252,10 +3252,10 @@ do [
         -> greater? [.rational:] @[to :rational [1 1]]    -> greater? [.null:]     @[null]                  
         -> greater? [.true:]     @[true]                  -> greater? [.false:]    @[false]                 
         -> greater? [.complex:]  @[to :complex [1.0 1.0]] -> greater? [.floating:] @[:floating]             
-        -> greater? [.a:]         [a\a]                   -> greater? [.a: `a`]     [a\a: `a`]              
+        -> greater? [.a:]         [a\a]                   -> greater? [.a: 'a']     [a\a: 'a']              
         -> greater? [.plus:]      [+]                     -> greater? [.a:]        @[{/a:/}]                
         -> greater? [.binary:]   @[to :binary 1]          -> greater? [.word:]      [(.word:)]               
-        -> greater? [.label:]    @[[label:]]              -> greater? [.a:]        @[#[a: `a`]]             
+        -> greater? [.label:]    @[[label:]]              -> greater? [.a:]        @[#[a: 'a']]             
         -> greater? [.black:]    @[#black]                -> greater? [.var:]      @[var 'word?]            
         -> greater? [.word:]     @[var 'word?]
     ] => not? passed
@@ -3293,8 +3293,8 @@ do [
         -> greater? to :binary 0 true                 -> greater? to :binary 0 false                
         -> greater? to :binary 0 maybe                -> greater? to :binary 1 to :complex [1 1]                  
         -> greater? to :binary 1 1.0.0                -> greater? to :binary 1 :type              
-        -> greater? to :binary 1 :binary              -> greater? to :binary 1 `1`                  
-        -> greater? to :binary "a" `a`                -> greater? to :binary 1 "01"                 
+        -> greater? to :binary 1 :binary              -> greater? to :binary 1 '1'                  
+        -> greater? to :binary "a" 'a'                -> greater? to :binary 1 "01"                 
         -> greater? to :binary 1 "1"                  -> greater? @[to :binary 1] [binary]          
         -> greater? @[to :binary 1] [one]             -> greater? @[to :binary 1] [binary:]         
         -> greater? @[to :binary 1][.binary]          -> greater? @[to :binary 1] [.binary:]        
@@ -3310,7 +3310,7 @@ do [
         -> greater? 0..0 true                     -> greater? 0..0 false
         -> greater? 0..0 maybe                    -> greater? 1..1 to :complex [1 1]
         -> greater? 1..1 1.0.0                    -> greater? 1..1 :type                        
-        -> greater? 1..1 :range                   -> greater? 1..1 `1` 
+        -> greater? 1..1 :range                   -> greater? 1..1 '1' 
         -> greater? 1..1 "1"                      -> greater? 1..1 'range  
         -> greater? 1..1 {/1/}
     ] => not? passed
@@ -3337,7 +3337,7 @@ do [
         -> greater? #black true               -> greater? #black false 
         -> greater? #black maybe              -> greater? #black to :complex [0 0]
         -> greater? #black 0.0.0              -> greater? #black :color
-        -> greater? #black `1`                -> greater? #black "#000000"
+        -> greater? #black '1'                -> greater? #black "#000000"
         -> greater? #black "000000"           -> greater? [#black] [black] 
         -> greater? #black 'black             -> greater? [#black] [.black]
         -> greater? [#black] [.black:]        -> greater? #black  {/#000000/}                 
@@ -3349,7 +3349,7 @@ do [
         -> greater? var 'null?     null       -> greater? var 'true?    true  
         -> greater? var 'false?    false 
         -> greater? var 'version?  1.0.0      -> greater? var 'type?    :type 
-        -> greater? var 'function? :function  -> greater? var 'char?    `a` 
+        -> greater? var 'function? :function  -> greater? var 'char?    'a' 
         -> greater? @[var 'word?]  [word]     -> greater? @[var 'word?] [var]      
         -> greater? @[var 'word?]  [var:]     -> greater? @[var 'word?] [word:]    
         -> greater? var 'word?     'word?     -> greater? var 'var      'var       
@@ -3599,11 +3599,11 @@ do [
     ensure -> not? greaterOrEqual? ø 1
     ensure -> not? greaterOrEqual? ø 1.0
     ensure -> not? greaterOrEqual? ø "ø"
-    ensure -> not? greaterOrEqual? ø `ø`
+    ensure -> not? greaterOrEqual? ø 'ø'
     ensure -> not? ø >= 1
     ensure -> not? ø >= 1.0
     ensure -> not? ø >= "ø"
-    ensure -> not? ø >= `ø`
+    ensure -> not? ø >= 'ø'
     passed
     
     
@@ -3676,24 +3676,24 @@ do [
     
     topic « greaterOrEqual? - :char
     
-    ensure -> greaterOrEqual? `a` `a`
-    ensure -> `a` >= `a`
+    ensure -> greaterOrEqual? 'a' 'a'
+    ensure -> 'a' >= 'a'
     passed
     
-    ensure -> `b` >= `a`  
-    ensure -> `z` >= `a`  
+    ensure -> 'b' >= 'a'  
+    ensure -> 'z' >= 'a'  
     passed
     
-    ensure -> not? greaterOrEqual? `a` "a" 
-    ensure -> not? greaterOrEqual? `1`  1
-    ensure -> not? greaterOrEqual? "a" `a` 
-    ensure -> not? greaterOrEqual? `a` `b`
-    ensure -> not? greaterOrEqual?  1  `1`
-    ensure -> not? `a` >= "a" 
-    ensure -> not? `1` >=  1
-    ensure -> not? "a" >= `a` 
-    ensure -> not? `a` >= `b`
-    ensure -> not?  1  >= `1`
+    ensure -> not? greaterOrEqual? 'a' "a" 
+    ensure -> not? greaterOrEqual? '1'  1
+    ensure -> not? greaterOrEqual? "a" 'a' 
+    ensure -> not? greaterOrEqual? 'a' 'b'
+    ensure -> not? greaterOrEqual?  1  '1'
+    ensure -> not? 'a' >= "a" 
+    ensure -> not? '1' >=  1
+    ensure -> not? "a" >= 'a' 
+    ensure -> not? 'a' >= 'b'
+    ensure -> not?  1  >= '1'
     passed 
     
     
@@ -3708,8 +3708,8 @@ do [
     ensure -> greaterOrEqual? "Artu" "Art"
     passed
     
-    ensure -> not? greaterOrEqual? "b" `a`
-    ensure -> not? greaterOrEqual? "b" `b`
+    ensure -> not? greaterOrEqual? "b" 'a'
+    ensure -> not? greaterOrEqual? "b" 'b'
     ensure -> not? greaterOrEqual? "b" 'a
     ensure -> not? greaterOrEqual? "b" 'b
     ensure -> not? greaterOrEqual? "b" to :word "a"
@@ -3735,8 +3735,8 @@ do [
     
     ensure -> not? greaterOrEqual? to :word "b" "a"
     ensure -> not? greaterOrEqual? to :word "b" "b"
-    ensure -> not? greaterOrEqual? to :word "b" `a`
-    ensure -> not? greaterOrEqual? to :word "b" `b`
+    ensure -> not? greaterOrEqual? to :word "b" 'a'
+    ensure -> not? greaterOrEqual? to :word "b" 'b'
     ensure -> not? greaterOrEqual? to :word "b" 'a
     ensure -> not? greaterOrEqual? to :word "b" 'b
     ensure -> not? greaterOrEqual? to :word "b" to :label "a"
@@ -3760,8 +3760,8 @@ do [
     
     ensure -> not? greaterOrEqual? to :label "b" "a"
     ensure -> not? greaterOrEqual? to :label "b" "b"
-    ensure -> not? greaterOrEqual? to :label "b" `a`
-    ensure -> not? greaterOrEqual? to :label "b" `b`
+    ensure -> not? greaterOrEqual? to :label "b" 'a'
+    ensure -> not? greaterOrEqual? to :label "b" 'b'
     ensure -> not? greaterOrEqual? to :label "b" 'a
     ensure -> not? greaterOrEqual? to :label "b" 'b
     ensure -> not? greaterOrEqual? to :label "b" to :word "a"
@@ -3785,8 +3785,8 @@ do [
     
     ensure -> not? greaterOrEqual? 'b "a"
     ensure -> not? greaterOrEqual? 'b "b"
-    ensure -> not? greaterOrEqual? 'b `a`
-    ensure -> not? greaterOrEqual? 'b `b`
+    ensure -> not? greaterOrEqual? 'b 'a'
+    ensure -> not? greaterOrEqual? 'b 'b'
     ensure -> not? greaterOrEqual? 'b to :word "a"
     ensure -> not? greaterOrEqual? 'b to :word "b"
     ensure -> not? greaterOrEqual? 'b to :label "a"
@@ -3848,8 +3848,8 @@ do [
     
     ensure -> not? greaterOrEqual? to :attribute "b" "a"
     ensure -> not? greaterOrEqual? to :attribute "b" "b"
-    ensure -> not? greaterOrEqual? to :attribute "b" `a`
-    ensure -> not? greaterOrEqual? to :attribute "b" `b`
+    ensure -> not? greaterOrEqual? to :attribute "b" 'a'
+    ensure -> not? greaterOrEqual? to :attribute "b" 'b'
     ensure -> not? greaterOrEqual? to :attribute "b" 'a
     ensure -> not? greaterOrEqual? to :attribute "b" 'b
     ensure -> not? greaterOrEqual? to :attribute "b" to :word "a"
@@ -3873,8 +3873,8 @@ do [
     
     ensure -> not? greaterOrEqual? to :attributelabel "b" "a"
     ensure -> not? greaterOrEqual? to :attributelabel "b" "b"
-    ensure -> not? greaterOrEqual? to :attributelabel "b" `a`
-    ensure -> not? greaterOrEqual? to :attributelabel "b" `b`
+    ensure -> not? greaterOrEqual? to :attributelabel "b" 'a'
+    ensure -> not? greaterOrEqual? to :attributelabel "b" 'b'
     ensure -> not? greaterOrEqual? to :attributelabel "b" 'a
     ensure -> not? greaterOrEqual? to :attributelabel "b" 'b
     ensure -> not? greaterOrEqual? to :attributelabel "b" to :word "a"
@@ -3893,7 +3893,7 @@ do [
     ensure -> greaterOrEqual? to :symbol "+" to :symbol "+"
     ensure -> not? greaterOrEqual? to :symbol "+" to :symbol "-"
     ensure -> not? greaterOrEqual? to :symbol "+" to :symbol "++"
-    ensure -> not? greaterOrEqual? to :symbol "+" `+`
+    ensure -> not? greaterOrEqual? to :symbol "+" '+'
     ensure -> not? greaterOrEqual? to :symbol "+" {+}
     ensure -> not? greaterOrEqual? to :symbol "+" "+"
     ensure -> not? greaterOrEqual? to :symbol "+" to :word "plus"
@@ -4137,7 +4137,7 @@ do [
         -> greaterOrEqual? 1 null          -> greaterOrEqual? 1 true
         -> greaterOrEqual? 1 false         -> greaterOrEqual? 1 to :complex [1 1]
         -> greaterOrEqual? 1 1.0.0         -> greaterOrEqual? 1 :integer
-        -> greaterOrEqual? 1 `1`           -> greaterOrEqual? 1 "1"
+        -> greaterOrEqual? 1 '1'           -> greaterOrEqual? 1 "1"
         -> greaterOrEqual? [1] [one]       -> greaterOrEqual? [1] [one:]
         -> greaterOrEqual? 1 '1            -> greaterOrEqual? [1] [.1]         
         -> greaterOrEqual? [1] [.1:]       -> greaterOrEqual? [1] [one\1]
@@ -4154,7 +4154,7 @@ do [
         -> greaterOrEqual? 1.0 null            -> greaterOrEqual? 1.0 true
         -> greaterOrEqual? 1.0 false           -> greaterOrEqual? 1.0 to :complex [1.0 1.0]
         -> greaterOrEqual? 1.0 1.0.0           -> greaterOrEqual? 1.0 :floating
-        -> greaterOrEqual? 1.0 `1`             -> greaterOrEqual? 1.0 "1.0"
+        -> greaterOrEqual? 1.0 '1'             -> greaterOrEqual? 1.0 "1.0"
         -> greaterOrEqual? [1.0] [one]         -> greaterOrEqual? [1.0] [one:]
         -> greaterOrEqual? 1.0 '1.0i           -> greaterOrEqual? [1.0] [.1]            
         -> greaterOrEqual? [1.0] [.1:]         -> greaterOrEqual? [1.0] [one\1]
@@ -4172,7 +4172,7 @@ do [
         -> greaterOrEqual? a null          -> greaterOrEqual? a true
         -> greaterOrEqual? a false         -> greaterOrEqual? a to :complex [1 1]
         -> greaterOrEqual? a 1.0.0         -> greaterOrEqual? a :rational
-        -> greaterOrEqual? a `1`           -> greaterOrEqual? a "1/1"
+        -> greaterOrEqual? a '1'           -> greaterOrEqual? a "1/1"
         -> greaterOrEqual? @[a] [one]      -> greaterOrEqual? @[a] [one:]
         -> greaterOrEqual? 1 '1            -> greaterOrEqual? @[a] [.1]                 
         -> greaterOrEqual? @[a] [.1:]      -> greaterOrEqual? @[a] [one\1]
@@ -4189,7 +4189,7 @@ do [
         -> greaterOrEqual? 1:usd null          -> greaterOrEqual? 1:usd true
         -> greaterOrEqual? 1:usd false         -> greaterOrEqual? 1:usd to :complex [1 1]
         -> greaterOrEqual? 1:usd 1.0.0         -> greaterOrEqual? 1:usd :quantity
-        -> greaterOrEqual? 1:usd `1`           -> greaterOrEqual? 1:usd "1USD"
+        -> greaterOrEqual? 1:usd '1'           -> greaterOrEqual? 1:usd "1USD"
         -> greaterOrEqual? [1:usd] [one]       -> greaterOrEqual? [1:usd] [one:]
         -> greaterOrEqual? 1:usd '1.0i         -> greaterOrEqual? [1:usd] [.1]                  
         -> greaterOrEqual? [1:usd] [.1:]       -> greaterOrEqual? [1:usd] [one\1]
@@ -4205,7 +4205,7 @@ do [
         -> greaterOrEqual? 1:m null            -> greaterOrEqual? 1:m true
         -> greaterOrEqual? 1:m false           -> greaterOrEqual? 1:m to :complex [1 1]
         -> greaterOrEqual? 1:m 1.0.0           -> greaterOrEqual? 1:m :quantity
-        -> greaterOrEqual? 1:m `1`             -> greaterOrEqual? 1:m "1m"
+        -> greaterOrEqual? 1:m '1'             -> greaterOrEqual? 1:m "1m"
         -> greaterOrEqual? [1:m] [one]         -> greaterOrEqual? [1:m] [one:]
         -> greaterOrEqual? 1:m '1              -> greaterOrEqual? [1:m] [.1]            
         -> greaterOrEqual? [1:m] [.1:]         -> greaterOrEqual? [1:m] [one\1]
@@ -4221,7 +4221,7 @@ do [
         -> greaterOrEqual? 1:m3 null           -> greaterOrEqual? 1:m3 true
         -> greaterOrEqual? 1:m3 false          -> greaterOrEqual? 1:m3 to :complex [1 1]
         -> greaterOrEqual? 1:m3 1.0.0          -> greaterOrEqual? 1:m3 :quantity
-        -> greaterOrEqual? 1:m3 `1`            -> greaterOrEqual? 1:m3 "1m³"
+        -> greaterOrEqual? 1:m3 '1'            -> greaterOrEqual? 1:m3 "1m³"
         -> greaterOrEqual? [1:m3] [one]        -> greaterOrEqual? [1:m3] [one:]
         -> greaterOrEqual? 1:m3 '1             -> greaterOrEqual? [1:m3] [.1]              
         -> greaterOrEqual? [1:m3] [.1:]        -> greaterOrEqual? [1:m3] [one\1]
@@ -4237,7 +4237,7 @@ do [
         -> greaterOrEqual? 1:c null            -> greaterOrEqual? 1:c true
         -> greaterOrEqual? 1:c false           -> greaterOrEqual? 1:c to :complex [1 1]
         -> greaterOrEqual? 1:c 1.0.0           -> greaterOrEqual? 1:c :quantity
-        -> greaterOrEqual? 1:c `1`             -> greaterOrEqual? 1:c "1°C"
+        -> greaterOrEqual? 1:c '1'             -> greaterOrEqual? 1:c "1°C"
         -> greaterOrEqual? [1:c] [one]         -> greaterOrEqual? [1:c] [one:]
         -> greaterOrEqual? 1:c '1.0i           -> greaterOrEqual? [1:c] [.1]            
         -> greaterOrEqual? [1:c] [.1:]         -> greaterOrEqual? [1:c] [one\1]       
@@ -4255,7 +4255,7 @@ do [
         -> greaterOrEqual? null to :rational [1 1] -> greaterOrEqual? null true
         -> greaterOrEqual? null false              -> greaterOrEqual? null to :complex [0 0]
         -> greaterOrEqual? null 0.0.0              -> greaterOrEqual? null :null
-        -> greaterOrEqual? null `ø`                -> greaterOrEqual? null "null"
+        -> greaterOrEqual? null 'ø'                -> greaterOrEqual? null "null"
         -> greaterOrEqual? @[null] [null]          -> greaterOrEqual? @[null] [null:]
         -> greaterOrEqual? null 'null              -> greaterOrEqual? @[null] [.null]               
         -> greaterOrEqual? @[null] [.null:]        -> greaterOrEqual? @[null] [null\null]
@@ -4273,7 +4273,7 @@ do [
         -> greaterOrEqual? true 0                  -> greaterOrEqual? true 0.0            
         -> greaterOrEqual? true to :rational [1 1] -> greaterOrEqual? true to :complex [0 0]
         -> greaterOrEqual? true 0.0.0              -> greaterOrEqual? true :true
-        -> greaterOrEqual? true `0`                -> greaterOrEqual? true "true"
+        -> greaterOrEqual? true '0'                -> greaterOrEqual? true "true"
         -> greaterOrEqual? @[true] [true]          -> greaterOrEqual? @[true] [true:]
         -> greaterOrEqual? true 'true              -> greaterOrEqual? @[true] [.true]               
         -> greaterOrEqual? @[true] [.true:]        -> greaterOrEqual? @[true] [true\true]
@@ -4289,7 +4289,7 @@ do [
         -> greaterOrEqual? false 0                     -> greaterOrEqual? false 0.0            
         -> greaterOrEqual? false to :rational [1 1]    -> greaterOrEqual? false to :complex [0 0]
         -> greaterOrEqual? false 0.0.0                 -> greaterOrEqual? false :false
-        -> greaterOrEqual? false `0`                   -> greaterOrEqual? false "false"
+        -> greaterOrEqual? false '0'                   -> greaterOrEqual? false "false"
         -> greaterOrEqual? @[false] [false]            -> greaterOrEqual? @[false] [false:]
         -> greaterOrEqual? false 'false                -> greaterOrEqual? @[false] [.false]                 
         -> greaterOrEqual? @[false] [.false:]          -> greaterOrEqual? @[false] [false\false]
@@ -4305,7 +4305,7 @@ do [
         -> greaterOrEqual? maybe 0                     -> greaterOrEqual? maybe 0.0            
         -> greaterOrEqual? maybe to :rational [1 1]    -> greaterOrEqual? maybe to :complex [0 0]
         -> greaterOrEqual? maybe 0.0.0                 -> greaterOrEqual? maybe :maybe
-        -> greaterOrEqual? maybe `0`                   -> greaterOrEqual? maybe "maybe"
+        -> greaterOrEqual? maybe '0'                   -> greaterOrEqual? maybe "maybe"
         -> greaterOrEqual? @[maybe] [maybe]            -> greaterOrEqual? @[maybe] [maybe:]
         -> greaterOrEqual? maybe 'maybe                -> greaterOrEqual? @[maybe] [.maybe]                 
         -> greaterOrEqual? @[maybe] [.maybe:]          -> greaterOrEqual? @[maybe] [maybe\maybe]
@@ -4323,7 +4323,7 @@ do [
         -> greaterOrEqual? a to :rational [1 1]    -> greaterOrEqual? a null                    
         -> greaterOrEqual? a true                  -> greaterOrEqual? a false
         -> greaterOrEqual? a 1.0.0                 -> greaterOrEqual? a :rational
-        -> greaterOrEqual? a `1`                   -> greaterOrEqual? a "1.0+1.0i"
+        -> greaterOrEqual? a '1'                   -> greaterOrEqual? a "1.0+1.0i"
         -> greaterOrEqual? @[a] [one]              -> greaterOrEqual? @[a] [one:]
         -> greaterOrEqual? 1 '1                    -> greaterOrEqual? @[a] [.1]                 
         -> greaterOrEqual? @[a] [.1:]              -> greaterOrEqual? @[a] [one\1]
@@ -4341,7 +4341,7 @@ do [
         -> greaterOrEqual? 1.0.0 to :rational [1 1]    -> greaterOrEqual? 1.0.0 null                    
         -> greaterOrEqual? 1.0.0 true                  -> greaterOrEqual? 1.0.0 false                   
         -> greaterOrEqual? 1.0.0 to :complex [1.0 1.0] -> greaterOrEqual? 1.0.0 :floating
-        -> greaterOrEqual? 1.0.0 `1`                   -> greaterOrEqual? 1.0.0 "1.0.0"
+        -> greaterOrEqual? 1.0.0 '1'                   -> greaterOrEqual? 1.0.0 "1.0.0"
         -> greaterOrEqual? [1.0.0] [one]               -> greaterOrEqual? [1.0.0] [one:]
         -> greaterOrEqual? 1.0.0 '1                    -> greaterOrEqual? [1.0.0] [.1]                  
         -> greaterOrEqual? [1.0.0] [.1:]               -> greaterOrEqual? [1.0.0] [one\1]
@@ -4360,8 +4360,8 @@ do [
         -> greaterOrEqual? :rational to :rational [1 1]    -> greaterOrEqual? :null null                    
         -> greaterOrEqual? :true true                      -> greaterOrEqual? :false false                   
         -> greaterOrEqual? :logical false                  -> greaterOrEqual? :complex to :complex [1 1]   
-        -> greaterOrEqual? :version 1.0.0                  -> greaterOrEqual? :T `T`                         
-        -> greaterOrEqual? :char `T`                       -> greaterOrEqual? :string ":type"
+        -> greaterOrEqual? :version 1.0.0                  -> greaterOrEqual? :T 'T'                         
+        -> greaterOrEqual? :char 'T'                       -> greaterOrEqual? :string ":type"
         -> greaterOrEqual? [:type] [type]                  -> greaterOrEqual? [:word] [word]                     
         -> greaterOrEqual? [:type] [type:]                 -> greaterOrEqual? [:label] [label:]
         -> greaterOrEqual? :1 '1.                          -> greaterOrEqual? :literal '1                       
@@ -4382,18 +4382,18 @@ do [
     
     ; for :char
     ensure -> every? @[
-        -> greaterOrEqual? `1` 1.0          
-        -> greaterOrEqual? `1` to :rational [1 1]      -> greaterOrEqual? `ø` null                    
-        -> greaterOrEqual? `t` true                    -> greaterOrEqual? `f` false                   
-        -> greaterOrEqual? `1` to :complex [1.0 1.0]   -> greaterOrEqual? `T` :floating
-        -> greaterOrEqual? [`a`] [one]                 -> greaterOrEqual? `a` 'A                      
-        -> greaterOrEqual? [`a`] [.1]                  -> greaterOrEqual? [`a`] [.a:]                 
-        -> greaterOrEqual? [`a`] [a\a]                 -> greaterOrEqual? [`a`] [a\a:]                
-        -> greaterOrEqual? [`+`] [+]                   -> greaterOrEqual? `a` {/a/}                   
-        -> greaterOrEqual? `1` to :binary 1            -> greaterOrEqual? `a` to :binary 1            
-        -> greaterOrEqual? [`1`] [(`1`)]               -> greaterOrEqual? `a` [`a`]                   
-        -> greaterOrEqual? `1` 1..1                    -> greaterOrEqual? `a` #[a: `a`]               
-        -> greaterOrEqual? `1` #black                  -> greaterOrEqual? `a` var 'char?
+        -> greaterOrEqual? '1' 1.0          
+        -> greaterOrEqual? '1' to :rational [1 1]      -> greaterOrEqual? 'ø' null                    
+        -> greaterOrEqual? 't' true                    -> greaterOrEqual? 'f' false                   
+        -> greaterOrEqual? '1' to :complex [1.0 1.0]   -> greaterOrEqual? 'T' :floating
+        -> greaterOrEqual? ['a'] [one]                 -> greaterOrEqual? 'a' 'A                      
+        -> greaterOrEqual? ['a'] [.1]                  -> greaterOrEqual? ['a'] [.a:]                 
+        -> greaterOrEqual? ['a'] [a\a]                 -> greaterOrEqual? ['a'] [a\a:]                
+        -> greaterOrEqual? ['+'] [+]                   -> greaterOrEqual? 'a' {/a/}                   
+        -> greaterOrEqual? '1' to :binary 1            -> greaterOrEqual? 'a' to :binary 1            
+        -> greaterOrEqual? ['1'] [('1')]               -> greaterOrEqual? 'a' ['a']                   
+        -> greaterOrEqual? '1' 1..1                    -> greaterOrEqual? 'a' #[a: 'a']               
+        -> greaterOrEqual? '1' #black                  -> greaterOrEqual? 'a' var 'char?
     ] => not? passed
     
     ; for :string
@@ -4422,7 +4422,7 @@ do [
         -> greaterOrEqual? [a]         [a\a:]                    -> greaterOrEqual? [a]     @[{/a/}]                      
         -> greaterOrEqual? [binary]   @[to :binary 1]            -> greaterOrEqual? [one]   @[to :binary 1]              
         -> greaterOrEqual? [word]      [(word)]                  -> greaterOrEqual? [word]  @[[word]]                      
-        -> greaterOrEqual? [range]    @[range 1 1]               -> greaterOrEqual? [a]     @[#[a: `a`]]               
+        -> greaterOrEqual? [range]    @[range 1 1]               -> greaterOrEqual? [a]     @[#[a: 'a']]               
         -> greaterOrEqual? [black]    @[#black ]                 -> greaterOrEqual? [word]  @[var 'word?]              
         -> greaterOrEqual? [var]      @[var 'word?]
     ] => not? passed
@@ -4435,7 +4435,7 @@ do [
         -> greaterOrEqual? [type:]     @[:floating]              -> greaterOrEqual? [a:]         [a\a]                     
         -> greaterOrEqual? [a:]         [a\a:]                   -> greaterOrEqual? [a:]        @[{/a:/}]                 
         -> greaterOrEqual? [binary:]   @[to :binary 1]           -> greaterOrEqual? [word:]      [(word:)]                
-        -> greaterOrEqual? [label:]    @[[label:]]               -> greaterOrEqual? [a:]        @[#[a: `a`]]               
+        -> greaterOrEqual? [label:]    @[[label:]]               -> greaterOrEqual? [a:]        @[#[a: 'a']]               
         -> greaterOrEqual? [black:]    @[#black ]                -> greaterOrEqual? [var:]      @[var 'word?]
         -> greaterOrEqual? [word:]     @[var 'word?]
     ] => not? passed
@@ -4463,7 +4463,7 @@ do [
         -> greaterOrEqual? [.complex]  @[to :complex [1.0 1.0]] -> greaterOrEqual? [.floating] @[:floating]                          
         -> greaterOrEqual? [.a]        @[{/a:/}]                -> greaterOrEqual? [.binary]   @[to :binary 1]          
         -> greaterOrEqual? [.word]      [(.word:)]              -> greaterOrEqual? [.label]    @[[.label]]                               
-        -> greaterOrEqual? [.a]        @[#[a: `a`]]             -> greaterOrEqual? [.black]    @[#black]                
+        -> greaterOrEqual? [.a]        @[#[a: 'a']]             -> greaterOrEqual? [.black]    @[#black]                
         -> greaterOrEqual? [.var]      @[var 'word?]            -> greaterOrEqual? [.word]     @[var 'word?]
     ] => not? passed
     
@@ -4472,10 +4472,10 @@ do [
         -> greaterOrEqual? [.rational:] @[to :rational [1 1]]    -> greaterOrEqual? [.null:]     @[null]                  
         -> greaterOrEqual? [.true:]     @[true]                  -> greaterOrEqual? [.false:]    @[false]                 
         -> greaterOrEqual? [.complex:]  @[to :complex [1.0 1.0]] -> greaterOrEqual? [.floating:] @[:floating]             
-        -> greaterOrEqual? [.a:]         [a\a]                   -> greaterOrEqual? [.a: `a`]     [a\a: `a`]              
+        -> greaterOrEqual? [.a:]         [a\a]                   -> greaterOrEqual? [.a: 'a']     [a\a: 'a']              
         -> greaterOrEqual? [.plus:]      [+]                     -> greaterOrEqual? [.a:]        @[{/a:/}]                
         -> greaterOrEqual? [.binary:]   @[to :binary 1]          -> greaterOrEqual? [.word:]      [(.word:)]               
-        -> greaterOrEqual? [.label:]    @[[label:]]              -> greaterOrEqual? [.a:]        @[#[a: `a`]]             
+        -> greaterOrEqual? [.label:]    @[[label:]]              -> greaterOrEqual? [.a:]        @[#[a: 'a']]             
         -> greaterOrEqual? [.black:]    @[#black]                -> greaterOrEqual? [.var:]      @[var 'word?]            
         -> greaterOrEqual? [.word:]     @[var 'word?]
     ] => not? passed
@@ -4513,8 +4513,8 @@ do [
         -> greaterOrEqual? to :binary 0 true                 -> greaterOrEqual? to :binary 0 false                
         -> greaterOrEqual? to :binary 0 maybe                -> greaterOrEqual? to :binary 1 to :complex [1 1]                  
         -> greaterOrEqual? to :binary 1 1.0.0                -> greaterOrEqual? to :binary 1 :type              
-        -> greaterOrEqual? to :binary 1 :binary              -> greaterOrEqual? to :binary 1 `1`                  
-        -> greaterOrEqual? to :binary "a" `a`                -> greaterOrEqual? to :binary 1 "01"                 
+        -> greaterOrEqual? to :binary 1 :binary              -> greaterOrEqual? to :binary 1 '1'                  
+        -> greaterOrEqual? to :binary "a" 'a'                -> greaterOrEqual? to :binary 1 "01"                 
         -> greaterOrEqual? to :binary 1 "1"                  -> greaterOrEqual? @[to :binary 1] [binary]          
         -> greaterOrEqual? @[to :binary 1] [one]             -> greaterOrEqual? @[to :binary 1] [binary:]         
         -> greaterOrEqual? @[to :binary 1][.binary]          -> greaterOrEqual? @[to :binary 1] [.binary:]        
@@ -4530,7 +4530,7 @@ do [
         -> greaterOrEqual? 0..0 true                     -> greaterOrEqual? 0..0 false
         -> greaterOrEqual? 0..0 maybe                    -> greaterOrEqual? 1..1 to :complex [1 1]
         -> greaterOrEqual? 1..1 1.0.0                    -> greaterOrEqual? 1..1 :type                        
-        -> greaterOrEqual? 1..1 :range                   -> greaterOrEqual? 1..1 `1` 
+        -> greaterOrEqual? 1..1 :range                   -> greaterOrEqual? 1..1 '1' 
         -> greaterOrEqual? 1..1 "1"                      -> greaterOrEqual? 1..1 'range  
         -> greaterOrEqual? 1..1 {/1/}
     ] => not? passed
@@ -4557,7 +4557,7 @@ do [
         -> greaterOrEqual? #black true               -> greaterOrEqual? #black false 
         -> greaterOrEqual? #black maybe              -> greaterOrEqual? #black to :complex [0 0]
         -> greaterOrEqual? #black 0.0.0              -> greaterOrEqual? #black :color
-        -> greaterOrEqual? #black `1`                -> greaterOrEqual? #black "#000000"
+        -> greaterOrEqual? #black '1'                -> greaterOrEqual? #black "#000000"
         -> greaterOrEqual? #black "000000"           -> greaterOrEqual? [#black] [black] 
         -> greaterOrEqual? #black 'black             -> greaterOrEqual? [#black] [.black]
         -> greaterOrEqual? [#black] [.black:]        -> greaterOrEqual? #black  {/#000000/}                 
@@ -4569,7 +4569,7 @@ do [
         -> greaterOrEqual? var 'null?     null       -> greaterOrEqual? var 'true?    true  
         -> greaterOrEqual? var 'false?    false 
         -> greaterOrEqual? var 'version?  1.0.0      -> greaterOrEqual? var 'type?    :type 
-        -> greaterOrEqual? var 'function? :function  -> greaterOrEqual? var 'char?    `a` 
+        -> greaterOrEqual? var 'function? :function  -> greaterOrEqual? var 'char?    'a' 
         -> greaterOrEqual? @[var 'word?]  [word]     -> greaterOrEqual? @[var 'word?] [var]      
         -> greaterOrEqual? @[var 'word?]  [var:]     -> greaterOrEqual? @[var 'word?] [word:]    
         -> greaterOrEqual? var 'word?     'word?     -> greaterOrEqual? var 'var      'var       
@@ -4821,11 +4821,11 @@ do [
     ensure -> not? less? ø 1
     ensure -> not? less? ø 1.0
     ensure -> not? less? ø "ø"
-    ensure -> not? less? ø `ø`
+    ensure -> not? less? ø 'ø'
     ensure -> not? ø < 1
     ensure -> not? ø < 1.0
     ensure -> not? ø < "ø"
-    ensure -> not? ø < `ø`
+    ensure -> not? ø < 'ø'
     passed
     
     
@@ -4899,24 +4899,24 @@ do [
     
     topic « less? - :char
     
-    ensure -> not? less? `a` `a`
-    ensure -> not? `a` < `a`
+    ensure -> not? less? 'a' 'a'
+    ensure -> not? 'a' < 'a'
     passed
     
-    ensure -> `a` < `b`
-    ensure -> `a` < `z`
+    ensure -> 'a' < 'b'
+    ensure -> 'a' < 'z'
     passed
     
-    ensure -> not? less? `a` "a" 
-    ensure -> not? less? `1` 1
-    ensure -> not? less? "a" `a` 
-    ensure -> not? less? `b` `a`
-    ensure -> not? less? 1   `1`
-    ensure -> not? `a` < "a" 
-    ensure -> not? `1` <  1
-    ensure -> not? "a" < `a` 
-    ensure -> not? `b` < `a`
-    ensure -> not?  1  < `1`
+    ensure -> not? less? 'a' "a" 
+    ensure -> not? less? '1' 1
+    ensure -> not? less? "a" 'a' 
+    ensure -> not? less? 'b' 'a'
+    ensure -> not? less? 1   '1'
+    ensure -> not? 'a' < "a" 
+    ensure -> not? '1' <  1
+    ensure -> not? "a" < 'a' 
+    ensure -> not? 'b' < 'a'
+    ensure -> not?  1  < '1'
     passed 
     
     
@@ -4931,7 +4931,7 @@ do [
     ensure -> less? "Art" "Artu"
     passed
     
-    ensure -> not? less? "a" `b`
+    ensure -> not? less? "a" 'b'
     ensure -> not? less? "a" 'b
     ensure -> not? less? "a" to :word "b"
     ensure -> not? less? "a" to :label "b"
@@ -4949,7 +4949,7 @@ do [
     passed
     
     ensure -> not? less? to :word "a" "b"
-    ensure -> not? less? to :word "a" `b`
+    ensure -> not? less? to :word "a" 'b'
     ensure -> not? less? to :word "a" 'b
     ensure -> not? less? to :word "a" to :label "b"
     ensure -> not? less? to :word "a" to :attribute "b"
@@ -4967,7 +4967,7 @@ do [
     passed
     
     ensure -> not? less? to :label "a" "b"
-    ensure -> not? less? to :label "a" `b`
+    ensure -> not? less? to :label "a" 'b'
     ensure -> not? less? to :label "a" 'b
     ensure -> not? less? to :label "a" to :word "b"
     ensure -> not? less? to :label "a" to :attribute "b"
@@ -4985,7 +4985,7 @@ do [
     passed
     
     ensure -> not? less? 'a "b"
-    ensure -> not? less? 'a `b`
+    ensure -> not? less? 'a 'b'
     ensure -> not? less? 'a to :word "b"
     ensure -> not? less? 'a to :label "b"
     ensure -> not? less? 'a to :attribute "b"
@@ -5038,7 +5038,7 @@ do [
     passed
     
     ensure -> not? less? to :attribute "a" "b"
-    ensure -> not? less? to :attribute "a" `b`
+    ensure -> not? less? to :attribute "a" 'b'
     ensure -> not? less? to :attribute "a" 'b
     ensure -> not? less? to :attribute "a" to :word "b"
     ensure -> not? less? to :attribute "a" to :label "b"
@@ -5056,7 +5056,7 @@ do [
     passed
     
     ensure -> not? less? to :attributelabel "a" "b"
-    ensure -> not? less? to :attributelabel "a" `b`
+    ensure -> not? less? to :attributelabel "a" 'b'
     ensure -> not? less? to :attributelabel "a" 'b
     ensure -> not? less? to :attributelabel "a" to :word "b"
     ensure -> not? less? to :attributelabel "a" to :label "b"
@@ -5070,7 +5070,7 @@ do [
     ensure -> not? less? to :symbol "+" to :symbol "+"
     ensure -> not? less? to :symbol "+" to :symbol "-"
     ensure -> not? less? to :symbol "+" to :symbol "++"
-    ensure -> not? less? to :symbol "+" `+`
+    ensure -> not? less? to :symbol "+" '+'
     ensure -> not? less? to :symbol "+" {+}
     ensure -> not? less? to :symbol "+" "+"
     ensure -> not? less? to :symbol "+" to :word "plus"
@@ -5313,7 +5313,7 @@ do [
         -> less? 1 null          -> less? 1 true
         -> less? 1 false         -> less? 1 to :complex [1 1]
         -> less? 1 1.0.0         -> less? 1 :integer
-        -> less? 1 `1`           -> less? 1 "1"
+        -> less? 1 '1'           -> less? 1 "1"
         -> less? [1] [one]       -> less? [1] [one:]
         -> less? 1 '1            -> less? [1] [.1]         
         -> less? [1] [.1:]       -> less? [1] [one\1]
@@ -5330,7 +5330,7 @@ do [
         -> less? 1.0 null            -> less? 1.0 true
         -> less? 1.0 false           -> less? 1.0 to :complex [1.0 1.0]
         -> less? 1.0 1.0.0           -> less? 1.0 :floating
-        -> less? 1.0 `1`             -> less? 1.0 "1.0"
+        -> less? 1.0 '1'             -> less? 1.0 "1.0"
         -> less? [1.0] [one]         -> less? [1.0] [one:]
         -> less? 1.0 '1.0i           -> less? [1.0] [.1]            
         -> less? [1.0] [.1:]         -> less? [1.0] [one\1]
@@ -5348,7 +5348,7 @@ do [
         -> less? a null          -> less? a true
         -> less? a false         -> less? a to :complex [1 1]
         -> less? a 1.0.0         -> less? a :rational
-        -> less? a `1`           -> less? a "1/1"
+        -> less? a '1'           -> less? a "1/1"
         -> less? @[a] [one]      -> less? @[a] [one:]
         -> less? 1 '1            -> less? @[a] [.1]                 
         -> less? @[a] [.1:]      -> less? @[a] [one\1]
@@ -5365,7 +5365,7 @@ do [
         -> less? 1:usd null          -> less? 1:usd true
         -> less? 1:usd false         -> less? 1:usd to :complex [1 1]
         -> less? 1:usd 1.0.0         -> less? 1:usd :quantity
-        -> less? 1:usd `1`           -> less? 1:usd "1USD"
+        -> less? 1:usd '1'           -> less? 1:usd "1USD"
         -> less? [1:usd] [one]       -> less? [1:usd] [one:]
         -> less? 1:usd '1.0i         -> less? [1:usd] [.1]                  
         -> less? [1:usd] [.1:]       -> less? [1:usd] [one\1]
@@ -5381,7 +5381,7 @@ do [
         -> less? 1:m null            -> less? 1:m true
         -> less? 1:m false           -> less? 1:m to :complex [1 1]
         -> less? 1:m 1.0.0           -> less? 1:m :quantity
-        -> less? 1:m `1`             -> less? 1:m "1m"
+        -> less? 1:m '1'             -> less? 1:m "1m"
         -> less? [1:m] [one]         -> less? [1:m] [one:]
         -> less? 1:m '1              -> less? [1:m] [.1]            
         -> less? [1:m] [.1:]         -> less? [1:m] [one\1]
@@ -5397,7 +5397,7 @@ do [
         -> less? 1:m3 null           -> less? 1:m3 true
         -> less? 1:m3 false          -> less? 1:m3 to :complex [1 1]
         -> less? 1:m3 1.0.0          -> less? 1:m3 :quantity
-        -> less? 1:m3 `1`            -> less? 1:m3 "1m³"
+        -> less? 1:m3 '1'            -> less? 1:m3 "1m³"
         -> less? [1:m3] [one]        -> less? [1:m3] [one:]
         -> less? 1:m3 '1             -> less? [1:m3] [.1]              
         -> less? [1:m3] [.1:]        -> less? [1:m3] [one\1]
@@ -5413,7 +5413,7 @@ do [
         -> less? 1:c null            -> less? 1:c true
         -> less? 1:c false           -> less? 1:c to :complex [1 1]
         -> less? 1:c 1.0.0           -> less? 1:c :quantity
-        -> less? 1:c `1`             -> less? 1:c "1°C"
+        -> less? 1:c '1'             -> less? 1:c "1°C"
         -> less? [1:c] [one]         -> less? [1:c] [one:]
         -> less? 1:c '1.0i           -> less? [1:c] [.1]            
         -> less? [1:c] [.1:]         -> less? [1:c] [one\1]       
@@ -5431,7 +5431,7 @@ do [
         -> less? null to :rational [1 1] -> less? null true
         -> less? null false              -> less? null to :complex [0 0]
         -> less? null 0.0.0              -> less? null :null
-        -> less? null `ø`                -> less? null "null"
+        -> less? null 'ø'                -> less? null "null"
         -> less? @[null] [null]          -> less? @[null] [null:]
         -> less? null 'null              -> less? @[null] [.null]               
         -> less? @[null] [.null:]        -> less? @[null] [null\null]
@@ -5449,7 +5449,7 @@ do [
         -> less? true 0                  -> less? true 0.0            
         -> less? true to :rational [1 1] -> less? true to :complex [0 0]
         -> less? true 0.0.0              -> less? true :true
-        -> less? true `0`                -> less? true "true"
+        -> less? true '0'                -> less? true "true"
         -> less? @[true] [true]          -> less? @[true] [true:]
         -> less? true 'true              -> less? @[true] [.true]               
         -> less? @[true] [.true:]        -> less? @[true] [true\true]
@@ -5465,7 +5465,7 @@ do [
         -> less? false 0                     -> less? false 0.0            
         -> less? false to :rational [1 1]    -> less? false to :complex [0 0]
         -> less? false 0.0.0                 -> less? false :false
-        -> less? false `0`                   -> less? false "false"
+        -> less? false '0'                   -> less? false "false"
         -> less? @[false] [false]            -> less? @[false] [false:]
         -> less? false 'false                -> less? @[false] [.false]                 
         -> less? @[false] [.false:]          -> less? @[false] [false\false]
@@ -5481,7 +5481,7 @@ do [
         -> less? maybe 0                     -> less? maybe 0.0            
         -> less? maybe to :rational [1 1]    -> less? maybe to :complex [0 0]
         -> less? maybe 0.0.0                 -> less? maybe :maybe
-        -> less? maybe `0`                   -> less? maybe "maybe"
+        -> less? maybe '0'                   -> less? maybe "maybe"
         -> less? @[maybe] [maybe]            -> less? @[maybe] [maybe:]
         -> less? maybe 'maybe                -> less? @[maybe] [.maybe]                 
         -> less? @[maybe] [.maybe:]          -> less? @[maybe] [maybe\maybe]
@@ -5499,7 +5499,7 @@ do [
         -> less? a to :rational [1 1]    -> less? a null                    
         -> less? a true                  -> less? a false
         -> less? a 1.0.0                 -> less? a :rational
-        -> less? a `1`                   -> less? a "1.0+1.0i"
+        -> less? a '1'                   -> less? a "1.0+1.0i"
         -> less? @[a] [one]              -> less? @[a] [one:]
         -> less? 1 '1                    -> less? @[a] [.1]                 
         -> less? @[a] [.1:]              -> less? @[a] [one\1]
@@ -5517,7 +5517,7 @@ do [
         -> less? 1.0.0 to :rational [1 1]    -> less? 1.0.0 null                    
         -> less? 1.0.0 true                  -> less? 1.0.0 false                   
         -> less? 1.0.0 to :complex [1.0 1.0] -> less? 1.0.0 :floating
-        -> less? 1.0.0 `1`                   -> less? 1.0.0 "1.0.0"
+        -> less? 1.0.0 '1'                   -> less? 1.0.0 "1.0.0"
         -> less? [1.0.0] [one]               -> less? [1.0.0] [one:]
         -> less? 1.0.0 '1                    -> less? [1.0.0] [.1]                  
         -> less? [1.0.0] [.1:]               -> less? [1.0.0] [one\1]
@@ -5536,8 +5536,8 @@ do [
         -> less? :rational to :rational [1 1]    -> less? :null null                    
         -> less? :true true                      -> less? :false false                   
         -> less? :logical false                  -> less? :complex to :complex [1 1]   
-        -> less? :version 1.0.0                  -> less? :T `T`                         
-        -> less? :char `T`                       -> less? :string ":type"
+        -> less? :version 1.0.0                  -> less? :T 'T'                         
+        -> less? :char 'T'                       -> less? :string ":type"
         -> less? [:type] [type]                  -> less? [:word] [word]                     
         -> less? [:type] [type:]                 -> less? [:label] [label:]
         -> less? :1 '1.                          -> less? :literal '1                       
@@ -5558,18 +5558,18 @@ do [
     
     ; for :char
     ensure -> every? @[
-        -> less? `1` 1.0          
-        -> less? `1` to :rational [1 1]      -> less? `ø` null                    
-        -> less? `t` true                    -> less? `f` false                   
-        -> less? `1` to :complex [1.0 1.0]   -> less? `T` :floating
-        -> less? [`a`] [one]                 -> less? `a` 'A                      
-        -> less? [`a`] [.1]                  -> less? [`a`] [.a:]                 
-        -> less? [`a`] [a\a]                 -> less? [`a`] [a\a:]                
-        -> less? [`+`] [+]                   -> less? `a` {/a/}                   
-        -> less? `1` to :binary 1            -> less? `a` to :binary 1            
-        -> less? [`1`] [(`1`)]               -> less? `a` [`a`]                   
-        -> less? `1` 1..1                    -> less? `a` #[a: `a`]               
-        -> less? `1` #black                  -> less? `a` var 'char?
+        -> less? '1' 1.0          
+        -> less? '1' to :rational [1 1]      -> less? 'ø' null                    
+        -> less? 't' true                    -> less? 'f' false                   
+        -> less? '1' to :complex [1.0 1.0]   -> less? 'T' :floating
+        -> less? ['a'] [one]                 -> less? 'a' 'A                      
+        -> less? ['a'] [.1]                  -> less? ['a'] [.a:]                 
+        -> less? ['a'] [a\a]                 -> less? ['a'] [a\a:]                
+        -> less? ['+'] [+]                   -> less? 'a' {/a/}                   
+        -> less? '1' to :binary 1            -> less? 'a' to :binary 1            
+        -> less? ['1'] [('1')]               -> less? 'a' ['a']                   
+        -> less? '1' 1..1                    -> less? 'a' #[a: 'a']               
+        -> less? '1' #black                  -> less? 'a' var 'char?
     ] => not? passed
     
     ; for :string
@@ -5598,7 +5598,7 @@ do [
         -> less? [a]         [a\a:]                    -> less? [a]     @[{/a/}]                      
         -> less? [binary]   @[to :binary 1]            -> less? [one]   @[to :binary 1]              
         -> less? [word]      [(word)]                  -> less? [word]  @[[word]]                      
-        -> less? [range]    @[range 1 1]               -> less? [a]     @[#[a: `a`]]               
+        -> less? [range]    @[range 1 1]               -> less? [a]     @[#[a: 'a']]               
         -> less? [black]    @[#black ]                 -> less? [word]  @[var 'word?]              
         -> less? [var]      @[var 'word?]
     ] => not? passed
@@ -5611,7 +5611,7 @@ do [
         -> less? [type:]     @[:floating]              -> less? [a:]         [a\a]                     
         -> less? [a:]         [a\a:]                   -> less? [a:]        @[{/a:/}]                 
         -> less? [binary:]   @[to :binary 1]           -> less? [word:]      [(word:)]                
-        -> less? [label:]    @[[label:]]               -> less? [a:]        @[#[a: `a`]]               
+        -> less? [label:]    @[[label:]]               -> less? [a:]        @[#[a: 'a']]               
         -> less? [black:]    @[#black ]                -> less? [var:]      @[var 'word?]
         -> less? [word:]     @[var 'word?]
     ] => not? passed
@@ -5639,7 +5639,7 @@ do [
         -> less? [.complex]  @[to :complex [1.0 1.0]] -> less? [.floating] @[:floating]                          
         -> less? [.a]        @[{/a:/}]                -> less? [.binary]   @[to :binary 1]          
         -> less? [.word]      [(.word:)]              -> less? [.label]    @[[.label]]                               
-        -> less? [.a]        @[#[a: `a`]]             -> less? [.black]    @[#black]                
+        -> less? [.a]        @[#[a: 'a']]             -> less? [.black]    @[#black]                
         -> less? [.var]      @[var 'word?]            -> less? [.word]     @[var 'word?]
     ] => not? passed
     
@@ -5648,10 +5648,10 @@ do [
         -> less? [.rational:] @[to :rational [1 1]]    -> less? [.null:]     @[null]                  
         -> less? [.true:]     @[true]                  -> less? [.false:]    @[false]                 
         -> less? [.complex:]  @[to :complex [1.0 1.0]] -> less? [.floating:] @[:floating]             
-        -> less? [.a:]         [a\a]                   -> less? [.a: `a`]     [a\a: `a`]              
+        -> less? [.a:]         [a\a]                   -> less? [.a: 'a']     [a\a: 'a']              
         -> less? [.plus:]      [+]                     -> less? [.a:]        @[{/a:/}]                
         -> less? [.binary:]   @[to :binary 1]          -> less? [.word:]      [(.word:)]               
-        -> less? [.label:]    @[[label:]]              -> less? [.a:]        @[#[a: `a`]]             
+        -> less? [.label:]    @[[label:]]              -> less? [.a:]        @[#[a: 'a']]             
         -> less? [.black:]    @[#black]                -> less? [.var:]      @[var 'word?]            
         -> less? [.word:]     @[var 'word?]
     ] => not? passed
@@ -5688,8 +5688,8 @@ do [
         -> less? to :binary 0 true                 -> less? to :binary 0 false                
         -> less? to :binary 0 maybe                -> less? to :binary 1 to :complex [1 1]                  
         -> less? to :binary 1 1.0.0                -> less? to :binary 1 :type              
-        -> less? to :binary 1 :binary              -> less? to :binary 1 `1`                  
-        -> less? to :binary "a" `a`                -> less? to :binary 1 "01"                 
+        -> less? to :binary 1 :binary              -> less? to :binary 1 '1'                  
+        -> less? to :binary "a" 'a'                -> less? to :binary 1 "01"                 
         -> less? to :binary 1 "1"                  -> less? @[to :binary 1] [binary]          
         -> less? @[to :binary 1] [one]             -> less? @[to :binary 1] [binary:]         
         -> less? @[to :binary 1][.binary]          -> less? @[to :binary 1] [.binary:]        
@@ -5705,7 +5705,7 @@ do [
         -> less? 0..0 true                     -> less? 0..0 false
         -> less? 0..0 maybe                    -> less? 1..1 to :complex [1 1]
         -> less? 1..1 1.0.0                    -> less? 1..1 :type                        
-        -> less? 1..1 :range                   -> less? 1..1 `1` 
+        -> less? 1..1 :range                   -> less? 1..1 '1' 
         -> less? 1..1 "1"                      -> less? 1..1 'range  
         -> less? 1..1 {/1/}
     ] => not? passed
@@ -5732,7 +5732,7 @@ do [
         -> less? #black true               -> less? #black false 
         -> less? #black maybe              -> less? #black to :complex [0 0]
         -> less? #black 0.0.0              -> less? #black :color
-        -> less? #black `1`                -> less? #black "#000000"
+        -> less? #black '1'                -> less? #black "#000000"
         -> less? #black "000000"           -> less? [#black] [black] 
         -> less? #black 'black             -> less? [#black] [.black]
         -> less? [#black] [.black:]        -> less? #black  {/#000000/}                 
@@ -5744,7 +5744,7 @@ do [
         -> less? var 'null?     null       -> less? var 'true?    true  
         -> less? var 'false?    false 
         -> less? var 'version?  1.0.0      -> less? var 'type?    :type 
-        -> less? var 'function? :function  -> less? var 'char?    `a` 
+        -> less? var 'function? :function  -> less? var 'char?    'a' 
         -> less? @[var 'word?]  [word]     -> less? @[var 'word?] [var]      
         -> less? @[var 'word?]  [var:]     -> less? @[var 'word?] [word:]    
         -> less? var 'word?     'word?     -> less? var 'var      'var       
@@ -5996,11 +5996,11 @@ do [
     ensure -> not? lessOrEqual? ø 1
     ensure -> not? lessOrEqual? ø 1.0
     ensure -> not? lessOrEqual? ø "ø"
-    ensure -> not? lessOrEqual? ø `ø`
+    ensure -> not? lessOrEqual? ø 'ø'
     ensure -> not? ø =< 1
     ensure -> not? ø =< 1.0
     ensure -> not? ø =< "ø"
-    ensure -> not? ø =< `ø`
+    ensure -> not? ø =< 'ø'
     passed
     
     
@@ -6071,24 +6071,24 @@ do [
     
     topic « lessOrEqual? - :char
     
-    ensure -> lessOrEqual? `a` `a`
-    ensure -> `a` =< `a`
+    ensure -> lessOrEqual? 'a' 'a'
+    ensure -> 'a' =< 'a'
     passed
     
-    ensure -> `a` =< `b`
-    ensure -> `a` =< `z`
+    ensure -> 'a' =< 'b'
+    ensure -> 'a' =< 'z'
     passed
     
-    ensure -> not? lessOrEqual? `a` "a" 
-    ensure -> not? lessOrEqual? `1` 1
-    ensure -> not? lessOrEqual? "a" `a` 
-    ensure -> not? lessOrEqual? `b` `a`
-    ensure -> not? lessOrEqual? 1   `1`
-    ensure -> not? `a` =< "a" 
-    ensure -> not? `1` =<  1
-    ensure -> not? "a" =< `a` 
-    ensure -> not? `b` =< `a`
-    ensure -> not?  1  =< `1`
+    ensure -> not? lessOrEqual? 'a' "a" 
+    ensure -> not? lessOrEqual? '1' 1
+    ensure -> not? lessOrEqual? "a" 'a' 
+    ensure -> not? lessOrEqual? 'b' 'a'
+    ensure -> not? lessOrEqual? 1   '1'
+    ensure -> not? 'a' =< "a" 
+    ensure -> not? '1' =<  1
+    ensure -> not? "a" =< 'a' 
+    ensure -> not? 'b' =< 'a'
+    ensure -> not?  1  =< '1'
     passed 
     
     
@@ -6103,8 +6103,8 @@ do [
     ensure -> lessOrEqual? "Art" "Artu"
     passed
     
-    ensure -> not? lessOrEqual? "a" `a`
-    ensure -> not? lessOrEqual? "a" `b`
+    ensure -> not? lessOrEqual? "a" 'a'
+    ensure -> not? lessOrEqual? "a" 'b'
     ensure -> not? lessOrEqual? "a" 'a
     ensure -> not? lessOrEqual? "a" 'b
     ensure -> not? lessOrEqual? "a" to :word "a"
@@ -6130,8 +6130,8 @@ do [
     
     ensure -> not? lessOrEqual? to :word "a" "a"
     ensure -> not? lessOrEqual? to :word "a" "b"
-    ensure -> not? lessOrEqual? to :word "a" `a`
-    ensure -> not? lessOrEqual? to :word "a" `b`
+    ensure -> not? lessOrEqual? to :word "a" 'a'
+    ensure -> not? lessOrEqual? to :word "a" 'b'
     ensure -> not? lessOrEqual? to :word "a" 'a
     ensure -> not? lessOrEqual? to :word "a" 'b
     ensure -> not? lessOrEqual? to :word "a" to :label "a"
@@ -6155,8 +6155,8 @@ do [
     
     ensure -> not? lessOrEqual? to :label "a" "a"
     ensure -> not? lessOrEqual? to :label "a" "b"
-    ensure -> not? lessOrEqual? to :label "a" `a`
-    ensure -> not? lessOrEqual? to :label "a" `b`
+    ensure -> not? lessOrEqual? to :label "a" 'a'
+    ensure -> not? lessOrEqual? to :label "a" 'b'
     ensure -> not? lessOrEqual? to :label "a" 'a
     ensure -> not? lessOrEqual? to :label "a" 'b
     ensure -> not? lessOrEqual? to :label "a" to :word "a"
@@ -6180,8 +6180,8 @@ do [
     
     ensure -> not? lessOrEqual? 'a "a"
     ensure -> not? lessOrEqual? 'a "b"
-    ensure -> not? lessOrEqual? 'a `a`
-    ensure -> not? lessOrEqual? 'a `b`
+    ensure -> not? lessOrEqual? 'a 'a'
+    ensure -> not? lessOrEqual? 'a 'b'
     ensure -> not? lessOrEqual? 'a to :word "a"
     ensure -> not? lessOrEqual? 'a to :word "b"
     ensure -> not? lessOrEqual? 'a to :label "a"
@@ -6243,8 +6243,8 @@ do [
     
     ensure -> not? lessOrEqual? to :attribute "a" "a"
     ensure -> not? lessOrEqual? to :attribute "a" "b"
-    ensure -> not? lessOrEqual? to :attribute "a" `a`
-    ensure -> not? lessOrEqual? to :attribute "a" `b`
+    ensure -> not? lessOrEqual? to :attribute "a" 'a'
+    ensure -> not? lessOrEqual? to :attribute "a" 'b'
     ensure -> not? lessOrEqual? to :attribute "a" 'a
     ensure -> not? lessOrEqual? to :attribute "a" 'b
     ensure -> not? lessOrEqual? to :attribute "a" to :word "a"
@@ -6268,8 +6268,8 @@ do [
     
     ensure -> not? lessOrEqual? to :attributelabel "a" "a"
     ensure -> not? lessOrEqual? to :attributelabel "a" "b"
-    ensure -> not? lessOrEqual? to :attributelabel "a" `a`
-    ensure -> not? lessOrEqual? to :attributelabel "a" `b`
+    ensure -> not? lessOrEqual? to :attributelabel "a" 'a'
+    ensure -> not? lessOrEqual? to :attributelabel "a" 'b'
     ensure -> not? lessOrEqual? to :attributelabel "a" 'a
     ensure -> not? lessOrEqual? to :attributelabel "a" 'b
     ensure -> not? lessOrEqual? to :attributelabel "a" to :word "a"
@@ -6288,7 +6288,7 @@ do [
     ensure -> lessOrEqual? to :symbol "+" to :symbol "+"
     ensure -> not? lessOrEqual? to :symbol "+" to :symbol "-"
     ensure -> not? lessOrEqual? to :symbol "+" to :symbol "++"
-    ensure -> not? lessOrEqual? to :symbol "+" `+`
+    ensure -> not? lessOrEqual? to :symbol "+" '+'
     ensure -> not? lessOrEqual? to :symbol "+" {+}
     ensure -> not? lessOrEqual? to :symbol "+" "+"
     ensure -> not? lessOrEqual? to :symbol "+" to :word "plus"
@@ -6531,7 +6531,7 @@ do [
         -> lessOrEqual? 1 null          -> lessOrEqual? 1 true
         -> lessOrEqual? 1 false         -> lessOrEqual? 1 to :complex [1 1]
         -> lessOrEqual? 1 1.0.0         -> lessOrEqual? 1 :integer
-        -> lessOrEqual? 1 `1`           -> lessOrEqual? 1 "1"
+        -> lessOrEqual? 1 '1'           -> lessOrEqual? 1 "1"
         -> lessOrEqual? [1] [one]       -> lessOrEqual? [1] [one:]
         -> lessOrEqual? 1 '1            -> lessOrEqual? [1] [.1]         
         -> lessOrEqual? [1] [.1:]       -> lessOrEqual? [1] [one\1]
@@ -6548,7 +6548,7 @@ do [
         -> lessOrEqual? 1.0 null            -> lessOrEqual? 1.0 true
         -> lessOrEqual? 1.0 false           -> lessOrEqual? 1.0 to :complex [1.0 1.0]
         -> lessOrEqual? 1.0 1.0.0           -> lessOrEqual? 1.0 :floating
-        -> lessOrEqual? 1.0 `1`             -> lessOrEqual? 1.0 "1.0"
+        -> lessOrEqual? 1.0 '1'             -> lessOrEqual? 1.0 "1.0"
         -> lessOrEqual? [1.0] [one]         -> lessOrEqual? [1.0] [one:]
         -> lessOrEqual? 1.0 '1.0i           -> lessOrEqual? [1.0] [.1]            
         -> lessOrEqual? [1.0] [.1:]         -> lessOrEqual? [1.0] [one\1]
@@ -6566,7 +6566,7 @@ do [
         -> lessOrEqual? a null          -> lessOrEqual? a true
         -> lessOrEqual? a false         -> lessOrEqual? a to :complex [1 1]
         -> lessOrEqual? a 1.0.0         -> lessOrEqual? a :rational
-        -> lessOrEqual? a `1`           -> lessOrEqual? a "1/1"
+        -> lessOrEqual? a '1'           -> lessOrEqual? a "1/1"
         -> lessOrEqual? @[a] [one]      -> lessOrEqual? @[a] [one:]
         -> lessOrEqual? 1 '1            -> lessOrEqual? @[a] [.1]                 
         -> lessOrEqual? @[a] [.1:]      -> lessOrEqual? @[a] [one\1]
@@ -6583,7 +6583,7 @@ do [
         -> lessOrEqual? 1:usd null          -> lessOrEqual? 1:usd true
         -> lessOrEqual? 1:usd false         -> lessOrEqual? 1:usd to :complex [1 1]
         -> lessOrEqual? 1:usd 1.0.0         -> lessOrEqual? 1:usd :quantity
-        -> lessOrEqual? 1:usd `1`           -> lessOrEqual? 1:usd "1USD"
+        -> lessOrEqual? 1:usd '1'           -> lessOrEqual? 1:usd "1USD"
         -> lessOrEqual? [1:usd] [one]       -> lessOrEqual? [1:usd] [one:]
         -> lessOrEqual? 1:usd '1.0i         -> lessOrEqual? [1:usd] [.1]                  
         -> lessOrEqual? [1:usd] [.1:]       -> lessOrEqual? [1:usd] [one\1]
@@ -6599,7 +6599,7 @@ do [
         -> lessOrEqual? 1:m null            -> lessOrEqual? 1:m true
         -> lessOrEqual? 1:m false           -> lessOrEqual? 1:m to :complex [1 1]
         -> lessOrEqual? 1:m 1.0.0           -> lessOrEqual? 1:m :quantity
-        -> lessOrEqual? 1:m `1`             -> lessOrEqual? 1:m "1m"
+        -> lessOrEqual? 1:m '1'             -> lessOrEqual? 1:m "1m"
         -> lessOrEqual? [1:m] [one]         -> lessOrEqual? [1:m] [one:]
         -> lessOrEqual? 1:m '1              -> lessOrEqual? [1:m] [.1]            
         -> lessOrEqual? [1:m] [.1:]         -> lessOrEqual? [1:m] [one\1]
@@ -6615,7 +6615,7 @@ do [
         -> lessOrEqual? 1:m3 null           -> lessOrEqual? 1:m3 true
         -> lessOrEqual? 1:m3 false          -> lessOrEqual? 1:m3 to :complex [1 1]
         -> lessOrEqual? 1:m3 1.0.0          -> lessOrEqual? 1:m3 :quantity
-        -> lessOrEqual? 1:m3 `1`            -> lessOrEqual? 1:m3 "1m³"
+        -> lessOrEqual? 1:m3 '1'            -> lessOrEqual? 1:m3 "1m³"
         -> lessOrEqual? [1:m3] [one]        -> lessOrEqual? [1:m3] [one:]
         -> lessOrEqual? 1:m3 '1             -> lessOrEqual? [1:m3] [.1]              
         -> lessOrEqual? [1:m3] [.1:]        -> lessOrEqual? [1:m3] [one\1]
@@ -6631,7 +6631,7 @@ do [
         -> lessOrEqual? 1:c null            -> lessOrEqual? 1:c true
         -> lessOrEqual? 1:c false           -> lessOrEqual? 1:c to :complex [1 1]
         -> lessOrEqual? 1:c 1.0.0           -> lessOrEqual? 1:c :quantity
-        -> lessOrEqual? 1:c `1`             -> lessOrEqual? 1:c "1°C"
+        -> lessOrEqual? 1:c '1'             -> lessOrEqual? 1:c "1°C"
         -> lessOrEqual? [1:c] [one]         -> lessOrEqual? [1:c] [one:]
         -> lessOrEqual? 1:c '1.0i           -> lessOrEqual? [1:c] [.1]            
         -> lessOrEqual? [1:c] [.1:]         -> lessOrEqual? [1:c] [one\1]       
@@ -6649,7 +6649,7 @@ do [
         -> lessOrEqual? null to :rational [1 1] -> lessOrEqual? null true
         -> lessOrEqual? null false              -> lessOrEqual? null to :complex [0 0]
         -> lessOrEqual? null 0.0.0              -> lessOrEqual? null :null
-        -> lessOrEqual? null `ø`                -> lessOrEqual? null "null"
+        -> lessOrEqual? null 'ø'                -> lessOrEqual? null "null"
         -> lessOrEqual? @[null] [null]          -> lessOrEqual? @[null] [null:]
         -> lessOrEqual? null 'null              -> lessOrEqual? @[null] [.null]               
         -> lessOrEqual? @[null] [.null:]        -> lessOrEqual? @[null] [null\null]
@@ -6667,7 +6667,7 @@ do [
         -> lessOrEqual? true 0                  -> lessOrEqual? true 0.0            
         -> lessOrEqual? true to :rational [1 1] -> lessOrEqual? true to :complex [0 0]
         -> lessOrEqual? true 0.0.0              -> lessOrEqual? true :true
-        -> lessOrEqual? true `0`                -> lessOrEqual? true "true"
+        -> lessOrEqual? true '0'                -> lessOrEqual? true "true"
         -> lessOrEqual? @[true] [true]          -> lessOrEqual? @[true] [true:]
         -> lessOrEqual? true 'true              -> lessOrEqual? @[true] [.true]               
         -> lessOrEqual? @[true] [.true:]        -> lessOrEqual? @[true] [true\true]
@@ -6683,7 +6683,7 @@ do [
         -> lessOrEqual? false 0                     -> lessOrEqual? false 0.0            
         -> lessOrEqual? false to :rational [1 1]    -> lessOrEqual? false to :complex [0 0]
         -> lessOrEqual? false 0.0.0                 -> lessOrEqual? false :false
-        -> lessOrEqual? false `0`                   -> lessOrEqual? false "false"
+        -> lessOrEqual? false '0'                   -> lessOrEqual? false "false"
         -> lessOrEqual? @[false] [false]            -> lessOrEqual? @[false] [false:]
         -> lessOrEqual? false 'false                -> lessOrEqual? @[false] [.false]                 
         -> lessOrEqual? @[false] [.false:]          -> lessOrEqual? @[false] [false\false]
@@ -6699,7 +6699,7 @@ do [
         -> lessOrEqual? maybe 0                     -> lessOrEqual? maybe 0.0            
         -> lessOrEqual? maybe to :rational [1 1]    -> lessOrEqual? maybe to :complex [0 0]
         -> lessOrEqual? maybe 0.0.0                 -> lessOrEqual? maybe :maybe
-        -> lessOrEqual? maybe `0`                   -> lessOrEqual? maybe "maybe"
+        -> lessOrEqual? maybe '0'                   -> lessOrEqual? maybe "maybe"
         -> lessOrEqual? @[maybe] [maybe]            -> lessOrEqual? @[maybe] [maybe:]
         -> lessOrEqual? maybe 'maybe                -> lessOrEqual? @[maybe] [.maybe]                 
         -> lessOrEqual? @[maybe] [.maybe:]          -> lessOrEqual? @[maybe] [maybe\maybe]
@@ -6717,7 +6717,7 @@ do [
         -> lessOrEqual? a to :rational [1 1]    -> lessOrEqual? a null                    
         -> lessOrEqual? a true                  -> lessOrEqual? a false
         -> lessOrEqual? a 1.0.0                 -> lessOrEqual? a :rational
-        -> lessOrEqual? a `1`                   -> lessOrEqual? a "1.0+1.0i"
+        -> lessOrEqual? a '1'                   -> lessOrEqual? a "1.0+1.0i"
         -> lessOrEqual? @[a] [one]              -> lessOrEqual? @[a] [one:]
         -> lessOrEqual? 1 '1                    -> lessOrEqual? @[a] [.1]                 
         -> lessOrEqual? @[a] [.1:]              -> lessOrEqual? @[a] [one\1]
@@ -6735,7 +6735,7 @@ do [
         -> lessOrEqual? 1.0.0 to :rational [1 1]    -> lessOrEqual? 1.0.0 null                    
         -> lessOrEqual? 1.0.0 true                  -> lessOrEqual? 1.0.0 false                   
         -> lessOrEqual? 1.0.0 to :complex [1.0 1.0] -> lessOrEqual? 1.0.0 :floating
-        -> lessOrEqual? 1.0.0 `1`                   -> lessOrEqual? 1.0.0 "1.0.0"
+        -> lessOrEqual? 1.0.0 '1'                   -> lessOrEqual? 1.0.0 "1.0.0"
         -> lessOrEqual? [1.0.0] [one]               -> lessOrEqual? [1.0.0] [one:]
         -> lessOrEqual? 1.0.0 '1                    -> lessOrEqual? [1.0.0] [.1]                  
         -> lessOrEqual? [1.0.0] [.1:]               -> lessOrEqual? [1.0.0] [one\1]
@@ -6754,8 +6754,8 @@ do [
         -> lessOrEqual? :rational to :rational [1 1]    -> lessOrEqual? :null null                    
         -> lessOrEqual? :true true                      -> lessOrEqual? :false false                   
         -> lessOrEqual? :logical false                  -> lessOrEqual? :complex to :complex [1 1]   
-        -> lessOrEqual? :version 1.0.0                  -> lessOrEqual? :T `T`                         
-        -> lessOrEqual? :char `T`                       -> lessOrEqual? :string ":type"
+        -> lessOrEqual? :version 1.0.0                  -> lessOrEqual? :T 'T'                         
+        -> lessOrEqual? :char 'T'                       -> lessOrEqual? :string ":type"
         -> lessOrEqual? [:type] [type]                  -> lessOrEqual? [:word] [word]                     
         -> lessOrEqual? [:type] [type:]                 -> lessOrEqual? [:label] [label:]
         -> lessOrEqual? :1 '1.                          -> lessOrEqual? :literal '1                       
@@ -6776,18 +6776,18 @@ do [
     
     ; for :char
     ensure -> every? @[
-        -> lessOrEqual? `1` 1.0          
-        -> lessOrEqual? `1` to :rational [1 1]      -> lessOrEqual? `ø` null                    
-        -> lessOrEqual? `t` true                    -> lessOrEqual? `f` false                   
-        -> lessOrEqual? `1` to :complex [1.0 1.0]   -> lessOrEqual? `T` :floating
-        -> lessOrEqual? [`a`] [one]                 -> lessOrEqual? `a` 'A                      
-        -> lessOrEqual? [`a`] [.1]                  -> lessOrEqual? [`a`] [.a:]                 
-        -> lessOrEqual? [`a`] [a\a]                 -> lessOrEqual? [`a`] [a\a:]                
-        -> lessOrEqual? [`+`] [+]                   -> lessOrEqual? `a` {/a/}                   
-        -> lessOrEqual? `1` to :binary 1            -> lessOrEqual? `a` to :binary 1            
-        -> lessOrEqual? [`1`] [(`1`)]               -> lessOrEqual? `a` [`a`]                   
-        -> lessOrEqual? `1` 1..1                    -> lessOrEqual? `a` #[a: `a`]               
-        -> lessOrEqual? `1` #black                  -> lessOrEqual? `a` var 'char?
+        -> lessOrEqual? '1' 1.0          
+        -> lessOrEqual? '1' to :rational [1 1]      -> lessOrEqual? 'ø' null                    
+        -> lessOrEqual? 't' true                    -> lessOrEqual? 'f' false                   
+        -> lessOrEqual? '1' to :complex [1.0 1.0]   -> lessOrEqual? 'T' :floating
+        -> lessOrEqual? ['a'] [one]                 -> lessOrEqual? 'a' 'A                      
+        -> lessOrEqual? ['a'] [.1]                  -> lessOrEqual? ['a'] [.a:]                 
+        -> lessOrEqual? ['a'] [a\a]                 -> lessOrEqual? ['a'] [a\a:]                
+        -> lessOrEqual? ['+'] [+]                   -> lessOrEqual? 'a' {/a/}                   
+        -> lessOrEqual? '1' to :binary 1            -> lessOrEqual? 'a' to :binary 1            
+        -> lessOrEqual? ['1'] [('1')]               -> lessOrEqual? 'a' ['a']                   
+        -> lessOrEqual? '1' 1..1                    -> lessOrEqual? 'a' #[a: 'a']               
+        -> lessOrEqual? '1' #black                  -> lessOrEqual? 'a' var 'char?
     ] => not? passed
     
     ; for :string
@@ -6816,7 +6816,7 @@ do [
         -> lessOrEqual? [a]         [a\a:]                    -> lessOrEqual? [a]     @[{/a/}]                      
         -> lessOrEqual? [binary]   @[to :binary 1]            -> lessOrEqual? [one]   @[to :binary 1]              
         -> lessOrEqual? [word]      [(word)]                  -> lessOrEqual? [word]  @[[word]]                      
-        -> lessOrEqual? [range]    @[range 1 1]               -> lessOrEqual? [a]     @[#[a: `a`]]               
+        -> lessOrEqual? [range]    @[range 1 1]               -> lessOrEqual? [a]     @[#[a: 'a']]               
         -> lessOrEqual? [black]    @[#black ]                 -> lessOrEqual? [word]  @[var 'word?]              
         -> lessOrEqual? [var]      @[var 'word?]
     ] => not? passed
@@ -6829,7 +6829,7 @@ do [
         -> lessOrEqual? [type:]     @[:floating]              -> lessOrEqual? [a:]         [a\a]                     
         -> lessOrEqual? [a:]         [a\a:]                   -> lessOrEqual? [a:]        @[{/a:/}]                 
         -> lessOrEqual? [binary:]   @[to :binary 1]           -> lessOrEqual? [word:]      [(word:)]                
-        -> lessOrEqual? [label:]    @[[label:]]               -> lessOrEqual? [a:]        @[#[a: `a`]]               
+        -> lessOrEqual? [label:]    @[[label:]]               -> lessOrEqual? [a:]        @[#[a: 'a']]               
         -> lessOrEqual? [black:]    @[#black ]                -> lessOrEqual? [var:]      @[var 'word?]
         -> lessOrEqual? [word:]     @[var 'word?]
     ] => not? passed
@@ -6857,7 +6857,7 @@ do [
         -> lessOrEqual? [.complex]  @[to :complex [1.0 1.0]] -> lessOrEqual? [.floating] @[:floating]                          
         -> lessOrEqual? [.a]        @[{/a:/}]                -> lessOrEqual? [.binary]   @[to :binary 1]          
         -> lessOrEqual? [.word]      [(.word:)]              -> lessOrEqual? [.label]    @[[.label]]                               
-        -> lessOrEqual? [.a]        @[#[a: `a`]]             -> lessOrEqual? [.black]    @[#black]                
+        -> lessOrEqual? [.a]        @[#[a: 'a']]             -> lessOrEqual? [.black]    @[#black]                
         -> lessOrEqual? [.var]      @[var 'word?]            -> lessOrEqual? [.word]     @[var 'word?]
     ] => not? passed
     
@@ -6866,10 +6866,10 @@ do [
         -> lessOrEqual? [.rational:] @[to :rational [1 1]]    -> lessOrEqual? [.null:]     @[null]                  
         -> lessOrEqual? [.true:]     @[true]                  -> lessOrEqual? [.false:]    @[false]                 
         -> lessOrEqual? [.complex:]  @[to :complex [1.0 1.0]] -> lessOrEqual? [.floating:] @[:floating]             
-        -> lessOrEqual? [.a:]         [a\a]                   -> lessOrEqual? [.a: `a`]     [a\a: `a`]              
+        -> lessOrEqual? [.a:]         [a\a]                   -> lessOrEqual? [.a: 'a']     [a\a: 'a']              
         -> lessOrEqual? [.plus:]      [+]                     -> lessOrEqual? [.a:]        @[{/a:/}]                
         -> lessOrEqual? [.binary:]   @[to :binary 1]          -> lessOrEqual? [.word:]      [(.word:)]               
-        -> lessOrEqual? [.label:]    @[[label:]]              -> lessOrEqual? [.a:]        @[#[a: `a`]]             
+        -> lessOrEqual? [.label:]    @[[label:]]              -> lessOrEqual? [.a:]        @[#[a: 'a']]             
         -> lessOrEqual? [.black:]    @[#black]                -> lessOrEqual? [.var:]      @[var 'word?]            
         -> lessOrEqual? [.word:]     @[var 'word?]
     ] => not? passed
@@ -6907,8 +6907,8 @@ do [
         -> lessOrEqual? to :binary 0 true                 -> lessOrEqual? to :binary 0 false                
         -> lessOrEqual? to :binary 0 maybe                -> lessOrEqual? to :binary 1 to :complex [1 1]                  
         -> lessOrEqual? to :binary 1 1.0.0                -> lessOrEqual? to :binary 1 :type              
-        -> lessOrEqual? to :binary 1 :binary              -> lessOrEqual? to :binary 1 `1`                  
-        -> lessOrEqual? to :binary "a" `a`                -> lessOrEqual? to :binary 1 "01"                 
+        -> lessOrEqual? to :binary 1 :binary              -> lessOrEqual? to :binary 1 '1'                  
+        -> lessOrEqual? to :binary "a" 'a'                -> lessOrEqual? to :binary 1 "01"                 
         -> lessOrEqual? to :binary 1 "1"                  -> lessOrEqual? @[to :binary 1] [binary]          
         -> lessOrEqual? @[to :binary 1] [one]             -> lessOrEqual? @[to :binary 1] [binary:]         
         -> lessOrEqual? @[to :binary 1][.binary]          -> lessOrEqual? @[to :binary 1] [.binary:]        
@@ -6924,7 +6924,7 @@ do [
         -> lessOrEqual? 0..0 true                     -> lessOrEqual? 0..0 false
         -> lessOrEqual? 0..0 maybe                    -> lessOrEqual? 1..1 to :complex [1 1]
         -> lessOrEqual? 1..1 1.0.0                    -> lessOrEqual? 1..1 :type                        
-        -> lessOrEqual? 1..1 :range                   -> lessOrEqual? 1..1 `1` 
+        -> lessOrEqual? 1..1 :range                   -> lessOrEqual? 1..1 '1' 
         -> lessOrEqual? 1..1 "1"                      -> lessOrEqual? 1..1 'range  
         -> lessOrEqual? 1..1 {/1/}
     ] => not? passed
@@ -6951,7 +6951,7 @@ do [
         -> lessOrEqual? #black true               -> lessOrEqual? #black false 
         -> lessOrEqual? #black maybe              -> lessOrEqual? #black to :complex [0 0]
         -> lessOrEqual? #black 0.0.0              -> lessOrEqual? #black :color
-        -> lessOrEqual? #black `1`                -> lessOrEqual? #black "#000000"
+        -> lessOrEqual? #black '1'                -> lessOrEqual? #black "#000000"
         -> lessOrEqual? #black "000000"           -> lessOrEqual? [#black] [black] 
         -> lessOrEqual? #black 'black             -> lessOrEqual? [#black] [.black]
         -> lessOrEqual? [#black] [.black:]        -> lessOrEqual? #black  {/#000000/}                 
@@ -6963,7 +6963,7 @@ do [
         -> lessOrEqual? var 'null?     null       -> lessOrEqual? var 'true?    true  
         -> lessOrEqual? var 'false?    false 
         -> lessOrEqual? var 'version?  1.0.0      -> lessOrEqual? var 'type?    :type 
-        -> lessOrEqual? var 'function? :function  -> lessOrEqual? var 'char?    `a` 
+        -> lessOrEqual? var 'function? :function  -> lessOrEqual? var 'char?    'a' 
         -> lessOrEqual? @[var 'word?]  [word]     -> lessOrEqual? @[var 'word?] [var]      
         -> lessOrEqual? @[var 'word?]  [var:]     -> lessOrEqual? @[var 'word?] [word:]    
         -> lessOrEqual? var 'word?     'word?     -> lessOrEqual? var 'var      'var       
@@ -7143,11 +7143,11 @@ do [
     ensure -> notEqual? ø 1
     ensure -> notEqual? ø 1.0
     ensure -> notEqual? ø "ø"
-    ensure -> notEqual? ø `ø`
+    ensure -> notEqual? ø 'ø'
     ensure -> ø <> 1
     ensure -> ø <> 1.0
     ensure -> ø <> "ø"
-    ensure -> ø <> `ø`
+    ensure -> ø <> 'ø'
     passed
     
     
@@ -7209,22 +7209,22 @@ do [
     
     topic « notEqual? - :char
     
-    ensure -> not? notEqual? `a` `a`
-    ensure -> not? `a` <> `a`
+    ensure -> not? notEqual? 'a' 'a'
+    ensure -> not? 'a' <> 'a'
     passed
     
-    ensure -> notEqual? `a` "a" 
-    ensure -> notEqual? `a` `b`
-    ensure -> notEqual? `1` 1
-    ensure -> notEqual? "a" `a` 
-    ensure -> notEqual? `b` `a`
-    ensure -> notEqual? 1   `1`
-    ensure -> `a` <> "a" 
-    ensure -> `a` <> `b`
-    ensure -> `1` <>  1
-    ensure -> "a" <> `a` 
-    ensure -> `b` <> `a`
-    ensure ->  1  <> `1`
+    ensure -> notEqual? 'a' "a" 
+    ensure -> notEqual? 'a' 'b'
+    ensure -> notEqual? '1' 1
+    ensure -> notEqual? "a" 'a' 
+    ensure -> notEqual? 'b' 'a'
+    ensure -> notEqual? 1   '1'
+    ensure -> 'a' <> "a" 
+    ensure -> 'a' <> 'b'
+    ensure -> '1' <>  1
+    ensure -> "a" <> 'a' 
+    ensure -> 'b' <> 'a'
+    ensure ->  1  <> '1'
     passed 
     
     
@@ -7238,7 +7238,7 @@ do [
     ensure -> notEqual? "Art" "Bob"
     passed
     
-    ensure -> notEqual? "b" `a`
+    ensure -> notEqual? "b" 'a'
     ensure -> notEqual? "b" 'a
     ensure -> notEqual? "b" to :label "a"
     ensure -> notEqual? "b" to :attribute "a"
@@ -7254,7 +7254,7 @@ do [
     passed
     
     ensure -> notEqual? to :word "b" "a"
-    ensure -> notEqual? to :word "b" `a`
+    ensure -> notEqual? to :word "b" 'a'
     ensure -> notEqual? to :word "b" 'a
     ensure -> notEqual? to :word "b" to :label "a"
     ensure -> notEqual? to :word "b" to :attribute "a"
@@ -7270,7 +7270,7 @@ do [
     passed
     
     ensure -> notEqual? to :label "b" "a"
-    ensure -> notEqual? to :label "b" `a`
+    ensure -> notEqual? to :label "b" 'a'
     ensure -> notEqual? to :label "b" 'a
     ensure -> notEqual? to :label "b" to :word "a"
     ensure -> notEqual? to :label "b" to :attribute "a"
@@ -7282,7 +7282,7 @@ do [
     topic « notEqual? - :literal
     
     ensure -> notEqual? 'b "a"
-    ensure -> notEqual? 'b `a`
+    ensure -> notEqual? 'b 'a'
     ensure -> notEqual? 'b to :label "a"
     ensure -> notEqual? 'b to :word "a"
     ensure -> notEqual? 'b to :attribute "a"
@@ -7298,7 +7298,7 @@ do [
     passed
     
     ensure -> notEqual? to :attribute "b" "a"
-    ensure -> notEqual? to :attribute "b" `a`
+    ensure -> notEqual? to :attribute "b" 'a'
     ensure -> notEqual? to :attribute "b" 'a
     ensure -> notEqual? to :attribute "b" to :word "a"
     ensure -> notEqual? to :attribute "b" to :label "a"
@@ -7314,7 +7314,7 @@ do [
     passed
     
     ensure -> notEqual? to :attributelabel "b" "a"
-    ensure -> notEqual? to :attributelabel "b" `a`
+    ensure -> notEqual? to :attributelabel "b" 'a'
     ensure -> notEqual? to :attributelabel "b" 'a
     ensure -> notEqual? to :attributelabel "b" to :word "a"
     ensure -> notEqual? to :attributelabel "b" to :label "a"
@@ -7361,7 +7361,7 @@ do [
     ensure -> not? notEqual? to :symbol "+" to :symbol "+"
     ensure -> notEqual? to :symbol "+" to :symbol "-"
     ensure -> notEqual? to :symbol "+" "++"
-    ensure -> notEqual? to :symbol "+" `+`
+    ensure -> notEqual? to :symbol "+" '+'
     ensure -> notEqual? to :symbol "+" {+}
     ensure -> notEqual? to :symbol "+" "+"
     ensure -> notEqual? to :symbol "+" to :word "plus"
@@ -7616,7 +7616,7 @@ do [
         -> notEqual? 1 null         -> notEqual? 1 true
         -> notEqual? 1 false        -> notEqual? 1 to :complex [1 1]
         -> notEqual? 1 1.0.0        -> notEqual? 1 :integer
-        -> notEqual? 1 `1`          -> notEqual? 1 "1"
+        -> notEqual? 1 '1'          -> notEqual? 1 "1"
         -> notEqual? [1] [one]      -> notEqual? [1] [one:]
         -> notEqual? [1 1] [one: 1] -> notEqual? 1 '1
         -> notEqual? [1] [.1]       -> notEqual? [1] [.1:]
@@ -7634,7 +7634,7 @@ do [
         -> notEqual? 1.0 null               -> notEqual? 1.0 true
         -> notEqual? 1.0 false              -> notEqual? 1.0 to :complex [1.0 1.0]
         -> notEqual? 1.0 1.0.0              -> notEqual? 1.0 :floating
-        -> notEqual? 1.0 `1`                -> notEqual? 1.0 "1.0"
+        -> notEqual? 1.0 '1'                -> notEqual? 1.0 "1.0"
         -> notEqual? [1.0] [one]            -> notEqual? 1.0 '1
         -> notEqual? [1.0] [.1]             -> notEqual? [1.0] [.1:]
         -> notEqual? [1.0] [one\1]          -> notEqual? [1.0] [one\1:]         
@@ -7651,7 +7651,7 @@ do [
         -> notEqual? a null                     -> notEqual? a true
         -> notEqual? a false                    -> notEqual? a to :complex [1 1]
         -> notEqual? a 1.0.0                    -> notEqual? a :rational
-        -> notEqual? a `1`                      -> notEqual? a "1/1"
+        -> notEqual? a '1'                      -> notEqual? a "1/1"
         -> notEqual? @[a] [one]                 -> notEqual? @[a] [one:]
         -> notEqual? 1 '1                       -> notEqual? @[a] [.1]                  
         -> notEqual? @[a] [.1:]                 -> notEqual? @[a] [one\1]
@@ -7667,7 +7667,7 @@ do [
         -> notEqual? 1:usd null             -> notEqual? 1:usd true
         -> notEqual? 1:usd false            -> notEqual? 1:usd to :complex [1 1]
         -> notEqual? 1:usd 1.0.0            -> notEqual? 1:usd :quantity
-        -> notEqual? 1:usd `1`              -> notEqual? 1:usd "1USD"
+        -> notEqual? 1:usd '1'              -> notEqual? 1:usd "1USD"
         -> notEqual? [1:usd] [one]          -> notEqual? [1:usd] [one:]
         -> notEqual? 1:usd '1               -> notEqual? [1:usd] [.1]                  
         -> notEqual? [1:usd] [.1:]          -> notEqual? [1:usd] [one\1]
@@ -7683,7 +7683,7 @@ do [
         -> notEqual? 1:m null           -> notEqual? 1:m true
         -> notEqual? 1:m false          -> notEqual? 1:m to :complex [1 1]
         -> notEqual? 1:m 1.0.0          -> notEqual? 1:m :quantity
-        -> notEqual? 1:m `1`            -> notEqual? 1:m "1m"
+        -> notEqual? 1:m '1'            -> notEqual? 1:m "1m"
         -> notEqual? [1:m] [one]        -> notEqual? [1:m] [one:]
         -> notEqual? 1:m '1             -> notEqual? [1:m] [.1]            
         -> notEqual? [1:m] [.1: 1:m]    -> notEqual? [1:m] [one\1]
@@ -7699,7 +7699,7 @@ do [
         -> notEqual? 1:m3 null                  -> notEqual? 1:m3 true
         -> notEqual? 1:m3 false                 -> notEqual? 1:m3 to :complex [1 1]
         -> notEqual? 1:m3 1.0.0                 -> notEqual? 1:m3 :quantity
-        -> notEqual? 1:m3 `1`                   -> notEqual? 1:m3 "1m³"
+        -> notEqual? 1:m3 '1'                   -> notEqual? 1:m3 "1m³"
         -> notEqual? [1:m3] [one]               -> notEqual? [1:m3] [one:]
         -> notEqual? 1:m3 '1                    -> notEqual? [1:m3] [.1]               
         -> notEqual? [1:m3] [.1:]               -> notEqual? [1:m3] [one\1]
@@ -7715,7 +7715,7 @@ do [
         -> notEqual? 1:c null              -> notEqual? 1:c true
         -> notEqual? 1:c false             -> notEqual? 1:c to :complex [1 1]
         -> notEqual? 1:c 1.0.0             -> notEqual? 1:c :quantity
-        -> notEqual? 1:c `1`               -> notEqual? 1:c "1°C"
+        -> notEqual? 1:c '1'               -> notEqual? 1:c "1°C"
         -> notEqual? [1:c] [one]           -> notEqual? [1:c] [one:]
         -> notEqual? 1:c '1.0i             -> notEqual? [1:c] [.1]            
         -> notEqual? [1:c] [.1:]           -> notEqual? [1:c] [one\1]         
@@ -7733,7 +7733,7 @@ do [
         -> notEqual? null to :rational [1 1]        -> notEqual? null true
         -> notEqual? null false                     -> notEqual? null to :complex [0 0]
         -> notEqual? null 0.0.0                     -> notEqual? null :null
-        -> notEqual? null `ø`                       -> notEqual? null "null"
+        -> notEqual? null 'ø'                       -> notEqual? null "null"
         -> notEqual? @[null] [null]                 -> notEqual? @[null] [null:]
         -> notEqual? null 'null                     -> notEqual? @[null] [.null]               
         -> notEqual? @[null] [.null:]               -> notEqual? @[null] [null\null]
@@ -7750,7 +7750,7 @@ do [
         -> notEqual? true 0                     -> notEqual? true 0.0            
         -> notEqual? true to :rational [1 1]    -> notEqual? true to :complex [1 1]
         -> notEqual? true 0.0.0                 -> notEqual? true :true
-        -> notEqual? true `0`                   -> notEqual? true "true"
+        -> notEqual? true '0'                   -> notEqual? true "true"
         -> notEqual? @[true] [true]             -> notEqual? true 'true
         -> notEqual? @[true] [.true]            -> notEqual? @[true] [.true:]
         -> notEqual? @[true] [true\true]        -> notEqual? @[true] [true\true:]       
@@ -7765,7 +7765,7 @@ do [
         -> notEqual? false 0                        -> notEqual? false 0.0            
         -> notEqual? false to :rational [1 1]       -> notEqual? false to :complex [1 1]
         -> notEqual? false 0.0.0                    -> notEqual? false :false
-        -> notEqual? false `0`                      -> notEqual? false "false"
+        -> notEqual? false '0'                      -> notEqual? false "false"
         -> notEqual? @[false] [false]               -> notEqual? @[false] [false:]
         -> notEqual? false 'false                   -> notEqual? @[false] [.false]              
         -> notEqual? @[false] [.false:]             -> notEqual? @[false] [false\false]
@@ -7781,7 +7781,7 @@ do [
         -> notEqual? maybe 0                        -> notEqual? maybe 0.0            
         -> notEqual? maybe to :rational [1 1]       -> notEqual? maybe to :complex [1 1]
         -> notEqual? maybe 0.0.0                    -> notEqual? maybe :maybe
-        -> notEqual? maybe `0`                      -> notEqual? maybe "maybe"
+        -> notEqual? maybe '0'                      -> notEqual? maybe "maybe"
         -> notEqual? @[maybe] [maybe]               -> notEqual? @[maybe] [maybe:]
         -> notEqual? maybe 'maybe                   -> notEqual? @[maybe] [.maybe]              
         -> notEqual? @[maybe] [.maybe:]             -> notEqual? @[maybe] [maybe\maybe]
@@ -7799,7 +7799,7 @@ do [
         -> notEqual? a to :rational [1 1]       -> notEqual? a null                    
         -> notEqual? a true                     -> notEqual? a false
         -> notEqual? a 1.0.0                    -> notEqual? a :rational
-        -> notEqual? a `1`                      -> notEqual? a "1.0+1.0i"
+        -> notEqual? a '1'                      -> notEqual? a "1.0+1.0i"
         -> notEqual? @[a] [one]                 -> notEqual? @[a] [one:]
         -> notEqual? 1 '1                       -> notEqual? @[a] [.1]                  
         -> notEqual? @[a] [.1:]                 -> notEqual? @[a] [one\1]
@@ -7817,7 +7817,7 @@ do [
         -> notEqual? 1.0.0 to :rational [1 1]       -> notEqual? 1.0.0 null                    
         -> notEqual? 1.0.0 true                     -> notEqual? 1.0.0 false                   
         -> notEqual? 1.0.0 to :complex [1.0 1.0]    -> notEqual? 1.0.0 :floating
-        -> notEqual? 1.0.0 `1`                      -> notEqual? 1.0.0 "1.0.0"
+        -> notEqual? 1.0.0 '1'                      -> notEqual? 1.0.0 "1.0.0"
         -> notEqual? [1.0.0] [one]                  -> notEqual? [1.0.0] [one:]
         -> notEqual? 1.0.0 '1                       -> notEqual? [1.0.0] [.1]                   
         -> notEqual? [1.0.0] [.1:]                  -> notEqual? [1.0.0] [one\1]                
@@ -7836,8 +7836,8 @@ do [
         -> notEqual? :rational to :rational [1 1]      -> notEqual? :null null                    
         -> notEqual? :true true                        -> notEqual? :false false                   
         -> notEqual? :logical false                    -> notEqual? :complex to :complex [1 1]   
-        -> notEqual? :version 1.0.0                    -> notEqual? :T `T`                         
-        -> notEqual? :char `T`                         -> notEqual? :string ":type"
+        -> notEqual? :version 1.0.0                    -> notEqual? :T 'T'                         
+        -> notEqual? :char 'T'                         -> notEqual? :string ":type"
         -> notEqual? [:type] [type]                    -> notEqual? [:word] [word]                     
         -> notEqual? [:type] [type:]                   -> notEqual? [:label] [label:]
         -> notEqual? :1 '1                             -> notEqual? :literal '1                       
@@ -7858,19 +7858,19 @@ do [
     
     ; for :char
     ensure -> not? every? @[
-        -> notEqual? `1` 1.0          
-        -> notEqual? `1` to :rational [1 1]    -> notEqual? `ø` null                    
-        -> notEqual? `t` true                  -> notEqual? `f` false                   
-        -> notEqual? `1` to :complex [1.0 1.0] -> notEqual? `T` :floating
-        -> notEqual? [`a`] [one]               -> notEqual? [`a`] [a: `a`]
-        -> notEqual? `a` 'a                    -> notEqual? [`a`] [.1]                
-        -> notEqual? [`a`] [.a:]               -> notEqual? [`a`] [a\a]
-        -> notEqual? [`a`] [a\a:]              -> notEqual? [`+`] [+]                 
-        -> notEqual? `a` {/a/}                 -> notEqual? `1` to :binary 1          
-        -> notEqual? `a` to :binary 1          -> notEqual? [`1`] [(`1`)]             
-        -> notEqual? `a` [`a`]                 -> notEqual? `1` 1..1                  
-        -> notEqual? `a` #[a: `a`]             -> notEqual? `1` #black                
-        -> notEqual? `a` var 'char?
+        -> notEqual? '1' 1.0          
+        -> notEqual? '1' to :rational [1 1]    -> notEqual? 'ø' null                    
+        -> notEqual? 't' true                  -> notEqual? 'f' false                   
+        -> notEqual? '1' to :complex [1.0 1.0] -> notEqual? 'T' :floating
+        -> notEqual? ['a'] [one]               -> notEqual? ['a'] [a: 'a']
+        -> notEqual? 'a' 'a                    -> notEqual? ['a'] [.1]                
+        -> notEqual? ['a'] [.a:]               -> notEqual? ['a'] [a\a]
+        -> notEqual? ['a'] [a\a:]              -> notEqual? ['+'] [+]                 
+        -> notEqual? 'a' {/a/}                 -> notEqual? '1' to :binary 1          
+        -> notEqual? 'a' to :binary 1          -> notEqual? ['1'] [('1')]             
+        -> notEqual? 'a' ['a']                 -> notEqual? '1' 1..1                  
+        -> notEqual? 'a' #[a: 'a']             -> notEqual? '1' #black                
+        -> notEqual? 'a' var 'char?
     ] => not? passed
     
     ; for :string
@@ -7900,7 +7900,7 @@ do [
         -> notEqual? [a]         [a\a:]                    -> notEqual? [a]     [{/a/}]                      
         -> notEqual? [binary]   @[to :binary 1]            -> notEqual? [one]   @[to :binary 1]              
         -> notEqual? [word]     [(word)]                   -> notEqual? [word]  [[word]]                      
-        -> notEqual? [range]    @[range 1 1]               -> notEqual? [a]     @[#[a: `a`]]               
+        -> notEqual? [range]    @[range 1 1]               -> notEqual? [a]     @[#[a: 'a']]               
         -> notEqual? [black]    @[#black ]                 -> notEqual? [word]  @[var 'word?]              
         -> notEqual? [var]      @[var 'word?]
     ] => not? passed
@@ -7913,7 +7913,7 @@ do [
         -> notEqual? [type:]      [:floating]               -> notEqual? [a:]         [a\a]                     
         -> notEqual? [a:]         [a\a:]                    -> notEqual? [a:]         [{/a:/}]                 
         -> notEqual? [binary:]   @[to :binary 1]            -> notEqual? [word:]      [(word:)]                
-        -> notEqual? [label:]     [[label:]]                -> notEqual? [a:]        @[#[a: `a`]]               
+        -> notEqual? [label:]     [[label:]]                -> notEqual? [a:]        @[#[a: 'a']]               
         -> notEqual? [black:]     [#black ]                 -> notEqual? [var:]      @[var 'word?]
         -> notEqual? [word:]     @[var 'word?]
     ] => not? passed
@@ -7941,7 +7941,7 @@ do [
         -> notEqual? [.complex]  @[to :complex [1.0 1.0]]   -> notEqual? [.floating] @[:floating]                          
         -> notEqual? [.a]        @[{/a:/}]                  -> notEqual? [.binary]   @[to :binary 1]          
         -> notEqual? [.word]      [(.word)]                 -> notEqual? [.label]    @[[.label]]                               
-        -> notEqual? [.a]        @[#[a: `a`]]               -> notEqual? [.black]    @[#black]                
+        -> notEqual? [.a]        @[#[a: 'a']]               -> notEqual? [.black]    @[#black]                
         -> notEqual? [.var]      @[var 'word?]              -> notEqual? [.word]     @[var 'word?]
     ] => not? passed
     
@@ -7950,10 +7950,10 @@ do [
         -> notEqual? [.rational:] @[to :rational [1 1]]    -> notEqual? [.null:]     @[null]                  
         -> notEqual? [.true:]     @[true]                  -> notEqual? [.false:]    @[false]                 
         -> notEqual? [.complex:]  @[to :complex [1.0 1.0]] -> notEqual? [.floating:]  [:floating]             
-        -> notEqual? [.a:]         [a\a]                   -> notEqual? [.a: `a`]     [a\a: `a`]              
+        -> notEqual? [.a:]         [a\a]                   -> notEqual? [.a: 'a']     [a\a: 'a']              
         -> notEqual? [.plus:]      [+]                     -> notEqual? [.a:]        @[{/a:/}]                
         -> notEqual? [.binary:]   @[to :binary 1]          -> notEqual? [.word:]      [(.word:)]               
-        -> notEqual? [.label:]    @[[label:]]              -> notEqual? [.a:]        @[#[a: `a`]]             
+        -> notEqual? [.label:]    @[[label:]]              -> notEqual? [.a:]        @[#[a: 'a']]             
         -> notEqual? [.black:]     [#black]                -> notEqual? [.var:]      @[var 'word?]            
         -> notEqual? [.word:]     @[var 'word?]
     ] => not? passed
@@ -7991,8 +7991,8 @@ do [
         -> notEqual? to :binary 0 true                 -> notEqual? to :binary 0 false                
         -> notEqual? to :binary 0 maybe                -> notEqual? to :binary 1 to :complex [1 1]                  
         -> notEqual? to :binary 1 1.0.0                -> notEqual? to :binary 1 :type              
-        -> notEqual? to :binary 1 :binary              -> notEqual? to :binary 1 `1`                  
-        -> notEqual? to :binary "a" `a`                -> notEqual? to :binary 1 "01"                 
+        -> notEqual? to :binary 1 :binary              -> notEqual? to :binary 1 '1'                  
+        -> notEqual? to :binary "a" 'a'                -> notEqual? to :binary 1 "01"                 
         -> notEqual? to :binary 1 "1"                  -> notEqual? @[to :binary 1] [binary]          
         -> notEqual? @[to :binary 1] [one]             -> notEqual? @[to :binary 1] [binary:]         
         -> notEqual? @[to :binary 1][.binary]          -> notEqual? @[to :binary 1] [.binary:]        
@@ -8008,7 +8008,7 @@ do [
         -> notEqual? 0..0 true                     -> notEqual? 0..0 false
         -> notEqual? 0..0 maybe                    -> notEqual? 1..1 to :complex [1 1]
         -> notEqual? 1..1 1.0.0                    -> notEqual? 1..1 :type                        
-        -> notEqual? 1..1 :range                   -> notEqual? 1..1 `1` 
+        -> notEqual? 1..1 :range                   -> notEqual? 1..1 '1' 
         -> notEqual? 1..1 "1"                      -> notEqual? 1..1 'range  
         -> notEqual? 1..1 {/1/}
     ] => not? passed
@@ -8035,7 +8035,7 @@ do [
         -> notEqual? #black true               -> notEqual? #black false 
         -> notEqual? #black maybe              -> notEqual? #black to :complex [0 0]
         -> notEqual? #black 0.0.0              -> notEqual? #black :color
-        -> notEqual? #black `1`                -> notEqual? #black "#000000"
+        -> notEqual? #black '1'                -> notEqual? #black "#000000"
         -> notEqual? #black "000000"           -> notEqual? [#black] [black] 
         -> notEqual? #black 'black             -> notEqual? [#black] [.black]
         -> notEqual? [#black] [.black:]        -> notEqual? #black  {/#000000/}                 
@@ -8047,7 +8047,7 @@ do [
         -> notEqual? var 'null?     null       -> notEqual? var 'true?    true  
         -> notEqual? var 'false?    false
         -> notEqual? var 'version?  1.0.0      -> notEqual? var 'type?    :type 
-        -> notEqual? var 'function? :function  -> notEqual? var 'char?    `a` 
+        -> notEqual? var 'function? :function  -> notEqual? var 'char?    'a' 
         -> notEqual? @[var 'word?]  [word]     -> notEqual? @[var 'word?] [var]      
         -> notEqual? @[var 'word?]  [var:]     -> notEqual? @[var 'word?] [word:]    
         -> notEqual? var 'word?     'word?     -> notEqual? var 'var      'var       
@@ -8199,7 +8199,7 @@ do [
     ensure -> not? same? ø 1
     ensure -> not? same? ø 1.0
     ensure -> not? same? ø "ø"
-    ensure -> not? same? ø `ø`
+    ensure -> not? same? ø 'ø'
     passed
     
     
@@ -8257,15 +8257,15 @@ do [
     
     topic « same? - :char
     
-    ensure -> same? `a` `a`
+    ensure -> same? 'a' 'a'
     passed
     
-    ensure -> not? same? `a` "a" 
-    ensure -> not? same? `a` `b`
-    ensure -> not? same? `1` 1
-    ensure -> not? same? "a" `a` 
-    ensure -> not? same? `b` `a`
-    ensure -> not? same? 1   `1`
+    ensure -> not? same? 'a' "a" 
+    ensure -> not? same? 'a' 'b'
+    ensure -> not? same? '1' 1
+    ensure -> not? same? "a" 'a' 
+    ensure -> not? same? 'b' 'a'
+    ensure -> not? same? 1   '1'
     passed 
     
     
@@ -8278,7 +8278,7 @@ do [
     ensure -> not? same? "Art" "Bob"
     passed
     
-    ensure -> not? same? "a" `a`
+    ensure -> not? same? "a" 'a'
     ensure -> not? same? "a" 'a
     ensure -> not? same? "a" to :label "a"
     ensure -> not? same? "a" to :attribute "a"
@@ -8294,7 +8294,7 @@ do [
     passed
     
     ensure -> not? same? to :word "a" "a"
-    ensure -> not? same? to :word "a" `a`
+    ensure -> not? same? to :word "a" 'a'
     ensure -> not? same? to :word "a" 'a
     ensure -> not? same? to :word "a" to :label "a"
     ensure -> not? same? to :word "a" to :attribute "a"
@@ -8310,7 +8310,7 @@ do [
     passed
     
     ensure -> not? same? to :label "a" "a"
-    ensure -> not? same? to :label "a" `a`
+    ensure -> not? same? to :label "a" 'a'
     ensure -> not? same? to :label "a" 'a
     ensure -> not? same? to :label "a" to :word "a"
     ensure -> not? same? to :label "a" to :attribute "a"
@@ -8326,7 +8326,7 @@ do [
     passed
     
     ensure -> not? same? 'a "a"
-    ensure -> not? same? 'a `a`
+    ensure -> not? same? 'a 'a'
     ensure -> not? same? 'a to :label "a"
     ensure -> not? same? 'a to :word "a"
     ensure -> not? same? 'a to :attribute "a"
@@ -8342,7 +8342,7 @@ do [
     passed
     
     ensure -> not? same? to :attribute "a" "a"
-    ensure -> not? same? to :attribute "a" `a`
+    ensure -> not? same? to :attribute "a" 'a'
     ensure -> not? same? to :attribute "a" 'a
     ensure -> not? same? to :attribute "a" to :word "a"
     ensure -> not? same? to :attribute "a" to :label "a"
@@ -8358,7 +8358,7 @@ do [
     passed
     
     ensure -> not? same? to :attributelabel "a" "a"
-    ensure -> not? same? to :attributelabel "a" `a`
+    ensure -> not? same? to :attributelabel "a" 'a'
     ensure -> not? same? to :attributelabel "a" 'a
     ensure -> not? same? to :attributelabel "a" to :word "a"
     ensure -> not? same? to :attributelabel "a" to :label "a"
@@ -8405,7 +8405,7 @@ do [
     ensure -> same? to :symbol "+" to :symbol "+"
     ensure -> not? same? to :symbol "+" to :symbol "-"
     ensure -> not? same? to :symbol "+" "++"
-    ensure -> not? same? to :symbol "+" `+`
+    ensure -> not? same? to :symbol "+" '+'
     ensure -> not? same? to :symbol "+" {+}
     ensure -> not? same? to :symbol "+" "+"
     ensure -> not? same? to :symbol "+" to :word "plus"
@@ -8661,7 +8661,7 @@ do [
         -> same? 1 null         -> same? 1 true
         -> same? 1 false        -> same? 1 to :complex [1 1]
         -> same? 1 1.0.0        -> same? 1 :integer
-        -> same? 1 `1`          -> same? 1 "1"
+        -> same? 1 '1'          -> same? 1 "1"
         -> same? [1] [one]      -> same? [1] [one:]
         -> same? 1 '1           -> same? [1] [.1]         
         -> same? [1] [.1:]      -> same? [1] [one\1]
@@ -8678,7 +8678,7 @@ do [
         -> same? 1.0 null               -> same? 1.0 true
         -> same? 1.0 false              -> same? 1.0 to :complex [1.0 1.0]
         -> same? 1.0 1.0.0              -> same? 1.0 :floating
-        -> same? 1.0 `1`                -> same? 1.0 "1.0"
+        -> same? 1.0 '1'                -> same? 1.0 "1.0"
         -> same? [1.0] [one]            -> same? 1.0 '1                 
         -> same? [1.0] [.1]             -> same? [1.0] [.1:]            
         -> same? [1.0] [one\1]          -> same? [1.0] [one\1:]        
@@ -8695,7 +8695,7 @@ do [
         -> same? a null                     -> same? a true
         -> same? a false                    -> same? a to :complex [1 1]
         -> same? a 1.0.0                    -> same? a :rational
-        -> same? a `1`                      -> same? a "1/1"
+        -> same? a '1'                      -> same? a "1/1"
         -> same? @[a] [one]                 -> same? @[a] [one:]
         -> same? 1 '1                       -> same? @[a] [.1]                 
         -> same? @[a] [.1:]                 -> same? @[a] [one\1]
@@ -8711,7 +8711,7 @@ do [
         -> same? 1:usd null             -> same? 1:usd true
         -> same? 1:usd false            -> same? 1:usd to :complex [1 1]
         -> same? 1:usd 1.0.0            -> same? 1:usd :quantity
-        -> same? 1:usd `1`              -> same? 1:usd "1USD"
+        -> same? 1:usd '1'              -> same? 1:usd "1USD"
         -> same? [1:usd] [one]          -> same? [1:usd] [one:]
         -> same? 1:usd '1               -> same? [1:usd] [.1]                  
         -> same? [1:usd] [.1:]          -> same? [1:usd] [one\1]
@@ -8727,7 +8727,7 @@ do [
         -> same? 1:m null           -> same? 1:m true
         -> same? 1:m false          -> same? 1:m to :complex [1 1]
         -> same? 1:m 1.0.0          -> same? 1:m :quantity
-        -> same? 1:m `1`            -> same? 1:m "1m"
+        -> same? 1:m '1'            -> same? 1:m "1m"
         -> same? [1:m] [one]        -> same? [1:m] [one:]
         -> same? 1:m '1             -> same? [1:m] [.1]            
         -> same? [1:m] [one\1]      -> same? [1:m] [one\1:]        
@@ -8742,7 +8742,7 @@ do [
         -> same? 1:m3 null              -> same? 1:m3 true
         -> same? 1:m3 false             -> same? 1:m3 to :complex [1 1]
         -> same? 1:m3 1.0.0             -> same? 1:m3 :quantity
-        -> same? 1:m3 `1`               -> same? 1:m3 "1m³"
+        -> same? 1:m3 '1'               -> same? 1:m3 "1m³"
         -> same? [1:m3] [one]           -> same? [1:m3] [one:]
         -> same? 1:m3 '1                -> same? [1:m3] [.1]               
         -> same? [1:m3] [.1:]           -> same? [1:m3] [one\1]
@@ -8758,7 +8758,7 @@ do [
         -> same? 1:c null           -> same? 1:c true
         -> same? 1:c false          -> same? 1:c to :complex [1 1]
         -> same? 1:c 1.0.0          -> same? 1:c :quantity
-        -> same? 1:c `1`            -> same? 1:c "1°C"
+        -> same? 1:c '1'            -> same? 1:c "1°C"
         -> same? [1:c] [one]        -> same? [1:c] [one:]
         -> same? 1:c '1             -> same? [1:c] [.1]            
         -> same? [1:c] [.1:]        -> same? [1:c] [one\1]
@@ -8776,7 +8776,7 @@ do [
         -> same? null to :rational [1 1]    -> same? null true
         -> same? null false                 -> same? null to :complex [0 0]
         -> same? null 0.0.0                 -> same? null :null
-        -> same? null `ø`                   -> same? null "null"
+        -> same? null 'ø'                   -> same? null "null"
         -> same? @[null] [null]             -> same? @[null] [null:]
         -> same? null 'null                 -> same? @[null] [.null]               
         -> same? @[null] [.null:]           -> same? @[null] [null\null]
@@ -8793,7 +8793,7 @@ do [
         -> same? true 0                        -> same? true 0.0            
         -> same? true to :rational [1 1]       -> same? true to :complex [0 0]
         -> same? true 0.0.0                    -> same? true :true
-        -> same? true `0`                      -> same? true "true"
+        -> same? true '0'                      -> same? true "true"
         -> same? @[true] [true]                -> same? true 'true
         -> same? @[true] [.true]               -> same? @[true] [.true:]
         -> same? @[true] [true\true]           -> same? @[true] [true\true:]          
@@ -8808,7 +8808,7 @@ do [
         -> same? false 0                           -> same? false 0.0            
         -> same? false to :rational [1 1]          -> same? false to :complex [0 0]
         -> same? false 0.0.0                       -> same? false :false
-        -> same? false `0`                         -> same? false "false"
+        -> same? false '0'                         -> same? false "false"
         -> same? @[false] [false]                  -> same? @[false] [false:]
         -> same? false 'false                      -> same? @[false] [.false]                 
         -> same? @[false] [.false:]                -> same? @[false] [false\false]
@@ -8823,7 +8823,7 @@ do [
         -> same? maybe 0                           -> same? maybe 0.0            
         -> same? maybe to :rational [1 1]          -> same? maybe to :complex [0 0]
         -> same? maybe 0.0.0                       -> same? maybe :maybe
-        -> same? maybe `0`                         -> same? maybe "maybe"
+        -> same? maybe '0'                         -> same? maybe "maybe"
         -> same? @[maybe] [maybe]                  -> same? @[maybe] [maybe:]
         -> same? maybe 'maybe                      -> same? @[maybe] [.maybe]                
         -> same? @[maybe] [.maybe:]                -> same? @[maybe] [maybe\maybe]
@@ -8841,7 +8841,7 @@ do [
         -> same? a to :rational [1 1]   -> same? a null                    
         -> same? a true                 -> same? a false
         -> same? a 1.0.0                -> same? a :rational
-        -> same? a `1`                  -> same? a "1.0+1.0i"
+        -> same? a '1'                  -> same? a "1.0+1.0i"
         -> same? @[a] [one]             -> same? @[a] [one:]
         -> same? 1 '1.0i                -> same? @[a] [.1]                 
         -> same? @[a] [.1:]             -> same? @[a] [one\1]
@@ -8858,7 +8858,7 @@ do [
         -> same? 1.0.0 to :rational [1 1]      -> same? 1.0.0 null                    
         -> same? 1.0.0 true                    -> same? 1.0.0 false                   
         -> same? 1.0.0 to :complex [1.0 1.0]   -> same? 1.0.0 :floating
-        -> same? 1.0.0 `1`                     -> same? 1.0.0 "1.0.0"
+        -> same? 1.0.0 '1'                     -> same? 1.0.0 "1.0.0"
         -> same? [1.0.0] [one]                 -> same? [1.0.0] [one:]
         -> same? 1.0.0 '1.0i                   -> same? [1.0.0] [.1]                  
         -> same? [1.0.0] [.1:]                 -> same? [1.0.0] [one\1]
@@ -8877,8 +8877,8 @@ do [
         -> same? :rational to :rational [1 1]   -> same? :null null                    
         -> same? :true true                     -> same? :false false                   
         -> same? :logical false                 -> same? :complex to :complex [1 1]   
-        -> same? :version 1.0.0                 -> same? :T `T`                         
-        -> same? :char `T`                      -> same? :string ":type"
+        -> same? :version 1.0.0                 -> same? :T 'T'                         
+        -> same? :char 'T'                      -> same? :string ":type"
         -> same? [:type] [type]                 -> same? [:word] [word]                     
         -> same? [:type] [type:]                -> same? [:label] [label:]
         -> same? :1 '1                          -> same? :literal '1                       
@@ -8899,18 +8899,18 @@ do [
     
     ; for :char
     ensure -> every? @[
-        -> same? `1` 1.0          
-        -> same? `1` to :rational [1 1]     -> same? `ø` null                    
-        -> same? `t` true                   -> same? `f` false                   
-        -> same? `1` to :complex [1.0 1.0]  -> same? `T` :floating
-        -> same? [`a`] [one]                -> same? `a` 'a
-        -> same? [`a`] [.1]                 -> same? [`a`] [.a:]
-        -> same? [`a`] [a\a]                -> same? [`a`] [a\a:]              
-        -> same? [`+`] [+]                  -> same? `a` {/a/}
-        -> same? `1` to :binary 1           -> same? `a` to :binary 1
-        -> same? [`1`] [(`1`)]              -> same? `a` [`a`]
-        -> same? `1` 1..1                   -> same? `a` #[a: `a`]
-        -> same? `1` #black                 -> same? `a` var 'char?
+        -> same? '1' 1.0          
+        -> same? '1' to :rational [1 1]     -> same? 'ø' null                    
+        -> same? 't' true                   -> same? 'f' false                   
+        -> same? '1' to :complex [1.0 1.0]  -> same? 'T' :floating
+        -> same? ['a'] [one]                -> same? 'a' 'a
+        -> same? ['a'] [.1]                 -> same? ['a'] [.a:]
+        -> same? ['a'] [a\a]                -> same? ['a'] [a\a:]              
+        -> same? ['+'] [+]                  -> same? 'a' {/a/}
+        -> same? '1' to :binary 1           -> same? 'a' to :binary 1
+        -> same? ['1'] [('1')]              -> same? 'a' ['a']
+        -> same? '1' 1..1                   -> same? 'a' #[a: 'a']
+        -> same? '1' #black                 -> same? 'a' var 'char?
     ] => not? passed
     
     ; for :string
@@ -8940,7 +8940,7 @@ do [
         -> same? [a]         [a\a:]                    -> same? [a]     @[{/a/}]                      
         -> same? [binary]   @[to :binary 1]            -> same? [one]   @[to :binary 1]              
         -> same? [word]      [(word)]                  -> same? [word]  @[[word]]                      
-        -> same? [range]    @[range 1 1]               -> same? [a]     @[#[a: `a`]]               
+        -> same? [range]    @[range 1 1]               -> same? [a]     @[#[a: 'a']]               
         -> same? [black]    @[#black ]                 -> same? [word]  @[var 'word?]              
         -> same? [var]      @[var 'word?]
     ] => not? passed
@@ -8953,7 +8953,7 @@ do [
         -> same? [type:]     @[:floating]              -> same? [a:]         [a\a]                     
         -> same? [a:]         [a\a:]                   -> same? [a:]        @[{/a:/}]                 
         -> same? [binary:]   @[to :binary 1]           -> same? [word:]      [(word:)]                
-        -> same? [label:]    @[[label:]]               -> same? [a:]        @[#[a: `a`]]               
+        -> same? [label:]    @[[label:]]               -> same? [a:]        @[#[a: 'a']]               
         -> same? [black:]    @[#black ]                -> same? [var:]      @[var 'word?]
         -> same? [word:]     @[var 'word?]
     ] => not? passed
@@ -8981,7 +8981,7 @@ do [
         -> same? [.complex]  @[to :complex [1.0 1.0]] -> same? [.floating] @[:floating]                          
         -> same? [.a]        @[{/a:/}]                -> same? [.binary]   @[to :binary 1]          
         -> same? [.word]      [(.word:)]              -> same? [.label]    @[[.label]]                               
-        -> same? [.a]        @[#[a: `a`]]             -> same? [.black]    @[#black]                
+        -> same? [.a]        @[#[a: 'a']]             -> same? [.black]    @[#black]                
         -> same? [.var]      @[var 'word?]            -> same? [.word]     @[var 'word?]
     ] => not? passed
     
@@ -8990,10 +8990,10 @@ do [
         -> same? [.rational:] @[to :rational [1 1]]    -> same? [.null:]     @[null]                  
         -> same? [.true:]     @[true]                  -> same? [.false:]    @[false]                 
         -> same? [.complex:]  @[to :complex [1.0 1.0]] -> same? [.floating:] @[:floating]             
-        -> same? [.a:]         [a\a]                   -> same? [.a: `a`]     [a\a: `a`]              
+        -> same? [.a:]         [a\a]                   -> same? [.a: 'a']     [a\a: 'a']              
         -> same? [.plus:]      [+]                     -> same? [.a:]        @[{/a:/}]                
         -> same? [.binary:]   @[to :binary 1]          -> same? [.word:]      [(.word:)]               
-        -> same? [.label:]    @[[label:]]              -> same? [.a:]        @[#[a: `a`]]             
+        -> same? [.label:]    @[[label:]]              -> same? [.a:]        @[#[a: 'a']]             
         -> same? [.black:]    @[#black]                -> same? [.var:]      @[var 'word?]            
         -> same? [.word:]     @[var 'word?]
     ] => not? passed
@@ -9030,8 +9030,8 @@ do [
         -> same? to :binary 0 true                 -> same? to :binary 0 false                
         -> same? to :binary 0 maybe                -> same? to :binary 1 to :complex [1 1]                  
         -> same? to :binary 1 1.0.0                -> same? to :binary 1 :type              
-        -> same? to :binary 1 :binary              -> same? to :binary 1 `1`                  
-        -> same? to :binary "a" `a`                -> same? to :binary 1 "01"                 
+        -> same? to :binary 1 :binary              -> same? to :binary 1 '1'                  
+        -> same? to :binary "a" 'a'                -> same? to :binary 1 "01"                 
         -> same? to :binary 1 "1"                  -> same? @[to :binary 1] [binary]          
         -> same? @[to :binary 1] [one]             -> same? @[to :binary 1] [binary:]         
         -> same? @[to :binary 1][.binary]          -> same? @[to :binary 1] [.binary:]        
@@ -9047,7 +9047,7 @@ do [
         -> same? 0..0 true                     -> same? 0..0 false
         -> same? 0..0 maybe                    -> same? 1..1 to :complex [1 1]
         -> same? 1..1 1.0.0                    -> same? 1..1 :type                        
-        -> same? 1..1 :range                   -> same? 1..1 `1` 
+        -> same? 1..1 :range                   -> same? 1..1 '1' 
         -> same? 1..1 "1"                      -> same? 1..1 'range  
         -> same? 1..1 {/1/}
     ] => not? passed
@@ -9074,7 +9074,7 @@ do [
         -> same? #black true               -> same? #black false 
         -> same? #black maybe              -> same? #black to :complex [0 0]
         -> same? #black 0.0.0              -> same? #black :color
-        -> same? #black `1`                -> same? #black "#000000"
+        -> same? #black '1'                -> same? #black "#000000"
         -> same? #black "000000"           -> same? [#black] [black] 
         -> same? #black 'black             -> same? [#black] [.black]
         -> same? [#black] [.black:]        -> same? #black  {/#000000/}                 
@@ -9085,7 +9085,7 @@ do [
     ensure -> every? @[
         -> same? var 'null?     null
         -> same? var 'version?  1.0.0      -> same? var 'type?    :type 
-        -> same? var 'function? :function  -> same? var 'char?    `a` 
+        -> same? var 'function? :function  -> same? var 'char?    'a' 
         -> same? @[var 'word?]  [word]     -> same? @[var 'word?] [var]      
         -> same? @[var 'word?]  [var:]     -> same? @[var 'word?] [word:]    
         -> same? var 'word?     'word?     -> same? var 'var      'var       
