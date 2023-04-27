@@ -866,9 +866,9 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                     AddToken newLabel(p.value)
                 else:
                     AddToken newString(p.value)
-            of BackTick:
-                parseString(p, stopper=BackTick)
-                AddToken newChar(p.value)
+            # of BackTick:
+            #     parseString(p, stopper=BackTick)
+            #     AddToken newChar(p.value)
             of Colon:
                 parseIdentifier(p, alsoAddCurrent=false)
                 if Empty(p.value):
@@ -936,9 +936,16 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                     # if it's empty, then try parsing it as :symbolLiteral
                     if likely(p.buf[p.bufpos] in Symbols):
                         parseAndAddSymbol(p,topBlock)
-                        ReplaceLastToken(newSymbolLiteral(LastToken.m))
+                        if LastToken.m == backslash and p.buf[p.bufpos] in ['n', 'r', 't', 'b', 'f', 'v', 'a', 'e', 'x', 'u', 'U', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9']:
+                            p.bufpos = p.bufpos - 2
+                            parseString(p, stopper=Tick)
+                            ReplaceLastToken newChar(p.value)
+                        else:
+                            ReplaceLastToken(newSymbolLiteral(LastToken.m))
                     else:
+                        p.bufpos = p.bufpos - 1
                         parseString(p, stopper=Tick)
+                        AddToken newChar(p.value)
                     # else:
                     #     SyntaxError_EmptyLiteral(p.lineNumber, getContext(p, p.bufpos-1))
                 else:
