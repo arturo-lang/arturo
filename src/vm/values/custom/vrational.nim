@@ -47,6 +47,7 @@ type
 #=======================================
 
 func toRational*(num, den: int): VRational {.inline.}
+func toBigRational*(x: int | Int | float): VRational
 
 #=======================================
 # Helpers
@@ -89,7 +90,7 @@ template getDenominator*(x: VRational, big: bool = false): untyped =
         x.den
 
 #=======================================
-# Methods
+# Constructors
 #=======================================
 
 func toRational*(num, den: int): VRational {.inline.} =
@@ -172,40 +173,9 @@ when not defined(NOGMP):
         # we don't call `simplifyRational` here,
         # since this could again degrade it to a Normal rational!
         
-
-# when not defined(NOGMP):
-#     func initRational*(num: Int, den: Int): VRational =
-#         result.rKind = BigRational
-#         result.br = newRat(num, den)
-
-#         simplifyRational(result)
-
-#     func initRational*(num: int, den: Int): VRational =
-#         result.rKind = BigRational
-#         result.br = newRat(newInt(num), den)
-        
-#         simplifyRational(result)
-
-#     func initRational*(num: Int, den: int): VRational =
-#         result.rKind = BigRational
-#         result.br = newRat(num, newInt(den))
-
-#         simplifyRational(result)
-
-# when not defined(NOGMP):
-
-#     func toBigRational*(x: int | Int | float): VRational =
-#         result.rKind = BigRational
-#         result.br = newRat(x)
-        
-#         simplifyRational(result)
-
-#     func toBigRational*(x: VRational): VRational =
-#         if x.rKind == BigRational:
-#             result = x
-#         else:
-#             result.rKind = BigRational
-#             result.br = newRat(x.num, x.den)
+#=======================================
+# Converters
+#=======================================
 
 func toFloat*(x: VRational): float =
     if x.rKind == NormalRational:
@@ -218,8 +188,11 @@ func toInt*(x: VRational): int =
     if x.rKind == NormalRational:
         result = x.num div x.den
     else:
-        discard
-        # show error
+        when not defined(NOGMP):
+            if canBeSimplified(x.br):
+                result = getInt(numerator(x.br)) div getInt(denominator(x.br))
+            else:
+                raise newException(ValueError, "cannot convert to int")
 
 func `+`*(x, y: VRational): VRational =
     if x.rKind == NormalRational:
