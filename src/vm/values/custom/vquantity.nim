@@ -659,6 +659,8 @@ type
         atoms       : Atoms
         flags       : set[QuantityFlag]
 
+    VQuantity = Quantity
+
 # Benchmarking
 {.hints: on.} # Apparently we cannot disable just `Name` hints?
 {.hint: "Quantity's inner type is currently " & $sizeof(Quantity) & ".".}
