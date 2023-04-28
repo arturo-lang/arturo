@@ -194,6 +194,14 @@ when not defined(NOGMP):
         result.rKind = BigRational
         result.br = newRat(num, den)
 
+    func toRational*(x: float, y: Int): VRational =
+        # create VRational from numerator and denominator (float and big Int)
+        result = toRational(x) * reciprocal(toRational(y))
+
+    func toRational*(x: Int, y: float): VRational =
+        # create VRational from numerator and denominator (big Int and float)
+        result = toRational(x) * reciprocal(toRational(y))
+
     func toBigRational*(x: int | Int | float): VRational =
         # create VRational from int, big Int or float
         result.rKind = BigRational
