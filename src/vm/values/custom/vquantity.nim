@@ -884,7 +884,7 @@ func `=~`(a, b: Quantity): bool =
 # Operators
 #=======================================
 
-proc `+`(a, b: Quantity): Quantity =
+proc `+`*(a, b: Quantity): Quantity =
     if not (a =~ b):
         raise newException(ValueError, "Cannot add quantities with different dimensions.")
 
