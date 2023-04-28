@@ -620,7 +620,7 @@ static:
 
 type
     AtomExponent        = -5..5
-    QuantityValue       = RationalValue
+    QuantityValue       = VRational
     QuantitySignature   = int64
 
     Prefix          = generatePrefixDefinitions()
@@ -652,7 +652,7 @@ type
         IsTemperature
         IsCurrency
 
-    Quantity = ref tuple
+    Quantity = tuple
         original    : QuantityValue
         value       : QuantityValue
         signature   : QuantitySignature
@@ -1002,7 +1002,7 @@ proc initQuantities*() =
     Quantities = generateQuantities()
 
     echo "BEFORE"
-    #generateConstants()
+    generateConstants()
     echo "AFTER"
 
     # planckMass = newQuantity(parseValue("2.176434e-8"), parseAtoms("1/kg"))
