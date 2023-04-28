@@ -498,25 +498,27 @@ proc newLit(ct: CTRational): NimNode =
         newIdentNode("VRational"),
         nnkExprColonExpr.newTree(
             newIdentNode("rKind"),
-            newIdentNode("NormalRational")
+            newIde
+            ntNode("NormalRational")
         ),
         nnkExprColonExpr.newTree(
-            newIdentNode("r"),
-            nnkObjConstr.newTree(
-                nnkBracketExpr.newTree(
-                    newIdentNode("VRationalObj"),
-                    newIdentNode("int")
-                ),
-                nnkExprColonExpr.newTree(
-                    newIdentNode("num"),
-                    newLit(ct.num)
-                ),
-                nnkExprColonExpr.newTree(
-                    newIdentNode("den"),
-                    newLit(ct.den)
-                )
-            )
+            newIdentNode("num"),
+            newLit(ct.num)
+        ),
+        nnkExprColonExpr.newTree(
+            newIdentNode("den"),
+            newLit(ct.den)
         )
+        # nnkExprColonExpr.newTree(
+        #     newIdentNode("r"),
+        #     nnkObjConstr.newTree(
+        #         nnkBracketExpr.newTree(
+        #             newIdentNode("VRationalObj"),
+        #             newIdentNode("int")
+        #         ),
+                
+        #     )
+        # )
     )
 
 proc getAtomsSeq*(ats: seq[Atom]): NimNode =
