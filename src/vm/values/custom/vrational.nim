@@ -889,6 +889,3 @@ func `$`*(x: VRational): string =
     else:
         when not defined(NOGMP):
             result = $x.br
-
-when isMainModule:
-    echo $(toRational(3,2) % toRational(2,3))
