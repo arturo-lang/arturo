@@ -8,7 +8,7 @@
 
 ## The internal `:rational` type
 
-# Contains code based on
+# Initially inspired by
 # the Rationals module: https://raw.githubusercontent.com/nim-lang/Nim/version-1-6/lib/pure/rationals.nim
 # which forms part of the Nim standard library.
 # (c) Copyright 2015 Dennis Felsing
