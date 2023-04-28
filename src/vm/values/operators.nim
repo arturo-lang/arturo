@@ -659,14 +659,10 @@ proc `-=`*(x: var Value, y: Value) =
         of Complex    || Complex        :   x.z -= y.z
         
         of Color      || Color          :   x.l -= y.l
-        of Quantity   || Integer        :   x.nm -= y
-        of Quantity   || Floating       :   x.nm -= y
-        of Quantity   || Rational       :   x.nm -= y
-        of Quantity   || Quantity       :
-            if x.unit.name == y.unit.name:
-                x.nm -= y.nm
-            else:
-                x = newQuantity(x.nm - convertQuantityValue(y.nm, y.unit.name, x.unit.name), x.unit)
+        of Quantity   || Integer        :   x.q -= y.i
+        of Quantity   || Floating       :   x.q -= y.f
+        of Quantity   || Rational       :   x.q -= y.rat
+        of Quantity   || Quantity       :   x.q -= y.q
         else:
             discard invalidOperation("sub")
 
