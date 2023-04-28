@@ -254,6 +254,14 @@ func newRational*(num: int, den: int): Value {.inline.} =
     ## create Rational value from numerator + denominator (int)
     Value(kind: Rational, rat: toRational(num, den))
 
+func newRational*(num: float, den: int | float): Value {.inline.} =
+    ## create Rational value from numerator + denominator (float and int or float)
+    Value(kind: Rational, rat: toRational(num, den))
+
+func newRational*(num: int, den: float): Value {.inline.} =
+    ## create Rational value from numerator + denominator (int and float)
+    Value(kind: Rational, rat: toRational(num, den))
+
 when not defined(NOGMP):
     func newRational*(num: int, den: Int): Value {.inline.} =
         ## create Rational value from numerator + denominator (int, Int)
