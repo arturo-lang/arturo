@@ -360,6 +360,10 @@ func `+=`*(x: var VRational, y: int) =
         when not defined(NOGMP):
             x += toBigRational(y)
 
+func `+=`*(x: var VRational, y: float) =
+    # add VRational and float, in-place
+    x += toRational(y)
+
 func `-`*(x: VRational): VRational =
     # negate a VRational
     if x.rKind == NormalRational:
