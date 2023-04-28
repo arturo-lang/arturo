@@ -620,7 +620,7 @@ static:
 
 type
     AtomExponent        = -5..5
-    QuantityValue       = VRational
+    QuantityValue       = RationalValue
     QuantitySignature   = int64
 
     Prefix          = generatePrefixDefinitions()
@@ -652,7 +652,7 @@ type
         IsTemperature
         IsCurrency
 
-    Quantity = tuple
+    Quantity = ref tuple
         original    : QuantityValue
         value       : QuantityValue
         signature   : QuantitySignature
@@ -700,6 +700,8 @@ generateConstantDefinitions()
 #=======================================
 # Helpers
 #=======================================
+
+proc `$`*(q: Quantity): string 
 
 func isUnitless(q: Quantity): bool {.inline.} =
     return q.signature == 0
@@ -779,7 +781,7 @@ proc parseAtoms*(str: string): Atoms =
 # Constructors
 #=======================================
 
-proc newQuantity*(v: VRational, atoms: Atoms): Quantity =
+proc newQuantity*(v: QuantityValue, atoms: Atoms): Quantity =
     result.original = v
     result.value = v
 
@@ -790,7 +792,7 @@ proc newQuantity*(v: VRational, atoms: Atoms): Quantity =
 
         result.atoms.add(atom)
 
-proc parseValue(s: string): VRational =
+proc parseValue(s: string): QuantityValue =
     if s.contains("."):
         result = toRational(parseFloat(s))
     elif s.contains(":"):
@@ -1000,7 +1002,7 @@ proc initQuantities*() =
     Quantities = generateQuantities()
 
     echo "BEFORE"
-    generateConstants()
+    #generateConstants()
     echo "AFTER"
 
     # planckMass = newQuantity(parseValue("2.176434e-8"), parseAtoms("1/kg"))
