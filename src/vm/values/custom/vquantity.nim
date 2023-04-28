@@ -914,7 +914,7 @@ proc `+`*(a: Quantity, b: int | float | QuantityValue): Quantity =
 proc `+=`*(a: var Quantity, b: int | float | QuantityValue) =
     a.original += b
 
-proc `-`(a, b: Quantity): Quantity =
+proc `-`*(a, b: Quantity): Quantity =
     if not (a =~ b):
         raise newException(ValueError, "Cannot subtract quantities with different dimensions.")
 
@@ -926,8 +926,11 @@ proc `-`(a, b: Quantity): Quantity =
 
     result = toQuantity(a.original - convB.original, a.atoms)
 
-proc `-`(a: Quantity, b: int | float): Quantity =
-    result = toQuantity(a.original - float(b), a.atoms)
+proc `-`*(a: Quantity, b: int | float | QuantityValue): Quantity =
+    result = toQuantity(a.original - b, a.atoms)
+
+proc `-=`*(a: var Quantity, b: int | float | QuantityValue) =
+    a.original -= b
 
 proc `*`(a, b: Quantity): Quantity =
     if a =~ b:
