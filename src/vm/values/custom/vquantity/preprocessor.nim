@@ -508,23 +508,6 @@ proc newLit(ct: CTRational): NimNode =
             newIdentNode("den"),
             newLit(ct.den)
         )
-        # nnkExprColonExpr.newTree(
-        #     newIdentNode("r"),
-        #     nnkObjConstr.newTree(
-        #         nnkBracketExpr.newTree(
-        #             newIdentNode("VRationalObj"),
-        #             newIdentNode("int")
-        #         ),
-        #         nnkExprColonExpr.newTree(
-        #             newIdentNode("num"),
-        #             newLit(ct.num)
-        #         ),
-        #         nnkExprColonExpr.newTree(
-        #             newIdentNode("den"),
-        #             newLit(ct.den)
-        #         )
-        #     )
-        # )
     )
 
 proc getAtomsSeq*(ats: seq[Atom]): NimNode =
@@ -626,41 +609,3 @@ macro generateConstants*(): untyped =
             )
 
     res
-
-dumpAstGen:
-    (VQuantity)(1)
-    @[(one,two), (three,four)]
-
-dumpAstGen:
-    case str:
-        of "a", "b", "c": result = (No_Prefix, m_Unit)
-        of "d", "e", "f": (No_Prefix, s_Unit)
-        else:
-            (No_Prefix, No_Unit)
-
-    {IsBase, IsTemperature}
-
-    Unit(kind: CoreUnit, core: m_Unit)
-
-    AtomExponent(1)
-
-dumpAstGen:
-    if UserUnits.hasKey(Unit(kind: User, name: str)):
-        result = Unit(kind: User, name: str)
-    else:
-        result = Unit(kind: CoreUnit, core: No_Unit)
-
-dumpAstGen:
-    initRational(1, 2)
-
-    VRational(rKind: NormalRational, r: VRationalObj[int](num: 123, den: 456))
-
-    var
-        planckMass: Quantity
-        planckLength: Quantity
-
-dumpAstGen:
-    speedOfLight = 1
-    sp = 2
-
-    newQuantity("str", @[])
