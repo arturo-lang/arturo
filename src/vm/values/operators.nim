@@ -568,7 +568,7 @@ proc inc*(x: Value): Value =
         of Floating: return newFloating(x.f+1.0)
         of Rational: return newRational(x.rat+1)
         of Complex: return newComplex(x.z+1.0)
-        of Quantity: return newQuantity(x.nm + I1, x.unit)
+        of Quantity: return newQuantity(x.q + 1)
         else:
             return invalidOperation("inc")
 
@@ -585,7 +585,7 @@ proc incI*(x: var Value) =
         of Floating: x.f += 1.0
         of Rational: x.rat += 1
         of Complex: x.z = x.z + 1.0
-        of Quantity: x.nm += I1
+        of Quantity: x.q += 1
         else:
             discard invalidOperation("inc")
 
