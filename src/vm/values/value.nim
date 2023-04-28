@@ -415,7 +415,7 @@ func newSymbolLiteral*(m: string): Value {.inline.} =
     newSymbolLiteral(parseEnum[VSymbol](m))
 
 func newQuantity*(v: Value, atoms: Atoms): Value {.inline, enforceNoRaises.} =
-    ## create Quantity value from a numerical value ``nm`` (Value) + ``unit`` (Atoms)
+    ## create Quantity value from a numerical value ``v`` (Value) + ``atoms`` (Atoms)
     if v.kind == Integer:
         if v.iKind == NormalInteger:
             return newQuantity(v.i, atoms)
@@ -427,13 +427,9 @@ func newQuantity*(v: Value, atoms: Atoms): Value {.inline, enforceNoRaises.} =
     else:
         return newQuantity(v.rat, atoms)
 
-func newQuantity*(nm: Value, unit: VQuantity): Value {.inline, enforceNoRaises.} =
-    ## create Quantity value from a numerical value ``nm`` (Value) + ``unit`` (VQuantity)
-    Value(kind: Quantity, nm: nm, unit: unit)
-
-proc newQuantity*(nm: Value, name: UnitName): Value {.inline.} =
-    ## create Quantity value from numerica value ``nm`` (Value) + unit ``name`` (UnitName)
-    newQuantity(nm, newQuantitySpec(name))
+func newQuantity*(v: Value, atoms: string): Value {.inline.} =
+    ## create Quantity value from a numerical value ``v`` (Value) + ``atoms`` (string)
+    newQuantity(v, parseAtoms(atoms))
 
 func newRegex*(rx: sink VRegex): Value {.inline, enforceNoRaises.} =
     ## create Regex value from VRegex
