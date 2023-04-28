@@ -915,11 +915,9 @@ func hash*(v: Value): Hash {.inline.}=
         of Symbol,
            SymbolLiteral: result = result !& cast[Hash](ord(v.m))
 
-        of Quantity:
-            result = result !& hash(v.nm)
-            result = result !& hash(v.unit)
+        of Quantity     : result = result !& hash(v.q)
 
-        of Regex: result = result !& hash(v.rx)
+        of Regex        : result = result !& hash(v.rx)
 
         of Color        : result = result !& cast[Hash](v.l)
 
