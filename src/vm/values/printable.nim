@@ -268,7 +268,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
         of Symbol, 
            SymbolLiteral: dumpSymbol(v)
 
-        of Quantity     : dumpPrimitive($(v.nm) & ":" & stringify(v.unit.name), v)
+        of Quantity     : dumpPrimitive($(v.q), v)
 
         of Regex        : dumpPrimitive($(v.rx), v)
 
