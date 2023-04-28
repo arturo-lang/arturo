@@ -637,7 +637,7 @@ type
             of User:
                 name: string
 
-    PrefixedUnit = tuple
+    PrefixedUnit* = tuple
         p: Prefix
         u: Unit
 
@@ -645,14 +645,14 @@ type
         unit: PrefixedUnit
         power: AtomExponent
 
-    Atoms = seq[Atom]
+    Atoms* = seq[Atom]
 
     QuantityFlag = enum
         IsBase
         IsTemperature
         IsCurrency
 
-    Quantity = tuple
+    Quantity* = tuple
         original    : QuantityValue
         value       : QuantityValue
         signature   : QuantitySignature
