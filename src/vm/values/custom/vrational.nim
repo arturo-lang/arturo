@@ -282,11 +282,11 @@ func `+`*(x, y: VRational): VRational =
                     result = toBigRational(x) + y
         else:
             when not defined(NOGMP):
-                result = x + toBigRational(y)
+                result = toBigRational(x) + y
     else:
         when not defined(NOGMP):
             if y.rKind == NormalRational:
-                result = toBigRational(x) + y
+                result = x + toBigRational(y)
             else:
                 result = VRational(
                     rKind: BigRational,
@@ -453,11 +453,11 @@ func `-=`*(x: var VRational, y: VRational) =
                     x = toBigRational(x) - y
         else:
             when not defined(NOGMP):
-                x = toBigRational(x) + y
+                x = toBigRational(x) - y
     else:
         when not defined(NOGMP):
             if y.rKind == NormalRational:
-                x += toBigRational(y)
+                x -= toBigRational(y)
             else:
                 x.br -= y.br
     
