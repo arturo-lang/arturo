@@ -1,6 +1,31 @@
+#=======================================================
+# Arturo
+# Programming Language + Bytecode VM compiler
+# (c) 2019-2023 Yanis Zafirópulos
+#
+# @file: vm/values/custom/vquantity/preprocessor.nim
+#=======================================================
+
+## Macro preprocessor for the VQuantity module
+## 
+## The whole module works solely at compile-time and
+## is used to define the base units, prefixes, units,
+## constants and dimensions for the VQuantity module.
+
+#=======================================
+# Libraries
+#=======================================
+
 import macros, math, sequtils, strscans, strutils, tables
 
+# yes, we are using the system's rational type, since
+# it's not GMP-based in any case, but only for the values
+# that can be encoded without the help of the GMP library
 import std/rationals
+
+#=======================================
+# Types
+#=======================================
 
 type
     Atom = tuple
@@ -21,17 +46,25 @@ type
         value: Quantity
         precalculated: bool
 
-var
-    baseUnits {.compileTime.}: seq[string]
-    dimensions {.compileTime.}: OrderedTable[int64,string]
-    prefixes {.compileTime.}: OrderedTable[string, tuple[sym: string, val: int]]
-    defs {.compileTime.}: OrderedTable[string, Quantity]
-    units {.compileTime.}: OrderedTable[string, string]
-    constants {.compileTime.}: OrderedTable[string,Constant]
+#=======================================
+# Variables
+#=======================================
 
-    parsable {.compileTime.}: OrderedTable[string, (string, string)]
-    currencyUnits {.compileTime.}: seq[string]
-    temperatureUnits {.compileTime.}: seq[string]
+var
+    baseUnits           {.compileTime.} : seq[string]
+    dimensions          {.compileTime.} : OrderedTable[int64,string]
+    prefixes            {.compileTime.} : OrderedTable[string, tuple[sym: string, val: int]]
+    defs                {.compileTime.} : OrderedTable[string, Quantity]
+    units               {.compileTime.} : OrderedTable[string, string]
+    constants           {.compileTime.} : OrderedTable[string,Constant]
+
+    parsable            {.compileTime.} : OrderedTable[string, (string, string)]
+    currencyUnits       {.compileTime.} : seq[string]
+    temperatureUnits    {.compileTime.} : seq[string]
+
+#=======================================
+# Constants
+#=======================================
 
 const
     MagicPower = 6.0
@@ -50,6 +83,10 @@ const
         "⁵": 5
     }.toTable
 
+#=======================================
+# Templates
+#=======================================
+
 template prefixId(str: string): string =
     str & "_Prefix"
 
@@ -59,7 +96,12 @@ template unitId(str: string): string =
 template getDimension(q: Quantity): string =
     dimensions.getOrDefault(q.signature, "NOT FOUND!")
 
-func `^`*(x: CTRational, y: int): CTRational =
+#=======================================
+# Helpers
+#=======================================
+
+# The std library doesn't support this!
+func `^`(x: CTRational, y: int): CTRational =
     if y < 0:
         result.num = x.den ^ -y
         result.den = x.num ^ -y
@@ -67,7 +109,7 @@ func `^`*(x: CTRational, y: int): CTRational =
         result.num = x.num ^ y
         result.den = x.den ^ y
 
-proc getDefined*(str: string): Quantity =
+proc getDefined(str: string): Quantity =
     let (pref, unit) = parsable[str]
     result = defs[unit]
 
@@ -85,6 +127,10 @@ proc getConverted(q: Quantity): CTRational =
         for atom in q.atoms:
             let atomUnit = getDefined(atom.kind)
             result *= atomUnit.value ^ atom.expo
+
+#=======================================
+# Constructors
+#=======================================
 
 proc newQuantity(v: CTRational, atoms: seq[Atom], base: static bool = false): Quantity =
     result.original = v
@@ -104,45 +150,6 @@ proc newQuantity(v: CTRational, atoms: seq[Atom], base: static bool = false): Qu
         result.value = result.getConverted()
 
     result.base = base
-
-proc `+`(a, b: Quantity): Quantity =
-    newQuantity(
-        a.value + b.value,
-        a.atoms
-    )
-
-proc `*`(a, b: Quantity): Quantity =
-    newQuantity(
-        a.original * b.original,
-        a.atoms & b.atoms
-    )
-
-proc `$`*(q: Quantity): string =
-    result &= $(q.original)
-
-    var tbl: OrderedTable[string,int]
-    
-    for atom in q.atoms:
-        if tbl.hasKeyOrPut(atom.kind, atom.expo):
-            tbl[atom.kind] += atom.expo
-        else:
-            tbl[atom.kind] = atom.expo
-    
-    var num, den: seq[string]
-
-    for (unit,expo) in tbl.pairs:
-        if expo > 0:
-            num.add(unit & expos[expo + 3])
-        else:
-            den.add(unit & expos[expo + 3])
-
-    if num.len > 0:
-        result &= " " & num.join("·")
-    else:
-        result &= " 1"
-
-    if den.len > 0:
-        result &= "/" & den.join("·")
 
 proc parseAtoms(str: string): seq[Atom] =
     proc parseAtom(atstr: string, denominator: static bool=false): Atom =
@@ -211,6 +218,10 @@ proc parseDimensionFormula*(str: string):int64 =
 
     return int64(sign)
 
+#=======================================
+# Methods
+#=======================================
+
 proc defDimension*(quantity: string, formula: string = "") =
     let signature = parseDimensionFormula(formula)
 
@@ -263,6 +274,63 @@ proc defConstant*(name: string, precalculated: bool, definition: string) =
 proc defCurrency*(currency: string, symbol: string) =
     currencyUnits.add(currency)
     defUnit(currency, symbol, false, "")
+
+#=======================================
+# Macros & Generators
+#=======================================
+
+# Overloads
+
+proc newLit(ct: CTRational): NimNode =
+    nnkObjConstr.newTree(
+        newIdentNode("VRational"),
+        nnkExprColonExpr.newTree(
+            newIdentNode("rKind"),
+            newIdentNode("NormalRational")
+        ),
+        nnkExprColonExpr.newTree(
+            newIdentNode("num"),
+            newLit(ct.num)
+        ),
+        nnkExprColonExpr.newTree(
+            newIdentNode("den"),
+            newLit(ct.den)
+        )
+    )
+
+# Helpers
+
+proc getAtomsSeq(ats: seq[Atom]): NimNode =
+    var atoms = nnkBracket.newTree()
+    for atom in ats:
+        let (expo, kind) = parsable[atom.kind]
+        atoms.add nnkTupleConstr.newTree(
+            nnkTupleConstr.newTree(
+                newIdentNode(prefixId(expo)),
+                nnkObjConstr.newTree(
+                    newIdentNode("Unit"),
+                    nnkExprColonExpr.newTree(
+                        newIdentNode("kind"),
+                        newIdentNode("Core")
+                    ),
+                    nnkExprColonExpr.newTree(
+                        newIdentNode("core"),
+                        newIdentNode(unitId(kind))
+                    )
+                )
+            ),
+            nnkCall.newTree(
+                newIdentNode("AtomExponent"),
+                newLit(atom.expo)
+            )
+        )
+
+    result = nnkPrefix.newTree(
+        newIdentNode("@"),
+        atoms
+    )
+
+# Main
 
 macro generatePrefixDefinitions*(): untyped =
     let res = nnkEnumTy.newTree(
@@ -452,53 +520,6 @@ macro generateUnitParser*(): untyped =
         )
     )
 
-proc newLit(ct: CTRational): NimNode =
-    nnkObjConstr.newTree(
-        newIdentNode("VRational"),
-        nnkExprColonExpr.newTree(
-            newIdentNode("rKind"),
-            newIdentNode("NormalRational")
-        ),
-        nnkExprColonExpr.newTree(
-            newIdentNode("num"),
-            newLit(ct.num)
-        ),
-        nnkExprColonExpr.newTree(
-            newIdentNode("den"),
-            newLit(ct.den)
-        )
-    )
-
-proc getAtomsSeq*(ats: seq[Atom]): NimNode =
-    var atoms = nnkBracket.newTree()
-    for atom in ats:
-        let (expo, kind) = parsable[atom.kind]
-        atoms.add nnkTupleConstr.newTree(
-            nnkTupleConstr.newTree(
-                newIdentNode(prefixId(expo)),
-                nnkObjConstr.newTree(
-                    newIdentNode("Unit"),
-                    nnkExprColonExpr.newTree(
-                        newIdentNode("kind"),
-                        newIdentNode("Core")
-                    ),
-                    nnkExprColonExpr.newTree(
-                        newIdentNode("core"),
-                        newIdentNode(unitId(kind))
-                    )
-                )
-            ),
-            nnkCall.newTree(
-                newIdentNode("AtomExponent"),
-                newLit(atom.expo)
-            )
-        )
-
-    result = nnkPrefix.newTree(
-        newIdentNode("@"),
-        atoms
-    )
-
 macro generateQuantities*(): untyped =
     let items = nnkTableConstr.newTree()
 
@@ -568,6 +589,56 @@ macro generateConstants*(): untyped =
             )
 
     res
+
+#=======================================
+# Debugging
+#=======================================
+
+# Overloads
+
+# * we don't really need them, but they are
+#   useful for debugging, at the compiler level only!
+
+proc `+`(a, b: Quantity): Quantity =
+    newQuantity(
+        a.value + b.value,
+        a.atoms
+    )
+
+proc `*`(a, b: Quantity): Quantity =
+    newQuantity(
+        a.original * b.original,
+        a.atoms & b.atoms
+    )
+
+proc `$`*(q: Quantity): string =
+    result &= $(q.original)
+
+    var tbl: OrderedTable[string,int]
+    
+    for atom in q.atoms:
+        if tbl.hasKeyOrPut(atom.kind, atom.expo):
+            tbl[atom.kind] += atom.expo
+        else:
+            tbl[atom.kind] = atom.expo
+    
+    var num, den: seq[string]
+
+    for (unit,expo) in tbl.pairs:
+        if expo > 0:
+            num.add(unit & expos[expo + 3])
+        else:
+            den.add(unit & expos[expo + 3])
+
+    if num.len > 0:
+        result &= " " & num.join("·")
+    else:
+        result &= " 1"
+
+    if den.len > 0:
+        result &= "/" & den.join("·")
+
+# Main debugging routines
 
 proc debugAdd(a,b:string) =
     let pA = parseQuantity(a)
