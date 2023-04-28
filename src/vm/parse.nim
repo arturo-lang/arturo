@@ -888,7 +888,7 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                         if p.buf[p.bufpos]==BackTick:
                             let pv = newFloating(p.value)
                             parseQuantity(p)
-                            AddToken newQuantity(pv, parseQuantitySpec(p.value))
+                            AddToken newQuantity(pv, p.value)
                         elif p.buf[p.bufpos] in ScientificNotation_Start and p.buf[p.bufpos+1] in ScientificNotation:
                             let pv = p.value
                             parseExponent(p)
@@ -899,7 +899,7 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                     if p.buf[p.bufpos]==BackTick:
                         let pv = newInteger(p.value, p.lineNumber)
                         parseQuantity(p)
-                        AddToken newQuantity(pv, parseQuantitySpec(p.value))
+                        AddToken newQuantity(pv, p.value)
                     elif p.buf[p.bufpos]==Colon:
                         inc(p.bufpos)
                         let leftValue = newInteger(p.value, p.lineNumber)
@@ -911,7 +911,7 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                             if p.buf[p.bufpos]==BackTick:
                                 let pv = newRational(leftValue, newInteger(p.value, p.lineNumber))
                                 parseQuantity(p)
-                                AddToken newQuantity(pv, parseQuantitySpec(p.value))
+                                AddToken newQuantity(pv, p.value)
                             else:
                                 AddToken newRational(leftValue, newInteger(p.value, p.lineNumber))
                     elif p.buf[p.bufpos]=='e' and p.buf[p.bufpos+1] in ScientificNotation:
