@@ -831,7 +831,7 @@ func consideredEqual*(x: Value, y: Value): bool {.inline,enforceNoRaises.} =
         of Char: return x.c == y.c
         of Symbol,
            SymbolLiteral: return x.m == y.m
-        of Quantity: return x.nm == y.nm and x.unit == y.unit
+        of Quantity: return x.q == y.q
         of Regex: return x.rx == y.rx
         of Color: return x.l == y.l
         of Inline:
