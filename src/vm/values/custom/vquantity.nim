@@ -944,15 +944,15 @@ proc `-`*(a: Quantity, b: int | float | QuantityValue): Quantity =
 proc `-=`*(a: var Quantity, b: int | float | QuantityValue) =
     a.original -= b
 
-proc `*`(a, b: Quantity): Quantity =
+proc `*`*(a, b: Quantity): Quantity =
     if a =~ b:
         let convB = b.convertTo(a.atoms)
         result = toQuantity(a.original * convB.original, flatten(a.atoms & convB.atoms))
     else:
         result = toQuantity(a.original * b.original, flatten(a.atoms & b.atoms))
 
-proc `*`(a: Quantity, b: int | float): Quantity =
-    result = toQuantity(a.original * float(b), a.atoms)
+proc `*`*(a: Quantity, b: int | float | QuantityValue): Quantity =
+    result = toQuantity(a.original * b, a.atoms)
 
 proc `/`(a, b: Quantity): Quantity =
     if a =~ b:
