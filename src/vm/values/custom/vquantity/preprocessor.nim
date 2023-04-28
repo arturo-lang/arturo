@@ -498,8 +498,7 @@ proc newLit(ct: CTRational): NimNode =
         newIdentNode("VRational"),
         nnkExprColonExpr.newTree(
             newIdentNode("rKind"),
-            newIde
-            ntNode("NormalRational")
+            newIdentNode("NormalRational")
         ),
         nnkExprColonExpr.newTree(
             newIdentNode("num"),
@@ -516,7 +515,14 @@ proc newLit(ct: CTRational): NimNode =
         #             newIdentNode("VRationalObj"),
         #             newIdentNode("int")
         #         ),
-                
+        #         nnkExprColonExpr.newTree(
+        #             newIdentNode("num"),
+        #             newLit(ct.num)
+        #         ),
+        #         nnkExprColonExpr.newTree(
+        #             newIdentNode("den"),
+        #             newLit(ct.den)
+        #         )
         #     )
         # )
     )
