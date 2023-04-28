@@ -414,20 +414,21 @@ func newSymbolLiteral*(m: string): Value {.inline.} =
     ## create SymbolLiteral value from string
     newSymbolLiteral(parseEnum[VSymbol](m))
 
-func newQuantity*(v: Value, atoms: Atoms): Value {.inline, enforceNoRaises.} =
+proc newQuantity*(v: Value, atoms: Atoms): Value {.inline, enforceNoRaises.} =
     ## create Quantity value from a numerical value ``v`` (Value) + ``atoms`` (Atoms)
+    result = Value(kind: Quantity)
     if v.kind == Integer:
         if v.iKind == NormalInteger:
-            return newQuantity(v.i, atoms)
+            result.q = toQuantity(v.i, atoms)
         else:
             when not defined(NOGMP):
-                return newQuantity(v.bi, atoms)
-    elif v.kind == Float:
-        return newQuantity(v.f, atoms)
+                result.q = toQuantity(v.bi, atoms)
+    elif v.kind == Floating:
+        result.q = toQuantity(v.f, atoms)
     else:
-        return newQuantity(v.rat, atoms)
+        result.q = toQuantity(v.rat, atoms)
 
-func newQuantity*(v: Value, atoms: string): Value {.inline.} =
+proc newQuantity*(v: Value, atoms: string): Value {.inline.} =
     ## create Quantity value from a numerical value ``v`` (Value) + ``atoms`` (string)
     newQuantity(v, parseAtoms(atoms))
 

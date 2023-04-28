@@ -652,7 +652,7 @@ type
         IsTemperature
         IsCurrency
 
-    Quantity* = tuple
+    Quantity = tuple
         original    : QuantityValue
         value       : QuantityValue
         signature   : QuantitySignature
@@ -792,8 +792,12 @@ proc toQuantity*(v: QuantityValue, atoms: Atoms): Quantity =
 
         result.atoms.add(atom)
 
-proc toQuantity*(v: int | float, atoms: Atoms): Quantity {.inline.} =
-    result = toQuantity(toRational(v), atoms)
+when not defined(NOGMP):
+    proc toQuantity*(v: int | float | Int, atoms: Atoms): Quantity {.inline.} =
+        result = toQuantity(toRational(v), atoms)
+else:
+    proc toQuantity*(v: int | float, atoms: Atoms): Quantity {.inline.} =
+        result = toQuantity(toRational(v), atoms)
 
 proc parseValue(s: string): QuantityValue =
     if s.contains("."):
