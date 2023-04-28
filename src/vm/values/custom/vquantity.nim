@@ -620,7 +620,7 @@ static:
 
 type
     AtomExponent        = -5..5
-    QuantityValue       = VRational
+    QuantityValue*      = VRational
     QuantitySignature   = int64
 
     Prefix          = generatePrefixDefinitions()
