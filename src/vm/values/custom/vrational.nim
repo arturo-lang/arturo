@@ -50,8 +50,7 @@ func toRational*(num, den: int): VRational {.inline.}
 when not defined(NOGMP):
     func toBigRational*(x: int | Int | float): VRational
 
-func `*`*(x, y: VRational): VRational
-func reciprocal*(x: VRational): VRational
+func `/`*(x, y: VRational): VRational
 
 #=======================================
 # Helpers
@@ -167,11 +166,11 @@ func toRational*(x: float): VRational =
 
 func toRational*(x: float, y: int | float): VRational =
     # create VRational from numerator and denominator (float and int or float)
-    result = toRational(x) * reciprocal(toRational(y))
+    result = toRational(x) / toRational(y)
 
 func toRational*(x: int, y: float): VRational =
     # create VRational from numerator and denominator (int and float)
-    result = toRational(x) * reciprocal(toRational(y))
+    result = toRational(x) / toRational(y)
 
 when not defined(NOGMP):
     func toRational*(x: Int): VRational = 
