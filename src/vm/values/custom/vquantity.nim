@@ -890,9 +890,9 @@ proc `+`(a, b: Quantity): Quantity =
 
     let convB = b.convertTo(a.atoms)
 
-    echo "quantity A: " & $(a)
-    echo "quantity B: " & $(b)
-    echo "\tconverted: " & $(convB)
+    # echo "quantity A: " & $(a)
+    # echo "quantity B: " & $(b)
+    # echo "\tconverted: " & $(convB)
 
     result = toQuantity(a.original + convB.original, a.atoms)
 
