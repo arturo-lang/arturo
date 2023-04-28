@@ -896,8 +896,23 @@ proc `+`*(a, b: Quantity): Quantity =
 
     result = toQuantity(a.original + convB.original, a.atoms)
 
+proc `+=`*(a: var Quantity, b: Quantity) =
+    if not (a =~ b):
+        raise newException(ValueError, "Cannot add quantities with different dimensions.")
+
+    let convB = b.convertTo(a.atoms)
+
+    # echo "quantity A: " & $(a)
+    # echo "quantity B: " & $(b)
+    # echo "\tconverted: " & $(convB)
+
+    a.original += convB.original
+
 proc `+`*(a: Quantity, b: int | float | QuantityValue): Quantity =
     result = toQuantity(a.original + b, a.atoms)
+
+proc `+=`*(a: var Quantity, b: int | float | QuantityValue) =
+    a.original += b
 
 proc `-`(a, b: Quantity): Quantity =
     if not (a =~ b):
