@@ -435,47 +435,47 @@ template normalIntegerShrI*(x: var Value, y: int): untyped =
 # Methods
 #=======================================
 
-proc convertToTemperatureUnit*(v: Value, src: UnitName, tgt: UnitName): Value =
-    ## convert given temperature value ``v`` from ``src`` unit to ``tgt``
-    case src:
-        of C:
-            if tgt==F: return v * newFloating(9/5) + newInteger(32)
-            elif tgt==K: return v + newFloating(273.15)
-            else: return v * newFloating(9/5) + newFloating(491.67)
-        of F:
-            if tgt==C: return (v - newInteger(32)) * newFloating(5/9)
-            elif tgt==K: return (v - newInteger(32)) * newFloating(5/9) + newFloating(273.15)
-            else: return v + newFloating(459.67)
-        of K: 
-            if tgt==C: return v - newFloating(273.15)
-            elif tgt==F: return (v-newFloating(273.15)) * newFloating(9/5) + newInteger(32)
-            else: return v * newFloating(1.8)
-        of R:
-            if tgt==C: return (v - newFloating(491.67)) * newFloating(5/9)
-            elif tgt==F: return v - newFloating(459.67)
-            else: return v * newFloating(5/9)
+# proc convertToTemperatureUnit*(v: Value, src: UnitName, tgt: UnitName): Value =
+#     ## convert given temperature value ``v`` from ``src`` unit to ``tgt``
+#     case src:
+#         of C:
+#             if tgt==F: return v * newFloating(9/5) + newInteger(32)
+#             elif tgt==K: return v + newFloating(273.15)
+#             else: return v * newFloating(9/5) + newFloating(491.67)
+#         of F:
+#             if tgt==C: return (v - newInteger(32)) * newFloating(5/9)
+#             elif tgt==K: return (v - newInteger(32)) * newFloating(5/9) + newFloating(273.15)
+#             else: return v + newFloating(459.67)
+#         of K: 
+#             if tgt==C: return v - newFloating(273.15)
+#             elif tgt==F: return (v-newFloating(273.15)) * newFloating(9/5) + newInteger(32)
+#             else: return v * newFloating(1.8)
+#         of R:
+#             if tgt==C: return (v - newFloating(491.67)) * newFloating(5/9)
+#             elif tgt==F: return v - newFloating(459.67)
+#             else: return v * newFloating(5/9)
 
-        else: discard
+#         else: discard
 
-proc convertQuantityValue*(nm: Value, fromU: UnitName, toU: UnitName, fromKind = NoUnit, toKind = NoUnit, op = ""): Value =
-    ## convert given quantity value ``nm`` from ``fromU`` unit to ``toU`` 
-    var fromK = fromKind
-    var toK = toKind
-    if fromK==NoUnit: fromK = quantityKindForName(fromU)
-    if toK==NoUnit: toK = quantityKindForName(toU)
+# proc convertQuantityValue*(nm: Value, fromU: UnitName, toU: UnitName, fromKind = NoUnit, toKind = NoUnit, op = ""): Value =
+#     ## convert given quantity value ``nm`` from ``fromU`` unit to ``toU`` 
+#     var fromK = fromKind
+#     var toK = toKind
+#     if fromK==NoUnit: fromK = quantityKindForName(fromU)
+#     if toK==NoUnit: toK = quantityKindForName(toU)
 
-    if unlikely(fromK!=toK):
-        when not defined(WEB):
-            RuntimeError_CannotConvertQuantity($(nm), stringify(fromU), stringify(fromK), stringify(toU), stringify(toK))
+#     if unlikely(fromK!=toK):
+#         when not defined(WEB):
+#             RuntimeError_CannotConvertQuantity($(nm), stringify(fromU), stringify(fromK), stringify(toU), stringify(toK))
     
-    if toK == TemperatureUnit:
-        return convertToTemperatureUnit(nm, fromU, toU)
-    else:
-        let fmultiplier = getQuantityMultiplier(fromU, toU, isCurrency=fromK==CurrencyUnit)
-        if fmultiplier == 1.0:
-            return nm
-        else:
-            return nm * newFloating(fmultiplier)
+#     if toK == TemperatureUnit:
+#         return convertToTemperatureUnit(nm, fromU, toU)
+#     else:
+#         let fmultiplier = getQuantityMultiplier(fromU, toU, isCurrency=fromK==CurrencyUnit)
+#         if fmultiplier == 1.0:
+#             return nm
+#         else:
+#             return nm * newFloating(fmultiplier)
 
 #=======================================
 # Overloads
