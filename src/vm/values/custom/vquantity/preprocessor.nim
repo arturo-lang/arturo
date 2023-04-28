@@ -495,7 +495,7 @@ macro generateUnitParser*(): untyped =
 
 proc newLit(ct: CTRational): NimNode =
     nnkObjConstr.newTree(
-        newIdentNode("QuantityValue"),
+        newIdentNode("VRational"),
         nnkExprColonExpr.newTree(
             newIdentNode("rKind"),
             newIdentNode("NormalRational")
