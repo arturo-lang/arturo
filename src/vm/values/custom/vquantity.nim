@@ -794,10 +794,10 @@ proc parseValue(s: string): VRational =
     elif s.contains(":"):
         let ratParts = s.split(":")
         try:
-            result = initRational(parseInt(ratparts[0]), parseInt(ratparts[1]))
+            result = toRational(parseInt(ratparts[0]), parseInt(ratparts[1]))
         except ValueError:
             when not defined(NOGMP):
-                result = initRational(newInt(ratparts[0]), newInt(ratparts[1]))
+                result = toRational(newInt(ratparts[0]), newInt(ratparts[1]))
     else:
         try:
             result = toRational(parseInt(s))
