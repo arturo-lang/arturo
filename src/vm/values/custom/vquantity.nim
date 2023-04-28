@@ -792,6 +792,9 @@ proc toQuantity*(v: QuantityValue, atoms: Atoms): Quantity =
 
         result.atoms.add(atom)
 
+proc toQuantity*(v: int | float, atoms: Atoms): Quantity {.inline.} =
+    result = toQuantity(toRational(v), atoms)
+
 proc parseValue(s: string): QuantityValue =
     if s.contains("."):
         result = toRational(parseFloat(s))
