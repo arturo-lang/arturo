@@ -511,14 +511,10 @@ proc `+`*(x: Value, y: Value): Value =
         of Complex    || Complex        :   return newComplex(x.z + y.z)
         
         of Color      || Color          :   return newColor(x.l + y.l)
-        of Quantity   || Integer        :   return newQuantity(x.nm + y, x.unit)
-        of Quantity   || Floating       :   return newQuantity(x.nm + y, x.unit)
-        of Quantity   || Rational       :   return newQuantity(x.nm + y, x.unit)
-        of Quantity   || Quantity       :
-            if x.unit.name == y.unit.name:
-                return newQuantity(x.nm + y.nm, x.unit)
-            else:
-                return newQuantity(x.nm + convertQuantityValue(y.nm, y.unit.name, x.unit.name), x.unit)
+        of Quantity   || Integer        :   return newQuantity(x.q + y.i)
+        of Quantity   || Floating       :   return newQuantity(x.q + y.f)
+        of Quantity   || Rational       :   return newQuantity(x.q + y.rat)
+        of Quantity   || Quantity       :   return newQuantity(x.q + y.q)
         else:
             return invalidOperation("add")
 
