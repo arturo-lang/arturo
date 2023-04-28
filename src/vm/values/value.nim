@@ -432,9 +432,12 @@ proc newQuantity*(v: Value, atoms: string): Value {.inline.} =
     ## create Quantity value from a numerical value ``v`` (Value) + ``atoms`` (string)
     newQuantity(v, parseAtoms(atoms))
 
-proc newQuantity*(q: VQuantity): Value {.inline, enforceNoRaises.} =
+proc newQuantity*(q: VQuantity, copy: static bool = false): Value {.inline, enforceNoRaises.} =
     ## create Quantity value from QuantityValue ``q`` (QuantityValue) + ``a`` (Atoms)
-    Value(kind: Quantity, q: toQuantity(q.original, q.atoms))
+    when copy:
+        Value(kind: Quantity, q: toQuantity(q.original, q.atoms))
+    else:
+        Value(kind: Quantity, q: q)
 
 func newRegex*(rx: sink VRegex): Value {.inline, enforceNoRaises.} =
     ## create Regex value from VRegex
@@ -685,7 +688,7 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Symbol:          result = newSymbol(v.m)
         of SymbolLiteral:   result = newSymbolLiteral(v.m)
         of Regex:           result = newRegex(v.rx)
-        of Quantity:        result = newQuantity(v.q)
+        of Quantity:        result = newQuantity(v.q, copy=true)
         of Color:           result = newColor(v.l)
         of Date:            result = newDate(v.eobj[])
         of Binary:          result = newBinary(v.n)
