@@ -13,8 +13,8 @@
 #=======================================
 
 import hashes, macros
-import math, sequtils, strutils
-import sugar, tables, times, unicode
+import sequtils, strutils, sugar
+import tables, times, unicode
 
 when not defined(WEB):
     import net except Socket
