@@ -312,6 +312,10 @@ func `+`*(x: VRational, y: int): VRational =
         when not defined(NOGMP):
             result = x + toBigRational(y)
 
+func `+`*(x: VRational, y: float): VRational = 
+    # add VRational and float
+    x + toRational(y)
+
 func `+`*(x: int, y: VRational): VRational {.inline.} =
     # add int and VRational
     y + x
