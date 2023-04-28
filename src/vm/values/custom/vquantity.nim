@@ -12,7 +12,7 @@
 # Libraries
 #=======================================
 
-import algorithm, math, parseutils, sequtils, strutils, sugar, tables
+import algorithm, math, parseutils, sequtils, strutils, tables
 
 when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
