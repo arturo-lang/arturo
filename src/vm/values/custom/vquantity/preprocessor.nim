@@ -582,7 +582,7 @@ macro generateConstants*(): untyped =
             res.add nnkAsgn.newTree(
                 newIdentNode(name),
                 nnkCall.newTree(
-                    newIdentNode("newQuantity"),
+                    newIdentNode("toQuantity"),
                     newLit(definition.split(" ")[0]),
                     getAtomsSeq(parseAtoms(definition.split(" ")[1]))
                 )

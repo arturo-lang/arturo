@@ -781,7 +781,7 @@ proc parseAtoms*(str: string): Atoms =
 # Constructors
 #=======================================
 
-proc newQuantity*(v: QuantityValue, atoms: Atoms): Quantity =
+proc toQuantity*(v: QuantityValue, atoms: Atoms): Quantity =
     result.original = v
     result.value = v
 
@@ -809,18 +809,18 @@ proc parseValue(s: string): QuantityValue =
             when not defined(NOGMP):
                 result = toRational(newInt(s))
 
-proc newQuantity*(str: string): Quantity =
+proc toQuantity*(str: string): Quantity =
     let parts = str.split(" ")
 
     # Warning: we should be able to parse rational numbers as well!
     let value = parseValue(parts[0])
     let atoms = parseAtoms(parts[1])
 
-    result = newQuantity(value, atoms)
+    result = toQuantity(value, atoms)
 
-proc newQuantity*(vstr: string, atoms: Atoms): Quantity =
+proc toQuantity*(vstr: string, atoms: Atoms): Quantity =
     echo "defining ---> " & $(vstr)
-    result = newQuantity(parseValue(vstr), atoms)
+    result = toQuantity(parseValue(vstr), atoms)
 
 #=======================================
 # Methods
@@ -852,7 +852,7 @@ proc convertTo*(q: Quantity, atoms: Atoms): Quantity =
 
     # Solution 2
     let newVal = q.value/getValue(atoms)
-    result = newQuantity(newVal, atoms)
+    result = toQuantity(newVal, atoms)
 
 proc toBase*(q: Quantity): Atoms =
     for atom in q.atoms:
@@ -887,10 +887,10 @@ proc `+`(a, b: Quantity): Quantity =
     echo "quantity B: " & $(b)
     echo "\tconverted: " & $(convB)
 
-    result = newQuantity(a.original + convB.original, a.atoms)
+    result = toQuantity(a.original + convB.original, a.atoms)
 
 proc `+`(a: Quantity, b: int | float): Quantity =
-    result = newQuantity(a.original + float(b), a.atoms)
+    result = toQuantity(a.original + float(b), a.atoms)
 
 proc `-`(a, b: Quantity): Quantity =
     if not (a =~ b):
@@ -902,30 +902,30 @@ proc `-`(a, b: Quantity): Quantity =
     echo "quantity B: " & $(b)
     echo "\tconverted: " & $(convB)
 
-    result = newQuantity(a.original - convB.original, a.atoms)
+    result = toQuantity(a.original - convB.original, a.atoms)
 
 proc `-`(a: Quantity, b: int | float): Quantity =
-    result = newQuantity(a.original - float(b), a.atoms)
+    result = toQuantity(a.original - float(b), a.atoms)
 
 proc `*`(a, b: Quantity): Quantity =
     if a =~ b:
         let convB = b.convertTo(a.atoms)
-        result = newQuantity(a.original * convB.original, flatten(a.atoms & convB.atoms))
+        result = toQuantity(a.original * convB.original, flatten(a.atoms & convB.atoms))
     else:
-        result = newQuantity(a.original * b.original, flatten(a.atoms & b.atoms))
+        result = toQuantity(a.original * b.original, flatten(a.atoms & b.atoms))
 
 proc `*`(a: Quantity, b: int | float): Quantity =
-    result = newQuantity(a.original * float(b), a.atoms)
+    result = toQuantity(a.original * float(b), a.atoms)
 
 proc `/`(a, b: Quantity): Quantity =
     if a =~ b:
         let convB = b.convertTo(a.atoms)
-        result = newQuantity(a.original / convB.original, flatten(a.atoms & reverse(convB.atoms)))
+        result = toQuantity(a.original / convB.original, flatten(a.atoms & reverse(convB.atoms)))
     else:
-        result = newQuantity(a.original / b.original, flatten(a.atoms & reverse(b.atoms)))
+        result = toQuantity(a.original / b.original, flatten(a.atoms & reverse(b.atoms)))
 
 proc `/`(a: Quantity, b: int | float): Quantity =
-    result = newQuantity(a.original / b, a.atoms)
+    result = toQuantity(a.original / b, a.atoms)
 
 #=======================================
 # String converters
@@ -991,7 +991,7 @@ proc inspect*(q: Quantity) =
 
 proc defineNewUserUnit*(name: string, symbol: string, definition: string) =
     UserUnits[name] = symbol
-    Quantities[Unit(kind: User, name: name)] = newQuantity(definition)
+    Quantities[Unit(kind: User, name: name)] = toQuantity(definition)
 
 #=======================================
 # Setup
@@ -1005,7 +1005,7 @@ proc initQuantities*() =
     generateConstants()
     echo "AFTER"
 
-    # planckMass = newQuantity(parseValue("2.176434e-8"), parseAtoms("1/kg"))
+    # planckMass = toQuantity(parseValue("2.176434e-8"), parseAtoms("1/kg"))
 
 #=======================================
 # Testing
@@ -1060,16 +1060,16 @@ const
 when isMainModule:
     var x: Quantity
     # bmark "10_000":
-    #     x = newQuantity("3.0 m.kg2/s")
+    #     x = toQuantity("3.0 m.kg2/s")
 
     initQuantities()
 
-    # echo $(newQuantity("3 yd"))
-    # echo $(newQuantity("3.0 m.kg2/s"))
-    # echo $(newQuantity("3 ang"))
+    # echo $(toQuantity("3 yd"))
+    # echo $(toQuantity("3.0 m.kg2/s"))
+    # echo $(toQuantity("3 ang"))
 
-    # let threeYD = newQuantity("3 yd")
-    # let twoM = newQuantity("2 m")
+    # let threeYD = toQuantity("3 yd")
+    # let twoM = toQuantity("2 m")
     # echo "3yd ->"
     # inspect threeYD
     # echo "3yd + 1 ->"
@@ -1097,107 +1097,107 @@ when isMainModule:
     # inspect twoM * threeYD
     # echo "3yd * 2m ->"
     # inspect threeYD * twoM
-    # # inspect newQuantity("3.0 m.kg2/s")
-    # # inspect newQuantity("3 ang")
+    # # inspect toQuantity("3.0 m.kg2/s")
+    # # inspect toQuantity("3 ang")
 
-    # # inspect newQuantity("3 USD")
+    # # inspect toQuantity("3 USD")
 
     # # echo $(Quantities)
     # # inspect Quantities[Unit(kind: Core, core: USD_Unit)]
-    # # inspect newQuantity("3.0 EUR")
-    # # # echo $(newQuantity("3 zf"))
+    # # inspect toQuantity("3.0 EUR")
+    # # # echo $(toQuantity("3 zf"))
     # echo "Converting 3yd to meters"
-    # inspect (newQuantity("3 yd")).convertTo(parseAtoms("m"))
+    # inspect (toQuantity("3 yd")).convertTo(parseAtoms("m"))
 
     # echo "Converting 3m to yards"
-    # inspect (newQuantity("3 m")).convertTo(parseAtoms("yd"))
+    # inspect (toQuantity("3 m")).convertTo(parseAtoms("yd"))
 
     # echo "Converting 3yd2 to meters2"
-    # inspect (newQuantity("3 yd2")).convertTo(parseAtoms("m2"))
+    # inspect (toQuantity("3 yd2")).convertTo(parseAtoms("m2"))
 
     # echo "Converting 3m2 to yards2"
-    # inspect (newQuantity("3 m2")).convertTo(parseAtoms("yd2"))
+    # inspect (toQuantity("3 m2")).convertTo(parseAtoms("yd2"))
 
-    # toBase(newQuantity("3 W"))
+    # toBase(toQuantity("3 W"))
 
     # echo "Converting 3m to yards2"
-    # inspect (newQuantity("3 m")).convertTo(parseAtoms("yd2"))
+    # inspect (toQuantity("3 m")).convertTo(parseAtoms("yd2"))
 
     # echo "Converting 300cm to meters"
-    # inspect (newQuantity("300 cm")).convertTo(parseAtoms("m"))
+    # inspect (toQuantity("300 cm")).convertTo(parseAtoms("m"))
 
     # echo "Converting 3m to cm"
-    # inspect (newQuantity("3 m")).convertTo(parseAtoms("cm"))
+    # inspect (toQuantity("3 m")).convertTo(parseAtoms("cm"))
 
     # echo "Convert 3yd to m" # 2.7432
-    # inspect (newQuantity("3 yd")).convertTo(parseAtoms("m"))
+    # inspect (toQuantity("3 yd")).convertTo(parseAtoms("m"))
 
     # echo "Convert 3m to yd" # 3.28084
-    # inspect (newQuantity("3 m")).convertTo(parseAtoms("yd"))
+    # inspect (toQuantity("3 m")).convertTo(parseAtoms("yd"))
 
     # echo "Convert 300cm to yd"
-    # inspect (newQuantity("300 cm")).convertTo(parseAtoms("yd"))
+    # inspect (toQuantity("300 cm")).convertTo(parseAtoms("yd"))
 
     # echo "Convert 1kg to lb"
-    # inspect (newQuantity("1 kg")).convertTo(parseAtoms("lb"))
+    # inspect (toQuantity("1 kg")).convertTo(parseAtoms("lb"))
 
     # echo "Convert 2m2 to yd2"
-    # inspect (newQuantity("2 m2")).convertTo(parseAtoms("yd2"))
+    # inspect (toQuantity("2 m2")).convertTo(parseAtoms("yd2"))
 
     # echo "Convert 2yd2 to m2"
-    # inspect (newQuantity("2 yd2")).convertTo(parseAtoms("m2"))
+    # inspect (toQuantity("2 yd2")).convertTo(parseAtoms("m2"))
 
     # echo "Convert 3N to kg.m/s2"
-    # inspect (newQuantity("3 N")).convertTo(parseAtoms("kg.m/s2"))
+    # inspect (toQuantity("3 N")).convertTo(parseAtoms("kg.m/s2"))
 
     # echo "Convert 3kg.m/s2 to N"
-    # inspect (newQuantity("3 kg.m/s2")).convertTo(parseAtoms("N"))
+    # inspect (toQuantity("3 kg.m/s2")).convertTo(parseAtoms("N"))
 
-    # inspect (newQuantity("5 Pa"))
+    # inspect (toQuantity("5 Pa"))
 
-    # inspect (newQuantity("3 H"))
+    # inspect (toQuantity("3 H"))
 
     # echo "Adding 3m and 2yd"
-    # inspect (newQuantity("3 m")) + (newQuantity("2 yd"))
+    # inspect (toQuantity("3 m")) + (toQuantity("2 yd"))
 
     # echo "Adding 2yd and 3m"
-    # inspect (newQuantity("2 yd")) + (newQuantity("3 m"))
+    # inspect (toQuantity("2 yd")) + (toQuantity("3 m"))
 
     # echo "Subtracting 3m and 2yd"
-    # inspect (newQuantity("3 m")) - (newQuantity("2 yd"))
+    # inspect (toQuantity("3 m")) - (toQuantity("2 yd"))
 
     # echo "multiplying 3m and 2yd"
-    # inspect (newQuantity("3 m")) * (newQuantity("2 yd"))
+    # inspect (toQuantity("3 m")) * (toQuantity("2 yd"))
 
     # echo "multiplying 2yd and 3m"
-    # inspect (newQuantity("2 yd")) * (newQuantity("3 m"))
+    # inspect (toQuantity("2 yd")) * (toQuantity("3 m"))
 
     # echo "dividing 3m and 3m"
-    # inspect (newQuantity("3 m")) / (newQuantity("3 m"))
+    # inspect (toQuantity("3 m")) / (toQuantity("3 m"))
 
     # echo "dividing 3m2 and 3m"
-    # inspect (newQuantity("3 m2")) / (newQuantity("3 m"))
+    # inspect (toQuantity("3 m2")) / (toQuantity("3 m"))
 
     # echo "dividing 3m3 and 3m"
-    # inspect (newQuantity("3 m3")) / (newQuantity("3 m"))
+    # inspect (toQuantity("3 m3")) / (toQuantity("3 m"))
 
     # echo "dividing 3m3 and 3m2"
-    inspect (newQuantity("3 m3")) / (newQuantity("3 m2"))
+    inspect (toQuantity("3 m3")) / (toQuantity("3 m2"))
 
     defineNewUserUnit("zf", "Zf", "1 bit/m.s")
 
     echo $(Quantities[Unit(kind:User, name:"zf")])
 
-    echo $(newQuantity("3 zf") + newQuantity("12 bit/yd.s"))
+    echo $(toQuantity("3 zf") + toQuantity("12 bit/yd.s"))
 
-    echo $(newQuantity("3 m") + newQuantity("12 yd"))
-    #echo $(newQuantity("3 s/m") + newQuantity("12 zf"))
+    echo $(toQuantity("3 m") + toQuantity("12 yd"))
+    #echo $(toQuantity("3 s/m") + toQuantity("12 zf"))
 
-    echo $(newQuantity("3 days") + newQuantity("1 week"))
+    echo $(toQuantity("3 days") + toQuantity("1 week"))
 
-    echo $(newQuantity("15 km/hr") * newQuantity("30 min"))
+    echo $(toQuantity("15 km/hr") * toQuantity("30 min"))
 
-    echo $(newQuantity("0 g") + newQuantity("1 ozt"))
+    echo $(toQuantity("0 g") + toQuantity("1 ozt"))
 
     # proc getSign1(x: float): float {.inline.} =
     #     if x < 12:
