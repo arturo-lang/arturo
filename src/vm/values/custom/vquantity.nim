@@ -976,6 +976,15 @@ proc `$`*(atoms: Atoms, oneline: static bool=false): string =
 proc `$`*(q: Quantity): string =
     result = $q.original & " " & $q.atoms
 
+proc codify*(q: Quantity): string =
+    result = ($q.original).replace("/",":") & "`"
+    
+    result &= ($(q.atoms)).replace("·",".")
+                          .replace("¹","")
+                          .replace("²","2")
+                          .replace("³","3")
+                          .replace("⁴","4")
+
 proc inspect*(q: Quantity) =
     echo "----------------------------------------"
     echo $(q)
