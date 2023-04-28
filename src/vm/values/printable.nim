@@ -102,7 +102,7 @@ proc `$`*(v: Value): string {.inline.} =
            SymbolLiteral:
             return $(v.m)
         of Quantity:
-            return $(v.nm) & stringify(v.unit.name)
+            return $(v.q)
         of Regex:
             return $(v.rx)
         of Color        :
