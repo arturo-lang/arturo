@@ -209,14 +209,10 @@ proc parseDimensionFormula*(str: string):int64 =
     for (tp, exp) in dims.pairs:
         sign += pow(MagicPower, float(dimList.find(tp))) * float(exp)
 
-    echo $(dims)
-
     return int64(sign)
 
 proc defDimension*(quantity: string, formula: string = "") =
-    echo "parsing: " & formula
     let signature = parseDimensionFormula(formula)
-    echo "signature is: " & $(signature)
 
     if dimensions.hasKey(signature):
         raise newException(ValueError, "Dimension already defined: " & quantity & " => " & dimensions[signature])
@@ -226,7 +222,6 @@ proc defPrefix*(prefix, symbol: string, value: int) =
     prefixes[prefix] = (sym: symbol, val: value)
 
 proc defUnit*(unit: string, symbol: string, prefixed: bool, definition: string, aliases: varargs[string]) =
-    echo "defining: " & unit
     units[unit] = symbol
     if definition != "":
         if definition[0] in 'A'..'Z':
@@ -268,42 +263,6 @@ proc defConstant*(name: string, precalculated: bool, definition: string) =
 proc defCurrency*(currency: string, symbol: string) =
     currencyUnits.add(currency)
     defUnit(currency, symbol, false, "")
-
-proc debugAdd(a,b:string) =
-    let pA = parseQuantity(a)
-    let pB = parseQuantity(b)
-    echo a & " + " & b & " = " & $(pA + pB)
-
-proc debugMul(a,b:string) =
-    let pA = parseQuantity(a)
-    let pB = parseQuantity(b)
-    echo a & " * " & b & " = " & $(pA * pB)
-
-proc printUnits*() =
-    for unit, quantity in defs:
-        echo unit & " = "
-        echo "\t.original = " & $(quantity.original)
-        echo "\t.value = " & $(quantity.value)
-        echo "\t\t.signature = " & $(quantity.signature)
-        echo "\t\t===> " & $quantity.getDimension()
-        echo "\t.atoms = " & $(quantity.atoms)
-        echo "\t.base = " & $(quantity.base)
-        echo ""
-
-    echo $(constants)
-
-    # echo $(parsable)
-
-    # echo $(parseQuantity("1 kg/m2"))
-
-    # debugAdd "1 m", "1 m"
-    # debugAdd "1 m", "3 m"
-    # debugAdd "1 m", "1 yd"
-
-    # debugAdd "3 m", "2 yd"
-
-    # debugMul "2 m", "3 m" 
-    # debugMul "2 m", "3 yd" 
 
 macro generatePrefixDefinitions*(): untyped =
     let res = nnkEnumTy.newTree(
@@ -609,3 +568,26 @@ macro generateConstants*(): untyped =
             )
 
     res
+
+proc debugAdd(a,b:string) =
+    let pA = parseQuantity(a)
+    let pB = parseQuantity(b)
+    echo a & " + " & b & " = " & $(pA + pB)
+
+proc debugMul(a,b:string) =
+    let pA = parseQuantity(a)
+    let pB = parseQuantity(b)
+    echo a & " * " & b & " = " & $(pA * pB)
+
+proc printUnits*() =
+    for unit, quantity in defs:
+        echo unit & " = "
+        echo "\t.original = " & $(quantity.original)
+        echo "\t.value = " & $(quantity.value)
+        echo "\t\t.signature = " & $(quantity.signature)
+        echo "\t\t===> " & $quantity.getDimension()
+        echo "\t.atoms = " & $(quantity.atoms)
+        echo "\t.base = " & $(quantity.base)
+        echo ""
+
+    echo $(constants)
