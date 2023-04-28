@@ -710,7 +710,7 @@ proc `*`*(x: Value, y: Value): Value =
         of BigInteger || Floating       :   (when GMP: return newFloating(x.bi * y.f))
         of Integer    || Rational       :   return newRational(x.i * y.rat)
         of Integer    || Complex        :   return newComplex(float(x.i) * y.z)
-        of Integer    || Quantity       :   return newQuantity(x * y.nm, y.unit)
+        of Integer    || Quantity       :   return newQuantity(x.i * y.q)
 
         of Floating   || Integer        :   return newFloating(x.f * float(y.i))
         of Floating   || BigInteger     :   (when GMP: return newFloating(x.f * y.bi))
@@ -727,16 +727,10 @@ proc `*`*(x: Value, y: Value): Value =
         of Complex    || Rational       :   return newComplex(x.z * toFloat(y.rat))
         of Complex    || Complex        :   return newComplex(x.z * y.z)
         
-        of Quantity   || Integer        :   return newQuantity(x.nm * y, x.unit)
-        of Quantity   || Floating       :   return newQuantity(x.nm * y, x.unit)
-        of Quantity   || Rational       :   return newQuantity(x.nm * y, x.unit)
-        of Quantity   || Quantity       :
-            let finalSpec = getFinalUnitAfterOperation("mul", x.unit, y.unit)
-            if unlikely(finalSpec == ErrorQuantity):
-                when not defined(WEB):
-                    RuntimeError_IncompatibleQuantityOperation("mul", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
-            else:
-                return newQuantity(x.nm * convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
+        of Quantity   || Integer        :   return newQuantity(x.q * y.i)
+        of Quantity   || Floating       :   return newQuantity(x.q * y.f)
+        of Quantity   || Rational       :   return newQuantity(x.q * y.rat)
+        of Quantity   || Quantity       :   return newQuantity(x.q * y.q)
         else:
             return invalidOperation("mul")
 
