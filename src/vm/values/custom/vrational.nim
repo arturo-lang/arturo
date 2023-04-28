@@ -50,6 +50,8 @@ func toRational*(num, den: int): VRational {.inline.}
 when not defined(NOGMP):
     func toBigRational*(x: int | Int | float): VRational
 
+func `*`*(x, y: VRational): VRational
+
 #=======================================
 # Helpers
 #=======================================
@@ -134,8 +136,9 @@ func toRational*(x: int): VRational =
     result.num = x
     result.den = 1
 
-func toRational*(x: float, n: int = high(int) shr (sizeof(int) div 2 * 8)): VRational =
+func toRational*(x: float): VRational =
     # create VRational from float
+    let n: int = high(int) shr (sizeof(int) div 2 * 8)
     var
         m11, m22 = 1
         m12, m21 = 0
@@ -160,6 +163,14 @@ func toRational*(x: float, n: int = high(int) shr (sizeof(int) div 2 * 8)): VRat
                 break # representation failure; should throw error?
         ai = int(x)
     result = m11 // m21
+
+func toRational*(x: float, y: int | float): VRational =
+    # create VRational from numerator and denominator (float and int or float)
+    result = toRational(x) * toRational(y)
+
+func toRational*(x: int, y: float): VRational =
+    # create VRational from numerator and denominator (int and float)
+    result = toRational(x) * toRational(y)
 
 when not defined(NOGMP):
     func toRational*(x: Int): VRational = 
