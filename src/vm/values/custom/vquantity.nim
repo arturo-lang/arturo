@@ -896,8 +896,8 @@ proc `+`(a, b: Quantity): Quantity =
 
     result = toQuantity(a.original + convB.original, a.atoms)
 
-proc `+`(a: Quantity, b: int | float): Quantity =
-    result = toQuantity(a.original + float(b), a.atoms)
+proc `+`*(a: Quantity, b: int | float | QuantityValue): Quantity =
+    result = toQuantity(a.original + b, a.atoms)
 
 proc `-`(a, b: Quantity): Quantity =
     if not (a =~ b):
