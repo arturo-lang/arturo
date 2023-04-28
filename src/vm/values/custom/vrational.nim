@@ -426,6 +426,10 @@ func `-`*(x: VRational, y: int): VRational =
         when not defined(NOGMP):
             result = x - toBigRational(y)
 
+func `-`*(x: VRational, y: float): VRational = 
+    # add VRational and float
+    x - toRational(y)
+
 func `-`*(x: int, y: VRational): VRational =
     # subtract VRational from int
     if y.rKind == NormalRational:
@@ -483,6 +487,10 @@ func `-=`*(x: var VRational, y: int) =
     else:
         when not defined(NOGMP):
             x -= toBigRational(y)
+
+func `-=`*(x: var VRational, y: float) =
+    # subtract float from VRational, in-place
+    x -= toRational(y)
 
 func `*`*(x, y: VRational): VRational =
     # multiply two VRationals
