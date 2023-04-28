@@ -250,51 +250,22 @@ func newRational*(rat: VRational): Value {.inline, enforceNoRaises.} =
     ## create Rational value from VRational
     Value(kind: Rational, rat: rat)
 
-func newRational*(num: int, den: int): Value {.inline.} =
-    ## create Rational value from numerator + denominator (int)
-    Value(kind: Rational, rat: toRational(num, den))
-
-func newRational*(num: float, den: int | float): Value {.inline.} =
-    ## create Rational value from numerator + denominator (float and int or float)
-    Value(kind: Rational, rat: toRational(num, den))
-
-func newRational*(num: int, den: float): Value {.inline.} =
-    ## create Rational value from numerator + denominator (int and float)
-    Value(kind: Rational, rat: toRational(num, den))
-
 when not defined(NOGMP):
-    func newRational*(num: int, den: Int): Value {.inline.} =
-        ## create Rational value from numerator + denominator (int, Int)
+    func newRational*(n: int | float | Int): Value {.inline.} =
+        ## create Rational value from int, float or Int
+        Value(kind: Rational, rat: toRational(n))
+
+    func newRational*(num: int | float | Int, den: int | float | Int): Value {.inline.} = 
+        ## create Rational value from numerator + denominator (int, float or Int)
         Value(kind: Rational, rat: toRational(num, den))
+else:
+    func newRational*(n: int | float): Value {.inline.} =
+        ## create Rational value from int or float
+        Value(kind: Rational, rat: toRational(n))
 
-    func newRational*(num: Int, den: int): Value {.inline.} =
-        ## create Rational value from numerator + denominator (Int, int)
+    func newRational*(num: int | float, den: int | float): Value {.inline.} = 
+        ## create Rational value from numerator + denominator (int or float)
         Value(kind: Rational, rat: toRational(num, den))
-
-    func newRational*(num: Int, den: Int): Value {.inline.} =
-        ## create Rational value from numerator + denominator (Int, Int)
-        Value(kind: Rational, rat: toRational(num, den))
-
-    func newRational*(num: float, den: Int): Value {.inline.} =
-        ## create Rational value from numerator + denominator (float, Int)
-        Value(kind: Rational, rat: toRational(num, den))
-
-    func newRational*(num: Int, den: float): Value {.inline.} =
-        ## create Rational value from numerator + denominator (Int, float)
-        Value(kind: Rational, rat: toRational(num, den))
-
-func newRational*(n: int): Value {.inline.} =
-    ## create Rational value from int
-    Value(kind: Rational, rat: toRational(n))
-
-when not defined(NOGMP):
-    func newRational*(n: Int): Value {.inline.} =
-        ## create Rational value from Int
-        Value(kind: Rational, rat: toBigRational(n))
-
-func newRational*(n: float): Value {.inline.} =
-    ## create Rational value from float
-    Value(kind: Rational, rat: toRational(n))
 
 func newRational*(num: Value, den: Value): Value {.inline, enforceNoRaises.} =
     ## create Rational value from numerator + denominator (Value)
