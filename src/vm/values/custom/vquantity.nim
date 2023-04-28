@@ -659,7 +659,7 @@ type
         atoms       : Atoms
         flags       : set[QuantityFlag]
 
-    VQuantity = Quantity
+    VQuantity* = Quantity
 
 # Benchmarking
 {.hints: on.} # Apparently we cannot disable just `Name` hints?
