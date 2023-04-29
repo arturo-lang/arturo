@@ -285,6 +285,9 @@ func set*(z: Rat, s: string, base: cint = 10): Rat =
 func toCLong*(x: Int): clong =
     mpz_get_si(x[])
 
+func toCDouble*(x: Int): cdouble =
+    return mpz_get_d(x[])
+
 func toCDouble*(x: Float): cdouble =
     return mpfr_get_d(x[], MPFR_RNDN)
 
