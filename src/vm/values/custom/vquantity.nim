@@ -689,7 +689,7 @@ var
 
     Dimensions          : Table[QuantitySignature, string]
     Quantities          : Table[Unit, Quantity]
-    UserUnits           : Table[string,string]
+    UserUnits           : Table[string, string]
 
 #=======================================
 # Useful Constants
