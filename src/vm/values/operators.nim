@@ -765,8 +765,11 @@ proc `*=`*(x: var Value, y: Value) =
         of Integer    || Floating       :   x = newFloating(x.i * y.f)
         of BigInteger || Floating       :   (when GMP: x = newFloating(x.bi * y.f))
         of Integer    || Rational       :   x = newRational(x.i * y.rat)
+        of BigInteger || Rational       :   (when GMP: x = newRational(x.bi * y.rat))
         of Integer    || Complex        :   x = newComplex(float(x.i) * y.z)
-        of Integer    || Quantity       :   x = newQuantity(x * y.nm, y.unit)
+        of Integer    || Quantity       :   x = newQuantity(x.i * y.q)
+        of BigInteger || Quantity       :   (when GMP: x = newQuantity(x.bi * y.q))
+
         of Floating   || Integer        :   x.f *= float(y.i)
         of Floating   || BigInteger     :   (when GMP: x = newFloating(x.f * y.bi))
         of Floating   || Floating       :   x.f *= y.f
@@ -783,16 +786,11 @@ proc `*=`*(x: var Value, y: Value) =
         of Complex    || Rational       :   x.z *= toFloat(y.rat)
         of Complex    || Complex        :   x.z *= y.z
         
-        of Quantity   || Integer        :   x.nm *= y
-        of Quantity   || Floating       :   x.nm *= y
-        of Quantity   || Rational       :   x.nm *= y
-        of Quantity   || Quantity       :
-            let finalSpec = getFinalUnitAfterOperation("mul", x.unit, y.unit)
-            if unlikely(finalSpec == ErrorQuantity):
-                when not defined(WEB):
-                    RuntimeError_IncompatibleQuantityOperation("mul", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
-            else:
-                x = newQuantity(x.nm * convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
+        of Quantity   || Integer        :   x.q *= y.i
+        of Quantity   || BigInteger     :   (when GMP: x.q *= y.bi)
+        of Quantity   || Floating       :   x.q *= y.f
+        of Quantity   || Rational       :   x.q *= y.rat
+        of Quantity   || Quantity       :   x.q *= y.q
         else:
             discard invalidOperation("mul")
 
