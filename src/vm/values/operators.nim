@@ -724,6 +724,7 @@ proc `*`*(x: Value, y: Value): Value =
         of BigInteger || Rational       :   (when GMP: return newRational(x.bi * y.rat))
         of Integer    || Complex        :   return newComplex(float(x.i) * y.z)
         of Integer    || Quantity       :   return newQuantity(x.i * y.q)
+        of BigInteger || Quantity       :   (when GMP: return newQuantity(x.bi * y.q))
 
         of Floating   || Integer        :   return newFloating(x.f * float(y.i))
         of Floating   || BigInteger     :   (when GMP: return newFloating(x.f * y.bi))
