@@ -1014,6 +1014,22 @@ when not defined(NOGMP):
     proc `/=`*(a: var Quantity, b: Int) =
         a.original /= b
 
+# TODO(VQuantity) should `/` & `//` implementations be the same?
+#  labels: values, open discussion
+proc `//`*(a: Quantity, b: int | float | Quantity | QuantityValue): Quantity =
+    a / b
+
+when not defined(NOGMP):
+    proc `//`*(a: Quantity, b: Int): Quantity =
+        a / b
+
+proc `//=`*(a: var Quantity, b: int | float | Quantity | QuantityValue) =
+    a = a // b
+
+when not defined(NOGMP):
+    proc `//=`*(a: var Quantity, b: Int) =
+        a = a // b
+
 #=======================================
 # String converters
 #=======================================
