@@ -990,14 +990,14 @@ when not defined(NOGMP):
     proc `*=`*(a: var Quantity, b: Int) =
         a.original *= b
 
-proc `/`(a, b: Quantity): Quantity =
+proc `/`*(a, b: Quantity): Quantity =
     if a =~ b:
         let convB = b.convertTo(a.atoms)
         result = toQuantity(a.original / convB.original, flatten(a.atoms & reverse(convB.atoms)))
     else:
         result = toQuantity(a.original / b.original, flatten(a.atoms & reverse(b.atoms)))
 
-proc `/`(a: Quantity, b: int | float): Quantity =
+proc `/`*(a: Quantity, b: int | float | QuantityValue): Quantity =
     result = toQuantity(a.original / b, a.atoms)
 
 #=======================================
