@@ -707,6 +707,8 @@ func isUnitless(q: Quantity): bool {.inline.} =
     return q.signature == 0
 
 proc getPrimitive(unit: PrefixedUnit): Quantity =
+    # echo "in getPrimitive: ", unit.u, " ", unit.p
+    # echo $(Quantities)
     result = Quantities[unit.u]
 
     # Warning: This may be losing information for too-low or too-high values!
@@ -1187,63 +1189,64 @@ proc initQuantities*() =
     Dimensions = generateDimensions()
     Quantities = generateQuantities()
 
-    echo "BEFORE"
+    #echo "BEFORE"
     generateConstants()
-    echo "AFTER"
+    # echo "AFTER"
 
     # planckMass = toQuantity(parseValue("2.176434e-8"), parseAtoms("1/kg"))
 
 #=======================================
 # Testing
 #=======================================
-static:
-    printUnits()
 
-
-
-import helpers/benchmark
-import random, strutils
-
-template bmark(ttl:string, action:untyped):untyped =
-    echo "----------------------"
-    echo ttl
-    echo "----------------------"
-    benchmark "":
-        for i in 1..1_000_000:
-            action
-
-const
-    pwrs = [
-        1.int64, 
-        6.int64,
-        36.int64, 
-        216.int64, 
-        1296.int64,
-        7776.int64,
-        46656.int64,
-        279936.int64,
-        1679616.int64,
-        10077696.int64,
-        60466176.int64,
-        362797056.int64,
-        2176782336,
-        2176782337,
-        2176782338,
-        2176782339,
-        2176782340,
-        2176782341,
-        2176782342,
-        2176782343,
-        2176782344,
-        2176782345,
-        2176782346,
-        2176782347,
-        2176782348,
-        2176782349,
-        2176782350
-    ]
+initQuantities()
 
 when isMainModule:
+    static:
+        printUnits()
+
+    import helpers/benchmark
+    import random, strutils
+
+    template bmark(ttl:string, action:untyped):untyped =
+        echo "----------------------"
+        echo ttl
+        echo "----------------------"
+        benchmark "":
+            for i in 1..1_000_000:
+                action
+
+    const
+        pwrs = [
+            1.int64, 
+            6.int64,
+            36.int64, 
+            216.int64, 
+            1296.int64,
+            7776.int64,
+            46656.int64,
+            279936.int64,
+            1679616.int64,
+            10077696.int64,
+            60466176.int64,
+            362797056.int64,
+            2176782336,
+            2176782337,
+            2176782338,
+            2176782339,
+            2176782340,
+            2176782341,
+            2176782342,
+            2176782343,
+            2176782344,
+            2176782345,
+            2176782346,
+            2176782347,
+            2176782348,
+            2176782349,
+            2176782350
+        ]
+
     var x: Quantity
     # bmark "10_000":
     #     x = toQuantity("3.0 m.kg2/s")
