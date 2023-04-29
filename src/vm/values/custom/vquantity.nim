@@ -1146,7 +1146,7 @@ proc `$`*(atoms: Atoms, oneline: static bool=false): string =
         result = atoms.mapIt($it).join("·")
 
 proc `$`*(q: Quantity): string =
-    result = $q.original & " " & $q.atoms
+    result = stringify(q.original) & " " & $q.atoms & " (= " & $q.original & ")"
 
 proc codify*(q: Quantity): string =
     result = ($q.original).replace("/",":") & "`"
