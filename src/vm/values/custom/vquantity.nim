@@ -1000,6 +1000,10 @@ proc `/`*(a, b: Quantity): Quantity =
 proc `/`*(a: Quantity, b: int | float | QuantityValue): Quantity =
     result = toQuantity(a.original / b, a.atoms)
 
+when not defined(NOGMP):
+    proc `/`*(a: Quantity, b: Int): Quantity =
+        result = toQuantity(a.original / b, a.atoms)
+
 #=======================================
 # String converters
 #=======================================
