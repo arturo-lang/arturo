@@ -205,7 +205,7 @@ proc defineSymbols*() =
                 let time = getBenchmark:
                     execUnscoped(preevaled)
 
-                push newQuantity(newFloating(time), newQuantitySpec(MS))
+                push newQuantity(toQuantity(time, parseAtoms("ms")))
             else:
                 benchmark "":
                     execUnscoped(preevaled)
