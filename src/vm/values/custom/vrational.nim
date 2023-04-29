@@ -867,6 +867,16 @@ func `==`*(x, y: VRational): bool =
             else:
                 result = x.br == y.br
 
+when not defined(NOGMP):
+    func `==`*(x: VRational, y: Int): bool =
+        raise newException(
+            ValueError,
+            "comparison between VRational and Int not yet supported"
+        )
+
+    func `==`*(x: Int, y: VRational): bool =
+        y == x
+
 #=======================================
 # Methods
 #=======================================
