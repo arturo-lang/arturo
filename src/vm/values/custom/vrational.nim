@@ -578,7 +578,7 @@ when not defined(NOGMP):
         # multiply VRational by Int
         x * toRational(y)
 
-    func `-`*(x: Int, y: VRational): VRational =
+    func `*`*(x: Int, y: VRational): VRational =
         # multiply Int by VRational
         toRational(x) * y
 
