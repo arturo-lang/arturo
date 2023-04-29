@@ -493,6 +493,7 @@ proc `+`*(x: Value, y: Value): Value =
         of Integer    || Floating       :   return newFloating(x.i + y.f)
         of BigInteger || Floating       :   (when GMP: return newFloating(x.bi + y.f))
         of Integer    || Rational       :   return newRational(x.i + y.rat)
+        of BigInteger || Rational       :   (when GMP: return newRational(x.bi + y.rat))
         of Integer    || Complex        :   return newComplex(float(x.i) + y.z)
 
         of Floating   || Integer        :   return newFloating(x.f + float(y.i))
@@ -512,6 +513,7 @@ proc `+`*(x: Value, y: Value): Value =
         
         of Color      || Color          :   return newColor(x.l + y.l)
         of Quantity   || Integer        :   return newQuantity(x.q + y.i)
+        of Quantity   || BigInteger     :   (when GMP: return newQuantity(x.q + y.bi))
         of Quantity   || Floating       :   return newQuantity(x.q + y.f)
         of Quantity   || Rational       :   return newQuantity(x.q + y.rat)
         of Quantity   || Quantity       :   return newQuantity(x.q + y.q)
@@ -533,6 +535,7 @@ proc `+=`*(x: var Value, y: Value) =
         of Integer    || Floating       :   x = newFloating(x.i + y.f)
         of BigInteger || Floating       :   (when GMP: x = newFloating(x.bi + y.f))
         of Integer    || Rational       :   x = newRational(x.i + y.rat)
+        of BigInteger || Rational       :   (when GMP: x = newRational(x.bi + y.rat))
         of Integer    || Complex        :   x = newComplex(float(x.i) + y.z)
 
         of Floating   || Integer        :   x.f += float(y.i)
@@ -552,6 +555,7 @@ proc `+=`*(x: var Value, y: Value) =
         
         of Color      || Color          :   x.l += y.l
         of Quantity   || Integer        :   x.q += y.i
+        of Quantity   || BigInteger     :   (when GMP: x.q += y.bi)
         of Quantity   || Floating       :   x.q += y.f
         of Quantity   || Rational       :   x.q += y.rat
         of Quantity   || Quantity       :   x.q += y.q
@@ -601,6 +605,7 @@ proc `-`*(x: Value, y: Value): Value =
         of Integer    || Floating       :   return newFloating(x.i - y.f)
         of BigInteger || Floating       :   (when GMP: return newFloating(x.bi - y.f))
         of Integer    || Rational       :   return newRational(x.i - y.rat)
+        of BigInteger || Rational       :   (when GMP: return newRational(x.bi - y.rat))
         of Integer    || Complex        :   return newComplex(float(x.i) - y.z)
 
         of Floating   || Integer        :   return newFloating(x.f - float(y.i))
@@ -620,6 +625,7 @@ proc `-`*(x: Value, y: Value): Value =
         
         of Color      || Color          :   return newColor(x.l - y.l)
         of Quantity   || Integer        :   return newQuantity(x.q - y.i)
+        of Quantity   || BigInteger     :   (when GMP: return newQuantity(x.q - y.bi))
         of Quantity   || Floating       :   return newQuantity(x.q - y.f)
         of Quantity   || Rational       :   return newQuantity(x.q - y.rat)
         of Quantity   || Quantity       :   return newQuantity(x.q - y.q)
@@ -641,6 +647,7 @@ proc `-=`*(x: var Value, y: Value) =
         of Integer    || Floating       :   x = newFloating(x.i - y.f)
         of BigInteger || Floating       :   (when GMP: x = newFloating(x.bi - y.f))
         of Integer    || Rational       :   x = newRational(x.i - y.rat)
+        of BigInteger || Rational       :   (when GMP: x = newRational(x.bi - y.rat))
         of Integer    || Complex        :   x = newComplex(float(x.i) - y.z)
 
         of Floating   || Integer        :   x.f -= float(y.i)
@@ -660,6 +667,7 @@ proc `-=`*(x: var Value, y: Value) =
         
         of Color      || Color          :   x.l -= y.l
         of Quantity   || Integer        :   x.q -= y.i
+        of Quantity   || BigInteger     :   (when GMP: x.q -= y.bi)
         of Quantity   || Floating       :   x.q -= y.f
         of Quantity   || Rational       :   x.q -= y.rat
         of Quantity   || Quantity       :   x.q -= y.q
@@ -709,6 +717,7 @@ proc `*`*(x: Value, y: Value): Value =
         of Integer    || Floating       :   return newFloating(x.i * y.f)
         of BigInteger || Floating       :   (when GMP: return newFloating(x.bi * y.f))
         of Integer    || Rational       :   return newRational(x.i * y.rat)
+        of BigInteger || Rational       :   (when GMP: return newRational(x.bi * y.rat))
         of Integer    || Complex        :   return newComplex(float(x.i) * y.z)
         of Integer    || Quantity       :   return newQuantity(x.i * y.q)
 
@@ -728,6 +737,7 @@ proc `*`*(x: Value, y: Value): Value =
         of Complex    || Complex        :   return newComplex(x.z * y.z)
         
         of Quantity   || Integer        :   return newQuantity(x.q * y.i)
+        of Quantity   || BigInteger     :   (when GMP: return newQuantity(x.q * y.bi))
         of Quantity   || Floating       :   return newQuantity(x.q * y.f)
         of Quantity   || Rational       :   return newQuantity(x.q * y.rat)
         of Quantity   || Quantity       :   return newQuantity(x.q * y.q)
