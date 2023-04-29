@@ -30,6 +30,7 @@ when not defined(NOGMP):
 import helpers/maths
 import helpers/ranges
 import vm/values/custom/vrange
+import vm/values/custom/vquantity
 
 import vm/errors
 
@@ -42,7 +43,7 @@ import vm/lib
 template processTrigonometric(fun: untyped): untyped =
     var v = x
     if xKind == Quantity:
-        v = convertQuantityValue(x.nm, x.unit.name, RAD)
+        v = newQuantity(x.q.convertTo(parseAtoms("rad")))
 
     if v.kind==Complex: push(newComplex(fun(v.z)))
     else: push(newFloating(fun(asFloat(v))))
