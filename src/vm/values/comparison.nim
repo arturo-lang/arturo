@@ -116,14 +116,29 @@ proc `==`*(x: Value, y: Value): bool =
                 return toRational(x.f)==y.rat
             else: return x.f==y.f
     elif x.kind == Quantity or y.kind == Quantity:
-        if x.kind == Quantity:
-            if y.kind == Quantity:
-                if x.unit.kind != y.unit.kind: return false
-                return x.nm == convertQuantityValue(y.nm, y.unit.name, x.unit.name)
+        if y.kind == Integer:
+            if y.iKind == NormalInteger:
+                return x.q == y.i
             else:
-                return x.nm == y
+                return x.q == y.bi
+        elif y.kind == Floating:
+            return x.q == y.f
+        elif y.kind == Rational:
+            return x.q == y.rat
+        elif y.kind == Quantity:
+            if x.kind == Integer:
+                if x.iKind == NormalInteger:
+                    return x.i == y.q
+                else:
+                    return x.bi == y.q
+            elif x.kind == Floating:
+                return x.f == y.q
+            elif x.kind == Rational:
+                return x.rat == y.q
+            else:
+                return x.q == y.q
         else:
-            return x == y.nm
+            return false
     else:
         if x.kind != y.kind: return false
 
