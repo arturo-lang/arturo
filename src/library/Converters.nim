@@ -135,10 +135,11 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                             when not defined(NOGMP):
                                 return newString($(y.bi))
                     of Quantity:
-                        if checkAttr("unit", doValidate=false):
-                            return newQuantity(y, parseQuantitySpec(aUnit.s))
-                        else:
-                            throwConversionFailed()
+                        discard
+                        # if checkAttr("unit", doValidate=false):
+                        #     return newQuantity(y, parseQuantitySpec(aUnit.s))
+                        # else:
+                        #     throwConversionFailed()
                     of Date:
                         return newDate(local(fromUnix(y.i)))
                     of Binary:
@@ -165,10 +166,11 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                         else:
                             return newString($(y.f))
                     of Quantity:
-                        if checkAttr("unit", doValidate=false):
-                            return newQuantity(y, parseQuantitySpec(aUnit.s))
-                        else:
-                            throwConversionFailed()
+                        discard
+                        # if checkAttr("unit", doValidate=false):
+                        #     return newQuantity(y, parseQuantitySpec(aUnit.s))
+                        # else:
+                        #     throwConversionFailed()
                     of Binary:
                         return newBinary(numberToBinary(y.f))
                     else: throwCannotConvert()
@@ -394,14 +396,15 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                             throwCannotConvert()
 
                     of Quantity:
-                        requireBlockSize(y, 2)
+                        discard
+                        # requireBlockSize(y, 2)
                         
-                        let firstElem {.cursor} = y.a[0]
-                        let secondElem {.cursor} = y.a[1]
-                        requireValue(firstElem, {Integer, Floating})
-                        requireValue(secondElem, {Word, Literal, String})
+                        # let firstElem {.cursor} = y.a[0]
+                        # let secondElem {.cursor} = y.a[1]
+                        # requireValue(firstElem, {Integer, Floating})
+                        # requireValue(secondElem, {Word, Literal, String})
                         
-                        return newQuantity(firstElem, parseQuantitySpec(secondElem.s))
+                        # return newQuantity(firstElem, parseQuantitySpec(secondElem.s))
 
                     of Color:
                         requireBlockSize(y, 3, 4)
@@ -520,31 +523,32 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                         throwCannotConvert()
 
             of Quantity:
-                case tp:
-                    of Integer, Floating:
-                        return convertedValueToType(x, y.nm, tp, aFormat)
-                    of String:
-                        if (not aFormat.isNil):
-                            try:
-                                var ret: string
-                                if y.nm.kind==Floating:
-                                    formatValue(ret, y.nm.f, aFormat.s)
-                                else:
-                                    formatValue(ret, float(y.nm.i), aFormat.s)
+                discard
+                # case tp:
+                #     of Integer, Floating:
+                #         return convertedValueToType(x, y.nm, tp, aFormat)
+                #     of String:
+                #         if (not aFormat.isNil):
+                #             try:
+                #                 var ret: string
+                #                 if y.nm.kind==Floating:
+                #                     formatValue(ret, y.nm.f, aFormat.s)
+                #                 else:
+                #                     formatValue(ret, float(y.nm.i), aFormat.s)
 
-                                return newString(ret & stringify(y.unit.name))
-                            except CatchableError:
-                                throwConversionFailed()
-                        else:
-                            return newString($(y))
-                    of Quantity:
-                        if checkAttr("unit", doValidate=false):
-                            let target = parseQuantitySpec(aUnit.s).name
-                            return newQuantity(convertQuantityValue(y.nm, y.unit.name, target), target)
-                        else:
-                            return y
-                    else:
-                        throwCannotConvert()
+                #                 return newString(ret & stringify(y.unit.name))
+                #             except CatchableError:
+                #                 throwConversionFailed()
+                #         else:
+                #             return newString($(y))
+                #     of Quantity:
+                #         if checkAttr("unit", doValidate=false):
+                #             let target = parseQuantitySpec(aUnit.s).name
+                #             return newQuantity(convertQuantityValue(y.nm, y.unit.name, target), target)
+                #         else:
+                #             return y
+                #     else:
+                #         throwCannotConvert()
 
             of Regex:
                 case tp:
@@ -1218,7 +1222,7 @@ proc defineSymbols*() =
         description = "convert quantity to given unit",
         args        = {
             "unit"  : {Literal,String,Word},
-            "value" : {Integer,Floating,Quantity},
+            "value" : {Integer,Floating,Rational,Quantity},
         },
         attrs       = NoAttrs,
         returns     = {Quantity},
@@ -1230,11 +1234,19 @@ proc defineSymbols*() =
             ; 0.836127m²
         """:
             #=======================================================
-            let qs = parseQuantitySpec(x.s)
+            let qs = parseAtoms(x.s)
             if yKind==Quantity:
-                push newQuantity(convertQuantityValue(y.nm, y.unit.name, qs.name), qs)
+                push newQuantity(y.q.convertTo(qs))
+            elif yKind==Integer:
+                if y.iKind == NormalInteger:
+                    push newQuantity(toQuantity(y.i, qs))
+                else:
+                    when not defined(NOGMP):
+                        push newQuantity(toQuantity(y.bi, qs))
+            elif yKind==Floating:
+                push newQuantity(toQuantity(y.f, qs))
             else:
-                push newQuantity(y, qs)
+                push newQuantity(toQuantity(y.rat, qs))
 
     builtin "range",
         alias       = ellipsis,
