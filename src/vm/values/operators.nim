@@ -1105,7 +1105,7 @@ proc `^`*(x: Value, y: Value): Value =
         of Complex    || Floating       :   return newComplex(pow(x.z, y.f))
         of Complex    || Complex        :   return newComplex(pow(x.z, y.z))
         
-        # of Quantity   || Integer        :   return newQuantity(x.q ^ y.i)
+        of Quantity   || Integer        :   return newQuantity(x.q ^ y.i)
         # of Quantity   || BigInteger     :   return newQuantity(x.q ^ y.bi)
         # of Quantity   || Floating       :   return newQuantity(x.q ^ y.f)
         # of Quantity   || Rational       :   return newQuantity(x.q ^ y.rat)
@@ -1140,9 +1140,10 @@ proc `^=`*(x: var Value, y: Value) =
         of Complex    || Complex        :   x.z = pow(x.z, y.z)
         
         of Quantity   || Integer        :   x.q ^= y.i
-        of Quantity   || Floating       :   x.q ^= y.f
-        of Quantity   || Rational       :   x.q ^= y.rat
-        of Quantity   || Quantity       :   x.q ^= y.q
+        # of Quantity   || BigInteger     :   x.q ^= y.bi
+        # of Quantity   || Floating       :   x.q ^= y.f
+        # of Quantity   || Rational       :   x.q ^= y.rat
+        # of Quantity   || Quantity       :   x.q ^= y.q
         else:
             discard invalidOperation("pow")
 
