@@ -33,7 +33,7 @@ type
         NormalRational,
         BigRational
 
-    VRational* = ref object
+    VRational* = object
         case rKind*: RationalKind:
             of NormalRational:
                 num*: int
@@ -81,6 +81,17 @@ func simplifyRational(x: var VRational) =
     when not defined(NOGMP):
         if x.rKind == BigRational and canBeSimplified(x.br):
             x = toRational(getInt(numerator(x.br)), getInt(denominator(x.br)))
+
+func canBeCoerced(x: VRational): bool =
+    if x.rKind == NormalRational:
+        let quotient = float64(float(x.num) / float(x.den))
+        let roundTrip = int64(float(quotient) * float(x.den))
+        return x.num == roundTrip
+    else:
+        when not defined(NOGMP):
+            let quotient = float64(float(toCDouble(numerator(x.br)) / toCDouble(denominator(x.br))))
+            let roundTrip = int64(float(quotient) * float(toCDouble(denominator(x.br))))
+            return x.num == roundTrip
 
 # Public
 
@@ -1071,3 +1082,20 @@ func `$`*(x: VRational): string =
     else:
         when not defined(NOGMP):
             result = $x.br
+
+func stringify*(x: VRational): string =
+    # convert VRational to normalized string
+    if x.rKind == NormalRational:
+        if x.den == 1:
+            result = $x.num
+        else:
+            if x.canBeCoerced():
+                result = $(toFloat(x))
+            else:
+                result = $x.num & "/" & $x.den
+    else:
+        when not defined(NOGMP):
+            if x.canBeCoerced:
+                result = $(toFloat(x))
+            else:
+                result = $x.br
