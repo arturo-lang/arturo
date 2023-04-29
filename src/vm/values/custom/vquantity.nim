@@ -973,6 +973,13 @@ proc `*`*(a: Quantity, b: int | float | QuantityValue): Quantity =
 proc `*`*(a: int | float | QuantityValue, b: Quantity): Quantity =
     result = toQuantity(a * b.original, b.atoms)
 
+when not defined(NOGMP):
+    proc `*`*(a: Quantity, b: Int): Quantity =
+        result = toQuantity(a.original * b, a.atoms)
+
+    proc `*`*(a: Int, b: Quantity): Quantity =
+        result = toQuantity(a * b.original, b.atoms)
+
 proc `/`(a, b: Quantity): Quantity =
     if a =~ b:
         let convB = b.convertTo(a.atoms)
