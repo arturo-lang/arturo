@@ -619,6 +619,10 @@ func `*=`*(x: var VRational, y: int) =
         when not defined(NOGMP):
             x *= toBigRational(y)
 
+func `*=`*(x: var VRational, y: float) = 
+    # multiply VRational by float, in-place
+    x *= toRational(y)
+
 when not defined(NOGMP):
     func `*=`*(x: var VRational, y: Int) =
         # multiply VRational by Int, in-place
