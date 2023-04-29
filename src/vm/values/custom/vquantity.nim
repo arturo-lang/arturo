@@ -980,6 +980,13 @@ when not defined(NOGMP):
     proc `*`*(a: Int, b: Quantity): Quantity =
         result = toQuantity(a * b.original, b.atoms)
 
+proc `*=`*(a: var Quantity, b: int | float | QuantityValue) =
+    a.original *= b
+
+when not defined(NOGMP):
+    proc `*=`*(a: var Quantity, b: Int) =
+        a.original *= b
+
 proc `/`(a, b: Quantity): Quantity =
     if a =~ b:
         let convB = b.convertTo(a.atoms)
