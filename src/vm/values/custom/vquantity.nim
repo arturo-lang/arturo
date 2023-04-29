@@ -880,7 +880,7 @@ proc getBaseUnits*(q: Quantity): Atoms =
 func `=~`(a, b: Quantity): bool =
     return a.signature == b.signature
 
-func `==`*(a, b: Quantity): bool =
+proc `==`*(a, b: Quantity): bool =
     if not (a =~ b):
         return false
 
@@ -891,9 +891,15 @@ func `==`*(a, b: Quantity): bool =
 func `==`*(a: Quantity, b: int | float | QuantityValue): bool =
     return a.original == b
 
+func `==`*(a: int | float | QuantityValue, b: Quantity): bool =
+    return a == b.original
+
 when not defined(NOGMP):
     func `==`*(a: Quantity, b: Int): bool =
         return a.original == b
+
+    func `==`*(a: Int, b: Quantity): bool =
+        return a == b.original
 
 #=======================================
 # Operators
