@@ -880,6 +880,21 @@ proc getBaseUnits*(q: Quantity): Atoms =
 func `=~`(a, b: Quantity): bool =
     return a.signature == b.signature
 
+func `==`*(a, b: Quantity): bool =
+    if not (a =~ b):
+        return false
+
+    let convB = b.convertTo(a.atoms)
+
+    return a.original == convB.original
+
+func `==`*(a: Quantity, b: int | float | QuantityValue): bool =
+    return a.original == b
+
+when not defined(NOGMP):
+    func `==`*(a: Quantity, b: Int): bool =
+        return a.original == b
+
 #=======================================
 # Operators
 #=======================================
