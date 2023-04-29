@@ -1004,6 +1004,16 @@ when not defined(NOGMP):
     proc `/`*(a: Quantity, b: Int): Quantity =
         result = toQuantity(a.original / b, a.atoms)
 
+proc `/=`*(a: var Quantity, b: Quantity) =
+    a = a / b
+
+proc `/=`*(a: var Quantity, b: int | float | QuantityValue) =
+    a.original /= b
+
+when not defined(NOGMP):
+    proc `/=`*(a: var Quantity, b: Int) =
+        a.original /= b
+
 #=======================================
 # String converters
 #=======================================
