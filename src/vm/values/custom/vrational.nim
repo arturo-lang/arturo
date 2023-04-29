@@ -689,6 +689,16 @@ func `/`*(x: int, y: VRational): VRational =
         when not defined(NOGMP):
             result = toBigRational(x) / y
 
+when not defined(NOGMP):
+    func `/`*(x: VRational, y: Int): VRational =
+        # divide VRational by Int
+        x / toRational(y)
+
+    func `/`*(x: Int, y: VRational): VRational =
+        # divide Int by VRational
+        toRational(x) / y
+
+
 func `/=`*(x: var VRational, y: VRational) =
     # divide two VRationals, in-place
     if x.rKind == NormalRational:
