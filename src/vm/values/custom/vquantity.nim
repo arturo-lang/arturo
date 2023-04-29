@@ -901,6 +901,48 @@ when not defined(NOGMP):
     func `==`*(a: Int, b: Quantity): bool =
         return a == b.original
 
+proc `<`*(a, b: Quantity): bool =
+    if not (a =~ b):
+        return false
+
+    let convB = b.convertTo(a.atoms)
+
+    return a.original < convB.original
+
+func `<`*(a: Quantity, b: int | float | QuantityValue): bool =
+    return a.original < b
+
+func `<`*(a: int | float | QuantityValue, b: Quantity): bool =
+    return a < b.original
+
+when not defined(NOGMP):
+    func `<`*(a: Quantity, b: Int): bool =
+        return a.original < b
+
+    func `<`*(a: Int, b: Quantity): bool =
+        return a < b.original
+
+proc `>`*(a, b: Quantity): bool =
+    if not (a =~ b):
+        return false
+
+    let convB = b.convertTo(a.atoms)
+
+    return a.original > convB.original
+
+func `>`*(a: Quantity, b: int | float | QuantityValue): bool =
+    return a.original > b
+
+func `>`*(a: int | float | QuantityValue, b: Quantity): bool =
+    return a > b.original
+
+when not defined(NOGMP):
+    func `>`*(a: Quantity, b: Int): bool =
+        return a.original > b
+
+    func `>`*(a: Int, b: Quantity): bool =
+        return a > b.original
+
 #=======================================
 # Operators
 #=======================================
