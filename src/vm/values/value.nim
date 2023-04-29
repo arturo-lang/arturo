@@ -416,6 +416,7 @@ func newSymbolLiteral*(m: string): Value {.inline.} =
 
 proc newQuantity*(v: Value, atoms: Atoms): Value {.inline, enforceNoRaises.} =
     ## create Quantity value from a numerical value ``v`` (Value) + ``atoms`` (Atoms)
+    #echo "in newQuantity (Value, Atoms)"
     result = Value(kind: Quantity)
     if v.kind == Integer:
         if v.iKind == NormalInteger:
@@ -430,6 +431,7 @@ proc newQuantity*(v: Value, atoms: Atoms): Value {.inline, enforceNoRaises.} =
 
 proc newQuantity*(v: Value, atoms: string): Value {.inline.} =
     ## create Quantity value from a numerical value ``v`` (Value) + ``atoms`` (string)
+    #echo "in newQuantity (Value, string)"
     newQuantity(v, parseAtoms(atoms))
 
 proc newQuantity*(q: VQuantity, copy: static bool = false): Value {.inline, enforceNoRaises.} =
