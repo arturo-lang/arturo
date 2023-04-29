@@ -994,11 +994,11 @@ proc `%`*(x: Value, y: Value): Value =
         of Rational   || Floating       :   return newRational(x.rat mod toRational(notZero(y.f)))
         of Rational   || Rational       :   return newRational(x.rat mod notZero(y.rat))
         
-        of Quantity   || Integer        :   return newQuantity(x.q % y.i)
-        of Quantity   || BigInteger     :   (when GMP: return newQuantity(x.q % y.bi))
-        of Quantity   || Floating       :   return newQuantity(x.q % y.f)
-        of Quantity   || Rational       :   return newQuantity(x.q % y.rat)
-        of Quantity   || Quantity       :   return newQuantity(x.q % y.q)
+        # of Quantity   || Integer        :   return newQuantity(x.q % y.i)
+        # of Quantity   || BigInteger     :   (when GMP: return newQuantity(x.q % y.bi))
+        # of Quantity   || Floating       :   return newQuantity(x.q % y.f)
+        # of Quantity   || Rational       :   return newQuantity(x.q % y.rat)
+        # of Quantity   || Quantity       :   return newQuantity(x.q % y.q)
         else:
             return invalidOperation("mod")
 
@@ -1027,10 +1027,10 @@ proc `%=`*(x: var Value, y: Value) =
         of Rational   || Floating       :   x.rat = x.rat mod toRational(notZero(y.f))
         of Rational   || Rational       :   x.rat = x.rat mod notZero(y.rat)
         
-        of Quantity   || Integer        :   x.q %= y.i
-        of Quantity   || Floating       :   x.q %= y.f
-        of Quantity   || Rational       :   x.q %= y.rat
-        of Quantity   || Quantity       :   x.q %= y.q
+        # of Quantity   || Integer        :   x.q %= y.i
+        # of Quantity   || Floating       :   x.q %= y.f
+        # of Quantity   || Rational       :   x.q %= y.rat
+        # of Quantity   || Quantity       :   x.q %= y.q
         else:
             discard invalidOperation("mod")
 
@@ -1066,11 +1066,11 @@ proc `/%`*(x: Value, y: Value): Value =
         of Rational   || Floating       :   return newBlock(@[x/y, x%y])
         of Rational   || Rational       :   return newBlock(@[x/y, x%y])
         
-        of Quantity   || Integer        :   return newBlock(@[x/y, x%y])
-        of Quantity   || BigInteger     :   return newBlock(@[x/y, x%y])
-        of Quantity   || Floating       :   return newBlock(@[x/y, x%y])
-        of Quantity   || Rational       :   return newBlock(@[x/y, x%y])
-        of Quantity   || Quantity       :   return newBlock(@[x/y, x%y])
+        # of Quantity   || Integer        :   return newBlock(@[x/y, x%y])
+        # of Quantity   || BigInteger     :   return newBlock(@[x/y, x%y])
+        # of Quantity   || Floating       :   return newBlock(@[x/y, x%y])
+        # of Quantity   || Rational       :   return newBlock(@[x/y, x%y])
+        # of Quantity   || Quantity       :   return newBlock(@[x/y, x%y])
         else:
             return invalidOperation("divmod")
 
@@ -1105,10 +1105,11 @@ proc `^`*(x: Value, y: Value): Value =
         of Complex    || Floating       :   return newComplex(pow(x.z, y.f))
         of Complex    || Complex        :   return newComplex(pow(x.z, y.z))
         
-        of Quantity   || Integer        :   return newQuantity(x.q ^ y.i)
-        of Quantity   || Floating       :   return newQuantity(x.q ^ y.f)
-        of Quantity   || Rational       :   return newQuantity(x.q ^ y.rat)
-        of Quantity   || Quantity       :   return newQuantity(x.q ^ y.q)
+        # of Quantity   || Integer        :   return newQuantity(x.q ^ y.i)
+        # of Quantity   || BigInteger     :   return newQuantity(x.q ^ y.bi)
+        # of Quantity   || Floating       :   return newQuantity(x.q ^ y.f)
+        # of Quantity   || Rational       :   return newQuantity(x.q ^ y.rat)
+        # of Quantity   || Quantity       :   return newQuantity(x.q ^ y.q)
         else:
             return invalidOperation("pow")
 
