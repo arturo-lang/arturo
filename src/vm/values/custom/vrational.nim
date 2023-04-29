@@ -320,6 +320,15 @@ func `+`*(x: int, y: VRational): VRational {.inline.} =
     # add int and VRational
     y + x
 
+when not defined(NOGMP):
+    func `+`*(x: VRational, y: Int): VRational =
+        # add VRational and Int
+        x + toRational(y)
+
+    func `+`*(x: Int, y: VRational): VRational =
+        # add Int and VRational
+        toRational(x) + y
+
 func `+=`*(x: var VRational, y: VRational) =
     # add two VRationals, in-place
     if x.rKind == NormalRational:
@@ -363,6 +372,11 @@ func `+=`*(x: var VRational, y: int) =
 func `+=`*(x: var VRational, y: float) =
     # add VRational and float, in-place
     x += toRational(y)
+
+when not defined(NOGMP):
+    func `+=`*(x: var VRational, y: Int) =
+        # add VRational and Int, in-place
+        x += toRational(y)
 
 func `-`*(x: VRational): VRational =
     # negate a VRational
