@@ -931,11 +931,11 @@ proc `//`*(x: Value, y: Value): Value =
         of Rational   || Floating       :   return newRational(x.rat / toRational(notZero(y.f)))
         of Rational   || Rational       :   return newRational(x.rat / notZero(y.rat))
         
-        of Quantity   || Integer        :   x.q // y.i
-        of Quantity   || BigInteger     :   (when GMP: x.q // y.bi)
-        of Quantity   || Floating       :   x.q // y.f
-        of Quantity   || Rational       :   x.q // y.rat
-        of Quantity   || Quantity       :   x.q // y.q
+        of Quantity   || Integer        :   return newQuantity(x.q // y.i)
+        of Quantity   || BigInteger     :   (when GMP: return newQuantity(x.q // y.bi))
+        of Quantity   || Floating       :   return newQuantity(x.q // y.f)
+        of Quantity   || Rational       :   return newQuantity(x.q // y.rat)
+        of Quantity   || Quantity       :   return newQuantity(x.q // y.q)
         else:
             return invalidOperation("fdiv")
 
