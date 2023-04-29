@@ -503,6 +503,7 @@ proc `+`*(x: Value, y: Value): Value =
         of Floating   || Complex        :   return newComplex(x.f + y.z)
 
         of Rational   || Integer        :   return newRational(x.rat + y.i)
+        of Rational   || BigInteger     :   (when GMP: return newRational(x.rat + y.bi))
         of Rational   || Floating       :   return newRational(x.rat + toRational(y.f))
         of Rational   || Rational       :   return newRational(x.rat + y.rat)
 
@@ -545,6 +546,7 @@ proc `+=`*(x: var Value, y: Value) =
         of Floating   || Complex        :   x = newComplex(x.f + y.z)
 
         of Rational   || Integer        :   x.rat += y.i
+        of Rational   || BigInteger     :   (when GMP: x.rat += y.bi)
         of Rational   || Floating       :   x.rat += toRational(y.f)
         of Rational   || Rational       :   x.rat += y.rat
 
@@ -615,6 +617,7 @@ proc `-`*(x: Value, y: Value): Value =
         of Floating   || Complex        :   return newComplex(x.f - y.z)
 
         of Rational   || Integer        :   return newRational(x.rat - y.i)
+        of Rational   || BigInteger     :   (when GMP: return newRational(x.rat - y.bi))
         of Rational   || Floating       :   return newRational(x.rat - toRational(y.f))
         of Rational   || Rational       :   return newRational(x.rat - y.rat)
 
@@ -657,6 +660,7 @@ proc `-=`*(x: var Value, y: Value) =
         of Floating   || Complex        :   x = newComplex(x.f - y.z)
 
         of Rational   || Integer        :   x.rat -= y.i
+        of Rational   || BigInteger     :   (when GMP: x.rat -= y.bi)
         of Rational   || Floating       :   x.rat -= toRational(y.f)
         of Rational   || Rational       :   x.rat -= y.rat
 
@@ -728,6 +732,7 @@ proc `*`*(x: Value, y: Value): Value =
         of Floating   || Complex        :   return newComplex(x.f * y.z)
 
         of Rational   || Integer        :   return newRational(x.rat * y.i)
+        of Rational   || BigInteger     :   (when GMP: return newRational(x.rat * y.bi))
         of Rational   || Floating       :   return newRational(x.rat * toRational(y.f))
         of Rational   || Rational       :   return newRational(x.rat * y.rat)
 
@@ -769,6 +774,7 @@ proc `*=`*(x: var Value, y: Value) =
         of Floating   || Complex        :   x = newComplex(x.f * y.z)
 
         of Rational   || Integer        :   x.rat *= y.i
+        of Rational   || BigInteger     :   (when GMP: x.rat *= y.bi)
         of Rational   || Floating       :   x.rat *= toRational(y.f)
         of Rational   || Rational       :   x.rat *= y.rat
 
