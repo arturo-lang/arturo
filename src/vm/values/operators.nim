@@ -767,7 +767,6 @@ proc `*=`*(x: var Value, y: Value) =
         of Integer    || Rational       :   x = newRational(x.i * y.rat)
         of Integer    || Complex        :   x = newComplex(float(x.i) * y.z)
         of Integer    || Quantity       :   x = newQuantity(x * y.nm, y.unit)
-# ALSO ADD BigInteger || Quantity & Quantity || BigInteger pairs!!!
         of Floating   || Integer        :   x.f *= float(y.i)
         of Floating   || BigInteger     :   (when GMP: x = newFloating(x.f * y.bi))
         of Floating   || Floating       :   x.f *= y.f
