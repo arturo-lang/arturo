@@ -566,12 +566,21 @@ func `*`*(x: VRational, y: int): VRational =
             result = x * toBigRational(y)
 
 func `*`*(x: VRational, y: float): VRational = 
-    # add VRational and float
+    # multiply VRational by float
     x * toRational(y)
 
 func `*`*(x: int, y: VRational): VRational {.inline.} =
     # multiply int by VRational
     y * x
+
+when not defined(NOGMP):
+    func `*`*(x: VRational, y: Int): VRational =
+        # multiply VRational by Int
+        x * toRational(y)
+
+    func `-`*(x: Int, y: VRational): VRational =
+        # multiply Int by VRational
+        toRational(x) * y
 
 func `*=`*(x: var VRational, y: VRational) =
     # multiply two VRationals, in-place
@@ -609,6 +618,11 @@ func `*=`*(x: var VRational, y: int) =
     else:
         when not defined(NOGMP):
             x *= toBigRational(y)
+
+when not defined(NOGMP):
+    func `*=`*(x: var VRational, y: Int) =
+        # multiply VRational by Int, in-place
+        x *= toRational(y)
 
 func `/`*(x, y: VRational): VRational =
     # divide two VRationals
