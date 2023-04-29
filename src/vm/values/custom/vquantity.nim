@@ -1030,6 +1030,17 @@ when not defined(NOGMP):
     proc `//=`*(a: var Quantity, b: Int) =
         a = a // b
 
+proc `^`*(a: Quantity, b: int): Quantity =
+    result = a
+
+    var i = 1
+    while i < b:
+        result *= a
+        inc i
+
+proc `^=`*(a: var Quantity, b: int) =
+    a = a ^ b
+
 #=======================================
 # String converters
 #=======================================
