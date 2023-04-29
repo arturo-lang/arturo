@@ -262,7 +262,7 @@ proc defineSymbols*() =
                 if xKind == Integer:
                     sleep(x.i)
                 else:
-                    sleep(asInt(convertQuantityValue(x.nm, x.unit.name, MS)))
+                    sleep(toInt((x.q.convertTo(parseAtoms("ms"))).original))
 
         builtin "process",
             alias       = unaliased, 
