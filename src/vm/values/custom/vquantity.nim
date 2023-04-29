@@ -980,6 +980,9 @@ when not defined(NOGMP):
     proc `*`*(a: Int, b: Quantity): Quantity =
         result = toQuantity(a * b.original, b.atoms)
 
+proc `*=`*(a: var Quantity, b: Quantity) =
+    a = a * b
+
 proc `*=`*(a: var Quantity, b: int | float | QuantityValue) =
     a.original *= b
 
