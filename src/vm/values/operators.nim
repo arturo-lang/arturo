@@ -802,9 +802,12 @@ proc neg*(x: Value): Value =
             if x.iKind==NormalInteger: return normalIntegerNeg(x.i)
             else: (when GMP: return newInteger(neg(x.bi)))
         of Floating: return newFloating(x.f*(-1.0))
+        # TODO(VRational) add `neg` overload
+        #  it can be faster for BigRational values
+        #  labels: 3rd-party, enhancement, values
         of Rational: return newRational(x.rat*(-1))
         of Complex: return newComplex(x.z*(-1.0))
-        of Quantity: return newQuantity(x.nm * I1M, x.unit)
+        of Quantity: return newQuantity(x.q*(-1))
         else:
             return invalidOperation("neg")
 
@@ -821,7 +824,7 @@ proc negI*(x: var Value) =
         of Floating: x.f *= -1.0
         of Rational: x.rat *= -1
         of Complex: x.z *= -1.0
-        of Quantity: x.nm *= I1M
+        of Quantity: x.q *= -1
         else:
             discard invalidOperation("neg")
 
