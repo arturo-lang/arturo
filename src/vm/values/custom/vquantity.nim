@@ -733,7 +733,6 @@ func isUnitless(q: Quantity): bool {.inline.} =
 proc getExchangeRate(curr: string): float =
     let s = toLowerAscii(curr)
     let url = "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/" & s & "/usd.json"
-    echo "calling: " & url
     let content = waitFor (newAsyncHttpClient().getContent(url))
     let response = parseJson(content)
     return response["usd"].fnum
