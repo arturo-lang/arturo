@@ -94,6 +94,7 @@ static:
     defDimension "Surface Tension",             "M·T⁻²"
     defDimension "Temperature",                 "K"
     defDimension "Thermal Conductivity",        "L·M·T⁻³·K⁻¹"
+    defDimension "Thermal Insulance",           "M⁻¹·T³·K"
     defDimension "Time",                        "T"
     defDimension "Unitless",                    ""           
     defDimension "Viscosity",                   "L⁻¹·M·T⁻¹"
@@ -275,6 +276,7 @@ static:
     defUnit "ac",       "ac",       false,      "4840 yd2",                 "acre", "acres"
     defUnit "are",      "are",      false,      "100 m2",                   "ares"
     defUnit "ha",       "ha",       false,      "100 are",                  "hectare", "hectares"
+    defUnit "barn",     "b",        false,      "100 ftm2",                 "barns"
 
     #---------------------------------------------------------------------------------------------------------------------------
     # Volume units (base: m^3)
@@ -402,6 +404,7 @@ static:
     #---------------------------------------------------------------------------------------------------------------------------
     defUnit "V",        "V",        true,       "1 W/A",                    "volt", "volts"
     defUnit "statV",    "statV",    false,      "299.792458 V",             "statvolt", "statvolts"
+    defUnit "abV",      "abV",      false,      "1e-8 V",                   "abvolt", "abvolts"
 
     #---------------------------------------------------------------------------------------------------------------------------
     # Resistance units (base: Ohm = 1 V/A)
@@ -410,6 +413,7 @@ static:
     #---------------------------------------------------------------------------------------------------------------------------
     defUnit "Ohm",      "Ω",        true,       "1 V/A",                    "ohm", "ohms"
     defUnit "statOhm",  "statΩ",    false,      "8.987551787e11 ohm",       "statohm", "statohms"
+    defUnit "abOhm",    "abΩ",      false,      "1e-9 Ohm",                 "abohm", "abohms"
 
     #---------------------------------------------------------------------------------------------------------------------------
     # Conductance units (base: S = 1 A/V)
@@ -425,6 +429,7 @@ static:
     #---------------------------------------------------------------------------------------------------------------------------
     defUnit "C",        "C",        true,       "1 A.s",                    "coulomb", "coulombs"
     defUnit "statC",    "statC",    false,      "3.335641e-10 C",           "statcoulomb", "statcoulombs"
+    defUnit "abC",      "abC",      false,      "10 C",                     "abcoulomb", "abcoulombs"
     defUnit "Fr",       "Fr",       false,      "1 statC",                  "franklin", "franklins"
 
     #---------------------------------------------------------------------------------------------------------------------------
@@ -447,6 +452,7 @@ static:
     #       name        symbol      prefix?     definition                  aliases
     #---------------------------------------------------------------------------------------------------------------------------
     defUnit "H",        "H",        true,       "1 V.s/A",                  "henry", "henrys"
+    defUnit "abH",      "abH",      false,      "1e-9 H",                   "abhenry", "abhenrys"
 
     #---------------------------------------------------------------------------------------------------------------------------
     # Magnetic flux units (base: Wb = 1 V.s)
