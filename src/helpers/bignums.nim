@@ -594,6 +594,10 @@ func mul*(z, x: Int, y: int): Int =
     else:
         mpz_mul_si(result[], x[], y.clong)
 
+func `mul`*(z, x, y: Float): Float =
+    result = z
+    mpfr_mul(result[], x[], y[], MPFR_RNDN)
+
 func mul*(z, x, y: Rat): Rat =
     result = z
     mpq_mul(result[], x[], y[])
@@ -613,6 +617,9 @@ func `*`*(x:Int, y: float): float =
     let res = newFloat()
     mpfr_mul_d(res[], newFloat(x)[], y, MPFR_RNDN)
     result = toCDouble(res)
+
+func `*`*(x: Float, y: Float): Float =
+    newFloat().mul(x, y)
 
 func `*`*(x: Rat, y: Rat): Rat =
     newRat().mul(x, y)
