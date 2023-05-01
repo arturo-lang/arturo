@@ -84,14 +84,12 @@ func simplifyRational(x: var VRational) =
 
 func canBeCoerced(x: VRational): bool =
     if x.rKind == NormalRational:
-        let quotient = float64(float(x.num) / float(x.den))
-        let roundTrip = float(quotient) * float(x.den)
-        return float(x.num) == roundTrip
+        let quotient = x.num / x.den
+        return quotient == round(quotient, 10)
     else:
         when not defined(NOGMP):
             let quotient = float64(float(toCDouble(numerator(x.br)) / toCDouble(denominator(x.br))))
-            let roundTrip = int64(float(quotient) * float(toCDouble(denominator(x.br))))
-            return x.num == roundTrip
+            return quotient == round(quotient, 10)
 
 # Public
 
