@@ -377,6 +377,8 @@ static:
     defUnit "BTU",      "BTU",      false,      "1055.05585262 J",          "britishThermalUnit", "britishThermalUnits"
     defUnit "eV",       "eV",       true,       "1.602176565e-19 J",        "electronVolt", "electronVolts"
     defUnit "erg",      "erg",      false,      "1e-7 J",                   "ergs"
+    defUnit "th",       "th",       false,      "4.1868 MJ",                "thermie", "thermies"
+    defUnit "thm",      "thm",      false,      "105.506 MJ",               "therm", "therms"
 
     #---------------------------------------------------------------------------------------------------------------------------
     # Power units (base: W = 1 J/s)
