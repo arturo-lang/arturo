@@ -1173,8 +1173,10 @@ proc `$`*(atoms: Atoms, oneline: static bool=false): string =
         result = atoms.mapIt($it).join("·")
 
 proc `$`*(q: Quantity): string =
-    let coerce = unlikely(q.signature == static parseDimensionFormula("C"))
-    result = stringify(q.original, coerce=coerce) & " " & $q.atoms & " (= " & $q.original & ") => " & getDimension(q)
+    if unlikely(q.signature == static parseDimensionFormula("C"))
+        result = stringify(q.original, coerce=true) & " " & $q.atoms & " (= " & $q.original & ") => " & getDimension(q)
+    else:
+        result = stringify(q.original) & " " & $q.atoms & " (= " & $q.original & ") => " & getDimension(q)
 
 proc codify*(q: Quantity): string =
     result = ($q.original).replace("/",":") & "`"
