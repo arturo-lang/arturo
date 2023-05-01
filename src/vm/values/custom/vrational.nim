@@ -1084,7 +1084,7 @@ func `$`*(x: VRational): string =
 func stringify*(x: VRational, coerce: static bool = false): string =
     # convert VRational to normalized string
     when coerce:
-        result = $(toFloat(x))
+        result = (toFloat(x)).formatFloat(ffDecimal, 3)
     else:
         if x.rKind == NormalRational:
             if x.den == 1:
