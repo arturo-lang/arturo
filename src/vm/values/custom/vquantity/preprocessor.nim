@@ -245,14 +245,20 @@ proc defUnit*(unit: string, symbol: string, prefixed: bool, definition: string, 
             defs[unit] = parseQuantity(definition)
 
         for alias in aliases:
+            if parsable.hasKey(alias):
+                raise newException(ValueError, "Parsable already defined: " & alias)
             parsable[alias] = ("No", unit)
 
+        if parsable.hasKey(unit):
+            raise newException(ValueError, "Parsable already defined: " & unit)
         parsable[unit] = ("No", unit)
         
         if prefixed: 
             for prefix, (sym, val) in prefixes:
                 if prefix != "No":
                     let prefixedUnit = prefix & unit
+                    if parsable.hasKey(prefixedUnit):
+                        raise newException(ValueError, "Parsable already defined: " & prefixedUnit)
                     parsable[prefixedUnit] = (prefix, unit)
     else:
         temperatureUnits.add(unit)
