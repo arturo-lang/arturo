@@ -397,6 +397,8 @@ static:
     #       name        symbol      prefix?     definition                  aliases
     #---------------------------------------------------------------------------------------------------------------------------
     defUnit "statA",    "statA",    false,      "3.335641e-10 A",           "statampere", "statamperes"
+    defUnit "abA",      "abA",      false,      "10 A",                     "abampere", "abamperes"
+    defUnit "Bi",       "Bi",       false,      "10 A",                     "biot", "biots"
 
     #---------------------------------------------------------------------------------------------------------------------------
     # Potential units (base: V = 1 W/A)
