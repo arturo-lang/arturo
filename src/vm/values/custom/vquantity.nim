@@ -53,6 +53,7 @@ static:
     defDimension "Density",                     "L⁻³·M"
     defDimension "Elastance",                   "L²·M·T⁻⁴·I⁻²"                
     defDimension "Electric Field",              "L·M·T⁻³·I⁻¹"
+    defDimension "Electricity Price",           "L⁻²·M⁻¹·T²·C"
     defDimension "Energy",                      "L²·M·T⁻²"
     defDimension "Entropy",                     "L²·M·T⁻²·K⁻¹"
     defDimension "Force",                       "L·M·T⁻²"
