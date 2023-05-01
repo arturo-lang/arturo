@@ -12,7 +12,10 @@
 # Libraries
 #=======================================
 
-import algorithm, math, parseutils, sequtils, strutils, tables
+import algorithm, std/enumutils, math, parseutils, sequtils, strutils, tables
+
+when not defined(WEB):
+    import asyncdispatch, httpClient, std/json
 
 when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
@@ -124,109 +127,6 @@ static:
     defPrefix "T",          "T",        12
     defPrefix "P",          "P",        15
     defPrefix "E",          "E",        18
-
-    #----------------------------------------------------------------------------------------------------
-    # Currencies
-    #----------------------------------------------------------------------------------------------------
-    #           name        symbol
-    #----------------------------------------------------------------------------------------------------
-    defCurrency "AED",      "د.إ"       # UAE Dinar
-    defCurrency "ALL",      "Lek"       # Albania Lek
-    defCurrency "ARS",      "$"         # Argentina Peso
-    defCurrency "AUD",      "$"         # Australia Dollar
-    defCurrency "BGN",      "лв"        # Bulgaria Lev
-    defCurrency "BHD",      "BD"        # Bahrain Dinar
-    defCurrency "BNB",      "BNB"       # Binance Coin
-    defCurrency "BND",      "$"         # Brunei Darussalam Dollar
-    defCurrency "BOB",      "$b"        # Bolivia Bolíviano
-    defCurrency "BRL",      "R$"        # Brazil Real
-    defCurrency "BTC",      "₿"         # Bitcoin
-    defCurrency "BWP",      "P"         # Botswana Pula
-    defCurrency "CAD",      "$"         # Canada Dollar
-    defCurrency "CHF",      "CHF"       # Switzerland Franc
-    defCurrency "CLP",      "$"         # Chile Peso
-    defCurrency "CNY",      "¥"         # China Yuan Renminbi
-    defCurrency "COP",      "$"         # Colombia Peso
-    defCurrency "CRC",      "₡"         # Costa Rica Colon
-    defCurrency "CZK",      "Kč"        # Czech Republic Koruna
-    defCurrency "DKK",      "kr"        # Denmark Krone
-    defCurrency "DOP",      "RD$"       # Dominican Republic Peso
-    defCurrency "DZD",      "دج"        # Algeria Dinar
-    defCurrency "EGP",      "£"         # Egypt Pound
-    defCurrency "ETB",      "Br"        # Ethiopia Birr
-    defCurrency "ETH",      "Ξ"         # Ethereum
-    defCurrency "EUR",      "€"         # Euro
-    defCurrency "FJD",      "$"         # Fiji Dollar
-    defCurrency "GBP",      "£"         # United Kingdom Pound
-    defCurrency "HKD",      "$"         # Hong Kong Dollar
-    defCurrency "HNL",      "L"         # Honduras Lempira
-    defCurrency "HRK",      "kn"        # Croatia Kuna
-    defCurrency "HUF",      "Ft"        # Hungary Forint
-    defCurrency "IDR",      "Rp"        # Indonesia Rupiah
-    defCurrency "ILS",      "₪"         # Israel Shekel
-    defCurrency "INR",      "₹"         # India Rupee
-    defCurrency "IRR",      "﷼"         # Iran Rial
-    defCurrency "ISK",      "kr"        # Iceland Krona
-    defCurrency "JMD",      "J$"        # Jamaica Dollar
-    defCurrency "JOD",      "JD"        # Jordan Dinar
-    defCurrency "JPY",      "¥"         # Japan Yen
-    defCurrency "KES",      "KSh"       # Kenya Shilling
-    defCurrency "KRW",      "₩"         # Korea (South) Won
-    defCurrency "KWD",      "KD"        # Kuwait Dinar
-    defCurrency "KYD",      "$"         # Cayman Islands Dollar
-    defCurrency "KZT",      "₸"         # Kazakhstan Tenge
-    defCurrency "LBP",      "£"         # Lebanon Pound
-    defCurrency "LKR",      "₨"         # Sri Lanka Rupee
-    defCurrency "MAD",      "MAD"       # Morocco Dirham
-    defCurrency "MDL",      "lei"       # Moldova Leu
-    defCurrency "MKD",      "ден"       # Macedonia Denar
-    defCurrency "MXN",      "$"         # Mexico Peso
-    defCurrency "MUR",      "₨"         # Mauritius Rupee
-    defCurrency "MYR",      "RM"        # Malaysia Ringgit
-    defCurrency "NAD",      "$"         # Namibia Dollar
-    defCurrency "NGN",      "₦"         # Nigeria Naira
-    defCurrency "NIO",      "C$"        # Nicaragua Cordoba
-    defCurrency "NOK",      "kr"        # Norway Krone
-    defCurrency "NPR",      "₨"         # Nepal Rupee
-    defCurrency "NZD",      "$"         # New Zealand Dollar
-    defCurrency "OMR",      "﷼"         # Oman Rial
-    defCurrency "PAB",      "B/."       # Panama Balboa
-    defCurrency "PEN",      "S/."       # Peru Sol
-    defCurrency "PGK",      "K"         # Papua New Guinea Kina
-    defCurrency "PHP",      "₱"         # Philippines Peso
-    defCurrency "PKR",      "₨"         # Pakistan Rupee
-    defCurrency "PLN",      "zł"        # Poland Zloty
-    defCurrency "PYG",      "Gs"        # Paraguay Guarani
-    defCurrency "QAR",      "﷼"         # Qatar Riyal
-    defCurrency "RON",      "lei"       # Romania Leu
-    defCurrency "RSD",      "Дин."      # Serbia Dinar
-    defCurrency "RUB",      "₽"         # Russia Ruble
-    defCurrency "SAR",      "﷼"         # Saudi Arabia Riyal
-    defCurrency "SCR",      "₨"         # Seychelles Rupee
-    defCurrency "SEK",      "kr"        # Sweden Krona
-    defCurrency "SGD",      "$"         # Singapore Dollar
-    defCurrency "SLL",      "Le"        # Sierra Leone Leone
-    defCurrency "SOS",      "S"         # Somalia Shilling
-    defCurrency "SVC",      "$"         # El Salvador Colon
-    defCurrency "THB",      "฿"         # Thailand Baht
-    defCurrency "TND",      "د.ت"       # Tunisia Dinar
-    defCurrency "TRY",      "₺"         # Turkey Lira
-    defCurrency "TTD",      "TT$"       # Trinidad and Tobago Dollar
-    defCurrency "TWD",      "NT$"       # Taiwan New Dollar
-    defCurrency "TZS",      "TSh"       # Tanzania Shilling
-    defCurrency "UAH",      "₴"         # Ukraine Hryvnia
-    defCurrency "UGX",      "USh"       # Uganda Shilling
-    defCurrency "UYU",      "$U"        # Uruguay Peso
-    defCurrency "UZS",      "лв"        # Uzbekistan Som
-    defCurrency "VES",      "Bs"        # Venezuela Bolivar
-    defCurrency "VND",      "₫"         # Vietnam Dong
-    defCurrency "XAF",      "FCFA"      # Central Africa CFA Franc
-    defCurrency "XAG",      "XAG"       # Silver
-    defCurrency "XAU",      "XAU"       # Gold
-    defCurrency "XOF",      "CFA"       # West Africa CFA France
-    defCurrency "YER",      "﷼"         # Yemen Rial
-    defCurrency "ZAR",      "R"         # South Africa Rand
-    defCurrency "ZMW",      "ZK"        # Zambia Kwacha
 
     #---------------------------------------------------------------------------------------------------------------------------
     # Base units
@@ -587,6 +487,109 @@ static:
     defUnit "lm",       "lm",       true,       "1 cd.sr",                  "lumen", "lumens"
 
     #----------------------------------------------------------------------------------------------------
+    # Currencies
+    #----------------------------------------------------------------------------------------------------
+    #           name        symbol
+    #----------------------------------------------------------------------------------------------------
+    defCurrency "AED",      "د.إ"       # UAE Dinar
+    defCurrency "ALL",      "Lek"       # Albania Lek
+    defCurrency "ARS",      "$"         # Argentina Peso
+    defCurrency "AUD",      "$"         # Australia Dollar
+    defCurrency "BGN",      "лв"        # Bulgaria Lev
+    defCurrency "BHD",      "BD"        # Bahrain Dinar
+    defCurrency "BNB",      "BNB"       # Binance Coin
+    defCurrency "BND",      "$"         # Brunei Darussalam Dollar
+    defCurrency "BOB",      "$b"        # Bolivia Bolíviano
+    defCurrency "BRL",      "R$"        # Brazil Real
+    defCurrency "BTC",      "₿"         # Bitcoin
+    defCurrency "BWP",      "P"         # Botswana Pula
+    defCurrency "CAD",      "$"         # Canada Dollar
+    defCurrency "CHF",      "CHF"       # Switzerland Franc
+    defCurrency "CLP",      "$"         # Chile Peso
+    defCurrency "CNY",      "¥"         # China Yuan Renminbi
+    defCurrency "COP",      "$"         # Colombia Peso
+    defCurrency "CRC",      "₡"         # Costa Rica Colon
+    defCurrency "CZK",      "Kč"        # Czech Republic Koruna
+    defCurrency "DKK",      "kr"        # Denmark Krone
+    defCurrency "DOP",      "RD$"       # Dominican Republic Peso
+    defCurrency "DZD",      "دج"        # Algeria Dinar
+    defCurrency "EGP",      "£"         # Egypt Pound
+    defCurrency "ETB",      "Br"        # Ethiopia Birr
+    defCurrency "ETH",      "Ξ"         # Ethereum
+    defCurrency "EUR",      "€"         # Euro
+    defCurrency "FJD",      "$"         # Fiji Dollar
+    defCurrency "GBP",      "£"         # United Kingdom Pound
+    defCurrency "HKD",      "$"         # Hong Kong Dollar
+    defCurrency "HNL",      "L"         # Honduras Lempira
+    defCurrency "HRK",      "kn"        # Croatia Kuna
+    defCurrency "HUF",      "Ft"        # Hungary Forint
+    defCurrency "IDR",      "Rp"        # Indonesia Rupiah
+    defCurrency "ILS",      "₪"         # Israel Shekel
+    defCurrency "INR",      "₹"         # India Rupee
+    defCurrency "IRR",      "﷼"         # Iran Rial
+    defCurrency "ISK",      "kr"        # Iceland Krona
+    defCurrency "JMD",      "J$"        # Jamaica Dollar
+    defCurrency "JOD",      "JD"        # Jordan Dinar
+    defCurrency "JPY",      "¥"         # Japan Yen
+    defCurrency "KES",      "KSh"       # Kenya Shilling
+    defCurrency "KRW",      "₩"         # Korea (South) Won
+    defCurrency "KWD",      "KD"        # Kuwait Dinar
+    defCurrency "KYD",      "$"         # Cayman Islands Dollar
+    defCurrency "KZT",      "₸"         # Kazakhstan Tenge
+    defCurrency "LBP",      "£"         # Lebanon Pound
+    defCurrency "LKR",      "₨"         # Sri Lanka Rupee
+    defCurrency "MAD",      "MAD"       # Morocco Dirham
+    defCurrency "MDL",      "lei"       # Moldova Leu
+    defCurrency "MKD",      "ден"       # Macedonia Denar
+    defCurrency "MXN",      "$"         # Mexico Peso
+    defCurrency "MUR",      "₨"         # Mauritius Rupee
+    defCurrency "MYR",      "RM"        # Malaysia Ringgit
+    defCurrency "NAD",      "$"         # Namibia Dollar
+    defCurrency "NGN",      "₦"         # Nigeria Naira
+    defCurrency "NIO",      "C$"        # Nicaragua Cordoba
+    defCurrency "NOK",      "kr"        # Norway Krone
+    defCurrency "NPR",      "₨"         # Nepal Rupee
+    defCurrency "NZD",      "$"         # New Zealand Dollar
+    defCurrency "OMR",      "﷼"         # Oman Rial
+    defCurrency "PAB",      "B/."       # Panama Balboa
+    defCurrency "PEN",      "S/."       # Peru Sol
+    defCurrency "PGK",      "K"         # Papua New Guinea Kina
+    defCurrency "PHP",      "₱"         # Philippines Peso
+    defCurrency "PKR",      "₨"         # Pakistan Rupee
+    defCurrency "PLN",      "zł"        # Poland Zloty
+    defCurrency "PYG",      "Gs"        # Paraguay Guarani
+    defCurrency "QAR",      "﷼"         # Qatar Riyal
+    defCurrency "RON",      "lei"       # Romania Leu
+    defCurrency "RSD",      "Дин."      # Serbia Dinar
+    defCurrency "RUB",      "₽"         # Russia Ruble
+    defCurrency "SAR",      "﷼"         # Saudi Arabia Riyal
+    defCurrency "SCR",      "₨"         # Seychelles Rupee
+    defCurrency "SEK",      "kr"        # Sweden Krona
+    defCurrency "SGD",      "$"         # Singapore Dollar
+    defCurrency "SLL",      "Le"        # Sierra Leone Leone
+    defCurrency "SOS",      "S"         # Somalia Shilling
+    defCurrency "SVC",      "$"         # El Salvador Colon
+    defCurrency "THB",      "฿"         # Thailand Baht
+    defCurrency "TND",      "د.ت"       # Tunisia Dinar
+    defCurrency "TRY",      "₺"         # Turkey Lira
+    defCurrency "TTD",      "TT$"       # Trinidad and Tobago Dollar
+    defCurrency "TWD",      "NT$"       # Taiwan New Dollar
+    defCurrency "TZS",      "TSh"       # Tanzania Shilling
+    defCurrency "UAH",      "₴"         # Ukraine Hryvnia
+    defCurrency "UGX",      "USh"       # Uganda Shilling
+    defCurrency "UYU",      "$U"        # Uruguay Peso
+    defCurrency "UZS",      "лв"        # Uzbekistan Som
+    defCurrency "VES",      "Bs"        # Venezuela Bolivar
+    defCurrency "VND",      "₫"         # Vietnam Dong
+    defCurrency "XAF",      "FCFA"      # Central Africa CFA Franc
+    defCurrency "XAG",      "XAG"       # Silver
+    defCurrency "XAU",      "XAU"       # Gold
+    defCurrency "XOF",      "CFA"       # West Africa CFA France
+    defCurrency "YER",      "﷼"         # Yemen Rial
+    defCurrency "ZAR",      "R"         # South Africa Rand
+    defCurrency "ZMW",      "ZK"        # Zambia Kwacha
+
+    #----------------------------------------------------------------------------------------------------
     # Constants
     #----------------------------------------------------------------------------------------------------
     #           name                            pre-calculate?      definition
@@ -727,13 +730,26 @@ proc `$`*(q: Quantity): string
 func isUnitless(q: Quantity): bool {.inline.} =
     return q.signature == 0
 
+proc getExchangeRate(curr: string): float =
+    let s = toLowerAscii(curr)
+    let url = "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/" & s & "/usd.json"
+    echo "calling: " & url
+    let content = waitFor (newAsyncHttpClient().getContent(url))
+    let response = parseJson(content)
+    return response["usd"].fnum
+
 proc getPrimitive(unit: PrefixedUnit): Quantity =
     # echo "in getPrimitive: ", unit.u, " ", unit.p
     # echo $(Quantities)
     result = Quantities[unit.u]
 
-    # Warning: This may be losing information for too-low or too-high values!
-    result.value *= toRational(pow(float(10), float(ord(unit.p))))
+    if unlikely((result.signature == static parseDimensionFormula("C")) and isZero(result.value)):
+        let xrate = getExchangeRate((symbolName(unit.u.core)).replace("_Unit",""))
+        Quantities[unit.u].value = toRational(xrate)
+        result.value = toRational(xrate)
+    else:
+        # Warning: This may be losing information for too-low or too-high values!
+        result.value *= toRational(pow(float(10), float(ord(unit.p))))
 
 proc getSignature(atoms: Atoms): QuantitySignature =
     for atom in atoms:
@@ -850,7 +866,7 @@ proc toQuantity*(str: string): Quantity =
     result = toQuantity(value, atoms)
 
 proc toQuantity*(vstr: string, atoms: Atoms): Quantity =
-    echo "defining ---> " & $(vstr)
+    # used mainly for the constants!
     result = toQuantity(parseValue(vstr), atoms)
 
 #=======================================
@@ -867,21 +883,6 @@ proc convertTo*(q: Quantity, atoms: Atoms): Quantity =
     if q.atoms == atoms:
         return q
 
-    # Solution 1
-    # var leftSide = 1.0
-    # var rightSide = 1.0
-
-    # for atom in q.atoms:
-    #     let prim = getPrimitive(atom.unit)
-    #     leftSide *= pow(prim.value, float(atom.power))
-
-    # for atom in atoms:
-    #     let prim = getPrimitive(atom.unit)
-    #     rightSide *= pow(prim.value, float(atom.power))
-
-    # let newVal = q.original * leftSide / rightSide
-
-    # Solution 2
     let newVal = q.value/getValue(atoms)
     result = toQuantity(newVal, atoms)
 
@@ -896,6 +897,10 @@ proc toBase*(q: Quantity): Atoms =
 
 proc getBaseUnits*(q: Quantity): Atoms =
     result = flatten(toBase(q))
+
+proc defineNewUserUnit*(name: string, symbol: string, definition: string) =
+    UserUnits[name] = symbol
+    Quantities[Unit(kind: User, name: name)] = toQuantity(definition)
 
 #=======================================
 # Comparison
@@ -1168,7 +1173,8 @@ proc `$`*(atoms: Atoms, oneline: static bool=false): string =
         result = atoms.mapIt($it).join("·")
 
 proc `$`*(q: Quantity): string =
-    result = stringify(q.original) & " " & $q.atoms & " (= " & $q.original & ") => " & getDimension(q)
+    let coerce = unlikely(q.signature == static parseDimensionFormula("C"))
+    result = stringify(q.original, coerce=coerce) & " " & $q.atoms & " (= " & $q.original & ") => " & getDimension(q)
 
 proc codify*(q: Quantity): string =
     result = ($q.original).replace("/",":") & "`"
@@ -1198,10 +1204,6 @@ proc inspect*(q: Quantity) =
     echo ".base units: ", `$`(getBaseUnits(q), oneline=true)
     
     echo ""
-
-proc defineNewUserUnit*(name: string, symbol: string, definition: string) =
-    UserUnits[name] = symbol
-    Quantities[Unit(kind: User, name: name)] = toQuantity(definition)
 
 #=======================================
 # Setup

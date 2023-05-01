@@ -261,7 +261,10 @@ proc defUnit*(unit: string, symbol: string, prefixed: bool, definition: string, 
                         raise newException(ValueError, "Parsable already defined: " & prefixedUnit)
                     parsable[prefixedUnit] = (prefix, unit)
     else:
-        temperatureUnits.add(unit)
+        if unit.startsWith("deg"):
+            temperatureUnits.add(unit)
+            defs[unit] = parseQuantity("0 K")
+            parsable[unit] = ("No", unit)
 
 proc defConstant*(name: string, precalculated: bool, definition: string) =
     if precalculated:
@@ -279,7 +282,7 @@ proc defConstant*(name: string, precalculated: bool, definition: string) =
 
 proc defCurrency*(currency: string, symbol: string) =
     currencyUnits.add(currency)
-    defUnit(currency, symbol, false, "")
+    defUnit(currency, symbol, false, "0 USD")
 
 #=======================================
 # Macros & Generators

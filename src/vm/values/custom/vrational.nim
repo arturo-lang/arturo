@@ -1081,19 +1081,22 @@ func `$`*(x: VRational): string =
         when not defined(NOGMP):
             result = $x.br
 
-func stringify*(x: VRational): string =
+func stringify*(x: VRational, coerce: static bool = false): string =
     # convert VRational to normalized string
-    if x.rKind == NormalRational:
-        if x.den == 1:
-            result = $x.num
-        else:
-            if x.canBeCoerced():
-                result = $(toFloat(x))
-            else:
-                result = $x.num & "/" & $x.den
+    when coerce:
+        result = $(toFloat(x))
     else:
-        when not defined(NOGMP):
-            if x.canBeCoerced:
-                result = $(toFloat(x))
+        if x.rKind == NormalRational:
+            if x.den == 1:
+                result = $x.num
             else:
-                result = $x.br
+                if x.canBeCoerced():
+                    result = $(toFloat(x))
+                else:
+                    result = $x.num & "/" & $x.den
+        else:
+            when not defined(NOGMP):
+                if x.canBeCoerced:
+                    result = $(toFloat(x))
+                else:
+                    result = $x.br
