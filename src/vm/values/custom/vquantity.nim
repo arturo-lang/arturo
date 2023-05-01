@@ -291,6 +291,7 @@ static:
     defUnit "floz",     "floz",     false,      "1:8 cup",                  "fluidOunce", "fluidOunces"
     defUnit "tbsp",     "tbsp",     false,      "1:2 floz",                 "tablespoon", "tablespoons"
     defUnit "tsp",      "tsp",      false,      "1:3 tbsp",                 "teaspoon", "teaspoons"
+    defUnit "bu",       "bu",       false,      "2150.42 in3",              "bushel", "bushels"
     
     #---------------------------------------------------------------------------------------------------------------------------
     # Time units (base: s)
