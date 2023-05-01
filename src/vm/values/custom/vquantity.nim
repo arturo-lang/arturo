@@ -292,6 +292,7 @@ static:
     defUnit "tbsp",     "tbsp",     false,      "1:2 floz",                 "tablespoon", "tablespoons"
     defUnit "tsp",      "tsp",      false,      "1:3 tbsp",                 "teaspoon", "teaspoons"
     defUnit "bu",       "bu",       false,      "2150.42 in3",              "bushel", "bushels"
+    defUnit "cord",     "cord",     false,      "128 ft3",                  "cords"
     
     #---------------------------------------------------------------------------------------------------------------------------
     # Time units (base: s)
