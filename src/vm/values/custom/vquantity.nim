@@ -272,7 +272,7 @@ static:
     defUnit "sqin",     "in²",      false,      "1 in2",                    "squareInch", "squareInches"
     defUnit "sqft",     "ft²",      false,      "1 ft2",                    "squareFoot", "squareFeet"
     defUnit "ac",       "ac",       false,      "4840 yd2",                 "acre", "acres"
-    defUnit "are",      "are",      false,      "100 m2",                   "are", "ares"
+    defUnit "are",      "are",      false,      "100 m2",                   "ares"
     defUnit "ha",       "ha",       false,      "100 are",                  "hectare", "hectares"
 
     #---------------------------------------------------------------------------------------------------------------------------
@@ -281,11 +281,11 @@ static:
     #       name        symbol      prefix?     definition                  aliases
     #---------------------------------------------------------------------------------------------------------------------------
     defUnit "L",        "L",        true,       "1000 cm3",                 "l", "liter", "liters"
-    defUnit "gal",      "gal",      false,      "231 in3",                  "gallon", "gallons"
+    defUnit "gal",      "gal",      false,      "231 in3",                  "gals", "gallon", "gallons"
     defUnit "bbl",      "bbl",      false,      "42 gal",                   "barrel", "barrels"
     defUnit "qt",       "qt",       false,      "1:4 gal",                  "quart", "quarts"
-    defUnit "pt",       "pt",       false,      "1:2 qt",                   "pint", "pints"
-    defUnit "cup",      "cup",      false,      "1:2 pt",                   "cup", "cups"
+    defUnit "p",        "p",        false,      "1:2 qt",                   "pint", "pints"
+    defUnit "cup",      "cup",      false,      "1:2 p",                    "cups"
     defUnit "floz",     "floz",     false,      "1:8 cup",                  "fluidOunce", "fluidOunces"
     defUnit "tbsp",     "tbsp",     false,      "1:2 floz",                 "tablespoon", "tablespoons"
     defUnit "tsp",      "tsp",      false,      "1:3 tbsp",                 "teaspoon", "teaspoons"
@@ -297,7 +297,7 @@ static:
     #---------------------------------------------------------------------------------------------------------------------------
     defUnit "min",      "min",      false,      "60 s",                     "minute", "minutes"
     defUnit "hr",       "hr",       false,      "60 min",                   "hour", "hours"
-    defUnit "day",      "day",      false,      "24 hr",                    "day", "days"
+    defUnit "day",      "day",      false,      "24 hr",                    "days"
     defUnit "wk",       "wk",       false,      "7 days",                   "week", "weeks"
     defUnit "mo",       "mo",       false,      "2629746 s",                "month", "months"
     defUnit "yr",       "yr",       false,      "31556952 s",               "year", "years"
@@ -312,7 +312,7 @@ static:
     defUnit "oz",       "oz",       false,      "1:16 lb",                  "ounce", "ounces"
     defUnit "ct",       "ct",       false,      "1:5 g",                    "carat", "carats"
     defUnit "t",        "t",        false,      "1000 kg",                  "tonne", "tonnes", "metricTon", "metricTons"
-    defUnit "ton",      "ST",       false,      "2000 lb",                  "ton", "tons", "shortTon", "shortTons"
+    defUnit "ton",      "ST",       false,      "2000 lb",                  "tons", "shortTon", "shortTons"
     defUnit "lt",       "LT",       false,      "2240 lb",                  "longTon", "longTons"
     defUnit "st",       "st",       false,      "14 lb",                    "stone", "stones"
     defUnit "Da",       "Da",       false,      "1.66053906660e-27 kg",     "dalton", "daltons", "AMU"
@@ -331,14 +331,14 @@ static:
     defUnit "mph",      "mph",      false,      "5280:3600 ft/s",           "milePerHour", "milesPerHour"
     defUnit "kn",       "kn",       false,      "1852:3600 m/s",            "knot", "knots"
     defUnit "fps",      "ft/s",     false,      "1:3600 ft/s",              "footPerSecond", "feetPerSecond"
-    defUnit "mach",     "mach",     false,      "340.29 m/s",               "mach", "machs"
+    defUnit "mach",     "mach",     false,      "340.29 m/s",               "machs"
 
     #---------------------------------------------------------------------------------------------------------------------------
     # Acceleration units (base: m/s2)
     #---------------------------------------------------------------------------------------------------------------------------
     #       name        symbol      prefix?     definition                  aliases
     #---------------------------------------------------------------------------------------------------------------------------
-    defUnit "Gal",      "Gal",      false,      "1 cm/s2",                  "gal", "gals", "galileo"
+    defUnit "Gal",      "Gal",      false,      "1 cm/s2",                  "galileo", "galileos"
 
     #---------------------------------------------------------------------------------------------------------------------------
     # Force units (base: N = 1 kg.m/s2)
@@ -358,7 +358,7 @@ static:
     #---------------------------------------------------------------------------------------------------------------------------
     defUnit "Pa",       "Pa",       true,       "1 N/m2",                   "pascal", "pascals"
     defUnit "atm",      "atm",      false,      "101325 Pa",                "atmosphere", "atmospheres"
-    defUnit "bar",      "bar",      true,       "100000 Pa",                "bar", "bars"
+    defUnit "bar",      "bar",      true,       "100000 Pa",                "bars"
     defUnit "pz",       "pz",       false,      "10 kPa",                   "pieze"
     defUnit "Ba",       "Ba",       false,      "1 dyn/cm2",                "barye", "baryes"
     defUnit "mmHg",     "mmHg",     false,      "133.3223684 Pa",           "millimeterOfMercury", "millimetersOfMercury"
@@ -371,10 +371,11 @@ static:
     #       name        symbol      prefix?     definition                  aliases
     #---------------------------------------------------------------------------------------------------------------------------
     defUnit "J",        "J",        true,       "1 N.m",                    "joule", "joules"
+    defUnit "Wh",       "Wh",       true,       "3600 J",                   "wattHour", "wattHours"
     defUnit "cal",      "cal",      true,       "4.184 J",                  "calorie", "calories"
     defUnit "BTU",      "BTU",      false,      "1055.05585262 J",          "britishThermalUnit", "britishThermalUnits"
     defUnit "eV",       "eV",       true,       "1.602176565e-19 J",        "electronVolt", "electronVolts"
-    defUnit "erg",      "erg",      false,      "1e-7 J",                   "erg", "ergs"
+    defUnit "erg",      "erg",      false,      "1e-7 J",                   "ergs"
 
     #---------------------------------------------------------------------------------------------------------------------------
     # Power units (base: W = 1 J/s)
@@ -458,7 +459,7 @@ static:
     #       name        symbol      prefix?     definition                  aliases
     #---------------------------------------------------------------------------------------------------------------------------
     defUnit "T",        "T",        true,       "1 Wb/m2",                  "tesla", "teslas"
-    defUnit "G",        "G",        true,       "1e-4 T",                   "gauss", "gauss"
+    defUnit "G",        "G",        true,       "1e-4 T",                   "gauss"
 
     #---------------------------------------------------------------------------------------------------------------------------
     # Temperature units (base: K)
@@ -1146,7 +1147,7 @@ proc `$`*(atoms: Atoms, oneline: static bool=false): string =
         result = atoms.mapIt($it).join("·")
 
 proc `$`*(q: Quantity): string =
-    result = stringify(q.original) & " " & $q.atoms & " (= " & $q.original & ")"
+    result = stringify(q.original) & " " & $q.atoms & " (= " & $q.original & ") => " & getDimension(q)
 
 proc codify*(q: Quantity): string =
     result = ($q.original).replace("/",":") & "`"
