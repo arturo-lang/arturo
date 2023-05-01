@@ -78,6 +78,7 @@ const
     PermittedIdentifiers_Start  = Letters + {'_'}
     PermittedColorChars         = Letters + Numbers
     PermittedIdentifiers_In     = PermittedIdentifiers_Start + Numbers + {'?'}
+    PermittedQuantityChars      = Letters + Numbers + {'.', '/'}
     
     SemVerExtra                 = Letters + PermittedNumbers_Start + {'+', '-', '.'}
 
@@ -816,7 +817,7 @@ template parseQuantity(p: var Parser) =
     setLen(p.value, 0)
     var pos = p.bufpos
     inc(pos)
-    while p.buf[pos] in PermittedColorChars:
+    while p.buf[pos] in PermittedQuantityChars:
         add(p.value, p.buf[pos])
         inc(pos)
     p.bufpos = pos
