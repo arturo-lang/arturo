@@ -813,9 +813,13 @@ template parsePath(p: var Parser, root: Value, curLevel: int) =
             else:
                 break
 
-template parseUnit(p: var Parser) =
+template parseUnit(p: var Parser, justUnit: bool = false) =
     setLen(p.value, 0)
-    var pos = p.bufpos
+    var pos =
+        when justUnit:
+            p.bufpos + 1
+        else:
+            p.bufpos
     inc(pos)
     while p.buf[pos] in PermittedQuantityChars:
         add(p.value, p.buf[pos])
@@ -975,6 +979,9 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                         inc(p.bufpos)
                     else:
                         AddToken newLiteral(p.value)
+            of BackTick:
+                parseUnit(p, justUnit=true)
+                AddToken newUnit(p.value)
             of Dot:
                 if p.buf[p.bufpos+1] == Dot:
                     inc(p.bufpos, 2)
