@@ -29,6 +29,11 @@ import helpers/intrinsics
 #=======================================
 
 type 
+    RationalMode* = enum
+        CurrencyRational,
+        TemperatureRational,
+        RegularRational
+
     RationalKind* = enum
         NormalRational,
         BigRational
@@ -1081,10 +1086,19 @@ func `$`*(x: VRational): string =
         when not defined(NOGMP):
             result = $x.br
 
-func stringify*(x: VRational, coerce: static bool = false): string =
+func stringify*(x: VRational, mode: static RationalMode = RegularRational): string =
     # convert VRational to normalized string
-    when coerce:
-        result = (toFloat(x)).formatFloat(ffDecimal, 3)
+    when mode == CurrencyRational:
+        result = (toFloat(x)).formatFloat(ffDecimal, 2)
+    elif mode == TemperatureRational:
+        if x.rKind == NormalRational:
+            if x.den == 1:
+                result = $x.num
+            else:
+                result = (toFloat(x)).formatFloat(ffDecimal, 1)
+        else:
+            when not defined(NOGMP):
+                result = (toFloat(x)).formatFloat(ffDecimal, 1)
     else:
         if x.rKind == NormalRational:
             if x.den == 1:
