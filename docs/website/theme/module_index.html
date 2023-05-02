@@ -37,7 +37,7 @@
                         loop sort keys get pageTree\documentation\library last chop pagePath 'fff [ 
                             fun: replace replace fff "_" "" "-" "?"
                             if? :function = type var fun [
-                                if? `?` = last fun [
+                                if? '?' = last fun [
                                     predicateCount: predicateCount + 1 
                                 ]
                                 else [
@@ -59,7 +59,7 @@
                                     funcList: select map sort keys get pageTree\documentation\library last chop pagePath 'fff [
                                         @[last chop pagePath, replace replace fff "_" "" "-" "?"]
                                     ] 'fff [
-                                        and? :function = type var fff\1 `?` <> last fff\1
+                                        and? :function = type var fff\1 '?' <> last fff\1
                                     ]
                                 ||>
                                 <||= loop funcList 'fff [ ||>
@@ -75,7 +75,7 @@
                         <div class="content">
                             <ul class="list">
                                 <||= loop sort keys get pageTree\documentation\library last chop pagePath 'fff [ fun: replace replace fff "_" "" "-" "?" ||>
-                                    <|| if and? :function = type var fun `?` = last fun [ ||>
+                                    <|| if and? :function = type var fun '?' = last fun [ ||>
                                         <li class="list-item"><a href="<||= linkTo ~{documentation/library/|last chop pagePath|/|lower fun|} ||>"><||= fun ||></a></li>
                                     <|| ] ||>
                                 <||]||>
