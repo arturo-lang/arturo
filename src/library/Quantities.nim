@@ -77,6 +77,27 @@ proc defineSymbols*() =
                     push newLogical(x.u =~ y.q)
                 else:
                     push newLogical(x.u =~ y.u)
+
+    builtin "convert",
+        alias       = tilderight,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "convert quantity to given unit",
+        args        = {
+            "value" : {Integer,Floating,Rational,Quantity},
+            "unit"  : {Literal,String,Word}
+        },
+        attrs       = NoAttrs,
+        returns     = {Quantity},
+        example     = """
+            print convert 3`m `cm
+            ; 300.0 cm
+
+            print 1`yd2 ~> `m2
+            ; 0.836127 m²
+        """:
+            #=======================================================
+            convertQuantity(y, x, yKind, xKind)
     
     builtin "in",
         alias       = unaliased,
@@ -90,10 +111,10 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Quantity},
         example     = """
-            print in'cm 3:m
+            print in`cm 3`m
             ; 300.0cm
 
-            print in'm2 1:yd2
+            print in`m2 1`yd2
             ; 0.836127m²
         """:
             #=======================================================
