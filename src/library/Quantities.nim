@@ -119,7 +119,7 @@ proc defineSymbols*() =
         example     = """
         """:
             #=======================================================
-            push newLiteral(getProperty(x.q))
+            push newLiteral(getProperty(x.q).toLowerAscii())
 
 #=======================================
 # Add Library
