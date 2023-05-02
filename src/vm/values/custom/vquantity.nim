@@ -36,74 +36,74 @@ const
 
 static:
     #----------------------------------------------------------------------------------------------------
-    # Dimensions
+    # Properties
     #----------------------------------------------------------------------------------------------------
-    #             name                          formula
+    #            name                           formula
     #----------------------------------------------------------------------------------------------------
-    defDimension "Acceleration",                "L·T⁻²"
-    defDimension "Action",                      "L²·M·T⁻¹"                    
-    defDimension "Angle",                       "A"  
-    defDimension "Angular Velocity",            "T⁻¹·A"
-    defDimension "Area",                        "L²"
-    defDimension "Area Density",                "L⁻²·M"
-    defDimension "Capacitance",                 "L⁻²·M⁻¹·T⁴·I²"
-    defDimension "Charge",                      "T·I"     
-    defDimension "Conductance",                 "L⁻²·M⁻¹·T³·I²"
-    defDimension "Currency",                    "C"           
-    defDimension "Current",                     "I"
-    defDimension "Current Density",             "L⁻²·I"
-    defDimension "Data-transfer Rate",          "T⁻¹·B"
-    defDimension "Density",                     "L⁻³·M"
-    defDimension "Elastance",                   "L²·M·T⁻⁴·I⁻²"                
-    defDimension "Electric Field",              "L·M·T⁻³·I⁻¹"
-    defDimension "Electricity Price",           "L⁻²·M⁻¹·T²·C"
-    defDimension "Energy",                      "L²·M·T⁻²"
-    defDimension "Entropy",                     "L²·M·T⁻²·K⁻¹"
-    defDimension "Force",                       "L·M·T⁻²"
-    defDimension "Frequency",                   "T⁻¹"
-    defDimension "Heat Flux",                   "M·T⁻³"
-    defDimension "Illuminance",                 "L⁻²·J"
-    defDimension "Inductance",                  "L²·M·T⁻²·I⁻²"
-    defDimension "Information",                 "B"
-    defDimension "Jerk",                        "L·T⁻³"
-    defDimension "Kinematic Viscosity",         "L²·T⁻¹"
-    defDimension "Length",                      "L"
-    defDimension "Luminosity",                  "J"      
-    defDimension "Luminous Flux",               "J·S"
-    defDimension "Magnetic Flux",               "L²·M·T⁻²·I⁻¹"
-    defDimension "Magnetic Flux Density",       "M·T⁻²·I⁻¹"
-    defDimension "Magnetic Field Strength",     "L⁻¹·I"
-    defDimension "Mass",                        "M"
-    defDimension "Mass Flow Rate",              "M·T⁻¹"
-    defDimension "Molar Concentration",         "L⁻³·N"
-    defDimension "Mole Flow Rate",              "N·T⁻¹"
-    defDimension "Moment of Inertia",           "L²·M"
-    defDimension "Momentum",                    "L·M·T⁻¹"
-    defDimension "Permeability",                "L·M·T⁻²·I⁻²"
-    defDimension "Permittivity",                "L⁻³·M⁻¹·T⁴·I²"
-    defDimension "Potential",                   "L²·M·T⁻³·I⁻¹"
-    defDimension "Power",                       "L²·M·T⁻³"
-    defDimension "Pressure",                    "L⁻¹·M·T⁻²"
-    defDimension "Radiation",                   "L²·T⁻²"
-    defDimension "Radiation Exposure",          "M⁻¹·T·I"
-    defDimension "Resistance",                  "L²·M·T⁻³·I⁻²"
-    defDimension "Resistivity",                 "L³·M·T⁻³·I⁻²"
-    defDimension "Salary",                      "T⁻¹·C"
-    defDimension "Solid Angle",                 "S" 
-    defDimension "Specific Volume",             "L³·M⁻¹"
-    defDimension "Speed",                       "L·T⁻¹"
-    defDimension "Snap",                        "L·T⁻⁴"
-    defDimension "Substance",                   "N"              
-    defDimension "Surface Tension",             "M·T⁻²"
-    defDimension "Temperature",                 "K"
-    defDimension "Thermal Conductivity",        "L·M·T⁻³·K⁻¹"
-    defDimension "Thermal Insulance",           "M⁻¹·T³·K"
-    defDimension "Time",                        "T"
-    defDimension "Unitless",                    ""           
-    defDimension "Viscosity",                   "L⁻¹·M·T⁻¹"
-    defDimension "Volume",                      "L³"
-    defDimension "Volumetric Flow",             "L³·T⁻¹"
-    defDimension "Wave Number",                 "L⁻¹"
+    defProperty "Acceleration",                 "L·T⁻²"
+    defProperty "Action",                       "L²·M·T⁻¹"                    
+    defProperty "Angle",                        "A"  
+    defProperty "Angular Velocity",             "T⁻¹·A"
+    defProperty "Area",                         "L²"
+    defProperty "Area Density",                 "L⁻²·M"
+    defProperty "Capacitance",                  "L⁻²·M⁻¹·T⁴·I²"
+    defProperty "Charge",                       "T·I"     
+    defProperty "Conductance",                  "L⁻²·M⁻¹·T³·I²"
+    defProperty "Currency",                     "C"           
+    defProperty "Current",                      "I"
+    defProperty "Current Density",              "L⁻²·I"
+    defProperty "Data-transfer Rate",           "T⁻¹·B"
+    defProperty "Density",                      "L⁻³·M"
+    defProperty "Elastance",                    "L²·M·T⁻⁴·I⁻²"                
+    defProperty "Electric Field",               "L·M·T⁻³·I⁻¹"
+    defProperty "Electricity Price",            "L⁻²·M⁻¹·T²·C"
+    defProperty "Energy",                       "L²·M·T⁻²"
+    defProperty "Entropy",                      "L²·M·T⁻²·K⁻¹"
+    defProperty "Force",                        "L·M·T⁻²"
+    defProperty "Frequency",                    "T⁻¹"
+    defProperty "Heat Flux",                    "M·T⁻³"
+    defProperty "Illuminance",                  "L⁻²·J"
+    defProperty "Inductance",                   "L²·M·T⁻²·I⁻²"
+    defProperty "Information",                  "B"
+    defProperty "Jerk",                         "L·T⁻³"
+    defProperty "Kinematic Viscosity",          "L²·T⁻¹"
+    defProperty "Length",                       "L"
+    defProperty "Luminosity",                   "J"      
+    defProperty "Luminous Flux",                "J·S"
+    defProperty "Magnetic Flux",                "L²·M·T⁻²·I⁻¹"
+    defProperty "Magnetic Flux Density",        "M·T⁻²·I⁻¹"
+    defProperty "Magnetic Field Strength",      "L⁻¹·I"
+    defProperty "Mass",                         "M"
+    defProperty "Mass Flow Rate",               "M·T⁻¹"
+    defProperty "Molar Concentration",          "L⁻³·N"
+    defProperty "Mole Flow Rate",               "N·T⁻¹"
+    defProperty "Moment of Inertia",            "L²·M"
+    defProperty "Momentum",                     "L·M·T⁻¹"
+    defProperty "Permeability",                 "L·M·T⁻²·I⁻²"
+    defProperty "Permittivity",                 "L⁻³·M⁻¹·T⁴·I²"
+    defProperty "Potential",                    "L²·M·T⁻³·I⁻¹"
+    defProperty "Power",                        "L²·M·T⁻³"
+    defProperty "Pressure",                     "L⁻¹·M·T⁻²"
+    defProperty "Radiation",                    "L²·T⁻²"
+    defProperty "Radiation Exposure",           "M⁻¹·T·I"
+    defProperty "Resistance",                   "L²·M·T⁻³·I⁻²"
+    defProperty "Resistivity",                  "L³·M·T⁻³·I⁻²"
+    defProperty "Salary",                       "T⁻¹·C"
+    defProperty "Solid Angle",                  "S" 
+    defProperty "Specific Volume",              "L³·M⁻¹"
+    defProperty "Speed",                        "L·T⁻¹"
+    defProperty "Snap",                         "L·T⁻⁴"
+    defProperty "Substance",                    "N"              
+    defProperty "Surface Tension",              "M·T⁻²"
+    defProperty "Temperature",                  "K"
+    defProperty "Thermal Conductivity",         "L·M·T⁻³·K⁻¹"
+    defProperty "Thermal Insulance",            "M⁻¹·T³·K"
+    defProperty "Time",                         "T"
+    defProperty "Unitless",                     ""           
+    defProperty "Viscosity",                    "L⁻¹·M·T⁻¹"
+    defProperty "Volume",                       "L³"
+    defProperty "Volumetric Flow",              "L³·T⁻¹"
+    defProperty "Wave Number",                  "L⁻¹"
 
     #----------------------------------------------------------------------------------------------------
     # Prefixes
@@ -710,7 +710,7 @@ const
 var
     AtomsCache {.used.} : Table[string,Atoms]
 
-    Dimensions          : Table[QuantitySignature, string]
+    Properties          : Table[QuantitySignature, string]
     Quantities          : Table[Unit, Quantity]
     UserUnits           : Table[string, string]
 
@@ -741,7 +741,7 @@ proc getPrimitive(unit: PrefixedUnit): Quantity =
     # echo $(Quantities)
     result = Quantities[unit.u]
 
-    if unlikely((result.signature == static parseDimensionFormula("C")) and isZero(result.value)):
+    if unlikely((result.signature == static parsePropertyFormula("C")) and isZero(result.value)):
         let xrate = getExchangeRate((symbolName(unit.u.core)).replace("_CoreUnit",""))
         Quantities[unit.u].value = toRational(xrate)
         result.value = toRational(xrate)
@@ -871,8 +871,8 @@ proc toQuantity*(vstr: string, atoms: Atoms): Quantity =
 # Methods
 #=======================================
 
-proc getDimension*(q: Quantity): string =
-    Dimensions.getOrDefault(q.signature, "Unknown")
+proc getProperty*(q: Quantity): string =
+    Properties.getOrDefault(q.signature, "Unknown")
 
 proc convertTemperature*(v: QuantityValue, fromU: CoreUnit, toU: CoreUnit): QuantityValue =
     if fromU == toU:
@@ -1208,7 +1208,7 @@ proc `$`*(atoms: Atoms, oneline: static bool=false): string =
         result = atoms.mapIt($it).join("·")
 
 proc `$`*(q: Quantity): string =
-    if unlikely(q.signature == static parseDimensionFormula("C")):
+    if unlikely(q.signature == static parsePropertyFormula("C")):
         result = stringify(q.original, coerce=true) & " " & $q.atoms# & " (= " & $q.original & ") => " & getDimension(q)
     else:
         result = stringify(q.original) & " " & $q.atoms# & " (= " & $q.original & ") => " & getDimension(q)
@@ -1228,7 +1228,7 @@ proc inspect*(q: Quantity) =
     echo "----------------------------------------"
     echo ".original: ", q.original
     echo ".value: ", q.value
-    echo ".signature: ", q.signature, " => ", getDimension(q)
+    echo ".signature: ", q.signature, " => ", getProperty(q)
     echo ".flags: ", q.flags
     echo ".atoms: "
 
@@ -1247,7 +1247,7 @@ proc inspect*(q: Quantity) =
 #=======================================
 
 proc initQuantities*() =
-    Dimensions = generateDimensions()
+    Properties = generateProperties()
     Quantities = generateQuantities()
 
     generateConstants()

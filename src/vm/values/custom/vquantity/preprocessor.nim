@@ -10,7 +10,7 @@
 ## 
 ## The whole module works solely at compile-time and
 ## is used to define the base units, prefixes, units,
-## constants and dimensions for the VQuantity module.
+## constants and properties for the VQuantity module.
 
 #=======================================
 # Libraries
@@ -53,7 +53,7 @@ type
 
 var
     baseUnits           {.compileTime.} : seq[string]
-    dimensions          {.compileTime.} : OrderedTable[int64,string]
+    properties          {.compileTime.} : OrderedTable[int64,string]
     prefixes            {.compileTime.} : OrderedTable[string, tuple[sym: string, val: int]]
     defs                {.compileTime.} : OrderedTable[string, Quantity]
     units               {.compileTime.} : OrderedTable[string, string]
@@ -94,8 +94,8 @@ template prefixId(str: string): string =
 template unitId(str: string): string =
     str & "_CoreUnit"
  
-template getDimension(q: Quantity): string =
-    dimensions.getOrDefault(q.signature, "NOT FOUND!")
+template getProperty(q: Quantity): string =
+    properties.getOrDefault(q.signature, "NOT FOUND!")
 
 #=======================================
 # Helpers
@@ -192,7 +192,7 @@ proc parseQuantity*(s: string): Quantity =
         parseAtoms(components[1])
     )
 
-proc parseDimensionFormula*(str: string):int64 =
+proc parsePropertyFormula*(str: string):int64 =
     proc getTypeAndExpo(s: string): tuple[tp: string, exp: int] =
         result.exp = 1
         var x: char
@@ -202,7 +202,7 @@ proc parseDimensionFormula*(str: string):int64 =
             if y != "":
                 result.exp = expot[y]
         else:
-            raise newException(ValueError, "Invalid dimension pattern: " & s)
+            raise newException(ValueError, "Invalid property pattern: " & s)
 
     if str.len == 0: return 
 
@@ -223,12 +223,12 @@ proc parseDimensionFormula*(str: string):int64 =
 # Methods
 #=======================================
 
-proc defDimension*(quantity: string, formula: string = "") =
-    let signature = parseDimensionFormula(formula)
+proc defProperty*(quantity: string, formula: string = "") =
+    let signature = parsePropertyFormula(formula)
 
-    if dimensions.hasKey(signature):
-        raise newException(ValueError, "Dimension already defined: " & quantity & " => " & dimensions[signature])
-    dimensions[signature] = quantity
+    if properties.hasKey(signature):
+        raise newException(ValueError, "Property already defined: " & quantity & " => " & properties[signature])
+    properties[signature] = quantity
 
 proc defPrefix*(prefix, symbol: string, value: int) =
     prefixes[prefix] = (sym: symbol, val: value)
@@ -396,13 +396,13 @@ macro generateConstantDefinitions*(): untyped =
 
     res
 
-macro generateDimensions*(): untyped =
+macro generateProperties*(): untyped =
     let items = nnkTableConstr.newTree()
 
-    for (signature,dimension) in pairs(dimensions):
+    for (signature,property) in pairs(properties):
         items.add nnkExprColonExpr.newTree(
             newLit(signature),
-            newLit(dimension)
+            newLit(property)
         )
 
     nnkDotExpr.newTree(
@@ -695,7 +695,7 @@ proc printUnits*() =
         echo "\t.original = " & $(quantity.original)
         echo "\t.value = " & $(quantity.value)
         echo "\t\t.signature = " & $(quantity.signature)
-        echo "\t\t===> " & $quantity.getDimension()
+        echo "\t\t===> " & $quantity.getProperty()
         echo "\t.atoms = " & $(quantity.atoms)
         echo "\t.base = " & $(quantity.base)
         echo ""
