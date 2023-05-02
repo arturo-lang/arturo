@@ -55,6 +55,7 @@
 
 >> between? - :complex
 [+] passed!
+[+] passed!
 
 >> between? - :version
 [+] passed!
@@ -126,6 +127,7 @@
 [+] passed!
 
 >> compare - :complex
+[+] passed!
 [+] passed!
 
 >> compare - :version
@@ -227,6 +229,7 @@
 [+] passed!
 
 >> equal? - :complex
+[+] passed!
 [+] passed!
 [+] passed!
 
@@ -393,6 +396,7 @@
 >> greater? - :complex
 [+] passed!
 [+] passed!
+[+] passed!
 
 >> greater? - :version
 [+] passed!
@@ -551,6 +555,7 @@
 [+] passed!
 
 >> greaterOrEqual? - :complex
+[+] passed!
 [+] passed!
 [+] passed!
 
@@ -715,6 +720,7 @@
 >> less? - :complex
 [+] passed!
 [+] passed!
+[+] passed!
 
 >> less? - :version
 [+] passed!
@@ -877,6 +883,7 @@
 >> lessOrEqual? - :complex
 [+] passed!
 [+] passed!
+[+] passed!
 
 >> lessOrEqual? - :version
 [+] passed!
@@ -1028,6 +1035,7 @@
 [+] passed!
 
 >> notEqual? - :complex
+[+] passed!
 [+] passed!
 [+] passed!
 
@@ -1186,6 +1194,7 @@
 [+] passed!
 
 >> same? - :complex
+[+] passed!
 [+] passed!
 [+] passed!
 
