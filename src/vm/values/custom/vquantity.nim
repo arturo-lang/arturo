@@ -127,6 +127,12 @@ proc `$`*(q: Quantity): string
 func isUnitless(q: Quantity): bool {.inline.} =
     return q.signature == 0
 
+func isCurrency(q: Quantity): bool {.inline.} =
+    return q.signature == (static parsePropertyFormula("C"))
+
+func isTemperature(q: Quantity): bool {.inline.} =
+    return q.signature == (static parsePropertyFormula("T"))
+
 proc getExchangeRate(curr: string): float =
     let s = toLowerAscii(curr)
     let url = "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/" & s & "/usd.json"
@@ -135,11 +141,9 @@ proc getExchangeRate(curr: string): float =
     return response["usd"].fnum
 
 proc getPrimitive(unit: PrefixedUnit): Quantity =
-    # echo "in getPrimitive: ", unit.u, " ", unit.p
-    # echo $(Quantities)
     result = Quantities[unit.u]
 
-    if unlikely((result.signature == static parsePropertyFormula("C")) and isZero(result.value)):
+    if unlikely(result.isCurrency() and isZero(result.value)):
         let xrate = getExchangeRate((symbolName(unit.u.core)).replace("_CoreUnit",""))
         Quantities[unit.u].value = toRational(xrate)
         result.value = toRational(xrate)
@@ -176,7 +180,7 @@ proc reverse*(atoms: Atoms): Atoms =
 # Parsers
 #=======================================
 
-proc parseUnit*(str: string): PrefixedUnit = 
+proc parseSubUnit*(str: string): PrefixedUnit = 
     generateUnitParser()
 
 proc parseAtoms*(str: string): Atoms = 
@@ -187,7 +191,7 @@ proc parseAtoms*(str: string): Atoms =
             unitStr.add at[i]
             inc i
 
-        result.unit = parseUnit(unitStr)
+        result.unit = parseSubUnit(unitStr)
         result.power = 1
         if i < at.len:
             result.power = parseInt(at[i..^1])
@@ -606,7 +610,7 @@ proc `$`*(atoms: Atoms, oneline: static bool=false): string =
         result = atoms.mapIt($it).join("·")
 
 proc `$`*(q: Quantity): string =
-    if unlikely(q.signature == static parsePropertyFormula("C")):
+    if unlikely(q.isCurrency()):
         result = stringify(q.original, coerce=true) & " " & $q.atoms# & " (= " & $q.original & ") => " & getDimension(q)
     else:
         result = stringify(q.original) & " " & $q.atoms# & " (= " & $q.original & ") => " & getDimension(q)
