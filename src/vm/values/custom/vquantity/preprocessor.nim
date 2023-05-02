@@ -45,6 +45,7 @@ type
         definition: string
         value: Quantity
         precalculated: bool
+        description: string
 
 #=======================================
 # Variables
@@ -266,18 +267,20 @@ proc defUnit*(unit: string, symbol: string, prefixed: bool, definition: string, 
             defs[unit] = parseQuantity("0 K")
             parsable[unit] = ("No", unit)
 
-proc defConstant*(name: string, precalculated: bool, definition: string) =
+proc defConstant*(name: string, precalculated: bool, definition: string, description: string) =
     if precalculated:
         constants[name] = (
             definition: definition, 
             value: parseQuantity(definition),
-            precalculated: precalculated
+            precalculated: precalculated,
+            description: description
         )
     else:
         constants[name] = (
             definition: definition, 
             value: newQuantity(1//1, @[(kind: name, expo: 1)], base=true),
-            precalculated: precalculated
+            precalculated: precalculated,
+            description: description
         )
 
 proc defCurrency*(currency: string, symbol: string) =
@@ -577,7 +580,7 @@ macro generateQuantities*(): untyped =
 macro generateConstants*(): untyped =
     let res = nnkStmtList.newTree()
     for (name, content) in pairs(constants):
-        let (definition, quantity, precalculated) = content
+        let (definition, quantity, precalculated, description) = content
 
         if precalculated:
             res.add nnkAsgn.newTree(
@@ -615,7 +618,7 @@ macro addPhysicalConstants*(): untyped =
             ),
             nnkExprEqExpr.newTree(
                 newIdentNode("description"),
-                newLit("the number pi, mathematical constant")
+                newLit(content.description)
             ),
             nnkStmtList.newTree(
                 nnkCall.newTree(
