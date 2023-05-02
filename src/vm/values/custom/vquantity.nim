@@ -378,9 +378,9 @@ static:
     #---------------------------------------------------------------------------------------------------------------------------
     #       name        symbol      prefix?     definition                  aliases
     #---------------------------------------------------------------------------------------------------------------------------
-    defUnit "degC",     "°C",       false,      "",                         "celsius"
-    defUnit "degF",     "°F",       false,      "",                         "fahrenheit"
-    defUnit "degR",     "°R",       false,      "",                         "rankine"
+    defUnit "degC",     "°C",       false,      "1 K",                      "celsius"
+    defUnit "degF",     "°F",       false,      "5/9 K",                    "fahrenheit"
+    defUnit "degR",     "°R",       false,      "5/9 K",                    "rankine"
 
     #---------------------------------------------------------------------------------------------------------------------------
     # Information units (base: B)
