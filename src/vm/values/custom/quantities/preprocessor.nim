@@ -60,7 +60,6 @@ var
     constants           {.compileTime.} : OrderedTable[string,Constant]
 
     parsable            {.compileTime.} : OrderedTable[string, (string, string)]
-    currencyUnits       {.compileTime.} : seq[string]
 
 #=======================================
 # Constants
@@ -238,9 +237,6 @@ proc defUnit*(unit: string, symbol: string, prefixed: bool, definition: string, 
     if definition[0] in 'A'..'Z':
         baseUnits.add(unit)
         defs[unit] = newQuantity(1//1, @[(kind: unit, expo: 1)], base=true)
-
-        if unit=="USD":
-            currencyUnits.add(unit)
     else:
         defs[unit] = parseQuantity(definition)
 
@@ -278,7 +274,6 @@ proc defConstant*(name: string, precalculated: bool, definition: string, descrip
         )
 
 proc defCurrency*(currency: string, symbol: string) =
-    currencyUnits.add(currency)
     defUnit(currency, symbol, false, "0 USD")
 
 #=======================================
