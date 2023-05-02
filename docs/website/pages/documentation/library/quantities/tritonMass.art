@@ -1,0 +1,15 @@
+name: "tritonMass"
+type: :quantity
+description: "the mass of a triton"
+module: "Quantities"
+line: 680
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Quantities.nim#L680"
+returns: [
+                :quantity
+        ]
+related: [
+                "Quantities/deuteronMass"
+                 "Quantities/protonMass"
+                 "Quantities/helionMass"
+                 "Quantities/neutronMass"
+        ]

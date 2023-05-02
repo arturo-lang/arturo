@@ -10,6 +10,6 @@ returns: [
 related: [
                 "Logic/false"
                  "Logic/true"
-                 "Logic/any?"
-                 "Logic/and?"
+                 "Quantities/magneticFluxQuantum"
+                 "Quantities/molarGasConstant"
         ]

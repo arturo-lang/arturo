@@ -1,0 +1,15 @@
+name: "standardTemperature"
+type: :quantity
+description: "the standard temperature"
+module: "Quantities"
+line: 680
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Quantities.nim#L680"
+returns: [
+                :quantity
+        ]
+related: [
+                "Quantities/standardPressure"
+                 "Quantities/planckTemperature"
+                 "Quantities/deuteronMass"
+                 "Quantities/conductanceQuantum"
+        ]

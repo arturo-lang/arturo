@@ -1,0 +1,15 @@
+name: "speedOfLight"
+type: :quantity
+description: "the speed of light in a vacuum"
+module: "Quantities"
+line: 680
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Quantities.nim#L680"
+returns: [
+                :quantity
+        ]
+related: [
+                "Quantities/tauMass"
+                 "Quantities/impedanceOfVacuum"
+                 "Quantities/atomicMass"
+                 "Quantities/josephsonConstant"
+        ]
