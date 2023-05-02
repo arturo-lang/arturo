@@ -379,8 +379,8 @@ static:
     #       name        symbol      prefix?     definition                  aliases
     #---------------------------------------------------------------------------------------------------------------------------
     defUnit "degC",     "°C",       false,      "1 K",                      "celsius"
-    defUnit "degF",     "°F",       false,      "5/9 K",                    "fahrenheit"
-    defUnit "degR",     "°R",       false,      "5/9 K",                    "rankine"
+    defUnit "degF",     "°F",       false,      "5:9 K",                    "fahrenheit"
+    defUnit "degR",     "°R",       false,      "5:9 K",                    "rankine"
 
     #---------------------------------------------------------------------------------------------------------------------------
     # Information units (base: B)
@@ -1221,6 +1221,8 @@ proc initQuantities*() =
 #=======================================
 
 initQuantities()
+
+echo $(Quantities)
 
 when isMainModule:
     import helpers/benchmark
