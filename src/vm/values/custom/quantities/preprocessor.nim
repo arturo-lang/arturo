@@ -541,16 +541,6 @@ macro generateQuantities*(): untyped =
     for (unit,quantity) in pairs(defs):
         var atomsSeq = getAtomsSeq(quantity.atoms)
 
-        var flags = nnkCurly.newTree()
-        if quantity.base:
-            flags.add newIdentNode("IsBase")
-
-        if temperatureUnits.contains(unit):
-            flags.add newIdentNode("IsTemperature")
-
-        if currencyUnits.contains(unit):
-            flags.add newIdentNode("IsCurrency")
-
         items.add nnkExprColonExpr.newTree(
             nnkObjConstr.newTree(
                 newIdentNode("SubUnit"),
@@ -568,7 +558,7 @@ macro generateQuantities*(): untyped =
                 newLit(quantity.value),
                 newLit(quantity.signature),
                 atomsSeq,
-                flags
+                newLit(quantity.base)
             )
         )
 
@@ -590,7 +580,7 @@ macro generateConstants*(): untyped =
                     newLit(quantity.value),
                     newLit(quantity.signature),
                     getAtomsSeq(quantity.atoms),
-                    nnkCurly.newTree()
+                    newLit(false)
                 )
             )
         else:

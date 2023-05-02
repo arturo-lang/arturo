@@ -623,7 +623,7 @@ proc inspect*(q: Quantity) =
     echo ".original: ", q.original
     echo ".value: ", q.value
     echo ".signature: ", q.signature, " => ", getProperty(q)
-    echo ".flags: ", q.flags
+    echo ".base: ", q.base
     echo ".atoms: "
 
     for atom in q.atoms:
