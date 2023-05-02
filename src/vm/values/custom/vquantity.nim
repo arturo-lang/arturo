@@ -116,6 +116,7 @@ generateConstantDefinitions()
 #=======================================
 
 proc `$`*(q: Quantity): string 
+proc inspect*(q: Quantity)
 
 #=======================================
 # Helpers
@@ -135,7 +136,7 @@ func isCurrency(q: Quantity): bool {.inline.} =
     return q.signature == (static parsePropertyFormula("C"))
 
 func isTemperature(q: Quantity): bool {.inline.} =
-    return q.signature == (static parsePropertyFormula("T"))
+    return q.signature == (static parsePropertyFormula("K"))
 
 proc getExchangeRate(curr: string): float =
     let s = toLowerAscii(curr)
@@ -319,7 +320,7 @@ proc convertTo*(q: Quantity, atoms: Atoms): Quantity =
     result = toQuantity(newVal, atoms)
 
 proc convertQuantity*(q: Quantity, atoms: Atoms): Quantity =
-    if isTemperature(q):
+    if unlikely(isTemperature(q)):
         echo $(atoms[0])
     else:
         result = q.convertTo(atoms)
