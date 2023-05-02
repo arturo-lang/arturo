@@ -91,7 +91,7 @@ template prefixId(str: string): string =
     str & "_Prefix"
 
 template unitId(str: string): string =
-    str & "_Unit"
+    str & "_CoreUnit"
  
 template getDimension(q: Quantity): string =
     dimensions.getOrDefault(q.signature, "NOT FOUND!")

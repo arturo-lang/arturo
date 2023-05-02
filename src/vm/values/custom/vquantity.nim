@@ -744,7 +744,7 @@ proc getPrimitive(unit: PrefixedUnit): Quantity =
     result = Quantities[unit.u]
 
     if unlikely((result.signature == static parseDimensionFormula("C")) and isZero(result.value)):
-        let xrate = getExchangeRate((symbolName(unit.u.core)).replace("_Unit",""))
+        let xrate = getExchangeRate((symbolName(unit.u.core)).replace("_CoreUnit",""))
         Quantities[unit.u].value = toRational(xrate)
         result.value = toRational(xrate)
     else:
@@ -880,24 +880,24 @@ proc convertTemperature*(v: QuantityValue, fromU: CoreUnit, toU: CoreUnit): Quan
     if fromU == toU:
         return v
 
-    if fromU == K_Unit:
-        if toU == degC_Unit:
+    if fromU == K_CoreUnit:
+        if toU == degC_CoreUnit:
             result = v - 273.15
-        elif toU == degF_Unit:
+        elif toU == degF_CoreUnit:
             result = v * 9/5 - 459.67
         else:
             echo "ERROR!"
-    elif fromU == degC_Unit:
-        if toU == K_Unit:
+    elif fromU == degC_CoreUnit:
+        if toU == K_CoreUnit:
             result = v + 273.15
-        elif toU == degF_Unit:
+        elif toU == degF_CoreUnit:
             result = v * 9/5 + 32
         else:
             echo "ERROR!"
-    elif fromU == degF_Unit:
-        if toU == K_Unit:
+    elif fromU == degF_CoreUnit:
+        if toU == K_CoreUnit:
             result = (v + 459.67) * 5/9
-        elif toU == degC_Unit:
+        elif toU == degC_CoreUnit:
             result = (v - 32) * 5/9
         else:
             echo "ERROR!"
