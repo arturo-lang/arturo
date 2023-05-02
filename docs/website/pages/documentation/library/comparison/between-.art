@@ -2,8 +2,8 @@ name: "between?"
 type: :function
 description: "check if given value is between the given values (inclusive)"
 module: "Comparison"
-line: 34
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Comparison.nim#L34"
+line: 41
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Comparison.nim#L41"
 returns: [
                 :logical
         ]

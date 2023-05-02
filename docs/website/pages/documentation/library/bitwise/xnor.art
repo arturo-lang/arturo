@@ -2,8 +2,8 @@ name: "xnor"
 type: :function
 description: "calculate the binary XNOR for the given values"
 module: "Bitwise"
-line: 195
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Bitwise.nim#L195"
+line: 202
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Bitwise.nim#L202"
 returns: [
                 :integer
                  :binary

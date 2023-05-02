@@ -2,8 +2,8 @@ name: "when?"
 type: :function
 description: "check if a specific condition is fulfilled and, if so, execute given action"
 module: "Core"
-line: 854
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L854"
+line: 923
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L923"
 returns: [
                 :logical
         ]
@@ -28,7 +28,7 @@ arguments: #[
         ]
 related: [
                 "Core/unless?"
+                 "Core/throws?"
                  "Core/while"
                  "Core/try?"
-                 "Iterators/every?"
         ]

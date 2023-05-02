@@ -2,8 +2,8 @@ name: "terminate"
 type: :function
 description: "kill process with given id"
 module: "System"
-line: 375
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/System.nim#L375"
+line: 390
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/System.nim#L390"
 returns: [
                 :nothing
         ]

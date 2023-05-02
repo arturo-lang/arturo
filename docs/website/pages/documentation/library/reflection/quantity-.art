@@ -2,8 +2,8 @@ name: "quantity?"
 type: :function
 description: "checks if given value is of type :quantity"
 module: "Reflection"
-line: 737
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L737"
+line: 740
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L740"
 returns: [
                 :logical
         ]

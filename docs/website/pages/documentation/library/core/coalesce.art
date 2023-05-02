@@ -2,8 +2,8 @@ name: "coalesce"
 type: :function
 description: "if first value is null or false, return second value; otherwise return the first one"
 module: "Core"
-line: 222
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L222"
+line: 229
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L229"
 returns: [
                 :any
         ]

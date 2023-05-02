@@ -2,8 +2,8 @@ name: "symlink"
 type: :function
 description: "create symbolic link of file to given destination"
 module: "Files"
-line: 401
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Files.nim#L401"
+line: 425
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Files.nim#L425"
 returns: [
                 :nothing
         ]

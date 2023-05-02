@@ -2,8 +2,8 @@ name: "sort"
 type: :function
 description: "sort given block in ascending order"
 module: "Collections"
-line: 1643
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L1643"
+line: 1788
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L1788"
 returns: [
                 :block
                  :nothing

@@ -2,8 +2,8 @@ name: "acos"
 type: :function
 description: "calculate the inverse cosine of given angle"
 module: "Numbers"
-line: 84
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L84"
+line: 91
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L91"
 returns: [
                 :floating
                  :complex

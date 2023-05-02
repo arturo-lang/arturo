@@ -2,8 +2,8 @@ name: "volume"
 type: :function
 description: "get file size for given path"
 module: "Files"
-line: 484
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Files.nim#L484"
+line: 508
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Files.nim#L508"
 returns: [
                 :quantity
         ]

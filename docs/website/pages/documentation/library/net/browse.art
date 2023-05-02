@@ -2,8 +2,8 @@ name: "browse"
 type: :function
 description: "open given URL with default browser"
 module: "Net"
-line: 48
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Net.nim#L48"
+line: 64
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Net.nim#L64"
 returns: [
                 :nothing
         ]

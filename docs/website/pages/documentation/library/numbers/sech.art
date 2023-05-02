@@ -2,8 +2,8 @@ name: "sech"
 type: :function
 description: "calculate the hyperbolic secant of given angle"
 module: "Numbers"
-line: 1235
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L1235"
+line: 1267
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L1267"
 returns: [
                 :floating
                  :complex

@@ -2,8 +2,8 @@ name: "rename"
 type: :function
 description: "rename file at path using given new path name"
 module: "Files"
-line: 368
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Files.nim#L368"
+line: 392
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Files.nim#L392"
 returns: [
                 :nothing
         ]

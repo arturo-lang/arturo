@@ -2,8 +2,8 @@ name: "gather"
 type: :function
 description: "group items in collection by block result and return as dictionary"
 module: "Iterators"
-line: 979
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Iterators.nim#L979"
+line: 992
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Iterators.nim#L992"
 returns: [
                 :dictionary
                  :nothing

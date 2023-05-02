@@ -2,14 +2,14 @@ name: "define"
 type: :function
 description: "define new type with given prototype"
 module: "Converters"
-line: 698
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Converters.nim#L698"
+line: 764
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Converters.nim#L764"
 returns: [
                 :nothing
         ]
 examples: [
                 {
-                        define :person [name surname age][  
+                        define :person [name surname age][
                         
                             ; magic method to be executed
                             ; after a new object has been created
@@ -46,9 +46,9 @@ examples: [
                         ; NAME: Jane, SURNAME: Doe, AGE: 33
                         
                         sayHello a
-                        ; Hello John 
+                        ; Hello John
                         
-                        a > b 
+                        a > b
                         ; => true (a\age > b\age)
                         
                         print join.with:"\n" sort @[a b]

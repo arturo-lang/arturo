@@ -1,0 +1,71 @@
+name: "pop"
+type: :function
+description: "remove and return the last item from given collection"
+module: "Collections"
+line: 1178
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L1178"
+returns: [
+                :any
+        ]
+examples: [
+                {
+                        a: [0 1 2 3 4 5]
+                        b: pop 'a
+                        
+                        inspect a
+                        ; [ :block
+                        ;         0 :integer
+                        ;         1 :integer
+                        ;         2 :integer
+                        ;         3 :integer
+                        ;         4 :integer
+                        ; ]
+                        inspect b     ; 5 :integer
+                        
+                        
+                        b: pop.n: 2 'a
+                        
+                        inspect a
+                        ; [ :block
+                        ;         0 :integer
+                        ;         1 :integer
+                        ;         2 :integer
+                        ; ]
+                        inspect b
+                        ; [ :block
+                        ;         3 :integer
+                        ;         4 :integer
+                        ; ]
+                }
+                 {
+                        a: "Arturoo"
+                        b: pop 'a
+                        
+                        inspect a     ; Arturo :string
+                        inspect b     ; o :char
+                        
+                        b: pop.n: 3 'a
+                        
+                        inspect a     ; Art :string
+                        inspect b     ; uro :string
+                }
+        ]
+attributes: #[
+        n: #[
+                types: [
+                                :integer
+                        ]
+                description: "remove multiple items. (Must be greater than 0.)"
+                ]
+        ]
+arguments: #[
+        collection: [
+                        :literal
+                ]
+        ]
+related: [
+                "Collections/chop"
+                 "Collections/sample"
+                 "Collections/drop"
+                 "Collections/prepend"
+        ]

@@ -2,8 +2,8 @@ name: "sorted?"
 type: :function
 description: "check if given collection is already sorted"
 module: "Collections"
-line: 1827
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L1827"
+line: 1977
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L1977"
 returns: [
                 :logical
         ]

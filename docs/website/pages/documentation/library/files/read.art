@@ -2,8 +2,8 @@ name: "read"
 type: :function
 description: "read file from given path"
 module: "Files"
-line: 277
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Files.nim#L277"
+line: 295
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Files.nim#L295"
 returns: [
                 :string
                  :binary
@@ -47,6 +47,12 @@ attributes: #[
                                 :logical
                         ]
                 description: "read CSV file into a block of rows"
+                ]
+        delimiter: #[
+                types: [
+                                :char
+                        ]
+                description: "read CSV file with a specific delimiter"
                 ]
         withHeaders: #[
                 types: [

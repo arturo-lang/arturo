@@ -2,8 +2,8 @@ name: "upper"
 type: :function
 description: "convert given string to uppercase"
 module: "Strings"
-line: 1046
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L1046"
+line: 1058
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L1058"
 returns: [
                 :char
                  :string

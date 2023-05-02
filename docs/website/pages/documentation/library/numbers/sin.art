@@ -2,8 +2,8 @@ name: "sin"
 type: :function
 description: "calculate the sine of given angle"
 module: "Numbers"
-line: 1256
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L1256"
+line: 1288
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L1288"
 returns: [
                 :floating
                  :complex

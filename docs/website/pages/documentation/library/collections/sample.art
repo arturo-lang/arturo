@@ -2,8 +2,8 @@ name: "sample"
 type: :function
 description: "get a random element from given collection"
 module: "Collections"
-line: 1422
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L1422"
+line: 1558
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L1558"
 returns: [
                 :null
                  :any

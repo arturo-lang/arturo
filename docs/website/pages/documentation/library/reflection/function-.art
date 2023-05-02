@@ -2,8 +2,8 @@ name: "function?"
 type: :function
 description: "checks if given value is of type :function"
 module: "Reflection"
-line: 576
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L576"
+line: 579
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L579"
 returns: [
                 :logical
         ]

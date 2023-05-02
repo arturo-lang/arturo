@@ -2,8 +2,8 @@ name: "path"
 type: :dictionary
 description: "common path constants"
 module: "Paths"
-line: 326
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Paths.nim#L326"
+line: 336
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Paths.nim#L336"
 returns: [
                 :dictionary
         ]

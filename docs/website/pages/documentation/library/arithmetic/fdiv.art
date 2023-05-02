@@ -2,8 +2,8 @@ name: "fdiv"
 type: :function
 description: "divide given values and return result"
 module: "Arithmetic"
-line: 118
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Arithmetic.nim#L118"
+line: 117
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Arithmetic.nim#L117"
 returns: [
                 :floating
                  :rational

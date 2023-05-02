@@ -2,8 +2,8 @@ name: "cluster"
 type: :function
 description: "group together items in collection that abide by given predicate"
 module: "Iterators"
-line: 522
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Iterators.nim#L522"
+line: 535
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Iterators.nim#L535"
 returns: [
                 :block
                  :nothing
@@ -45,7 +45,7 @@ attributes: #[
                 ]
         value: #[
                 types: [
-                                :any
+                                :logical
                         ]
                 description: "also include condition values"
                 ]

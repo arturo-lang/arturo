@@ -2,8 +2,8 @@ name: "numeric?"
 type: :function
 description: "check if given string is numeric"
 module: "Strings"
-line: 614
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L614"
+line: 620
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L620"
 returns: [
                 :logical
         ]

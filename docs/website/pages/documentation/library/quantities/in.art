@@ -1,0 +1,39 @@
+name: "in"
+type: :function
+description: "convert quantity to given unit"
+module: "Quantities"
+line: 74
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Quantities.nim#L74"
+returns: [
+                :quantity
+        ]
+examples: [
+                {
+                        print in'cm 3:m
+                        ; 300.0cm
+                        
+                        print in'm2 1:yd2
+                        ; 0.836127m²
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        unit: [
+                        :string
+                         :word
+                         :literal
+                ]
+        value: [
+                        :integer
+                         :floating
+                         :rational
+                         :quantity
+                ]
+        ]
+related: [
+                "Strings/truncate"
+                 "Strings/capitalize"
+                 "Collections/index"
+                 "Arithmetic/inc"
+        ]

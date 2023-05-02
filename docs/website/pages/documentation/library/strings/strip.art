@@ -2,8 +2,8 @@ name: "strip"
 type: :function
 description: "strip whitespace from given string"
 module: "Strings"
-line: 914
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L914"
+line: 926
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L926"
 returns: [
                 :string
                  :nothing

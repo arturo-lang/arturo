@@ -2,8 +2,8 @@ name: "regex?"
 type: :function
 description: "checks if given value is of type :regex"
 module: "Reflection"
-line: 794
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L794"
+line: 802
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L802"
 returns: [
                 :logical
         ]

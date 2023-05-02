@@ -2,8 +2,8 @@ name: "even?"
 type: :function
 description: "check if given number is even"
 module: "Numbers"
-line: 629
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L629"
+line: 647
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L647"
 returns: [
                 :logical
         ]

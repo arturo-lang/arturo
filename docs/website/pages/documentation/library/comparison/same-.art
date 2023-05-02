@@ -2,8 +2,8 @@ name: "same?"
 type: :function
 description: "check if given values are exactly the same (identity)"
 module: "Comparison"
-line: 209
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Comparison.nim#L209"
+line: 221
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Comparison.nim#L221"
 returns: [
                 :logical
         ]

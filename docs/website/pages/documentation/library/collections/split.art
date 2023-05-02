@@ -2,8 +2,8 @@ name: "split"
 type: :function
 description: "split collection to components"
 module: "Collections"
-line: 1867
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L1867"
+line: 2018
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L2018"
 returns: [
                 :block
                  :nothing

@@ -2,8 +2,8 @@ name: "stack"
 type: :function
 description: "get current stack"
 module: "Reflection"
-line: 831
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L831"
+line: 839
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L839"
 returns: [
                 :dictionary
         ]

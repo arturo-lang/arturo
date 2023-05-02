@@ -2,8 +2,8 @@ name: "acsec"
 type: :function
 description: "calculate the inverse cosecant of given angle"
 module: "Numbers"
-line: 126
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L126"
+line: 133
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L133"
 returns: [
                 :floating
                  :complex

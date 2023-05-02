@@ -2,8 +2,8 @@ name: "replace"
 type: :function
 description: "replace every matched substring/s by given replacement string and return result"
 module: "Strings"
-line: 858
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L858"
+line: 870
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L870"
 returns: [
                 :string
                  :nothing

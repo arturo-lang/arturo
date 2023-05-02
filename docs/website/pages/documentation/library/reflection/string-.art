@@ -2,8 +2,8 @@ name: "string?"
 type: :function
 description: "checks if given value is of type :string"
 module: "Reflection"
-line: 869
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L869"
+line: 877
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L877"
 returns: [
                 :logical
         ]

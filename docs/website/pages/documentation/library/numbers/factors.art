@@ -2,8 +2,8 @@ name: "factors"
 type: :function
 description: "get list of factors for given integer"
 module: "Numbers"
-line: 688
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L688"
+line: 709
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L709"
 returns: [
                 :block
         ]

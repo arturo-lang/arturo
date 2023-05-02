@@ -2,8 +2,8 @@ name: "inc"
 type: :function
 description: "increase given value by 1"
 module: "Arithmetic"
-line: 139
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Arithmetic.nim#L139"
+line: 137
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Arithmetic.nim#L137"
 returns: [
                 :integer
                  :floating
@@ -34,6 +34,6 @@ arguments: #[
 related: [
                 "Arithmetic/dec"
                  "Arithmetic/divmod"
-                 "Converters/in"
+                 "Quantities/in"
                  "Arithmetic/neg"
         ]

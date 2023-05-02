@@ -2,8 +2,8 @@ name: "let"
 type: :function
 description: "set symbol to given value"
 module: "Core"
-line: 492
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L492"
+line: 512
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L512"
 returns: [
                 :nothing
         ]

@@ -2,8 +2,8 @@ name: "unique"
 type: :function
 description: "get given collection without duplicates"
 module: "Collections"
-line: 2185
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L2185"
+line: 2334
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L2334"
 returns: [
                 :block
                  :nothing

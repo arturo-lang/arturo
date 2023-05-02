@@ -1,0 +1,34 @@
+name: "throws?"
+type: :function
+description: "perform action, and return true if errors were thrown"
+module: "Core"
+line: 641
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L641"
+returns: [
+                :logical
+        ]
+examples: [
+                {
+                        throws? [
+                            1 + 2
+                        ] 
+                        ; => false
+                        
+                        throws? -> 1/0
+                        ; => true
+                }
+        ]
+attributes: #[
+        ]
+arguments: #[
+        action: [
+                        :block
+                         :bytecode
+                ]
+        ]
+related: [
+                "Core/try?"
+                 "Core/unless?"
+                 "Core/try"
+                 "Core/when?"
+        ]

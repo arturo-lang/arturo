@@ -2,8 +2,8 @@ name: "get"
 type: :function
 description: "get collection\'s item by given index"
 module: "Collections"
-line: 543
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L543"
+line: 556
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L556"
 returns: [
                 :any
         ]
@@ -36,6 +36,7 @@ examples: [
                         print get str 1               ; e
                         z: 0
                         print str\[z+1]               ; e
+                        print str\[0..4]              ; Hello
                 }
         ]
 attributes: #[

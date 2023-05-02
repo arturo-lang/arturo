@@ -2,8 +2,8 @@ name: "nand"
 type: :function
 description: "calculate the binary NAND for the given values"
 module: "Bitwise"
-line: 58
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Bitwise.nim#L58"
+line: 56
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Bitwise.nim#L56"
 returns: [
                 :integer
                  :binary

@@ -1,0 +1,15 @@
+name: "reducedPlanckConstant"
+type: :quantity
+description: "the number pi, mathematical constant"
+module: "macros"
+line: 680
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/macros.nim#L680"
+returns: [
+                :quantity
+        ]
+related: [
+                "Macros/planckConstant"
+                 "Macros/inverseConductanceQuantum"
+                 "Macros/molarGasConstant"
+                 "Macros/boltzmannConstant"
+        ]

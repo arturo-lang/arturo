@@ -2,8 +2,8 @@ name: "symbol?"
 type: :function
 description: "checks if given value is of type :symbol"
 module: "Reflection"
-line: 887
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L887"
+line: 895
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L895"
 returns: [
                 :logical
         ]

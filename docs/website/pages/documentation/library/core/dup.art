@@ -2,8 +2,8 @@ name: "dup"
 type: :function
 description: "duplicate the top of the stack and convert non-returning call to a do-return call"
 module: "Core"
-line: 359
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L359"
+line: 366
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L366"
 returns: [
                 :any
         ]

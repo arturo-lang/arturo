@@ -2,8 +2,8 @@ name: "insert"
 type: :function
 description: "insert value in collection at given index"
 module: "Collections"
-line: 778
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L778"
+line: 824
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L824"
 returns: [
                 :string
                  :dictionary

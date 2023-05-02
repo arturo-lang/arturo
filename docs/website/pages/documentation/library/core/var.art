@@ -2,8 +2,8 @@ name: "var"
 type: :function
 description: "get symbol value by given name"
 module: "Core"
-line: 831
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L831"
+line: 900
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L900"
 returns: [
                 :any
         ]

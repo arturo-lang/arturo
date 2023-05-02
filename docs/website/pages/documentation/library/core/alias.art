@@ -2,8 +2,8 @@ name: "alias"
 type: :function
 description: "assign symbol to given function"
 module: "Core"
-line: 40
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L40"
+line: 44
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L44"
 returns: [
                 :nothing
         ]

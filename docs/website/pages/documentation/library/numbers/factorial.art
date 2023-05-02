@@ -2,8 +2,8 @@ name: "factorial"
 type: :function
 description: "calculate the factorial of given value"
 module: "Numbers"
-line: 670
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L670"
+line: 688
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L688"
 returns: [
                 :integer
         ]
