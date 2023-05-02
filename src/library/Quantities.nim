@@ -52,6 +52,13 @@ template convertQuantity(x, y: Value, xKind, yKind: ValueKind): untyped =
 # Methods
 #=======================================
 
+# TODO: potential candidates!
+#
+# scalar: get value as rational -> rational
+# coerce: force conversion of the value to the most appropriate numeric type
+#       (* could this go to the Number module?)
+# unit: get unit from quantity
+
 proc defineSymbols*() =
 
     addPhysicalConstants()
