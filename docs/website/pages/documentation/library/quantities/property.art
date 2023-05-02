@@ -18,8 +18,8 @@ arguments: #[
                 ]
         ]
 related: [
-                "Collections/pop"
-                 "Sets/powerset"
-                 "Dates/before"
-                 "Numbers/numerator"
+                "Quantities/hartreeEnergy"
+                 "Quantities/planckConstant"
+                 "Quantities/speedOfLight"
+                 "Quantities/rydbergConstant"
         ]

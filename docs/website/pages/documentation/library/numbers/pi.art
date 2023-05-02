@@ -8,8 +8,8 @@ returns: [
                 :floating
         ]
 related: [
-                "Macros/impedanceOfVacuum"
-                 "Macros/helionMass"
-                 "Macros/planckMass"
-                 "Macros/tritonMass"
+                "Numbers/epsilon"
+                 "Numbers/ceil"
+                 "Numbers/sinh"
+                 "Numbers/asinh"
         ]

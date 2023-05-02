@@ -32,8 +32,8 @@ arguments: #[
                 ]
         ]
 related: [
-                "Strings/truncate"
-                 "Strings/capitalize"
-                 "Collections/index"
-                 "Arithmetic/inc"
+                "Quantities/gravitationalConstant"
+                 "Quantities/inverseConductanceQuantum"
+                 "Quantities/tritonMass"
+                 "Quantities/boltzmannConstant"
         ]
