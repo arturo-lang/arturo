@@ -289,21 +289,21 @@ proc convertTemperature*(v: QuantityValue, fromU: CoreUnit, toU: CoreUnit): Quan
         if toU == degC_CoreUnit:
             result = v - 273.15
         elif toU == degF_CoreUnit:
-            result = v * 9/5 - 459.67
+            result = v * (9//5) - 459.67
         else:
             echo "ERROR!"
     elif fromU == degC_CoreUnit:
         if toU == K_CoreUnit:
             result = v + 273.15
         elif toU == degF_CoreUnit:
-            result = v * 9/5 + 32
+            result = v * (9//5) + 32
         else:
             echo "ERROR!"
     elif fromU == degF_CoreUnit:
         if toU == K_CoreUnit:
-            result = (v + 459.67) * 5/9
+            result = (v + 459.67) * (5//9)
         elif toU == degC_CoreUnit:
-            result = (v - 32) * 5/9
+            result = (v - 32) * (5//9)
         else:
             echo "ERROR!"
     else:
@@ -324,7 +324,7 @@ proc convertQuantity*(q: Quantity, atoms: Atoms): Quantity =
         if q.signature != getSignature(atoms):
             raise newException(ValueError, "Cannot convert quantities with different dimensions.")
         
-        result = toQuantity(convertTemperature(q.value, q.atoms[0].unit.u.core, atoms[0].unit.u.core), atoms)
+        result = toQuantity(convertTemperature(q.original, q.atoms[0].unit.u.core, atoms[0].unit.u.core), atoms)
     else:
         result = q.convertTo(atoms)
 
