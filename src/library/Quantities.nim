@@ -20,7 +20,7 @@
 #=======================================
 
 import vm/values/custom/vquantity
-import vm/values/custom/vquantity/preprocessor
+import vm/values/custom/quantities/preprocessor
 
 import vm/lib
 
