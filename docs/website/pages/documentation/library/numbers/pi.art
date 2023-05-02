@@ -2,14 +2,14 @@ name: "pi"
 type: :floating
 description: "the number pi, mathematical constant"
 module: "Numbers"
-line: 1005
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L1005"
+line: 1037
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L1037"
 returns: [
                 :floating
         ]
 related: [
-                "Numbers/epsilon"
-                 "Numbers/ceil"
-                 "Numbers/sinh"
-                 "Numbers/asinh"
+                "Macros/impedanceOfVacuum"
+                 "Macros/helionMass"
+                 "Macros/planckMass"
+                 "Macros/tritonMass"
         ]

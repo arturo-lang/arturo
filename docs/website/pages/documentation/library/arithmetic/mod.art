@@ -2,8 +2,8 @@ name: "mod"
 type: :function
 description: "calculate the modulo of given values and return result"
 module: "Arithmetic"
-line: 159
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Arithmetic.nim#L159"
+line: 156
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Arithmetic.nim#L156"
 returns: [
                 :integer
                  :floating

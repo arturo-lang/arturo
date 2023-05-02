@@ -2,8 +2,8 @@ name: "one?"
 type: :function
 description: "check if given number or collection size is one"
 module: "Collections"
-line: 1027
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L1027"
+line: 1080
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L1080"
 returns: [
                 :logical
         ]

@@ -2,8 +2,8 @@ name: "render"
 type: :function
 description: "render template with |string| interpolation"
 module: "Strings"
-line: 767
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L767"
+line: 773
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L773"
 returns: [
                 :string
                  :nothing

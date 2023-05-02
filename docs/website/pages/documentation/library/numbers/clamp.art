@@ -2,17 +2,19 @@ name: "clamp"
 type: :function
 description: "force value within given range"
 module: "Numbers"
-line: 390
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L390"
+line: 398
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L398"
 returns: [
                 :integer
                  :floating
         ]
 examples: [
                 {
-                        clamp 2 1 3             ; 2
-                        clamp 0 1 3             ; 1
-                        clamp 4 1 3             ; 3
+                        clamp 2 1..3                ; 2
+                        clamp 0 1..3                ; 1
+                        clamp 4 1..3                ; 3
+                        clamp 4 3..1                ; 3
+                        clamp 5 range.step: 2 0 5   ; 4
                 }
         ]
 attributes: #[
@@ -22,13 +24,8 @@ arguments: #[
                         :integer
                          :floating
                 ]
-        min: [
-                        :integer
-                         :floating
-                ]
-        max: [
-                        :integer
-                         :floating
+        range: [
+                        :range
                 ]
         ]
 related: [

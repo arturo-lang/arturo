@@ -2,8 +2,8 @@ name: "random"
 type: :function
 description: "get a random integer between given limits"
 module: "Numbers"
-line: 1138
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L1138"
+line: 1170
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L1170"
 returns: [
                 :integer
                  :floating

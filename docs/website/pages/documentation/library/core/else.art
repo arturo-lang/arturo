@@ -2,8 +2,8 @@ name: "else"
 type: :function
 description: "perform action, if last condition was not true"
 module: "Core"
-line: 385
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L385"
+line: 392
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L392"
 returns: [
                 :nothing
         ]

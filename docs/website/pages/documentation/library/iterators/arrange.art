@@ -2,8 +2,8 @@ name: "arrange"
 type: :function
 description: "sort items in collection using given action, in ascending order"
 module: "Iterators"
-line: 410
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Iterators.nim#L410"
+line: 423
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Iterators.nim#L423"
 returns: [
                 :block
                  :nothing

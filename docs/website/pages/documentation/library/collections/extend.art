@@ -2,8 +2,8 @@ name: "extend"
 type: :function
 description: "get new dictionary by merging given ones"
 module: "Collections"
-line: 436
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L436"
+line: 452
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L452"
 returns: [
                 :dictionary
         ]

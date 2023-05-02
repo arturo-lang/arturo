@@ -2,8 +2,8 @@ name: "word?"
 type: :function
 description: "checks if given value is of type :word"
 module: "Reflection"
-line: 1002
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L1002"
+line: 1010
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L1010"
 returns: [
                 :logical
         ]

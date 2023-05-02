@@ -2,8 +2,8 @@ name: "variance"
 type: :function
 description: "get population variance of given collection of numbers"
 module: "Statistics"
-line: 181
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Statistics.nim#L181"
+line: 192
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Statistics.nim#L192"
 returns: [
                 :floating
         ]

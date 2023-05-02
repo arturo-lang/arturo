@@ -2,8 +2,8 @@ name: "loop"
 type: :function
 description: "loop through collection, using given iterator and block"
 module: "Iterators"
-line: 1018
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Iterators.nim#L1018"
+line: 1031
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Iterators.nim#L1031"
 returns: [
                 :nothing
         ]

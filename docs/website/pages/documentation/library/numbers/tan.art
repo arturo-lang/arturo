@@ -2,8 +2,8 @@ name: "tan"
 type: :function
 description: "calculate the tangent of given angle"
 module: "Numbers"
-line: 1359
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L1359"
+line: 1395
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L1395"
 returns: [
                 :floating
                  :complex

@@ -2,8 +2,8 @@ name: "gamma"
 type: :function
 description: "calculate the gamma function for given value"
 module: "Numbers"
-line: 750
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L750"
+line: 771
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L771"
 returns: [
                 :floating
         ]

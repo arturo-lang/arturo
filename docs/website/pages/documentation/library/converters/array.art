@@ -2,8 +2,8 @@ name: "array"
 type: :function
 description: "create array from given block, by reducing/calculating all internal values"
 module: "Converters"
-line: 539
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Converters.nim#L539"
+line: 604
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Converters.nim#L604"
 returns: [
                 :block
         ]

@@ -2,8 +2,8 @@ name: "shr"
 type: :function
 description: "shift-right first value bits by second value"
 module: "Bitwise"
-line: 174
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Bitwise.nim#L174"
+line: 182
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Bitwise.nim#L182"
 returns: [
                 :integer
                  :nothing

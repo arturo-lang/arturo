@@ -2,8 +2,8 @@ name: "select"
 type: :function
 description: "get collection\'s items that fulfil given condition"
 module: "Iterators"
-line: 1257
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Iterators.nim#L1257"
+line: 1282
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Iterators.nim#L1282"
 returns: [
                 :block
                  :nothing

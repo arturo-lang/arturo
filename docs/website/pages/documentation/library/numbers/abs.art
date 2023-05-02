@@ -2,8 +2,8 @@ name: "abs"
 type: :function
 description: "get the absolute value for given integer"
 module: "Numbers"
-line: 53
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L53"
+line: 60
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L60"
 returns: [
                 :integer
                  :floating

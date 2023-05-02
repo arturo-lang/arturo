@@ -2,8 +2,8 @@ name: "log"
 type: :function
 description: "calculate the logarithm of value using given base"
 module: "Numbers"
-line: 906
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L906"
+line: 935
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L935"
 returns: [
                 :floating
         ]

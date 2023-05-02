@@ -2,8 +2,8 @@ name: "asech"
 type: :function
 description: "calculate the inverse hyperbolic secant of given angle"
 module: "Numbers"
-line: 248
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L248"
+line: 255
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L255"
 returns: [
                 :floating
                  :complex

@@ -2,8 +2,8 @@ name: "append"
 type: :function
 description: "append value to given collection"
 module: "Collections"
-line: 51
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L51"
+line: 52
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L52"
 returns: [
                 :string
                  :binary
@@ -50,6 +50,6 @@ arguments: #[
 related: [
                 "Collections/prepend"
                  "Collections/sample"
+                 "Collections/pop"
                  "Collections/values"
-                 "Collections/remove"
         ]

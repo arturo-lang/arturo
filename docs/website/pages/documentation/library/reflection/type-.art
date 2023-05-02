@@ -2,8 +2,8 @@ name: "type?"
 type: :function
 description: "checks if given value is of type :type"
 module: "Reflection"
-line: 967
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L967"
+line: 975
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L975"
 returns: [
                 :logical
         ]

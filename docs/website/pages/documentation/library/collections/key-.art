@@ -2,8 +2,8 @@ name: "key?"
 type: :function
 description: "check if collection contains given key"
 module: "Collections"
-line: 836
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L836"
+line: 882
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L882"
 returns: [
                 :logical
         ]

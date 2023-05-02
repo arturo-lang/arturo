@@ -2,8 +2,8 @@ name: "lcm"
 type: :function
 description: "calculate least common multiplier for given collection of integers"
 module: "Numbers"
-line: 848
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L848"
+line: 873
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L873"
 returns: [
                 :integer
         ]

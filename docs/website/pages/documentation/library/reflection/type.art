@@ -2,8 +2,8 @@ name: "type"
 type: :function
 description: "get type of given value"
 module: "Reflection"
-line: 947
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L947"
+line: 955
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L955"
 returns: [
                 :type
         ]

@@ -2,8 +2,8 @@ name: "empty?"
 type: :function
 description: "check if given collection is empty"
 module: "Collections"
-line: 410
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L410"
+line: 426
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L426"
 returns: [
                 :logical
         ]

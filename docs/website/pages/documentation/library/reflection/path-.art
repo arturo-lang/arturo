@@ -2,8 +2,8 @@ name: "path?"
 type: :function
 description: "checks if given value is of type :path"
 module: "Reflection"
-line: 703
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L703"
+line: 706
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L706"
 returns: [
                 :logical
         ]

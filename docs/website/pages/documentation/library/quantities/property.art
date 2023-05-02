@@ -1,0 +1,25 @@
+name: "property"
+type: :function
+description: "get the described property of given quantity"
+module: "Quantities"
+line: 107
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Quantities.nim#L107"
+returns: [
+                :literal
+        ]
+examples: [
+                ""
+        ]
+attributes: #[
+        ]
+arguments: #[
+        quantity: [
+                        :quantity
+                ]
+        ]
+related: [
+                "Collections/pop"
+                 "Sets/powerset"
+                 "Dates/before"
+                 "Numbers/numerator"
+        ]

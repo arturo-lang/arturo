@@ -2,8 +2,8 @@ name: "object?"
 type: :function
 description: "checks if given value is a custom-type object"
 module: "Reflection"
-line: 682
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L682"
+line: 685
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L685"
 returns: [
                 :logical
         ]

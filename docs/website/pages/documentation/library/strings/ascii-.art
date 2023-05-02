@@ -2,8 +2,8 @@ name: "ascii?"
 type: :function
 description: "check if given character/string is in ASCII"
 module: "Strings"
-line: 112
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L112"
+line: 114
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L114"
 returns: [
                 :logical
         ]

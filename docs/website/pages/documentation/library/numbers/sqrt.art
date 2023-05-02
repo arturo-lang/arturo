@@ -2,8 +2,8 @@ name: "sqrt"
 type: :function
 description: "get square root of given value"
 module: "Numbers"
-line: 1298
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L1298"
+line: 1334
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L1334"
 returns: [
                 :floating
         ]

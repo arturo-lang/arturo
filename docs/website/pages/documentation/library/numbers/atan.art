@@ -2,8 +2,8 @@ name: "atan"
 type: :function
 description: "calculate the inverse tangent of given angle"
 module: "Numbers"
-line: 311
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L311"
+line: 318
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L318"
 returns: [
                 :floating
                  :complex

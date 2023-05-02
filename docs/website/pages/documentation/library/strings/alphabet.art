@@ -2,8 +2,8 @@ name: "alphabet"
 type: :function
 description: "get dictionary-index charset for given locale"
 module: "Strings"
-line: 68
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L68"
+line: 70
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L70"
 returns: [
                 :null
                  :block

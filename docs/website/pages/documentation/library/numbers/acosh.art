@@ -2,8 +2,8 @@ name: "acosh"
 type: :function
 description: "calculate the inverse hyperbolic cosine of given angle"
 module: "Numbers"
-line: 105
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L105"
+line: 112
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L112"
 returns: [
                 :floating
                  :complex
