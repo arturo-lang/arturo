@@ -383,7 +383,10 @@ macro generateConstantDefinitions*(): untyped =
 
     for (name, content) in pairs(constants):
         res.add nnkIdentDefs.newTree(
-            newIdentNode(name),
+            nnkPostfix.newTree(
+                newIdentNode("*"),
+                newIdentNode(name)
+            ),
             newIdentNode("Quantity"),
             newEmptyNode()
         )
@@ -599,6 +602,30 @@ macro generateConstants*(): untyped =
 
     res
 
+macro addPhysicalConstants*(): untyped =
+    let res = nnkStmtList.newTree()
+
+    for (name, content) in pairs(constants):
+        res.add nnkCommand.newTree(
+            newIdentNode("constant"),
+            newLit(name),
+            nnkExprEqExpr.newTree(
+                newIdentNode("alias"),
+                newIdentNode("unaliased")
+            ),
+            nnkExprEqExpr.newTree(
+                newIdentNode("description"),
+                newLit("the number pi, mathematical constant")
+            ),
+            nnkStmtList.newTree(
+                nnkCall.newTree(
+                    newIdentNode("newQuantity"),
+                    newIdentNode(name)
+                )
+            )
+        )
+
+    res
 #=======================================
 # Debugging
 #=======================================
@@ -671,3 +698,8 @@ proc printUnits*() =
         echo ""
 
     echo $(constants)
+
+dumpAstGen:
+    var
+        x: Quantity
+        y*: Quantity

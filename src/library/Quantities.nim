@@ -20,6 +20,7 @@
 #=======================================
 
 import vm/values/custom/vquantity
+import vm/values/custom/vquantity/preprocessor
 
 import vm/lib
 
@@ -41,6 +42,8 @@ import vm/lib
 
 proc defineSymbols*() =
 
+    addPhysicalConstants()
+
     builtin "conforms?",
         alias       = unaliased,
         op          = opNop,
@@ -52,7 +55,7 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Logical},
-        # TODO(Quantities/property) add documentation example
+        # TODO(Quantities/conforms?) add documentation example
         #  labels: documentation, easy
         example     = """
         """:
