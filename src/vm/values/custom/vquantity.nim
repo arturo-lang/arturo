@@ -875,15 +875,47 @@ proc toQuantity*(vstr: string, atoms: Atoms): Quantity =
 proc getDimension*(q: Quantity): string =
     Dimensions.getOrDefault(q.signature, "Unknown")
 
+proc convertTemperature*(v: QuantityValue, fromU: CoreUnit, toU: CoreUnit): QuantityValue =
+    if fromU == toU:
+        return v
+
+    if fromU == K_Unit:
+        if toU == degC_Unit:
+            result = v - 273.15
+        elif toU == degF_Unit:
+            result = v * 9/5 - 459.67
+        else:
+            echo "ERROR!"
+    elif fromU == degC_Unit:
+        if toU == K_Unit:
+            result = v + 273.15
+        elif toU == degF_Unit:
+            result = v * 9/5 + 32
+        else:
+            echo "ERROR!"
+    elif fromU == degF_Unit:
+        if toU == K_Unit:
+            result = (v + 459.67) * 5/9
+        elif toU == degC_Unit:
+            result = (v - 32) * 5/9
+        else:
+            echo "ERROR!"
+    else:
+        echo "ERROR!"
+
 proc convertTo*(q: Quantity, atoms: Atoms): Quantity =
     if q.signature != getSignature(atoms):
         raise newException(ValueError, "Cannot convert quantities with different dimensions.")
 
-    if q.atoms == atoms:
-        return q
+    if q.signature == static parseDimensionFormula("K"):
+        let newTemp = convertTemperature(q.value, atoms[0].unit.u.core, q.atoms[0].unit.u.core)
+        result = toQuantity(newTemp, atoms)
+    else:
+        if q.atoms == atoms:
+            return q
 
-    let newVal = q.value/getValue(atoms)
-    result = toQuantity(newVal, atoms)
+        let newVal = q.value/getValue(atoms)
+        result = toQuantity(newVal, atoms)
 
 proc toBase*(q: Quantity): Atoms =
     for atom in q.atoms:
