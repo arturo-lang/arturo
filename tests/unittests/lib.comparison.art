@@ -7215,16 +7215,22 @@ do [
     
     topic « notEqual? - :complex
     
-    ensure -> not? notEqual? to :complex [0 2] ((to :complex [1 2]) - 1) 
+    ensure -> not? notEqual? to :complex [0 2] to :complex [0 2]
+    ensure -> not? (to :complex [0 2]) <> (to :complex [0 2])
     passed
     
-    ensure -> notEqual? to :complex [1 2] to :complex @[neg 1 2] 
-    ensure -> notEqual? to :complex [1 2] 1
-    ensure -> notEqual? 1 to :complex [1 2]
-    ensure -> not? (to :complex [0 2]) <> ((to :complex [1 2]) - 1) 
-    ensure -> (to :complex [1 2]) <> to :complex @[neg 1 2] 
-    ensure -> (to :complex [1 2]) <> 1
-    ensure -> 1 <> to :complex [1 2]
+    ; greater than
+    ensure -> notEqual? to :complex [2 2] to :complex [1 2] 
+    ensure -> notEqual? to :complex [2 3] to :complex [1 2]
+    ensure -> (to :complex [2 2]) <> (to :complex [1 2]) 
+    ensure -> (to :complex [2 3]) <> (to :complex [1 2]) 
+    passed
+    
+    ; less than
+    ensure -> notEqual? to :complex [0 2] to :complex [1 2] 
+    ensure -> notEqual? to :complex [0 1] to :complex [1 2]
+    ensure -> (to :complex [0 2]) <> (to :complex [1 2]) 
+    ensure -> (to :complex [0 1]) <> (to :complex [1 2])
     passed
     
     
