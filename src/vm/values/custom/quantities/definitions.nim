@@ -182,7 +182,7 @@ static:
     #       name        symbol      prefix?     definition                  aliases
     #---------------------------------------------------------------------------------------------------------------------------
     defUnit "min",      "min",      false,      "60 s",                     "minute", "minutes"
-    defUnit "hr",       "hr",       false,      "60 min",                   "hour", "hours"
+    defUnit "h",        "h",       false,       "60 min",                   "hour", "hours", "hr", "hrs"
     defUnit "day",      "day",      false,      "24 hr",                    "days"
     defUnit "wk",       "wk",       false,      "7 days",                   "week", "weeks"
     defUnit "mo",       "mo",       false,      "2629746 s",                "month", "months"
