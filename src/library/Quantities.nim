@@ -84,7 +84,7 @@ proc defineSymbols*() =
                     push newLogical(x.u =~ y.u)
 
     builtin "convert",
-        alias       = tilderight,
+        alias       = longarrowright,
         op          = opNop,
         rule        = InfixPrecedence,
         description = "convert quantity to given unit",
