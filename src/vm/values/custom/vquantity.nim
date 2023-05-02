@@ -37,7 +37,7 @@ const
 
 type
     AtomExponent        = -5..5
-    QuantityValue*      = VRational
+    QuantityValue       = VRational
     QuantitySignature   = int64
 
     Prefix          = generatePrefixDefinitions()
@@ -54,7 +54,7 @@ type
             of User:
                 name: string
 
-    PrefixedUnit* = tuple
+    PrefixedUnit = tuple
         p: Prefix
         u: SubUnit
 
@@ -62,7 +62,7 @@ type
         unit: PrefixedUnit
         power: AtomExponent
 
-    Atoms* = seq[Atom]
+    Atoms = seq[Atom]
 
     QuantityFlag = enum
         IsBase

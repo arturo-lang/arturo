@@ -245,8 +245,8 @@ type
                SymbolLiteral:
                    m*  : VSymbol
             of Regex:       rx* : VRegex
-            of Unit:        u*  : Atoms
-            of Quantity:    q*: VQuantity
+            of Unit:        u*  : VUnit
+            of Quantity:    q*  : VQuantity
             of Color:       l*  : VColor
             of Date:
                 e*     : ValueDict
