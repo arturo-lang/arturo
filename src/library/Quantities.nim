@@ -74,6 +74,23 @@ proc defineSymbols*() =
             else:
                 push newQuantity(toQuantity(y.rat, qs))
 
+    builtin "property",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "get the described property of given quantity",
+        args        = {
+            "quantity"  : {Quantity}
+        },
+        attrs       = NoAttrs,
+        returns     = {Literal},
+        # TODO(Quantities/property) add documentation example
+        #  labels: documentation, easy
+        example     = """
+        """:
+            #=======================================================
+            push newLiteral(getDimension(x.q))
+
 # # TODO(Numbers) add `tau` constant
 # #  labels:library, new feature
  
