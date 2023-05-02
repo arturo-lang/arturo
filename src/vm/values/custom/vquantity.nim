@@ -173,7 +173,8 @@ proc flatten*(atoms: Atoms): Atoms =
             cnts[atom.unit] += atom.power
 
     for (unit, power) in pairs(cnts):
-        result.add (unit: unit, power: AtomExponent(power))
+        if power != 0:
+            result.add (unit: unit, power: AtomExponent(power))
 
 proc reverse*(atoms: Atoms): Atoms =
     for atom in atoms:
