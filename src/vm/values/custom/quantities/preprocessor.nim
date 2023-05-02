@@ -524,6 +524,22 @@ macro generateUnitParser*(): untyped =
         )
     )
 
+macro getNoUnitFound*(): untyped =
+    nnkTupleConstr.newTree(
+        newIdentNode("No_Prefix"),
+        nnkObjConstr.newTree(
+            newIdentNode("SubUnit"),
+            nnkExprColonExpr.newTree(
+                newIdentNode("kind"),
+                newIdentNode("Core")
+            ),
+            nnkExprColonExpr.newTree(
+                newIdentNode("core"),
+                newIdentNode("No_Unit")
+            )
+        )
+    )
+
 macro generateQuantities*(): untyped =
     let items = nnkTableConstr.newTree()
 
