@@ -36,6 +36,8 @@ const
 #=======================================
 
 type
+    # private
+
     AtomExponent        = -5..5
     QuantityValue       = VRational
     QuantitySignature   = int64
@@ -64,17 +66,14 @@ type
 
     Atoms = seq[Atom]
 
-    QuantityFlag = enum
-        IsBase
-        IsTemperature
-        IsCurrency
-
     Quantity = tuple
         original    : QuantityValue
         value       : QuantityValue
         signature   : QuantitySignature
         atoms       : Atoms
-        flags       : set[QuantityFlag]
+        base        : bool
+
+    # public
 
     VUnit* = Atoms
     VQuantity* = Quantity
@@ -310,7 +309,7 @@ proc convertTo*(q: Quantity, atoms: Atoms): Quantity =
 proc toBase*(q: Quantity): Atoms =
     for atom in q.atoms:
         let prim = getPrimitive(atom.unit)
-        if IsBase in prim.flags:
+        if prim.base:
             result.add atom
             continue
         else:
