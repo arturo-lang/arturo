@@ -3,7 +3,7 @@
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2023 Yanis Zafirópulos
 #
-# @file: vm/values/custom/vquantity/preprocessor.nim
+# @file: vm/values/custom/quantities/preprocessor.nim
 #=======================================================
 
 ## Macro preprocessor for the VQuantity module
