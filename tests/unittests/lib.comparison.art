@@ -859,7 +859,7 @@ do [
     
     ; comparing re
     ensure -> 0 = compare to :complex [1 2] to :complex [1 2]
-    ensure -> 1 = compare to :complex [1 2] to :complex [1 2] 
+    ensure -> 1 = compare to :complex [2 2] to :complex [1 2] 
     ensure -> (neg 1) = compare to :complex [1 2] to :complex [2 2] 
     passed
     
