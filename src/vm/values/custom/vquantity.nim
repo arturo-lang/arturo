@@ -199,7 +199,10 @@ proc unitAlaCarte*(str: string): PrefixedUnit =
 proc parseSubUnit*(str: string): PrefixedUnit = 
     generateUnitParser()
 
+    echo "in parseSubUnit"
+    echo $(result)
     if unlikely(result == NoUnitFound): 
+        echo "creating it!"
         result = unitAlaCarte(str)
 
 proc parseAtoms*(str: string): Atoms = 
