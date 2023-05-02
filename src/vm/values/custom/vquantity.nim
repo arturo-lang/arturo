@@ -937,14 +937,14 @@ proc defineNewUserUnit*(name: string, symbol: string, definition: string) =
 func `=~`*(a, b: Quantity): bool {.inline.} =
     return a.signature == b.signature
 
-func `=~`*(a: Quantity, b: Atoms): bool {.inline.} =
+proc `=~`*(a: Quantity, b: Atoms): bool {.inline.} =
     return a.signature == getSignature(b)
 
-func `=~`*(a: Atoms, b: Quantity): bool {.inline.} =
+proc `=~`*(a: Atoms, b: Quantity): bool {.inline.} =
     return getSignature(a) == b.signature
 
-func `=~`*(a: Atoms, b: Atoms): bool {.inline.} =
-    return getSignature(a) == getSignature(b
+proc `=~`*(a: Atoms, b: Atoms): bool {.inline.} =
+    return getSignature(a) == getSignature(b)
 
 proc `==`*(a, b: Quantity): bool =
     if not (a =~ b):
