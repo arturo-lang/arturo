@@ -698,8 +698,3 @@ proc printUnits*() =
         echo ""
 
     echo $(constants)
-
-dumpAstGen:
-    var
-        x: Quantity
-        y*: Quantity
