@@ -857,9 +857,16 @@ do [
     
     topic « compare - :complex
     
-    ensure -> 0 = compare to :complex [0 2] ((to :complex [1 2]) - 1)
-    ; ensure -> 1 = compare to :complex [1 2] to :complex [0 2] 
-    ; ensure -> (neg 1) = compare to :complex [0 2] to :complex [1 2] 
+    ; comparing re
+    ensure -> 0 = compare to :complex [1 2] to :complex [1 2]
+    ensure -> 1 = compare to :complex [1 2] to :complex [1 2] 
+    ensure -> (neg 1) = compare to :complex [1 2] to :complex [2 2] 
+    passed
+    
+    ; comparing im
+    ensure -> 0 = compare to :complex [1 2] to :complex [1 2]
+    ensure -> 1 = compare to :complex [1 2] to :complex [1 1] 
+    ensure -> (neg 1) = compare to :complex [1 1] to :complex [1 2] 
     passed
     
     
