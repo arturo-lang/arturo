@@ -279,7 +279,7 @@ proc toQuantity*(vstr: string, atoms: Atoms): Quantity =
 #=======================================
 
 proc getProperty*(q: Quantity): string =
-    Properties.getOrDefault(q.signature, "Unknown")
+    Properties.getOrDefault(q.signature, "Unknown").toLowerAscii()
 
 proc convertTemperature*(v: QuantityValue, fromU: CoreUnit, toU: CoreUnit): QuantityValue =
     if fromU == toU:
