@@ -364,7 +364,7 @@ macro generateUnitDefinitions*(): untyped =
         )
 
     res.add nnkEnumFieldDef.newTree(
-        newIdentNode("No_Unit"),
+        newIdentNode("No_CoreUnit"),
         newLit("")
     )
 
@@ -513,7 +513,7 @@ macro generateUnitParser*(): untyped =
                                     ),
                                     nnkExprColonExpr.newTree(
                                         newIdentNode("core"),
-                                        newIdentNode("No_Unit")
+                                        newIdentNode("No_CoreUnit")
                                     )
                                 )
                             )
@@ -535,7 +535,7 @@ macro getNoUnitFound*(): untyped =
             ),
             nnkExprColonExpr.newTree(
                 newIdentNode("core"),
-                newIdentNode("No_Unit")
+                newIdentNode("No_CoreUnit")
             )
         )
     )

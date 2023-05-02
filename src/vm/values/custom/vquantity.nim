@@ -201,6 +201,7 @@ proc parseSubUnit*(str: string): PrefixedUnit =
 
     echo "in parseSubUnit"
     echo $(result)
+    echo "NoUnitFound: " & $(NoUnitFound)
     if unlikely(result == NoUnitFound): 
         echo "creating it!"
         result = unitAlaCarte(str)
