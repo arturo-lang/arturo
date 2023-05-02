@@ -841,6 +841,7 @@ func consideredEqual*(x: Value, y: Value): bool {.inline,enforceNoRaises.} =
         of Char: return x.c == y.c
         of Symbol,
            SymbolLiteral: return x.m == y.m
+        of Unit: return x.u == y.u
         of Quantity: return x.q.original == y.q.original and x.q.atoms == y.q.atoms
         of Regex: return x.rx == y.rx
         of Color: return x.l == y.l
@@ -924,6 +925,8 @@ func hash*(v: Value): Hash {.inline.}=
 
         of Symbol,
            SymbolLiteral: result = result !& cast[Hash](ord(v.m))
+
+        of Unit         : result = result !& hash(v.u)
 
         of Quantity     : result = result !& hash(v.q)
 
