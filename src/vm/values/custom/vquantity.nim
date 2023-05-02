@@ -318,6 +318,12 @@ proc convertTo*(q: Quantity, atoms: Atoms): Quantity =
     let newVal = q.value/getValue(atoms)
     result = toQuantity(newVal, atoms)
 
+proc convertQuantity*(q: Quantity, atoms: Atoms): Quantity =
+    if isTemperature(q):
+        echo $(atoms[0])
+    else:
+        result = q.convertTo(atoms)
+
 proc toBase*(q: Quantity): Atoms =
     for atom in q.atoms:
         let prim = getPrimitive(atom.unit)
