@@ -40,6 +40,33 @@ import vm/lib
 #=======================================
 
 proc defineSymbols*() =
+
+    builtin "conforms?",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "check if given quantities/units are compatible",
+        args        = {
+            "a"     : {Quantity, Unit},
+            "b"     : {Quantity, Unit}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        # TODO(Quantities/property) add documentation example
+        #  labels: documentation, easy
+        example     = """
+        """:
+            #=======================================================
+            if xKind == Quantity:
+                if yKind == Quantity:
+                    push newLogical(x.q =~ y.q)
+                else:
+                    push newLogical(x.q =~ y.u)
+            else:
+                if yKind == Quantity:
+                    push newLogical(x.u =~ y.q)
+                else:
+                    push newLogical(x.u =~ y.u)
     
     builtin "in",
         alias       = unaliased,
