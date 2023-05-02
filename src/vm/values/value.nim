@@ -422,9 +422,9 @@ proc newUnit*(u: string): Value {.inline.} =
     ## create Unit value from string
     newUnit(parseAtoms(u))
 
-proc newQuantity*(v: Value, atoms: Atoms): Value {.inline, enforceNoRaises.} =
-    ## create Quantity value from a numerical value ``v`` (Value) + ``atoms`` (Atoms)
-    #echo "in newQuantity (Value, Atoms)"
+proc newQuantity*(v: Value, atoms: VUnit): Value {.inline, enforceNoRaises.} =
+    ## create Quantity value from a numerical value ``v`` (Value) + ``atoms`` (VUnit)
+    #echo "in newQuantity (Value, VUnit)"
     result = Value(kind: Quantity)
     if v.kind == Integer:
         if v.iKind == NormalInteger:
@@ -443,7 +443,7 @@ proc newQuantity*(v: Value, atoms: string): Value {.inline.} =
     newQuantity(v, parseAtoms(atoms))
 
 proc newQuantity*(q: VQuantity, copy: static bool = false): Value {.inline, enforceNoRaises.} =
-    ## create Quantity value from QuantityValue ``q`` (QuantityValue) + ``a`` (Atoms)
+    ## create Quantity value from QuantityValue ``q`` (VQuantity)
     when copy:
         Value(kind: Quantity, q: toQuantity(q.original, q.atoms))
     else:
