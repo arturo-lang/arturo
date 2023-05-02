@@ -321,7 +321,10 @@ proc convertTo*(q: Quantity, atoms: Atoms): Quantity =
 
 proc convertQuantity*(q: Quantity, atoms: Atoms): Quantity =
     if unlikely(isTemperature(q)):
-        echo $(atoms[0])
+        if q.signature != getSignature(atoms):
+            raise newException(ValueError, "Cannot convert quantities with different dimensions.")
+        
+        result = toQuantity(convertTemperature(q.value, q.atoms[0].unit.u.core, atoms[0].unit.u.core), atoms)
     else:
         result = q.convertTo(atoms)
 
@@ -622,9 +625,9 @@ proc `$`*(atoms: Atoms, oneline: static bool=false): string =
 
 proc `$`*(q: Quantity): string =
     if unlikely(q.isCurrency()):
-        result = stringify(q.original, coerce=true) & " " & $q.atoms
+        result = stringify(q.original, CurrencyRational) & " " & $q.atoms
     elif unlikely(q.isTemperature()):
-        result = stringify(q.original, coerce=true) & (if q.atoms[0].unit.u.core == K_CoreUnit: " " else: "") & $q.atoms
+        result = stringify(q.original, TemperatureRational) & (if q.atoms[0].unit.u.core == K_CoreUnit: " " else: "") & $q.atoms
     else:
         result = stringify(q.original) & " " & $q.atoms
 
