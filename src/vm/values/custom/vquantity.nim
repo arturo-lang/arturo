@@ -1251,10 +1251,10 @@ proc initQuantities*() =
 
 initQuantities()
 
-for (n,q) in pairs(Quantities):
-    echo $(n)
-    inspect(q)
-    echo "--"
+# for (n,q) in pairs(Quantities):
+#     echo $(n)
+#     inspect(q)
+#     echo "--"
 
 when isMainModule:
     import helpers/benchmark
