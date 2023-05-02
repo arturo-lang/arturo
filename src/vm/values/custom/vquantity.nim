@@ -6,7 +6,7 @@
 # @file: vm/values/custom/vquantity.nim
 #=======================================================
 
-## The internal `:unit` & `:quantity` type
+## The internal `:quantity` type
 
 #=======================================
 # Libraries
