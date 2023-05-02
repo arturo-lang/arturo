@@ -87,13 +87,6 @@ type
 {.hint: "Quantity's inner type is currently " & $sizeof(Quantity) & ".".}
 {.hints: off.}
 
-func `==`(a, b: SubUnit): bool =
-    if a.kind != b.kind: return false
-    return
-        case a.kind:
-            of Core: a.core == b.core
-            of User: a.name == b.name
-
 #=======================================
 # Constants
 #=======================================
@@ -119,10 +112,21 @@ var
 generateConstantDefinitions()
 
 #=======================================
-# Helpers
+# Forward declarations
 #=======================================
 
 proc `$`*(q: Quantity): string 
+
+#=======================================
+# Helpers
+#=======================================
+
+func `==`(a, b: SubUnit): bool =
+    if a.kind != b.kind: return false
+    return
+        case a.kind:
+            of Core: a.core == b.core
+            of User: a.name == b.name
 
 func isUnitless(q: Quantity): bool {.inline.} =
     return q.signature == 0
@@ -147,9 +151,8 @@ proc getPrimitive(unit: PrefixedUnit): Quantity =
         let xrate = getExchangeRate((symbolName(unit.u.core)).replace("_CoreUnit",""))
         Quantities[unit.u].value = toRational(xrate)
         result.value = toRational(xrate)
-    else:
-        # Warning: This may be losing information for too-low or too-high values!
-        result.value *= toRational(pow(float(10), float(ord(unit.p))))
+    elif unit.p != No_Prefix:
+        result.value *= pow(float(10), float(ord(unit.p)))
 
 proc getSignature(atoms: Atoms): QuantitySignature =
     for atom in atoms:
@@ -611,9 +614,11 @@ proc `$`*(atoms: Atoms, oneline: static bool=false): string =
 
 proc `$`*(q: Quantity): string =
     if unlikely(q.isCurrency()):
-        result = stringify(q.original, coerce=true) & " " & $q.atoms# & " (= " & $q.original & ") => " & getDimension(q)
+        result = stringify(q.original, coerce=true) & " " & $q.atoms
+    elif unlikely(q.isTemperature()):
+        result = stringify(q.original, coerce=true) & (if q.atoms[0].unit.u.core == K_CoreUnit: " " else: "") & $q.atoms
     else:
-        result = stringify(q.original) & " " & $q.atoms# & " (= " & $q.original & ") => " & getDimension(q)
+        result = stringify(q.original) & " " & $q.atoms
 
 proc codify*(q: Quantity): string =
     result = ($q.original).replace("/",":") & "`"
