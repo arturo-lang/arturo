@@ -3661,14 +3661,14 @@ do [
     
     ; equal to
     ensure -> greaterOrEqual? to :complex [1 2] to :complex [1 2] 
-    ensure -> (to :complex [1 2]) > (to :complex [1 2]) 
+    ensure -> (to :complex [1 2]) >= (to :complex [1 2]) 
     passed
     
     ; less than
     ensure -> not? greaterOrEqual? to :complex [0 2] to :complex [1 2] 
     ensure -> not? greaterOrEqual? to :complex [1 1] to :complex [1 2]
-    ensure -> not? (to :complex [0 2]) > (to :complex [1 2]) 
-    ensure -> not? (to :complex [1 1]) > (to :complex [1 2])
+    ensure -> not? (to :complex [0 2]) >= (to :complex [1 2]) 
+    ensure -> not? (to :complex [1 1]) >= (to :complex [1 2])
     passed
     
     
