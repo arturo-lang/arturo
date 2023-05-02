@@ -119,7 +119,7 @@ proc defineSymbols*() =
         example     = """
         """:
             #=======================================================
-            push newLiteral(getDimension(x.q))
+            push newLiteral(getProperty(x.q))
 
 # # TODO(Numbers) add `tau` constant
 # #  labels:library, new feature
