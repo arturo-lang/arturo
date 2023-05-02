@@ -414,6 +414,10 @@ func newSymbolLiteral*(m: string): Value {.inline.} =
     ## create SymbolLiteral value from string
     newSymbolLiteral(parseEnum[VSymbol](m))
 
+proc newUnit*(u: VUnit): Value {.inline, enforceNoRaises.} =
+    ## create Unit value from VUnit
+    Value(kind: Unit, u: u)
+
 proc newQuantity*(v: Value, atoms: Atoms): Value {.inline, enforceNoRaises.} =
     ## create Quantity value from a numerical value ``v`` (Value) + ``atoms`` (Atoms)
     #echo "in newQuantity (Value, Atoms)"
@@ -690,6 +694,7 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Symbol:          result = newSymbol(v.m)
         of SymbolLiteral:   result = newSymbolLiteral(v.m)
         of Regex:           result = newRegex(v.rx)
+        of Unit:            result = newUnit(v.u)
         of Quantity:        result = newQuantity(v.q, copy=true)
         of Color:           result = newColor(v.l)
         of Date:            result = newDate(v.eobj[])
