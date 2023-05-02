@@ -6,7 +6,7 @@
 # @file: vm/values/custom/vquantity.nim
 #=======================================================
 
-## The internal `:quantity` type
+## The internal `:quantity` & `:unit` types
 
 #=======================================
 # Libraries
@@ -21,6 +21,10 @@ when not defined(NOGMP):
     import helpers/bignums as BignumsHelper
 
 import vm/values/custom/vrational
+
+#=======================================
+# Includes
+#=======================================
 
 include quantities/definitions
 
@@ -79,7 +83,7 @@ type
     VQuantity* = Quantity
 
 # Benchmarking
-{.hints: on.} # Apparently we cannot disable just `Name` hints?
+{.hints: on.}
 {.hint: "Quantity's inner type is currently " & $sizeof(Quantity) & ".".}
 {.hints: off.}
 
