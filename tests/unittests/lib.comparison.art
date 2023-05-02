@@ -8276,12 +8276,17 @@ do [
     
     topic « same? - :complex
     
-    ensure -> same? to :complex [0 2] ((to :complex [1 2]) - 1) 
+    ensure -> same? to :complex [0 2] to :complex [0 2]
     passed
     
-    ensure -> not? same? to :complex [1 2] to :complex @[neg 1 2] 
-    ensure -> not? same? to :complex [1 2] 1
-    ensure -> not? same? 1 to :complex [1 2]
+    ; greater than
+    ensure -> not? same? to :complex [2 2] to :complex [1 2] 
+    ensure -> not? same? to :complex [2 3] to :complex [1 2]
+    passed
+    
+    ; less than
+    ensure -> not? same? to :complex [0 2] to :complex [1 2] 
+    ensure -> not? same? to :complex [0 1] to :complex [1 2]
     passed
     
     
