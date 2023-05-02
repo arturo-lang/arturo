@@ -418,6 +418,10 @@ proc newUnit*(u: VUnit): Value {.inline, enforceNoRaises.} =
     ## create Unit value from VUnit
     Value(kind: Unit, u: u)
 
+proc newUnit*(u: string): Value {.inline.} =
+    ## create Unit value from string
+    newUnit(parseAtoms(u))
+
 proc newQuantity*(v: Value, atoms: Atoms): Value {.inline, enforceNoRaises.} =
     ## create Quantity value from a numerical value ``v`` (Value) + ``atoms`` (Atoms)
     #echo "in newQuantity (Value, Atoms)"
