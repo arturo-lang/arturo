@@ -94,6 +94,8 @@ type
 const
     AtomExponents = ["⁻⁵", "⁻⁴", "⁻³", "⁻²", "⁻¹", "", "", "²", "³", "⁴", "⁵"]
 
+    NoUnitFound = getNoUnitFound()
+
 #=======================================
 # Variables
 #=======================================
@@ -115,6 +117,7 @@ generateConstantDefinitions()
 # Forward declarations
 #=======================================
 
+proc toQuantity*(vstr: string, atoms: Atoms): Quantity
 proc `$`*(q: Quantity): string 
 proc inspect*(q: Quantity)
 
@@ -181,12 +184,23 @@ proc reverse*(atoms: Atoms): Atoms =
     for atom in atoms:
         result.add (unit: atom.unit, power: AtomExponent(-atom.power))
 
+proc unitAlaCarte*(str: string): PrefixedUnit = 
+    let subu = SubUnit(kind: User, name: str)
+    
+    result = (No_Prefix, subu)
+
+    Quantities[subu] = toQuantity("1", @[])
+    UserUnits[str] = str
+
 #=======================================
 # Parsers
 #=======================================
 
 proc parseSubUnit*(str: string): PrefixedUnit = 
     generateUnitParser()
+
+    if unlikely(result == NoUnitFound): 
+        result = unitAlaCarte(str)
 
 proc parseAtoms*(str: string): Atoms = 
     proc parseAtom(at: string, denominator: static bool=false): Atom =
