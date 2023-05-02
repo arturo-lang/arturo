@@ -1323,7 +1323,7 @@ do [
     topic « equal? - :complex
     
     ensure -> equal? to :complex [0 2] to :complex [0 2]
-    ensure -> equal? (to :complex [0 2]) = (to :complex [0 2])
+    ensure -> (to :complex [0 2]) = (to :complex [0 2])
     passed
     
     ; greater than
