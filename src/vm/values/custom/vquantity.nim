@@ -6,7 +6,7 @@
 # @file: vm/values/custom/vquantity.nim
 #=======================================================
 
-## The internal `:quantity` type
+## The internal `:unit` & `:quantity` type
 
 #=======================================
 # Libraries
@@ -683,6 +683,7 @@ type
         atoms       : Atoms
         flags       : set[QuantityFlag]
 
+    VUnit* = Atoms
     VQuantity* = Quantity
 
 # Benchmarking
