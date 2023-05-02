@@ -320,7 +320,7 @@ proc getAtomsSeq(ats: seq[Atom]): NimNode =
             nnkTupleConstr.newTree(
                 newIdentNode(prefixId(expo)),
                 nnkObjConstr.newTree(
-                    newIdentNode("Unit"),
+                    newIdentNode("SubUnit"),
                     nnkExprColonExpr.newTree(
                         newIdentNode("kind"),
                         newIdentNode("Core")
@@ -454,7 +454,7 @@ macro generateUnitParser*(): untyped =
                 nnkTupleConstr.newTree(
                     newIdentNode(prefixId(ret[0])),
                     nnkObjConstr.newTree(
-                        newIdentNode("Unit"),
+                        newIdentNode("SubUnit"),
                         nnkExprColonExpr.newTree(
                             newIdentNode("kind"),
                             newIdentNode("Core")
@@ -479,7 +479,7 @@ macro generateUnitParser*(): untyped =
                             newIdentNode("hasKey")
                         ),
                         nnkObjConstr.newTree(
-                            newIdentNode("Unit"),
+                            newIdentNode("SubUnit"),
                             nnkExprColonExpr.newTree(
                                 newIdentNode("kind"),
                                 newIdentNode("User")
@@ -496,7 +496,7 @@ macro generateUnitParser*(): untyped =
                             nnkTupleConstr.newTree(
                                 newIdentNode("No_Prefix"),
                                 nnkObjConstr.newTree(
-                                    newIdentNode("Unit"),
+                                    newIdentNode("SubUnit"),
                                     nnkExprColonExpr.newTree(
                                         newIdentNode("kind"),
                                         newIdentNode("User")
@@ -517,7 +517,7 @@ macro generateUnitParser*(): untyped =
                             nnkTupleConstr.newTree(
                                 newIdentNode("No_Prefix"),
                                 nnkObjConstr.newTree(
-                                    newIdentNode("Unit"),
+                                    newIdentNode("SubUnit"),
                                     nnkExprColonExpr.newTree(
                                         newIdentNode("kind"),
                                         newIdentNode("Core")
@@ -553,7 +553,7 @@ macro generateQuantities*(): untyped =
 
         items.add nnkExprColonExpr.newTree(
             nnkObjConstr.newTree(
-                newIdentNode("Unit"),
+                newIdentNode("SubUnit"),
                 nnkExprColonExpr.newTree(
                     newIdentNode("kind"),
                     newIdentNode("Core")
