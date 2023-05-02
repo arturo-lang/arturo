@@ -813,7 +813,7 @@ template parsePath(p: var Parser, root: Value, curLevel: int) =
             else:
                 break
 
-template parseQuantity(p: var Parser) =
+template parseUnit(p: var Parser) =
     setLen(p.value, 0)
     var pos = p.bufpos
     inc(pos)
@@ -888,7 +888,7 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                     else:
                         if p.buf[p.bufpos]==BackTick:
                             let pv = newFloating(p.value)
-                            parseQuantity(p)
+                            parseUnit(p)
                             AddToken newQuantity(pv, p.value)
                         elif p.buf[p.bufpos] in ScientificNotation_Start and p.buf[p.bufpos+1] in ScientificNotation:
                             let pv = p.value
@@ -899,7 +899,7 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                 else:
                     if p.buf[p.bufpos]==BackTick:
                         let pv = newInteger(p.value, p.lineNumber)
-                        parseQuantity(p)
+                        parseUnit(p)
                         AddToken newQuantity(pv, p.value)
                     elif p.buf[p.bufpos]==Colon:
                         inc(p.bufpos)
@@ -911,7 +911,7 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                         else:
                             if p.buf[p.bufpos]==BackTick:
                                 let pv = newRational(leftValue, newInteger(p.value, p.lineNumber))
-                                parseQuantity(p)
+                                parseUnit(p)
                                 AddToken newQuantity(pv, p.value)
                             else:
                                 AddToken newRational(leftValue, newInteger(p.value, p.lineNumber))
