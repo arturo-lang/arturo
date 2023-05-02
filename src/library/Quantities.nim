@@ -104,6 +104,27 @@ proc defineSymbols*() =
             #=======================================================
             convertQuantity(y, x, yKind, xKind)
 
+    builtin "in",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "convert quantity to given unit",
+        args        = {
+            "unit"  : {Unit,Literal,String,Word},
+            "value" : {Quantity,Integer,Floating,Rational}
+        },
+        attrs       = NoAttrs,
+        returns     = {Quantity},
+        example     = """
+            print in`cm 3`m
+            ; 300.0 cm
+
+            print in`m2 1`yd2
+            ; 0.836127 m²
+        """:
+            #=======================================================
+            convertQuantity(x, y, xKind, yKind)
+
     builtin "property",
         alias       = unaliased,
         op          = opNop,
