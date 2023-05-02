@@ -61,7 +61,6 @@ var
 
     parsable            {.compileTime.} : OrderedTable[string, (string, string)]
     currencyUnits       {.compileTime.} : seq[string]
-    temperatureUnits    {.compileTime.} : seq[string]
 
 #=======================================
 # Constants
@@ -235,37 +234,32 @@ proc defPrefix*(prefix, symbol: string, value: int) =
 
 proc defUnit*(unit: string, symbol: string, prefixed: bool, definition: string, aliases: varargs[string]) =
     units[unit] = symbol
-    if definition != "":
-        if definition[0] in 'A'..'Z':
-            baseUnits.add(unit)
-            defs[unit] = newQuantity(1//1, @[(kind: unit, expo: 1)], base=true)
 
-            if unit=="USD":
-                currencyUnits.add(unit)
-        else:
-            defs[unit] = parseQuantity(definition)
+    if definition[0] in 'A'..'Z':
+        baseUnits.add(unit)
+        defs[unit] = newQuantity(1//1, @[(kind: unit, expo: 1)], base=true)
 
-        for alias in aliases:
-            if parsable.hasKey(alias):
-                raise newException(ValueError, "Parsable already defined: " & alias)
-            parsable[alias] = ("No", unit)
-
-        if parsable.hasKey(unit):
-            raise newException(ValueError, "Parsable already defined: " & unit)
-        parsable[unit] = ("No", unit)
-        
-        if prefixed: 
-            for prefix, (sym, val) in prefixes:
-                if prefix != "No":
-                    let prefixedUnit = prefix & unit
-                    if parsable.hasKey(prefixedUnit):
-                        raise newException(ValueError, "Parsable already defined: " & prefixedUnit)
-                    parsable[prefixedUnit] = (prefix, unit)
+        if unit=="USD":
+            currencyUnits.add(unit)
     else:
-        if unit.startsWith("deg"):
-            temperatureUnits.add(unit)
-            defs[unit] = parseQuantity("0 K")
-            parsable[unit] = ("No", unit)
+        defs[unit] = parseQuantity(definition)
+
+    for alias in aliases:
+        if parsable.hasKey(alias):
+            raise newException(ValueError, "Parsable already defined: " & alias)
+        parsable[alias] = ("No", unit)
+
+    if parsable.hasKey(unit):
+        raise newException(ValueError, "Parsable already defined: " & unit)
+    parsable[unit] = ("No", unit)
+    
+    if prefixed: 
+        for prefix, (sym, val) in prefixes:
+            if prefix != "No":
+                let prefixedUnit = prefix & unit
+                if parsable.hasKey(prefixedUnit):
+                    raise newException(ValueError, "Parsable already defined: " & prefixedUnit)
+                parsable[prefixedUnit] = (prefix, unit)
 
 proc defConstant*(name: string, precalculated: bool, definition: string, description: string) =
     if precalculated:
