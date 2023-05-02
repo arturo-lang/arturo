@@ -43,12 +43,12 @@ type
     Prefix          = generatePrefixDefinitions()
     CoreUnit        = generateUnitDefinitions()
 
-    UnitKind = enum
+    SubUnitKind = enum
         Core
         User
 
-    Unit = object
-        case kind: UnitKind:
+    SubUnit = object
+        case kind: SubUnitKind:
             of Core:
                 core: CoreUnit
             of User:
@@ -56,7 +56,7 @@ type
 
     PrefixedUnit* = tuple
         p: Prefix
-        u: Unit
+        u: SubUnit
 
     Atom = tuple
         unit: PrefixedUnit
@@ -84,7 +84,7 @@ type
 {.hint: "Quantity's inner type is currently " & $sizeof(Quantity) & ".".}
 {.hints: off.}
 
-func `==`(a, b: Unit): bool =
+func `==`(a, b: SubUnit): bool =
     if a.kind != b.kind: return false
     return
         case a.kind:
@@ -106,7 +106,7 @@ var
     AtomsCache {.used.} : Table[string,Atoms]
 
     Properties          : Table[QuantitySignature, string]
-    Quantities          : Table[Unit, Quantity]
+    Quantities          : Table[SubUnit, Quantity]
     UserUnits           : Table[string, string]
 
 #=======================================
@@ -321,7 +321,7 @@ proc getBaseUnits*(q: Quantity): Atoms =
 
 proc defineNewUserUnit*(name: string, symbol: string, definition: string) =
     UserUnits[name] = symbol
-    Quantities[Unit(kind: User, name: name)] = toQuantity(definition)
+    Quantities[SubUnit(kind: User, name: name)] = toQuantity(definition)
 
 #=======================================
 # Comparison
@@ -570,7 +570,7 @@ proc `^=`*(a: var Quantity, b: int) =
 func `$`*(expo: AtomExponent): string =
     AtomExponents[expo + 5]
 
-proc `$`*(unit: Unit): string =
+proc `$`*(unit: SubUnit): string =
     case unit.kind:
         of Core: $(unit.core)
         of User: UserUnits[unit.name]
