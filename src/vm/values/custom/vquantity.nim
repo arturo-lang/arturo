@@ -908,7 +908,7 @@ proc convertTo*(q: Quantity, atoms: Atoms): Quantity =
         raise newException(ValueError, "Cannot convert quantities with different dimensions.")
 
     if q.signature == static parseDimensionFormula("K"):
-        let newTemp = convertTemperature(q.value, atoms[0].unit.u.core, q.atoms[0].unit.u.core)
+        let newTemp = convertTemperature(q.value, q.atoms[0].unit.u.core, atoms[0].unit.u.core)
         result = toQuantity(newTemp, atoms)
     else:
         if q.atoms == atoms:
