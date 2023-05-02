@@ -934,8 +934,17 @@ proc defineNewUserUnit*(name: string, symbol: string, definition: string) =
 # Comparison
 #=======================================
 
-func `=~`(a, b: Quantity): bool =
+func `=~`*(a, b: Quantity): bool {.inline.} =
     return a.signature == b.signature
+
+func `=~`*(a: Quantity, b: Atoms): bool {.inline.} =
+    return a.signature == getSignature(b)
+
+func `=~`*(a: Atoms, b: Quantity): bool {.inline.} =
+    return getSignature(a) == b.signature
+
+func `=~`*(a: Atoms, b: Atoms): bool {.inline.} =
+    return getSignature(a) == getSignature(b
 
 proc `==`*(a, b: Quantity): bool =
     if not (a =~ b):
