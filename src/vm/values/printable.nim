@@ -101,6 +101,8 @@ proc `$`*(v: Value): string {.inline.} =
         of Symbol,
            SymbolLiteral:
             return $(v.m)
+        of Unit:
+            return $(v.u)
         of Quantity:
             return $(v.q)
         of Regex:
@@ -272,6 +274,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
         of Symbol, 
            SymbolLiteral: dumpSymbol(v)
 
+        of Unit         : dumpPrimitive($(v.u), v)
         of Quantity     : dumpPrimitive($(v.q), v)
 
         of Regex        : dumpPrimitive($(v.rx), v)
