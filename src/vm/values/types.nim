@@ -81,24 +81,25 @@ type
         Symbol          = 17
         SymbolLiteral   = 18
 
-        Quantity        = 19
-        Regex           = 20
-        Color           = 21
-        Date            = 22
-        Binary          = 23
-        Dictionary      = 24
-        Object          = 25
-        Store           = 26
-        Function        = 27
-        Inline          = 28
-        Block           = 29
-        Range           = 30
-        Database        = 31
-        Socket          = 32    
-        Bytecode        = 33
+        Unit            = 19
+        Quantity        = 20
+        Regex           = 21
+        Color           = 22
+        Date            = 23
+        Binary          = 24
+        Dictionary      = 25
+        Object          = 26
+        Store           = 27
+        Function        = 28
+        Inline          = 29
+        Block           = 30
+        Range           = 31
+        Database        = 32
+        Socket          = 33    
+        Bytecode        = 34
 
-        Nothing         = 34
-        Any             = 35
+        Nothing         = 35
+        Any             = 36
 
     ValueSpec* = set[ValueKind]
 
@@ -244,6 +245,7 @@ type
                SymbolLiteral:
                    m*  : VSymbol
             of Regex:       rx* : VRegex
+            of Unit:        u*  : Atoms
             of Quantity:    q*: VQuantity
             of Color:       l*  : VColor
             of Date:
