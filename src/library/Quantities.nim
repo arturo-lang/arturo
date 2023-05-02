@@ -28,13 +28,20 @@ import vm/lib
 # Helpers
 #=======================================
 
-# template processTrigonometric(fun: untyped): untyped =
-#     var v = x
-#     if xKind == Quantity:
-#         v = newQuantity(x.q.convertTo(parseAtoms("rad")))
-
-#     if v.kind==Complex: push(newComplex(fun(v.z)))
-#     else: push(newFloating(fun(asFloat(v))))
+template convertQuantity(x, y: Value, xKind, yKind: ValueKind): untyped =
+    let qs = parseAtoms(x.s)
+    if yKind==Quantity:
+        push newQuantity(y.q.convertTo(qs))
+    elif yKind==Integer:
+        if y.iKind == NormalInteger:
+            push newQuantity(toQuantity(y.i, qs))
+        else:
+            when not defined(NOGMP):
+                push newQuantity(toQuantity(y.bi, qs))
+    elif yKind==Floating:
+        push newQuantity(toQuantity(y.f, qs))
+    else:
+        push newQuantity(toQuantity(y.rat, qs))
 
 #=======================================
 # Methods
@@ -90,19 +97,7 @@ proc defineSymbols*() =
             ; 0.836127m²
         """:
             #=======================================================
-            let qs = parseAtoms(x.s)
-            if yKind==Quantity:
-                push newQuantity(y.q.convertTo(qs))
-            elif yKind==Integer:
-                if y.iKind == NormalInteger:
-                    push newQuantity(toQuantity(y.i, qs))
-                else:
-                    when not defined(NOGMP):
-                        push newQuantity(toQuantity(y.bi, qs))
-            elif yKind==Floating:
-                push newQuantity(toQuantity(y.f, qs))
-            else:
-                push newQuantity(toQuantity(y.rat, qs))
+            convertQuantity(x, y, xKind, yKind)
 
     builtin "property",
         alias       = unaliased,
