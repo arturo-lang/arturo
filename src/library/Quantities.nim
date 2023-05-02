@@ -29,7 +29,12 @@ import vm/lib
 #=======================================
 
 template convertQuantity(x, y: Value, xKind, yKind: ValueKind): untyped =
-    let qs = parseAtoms(x.s)
+    let qs = 
+        if x.kind == Unit:
+            x.u
+        else:
+            parseAtoms(x.s)
+
     if yKind==Quantity:
         push newQuantity(y.q.convertQuantity(qs))
     elif yKind==Integer:
@@ -84,8 +89,8 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "convert quantity to given unit",
         args        = {
-            "value" : {Integer,Floating,Rational,Quantity},
-            "unit"  : {Literal,String,Word}
+            "value" : {Quantity,Integer,Floating,Rational},
+            "unit"  : {Unit,Literal,String,Word}
         },
         attrs       = NoAttrs,
         returns     = {Quantity},
@@ -105,8 +110,8 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "convert quantity to given unit",
         args        = {
-            "unit"  : {Literal,String,Word},
-            "value" : {Integer,Floating,Rational,Quantity},
+            "unit"  : {Unit,Literal,String,Word},
+            "value" : {Quantity,Integer,Floating,Rational},
         },
         attrs       = NoAttrs,
         returns     = {Quantity},
