@@ -1215,39 +1215,6 @@ proc defineSymbols*() =
 
             push(ret)
 
-    builtin "in",
-        alias       = unaliased,
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "convert quantity to given unit",
-        args        = {
-            "unit"  : {Literal,String,Word},
-            "value" : {Integer,Floating,Rational,Quantity},
-        },
-        attrs       = NoAttrs,
-        returns     = {Quantity},
-        example     = """
-            print in'cm 3:m
-            ; 300.0cm
-
-            print in'm2 1:yd2
-            ; 0.836127m²
-        """:
-            #=======================================================
-            let qs = parseAtoms(x.s)
-            if yKind==Quantity:
-                push newQuantity(y.q.convertTo(qs))
-            elif yKind==Integer:
-                if y.iKind == NormalInteger:
-                    push newQuantity(toQuantity(y.i, qs))
-                else:
-                    when not defined(NOGMP):
-                        push newQuantity(toQuantity(y.bi, qs))
-            elif yKind==Floating:
-                push newQuantity(toQuantity(y.f, qs))
-            else:
-                push newQuantity(toQuantity(y.rat, qs))
-
     builtin "range",
         alias       = ellipsis,
         op          = opRange,
