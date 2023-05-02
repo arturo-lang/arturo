@@ -2491,7 +2491,7 @@ do [
     ensure -> greater? to :complex [2 2] to :complex [1 2]
     ensure -> greater? to :complex [1 3] to :complex [1 2]
     ensure -> (to :complex [2 2]) > (to :complex [1 2])
-    ensure -> (to :complex [1 2]) > (to :complex [1 3])
+    ensure -> (to :complex [1 3]) > (to :complex [1 2])
     passed
     
     ; equal to
@@ -3656,7 +3656,7 @@ do [
     ensure -> greaterOrEqual? to :complex [2 2] to :complex [1 2]
     ensure -> greaterOrEqual? to :complex [1 3] to :complex [1 2]
     ensure -> (to :complex [2 2]) >= (to :complex [1 2])
-    ensure -> (to :complex [1 2]) >= (to :complex [1 3])
+    ensure -> (to :complex [1 3]) >= (to :complex [1 2])
     passed
     
     ; equal to
