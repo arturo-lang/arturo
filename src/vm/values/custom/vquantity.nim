@@ -200,7 +200,7 @@ proc parseSubUnit*(str: string): PrefixedUnit =
     generateUnitParser()
 
     if result.u.kind==Core and result.u.core == No_CoreUnit:
-        echo "creating it!"
+        #echo "creating it!"
         result = unitAlaCarte(str)
 
 proc parseAtoms*(str: string): Atoms = 
