@@ -54,6 +54,7 @@ type
 var
     baseUnits           {.compileTime.} : seq[string]
     properties          {.compileTime.} : OrderedTable[int64,string]
+    propertyExamples    {.compileTime.} : OrderedTable[string,string]
     prefixes            {.compileTime.} : OrderedTable[string, tuple[sym: string, val: int]]
     defs                {.compileTime.} : OrderedTable[string, Quantity]
     units               {.compileTime.} : OrderedTable[string, string]
@@ -221,12 +222,13 @@ proc parsePropertyFormula*(str: string):int64 =
 # Methods
 #=======================================
 
-proc defProperty*(quantity: string, formula: string = "") =
+proc defProperty*(quantity: string, formula: string = "", example: string = "") =
     let signature = parsePropertyFormula(formula)
 
     if properties.hasKey(signature):
         raise newException(ValueError, "Property already defined: " & quantity & " => " & properties[signature])
     properties[signature] = quantity
+    propertyExamples[quantity] = example
 
 proc defPrefix*(prefix, symbol: string, value: int) =
     prefixes[prefix] = (sym: symbol, val: value)
@@ -673,7 +675,7 @@ macro addPropertyPredicates*(): untyped =
             ),
             nnkExprEqExpr.newTree(
                 newIdentNode("example"),
-                newLit("            " & predName & " " & " WWWW\n            ; => true\n        ")
+                newLit("            " & predName & " " & propertyExamples[property] & "\n            ; => true\n        ")
             ),
             nnkStmtList.newTree(
                 nnkCall.newTree(
