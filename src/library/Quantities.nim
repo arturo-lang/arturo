@@ -62,6 +62,7 @@ template convertQuantity(x, y: Value, xKind, yKind: ValueKind): untyped =
 proc defineSymbols*() =
 
     addPhysicalConstants()
+    addPropertyPredicates()
 
     builtin "conforms?",
         alias       = unaliased,
