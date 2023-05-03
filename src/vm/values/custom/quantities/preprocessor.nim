@@ -624,6 +624,82 @@ macro addPhysicalConstants*(): untyped =
         )
 
     res
+
+macro addPropertyPredicates*(): untyped =
+    let res = nnkStmtList.newTree()
+
+    for (signature,property) in pairs(properties):
+        let cleanProperty = $(property[0].toLowerAscii()) & (property[1 .. -1]).replace("-","").replace(" ","")
+        let predName = cleanProperty & "?"
+        res.add nnkCommand.newTree(
+            newIdentNode("builtin"),
+            newLit(predName),
+            nnkExprEqExpr.newTree(
+                newIdentNode("alias"),
+                newIdentNode("unaliased")
+            ),
+            nnkExprEqExpr.newTree(
+                newIdentNode("op"),
+                newIdentNode("opNop")
+            ),
+            nnkExprEqExpr.newTree(
+                newIdentNode("rule"),
+                newIdentNode("PrefixPrecedence")
+            ),
+            nnkExprEqExpr.newTree(
+                newIdentNode("description"),
+                newLit("checks if given quantity describes " & property)
+            ),
+            nnkExprEqExpr.newTree(
+                newIdentNode("args"),
+                nnkTableConstr.newTree(
+                    nnkExprColonExpr.newTree(
+                        newLit("value"),
+                        nnkCurly.newTree(
+                            newIdentNode("Quantity")
+                        )
+                    )
+                )
+            ),
+            nnkExprEqExpr.newTree(
+                newIdentNode("attrs"),
+                newIdentNode("NoAttrs")
+            ),
+            nnkExprEqExpr.newTree(
+                newIdentNode("returns"),
+                nnkCurly.newTree(
+                    newIdentNode("Logical")
+                )
+            ),
+            nnkExprEqExpr.newTree(
+                newIdentNode("example"),
+                newLit("            " & predName & " " & " WWWW\n            ; => true\n        ")
+            ),
+            nnkStmtList.newTree(
+                nnkCall.newTree(
+                    newIdentNode("push"),
+                    nnkCall.newTree(
+                        newIdentNode("newLogical"),
+                        nnkInfix.newTree(
+                            newIdentNode("=="),
+                            nnkCall.newTree(
+                            newIdentNode("getProperty"),
+                            nnkDotExpr.newTree(
+                                newIdentNode("x"),
+                                newIdentNode("q")
+                            )
+                            ),
+                            newLit(property)
+                        )
+                    )
+                )
+            )
+        )
+
+    res
+
+
+
 #=======================================
 # Debugging
 #=======================================
@@ -696,3 +772,22 @@ proc printUnits*() =
         echo ""
 
     echo $(constants)
+
+dumpAstGen:
+
+    builtin "binary?",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "checks if given quantity describes XXX",
+        args        = {
+            "value" : {Quantity}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            ZZZ WWWW
+            ; => true
+        """:
+            #=======================================================
+            push(newLogical(getProperty(x.q) == "PROPERTY"))
