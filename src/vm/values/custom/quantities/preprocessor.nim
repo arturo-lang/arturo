@@ -629,7 +629,7 @@ macro addPropertyPredicates*(): untyped =
     let res = nnkStmtList.newTree()
 
     for (signature,property) in pairs(properties):
-        let cleanProperty = $(property[0].toLowerAscii()) & (property[1 .. -1]).replace("-","").replace(" ","")
+        let cleanProperty = $(property[0].toLowerAscii()) & (property[1..^1]).replace("-","").replace(" ","")
         let predName = cleanProperty & "?"
         res.add nnkCommand.newTree(
             newIdentNode("builtin"),
