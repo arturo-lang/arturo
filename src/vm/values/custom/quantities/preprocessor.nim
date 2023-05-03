@@ -684,14 +684,17 @@ macro addPropertyPredicates*(): untyped =
                         newIdentNode("newLogical"),
                         nnkInfix.newTree(
                             newIdentNode("=="),
-                            nnkCall.newTree(
-                            newIdentNode("getProperty"),
-                            nnkDotExpr.newTree(
-                                newIdentNode("x"),
-                                newIdentNode("q")
-                            )
-                            ),
-                            newLit(property)
+                            #nnkCall.newTree(
+                                #newIdentNode("getProperty"),
+                                nnkDotExpr.newTree(
+                                    nnkDotExpr.newTree(
+                                        newIdentNode("x"),
+                                        newIdentNode("q")
+                                    ),
+                                    newIdentNode("signature")
+                                ),
+                            #),
+                            newLit(signature)#newLit(property)
                         )
                     )
                 )
@@ -774,3 +777,6 @@ proc printUnits*() =
         echo ""
 
     echo $(constants)
+
+dumpAstGen:
+    push(newLogical(x.q.signature == 123))
