@@ -34,7 +34,7 @@ static:
     defProperty "Currency",                     "C"           
     defProperty "Current",                      "I"
     defProperty "Current Density",              "L⁻²·I"
-    defProperty "Data-transfer Rate",           "T⁻¹·B"
+    defProperty "Data-Transfer Rate",           "T⁻¹·B"
     defProperty "Density",                      "L⁻³·M"
     defProperty "Elastance",                    "L²·M·T⁻⁴·I⁻²"                
     defProperty "Electric Field",               "L·M·T⁻³·I⁻¹"
