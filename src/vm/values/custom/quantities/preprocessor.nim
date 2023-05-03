@@ -774,22 +774,3 @@ proc printUnits*() =
         echo ""
 
     echo $(constants)
-
-dumpAstGen:
-
-    builtin "binary?",
-        alias       = unaliased, 
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "checks if given quantity describes XXX",
-        args        = {
-            "value" : {Quantity}
-        },
-        attrs       = NoAttrs,
-        returns     = {Logical},
-        example     = """
-            ZZZ WWWW
-            ; => true
-        """:
-            #=======================================================
-            push(newLogical(getProperty(x.q) == "PROPERTY"))
