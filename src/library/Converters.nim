@@ -401,7 +401,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                         
                         let firstElem {.cursor} = y.a[0]
                         let secondElem {.cursor} = y.a[1]
-                        requireValue(firstElem, {Integer, Floating})
+                        requireValue(firstElem, {Integer, Floating, Rational})
                         requireValue(secondElem, {Unit, Word, Literal, String})
                         
                         if secondElem.kind == Unit:
