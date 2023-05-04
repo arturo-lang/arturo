@@ -520,6 +520,10 @@ proc processBlock*(
                 addChild(newCall)
                 rewindCallBranches(optimize=true)
 
+    proc addBuiltinCall(target: var Node, op: OpCode, arity: int8) =
+        target.addChild(newCallNode(BuiltinCall, arity, nil, op))
+        target.rollThrough()
+
     func addStore(target: var Node, val: Value) {.enforceNoRaises.} =
         target.addChild(newCallNode(VariableStore, 1, val))
 
@@ -843,7 +847,15 @@ proc processBlock*(
                 echo "AST: found Quantity"
                 when processingArrow: ArrowBlock[^1].add(item)
 
-                current.addTerminal(newConstant(item))
+                current.addBuiltinCall(opTo, 2)
+                current.addTerminal(newConstant(newType("quantity")))
+                current.addBuiltinCall(opArray, 1)
+                current.addTerminal(newConstant(newBlock(@[
+                    newRational(item.q.original),
+                    newUnit(item.q.atoms)
+                ])))
+
+                #current.addTerminal(newConstant(item))
 
             else:
                 when processingArrow: ArrowBlock[^1].add(item)
