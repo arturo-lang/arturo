@@ -377,17 +377,22 @@ proc toBase*(q: Quantity): Atoms =
 proc getBaseUnits*(q: Quantity): Atoms =
     result = flatten(toBase(q))
 
-proc defineNewUserUnit*(name: string, symbol: string, definition: string) =
+proc defineNewUserUnit*(name: string, symbol: string, description: string, definition: string) =
     UserUnits[name] = symbol
-    Quantities[SubUnit(kind: User, name: name)] = toQuantity(definition)
+    let q = toQuantity(definition)
+    Quantities[SubUnit(kind: User, name: name)] = q
+    Properties[q.signature] = description
 
-proc defineNewUserUnit*(name: string, symbol: string, definition: Quantity) =
+proc defineNewUserUnit*(name: string, symbol: string, description: string, definition: Quantity) =
     UserUnits[name] = symbol
     Quantities[SubUnit(kind: User, name: name)] = definition
+    Properties[definition.signature] = description
 
-proc defineNewUserUnit*(name: string, symbol: string, definition: Atoms) =
+proc defineNewUserUnit*(name: string, symbol: string, description: string, definition: Atoms) =
     UserUnits[name] = symbol
-    Quantities[SubUnit(kind: User, name: name)] = toQuantity(1, definition)
+    let q = toQuantity(1, definition)
+    Quantities[SubUnit(kind: User, name: name)] = q
+    Properties[q.signature] = description
 
 proc defineNewProperty*(name: string, definition: Quantity) =
     Properties[definition.signature] = name
