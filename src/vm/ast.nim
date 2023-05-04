@@ -41,7 +41,7 @@ import sugar, tables, unicode, std/with
 
 import vm/[globals, values/value, values/comparison, values/operators, values/types]
 import vm/values/printable
-import vm/values/custom/[vbinary, vcolor, vlogical, vsymbol, vversion]
+import vm/values/custom/[vbinary, vcolor, vlogical, vquantity, vsymbol, vversion]
 
 import vm/profiler
 
