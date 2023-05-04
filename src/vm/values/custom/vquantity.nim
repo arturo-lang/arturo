@@ -108,6 +108,9 @@ var
     Quantities          : Table[SubUnit, Quantity]
     UserUnits           : Table[string, string]
 
+    LastSignature       : QuantitySignature = static int(pow(6.0,11.0))
+    SignatureStep       : QuantitySignature = static int(pow(6.0,20.0))
+
 #=======================================
 # Useful Constants
 #=======================================
@@ -190,7 +193,10 @@ proc unitAlaCarte*(str: string): PrefixedUnit =
     
     result = (No_Prefix, subu)
 
-    Quantities[subu] = toQuantity("1", @[])
+    var newQuantity = toQuantity("1", @[])
+    newQuantity.signature = LastSignature
+    LastSignature += SignatureStep
+    Quantities[subu] = newQuantity
     UserUnits[str] = str
 
 #=======================================
