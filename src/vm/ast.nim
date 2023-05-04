@@ -847,6 +847,7 @@ proc processBlock*(
                 echo "AST: found Quantity"
                 when processingArrow: ArrowBlock[^1].add(item)
 
+                current.addPotentialInfixCall()
                 current.addBuiltinCall(opTo, 2)
                 current.addTerminal(newConstant(newType("quantity")))
                 current.addBuiltinCall(opArray, 1)
