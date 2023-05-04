@@ -397,14 +397,17 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
 
                     of Quantity:
                         discard
-                        # requireBlockSize(y, 2)
+                        requireBlockSize(y, 2)
                         
-                        # let firstElem {.cursor} = y.a[0]
-                        # let secondElem {.cursor} = y.a[1]
-                        # requireValue(firstElem, {Integer, Floating})
-                        # requireValue(secondElem, {Word, Literal, String})
+                        let firstElem {.cursor} = y.a[0]
+                        let secondElem {.cursor} = y.a[1]
+                        requireValue(firstElem, {Integer, Floating})
+                        requireValue(secondElem, {Unit, Word, Literal, String})
                         
-                        # return newQuantity(firstElem, parseQuantitySpec(secondElem.s))
+                        if secondElem.kind == Unit:
+                            return newQuantity(firstElem, secondElem.u)
+                        else:
+                            return newQuantity(firstElem, secondElem.s)
 
                     of Color:
                         requireBlockSize(y, 3, 4)
