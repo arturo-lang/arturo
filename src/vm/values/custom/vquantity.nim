@@ -389,6 +389,12 @@ proc defineNewUserUnit*(name: string, symbol: string, definition: Atoms) =
     UserUnits[name] = symbol
     Quantities[SubUnit(kind: User, name: name)] = toQuantity(1, definition)
 
+proc defineNewProperty*(name: string, definition: Quantity) =
+    Properties[definition.signature] = name
+
+proc defineNewProperty*(name: string, definition: Atoms) =
+    Properties[getSignature(definition)] = name
+
 #=======================================
 # Comparison
 #=======================================
