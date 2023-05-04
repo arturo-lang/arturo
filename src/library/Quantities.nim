@@ -159,17 +159,27 @@ proc defineSymbols*() =
             "name"  : {Literal,String},
             "value" : {Quantity,Unit}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "symbol"    : ({String}, "define main unit symbol"),
+            "describes" : ({String}, "set corresponding property for new unit"),
+            "property"  : ({Logical}, "define a new property")
+        },
         returns     = {Literal},
         # TODO(Quantities/specify) add documentation example
         #  labels: documentation, easy
         example     = """
         """:
             #=======================================================
-            if yKind == Quantity:
-                defineNewUserUnit(x.s, x.s, y.q)
+            if hadAttr("property"):
+                if yKind == Quantity:
+                    defineNewProperty(x.s, y.q)
+                else:
+                    defineNewProperty(x.s, y.u)
             else:
-                defineNewUserUnit(x.s, x.s, y.u)
+                if yKind == Quantity:
+                    defineNewUserUnit(x.s, x.s, y.q)
+                else:
+                    defineNewUserUnit(x.s, x.s, y.u)
 
 #=======================================
 # Add Library
