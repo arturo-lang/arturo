@@ -477,9 +477,18 @@ do [
     
     topic « between? - :complex
     
+    ; comparing re
     ensure -> between? to :complex [1 2] to :complex [0 2] to :complex [2 2]
-    ; ensure -> not? between? to :complex [3 2] to :complex [1 2] to :complex [2 2] 
-    ; ensure -> not? between? to :complex [0 2] to :complex [1 2] to :complex [2 2] 
+    ensure -> between? to :complex [1 2] to :complex [1 2] to :complex [2 2]
+    ensure -> not? between? to :complex [0 2] to :complex [1 2] to :complex [2 2]
+    ensure -> not? between? to :complex [3 2] to :complex [0 2] to :complex [1 2]
+    passed
+    
+    ; comparing im
+    ensure -> between? to :complex [1 1] to :complex [1 0] to :complex [1 2]
+    ensure -> between? to :complex [1 1] to :complex [1 1] to :complex [1 2]
+    ensure -> not? between? to :complex [1 0] to :complex [1 1] to :complex [1 2]
+    ensure -> not? between? to :complex [1 3] to :complex [1 0] to :complex [1 2]
     passed
     
     
@@ -848,9 +857,16 @@ do [
     
     topic « compare - :complex
     
-    ensure -> 0 = compare to :complex [0 2] ((to :complex [1 2]) - 1)
-    ; ensure -> 1 = compare to :complex [1 2] to :complex [0 2] 
-    ; ensure -> (neg 1) = compare to :complex [0 2] to :complex [1 2] 
+    ; comparing re
+    ensure -> 0 = compare to :complex [1 2] to :complex [1 2]
+    ensure -> 1 = compare to :complex [2 2] to :complex [1 2] 
+    ensure -> (neg 1) = compare to :complex [1 2] to :complex [2 2] 
+    passed
+    
+    ; comparing im
+    ensure -> 0 = compare to :complex [1 2] to :complex [1 2]
+    ensure -> 1 = compare to :complex [1 2] to :complex [1 1] 
+    ensure -> (neg 1) = compare to :complex [1 1] to :complex [1 2] 
     passed
     
     
@@ -1306,16 +1322,22 @@ do [
     
     topic « equal? - :complex
     
-    ensure -> equal? to :complex [0 2] ((to :complex [1 2]) - 1) 
+    ensure -> equal? to :complex [0 2] to :complex [0 2]
+    ensure -> (to :complex [0 2]) = (to :complex [0 2])
     passed
     
-    ensure -> not? equal? to :complex [1 2] to :complex @[neg 1 2] 
-    ensure -> not? equal? to :complex [1 2] 1
-    ensure -> not? equal? 1 to :complex [1 2]
-    ensure -> (to :complex [0 2]) = ((to :complex [1 2]) - 1) 
-    ensure -> not? (to :complex [1 2]) = to :complex @[neg 1 2] 
-    ensure -> not? (to :complex [1 2]) = 1
-    ensure -> not? 1 = to :complex [1 2]
+    ; greater than
+    ensure -> not? equal? to :complex [2 2] to :complex [1 2] 
+    ensure -> not? equal? to :complex [2 3] to :complex [1 2]
+    ensure -> not? (to :complex [2 2]) = (to :complex [1 2]) 
+    ensure -> not? (to :complex [2 3]) = (to :complex [1 2]) 
+    passed
+    
+    ; less than
+    ensure -> not? equal? to :complex [0 2] to :complex [1 2] 
+    ensure -> not? equal? to :complex [0 1] to :complex [1 2]
+    ensure -> not? (to :complex [0 2]) = (to :complex [1 2]) 
+    ensure -> not? (to :complex [0 1]) = (to :complex [1 2])
     passed
     
     
@@ -2466,18 +2488,24 @@ do [
     
     topic « greater? - :complex
     
-    ; ensure -> greater? to :complex [1 1] to :complex [0 1]
-    ensure -> not? greater? to :complex [0 2] ((to :complex [1 2]) - 1) 
+    ensure -> greater? to :complex [2 2] to :complex [1 2]
+    ensure -> greater? to :complex [1 3] to :complex [1 2]
+    ensure -> (to :complex [2 2]) > (to :complex [1 2])
+    ensure -> (to :complex [1 3]) > (to :complex [1 2])
     passed
     
-    ensure -> not? greater? to :complex [1 2] to :complex @[neg 1 2] 
-    ensure -> not? greater? to :complex [1 2] 1
-    ensure -> not? greater? 1 to :complex [1 2]
-    ensure -> not? (to :complex [0 2]) > ((to :complex [1 2]) - 1) 
-    ensure -> not? (to :complex [1 2]) > to :complex @[neg 1 2] 
-    ensure -> not? (to :complex [1 2]) > 1
-    ensure -> not? 1 > to :complex [1 2]
+    ; equal to
+    ensure -> not? greater? to :complex [1 2] to :complex [1 2] 
+    ensure -> not? (to :complex [1 2]) > (to :complex [1 2]) 
     passed
+    
+    ; less than
+    ensure -> not? greater? to :complex [0 2] to :complex [1 2] 
+    ensure -> not? greater? to :complex [1 1] to :complex [1 2]
+    ensure -> not? (to :complex [0 2]) > (to :complex [1 2]) 
+    ensure -> not? (to :complex [1 1]) > (to :complex [1 2])
+    passed
+    
     
     topic « greater? - :version
     
@@ -3624,17 +3652,23 @@ do [
     
     topic « greaterOrEqual? - :complex
     
-    ; ensure -> greaterOrEqual? to :complex [1 2] to :complex [0 2]
-    ensure -> greaterOrEqual? to :complex [0 2] ((to :complex [1 2]) - 1) 
+    ; greater than
+    ensure -> greaterOrEqual? to :complex [2 2] to :complex [1 2]
+    ensure -> greaterOrEqual? to :complex [1 3] to :complex [1 2]
+    ensure -> (to :complex [2 2]) >= (to :complex [1 2])
+    ensure -> (to :complex [1 3]) >= (to :complex [1 2])
     passed
     
-    ensure -> not? greaterOrEqual? to :complex [1 2] to :complex @[neg 1 2] 
-    ensure -> not? greaterOrEqual? to :complex [1 2] 1
-    ensure -> not? greaterOrEqual? 1 to :complex [1 2]
-    ensure -> (to :complex [0 2]) >= ((to :complex [1 2]) - 1) 
-    ensure -> not? (to :complex [1 2]) >= to :complex @[neg 1 2] 
-    ensure -> not? (to :complex [1 2]) >= 1
-    ensure -> not? 1 >= to :complex [1 2]
+    ; equal to
+    ensure -> greaterOrEqual? to :complex [1 2] to :complex [1 2] 
+    ensure -> (to :complex [1 2]) >= (to :complex [1 2]) 
+    passed
+    
+    ; less than
+    ensure -> not? greaterOrEqual? to :complex [0 2] to :complex [1 2] 
+    ensure -> not? greaterOrEqual? to :complex [1 1] to :complex [1 2]
+    ensure -> not? (to :complex [0 2]) >= (to :complex [1 2]) 
+    ensure -> not? (to :complex [1 1]) >= (to :complex [1 2])
     passed
     
     
@@ -4846,18 +4880,24 @@ do [
     
     
     topic « less? - :complex
-    ; always returns `false`
     
-    ensure -> not? less? to :complex [0 2] ((to :complex [1 2]) - 1) 
+    ; less
+    ensure -> less? to :complex [0 2] to :complex [1 2] 
+    ensure -> less? to :complex [1 1] to :complex [1 2]
+    ensure -> (to :complex [0 2]) < (to :complex [1 2]) 
+    ensure -> (to :complex [1 1]) < (to :complex [1 2])
     passed
     
-    ensure -> not? less? to :complex [1 2] to :complex @[neg 1 2] 
-    ensure -> not? less? to :complex [1 2] 1
-    ensure -> not? less? 1 to :complex [1 2]
-    ensure -> not? (to :complex [0 2]) < ((to :complex [1 2]) - 1) 
-    ensure -> not? (to :complex [1 2]) < to :complex @[neg 1 2] 
-    ensure -> not? (to :complex [1 2]) < 1
-    ensure -> not? 1 < to :complex [1 2]
+    ; equal to
+    ensure -> not? less? to :complex [1 2] to :complex [1 2] 
+    ensure -> not? (to :complex [1 2]) < (to :complex [1 2]) 
+    passed
+    
+    ; less than
+    ensure -> not? less? to :complex [2 2] to :complex [1 2]
+    ensure -> not? less? to :complex [1 3] to :complex [1 2]
+    ensure -> not? (to :complex [2 2]) < (to :complex [1 2])
+    ensure -> not? (to :complex [1 3]) < (to :complex [1 2])
     passed
     
     
@@ -6021,16 +6061,23 @@ do [
     
     topic « lessOrEqual? - :complex
     
-    ensure -> lessOrEqual? to :complex [0 2] ((to :complex [1 2]) - 1) 
+    ; greater than
+    ensure -> lessOrEqual? to :complex [0 2] to :complex [1 2] 
+    ensure -> lessOrEqual? to :complex [1 1] to :complex [1 2]
+    ensure -> (to :complex [0 2]) =< (to :complex [1 2]) 
+    ensure -> (to :complex [1 1]) =< (to :complex [1 2])
     passed
     
-    ensure -> not? lessOrEqual? to :complex [1 2] to :complex @[neg 1 2] 
-    ensure -> not? lessOrEqual? to :complex [1 2] 1
-    ensure -> not? lessOrEqual? 1 to :complex [1 2]
-    ensure -> (to :complex [0 2]) =< ((to :complex [1 2]) - 1) 
-    ensure -> not? (to :complex [1 2]) =< to :complex @[neg 1 2] 
-    ensure -> not? (to :complex [1 2]) =< 1
-    ensure -> not? 1 =< to :complex [1 2]
+    ; equal to
+    ensure -> lessOrEqual? to :complex [1 2] to :complex [1 2] 
+    ensure -> (to :complex [1 2]) =< (to :complex [1 2]) 
+    passed
+    
+    ; less than
+    ensure -> not? lessOrEqual? to :complex [2 2] to :complex [1 2]
+    ensure -> not? lessOrEqual? to :complex [1 3] to :complex [1 2]
+    ensure -> not? (to :complex [2 2]) =< (to :complex [1 2])
+    ensure -> not? (to :complex [1 3]) =< (to :complex [1 2])
     passed
     
     
@@ -7168,16 +7215,22 @@ do [
     
     topic « notEqual? - :complex
     
-    ensure -> not? notEqual? to :complex [0 2] ((to :complex [1 2]) - 1) 
+    ensure -> not? notEqual? to :complex [0 2] to :complex [0 2]
+    ensure -> not? (to :complex [0 2]) <> (to :complex [0 2])
     passed
     
-    ensure -> notEqual? to :complex [1 2] to :complex @[neg 1 2] 
-    ensure -> notEqual? to :complex [1 2] 1
-    ensure -> notEqual? 1 to :complex [1 2]
-    ensure -> not? (to :complex [0 2]) <> ((to :complex [1 2]) - 1) 
-    ensure -> (to :complex [1 2]) <> to :complex @[neg 1 2] 
-    ensure -> (to :complex [1 2]) <> 1
-    ensure -> 1 <> to :complex [1 2]
+    ; greater than
+    ensure -> notEqual? to :complex [2 2] to :complex [1 2] 
+    ensure -> notEqual? to :complex [2 3] to :complex [1 2]
+    ensure -> (to :complex [2 2]) <> (to :complex [1 2]) 
+    ensure -> (to :complex [2 3]) <> (to :complex [1 2]) 
+    passed
+    
+    ; less than
+    ensure -> notEqual? to :complex [0 2] to :complex [1 2] 
+    ensure -> notEqual? to :complex [0 1] to :complex [1 2]
+    ensure -> (to :complex [0 2]) <> (to :complex [1 2]) 
+    ensure -> (to :complex [0 1]) <> (to :complex [1 2])
     passed
     
     
@@ -8223,12 +8276,17 @@ do [
     
     topic « same? - :complex
     
-    ensure -> same? to :complex [0 2] ((to :complex [1 2]) - 1) 
+    ensure -> same? to :complex [0 2] to :complex [0 2]
     passed
     
-    ensure -> not? same? to :complex [1 2] to :complex @[neg 1 2] 
-    ensure -> not? same? to :complex [1 2] 1
-    ensure -> not? same? 1 to :complex [1 2]
+    ; greater than
+    ensure -> not? same? to :complex [2 2] to :complex [1 2] 
+    ensure -> not? same? to :complex [2 3] to :complex [1 2]
+    passed
+    
+    ; less than
+    ensure -> not? same? to :complex [0 2] to :complex [1 2] 
+    ensure -> not? same? to :complex [0 1] to :complex [1 2]
     passed
     
     
