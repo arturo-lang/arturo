@@ -1,0 +1,18 @@
+; by @Krenium
+
+summarize: function [n :string][
+    ;; description: « returns a summary of a numeric string
+    s: size n
+    if s > 20 -> n: ((take n 10)++"...")++drop n s-10
+    n ++ ~" (|s| digits)"
+]
+
+[a b count]: [0 1 0]
+print "First 27 Iccanobif primes:"
+while -> count < 27 [
+    if prime? to :integer r: <= reverse ~"|a|" [
+        print [pad ~"|count+1|" 2 "->" summarize r]
+        inc 'count
+    ]
+    [a b]: @[b a+b]
+]

@@ -214,14 +214,6 @@ proc `==`*(x: Value, y: Value): bool =
             else:
                 return false
 
-# TODO(VM/values/comparison) add `<`/`>` support for Complex values
-#  currently, `=` is supported but not `<` and `>`!
-#  Since Complex values encapsulate a VComplex object (from values/custom/vcomplex)
-#  the ideal implementation would be done there (adding a `>` and `<` operator to VComplex)
-#  and then link the method here :-)
-#  see also: https://github.com/arturo-lang/arturo/pull/1139
-#  labels: critical,bug,values,easy
-
 # TODO(VM/values/comparison) how should we handle Dictionary values?
 #  right now, both `<` and `>` simply return false
 #  but is it even a normal idea to compare a Dictionary with something else, or
@@ -375,6 +367,11 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
         case x.kind:
             of Null: return false
             of Logical: return false
+            of Complex:
+                if x.z.re == y.z.re:
+                    return x.z.im < y.z.im
+                else:
+                    return x.z.re < y.z.re
             of Version: return x.version < y.version
             of Type: return false
             of Char: return $(x.c) < $(y.c)
@@ -478,6 +475,11 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
         case x.kind:
             of Null: return false
             of Logical: return false
+            of Complex:
+                if x.z.re == y.z.re:
+                    return x.z.im > y.z.im
+                else:
+                    return x.z.re > y.z.re
             of Version: return x.version > y.version
             of Type: return false
             of Char: return $(x.c) > $(y.c)
