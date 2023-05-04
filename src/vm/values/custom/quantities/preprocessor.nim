@@ -565,7 +565,8 @@ macro generateQuantities*(): untyped =
                 newLit(quantity.value),
                 newLit(quantity.signature),
                 atomsSeq,
-                newLit(quantity.base)
+                newLit(quantity.base),
+                newLit(false)
             )
         )
 
@@ -587,6 +588,7 @@ macro generateConstants*(): untyped =
                     newLit(quantity.value),
                     newLit(quantity.signature),
                     getAtomsSeq(quantity.atoms),
+                    newLit(false),
                     newLit(false)
                 )
             )
