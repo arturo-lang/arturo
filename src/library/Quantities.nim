@@ -150,6 +150,27 @@ proc defineSymbols*() =
             #=======================================================
             push newLiteral(getProperty(x.q))
 
+    builtin "specify",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "define new user unit",
+        args        = {
+            "name"  : {Literal,String},
+            "value" : {Quantity,Unit}
+        },
+        attrs       = NoAttrs,
+        returns     = {Literal},
+        # TODO(Quantities/specify) add documentation example
+        #  labels: documentation, easy
+        example     = """
+        """:
+            #=======================================================
+            if yKind == Quantity:
+                defineNewUserUnit(x.s, x.s, y.q)
+            else:
+                defineNewUserUnit(x.s, x.s, y.u)
+
 #=======================================
 # Add Library
 #=======================================
