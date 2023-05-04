@@ -839,6 +839,12 @@ proc processBlock*(
                         else:
                             current.addTerminal(newConstant(item))
 
+            of Quantity:
+                echo "AST: found Quantity"
+                when processingArrow: ArrowBlock[^1].add(item)
+
+                current.addTerminal(newConstant(item))
+
             else:
                 when processingArrow: ArrowBlock[^1].add(item)
 
