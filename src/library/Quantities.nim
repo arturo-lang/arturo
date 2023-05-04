@@ -176,10 +176,19 @@ proc defineSymbols*() =
                 else:
                     defineNewProperty(x.s, y.u)
             else:
+                var sym = x.s
+                var desc = x.s
+ 
+                if checkAttr("symbol"):
+                    sym = aSymbol.s
+ 
+                if checkAttr("describes"):
+                    desc = aDescribes.s
+ 
                 if yKind == Quantity:
-                    defineNewUserUnit(x.s, x.s, y.q)
+                    defineNewUserUnit(x.s, sym, desc, y.q)
                 else:
-                    defineNewUserUnit(x.s, x.s, y.u)
+                    defineNewUserUnit(x.s, sym, desc, y.u)
 
 #=======================================
 # Add Library
