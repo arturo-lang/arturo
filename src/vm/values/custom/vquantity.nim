@@ -141,6 +141,11 @@ func isCurrency(q: Quantity): bool {.inline.} =
 func isTemperature(q: Quantity): bool {.inline.} =
     return q.signature == (static parsePropertyFormula("K"))
 
+func containsUserUnits*(q: Quantity): bool =
+    for atom in q.atoms:
+        if atom.unit.u.kind == User: return true
+    return false
+
 proc getExchangeRate(curr: string): float =
     let s = toLowerAscii(curr)
     let url = "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/" & s & "/usd.json"
