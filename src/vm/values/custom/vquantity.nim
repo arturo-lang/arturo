@@ -71,11 +71,12 @@ type
     Atoms = seq[Atom]
 
     Quantity = tuple
-        original    : QuantityValue
-        value       : QuantityValue
-        signature   : QuantitySignature
-        atoms       : Atoms
-        base        : bool
+        original        : QuantityValue
+        value           : QuantityValue
+        signature       : QuantitySignature
+        atoms           : Atoms
+        base            : bool
+        withUserUnits   : bool
 
     # public
 
@@ -141,11 +142,6 @@ func isCurrency(q: Quantity): bool {.inline.} =
 func isTemperature(q: Quantity): bool {.inline.} =
     return q.signature == (static parsePropertyFormula("K"))
 
-func containsUserUnits*(q: Quantity): bool =
-    for atom in q.atoms:
-        if atom.unit.u.kind == User: return true
-    return false
-
 proc getExchangeRate(curr: string): float =
     let s = toLowerAscii(curr)
     let url = "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/" & s & "/usd.json"
@@ -205,7 +201,6 @@ proc parseSubUnit*(str: string): PrefixedUnit =
     generateUnitParser()
 
     if result.u.kind==Core and result.u.core == No_CoreUnit:
-        #echo "creating it!"
         result = unitAlaCarte(str)
 
 proc parseAtoms*(str: string): Atoms = 
@@ -254,6 +249,9 @@ proc toQuantity*(v: QuantityValue, atoms: Atoms): Quantity =
         let prim = getPrimitive(atom.unit)
         result.signature += prim.signature * atom.power
         result.value *= prim.value ^ atom.power
+
+        if unlikely(atom.unit.u.kind == User):
+            result.withUserUnits = true
 
         result.atoms.add(atom)
 
@@ -376,6 +374,14 @@ proc getBaseUnits*(q: Quantity): Atoms =
 proc defineNewUserUnit*(name: string, symbol: string, definition: string) =
     UserUnits[name] = symbol
     Quantities[SubUnit(kind: User, name: name)] = toQuantity(definition)
+
+proc defineNewUserUnit*(name: string, symbol: string, definition: Quantity) =
+    UserUnits[name] = symbol
+    Quantities[SubUnit(kind: User, name: name)] = definition
+
+proc defineNewUserUnit*(name: string, symbol: string, definition: Atoms) =
+    UserUnits[name] = symbol
+    Quantities[SubUnit(kind: User, name: name)] = toQuantity(1, definition)
 
 #=======================================
 # Comparison
