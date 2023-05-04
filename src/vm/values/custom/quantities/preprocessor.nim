@@ -779,6 +779,3 @@ proc printUnits*() =
         echo ""
 
     echo $(constants)
-
-dumpAstGen:
-    push(newLogical(x.q.signature == 123))
