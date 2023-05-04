@@ -844,7 +844,6 @@ proc processBlock*(
                             current.addTerminal(newConstant(item))
 
             of Quantity:
-                echo "AST: found Quantity"
                 when processingArrow: ArrowBlock[^1].add(item)
 
                 current.addPotentialInfixCall()
