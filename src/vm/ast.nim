@@ -432,11 +432,11 @@ proc processBlock*(
                         case target.op:
                             of opAdd        : target.optimizeAdd()
                             of opSub        : target.optimizeSub()
-                            of opMul        : target.optimizeArithmeticOp(`*`)
-                            of opDiv        : target.optimizeArithmeticOp(`/`)
-                            of opFDiv       : target.optimizeArithmeticOp(`//`)
-                            of opMod        : target.optimizeArithmeticOp(`%`)
-                            of opPow        : target.optimizeArithmeticOp(`^`)
+                            of opMul        : target.optimizeArithmeticOp(operators.`*`)
+                            of opDiv        : target.optimizeArithmeticOp(operators.`/`)
+                            of opFDiv       : target.optimizeArithmeticOp(operators.`//`)
+                            of opMod        : target.optimizeArithmeticOp(operators.`%`)
+                            of opPow        : target.optimizeArithmeticOp(operators.`^`)
                             of opAppend     : target.optimizeAppend()
                             of opTo         : target.optimizeTo()
                             of opReturn     : 
@@ -846,7 +846,7 @@ proc processBlock*(
             of Quantity:
                 when processingArrow: ArrowBlock[^1].add(item)
 
-                if unlikely(item.containsUserUnits()):
+                if unlikely(item.q.withUserUnits):
                     # if the quantity contains user-defined units,
                     # they may not be defined yet - remember we are at the AST stage,
                     # that is: pre-runtime - so the calculations will be wrong
