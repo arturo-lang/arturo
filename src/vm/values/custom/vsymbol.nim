@@ -52,7 +52,7 @@ type
         equalless                = "=<"
         greaterequal             = ">="
         lessgreater              = "<>"
-
+        
         lesscolon                = "<:"
         minuscolon               = "-:"
         greatercolon             = ">:"
@@ -97,6 +97,7 @@ type
         dotslash                 = "./"
         colon                    = ":"
         doublecolon              = "::"
+        colonequal               = ":="
         doublepipe               = "||"
 
         slashedzero              = "∅"
