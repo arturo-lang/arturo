@@ -903,12 +903,9 @@ func `==`*(x: int, y: VRational): bool {.inline.} =
     return y == x
 
 func `==`*(x: VRational, y: float): bool = 
-    raise newException(
-        ValueError,
-        "comparison between VRational and float not yet supported"
-    )
+    return toFloat(x) == y
 
-func `==`*(x: float, y: VRational): bool =
+func `==`*(x: float, y: VRational): bool {.inline.} =
     y == x
 
 when not defined(NOGMP):
