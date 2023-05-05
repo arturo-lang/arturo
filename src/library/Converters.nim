@@ -82,7 +82,7 @@ template throwConversionFailed(): untyped =
 #  labels: library, cleanup, unit-test
 
 proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Value =
-    if y.kind == tp and y.kind!=Quantity:
+    if unlikely(y.kind == tp):
         return y
     else:
         case y.kind:
@@ -135,11 +135,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                             when not defined(NOGMP):
                                 return newString($(y.bi))
                     of Quantity:
-                        discard
-                        # if checkAttr("unit", doValidate=false):
-                        #     return newQuantity(y, parseQuantitySpec(aUnit.s))
-                        # else:
-                        #     throwConversionFailed()
+                        return newQuantity(y, @[])
                     of Date:
                         return newDate(local(fromUnix(y.i)))
                     of Binary:
@@ -166,11 +162,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                         else:
                             return newString($(y.f))
                     of Quantity:
-                        discard
-                        # if checkAttr("unit", doValidate=false):
-                        #     return newQuantity(y, parseQuantitySpec(aUnit.s))
-                        # else:
-                        #     throwConversionFailed()
+                        return newQuantity(y, @[])
                     of Binary:
                         return newBinary(numberToBinary(y.f))
                     else: throwCannotConvert()
@@ -216,6 +208,8 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                                 newInteger(getNumerator(y.rat, big=true)),
                                 newInteger(getDenominator(y.rat, big=true))
                             ])
+                    of Quantity:
+                        return newQuantity(y, @[])
                     else: throwCannotConvert()
 
             of Version:
@@ -538,6 +532,12 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                     else:
                         throwCannotConvert()
 
+            of Unit:
+                if tp == String:
+                    return newString($(x.u))
+                else:
+                    throwCannotConvert()
+
             of Regex:
                 case tp:
                     of String:
@@ -569,7 +569,6 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                         throwCannotConvert()
 
             of Function,
-               Unit,
                Database,
                Socket,
                Nothing,
