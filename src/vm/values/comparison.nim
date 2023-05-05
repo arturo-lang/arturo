@@ -346,7 +346,7 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
                 return x.q < y.bi
         elif y.kind == Floating:
             return x.q < y.f
-        elif y.kind < Rational:
+        elif y.kind == Rational:
             return x.q < y.rat
         elif y.kind == Quantity:
             if x.kind == Integer:
@@ -398,7 +398,6 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
                 return false
 
 proc `>`*(x: Value, y: Value): bool {.inline.}=
-    echo "IN >"
     if x.kind in {Integer, Floating, Rational} and y.kind in {Integer, Floating, Rational}:
         if x.kind==Integer:
             if y.kind==Integer: 
@@ -450,9 +449,6 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
                 return cmp(toRational(x.f), y.rat) > 0     
             else: return x.f>y.f
     elif x.kind == Quantity or y.kind == Quantity:
-        echo "In here:"
-        echo "x.kind: " & $x.kind
-        echo "y.kind: " & $y.kind
         if y.kind == Integer:
             if y.iKind == NormalInteger:
                 return x.q > y.i
@@ -460,12 +456,11 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
                 return x.q > y.bi
         elif y.kind == Floating:
             return x.q > y.f
-        elif y.kind > Rational:
+        elif y.kind == Rational:
             return x.q > y.rat
         elif y.kind == Quantity:
             if x.kind == Integer:
                 if x.iKind == NormalInteger:
-                    debugEcho("comparing int > quantity")
                     return x.i > y.q
                 else:
                     return x.bi > y.q
