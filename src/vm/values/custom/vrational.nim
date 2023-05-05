@@ -941,6 +941,7 @@ func `>`*(x: VRational, y: int): bool =
     return toFloat(x) > float(y)
 
 func `>`*(x: int, y: VRational): bool =
+    debugEcho "comparing int and VRational"
     return float(x) > toFloat(y)
 
 func `>`*(x: VRational, y: float): bool = 
