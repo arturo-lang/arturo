@@ -711,7 +711,7 @@ func codify*(expo: AtomExponent): string =
 
 proc codify*(unit: SubUnit): string =
     case unit.kind:
-        of Core: symbolName(unit.core)
+        of Core: (symbolName(unit.core)).replace("_CoreUnit","")
         of User: UserUnits[unit.name]
 
 proc codify*(punit: PrefixedUnit): string =
