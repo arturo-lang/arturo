@@ -120,7 +120,7 @@ proc defineSymbols*() =
             print convert 3`m `cm
             ; 300.0 cm
 
-            print 1`yd2 ~> `m2
+            print 1`yd2 --> `m2
             ; 0.836127 m²
         """:
             #=======================================================
