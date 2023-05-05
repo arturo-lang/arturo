@@ -590,6 +590,10 @@ func `*`*(x: VRational, y: float): VRational =
     # multiply VRational by float
     x * toRational(y)
 
+func `*`*(x: float, y: VRational): VRational = 
+    # multiply float by VRational
+    toRational(x) * y
+
 func `*`*(x: int, y: VRational): VRational {.inline.} =
     # multiply int by VRational
     y * x
