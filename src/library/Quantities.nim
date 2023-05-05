@@ -61,9 +61,9 @@ proc defineSymbols*() =
     addPropertyPredicates()
 
     builtin "conforms?",
-        alias       = unaliased,
+        alias       = colonequal,
         op          = opNop,
-        rule        = PrefixPrecedence,
+        rule        = InfixPrecedence,
         description = "check if given quantities/units are compatible",
         args        = {
             "a"     : {Quantity, Unit},
