@@ -270,9 +270,9 @@ proc defineSymbols*() =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "get the unit of given quantity",
+        description = "get the units of given quantity",
         args        = {
-            "value"     : {Quantity}
+            "value"     : {Quantity, Unit}
         },
         attrs       = {
             "base"  : ({Logical}, "get base units")
@@ -283,10 +283,16 @@ proc defineSymbols*() =
         example     = """
         """:
             #=======================================================
-            if hadAttr("base"):
-                push newUnit(getBaseUnits(x.q))
+            if likely(xKind == Quantity):
+                if hadAttr("base"):
+                    push newUnit(getBaseUnits(x.q))
+                else:
+                    push(newUnit(x.q.atoms))
             else:
-                push(newUnit(x.q.atoms))
+                if hadAttr("base"):
+                    push newUnit(getBaseUnits(x.u))
+                else:
+                    push(newUnit(x.u))
 
 #=======================================
 # Add Library
