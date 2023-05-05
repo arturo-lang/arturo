@@ -78,8 +78,6 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Logical},
-        # TODO(Quantities/conforms?) add documentation example
-        #  labels: documentation, easy
         example     = """
             conforms? 3`m `m        ; => true
             conforms? 4`m `cm       ; => true
