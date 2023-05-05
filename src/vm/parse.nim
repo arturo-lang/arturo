@@ -876,6 +876,9 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                     if p.buf[p.bufpos]==Colon:
                         inc(p.bufpos)
                         AddToken newSymbol(doublecolon)
+                    elif p.buf[p.bufpos]=='=':
+                        inc(p.bufpos)
+                        AddToken newSymbol(colonequal)
                     else:
                         AddToken newSymbol(colon)
                 else:
