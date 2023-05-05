@@ -160,6 +160,12 @@ proc defineSymbols*() =
         # TODO(Quantities/property) add documentation example
         #  labels: documentation, easy
         example     = """
+            property 3`m            ; => 'length
+            property 4`m2           ; => 'area
+            property 5`m3           ; => 'volume
+
+            property 6`J/s          ; => 'power
+            property 3`V            ; => 'potential
         """:
             #=======================================================
             push newLiteral(getProperty(x.q))
