@@ -87,7 +87,7 @@ func simplifyRational(x: var VRational) =
         if x.rKind == BigRational and canBeSimplified(x.br):
             x = toRational(getInt(numerator(x.br)), getInt(denominator(x.br)))
 
-func canBeCoerced(x: VRational): bool =
+func canBeCoerced*(x: VRational): bool =
     if x.rKind == NormalRational:
         let quotient = x.num / x.den
         return quotient == round(quotient, 10)
@@ -202,6 +202,13 @@ when not defined(NOGMP):
         result = VRational(
             rKind: BigRational,
             br: newRat(x)
+        )
+
+    func toRational*(x: Rat): VRational =
+        # create VRational from Rat
+        result = VRational(
+            rKind: BigRational,
+            br: x
         )
 
     func toRational*(num: Int, den: int): VRational =
