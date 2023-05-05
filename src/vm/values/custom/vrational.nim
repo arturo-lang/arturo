@@ -919,66 +919,42 @@ when not defined(NOGMP):
         y == x
 
 func `<`*(x: VRational, y: int): bool =
-    raise newException(
-        ValueError,
-        "comparison between VRational and Int not yet supported"
-    )
+    return toFloat(x) < float(y)
 
 func `<`*(x: int, y: VRational): bool =
-    raise newException(
-        ValueError,
-        "comparison between VRational and Int not yet supported"
-    )
+    return float(x) < toFloat(y)
 
 func `<`*(x: VRational, y: float): bool = 
-    raise newException(
-        ValueError,
-        "comparison between VRational and float not yet supported"
-    )
+    return toFloat(x) < y
 
 func `<`*(x: float, y: VRational): bool =
-    y < x
+    return x < toFloat(y)
 
 when not defined(NOGMP):
     func `<`*(x: VRational, y: Int): bool =
-        raise newException(
-            ValueError,
-            "comparison between VRational and Int not yet supported"
-        )
+        return toFloat(x) < toCDouble(y)
 
     func `<`*(x: Int, y: VRational): bool =
-        y < x
+        return toCDouble(x) < toFloat(y)
 
 func `>`*(x: VRational, y: int): bool =
-    raise newException(
-        ValueError,
-        "comparison between VRational and Int not yet supported"
-    )
+    return toFloat(x) > float(y)
 
 func `>`*(x: int, y: VRational): bool =
-    raise newException(
-        ValueError,
-        "comparison between VRational and Int not yet supported"
-    )
+    return float(x) > toFloat(y)
 
 func `>`*(x: VRational, y: float): bool = 
-    raise newException(
-        ValueError,
-        "comparison between VRational and float not yet supported"
-    )
+    return toFloat(x) > y
 
 func `>`*(x: float, y: VRational): bool =
-    y > x
+    return x > toFloat(y)
 
 when not defined(NOGMP):
     func `>`*(x: VRational, y: Int): bool =
-        raise newException(
-            ValueError,
-            "comparison between VRational and Int not yet supported"
-        )
+        return toFloat(x) > toCDouble(y)
 
     func `>`*(x: Int, y: VRational): bool =
-        y > x
+        return toCDouble(x) > toFloat(y)
 
 #=======================================
 # Methods
