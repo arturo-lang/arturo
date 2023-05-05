@@ -281,14 +281,19 @@ proc defineSymbols*() =
         args        = {
             "value"     : {Quantity}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "base"  : ({Logical}, "get base units")
+        },
         returns     = {Unit},
         # TODO(Quantities/unit) add documentation example
         #  labels: documentation, easy
         example     = """
         """:
             #=======================================================
-            push(newUnit(x.q.atoms))
+            if hadAttr("base"):
+                push newUnit(getBaseUnits(x.q))
+            else:
+                push(newUnit(x.q.atoms))
 
 #=======================================
 # Add Library
