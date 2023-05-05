@@ -703,14 +703,42 @@ proc `$`*(q: Quantity): string =
     else:
         result = stringify(q.original) & " " & $q.atoms
 
+func codify*(expo: AtomExponent): string =
+    if expo notin [-1, 1]:
+        $(abs(expo))
+    else:
+        ""
+
+proc codify*(unit: SubUnit): string =
+    case unit.kind:
+        of Core: symbolName(unit.core)
+        of User: UserUnits[unit.name]
+
+proc codify*(punit: PrefixedUnit): string =
+    $(punit.p) & codify(punit.u)
+
+proc codify*(atom: Atom): string =
+    codify(atom.unit) & codify(atom.power)
+
+proc codify*(atoms: Atoms): string =
+    var pos: seq[string]
+    var neg: seq[string]
+
+    for atom in atoms:
+        if atom.power > 0:
+            pos.add codify(atom)
+        else:
+            neg.add codify(atom)
+
+    result = pos.join(".")
+
+    if neg.len > 0:
+        result &= "/" & (neg.join(".")).replace("⁻¹", "").replace("⁻", "")
+
 proc codify*(q: Quantity): string =
     result = ($q.original).replace("/",":") & "`"
     
-    result &= ($(q.atoms)).replace("·",".")
-                          .replace("¹","")
-                          .replace("²","2")
-                          .replace("³","3")
-                          .replace("⁴","4")
+    result &= codify(q.atoms)
 
 proc inspect*(q: Quantity) =
     echo "----------------------------------------"
