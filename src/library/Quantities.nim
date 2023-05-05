@@ -236,6 +236,23 @@ proc defineSymbols*() =
         # TODO(Quantities/specify) add documentation example
         #  labels: documentation, easy
         example     = """
+            specify 'nauMile 1.1508`mi
+
+            print 2`nauMile                ; 2 nauMile
+            print 3`nauMile --> `km        ; 5.5560992256 km
+            ..........
+            specify.symbol:"NM" 'nauMile 1.1508`mi
+
+            print 2`nauMile                ; 2 NM
+            ..........
+            specify.describes:"coding speed" 'lph `lines/h
+
+            print 100`lph                   ; 100 lph
+            print property 100`lph          ; coding speed
+            ..........
+            specify.property "sweetness" `tspSugar
+
+            print property 3`tspSugar       ; sweetness
         """:
             #=======================================================
             if hadAttr("property"):
