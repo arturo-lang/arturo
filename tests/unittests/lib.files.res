@@ -354,7 +354,7 @@ unzipped as README.md
 
 >> volume
 
-13B
+13 B
 
 >> write
 
