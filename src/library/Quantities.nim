@@ -176,7 +176,7 @@ proc defineSymbols*() =
                 elif r.canBeCoerced():
                     push(newFloating(toFloat(r)))
                 else:
-                    push(newRational(r.br))
+                    push(newRational(r))
             else:
                 when not defined(NOGMP):
                     if r.br.denominator() == 1:
@@ -184,7 +184,7 @@ proc defineSymbols*() =
                     elif r.canBeCoerced():
                         push(newFloating(toFloat(r)))
                     else:
-                        push(newRational(r.br))
+                        push(newRational(r))
 
     builtin "specify",
         alias       = unaliased,
