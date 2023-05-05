@@ -189,8 +189,6 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Integer, Floating, Rational},
-        # TODO(Quantities/scalar) add documentation example
-        #  labels: documentation, easy
         example     = """
             scalar 3`m              ; => 3
             scalar 4.0`m2           ; => 4
