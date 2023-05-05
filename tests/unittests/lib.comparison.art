@@ -1791,8 +1791,8 @@ do [
         -> equal? 1 '1'             -> equal? 1 "1"
         -> equal? [1] [one]         -> equal? [1] [one:]
         -> equal? 1 '1              -> equal? [1] [.1]         
-        -> equal? [1] [.1`]         -> equal? [1] [one\1]
-        -> equal? [1] [one\1`]      -> equal? [1] [+]          
+        -> equal? [1] [.1:]         -> equal? [1] [one\1]
+        -> equal? [1] [one\1:]      -> equal? [1] [+]          
         -> equal? 1 {/1/}           -> equal? 1 to :binary 1   
         -> equal? 1 to :binary 1    -> equal? [1] [(1)]        
         -> equal? 1 [1]             -> equal? 1 1..1           
@@ -1807,8 +1807,8 @@ do [
         -> equal? 1.0 1.0.0             -> equal? 1.0 :floating
         -> equal? 1.0 '1'               -> equal? 1.0 "1.0"
         -> equal? [1.0] [one]           -> equal? 1.0 '1
-        -> equal? [1.0] [.1]            -> equal? [1.0] [.1`]
-        -> equal? [1.0] [one\1]         -> equal? [1.0] [one\1`]        
+        -> equal? [1.0] [.1]            -> equal? [1.0] [.1:]
+        -> equal? [1.0] [one\1]         -> equal? [1.0] [one\1:]        
         -> equal? [1.0] [+]             -> equal? 1.0 {/1.0/}
         -> equal? 1.0 to :binary 1.0    -> equal? 1.0 to :binary 1.0
         -> equal? [1.0] [(1.0)]         -> equal? 1.0 [1]
@@ -1825,7 +1825,7 @@ do [
         -> equal? a '1'                     -> equal? a "1/1"
         -> equal? @[a] [one]                -> equal? @[a] [one:]
         -> equal? 1 '1                      -> equal? @[a] [.1]                 
-        -> equal? @[a] [.1`]                -> equal? @[a] [one\1]          
+        -> equal? @[a] [.1:]                -> equal? @[a] [one\1]          
         -> equal? @[a] [+]                  -> equal? a {/1/1/}
         -> equal? a to :binary 1            -> equal? a to :binary 1
         -> equal? @[a] [(1)]                -> equal? a [1]
@@ -1841,8 +1841,8 @@ do [
         -> equal? 1`usd '1'             -> equal? 1`usd "1USD"
         -> equal? [1`usd] [one]         -> equal? [1`usd] [one:]
         -> equal? 1`usd '1              -> equal? [1`usd] [.1]                  
-        -> equal? [1`usd] [.1`]         -> equal? [1`usd] [one\1]
-        -> equal? [1`usd] [one\1`]      -> equal? [1`usd] [+]                   
+        -> equal? [1`usd] [.1:]         -> equal? [1`usd] [one\1]
+        -> equal? [1`usd] [one\1:]      -> equal? [1`usd] [+]                   
         -> equal? 1`usd {/1USD/}        -> equal? 1`usd to :binary 1            
         -> equal? 1`usd to :binary 1    -> equal? [1`usd] [(1)]                 
         -> equal? 1`usd [1`usd]         -> equal? 1`usd 1..1                    
@@ -1857,7 +1857,7 @@ do [
         -> equal? 1`m '1'           -> equal? 1`m "1m"
         -> equal? [1`m] [one]       -> equal? [1`m] [one:]
         -> equal? 1`m '1            -> equal? [1`m] [.1]            
-        -> equal? [1`m] [one\1]     -> equal? [1`m] [one\1`]        
+        -> equal? [1`m] [one\1]     -> equal? [1`m] [one\1:]        
         -> equal? [1`m] [+]         -> equal? 1`m {/1m/}
         -> equal? 1`m to :binary 1  -> equal? 1`m to :binary 1
         -> equal? [1`m] [(1)]       -> equal? 1`m [1`m]
@@ -1872,8 +1872,8 @@ do [
         -> equal? 1`m3 '1'                  -> equal? 1`m3 "1m³"
         -> equal? [1`m3] [one]              -> equal? [1`m3] [one:]
         -> equal? 1`m3 '1                   -> equal? [1`m3] [.1]               
-        -> equal? [1`m3] [.1`]              -> equal? [1`m3] [one\1]
-        -> equal? [1`m3] [one\1`]           -> equal? [1`m3] [+]                
+        -> equal? [1`m3] [.1:]              -> equal? [1`m3] [one\1]
+        -> equal? [1`m3] [one\1:]           -> equal? [1`m3] [+]                
         -> equal? 1`m3 {/1m³/}              -> equal? 1`m3 to :binary 1         
         -> equal? 1`m3 to :binary 1         -> equal? [1`m3] [(1)]              
         -> equal? 1`m3 [1`m3]               -> equal? 1`m3 1..1                 
@@ -1888,8 +1888,8 @@ do [
         -> equal? 1`c '1'               -> equal? 1`c "1°C"
         -> equal? [1`c] [one]           -> equal? [1`c] [one:]
         -> equal? 1`c '1                -> equal? [1`c] [.1]            
-        -> equal? [1`c] [.1`]           -> equal? [1`c] [one\1]
-        -> equal? [1`c] [one\1`]        -> equal? [1`c] [+]             
+        -> equal? [1`c] [.1:]           -> equal? [1`c] [one\1]
+        -> equal? [1`c] [one\1:]        -> equal? [1`c] [+]             
         -> equal? 1`c {/1°C/}           -> equal? 1`c to :binary 1      
         -> equal? 1`c to :binary 1      -> equal? [1`c] [(1)]           
         -> equal? 1`c [1`c]             -> equal? 1`c 1..1              
@@ -1972,8 +1972,8 @@ do [
         -> equal? a '1'                     -> equal? a "1.0+1.0i"
         -> equal? @[a] [one]                -> equal? @[a] [one:]
         -> equal? 1 '1                      -> equal? @[a] [.1]                 
-        -> equal? @[a] [.1`]                -> equal? @[a] [one\1]              
-        -> equal? @[a] [one\1`]             -> equal? @[a] [+]                  
+        -> equal? @[a] [.1:]                -> equal? @[a] [one\1]              
+        -> equal? @[a] [one\1:]             -> equal? @[a] [+]                  
         -> equal? a {/1.0+1.0i/}            -> equal? a to :binary 1            
         -> equal? a to :binary 1            -> equal? @[a] [(1)]                
         -> equal? a [1]                     -> equal? a 1..1                    
@@ -1990,8 +1990,8 @@ do [
         -> equal? 1.0.0 '1'                     -> equal? 1.0.0 "1.0.0"
         -> equal? [1.0.0] [one]                 -> equal? [1.0.0] [one:]
         -> equal? 1.0.0 '1                      -> equal? [1.0.0] [.1]                  
-        -> equal? [1.0.0] [.1`]                 -> equal? [1.0.0] [one\1]
-        -> equal? [1.0.0] [one\1`]              -> equal? [1.0.0] [+]                   
+        -> equal? [1.0.0] [.1:]                 -> equal? [1.0.0] [one\1]
+        -> equal? [1.0.0] [one\1:]              -> equal? [1.0.0] [+]                   
         -> equal? 1.0.0 {/1.0.0/}               -> equal? 1.0.0 to :binary 1.0          
         -> equal? 1.0.0 to :binary 1.0          -> equal? [1.0.0] [(1.0.0)]             
         -> equal? 1.0.0 [1.0.0]                 -> equal? 1.0.0 1..1                    
@@ -2948,8 +2948,8 @@ do [
         -> greater? 1 '1'           -> greater? 1 "1"
         -> greater? [1] [one]       -> greater? [1] [one:]
         -> greater? 1 '1            -> greater? [1] [.1]         
-        -> greater? [1] [.1`]       -> greater? [1] [one\1]
-        -> greater? [1] [one\1`]    -> greater? [1] [+]          
+        -> greater? [1] [.1:]       -> greater? [1] [one\1]
+        -> greater? [1] [one\1:]    -> greater? [1] [+]          
         -> greater? 1 {/1/}         -> greater? 1 to :binary 1   
         -> greater? 1 to :binary 1  -> greater? [1] [(1)]        
         -> greater? 1 [1]           -> greater? 1 1..1           
@@ -2965,8 +2965,8 @@ do [
         -> greater? 1.0 '1'             -> greater? 1.0 "1.0"
         -> greater? [1.0] [one]         -> greater? [1.0] [one:]
         -> greater? 1.0 '1.0i           -> greater? [1.0] [.1]            
-        -> greater? [1.0] [.1`]         -> greater? [1.0] [one\1]
-        -> greater? [1.0] [one\1`]      -> greater? [1.0] [+]           
+        -> greater? [1.0] [.1:]         -> greater? [1.0] [one\1]
+        -> greater? [1.0] [one\1:]      -> greater? [1.0] [+]           
         -> greater? 1.0 {/1.0/}         -> greater? 1.0 to :binary 1.0  
         -> greater? 1.0 to :binary 1.0  -> greater? [1.0] [(1.0)]       
         -> greater? 1.0 [1]             -> greater? 1.0 1..1            
@@ -2983,8 +2983,8 @@ do [
         -> greater? a '1'           -> greater? a "1/1"
         -> greater? @[a] [one]      -> greater? @[a] [one:]
         -> greater? 1 '1            -> greater? @[a] [.1]                 
-        -> greater? @[a] [.1`]      -> greater? @[a] [one\1]
-        -> greater? @[a] [one\1`]   -> greater? @[a] [+]                  
+        -> greater? @[a] [.1:]      -> greater? @[a] [one\1]
+        -> greater? @[a] [one\1:]   -> greater? @[a] [+]                  
         -> greater? a {/1/1/}       -> greater? a to :binary 1            
         -> greater? a to :binary 1  -> greater? @[a] [(1)]                
         -> greater? a [1]           -> greater? a 1..1                    
@@ -3000,8 +3000,8 @@ do [
         -> greater? 1`usd '1'           -> greater? 1`usd "1USD"
         -> greater? [1`usd] [one]       -> greater? [1`usd] [one:]
         -> greater? 1`usd '1.0i         -> greater? [1`usd] [.1]                  
-        -> greater? [1`usd] [.1`]       -> greater? [1`usd] [one\1]
-        -> greater? [1`usd] [one\1`]    -> greater? [1`usd] [+]         
+        -> greater? [1`usd] [.1:]       -> greater? [1`usd] [one\1]
+        -> greater? [1`usd] [one\1:]    -> greater? [1`usd] [+]         
         -> greater? 1`usd {/1USD/}      -> greater? 1`usd to :binary 1  
         -> greater? 1`usd to :binary 1  -> greater? [1`usd] [(1)]       
         -> greater? 1`usd [1`usd]       -> greater? 1`usd 1..1          
@@ -3016,8 +3016,8 @@ do [
         -> greater? 1`m '1'             -> greater? 1`m "1m"
         -> greater? [1`m] [one]         -> greater? [1`m] [one:]
         -> greater? 1`m '1              -> greater? [1`m] [.1]            
-        -> greater? [1`m] [.1`]         -> greater? [1`m] [one\1]
-        -> greater? [1`m] [one\1`]      -> greater? [1`m] [+]             
+        -> greater? [1`m] [.1:]         -> greater? [1`m] [one\1]
+        -> greater? [1`m] [one\1:]      -> greater? [1`m] [+]             
         -> greater? 1`m {/1m/}          -> greater? 1`m to :binary 1      
         -> greater? 1`m to :binary 1    -> greater? [1`m] [(1)]           
         -> greater? 1`m [1`m]           -> greater? 1`m 1..1              
@@ -3032,8 +3032,8 @@ do [
         -> greater? 1`m3 '1'            -> greater? 1`m3 "1m³"
         -> greater? [1`m3] [one]        -> greater? [1`m3] [one:]
         -> greater? 1`m3 '1             -> greater? [1`m3] [.1]              
-        -> greater? [1`m3] [.1`]        -> greater? [1`m3] [one\1]
-        -> greater? [1`m3] [one\1`]     -> greater? [1`m3] [+]                
+        -> greater? [1`m3] [.1:]        -> greater? [1`m3] [one\1]
+        -> greater? [1`m3] [one\1:]     -> greater? [1`m3] [+]                
         -> greater? 1`m3 {/1m³/}        -> greater? 1`m3 to :binary 1         
         -> greater? 1`m3 to :binary 1   -> greater? [1`m3] [(1)]              
         -> greater? 1`m3 [1`m3]         -> greater? 1`m3 1..1                 
@@ -3048,8 +3048,8 @@ do [
         -> greater? 1`c '1'             -> greater? 1`c "1°C"
         -> greater? [1`c] [one]         -> greater? [1`c] [one:]
         -> greater? 1`c '1.0i           -> greater? [1`c] [.1]            
-        -> greater? [1`c] [.1`]         -> greater? [1`c] [one\1]       
-        -> greater? [1`c] [one\1`]      -> greater? [1`c] [+]           
+        -> greater? [1`c] [.1:]         -> greater? [1`c] [one\1]       
+        -> greater? [1`c] [one\1:]      -> greater? [1`c] [+]           
         -> greater? 1`c {/1°C/}         -> greater? 1`c to :binary 1    
         -> greater? 1`c to :binary 1    -> greater? [1`c] [(1)]         
         -> greater? 1`c [1`c]           -> greater? 1`c 1..1            
@@ -3134,8 +3134,8 @@ do [
         -> greater? a '1'                   -> greater? a "1.0+1.0i"
         -> greater? @[a] [one]              -> greater? @[a] [one:]
         -> greater? 1 '1                    -> greater? @[a] [.1]                 
-        -> greater? @[a] [.1`]              -> greater? @[a] [one\1]
-        -> greater? @[a] [one\1`]           -> greater? @[a] [+]                  
+        -> greater? @[a] [.1:]              -> greater? @[a] [one\1]
+        -> greater? @[a] [one\1:]           -> greater? @[a] [+]                  
         -> greater? a {/1.0+1.0i/}          -> greater? a to :binary 1            
         -> greater? a to :binary 1          -> greater? @[a] [(1)]                
         -> greater? a [1]                   -> greater? a 1..1                    
@@ -3152,8 +3152,8 @@ do [
         -> greater? 1.0.0 '1'                   -> greater? 1.0.0 "1.0.0"
         -> greater? [1.0.0] [one]               -> greater? [1.0.0] [one:]
         -> greater? 1.0.0 '1                    -> greater? [1.0.0] [.1]                  
-        -> greater? [1.0.0] [.1`]               -> greater? [1.0.0] [one\1]
-        -> greater? [1.0.0] [one\1`]            -> greater? [1.0.0] [+]                   
+        -> greater? [1.0.0] [.1:]               -> greater? [1.0.0] [one\1]
+        -> greater? [1.0.0] [one\1:]            -> greater? [1.0.0] [+]                   
         -> greater? 1.0.0 {/1.0.0/}             -> greater? 1.0.0 to :binary 1.0          
         -> greater? 1.0.0 to :binary 1.0        -> greater? [1.0.0] [(1.0.0)]             
         -> greater? 1.0.0 [1.0.0]               -> greater? 1.0.0 1..1                    
@@ -4174,8 +4174,8 @@ do [
         -> greaterOrEqual? 1 '1'           -> greaterOrEqual? 1 "1"
         -> greaterOrEqual? [1] [one]       -> greaterOrEqual? [1] [one:]
         -> greaterOrEqual? 1 '1            -> greaterOrEqual? [1] [.1]         
-        -> greaterOrEqual? [1] [.1`]       -> greaterOrEqual? [1] [one\1]
-        -> greaterOrEqual? [1] [one\1`]    -> greaterOrEqual? [1] [+]          
+        -> greaterOrEqual? [1] [.1:]       -> greaterOrEqual? [1] [one\1]
+        -> greaterOrEqual? [1] [one\1:]    -> greaterOrEqual? [1] [+]          
         -> greaterOrEqual? 1 {/1/}         -> greaterOrEqual? 1 to :binary 1   
         -> greaterOrEqual? 1 to :binary 1  -> greaterOrEqual? [1] [(1)]        
         -> greaterOrEqual? 1 [1]           -> greaterOrEqual? 1 1..1           
@@ -4191,8 +4191,8 @@ do [
         -> greaterOrEqual? 1.0 '1'             -> greaterOrEqual? 1.0 "1.0"
         -> greaterOrEqual? [1.0] [one]         -> greaterOrEqual? [1.0] [one:]
         -> greaterOrEqual? 1.0 '1.0i           -> greaterOrEqual? [1.0] [.1]            
-        -> greaterOrEqual? [1.0] [.1`]         -> greaterOrEqual? [1.0] [one\1]
-        -> greaterOrEqual? [1.0] [one\1`]      -> greaterOrEqual? [1.0] [+]           
+        -> greaterOrEqual? [1.0] [.1:]         -> greaterOrEqual? [1.0] [one\1]
+        -> greaterOrEqual? [1.0] [one\1:]      -> greaterOrEqual? [1.0] [+]           
         -> greaterOrEqual? 1.0 {/1.0/}         -> greaterOrEqual? 1.0 to :binary 1.0  
         -> greaterOrEqual? 1.0 to :binary 1.0  -> greaterOrEqual? [1.0] [(1.0)]       
         -> greaterOrEqual? 1.0 [1]             -> greaterOrEqual? 1.0 1..1            
@@ -4209,8 +4209,8 @@ do [
         -> greaterOrEqual? a '1'           -> greaterOrEqual? a "1/1"
         -> greaterOrEqual? @[a] [one]      -> greaterOrEqual? @[a] [one:]
         -> greaterOrEqual? 1 '1            -> greaterOrEqual? @[a] [.1]                 
-        -> greaterOrEqual? @[a] [.1`]      -> greaterOrEqual? @[a] [one\1]
-        -> greaterOrEqual? @[a] [one\1`]   -> greaterOrEqual? @[a] [+]                  
+        -> greaterOrEqual? @[a] [.1:]      -> greaterOrEqual? @[a] [one\1]
+        -> greaterOrEqual? @[a] [one\1:]   -> greaterOrEqual? @[a] [+]                  
         -> greaterOrEqual? a {/1/1/}       -> greaterOrEqual? a to :binary 1            
         -> greaterOrEqual? a to :binary 1  -> greaterOrEqual? @[a] [(1)]                
         -> greaterOrEqual? a [1]           -> greaterOrEqual? a 1..1                    
@@ -4226,8 +4226,8 @@ do [
         -> greaterOrEqual? 1`usd '1'           -> greaterOrEqual? 1`usd "1USD"
         -> greaterOrEqual? [1`usd] [one]       -> greaterOrEqual? [1`usd] [one:]
         -> greaterOrEqual? 1`usd '1.0i         -> greaterOrEqual? [1`usd] [.1]                  
-        -> greaterOrEqual? [1`usd] [.1`]       -> greaterOrEqual? [1`usd] [one\1]
-        -> greaterOrEqual? [1`usd] [one\1`]    -> greaterOrEqual? [1`usd] [+]         
+        -> greaterOrEqual? [1`usd] [.1:]       -> greaterOrEqual? [1`usd] [one\1]
+        -> greaterOrEqual? [1`usd] [one\1:]    -> greaterOrEqual? [1`usd] [+]         
         -> greaterOrEqual? 1`usd {/1USD/}      -> greaterOrEqual? 1`usd to :binary 1  
         -> greaterOrEqual? 1`usd to :binary 1  -> greaterOrEqual? [1`usd] [(1)]       
         -> greaterOrEqual? 1`usd [1`usd]       -> greaterOrEqual? 1`usd 1..1          
@@ -4242,8 +4242,8 @@ do [
         -> greaterOrEqual? 1`m '1'             -> greaterOrEqual? 1`m "1m"
         -> greaterOrEqual? [1`m] [one]         -> greaterOrEqual? [1`m] [one:]
         -> greaterOrEqual? 1`m '1              -> greaterOrEqual? [1`m] [.1]            
-        -> greaterOrEqual? [1`m] [.1`]         -> greaterOrEqual? [1`m] [one\1]
-        -> greaterOrEqual? [1`m] [one\1`]      -> greaterOrEqual? [1`m] [+]             
+        -> greaterOrEqual? [1`m] [.1:]         -> greaterOrEqual? [1`m] [one\1]
+        -> greaterOrEqual? [1`m] [one\1:]      -> greaterOrEqual? [1`m] [+]             
         -> greaterOrEqual? 1`m {/1m/}          -> greaterOrEqual? 1`m to :binary 1      
         -> greaterOrEqual? 1`m to :binary 1    -> greaterOrEqual? [1`m] [(1)]           
         -> greaterOrEqual? 1`m [1`m]           -> greaterOrEqual? 1`m 1..1              
@@ -4258,8 +4258,8 @@ do [
         -> greaterOrEqual? 1`m3 '1'            -> greaterOrEqual? 1`m3 "1m³"
         -> greaterOrEqual? [1`m3] [one]        -> greaterOrEqual? [1`m3] [one:]
         -> greaterOrEqual? 1`m3 '1             -> greaterOrEqual? [1`m3] [.1]              
-        -> greaterOrEqual? [1`m3] [.1`]        -> greaterOrEqual? [1`m3] [one\1]
-        -> greaterOrEqual? [1`m3] [one\1`]     -> greaterOrEqual? [1`m3] [+]                
+        -> greaterOrEqual? [1`m3] [.1:]        -> greaterOrEqual? [1`m3] [one\1]
+        -> greaterOrEqual? [1`m3] [one\1:]     -> greaterOrEqual? [1`m3] [+]                
         -> greaterOrEqual? 1`m3 {/1m³/}        -> greaterOrEqual? 1`m3 to :binary 1         
         -> greaterOrEqual? 1`m3 to :binary 1   -> greaterOrEqual? [1`m3] [(1)]              
         -> greaterOrEqual? 1`m3 [1`m3]         -> greaterOrEqual? 1`m3 1..1                 
@@ -4274,8 +4274,8 @@ do [
         -> greaterOrEqual? 1`c '1'             -> greaterOrEqual? 1`c "1°C"
         -> greaterOrEqual? [1`c] [one]         -> greaterOrEqual? [1`c] [one:]
         -> greaterOrEqual? 1`c '1.0i           -> greaterOrEqual? [1`c] [.1]            
-        -> greaterOrEqual? [1`c] [.1`]         -> greaterOrEqual? [1`c] [one\1]       
-        -> greaterOrEqual? [1`c] [one\1`]      -> greaterOrEqual? [1`c] [+]           
+        -> greaterOrEqual? [1`c] [.1:]         -> greaterOrEqual? [1`c] [one\1]       
+        -> greaterOrEqual? [1`c] [one\1:]      -> greaterOrEqual? [1`c] [+]           
         -> greaterOrEqual? 1`c {/1°C/}         -> greaterOrEqual? 1`c to :binary 1    
         -> greaterOrEqual? 1`c to :binary 1    -> greaterOrEqual? [1`c] [(1)]         
         -> greaterOrEqual? 1`c [1`c]           -> greaterOrEqual? 1`c 1..1            
@@ -4360,8 +4360,8 @@ do [
         -> greaterOrEqual? a '1'                   -> greaterOrEqual? a "1.0+1.0i"
         -> greaterOrEqual? @[a] [one]              -> greaterOrEqual? @[a] [one:]
         -> greaterOrEqual? 1 '1                    -> greaterOrEqual? @[a] [.1]                 
-        -> greaterOrEqual? @[a] [.1`]              -> greaterOrEqual? @[a] [one\1]
-        -> greaterOrEqual? @[a] [one\1`]           -> greaterOrEqual? @[a] [+]                  
+        -> greaterOrEqual? @[a] [.1:]              -> greaterOrEqual? @[a] [one\1]
+        -> greaterOrEqual? @[a] [one\1:]           -> greaterOrEqual? @[a] [+]                  
         -> greaterOrEqual? a {/1.0+1.0i/}          -> greaterOrEqual? a to :binary 1            
         -> greaterOrEqual? a to :binary 1          -> greaterOrEqual? @[a] [(1)]                
         -> greaterOrEqual? a [1]                   -> greaterOrEqual? a 1..1                    
@@ -4378,8 +4378,8 @@ do [
         -> greaterOrEqual? 1.0.0 '1'                   -> greaterOrEqual? 1.0.0 "1.0.0"
         -> greaterOrEqual? [1.0.0] [one]               -> greaterOrEqual? [1.0.0] [one:]
         -> greaterOrEqual? 1.0.0 '1                    -> greaterOrEqual? [1.0.0] [.1]                  
-        -> greaterOrEqual? [1.0.0] [.1`]               -> greaterOrEqual? [1.0.0] [one\1]
-        -> greaterOrEqual? [1.0.0] [one\1`]            -> greaterOrEqual? [1.0.0] [+]                   
+        -> greaterOrEqual? [1.0.0] [.1:]               -> greaterOrEqual? [1.0.0] [one\1]
+        -> greaterOrEqual? [1.0.0] [one\1:]            -> greaterOrEqual? [1.0.0] [+]                   
         -> greaterOrEqual? 1.0.0 {/1.0.0/}             -> greaterOrEqual? 1.0.0 to :binary 1.0          
         -> greaterOrEqual? 1.0.0 to :binary 1.0        -> greaterOrEqual? [1.0.0] [(1.0.0)]             
         -> greaterOrEqual? 1.0.0 [1.0.0]               -> greaterOrEqual? 1.0.0 1..1                    
@@ -5356,8 +5356,8 @@ do [
         -> less? 1 '1'           -> less? 1 "1"
         -> less? [1] [one]       -> less? [1] [one:]
         -> less? 1 '1            -> less? [1] [.1]         
-        -> less? [1] [.1`]       -> less? [1] [one\1]
-        -> less? [1] [one\1`]    -> less? [1] [+]          
+        -> less? [1] [.1:]       -> less? [1] [one\1]
+        -> less? [1] [one\1:]    -> less? [1] [+]          
         -> less? 1 {/1/}         -> less? 1 to :binary 1   
         -> less? 1 to :binary 1  -> less? [1] [(1)]        
         -> less? 1 [1]           -> less? 1 1..1           
@@ -5373,8 +5373,8 @@ do [
         -> less? 1.0 '1'             -> less? 1.0 "1.0"
         -> less? [1.0] [one]         -> less? [1.0] [one:]
         -> less? 1.0 '1.0i           -> less? [1.0] [.1]            
-        -> less? [1.0] [.1`]         -> less? [1.0] [one\1]
-        -> less? [1.0] [one\1`]      -> less? [1.0] [+]           
+        -> less? [1.0] [.1:]         -> less? [1.0] [one\1]
+        -> less? [1.0] [one\1:]      -> less? [1.0] [+]           
         -> less? 1.0 {/1.0/}         -> less? 1.0 to :binary 1.0  
         -> less? 1.0 to :binary 1.0  -> less? [1.0] [(1.0)]       
         -> less? 1.0 [1]             -> less? 1.0 1..1            
@@ -5391,8 +5391,8 @@ do [
         -> less? a '1'           -> less? a "1/1"
         -> less? @[a] [one]      -> less? @[a] [one:]
         -> less? 1 '1            -> less? @[a] [.1]                 
-        -> less? @[a] [.1`]      -> less? @[a] [one\1]
-        -> less? @[a] [one\1`]   -> less? @[a] [+]                  
+        -> less? @[a] [.1:]      -> less? @[a] [one\1]
+        -> less? @[a] [one\1:]   -> less? @[a] [+]                  
         -> less? a {/1/1/}       -> less? a to :binary 1            
         -> less? a to :binary 1  -> less? @[a] [(1)]                
         -> less? a [1]           -> less? a 1..1                    
@@ -5408,8 +5408,8 @@ do [
         -> less? 1`usd '1'           -> less? 1`usd "1USD"
         -> less? [1`usd] [one]       -> less? [1`usd] [one:]
         -> less? 1`usd '1.0i         -> less? [1`usd] [.1]                  
-        -> less? [1`usd] [.1`]       -> less? [1`usd] [one\1]
-        -> less? [1`usd] [one\1`]    -> less? [1`usd] [+]         
+        -> less? [1`usd] [.1:]       -> less? [1`usd] [one\1]
+        -> less? [1`usd] [one\1:]    -> less? [1`usd] [+]         
         -> less? 1`usd {/1USD/}      -> less? 1`usd to :binary 1  
         -> less? 1`usd to :binary 1  -> less? [1`usd] [(1)]       
         -> less? 1`usd [1`usd]       -> less? 1`usd 1..1          
@@ -5424,8 +5424,8 @@ do [
         -> less? 1`m '1'             -> less? 1`m "1m"
         -> less? [1`m] [one]         -> less? [1`m] [one:]
         -> less? 1`m '1              -> less? [1`m] [.1]            
-        -> less? [1`m] [.1`]         -> less? [1`m] [one\1]
-        -> less? [1`m] [one\1`]      -> less? [1`m] [+]             
+        -> less? [1`m] [.1:]         -> less? [1`m] [one\1]
+        -> less? [1`m] [one\1:]      -> less? [1`m] [+]             
         -> less? 1`m {/1m/}          -> less? 1`m to :binary 1      
         -> less? 1`m to :binary 1    -> less? [1`m] [(1)]           
         -> less? 1`m [1`m]           -> less? 1`m 1..1              
@@ -5440,8 +5440,8 @@ do [
         -> less? 1`m3 '1'            -> less? 1`m3 "1m³"
         -> less? [1`m3] [one]        -> less? [1`m3] [one:]
         -> less? 1`m3 '1             -> less? [1`m3] [.1]              
-        -> less? [1`m3] [.1`]        -> less? [1`m3] [one\1]
-        -> less? [1`m3] [one\1`]     -> less? [1`m3] [+]                
+        -> less? [1`m3] [.1:]        -> less? [1`m3] [one\1]
+        -> less? [1`m3] [one\1:]     -> less? [1`m3] [+]                
         -> less? 1`m3 {/1m³/}        -> less? 1`m3 to :binary 1         
         -> less? 1`m3 to :binary 1   -> less? [1`m3] [(1)]              
         -> less? 1`m3 [1`m3]         -> less? 1`m3 1..1                 
@@ -5456,8 +5456,8 @@ do [
         -> less? 1`c '1'             -> less? 1`c "1°C"
         -> less? [1`c] [one]         -> less? [1`c] [one:]
         -> less? 1`c '1.0i           -> less? [1`c] [.1]            
-        -> less? [1`c] [.1`]         -> less? [1`c] [one\1]       
-        -> less? [1`c] [one\1`]      -> less? [1`c] [+]           
+        -> less? [1`c] [.1:]         -> less? [1`c] [one\1]       
+        -> less? [1`c] [one\1:]      -> less? [1`c] [+]           
         -> less? 1`c {/1°C/}         -> less? 1`c to :binary 1    
         -> less? 1`c to :binary 1    -> less? [1`c] [(1)]         
         -> less? 1`c [1`c]           -> less? 1`c 1..1            
@@ -5542,8 +5542,8 @@ do [
         -> less? a '1'                   -> less? a "1.0+1.0i"
         -> less? @[a] [one]              -> less? @[a] [one:]
         -> less? 1 '1                    -> less? @[a] [.1]                 
-        -> less? @[a] [.1`]              -> less? @[a] [one\1]
-        -> less? @[a] [one\1`]           -> less? @[a] [+]                  
+        -> less? @[a] [.1:]              -> less? @[a] [one\1]
+        -> less? @[a] [one\1:]           -> less? @[a] [+]                  
         -> less? a {/1.0+1.0i/}          -> less? a to :binary 1            
         -> less? a to :binary 1          -> less? @[a] [(1)]                
         -> less? a [1]                   -> less? a 1..1                    
@@ -5560,8 +5560,8 @@ do [
         -> less? 1.0.0 '1'                   -> less? 1.0.0 "1.0.0"
         -> less? [1.0.0] [one]               -> less? [1.0.0] [one:]
         -> less? 1.0.0 '1                    -> less? [1.0.0] [.1]                  
-        -> less? [1.0.0] [.1`]               -> less? [1.0.0] [one\1]
-        -> less? [1.0.0] [one\1`]            -> less? [1.0.0] [+]                   
+        -> less? [1.0.0] [.1:]               -> less? [1.0.0] [one\1]
+        -> less? [1.0.0] [one\1:]            -> less? [1.0.0] [+]                   
         -> less? 1.0.0 {/1.0.0/}             -> less? 1.0.0 to :binary 1.0          
         -> less? 1.0.0 to :binary 1.0        -> less? [1.0.0] [(1.0.0)]             
         -> less? 1.0.0 [1.0.0]               -> less? 1.0.0 1..1                    
@@ -6581,8 +6581,8 @@ do [
         -> lessOrEqual? 1 '1'           -> lessOrEqual? 1 "1"
         -> lessOrEqual? [1] [one]       -> lessOrEqual? [1] [one:]
         -> lessOrEqual? 1 '1            -> lessOrEqual? [1] [.1]         
-        -> lessOrEqual? [1] [.1`]       -> lessOrEqual? [1] [one\1]
-        -> lessOrEqual? [1] [one\1`]    -> lessOrEqual? [1] [+]          
+        -> lessOrEqual? [1] [.1:]       -> lessOrEqual? [1] [one\1]
+        -> lessOrEqual? [1] [one\1:]    -> lessOrEqual? [1] [+]          
         -> lessOrEqual? 1 {/1/}         -> lessOrEqual? 1 to :binary 1   
         -> lessOrEqual? 1 to :binary 1  -> lessOrEqual? [1] [(1)]        
         -> lessOrEqual? 1 [1]           -> lessOrEqual? 1 1..1           
@@ -6598,8 +6598,8 @@ do [
         -> lessOrEqual? 1.0 '1'             -> lessOrEqual? 1.0 "1.0"
         -> lessOrEqual? [1.0] [one]         -> lessOrEqual? [1.0] [one:]
         -> lessOrEqual? 1.0 '1.0i           -> lessOrEqual? [1.0] [.1]            
-        -> lessOrEqual? [1.0] [.1`]         -> lessOrEqual? [1.0] [one\1]
-        -> lessOrEqual? [1.0] [one\1`]      -> lessOrEqual? [1.0] [+]           
+        -> lessOrEqual? [1.0] [.1:]         -> lessOrEqual? [1.0] [one\1]
+        -> lessOrEqual? [1.0] [one\1:]      -> lessOrEqual? [1.0] [+]           
         -> lessOrEqual? 1.0 {/1.0/}         -> lessOrEqual? 1.0 to :binary 1.0  
         -> lessOrEqual? 1.0 to :binary 1.0  -> lessOrEqual? [1.0] [(1.0)]       
         -> lessOrEqual? 1.0 [1]             -> lessOrEqual? 1.0 1..1            
@@ -6616,8 +6616,8 @@ do [
         -> lessOrEqual? a '1'           -> lessOrEqual? a "1/1"
         -> lessOrEqual? @[a] [one]      -> lessOrEqual? @[a] [one:]
         -> lessOrEqual? 1 '1            -> lessOrEqual? @[a] [.1]                 
-        -> lessOrEqual? @[a] [.1`]      -> lessOrEqual? @[a] [one\1]
-        -> lessOrEqual? @[a] [one\1`]   -> lessOrEqual? @[a] [+]                  
+        -> lessOrEqual? @[a] [.1:]      -> lessOrEqual? @[a] [one\1]
+        -> lessOrEqual? @[a] [one\1:]   -> lessOrEqual? @[a] [+]                  
         -> lessOrEqual? a {/1/1/}       -> lessOrEqual? a to :binary 1            
         -> lessOrEqual? a to :binary 1  -> lessOrEqual? @[a] [(1)]                
         -> lessOrEqual? a [1]           -> lessOrEqual? a 1..1                    
@@ -6633,8 +6633,8 @@ do [
         -> lessOrEqual? 1`usd '1'           -> lessOrEqual? 1`usd "1USD"
         -> lessOrEqual? [1`usd] [one]       -> lessOrEqual? [1`usd] [one:]
         -> lessOrEqual? 1`usd '1.0i         -> lessOrEqual? [1`usd] [.1]                  
-        -> lessOrEqual? [1`usd] [.1`]       -> lessOrEqual? [1`usd] [one\1]
-        -> lessOrEqual? [1`usd] [one\1`]    -> lessOrEqual? [1`usd] [+]         
+        -> lessOrEqual? [1`usd] [.1:]       -> lessOrEqual? [1`usd] [one\1]
+        -> lessOrEqual? [1`usd] [one\1:]    -> lessOrEqual? [1`usd] [+]         
         -> lessOrEqual? 1`usd {/1USD/}      -> lessOrEqual? 1`usd to :binary 1  
         -> lessOrEqual? 1`usd to :binary 1  -> lessOrEqual? [1`usd] [(1)]       
         -> lessOrEqual? 1`usd [1`usd]       -> lessOrEqual? 1`usd 1..1          
@@ -6649,8 +6649,8 @@ do [
         -> lessOrEqual? 1`m '1'             -> lessOrEqual? 1`m "1m"
         -> lessOrEqual? [1`m] [one]         -> lessOrEqual? [1`m] [one:]
         -> lessOrEqual? 1`m '1              -> lessOrEqual? [1`m] [.1]            
-        -> lessOrEqual? [1`m] [.1`]         -> lessOrEqual? [1`m] [one\1]
-        -> lessOrEqual? [1`m] [one\1`]      -> lessOrEqual? [1`m] [+]             
+        -> lessOrEqual? [1`m] [.1:]         -> lessOrEqual? [1`m] [one\1]
+        -> lessOrEqual? [1`m] [one\1:]      -> lessOrEqual? [1`m] [+]             
         -> lessOrEqual? 1`m {/1m/}          -> lessOrEqual? 1`m to :binary 1      
         -> lessOrEqual? 1`m to :binary 1    -> lessOrEqual? [1`m] [(1)]           
         -> lessOrEqual? 1`m [1`m]           -> lessOrEqual? 1`m 1..1              
@@ -6665,8 +6665,8 @@ do [
         -> lessOrEqual? 1`m3 '1'            -> lessOrEqual? 1`m3 "1m³"
         -> lessOrEqual? [1`m3] [one]        -> lessOrEqual? [1`m3] [one:]
         -> lessOrEqual? 1`m3 '1             -> lessOrEqual? [1`m3] [.1]              
-        -> lessOrEqual? [1`m3] [.1`]        -> lessOrEqual? [1`m3] [one\1]
-        -> lessOrEqual? [1`m3] [one\1`]     -> lessOrEqual? [1`m3] [+]                
+        -> lessOrEqual? [1`m3] [.1:]        -> lessOrEqual? [1`m3] [one\1]
+        -> lessOrEqual? [1`m3] [one\1:]     -> lessOrEqual? [1`m3] [+]                
         -> lessOrEqual? 1`m3 {/1m³/}        -> lessOrEqual? 1`m3 to :binary 1         
         -> lessOrEqual? 1`m3 to :binary 1   -> lessOrEqual? [1`m3] [(1)]              
         -> lessOrEqual? 1`m3 [1`m3]         -> lessOrEqual? 1`m3 1..1                 
@@ -6681,8 +6681,8 @@ do [
         -> lessOrEqual? 1`c '1'             -> lessOrEqual? 1`c "1°C"
         -> lessOrEqual? [1`c] [one]         -> lessOrEqual? [1`c] [one:]
         -> lessOrEqual? 1`c '1.0i           -> lessOrEqual? [1`c] [.1]            
-        -> lessOrEqual? [1`c] [.1`]         -> lessOrEqual? [1`c] [one\1]       
-        -> lessOrEqual? [1`c] [one\1`]      -> lessOrEqual? [1`c] [+]           
+        -> lessOrEqual? [1`c] [.1:]         -> lessOrEqual? [1`c] [one\1]       
+        -> lessOrEqual? [1`c] [one\1:]      -> lessOrEqual? [1`c] [+]           
         -> lessOrEqual? 1`c {/1°C/}         -> lessOrEqual? 1`c to :binary 1    
         -> lessOrEqual? 1`c to :binary 1    -> lessOrEqual? [1`c] [(1)]         
         -> lessOrEqual? 1`c [1`c]           -> lessOrEqual? 1`c 1..1            
@@ -6767,8 +6767,8 @@ do [
         -> lessOrEqual? a '1'                   -> lessOrEqual? a "1.0+1.0i"
         -> lessOrEqual? @[a] [one]              -> lessOrEqual? @[a] [one:]
         -> lessOrEqual? 1 '1                    -> lessOrEqual? @[a] [.1]                 
-        -> lessOrEqual? @[a] [.1`]              -> lessOrEqual? @[a] [one\1]
-        -> lessOrEqual? @[a] [one\1`]           -> lessOrEqual? @[a] [+]                  
+        -> lessOrEqual? @[a] [.1:]              -> lessOrEqual? @[a] [one\1]
+        -> lessOrEqual? @[a] [one\1:]           -> lessOrEqual? @[a] [+]                  
         -> lessOrEqual? a {/1.0+1.0i/}          -> lessOrEqual? a to :binary 1            
         -> lessOrEqual? a to :binary 1          -> lessOrEqual? @[a] [(1)]                
         -> lessOrEqual? a [1]                   -> lessOrEqual? a 1..1                    
@@ -6785,8 +6785,8 @@ do [
         -> lessOrEqual? 1.0.0 '1'                   -> lessOrEqual? 1.0.0 "1.0.0"
         -> lessOrEqual? [1.0.0] [one]               -> lessOrEqual? [1.0.0] [one:]
         -> lessOrEqual? 1.0.0 '1                    -> lessOrEqual? [1.0.0] [.1]                  
-        -> lessOrEqual? [1.0.0] [.1`]               -> lessOrEqual? [1.0.0] [one\1]
-        -> lessOrEqual? [1.0.0] [one\1`]            -> lessOrEqual? [1.0.0] [+]                   
+        -> lessOrEqual? [1.0.0] [.1:]               -> lessOrEqual? [1.0.0] [one\1]
+        -> lessOrEqual? [1.0.0] [one\1:]            -> lessOrEqual? [1.0.0] [+]                   
         -> lessOrEqual? 1.0.0 {/1.0.0/}             -> lessOrEqual? 1.0.0 to :binary 1.0          
         -> lessOrEqual? 1.0.0 to :binary 1.0        -> lessOrEqual? [1.0.0] [(1.0.0)]             
         -> lessOrEqual? 1.0.0 [1.0.0]               -> lessOrEqual? 1.0.0 1..1                    
@@ -7672,9 +7672,9 @@ do [
         -> notEqual? 1 '1'          -> notEqual? 1 "1"
         -> notEqual? [1] [one]      -> notEqual? [1] [one:]
         -> notEqual? [1 1] [one: 1] -> notEqual? 1 '1
-        -> notEqual? [1] [.1]       -> notEqual? [1] [.1`]
+        -> notEqual? [1] [.1]       -> notEqual? [1] [.1:]
         -> notEqual? [1 1] [.1` 1]  -> notEqual? [1] [one\1]
-        -> notEqual? [1] [one\1`]   -> notEqual? [1 1] [one\1` 1]
+        -> notEqual? [1] [one\1:]   -> notEqual? [1 1] [one\1` 1]
         -> notEqual? [1] [+]        -> notEqual? 1 {/1/}
         -> notEqual? 1 to :binary 1 -> notEqual? 1 to :binary 1
         -> notEqual? [1] [(1)]      -> notEqual? 1 [1]
@@ -7689,8 +7689,8 @@ do [
         -> notEqual? 1.0 1.0.0              -> notEqual? 1.0 :floating
         -> notEqual? 1.0 '1'                -> notEqual? 1.0 "1.0"
         -> notEqual? [1.0] [one]            -> notEqual? 1.0 '1
-        -> notEqual? [1.0] [.1]             -> notEqual? [1.0] [.1`]
-        -> notEqual? [1.0] [one\1]          -> notEqual? [1.0] [one\1`]         
+        -> notEqual? [1.0] [.1]             -> notEqual? [1.0] [.1:]
+        -> notEqual? [1.0] [one\1]          -> notEqual? [1.0] [one\1:]         
         -> notEqual? [1.0] [+]              -> notEqual? 1.0 {/1.0/}
         -> notEqual? 1.0 to :binary 1.0     -> notEqual? 1.0 to :binary 1.0
         -> notEqual? [1.0] [(1.0)]          -> notEqual? 1.0 [1]
@@ -7707,7 +7707,7 @@ do [
         -> notEqual? a '1'                      -> notEqual? a "1/1"
         -> notEqual? @[a] [one]                 -> notEqual? @[a] [one:]
         -> notEqual? 1 '1                       -> notEqual? @[a] [.1]                  
-        -> notEqual? @[a] [.1`]                 -> notEqual? @[a] [one\1]
+        -> notEqual? @[a] [.1:]                 -> notEqual? @[a] [one\1]
         -> notEqual? @[a] [+]                   -> notEqual? a {/1/1/}
         -> notEqual? a to :binary 1             -> notEqual? a to :binary 1
         -> notEqual? @[a] [(1)]                 -> notEqual? a [1]
@@ -7723,8 +7723,8 @@ do [
         -> notEqual? 1`usd '1'              -> notEqual? 1`usd "1USD"
         -> notEqual? [1`usd] [one]          -> notEqual? [1`usd] [one:]
         -> notEqual? 1`usd '1               -> notEqual? [1`usd] [.1]                  
-        -> notEqual? [1`usd] [.1`]          -> notEqual? [1`usd] [one\1]
-        -> notEqual? [1`usd] [one\1`]       -> notEqual? [1`usd] [+]                   
+        -> notEqual? [1`usd] [.1:]          -> notEqual? [1`usd] [one\1]
+        -> notEqual? [1`usd] [one\1:]       -> notEqual? [1`usd] [+]                   
         -> notEqual? 1`usd {/1USD/}         -> notEqual? 1`usd to :binary 1            
         -> notEqual? 1`usd to :binary 1     -> notEqual? [1`usd] [(1)]                 
         -> notEqual? 1`usd [1`usd]          -> notEqual? 1`usd 1..1                    
@@ -7740,7 +7740,7 @@ do [
         -> notEqual? [1`m] [one]        -> notEqual? [1`m] [one:]
         -> notEqual? 1`m '1             -> notEqual? [1`m] [.1]            
         -> notEqual? [1`m] [.1` 1`m]    -> notEqual? [1`m] [one\1]
-        -> notEqual? [1`m] [one\1`]     -> notEqual? [1`m] [+]              
+        -> notEqual? [1`m] [one\1:]     -> notEqual? [1`m] [+]              
         -> notEqual? 1`m {/1m/}         -> notEqual? 1`m to :binary 1       
         -> notEqual? 1`m to :binary 1   -> notEqual? [1`m] [(1)]            
         -> notEqual? 1`m [1`m]          -> notEqual? 1`m 1..1               
@@ -7755,8 +7755,8 @@ do [
         -> notEqual? 1`m3 '1'                   -> notEqual? 1`m3 "1m³"
         -> notEqual? [1`m3] [one]               -> notEqual? [1`m3] [one:]
         -> notEqual? 1`m3 '1                    -> notEqual? [1`m3] [.1]               
-        -> notEqual? [1`m3] [.1`]               -> notEqual? [1`m3] [one\1]
-        -> notEqual? [1`m3] [one\1`]            -> notEqual? [1`m3] [+]                
+        -> notEqual? [1`m3] [.1:]               -> notEqual? [1`m3] [one\1]
+        -> notEqual? [1`m3] [one\1:]            -> notEqual? [1`m3] [+]                
         -> notEqual? 1`m3 {/1m³/}               -> notEqual? 1`m3 to :binary 1         
         -> notEqual? 1`m3 to :binary 1          -> notEqual? [1`m3] [(1)]              
         -> notEqual? 1`m3 [1`m3]                -> notEqual? 1`m3 1..1                 
@@ -7771,8 +7771,8 @@ do [
         -> notEqual? 1`c '1'               -> notEqual? 1`c "1°C"
         -> notEqual? [1`c] [one]           -> notEqual? [1`c] [one:]
         -> notEqual? 1`c '1.0i             -> notEqual? [1`c] [.1]            
-        -> notEqual? [1`c] [.1`]           -> notEqual? [1`c] [one\1]         
-        -> notEqual? [1`c] [one\1`]        -> notEqual? [1`c] [+]             
+        -> notEqual? [1`c] [.1:]           -> notEqual? [1`c] [one\1]         
+        -> notEqual? [1`c] [one\1:]        -> notEqual? [1`c] [+]             
         -> notEqual? 1`c {/1°C/}           -> notEqual? 1`c to :binary 1      
         -> notEqual? 1`c to :binary 1      -> notEqual? [1`c] [(1)]           
         -> notEqual? 1`c [1`c]             -> notEqual? 1`c 1..1              
@@ -7855,8 +7855,8 @@ do [
         -> notEqual? a '1'                      -> notEqual? a "1.0+1.0i"
         -> notEqual? @[a] [one]                 -> notEqual? @[a] [one:]
         -> notEqual? 1 '1                       -> notEqual? @[a] [.1]                  
-        -> notEqual? @[a] [.1`]                 -> notEqual? @[a] [one\1]
-        -> notEqual? @[a] [one\1`]              -> notEqual? @[a] [+]                   
+        -> notEqual? @[a] [.1:]                 -> notEqual? @[a] [one\1]
+        -> notEqual? @[a] [one\1:]              -> notEqual? @[a] [+]                   
         -> notEqual? a {/1.0+1.0i/}             -> notEqual? a to :binary 1             
         -> notEqual? a to :binary 1             -> notEqual? @[a] [(1)]                 
         -> notEqual? a [1]                      -> notEqual? a 1..1                     
@@ -7873,8 +7873,8 @@ do [
         -> notEqual? 1.0.0 '1'                      -> notEqual? 1.0.0 "1.0.0"
         -> notEqual? [1.0.0] [one]                  -> notEqual? [1.0.0] [one:]
         -> notEqual? 1.0.0 '1                       -> notEqual? [1.0.0] [.1]                   
-        -> notEqual? [1.0.0] [.1`]                  -> notEqual? [1.0.0] [one\1]                
-        -> notEqual? [1.0.0] [one\1`]               -> notEqual? [1.0.0] [+]                    
+        -> notEqual? [1.0.0] [.1:]                  -> notEqual? [1.0.0] [one\1]                
+        -> notEqual? [1.0.0] [one\1:]               -> notEqual? [1.0.0] [+]                    
         -> notEqual? 1.0.0 {/1.0.0/}                -> notEqual? 1.0.0 to :binary 1.0           
         -> notEqual? 1.0.0 to :binary 1.0           -> notEqual? [1.0.0] [(1.0.0)]              
         -> notEqual? 1.0.0 [1.0.0]                  -> notEqual? 1.0.0 1..1                     
@@ -8722,8 +8722,8 @@ do [
         -> same? 1 '1'          -> same? 1 "1"
         -> same? [1] [one]      -> same? [1] [one:]
         -> same? 1 '1           -> same? [1] [.1]         
-        -> same? [1] [.1`]      -> same? [1] [one\1]
-        -> same? [1] [one\1`]   -> same? [1] [+]        
+        -> same? [1] [.1:]      -> same? [1] [one\1]
+        -> same? [1] [one\1:]   -> same? [1] [+]        
         -> same? 1 {/1/}        -> same? 1 to :binary 1 
         -> same? 1 to :binary 1 -> same? [1] [(1)]      
         -> same? 1 [1]          -> same? 1 1..1         
@@ -8738,8 +8738,8 @@ do [
         -> same? 1.0 1.0.0              -> same? 1.0 :floating
         -> same? 1.0 '1'                -> same? 1.0 "1.0"
         -> same? [1.0] [one]            -> same? 1.0 '1                 
-        -> same? [1.0] [.1]             -> same? [1.0] [.1`]            
-        -> same? [1.0] [one\1]          -> same? [1.0] [one\1`]        
+        -> same? [1.0] [.1]             -> same? [1.0] [.1:]            
+        -> same? [1.0] [one\1]          -> same? [1.0] [one\1:]        
         -> same? [1.0] [+]              -> same? 1.0 {/1.0/}
         -> same? 1.0 to :binary 1.0     -> same? 1.0 to :binary 1.0
         -> same? [1.0] [(1.0)]          -> same? 1.0 [1]
@@ -8756,7 +8756,7 @@ do [
         -> same? a '1'                      -> same? a "1/1"
         -> same? @[a] [one]                 -> same? @[a] [one:]
         -> same? 1 '1                       -> same? @[a] [.1]                 
-        -> same? @[a] [.1`]                 -> same? @[a] [one\1]
+        -> same? @[a] [.1:]                 -> same? @[a] [one\1]
         -> same? @[a] [+]                   -> same? a {/1/1/}
         -> same? a to :binary 1             -> same? a to :binary 1
         -> same? @[a] [(1)]                 -> same? a [1]
@@ -8772,8 +8772,8 @@ do [
         -> same? 1`usd '1'              -> same? 1`usd "1USD"
         -> same? [1`usd] [one]          -> same? [1`usd] [one:]
         -> same? 1`usd '1               -> same? [1`usd] [.1]                  
-        -> same? [1`usd] [.1`]          -> same? [1`usd] [one\1]
-        -> same? [1`usd] [one\1`]       -> same? [1`usd] [+]        
+        -> same? [1`usd] [.1:]          -> same? [1`usd] [one\1]
+        -> same? [1`usd] [one\1:]       -> same? [1`usd] [+]        
         -> same? 1`usd {/1USD/}         -> same? 1`usd to :binary 1 
         -> same? 1`usd to :binary 1     -> same? [1`usd] [(1)]      
         -> same? 1`usd [1`usd]          -> same? 1`usd 1..1         
@@ -8788,7 +8788,7 @@ do [
         -> same? 1`m '1'            -> same? 1`m "1m"
         -> same? [1`m] [one]        -> same? [1`m] [one:]
         -> same? 1`m '1             -> same? [1`m] [.1]            
-        -> same? [1`m] [one\1]      -> same? [1`m] [one\1`]        
+        -> same? [1`m] [one\1]      -> same? [1`m] [one\1:]        
         -> same? [1`m] [+]          -> same? 1`m {/1m/}
         -> same? 1`m to :binary 1   -> same? 1`m to :binary 1
         -> same? [1`m] [(1)]        -> same? 1`m [1`m]
@@ -8803,8 +8803,8 @@ do [
         -> same? 1`m3 '1'               -> same? 1`m3 "1m³"
         -> same? [1`m3] [one]           -> same? [1`m3] [one:]
         -> same? 1`m3 '1                -> same? [1`m3] [.1]               
-        -> same? [1`m3] [.1`]           -> same? [1`m3] [one\1]
-        -> same? [1`m3] [one\1`]        -> same? [1`m3] [+]             
+        -> same? [1`m3] [.1:]           -> same? [1`m3] [one\1]
+        -> same? [1`m3] [one\1:]        -> same? [1`m3] [+]             
         -> same? 1`m3 {/1m³/}           -> same? 1`m3 to :binary 1      
         -> same? 1`m3 to :binary 1      -> same? [1`m3] [(1)]           
         -> same? 1`m3 [1`m3]            -> same? 1`m3 1..1              
@@ -8819,8 +8819,8 @@ do [
         -> same? 1`c '1'            -> same? 1`c "1°C"
         -> same? [1`c] [one]        -> same? [1`c] [one:]
         -> same? 1`c '1             -> same? [1`c] [.1]            
-        -> same? [1`c] [.1`]        -> same? [1`c] [one\1]
-        -> same? [1`c] [one\1`]     -> same? [1`c] [+]          
+        -> same? [1`c] [.1:]        -> same? [1`c] [one\1]
+        -> same? [1`c] [one\1:]     -> same? [1`c] [+]          
         -> same? 1`c {/1°C/}        -> same? 1`c to :binary 1   
         -> same? 1`c to :binary 1   -> same? [1`c] [(1)]        
         -> same? 1`c [1`c]          -> same? 1`c 1..1           
@@ -8902,8 +8902,8 @@ do [
         -> same? a '1'                  -> same? a "1.0+1.0i"
         -> same? @[a] [one]             -> same? @[a] [one:]
         -> same? 1 '1.0i                -> same? @[a] [.1]                 
-        -> same? @[a] [.1`]             -> same? @[a] [one\1]
-        -> same? @[a] [one\1`]          -> same? @[a] [+]                  
+        -> same? @[a] [.1:]             -> same? @[a] [one\1]
+        -> same? @[a] [one\1:]          -> same? @[a] [+]                  
         -> same? a {/1.0+1.0i/}         -> same? a to :binary 1            
         -> same? a to :binary 1         -> same? @[a] [(1)]                
         -> same? a [1]                  -> same? a 1..1                    
@@ -8919,8 +8919,8 @@ do [
         -> same? 1.0.0 '1'                     -> same? 1.0.0 "1.0.0"
         -> same? [1.0.0] [one]                 -> same? [1.0.0] [one:]
         -> same? 1.0.0 '1.0i                   -> same? [1.0.0] [.1]                  
-        -> same? [1.0.0] [.1`]                 -> same? [1.0.0] [one\1]
-        -> same? [1.0.0] [one\1`]              -> same? [1.0.0 1.0.0] [one\1` 1.0.0]
+        -> same? [1.0.0] [.1:]                 -> same? [1.0.0] [one\1]
+        -> same? [1.0.0] [one\1:]              -> same? [1.0.0 1.0.0] [one\1` 1.0.0]
         -> same? [1.0.0] [+]                   -> same? 1.0.0 {/1.0.0/}
         -> same? 1.0.0 to :binary 1.0          -> same? 1.0.0 to :binary 1.0
         -> same? [1.0.0] [(1.0.0)]             -> same? 1.0.0 [1.0.0]
