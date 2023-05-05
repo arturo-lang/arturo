@@ -486,7 +486,6 @@ func `>`*(a: Quantity, b: int | float | QuantityValue): bool =
     return a.original > b
 
 func `>`*(a: int | float | QuantityValue, b: Quantity): bool =
-    debugEcho "comparing int with Quantity"
     return a > b.original
 
 when not defined(NOGMP):
