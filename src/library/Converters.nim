@@ -526,32 +526,17 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                         throwCannotConvert()
 
             of Quantity:
-                discard
-                # case tp:
-                #     of Integer, Floating:
-                #         return convertedValueToType(x, y.nm, tp, aFormat)
-                #     of String:
-                #         if (not aFormat.isNil):
-                #             try:
-                #                 var ret: string
-                #                 if y.nm.kind==Floating:
-                #                     formatValue(ret, y.nm.f, aFormat.s)
-                #                 else:
-                #                     formatValue(ret, float(y.nm.i), aFormat.s)
-
-                #                 return newString(ret & stringify(y.unit.name))
-                #             except CatchableError:
-                #                 throwConversionFailed()
-                #         else:
-                #             return newString($(y))
-                #     of Quantity:
-                #         if checkAttr("unit", doValidate=false):
-                #             let target = parseQuantitySpec(aUnit.s).name
-                #             return newQuantity(convertQuantityValue(y.nm, y.unit.name, target), target)
-                #         else:
-                #             return y
-                #     else:
-                #         throwCannotConvert()
+                case tp:
+                    of Floating:
+                        return newFloating(toFloat(x.q.original))
+                    of Rational:
+                        return newRational(x.q.original)
+                    of String:
+                        return newString($(x.q))
+                    of Unit:
+                        return newUnit(x.q.atoms)
+                    else:
+                        throwCannotConvert()
 
             of Regex:
                 case tp:
