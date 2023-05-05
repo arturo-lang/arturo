@@ -39,8 +39,8 @@ do [
     passed
     
     ensure -> every? @[
-        -> clamp 2 `a`..`d`
-        -> clamp `b` `a`..`c`
+        -> clamp 2 'a'..'d'
+        -> clamp 'b' 'a'..'c'
     ] => throws?
     passed
     
