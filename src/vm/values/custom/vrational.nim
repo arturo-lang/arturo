@@ -893,16 +893,14 @@ func `==`*(x, y: VRational): bool =
                 result = x.br == y.br
 
 func `==`*(x: VRational, y: int): bool =
-    raise newException(
-        ValueError,
-        "comparison between VRational and Int not yet supported"
-    )
+    if x.rKind == NormalRational:
+        return (x.den == 1) and (x.num == y)
+    else:
+        when not defined(NOGMP):
+            return (denominator(x.br)==1) and (numerator(x.br)==y)
 
-func `==`*(x: int, y: VRational): bool =
-    raise newException(
-        ValueError,
-        "comparison between VRational and Int not yet supported"
-    )
+func `==`*(x: int, y: VRational): bool {.inline.} =
+    return y == x
 
 func `==`*(x: VRational, y: float): bool = 
     raise newException(
