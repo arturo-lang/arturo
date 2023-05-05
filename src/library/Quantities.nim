@@ -273,7 +273,7 @@ proc defineSymbols*() =
                 else:
                     defineNewUserUnit(x.s, sym, desc, y.u)
 
-    builtin "unit",
+    builtin "units",
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
