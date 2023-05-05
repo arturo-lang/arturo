@@ -278,8 +278,6 @@ proc defineSymbols*() =
             "base"  : ({Logical}, "get base units")
         },
         returns     = {Unit},
-        # TODO(Quantities/unit) add documentation example
-        #  labels: documentation, easy
         example     = """
             units 3`m               ; => `m
             units `m2               ; => `m2
