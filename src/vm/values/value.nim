@@ -258,6 +258,10 @@ when not defined(NOGMP):
     func newRational*(num: int | float | Int, den: int | float | Int): Value {.inline.} = 
         ## create Rational value from numerator + denominator (int, float or Int)
         Value(kind: Rational, rat: toRational(num, den))
+
+    func newRational*(rat: Rat): Value {.inline.} =
+        ## create Rational value from Rat
+        Value(kind: Rational, rat: toRational(rat))
 else:
     func newRational*(n: int | float): Value {.inline.} =
         ## create Rational value from int or float
