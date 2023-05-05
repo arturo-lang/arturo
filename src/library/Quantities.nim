@@ -190,6 +190,23 @@ proc defineSymbols*() =
                 else:
                     defineNewUserUnit(x.s, sym, desc, y.u)
 
+    builtin "unit",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "get the unit of given quantity",
+        args        = {
+            "value"     : {Quantity}
+        },
+        attrs       = NoAttrs,
+        returns     = {Unit},
+        # TODO(Quantities/unit) add documentation example
+        #  labels: documentation, easy
+        example     = """
+        """:
+            #=======================================================
+            push(newUnit(x.q.atoms))
+
 #=======================================
 # Add Library
 #=======================================
