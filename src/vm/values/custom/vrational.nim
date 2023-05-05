@@ -910,10 +910,10 @@ func `==`*(x: float, y: VRational): bool {.inline.} =
 
 when not defined(NOGMP):
     func `==`*(x: VRational, y: Int): bool =
-        raise newException(
-            ValueError,
-            "comparison between VRational and Int not yet supported"
-        )
+        if x.rKind == NormalRational:
+            return (x.den == 1) and (x.num == y)
+        else:
+            return (denominator(x.br)==1) and (numerator(x.br)==y)
 
     func `==`*(x: Int, y: VRational): bool =
         y == x
