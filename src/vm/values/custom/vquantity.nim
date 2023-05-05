@@ -162,7 +162,7 @@ proc getPrimitive(unit: PrefixedUnit): Quantity =
     elif unit.p != No_Prefix:
         result.value *= pow(float(10), float(ord(unit.p)))
 
-proc getSignature(atoms: Atoms): QuantitySignature =
+proc getSignature*(atoms: Atoms): QuantitySignature =
     for atom in atoms:
         let prim = getPrimitive(atom.unit)
         result += prim.signature * atom.power
@@ -304,6 +304,9 @@ proc toQuantity*(vstr: string, atoms: Atoms): Quantity =
 
 proc getProperty*(q: Quantity): string =
     Properties.getOrDefault(q.signature, "Unknown").toLowerAscii()
+
+proc getProperty*(atoms: Atoms): string =
+    Properties.getOrDefault(getSignature(atoms), "Unknown").toLowerAscii()
 
 proc convertTemperature*(v: QuantityValue, fromU: CoreUnit, toU: CoreUnit): QuantityValue =
     if fromU == toU:
