@@ -75,16 +75,17 @@ proc defineSymbols*() =
             conforms? 3`m `m                ; => true
             conforms? 4`m `cm               ; => true
 
-            conforms? 5`m `s                ; => false
+            4`yd := 5`m                     ; => true
+            5`m := `s                       ; => false
             ..........
             givenValue: 6`yd/s      
 
             conforms? givenValue `m         ; => false
             conforms? givenValue `km/h      ; => true
             ..........
-            conforms? 3`m 4`m               ; => true
-            conforms? 5`W 5`N               ; => false
-            conforms? 5`W 3`J/s             ; => true
+            3`m := 4`m                      ; => true
+            5`W := 5`N                      ; => false
+            5`W := 3`J/s                    ; => true
         """:
             #=======================================================
             if xKind == Quantity:
