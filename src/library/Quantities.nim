@@ -151,14 +151,14 @@ proc defineSymbols*() =
         alias       = unaliased,
         op          = opNop,
         rule        = PrefixPrecedence,
-        description = "get the described property of given quantity",
+        description = "get the described property of given quantity or unit",
         args        = {
-            "quantity"  : {Quantity}
+            "quantity"  : {Quantity, Unit}
         },
-        attrs       = NoAttrs,
-        returns     = {Literal},
-        # TODO(Quantities/property) add documentation example
-        #  labels: documentation, easy
+        attrs       = {
+            "hash"  : ({Logical}, "get property as a hash")
+        },
+        returns     = {Literal, Integer},
         example     = """
             property 3`m            ; => 'length
             property 4`m2           ; => 'area
@@ -168,7 +168,16 @@ proc defineSymbols*() =
             property 3`V            ; => 'potential
         """:
             #=======================================================
-            push newLiteral(getProperty(x.q))
+            if xKind == Quantity:
+                if hadAttr("hash"):
+                    push newInteger(x.q.signature)
+                else:
+                    push newLiteral(getProperty(x.q))
+            else:
+                if hadAttr("hash"):
+                    push newInteger(getSignature(x.u))
+                else:
+                    push newLiteral(getProperty(x.u))
 
     builtin "scalar",
         alias       = unaliased,
