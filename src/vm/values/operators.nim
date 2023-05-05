@@ -725,17 +725,23 @@ proc `*`*(x: Value, y: Value): Value =
         of Integer    || Complex        :   return newComplex(float(x.i) * y.z)
         of Integer    || Quantity       :   return newQuantity(x.i * y.q)
         of BigInteger || Quantity       :   (when GMP: return newQuantity(x.bi * y.q))
+        of Integer    || Unit           :   return newQuantity(x, y.u)
+        of BigInteger || Unit           :   (when GMP: return newQuantity(x, y.u))
 
         of Floating   || Integer        :   return newFloating(x.f * float(y.i))
         of Floating   || BigInteger     :   (when GMP: return newFloating(x.f * y.bi))
         of Floating   || Floating       :   return newFloating(x.f * y.f)
         of Floating   || Rational       :   return newRational(toRational(x.f) * y.rat)
         of Floating   || Complex        :   return newComplex(x.f * y.z)
+        of Floating   || Quantity       :   return newQuantity(x.f * y.q)
+        of Floating   || Unit           :   return newQuantity(x, y.u)
 
         of Rational   || Integer        :   return newRational(x.rat * y.i)
         of Rational   || BigInteger     :   (when GMP: return newRational(x.rat * y.bi))
         of Rational   || Floating       :   return newRational(x.rat * toRational(y.f))
         of Rational   || Rational       :   return newRational(x.rat * y.rat)
+        of Rational   || Quantity       :   return newQuantity(x.rat * y.q)
+        of Rational   || Unit           :   return newQuantity(x, y.u)
 
         of Complex    || Integer        :   return newComplex(x.z * float(y.i))
         of Complex    || Floating       :   return newComplex(x.z * y.f)
@@ -747,6 +753,14 @@ proc `*`*(x: Value, y: Value): Value =
         of Quantity   || Floating       :   return newQuantity(x.q * y.f)
         of Quantity   || Rational       :   return newQuantity(x.q * y.rat)
         of Quantity   || Quantity       :   return newQuantity(x.q * y.q)
+
+        of Unit       || Integer        :   return newQuantity(y, x.u)
+        of Unit       || BigInteger     :   (when GMP: return newQuantity(y, x.u))
+        of Unit       || Floating       :   return newQuantity(y, x.u)
+        of Unit       || Rational       :   return newQuantity(y, x.u)
+        of Unit       || Quantity       :   return newQuantity(y, x.u)
+        of Unit       || Unit           :   return newUnit(flatten(x.u & y.u))
+
         else:
             return invalidOperation("mul")
 
@@ -769,17 +783,23 @@ proc `*=`*(x: var Value, y: Value) =
         of Integer    || Complex        :   x = newComplex(float(x.i) * y.z)
         of Integer    || Quantity       :   x = newQuantity(x.i * y.q)
         of BigInteger || Quantity       :   (when GMP: x = newQuantity(x.bi * y.q))
+        of Integer    || Unit           :   x = newQuantity(x, y.u)
+        of BigInteger || Unit           :   (when GMP: x = newQuantity(x, y.u))
 
         of Floating   || Integer        :   x.f *= float(y.i)
         of Floating   || BigInteger     :   (when GMP: x = newFloating(x.f * y.bi))
         of Floating   || Floating       :   x.f *= y.f
         of Floating   || Rational       :   x = newRational(toRational(x.f) * y.rat)
         of Floating   || Complex        :   x = newComplex(x.f * y.z)
+        of Floating   || Quantity       :   x = newQuantity(x.f * y.q)
+        of Floating   || Unit           :   x = newQuantity(x, y.u)
 
         of Rational   || Integer        :   x.rat *= y.i
         of Rational   || BigInteger     :   (when GMP: x.rat *= y.bi)
         of Rational   || Floating       :   x.rat *= toRational(y.f)
         of Rational   || Rational       :   x.rat *= y.rat
+        of Rational   || Quantity       :   x = newQuantity(x.rat * y.q)
+        of Rational   || Unit           :   x = newQuantity(x, y.u)
 
         of Complex    || Integer        :   x.z *= float(y.i)
         of Complex    || Floating       :   x.z *= y.f
@@ -791,6 +811,14 @@ proc `*=`*(x: var Value, y: Value) =
         of Quantity   || Floating       :   x.q *= y.f
         of Quantity   || Rational       :   x.q *= y.rat
         of Quantity   || Quantity       :   x.q *= y.q
+
+        of Unit       || Integer        :   x = newQuantity(y, x.u)
+        of Unit       || BigInteger     :   (when GMP: x = newQuantity(y, x.u))
+        of Unit       || Floating       :   x = newQuantity(y, x.u)
+        of Unit       || Rational       :   x = newQuantity(y, x.u)
+        of Unit       || Quantity       :   x = newQuantity(y, x.u)
+        of Unit       || Unit           :   x.u = flatten(x.u & y.u)
+
         else:
             discard invalidOperation("mul")
 
