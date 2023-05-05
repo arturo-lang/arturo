@@ -377,8 +377,20 @@ proc toBase*(q: Quantity): Atoms =
         else:
             result.add toBase(prim)
 
+proc toBase*(atoms: Atoms): Atoms =
+    for atom in atoms:
+        let prim = getPrimitive(atom.unit)
+        if prim.base:
+            result.add atom
+            continue
+        else:
+            result.add toBase(prim)
+
 proc getBaseUnits*(q: Quantity): Atoms =
     result = flatten(toBase(q))
+
+proc getBaseUnits*(atoms: Atoms): Atoms =
+    result = flatten(toBase(atoms))
 
 proc defineNewUserUnit*(name: string, symbol: string, description: string, definition: string) =
     UserUnits[name] = symbol
