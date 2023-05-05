@@ -22,6 +22,9 @@
 import vm/values/custom/vquantity
 import vm/values/custom/quantities/preprocessor
 
+when not defined(NOGMP):
+    import helpers/bignums as BignumsHelper
+
 import vm/lib
 
 #=======================================
@@ -149,6 +152,39 @@ proc defineSymbols*() =
         """:
             #=======================================================
             push newLiteral(getProperty(x.q))
+
+    builtin "scalar",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "get quantity value in the appropriate numeric type",
+        args        = {
+            "value"     : {Quantity}
+        },
+        attrs       = NoAttrs,
+        returns     = {Integer, Floating, Rational},
+        # TODO(Quantities/scalar) add documentation example
+        #  labels: documentation, easy
+        example     = """
+        """:
+            #=======================================================
+            let r {.cursor.} = x.q.original
+
+            if r.rKind == NormalRational:
+                if r.den == 1:
+                    push(newInteger(r.num))
+                elif r.canBeCoerced():
+                    push(newFloating(toFloat(r)))
+                else:
+                    push(newRational(r.br))
+            else:
+                when not defined(NOGMP):
+                    if r.br.denominator() == 1:
+                        push(newInteger(r.br.numerator()))
+                    elif r.canBeCoerced():
+                        push(newFloating(toFloat(r)))
+                    else:
+                        push(newRational(r.br))
 
     builtin "specify",
         alias       = unaliased,
