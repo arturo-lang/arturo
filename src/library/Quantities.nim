@@ -233,8 +233,6 @@ proc defineSymbols*() =
             "property"  : ({Logical}, "define a new property")
         },
         returns     = {Literal},
-        # TODO(Quantities/specify) add documentation example
-        #  labels: documentation, easy
         example     = """
             specify 'nauMile 1.1508`mi
 
