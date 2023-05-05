@@ -195,6 +195,7 @@ proc unitAlaCarte*(str: string): PrefixedUnit =
 
     var newQuantity = toQuantity("1", @[])
     newQuantity.signature = LastSignature
+    newQuantity.base = true
     LastSignature += SignatureStep
     Quantities[subu] = newQuantity
     UserUnits[str] = str
