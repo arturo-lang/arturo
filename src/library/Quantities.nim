@@ -192,6 +192,14 @@ proc defineSymbols*() =
         # TODO(Quantities/scalar) add documentation example
         #  labels: documentation, easy
         example     = """
+            scalar 3`m              ; => 3
+            scalar 4.0`m2           ; => 4
+            scalar 10:2`m3          ; => 5
+            ..........
+            scalar 3.1`m            ; => 3.1
+            scalar 5:2`m            ; => 2.5    
+            ..........
+            scalar 13:3`m           ; => 13/3
         """:
             #=======================================================
             let r {.cursor.} = x.q.original
