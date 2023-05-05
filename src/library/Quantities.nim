@@ -281,6 +281,24 @@ proc defineSymbols*() =
         # TODO(Quantities/unit) add documentation example
         #  labels: documentation, easy
         example     = """
+            units 3`m               ; => `m
+            units `m2               ; => `m2
+            units 8`J/s             ; => `J/s
+            units 7`W               ; => `W
+            ..........
+            units.base 3`m          ; => `m
+            units.base `m2          ; => `m2
+            units.base 8`J/s        ; => `J/s
+            units.base 7`W          ; => `J/s
+            ..........
+            specify 'ff 3`items
+            units 3`ff              ; => `items
+            units.base 3`ff         ; => `items
+            units.base 3`ff.ha      ; => `items.m2
+            ..........
+            specify 'kk 3`m2        
+            units 3`kk              ; => `kk
+            units.base 3`kk         ; => `m2
         """:
             #=======================================================
             if likely(xKind == Quantity):
