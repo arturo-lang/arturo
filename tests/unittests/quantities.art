@@ -1,10 +1,10 @@
 ; currencies
-print 100`eur
-print 100`usd
+print 100`EUR
+print 100`USD
 
 ; adding/subtracting/multiplying/dividing currencies
-print 100`eur + 20`eur
-print 100.5`usd - 30`usd
+print 100`EUR + 20`EUR
+print 100.5`USD - 30`USD
 print 33`CHF * 3
 print 99`JPY / 3
 
@@ -33,11 +33,11 @@ print 45`yd2 / 3`m
 print in'atm 1`bar
 
 ; Energy
-print in'J 1`KJ
+print in'J 1`kJ
 print in'kJ 1`J
 
 ; Power
-print in'W 1`KW
+print in'W 1`kW
 print in'hp 1`W
 
 ; Force
@@ -62,10 +62,10 @@ print in'bit 10`KiB
 
 ; Time
 print in'min 1`h
-print in'min 1`d
-print in'h 1`d
+print in'min 1`day
+print in'h 1`day
 
 ; Temperature
-print in'C 32`F
-print in'C 95`F
-print in'K 40`C
+print in'oC 32`oF
+print in'oC 95`oF
+print in'K 40`oC
