@@ -48,7 +48,7 @@ getDownloadUrl: $[ data :dictionary asset :integer][
 ]
 
 
-downloadArturo: $[url :string file :string][
+downloadArturo: $[url :string tempFile :string][
 	
 	ensure.that: "Is Arturo's download URL" -> 
 		prefix? url « https://github.com/arturo-lang/nightly/releases/download
@@ -60,7 +60,7 @@ downloadArturo: $[url :string file :string][
 		contains? url sys\release
 		
 	inform "- Downloading new version..."
-	download.as: file url
+	download.as: tempFile url
 	
 ]
 
