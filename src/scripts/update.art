@@ -25,6 +25,7 @@ downloadLatestRelease: $[
 	data :dictionary 
 	asset :integer
 ][
+	print color #green "- Downloading new version..."
 	download.as:"art.tar.gz"  (data\assets \ asset) \ "browser_download_url"
 ]
 
@@ -55,8 +56,6 @@ main: $[][
 	data: lookForReleases
 	
 	if? not? acceptance -> exit
-
-	print color #green "- Downloading new version..."
 
 	asset: ø
 	case [sys\os]
