@@ -78,7 +78,7 @@ downloadArturo: $[url :string tempFile :string][
 ]
 
 ; tested
-extractDownload: $[tempFile :string binaryPath :string][
+extract: $[tempFile :string binaryPath :string][
 	
 	;; description: « replace binaryPath by extracted .tag.gz file
 
@@ -121,7 +121,7 @@ main: $[][
 	if? not? acceptance -> exit
 
 	downloadArturo (getDownloadUrl data asset) tempFile 
-	extractDownload tempFile sys\binary
+	extract tempFile sys\binary
 	cleanupDownload tempFile
 
 ]
