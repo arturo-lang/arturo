@@ -41,6 +41,13 @@ lookForReleases: $[][
 	return data
 ]
 
+getDownloadUrl: $[ data :dictionary asset :integer][
+	return data | get "assets" 
+                | get asset
+                | get "browser_download_url"
+]
+
+
 downloadArturo: $[url :string file :string][
 	inform "- Downloading new version..."
 	download.as: file url
