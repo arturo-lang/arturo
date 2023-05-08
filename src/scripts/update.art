@@ -18,6 +18,7 @@ inform: $[content :string] ->
 
 ; » Main functions
 
+; tested
 chooseAsset: $[][
 	
 	unsupportedOS: $[os :string][
@@ -33,6 +34,7 @@ chooseAsset: $[][
 
 ]
 
+; tested
 lookForReleases: $[][
 	inform "- Checking Arturo repository..."
 	data: read.json "https://api.github.com/repos/arturo-lang/nightly/releases/latest"
@@ -41,6 +43,7 @@ lookForReleases: $[][
 	return data
 ]
 
+; tested
 getDownloadUrl: $[ data :dictionary asset :integer][
 	data: data | get "assets" 
                | get asset
@@ -48,7 +51,7 @@ getDownloadUrl: $[ data :dictionary asset :integer][
 	return data
 ]
 
-
+; tested
 downloadArturo: $[url :string tempFile :string][
 	
 	ensure.that: "Is Arturo's download URL" -> 
@@ -65,6 +68,7 @@ downloadArturo: $[url :string tempFile :string][
 	
 ]
 
+; tested
 extractDownload: $[tempFile :string binaryPath :string][
 
     output: remove.suffix binaryPath "arturo.exe"
@@ -74,12 +78,14 @@ extractDownload: $[tempFile :string binaryPath :string][
 	execute ~"tar --file |tempFile| --directory |output| |args|"
 ]
 
+; tested
 cleanupDownload: $[tempFile :string][
 	inform 	"- Cleaning up..."
 	execute ~"rm |tempFile|"
 	inform 	"- Done. :)"
 ]
 
+; tested
 acceptance: $[][
 	message: "  ** Are you sure you want to install it? [y/n]: "
 	confirm: input message | lower
