@@ -25,10 +25,13 @@ chooseAsset: $[][
 			~"your operating system (|os|) " ++
 			"doesn't support self-updates"
 	]
+	
+	base: 0
+	if? 'mini = release -> base: 1
 
 	case [sys\os]
-		when? [ = "macosx" ] -> return 2
-		when? [ = "linux"  ] -> return 0
+		when? [ = "macosx" ] -> return base + 0
+		when? [ = "linux"  ] -> return base + 2
 		else -> panic unsupportedOS sys\os
 ]
 
