@@ -18,6 +18,20 @@ inform: $[content :string] ->
 
 ; » Main functions
 
+chooseAsset: $[][
+	
+	unsupportedOS: $[os :string][
+		~"your operating system (|os|)" ++
+		"doesn't support self-updates"
+	]
+			
+	case [sys\os]
+		when? [ = "macosx" ] -> return 2
+		when? [ = "linux"  ] -> return 0
+		else -> panic unsupportedOS sys\os
+
+]
+
 lookForReleases: $[][
 	inform "- Checking Arturo repository..."
 	data: read.json "https://api.github.com/repos/arturo-lang/nightly/releases/latest"
@@ -57,17 +71,10 @@ acceptance: $[][
 
 main: $[][
 
+	asset: chooseAsset
 	data: lookForReleases
 
 	if? not? acceptance -> exit
-
-	asset: ø
-	case [sys\os]
-		when? [="macosx"]-> asset: 2
-		when? [="linux"]-> asset: 0
-		else [
-			panic ~{your operating system (|sys\os|) doesn't support self-updates}
-		]
 
 	downloadLatestRelease data asset
 	extractDownload
