@@ -21,6 +21,13 @@ lookForReleases: $[][
 	
 ]
 
+downloadLatestRelease: $[
+	data :dictionary 
+	asset :integer
+][
+	download.as:"art.tar.gz"  (data\assets \ asset) \ "browser_download_url"
+]
+
 data: lookForReleases
 
 confirm: input "  ** Are you sure you want to install it? [y/n]: "
@@ -34,8 +41,8 @@ if? "y"=strip lower confirm [
 		else [
 			panic ~{your operating system (|sys\os|) doesn't support self-updates}
 		]
-
-	download.as:"art.tar.gz"  (data\assets \ asset) \ "browser_download_url"
+		
+	downloadLatestRelease data asset
 	
 	print color #green "- Extracting..."
 	execute "tar xvfz art.tar.gz -C ~/.arturo/bin"
