@@ -33,6 +33,13 @@ extractDownload: $[][
 	execute "tar xvfz art.tar.gz -C ~/.arturo/bin"
 ]
 
+cleanupDownload: $[][
+	print color #green 	"- Cleaning up..."
+	execute 			"rm -rf art.tar.gz"
+	
+	print color #green 	"- Done. :)"
+]
+
 
 data: lookForReleases
 
@@ -50,10 +57,5 @@ if? "y"=strip lower confirm [
 		
 	downloadLatestRelease data asset
 	extractDownload
-	
-
-	print color #green 	"- Cleaning up..."
-	execute 			"rm -rf art.tar.gz"
-
-	print color #green 	"- Done. :)"
+	cleanupDownload
 ]
