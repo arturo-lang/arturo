@@ -66,7 +66,7 @@ downloadArturo: $[url :string tempFile :string][
 ]
 
 extractDownload: $[tempFile :string binaryPath :string][
-    
+
     output: remove.suffix binaryPath "arturo.exe"
     args: « --extract --overwrite-dir --ungzip --verbose
 
@@ -93,12 +93,13 @@ main: $[][
 
 	asset: chooseAsset
 	data: lookForReleases
+    tempFile: "art.tar.gz"
 
 	if? not? acceptance -> exit
 
-	downloadLatestRelease data asset
-	extractDownload
-	cleanupDownload
+	downloadArturo (getDownloadUrl data asset) tempFile 
+	extractDownload tempFile sys\binary
+	cleanupDownload tempFile
 
 ]
 
