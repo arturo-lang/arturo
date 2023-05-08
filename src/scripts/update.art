@@ -73,9 +73,9 @@ extractDownload: $[tempFile :string binaryPath :string][
 	execute ~"tar --file |tempFile| --directory |output| |args|"
 ]
 
-cleanupDownload: $[][
+cleanupDownload: $[tempFile :string][
 	inform 	"- Cleaning up..."
-	execute "rm -rf art.tar.gz"
+	execute ~"rm |tempFile|"
 	inform 	"- Done. :)"
 ]
 
