@@ -6,10 +6,6 @@
 ; @file: system/update.art
 ;========================================================
 
-; TODO(Script\update) needs complete rewrite
-;  currently the updater barely works, we should re-think and re-design the whole process and functionality
-;  labels: installer,open discussion,enhancement,bug,critical
-
 ; » Helper functions
 
 inform: $[content :string] ->
