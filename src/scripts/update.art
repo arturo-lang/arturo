@@ -90,7 +90,7 @@ extract: $[tempFile :string binaryPath :string][
 ]
 
 ; tested
-cleanupDownload: $[tempFile :string][
+cleanup: $[tempFile :string][
 	
 	;; description: « remove a temp-file
 	
@@ -122,7 +122,7 @@ main: $[][
 
 	downloadArturo (getDownloadUrl data asset) tempFile 
 	extract tempFile sys\binary
-	cleanupDownload tempFile
+	cleanup tempFile
 
 ]
 
