@@ -20,10 +20,9 @@ inform: $[content :string] ->
 
 lookForReleases: $[][
 	inform "- Checking Arturo repository..."
-	
 	data: read.json "https://api.github.com/repos/arturo-lang/nightly/releases/latest"
-	
 	inform ~"- Latest version found: |data\body|"
+
 	return data
 ]
 
@@ -42,8 +41,7 @@ extractDownload: $[][
 
 cleanupDownload: $[][
 	inform 	"- Cleaning up..."
-	execute 			"rm -rf art.tar.gz"
-	
+	execute "rm -rf art.tar.gz"
 	inform 	"- Done. :)"
 ]
 
@@ -59,6 +57,7 @@ acceptance: $[][
 
 
 main: $[][
+	
 	data: lookForReleases
 	
 	if? not? acceptance -> exit
