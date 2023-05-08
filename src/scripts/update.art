@@ -22,7 +22,7 @@ chooseAsset: $[][
 	
 	unsupportedOS: $[os :string][
 		return 
-			~"your operating system (|os|)" ++
+			~"your operating system (|os|) " ++
 			"doesn't support self-updates"
 	]
 			
