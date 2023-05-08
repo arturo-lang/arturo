@@ -40,6 +40,16 @@ cleanupDownload: $[][
 	print color #green 	"- Done. :)"
 ]
 
+acceptance: $[][
+	message: "  ** Are you sure you want to install it? [y/n]: "
+	confirm: input message | 
+						   | lower 
+						   | strip
+			
+	return in? confirm ["y" "yes"]
+
+]
+
 
 main: $[][
 	data: lookForReleases
