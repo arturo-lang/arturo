@@ -21,8 +21,9 @@ inform: $[content :string] ->
 chooseAsset: $[][
 	
 	unsupportedOS: $[os :string][
-		~"your operating system (|os|)" ++
-		"doesn't support self-updates"
+		return 
+			~"your operating system (|os|)" ++
+			"doesn't support self-updates"
 	]
 			
 	case [sys\os]
