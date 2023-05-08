@@ -12,7 +12,7 @@
 
 ; » Helper functions
 
-inform: $[content :string] -> 
+inform: $[content :string] ->
 	print [ color #green content]
 
 
@@ -27,7 +27,7 @@ lookForReleases: $[][
 ]
 
 downloadLatestRelease: $[
-	data :dictionary 
+	data :dictionary
 	asset :integer
 ][
 	inform "- Downloading new version..."
@@ -47,19 +47,19 @@ cleanupDownload: $[][
 
 acceptance: $[][
 	message: "  ** Are you sure you want to install it? [y/n]: "
-	confirm: input message | 
-						   | lower 
+	confirm: input message |
+						   | lower
 						   | strip
-			
+
 	return in? confirm ["y" "yes"]
 
 ]
 
 
 main: $[][
-	
+
 	data: lookForReleases
-	
+
 	if? not? acceptance -> exit
 
 	asset: ø
@@ -69,11 +69,11 @@ main: $[][
 		else [
 			panic ~{your operating system (|sys\os|) doesn't support self-updates}
 		]
-		
+
 	downloadLatestRelease data asset
 	extractDownload
 	cleanupDownload
-	
+
 ]
 
 main
