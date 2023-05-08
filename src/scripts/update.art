@@ -10,10 +10,18 @@
 ;  currently the updater barely works, we should re-think and re-design the whole process and functionality
 ;  labels: installer,open discussion,enhancement,bug,critical
 
-print color #green "- Checking Arturo repository..."
-data: read.json "https://api.github.com/repos/arturo-lang/nightly/releases/latest"
 
-print [color #green "- Latest version found:" data\body]
+lookForReleases: [][
+	print color #green "- Checking Arturo repository..."
+	
+	data: read.json "https://api.github.com/repos/arturo-lang/nightly/releases/latest"
+	print [color #green "- Latest version found:" data\body]
+	
+	return data
+	
+]
+
+data: lookForReleases
 
 confirm: input "  ** Are you sure you want to install it? [y/n]: "
 if? "y"=strip lower confirm [
@@ -37,4 +45,3 @@ if? "y"=strip lower confirm [
 
 	print color #green 	"- Done. :)"
 ]
-
