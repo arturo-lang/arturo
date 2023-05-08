@@ -41,21 +41,25 @@ cleanupDownload: $[][
 ]
 
 
-data: lookForReleases
+main: $[][
+	data: lookForReleases
 
-confirm: input "  ** Are you sure you want to install it? [y/n]: "
-if? "y"=strip lower confirm [
-	print color #green "- Downloading new version..."
+	confirm: input "  ** Are you sure you want to install it? [y/n]: "
+	if? "y"=strip lower confirm [
+		print color #green "- Downloading new version..."
 
-	asset: ø
-	case [sys\os]
-		when? [="macosx"]-> asset: 2
-		when? [="linux"]-> asset: 0
-		else [
-			panic ~{your operating system (|sys\os|) doesn't support self-updates}
-		]
-		
-	downloadLatestRelease data asset
-	extractDownload
-	cleanupDownload
+		asset: ø
+		case [sys\os]
+			when? [="macosx"]-> asset: 2
+			when? [="linux"]-> asset: 0
+			else [
+				panic ~{your operating system (|sys\os|) doesn't support self-updates}
+			]
+			
+		downloadLatestRelease data asset
+		extractDownload
+		cleanupDownload
+	]
 ]
+
+main
