@@ -42,9 +42,10 @@ lookForReleases: $[][
 ]
 
 getDownloadUrl: $[ data :dictionary asset :integer][
-	return data | get "assets" 
-                | get asset
-                | get "browser_download_url"
+	data: data | get "assets" 
+               | get asset
+               | get "browser_download_url"
+	return data
 ]
 
 
