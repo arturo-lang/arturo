@@ -10,35 +10,41 @@
 ;  currently the updater barely works, we should re-think and re-design the whole process and functionality
 ;  labels: installer,open discussion,enhancement,bug,critical
 
+; » Helper functions
+
+inform: $[content :string] -> 
+	print [ color #green content]
+
+
+; » Main functions
 
 lookForReleases: $[][
-	print color #green "- Checking Arturo repository..."
+	inform "- Checking Arturo repository..."
 	
 	data: read.json "https://api.github.com/repos/arturo-lang/nightly/releases/latest"
-	print [color #green "- Latest version found:" data\body]
 	
+	inform ~"- Latest version found: |data\body|"
 	return data
-	
 ]
 
 downloadLatestRelease: $[
 	data :dictionary 
 	asset :integer
 ][
-	print color #green "- Downloading new version..."
+	inform "- Downloading new version..."
 	download.as:"art.tar.gz"  (data\assets \ asset) \ "browser_download_url"
 ]
 
 extractDownload: $[][
-	print color #green "- Extracting..."
+	inform "- Extracting..."
 	execute "tar xvfz art.tar.gz -C ~/.arturo/bin"
 ]
 
 cleanupDownload: $[][
-	print color #green 	"- Cleaning up..."
+	inform 	"- Cleaning up..."
 	execute 			"rm -rf art.tar.gz"
 	
-	print color #green 	"- Done. :)"
+	inform 	"- Done. :)"
 ]
 
 acceptance: $[][
