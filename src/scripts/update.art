@@ -12,6 +12,23 @@ inform: $[content :string] ->
 	print [ color #green content]
 
 
+
+; » Interaction functions
+
+; tested
+acceptance: $[][
+
+	;; description: « ask to user if he want to proceed with update
+
+	message: "  ** Are you sure you want to install it? [y/n]: "
+	confirm: input message | lower
+						   | strip
+
+	return in? confirm ["y" "yes"]
+]
+
+
+
 ; » Main functions
 
 ; tested
@@ -100,18 +117,6 @@ cleanup: $[tempFile :string][
 	inform 	"- Cleaning up..."
 	execute ~"rm |tempFile|"
 	inform 	"- Done. :)"
-]
-
-; tested
-acceptance: $[][
-
-	;; description: « ask to user if he want to proceed with update
-
-	message: "  ** Are you sure you want to install it? [y/n]: "
-	confirm: input message | lower
-						   | strip
-
-	return in? confirm ["y" "yes"]
 ]
 
 
