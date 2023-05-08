@@ -41,10 +41,7 @@ lookForReleases: $[][
 	return data
 ]
 
-downloadLatestRelease: $[
-	data :dictionary
-	asset :integer
-][
+downloadArturo: $[data :dictionary asset :integer][
 	inform "- Downloading new version..."
 	download.as:"art.tar.gz"  (data\assets \ asset) \ "browser_download_url"
 ]
