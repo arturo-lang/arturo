@@ -64,9 +64,13 @@ downloadArturo: $[url :string file :string][
 	
 ]
 
-extractDownload: $[][
-	inform "- Extracting..."
-	execute "tar xvfz art.tar.gz -C ~/.arturo/bin"
+extractDownload: $[tempFile :string binaryPath :string][
+    
+    output: remove.suffix binaryPath "arturo.exe"
+    args: « --extract --overwrite-dir --ungzip --verbose
+
+	inform ~"- Extracting into |output|..."
+	execute ~"tar --file |tempFile| --directory |output| |args|"
 ]
 
 cleanupDownload: $[][
