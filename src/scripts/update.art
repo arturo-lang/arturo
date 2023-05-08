@@ -21,6 +21,9 @@ inform: $[content :string] ->
 ; tested
 chooseAsset: $[][
 	
+	;; description: « Choice which Release's asset it should download
+	;; returns: :integer
+	
 	unsupportedOS: $[os :string][
 		return 
 			~"your operating system (|os|) " ++
@@ -36,6 +39,10 @@ chooseAsset: $[][
 
 ; tested
 lookForReleases: $[][
+	
+	;; description: « gets the Releases' data
+	;; returns: :dictionary
+	
 	inform "- Checking Arturo repository..."
 	data: read.json "https://api.github.com/repos/arturo-lang/nightly/releases/latest"
 	inform ~"- Latest version found: |data\body|"
@@ -45,6 +52,10 @@ lookForReleases: $[][
 
 ; tested
 getDownloadUrl: $[ data :dictionary asset :integer][
+	
+	;; description: « gets the download's link for given asset
+	;; returns: :string
+	
 	data: data | get "assets" 
                | get asset
                | get "browser_download_url"
@@ -53,6 +64,8 @@ getDownloadUrl: $[ data :dictionary asset :integer][
 
 ; tested
 downloadArturo: $[url :string tempFile :string][
+	
+	;; description: « download the asset from given link
 	
 	ensure.that: "Is Arturo's download URL" -> 
 		prefix? url « https://github.com/arturo-lang/nightly/releases/download
@@ -70,6 +83,8 @@ downloadArturo: $[url :string tempFile :string][
 
 ; tested
 extractDownload: $[tempFile :string binaryPath :string][
+	
+	;; description: « replace binaryPath by extracted .tag.gz file
 
     output: remove.suffix binaryPath "arturo.exe"
     args: « --extract --overwrite-dir --ungzip --verbose
@@ -80,6 +95,9 @@ extractDownload: $[tempFile :string binaryPath :string][
 
 ; tested
 cleanupDownload: $[tempFile :string][
+	
+	;; description: « remove a temp-file
+	
 	inform 	"- Cleaning up..."
 	execute ~"rm |tempFile|"
 	inform 	"- Done. :)"
@@ -87,6 +105,9 @@ cleanupDownload: $[tempFile :string][
 
 ; tested
 acceptance: $[][
+	
+	;; description: « ask to user if he want to proceed with update
+	
 	message: "  ** Are you sure you want to install it? [y/n]: "
 	confirm: input message | lower
 						   | strip
