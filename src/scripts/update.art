@@ -62,8 +62,7 @@ cleanupDownload: $[][
 
 acceptance: $[][
 	message: "  ** Are you sure you want to install it? [y/n]: "
-	confirm: input message |
-						   | lower
+	confirm: input message | lower
 						   | strip
 
 	return in? confirm ["y" "yes"]
