@@ -52,7 +52,6 @@ acceptance: $[][
 						   | strip
 
 	return in? confirm ["y" "yes"]
-
 ]
 
 
