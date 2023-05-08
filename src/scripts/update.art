@@ -30,7 +30,6 @@ chooseAsset: $[][
 		when? [ = "macosx" ] -> return 2
 		when? [ = "linux"  ] -> return 0
 		else -> panic unsupportedOS sys\os
-
 ]
 
 ; tested
@@ -76,7 +75,6 @@ downloadArturo: $[url :string tempFile :string][
 
 	inform "- Downloading new version..."
 	download.as: tempFile url
-
 ]
 
 ; tested
