@@ -380,7 +380,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the smallest integer not smaller than given value",
         args        = {
-            "value" : {Integer,Floating}
+            "value" : {Integer,Floating,Rational}
         },
         attrs       = NoAttrs,
         returns     = {Integer},
