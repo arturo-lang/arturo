@@ -7,37 +7,71 @@
 
 >> clamp
 
->> clamp - :integer with :range
-[+] passed!
-[+] passed!
-
->> clamp - :integer with [:integer]
-
->> clamp - :integer with [:floating]
-
->> clamp - :integer with [:rational]
-
->> clamp - :floating with :range
+>> clamp - returns the `number`
 [+] passed!
 [+] passed!
 [+] passed!
-
->> clamp - :floating with [:integer]
-
->> clamp - :floating with [:floating]
-
->> clamp - :floating with [:rational]
-
->> clamp - :rational with :range
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 [+] passed!
 [+] passed!
 [+] passed!
 
->> clamp - :rational with [:integer]
+>> clamp - returns `range`'s upper edge
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
->> clamp - :rational with [:floating]
+>> clamp - returns `range`'s lower edge as :range
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
->> clamp - :rational with [:rational]
+>> clamp - using range.step
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> clamp - invalid operations
 [+] passed!
