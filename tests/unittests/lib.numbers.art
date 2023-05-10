@@ -76,6 +76,35 @@ do [
     ] => throws?
     passed
     
+    ensure.that: 
+    "returns :integer for :integer parameter" 
+    -> true
+    loop @[
+        clamp 5 0..10    
+        clamp 5 6..10    
+        clamp 5 0..4      
+    ] => integer?
+    passed
+    
+    ensure.that: 
+    "returns :integer for :floating parameter that is outside the range" 
+    -> true
+    loop @[  
+        clamp 5.0 6..10    
+        clamp 5.0 0..4       
+        clamp 5.5 6..10    
+        clamp 5.5 0..4      
+    ] => integer?
+    passed
+
+    ensure.that: 
+    "returns :floating for :floating parameter that is already within the rang" 
+    -> every? @[
+        clamp 5.0 0..10    
+        clamp 5.5 0..10 
+    ] => floating?
+    passed
+    
 ]
 
 topic « floor
