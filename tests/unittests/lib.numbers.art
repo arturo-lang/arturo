@@ -113,9 +113,9 @@ do [
     
     
     topic « clamp - :rational with :range
-    topic « clamp - :floating with [:integer]
-    topic « clamp - :floating with [:floating]
-    topic « clamp - :floating with [:rational] 
+    topic « clamp - :rational with [:integer]
+    topic « clamp - :rational with [:floating]
+    topic « clamp - :rational with [:rational] 
     
     
     topic « clamp - invalid operations
