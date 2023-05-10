@@ -14,9 +14,9 @@ do [
     passed
                         
     ensure.that: "works with :rational"
-        -> 4   = ceil to :rational @[7 2]
+        -> 4 = ceil to :rational @[7 2]
     ensure.that: "works with negative :rational" 
-        -> (neg 3)   = ceil to :rational @[neg 7 2]
+        -> (neg 3) = ceil to :rational @[neg 7 2]
     passed
     
 ]
