@@ -1225,9 +1225,13 @@ proc defineSymbols*() =
         },
         returns     = {Floating},
         example     = """
-            print round 2.1         ; 2.0
-            print round 2.9         ; 3.0
-            print round 6           ; 6.0
+            print round 2.1                     ; 2.0
+            print round 2.9                     ; 3.0
+            print round 6                       ; 6.0
+
+            print round to :rational [29 10]    ; 3.0
+            print round to :rational [21 10]    ; 2.0
+            print round to :rational [5 2]      ; 3.0
 
             print round pi          ; 3.0
             ..........
