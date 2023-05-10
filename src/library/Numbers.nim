@@ -410,11 +410,19 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Integer, Floating, Rational},
         example     = """
-            clamp 2 1..3                ; 2
-            clamp 0 1..3                ; 1
-            clamp 4 1..3                ; 3
-            clamp 4 3..1                ; 3
-            clamp 5 range.step: 2 0 5   ; 4
+            clamp 2 1..3                        ; 2
+            clamp 0 1..3                        ; 1
+            clamp 4 1..3                        ; 3
+            clamp 4 3..1                        ; 3
+            clamp 5 range.step: 2 0 5           ; 4
+            
+            clamp 4.5 0..6                      ; 4.5
+            clamp to :rational [1 5] 0..1       ; 1/5
+            
+            clamp 4.5 [1 2.5]                   ; 2.5
+            clamp 2 [5 10]                      ; 5
+            clamp 2 [10 5]                      ; 5
+            clamp 2.5 @[1 to :rational [5 2]]   ; 2.5
         """:
             #=======================================================
             case y.kind
