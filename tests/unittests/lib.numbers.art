@@ -85,3 +85,26 @@ do [
     passed
     
 ]
+
+
+topic « round
+do [
+    
+    ensure.that: "works with :floating"          -> 2.0       = round 2.1                    
+    ensure.that: "works with :floating"          -> 3.0       = round 2.9                    
+    ensure.that: "works with negative :floating" -> (neg 4.0) = round neg 3.5
+    passed
+                   
+    ensure.that: "works with :integer"          -> 4       = round 4
+    ensure.that: "works with negative :integer" -> (neg 4) = round neg 4
+    passed
+
+    ensure.that: "works with :rational" -> 4       = round to :rational @[7 2]
+    ensure.that: "works with :rational" -> 3       = round to :rational @[29 10]
+    ensure.that: "works with :rational" -> 2       = round to :rational @[21 10]
+    ensure.that: "works with :rational" -> (neg 4) = round to :rational @[neg 7 2]
+    ensure.that: "works with :rational" -> (neg 3) = round to :rational @[neg 29 10]
+    ensure.that: "works with :rational" -> (neg 2) = round to :rational @[neg 21 10]
+    passed
+    
+]
