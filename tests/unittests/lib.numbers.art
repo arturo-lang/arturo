@@ -65,3 +65,23 @@ do [
     passed
     
 ]
+
+topic « floor
+do [
+    
+    ensure.that: "works with :floating"          -> 2       = floor 2.1                    
+    ensure.that: "works with :floating"          -> 2       = floor 2.9                    
+    ensure.that: "works with negative :floating" -> (neg 4) = floor neg 3.5
+    passed
+                   
+    ensure.that: "works with :integer"          -> 4       = floor 4
+    ensure.that: "works with negative :integer" -> (neg 4) = floor neg 4
+    passed
+                        
+    ensure.that: "works with :rational"
+        -> 3 = floor to :rational @[7 2]
+    ensure.that: "works with negative :rational" 
+        -> (neg 4) = floor to :rational @[neg 7 2]
+    passed
+    
+]
