@@ -756,10 +756,11 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Integer},
         example     = """
-            print floor 2.1         ; 2
-            print floor 2.9         ; 2
-            print floor neg 3.5     ; -4
-            print floor 4           ; 4
+            print floor 2.1                     ; 2
+            print floor 2.9                     ; 2
+            print floor neg 3.5                 ; -4
+            print floor 4                       ; 4
+            print floor to :rational @[neg 7 2] ; -4
         """:
             #=======================================================
             push(newInteger(int(floor(asFloat(x)))))
