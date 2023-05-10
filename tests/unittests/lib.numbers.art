@@ -19,6 +19,18 @@ do [
         -> (neg 3) = ceil to :rational @[neg 7 2]
     passed
     
+    ensure.that: "always returns :integer" -> every? @[
+        ceil 2.1
+        ceil 2.9
+        ceil 3.5
+        ceil neg 3.5
+        ceil 4
+        ceil neg 4
+        ceil to :rational @[7 2]
+        ceil to :rational @[neg 7 2]
+    ] => integer? 
+    passed
+    
 ]
 
 topic « clamp
