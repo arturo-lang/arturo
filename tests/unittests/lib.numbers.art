@@ -96,6 +96,18 @@ do [
         -> (neg 4) = floor to :rational @[neg 7 2]
     passed
     
+    ensure.that: "always returns :integer" -> every? @[
+        floor 2.1
+        floor 2.9
+        floor 3.5
+        floor neg 3.5
+        floor 4
+        floor neg 4
+        floor to :rational @[7 2]
+        floor to :rational @[neg 7 2]
+    ] => integer? 
+    passed
+    
 ]
 
 
