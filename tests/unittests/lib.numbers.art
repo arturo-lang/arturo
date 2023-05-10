@@ -131,4 +131,20 @@ do [
     ensure.that: "works with :rational" -> (neg 2) = round to :rational @[neg 21 10]
     passed
     
+    ensure.that: "always returns :floating" -> every? @[
+        round 2.1
+        round 2.9
+        round 3.5
+        round neg 3.5
+        round 4
+        round neg 4
+        round to :rational @[7 2]
+        round to :rational @[neg 7 2]
+        round to :rational @[29 10]
+        round to :rational @[neg 29 10]
+        round to :rational @[21 10]
+        round to :rational @[neg 21 10]
+    ] => floating? 
+    passed
+    
 ]
