@@ -1,6 +1,26 @@
 topic: $[topic :string] -> print ~"\n>> |topic|"
 passed: $[] -> print "[+] passed!"
 
+topic « ceil
+do [
+    
+    ensure.that: "works with :floating"          -> 3       = ceil 2.1                    
+    ensure.that: "works with :floating"          -> 3       = ceil 2.9                    
+    ensure.that: "works with negative :floating" -> (neg 3) = ceil neg 3.5
+    passed
+                   
+    ensure.that: "works with :integer"          -> 4       = ceil 4
+    ensure.that: "works with negative :integer" -> (neg 4) = ceil neg 4
+    passed
+                        
+    ensure.that: "works with :rational"
+        -> 4   = ceil to :rational @[7 2]
+    ensure.that: "works with negative :rational" 
+        -> (neg 3)   = ceil to :rational @[neg 7 2]
+    passed
+    
+]
+
 topic « clamp
 do [
     
