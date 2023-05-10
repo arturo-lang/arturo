@@ -557,6 +557,13 @@ do [
         ensure -> every? @[
             -> clamp 2 `a`..`d`
             -> clamp `b` `a`..`c`
+            -> clamp 2 []
+            -> clamp 2 [1 1 1]
+            -> clamp 2 [a a]
+            -> clamp 2 ["a" "a"]
+            -> clamp 2 [[] []]
+            -> clamp 2 [() ()]
+            -> clamp 2 [`a` `a`]
         ] => throws? passed 
     
     
