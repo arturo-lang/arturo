@@ -29,12 +29,15 @@
 >> clamp - :floating with [:rational]
 
 >> clamp - :rational with :range
+[+] passed!
+[+] passed!
+[+] passed!
 
->> clamp - :floating with [:integer]
+>> clamp - :rational with [:integer]
 
->> clamp - :floating with [:floating]
+>> clamp - :rational with [:floating]
 
->> clamp - :floating with [:rational]
+>> clamp - :rational with [:rational]
 
 >> clamp - invalid operations
 [+] passed!
