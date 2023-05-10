@@ -113,6 +113,50 @@ do [
     
     
     topic « clamp - :rational with :range
+    
+    a: to :rational [5 2]
+    b: to :rational [2 1]
+    
+    ensure.that: "is within"  -> a = clamp a 0..4
+    ensure.that: "is greater" -> 1 = clamp a 0..1
+    ensure.that: "is less"    -> 3 = clamp a 3..4
+    ensure.that: "is in the upper limit" -> 2 = clamp b 0..2 
+    ensure.that: "is in the lower limit" -> 2 = clamp b 2..4
+    
+    a: to :rational [5 1]
+    b: to :rational [1 1]
+    
+    ensure.that: "works with .step attribute" -> 
+        4 = clamp a range.step: 2 0 5
+    ensure.that: "works with descending range" -> 
+        5 = clamp a range.step: 2 5 0
+    ensure.that: "works with descending and stepped range" -> 
+        3 = clamp b range.step: 2 5 2
+    passed
+    
+    a: to :rational [5 1]
+    b: to :rational [11 2]
+    
+    ensure.that: {
+        returns :integer 
+        for :rational parameter that is outside the range
+    } -> every? @[  
+        clamp a 6..10    
+        clamp a 0..4       
+        clamp b 6..10    
+        clamp b 0..4      
+    ] => integer?
+    passed
+    
+    ensure.that: {
+        returns :rational 
+        for :rational parameter that is already within the range
+    } -> every? @[
+        clamp a 0..10    
+        clamp b 0..10 
+    ] => rational? 
+    passed
+    
     topic « clamp - :rational with [:integer]
     topic « clamp - :rational with [:floating]
     topic « clamp - :rational with [:rational] 
