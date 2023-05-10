@@ -405,7 +405,7 @@ proc defineSymbols*() =
         description = "force value within given range",
         args        = {
             "number" : {Integer, Floating, Rational},
-            "range"  : {Range}
+            "range"  : {Range, Block}
         },
         attrs       = NoAttrs,
         returns     = {Integer, Floating, Rational},
@@ -417,12 +417,30 @@ proc defineSymbols*() =
             clamp 5 range.step: 2 0 5   ; 4
         """:
             #=======================================================
-            if not y.rng.numeric:
-                RuntimeError_IncompatibleValueType("clamp", valueKind(y), "numeric range")
-            
-            if (let minElem = y.rng.min()[1]; x.asFloat < float(minElem.i)): push(minElem)
-            elif (let maxElem = y.rng.max()[1]; x.asFloat > float(maxElem.i)): push(maxElem)
-            else: push(x)
+            case y.kind
+            of Range:
+                if not y.rng.numeric:
+                    RuntimeError_IncompatibleValueType("clamp", valueKind(y), "numeric range")
+                
+                if (let minElem = y.rng.min()[1]; x.asFloat < float(minElem.i)): push(minElem)
+                elif (let maxElem = y.rng.max()[1]; x.asFloat > float(maxElem.i)): push(maxElem)
+                else: push(x)       
+            of Block:
+                y.requireBlockSize(2)
+                let firstElem {.cursor} = y.a[0]
+                let secondElem {.cursor} = y.a[1]
+                firstElem.requireValue({Integer, Floating, Rational})
+                secondElem.requireValue({Integer, Floating, Rational})
+                
+                let minElem = min([firstElem, secondElem])
+                let maxElem = max([firstElem, secondElem])
+                
+                if x.asFloat < minElem.asFloat: push(minElem)
+                elif x.asFloat > maxElem.asFloat: push(maxElem)
+                else: push(x)  
+                    
+            else:
+                discard
              
 
     builtin "conj",
