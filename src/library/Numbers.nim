@@ -408,7 +408,7 @@ proc defineSymbols*() =
             "range"  : {Range}
         },
         attrs       = NoAttrs,
-        returns     = {Integer, Floating, Rational},
+        returns     = {Integer, Floating},
         example     = """
             clamp 2 1..3                ; 2
             clamp 0 1..3                ; 1
@@ -420,9 +420,14 @@ proc defineSymbols*() =
             if not y.rng.numeric:
                 RuntimeError_IncompatibleValueType("clamp", valueKind(y), "numeric range")
             
-            if (let minElem = y.rng.min()[1]; x.asFloat < float(minElem.i)): push(minElem)
-            elif (let maxElem = y.rng.max()[1]; x.asFloat > float(maxElem.i)): push(maxElem)
-            else: push(x)
+            if x.kind == Integer:
+                if (let minElem = y.rng.min()[1]; x.i < minElem.i): push(minElem)
+                elif (let maxElem = y.rng.max()[1]; x.i > maxElem.i): push(maxElem)
+                else: push(x)
+            else:
+                if (let minElem = y.rng.min()[1]; x.f < float(minElem.i)): push(minElem)
+                elif (let maxElem = y.rng.max()[1]; x.f > float(maxElem.i)): push(maxElem)
+                else: push(x)
              
 
     builtin "conj",
