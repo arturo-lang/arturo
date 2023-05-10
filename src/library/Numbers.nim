@@ -751,7 +751,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the largest integer not greater than given value",
         args        = {
-            "value" : {Integer,Floating}
+            "value" : {Integer,Floating,Rational}
         },
         attrs       = NoAttrs,
         returns     = {Integer},
