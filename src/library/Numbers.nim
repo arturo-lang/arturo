@@ -53,6 +53,9 @@ template processTrigonometric(fun: untyped): untyped =
 
 # TODO(Numbers) add `tau` constant
 #  labels:library, new feature
+
+# TODO(Numbers) add support to `:rational`to necessary functions
+#   labels:library, new feature, open discussion
  
 proc defineSymbols*() =
 
@@ -380,15 +383,16 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the smallest integer not smaller than given value",
         args        = {
-            "value" : {Integer,Floating}
+            "value" : {Integer,Floating,Rational}
         },
         attrs       = NoAttrs,
         returns     = {Integer},
         example     = """
-            print ceil 2.1          ; 3
-            print ceil 2.9          ; 3
-            print ceil neg 3.5      ; -3
-            print ceil 4            ; 4
+            print ceil 2.1                      ; 3
+            print ceil 2.9                      ; 3
+            print ceil neg 3.5                  ; -3
+            print ceil 4                        ; 4
+            print ceil to :rational @[neg 7 2]  ; -3
         """:
             #=======================================================
             push(newInteger(int(ceil(asFloat(x)))))
@@ -750,15 +754,16 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the largest integer not greater than given value",
         args        = {
-            "value" : {Integer,Floating}
+            "value" : {Integer,Floating,Rational}
         },
         attrs       = NoAttrs,
         returns     = {Integer},
         example     = """
-            print floor 2.1         ; 2
-            print floor 2.9         ; 2
-            print floor neg 3.5     ; -4
-            print floor 4           ; 4
+            print floor 2.1                     ; 2
+            print floor 2.9                     ; 2
+            print floor neg 3.5                 ; -4
+            print floor 4                       ; 4
+            print floor to :rational @[neg 7 2] ; -4
         """:
             #=======================================================
             push(newInteger(int(floor(asFloat(x)))))
@@ -1213,16 +1218,20 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "round given value",
         args        = {
-            "value" : {Integer,Floating}
+            "value" : {Integer,Floating,Rational}
         },
         attrs       = {
             "to"    : ({Integer},"round to given decimal places")
         },
         returns     = {Floating},
         example     = """
-            print round 2.1         ; 2.0
-            print round 2.9         ; 3.0
-            print round 6           ; 6.0
+            print round 2.1                     ; 2.0
+            print round 2.9                     ; 3.0
+            print round 6                       ; 6.0
+
+            print round to :rational [29 10]    ; 3.0
+            print round to :rational [21 10]    ; 2.0
+            print round to :rational [5 2]      ; 3.0
 
             print round pi          ; 3.0
             ..........
