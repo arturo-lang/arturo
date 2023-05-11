@@ -9,7 +9,7 @@
 ; And then, run like:
 ;  arturo-docgen tools/nodocs.art
 
-print "Standard library functions with documentation:"
+print "Standard library functions without documentation:"
 
 loop symbols [k, v][
     details: info.get k
