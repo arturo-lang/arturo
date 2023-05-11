@@ -1,0 +1,19 @@
+; Find stdlib functions with no documentation
+
+; this script is meant to be run only with a DOCGEN build
+; since it's the only one that contains data for the examples.
+;
+; So, first build like:
+;  ./build.nims install docgen --as:arturo-docgen
+;
+; And then, run like:
+;  arturo-docgen tools/nodocs.art
+
+print "Standard library functions with documentation:"
+
+loop symbols [k, v][
+    details: info.get k
+    if key? details 'example ->
+        if zero? strip join.with:"\n" details\example ->
+            print ["-" k]
+]
