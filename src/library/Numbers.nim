@@ -54,6 +54,9 @@ template processTrigonometric(fun: untyped): untyped =
 
 # TODO(Numbers) add `tau` constant
 #  labels:library, new feature
+
+# TODO(Numbers) add support to `:rational`to necessary functions
+#   labels:library, new feature, open discussion
  
 proc defineSymbols*() =
 
@@ -381,15 +384,16 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the smallest integer not smaller than given value",
         args        = {
-            "value" : {Integer,Floating}
+            "value" : {Integer,Floating,Rational}
         },
         attrs       = NoAttrs,
         returns     = {Integer},
         example     = """
-            print ceil 2.1          ; 3
-            print ceil 2.9          ; 3
-            print ceil neg 3.5      ; -3
-            print ceil 4            ; 4
+            print ceil 2.1                      ; 3
+            print ceil 2.9                      ; 3
+            print ceil neg 3.5                  ; -3
+            print ceil 4                        ; 4
+            print ceil to :rational @[neg 7 2]  ; -3
         """:
             #=======================================================
             push(newInteger(int(ceil(asFloat(x)))))
@@ -401,30 +405,51 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "force value within given range",
         args        = {
-            "number" : {Integer, Floating},
-            "range"  : {Range}
+            "number" : {Integer, Floating, Rational},
+            "range"  : {Range, Block}
         },
         attrs       = NoAttrs,
-        returns     = {Integer, Floating},
+        returns     = {Integer, Floating, Rational},
         example     = """
-            clamp 2 1..3                ; 2
-            clamp 0 1..3                ; 1
-            clamp 4 1..3                ; 3
-            clamp 4 3..1                ; 3
-            clamp 5 range.step: 2 0 5   ; 4
+            clamp 2 1..3                        ; 2
+            clamp 0 1..3                        ; 1
+            clamp 4 1..3                        ; 3
+            clamp 4 3..1                        ; 3
+            clamp 5 range.step: 2 0 5           ; 4
+            
+            clamp 4.5 0..6                      ; 4.5
+            clamp to :rational [1 5] 0..1       ; 1/5
+            
+            clamp 4.5 [1 2.5]                   ; 2.5
+            clamp 2 [5 10]                      ; 5
+            clamp 2 [10 5]                      ; 5
+            clamp 2.5 @[1 to :rational [5 2]]   ; 2.5
         """:
             #=======================================================
-            if not y.rng.numeric:
-                RuntimeError_IncompatibleValueType("clamp", valueKind(y), "numeric range")
-            
-            if x.kind == Integer:
-                if (let minElem = y.rng.min()[1]; x.i < minElem.i): push(minElem)
-                elif (let maxElem = y.rng.max()[1]; x.i > maxElem.i): push(maxElem)
-                else: push(x)
+            case y.kind
+            of Range:
+                if not y.rng.numeric:
+                    RuntimeError_IncompatibleValueType("clamp", valueKind(y), "numeric range")
+                
+                if (let minElem = y.rng.min()[1]; x.asFloat < float(minElem.i)): push(minElem)
+                elif (let maxElem = y.rng.max()[1]; x.asFloat > float(maxElem.i)): push(maxElem)
+                else: push(x)       
+            of Block:
+                y.requireBlockSize(2)
+                let firstElem {.cursor} = y.a[0]
+                let secondElem {.cursor} = y.a[1]
+                firstElem.requireValue({Integer, Floating, Rational})
+                secondElem.requireValue({Integer, Floating, Rational})
+                
+                let minElem = min([firstElem, secondElem])
+                let maxElem = max([firstElem, secondElem])
+                
+                if x.asFloat < minElem.asFloat: push(minElem)
+                elif x.asFloat > maxElem.asFloat: push(maxElem)
+                else: push(x)  
+                    
             else:
-                if (let minElem = y.rng.min()[1]; x.f < float(minElem.i)): push(minElem)
-                elif (let maxElem = y.rng.max()[1]; x.f > float(maxElem.i)): push(maxElem)
-                else: push(x)
+                discard
              
 
     builtin "conj",
@@ -754,15 +779,16 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the largest integer not greater than given value",
         args        = {
-            "value" : {Integer,Floating}
+            "value" : {Integer,Floating,Rational}
         },
         attrs       = NoAttrs,
         returns     = {Integer},
         example     = """
-            print floor 2.1         ; 2
-            print floor 2.9         ; 2
-            print floor neg 3.5     ; -4
-            print floor 4           ; 4
+            print floor 2.1                     ; 2
+            print floor 2.9                     ; 2
+            print floor neg 3.5                 ; -4
+            print floor 4                       ; 4
+            print floor to :rational @[neg 7 2] ; -4
         """:
             #=======================================================
             push(newInteger(int(floor(asFloat(x)))))
@@ -1220,16 +1246,20 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "round given value",
         args        = {
-            "value" : {Integer,Floating}
+            "value" : {Integer,Floating,Rational}
         },
         attrs       = {
             "to"    : ({Integer},"round to given decimal places")
         },
         returns     = {Floating},
         example     = """
-            print round 2.1         ; 2.0
-            print round 2.9         ; 3.0
-            print round 6           ; 6.0
+            print round 2.1                     ; 2.0
+            print round 2.9                     ; 3.0
+            print round 6                       ; 6.0
+
+            print round to :rational [29 10]    ; 3.0
+            print round to :rational [21 10]    ; 2.0
+            print round to :rational [5 2]      ; 3.0
 
             print round pi          ; 3.0
             ..........

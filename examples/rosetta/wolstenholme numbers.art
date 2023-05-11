@@ -1,0 +1,12 @@
+; by @Krenium
+
+wolstenholme: function [n][
+    numerator fold 1..n [s k] -> s + to :rational @[1 k*k]
+]
+
+print "First 20 Wolstenholme numbers:"
+loop 1..20 => [print wolstenholme &]
+
+print "\nFirst 4 Wolstenholme primes:"
+select.first:4 1..∞ =>
+    [prime? wolstenholme &] | loop => [print wolstenholme &]

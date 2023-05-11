@@ -752,11 +752,17 @@ func asFloat*(v: Value): float {.enforceNoRaises.} =
     ## get numeric value forcefully as a float
     ## 
     ## **Hint:** We have to make sure the value is 
-    ## either an Integer or a Floating value
-    if v.kind == Floating:
+    ## either an Integer, a Floating or a Rational value
+    case v.kind
+    of Floating:
         result = v.f
-    else:
+    of Integer:
         result = float(v.i)
+    of Rational:
+        result = toFloat(v.rat)
+    else:
+        discard
+
 
 func asInt*(v: Value): int {.enforceNoRaises.} = 
     ## get numeric value forcefully as an int
