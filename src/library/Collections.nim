@@ -2248,6 +2248,7 @@ proc defineSymbols*() =
     # TODO(Collections\take) returns SIGSEGV in some cases
     #  - when y param is 0
     #  - when y param is greater than a :range x param
+    #  - when y param is negative
     builtin "take",
         alias       = unaliased,
         op          = opNop,
@@ -2281,12 +2282,14 @@ proc defineSymbols*() =
                             upperLimit = InPlaced.a.len-1
                         InPlaced.a = InPlaced.a[0..upperLimit]
                 elif InPlaced.kind == Range:
-                    var res: ValueArray = newSeq[Value](upperLimit+1)
+                    let size = if y.i < InPlaced.rng.len: y.i 
+                               else: InPlaced.rng.len
+                    var res: ValueArray = newSeq[Value](size)
                     var i = 0
                     for item in items(InPlaced.rng):
+                        if i == size: break
                         res[i] = item
                         i += 1
-                        if i == upperLimit+1: break
                     InPlaced = newBlock(res)
             else:
                 if xKind == String:
@@ -2302,12 +2305,14 @@ proc defineSymbols*() =
                             upperLimit = x.a.len-1
                         push(newBlock(x.a[0..upperLimit]))
                 elif xKind == Range:
-                    var res: ValueArray = newSeq[Value](upperLimit+1)
+                    let size = if y.i < x.rng.len: y.i 
+                               else: x.rng.len
+                    var res: ValueArray = newSeq[Value](size)
                     var i = 0
                     for item in items(x.rng):
+                        if i == size: break
                         res[i] = item
                         i += 1
-                        if i == upperLimit+1: break
                     push(newBlock(res))
 
     builtin "tally",
