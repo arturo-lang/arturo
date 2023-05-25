@@ -165,16 +165,20 @@
 >> drop - :string < :string :string
 [+] passed!
 [+] passed!
+[+] passed!
 
 >> drop - :string < :string (literal) :string
+[+] passed!
 [+] passed!
 [+] passed!
 
 >> drop - :block < :block :block
 [+] passed!
 [+] passed!
+[+] passed!
 
 >> drop - :block < :block (literal) :block
+[+] passed!
 [+] passed!
 [+] passed!
 
@@ -757,13 +761,31 @@
 [+] passed!
 [+] passed!
 
->> take
+>> take - :string < :string :string
 [+] passed!
 [+] passed!
 [+] passed!
 
->> take - (literal)
+>> take - :string < :string (literal) :string
 [+] passed!
+[+] passed!
+[+] passed!
+
+>> take - :block < :block :block
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> take - :block < :block (literal) :block
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> take - :range < :range :integer
+[+] passed!
+[+] passed!
+
+>> take - :block < :range (literal) :integer
 [+] passed!
 [+] passed!
 
