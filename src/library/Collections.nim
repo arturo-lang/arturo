@@ -2245,6 +2245,9 @@ proc defineSymbols*() =
                         i += 1
                     push(newBlock(ret))
 
+    # TODO(Collections\take) returns SIGSEGV in some cases
+    #  - when y param is 0
+    #  - when y param is greater than a :range x param
     builtin "take",
         alias       = unaliased,
         op          = opNop,
