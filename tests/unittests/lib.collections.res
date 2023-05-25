@@ -784,8 +784,10 @@
 >> take - :range < :range :integer
 [+] passed!
 [+] passed!
+[+] passed!
 
 >> take - :block < :range (literal) :integer
+[+] passed!
 [+] passed!
 [+] passed!
 
