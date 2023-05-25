@@ -387,16 +387,26 @@ proc defineSymbols*() =
             if xKind == Literal:
                 ensureInPlace()
                 if InPlaced.kind == String:
-                    InPlaced.s = InPlaced.s[y.i..^1]
+                    if InPlaced.s.len >= y.i:
+                        InPlaced.s = InPlaced.s[y.i..^1]
+                    else: 
+                        InPlaced.s = ""
                 elif InPlaced.kind == Block:
-                    if InPlaced.a.len > 0:
+                    if InPlaced.a.len >= y.i:
                         InPlaced.a = InPlaced.a[y.i..^1]
+                    else:
+                        InPlaced.a = newSeq[Value](0)
             else:
                 if xKind == String:
-                    push(newString(x.s[y.i..^1]))
+                    if x.s.len >= y.i:
+                        push(newString(x.s[y.i..^1]))
+                    else:
+                        push(newString(""))
                 elif xKind == Block:
-                    if x.a.len == 0: push(newBlock())
-                    else: push(newBlock(x.a[y.i..^1]))
+                    if x.a.len >= y.i: 
+                        push(newBlock(x.a[y.i..^1]))
+                    else: 
+                        push(newBlock())
 
     builtin "empty",
         alias       = unaliased,
