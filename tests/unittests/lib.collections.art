@@ -480,42 +480,76 @@ do [
 
 topic "drop - :string < :string :string"
 do [
-    ensure -> "rturo" = drop "Arturo" 1
+    
+    ensure -> "art" = drop "art" 0
     passed
-    ensure -> "uro" = drop "Arturo" 3
+    
+    ensure -> "rt" = drop "art" 1
+    ensure -> "t" = drop "art" 2
     passed
+    
+    ensure -> "" = drop "art" 3
+    ensure -> "" = drop "art" 4
+    passed
+    
 ]
 
 topic "drop - :string < :string (literal) :string"
 do [
-    a: "Arturo", drop 'a 1
     
-    ensure -> "rturo" = a
+    a: "art", drop 'a 0
+    ensure -> "art" = a
     passed
     
-    b: "Arturo", drop 'b 3
-    ensure -> "uro" = b
+    a: "art", drop 'a 1
+    ensure -> "rt" = a
+    a: "art", drop 'a 2
+    ensure -> "t" = a
     passed
+    
+    a: "art", drop 'a 3
+    ensure -> "" = a
+    a: "art", drop 'a 4
+    ensure -> "" = a
+    passed
+    
 ]
 
 topic "drop - :block < :block :block"
 do [
-    ensure -> [2 3 4 5] = drop [1 2 3 4 5] 1
+    
+    ensure -> [a b c] = drop [a b c] 0
     passed
-    ensure -> [4 5] = drop [1 2 3 4 5] 3
+    
+    ensure -> [b c] = drop [a b c] 1
+    ensure -> [c] = drop [a b c] 2
     passed
+    
+    ensure -> [] = drop [a b c] 3
+    ensure -> [] = drop [a b c] 4
+    passed
+    
 ]
 
 topic "drop - :block < :block (literal) :block"
 do [
-    a: [1 2 3 4 5], drop 'a 1
     
-    ensure -> [2 3 4 5] = a
+    a: [a b c], drop 'a 0
+    ensure -> [a b c] = a
     passed
     
-    b: [1 2 3 4 5], drop 'b 3
-    ensure -> [4 5] = b
+    a: [a b c], drop 'a 1
+    ensure -> [b c] = a
+    a: [a b c], drop 'a 2
+    ensure -> [c] = a
     passed
+    
+    a: [a b c], drop 'a 3
+    ensure -> [] = a
+    a: [a b c], drop 'a 4
+    ensure -> [] = a
+    passed
+    
 ]
 
 topic "empty - empty?"
