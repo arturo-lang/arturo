@@ -387,29 +387,33 @@ proc defineSymbols*() =
             drop 'arr 3                   ; arr: [4 5 6 7 8 9 10]
         """:
             #=======================================================
-            if xKind == Literal:
+            
+            template numberInRange(container: untyped): untyped = 
+                container.len >= y.i
+                
+            if x.kind == Literal:
                 ensureInPlace()
-                if InPlaced.kind == String:
-                    if InPlaced.s.len >= y.i:
+                case InPlaced.kind
+                of String:
+                    if numberInRange(InPlaced.s):
                         InPlaced.s = InPlaced.s[y.i..^1]
                     else: 
                         InPlaced.s = ""
-                elif InPlaced.kind == Block:
-                    if InPlaced.a.len >= y.i:
+                of Block:
+                    if numberInRange(InPlaced.a):
                         InPlaced.a = InPlaced.a[y.i..^1]
                     else:
                         InPlaced.a = newSeq[Value](0)
+                else: discard
             else:
-                if xKind == String:
-                    if x.s.len >= y.i:
-                        push(newString(x.s[y.i..^1]))
-                    else:
-                        push(newString(""))
-                elif xKind == Block:
-                    if x.a.len >= y.i: 
-                        push(newBlock(x.a[y.i..^1]))
-                    else: 
-                        push(newBlock())
+                case x.kind
+                of String:
+                    if numberInRange(x.s): push(newString(x.s[y.i..^1]))
+                    else: push(newString(""))
+                of Block:
+                    if numberInRange(x.a): push(newBlock(x.a[y.i..^1]))
+                    else: push(newBlock())
+                else: discard
 
     builtin "empty",
         alias       = unaliased,
