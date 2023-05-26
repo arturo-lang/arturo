@@ -2269,19 +2269,20 @@ proc defineSymbols*() =
         """:
             #=======================================================
             var upperLimit = y.i-1
-            if xKind == Literal:
+            if x.kind == Literal:
                 ensureInPlace()
-                if InPlaced.kind == String:
+                case InPlaced.kind
+                of String:
                     if x.s.len > 0:
                         if upperLimit > InPlaced.s.len - 1:
                             upperLimit = InPlaced.s.len-1
                         InPlaced.s = InPlaced.s[0..upperLimit]
-                elif InPlaced.kind == Block:
+                of Block:
                     if InPlaced.a.len > 0:
                         if upperLimit > InPlaced.a.len - 1:
                             upperLimit = InPlaced.a.len-1
                         InPlaced.a = InPlaced.a[0..upperLimit]
-                elif InPlaced.kind == Range:
+                of Range:
                     let size = if y.i < InPlaced.rng.len: y.i 
                                else: InPlaced.rng.len
                     var res: ValueArray = newSeq[Value](size)
@@ -2291,20 +2292,22 @@ proc defineSymbols*() =
                         res[i] = item
                         i += 1
                     InPlaced = newBlock(res)
+                else: discard
             else:
-                if xKind == String:
+                case x.kind
+                of String:
                     if x.s.len == 0: push(newString(""))
                     else:
                         if upperLimit > x.s.len - 1:
                             upperLimit = x.s.len-1
                         push(newString(x.s[0..upperLimit]))
-                elif xKind == Block:
+                of Block:
                     if x.a.len == 0: push(newBlock())
                     else:
                         if upperLimit > x.a.len - 1:
                             upperLimit = x.a.len-1
                         push(newBlock(x.a[0..upperLimit]))
-                elif xKind == Range:
+                of Range:
                     let size = if y.i < x.rng.len: y.i 
                                else: x.rng.len
                     var res: ValueArray = newSeq[Value](size)
@@ -2314,6 +2317,7 @@ proc defineSymbols*() =
                         res[i] = item
                         i += 1
                     push(newBlock(res))
+                else: discard
 
     builtin "tally",
         alias       = unaliased,
