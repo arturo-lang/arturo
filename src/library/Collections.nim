@@ -2268,19 +2268,21 @@ proc defineSymbols*() =
             take 'arr 3                   ; arr: [1 2 3]
         """:
             #=======================================================
-            var upperLimit = y.i-1
+            
+            template getUpperLimit(container: (ValueArray|string)): int =
+                if y.i > container.len: container.len - 1
+                else: y.i - 1
+            
             if x.kind == Literal:
                 ensureInPlace()
                 case InPlaced.kind
                 of String:
                     if x.s.len > 0:
-                        if upperLimit > InPlaced.s.len - 1:
-                            upperLimit = InPlaced.s.len-1
+                        let upperLimit: int = InPlaced.s.getUpperLimit()
                         InPlaced.s = InPlaced.s[0..upperLimit]
                 of Block:
                     if InPlaced.a.len > 0:
-                        if upperLimit > InPlaced.a.len - 1:
-                            upperLimit = InPlaced.a.len-1
+                        let upperLimit: int = InPlaced.a.getUpperLimit()
                         InPlaced.a = InPlaced.a[0..upperLimit]
                 of Range:
                     let size = if y.i < InPlaced.rng.len: y.i 
@@ -2298,14 +2300,12 @@ proc defineSymbols*() =
                 of String:
                     if x.s.len == 0: push(newString(""))
                     else:
-                        if upperLimit > x.s.len - 1:
-                            upperLimit = x.s.len-1
+                        let upperLimit: int = x.s.getUpperLimit()
                         push(newString(x.s[0..upperLimit]))
                 of Block:
                     if x.a.len == 0: push(newBlock())
                     else:
-                        if upperLimit > x.a.len - 1:
-                            upperLimit = x.a.len-1
+                        let upperLimit: int = x.a.getUpperLimit()
                         push(newBlock(x.a[0..upperLimit]))
                 of Range:
                     let size = if y.i < x.rng.len: y.i 
