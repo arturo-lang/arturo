@@ -2301,15 +2301,19 @@ proc defineSymbols*() =
                     if InPlaced.a.len > 0:
                         InPlaced.a = InPlaced.a.take()
                 of Range:
-                    let size = if y.i < InPlaced.rng.len: y.i 
-                               else: InPlaced.rng.len
-                    var res: ValueArray = newSeq[Value](size)
-                    var i = 0
-                    for item in items(InPlaced.rng):
-                        if i == size: break
-                        res[i] = item
-                        i += 1
-                    InPlaced = newBlock(res)
+                    if 0 < y.i:
+                        let upperLimit: int = 
+                            if y.i < InPlaced.rng.len: y.i - 1 
+                            else: InPlaced.rng.len - 1
+                        InPlaced = newBlock(InPlaced.rng[0..upperLimit])
+                    elif 0 > y.i:
+                        let lowerLimit: int = 
+                            if abs(y.i) < InPlaced.rng.len: abs(y.i) - 1
+                            else: InPlaced.rng.len - 1
+                        InPlaced = newBlock(
+                            InPlaced.rng[InPlaced.rng.len-lowerLimit-1..InPlaced.rng.len-1])
+                    else:
+                        InPlaced = newBlock()
                 else: discard
             else:
                 case x.kind
@@ -2322,15 +2326,18 @@ proc defineSymbols*() =
                     else:
                         push(newBlock(x.a.take()))
                 of Range:
-                    let size = if y.i < x.rng.len: y.i 
-                               else: x.rng.len
-                    var res: ValueArray = newSeq[Value](size)
-                    var i = 0
-                    for item in items(x.rng):
-                        if i == size: break
-                        res[i] = item
-                        i += 1
-                    push(newBlock(res))
+                    if 0 < y.i:
+                        let upperLimit: int = 
+                            if y.i < x.rng.len: y.i - 1 
+                            else: x.rng.len - 1
+                        push(newBlock(x.rng[0..upperLimit]))
+                    elif 0 > y.i:
+                        let lowerLimit: int = 
+                            if abs(y.i) < x.rng.len: abs(y.i) - 1
+                            else: x.rng.len - 1
+                        push(newBlock(x.rng[x.rng.len-lowerLimit-1..x.rng.len-1]))
+                    else:
+                        push(newBlock())      
                 else: discard
 
     builtin "tally",
