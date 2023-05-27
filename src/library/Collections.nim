@@ -2281,8 +2281,14 @@ proc defineSymbols*() =
             #=======================================================
             
             template getUpperLimit(container: (ValueArray|string)): int =
-                if y.i > container.len: container.len - 1
-                else: y.i - 1
+                if abs(y.i) > container.len: container.len - 1
+                else: abs(y.i) - 1
+            
+            template take(container :untyped, upperLimit: int): untyped =
+                if 0 < y.i:
+                    container[0..upperLimit]
+                else:
+                    container[container.high - upperLimit..^1]
             
             if x.kind == Literal:
                 ensureInPlace()
@@ -2290,11 +2296,11 @@ proc defineSymbols*() =
                 of String:
                     if x.s.len > 0:
                         let upperLimit: int = InPlaced.s.getUpperLimit()
-                        InPlaced.s = InPlaced.s[0..upperLimit]
+                        InPlaced.s = InPlaced.s.take(upperLimit)
                 of Block:
                     if InPlaced.a.len > 0:
                         let upperLimit: int = InPlaced.a.getUpperLimit()
-                        InPlaced.a = InPlaced.a[0..upperLimit]
+                        InPlaced.a = InPlaced.a.take(upperLimit)
                 of Range:
                     let size = if y.i < InPlaced.rng.len: y.i 
                                else: InPlaced.rng.len
@@ -2312,12 +2318,12 @@ proc defineSymbols*() =
                     if x.s.len == 0: push(newString(""))
                     else:
                         let upperLimit: int = x.s.getUpperLimit()
-                        push(newString(x.s[0..upperLimit]))
+                        push(newString(x.s.take(upperLimit)))
                 of Block:
                     if x.a.len == 0: push(newBlock())
                     else:
                         let upperLimit: int = x.a.getUpperLimit()
-                        push(newBlock(x.a[0..upperLimit]))
+                        push(newBlock(x.a.take(upperLimit)))
                 of Range:
                     let size = if y.i < x.rng.len: y.i 
                                else: x.rng.len
