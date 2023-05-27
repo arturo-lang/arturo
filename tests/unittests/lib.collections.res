@@ -777,8 +777,14 @@
 [+] passed!
 [+] passed!
 [+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> take - :string < :string (literal) :string
+[+] passed!
+[+] passed!
+[+] passed!
 [+] passed!
 [+] passed!
 [+] passed!
@@ -787,8 +793,14 @@
 [+] passed!
 [+] passed!
 [+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> take - :block < :block (literal) :block
+[+] passed!
+[+] passed!
+[+] passed!
 [+] passed!
 [+] passed!
 [+] passed!
@@ -797,8 +809,14 @@
 [+] passed!
 [+] passed!
 [+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> take - :block < :range (literal) :integer
+[+] passed!
+[+] passed!
+[+] passed!
 [+] passed!
 [+] passed!
 [+] passed!
