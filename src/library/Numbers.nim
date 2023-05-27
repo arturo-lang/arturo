@@ -872,7 +872,7 @@ proc defineSymbols*() =
             infinite? a             ; true
             
             b: 0
-            infinite? b             ; true
+            infinite? b             ; false
         """:
             #=======================================================
             if xKind == Floating and (x.f == Inf or x.f == NegInf):
