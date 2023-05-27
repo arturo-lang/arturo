@@ -238,17 +238,11 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Any},
         example     = """
-            a: null
-            print coalesce a "Hello"    ; Hello
+            ; Note that 'attr returns null if it has no attribute          
+            print coalesce attr "myAttr" "attr not found"
+            print (attr "myAttr") ?? "attr not found"
             
-            b: "Spain"
-            print coalesce b "USA"      ; Spain
-            ..........
-            ages: [5 10 80 50 40 30 15]
-            print coalesce median ages 0    ; 30
-            
-            empty 'ages
-            print coalesce median ages 0    ; 0
+            print (myData) ?? defaultData
         """:
             #=======================================================
             let condition = not (xKind==Null or isFalse(x))
