@@ -2979,6 +2979,17 @@ do [
     ensure -> "art" = take "art" 4
     passed
     
+    ensure -> "" = take "art" neg 0
+    passed
+    
+    ensure -> "t" = take "art" neg 1
+    ensure -> "rt" = take "art" neg 2
+    passed
+    
+    ensure -> "art" = take "art" neg 3
+    ensure -> "art" = take "art" neg 4
+    passed
+    
 ]
 
 topic "take - :string < :string (literal) :string"
@@ -3000,6 +3011,22 @@ do [
     ensure -> "art" = a
     passed
     
+    a: "art", take 'a neg 0
+    ensure -> "" = a
+    passed
+    
+    a: "art", take 'a neg 1
+    ensure -> "t" = a
+    a: "art", take 'a neg 2
+    ensure -> "rt" = a
+    passed
+    
+    a: "art", take 'a neg 3
+    ensure -> "art" = a
+    a: "art", take 'a neg 4
+    ensure -> "art" = a
+    passed
+    
 ]
 
 topic "take - :block < :block :block"
@@ -3014,6 +3041,17 @@ do [
     
     ensure -> [a b c] = take [a b c] 3
     ensure -> [a b c] = take [a b c] 4
+    passed
+    
+    ensure -> [] = take [a b c] neg 0
+    passed
+    
+    ensure -> [c] = take [a b c] neg 1
+    ensure -> [b c] = take [a b c] neg 2
+    passed
+    
+    ensure -> [a b c] = take [a b c] neg 3
+    ensure -> [a b c] = take [a b c] neg 4
     passed
     
 ]
@@ -3034,6 +3072,22 @@ do [
     a: [a b c], take 'a 3
     ensure -> [a b c] = a
     a: [a b c], take 'a 4
+    ensure -> [a b c] = a
+    passed
+    
+    a: [a b c], take 'a neg 0
+    ensure -> [] = a
+    passed
+    
+    a: [a b c], take 'a neg 1
+    ensure -> [c] = a
+    a: [a b c], take 'a neg 2
+    ensure -> [b c] = a
+    passed
+    
+    a: [a b c], take 'a neg 3
+    ensure -> [a b c] = a
+    a: [a b c], take 'a neg 4
     ensure -> [a b c] = a
     passed
     
