@@ -492,6 +492,17 @@ do [
     ensure -> "" = drop "art" 4
     passed
     
+    ensure -> "art" = drop "art" neg 0
+    passed
+    
+    ensure -> "ar" = drop "art" neg 1
+    ensure -> "a" = drop "art" neg 2
+    passed
+    
+    ensure -> "" = drop "art" neg 3
+    ensure -> "" = drop "art" neg 4
+    passed
+    
 ]
 
 topic "drop - :string < :string (literal) :string"
@@ -513,6 +524,22 @@ do [
     ensure -> "" = a
     passed
     
+    a: "art", drop 'a neg 0
+    ensure -> "art" = a
+    passed
+    
+    a: "art", drop 'a neg 1
+    ensure -> "ar" = a
+    a: "art", drop 'a neg 2
+    ensure -> "a" = a
+    passed
+    
+    a: "art", drop 'a neg 3
+    ensure -> "" = a
+    a: "art", drop 'a neg 4
+    ensure -> "" = a
+    passed
+    
 ]
 
 topic "drop - :block < :block :block"
@@ -527,6 +554,17 @@ do [
     
     ensure -> [] = drop [a b c] 3
     ensure -> [] = drop [a b c] 4
+    passed
+    
+    ensure -> [a b c] = drop [a b c] neg 0
+    passed
+    
+    ensure -> [a b] = drop [a b c] neg 1
+    ensure -> [a] = drop [a b c] neg 2
+    passed
+    
+    ensure -> [] = drop [a b c] neg 3
+    ensure -> [] = drop [a b c] neg 4
     passed
     
 ]
@@ -547,6 +585,22 @@ do [
     a: [a b c], drop 'a 3
     ensure -> [] = a
     a: [a b c], drop 'a 4
+    ensure -> [] = a
+    passed
+    
+    a: [a b c], drop 'a neg 0
+    ensure -> [a b c] = a
+    passed
+    
+    a: [a b c], drop 'a neg 1
+    ensure -> [a b] = a
+    a: [a b c], drop 'a neg 2
+    ensure -> [a] = a
+    passed
+    
+    a: [a b c], drop 'a neg 3
+    ensure -> [] = a
+    a: [a b c], drop 'a neg 4
     ensure -> [] = a
     passed
     
