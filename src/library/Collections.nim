@@ -365,8 +365,6 @@ proc defineSymbols*() =
                 let res = unzip(x.a.map((z)=>(requireValue(z,{Block,Inline});(z.a[0], z.a[1]))))
                 push(newBlock(@[newBlock(res[0]), newBlock(res[1])]))
                 
-                
-    # TODO(Collections\drop) returns SIGSEGV when y is a negative number 
 
     builtin "drop",
         alias       = unaliased,
