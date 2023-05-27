@@ -389,29 +389,35 @@ proc defineSymbols*() =
             #=======================================================
             
             template numberInRange(container: untyped): untyped = 
-                container.len >= y.i
+                container.len >= abs(y.i)
+                
+            template drop(container: untyped): untyped =
+                if 0 < y.i:
+                    container[y.i..^1]
+                else:
+                    container[0.. container.high - abs(y.i)]
                 
             if x.kind == Literal:
                 ensureInPlace()
                 case InPlaced.kind
                 of String:
                     if numberInRange(InPlaced.s):
-                        InPlaced.s = InPlaced.s[y.i..^1]
+                        InPlaced.s = InPlaced.s.drop()
                     else: 
                         InPlaced.s = ""
                 of Block:
                     if numberInRange(InPlaced.a):
-                        InPlaced.a = InPlaced.a[y.i..^1]
+                        InPlaced.a = InPlaced.a.drop()
                     else:
                         InPlaced.a = newSeq[Value](0)
                 else: discard
             else:
                 case x.kind
                 of String:
-                    if numberInRange(x.s): push(newString(x.s[y.i..^1]))
+                    if numberInRange(x.s): push(newString(x.s.drop()))
                     else: push(newString(""))
                 of Block:
-                    if numberInRange(x.a): push(newBlock(x.a[y.i..^1]))
+                    if numberInRange(x.a): push(newBlock(x.a.drop()))
                     else: push(newBlock())
                 else: discard
 
