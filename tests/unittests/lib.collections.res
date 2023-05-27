@@ -166,8 +166,14 @@
 [+] passed!
 [+] passed!
 [+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> drop - :string < :string (literal) :string
+[+] passed!
+[+] passed!
+[+] passed!
 [+] passed!
 [+] passed!
 [+] passed!
@@ -176,8 +182,14 @@
 [+] passed!
 [+] passed!
 [+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
 
 >> drop - :block < :block (literal) :block
+[+] passed!
+[+] passed!
+[+] passed!
 [+] passed!
 [+] passed!
 [+] passed!
