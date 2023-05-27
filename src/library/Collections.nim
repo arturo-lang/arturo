@@ -2272,11 +2272,18 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {String, Block, Nothing},
         example     = """
-            str: take "some text" 5
-            print str                     ; some
+            str: "some text"
+            take str 4              ; => some
+            take str neg 4          ; => text
+            
+            take 1..3 2             ; => [1 2]
             ..........
-            arr: 1..10
-            take 'arr 3                   ; arr: [1 2 3]
+            arr: @1..10
+            take 'arr 3                   
+            arr                     ; => arr: [1 2 3]
+            ..........
+            take [1 2 3] 3          ; => [1 2 3]
+            take [1 2 3] 4          ; => [1 2 3]
         """:
             #=======================================================
             
