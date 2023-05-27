@@ -380,11 +380,16 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {String, Block, Nothing},
         example     = """
-            str: drop "some text" 5
-            print str                     ; text
+            str: "some text"
+            drop str 5                  ; => text
+            drop str neg 5              ; => some
             ..........
-            arr: 1..10
-            drop 'arr 3                   ; arr: [4 5 6 7 8 9 10]
+            arr: @1..10
+            drop 'arr 3                   
+            arr                         ; => [4 5 6 7 8 9 10]
+            ..........
+            drop [1 2 3] 3              ; => []
+            drop [1 2 3] 4              ; => []
         """:
             #=======================================================
             
