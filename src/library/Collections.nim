@@ -364,6 +364,7 @@ proc defineSymbols*() =
             else:
                 let res = unzip(x.a.map((z)=>(requireValue(z,{Block,Inline});(z.a[0], z.a[1]))))
                 push(newBlock(@[newBlock(res[0]), newBlock(res[1])]))
+                
 
     builtin "drop",
         alias       = unaliased,
@@ -377,26 +378,51 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {String, Block, Nothing},
         example     = """
-            str: drop "some text" 5
-            print str                     ; text
+            str: "some text"
+            drop str 5                  ; => text
+            drop str neg 5              ; => some
             ..........
-            arr: 1..10
-            drop 'arr 3                   ; arr: [4 5 6 7 8 9 10]
+            arr: @1..10
+            drop 'arr 3                   
+            arr                         ; => [4 5 6 7 8 9 10]
+            ..........
+            drop [1 2 3] 3              ; => []
+            drop [1 2 3] 4              ; => []
         """:
             #=======================================================
-            if xKind == Literal:
+            
+            template numberInRange(container: untyped): untyped = 
+                container.len >= abs(y.i)
+                
+            template drop(container: untyped): untyped =
+                if 0 < y.i:
+                    container[y.i..^1]
+                else:
+                    container[0.. container.high - abs(y.i)]
+                
+            if x.kind == Literal:
                 ensureInPlace()
-                if InPlaced.kind == String:
-                    InPlaced.s = InPlaced.s[y.i..^1]
-                elif InPlaced.kind == Block:
-                    if InPlaced.a.len > 0:
-                        InPlaced.a = InPlaced.a[y.i..^1]
+                case InPlaced.kind
+                of String:
+                    if numberInRange(InPlaced.s):
+                        InPlaced.s = InPlaced.s.drop()
+                    else: 
+                        InPlaced.s = ""
+                of Block:
+                    if numberInRange(InPlaced.a):
+                        InPlaced.a = InPlaced.a.drop()
+                    else:
+                        InPlaced.a = newSeq[Value](0)
+                else: discard
             else:
-                if xKind == String:
-                    push(newString(x.s[y.i..^1]))
-                elif xKind == Block:
-                    if x.a.len == 0: push(newBlock())
-                    else: push(newBlock(x.a[y.i..^1]))
+                case x.kind
+                of String:
+                    if numberInRange(x.s): push(newString(x.s.drop()))
+                    else: push(newString(""))
+                of Block:
+                    if numberInRange(x.a): push(newBlock(x.a.drop()))
+                    else: push(newBlock())
+                else: discard
 
     builtin "empty",
         alias       = unaliased,
@@ -2251,55 +2277,80 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {String, Block, Nothing},
         example     = """
-            str: take "some text" 5
-            print str                     ; some
+            str: "some text"
+            take str 4              ; => some
+            take str neg 4          ; => text
+            
+            take 1..3 2             ; => [1 2]
             ..........
-            arr: 1..10
-            take 'arr 3                   ; arr: [1 2 3]
+            arr: @1..10
+            take 'arr 3                   
+            arr                     ; => arr: [1 2 3]
+            ..........
+            take [1 2 3] 3          ; => [1 2 3]
+            take [1 2 3] 4          ; => [1 2 3]
         """:
             #=======================================================
-            var upperLimit = y.i-1
-            if xKind == Literal:
+            
+            template getUpperLimit(container: untyped): untyped =
+                if abs(y.i) > container.len: container.high
+                else: abs(y.i) - 1
+            
+            template take(container: untyped): untyped =
+                let upperLimit: int = container.getUpperLimit()
+                if 0 < y.i:
+                    container[0..upperLimit]
+                else:
+                    container[container.high - upperLimit..^1]
+            
+            if x.kind == Literal:
                 ensureInPlace()
-                if InPlaced.kind == String:
+                case InPlaced.kind
+                of String:
                     if x.s.len > 0:
-                        if upperLimit > InPlaced.s.len - 1:
-                            upperLimit = InPlaced.s.len-1
-                        InPlaced.s = InPlaced.s[0..upperLimit]
-                elif InPlaced.kind == Block:
+                        InPlaced.s = InPlaced.s.take()
+                of Block:
                     if InPlaced.a.len > 0:
-                        if upperLimit > InPlaced.a.len - 1:
-                            upperLimit = InPlaced.a.len-1
-                        InPlaced.a = InPlaced.a[0..upperLimit]
-                elif InPlaced.kind == Range:
-                    var res: ValueArray = newSeq[Value](upperLimit+1)
-                    var i = 0
-                    for item in items(InPlaced.rng):
-                        res[i] = item
-                        i += 1
-                        if i == upperLimit+1: break
-                    InPlaced = newBlock(res)
+                        InPlaced.a = InPlaced.a.take()
+                of Range:
+                    if 0 < y.i:
+                        let upperLimit: int = 
+                            if y.i < InPlaced.rng.len: y.i - 1 
+                            else: InPlaced.rng.len - 1
+                        InPlaced = newBlock(InPlaced.rng[0..upperLimit])
+                    elif 0 > y.i:
+                        let lowerLimit: int = 
+                            if abs(y.i) < InPlaced.rng.len: abs(y.i) - 1
+                            else: InPlaced.rng.len - 1
+                        InPlaced = newBlock(
+                            InPlaced.rng[InPlaced.rng.len-lowerLimit-1..InPlaced.rng.len-1])
+                    else:
+                        InPlaced = newBlock()
+                else: discard
             else:
-                if xKind == String:
+                case x.kind
+                of String:
                     if x.s.len == 0: push(newString(""))
                     else:
-                        if upperLimit > x.s.len - 1:
-                            upperLimit = x.s.len-1
-                        push(newString(x.s[0..upperLimit]))
-                elif xKind == Block:
+                        push(newString(x.s.take()))
+                of Block:
                     if x.a.len == 0: push(newBlock())
                     else:
-                        if upperLimit > x.a.len - 1:
-                            upperLimit = x.a.len-1
-                        push(newBlock(x.a[0..upperLimit]))
-                elif xKind == Range:
-                    var res: ValueArray = newSeq[Value](upperLimit+1)
-                    var i = 0
-                    for item in items(x.rng):
-                        res[i] = item
-                        i += 1
-                        if i == upperLimit+1: break
-                    push(newBlock(res))
+                        push(newBlock(x.a.take()))
+                of Range:
+                    if 0 < y.i:
+                        let upperLimit: int = 
+                            if y.i < x.rng.len: y.i - 1 
+                            else: x.rng.len - 1
+                        push(newBlock(x.rng[0..upperLimit]))
+                    elif 0 > y.i:
+                        let lowerLimit: int = 
+                            if abs(y.i) < x.rng.len: abs(y.i) - 1
+                            else: x.rng.len - 1
+                        push(newBlock(x.rng[x.rng.len-lowerLimit-1..x.rng.len-1]))
+                    else:
+                        push(newBlock())      
+                else: discard
 
     builtin "tally",
         alias       = unaliased,
