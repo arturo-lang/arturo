@@ -238,6 +238,11 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Any},
         example     = """
+            ; Note that 'attr returns null if it has no attribute          
+            print coalesce attr "myAttr" "attr not found"
+            print (attr "myAttr") ?? "attr not found"
+            
+            print (myData) ?? defaultData
         """:
             #=======================================================
             let condition = not (xKind==Null or isFalse(x))
