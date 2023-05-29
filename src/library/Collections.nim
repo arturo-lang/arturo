@@ -66,7 +66,7 @@ proc defineSymbols*() =
             append [1 2 3] [4 5]      ; => [1 2 3 4 5]
             ..........
             print "hell" ++ "o!"      ; hello!
-            print [1 2 3] ++ 4 ++ 5   ; [1 2 3 4 5]
+            print [1 2 3] ++ [4 5]    ; [1 2 3 4 5]
             ..........
             a: "hell"
             append 'a "o"
@@ -1269,6 +1269,13 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {String, Block, Binary, Nothing},
         example     = """
+            prepend "uro" "Art"     ; => "Arturo"
+            prepend [2 3 4] 1       ; => [1 2 3 4]
+            prepend [3 4 5] [1 2]   ; => [1 2 3 4 5]
+            ..........
+            a: "pend"
+            prepend 'a "pre"
+            print a                 ; prepend
         """:
             #=======================================================
             if xKind == Literal:
