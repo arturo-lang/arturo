@@ -36,13 +36,14 @@ import os
 #=======================================
 
 type
-    LinenoiseCompletions* = object
-        len*: csize_t
-        cvec*: cstringArray
+    constChar* {.importc:"const char*".} = cstring
+    LinenoiseCompletions* {.bycopy.} = object
+      len*: csize_t
+      cvec*: cstringArray
 
-    LinenoiseCompletionCallback*    = proc (buf: cstring; lc: ptr LinenoiseCompletions) {.cdecl.}
-    LinenoiseHintsCallback*         = proc (buf: cstring; color: var cint; bold: var cint): cstring {.cdecl.}
-    LinenoiseFreeHintsCallback*     = proc (buf: cstring; color: var cint; bold: var cint) {.cdecl.}
+    LinenoiseCompletionCallback*    = proc (buf: constChar; lc: ptr LinenoiseCompletions, userdata: pointer) {.cdecl.}
+    LinenoiseHintsCallback*         = proc (buf: constChar; color: var cint; bold: var cint, userdata: pointer): cstring {.cdecl.}
+    LinenoiseFreeHintsCallback*     = proc (buf: constChar; color: var cint; bold: var cint, userdata: pointer) {.cdecl.}
 
 #=======================================
 # Function prototypes
@@ -50,8 +51,8 @@ type
 
 {.push header: "linenoise/linenoise.h", cdecl.}
 
-proc linenoiseSetCompletionCallback*(cback: ptr LinenoiseCompletionCallback, userdata: cstring) {.importc: "linenoiseSetCompletionCallback".}
-proc linenoiseSetHintsCallback*(cback: ptr LinenoiseHintsCallback, userdata: cstring) {.importc: "linenoiseSetHintsCallback".}
+proc linenoiseSetCompletionCallback*(cback: ptr LinenoiseCompletionCallback, userdata: pointer): ptr LinenoiseCompletionCallback {.importc: "linenoiseSetCompletionCallback".}
+proc linenoiseSetHintsCallback*(callback: ptr LinenoiseHintsCallback, userdata: pointer) {.importc: "linenoiseSetHintsCallback".}
 proc linenoiseAddCompletion*(a2: ptr LinenoiseCompletions; a3: cstring) {.importc: "linenoiseAddCompletion".}
 proc linenoiseReadLine*(prompt: cstring): cstring {.importc: "linenoise".}
 proc linenoiseHistoryAdd*(line: cstring): cint {.importc: "linenoiseHistoryAdd", discardable.}

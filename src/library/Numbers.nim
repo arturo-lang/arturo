@@ -889,6 +889,15 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
+            infinite? 4             ; false
+            infinite? infinite      ; true
+            infinite? ∞             ; true
+            ..........
+            a: infinite
+            infinite? a             ; true
+            
+            b: 0
+            infinite? b             ; false
         """:
             #=======================================================
             if xKind == Floating and (x.f == Inf or x.f == NegInf):
