@@ -120,7 +120,8 @@ proc `==`*(x: Value, y: Value): bool =
             if y.iKind == NormalInteger:
                 return x.q == y.i
             else:
-                return x.q == y.bi
+                when not defined(NOGMP):
+                    return x.q == y.bi
         elif y.kind == Floating:
             return x.q == y.f
         elif y.kind == Rational:
@@ -130,7 +131,8 @@ proc `==`*(x: Value, y: Value): bool =
                 if x.iKind == NormalInteger:
                     return x.i == y.q
                 else:
-                    return x.bi == y.q
+                    when not defined(NOGMP):
+                        return x.bi == y.q
             elif x.kind == Floating:
                 return x.f == y.q
             elif x.kind == Rational:
@@ -343,7 +345,8 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
             if y.iKind == NormalInteger:
                 return x.q < y.i
             else:
-                return x.q < y.bi
+                when not defined(NOGMP):
+                    return x.q < y.bi
         elif y.kind == Floating:
             return x.q < y.f
         elif y.kind == Rational:
@@ -353,7 +356,8 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
                 if x.iKind == NormalInteger:
                     return x.i < y.q
                 else:
-                    return x.bi < y.q
+                    when not defined(NOGMP):
+                        return x.bi < y.q
             elif x.kind == Floating:
                 return x.f < y.q
             elif x.kind == Rational:
@@ -453,7 +457,8 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
             if y.iKind == NormalInteger:
                 return x.q > y.i
             else:
-                return x.q > y.bi
+                when not defined(NOGMP):
+                    return x.q > y.bi
         elif y.kind == Floating:
             return x.q > y.f
         elif y.kind == Rational:
@@ -463,7 +468,8 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
                 if x.iKind == NormalInteger:
                     return x.i > y.q
                 else:
-                    return x.bi > y.q
+                    when not defined(NOGMP):
+                        return x.bi > y.q
             elif x.kind == Floating:
                 return x.f > y.q
             elif x.kind == Rational:
