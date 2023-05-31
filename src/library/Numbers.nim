@@ -969,8 +969,8 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the logarithm of value using given base",
         args        = {
-            "value" : {Integer,Floating},
-            "base"  : {Integer,Floating}
+            "value" : {Integer,Floating,Rational},
+            "base"  : {Integer,Floating,Rational}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
