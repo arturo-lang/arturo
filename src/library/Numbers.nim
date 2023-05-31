@@ -344,8 +344,8 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse tangent of y / x",
         args        = {
-            "y"     : {Integer,Floating},
-            "x"     : {Integer,Floating}
+            "y"     : {Integer,Floating,Rational},
+            "x"     : {Integer,Floating,Rational}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
