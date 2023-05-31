@@ -1369,7 +1369,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get square root of given value",
         args        = {
-            "value" : {Integer,Floating,Complex}
+            "value" : {Integer,Floating,Complex,Rational}
         },
         attrs       = {
             "integer"   : ({Logical},"get the integer square root")
