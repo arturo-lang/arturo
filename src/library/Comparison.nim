@@ -60,14 +60,14 @@ proc defineSymbols*() =
             3 <=> 2 3           ; => true  
         """:
             #=======================================================
-            if x < y: 
-                push VFALSE
-                return
-            if x > z:
-                push VFALSE
-                return
-
-            push VTRUE
+            template isBetween(target, lower, upper: untyped) =
+                if target < lower or target > upper:
+                    push VFALSE
+                else:
+                    push VTRUE
+        
+            if y < z: x.isBetween(y, z)
+            else: x.isBetween(z, y)
 
     # TODO(Comparison/compare) verify it's working right
     #  The main problem seems to be this vague `else:`.
