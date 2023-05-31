@@ -96,6 +96,11 @@
 >> between? - :date
 [+] passed!
 
+>> between? - test with reversed index
+[+] passed!
+[+] passed!
+[+] passed!
+
 >> compare
 
 >> compare - :integer :floating :rational
