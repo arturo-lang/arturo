@@ -947,7 +947,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the natural logarithm of given value",
         args        = {
-            "value" : {Integer,Floating,Complex}
+            "value" : {Integer,Floating,Complex,Rational}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
