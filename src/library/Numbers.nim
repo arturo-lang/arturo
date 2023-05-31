@@ -1465,6 +1465,12 @@ proc defineSymbols*() =
         """:
             #=======================================================
             processTrigonometric(tanh)
+            
+    constant "tau",
+        alias       = unaliased,
+        description = "the number tau, mathematical constant":
+            newFloating(TAU)
+            
 
 #=======================================
 # Add Library
