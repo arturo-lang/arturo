@@ -854,8 +854,8 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the hypotenuse of a right-angle triangle with given base and height",
         args        = {
-            "base"  : {Integer,Floating},
-            "height": {Integer,Floating}
+            "base"  : {Integer,Floating,Rational},
+            "height": {Integer,Floating,Rational}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
