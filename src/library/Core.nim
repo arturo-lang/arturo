@@ -144,6 +144,11 @@ proc defineSymbols*() =
             ; compile with:
             ; clang -c -w mylib.c
             ; clang -shared -o libmylib.dylib mylib.o
+            ; 
+            ; NOTE:
+            ; * If you're using GCC, just replace `clang` by `gcc`
+            ; * If you're not on MacOS, replace your `dylib` by the right extension
+            ;   normally they can be `.so` or `.dll` in other Operational Systems.
             
             ; #include <stdio.h>
             ;
