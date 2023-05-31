@@ -54,9 +54,12 @@ proc defineSymbols*() =
             between? 1 2 3      ; => false
             between? 2 0 3      ; => true
             between? 3 2 3      ; => true
+            between? 3 3 2      ; => true
 
             1 <=> 2 3           ; => false
+            1 <=> 3 2           ; => false
             2 <=> 0 3           ; => true
+            2 <=> 3 0           ; => true
             3 <=> 2 3           ; => true  
         """:
             #=======================================================
