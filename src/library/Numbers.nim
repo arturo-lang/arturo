@@ -1404,7 +1404,7 @@ proc defineSymbols*() =
             "collection"    : {Block,Range}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating},
+        returns     = {Integer,Floating,Rational},
         example     = """
             print sum [3 4]           ; 7
             print sum [1 2 4 6]       ; 13
