@@ -690,7 +690,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the exponential function for given value",
         args        = {
-            "value" : {Integer,Floating,Complex}
+            "value" : {Integer,Floating,Complex,Rational}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
