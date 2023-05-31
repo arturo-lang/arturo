@@ -768,7 +768,8 @@ proc initQuantities*() =
     Properties = generateProperties()
     Quantities = generateQuantities()
 
-    generateConstants()
+    when not defined(NOGMP):
+        generateConstants()
 
 #=======================================
 # Testing
