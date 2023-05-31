@@ -1168,7 +1168,7 @@ proc defineSymbols*() =
         attrs       = {
             "cartesian"  : ({Logical},"return the cartesian product of given sublists")
         },
-        returns     = {Integer,Floating},
+        returns     = {Integer,Floating,Rational},
         example     = """
             print product [3 4]       ; 12
             print product [1 2 4 6]   ; 48
