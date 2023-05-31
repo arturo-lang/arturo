@@ -796,7 +796,7 @@ proc defineSymbols*() =
             rule        = PrefixPrecedence,
             description = "calculate the gamma function for given value",
             args        = {
-                "value" : {Integer,Floating}
+                "value" : {Integer,Floating,Rational}
             },
             attrs       = NoAttrs,
             returns     = {Floating},
