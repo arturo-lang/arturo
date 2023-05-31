@@ -201,7 +201,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic cotangent of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
