@@ -1201,8 +1201,8 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get a random integer between given limits",
         args        = {
-            "lowerLimit"    : {Integer, Floating},
-            "upperLimit"    : {Integer, Floating}
+            "lowerLimit"    : {Integer, Floating, Rational},
+            "upperLimit"    : {Integer, Floating, Rational}
         },
         attrs       = NoAttrs,
         returns     = {Integer, Floating},
