@@ -53,9 +53,6 @@ template processTrigonometric(fun: untyped): untyped =
 
 # TODO(Numbers) add `tau` constant
 #  labels:library, new feature
-
-# TODO(Numbers) add support to `:rational`to necessary functions
-#   labels:library, new feature, open discussion
  
 proc defineSymbols*() =
 
