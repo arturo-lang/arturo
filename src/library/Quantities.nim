@@ -57,7 +57,9 @@ template convertQuantity(x, y: Value, xKind, yKind: ValueKind): untyped =
 
 proc defineSymbols*() =
 
-    addPhysicalConstants()
+    when not defined(NOGMP):
+        addPhysicalConstants()
+        
     addPropertyPredicates()
 
     builtin "conforms?",
