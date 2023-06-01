@@ -648,6 +648,49 @@ do [
     
 ]
 
+topic « between? - test with reversed index
+do [
+ 
+    ; NOTE: as between? is agnostic to types, 
+    ; and the reversed order works via untyped template, 
+    ; this test works for every single test already tested above.
+    ; So, I'll not re-implement everything again, since it's not necessary.
+    
+    ensure -> between? 1 2                  1
+    ensure -> between? 1 2.0                1
+    ensure -> between? 1 to :rational [2 1] 1
+    ensure -> between? 1 2                  1.0
+    ensure -> between? 1 2.0                1.0
+    ensure -> between? 1 to :rational [2 1] 1.0
+    ensure -> between? 1 2                  to :rational [1 1]
+    ensure -> between? 1 2.0                to :rational [1 1]
+    ensure -> between? 1 to :rational [2 1] to :rational [1 1]
+    passed
+    
+    ensure -> between? 1 2                  0
+    ensure -> between? 1 2.0                0
+    ensure -> between? 1 to :rational [2 1] 0
+    ensure -> between? 1 2                  0.0
+    ensure -> between? 1 2.0                0.0
+    ensure -> between? 1 to :rational [2 1] 0.0
+    ensure -> between? 1 2                  to :rational [0 1]
+    ensure -> between? 1 2.0                to :rational [0 1]
+    ensure -> between? 1 to :rational [2 1] to :rational [0 1]
+    passed
+
+    ensure -> not? between? 0 2                     1
+    ensure -> not? between? 0 2.0                   1
+    ensure -> not? between? 0 to :rational [2 1]    1
+    ensure -> not? between? 0 2                     1.0
+    ensure -> not? between? 0 2.0                   1.0
+    ensure -> not? between? 0 to :rational [2 1]    1.0
+    ensure -> not? between? 0 2                     to :rational [1 1]
+    ensure -> not? between? 0 2.0                   to :rational [1 1]
+    ensure -> not? between? 0 to :rational [2 1]    to :rational [1 1]
+    passed
+    
+]
+
 
 topic « compare
 do [
