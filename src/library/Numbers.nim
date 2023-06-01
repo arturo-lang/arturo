@@ -51,9 +51,6 @@ template processTrigonometric(fun: untyped): untyped =
 # Methods
 #=======================================
 
-# TODO(Numbers) add `tau` constant
-#  labels:library, new feature
-
 # TODO(Numbers) add support to `:rational`to necessary functions
 #   labels:library, new feature, open discussion
  
@@ -1465,6 +1462,12 @@ proc defineSymbols*() =
         """:
             #=======================================================
             processTrigonometric(tanh)
+            
+    constant "tau",
+        alias       = unaliased,
+        description = "the number tau, mathematical constant":
+            newFloating(TAU)
+            
 
 #=======================================
 # Add Library
