@@ -109,42 +109,6 @@ func `^`(x: CTRational, y: int): CTRational =
         result.num = x.num ^ y
         result.den = x.den ^ y
 
-func safeToRational*(x: float,
-                 n: int = high(int) shr (sizeof(int) div 2 * 8)): Rational[int] =
-    ## Calculates the best rational approximation of `x`,
-    ## where the denominator is smaller than `n`
-    ## (default is the largest possible `int` for maximal resolution).
-    ##
-    ## The algorithm is based on the theory of continued fractions.
-    # David Eppstein / UC Irvine / 8 Aug 1993
-    # With corrections from Arno Formella, May 2008
-    runnableExamples:
-        let x = 1.2
-        doAssert x.toRational.toFloat == x
-
-    var
-        m11, m22 = 1
-        m12, m21 = 0
-        x = x
-
-    when defined(bit32):
-        var ai = int32(x)
-    else:
-        var ai = int(x)
-    while m21 * ai + m22 <= n:
-        swap m12, m11
-        swap m22, m21
-        m11 = m12 * ai + m11
-        m21 = m22 * ai + m21
-        if x == float(ai): break # division by zero
-        x = 1 / (x - float(ai))
-        if x > float(high(int32)): break # representation failure
-        when defined(bit32):
-            ai = int32(x)
-        else:
-            ai = int(x)
-    result = m11 // m21
-
 proc getDefined(str: string): Quantity =
     let (pref, unit) = parsable[str]
     result = defs[unit]
@@ -218,7 +182,7 @@ proc parseQuantity*(s: string): Quantity =
             let parts = str.replace("pi", $(PI)).split(":")
             return toRational(parseFloat(parts[0]) / parseFloat(parts[1]))
         else:
-            return safeToRational(parseFloat(str))
+            return toRational(parseFloat(str))
 
     var components = s.split(" ")
 
