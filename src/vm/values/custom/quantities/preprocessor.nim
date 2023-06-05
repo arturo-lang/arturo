@@ -126,7 +126,7 @@ func safeToRational*(x: float,
         m11, m22 = 1
         m12, m21 = 0
         x = x
-        
+
     when defined(bit32):
         var ai = int32(x)
     else:
@@ -139,7 +139,10 @@ func safeToRational*(x: float,
         if x == float(ai): break # division by zero
         x = 1 / (x - float(ai))
         if x > float(high(int32)): break # representation failure
-        ai = int(x)
+        when defined(bit32):
+            ai = int32(x)
+        else:
+            ai = int(x)
     result = m11 // m21
 
 proc getDefined(str: string): Quantity =
