@@ -36,6 +36,7 @@ when not defined(WEB):
 import vm/lib
 import vm/[bytecode, errors, eval, exec, opcodes, parse]
 
+import vm/values/printable
 import vm/values/custom/[vbinary, vrange, vrational]
 
 #=======================================
@@ -522,19 +523,20 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
             of Quantity:
                 case tp:
                     of Floating:
-                        return newFloating(toFloat(x.q.original))
+                        return newFloating(toFloat(y.q.original))
                     of Rational:
-                        return newRational(x.q.original)
+                        return newRational(y.q.original)
                     of String:
-                        return newString($(x.q))
+                        debugEcho "converting Quantity to String..."
+                        return newString($(y.q))
                     of Unit:
-                        return newUnit(x.q.atoms)
+                        return newUnit(y.q.atoms)
                     else:
                         throwCannotConvert()
 
             of Unit:
                 if tp == String:
-                    return newString($(x.u))
+                    return newString($(y.u))
                 else:
                     throwCannotConvert()
 
