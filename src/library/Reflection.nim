@@ -745,7 +745,9 @@ proc defineSymbols*() =
         args        = {
             "value" : {Any}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "big"   : ({Logical},"check if, internally, it's a bignum")
+        },
         returns     = {Logical},
         example     = """
             print quantity? 1:m         ; true
@@ -754,7 +756,10 @@ proc defineSymbols*() =
             print quantity? 3           ; false 
         """:
             #=======================================================
-            push(newLogical(xKind==Quantity))
+            if (hadAttr("big")):
+                push(newLogical(xKind==Quantity and x.q.original.rKind==BigRational))
+            else:
+                push(newLogical(xKind==Quantity))
 
     builtin "range?",
         alias       = unaliased, 
