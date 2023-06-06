@@ -527,7 +527,6 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                     of Rational:
                         return newRational(y.q.original)
                     of String:
-                        debugEcho "converting Quantity to String..."
                         return newString($(y.q))
                     of Unit:
                         return newUnit(y.q.atoms)
