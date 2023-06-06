@@ -969,8 +969,12 @@ func digits*(z: mpz_ptr, base: range[(2.cint) .. (62.cint)] = 10): csize_t =
     mpz_sizeinbase(z, base)
 
 func numerator*(x: Rat): Int =
+    debugEcho "getting numerator"
     result = newInt()
-    mpq_get_num(result[], x[])
+    mpz_set(result[], mpq_numref(x[])[])
+    debugEcho "got result"
+    # mpq_get_num(result[], x[])
+    # debugEcho "got num"
     
 func denominator*(x: Rat): Int =
     result = newInt()
