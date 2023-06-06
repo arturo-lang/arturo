@@ -696,8 +696,6 @@ proc `$`*(atoms: Atoms, oneline: static bool=false): string =
         result = atoms.mapIt($it).join("·")
 
 proc `$`*(q: Quantity): string =
-    echo "in Quantity.$"
-    echo "\t internal rational type: " &  $(q.original.rKind)
     if unlikely(q.isCurrency()):
         result = stringify(q.original, CurrencyRational) & " " & $q.atoms
     elif unlikely(q.isTemperature()):
