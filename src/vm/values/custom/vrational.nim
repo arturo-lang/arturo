@@ -88,11 +88,18 @@ func simplifyRational(x: var VRational) =
             x = toRational(getInt(numerator(x.br)), getInt(denominator(x.br)))
 
 func canBeCoerced*(x: VRational): bool =
+    debugEcho "in canBeCoerced"
     if x.rKind == NormalRational:
         let quotient = x.num / x.den
         return quotient == round(quotient, 10)
     else:
         when not defined(NOGMP):
+            debugEcho "canBeCoerced (big rational)"
+            debugEcho "numerator: ", numerator(x.br)
+            debugEcho "denominator: ", denominator(x.br)
+            debugEcho "numerator (float): ", toCDouble(numerator(x.br))
+            debugEcho "denominator (float): ", toCDouble(denominator(x.br))
+
             let quotient = float64(float(toCDouble(numerator(x.br)) / toCDouble(denominator(x.br))))
             return quotient == round(quotient, 10)
 
@@ -264,6 +271,7 @@ when not defined(NOGMP):
 #=======================================
 
 func toFloat*(x: VRational): float =
+    debugEcho "in toFloat"
     if x.rKind == NormalRational:
         result = x.num / x.den
     else:
@@ -420,6 +428,7 @@ func `-`*(x, y: VRational): VRational =
         if y.rKind == NormalRational:
             overflowGuard:
                 result = VRational()
+                result.rKind = NormalRational
                 let common = lcm(x.den, y.den)
                 #result.num = common div x.den * x.num - common div y.den * y.num
                 let part1 = common div x.den * x.num
@@ -659,6 +668,7 @@ func `/`*(x, y: VRational): VRational =
         if y.rKind == NormalRational:
             overflowGuard:
                 result = VRational()
+                result.rKind = NormalRational
                 #result.num = x.num * y.den
                 tryOp: mulIntWithOverflow(x.num, y.den, result.num)
                 #result.den = x.den * y.num
@@ -1069,6 +1079,7 @@ func `$`*(x: VRational): string =
             result = $x.br
 
 func stringify*(x: VRational, mode: static RationalMode = RegularRational): string =
+    debugEcho "in VRational.stringify"
     # convert VRational to normalized string
     when mode == CurrencyRational:
         result = (toFloat(x)).formatFloat(ffDecimal, 2)
@@ -1082,17 +1093,22 @@ func stringify*(x: VRational, mode: static RationalMode = RegularRational): stri
             when not defined(NOGMP):
                 result = (toFloat(x)).formatFloat(ffDecimal, 1)
     else:
+        debugEcho "here"
         if x.rKind == NormalRational:
             if x.den == 1:
                 result = $x.num
             else:
+                debugEcho "if-else"
                 if x.canBeCoerced():
                     result = $(toFloat(x))
                 else:
                     result = $x.num & "/" & $x.den
         else:
+            debugEcho "else"
             when not defined(NOGMP):
                 if x.canBeCoerced:
+                    debugEcho "else-if"
                     result = $(toFloat(x))
                 else:
+                    debugEcho "else-else"
                     result = $x.br
