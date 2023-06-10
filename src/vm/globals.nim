@@ -127,16 +127,19 @@ template GetSym*(s: string): untyped =
     ## so, we have to make sure we know it exists beforehand
     Syms[s]
 
-template SetSym*(s: string, v: Value, safe: static bool = false): untyped =
+template SetSym*(s: string, v: Value, safe: static bool = false, forceReadOnly: static bool = false): untyped =
     ## Sets symbol to given value in the symbol table
     when safe:
         # When doing it safely, also check if the value to be assigned is a read-only value
         # - if it is - we have to copy it first
         # - otherwise, go ahead and just assign it (pointer copy!)
-        if v.readonly:
+        when forceReadOnly:
             Syms[s] = copyValue(v)
         else:
-            Syms[s] = v
+            if v.readonly:
+                Syms[s] = copyValue(v)
+            else:
+                Syms[s] = v
     else:
         Syms[s] = v
 
