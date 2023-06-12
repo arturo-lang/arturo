@@ -1,0 +1,15 @@
+name: "vacuumPermeability"
+type: :quantity
+description: "the permeability of free space"
+module: "Quantities"
+line: 680
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Quantities.nim#L680"
+returns: [
+                :quantity
+        ]
+related: [
+                "Quantities/vacuumPermittivity"
+                 "Quantities/impedanceOfVacuum"
+                 "Quantities/planckTemperature"
+                 "Quantities/electronCharge"
+        ]

@@ -1,0 +1,15 @@
+name: "bohrRadius"
+type: :quantity
+description: "the radius of the first Bohr orbit of the hydrogen atom"
+module: "Quantities"
+line: 680
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Quantities.nim#L680"
+returns: [
+                :quantity
+        ]
+related: [
+                "Quantities/boltzmannConstant"
+                 "Quantities/reducedPlanckConstant"
+                 "Quantities/hartreeEnergy"
+                 "Quantities/planckConstant"
+        ]
