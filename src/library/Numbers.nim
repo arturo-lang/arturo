@@ -46,6 +46,7 @@ template processTrigonometric(fun: untyped): untyped =
         v = newQuantity(x.q.convertTo(parseAtoms("rad")))
 
     if v.kind==Complex: push(newComplex(fun(v.z)))
+    elif v.kind==Rational: push(newRational(fun(toFloat(v.rat))))
     else: push(newFloating(fun(asFloat(v))))
 
 #=======================================
