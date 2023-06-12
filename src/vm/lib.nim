@@ -187,10 +187,19 @@ template builtin*(n: string, alias: VSymbol, op: OpCode, rule: PrecedenceKind, d
 template constant*(n: string, alias: VSymbol, description: string, v: Value): untyped =
     ## add new constant with given name, alias, description - 
     ## followed by the value it's assigned to
+    
+    when defined(DEV):
+        static: echo " -> " & n
+
     SetSym(n, v)
+    let moduleName = 
+        when ((static (instantiationInfo().filename).replace(".nim")) != "macros"):
+            (static (instantiationInfo().filename.replace(".nim")))
+        else:
+            "Quantities"
     var vInfo = ValueInfo(
         descr: description,
-        module: static (instantiationInfo().filename).replace(".nim"),
+        module: moduleName,
         kind: v.kind
     )
 

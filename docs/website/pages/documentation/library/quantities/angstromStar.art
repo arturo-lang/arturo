@@ -1,0 +1,15 @@
+name: "angstromStar"
+type: :quantity
+description: "one ten-billionth of a meter"
+module: "Quantities"
+line: 680
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Quantities.nim#L680"
+returns: [
+                :quantity
+        ]
+related: [
+                "Quantities/thomsonCrossSection"
+                 "Quantities/electronCharge"
+                 "Quantities/vonKlitzingConstant"
+                 "Quantities/electronMass"
+        ]

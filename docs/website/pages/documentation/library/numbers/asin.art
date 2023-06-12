@@ -2,8 +2,8 @@ name: "asin"
 type: :function
 description: "calculate the inverse sine of given angle"
 module: "Numbers"
-line: 269
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L269"
+line: 276
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L276"
 returns: [
                 :floating
                  :complex

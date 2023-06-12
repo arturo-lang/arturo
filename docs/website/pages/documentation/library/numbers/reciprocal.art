@@ -2,8 +2,8 @@ name: "reciprocal"
 type: :function
 description: "calculate the reciprocal of given number"
 module: "Numbers"
-line: 1158
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L1158"
+line: 1190
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L1190"
 returns: [
                 :rational
         ]

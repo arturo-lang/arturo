@@ -2,8 +2,8 @@ name: "until"
 type: :function
 description: "execute action until the given condition is not false or null"
 module: "Core"
-line: 786
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L786"
+line: 855
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L855"
 returns: [
                 :nothing
         ]

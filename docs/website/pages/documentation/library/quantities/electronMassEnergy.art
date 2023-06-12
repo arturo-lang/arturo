@@ -1,0 +1,15 @@
+name: "electronMassEnergy"
+type: :quantity
+description: "the energy equivalent of the mass of an electron"
+module: "Quantities"
+line: 680
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Quantities.nim#L680"
+returns: [
+                :quantity
+        ]
+related: [
+                "Quantities/protonMassEnergy"
+                 "Quantities/hartreeEnergy"
+                 "Quantities/electronCharge"
+                 "Quantities/inverseConductanceQuantum"
+        ]

@@ -2,17 +2,17 @@ name: "with"
 type: :function
 description: "create closure-style block by embedding given words"
 module: "Converters"
-line: 1420
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Converters.nim#L1420"
+line: 1476
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Converters.nim#L1476"
 returns: [
                 :block
         ]
 examples: [
                 {
-                        f: function [x][ 
-                            with [x][ 
-                                "the multiple of" x "is" 2*x 
-                            ] 
+                        f: function [x][
+                            with [x][
+                                "the multiple of" x "is" 2*x
+                            ]
                         ]
                         
                         multiplier: f 10
@@ -36,5 +36,5 @@ related: [
                 "Converters/dictionary"
                  "Converters/store"
                  "Converters/function"
-                 "Converters/in"
+                 "Converters/define"
         ]

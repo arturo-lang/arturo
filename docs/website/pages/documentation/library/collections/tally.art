@@ -2,8 +2,8 @@ name: "tally"
 type: :function
 description: "find number of occurences of each value within given block and return as dictionary"
 module: "Collections"
-line: 2148
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L2148"
+line: 2297
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L2297"
 returns: [
                 :dictionary
         ]

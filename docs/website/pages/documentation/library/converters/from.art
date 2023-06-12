@@ -2,8 +2,8 @@ name: "from"
 type: :function
 description: "get value from string, using given representation"
 module: "Converters"
-line: 889
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Converters.nim#L889"
+line: 957
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Converters.nim#L957"
 returns: [
                 :any
         ]

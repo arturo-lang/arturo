@@ -1,18 +1,18 @@
 code: #[
-    "aeiouy": `W`
-    "bfpv": `1`
-    "cgjkqsxz": `2`
-    "dt": `3`
-    "l": `4`
-    "mn": `5`
-    "r": `6`
+    "aeiouy": 'W'
+    "bfpv": '1'
+    "cgjkqsxz": '2'
+    "dt": '3'
+    "l": '4'
+    "mn": '5'
+    "r": '6'
 ]
 
 getCode: function [ch][
     loop keys code 'k [
         if contains? k lower to :string ch -> return code\[k]
     ]
-    return ` `
+    return ' '
 ]
 
 soundex: function [str][
@@ -21,8 +21,8 @@ soundex: function [str][
     prev: getCode first str
     loop.with:'i str 'c [
         curr: getCode c
-        if curr <> ` ` [
-            if and? curr <> `W`
+        if curr <> ' ' [
+            if and? curr <> 'W'
                     curr <> prev -> 'result ++ curr
             prev: curr
         ]
@@ -32,7 +32,7 @@ soundex: function [str][
         result: slice result 0 3
     else [
         do.times: 4-size result ->
-            'result ++ `0`
+            'result ++ '0'
     ]
     return result
 ]

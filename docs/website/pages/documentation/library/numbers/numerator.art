@@ -2,8 +2,8 @@ name: "numerator"
 type: :function
 description: "get the numerator of given number"
 module: "Numbers"
-line: 956
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L956"
+line: 985
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L985"
 returns: [
                 :integer
         ]

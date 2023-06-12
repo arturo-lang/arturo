@@ -2,8 +2,8 @@ name: "filter"
 type: :function
 description: "get collection\'s items by filtering those that do not fulfil given condition"
 module: "Iterators"
-line: 730
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Iterators.nim#L730"
+line: 743
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Iterators.nim#L743"
 returns: [
                 :block
                  :nothing

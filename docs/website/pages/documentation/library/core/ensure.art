@@ -2,8 +2,8 @@ name: "ensure"
 type: :function
 description: "assert given condition is true, or exit"
 module: "Core"
-line: 411
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L411"
+line: 419
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L419"
 returns: [
                 :nothing
         ]
@@ -15,8 +15,19 @@ examples: [
                         
                         print "good, the number is positive indeed. let's continue..."
                 }
+                 {
+                        ensure.message: "Wrong calc" ->  0 = 1 + 1
+                        ; >> Assertion | "Wrong calc": [0 = 1 + 1]
+                        ;        error |
+                }
         ]
 attributes: #[
+        that: #[
+                types: [
+                                :string
+                        ]
+                description: "prints a custom message when ensure fails"
+                ]
         ]
 arguments: #[
         condition: [

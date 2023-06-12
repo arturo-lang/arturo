@@ -2,8 +2,8 @@ name: "pathLabel?"
 type: :function
 description: "checks if given value is of type :pathLabel"
 module: "Reflection"
-line: 720
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L720"
+line: 723
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L723"
 returns: [
                 :logical
         ]

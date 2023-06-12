@@ -2,8 +2,8 @@ name: "xor"
 type: :function
 description: "calculate the binary XOR for the given values"
 module: "Bitwise"
-line: 216
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Bitwise.nim#L216"
+line: 227
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Bitwise.nim#L227"
 returns: [
                 :integer
                  :binary

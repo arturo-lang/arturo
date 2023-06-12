@@ -2,8 +2,8 @@ name: "negative?"
 type: :function
 description: "check if given number is negative"
 module: "Numbers"
-line: 926
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L926"
+line: 955
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L955"
 returns: [
                 :logical
         ]

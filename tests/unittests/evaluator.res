@@ -67,11 +67,11 @@
         > Char
         >--------------------------------------------------
 
-        input: [`a`] 
+        input: ['a'] 
         data: [a] 
         code: [32 218] (2 bytes) 
 
-        input: [`😀`] 
+        input: ['😀'] 
         data: [😀] 
         code: [32 218] (2 bytes) 
 
@@ -158,12 +158,12 @@
         > Quantity
         >--------------------------------------------------
 
-        input: [1:eur] 
-        data: [1EUR] 
+        input: [1:1`s] 
+        data: [1 s] 
         code: [32 218] (2 bytes) 
 
-        input: [12:m] 
-        data: [12m] 
+        input: [12:1`m] 
+        data: [12 m] 
         code: [32 218] (2 bytes) 
 
 

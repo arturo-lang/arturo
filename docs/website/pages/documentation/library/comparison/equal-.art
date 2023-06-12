@@ -2,8 +2,8 @@ name: "equal?"
 type: :function
 description: "check if valueA = valueB (equality)"
 module: "Comparison"
-line: 89
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Comparison.nim#L89"
+line: 101
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Comparison.nim#L101"
 returns: [
                 :logical
         ]

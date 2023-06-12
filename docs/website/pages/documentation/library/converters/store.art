@@ -2,8 +2,8 @@ name: "store"
 type: :function
 description: "create or load a persistent store on disk"
 module: "Converters"
-line: 1226
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Converters.nim#L1226"
+line: 1272
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Converters.nim#L1272"
 returns: [
                 :range
         ]
@@ -42,9 +42,9 @@ examples: [
                         ; data can be as complicated as in any normal dictionary
                         da\people: da\people ++ #[name: "John" surname: "Doe"]
                         
-                        ; check some specific store value 
+                        ; check some specific store value
                         da\people\0\name
-                        ; => "John" 
+                        ; => "John"
                 }
                  {
                         ; create a new deferred store with the name `mystore`

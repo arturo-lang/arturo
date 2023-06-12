@@ -2,8 +2,8 @@ name: "pad"
 type: :function
 description: "align string by adding given padding"
 module: "Strings"
-line: 695
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L695"
+line: 701
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L701"
 returns: [
                 :string
         ]

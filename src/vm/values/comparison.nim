@@ -116,14 +116,31 @@ proc `==`*(x: Value, y: Value): bool =
                 return toRational(x.f)==y.rat
             else: return x.f==y.f
     elif x.kind == Quantity or y.kind == Quantity:
-        if x.kind == Quantity:
-            if y.kind == Quantity:
-                if x.unit.kind != y.unit.kind: return false
-                return x.nm == convertQuantityValue(y.nm, y.unit.name, x.unit.name)
+        if y.kind == Integer:
+            if y.iKind == NormalInteger:
+                return x.q == y.i
             else:
-                return x.nm == y
+                when not defined(NOGMP):
+                    return x.q == y.bi
+        elif y.kind == Floating:
+            return x.q == y.f
+        elif y.kind == Rational:
+            return x.q == y.rat
+        elif y.kind == Quantity:
+            if x.kind == Integer:
+                if x.iKind == NormalInteger:
+                    return x.i == y.q
+                else:
+                    when not defined(NOGMP):
+                        return x.bi == y.q
+            elif x.kind == Floating:
+                return x.f == y.q
+            elif x.kind == Rational:
+                return x.rat == y.q
+            else:
+                return x.q == y.q
         else:
-            return x == y.nm
+            return false
     else:
         if x.kind != y.kind: return false
 
@@ -324,14 +341,31 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
                 return cmp(toRational(x.f), y.rat) < 0  
             else: return x.f<y.f
     elif x.kind == Quantity or y.kind == Quantity:
-        if x.kind == Quantity:
-            if y.kind == Quantity:
-                if x.unit.kind != y.unit.kind: return false
-                return x.nm < convertQuantityValue(y.nm, y.unit.name, x.unit.name)
+        if y.kind == Integer:
+            if y.iKind == NormalInteger:
+                return x.q < y.i
             else:
-                return x.nm < y
+                when not defined(NOGMP):
+                    return x.q < y.bi
+        elif y.kind == Floating:
+            return x.q < y.f
+        elif y.kind == Rational:
+            return x.q < y.rat
+        elif y.kind == Quantity:
+            if x.kind == Integer:
+                if x.iKind == NormalInteger:
+                    return x.i < y.q
+                else:
+                    when not defined(NOGMP):
+                        return x.bi < y.q
+            elif x.kind == Floating:
+                return x.f < y.q
+            elif x.kind == Rational:
+                return x.rat < y.q
+            else:
+                return x.q < y.q
         else:
-            return x < y.nm
+            return false
     else:
         if x.kind != y.kind: return false
         case x.kind:
@@ -419,14 +453,29 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
                 return cmp(toRational(x.f), y.rat) > 0     
             else: return x.f>y.f
     elif x.kind == Quantity or y.kind == Quantity:
-        if x.kind == Quantity:
-            if y.kind == Quantity:
-                if x.unit.kind != y.unit.kind: return false
-                return x.nm > convertQuantityValue(y.nm, y.unit.name, x.unit.name)
+        if y.kind == Integer:
+            if y.iKind == NormalInteger:
+                return x.q > y.i
             else:
-                return x.nm > y
-        else:
-            return x > y.nm
+                when not defined(NOGMP):
+                    return x.q > y.bi
+        elif y.kind == Floating:
+            return x.q > y.f
+        elif y.kind == Rational:
+            return x.q > y.rat
+        elif y.kind == Quantity:
+            if x.kind == Integer:
+                if x.iKind == NormalInteger:
+                    return x.i > y.q
+                else:
+                    when not defined(NOGMP):
+                        return x.bi > y.q
+            elif x.kind == Floating:
+                return x.f > y.q
+            elif x.kind == Rational:
+                return x.rat > y.q
+            else:
+                return x.q > y.q
     else:
         if x.kind != y.kind: return false
         case x.kind:
@@ -506,7 +555,7 @@ proc identical*(x: Value, y: Value): bool {.inline.} =
 
             return true
         elif x.kind==Quantity:
-            return identical(x.nm, y.nm) and x.unit == y.unit
+            return (x.q.original == y.q.original) and (x.q.atoms == y.q.atoms)
         else:
             return true
     else:

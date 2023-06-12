@@ -1,8 +1,8 @@
-ord0: to :integer `0`
-ord7: to :integer `7`
+ord0: to :integer '0'
+ord7: to :integer '7'
 c2v: function [c][
     ordC: to :integer c
-    if? c < `A` -> return ordC - ord0
+    if? c < 'A' -> return ordC - ord0
     else -> return ordC - ord7
 ]
 

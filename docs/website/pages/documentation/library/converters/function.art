@@ -2,8 +2,8 @@ name: "function"
 type: :function
 description: "create function with given arguments and body"
 module: "Converters"
-line: 933
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Converters.nim#L933"
+line: 1001
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Converters.nim#L1001"
 returns: [
                 :function
         ]
@@ -132,7 +132,7 @@ arguments: #[
         ]
 related: [
                 "Converters/dictionary"
-                 "Converters/in"
                  "Converters/from"
                  "Converters/define"
+                 "Converters/with"
         ]

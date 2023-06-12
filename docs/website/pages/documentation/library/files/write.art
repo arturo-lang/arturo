@@ -2,8 +2,8 @@ name: "write"
 type: :function
 description: "write content to file at given path"
 module: "Files"
-line: 504
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Files.nim#L504"
+line: 528
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Files.nim#L528"
 returns: [
                 :nothing
         ]

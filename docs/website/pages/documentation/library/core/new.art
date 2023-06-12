@@ -2,8 +2,8 @@ name: "new"
 type: :function
 description: "create new value by cloning given one"
 module: "Core"
-line: 541
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L541"
+line: 561
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L561"
 returns: [
                 :any
         ]

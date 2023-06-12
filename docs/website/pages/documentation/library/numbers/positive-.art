@@ -2,8 +2,8 @@ name: "positive?"
 type: :function
 description: "check if given number is positive"
 module: "Numbers"
-line: 1010
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L1010"
+line: 1042
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L1042"
 returns: [
                 :logical
         ]

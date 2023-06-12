@@ -2,8 +2,8 @@ name: "escape"
 type: :function
 description: "escape given string"
 module: "Strings"
-line: 171
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L171"
+line: 173
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L173"
 returns: [
                 :string
                  :nothing

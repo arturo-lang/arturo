@@ -2,8 +2,8 @@ name: "exp"
 type: :function
 description: "calculate the exponential function for given value"
 module: "Numbers"
-line: 648
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L648"
+line: 666
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L666"
 returns: [
                 :floating
                  :complex

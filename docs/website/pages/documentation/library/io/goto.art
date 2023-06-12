@@ -2,8 +2,8 @@ name: "goto"
 type: :function
 description: "move cursor to given coordinates"
 module: "Io"
-line: 151
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Io.nim#L151"
+line: 150
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Io.nim#L150"
 returns: [
                 :nothing
         ]

@@ -2,8 +2,8 @@ name: "null"
 type: :null
 description: "the NULL constant"
 module: "Core"
-line: 565
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L565"
+line: 585
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L585"
 returns: [
                 :null
         ]

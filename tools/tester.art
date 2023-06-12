@@ -23,10 +23,12 @@ canExecute?: function [scri][
             "lib.collections"
             "lib.comparison"
             "lib.files"
+            "quantities"
             "sorting"
 
             "ackermann function"
             "arbitrary-precision integers - included"
+            "bell numbers"
             "benford's law"
             "combinations and permutations"
             "curzon numbers"

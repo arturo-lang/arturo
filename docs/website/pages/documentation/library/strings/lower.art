@@ -2,8 +2,8 @@ name: "lower"
 type: :function
 description: "convert given string to lowercase"
 module: "Strings"
-line: 374
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L374"
+line: 376
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L376"
 returns: [
                 :char
                  :string

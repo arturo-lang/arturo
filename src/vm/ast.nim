@@ -41,7 +41,7 @@ import sugar, tables, unicode, std/with
 
 import vm/[globals, values/value, values/comparison, values/operators, values/types]
 import vm/values/printable
-import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vrational, vsymbol, vversion]
+import vm/values/custom/[vbinary, vcolor, vlogical, vquantity, vsymbol, vversion]
 
 import vm/profiler
 
@@ -432,11 +432,11 @@ proc processBlock*(
                         case target.op:
                             of opAdd        : target.optimizeAdd()
                             of opSub        : target.optimizeSub()
-                            of opMul        : target.optimizeArithmeticOp(`*`)
-                            of opDiv        : target.optimizeArithmeticOp(`/`)
-                            of opFDiv       : target.optimizeArithmeticOp(`//`)
-                            of opMod        : target.optimizeArithmeticOp(`%`)
-                            of opPow        : target.optimizeArithmeticOp(`^`)
+                            of opMul        : target.optimizeArithmeticOp(operators.`*`)
+                            of opDiv        : target.optimizeArithmeticOp(operators.`/`)
+                            of opFDiv       : target.optimizeArithmeticOp(operators.`//`)
+                            of opMod        : target.optimizeArithmeticOp(operators.`%`)
+                            of opPow        : target.optimizeArithmeticOp(operators.`^`)
                             of opAppend     : target.optimizeAppend()
                             of opTo         : target.optimizeTo()
                             of opReturn     : 
@@ -519,6 +519,10 @@ proc processBlock*(
                 addPotentialInfixCall()
                 addChild(newCall)
                 rewindCallBranches(optimize=true)
+
+    proc addBuiltinCall(target: var Node, op: OpCode, arity: int8) =
+        target.addChild(newCallNode(BuiltinCall, arity, nil, op))
+        target.rollThrough()
 
     func addStore(target: var Node, val: Value) {.enforceNoRaises.} =
         target.addChild(newCallNode(VariableStore, 1, val))
@@ -838,6 +842,27 @@ proc processBlock*(
                                     current.addTerminal(newVariable(newWord(aliased.name.s)))
                         else:
                             current.addTerminal(newConstant(item))
+
+            of Quantity:
+                when processingArrow: ArrowBlock[^1].add(item)
+
+                if unlikely(item.q.withUserUnits):
+                    # if the quantity contains user-defined units,
+                    # they may not be defined yet - remember we are at the AST stage,
+                    # that is: pre-runtime - so the calculations will be wrong
+                    # For that reason, we substitute the quantity literal with:
+                    # `to :quantity [value unit]`
+                    current.addPotentialInfixCall()
+                    current.addBuiltinCall(opTo, 2)
+                    current.addTerminal(newConstant(newType("quantity")))
+                    current.addTerminal(newConstant(newBlock(@[
+                        newRational(item.q.original),
+                        newUnit(item.q.atoms)
+                    ])))
+                else:
+                    # the quantity doesn't contain user-defined units,
+                    # so we can simply push it to the tree
+                    current.addTerminal(newConstant(item))
 
             else:
                 when processingArrow: ArrowBlock[^1].add(item)

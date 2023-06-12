@@ -1,5 +1,5 @@
 target: "METHINKS IT IS LIKE A WEASEL"
-alphabet: [` `] ++ @`A`..`Z`
+alphabet: [' '] ++ @'A'..'Z'
 p: 0.05
 c: 100
 

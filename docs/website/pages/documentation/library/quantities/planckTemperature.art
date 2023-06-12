@@ -1,0 +1,15 @@
+name: "planckTemperature"
+type: :quantity
+description: "the temperature of the Planck scale"
+module: "Quantities"
+line: 680
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Quantities.nim#L680"
+returns: [
+                :quantity
+        ]
+related: [
+                "Quantities/planckTime"
+                 "Quantities/planckMass"
+                 "Quantities/planckLength"
+                 "Quantities/impedanceOfVacuum"
+        ]

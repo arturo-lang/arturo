@@ -2,8 +2,8 @@ name: "notEqual?"
 type: :function
 description: "check if valueA <> valueB (not equal)"
 module: "Comparison"
-line: 189
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Comparison.nim#L189"
+line: 201
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Comparison.nim#L201"
 returns: [
                 :logical
         ]

@@ -2,8 +2,8 @@ name: "ctan"
 type: :function
 description: "calculate the cotangent of given angle"
 module: "Numbers"
-line: 516
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L516"
+line: 531
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L531"
 returns: [
                 :floating
                  :complex

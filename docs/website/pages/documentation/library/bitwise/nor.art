@@ -2,8 +2,8 @@ name: "nor"
 type: :function
 description: "calculate the binary NOR for the given values"
 module: "Bitwise"
-line: 79
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Bitwise.nim#L79"
+line: 81
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Bitwise.nim#L81"
 returns: [
                 :integer
                  :binary

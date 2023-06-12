@@ -2,8 +2,8 @@ name: "do"
 type: :function
 description: "evaluate and execute given code"
 module: "Core"
-line: 274
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L274"
+line: 281
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L281"
 returns: [
                 :any
         ]

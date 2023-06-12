@@ -78,6 +78,7 @@ const
     PermittedIdentifiers_Start  = Letters + {'_'}
     PermittedColorChars         = Letters + Numbers
     PermittedIdentifiers_In     = PermittedIdentifiers_Start + Numbers + {'?'}
+    PermittedQuantityChars      = Letters + Numbers + {'.', '/'}
     
     SemVerExtra                 = Letters + PermittedNumbers_Start + {'+', '-', '.'}
 
@@ -812,11 +813,11 @@ template parsePath(p: var Parser, root: Value, curLevel: int) =
             else:
                 break
 
-template parseQuantity(p: var Parser) =
+template parseUnit(p: var Parser) =
     setLen(p.value, 0)
     var pos = p.bufpos
     inc(pos)
-    while p.buf[pos] in PermittedColorChars:
+    while p.buf[pos] in PermittedQuantityChars:
         add(p.value, p.buf[pos])
         inc(pos)
     p.bufpos = pos
@@ -866,15 +867,18 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                     AddToken newLabel(p.value)
                 else:
                     AddToken newString(p.value)
-            of BackTick:
-                parseString(p, stopper=BackTick)
-                AddToken newChar(p.value)
+            # of BackTick:
+            #     parseString(p, stopper=BackTick)
+            #     AddToken newChar(p.value)
             of Colon:
                 parseIdentifier(p, alsoAddCurrent=false)
                 if Empty(p.value):
                     if p.buf[p.bufpos]==Colon:
                         inc(p.bufpos)
                         AddToken newSymbol(doublecolon)
+                    elif p.buf[p.bufpos]=='=':
+                        inc(p.bufpos)
+                        AddToken newSymbol(colonequal)
                     else:
                         AddToken newSymbol(colon)
                 else:
@@ -885,10 +889,10 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                     if p.value.count(Dot)>1:
                         AddToken newVersion(p.value)
                     else:
-                        if p.buf[p.bufpos]==Colon:
+                        if p.buf[p.bufpos]==BackTick:
                             let pv = newFloating(p.value)
-                            parseQuantity(p)
-                            AddToken newQuantity(pv, parseQuantitySpec(p.value))
+                            parseUnit(p)
+                            AddToken newQuantity(pv, p.value)
                         elif p.buf[p.bufpos] in ScientificNotation_Start and p.buf[p.bufpos+1] in ScientificNotation:
                             let pv = p.value
                             parseExponent(p)
@@ -896,10 +900,24 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                         else:
                             AddToken newFloating(p.value)
                 else:
-                    if p.buf[p.bufpos]==Colon:
+                    if p.buf[p.bufpos]==BackTick:
                         let pv = newInteger(p.value, p.lineNumber)
-                        parseQuantity(p)
-                        AddToken newQuantity(pv, parseQuantitySpec(p.value))
+                        parseUnit(p)
+                        AddToken newQuantity(pv, p.value)
+                    elif p.buf[p.bufpos]==Colon:
+                        inc(p.bufpos)
+                        let leftValue = newInteger(p.value, p.lineNumber)
+                        setLen(p.value, 0)
+                        parseNumber(p)
+                        if hasDot: 
+                            raise newException(ValueError, "Invalid syntax for rationals")
+                        else:
+                            if p.buf[p.bufpos]==BackTick:
+                                let pv = newRational(leftValue, newInteger(p.value, p.lineNumber))
+                                parseUnit(p)
+                                AddToken newQuantity(pv, p.value)
+                            else:
+                                AddToken newRational(leftValue, newInteger(p.value, p.lineNumber))
                     elif p.buf[p.bufpos]=='e' and p.buf[p.bufpos+1] in ScientificNotation:
                         let pv = p.value
                         parseExponent(p)
@@ -931,16 +949,38 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                     AddToken newWord(p.value)
             of Tick:
                 # first try parsing it as a normal :literal
+                let initialP = p.bufpos
                 parseIdentifier(p, alsoAddCurrent=false)
                 if Empty(p.value): 
                     # if it's empty, then try parsing it as :symbolLiteral
                     if likely(p.buf[p.bufpos] in Symbols):
                         parseAndAddSymbol(p,topBlock)
-                        ReplaceLastToken(newSymbolLiteral(LastToken.m))
+                        if LastToken.m == backslash and p.buf[p.bufpos] in ['n', 'r', 't', 'b', 'f', 'v', 'a', 'e', 'x', 'u', 'U', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9']:
+                            p.bufpos = p.bufpos - 2
+                            parseString(p, stopper=Tick)
+                            ReplaceLastToken newChar(p.value)
+                        elif p.buf[p.bufpos]==Tick:
+                            p.bufpos = initialP
+                            parseString(p, stopper=Tick)
+                            ReplaceLastToken newChar(p.value)
+                        else:
+                            ReplaceLastToken(newSymbolLiteral(LastToken.m))
                     else:
-                        SyntaxError_EmptyLiteral(p.lineNumber, getContext(p, p.bufpos-1))
+                        p.bufpos = p.bufpos - 1
+                        parseString(p, stopper=Tick)
+                        AddToken newChar(p.value)
+                    # else:
+                    #     SyntaxError_EmptyLiteral(p.lineNumber, getContext(p, p.bufpos-1))
                 else:
-                    AddToken newLiteral(p.value)
+                    if p.buf[p.bufpos]==Tick:
+                        #parseString(p, stopper=BackTick)
+                        AddToken newChar(p.value)
+                        inc(p.bufpos)
+                    else:
+                        AddToken newLiteral(p.value)
+            of BackTick:
+                parseUnit(p)
+                AddToken newUnit(p.value)
             of Dot:
                 if p.buf[p.bufpos+1] == Dot:
                     inc(p.bufpos, 2)

@@ -1,9 +1,9 @@
 name: "in"
 type: :function
 description: "convert quantity to given unit"
-module: "Converters"
-line: 1147
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Converters.nim#L1147"
+module: "Quantities"
+line: 74
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Quantities.nim#L74"
 returns: [
                 :quantity
         ]
@@ -27,12 +27,13 @@ arguments: #[
         value: [
                         :integer
                          :floating
+                         :rational
                          :quantity
                 ]
         ]
 related: [
-                "Converters/function"
-                 "Converters/to"
-                 "Converters/with"
-                 "Converters/range"
+                "Quantities/gravitationalConstant"
+                 "Quantities/inverseConductanceQuantum"
+                 "Quantities/tritonMass"
+                 "Quantities/boltzmannConstant"
         ]

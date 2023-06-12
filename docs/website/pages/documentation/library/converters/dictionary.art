@@ -2,8 +2,8 @@ name: "dictionary"
 type: :function
 description: "create dictionary from given block or file, by getting all internal symbols"
 module: "Converters"
-line: 811
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Converters.nim#L811"
+line: 878
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Converters.nim#L878"
 returns: [
                 :dictionary
         ]
@@ -15,7 +15,7 @@ examples: [
                         a: #[
                             name: "John"
                             age: 34
-                        ]             
+                        ]
                         ; a: [name: "John", age: 34]
                         
                         d: #[

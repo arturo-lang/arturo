@@ -2,8 +2,8 @@ name: "csech"
 type: :function
 description: "calculate the hyperbolic cosecant of given angle"
 module: "Numbers"
-line: 495
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L495"
+line: 510
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L510"
 returns: [
                 :floating
                  :complex

@@ -2,8 +2,8 @@ name: "min"
 type: :function
 description: "get minimum element in given collection"
 module: "Collections"
-line: 982
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L982"
+line: 1035
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L1035"
 returns: [
                 :null
                  :any
