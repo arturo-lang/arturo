@@ -1,0 +1,15 @@
+name: "deuteronMass"
+type: :quantity
+description: "the mass of a deuteron"
+module: "Quantities"
+line: 680
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Quantities.nim#L680"
+returns: [
+                :quantity
+        ]
+related: [
+                "Quantities/neutronMass"
+                 "Quantities/tritonMass"
+                 "Quantities/muonMass"
+                 "Quantities/electronMass"
+        ]
