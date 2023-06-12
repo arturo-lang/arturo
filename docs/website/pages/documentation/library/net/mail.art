@@ -2,19 +2,19 @@ name: "mail"
 type: :function
 description: "send mail using given title and message to selected recipient"
 module: "Net"
-line: 101
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Net.nim#L101"
+line: 118
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Net.nim#L118"
 returns: [
                 :nothing
         ]
 examples: [
                 {
                         mail .using: #[
-                                server: "mymailserver.com"
-                                username: "myusername"
-                                password: "mypass123"
-                            ]
-                            "recipient@somemail.com" "Hello from Arturo" "Arturo rocks!"
+                                    server: "mymailserver.com"
+                                    username: "myusername"
+                                    password: "mypass123"
+                                ]
+                                "recipient@somemail.com" "Hello from Arturo" "Arturo rocks!"
                 }
         ]
 attributes: #[

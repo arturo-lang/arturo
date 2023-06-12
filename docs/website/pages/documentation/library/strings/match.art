@@ -2,8 +2,8 @@ name: "match"
 type: :function
 description: "get matches within string, using given regular expression"
 module: "Strings"
-line: 437
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L437"
+line: 442
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L442"
 returns: [
                 :integer
                  :dictionary
@@ -99,7 +99,8 @@ arguments: #[
                         :string
                 ]
         regex: [
-                        :string
+                        :char
+                         :string
                          :regex
                 ]
         ]

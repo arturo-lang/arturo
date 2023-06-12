@@ -2,8 +2,8 @@ name: "ln"
 type: :function
 description: "calculate the natural logarithm of given value"
 module: "Numbers"
-line: 884
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L884"
+line: 913
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L913"
 returns: [
                 :floating
                  :complex

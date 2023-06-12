@@ -36,7 +36,8 @@ when not defined(WEB):
 import vm/lib
 import vm/[bytecode, errors, eval, exec, opcodes, parse]
 
-import vm/values/custom/[vbinary, vrange]
+import vm/values/printable
+import vm/values/custom/[vbinary, vrange, vrational]
 
 #=======================================
 # Variables
@@ -82,7 +83,7 @@ template throwConversionFailed(): untyped =
 #  labels: library, cleanup, unit-test
 
 proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Value =
-    if y.kind == tp and y.kind!=Quantity:
+    if unlikely(y.kind == tp):
         return y
     else:
         case y.kind:
@@ -113,7 +114,12 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                 case tp:
                     of Logical: return newLogical(y.i!=0)
                     of Floating: return newFloating(float(y.i))
-                    of Rational: return newRational(y.i)
+                    of Rational: 
+                        if y.iKind == NormalInteger:
+                            return newRational(y.i)
+                        else:
+                            when not defined(NOGMP):
+                                return newRational(y.bi)
                     of Char: return newChar(toUTF8(Rune(y.i)))
                     of String:
                         if y.iKind==NormalInteger:
@@ -130,10 +136,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                             when not defined(NOGMP):
                                 return newString($(y.bi))
                     of Quantity:
-                        if checkAttr("unit", doValidate=false):
-                            return newQuantity(y, parseQuantitySpec(aUnit.s))
-                        else:
-                            throwConversionFailed()
+                        return newQuantity(y, @[])
                     of Date:
                         return newDate(local(fromUnix(y.i)))
                     of Binary:
@@ -160,10 +163,7 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                         else:
                             return newString($(y.f))
                     of Quantity:
-                        if checkAttr("unit", doValidate=false):
-                            return newQuantity(y, parseQuantitySpec(aUnit.s))
-                        else:
-                            throwConversionFailed()
+                        return newQuantity(y, @[])
                     of Binary:
                         return newBinary(numberToBinary(y.f))
                     else: throwCannotConvert()
@@ -199,10 +199,18 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                     of String:
                         return newString($(y))
                     of Block:
-                        return newBlock(@[
-                            newInteger(y.rat.num),
-                            newInteger(y.rat.den)
-                        ])
+                        if y.rat.rKind == NormalRational:
+                            return newBlock(@[
+                                newInteger(getNumerator(y.rat)),
+                                newInteger(getDenominator(y.rat))
+                            ])
+                        else:
+                            return newBlock(@[
+                                newInteger(getNumerator(y.rat, big=true)),
+                                newInteger(getDenominator(y.rat, big=true))
+                            ])
+                    of Quantity:
+                        return newQuantity(y, @[])
                     else: throwCannotConvert()
 
             of Version:
@@ -383,14 +391,18 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
                             throwCannotConvert()
 
                     of Quantity:
+                        discard
                         requireBlockSize(y, 2)
                         
                         let firstElem {.cursor} = y.a[0]
                         let secondElem {.cursor} = y.a[1]
-                        requireValue(firstElem, {Integer, Floating})
-                        requireValue(secondElem, {Word, Literal, String})
+                        requireValue(firstElem, {Integer, Floating, Rational})
+                        requireValue(secondElem, {Unit, Word, Literal, String})
                         
-                        return newQuantity(firstElem, parseQuantitySpec(secondElem.s))
+                        if secondElem.kind == Unit:
+                            return newQuantity(firstElem, secondElem.u)
+                        else:
+                            return newQuantity(firstElem, secondElem.s)
 
                     of Color:
                         requireBlockSize(y, 3, 4)
@@ -510,30 +522,22 @@ proc convertedValueToType(x, y: Value, tp: ValueKind, aFormat:Value = nil): Valu
 
             of Quantity:
                 case tp:
-                    of Integer, Floating:
-                        return convertedValueToType(x, y.nm, tp, aFormat)
+                    of Floating:
+                        return newFloating(toFloat(y.q.original))
+                    of Rational:
+                        return newRational(y.q.original)
                     of String:
-                        if (not aFormat.isNil):
-                            try:
-                                var ret: string
-                                if y.nm.kind==Floating:
-                                    formatValue(ret, y.nm.f, aFormat.s)
-                                else:
-                                    formatValue(ret, float(y.nm.i), aFormat.s)
-
-                                return newString(ret & stringify(y.unit.name))
-                            except CatchableError:
-                                throwConversionFailed()
-                        else:
-                            return newString($(y))
-                    of Quantity:
-                        if checkAttr("unit", doValidate=false):
-                            let target = parseQuantitySpec(aUnit.s).name
-                            return newQuantity(convertQuantityValue(y.nm, y.unit.name, target), target)
-                        else:
-                            return y
+                        return newString($(y.q))
+                    of Unit:
+                        return newUnit(y.q.atoms)
                     else:
                         throwCannotConvert()
+
+            of Unit:
+                if tp == String:
+                    return newString($(y.u))
+                else:
+                    throwCannotConvert()
 
             of Regex:
                 case tp:
@@ -1200,32 +1204,6 @@ proc defineSymbols*() =
 
             push(ret)
 
-    builtin "in",
-        alias       = unaliased,
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "convert quantity to given unit",
-        args        = {
-            "unit"  : {Literal,String,Word},
-            "value" : {Integer,Floating,Quantity},
-        },
-        attrs       = NoAttrs,
-        returns     = {Quantity},
-        example     = """
-            print in'cm 3:m
-            ; 300.0cm
-
-            print in'm2 1:yd2
-            ; 0.836127m²
-        """:
-            #=======================================================
-            let qs = parseQuantitySpec(x.s)
-            if yKind==Quantity:
-                push newQuantity(convertQuantityValue(y.nm, y.unit.name, qs.name), qs)
-            else:
-                push newQuantity(y, qs)
-
-
     builtin "range",
         alias       = ellipsis,
         op          = opRange,
@@ -1240,19 +1218,6 @@ proc defineSymbols*() =
         },
         returns     = {Range},
         example     = """
-            print range 0 10            ; 0..10
-            print 0..10                 ; 0..10
-            print range.step: 2 0 10    ; 0..10 (2)
-            ..........
-            print @range 1 10           ; 1 2 3 4 5 6 7 8 9 10
-            print @range 10 0           ; 10 9 8 7 6 5 4 3 2 1 0
-            print @range.step: 2 0 10   ; 0 2 4 6 8 10
-
-            ; But you can also use:
-                
-            print @1..10                ; 1 2 3 4 5 6 7 8 9 10
-            print @10..0                ; 10 9 8 7 6 5 4 3 2 1 0
-            print @0.. .step: 2 10      ; 0 2 4 6 8 10
         """:
             #=======================================================
             var limX: int

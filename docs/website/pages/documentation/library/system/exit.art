@@ -2,22 +2,15 @@ name: "exit"
 type: :function
 description: "exit program"
 module: "System"
-line: 173
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/System.nim#L173"
+line: 179
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/System.nim#L179"
 returns: [
                 :nothing
         ]
 examples: [
                 "exit              ; (terminates the program)"
-                 "exit.with: 3      ; (terminates the program with code 3)"
         ]
 attributes: #[
-        args: #[
-                types: [
-                                :integer
-                        ]
-                description: "use given error code"
-                ]
         ]
 arguments: #[
         ]

@@ -2,8 +2,8 @@ name: "delete"
 type: :function
 description: "delete file at given path"
 module: "Files"
-line: 90
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Files.nim#L90"
+line: 94
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Files.nim#L94"
 returns: [
                 :nothing
         ]

@@ -2,8 +2,8 @@ name: "denominator"
 type: :function
 description: "get the denominator of given number"
 module: "Numbers"
-line: 558
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L558"
+line: 573
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L573"
 returns: [
                 :integer
         ]

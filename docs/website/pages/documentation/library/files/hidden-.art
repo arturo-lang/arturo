@@ -2,8 +2,8 @@ name: "hidden?"
 type: :function
 description: "check if file/folder at given path is hidden"
 module: "Files"
-line: 142
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Files.nim#L142"
+line: 146
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Files.nim#L146"
 returns: [
                 :logical
         ]

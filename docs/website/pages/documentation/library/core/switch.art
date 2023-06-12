@@ -2,8 +2,8 @@ name: "switch"
 type: :function
 description: "if condition is not false or null perform given action, otherwise perform alternative action"
 module: "Core"
-line: 637
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L637"
+line: 615
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L615"
 returns: [
                 :any
         ]

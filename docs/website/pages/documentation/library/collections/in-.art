@@ -2,8 +2,8 @@ name: "in?"
 type: :function
 description: "check if value exists in given collection"
 module: "Collections"
-line: 647
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L647"
+line: 667
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L667"
 returns: [
                 :logical
         ]
@@ -40,6 +40,19 @@ examples: [
                         print in?.at:1 "two" ["one" "two" "three"]
                         ; true
                 }
+                 {
+                        print in?.deep 6 [1 2 4 [3 4 [5 6] 7] 8 [9 10]]
+                        ; true
+                }
+                 {
+                        user: #[ 
+                            name: "John" surname: "Doe"
+                            mom: #[ name: "Jane" surname: "Doe" ]
+                        ]
+                        
+                        print in?.deep "Jane" user
+                        ; true
+                }
         ]
 attributes: #[
         at: #[
@@ -47,6 +60,12 @@ attributes: #[
                                 :integer
                         ]
                 description: "check at given location within collection"
+                ]
+        deep: #[
+                types: [
+                                :logical
+                        ]
+                description: "searches recursively in deep for a value."
                 ]
         ]
 arguments: #[

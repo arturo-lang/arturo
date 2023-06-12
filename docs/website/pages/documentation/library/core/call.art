@@ -2,8 +2,8 @@ name: "call"
 type: :function
 description: "call function with given list of parameters"
 module: "Core"
-line: 112
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L112"
+line: 119
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L119"
 returns: [
                 :any
         ]

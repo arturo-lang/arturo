@@ -2,8 +2,8 @@ name: "move"
 type: :function
 description: "move file at path to given destination"
 module: "Files"
-line: 161
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Files.nim#L161"
+line: 165
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Files.nim#L165"
 returns: [
                 :nothing
         ]

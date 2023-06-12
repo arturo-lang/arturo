@@ -16,6 +16,7 @@
          "Net"
          "Numbers"
          "Paths"
+         "Quantities"
          "Reflection"
          "Sets"
          "Sockets"

@@ -2,8 +2,8 @@ name: "outdent"
 type: :function
 description: "outdent each line of given text, by using minimum shared indentation"
 module: "Strings"
-line: 640
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L640"
+line: 646
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L646"
 returns: [
                 :string
                  :nothing

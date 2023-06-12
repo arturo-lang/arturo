@@ -2,8 +2,8 @@ name: "first"
 type: :function
 description: "return the first item of the given collection"
 module: "Collections"
-line: 465
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L465"
+line: 481
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L481"
 returns: [
                 :null
                  :any

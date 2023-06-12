@@ -2,8 +2,8 @@ name: "version?"
 type: :function
 description: "checks if given value is of type :version"
 module: "Reflection"
-line: 985
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L985"
+line: 993
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L993"
 returns: [
                 :logical
         ]

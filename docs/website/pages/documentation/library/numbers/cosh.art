@@ -2,8 +2,8 @@ name: "cosh"
 type: :function
 description: "calculate the hyperbolic cosine of given angle"
 module: "Numbers"
-line: 453
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L453"
+line: 468
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L468"
 returns: [
                 :floating
                  :complex

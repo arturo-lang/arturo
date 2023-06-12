@@ -2,8 +2,8 @@ name: "add"
 type: :function
 description: "add given values and return result"
 module: "Arithmetic"
-line: 30
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Arithmetic.nim#L30"
+line: 33
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Arithmetic.nim#L33"
 returns: [
                 :integer
                  :floating

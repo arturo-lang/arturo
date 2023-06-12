@@ -2,8 +2,8 @@ name: "if?"
 type: :function
 description: "perform action, if given condition is not false or null and return condition result"
 module: "Core"
-line: 455
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L455"
+line: 475
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L475"
 returns: [
                 :logical
         ]

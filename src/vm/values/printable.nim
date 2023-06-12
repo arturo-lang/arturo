@@ -101,8 +101,10 @@ proc `$`*(v: Value): string {.inline.} =
         of Symbol,
            SymbolLiteral:
             return $(v.m)
+        of Unit:
+            return $(v.u)
         of Quantity:
-            return $(v.nm) & stringify(v.unit.name)
+            return $(v.q)
         of Regex:
             return $(v.rx)
         of Color        :
@@ -173,6 +175,10 @@ proc `$`*(v: Value): string {.inline.} =
 
 
 proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepend="") {.exportc.} = 
+    if v.kind==Quantity:
+        v.q.inspect()
+        return
+    
     proc dumpPrimitive(str: string, v: Value) =
         if not muted:   stdout.write fmt("{bold(greenColor)}{str}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
         else:           stdout.write fmt("{str} :{($(v.kind)).toLowerAscii()}")
@@ -268,7 +274,8 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
         of Symbol, 
            SymbolLiteral: dumpSymbol(v)
 
-        of Quantity     : dumpPrimitive($(v.nm) & ":" & stringify(v.unit.name), v)
+        of Unit         : dumpPrimitive($(v.u), v)
+        of Quantity     : dumpPrimitive($(v.q), v)
 
         of Regex        : dumpPrimitive($(v.rx), v)
 
@@ -485,18 +492,15 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 result &= fmt("to :complex @[{v.z.re} neg {v.z.im * -1}]")
             else:
                 result &= fmt("to :complex [{v.z.re} {v.z.im}]")
-        of Rational     : 
-            if v.rat.num < 0:
-                result &= fmt("to :rational @[neg {v.rat.num * -1} {v.rat.den}]")
-            else:
-                result &= fmt("to :rational [{v.rat.num} {v.rat.den}]")
+        of Rational     :
+            result &= codify(v.rat) 
         of Version      : result &= fmt("{v.major}.{v.minor}.{v.patch}{v.extra}")
         of Type         : 
             if v.tpKind==BuiltinType:
                 result &= ":" & ($v.t).toLowerAscii()
             else:
                 result &= ":" & v.ts.name
-        of Char         : result &= "`" & $(v.c) & "`"
+        of Char         : result &= "'" & $(v.c) & "'"
         of String       : 
             if safeStrings:
                 result &= "««" & v.s & "»»"
@@ -518,7 +522,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 result &= ":"
         of Symbol       :  result &= $(v.m)
         of SymbolLiteral: result &= "'" & $(v.m)
-        of Quantity     : result &= $(v.nm) & ":" & toLowerAscii($(v.unit.name))
+        of Quantity     : result &= codify(v.q)
         of Regex        : result &= "{/" & $(v.rx) & "/}"
         of Color        : result &= $(v.l)
 

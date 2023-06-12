@@ -1,5 +1,5 @@
 words: read.lines relative "unixdict.txt"
-vowels: [`a` `e` `i` `o` `u`]
+vowels: ['a' 'e' 'i' 'o' 'u']
 alternatingVC?: function [w][
     lookForConsonant: true
     if contains? vowels first w -> lookForConsonant: false

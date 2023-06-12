@@ -2,8 +2,8 @@ name: "execute"
 type: :function
 description: "execute given shell command"
 module: "System"
-line: 102
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/System.nim#L102"
+line: 108
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/System.nim#L108"
 returns: [
                 :string
                  :dictionary

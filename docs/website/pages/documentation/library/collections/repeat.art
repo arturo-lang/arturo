@@ -2,8 +2,8 @@ name: "repeat"
 type: :function
 description: "repeat value the given number of times and return new one"
 module: "Collections"
-line: 1297
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L1297"
+line: 1433
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L1433"
 returns: [
                 :string
                  :block
@@ -41,5 +41,5 @@ related: [
                 "Collections/drop"
                  "Collections/permutate"
                  "Collections/prepend"
-                 "Collections/take"
+                 "Collections/pop"
         ]

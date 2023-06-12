@@ -2,8 +2,8 @@ name: "couple"
 type: :function
 description: "get combination of elements in given collections as array of tuples"
 module: "Collections"
-line: 308
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L308"
+line: 324
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L324"
 returns: [
                 :block
         ]

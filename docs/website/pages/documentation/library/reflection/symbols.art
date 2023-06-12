@@ -2,8 +2,8 @@ name: "symbols"
 type: :function
 description: "get currently defined symbols"
 module: "Reflection"
-line: 921
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L921"
+line: 929
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L929"
 returns: [
                 :dictionary
         ]

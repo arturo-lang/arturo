@@ -2,8 +2,8 @@ name: "range?"
 type: :function
 description: "checks if given value is of type :range"
 module: "Reflection"
-line: 756
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L756"
+line: 759
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L759"
 returns: [
                 :logical
         ]

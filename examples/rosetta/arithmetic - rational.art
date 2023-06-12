@@ -14,4 +14,4 @@ print ["a % b  :" a % b]
 print ["reciprocal b:" reciprocal b]
 print ["neg a:" neg a]
 
-print ["pi ~=" to :rational 3.14]
+print ["pi ~=" to :rational pi]

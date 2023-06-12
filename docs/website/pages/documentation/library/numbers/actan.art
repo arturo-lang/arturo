@@ -2,8 +2,8 @@ name: "actan"
 type: :function
 description: "calculate the inverse cotangent of given angle"
 module: "Numbers"
-line: 168
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L168"
+line: 175
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L175"
 returns: [
                 :floating
                  :complex

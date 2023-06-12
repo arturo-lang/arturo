@@ -1,5 +1,5 @@
 ranks: 1..13
-suits: [`♣`, `♦`, `♥`, `♠`]
+suits: ['♣', '♦', '♥', '♠']
 
 define :card [rank, suit][
     init: [
@@ -11,10 +11,10 @@ define :card [rank, suit][
     print: [
         R: ø
         case [this\rank=]
-            when? [1] -> R: `A`
-            when? [11]-> R: `J`
-            when? [12]-> R: `Q`
-            when? [13]-> R: `K`
+            when? [1] -> R: 'A'
+            when? [11]-> R: 'J'
+            when? [12]-> R: 'Q'
+            when? [13]-> R: 'K'
             else -> R: this\rank
         ~{|R||this\suit|}
     ]

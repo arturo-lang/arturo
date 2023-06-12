@@ -2,8 +2,8 @@ name: "drop"
 type: :function
 description: "drop first *number* of elements from given collection and return the remaining ones"
 module: "Collections"
-line: 352
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L352"
+line: 368
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L368"
 returns: [
                 :string
                  :block
@@ -34,6 +34,6 @@ arguments: #[
 related: [
                 "Collections/take"
                  "Collections/couple"
+                 "Collections/pop"
                  "Collections/repeat"
-                 "Collections/first"
         ]

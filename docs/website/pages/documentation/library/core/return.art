@@ -2,8 +2,8 @@ name: "return"
 type: :function
 description: "return given value from current function"
 module: "Core"
-line: 612
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L612"
+line: 590
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L590"
 returns: [
                 :nothing
         ]

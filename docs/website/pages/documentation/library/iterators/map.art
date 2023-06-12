@@ -2,8 +2,8 @@ name: "map"
 type: :function
 description: "map collection\'s items by applying given action"
 module: "Iterators"
-line: 1085
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Iterators.nim#L1085"
+line: 1098
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Iterators.nim#L1098"
 returns: [
                 :block
                  :nothing

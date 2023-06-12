@@ -2,8 +2,8 @@ name: "while"
 type: :function
 description: "execute action while the given condition is is not false or null"
 module: "Core"
-line: 894
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L894"
+line: 963
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L963"
 returns: [
                 :nothing
         ]

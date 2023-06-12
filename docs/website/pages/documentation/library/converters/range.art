@@ -2,8 +2,8 @@ name: "range"
 type: :function
 description: "get list of values in given range (inclusive)"
 module: "Converters"
-line: 1172
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Converters.nim#L1172"
+line: 1219
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Converters.nim#L1219"
 returns: [
                 :range
         ]

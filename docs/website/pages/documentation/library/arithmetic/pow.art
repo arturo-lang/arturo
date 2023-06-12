@@ -2,8 +2,8 @@ name: "pow"
 type: :function
 description: "calculate the power of given values and return result"
 module: "Arithmetic"
-line: 223
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Arithmetic.nim#L223"
+line: 217
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Arithmetic.nim#L217"
 returns: [
                 :integer
                  :floating

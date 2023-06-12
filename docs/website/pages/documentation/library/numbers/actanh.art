@@ -2,8 +2,8 @@ name: "actanh"
 type: :function
 description: "calculate the inverse hyperbolic cotangent of given angle"
 module: "Numbers"
-line: 189
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L189"
+line: 196
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L196"
 returns: [
                 :floating
                  :complex

@@ -2,8 +2,8 @@ name: "chunk"
 type: :function
 description: "chunk together consecutive items in collection that abide by given predicate"
 module: "Iterators"
-line: 468
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Iterators.nim#L468"
+line: 481
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Iterators.nim#L481"
 returns: [
                 :block
                  :nothing
@@ -35,7 +35,7 @@ attributes: #[
                 ]
         value: #[
                 types: [
-                                :any
+                                :logical
                         ]
                 description: "also include condition values"
                 ]

@@ -2,8 +2,8 @@ name: "collect"
 type: :function
 description: "collect items from given collection condition while is true"
 module: "Iterators"
-line: 581
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Iterators.nim#L581"
+line: 594
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Iterators.nim#L594"
 returns: [
                 :block
                  :nothing
@@ -11,7 +11,7 @@ returns: [
 examples: [
                 {
                         collect [1 3 5 4 6 7] => odd?
-                        ; => [1 3 4]
+                        ; => [1 3 5]
                         
                         collect [1 2 3 4 3 2 1 2 3] 'x -> x < 4
                         ; => [1 2 3]
