@@ -23,6 +23,7 @@ canExecute?: function [scri][
             "lib.collections"
             "lib.comparison"
             "lib.files"
+            "quantities"
             "sorting"
 
             "ackermann function"
