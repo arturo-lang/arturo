@@ -8834,6 +8834,16 @@ do [
     ensure -> not? same? a\year c\year
     passed
     
+    topic « same? - :unit
+    
+    ensure -> same? `USD `USD
+    ensure -> same? `EUR `EUR
+    passed
+    
+    ensure -> not? same? `USD `EUR
+    ensure -> not? same? `EUR `USD
+    passed
+    
     
     topic « same? - incompatible types
     
