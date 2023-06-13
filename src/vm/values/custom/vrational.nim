@@ -1011,7 +1011,7 @@ func neg*(x: VRational): VRational =
         when not defined(NOGMP):
             result = VRational(
                 rKind: BigRational,
-                br: -x.br
+                br: neg(x.br)
             )
 
 func floorDiv*(x, y: VRational): int =
