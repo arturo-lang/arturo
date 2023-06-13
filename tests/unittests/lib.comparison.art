@@ -6667,6 +6667,19 @@ do [
     ensure -> not? lessOrEqual? a d
     passed 
     
+    topic « lessOrEqual? - :unit
+    
+    ensure -> lessOrEqual? `USD `USD
+    ensure -> lessOrEqual? `EUR `EUR
+    ensure -> `USD =< `USD
+    ensure -> `EUR =< `EUR
+    passed
+    
+    ensure -> not? lessOrEqual? `USD `EUR
+    ensure -> not? equal? `EUR `USD
+    ensure -> not? `EUR =< `USD
+    passed
+    
     
     topic « lessOrEqual? - incompatible types
     
