@@ -111,6 +111,8 @@ var
     LastSignature       : QuantitySignature = static int(pow(6.0,11.0))
     SignatureStep       : QuantitySignature = static int(pow(6.0,20.0))
 
+    ExchangeRates       : Table[string, float]
+
 #=======================================
 # Useful Constants
 #=======================================
@@ -147,10 +149,13 @@ func isTemperature(q: Quantity): bool {.inline.} =
 
 proc getExchangeRate(curr: string): float =
     let s = toLowerAscii(curr)
-    let url = "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/" & s & "/usd.json"
-    let content = waitFor (newAsyncHttpClient().getContent(url))
-    let response = parseJson(content)
-    return response["usd"].fnum
+    if ExchangeRates.len == 0:
+        let url = "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/" & s & "/usd.json"
+        let content = waitFor (newAsyncHttpClient().getContent(url))
+        let response = parseJson(content)
+        ExchangeRates = response["usd"]
+
+    return ExchangeRates[s]
 
 proc getPrimitive(unit: PrefixedUnit): Quantity =
     result = Quantities[unit.u]
