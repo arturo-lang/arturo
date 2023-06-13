@@ -148,14 +148,21 @@ func isTemperature(q: Quantity): bool {.inline.} =
     return q.signature == (static parsePropertyFormula("K"))
 
 proc getExchangeRate(curr: string): float =
+    echo ">> in getExchangeRate"
     let s = toLowerAscii(curr)
     if ExchangeRates.len == 0:
+        echo "\t- ExchangeRates table was empty: downloading..."
         let url = "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/" & s & "/usd.json"
         let content = waitFor (newAsyncHttpClient().getContent(url))
+        echo "\t- Downloaded!"
         let response = parseJson(content)
+        echo "\t- JSON successfully parsed"
         for (k,v) in pairs(response["usd"]):
+            echo "\t\t> setting " & $(k)
             ExchangeRates[k] = v.fnum
+        echo "\t- All set :)"
 
+    echo ">> returning rate"
     return ExchangeRates[s]
 
 proc getPrimitive(unit: PrefixedUnit): Quantity =
