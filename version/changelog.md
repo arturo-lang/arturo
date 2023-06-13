@@ -7,7 +7,7 @@ v0.9.84
 
 ### Language
 
-- Added flag support for `:regex` values (`/i`, `/m` & `/s`)
+- Added flag support for Regex values (`/i`, `/m` & `/s`)
 - Identifiers (Word, Literal, etc) can now support underscores (`_`) as well 
 - Better support for parsing "hanging" attributes in pipe'd constructs
 - Rationals: added implicit GMP-powered BigNum support, new literal syntax (e.g. `1:2`) and more efficient handling
@@ -33,6 +33,7 @@ v0.9.84
 - Collections\sort: fixed `.ascii` when working with Literal values
 - Collections\split: fixed `.every:` and `.at:` when working with Literal values
 - Collections\take: fixed SIGSEGV errors
+- Comparison\between?: added support for order-insensitive limits
 - Converters\as: fixed `.code` to properly convert Rational or Complex values with negative fields
 - Converters\range: disallow zero `.step:` for new ranges
 - Converters\to: fixed support for Block/Dictionary/Object/Store to String conversions
