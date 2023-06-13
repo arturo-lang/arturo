@@ -3,7 +3,14 @@ topic:  $[topic :string] -> print ~"\n>> |topic|"
 passed: $[] -> print "[+] passed!"
 
 
+topic « currencies
+do [
+    
 
+    
+    
+    
+]
 ; adding/subtracting/multiplying/dividing currencies
 print 100`EUR + 20`EUR
 print 100.5`USD - 30`USD
