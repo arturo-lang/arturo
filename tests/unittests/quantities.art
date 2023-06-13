@@ -25,9 +25,27 @@ do [
     ; ] => currency?
     ; passed
     
+    topic « currencies - basic math
+    
+    data: [ 
+        200`EUR 300`EUR 100`EUR 400`EUR 
+        200`USD 300`USD 100`USD 400`USD 
+        200`BRL 300`BRL 100`BRL 400`BRL 
+    ]
+    
+    loop data [ res res2 a b ][
+        ensure -> res  = a + a
+        ensure -> res2 = b - a
+        ensure -> res  = a * 2
+        ensure -> res  = b / 2
+        ensure -> res  = b // 2
+        passed
+    ]
+    
     
     
 ]
+
 ; adding/subtracting/multiplying/dividing currencies
 print 100`EUR + 20`EUR
 print 100.5`USD - 30`USD
