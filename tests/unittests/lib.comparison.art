@@ -1184,9 +1184,9 @@ do [
     
     topic « compare - :unit
     
-    ensure -> 0 = `USD `USD
-    ensure -> 1 = `USD `EUR
-    ensure -> 1 = `EUR `USD
+    ensure -> 0 = compare `USD `USD
+    ensure -> 1 = compare `USD `EUR
+    ensure -> 1 = compare `EUR `USD
     passed
 
     
@@ -4234,6 +4234,19 @@ do [
     ensure -> greaterOrEqual? a b 
     ensure -> not? greaterOrEqual? a d
     passed 
+    
+    topic « greaterOrEqual? - :unit
+    
+    ensure -> greaterOrEqual? `USD `USD
+    ensure -> greaterOrEqual? `EUR `EUR
+    ensure -> `USD >= `USD
+    ensure -> `EUR >= `EUR
+    passed
+    
+    ensure -> not? greaterOrEqual? `USD `EUR
+    ensure -> not? greaterOrEqual? `EUR `USD
+    ensure -> not? `EUR >= `USD
+    passed
     
     
     topic « greaterOrEqual? - incompatible types
