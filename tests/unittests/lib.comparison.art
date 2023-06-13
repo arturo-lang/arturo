@@ -7771,6 +7771,19 @@ do [
     ensure -> notEqual? a\year c\year
     passed
     
+    topic « notEqual? - :unit
+    
+    ensure -> not? notEqual? `USD `USD
+    ensure -> not? notEqual? `EUR `EUR
+    ensure -> not? `USD <> `USD
+    ensure -> not? `EUR <> `EUR
+    passed
+    
+    ensure -> notEqual? `USD `EUR
+    ensure -> notEqual? `EUR `USD
+    ensure -> `EUR <> `USD
+    passed
+    
     
     topic « notEqual? - incompatible types
     
