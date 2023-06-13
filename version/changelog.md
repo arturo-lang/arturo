@@ -18,6 +18,7 @@ v0.9.84
 - Collections: added new `pop` method
 - Core: added new `throws?` method
 - Numbers: added new `tau` constant
+- Quantities: new module with various new Quantity-related built-in methods (`conforms?`, `convert`, `in`, `property`, `scalar`, `specify`, `units`) along with property-testing predicates (e.g. `length?`, `currency?`, etc) and many built-in physics-related constants (e.g. `avogadroContant`, `bohrRadius`, etc)
 
 **Enhancements, Changes & Fixes**
 
