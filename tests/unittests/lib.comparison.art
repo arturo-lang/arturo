@@ -2993,6 +2993,18 @@ do [
     passed 
     
     
+    topic « greater? - :unit
+    
+    ensure -> not? greater? `USD `USD
+    ensure -> not? greater? `EUR `EUR
+    ensure -> not? greater? `USD `EUR
+    ensure -> not? greater? `EUR `USD
+    ensure -> not? `USD > `USD
+    ensure -> not? `EUR > `EUR
+    ensure -> not? `EUR > `USD
+    passed
+    
+    
     topic « greater? - incompatible types
     
     ; NOTES: 
