@@ -56,6 +56,17 @@ do [
     ensure -> not? conforms? 100`EUR 100`m/s
     passed
     
+    topic « currencies - property
+    
+    ensure -> 'currency = property 100`EUR
+    ensure -> 'currency = property 100`USD
+    ensure -> 'currency = property 100`BRL
+    passed
+    
+    ensure -> 'currency <> property 100`m
+    ensure -> 'currency <> property 100`m/s
+    passed
+    
 ]
 
 ; Length
