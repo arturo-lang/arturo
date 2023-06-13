@@ -32,6 +32,7 @@ v0.9.84
 - Core\pop: renamed to `unstack` (`pop` is added as a proper popping function in Collections)
 - Collections\split: fixed `.every:` when working with Literal values
 - Collections\sort: fixed `.ascii` when working with Literal values
+- Converters\to: fixed support for `:block`/`:dictionary`/`:object`/`:store` to `:string` conversions
 - Files\read: added `.delimiter:` support for CSV's
 - Statistics\median: fixed bug + better and more efficient implementation
 - Strings\match: added support for Char values as needle
