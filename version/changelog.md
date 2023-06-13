@@ -8,7 +8,7 @@ v0.9.84
 ### Language
 
 - Added flag support for `:regex` values (`/i`, `/m` & `/s`)
-- Identifiers (`:word`, `:literal` values, etc) can now support underscores (`_`) as well 
+- Identifiers (Word, Literal, etc) can now support underscores (`_`) as well 
 - Better support for parsing "hanging" attributes in pipe'd constructs
 
 ### Library
@@ -34,7 +34,7 @@ v0.9.84
 - Collections\split: fixed `.every:` and `.at:` when working with Literal values
 - Collections\sort: fixed `.ascii` when working with Literal values
 - Converters\range: disallow zero `.step:` for new ranges
-- Converters\to: fixed support for `:block`/`:dictionary`/`:object`/`:store` to `:string` conversions
+- Converters\to: fixed support for Block/Dictionary/Object/Store to String conversions
 - Files\read: added `.delimiter:` support for CSV's
 - Numbers\clamp: made to work with Range values instead of lower/upper limits
 - Statistics\median: fixed bug + better and more efficient implementation
