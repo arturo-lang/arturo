@@ -1,9 +1,28 @@
-100.00 €
-100.00 $
-120.00 €
-70.50 $
-99.00 CHF
-33.00 ¥
+
+>> currencies
+
+>> currencies - currency? (hidden)
+
+>> currencies - basic math
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> currencies - conforms?
+[+] passed!
+[+] passed!
+
+>> currencies - property
+[+] passed!
+[+] passed!
+
+>> currencies - scalar
+[+] passed!
+
+>> currencies - specify
+[+] passed!
+
+>> currencies - units (disabled)
 5 m
 2.8288 m
 2.54 cm
