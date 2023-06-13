@@ -36,6 +36,7 @@ v0.9.84
 - Converters\range: disallow zero `.step:` for new ranges
 - Converters\to: fixed support for `:block`/`:dictionary`/`:object`/`:store` to `:string` conversions
 - Files\read: added `.delimiter:` support for CSV's
+- Numbers\clamp: made to work with Range values instead of lower/upper limits
 - Statistics\median: fixed bug + better and more efficient implementation
 - Strings\match: added support for Char values as needle
 - System\sys: added info about CPU endianess, current hostname and re-organized returned information
