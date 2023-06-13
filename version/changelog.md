@@ -14,6 +14,7 @@ v0.9.84
 **New**
 
 - Collections: added new `pop` method
+- Core: added new `throws?` method
 
 **Enhancements, Changes & Fixes**
 
