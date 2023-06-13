@@ -122,6 +122,31 @@ do [
     
     topic « length - basic math
     
+    ; :unit :scale
+    
+    ensure -> 3`m   = 2`m + 1
+    ensure -> 3.5`m = 2`m + 1.5
+    ensure -> 7.5`m = 5`m + 5:2
+    passed
+    
+    ensure -> 1`m   = 2`m - 1
+    ensure -> 0.5`m = 2`m - 1.5
+    ensure -> 4.5`m = 5`m - 1:2
+    passed
+    
+    ; ensure -> 7`m = 15`m / 2
+    ensure -> 7.5`m = 15`m // 2
+    passed
+    
+    ensure -> 2`m    = 1`m + 1`m
+    ensure -> 0`m    = 1`m - 1`m
+    passed
+    
+    ensure -> 1.01`m = 1`m + 1`cm
+    ensure -> 0.99`m = 1`m - 1`cm
+    passed
+    
+    
     topic « length - math // scales
     
     topic « length - math // area
