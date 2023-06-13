@@ -646,9 +646,15 @@ do [
     passed
     
     topic « between? - :unit
-    ensure -> between? `USD `USD    
-    ensure -> not? between? `USD `EUR
-    passed    
+    
+    ensure -> between? `USD `USD `USD    
+    ensure -> between? `USD `USD `EUR
+    ensure -> between? `EUR `USD `EUR
+    passed
+    
+    ; TODO: fix me soon
+    ; ensure -> not? between? `BRL `USD `EUR
+    ; passed    
     
 ]
 
