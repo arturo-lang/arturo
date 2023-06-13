@@ -10,6 +10,8 @@ v0.9.84
 - Added flag support for Regex values (`/i`, `/m` & `/s`)
 - Identifiers (Word, Literal, etc) can now support underscores (`_`) as well 
 - Added literal syntax sypport for Rationals, e.g. `1:2`
+- Modified existing `:quantity` type with new syntax
+- New `:unit` type
 
 ### Library
 
