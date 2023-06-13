@@ -9,8 +9,7 @@ v0.9.84
 
 - Added flag support for Regex values (`/i`, `/m` & `/s`)
 - Identifiers (Word, Literal, etc) can now support underscores (`_`) as well 
-- Better support for parsing "hanging" attributes in pipe'd constructs
-- Rationals: added implicit GMP-powered BigNum support, new literal syntax (e.g. `1:2`) and more efficient handling
+- Added literal syntax sypport for Rationals, e.g. `1:2`
 
 ### Library
 
@@ -18,6 +17,7 @@ v0.9.84
 
 - Collections: added new `pop` method
 - Core: added new `throws?` method
+- Numbers: added new `tau` constant
 
 **Enhancements, Changes & Fixes**
 
@@ -54,6 +54,9 @@ v0.9.84
 - Fixed issues with Date values and comparison operators
 - Added `auto/complete:` and `auto/hints:` magic variables, to enable setting (or unsetting) autocompletion and hints, respectively, in the REPL console
 - Improved error handling for incompatible values within Block parameters
+- Better support for parsing "hanging" attributes in pipe'd constructs
+- Rationals: added implicit GMP-powered BigNum support and more efficient handling
+- Fixed arm64/M1 compilation for macOS
 
 v0.9.82
 ========
