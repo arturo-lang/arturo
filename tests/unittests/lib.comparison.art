@@ -5430,6 +5430,17 @@ do [
     ensure -> not? less? a d
     passed 
     
+    topic « less? - :unit
+    
+    ensure -> not? less? `USD `USD
+    ensure -> not? less? `EUR `EUR
+    ensure -> not? less? `USD `EUR
+    ensure -> not? less? `EUR `USD
+    ensure -> not? `USD < `USD
+    ensure -> not? `EUR < `EUR
+    ensure -> not? `EUR < `USD
+    passed
+    
     
     topic « less? - incompatible types
     
