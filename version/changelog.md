@@ -8,6 +8,7 @@ v0.9.84
 ### Language
 
 - Added flag support for `:regex` values (`/i`, `/m` & `/s`)
+- Identifiers (`:word`, `:literal` values, etc) can now support underscores (`_`) as well 
 
 ### Library
 
