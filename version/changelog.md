@@ -47,7 +47,7 @@ v0.9.84
 - Added type-checking for built-in function attributes
 - Fixed issue with GMP-based BigNum handling on Windows
 - Fixed issues with Date values and comparison operators
-- Added `autocomplete:` magic variable, to enable setting (or unsetting) autocompletion in the REPL console
+- Added `auto/complete:` and `auto/hints:` magic variables, to enable setting (or unsetting) autocompletion and hints, respectively, in the REPL console
 - Improved error handling for incompatible values within Block parameters
 
 v0.9.82
