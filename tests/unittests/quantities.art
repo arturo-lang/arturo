@@ -1,6 +1,8 @@
-; currencies
-print 100`EUR
-print 100`USD
+
+topic:  $[topic :string] -> print ~"\n>> |topic|"
+passed: $[] -> print "[+] passed!"
+
+
 
 ; adding/subtracting/multiplying/dividing currencies
 print 100`EUR + 20`EUR
