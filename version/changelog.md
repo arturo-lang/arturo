@@ -30,14 +30,14 @@ v0.9.84
 - Collections\get: fixed to work with String-Range parameters
 - Collections\in?: added `.deep` option
 - Collections\last: made to return ranges for Range values + ability to handle infinite ranges correctly
+- Collections\sort: fixed `.ascii` when working with Literal values
+- Collections\split: fixed `.every:` and `.at:` when working with Literal values
 - Collections\take: fixed SIGSEGV errors
 - Converters\as: fixed `.code` to properly convert Rational or Complex values with negative fields
-- Core\ensure: added `.that:` option (to show user-defined message on failure)
-- Core\pop: renamed to `unstack` (`pop` is added as a proper popping function in Collections)
-- Collections\split: fixed `.every:` and `.at:` when working with Literal values
-- Collections\sort: fixed `.ascii` when working with Literal values
 - Converters\range: disallow zero `.step:` for new ranges
 - Converters\to: fixed support for Block/Dictionary/Object/Store to String conversions
+- Core\ensure: added `.that:` option (to show user-defined message on failure)
+- Core\pop: renamed to `unstack` (`pop` is added as a proper popping function in Collections)
 - Files\read: added `.delimiter:` support for CSV's
 - Numbers: added Rational value support to most (mainly trigonometric) functions
 - Numbers\clamp: made to work with Range values instead of lower/upper limits + better type support
