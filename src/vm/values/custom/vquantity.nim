@@ -153,7 +153,8 @@ proc getExchangeRate(curr: string): float =
         let url = "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/" & s & "/usd.json"
         let content = waitFor (newAsyncHttpClient().getContent(url))
         let response = parseJson(content)
-        ExchangeRates = response["usd"]
+        for (k,v) in pairs(response["usd"]):
+            ExchangeRates[k] = v.fnum
 
     return ExchangeRates[s]
 
