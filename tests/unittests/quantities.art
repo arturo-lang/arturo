@@ -221,6 +221,27 @@ do [
     ; ensure -> 1`apc  = 1`pc * (10 ^ (neg 18))
     passed
     
+    topic « length - math // convertions
+    
+    ang: (10 ^ (neg 10)) --> `m
+    
+    ensure -> 1`inch    = 127:5000`meters
+    ensure -> 1`foot    = 12`inches
+    ensure -> 1`yard    = 3`feet
+    ensure -> 1`rods    = 5.5`yards
+    ensure -> 1`mile    = 5280`feet
+    ensure -> 1`pica    = 12`points
+    ensure -> 1`point   = 1:72`inch
+    ensure -> 1`pixel   = 1:96`inch
+    ensure -> 1`fathom  = 1`yard
+    ensure -> 1`furlong = 1:8`miles
+    ; ensure -> 1`angstrom    = ang
+    ; SIGFPE: Arithmetic error.
+    ensure -> 1`lightYear   = 9460730472580800`m
+    ensure -> 1`nauticalMile        = 1852`meters
+    ensure -> 1`astronomicalUnit    = 149597870700`m
+    
+    
     topic « length - math // area
     
     topic « length - math // volume
