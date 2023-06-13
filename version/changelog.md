@@ -60,6 +60,7 @@ v0.9.84
 - Better support for parsing "hanging" attributes in pipe'd constructs
 - Rationals: added implicit GMP-powered BigNum support and more efficient handling
 - Fixed arm64/M1 compilation for macOS
+- Better `--update` support
 
 v0.9.82
 ========
