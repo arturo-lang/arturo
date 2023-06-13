@@ -630,9 +630,6 @@ func `*=`*(z: Int, x: int | culong | Int) =
 func `*=`*(x, y: Rat) =
     discard x.mul(x, y)
 
-func neg*(x: Rat): Rat =
-    mpq_neg(result[], x[])
-
 func inv*(x: Rat): Rat =
     mpq_inv(result[], x[])
 
@@ -1079,6 +1076,13 @@ func neg*(x: Int): Int =
 
 func negI*(x: Int) =
     mpz_neg(x[], x[])
+
+func neg*(z, x: Rat): Rat =
+    result = z
+    mpq_neg(result[], x[])
+
+func neg*(x: Rat): Rat =
+    newRat().neg(x)
 
 func gcd*(z, x, y: Int): Int =
     result = z
