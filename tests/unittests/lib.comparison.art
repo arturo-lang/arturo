@@ -2278,6 +2278,20 @@ do [
         -> equal? var 'regex?   {/regex?/} 
     ] => not? passed
     
+    
+    topic « equal? - :unit
+    
+    ensure -> equal? `USD `USD
+    ensure -> equal? `EUR `EUR
+    ensure -> `USD = `USD
+    ensure -> `EUR = `EUR
+    passed
+    
+    ensure -> not? equal? `USD `EUR
+    ensure -> not? equal? `EUR `USD
+    ensure -> not? `EUR = `USD
+    passed
+    
 ]
 
 topic « greater?
