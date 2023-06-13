@@ -149,6 +149,78 @@ do [
     
     topic « length - math // scales
     
+    ensure -> 1`Em  = 1`m * (10 ^ 18)
+    ensure -> 1`Pm  = 1`m * (10 ^ 15)
+    ensure -> 1`Tm  = 1`m * (10 ^ 12)
+    ensure -> 1`Gm  = 1`m * (10 ^ 9)
+    ensure -> 1`Mm  = 1`m * (10 ^ 6)
+    ensure -> 1`km  = 1`m * (10 ^ 3)
+    ensure -> 1`hm  = 1`m * (10 ^ 2)
+    ensure -> 1`dam = 1`m * (10 ^ 1)
+    ensure -> 1`dm  = 1`m * (10 ^ (neg 1 ))
+    ensure -> 1`cm  = 1`m * (10 ^ (neg 2 ))
+    ensure -> 1`mm  = 1`m * (10 ^ (neg 3 ))
+    ensure -> 1`um  = 1`m * (10 ^ (neg 6 ))
+    ensure -> 1`nm  = 1`m * (10 ^ (neg 9 ))
+    ; ensure -> 1`pm  = 1`m * (10 ^ (neg 12))
+    ; ensure -> 1`fm  = 1`m * (10 ^ (neg 15))
+    ; ensure -> 1`am  = 1`m * (10 ^ (neg 18))
+    passed
+    
+    ; ensure -> 1`Epx  = 1`px * (10 ^ 18)
+    ensure -> 1`Ppx  = 1`px * (10 ^ 15)
+    ensure -> 1`Tpx  = 1`px * (10 ^ 12)
+    ensure -> 1`Gpx  = 1`px * (10 ^ 9)
+    ensure -> 1`Mpx  = 1`px * (10 ^ 6)
+    ensure -> 1`kpx  = 1`px * (10 ^ 3)
+    ensure -> 1`hpx  = 1`px * (10 ^ 2)
+    ensure -> 1`dapx = 1`px * (10 ^ 1)
+    ensure -> 1`dpx  = 1`px * (10 ^ (neg 1 ))
+    ensure -> 1`cpx  = 1`px * (10 ^ (neg 2 ))
+    ensure -> 1`mpx  = 1`px * (10 ^ (neg 3 ))
+    ensure -> 1`upx  = 1`px * (10 ^ (neg 6 ))
+    ensure -> 1`npx  = 1`px * (10 ^ (neg 9 ))
+    ; ensure -> 1`ppx  = 1`px * (10 ^ (neg 12))
+    ; ensure -> 1`fpx  = 1`px * (10 ^ (neg 15))
+    ; ensure -> 1`apx  = 1`px * (10 ^ (neg 18))
+    passed
+    
+    ; ensure -> 1`Ept  = 1`pt * (10 ^ 18)
+    ensure -> 1`Ppt  = 1`pt * (10 ^ 15)
+    ensure -> 1`Tpt  = 1`pt * (10 ^ 12)
+    ensure -> 1`Gpt  = 1`pt * (10 ^ 9)
+    ensure -> 1`Mpt  = 1`pt * (10 ^ 6)
+    ensure -> 1`kpt  = 1`pt * (10 ^ 3)
+    ensure -> 1`hpt  = 1`pt * (10 ^ 2)
+    ensure -> 1`dapt = 1`pt * (10 ^ 1)
+    ensure -> 1`dpt  = 1`pt * (10 ^ (neg 1 ))
+    ensure -> 1`cpt  = 1`pt * (10 ^ (neg 2 ))
+    ensure -> 1`mpt  = 1`pt * (10 ^ (neg 3 ))
+    ensure -> 1`upt  = 1`pt * (10 ^ (neg 6 ))
+    ensure -> 1`npt  = 1`pt * (10 ^ (neg 9 ))
+    ; ensure -> 1`ppt  = 1`pt * (10 ^ (neg 12))
+    ; ensure -> 1`fpt  = 1`pt * (10 ^ (neg 15))
+    ; ensure -> 1`apt  = 1`pt * (10 ^ (neg 18))
+    passed
+    
+    ; ensure -> 1`Epc  = 1`pc * (10 ^ 18)
+    ensure -> 1`Ppc  = 1`pc * (10 ^ 15)
+    ensure -> 1`Tpc  = 1`pc * (10 ^ 12)
+    ensure -> 1`Gpc  = 1`pc * (10 ^ 9)
+    ensure -> 1`Mpc  = 1`pc * (10 ^ 6)
+    ensure -> 1`kpc  = 1`pc * (10 ^ 3)
+    ensure -> 1`hpc  = 1`pc * (10 ^ 2)
+    ensure -> 1`dapc = 1`pc * (10 ^ 1)
+    ensure -> 1`dpc  = 1`pc * (10 ^ (neg 1 ))
+    ensure -> 1`cpc  = 1`pc * (10 ^ (neg 2 ))
+    ensure -> 1`mpc  = 1`pc * (10 ^ (neg 3 ))
+    ensure -> 1`upc  = 1`pc * (10 ^ (neg 6 ))
+    ensure -> 1`npc  = 1`pc * (10 ^ (neg 9 ))
+    ; ensure -> 1`ppc  = 1`pc * (10 ^ (neg 12))
+    ; ensure -> 1`fpc  = 1`pc * (10 ^ (neg 15))
+    ; ensure -> 1`apc  = 1`pc * (10 ^ (neg 18))
+    passed
+    
     topic « length - math // area
     
     topic « length - math // volume
