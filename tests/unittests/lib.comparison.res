@@ -96,6 +96,9 @@
 >> between? - :date
 [+] passed!
 
+>> between? - :unit
+[+] passed!
+
 >> between? - test with reversed index
 [+] passed!
 [+] passed!
@@ -206,6 +209,9 @@
 >> less? - :date
 [+] passed!
 [+] passed!
+[+] passed!
+
+>> compare - :unit
 [+] passed!
 
 >> equal?
@@ -365,6 +371,10 @@
 [+] passed!
 [+] passed!
 
+>> equal? - :unit
+[+] passed!
+[+] passed!
+
 >> greater?
 
 >> greater? - :integer :floating :rational
@@ -494,6 +504,9 @@
 
 >> greater? - :date
 [+] passed!
+[+] passed!
+
+>> greater? - :unit
 [+] passed!
 
 >> greater? - incompatible types
@@ -656,6 +669,10 @@
 >> greaterOrEqual? - :database
 
 >> greaterOrEqual? - :date
+[+] passed!
+[+] passed!
+
+>> greaterOrEqual? - :unit
 [+] passed!
 [+] passed!
 
@@ -822,6 +839,9 @@
 [+] passed!
 [+] passed!
 
+>> less? - :unit
+[+] passed!
+
 >> less? - incompatible types
 [+] passed!
 [+] passed!
@@ -984,6 +1004,10 @@
 [+] passed!
 [+] passed!
 
+>> lessOrEqual? - :unit
+[+] passed!
+[+] passed!
+
 >> lessOrEqual? - incompatible types
 [+] passed!
 [+] passed!
@@ -1136,6 +1160,10 @@
 >> notEqual? - :database
 
 >> notEqual? - :date
+[+] passed!
+[+] passed!
+
+>> notEqual? - :unit
 [+] passed!
 [+] passed!
 
@@ -1296,6 +1324,10 @@
 >> same? - :database
 
 >> same? - :date
+[+] passed!
+[+] passed!
+
+>> same? - :unit
 [+] passed!
 [+] passed!
 
