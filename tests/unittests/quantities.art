@@ -74,6 +74,16 @@ do [
     ensure -> 100 = scalar 100`EUR
     passed
     
+    topic « currencies - specify
+    
+    specify.symbol: "ÁRT" .describes: "arturoCrypto" 'artc 10`EUR
+    
+    ensure -> 'arturocrypto = property 1`artc
+    ensure -> "1.00 ÁRT" = ~"|1`artc|"
+    ensure -> "31:2`ÁRT" = as.code 15.5`artc
+    ensure -> 10`EUR = 1`artc --> `EUR
+    passed
+    
 ]
 
 ; Length
