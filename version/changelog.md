@@ -9,6 +9,7 @@ v0.9.84
 
 - Added flag support for `:regex` values (`/i`, `/m` & `/s`)
 - Identifiers (`:word`, `:literal` values, etc) can now support underscores (`_`) as well 
+- Better support for parsing "hanging" attributes in pipe'd constructs
 
 ### Library
 
@@ -30,7 +31,7 @@ v0.9.84
 - Converters\as: fixed `.code` to properly convert Rational or Complex values with negative fields
 - Core\ensure: added `.that:` option (to show user-defined message on failure)
 - Core\pop: renamed to `unstack` (`pop` is added as a proper popping function in Collections)
-- Collections\split: fixed `.every:` when working with Literal values
+- Collections\split: fixed `.every:` and `.at:` when working with Literal values
 - Collections\sort: fixed `.ascii` when working with Literal values
 - Converters\to: fixed support for `:block`/`:dictionary`/`:object`/`:store` to `:string` conversions
 - Files\read: added `.delimiter:` support for CSV's
