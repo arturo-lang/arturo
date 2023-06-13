@@ -152,7 +152,7 @@ proc getExchangeRate(curr: string): float =
     let s = toLowerAscii(curr)
     if ExchangeRates.len == 0:
         echo "\t- ExchangeRates table was empty: downloading..."
-        let url = "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/" & s & "/usd.json"
+        let url = "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/usd.min.json"
         let content = waitFor (newAsyncHttpClient().getContent(url))
         echo "\t- Downloaded!"
         let response = parseJson(content)
