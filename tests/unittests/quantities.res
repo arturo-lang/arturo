@@ -23,6 +23,44 @@
 [+] passed!
 
 >> currencies - units (disabled)
+
+>> length
+
+>> length - length?
+[+] passed!
+
+>> length - basic math
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> length - math // scales
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> length - math // convertions
+
+>> length - math // area
+
+>> length - math // volume
+
+>> length - conforms?
+
+>> length - convert
+
+>> length - in
+
+>> length - property
+
+>> length - scalar
+
+>> length - specify
+
+>> length - units (disabled)
 5 m
 2.8288 m
 2.54 cm
