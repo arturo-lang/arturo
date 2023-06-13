@@ -10,6 +10,7 @@ v0.9.84
 - Added flag support for `:regex` values (`/i`, `/m` & `/s`)
 - Identifiers (Word, Literal, etc) can now support underscores (`_`) as well 
 - Better support for parsing "hanging" attributes in pipe'd constructs
+- Rationals: added implicit GMP-powered BigNum support, new literal syntax (e.g. `1:2`) and more efficient handling
 
 ### Library
 
@@ -24,10 +25,12 @@ v0.9.84
 - Arithmetic\add: fixed for operations between Color values
 - Arithmetic\sub: fixed for operations between Color values
 - Collections\contains?: added `.deep` option
+- Collections\drop: fixed SIGSEGV errors
 - Collections\first: made to return ranges for Range values + ability to handle infinite ranges correctly
 - Collections\get: fixed to work with String-Range parameters
 - Collections\in?: added `.deep` option
 - Collections\last: made to return ranges for Range values + ability to handle infinite ranges correctly
+- Collections\take: fixed SIGSEGV errors
 - Converters\as: fixed `.code` to properly convert Rational or Complex values with negative fields
 - Core\ensure: added `.that:` option (to show user-defined message on failure)
 - Core\pop: renamed to `unstack` (`pop` is added as a proper popping function in Collections)
@@ -36,7 +39,8 @@ v0.9.84
 - Converters\range: disallow zero `.step:` for new ranges
 - Converters\to: fixed support for Block/Dictionary/Object/Store to String conversions
 - Files\read: added `.delimiter:` support for CSV's
-- Numbers\clamp: made to work with Range values instead of lower/upper limits
+- Numbers: added Rational value support to most (mainly trigonometric) functions
+- Numbers\clamp: made to work with Range values instead of lower/upper limits + better type support
 - Statistics\median: fixed bug + better and more efficient implementation
 - Strings\match: added support for Char values as needle
 - System\sys: added info about CPU endianess, current hostname and re-organized returned information
