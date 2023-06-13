@@ -645,6 +645,16 @@ do [
             to :date .format: "MMM dd" "Jan 16"
     passed
     
+    topic « between? - :unit
+    
+    ensure -> between? `USD `USD `USD    
+    ensure -> between? `USD `USD `EUR
+    ensure -> between? `EUR `USD `EUR
+    passed
+    
+    ; TODO: fix me soon
+    ; ensure -> not? between? `BRL `USD `EUR
+    ; passed    
     
 ]
 
@@ -1171,6 +1181,14 @@ do [
     ensure -> 1 = compare a d
     ensure -> 1 = compare e d
     passed
+    
+    topic « compare - :unit
+    
+    ensure -> 0 = compare `USD `USD
+    ensure -> 1 = compare `USD `EUR
+    ensure -> 1 = compare `EUR `USD
+    passed
+
     
 ]
 
@@ -2266,6 +2284,20 @@ do [
         -> equal? var 'regex?   {/regex?/} 
     ] => not? passed
     
+    
+    topic « equal? - :unit
+    
+    ensure -> equal? `USD `USD
+    ensure -> equal? `EUR `EUR
+    ensure -> `USD = `USD
+    ensure -> `EUR = `EUR
+    passed
+    
+    ensure -> not? equal? `USD `EUR
+    ensure -> not? equal? `EUR `USD
+    ensure -> not? `EUR = `USD
+    passed
+    
 ]
 
 topic « greater?
@@ -2965,6 +2997,18 @@ do [
     ensure -> not? greater? a b 
     ensure -> not? greater? a d
     passed 
+    
+    
+    topic « greater? - :unit
+    
+    ensure -> not? greater? `USD `USD
+    ensure -> not? greater? `EUR `EUR
+    ensure -> not? greater? `USD `EUR
+    ensure -> not? greater? `EUR `USD
+    ensure -> not? `USD > `USD
+    ensure -> not? `EUR > `EUR
+    ensure -> not? `EUR > `USD
+    passed
     
     
     topic « greater? - incompatible types
@@ -4191,6 +4235,19 @@ do [
     ensure -> not? greaterOrEqual? a d
     passed 
     
+    topic « greaterOrEqual? - :unit
+    
+    ensure -> greaterOrEqual? `USD `USD
+    ensure -> greaterOrEqual? `EUR `EUR
+    ensure -> `USD >= `USD
+    ensure -> `EUR >= `EUR
+    passed
+    
+    ensure -> not? greaterOrEqual? `USD `EUR
+    ensure -> not? greaterOrEqual? `EUR `USD
+    ensure -> not? `EUR >= `USD
+    passed
+    
     
     topic « greaterOrEqual? - incompatible types
     
@@ -5372,6 +5429,17 @@ do [
     ensure -> not? less? a b
     ensure -> not? less? a d
     passed 
+    
+    topic « less? - :unit
+    
+    ensure -> not? less? `USD `USD
+    ensure -> not? less? `EUR `EUR
+    ensure -> not? less? `USD `EUR
+    ensure -> not? less? `EUR `USD
+    ensure -> not? `USD < `USD
+    ensure -> not? `EUR < `EUR
+    ensure -> not? `EUR < `USD
+    passed
     
     
     topic « less? - incompatible types
@@ -6599,6 +6667,19 @@ do [
     ensure -> not? lessOrEqual? a d
     passed 
     
+    topic « lessOrEqual? - :unit
+    
+    ensure -> lessOrEqual? `USD `USD
+    ensure -> lessOrEqual? `EUR `EUR
+    ensure -> `USD =< `USD
+    ensure -> `EUR =< `EUR
+    passed
+    
+    ensure -> not? lessOrEqual? `USD `EUR
+    ensure -> not? equal? `EUR `USD
+    ensure -> not? `EUR =< `USD
+    passed
+    
     
     topic « lessOrEqual? - incompatible types
     
@@ -7690,6 +7771,19 @@ do [
     ensure -> notEqual? a\year c\year
     passed
     
+    topic « notEqual? - :unit
+    
+    ensure -> not? notEqual? `USD `USD
+    ensure -> not? notEqual? `EUR `EUR
+    ensure -> not? `USD <> `USD
+    ensure -> not? `EUR <> `EUR
+    passed
+    
+    ensure -> notEqual? `USD `EUR
+    ensure -> notEqual? `EUR `USD
+    ensure -> `EUR <> `USD
+    passed
+    
     
     topic « notEqual? - incompatible types
     
@@ -8738,6 +8832,16 @@ do [
     ensure -> same? a\day c\day
     ensure -> same? a\month c\month
     ensure -> not? same? a\year c\year
+    passed
+    
+    topic « same? - :unit
+    
+    ensure -> same? `USD `USD
+    ensure -> same? `EUR `EUR
+    passed
+    
+    ensure -> not? same? `USD `EUR
+    ensure -> not? same? `EUR `USD
     passed
     
     

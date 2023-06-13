@@ -999,6 +999,21 @@ func abs*(x: VRational): VRational =
                 br: abs(x.br)
             )
 
+func neg*(x: VRational): VRational =
+    # negation of VRational
+    if x.rKind == NormalRational:
+        result = VRational(
+            rKind: NormalRational,
+            num: -x.num,
+            den: x.den
+        )
+    else:
+        when not defined(NOGMP):
+            result = VRational(
+                rKind: BigRational,
+                br: neg(x.br)
+            )
+
 func floorDiv*(x, y: VRational): int =
     # floor division between given VRationals
     if x.rKind == NormalRational:
