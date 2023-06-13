@@ -392,6 +392,8 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
                 return x.a.len < y.a.len
             of Dictionary:
                 return false
+            of Unit:
+                return false
             of Object:
                 if (let compareMethod = x.proto.methods.getOrDefault("compare", nil); not compareMethod.isNil):
                     return x.proto.doCompare(x, y) == -1
@@ -501,6 +503,8 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
                Block:
                 return x.a.len > y.a.len
             of Dictionary:
+                return false
+            of Unit:
                 return false
             of Object:
                 if (let compareMethod = x.proto.methods.getOrDefault("compare", nil); not compareMethod.isNil):
