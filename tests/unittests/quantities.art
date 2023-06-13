@@ -67,6 +67,13 @@ do [
     ensure -> 'currency <> property 100`m/s
     passed
     
+    topic « currencies - scalar
+    
+    ensure -> 200 = scalar 200`USD
+    ensure -> 100 = scalar 100`USD
+    ensure -> 100 = scalar 100`EUR
+    passed
+    
 ]
 
 ; Length
