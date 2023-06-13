@@ -185,7 +185,8 @@ proc `==`*(x: Value, y: Value): bool =
                     if not (v==y.d[k]): return false
 
                 return true
-
+            of Unit:
+                return x.u == y.u
             of Object:
                 if (let compareMethod = x.proto.methods.getOrDefault("compare", nil); not compareMethod.isNil):
                     return x.proto.doCompare(x,y) == 0
