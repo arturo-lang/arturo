@@ -833,7 +833,7 @@ proc neg*(x: Value): Value =
         # TODO(VRational) add `neg` overload
         #  it can be faster for BigRational values
         #  labels: 3rd-party, enhancement, values
-        of Rational: return newRational(x.rat*(-1))
+        of Rational: return newRational(neg(x.rat))
         of Complex: return newComplex(x.z*(-1.0))
         of Quantity: return newQuantity(x.q*(-1))
         else:
