@@ -48,6 +48,7 @@ v0.9.84
 - Fixed issue with GMP-based BigNum handling on Windows
 - Fixed issues with Date values and comparison operators
 - Added `autocomplete:` magic variable, to enable setting (or unsetting) autocompletion in the REPL console
+- Improved error handling for incompatible values within Block parameters
 
 v0.9.82
 ========
