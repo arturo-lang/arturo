@@ -42,7 +42,15 @@ do [
         passed
     ]
     
+    topic « currencies - conforms?
     
+    ensure -> conforms? 100`EUR 200`USD
+    ensure -> conforms? 100`EUR 100`USD
+    ensure -> conforms? 100`EUR 100`EUR
+    ensure -> 100`EUR := 200`USD
+    ensure -> 100`EUR := 100`USD
+    ensure -> 100`EUR := 100`EUR
+    passed
     
 ]
 
