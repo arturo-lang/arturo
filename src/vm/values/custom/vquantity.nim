@@ -157,6 +157,8 @@ proc getExchangeRate(curr: string): float =
         echo "\t- Downloaded!"
         let response = parseJson(content)
         echo "\t- JSON successfully parsed"
+        echo "\t" & $(response)
+        echo "\t" & $(response["usd"])
         for (k,v) in pairs(response["usd"]):
             echo "\t\t> setting " & $(k)
             ExchangeRates[k] = v.fnum
