@@ -74,9 +74,6 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Dictionary},
         example     = """
-            ; called with no parameters
-            args         ; => #[ values: [] ]
-
             ; called with: 1 two 3
             args         
             ; => #[
