@@ -636,6 +636,12 @@ do [
         
     topic « length - convert
 
+    ; DRY - already tested in math // scales
+    
+    ensure -> same? 100`cm convert 1`m `cm
+    ensure -> same? 100`cm 1`m --> `cm
+    passed
+
     topic « length - in
     
     topic « length - property
