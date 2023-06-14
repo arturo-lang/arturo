@@ -607,6 +607,16 @@ do [
     ensure -> 8`Epx3  = 2`Epx  ^ 3
     
     
+    topic « length - math // check auto-convertion
+
+    ; We don't need to do much testing here, 
+    ; just check that convertions happen automatically
+    ; when used in mathematical operations
+
+    ensure ->  6`m2.yd =   3`m2 * 2`yd
+    ensure -> 15`yd2/m = 45`yd2 / 3`m
+    passed    
+    
     topic « length - conforms?
 
     ensure -> every? [
