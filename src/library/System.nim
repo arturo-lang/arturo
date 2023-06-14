@@ -378,11 +378,19 @@ proc defineSymbols*() =
     # TODO(System/script) also add information about the current script being executed
     #  another location could also be Paths/path
     #  labels: library,enhancement
-    constant "script",
-        alias       = unaliased,
-        description = "embedded information about the current script":
-            getScriptInfo()
 
+    builtin "script",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "get embedded information about the current script",
+        args        = NoArgs,
+        attrs       = NoAttrs,
+        returns     = {Dictionary},
+        example     = """
+        """:
+            push(getScriptInfo())
+            
     when not defined(WEB):
         builtin "superuser?",
             alias       = unaliased, 
