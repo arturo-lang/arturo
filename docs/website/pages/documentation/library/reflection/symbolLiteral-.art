@@ -2,8 +2,8 @@ name: "symbolLiteral?"
 type: :function
 description: "checks if given value is of type :symbolLiteral"
 module: "Reflection"
-line: 904
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L904"
+line: 912
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L912"
 returns: [
                 :logical
         ]

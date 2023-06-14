@@ -205,7 +205,7 @@ proc defineSymbols*() =
                 let time = getBenchmark:
                     execUnscoped(preevaled)
 
-                push newQuantity(newFloating(time), newQuantitySpec(MS))
+                push newQuantity(toQuantity(time, parseAtoms("ms")))
             else:
                 benchmark "":
                     execUnscoped(preevaled)
@@ -745,7 +745,9 @@ proc defineSymbols*() =
         args        = {
             "value" : {Any}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "big"   : ({Logical},"check if, internally, it's a bignum")
+        },
         returns     = {Logical},
         example     = """
             print quantity? 1:m         ; true
@@ -754,7 +756,10 @@ proc defineSymbols*() =
             print quantity? 3           ; false 
         """:
             #=======================================================
-            push(newLogical(xKind==Quantity))
+            if (hadAttr("big")):
+                push(newLogical(xKind==Quantity and x.q.original.rKind==BigRational))
+            else:
+                push(newLogical(xKind==Quantity))
 
     builtin "range?",
         alias       = unaliased, 
@@ -783,7 +788,9 @@ proc defineSymbols*() =
         args        = {
             "value" : {Any}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "big"   : ({Logical},"check if, internally, it's a bignum")
+        },
         returns     = {Logical},
         example     = """
             r: to :rational 3.14        ; r: 157/50
@@ -792,7 +799,10 @@ proc defineSymbols*() =
             print rational? 3.14        ; false
         """:
             #=======================================================
-            push(newLogical(xKind==Rational))
+            if (hadAttr("big")):
+                push(newLogical(xKind==Rational and x.rat.rKind==BigRational))
+            else:
+                push(newLogical(xKind==Rational))
 
     builtin "regex?",
         alias       = unaliased, 

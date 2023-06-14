@@ -96,10 +96,10 @@ do [
     topic "append - :string < :string + :char"
     do [
 
-        ensure -> "Arturo" = append "Artur" `o`
+        ensure -> "Arturo" = append "Artur" 'o'
         passed
 
-        ensure -> "Arturo" = "Artur" ++ `o`
+        ensure -> "Arturo" = "Artur" ++ 'o'
         passed
 
     ]
@@ -108,12 +108,12 @@ do [
     do [
 
         s: "Artur"
-        append 's `o`
+        append 's 'o'
         ensure -> "Arturo" = s
         passed
 
         s: "Artur"
-        's ++ `o`
+        's ++ 'o'
         ensure -> "Arturo" = s
         passed
 
@@ -122,10 +122,10 @@ do [
     topic "append - :string < :char + :char"
     do [
 
-        ensure -> "ab" = append `a` `b`
+        ensure -> "ab" = append 'a' 'b'
         passed
         
-        ensure -> "ab" = `a` ++ `b`
+        ensure -> "ab" = 'a' ++ 'b'
         passed
 
     ]
@@ -133,13 +133,13 @@ do [
     topic "append - :string < :char (literal) + :char"
     do [
 
-        c: `a`
-        append 'c `b`
+        c: 'a'
+        append 'c 'b'
         ensure -> "ab" = c
         passed
         
-        c: `a`
-        'c ++ `b`
+        c: 'a'
+        'c ++ 'b'
         ensure -> "ab" = c
         passed
 
@@ -148,10 +148,10 @@ do [
     topic "append - :string < :char + :string"
     do [
 
-        ensure -> "Arturo" = append `A` "rturo"
+        ensure -> "Arturo" = append 'A' "rturo"
         passed
         
-        ensure -> "Arturo" = `A` ++ "rturo"
+        ensure -> "Arturo" = 'A' ++ "rturo"
         passed
 
     ]
@@ -159,12 +159,12 @@ do [
     topic "append - :string < :char (literal) + :string"
     do [
         
-        c: `A`
+        c: 'A'
         append 'c "rturo"
         ensure -> "Arturo" = c
         passed
         
-        c: `A`
+        c: 'A'
         'c ++ "rturo"
         ensure -> "Arturo" = c
         passed
@@ -342,7 +342,7 @@ do [
     str: "Arturo"
     ensure -> contains? str "Art"         ; :string
     passed
-    ensure -> contains? str `t`           ; :char
+    ensure -> contains? str 't'           ; :char
     passed
     ensure -> contains? str {/[Art]/}     ; :regex
     passed
@@ -480,42 +480,130 @@ do [
 
 topic "drop - :string < :string :string"
 do [
-    ensure -> "rturo" = drop "Arturo" 1
+    
+    ensure -> "art" = drop "art" 0
     passed
-    ensure -> "uro" = drop "Arturo" 3
+    
+    ensure -> "rt" = drop "art" 1
+    ensure -> "t" = drop "art" 2
     passed
+    
+    ensure -> "" = drop "art" 3
+    ensure -> "" = drop "art" 4
+    passed
+    
+    ensure -> "art" = drop "art" neg 0
+    passed
+    
+    ensure -> "ar" = drop "art" neg 1
+    ensure -> "a" = drop "art" neg 2
+    passed
+    
+    ensure -> "" = drop "art" neg 3
+    ensure -> "" = drop "art" neg 4
+    passed
+    
 ]
 
 topic "drop - :string < :string (literal) :string"
 do [
-    a: "Arturo", drop 'a 1
     
-    ensure -> "rturo" = a
+    a: "art", drop 'a 0
+    ensure -> "art" = a
     passed
     
-    b: "Arturo", drop 'b 3
-    ensure -> "uro" = b
+    a: "art", drop 'a 1
+    ensure -> "rt" = a
+    a: "art", drop 'a 2
+    ensure -> "t" = a
     passed
+    
+    a: "art", drop 'a 3
+    ensure -> "" = a
+    a: "art", drop 'a 4
+    ensure -> "" = a
+    passed
+    
+    a: "art", drop 'a neg 0
+    ensure -> "art" = a
+    passed
+    
+    a: "art", drop 'a neg 1
+    ensure -> "ar" = a
+    a: "art", drop 'a neg 2
+    ensure -> "a" = a
+    passed
+    
+    a: "art", drop 'a neg 3
+    ensure -> "" = a
+    a: "art", drop 'a neg 4
+    ensure -> "" = a
+    passed
+    
 ]
 
 topic "drop - :block < :block :block"
 do [
-    ensure -> [2 3 4 5] = drop [1 2 3 4 5] 1
+    
+    ensure -> [a b c] = drop [a b c] 0
     passed
-    ensure -> [4 5] = drop [1 2 3 4 5] 3
+    
+    ensure -> [b c] = drop [a b c] 1
+    ensure -> [c] = drop [a b c] 2
     passed
+    
+    ensure -> [] = drop [a b c] 3
+    ensure -> [] = drop [a b c] 4
+    passed
+    
+    ensure -> [a b c] = drop [a b c] neg 0
+    passed
+    
+    ensure -> [a b] = drop [a b c] neg 1
+    ensure -> [a] = drop [a b c] neg 2
+    passed
+    
+    ensure -> [] = drop [a b c] neg 3
+    ensure -> [] = drop [a b c] neg 4
+    passed
+    
 ]
 
 topic "drop - :block < :block (literal) :block"
 do [
-    a: [1 2 3 4 5], drop 'a 1
     
-    ensure -> [2 3 4 5] = a
+    a: [a b c], drop 'a 0
+    ensure -> [a b c] = a
     passed
     
-    b: [1 2 3 4 5], drop 'b 3
-    ensure -> [4 5] = b
+    a: [a b c], drop 'a 1
+    ensure -> [b c] = a
+    a: [a b c], drop 'a 2
+    ensure -> [c] = a
     passed
+    
+    a: [a b c], drop 'a 3
+    ensure -> [] = a
+    a: [a b c], drop 'a 4
+    ensure -> [] = a
+    passed
+    
+    a: [a b c], drop 'a neg 0
+    ensure -> [a b c] = a
+    passed
+    
+    a: [a b c], drop 'a neg 1
+    ensure -> [a b] = a
+    a: [a b c], drop 'a neg 2
+    ensure -> [a] = a
+    passed
+    
+    a: [a b c], drop 'a neg 3
+    ensure -> [] = a
+    a: [a b c], drop 'a neg 4
+    ensure -> [] = a
+    passed
+    
 ]
 
 topic "empty - empty?"
@@ -565,7 +653,7 @@ do [
 topic "first - .n"
 do [
 
-    ensure -> `A` = first "Arturo"
+    ensure -> 'A' = first "Arturo"
     passed
     ensure -> "A" <> first "Arturo"
     passed
@@ -602,17 +690,17 @@ do [
     passed
 
 
-    a: range `a` `l`
-    b: range.step: 2 `a` `l`
+    a: range 'a' 'l'
+    b: range.step: 2 'a' 'l'
 
-    ensure -> `a` = first a
-    ensure -> `a` = first b
+    ensure -> 'a' = first a
+    ensure -> 'a' = first b
     passed
 
-    ensure -> [`a` `b`] = @first.n: 2 a
-    ensure -> [`a` `c`] = @first.n: 2 b
-    ensure -> (`a`..`b`) = first.n: 2 a
-    ensure -> (range.step: 2 `a` `c`) = first.n: 2 b
+    ensure -> ['a' 'b'] = @first.n: 2 a
+    ensure -> ['a' 'c'] = @first.n: 2 b
+    ensure -> ('a'..'b') = first.n: 2 a
+    ensure -> (range.step: 2 'a' 'c') = first.n: 2 b
     passed
 
     ensure -> 5 = first range.step: 2 5 0
@@ -663,16 +751,16 @@ do [
 topic "get - :string"
 do [
     
-    ensure -> `r` = get "Arturo" 1
+    ensure -> 'r' = get "Arturo" 1
     passed
     
     s: "Arturo"
     
-    ensure -> `r` = s\1
+    ensure -> 'r' = s\1
     passed
     
     i: 0
-    ensure -> `r` = s\[i + 1]
+    ensure -> 'r' = s\[i + 1]
     passed
     
     ensure -> "Art"    = get s 0..2
@@ -829,7 +917,7 @@ do [
     str: "Arturo"
     ensure -> in? "Art" str        ; :string
     passed
-    ensure -> in? `t` str           ; :char
+    ensure -> in? 't' str           ; :char
     passed
     ensure -> in? {/[Art]/} str     ; :regex
     passed
@@ -997,7 +1085,7 @@ do [
 topic "insert - :string"
 do [
     
-    ensure -> "CPython" = insert "Python" 0 `C`
+    ensure -> "CPython" = insert "Python" 0 'C'
     passed
     ensure -> "Arturo Programming Language" 
         = insert "Arturo Language" 6 " Programming"
@@ -1008,7 +1096,7 @@ do [
 topic "insert - :string (literal)"
 do [
     
-    py: "Python", insert 'py 0 `C` 
+    py: "Python", insert 'py 0 'C' 
     art: "Arturo Language", insert 'art 6 " Programming"
     
     ensure -> "CPython" = py
@@ -1137,7 +1225,7 @@ do [
 topic "last - .n"
 do [
 
-    ensure -> `o` = last "Arturo"
+    ensure -> 'o' = last "Arturo"
     passed
     ensure -> "o" <> last "Arturo"
     passed
@@ -1178,17 +1266,17 @@ do [
     passed
 
 
-    a: range `a` `l`
-    b: range.step: 2 `a` `l`
+    a: range 'a' 'l'
+    b: range.step: 2 'a' 'l'
 
-    ensure -> `l` = last a
-    ensure -> `k` = last b
+    ensure -> 'l' = last a
+    ensure -> 'k' = last b
     passed
 
-    ensure -> [`k` `l`] = @last.n: 2 a
-    ensure -> [`i` `k`] = @last.n: 2 b
-    ensure -> (`k`..`l`) = last.n: 2 a
-    ensure -> (range.step: 2 `i` `k`) = last.n: 2 b
+    ensure -> ['k' 'l'] = @last.n: 2 a
+    ensure -> ['i' 'k'] = @last.n: 2 b
+    ensure -> ('k'..'l') = last.n: 2 a
+    ensure -> (range.step: 2 'i' 'k') = last.n: 2 b
     passed
 
     ensure -> 1 = last range.step: 2 5 0
@@ -1395,7 +1483,7 @@ do [
     b: pop 'a
     
     ensure -> "Arturo" = a
-    ensure -> `o` = b
+    ensure -> 'o' = b
     passed
     
     b: pop.n: 3 'a
@@ -1461,42 +1549,42 @@ do [
 
     topic "prepend - :string < :string + :char"
     do [
-        ensure -> "Arturo" = prepend "rturo" `A`
+        ensure -> "Arturo" = prepend "rturo" 'A'
         passed
     ]
     
     topic "prepend - :string < :string (literal) + :char"
     do [
         s: "rturo"
-        prepend 's `A`
+        prepend 's 'A'
         ensure -> "Arturo" = s
         passed
     ]
 
     topic "prepend - :string < :char + :char"
     do [
-        ensure -> "ba" = prepend `a` `b`
+        ensure -> "ba" = prepend 'a' 'b'
         passed
     ]
     
     topic "prepend - :string < :char (literal) + :char"
     do [
-        c: `a`
-        prepend 'c `b`
+        c: 'a'
+        prepend 'c 'b'
         ensure -> "ba" = c
         passed
     ]
 
     topic "prepend - :string < :char + :string"
     do [
-        ensure -> "Arturo" = prepend "rturo" `A`
+        ensure -> "Arturo" = prepend "rturo" 'A'
         passed
     ]
     
     topic "prepend - :string < :char (literal) + :string"
     do [
         c: "rturo"
-        prepend 'c `A`
+        prepend 'c 'A'
         ensure -> "Arturo" = c
         passed
     ]
@@ -1554,14 +1642,14 @@ do [
     ensure -> "Art" = "Arturo" -- "uro"
     passed
     
-    ensure -> "Artur" = remove "Arturo" `o`
-    ensure -> "Artur" = "Arturo" -- `o`
+    ensure -> "Artur" = remove "Arturo" 'o'
+    ensure -> "Artur" = "Arturo" -- 'o'
     passed
     
     ensure -> "C+" = remove.once "C++" "+"
-    ensure -> "C+" = remove.once "C++" `+`
+    ensure -> "C+" = remove.once "C++" '+'
     ensure -> "C+" = "C++" --.once "+"
-    ensure -> "C+" = "C++" --.once `+`
+    ensure -> "C+" = "C++" --.once '+'
     passed
 
     ; ensure -> "Rby" = remove.index "Ruby" 1
@@ -1589,10 +1677,10 @@ do [
     
     passed
     
-    a: "Arturo", remove 'a `o`
+    a: "Arturo", remove 'a 'o'
     ensure -> "Artur" = a
     
-    a: "Arturo", 'a -- `o`
+    a: "Arturo", 'a -- 'o'
     ensure -> "Artur" = a
     
     passed
@@ -1600,13 +1688,13 @@ do [
     a: "C++", remove.once 'a "+"
     ensure -> "C+" = a
     
-    a: "C++", remove.once 'a `+`
+    a: "C++", remove.once 'a '+'
     ensure -> "C+" = a
     
     a: "C++", 'a --.once "+"
     ensure -> "C+" = a
     
-    a: "C++", 'a --.once `+`
+    a: "C++", 'a --.once '+'
     ensure -> "C+" = a
     
     passed
@@ -1879,7 +1967,7 @@ do [
     ensure -> string? (sample a)
     passed
     
-    a: `a`..`z`
+    a: 'a'..'z'
     ensure -> in? (sample a) a
     ensure -> char? (sample a)
     passed
@@ -1890,7 +1978,7 @@ do [
 topic "set - :string"
 do [
     
-    a: "Aaturo", set a 1 `r`
+    a: "Aaturo", set a 1 'r'
     ensure -> "Arturo" = a 
     passed
     
@@ -1902,11 +1990,11 @@ do [
     ensure -> "Arturo" = a
     passed
     
-    a: "Aaturo", a\1: `r`
+    a: "Aaturo", a\1: 'r'
     ensure -> "Arturo" = a
     passed
     
-    a: "Aaturo", a\[1]: `r`
+    a: "Aaturo", a\[1]: 'r'
     ensure -> "Arturo" = a
     passed
     
@@ -2877,31 +2965,194 @@ do [
 
 ]
 
-topic "take"
+topic "take - :string < :string :string"
 do [
-    ensure -> "some" = take "some text" 4   
+    
+    ensure -> "" = take "art" 0
     passed
     
-    ensure -> [Arturo Nim] = take [Arturo Nim C Rust Cobol] 2 
+    ensure -> "a" = take "art" 1
+    ensure -> "ar" = take "art" 2
     passed
     
-    ensure -> [0 1 2 3] = take 0..10 4 
+    ensure -> "art" = take "art" 3
+    ensure -> "art" = take "art" 4
     passed
+    
+    ensure -> "" = take "art" neg 0
+    passed
+    
+    ensure -> "t" = take "art" neg 1
+    ensure -> "rt" = take "art" neg 2
+    passed
+    
+    ensure -> "art" = take "art" neg 3
+    ensure -> "art" = take "art" neg 4
+    passed
+    
 ]
 
-topic "take - (literal)"
+topic "take - :string < :string (literal) :string"
 do [
     
-    a: "some text", take 'a 4   
-    ensure -> "some" = a
+    a: "art", take 'a 0
+    ensure -> "" = a
     passed
     
-    a: [Arturo Nim C Rust Cobol], take 'a 2 
-    ensure -> [Arturo Nim] = a
+    a: "art", take 'a 1
+    ensure -> "a" = a
+    a: "art", take 'a 2
+    ensure -> "ar" = a
     passed
     
-    a: 0..10,  take 'a 4 
-    ensure -> [0 1 2 3] = a
+    a: "art", take 'a 3
+    ensure -> "art" = a
+    a: "art", take 'a 4
+    ensure -> "art" = a
+    passed
+    
+    a: "art", take 'a neg 0
+    ensure -> "" = a
+    passed
+    
+    a: "art", take 'a neg 1
+    ensure -> "t" = a
+    a: "art", take 'a neg 2
+    ensure -> "rt" = a
+    passed
+    
+    a: "art", take 'a neg 3
+    ensure -> "art" = a
+    a: "art", take 'a neg 4
+    ensure -> "art" = a
+    passed
+    
+]
+
+topic "take - :block < :block :block"
+do [
+    
+    ensure -> [] = take [a b c] 0
+    passed
+    
+    ensure -> [a] = take [a b c] 1
+    ensure -> [a b] = take [a b c] 2
+    passed
+    
+    ensure -> [a b c] = take [a b c] 3
+    ensure -> [a b c] = take [a b c] 4
+    passed
+    
+    ensure -> [] = take [a b c] neg 0
+    passed
+    
+    ensure -> [c] = take [a b c] neg 1
+    ensure -> [b c] = take [a b c] neg 2
+    passed
+    
+    ensure -> [a b c] = take [a b c] neg 3
+    ensure -> [a b c] = take [a b c] neg 4
+    passed
+    
+]
+
+topic "take - :block < :block (literal) :block"
+do [
+    
+    a: [a b c], take 'a 0
+    ensure -> [] = a
+    passed
+    
+    a: [a b c], take 'a 1
+    ensure -> [a] = a
+    a: [a b c], take 'a 2
+    ensure -> [a b] = a
+    passed
+    
+    a: [a b c], take 'a 3
+    ensure -> [a b c] = a
+    a: [a b c], take 'a 4
+    ensure -> [a b c] = a
+    passed
+    
+    a: [a b c], take 'a neg 0
+    ensure -> [] = a
+    passed
+    
+    a: [a b c], take 'a neg 1
+    ensure -> [c] = a
+    a: [a b c], take 'a neg 2
+    ensure -> [b c] = a
+    passed
+    
+    a: [a b c], take 'a neg 3
+    ensure -> [a b c] = a
+    a: [a b c], take 'a neg 4
+    ensure -> [a b c] = a
+    passed
+    
+]
+
+topic "take - :range < :range :integer"
+do [
+    
+    ensure -> [] = take 1..3 0
+    passed
+    
+    ensure -> [1] = take 1..3 1
+    ensure -> [1 2] = take 1..3 2
+    passed
+    
+    ensure -> [1 2 3] = take 1..3 3
+    ensure -> [1 2 3] = take 1..3 4
+    passed
+    
+    ensure -> [] = take 1..3 neg 0
+    passed
+    
+    ensure -> [3] = take 1..3 neg 1
+    ensure -> [2 3] = take 1..3 neg 2
+    passed
+    
+    ensure -> [1 2 3] = take 1..3 neg 3
+    ensure -> [1 2 3] = take 1..3 neg 4
+    passed
+    
+]
+
+topic "take - :block < :range (literal) :integer"
+do [
+    
+    a: 1..3, take 'a 0
+    ensure -> [] = a
+    passed
+    
+    a: 1..3, take 'a 1
+    ensure -> [1] = a
+    a: 1..3, take 'a 2
+    ensure -> [1 2] = a
+    passed
+    
+    a: 1..3, take 'a 3
+    ensure -> [1 2 3] = a
+    a: 1..3, take 'a 4
+    ensure -> [1 2 3] = a
+    passed
+    
+    a: 1..3, take 'a neg 0
+    ensure -> [] = a
+    passed
+    
+    a: 1..3, take 'a neg 1
+    ensure -> [3] = a
+    a: 1..3, take 'a neg 2
+    ensure -> [2 3] = a
+    passed
+    
+    a: 1..3, take 'a neg 3
+    ensure -> [1 2 3] = a
+    a: 1..3, take 'a neg 4
+    ensure -> [1 2 3] = a
     passed
     
 ]

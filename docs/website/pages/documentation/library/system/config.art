@@ -2,8 +2,8 @@ name: "config"
 type: :store
 description: "access global configuration"
 module: "System"
-line: 63
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/System.nim#L63"
+line: 69
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/System.nim#L69"
 returns: [
                 :store
         ]

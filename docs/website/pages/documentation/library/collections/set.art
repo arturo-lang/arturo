@@ -2,8 +2,8 @@ name: "set"
 type: :function
 description: "set collection\'s item at index to given value"
 module: "Collections"
-line: 1452
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L1452"
+line: 1588
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L1588"
 returns: [
                 :nothing
         ]

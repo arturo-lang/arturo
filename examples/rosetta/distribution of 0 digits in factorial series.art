@@ -4,7 +4,7 @@ lim: 100
 loop 1..10000 'n [
     'f * n
     str: to :string f
-    'su + (enumerate str 'c -> c = `0`) // size str
+    'su + (enumerate str 'c -> c = '0') // size str
     if n = lim [
         print [n ":" su // n]
         'lim * 10

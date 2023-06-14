@@ -2,8 +2,8 @@ name: "match?"
 type: :function
 description: "check if string matches given regular expression"
 module: "Strings"
-line: 568
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L568"
+line: 574
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L574"
 returns: [
                 :logical
         ]

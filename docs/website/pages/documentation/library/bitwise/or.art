@@ -2,8 +2,8 @@ name: "or"
 type: :function
 description: "calculate the binary OR for the given values"
 module: "Bitwise"
-line: 120
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Bitwise.nim#L120"
+line: 125
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Bitwise.nim#L125"
 returns: [
                 :integer
                  :binary

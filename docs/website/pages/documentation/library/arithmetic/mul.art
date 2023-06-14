@@ -2,8 +2,8 @@ name: "mul"
 type: :function
 description: "calculate the product of given values and return result"
 module: "Arithmetic"
-line: 181
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Arithmetic.nim#L181"
+line: 177
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Arithmetic.nim#L177"
 returns: [
                 :integer
                  :floating

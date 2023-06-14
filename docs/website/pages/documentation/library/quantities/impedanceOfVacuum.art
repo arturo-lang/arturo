@@ -1,0 +1,15 @@
+name: "impedanceOfVacuum"
+type: :quantity
+description: "the impedance of free space"
+module: "Quantities"
+line: 680
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Quantities.nim#L680"
+returns: [
+                :quantity
+        ]
+related: [
+                "Quantities/vacuumPermeability"
+                 "Quantities/planckTemperature"
+                 "Quantities/vacuumPermittivity"
+                 "Quantities/planckTime"
+        ]

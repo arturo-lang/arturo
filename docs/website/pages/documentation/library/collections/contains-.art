@@ -2,8 +2,8 @@ name: "contains?"
 type: :function
 description: "check if collection contains given value"
 module: "Collections"
-line: 226
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L226"
+line: 223
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L223"
 returns: [
                 :logical
         ]
@@ -40,6 +40,19 @@ examples: [
                         print contains?.at:1 ["one" "two" "three"] "two"
                         ; true
                 }
+                 {
+                        print contains?.deep [1 2 4 [3 4 [5 6] 7] 8 [9 10]] 6
+                        ; true
+                }
+                 {
+                        user: #[ 
+                            name: "John" surname: "Doe"
+                            mom: #[ name: "Jane" surname: "Doe" ]
+                        ]
+                        
+                        print contains?.deep user "Jane"
+                        ; true
+                }
         ]
 attributes: #[
         at: #[
@@ -47,6 +60,12 @@ attributes: #[
                                 :integer
                         ]
                 description: "check at given location within collection"
+                ]
+        deep: #[
+                types: [
+                                :logical
+                        ]
+                description: "searches recursively in deep for a value."
                 ]
         ]
 arguments: #[

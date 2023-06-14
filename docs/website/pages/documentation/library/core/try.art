@@ -2,8 +2,8 @@ name: "try"
 type: :function
 description: "perform action and catch possible errors"
 module: "Core"
-line: 663
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L663"
+line: 668
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L668"
 returns: [
                 :nothing
         ]
@@ -33,7 +33,7 @@ arguments: #[
         ]
 related: [
                 "Core/try?"
+                 "Core/throws?"
                  "Core/break"
                  "Core/return"
-                 "Core/else"
         ]

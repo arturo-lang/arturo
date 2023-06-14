@@ -1,47 +1,641 @@
 topic: $[topic :string] -> print ~"\n>> |topic|"
 passed: $[] -> print "[+] passed!"
 
+topic « ceil
+do [
+
+    ensure.that: "works with :floating"          -> 3       = ceil 2.1
+    ensure.that: "works with :floating"          -> 3       = ceil 2.9
+    ensure.that: "works with negative :floating" -> (neg 3) = ceil neg 3.5
+    passed
+
+    ensure.that: "works with :integer"          -> 4       = ceil 4
+    ensure.that: "works with negative :integer" -> (neg 4) = ceil neg 4
+    passed
+
+    ensure.that: "works with :rational"
+        -> 4 = ceil to :rational @[7 2]
+    ensure.that: "works with negative :rational"
+        -> (neg 3) = ceil to :rational @[neg 7 2]
+    passed
+
+    ensure.that: "always returns :integer" -> every? @[
+        ceil 2.1
+        ceil 2.9
+        ceil 3.5
+        ceil neg 3.5
+        ceil 4
+        ceil neg 4
+        ceil to :rational @[7 2]
+        ceil to :rational @[neg 7 2]
+    ] => integer?
+    passed
+
+]
+
+
 topic « clamp
 do [
-    
-    ensure -> 1 = clamp 1 0..2
-    ensure -> 1 = clamp 1 2..0
+
+
+    topic « clamp - returns the `number`
+
+        a: to :rational [4 2]
+
+        ; :range
+        ensure -> 2   = clamp 2   0..4
+        ensure -> 2.0 = clamp 2.0 0..4
+        ensure -> a   = clamp a   0..4
+        passed
+
+        ensure -> integer?  clamp 2   0..4
+        ensure -> floating? clamp 2.0 0..4
+        ensure -> rational? clamp a   0..4
+        passed
+
+        ; [:integer :integer]
+        ensure -> 2   = clamp 2   [0 4]
+        ensure -> 2.0 = clamp 2.0 [0 4]
+        ensure -> a   = clamp a   [0 4]
+        passed
+
+        ensure -> integer?  clamp 2   [0 4]
+        ensure -> floating? clamp 2.0 [0 4]
+        ensure -> rational? clamp a   [0 4]
+        passed
+
+        ; [:floating :floating]
+        ensure -> 2   = clamp 2   [0.0 4.0]
+        ensure -> 2.0 = clamp 2.0 [0.0 4.0]
+        ensure -> a   = clamp a   [0.0 4.0]
+        passed
+
+        ensure -> integer?  clamp 2   [0 4]
+        ensure -> floating? clamp 2.0 [0 4]
+        ensure -> rational? clamp a   [0 4]
+        passed
+
+        ; [:rational :rational]
+        a: to :rational [0 1]
+        b: to :rational [4 1]
+        ensure -> 2   = clamp 2   @[a b]
+        ensure -> 2.0 = clamp 2.0 @[a b]
+        ensure -> a   = clamp a   @[a b]
+        passed
+
+        ensure -> integer?  clamp 2   @[a b]
+        ensure -> floating? clamp 2.0 @[a b]
+        ensure -> rational? clamp a   @[a b]
+        passed
+
+        ; [:integer :floating]
+        a: to :rational [0 1]
+        b: to :rational [4 1]
+        ensure -> 2   = clamp 2   @[0   4.0]
+        ensure -> 2.0 = clamp 2.0 @[0   4.0]
+        ensure -> a   = clamp a   @[0   4.0]
+        ensure -> 2   = clamp 2   @[0.0   4]
+        ensure -> 2.0 = clamp 2.0 @[0.0   4]
+        ensure -> a   = clamp a   @[0.0   4]
+        passed
+
+        ensure -> integer?  clamp 2   @[0   4.0]
+        ensure -> floating? clamp 2.0 @[0   4.0]
+        ensure -> rational? clamp a   @[0   4.0]
+        ensure -> integer?  clamp 2   @[0.0   4]
+        ensure -> floating? clamp 2.0 @[0.0   4]
+        ensure -> rational? clamp a   @[0.0   4]
+        passed
+
+        ; [:integer :rational]
+        a: to :rational [4 1]
+        b: to :rational [0 1]
+        ensure -> 2   = clamp 2   @[0 a]
+        ensure -> 2.0 = clamp 2.0 @[0 a]
+        ensure -> b   = clamp b   @[0 a]
+        ensure -> 2   = clamp 2   @[b 4]
+        ensure -> 2.0 = clamp 2.0 @[b 4]
+        ensure -> b   = clamp b   @[b 4]
+        passed
+
+        ensure -> integer?  clamp 2   @[0 a]
+        ensure -> floating? clamp 2.0 @[0 a]
+        ensure -> rational? clamp b   @[0 a]
+        ensure -> integer?  clamp 2   @[b 4]
+        ensure -> floating? clamp 2.0 @[b 4]
+        ensure -> rational? clamp b   @[b 4]
+        passed
+
+        ; [:floating :rational]
+        a: to :rational [4 1]
+        b: to :rational [0 1]
+        ensure -> 2   = clamp 2   @[0.0 a]
+        ensure -> 2.0 = clamp 2.0 @[0.0 a]
+        ensure -> b   = clamp b   @[0.0 a]
+        ensure -> 2   = clamp 2   @[b 4.0]
+        ensure -> 2.0 = clamp 2.0 @[b 4.0]
+        ensure -> b   = clamp b   @[b 4.0]
+        passed
+
+        ensure -> integer?  clamp 2   @[0.0 a]
+        ensure -> floating? clamp 2.0 @[0.0 a]
+        ensure -> rational? clamp b   @[0.0 a]
+        ensure -> integer?  clamp 2   @[b 4.0]
+        ensure -> floating? clamp 2.0 @[b 4.0]
+        ensure -> rational? clamp b   @[b 4.0]
+        passed
+
+
+    topic « clamp - returns `range`'s upper edge
+
+        ; :range
+        a: to :rational [8 2]
+
+        ensure -> 4   = clamp 4   0..4
+        ensure -> 4.0 = clamp 4.0 0..4
+        ensure -> a   = clamp a   0..4
+        ensure -> 2   = clamp 4   0..2
+        ensure -> 2.0 = clamp 4.0 0..2
+        ensure -> 2   = clamp a   0..2
+        passed
+
+        ensure -> integer?  clamp 4   0..4
+        ensure -> floating? clamp 4.0 0..4
+        ensure -> rational? clamp a   0..4
+        ensure -> integer?  clamp 4   0..2
+        ensure -> integer?  clamp 4.0 0..2
+        ensure -> integer?  clamp a   0..2
+        passed
+
+        ; [:integer :integer]
+        a: to :rational [8 2]
+
+        ensure -> 4   = clamp 4   [0 4]
+        ensure -> 4.0 = clamp 4.0 [0 4]
+        ensure -> a   = clamp a   [0 4]
+        ensure -> 2   = clamp 4   [0 2]
+        ensure -> 2.0 = clamp 4.0 [0 2]
+        ensure -> 2   = clamp a   [0 2]
+        passed
+
+        ensure -> integer?  clamp 4   [0 4]
+        ensure -> floating? clamp 4.0 [0 4]
+        ensure -> rational? clamp a   [0 4]
+        ensure -> integer?  clamp 4   [0 2]
+        ensure -> integer?  clamp 4.0 [0 2]
+        ensure -> integer?  clamp a   [0 2]
+        passed
+
+        ; [:floating :floating]
+        a: to :rational [8 2]
+
+        ensure -> 4   = clamp 4   [0.0 4.0]
+        ensure -> 4.0 = clamp 4.0 [0.0 4.0]
+        ensure -> a   = clamp a   [0.0 4.0]
+        ensure -> 2   = clamp 4   [0.0 2.0]
+        ensure -> 2.0 = clamp 4.0 [0.0 2.0]
+        ensure -> 2   = clamp a   [0.0 2.0]
+        passed
+
+        ensure -> integer?  clamp 4    [0.0 4.0]
+        ensure -> floating? clamp 4.0  [0.0 4.0]
+        ensure -> rational? clamp a    [0.0 4.0]
+        ensure -> floating? clamp 4    [0.0 2.0]
+        ensure -> floating? clamp 4.0  [0.0 2.0]
+        ensure -> floating? clamp a    [0.0 2.0]
+        passed
+
+        ; [:rational :rational]
+        a: to :rational [8 2]
+        b: to :rational [0 1]
+        c: to :rational [2 1]
+
+        ensure -> 4   = clamp 4   @[b a]
+        ensure -> 4.0 = clamp 4.0 @[b a]
+        ensure -> a   = clamp a   @[b a]
+        ensure -> 2   = clamp 4   @[b c]
+        ensure -> 2.0 = clamp 4.0 @[b c]
+        ensure -> 2   = clamp a   @[b c]
+        passed
+
+        ensure -> integer?  clamp 4   @[b a]
+        ensure -> floating? clamp 4.0 @[b a]
+        ensure -> rational? clamp a   @[b a]
+        ensure -> rational? clamp 4   @[b c]
+        ensure -> rational? clamp 4.0 @[b c]
+        ensure -> rational? clamp a   @[b c]
+        passed
+
+        ; [:integer :floating]
+        a: to :rational [8 2]
+
+        ensure -> 4   = clamp 4   [0 4.0]
+        ensure -> 4.0 = clamp 4.0 [0 4.0]
+        ensure -> a   = clamp a   [0 4.0]
+        ensure -> 2   = clamp 4   [0 2.0]
+        ensure -> 2.0 = clamp 4.0 [0 2.0]
+        ensure -> 2   = clamp a   [0 2.0]
+        passed
+
+        ensure -> 4   = clamp 4   [0.0 4]
+        ensure -> 4.0 = clamp 4.0 [0.0 4]
+        ensure -> a   = clamp a   [0.0 4]
+        ensure -> 2   = clamp 4   [0.0 2]
+        ensure -> 2.0 = clamp 4.0 [0.0 2]
+        ensure -> 2   = clamp a   [0.0 2]
+        passed
+
+        ensure -> integer?  clamp 4   [0 4.0]
+        ensure -> floating? clamp 4.0 [0 4.0]
+        ensure -> rational? clamp a   [0 4.0]
+        ensure -> floating? clamp 4   [0 2.0]
+        ensure -> floating? clamp 4.0 [0 2.0]
+        ensure -> floating? clamp a   [0 2.0]
+        passed
+
+        ensure -> integer?  clamp 4   [0.0 4]
+        ensure -> floating? clamp 4.0 [0.0 4]
+        ensure -> rational? clamp a   [0.0 4]
+        ensure -> integer?  clamp 4   [0.0 2]
+        ensure -> integer?  clamp 4.0 [0.0 2]
+        ensure -> integer?  clamp a   [0.0 2]
+        passed
+
+        ; [:integer :rational]
+        a: to :rational [8 2]
+        b: to :rational [2 1]
+        c: to :rational [0 1]
+
+        ensure -> 4   = clamp 4   @[0 a]
+        ensure -> 4.0 = clamp 4.0 @[0 a]
+        ensure -> a   = clamp a   @[0 a]
+        ensure -> 2   = clamp 4   @[0 b]
+        ensure -> 2.0 = clamp 4.0 @[0 b]
+        ensure -> 2   = clamp a   @[0 b]
+        passed
+
+        ensure -> 4   = clamp 4   @[c 4]
+        ensure -> 4.0 = clamp 4.0 @[c 4]
+        ensure -> a   = clamp a   @[c 4]
+        ensure -> 2   = clamp 4   @[c 2]
+        ensure -> 2.0 = clamp 4.0 @[c 2]
+        ensure -> 2   = clamp a   @[c 2]
+        passed
+
+        ensure -> integer?  clamp 4   @[0 a]
+        ensure -> floating? clamp 4.0 @[0 a]
+        ensure -> rational? clamp a   @[0 a]
+        ensure -> rational? clamp 4   @[0 b]
+        ensure -> rational? clamp 4.0 @[0 b]
+        ensure -> rational? clamp a   @[0 b]
+        passed
+
+        ensure -> integer?  clamp 4   @[c 4]
+        ensure -> floating? clamp 4.0 @[c 4]
+        ensure -> rational? clamp a   @[c 4]
+        ensure -> integer?  clamp 4   @[c 2]
+        ensure -> integer?  clamp 4.0 @[c 2]
+        ensure -> integer?  clamp a   @[c 2]
+        passed
+
+        ; [:floating :rational]
+        a: to :rational [8 2]
+        b: to :rational [2 1]
+        c: to :rational [0 1]
+
+        ensure -> 4   = clamp 4   @[0.0 a]
+        ensure -> 4.0 = clamp 4.0 @[0.0 a]
+        ensure -> a   = clamp a   @[0.0 a]
+        ensure -> 2   = clamp 4   @[0.0 b]
+        ensure -> 2.0 = clamp 4.0 @[0.0 b]
+        ensure -> 2   = clamp a   @[0.0 b]
+        passed
+
+        ensure -> 4   = clamp 4   @[c 4.0]
+        ensure -> 4.0 = clamp 4.0 @[c 4.0]
+        ensure -> a   = clamp a   @[c 4.0]
+        ensure -> 2   = clamp 4   @[c 2.0]
+        ensure -> 2.0 = clamp 4.0 @[c 2.0]
+        ensure -> 2   = clamp a   @[c 2.0]
+        passed
+
+        ensure -> integer?  clamp 4   @[0.0 a]
+        ensure -> floating? clamp 4.0 @[0.0 a]
+        ensure -> rational? clamp a   @[0.0 a]
+        ensure -> rational? clamp 4   @[0.0 b]
+        ensure -> rational? clamp 4.0 @[0.0 b]
+        ensure -> rational? clamp a   @[0.0 b]
+        passed
+
+        ensure -> integer?  clamp 4   @[c 4.0]
+        ensure -> floating? clamp 4.0 @[c 4.0]
+        ensure -> rational? clamp a   @[c 4.0]
+        ensure -> floating? clamp 4   @[c 2.0]
+        ensure -> floating? clamp 4.0 @[c 2.0]
+        ensure -> floating? clamp a   @[c 2.0]
+        passed
+
+
+    topic « clamp - returns `range`'s lower edge as :range
+
+        ; :range
+        a: to :rational [0 1]
+
+        ensure -> 0   = clamp 0   0..4
+        ensure -> 0.0 = clamp 0.0 0..4
+        ensure -> a   = clamp a   0..4
+        ensure -> 2   = clamp 0   2..4
+        ensure -> 2.0 = clamp 0.0 2..4
+        ensure -> 2   = clamp a   2..4
+        passed
+
+        ensure -> integer?  clamp 0   0..4
+        ensure -> floating? clamp 0.0 0..4
+        ensure -> rational? clamp a   0..4
+        ensure -> integer?  clamp 0   2..4
+        ensure -> integer?  clamp 0.0 2..4
+        ensure -> integer?  clamp a   2..4
+        passed
+
+        ; [:integer :integer]
+        a: to :rational [0 1]
+
+        ensure -> 0   = clamp 0   [0 4]
+        ensure -> 0.0 = clamp 0.0 [0 4]
+        ensure -> a   = clamp a   [0 4]
+        ensure -> 2   = clamp 0   [2 4]
+        ensure -> 2.0 = clamp 0.0 [2 4]
+        ensure -> 2   = clamp a   [2 4]
+        passed
+
+        ensure -> integer?  clamp 0   [0 4]
+        ensure -> floating? clamp 0.0 [0 4]
+        ensure -> rational? clamp a   [0 4]
+        ensure -> integer?  clamp 0   [2 4]
+        ensure -> integer?  clamp 0.0 [2 4]
+        ensure -> integer?  clamp a   [2 4]
+        passed
+
+        ; [:floating :floating]
+        a: to :rational [0 1]
+
+        ensure -> 0   = clamp 0   [0.0 4.0]
+        ensure -> 0.0 = clamp 0.0 [0.0 4.0]
+        ensure -> a   = clamp a   [0.0 4.0]
+        ensure -> 2   = clamp 0   [2.0 4.0]
+        ensure -> 2.0 = clamp 0.0 [2.0 4.0]
+        ensure -> 2   = clamp a   [2.0 4.0]
+        passed
+
+        ensure -> integer?  clamp 0   [0.0 4.0]
+        ensure -> floating? clamp 0.0 [0.0 4.0]
+        ensure -> rational? clamp a   [0.0 4.0]
+        ensure -> floating? clamp 0   [2.0 4.0]
+        ensure -> floating? clamp 0.0 [2.0 4.0]
+        ensure -> floating? clamp a   [2.0 4.0]
+        passed
+
+        ; [:rational :rational]
+        a: to :rational [0 1]
+        b: to :rational [4 1]
+        c: to :rational [2 1]
+
+        ensure -> 0   = clamp 0   @[a b]
+        ensure -> 0.0 = clamp 0.0 @[a b]
+        ensure -> a   = clamp a   @[a b]
+        ensure -> 2   = clamp 0   @[c b]
+        ensure -> 2.0 = clamp 0.0 @[c b]
+        ensure -> 2   = clamp a   @[c b]
+        passed
+
+        ensure -> integer?  clamp 0   @[a b]
+        ensure -> floating? clamp 0.0 @[a b]
+        ensure -> rational? clamp a   @[a b]
+        ensure -> rational? clamp 0   @[c b]
+        ensure -> rational? clamp 0.0 @[c b]
+        ensure -> rational? clamp a   @[c b]
+        passed
+
+        ; [:integer :floating]
+        a: to :rational [0 1]
+
+        ensure -> 0   = clamp 0   [0 4.0]
+        ensure -> 0.0 = clamp 0.0 [0 4.0]
+        ensure -> a   = clamp a   [0 4.0]
+        ensure -> 2   = clamp 0   [2 4.0]
+        ensure -> 2.0 = clamp 0.0 [2 4.0]
+        ensure -> 2   = clamp a   [2 4.0]
+        passed
+
+        ensure -> 0   = clamp 0   [0.0 4]
+        ensure -> 0.0 = clamp 0.0 [0.0 4]
+        ensure -> a   = clamp a   [0.0 4]
+        ensure -> 2   = clamp 0   [2.0 4]
+        ensure -> 2.0 = clamp 0.0 [2.0 4]
+        ensure -> 2   = clamp a   [2.0 4]
+        passed
+
+        ensure -> integer?  clamp 0   [0 4.0]
+        ensure -> floating? clamp 0.0 [0 4.0]
+        ensure -> rational? clamp a   [0 4.0]
+        ensure -> integer?  clamp 0   [2 4.0]
+        ensure -> integer?  clamp 0.0 [2 4.0]
+        ensure -> integer?  clamp a   [2 4.0]
+        passed
+
+        ensure -> integer?  clamp 0   [0.0 4]
+        ensure -> floating? clamp 0.0 [0.0 4]
+        ensure -> rational? clamp a   [0.0 4]
+        ensure -> floating? clamp 0   [2.0 4]
+        ensure -> floating? clamp 0.0 [2.0 4]
+        ensure -> floating? clamp a   [2.0 4]
+        passed
+
+        ; [:integer :rational]
+        a: to :rational [0 1]
+        b: to :rational [4 1]
+        c: to :rational [2 1]
+
+        ensure -> 0   = clamp 0   @[0 b]
+        ensure -> 0.0 = clamp 0.0 @[0 b]
+        ensure -> a   = clamp a   @[0 b]
+        ensure -> 2   = clamp 0   @[2 b]
+        ensure -> 2.0 = clamp 0.0 @[2 b]
+        ensure -> 2   = clamp a   @[2 b]
+        passed
+
+        ensure -> 0   = clamp 0   @[a 4]
+        ensure -> 0.0 = clamp 0.0 @[a 4]
+        ensure -> a   = clamp a   @[a 4]
+        ensure -> 2   = clamp 0   @[c 4]
+        ensure -> 2.0 = clamp 0.0 @[c 4]
+        ensure -> 2   = clamp a   @[c 4]
+        passed
+
+        ensure -> integer?  clamp 0   @[0 b]
+        ensure -> floating? clamp 0.0 @[0 b]
+        ensure -> rational? clamp a   @[0 b]
+        ensure -> integer?  clamp 0   @[2 b]
+        ensure -> integer?  clamp 0.0 @[2 b]
+        ensure -> integer?  clamp a   @[2 b]
+        passed
+
+        ensure -> integer?  clamp 0   @[a 4]
+        ensure -> floating? clamp 0.0 @[a 4]
+        ensure -> rational? clamp a   @[a 4]
+        ensure -> rational? clamp 0   @[b 4]
+        ensure -> rational? clamp 0.0 @[b 4]
+        ensure -> rational? clamp a   @[b 4]
+        passed
+
+        ; [:floating :rational]
+        a: to :rational [0 1]
+        b: to :rational [4 1]
+        c: to :rational [2 1]
+
+        ensure -> 0   = clamp 0   @[0.0 b]
+        ensure -> 0.0 = clamp 0.0 @[0.0 b]
+        ensure -> a   = clamp a   @[0.0 b]
+        ensure -> 2   = clamp 0   @[2.0 b]
+        ensure -> 2.0 = clamp 0.0 @[2.0 b]
+        ensure -> 2   = clamp a   @[2.0 b]
+        passed
+
+        ensure -> 0   = clamp 0   @[a 4.0]
+        ensure -> 0.0 = clamp 0.0 @[a 4.0]
+        ensure -> a   = clamp a   @[a 4.0]
+        ensure -> 2   = clamp 0   @[c 4.0]
+        ensure -> 2.0 = clamp 0.0 @[c 4.0]
+        ensure -> 2   = clamp a   @[c 4.0]
+        passed
+
+        ensure -> integer?  clamp 0   @[0.0 b]
+        ensure -> floating? clamp 0.0 @[0.0 b]
+        ensure -> rational? clamp a   @[0.0 b]
+        ensure -> floating? clamp 0   @[2.0 b]
+        ensure -> floating? clamp 0.0 @[2.0 b]
+        ensure -> floating? clamp a   @[2.0 b]
+        passed
+
+        ensure -> integer?  clamp 0   @[a 4.0]
+        ensure -> floating? clamp 0.0 @[a 4.0]
+        ensure -> rational? clamp a   @[a 4.0]
+        ensure -> rational? clamp 0   @[b 4.0]
+        ensure -> rational? clamp 0.0 @[b 4.0]
+        ensure -> rational? clamp a   @[b 4.0]
+        passed
+
+
+    topic « clamp - using range.step
+
+        a: to :rational [3 1]
+        b: to :rational [5 1]
+
+        ensure -> 3 = clamp 3 range.step: 2 5 2
+        ensure -> 3 = clamp 3.0 range.step: 2 5 2
+        ensure -> 3 = clamp a range.step: 2 5 2
+        passed
+
+        ensure -> 4 = clamp 5 range.step: 2 2 5
+        ensure -> 4 = clamp 5.0 range.step: 2 2 5
+        ensure -> 4 = clamp b range.step: 2 2 5
+        passed
+
+        ensure -> integer?  clamp 3 range.step: 2   5 2
+        ensure -> floating? clamp 3.0 range.step: 2 5 2
+        ensure -> rational? clamp a range.step: 2   5 2
+        passed
+
+        ensure -> integer? clamp 5 range.step: 2 2 5
+        ensure -> integer? clamp 5.0 range.step: 2 2 5
+        ensure -> integer? clamp b range.step: 2 2 5
+        passed
+
+
+    topic « clamp - invalid operations
+
+        ensure -> every? @[
+            -> clamp 2 'a'..'d'
+            -> clamp 'b' 'a'..'c'
+            -> clamp 2 []
+            -> clamp 2 [1 1 1]
+            -> clamp 2 [a a]
+            -> clamp 2 ["a" "a"]
+            -> clamp 2 [[] []]
+            -> clamp 2 [() ()]
+            -> clamp 2 ['a' 'a']
+        ] => throws? passed
+
+
+]
+
+topic « floor
+do [
+
+    ensure.that: "works with :floating"          -> 2       = floor 2.1
+    ensure.that: "works with :floating"          -> 2       = floor 2.9
+    ensure.that: "works with negative :floating" -> (neg 4) = floor neg 3.5
     passed
-    
-    ensure -> 1.5 = clamp 1.5 0..2
-    ensure -> 1.5 = clamp 1.5 2..0
+
+    ensure.that: "works with :integer"          -> 4       = floor 4
+    ensure.that: "works with negative :integer" -> (neg 4) = floor neg 4
     passed
-    
-    ensure -> 1 = clamp 2 0..1
-    ensure -> 1 = clamp 2 1..0
+
+    ensure.that: "works with :rational"
+        -> 3 = floor to :rational @[7 2]
+    ensure.that: "works with negative :rational"
+        -> (neg 4) = floor to :rational @[neg 7 2]
     passed
-    
-    ensure -> 1 = clamp 2.5 0..1
-    ensure -> 1 = clamp 2.5 1..0
+
+    ensure.that: "always returns :integer" -> every? @[
+        floor 2.1
+        floor 2.9
+        floor 3.5
+        floor neg 3.5
+        floor 4
+        floor neg 4
+        floor to :rational @[7 2]
+        floor to :rational @[neg 7 2]
+    ] => integer?
     passed
-    
-    ensure -> 1 = clamp 0 1..2
-    ensure -> 1 = clamp 0 2..1
+
+]
+
+
+topic « round
+do [
+
+    ensure.that: "works with :floating"          -> 2.0       = round 2.1
+    ensure.that: "works with :floating"          -> 3.0       = round 2.9
+    ensure.that: "works with negative :floating" -> (neg 4.0) = round neg 3.5
     passed
-   
-    ensure -> 1 = clamp 0.5 1..2
-    ensure -> 1 = clamp 0.5 2..1
+
+    ensure.that: "works with :integer"          -> 4       = round 4
+    ensure.that: "works with negative :integer" -> (neg 4) = round neg 4
     passed
-    
-    ensure -> 4 = clamp 5 range.step: 2 0 5
-    ensure -> 5 = clamp 5 range.step: 2 5 0
-    ensure -> 3 = clamp 1 range.step: 2 5 2
+
+    ensure.that: "works with :rational" -> 4       = round to :rational @[7 2]
+    ensure.that: "works with :rational" -> 3       = round to :rational @[29 10]
+    ensure.that: "works with :rational" -> 2       = round to :rational @[21 10]
+    ensure.that: "works with :rational" -> (neg 4) = round to :rational @[neg 7 2]
+    ensure.that: "works with :rational" -> (neg 3) = round to :rational @[neg 29 10]
+    ensure.that: "works with :rational" -> (neg 2) = round to :rational @[neg 21 10]
     passed
-    
-    ensure -> 4 = clamp 5.5 range.step: 2 0 5
-    ensure -> 5 = clamp 5.5 range.step: 2 5 0
-    ensure -> 3 = clamp 1.2 range.step: 2 5 2
+
+    ensure.that: "always returns :floating" -> every? @[
+        round 2.1
+        round 2.9
+        round 3.5
+        round neg 3.5
+        round 4
+        round neg 4
+        round to :rational @[7 2]
+        round to :rational @[neg 7 2]
+        round to :rational @[29 10]
+        round to :rational @[neg 29 10]
+        round to :rational @[21 10]
+        round to :rational @[neg 21 10]
+    ] => floating?
     passed
-    
-    ensure -> every? @[
-        -> clamp 2 `a`..`d`
-        -> clamp `b` `a`..`c`
-    ] => throws?
-    passed
-    
+
 ]

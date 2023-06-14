@@ -2,8 +2,8 @@ name: "break"
 type: :function
 description: "break out of current block or loop"
 module: "Core"
-line: 86
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L86"
+line: 93
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L93"
 returns: [
                 :nothing
         ]
@@ -29,8 +29,8 @@ attributes: #[
 arguments: #[
         ]
 related: [
-                "Core/try"
+                "Core/unstack"
+                 "Core/try"
                  "Core/return"
                  "Core/new"
-                 "Core/case"
         ]

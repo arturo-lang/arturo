@@ -2,8 +2,8 @@ name: "sum"
 type: :function
 description: "calculate the sum of all values in given list"
 module: "Numbers"
-line: 1330
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L1330"
+line: 1366
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L1366"
 returns: [
                 :integer
                  :floating

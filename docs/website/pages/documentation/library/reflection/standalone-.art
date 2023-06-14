@@ -2,8 +2,8 @@ name: "standalone?"
 type: :function
 description: "checks if current script runs from the command-line"
 module: "Reflection"
-line: 848
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L848"
+line: 856
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L856"
 returns: [
                 :logical
         ]

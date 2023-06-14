@@ -390,7 +390,7 @@ do
 
     ; ---------//---------//---------//
 
-    inspect read.csv.delimiter: `;` ~"|dir|/test.csv"
+    inspect read.csv.delimiter: ';' ~"|dir|/test.csv"
 
 ]
 

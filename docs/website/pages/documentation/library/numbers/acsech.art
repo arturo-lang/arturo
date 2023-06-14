@@ -2,8 +2,8 @@ name: "acsech"
 type: :function
 description: "calculate the inverse hyperbolic cosecant of given angle"
 module: "Numbers"
-line: 147
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L147"
+line: 154
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L154"
 returns: [
                 :floating
                  :complex

@@ -1,0 +1,15 @@
+name: "protonMassEnergy"
+type: :quantity
+description: "the energy equivalent of the mass of a proton"
+module: "Quantities"
+line: 680
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Quantities.nim#L680"
+returns: [
+                :quantity
+        ]
+related: [
+                "Quantities/electronMassEnergy"
+                 "Quantities/hartreeEnergy"
+                 "Quantities/planckConstant"
+                 "Quantities/avogadroConstant"
+        ]

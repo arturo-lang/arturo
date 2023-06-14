@@ -1,0 +1,15 @@
+name: "conductanceQuantum"
+type: :quantity
+description: "the conductance of a superconductor"
+module: "Quantities"
+line: 680
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Quantities.nim#L680"
+returns: [
+                :quantity
+        ]
+related: [
+                "Quantities/inverseConductanceQuantum"
+                 "Quantities/magneticFluxQuantum"
+                 "Quantities/vonKlitzingConstant"
+                 "Quantities/thomsonCrossSection"
+        ]

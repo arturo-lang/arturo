@@ -1,0 +1,29 @@
+; by @Krenium
+
+forbidden?: function [n][
+    m: new n
+    v: 0
+    while -> and? m > 1 0 = m % 4 [
+        'm / 4
+        inc 'v
+    ]
+    7 = mod n / 4 ^ v 8
+]
+
+print "First 50 forbidden numbers:"
+forbidden: split.every:10 select.first:50 0..∞ => forbidden?
+loop forbidden 'row [
+    loop row 'n -> prints pad ~"|n|" 4
+    print ""
+]
+
+print ""
+[target n count]: [500 0 0]
+while -> target =< 5e6 [
+    if forbidden? n -> inc 'count
+    if n = target [
+        print [count "forbidden numbers up to" target]
+        'target * 10
+    ]
+    inc 'n
+]

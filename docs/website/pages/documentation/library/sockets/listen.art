@@ -16,7 +16,7 @@ examples: [
 attributes: #[
         blocking: #[
                 types: [
-                                :string
+                                :logical
                         ]
                 description: "set blocking mode (default: false)"
                 ]

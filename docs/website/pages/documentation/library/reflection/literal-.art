@@ -2,8 +2,8 @@ name: "literal?"
 type: :function
 description: "checks if given value is of type :literal"
 module: "Reflection"
-line: 624
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L624"
+line: 627
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L627"
 returns: [
                 :logical
         ]

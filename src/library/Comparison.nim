@@ -31,6 +31,7 @@ proc defineSymbols*() =
     #  This could serve in cases where we want to compare between weirdly-rounded floating-point numbers and integers, e.g.: 3.0000001 and 3.
     #  But: we'll obviously have to somehow "define" this... approximate equality.
     #  labels: library, enhancement, open discussion
+
     builtin "between?",
         alias       = thickarrowboth, 
         op          = opNop,
@@ -47,21 +48,29 @@ proc defineSymbols*() =
             between? 1 2 3      ; => false
             between? 2 0 3      ; => true
             between? 3 2 3      ; => true
+            between? 3 3 2      ; => true
 
             1 <=> 2 3           ; => false
+            1 <=> 3 2           ; => false
             2 <=> 0 3           ; => true
+            2 <=> 3 0           ; => true
             3 <=> 2 3           ; => true  
         """:
             #=======================================================
-            if x < y: 
-                push VFALSE
-                return
-            if x > z:
-                push VFALSE
-                return
+            template isBetween(target, lower, upper: untyped) =
+                if target < lower or target > upper:
+                    push VFALSE
+                else:
+                    push VTRUE
+        
+            if y < z: x.isBetween(y, z)
+            else: x.isBetween(z, y)
 
-            push VTRUE
-
+    # TODO(Comparison/compare) verify it's working right
+    #  The main problem seems to be this vague `else:`.
+    #  In a few words: Even comparisons that are simply not possible will return 1 (!)
+    #  see also: https://github.com/arturo-lang/arturo/pull/1139#issuecomment-1509404906
+    #  labels: library, critical, bug
     builtin "compare",
         alias       = unaliased, 
         op          = opNop,

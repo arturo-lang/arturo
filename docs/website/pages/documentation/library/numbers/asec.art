@@ -2,8 +2,8 @@ name: "asec"
 type: :function
 description: "calculate the inverse secant of given angle"
 module: "Numbers"
-line: 227
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L227"
+line: 234
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L234"
 returns: [
                 :floating
                  :complex

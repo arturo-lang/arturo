@@ -30,6 +30,7 @@ when not defined(NOGMP):
 import helpers/maths
 import helpers/ranges
 import vm/values/custom/vrange
+import vm/values/custom/vquantity
 
 import vm/errors
 
@@ -42,17 +43,15 @@ import vm/lib
 template processTrigonometric(fun: untyped): untyped =
     var v = x
     if xKind == Quantity:
-        v = convertQuantityValue(x.nm, x.unit.name, RAD)
+        v = newQuantity(x.q.convertTo(parseAtoms("rad")))
 
     if v.kind==Complex: push(newComplex(fun(v.z)))
+    elif v.kind==Rational: push(newRational(fun(toFloat(v.rat))))
     else: push(newFloating(fun(asFloat(v))))
 
 #=======================================
 # Methods
 #=======================================
-
-# TODO(Numbers) add `tau` constant
-#  labels:library, new feature
  
 proc defineSymbols*() =
 
@@ -93,7 +92,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse cosine of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -114,7 +113,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic cosine of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -135,7 +134,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse cosecant of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -156,7 +155,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic cosecant of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -177,7 +176,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse cotangent of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -198,7 +197,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic cotangent of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -236,7 +235,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse secant of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -257,7 +256,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic secant of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -278,7 +277,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse sine of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -299,7 +298,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic sine of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -320,7 +319,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse tangent of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -341,8 +340,8 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse tangent of y / x",
         args        = {
-            "y"     : {Integer,Floating},
-            "x"     : {Integer,Floating}
+            "y"     : {Integer,Floating,Rational},
+            "x"     : {Integer,Floating,Rational}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -359,7 +358,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic tangent of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -380,15 +379,16 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the smallest integer not smaller than given value",
         args        = {
-            "value" : {Integer,Floating}
+            "value" : {Integer,Floating,Rational}
         },
         attrs       = NoAttrs,
         returns     = {Integer},
         example     = """
-            print ceil 2.1          ; 3
-            print ceil 2.9          ; 3
-            print ceil neg 3.5      ; -3
-            print ceil 4            ; 4
+            print ceil 2.1                      ; 3
+            print ceil 2.9                      ; 3
+            print ceil neg 3.5                  ; -3
+            print ceil 4                        ; 4
+            print ceil to :rational @[neg 7 2]  ; -3
         """:
             #=======================================================
             push(newInteger(int(ceil(asFloat(x)))))
@@ -400,30 +400,51 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "force value within given range",
         args        = {
-            "number" : {Integer, Floating},
-            "range"  : {Range}
+            "number" : {Integer, Floating, Rational},
+            "range"  : {Range, Block}
         },
         attrs       = NoAttrs,
-        returns     = {Integer, Floating},
+        returns     = {Integer, Floating, Rational},
         example     = """
-            clamp 2 1..3                ; 2
-            clamp 0 1..3                ; 1
-            clamp 4 1..3                ; 3
-            clamp 4 3..1                ; 3
-            clamp 5 range.step: 2 0 5   ; 4
+            clamp 2 1..3                        ; 2
+            clamp 0 1..3                        ; 1
+            clamp 4 1..3                        ; 3
+            clamp 4 3..1                        ; 3
+            clamp 5 range.step: 2 0 5           ; 4
+            
+            clamp 4.5 0..6                      ; 4.5
+            clamp to :rational [1 5] 0..1       ; 1/5
+            
+            clamp 4.5 [1 2.5]                   ; 2.5
+            clamp 2 [5 10]                      ; 5
+            clamp 2 [10 5]                      ; 5
+            clamp 2.5 @[1 to :rational [5 2]]   ; 2.5
         """:
             #=======================================================
-            if not y.rng.numeric:
-                RuntimeError_IncompatibleValueType("clamp", valueKind(y), "numeric range")
-            
-            if x.kind == Integer:
-                if (let minElem = y.rng.min()[1]; x.i < minElem.i): push(minElem)
-                elif (let maxElem = y.rng.max()[1]; x.i > maxElem.i): push(maxElem)
-                else: push(x)
+            case y.kind
+            of Range:
+                if not y.rng.numeric:
+                    RuntimeError_IncompatibleValueType("clamp", valueKind(y), "numeric range")
+                
+                if (let minElem = y.rng.min()[1]; x.asFloat < float(minElem.i)): push(minElem)
+                elif (let maxElem = y.rng.max()[1]; x.asFloat > float(maxElem.i)): push(maxElem)
+                else: push(x)       
+            of Block:
+                y.requireBlockSize(2)
+                let firstElem {.cursor} = y.a[0]
+                let secondElem {.cursor} = y.a[1]
+                firstElem.requireValue({Integer, Floating, Rational})
+                secondElem.requireValue({Integer, Floating, Rational})
+                
+                let minElem = min([firstElem, secondElem])
+                let maxElem = max([firstElem, secondElem])
+                
+                if x.asFloat < minElem.asFloat: push(minElem)
+                elif x.asFloat > maxElem.asFloat: push(maxElem)
+                else: push(x)  
+                    
             else:
-                if (let minElem = y.rng.min()[1]; x.f < float(minElem.i)): push(minElem)
-                elif (let maxElem = y.rng.max()[1]; x.f > float(maxElem.i)): push(maxElem)
-                else: push(x)
+                discard
              
 
     builtin "conj",
@@ -449,7 +470,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the cosine of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -470,7 +491,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic cosine of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -491,7 +512,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the cosecant of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -512,7 +533,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic cosecant of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -533,7 +554,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the cotangent of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -554,7 +575,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic cotangent of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -597,7 +618,10 @@ proc defineSymbols*() =
             else:
                 rat = toRational(x.f)
 
-            push(newInteger(rat.den))
+            if rat.rKind == NormalRational:
+                push(newInteger(getDenominator(rat)))
+            else:
+                push(newInteger(getDenominator(rat, big=true)))
 
     builtin "digits",
         alias       = unaliased, 
@@ -665,7 +689,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the exponential function for given value",
         args        = {
-            "value" : {Integer,Floating,Complex}
+            "value" : {Integer,Floating,Complex,Rational}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -750,15 +774,16 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the largest integer not greater than given value",
         args        = {
-            "value" : {Integer,Floating}
+            "value" : {Integer,Floating,Rational}
         },
         attrs       = NoAttrs,
         returns     = {Integer},
         example     = """
-            print floor 2.1         ; 2
-            print floor 2.9         ; 2
-            print floor neg 3.5     ; -4
-            print floor 4           ; 4
+            print floor 2.1                     ; 2
+            print floor 2.9                     ; 2
+            print floor neg 3.5                 ; -4
+            print floor 4                       ; 4
+            print floor to :rational @[neg 7 2] ; -4
         """:
             #=======================================================
             push(newInteger(int(floor(asFloat(x)))))
@@ -770,7 +795,7 @@ proc defineSymbols*() =
             rule        = PrefixPrecedence,
             description = "calculate the gamma function for given value",
             args        = {
-                "value" : {Integer,Floating}
+                "value" : {Integer,Floating,Rational}
             },
             attrs       = NoAttrs,
             returns     = {Floating},
@@ -828,8 +853,8 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the hypotenuse of a right-angle triangle with given base and height",
         args        = {
-            "base"  : {Integer,Floating},
-            "height": {Integer,Floating}
+            "base"  : {Integer,Floating,Rational},
+            "height": {Integer,Floating,Rational}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
@@ -859,6 +884,15 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
+            infinite? 4             ; false
+            infinite? infinite      ; true
+            infinite? ∞             ; true
+            ..........
+            a: infinite
+            infinite? a             ; true
+            
+            b: 0
+            infinite? b             ; false
         """:
             #=======================================================
             if xKind == Floating and (x.f == Inf or x.f == NegInf):
@@ -912,7 +946,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the natural logarithm of given value",
         args        = {
-            "value" : {Integer,Floating,Complex}
+            "value" : {Integer,Floating,Complex,Rational}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -934,8 +968,8 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the logarithm of value using given base",
         args        = {
-            "value" : {Integer,Floating},
-            "base"  : {Integer,Floating}
+            "value" : {Integer,Floating,Rational},
+            "base"  : {Integer,Floating,Rational}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
@@ -974,7 +1008,7 @@ proc defineSymbols*() =
             elif xKind==Floating:
                 push(newLogical(x.f < 0.0))
             elif xKind==Rational:
-                push(newLogical(x.rat.num < 0)):
+                push(newLogical(isNegative(x.rat))):
             elif xKind==Complex:
                 push(newLogical(x.z.re < 0.0 or (x.z.re == 0.0 and x.z.im < 0.0)))
 
@@ -1006,7 +1040,10 @@ proc defineSymbols*() =
             else:
                 rat = toRational(x.f)
 
-            push(newInteger(rat.num))
+            if rat.rKind == NormalRational:
+                push(newInteger(getNumerator(rat)))
+            else:
+                push(newInteger(getNumerator(rat, big=true)))
 
     builtin "odd?",
         alias       = unaliased, 
@@ -1058,7 +1095,7 @@ proc defineSymbols*() =
             elif xKind==Floating:
                 push(newLogical(x.f > 0.0))
             elif xKind==Rational:
-                push(newLogical(x.rat.num > 0)):
+                push(newLogical(isPositive(x.rat))):
             elif xKind==Complex:
                 push(newLogical(x.z.re > 0.0 or (x.z.re == 0.0 and x.z.im > 0.0)))
     
@@ -1133,7 +1170,7 @@ proc defineSymbols*() =
         attrs       = {
             "cartesian"  : ({Logical},"return the cartesian product of given sublists")
         },
-        returns     = {Integer,Floating},
+        returns     = {Integer,Floating,Rational},
         example     = """
             print product [3 4]       ; 12
             print product [1 2 4 6]   ; 48
@@ -1166,8 +1203,8 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get a random integer between given limits",
         args        = {
-            "lowerLimit"    : {Integer, Floating},
-            "upperLimit"    : {Integer, Floating}
+            "lowerLimit"    : {Integer, Floating, Rational},
+            "upperLimit"    : {Integer, Floating, Rational}
         },
         attrs       = NoAttrs,
         returns     = {Integer, Floating},
@@ -1213,16 +1250,20 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "round given value",
         args        = {
-            "value" : {Integer,Floating}
+            "value" : {Integer,Floating,Rational}
         },
         attrs       = {
             "to"    : ({Integer},"round to given decimal places")
         },
         returns     = {Floating},
         example     = """
-            print round 2.1         ; 2.0
-            print round 2.9         ; 3.0
-            print round 6           ; 6.0
+            print round 2.1                     ; 2.0
+            print round 2.9                     ; 3.0
+            print round 6                       ; 6.0
+
+            print round to :rational [29 10]    ; 3.0
+            print round to :rational [21 10]    ; 2.0
+            print round to :rational [5 2]      ; 3.0
 
             print round pi          ; 3.0
             ..........
@@ -1242,7 +1283,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the secant of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -1263,7 +1304,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic secant of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -1284,7 +1325,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the sine of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -1305,7 +1346,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic sine of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -1330,7 +1371,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get square root of given value",
         args        = {
-            "value" : {Integer,Floating,Complex}
+            "value" : {Integer,Floating,Complex,Rational}
         },
         attrs       = {
             "integer"   : ({Logical},"get the integer square root")
@@ -1365,7 +1406,7 @@ proc defineSymbols*() =
             "collection"    : {Block,Range}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating},
+        returns     = {Integer,Floating,Rational},
         example     = """
             print sum [3 4]           ; 7
             print sum [1 2 4 6]       ; 13
@@ -1391,7 +1432,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the tangent of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -1412,7 +1453,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic tangent of given angle",
         args        = {
-            "angle" : {Integer,Floating,Complex,Quantity}
+            "angle" : {Integer,Floating,Complex,Rational,Quantity}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -1426,6 +1467,12 @@ proc defineSymbols*() =
         """:
             #=======================================================
             processTrigonometric(tanh)
+            
+    constant "tau",
+        alias       = unaliased,
+        description = "the number tau, mathematical constant":
+            newFloating(TAU)
+            
 
 #=======================================
 # Add Library

@@ -6,379 +6,796 @@
 # @file: vm/values/custom/vquantity.nim
 #=======================================================
 
-## The internal `:quantity` type
+## The internal `:quantity` & `:unit` types
 
 #=======================================
 # Libraries
 #=======================================
 
-import std/json, strutils, tables
+import algorithm, std/enumutils, math, parseutils, sequtils, strutils, tables
 
 when not defined(WEB):
-    import asyncdispatch, httpClient, strformat
+    import asyncdispatch, httpClient, std/json
+
+when not defined(NOGMP):
+    import helpers/bignums as BignumsHelper
+
+import vm/values/custom/vrational
+
+#=======================================
+# Includes
+#=======================================
+
+include quantities/definitions
+
+#=======================================
+# Compile-time Configuration
+#=======================================
+
+const
+    useAtomsCache = true
 
 #=======================================
 # Types
 #=======================================
 
-# TODO(vm/values/custom/vquantity) More units to add?
-#  labels: helpers, enhancement, open discussion
-
 type
-    UnitKind* = enum
-        CurrencyUnit
-        LengthUnit
-        AreaUnit
-        VolumeUnit
-        PressureUnit
-        EnergyUnit
-        ForceUnit
-        RadioactivityUnit
-        AngleUnit
-        SpeedUnit
-        WeightUnit
-        InformationUnit
-        TimeUnit
-        TemperatureUnit
+    # private
 
-        # Error value
-        NoUnit
+    AtomExponent        = -5..5
+    QuantityValue       = VRational
+    QuantitySignature   = int64
 
-    UnitName* = enum
-        # Currency
-        AED, ALL, ARS, AUD, BGN, BHD, BNB, BND, BOB, BRL, BTC, BWP, 
-        CAD, CHF, CLP, CNY, COP, CRC, CZK, DKK, DOP, DZD, EGP, ETB,
-        ETH, EUR, FJD, GBP, HKD, HNL, HRK, HUF, IDR, ILS, INR, IRR, 
-        ISK, JMD, JOD, JPY, KES, KRW, KWD, KYD, KZT, LBP, LKR, MAD, 
-        MDL, MKD, MXN, MUR, MYR, NAD, NGN, NIO, NOK, NPR, NZD, OMR, 
-        PAB, PEN, PGK, PHP, PKR, PLN, PYG, QAR, RON, RSD, RUB, SAR,
-        SCR, SEK, SGD, SLL, SOS, SVC, THB, TND, TRY, TTD, TWD, TZS, 
-        UAH, UGX, USD, UYU, UZS, VND, XAF, XAG, XAU, XOF, YER, ZAR, 
-        ZMW
+    Prefix          = generatePrefixDefinitions()
+    CoreUnit        = generateUnitDefinitions()
 
-        # Length
-        M, DM, CM, MM, MIM, NM, KM, IN, FT, FM, YD, ANG, LY, PC, AU, CHAIN, ROD, FUR, MI, NMI
+    SubUnitKind = enum
+        Core
+        User
 
-        # Area
-        M2, DM2, CM2, MM2, MIM2, NM2, KM2, IN2, FT2, YD2, ANG2, MI2, AC, A, HA
+    SubUnit = object
+        case kind: SubUnitKind:
+            of Core:
+                core: CoreUnit
+            of User:
+                name: string
 
-        # Volume
-        M3, DM3, CM3, MM3, MIM3, NM3, KM3, IN3, FT3, YD3, ANG3, MI3, L, DL, CL, ML, FLOZ, TSP, TBSP, CP, PT, QT, GAL
+    PrefixedUnit = tuple
+        p: Prefix
+        u: SubUnit
 
-        # Pressure
-        ATM, BAR, PA
+    Atom = tuple
+        unit: PrefixedUnit
+        power: AtomExponent
 
-        # Energy
-        J, KJ, MJ, CAL, KCAL, WH, KWH, ERG
+    Atoms = seq[Atom]
 
-        # Power
-        W, KW, HP
+    Quantity = tuple
+        original        : QuantityValue
+        value           : QuantityValue
+        signature       : QuantitySignature
+        atoms           : Atoms
+        base            : bool
+        withUserUnits   : bool
 
-        # Force
-        N, DYN, KGF, LBF, PDL, KIP
+    # public
 
-        # Radioactivity
-        BQ, CI, RD
+    VUnit* = Atoms
+    VQuantity* = Quantity
 
-        # Angle
-        DEG, RAD
+# Benchmarking
+{.hints: on.}
+{.hint: "Quantity's inner type is currently " & $sizeof(Quantity) & ".".}
+{.hints: off.}
 
-        # Speed
-        KPH, MPS, MPH, KN
-
-        # Weight
-        G, MG, KG, T, ST, OZ, LB, CT, OZT, LBT
-
-        # Information
-        BIT, B, KB, MB, GB, TB, KIB, MIB, GIB, TIB, 
-
-        # Time
-        MIN, H, D, WK, MO, YR, S, MS, NS
-
-        # Temperature
-        C, F, K, R
-
-        # Error value
-        NoName
-
-    VQuantity* = object
-        kind*: UnitKind
-        name*: UnitName
-        
 #=======================================
 # Constants
 #=======================================
 
 const
-    CannotConvertQuantity* = -18966.0
-    ConversionRatio = {
-        # Length
-        M: 1.0,
-        DM: 0.1,
-        CM: 0.01,
-        MM: 0.001,
-        MIM: 1e-6,
-        NM: 1e-9,
-        KM: 1000.0,
-        IN: 0.0254,
-        FT: 0.3048,
-        FM: 1.8288,
-        YD: 0.9144,
-        ANG: 1e-10,
-        LY: 9.461e+15,
-        PC: 3.086e+16,
-        AU: 1.496e+11,
-        CHAIN: 20.1168,
-        ROD: 5.0292,
-        FUR: 201.168,
-        MI: 1609.34,
-        NMI: 1852.0,
+    AtomExponents = ["⁻⁵", "⁻⁴", "⁻³", "⁻²", "⁻¹", "", "", "²", "³", "⁴", "⁵"]
 
-        # Area
-        M2: 1.0, 
-        DM2: 0.01,
-        CM2: 0.0001, 
-        MM2: 1e-6,
-        MIM2: 1e-12,
-        NM2: 1e-18,
-        KM2: 1000000.0,
-        IN2: 0.00064516,
-        FT2: 0.092903,
-        YD2: 0.836127,
-        ANG2: 1e-20,
-        MI2: 2592931.2786432, 
-        AC: 4046.86,
-        A: 100.0,
-        HA: 10000.0,
+    NoUnitFound = getNoUnitFound()
 
-        # Volume
-        M3: 1.0, 
-        DM3: 0.001,
-        CM3: 1e-6,
-        MM3: 1e-9,
-        MIM3: 1e-18,
-        NM3: 1e-27,
-        KM3: 1e+9,
-        IN3: 1.63871e-5,
-        FT3: 0.0283168, 
-        YD3: 0.764555, 
-        ANG3: 1e-30,
-        MI3: 4.168e+9, 
-        L: 0.001,
-        DL: 0.0001,
-        CL: 1e-5,
-        ML: 1e-6, 
-        FLOZ: 2.95735e-5,
-        PT: 0.000473, 
-        TSP: 4.9289e-6,
-        TBSP: 1.47868e-5,
-        CP: 0.000236588,
-        QT: 0.000946353, 
-        GAL: 0.00378541,
+#=======================================
+# Variables
+#=======================================
 
-        # Pressure
-        ATM: 1.0,
-        BAR: 0.986923,
-        PA: 9.86923e-6,
+var
+    AtomsCache {.used.} : Table[string,Atoms]
 
-        # Energy
-        J: 1.0,
-        KJ: 1000.0,
-        MJ: 1000000.0,
-        CAL: 4.184,
-        KCAL: 4184.0,
-        WH: 3600.0,
-        KWH: 3.6e+6,
-        ERG: 1e-7,
+    Properties          : Table[QuantitySignature, string]
+    Quantities          : Table[SubUnit, Quantity]
+    UserUnits           : Table[string, string]
 
-        # Power
-        W: 1.0,
-        KW: 1000.0, 
-        HP: 735.499,
+    LastSignature       : QuantitySignature = static int(pow(6.0,11.0))
+    SignatureStep       : QuantitySignature = static int(pow(6.0,20.0))
 
-        # Force
-        N: 1.0, 
-        DYN: 1e-5, 
-        KGF: 9.80665, 
-        LBF: 8.89644, 
-        PDL: 0.138255, 
-        KIP: 4448.22,
+    ExchangeRates       : Table[string, float]
 
-        # Radioactivity
-        BQ: 1.0,
-        CI: 3.7e+10,
-        RD: 1000000.0,
+#=======================================
+# Useful Constants
+#=======================================
 
-        # Angle
-        DEG: 1.0,
-        RAD: 57.2958,
+generateConstantDefinitions()
 
-        # Speed
-        KPH: 1.0,
-        MPS: 3.6,
-        MPH: 1.60934,
-        KN: 1.85,
+#=======================================
+# Forward declarations
+#=======================================
 
-        # Weight
-        G: 1.0, 
-        MG: 0.001, 
-        KG: 1000.0, 
-        T: 1000000.0, 
-        ST: 6350.29, 
-        OZ: 28.3495, 
-        LB: 453.592,
-        CT: 0.2,
-        OZT: 31.1035,
-        LBT: 373.242,
-
-        # Capacity
-        BIT: 1.0, 
-        B: 8.0, 
-        KB: 8.0 * 1000, 
-        MB: 8.0 * 1000 * 1000, 
-        GB: 8.0 * 1000 * 1000 * 1000, 
-        TB: 8.0 * 1000 * 1000 * 1000,
-        KIB: 8.0 * 1024, 
-        MIB: 8.0 * 1024 * 1024, 
-        GIB: 8.0 * 1024 * 1024 * 1024, 
-        TIB: 8.0 * 1024 * 1024 * 1024,
-
-        # Time
-        MIN: 1.0, 
-        H: 60.0, 
-        D: 1440.0,
-        WK: 10080.0,
-        MO: 43800.0,
-        YR: 526000.0,
-        S: 0.0166667,
-        MS: 1.66667e-5, 
-        NS: 1.66667e-11
-
-    }.toTable
-
-    ErrorQuantity* = VQuantity(kind: NoUnit, name: NoName)
-    NumericQuantity* = VQuantity(kind: NoUnit, name: B)
+proc toQuantity*(vstr: string, atoms: Atoms): Quantity
+proc `$`*(q: Quantity): string 
+proc inspect*(q: Quantity)
 
 #=======================================
 # Helpers
 #=======================================
 
-func quantityKindForName*(un: UnitName): UnitKind {.inline.} =
-    case un:
-        of AED..ZMW     :   CurrencyUnit
-        of M..NMI       :   LengthUnit
-        of M2..HA       :   AreaUnit
-        of M3..GAL      :   VolumeUnit
-        of ATM..PA      :   PressureUnit
-        of DEG..RAD     :   AngleUnit
-        of J..ERG       :   EnergyUnit
-        of N..KIP       :   ForceUnit
-        of BQ..RD       :   RadioactivityUnit
-        of KPH..KN      :   SpeedUnit
-        of G..LBT       :   WeightUnit
-        of BIT..TIB     :   InformationUnit
-        of MIN..NS      :   TimeUnit
-        of C..R         :   TemperatureUnit
-        else:
-            NoUnit
+func `==`(a, b: SubUnit): bool =
+    if a.kind != b.kind: return false
+    return
+        case a.kind:
+            of Core: a.core == b.core
+            of User: a.name == b.name
 
-proc getExchangeRate(src: UnitName, tgt: UnitName): float =
-    when not defined(WEB):
-        let s = toLowerAscii($(src))
-        let t = toLowerAscii($(tgt))
-        let url = "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/{s}/{t}.json".fmt
+func isUnitless(q: Quantity): bool {.inline.} =
+    return q.signature == 0
+
+func isCurrency(q: Quantity): bool {.inline.} =
+    return q.signature == (static parsePropertyFormula("C"))
+
+func isTemperature(q: Quantity): bool {.inline.} =
+    return q.signature == (static parsePropertyFormula("K"))
+
+proc getExchangeRate(curr: string): float =
+    let s = toLowerAscii(curr)
+    if ExchangeRates.len == 0:
+        let url = "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/usd.min.json"
         let content = waitFor (newAsyncHttpClient().getContent(url))
         let response = parseJson(content)
-        return response[t].fnum
-    else:
-        return 1.0
+        for (k,v) in pairs(response["usd"]):
+            ExchangeRates[k] = v.fnum
 
-#=======================================
-# Overloads
-#=======================================
+    return ExchangeRates[s]
 
-proc stringify*(un: UnitName): string =
-    result = toLowerAscii($(un))
-    case un:
-        of AED..ZMW, J, MJ, W, N, B..TB : result = toUpperAscii(result)
-        of PA, BQ, CI, RD               : result = capitalizeAscii(result)
-        of C..R                         : result = "°" & toUpperAscii(result)
-        of MIM, MIM2, MIM3              : result = result.replace("mim","μm")
-        of ANG, ANG2, ANG3              : result = result.replace("ang","Å")
-        of KIB..TIB                     : result = toUpperAscii(result).replace("I","i")
+proc getPrimitive(unit: PrefixedUnit): Quantity =
+    result = Quantities[unit.u]
 
-        of FLOZ     : result = "fl.oz"
-        of KJ       : result = "kJ"
-        of WH       : result = "Wh"
-        of KWH      : result = "kWh"
-        of KW       : result = "kW"
-        of DEG      : result = "°"
-        of KPH      : result = "km/h"
-        of MPS      : result = "m/s"
-        of OZT      : result = "oz.t"
-        of LBT      : result = "lb.t"
-        of BIT      : result = "b"
+    if unlikely(result.isCurrency() and isZero(result.value)):
+        let xrate = getExchangeRate((symbolName(unit.u.core)).replace("_CoreUnit",""))
+        Quantities[unit.u].value = toRational(xrate)
+        result.value = toRational(xrate)
+    elif unit.p != No_Prefix:
+        result.value *= pow(float(10), float(ord(unit.p)))
 
-        else:
-            discard
+proc getSignature*(atoms: Atoms): QuantitySignature =
+    for atom in atoms:
+        let prim = getPrimitive(atom.unit)
+        result += prim.signature * atom.power
+
+proc getValue(atoms: Atoms): QuantityValue =
+    result = 1//1
+    for atom in atoms:
+        let prim = getPrimitive(atom.unit)
+        result *= prim.value ^ atom.power
+
+proc flatten*(atoms: Atoms): Atoms =
+    var cnts: OrderedTable[PrefixedUnit, int]
+
+    for atom in atoms:
+        if cnts.hasKeyOrPut(atom.unit, atom.power):
+            cnts[atom.unit] += atom.power
+
+    for (unit, power) in pairs(cnts):
+        if power != 0:
+            result.add (unit: unit, power: AtomExponent(power))
+
+proc reverse*(atoms: Atoms): Atoms =
+    for atom in atoms:
+        result.add (unit: atom.unit, power: AtomExponent(-atom.power))
+
+proc unitAlaCarte*(str: string): PrefixedUnit = 
+    let subu = SubUnit(kind: User, name: str)
     
-    result = result.replace("2","²").replace("3","³")
+    result = (No_Prefix, subu)
 
-proc stringify*(uk: UnitKind): string =
-    toLowerAscii($(uk)).replace("unit","")
+    var newQuantity = toQuantity("1", @[])
+    newQuantity.signature = LastSignature
+    newQuantity.base = true
+    LastSignature += SignatureStep
+    Quantities[subu] = newQuantity
+    UserUnits[str] = str
 
-func `$`*(qs: VQuantity): string =
-    stringify(qs.name)
+#=======================================
+# Parsers
+#=======================================
+
+proc parseSubUnit*(str: string): PrefixedUnit = 
+    generateUnitParser()
+
+    if result.u.kind==Core and result.u.core == No_CoreUnit:
+        result = unitAlaCarte(str)
+
+proc parseAtoms*(str: string): Atoms = 
+    proc parseAtom(at: string, denominator: static bool=false): Atom =
+        var i = 0
+        var unitStr: string
+        while i < at.len and at[i] notin '2'..'9':
+            unitStr.add at[i]
+            inc i
+
+        result.unit = parseSubUnit(unitStr)
+        result.power = 1
+        if i < at.len:
+            result.power = parseInt(at[i..^1])
+
+        when denominator:
+            result.power = -result.power
+
+    when useAtomsCache:
+        if AtomsCache.hasKey(str):
+            return AtomsCache[str]
+
+    let parts = str.split("/")
+
+    if parts[0].len > 0:
+        for atomStr in parts[0].split("."):
+            if atomStr != "1":
+                result.add parseAtom(atomStr)
+
+    if parts.len > 1:
+        for atomStr in parts[1].split("."):
+            result.add parseAtom(atomStr, denominator=true)
+
+    when useAtomsCache:
+        AtomsCache[str] = result
+
+#=======================================
+# Constructors
+#=======================================
+
+proc toQuantity*(v: QuantityValue, atoms: Atoms): Quantity =
+    result.original = v
+    result.value = v
+
+    for atom in atoms:
+        let prim = getPrimitive(atom.unit)
+        result.signature += prim.signature * atom.power
+        result.value *= prim.value ^ atom.power
+
+        if unlikely(atom.unit.u.kind == User):
+            result.withUserUnits = true
+
+        result.atoms.add(atom)
+
+when not defined(NOGMP):
+    proc toQuantity*(v: int | float | Int, atoms: Atoms): Quantity {.inline.} =
+        result = toQuantity(toRational(v), atoms)
+else:
+    proc toQuantity*(v: int | float, atoms: Atoms): Quantity {.inline.} =
+        result = toQuantity(toRational(v), atoms)
+
+proc parseValue(s: string): QuantityValue =
+    if s.contains("."):
+        result = toRational(parseFloat(s))
+    elif s.contains(":"):
+        let ratParts = s.split(":")
+        try:
+            result = toRational(parseInt(ratparts[0]), parseInt(ratparts[1]))
+        except ValueError:
+            when not defined(NOGMP):
+                result = toRational(newInt(ratparts[0]), newInt(ratparts[1]))
+    else:
+        try:
+            result = toRational(parseInt(s))
+        except ValueError:
+            when not defined(NOGMP):
+                result = toRational(newInt(s))
+
+proc toQuantity*(str: string): Quantity =
+    let parts = str.split(" ")
+
+    # Warning: we should be able to parse rational numbers as well!
+    let value = parseValue(parts[0])
+    let atoms = parseAtoms(parts[1])
+
+    result = toQuantity(value, atoms)
+
+proc toQuantity*(vstr: string, atoms: Atoms): Quantity =
+    # used mainly for the constants!
+    result = toQuantity(parseValue(vstr), atoms)
 
 #=======================================
 # Methods
 #=======================================
 
-proc newQuantitySpec*(un: UnitName): VQuantity {.inline.} =
-    VQuantity(kind: quantityKindForName(un), name: un)
+proc getProperty*(q: Quantity): string =
+    Properties.getOrDefault(q.signature, "Unknown").toLowerAscii()
 
-proc getQuantityMultiplier*(src: UnitName, tgt: UnitName, isCurrency=false): float =
-    if isCurrency:
-        if src==tgt: return 1.0
-        else: return getExchangeRate(src, tgt)
-    else:
-        return ConversionRatio[src] / ConversionRatio[tgt]
+proc getProperty*(atoms: Atoms): string =
+    Properties.getOrDefault(getSignature(atoms), "Unknown").toLowerAscii()
 
-proc getCleanCorrelatedUnit*(b: VQuantity, a: VQuantity): VQuantity = 
-    var s = ($(a.name)).replace("2","").replace("3","")
-    
-    if ($(b.name)).contains("2")    :   s &= "2"
-    elif ($(b.name)).contains("3")  :   s &= "3"
+proc convertTemperature*(v: QuantityValue, fromU: CoreUnit, toU: CoreUnit): QuantityValue =
+    if fromU == toU:
+        return v
 
-    return VQuantity(kind: b.kind, name: parseEnum[UnitName](s))
-
-proc getFinalUnitAfterOperation*(op: string, argA: VQuantity, argB: VQuantity): VQuantity =
-    case op:
-        of "mul":
-            if argA.kind == LengthUnit and argB.kind == LengthUnit and argA.name in M..MI:
-                return newQuantitySpec(parseEnum[UnitName]($(argA.name)&"2"))
-
-            elif ((argA.name in M..MI) or (argA.name in M2..MI2)) and (argB.kind in {LengthUnit,AreaUnit}) and argA.kind!=argB.kind:
-               return newQuantitySpec(parseEnum[UnitName](($(argA.name)).replace("2","")&"3"))
-
-        of "div", "mod", "fdiv":
-            if ((argA.name in M2..MI2)) and (argB.kind==LengthUnit):
-               return newQuantitySpec(parseEnum[UnitName](($(argA.name)).replace("2","")))
-
-            elif ((argA.name in M3..MI3)) and (argB.kind==LengthUnit):
-               return newQuantitySpec(parseEnum[UnitName](($(argA.name)).replace("3","2")))
-
-            elif ((argA.name in M3..MI3)) and (argB.kind==AreaUnit) and argA.kind!=argB.kind:
-               return newQuantitySpec(parseEnum[UnitName](($(argA.name)).replace("3","")))
-
-            else:
-                return NumericQuantity
-
+    if fromU == K_CoreUnit:
+        if toU == degC_CoreUnit:
+            result = v - 273.15
+        elif toU == degF_CoreUnit:
+            result = v * (9//5) - 459.67
+        elif toU == degR_CoreUnit:
+            result = v * (9//5)
         else:
-            discard
+            echo "ERROR!"
+    elif fromU == degC_CoreUnit:
+        if toU == K_CoreUnit:
+            result = v + 273.15
+        elif toU == degF_CoreUnit:
+            result = v * (9//5) + 32
+        elif toU == degR_CoreUnit:
+            result = (v + 273.15) * (9//5)
+        else:
+            echo "ERROR!"
+    elif fromU == degF_CoreUnit:
+        if toU == K_CoreUnit:
+            result = (v + 459.67) * (5//9)
+        elif toU == degC_CoreUnit:
+            result = (v - 32) * (5//9)
+        elif toU == degR_CoreUnit:
+            result = v + 459.67
+        else:
+            echo "ERROR!"
+    elif fromU == degR_CoreUnit:
+        if toU == K_CoreUnit:
+            result = v * (5//9)
+        elif toU == degC_CoreUnit:
+            result = (v - 491.67) * (5//9)
+        elif toU == degF_CoreUnit:
+            result = v - 459.67
+    else:
+        echo "ERROR!"
 
-    return ErrorQuantity
+proc convertTo*(q: Quantity, atoms: Atoms): Quantity =
+    if q.signature != getSignature(atoms):
+        raise newException(ValueError, "Cannot convert quantities with different dimensions.")
 
-proc parseQuantitySpec*(str: string): VQuantity =
-    let unitName = parseEnum[UnitName](toUpperAscii(str))
-    newQuantitySpec(unitName)
+    if q.atoms == atoms:
+        return q
+
+    let newVal = q.value/getValue(atoms)
+    result = toQuantity(newVal, atoms)
+
+proc convertQuantity*(q: Quantity, atoms: Atoms): Quantity =
+    if unlikely(isTemperature(q)):
+        if q.signature != getSignature(atoms):
+            raise newException(ValueError, "Cannot convert quantities with different dimensions.")
+        
+        result = toQuantity(convertTemperature(q.original, q.atoms[0].unit.u.core, atoms[0].unit.u.core), atoms)
+    else:
+        result = q.convertTo(atoms)
+
+proc toBase*(q: Quantity): Atoms =
+    for atom in q.atoms:
+        let prim = getPrimitive(atom.unit)
+        if prim.base:
+            result.add atom
+            continue
+        else:
+            result.add toBase(prim)
+
+proc toBase*(atoms: Atoms): Atoms =
+    for atom in atoms:
+        let prim = getPrimitive(atom.unit)
+        if prim.base:
+            result.add atom
+            continue
+        else:
+            result.add toBase(prim)
+
+proc getBaseUnits*(q: Quantity): Atoms =
+    result = flatten(toBase(q))
+
+proc getBaseUnits*(atoms: Atoms): Atoms =
+    result = flatten(toBase(atoms))
+
+proc defineNewUserUnit*(name: string, symbol: string, description: string, definition: string) =
+    UserUnits[name] = symbol
+    let q = toQuantity(definition)
+    Quantities[SubUnit(kind: User, name: name)] = q
+    Properties[q.signature] = description
+
+proc defineNewUserUnit*(name: string, symbol: string, description: string, definition: Quantity) =
+    UserUnits[name] = symbol
+    Quantities[SubUnit(kind: User, name: name)] = definition
+    Properties[definition.signature] = description
+
+proc defineNewUserUnit*(name: string, symbol: string, description: string, definition: Atoms) =
+    UserUnits[name] = symbol
+    let q = toQuantity(1, definition)
+    Quantities[SubUnit(kind: User, name: name)] = q
+    Properties[q.signature] = description
+
+proc defineNewProperty*(name: string, definition: Quantity) =
+    Properties[definition.signature] = name
+
+proc defineNewProperty*(name: string, definition: Atoms) =
+    Properties[getSignature(definition)] = name
+
+#=======================================
+# Comparison
+#=======================================
+
+func `=~`*(a, b: Quantity): bool {.inline.} =
+    return a.signature == b.signature
+
+proc `=~`*(a: Quantity, b: Atoms): bool {.inline.} =
+    return a.signature == getSignature(b)
+
+proc `=~`*(a: Atoms, b: Quantity): bool {.inline.} =
+    return getSignature(a) == b.signature
+
+proc `=~`*(a: Atoms, b: Atoms): bool {.inline.} =
+    return getSignature(a) == getSignature(b)
+
+proc `==`*(a, b: Quantity): bool =
+    if not (a =~ b):
+        return false
+
+    let convB = b.convertTo(a.atoms)
+
+    return a.original == convB.original
+
+func `==`*(a: Quantity, b: int | float | QuantityValue): bool =
+    return a.original == b
+
+func `==`*(a: int | float | QuantityValue, b: Quantity): bool =
+    return a == b.original
+
+when not defined(NOGMP):
+    func `==`*(a: Quantity, b: Int): bool =
+        return a.original == b
+
+    func `==`*(a: Int, b: Quantity): bool =
+        return a == b.original
+
+proc `<`*(a, b: Quantity): bool =
+    if not (a =~ b):
+        return false
+
+    let convB = b.convertTo(a.atoms)
+
+    return a.original < convB.original
+
+func `<`*(a: Quantity, b: int | float | QuantityValue): bool =
+    return a.original < b
+
+func `<`*(a: int | float | QuantityValue, b: Quantity): bool =
+    return a < b.original
+
+when not defined(NOGMP):
+    func `<`*(a: Quantity, b: Int): bool =
+        return a.original < b
+
+    func `<`*(a: Int, b: Quantity): bool =
+        return a < b.original
+
+proc `>`*(a, b: Quantity): bool =
+    if not (a =~ b):
+        return false
+
+    let convB = b.convertTo(a.atoms)
+
+    return a.original > convB.original
+
+func `>`*(a: Quantity, b: int | float | QuantityValue): bool =
+    return a.original > b
+
+func `>`*(a: int | float | QuantityValue, b: Quantity): bool =
+    return a > b.original
+
+when not defined(NOGMP):
+    func `>`*(a: Quantity, b: Int): bool =
+        return a.original > b
+
+    func `>`*(a: Int, b: Quantity): bool =
+        return a > b.original
+
+#=======================================
+# Operators
+#=======================================
+
+proc `+`*(a, b: Quantity): Quantity =
+    if not (a =~ b):
+        raise newException(ValueError, "Cannot add quantities with different dimensions.")
+
+    let convB = b.convertTo(a.atoms)
+
+    # echo "quantity A: " & $(a)
+    # echo "quantity B: " & $(b)
+    # echo "\tconverted: " & $(convB)
+
+    result = toQuantity(a.original + convB.original, a.atoms)
+
+proc `+`*(a: Quantity, b: int | float | QuantityValue): Quantity =
+    result = toQuantity(a.original + b, a.atoms)
+
+when not defined(NOGMP):
+    proc `+`*(a: Quantity, b: Int): Quantity =
+        result = toQuantity(a.original + b, a.atoms)
+
+proc `+=`*(a: var Quantity, b: Quantity) =
+    if not (a =~ b):
+        raise newException(ValueError, "Cannot add quantities with different dimensions.")
+
+    let convB = b.convertTo(a.atoms)
+
+    # echo "quantity A: " & $(a)
+    # echo "quantity B: " & $(b)
+    # echo "\tconverted: " & $(convB)
+
+    a.original += convB.original
+
+proc `+=`*(a: var Quantity, b: int | float | QuantityValue) =
+    a.original += b
+
+when not defined(NOGMP):
+    proc `+=`*(a: var Quantity, b: Int) =
+        a.original += b
+
+proc `-`*(a, b: Quantity): Quantity =
+    if not (a =~ b):
+        raise newException(ValueError, "Cannot subtract quantities with different dimensions.")
+
+    let convB = b.convertTo(a.atoms)
+
+    # echo "quantity A: " & $(a)
+    # echo "quantity B: " & $(b)
+    # echo "\tconverted: " & $(convB)
+
+    result = toQuantity(a.original - convB.original, a.atoms)
+
+proc `-`*(a: Quantity, b: int | float | QuantityValue): Quantity =
+    result = toQuantity(a.original - b, a.atoms)
+
+when not defined(NOGMP):
+    proc `-`*(a: Quantity, b: Int): Quantity =
+        result = toQuantity(a.original - b, a.atoms)
+
+proc `-=`*(a: var Quantity, b: Quantity) =
+    if not (a =~ b):
+        raise newException(ValueError, "Cannot subtract quantities with different dimensions.")
+
+    let convB = b.convertTo(a.atoms)
+
+    # echo "quantity A: " & $(a)
+    # echo "quantity B: " & $(b)
+    # echo "\tconverted: " & $(convB)
+
+    a.original -= convB.original
+
+proc `-=`*(a: var Quantity, b: int | float | QuantityValue) =
+    a.original -= b
+
+when not defined(NOGMP):
+    proc `-=`*(a: var Quantity, b: Int) =
+        a.original -= b
+
+proc `*`*(a, b: Quantity): Quantity =
+    if a =~ b:
+        let convB = b.convertTo(a.atoms)
+        result = toQuantity(a.original * convB.original, flatten(a.atoms & convB.atoms))
+    else:
+        result = toQuantity(a.original * b.original, flatten(a.atoms & b.atoms))
+
+proc `*`*(a: Quantity, b: int | float | QuantityValue): Quantity =
+    result = toQuantity(a.original * b, a.atoms)
+
+proc `*`*(a: int | float | QuantityValue, b: Quantity): Quantity =
+    result = toQuantity(a * b.original, b.atoms)
+
+when not defined(NOGMP):
+    proc `*`*(a: Quantity, b: Int): Quantity =
+        result = toQuantity(a.original * b, a.atoms)
+
+    proc `*`*(a: Int, b: Quantity): Quantity =
+        result = toQuantity(a * b.original, b.atoms)
+
+proc `*=`*(a: var Quantity, b: Quantity) =
+    a = a * b
+
+proc `*=`*(a: var Quantity, b: int | float | QuantityValue) =
+    a.original *= b
+
+when not defined(NOGMP):
+    proc `*=`*(a: var Quantity, b: Int) =
+        a.original *= b
+
+proc `/`*(a, b: Quantity): Quantity =
+    if a =~ b:
+        let convB = b.convertTo(a.atoms)
+        result = toQuantity(a.original / convB.original, flatten(a.atoms & reverse(convB.atoms)))
+    else:
+        result = toQuantity(a.original / b.original, flatten(a.atoms & reverse(b.atoms)))
+
+proc `/`*(a: Quantity, b: int | float | QuantityValue): Quantity =
+    result = toQuantity(a.original / b, a.atoms)
+
+when not defined(NOGMP):
+    proc `/`*(a: Quantity, b: Int): Quantity =
+        result = toQuantity(a.original / b, a.atoms)
+
+proc `/=`*(a: var Quantity, b: Quantity) =
+    a = a / b
+
+proc `/=`*(a: var Quantity, b: int | float | QuantityValue) =
+    a.original /= b
+
+when not defined(NOGMP):
+    proc `/=`*(a: var Quantity, b: Int) =
+        a.original /= b
+
+# TODO(VQuantity) should `/` & `//` implementations be the same?
+#  labels: values, open discussion
+proc `//`*(a: Quantity, b: int | float | Quantity | QuantityValue): Quantity =
+    a / b
+
+when not defined(NOGMP):
+    proc `//`*(a: Quantity, b: Int): Quantity =
+        a / b
+
+proc `//=`*(a: var Quantity, b: int | float | Quantity | QuantityValue) =
+    a = a // b
+
+when not defined(NOGMP):
+    proc `//=`*(a: var Quantity, b: Int) =
+        a = a // b
+
+proc `^`*(a: Quantity, b: int): Quantity =
+    result = a
+
+    var i = 1
+    while i < b:
+        result *= a
+        inc i
+
+proc `^=`*(a: var Quantity, b: int) =
+    a = a ^ b
+
+#=======================================
+# String converters
+#=======================================
+
+func `$`*(expo: AtomExponent): string =
+    AtomExponents[expo + 5]
+
+proc `$`*(unit: SubUnit): string =
+    case unit.kind:
+        of Core: $(unit.core)
+        of User: UserUnits[unit.name]
+
+proc `$`*(punit: PrefixedUnit): string =
+    $(punit.p) & $(punit.u)
+
+proc `$`*(atom: Atom): string =
+    $(atom.unit) & $(atom.power)
+
+proc `$`*(atoms: Atoms, oneline: static bool=false): string =
+    when not oneline:
+        var pos: seq[string]
+        var neg: seq[string]
+
+        for atom in atoms:
+            if atom.power > 0:
+                pos.add $(atom)
+            else:
+                neg.add $(atom)
+
+        if pos.len > 0:
+            result = pos.join("·")
+
+            if neg.len > 0:
+                result &= "/" & (neg.join("·")).replace("⁻¹", "").replace("⁻", "")
+        else:
+            result = neg.join("·")
+    else:
+        result = atoms.mapIt($it).join("·")
+
+proc `$`*(q: Quantity): string =
+    if unlikely(q.isCurrency()):
+        result = stringify(q.original, CurrencyRational) & " " & $q.atoms
+    elif unlikely(q.isTemperature()):
+        result = stringify(q.original, TemperatureRational) & (if q.atoms[0].unit.u.core == K_CoreUnit: " " else: "") & $q.atoms
+    else:
+        result = stringify(q.original) & " " & $q.atoms
+
+func codify*(expo: AtomExponent): string =
+    if expo notin [-1, 1]:
+        $(abs(expo))
+    else:
+        ""
+
+proc codify*(unit: SubUnit): string =
+    case unit.kind:
+        of Core: (symbolName(unit.core)).replace("_CoreUnit","")
+        of User: UserUnits[unit.name]
+
+proc codify*(punit: PrefixedUnit): string =
+    $(punit.p) & codify(punit.u)
+
+proc codify*(atom: Atom): string =
+    codify(atom.unit) & codify(atom.power)
+
+proc codify*(atoms: Atoms): string =
+    var pos: seq[string]
+    var neg: seq[string]
+
+    for atom in atoms:
+        if atom.power > 0:
+            pos.add codify(atom)
+        else:
+            neg.add codify(atom)
+
+    result = pos.join(".")
+
+    if neg.len > 0:
+        result &= "/" & (neg.join(".")).replace("⁻¹", "").replace("⁻", "")
+
+proc codify*(q: Quantity): string =
+    result = ($q.original).replace("/",":") & "`"
+    
+    result &= codify(q.atoms)
+
+proc inspect*(q: Quantity) =
+    echo "----------------------------------------"
+    echo $(q)
+    echo "----------------------------------------"
+    echo ".original: ", q.original
+    echo ".value: ", q.value
+    echo ".signature: ", q.signature, " => ", getProperty(q)
+    echo ".base: ", q.base
+    echo ".atoms: "
+
+    for atom in q.atoms:
+        echo "    - (", atom, ") = "
+        echo "        .prefix: ", atom.unit.p
+        echo "        .unit: ", atom.unit.u
+        echo "        .power: ", atom.power
+
+    echo ".base units: ", `$`(getBaseUnits(q), oneline=true)
+    
+    echo ""
+
+#=======================================
+# Setup
+#=======================================
+
+proc initQuantities*() =
+    Properties = generateProperties()
+    Quantities = generateQuantities()
+
+    when not defined(NOGMP):
+        generateConstants()
+
+#=======================================
+# Testing
+#=======================================
+
+initQuantities()
+
+# for (n,q) in pairs(Quantities):
+#     echo $(n)
+#     inspect(q)
+#     echo "--"
+
+when isMainModule:
+    import helpers/benchmark
+    import random, strutils
+
+    template bmark(ttl:string, action:untyped):untyped =
+        echo "----------------------"
+        echo ttl
+        echo "----------------------"
+        benchmark "":
+            for i in 1..1_000_000:
+                action

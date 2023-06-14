@@ -42,7 +42,7 @@ draw: function [mayans][
         loop 0..3 'j [
             prints HB
         ]
-        prints (i < idx)? -> UC -> UR ++ `\n`
+        prints (i < idx)? -> UC -> UR ++ '\n'
     ]
 
     loop 1..4 'i [
@@ -57,7 +57,7 @@ draw: function [mayans][
     loop 0..idx 'i [
         loop 0..3 'j ->
             prints HB
-        prints (i < idx)? -> LC -> LR ++ `\n`
+        prints (i < idx)? -> LC -> LR ++ '\n'
     ]
 ]
 

@@ -2,8 +2,8 @@ name: "odd?"
 type: :function
 description: "check if given number is odd"
 module: "Numbers"
-line: 986
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L986"
+line: 1018
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L1018"
 returns: [
                 :logical
         ]

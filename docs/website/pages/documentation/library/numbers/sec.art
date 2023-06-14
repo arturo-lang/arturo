@@ -2,8 +2,8 @@ name: "sec"
 type: :function
 description: "calculate the secant of given angle"
 module: "Numbers"
-line: 1214
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L1214"
+line: 1246
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L1246"
 returns: [
                 :floating
                  :complex

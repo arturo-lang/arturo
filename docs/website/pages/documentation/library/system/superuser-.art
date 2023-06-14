@@ -2,8 +2,8 @@ name: "superuser?"
 type: :function
 description: "check if current user has administrator/root privileges"
 module: "System"
-line: 313
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/System.nim#L313"
+line: 317
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/System.nim#L317"
 returns: [
                 :logical
         ]

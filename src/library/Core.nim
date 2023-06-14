@@ -144,6 +144,11 @@ proc defineSymbols*() =
             ; compile with:
             ; clang -c -w mylib.c
             ; clang -shared -o libmylib.dylib mylib.o
+            ; 
+            ; NOTE:
+            ; * If you're using GCC, just replace `clang` by `gcc`
+            ; * If you're not on MacOS, replace your `dylib` by the right extension
+            ;   normally they can be `.so` or `.dll` in other Operational Systems.
             
             ; #include <stdio.h>
             ;
@@ -238,6 +243,11 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Any},
         example     = """
+            ; Note that 'attr returns null if it has no attribute          
+            print coalesce attr "myAttr" "attr not found"
+            print (attr "myAttr") ?? "attr not found"
+            
+            print (myData) ?? defaultData
         """:
             #=======================================================
             let condition = not (xKind==Null or isFalse(x))
@@ -508,6 +518,14 @@ proc defineSymbols*() =
                 execUnscoped(y)
 
             push(newLogical(condition))
+
+    # TODO(Core/let) block assignments should properly handle readonly Values
+    #  In a few words: we should make sure that `[a b]: [1 2]` is the same as 
+    #  assigning each value one by one, which means that there should be an *implicit* 
+    #  new Value created for readonly value. Apparently, `setSym` in VM/globals 
+    #  doesn't handle this properly; but it should.
+    #  See also: https://discord.com/channels/765519132186640445/829324913097048065/1099426535569633401
+    #  labels: library, bug, critical
 
     builtin "let",
         alias       = colon, 

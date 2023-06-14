@@ -20,13 +20,17 @@ ourGamma: function [x][
     return result
 ]
 
+print repeat "-" 100
+
 loop 1..10 'z [
     v1: ourGamma z // 3
     v2: gamma z // 3
     print [
-        pad (to :string z)++" =>" 10
+        pad (to :string z)++" =>" 6
         pad (to :string v1)++" ~" 30 
         pad (to :string v2)++" :" 30
         pad (to :string v1-v2) 30
     ]
 ]
+
+print repeat "-" 100

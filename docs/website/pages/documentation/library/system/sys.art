@@ -2,8 +2,8 @@ name: "sys"
 type: :function
 description: "get current system information"
 module: "System"
-line: 331
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/System.nim#L331"
+line: 342
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/System.nim#L342"
 returns: [
                 :dictionary
         ]
@@ -35,8 +35,12 @@ examples: [
                         ;        pcre    :        8.45.0 :version
                         ;    ] 
                         ;    binary     :    /Users/drkameleon/OpenSource/arturo-lang/arturo/bin/arturo :string
-                        ;    cpu        :    amd64 :string
+                        ;    cpu        :        [ :dictionary
+                        ;           arch    :                amd64 :literal
+                        ;           endian  :                little :literal
+                        ;   ]
                         ;     os         :    macosx :string
+                        ;   hostname   :    drkameleons-Mac.home :string
                         ;      release    :    full :literal
                         ;]
                 }

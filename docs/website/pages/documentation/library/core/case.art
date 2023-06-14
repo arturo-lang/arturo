@@ -2,8 +2,8 @@ name: "case"
 type: :function
 description: "initiate a case block to check for different cases"
 module: "Core"
-line: 198
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L198"
+line: 205
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L205"
 returns: [
                 :nothing
         ]

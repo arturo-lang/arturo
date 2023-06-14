@@ -2,8 +2,8 @@ name: "translate"
 type: :function
 description: "takes a dictionary of translations and replaces each instance sequentially"
 module: "Strings"
-line: 972
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L972"
+line: 984
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L984"
 returns: [
                 :string
                  :nothing

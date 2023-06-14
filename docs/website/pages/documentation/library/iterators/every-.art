@@ -2,8 +2,8 @@ name: "every?"
 type: :function
 description: "check if every item in collection satisfies given condition"
 module: "Iterators"
-line: 689
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Iterators.nim#L689"
+line: 702
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Iterators.nim#L702"
 returns: [
                 :logical
         ]

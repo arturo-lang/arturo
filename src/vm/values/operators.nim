@@ -112,7 +112,7 @@ template toNewBig(v: untyped): untyped =
 
 template notZero(v: untyped): untyped =
     when v is VRational:
-        if unlikely(v.num==0):
+        if unlikely(isZero(v)):
             RuntimeError_DivisionByZero()
     elif v is VComplex:
         if unlikely(v.re==0 and v.im==0):
@@ -435,47 +435,47 @@ template normalIntegerShrI*(x: var Value, y: int): untyped =
 # Methods
 #=======================================
 
-proc convertToTemperatureUnit*(v: Value, src: UnitName, tgt: UnitName): Value =
-    ## convert given temperature value ``v`` from ``src`` unit to ``tgt``
-    case src:
-        of C:
-            if tgt==F: return v * newFloating(9/5) + newInteger(32)
-            elif tgt==K: return v + newFloating(273.15)
-            else: return v * newFloating(9/5) + newFloating(491.67)
-        of F:
-            if tgt==C: return (v - newInteger(32)) * newFloating(5/9)
-            elif tgt==K: return (v - newInteger(32)) * newFloating(5/9) + newFloating(273.15)
-            else: return v + newFloating(459.67)
-        of K: 
-            if tgt==C: return v - newFloating(273.15)
-            elif tgt==F: return (v-newFloating(273.15)) * newFloating(9/5) + newInteger(32)
-            else: return v * newFloating(1.8)
-        of R:
-            if tgt==C: return (v - newFloating(491.67)) * newFloating(5/9)
-            elif tgt==F: return v - newFloating(459.67)
-            else: return v * newFloating(5/9)
+# proc convertToTemperatureUnit*(v: Value, src: UnitName, tgt: UnitName): Value =
+#     ## convert given temperature value ``v`` from ``src`` unit to ``tgt``
+#     case src:
+#         of C:
+#             if tgt==F: return v * newFloating(9/5) + newInteger(32)
+#             elif tgt==K: return v + newFloating(273.15)
+#             else: return v * newFloating(9/5) + newFloating(491.67)
+#         of F:
+#             if tgt==C: return (v - newInteger(32)) * newFloating(5/9)
+#             elif tgt==K: return (v - newInteger(32)) * newFloating(5/9) + newFloating(273.15)
+#             else: return v + newFloating(459.67)
+#         of K: 
+#             if tgt==C: return v - newFloating(273.15)
+#             elif tgt==F: return (v-newFloating(273.15)) * newFloating(9/5) + newInteger(32)
+#             else: return v * newFloating(1.8)
+#         of R:
+#             if tgt==C: return (v - newFloating(491.67)) * newFloating(5/9)
+#             elif tgt==F: return v - newFloating(459.67)
+#             else: return v * newFloating(5/9)
 
-        else: discard
+#         else: discard
 
-proc convertQuantityValue*(nm: Value, fromU: UnitName, toU: UnitName, fromKind = NoUnit, toKind = NoUnit, op = ""): Value =
-    ## convert given quantity value ``nm`` from ``fromU`` unit to ``toU`` 
-    var fromK = fromKind
-    var toK = toKind
-    if fromK==NoUnit: fromK = quantityKindForName(fromU)
-    if toK==NoUnit: toK = quantityKindForName(toU)
+# proc convertQuantityValue*(nm: Value, fromU: UnitName, toU: UnitName, fromKind = NoUnit, toKind = NoUnit, op = ""): Value =
+#     ## convert given quantity value ``nm`` from ``fromU`` unit to ``toU`` 
+#     var fromK = fromKind
+#     var toK = toKind
+#     if fromK==NoUnit: fromK = quantityKindForName(fromU)
+#     if toK==NoUnit: toK = quantityKindForName(toU)
 
-    if unlikely(fromK!=toK):
-        when not defined(WEB):
-            RuntimeError_CannotConvertQuantity($(nm), stringify(fromU), stringify(fromK), stringify(toU), stringify(toK))
+#     if unlikely(fromK!=toK):
+#         when not defined(WEB):
+#             RuntimeError_CannotConvertQuantity($(nm), stringify(fromU), stringify(fromK), stringify(toU), stringify(toK))
     
-    if toK == TemperatureUnit:
-        return convertToTemperatureUnit(nm, fromU, toU)
-    else:
-        let fmultiplier = getQuantityMultiplier(fromU, toU, isCurrency=fromK==CurrencyUnit)
-        if fmultiplier == 1.0:
-            return nm
-        else:
-            return nm * newFloating(fmultiplier)
+#     if toK == TemperatureUnit:
+#         return convertToTemperatureUnit(nm, fromU, toU)
+#     else:
+#         let fmultiplier = getQuantityMultiplier(fromU, toU, isCurrency=fromK==CurrencyUnit)
+#         if fmultiplier == 1.0:
+#             return nm
+#         else:
+#             return nm * newFloating(fmultiplier)
 
 #=======================================
 # Overloads
@@ -493,6 +493,7 @@ proc `+`*(x: Value, y: Value): Value =
         of Integer    || Floating       :   return newFloating(x.i + y.f)
         of BigInteger || Floating       :   (when GMP: return newFloating(x.bi + y.f))
         of Integer    || Rational       :   return newRational(x.i + y.rat)
+        of BigInteger || Rational       :   (when GMP: return newRational(x.bi + y.rat))
         of Integer    || Complex        :   return newComplex(float(x.i) + y.z)
 
         of Floating   || Integer        :   return newFloating(x.f + float(y.i))
@@ -502,6 +503,7 @@ proc `+`*(x: Value, y: Value): Value =
         of Floating   || Complex        :   return newComplex(x.f + y.z)
 
         of Rational   || Integer        :   return newRational(x.rat + y.i)
+        of Rational   || BigInteger     :   (when GMP: return newRational(x.rat + y.bi))
         of Rational   || Floating       :   return newRational(x.rat + toRational(y.f))
         of Rational   || Rational       :   return newRational(x.rat + y.rat)
 
@@ -511,14 +513,11 @@ proc `+`*(x: Value, y: Value): Value =
         of Complex    || Complex        :   return newComplex(x.z + y.z)
         
         of Color      || Color          :   return newColor(x.l + y.l)
-        of Quantity   || Integer        :   return newQuantity(x.nm + y, x.unit)
-        of Quantity   || Floating       :   return newQuantity(x.nm + y, x.unit)
-        of Quantity   || Rational       :   return newQuantity(x.nm + y, x.unit)
-        of Quantity   || Quantity       :
-            if x.unit.name == y.unit.name:
-                return newQuantity(x.nm + y.nm, x.unit)
-            else:
-                return newQuantity(x.nm + convertQuantityValue(y.nm, y.unit.name, x.unit.name), x.unit)
+        of Quantity   || Integer        :   return newQuantity(x.q + y.i)
+        of Quantity   || BigInteger     :   (when GMP: return newQuantity(x.q + y.bi))
+        of Quantity   || Floating       :   return newQuantity(x.q + y.f)
+        of Quantity   || Rational       :   return newQuantity(x.q + y.rat)
+        of Quantity   || Quantity       :   return newQuantity(x.q + y.q)
         else:
             return invalidOperation("add")
 
@@ -537,6 +536,7 @@ proc `+=`*(x: var Value, y: Value) =
         of Integer    || Floating       :   x = newFloating(x.i + y.f)
         of BigInteger || Floating       :   (when GMP: x = newFloating(x.bi + y.f))
         of Integer    || Rational       :   x = newRational(x.i + y.rat)
+        of BigInteger || Rational       :   (when GMP: x = newRational(x.bi + y.rat))
         of Integer    || Complex        :   x = newComplex(float(x.i) + y.z)
 
         of Floating   || Integer        :   x.f += float(y.i)
@@ -546,6 +546,7 @@ proc `+=`*(x: var Value, y: Value) =
         of Floating   || Complex        :   x = newComplex(x.f + y.z)
 
         of Rational   || Integer        :   x.rat += y.i
+        of Rational   || BigInteger     :   (when GMP: x.rat += y.bi)
         of Rational   || Floating       :   x.rat += toRational(y.f)
         of Rational   || Rational       :   x.rat += y.rat
 
@@ -555,14 +556,11 @@ proc `+=`*(x: var Value, y: Value) =
         of Complex    || Complex        :   x.z += y.z
         
         of Color      || Color          :   x.l += y.l
-        of Quantity   || Integer        :   x.nm += y
-        of Quantity   || Floating       :   x.nm += y
-        of Quantity   || Rational       :   x.nm += y
-        of Quantity   || Quantity       :
-            if x.unit.name == y.unit.name:
-                x.nm += y.nm
-            else:
-                x = newQuantity(x.nm + convertQuantityValue(y.nm, y.unit.name, x.unit.name), x.unit)
+        of Quantity   || Integer        :   x.q += y.i
+        of Quantity   || BigInteger     :   (when GMP: x.q += y.bi)
+        of Quantity   || Floating       :   x.q += y.f
+        of Quantity   || Rational       :   x.q += y.rat
+        of Quantity   || Quantity       :   x.q += y.q
         else:
             discard invalidOperation("add")
 
@@ -576,7 +574,7 @@ proc inc*(x: Value): Value =
         of Floating: return newFloating(x.f+1.0)
         of Rational: return newRational(x.rat+1)
         of Complex: return newComplex(x.z+1.0)
-        of Quantity: return newQuantity(x.nm + I1, x.unit)
+        of Quantity: return newQuantity(x.q + 1)
         else:
             return invalidOperation("inc")
 
@@ -593,7 +591,7 @@ proc incI*(x: var Value) =
         of Floating: x.f += 1.0
         of Rational: x.rat += 1
         of Complex: x.z = x.z + 1.0
-        of Quantity: x.nm += I1
+        of Quantity: x.q += 1
         else:
             discard invalidOperation("inc")
 
@@ -609,6 +607,7 @@ proc `-`*(x: Value, y: Value): Value =
         of Integer    || Floating       :   return newFloating(x.i - y.f)
         of BigInteger || Floating       :   (when GMP: return newFloating(x.bi - y.f))
         of Integer    || Rational       :   return newRational(x.i - y.rat)
+        of BigInteger || Rational       :   (when GMP: return newRational(x.bi - y.rat))
         of Integer    || Complex        :   return newComplex(float(x.i) - y.z)
 
         of Floating   || Integer        :   return newFloating(x.f - float(y.i))
@@ -618,6 +617,7 @@ proc `-`*(x: Value, y: Value): Value =
         of Floating   || Complex        :   return newComplex(x.f - y.z)
 
         of Rational   || Integer        :   return newRational(x.rat - y.i)
+        of Rational   || BigInteger     :   (when GMP: return newRational(x.rat - y.bi))
         of Rational   || Floating       :   return newRational(x.rat - toRational(y.f))
         of Rational   || Rational       :   return newRational(x.rat - y.rat)
 
@@ -627,14 +627,11 @@ proc `-`*(x: Value, y: Value): Value =
         of Complex    || Complex        :   return newComplex(x.z - y.z)
         
         of Color      || Color          :   return newColor(x.l - y.l)
-        of Quantity   || Integer        :   return newQuantity(x.nm - y, x.unit)
-        of Quantity   || Floating       :   return newQuantity(x.nm - y, x.unit)
-        of Quantity   || Rational       :   return newQuantity(x.nm - y, x.unit)
-        of Quantity   || Quantity       :
-            if x.unit.name == y.unit.name:
-                return newQuantity(x.nm - y.nm, x.unit)
-            else:
-                return newQuantity(x.nm - convertQuantityValue(y.nm, y.unit.name, x.unit.name), x.unit)
+        of Quantity   || Integer        :   return newQuantity(x.q - y.i)
+        of Quantity   || BigInteger     :   (when GMP: return newQuantity(x.q - y.bi))
+        of Quantity   || Floating       :   return newQuantity(x.q - y.f)
+        of Quantity   || Rational       :   return newQuantity(x.q - y.rat)
+        of Quantity   || Quantity       :   return newQuantity(x.q - y.q)
         else:
             return invalidOperation("sub")
 
@@ -653,6 +650,7 @@ proc `-=`*(x: var Value, y: Value) =
         of Integer    || Floating       :   x = newFloating(x.i - y.f)
         of BigInteger || Floating       :   (when GMP: x = newFloating(x.bi - y.f))
         of Integer    || Rational       :   x = newRational(x.i - y.rat)
+        of BigInteger || Rational       :   (when GMP: x = newRational(x.bi - y.rat))
         of Integer    || Complex        :   x = newComplex(float(x.i) - y.z)
 
         of Floating   || Integer        :   x.f -= float(y.i)
@@ -662,6 +660,7 @@ proc `-=`*(x: var Value, y: Value) =
         of Floating   || Complex        :   x = newComplex(x.f - y.z)
 
         of Rational   || Integer        :   x.rat -= y.i
+        of Rational   || BigInteger     :   (when GMP: x.rat -= y.bi)
         of Rational   || Floating       :   x.rat -= toRational(y.f)
         of Rational   || Rational       :   x.rat -= y.rat
 
@@ -671,14 +670,11 @@ proc `-=`*(x: var Value, y: Value) =
         of Complex    || Complex        :   x.z -= y.z
         
         of Color      || Color          :   x.l -= y.l
-        of Quantity   || Integer        :   x.nm -= y
-        of Quantity   || Floating       :   x.nm -= y
-        of Quantity   || Rational       :   x.nm -= y
-        of Quantity   || Quantity       :
-            if x.unit.name == y.unit.name:
-                x.nm -= y.nm
-            else:
-                x = newQuantity(x.nm - convertQuantityValue(y.nm, y.unit.name, x.unit.name), x.unit)
+        of Quantity   || Integer        :   x.q -= y.i
+        of Quantity   || BigInteger     :   (when GMP: x.q -= y.bi)
+        of Quantity   || Floating       :   x.q -= y.f
+        of Quantity   || Rational       :   x.q -= y.rat
+        of Quantity   || Quantity       :   x.q -= y.q
         else:
             discard invalidOperation("sub")
 
@@ -692,7 +688,7 @@ proc dec*(x: Value): Value =
         of Floating: return newFloating(x.f-1.0)
         of Rational: return newRational(x.rat-1)
         of Complex: return newComplex(x.z-1.0)
-        of Quantity: return newQuantity(x.nm - I1, x.unit)
+        of Quantity: return newQuantity(x.q - 1)
         else:
             return invalidOperation("dec")
 
@@ -709,7 +705,7 @@ proc decI*(x: var Value) =
         of Floating: x.f -= 1.0
         of Rational: x.rat -= 1
         of Complex: x.z = x.z - 1.0
-        of Quantity: x.nm -= I1
+        of Quantity: x.q -= 1
         else:
             discard invalidOperation("dec")
 
@@ -725,34 +721,46 @@ proc `*`*(x: Value, y: Value): Value =
         of Integer    || Floating       :   return newFloating(x.i * y.f)
         of BigInteger || Floating       :   (when GMP: return newFloating(x.bi * y.f))
         of Integer    || Rational       :   return newRational(x.i * y.rat)
+        of BigInteger || Rational       :   (when GMP: return newRational(x.bi * y.rat))
         of Integer    || Complex        :   return newComplex(float(x.i) * y.z)
-        of Integer    || Quantity       :   return newQuantity(x * y.nm, y.unit)
+        of Integer    || Quantity       :   return newQuantity(x.i * y.q)
+        of BigInteger || Quantity       :   (when GMP: return newQuantity(x.bi * y.q))
+        of Integer    || Unit           :   return newQuantity(x, y.u)
+        of BigInteger || Unit           :   (when GMP: return newQuantity(x, y.u))
 
         of Floating   || Integer        :   return newFloating(x.f * float(y.i))
         of Floating   || BigInteger     :   (when GMP: return newFloating(x.f * y.bi))
         of Floating   || Floating       :   return newFloating(x.f * y.f)
         of Floating   || Rational       :   return newRational(toRational(x.f) * y.rat)
         of Floating   || Complex        :   return newComplex(x.f * y.z)
+        of Floating   || Quantity       :   return newQuantity(x.f * y.q)
+        of Floating   || Unit           :   return newQuantity(x, y.u)
 
         of Rational   || Integer        :   return newRational(x.rat * y.i)
+        of Rational   || BigInteger     :   (when GMP: return newRational(x.rat * y.bi))
         of Rational   || Floating       :   return newRational(x.rat * toRational(y.f))
         of Rational   || Rational       :   return newRational(x.rat * y.rat)
+        of Rational   || Quantity       :   return newQuantity(x.rat * y.q)
+        of Rational   || Unit           :   return newQuantity(x, y.u)
 
         of Complex    || Integer        :   return newComplex(x.z * float(y.i))
         of Complex    || Floating       :   return newComplex(x.z * y.f)
         of Complex    || Rational       :   return newComplex(x.z * toFloat(y.rat))
         of Complex    || Complex        :   return newComplex(x.z * y.z)
         
-        of Quantity   || Integer        :   return newQuantity(x.nm * y, x.unit)
-        of Quantity   || Floating       :   return newQuantity(x.nm * y, x.unit)
-        of Quantity   || Rational       :   return newQuantity(x.nm * y, x.unit)
-        of Quantity   || Quantity       :
-            let finalSpec = getFinalUnitAfterOperation("mul", x.unit, y.unit)
-            if unlikely(finalSpec == ErrorQuantity):
-                when not defined(WEB):
-                    RuntimeError_IncompatibleQuantityOperation("mul", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
-            else:
-                return newQuantity(x.nm * convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
+        of Quantity   || Integer        :   return newQuantity(x.q * y.i)
+        of Quantity   || BigInteger     :   (when GMP: return newQuantity(x.q * y.bi))
+        of Quantity   || Floating       :   return newQuantity(x.q * y.f)
+        of Quantity   || Rational       :   return newQuantity(x.q * y.rat)
+        of Quantity   || Quantity       :   return newQuantity(x.q * y.q)
+
+        of Unit       || Integer        :   return newQuantity(y, x.u)
+        of Unit       || BigInteger     :   (when GMP: return newQuantity(y, x.u))
+        of Unit       || Floating       :   return newQuantity(y, x.u)
+        of Unit       || Rational       :   return newQuantity(y, x.u)
+        of Unit       || Quantity       :   return newQuantity(y, x.u)
+        of Unit       || Unit           :   return newUnit(flatten(x.u & y.u))
+
         else:
             return invalidOperation("mul")
 
@@ -771,34 +779,46 @@ proc `*=`*(x: var Value, y: Value) =
         of Integer    || Floating       :   x = newFloating(x.i * y.f)
         of BigInteger || Floating       :   (when GMP: x = newFloating(x.bi * y.f))
         of Integer    || Rational       :   x = newRational(x.i * y.rat)
+        of BigInteger || Rational       :   (when GMP: x = newRational(x.bi * y.rat))
         of Integer    || Complex        :   x = newComplex(float(x.i) * y.z)
-        of Integer    || Quantity       :   x = newQuantity(x * y.nm, y.unit)
+        of Integer    || Quantity       :   x = newQuantity(x.i * y.q)
+        of BigInteger || Quantity       :   (when GMP: x = newQuantity(x.bi * y.q))
+        of Integer    || Unit           :   x = newQuantity(x, y.u)
+        of BigInteger || Unit           :   (when GMP: x = newQuantity(x, y.u))
 
         of Floating   || Integer        :   x.f *= float(y.i)
         of Floating   || BigInteger     :   (when GMP: x = newFloating(x.f * y.bi))
         of Floating   || Floating       :   x.f *= y.f
         of Floating   || Rational       :   x = newRational(toRational(x.f) * y.rat)
         of Floating   || Complex        :   x = newComplex(x.f * y.z)
+        of Floating   || Quantity       :   x = newQuantity(x.f * y.q)
+        of Floating   || Unit           :   x = newQuantity(x, y.u)
 
         of Rational   || Integer        :   x.rat *= y.i
+        of Rational   || BigInteger     :   (when GMP: x.rat *= y.bi)
         of Rational   || Floating       :   x.rat *= toRational(y.f)
         of Rational   || Rational       :   x.rat *= y.rat
+        of Rational   || Quantity       :   x = newQuantity(x.rat * y.q)
+        of Rational   || Unit           :   x = newQuantity(x, y.u)
 
         of Complex    || Integer        :   x.z *= float(y.i)
         of Complex    || Floating       :   x.z *= y.f
         of Complex    || Rational       :   x.z *= toFloat(y.rat)
         of Complex    || Complex        :   x.z *= y.z
         
-        of Quantity   || Integer        :   x.nm *= y
-        of Quantity   || Floating       :   x.nm *= y
-        of Quantity   || Rational       :   x.nm *= y
-        of Quantity   || Quantity       :
-            let finalSpec = getFinalUnitAfterOperation("mul", x.unit, y.unit)
-            if unlikely(finalSpec == ErrorQuantity):
-                when not defined(WEB):
-                    RuntimeError_IncompatibleQuantityOperation("mul", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
-            else:
-                x = newQuantity(x.nm * convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
+        of Quantity   || Integer        :   x.q *= y.i
+        of Quantity   || BigInteger     :   (when GMP: x.q *= y.bi)
+        of Quantity   || Floating       :   x.q *= y.f
+        of Quantity   || Rational       :   x.q *= y.rat
+        of Quantity   || Quantity       :   x.q *= y.q
+
+        of Unit       || Integer        :   x = newQuantity(y, x.u)
+        of Unit       || BigInteger     :   (when GMP: x = newQuantity(y, x.u))
+        of Unit       || Floating       :   x = newQuantity(y, x.u)
+        of Unit       || Rational       :   x = newQuantity(y, x.u)
+        of Unit       || Quantity       :   x = newQuantity(y, x.u)
+        of Unit       || Unit           :   x.u = flatten(x.u & y.u)
+
         else:
             discard invalidOperation("mul")
 
@@ -810,9 +830,9 @@ proc neg*(x: Value): Value =
             if x.iKind==NormalInteger: return normalIntegerNeg(x.i)
             else: (when GMP: return newInteger(neg(x.bi)))
         of Floating: return newFloating(x.f*(-1.0))
-        of Rational: return newRational(x.rat*(-1))
+        of Rational: return newRational(neg(x.rat))
         of Complex: return newComplex(x.z*(-1.0))
-        of Quantity: return newQuantity(x.nm * I1M, x.unit)
+        of Quantity: return newQuantity(x.q*(-1))
         else:
             return invalidOperation("neg")
 
@@ -829,7 +849,7 @@ proc negI*(x: var Value) =
         of Floating: x.f *= -1.0
         of Rational: x.rat *= -1
         of Complex: x.z *= -1.0
-        of Quantity: x.nm *= I1M
+        of Quantity: x.q *= -1
         else:
             discard invalidOperation("neg")
 
@@ -845,6 +865,7 @@ proc `/`*(x: Value, y: Value): Value =
         of Integer    || Floating       :   return newFloating(x.i / notZero(y.f))
         of BigInteger || Floating       :   (when GMP: return newFloating(x.bi / notZero(y.f)))
         of Integer    || Rational       :   return newInteger(toRational(x.i) div notZero(y.rat))
+        of BigInteger || Rational       :   (when GMP: return newInteger(toRational(x.bi) div notZero(y.rat)))
         of Integer    || Complex        :   return newComplex(float(x.i) / notZero(y.z))
 
         of Floating   || Integer        :   return newFloating(x.f / float(notZero(y.i)))
@@ -854,6 +875,7 @@ proc `/`*(x: Value, y: Value): Value =
         of Floating   || Complex        :   return newComplex(x.f / notZero(y.z))
 
         of Rational   || Integer        :   return newRational(x.rat / toRational(notZero(y.i)))
+        of Rational   || BigInteger     :   (when GMP: return newRational(x.rat / toRational(notZero(y.bi))))
         of Rational   || Floating       :   return newRational(x.rat / toRational(notZero(y.f)))
         of Rational   || Rational       :   return newRational(x.rat / notZero(y.rat))
 
@@ -862,18 +884,11 @@ proc `/`*(x: Value, y: Value): Value =
         of Complex    || Rational       :   return newComplex(x.z / toFloat(notZero(y.rat)))
         of Complex    || Complex        :   return newComplex(x.z / notZero(y.z))
         
-        of Quantity   || Integer        :   return newQuantity(x.nm / y, x.unit)
-        of Quantity   || Floating       :   return newQuantity(x.nm / y, x.unit)
-        of Quantity   || Rational       :   return newQuantity(x.nm / y, x.unit)
-        of Quantity   || Quantity       :
-            let finalSpec = getFinalUnitAfterOperation("div", x.unit, y.unit)
-            if unlikely(finalSpec == ErrorQuantity):
-                when not defined(WEB):
-                    RuntimeError_IncompatibleQuantityOperation("div", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
-            elif finalSpec == NumericQuantity:
-                return x.nm / y.nm
-            else:
-                return newQuantity(x.nm / convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
+        of Quantity   || Integer        :   return newQuantity(x.q / y.i)
+        of Quantity   || BigInteger     :   (when GMP: return newQuantity(x.q / y.bi))
+        of Quantity   || Floating       :   return newQuantity(x.q / y.f)
+        of Quantity   || Rational       :   return newQuantity(x.q / y.rat)
+        of Quantity   || Quantity       :   return newQuantity(x.q / y.q)
         else:
             return invalidOperation("div")
 
@@ -892,6 +907,7 @@ proc `/=`*(x: var Value, y: Value) =
         of Integer    || Floating       :   x = newFloating(x.i / notZero(y.f))
         of BigInteger || Floating       :   (when GMP: x = newFloating(x.bi / notZero(y.f)))
         of Integer    || Rational       :   x = newInteger(toRational(x.i) div notZero(y.rat))
+        of BigInteger || Rational       :   (when GMP: x = newInteger(toRational(x.bi) div notZero(y.rat)))
         of Integer    || Complex        :   x = newComplex(float(x.i) / notZero(y.z))
 
         of Floating   || Integer        :   x.f /= float(notZero(y.i))
@@ -901,6 +917,7 @@ proc `/=`*(x: var Value, y: Value) =
         of Floating   || Complex        :   x = newComplex(x.f / notZero(y.z))
 
         of Rational   || Integer        :   x.rat /= toRational(notZero(y.i))
+        of Rational   || BigInteger     :   (when GMP: x = newRational(x.rat / toRational(notZero(y.bi))))
         of Rational   || Floating       :   x.rat /= toRational(notZero(y.f))
         of Rational   || Rational       :   x.rat /= notZero(y.rat)
 
@@ -909,18 +926,11 @@ proc `/=`*(x: var Value, y: Value) =
         of Complex    || Rational       :   x.z /= toFloat(notZero(y.rat))
         of Complex    || Complex        :   x.z /= notZero(y.z)
         
-        of Quantity   || Integer        :   x.nm /= y
-        of Quantity   || Floating       :   x.nm /= y
-        of Quantity   || Rational       :   x.nm /= y
-        of Quantity   || Quantity       :
-            let finalSpec = getFinalUnitAfterOperation("div", x.unit, y.unit)
-            if unlikely(finalSpec == ErrorQuantity):
-                when not defined(WEB):
-                    RuntimeError_IncompatibleQuantityOperation("div", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
-            elif finalSpec == NumericQuantity:
-                x.nm /= y.nm
-            else:
-                x = newQuantity(x.nm / convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
+        of Quantity   || Integer        :   x.q /= y.i
+        of Quantity   || BigInteger     :   (when GMP: x.q /= y.bi)
+        of Quantity   || Floating       :   x.q /= y.f
+        of Quantity   || Rational       :   x.q /= y.rat
+        of Quantity   || Quantity       :   x.q /= y.q
         else:
             discard invalidOperation("div")
 
@@ -934,6 +944,7 @@ proc `//`*(x: Value, y: Value): Value =
         of Integer    || Floating       :   return newFloating(float(x.i) / notZero(y.f))
         of BigInteger || Floating       :   (when GMP: return newFloating(x.bi / notZero(y.f)))
         of Integer    || Rational       :   return newRational(x.i / notZero(y.rat))
+        of BigInteger || Rational       :   (when GMP: return newRational(x.bi / notZero(y.rat)))
 
         of Floating   || Integer        :   return newFloating(x.f / float(notZero(y.i)))
         of Floating   || BigInteger     :   (when GMP: return newFloating(x.f / notZero(y.bi)))
@@ -941,21 +952,15 @@ proc `//`*(x: Value, y: Value): Value =
         of Floating   || Rational       :   return newRational(toRational(x.f) / notZero(y.rat))
 
         of Rational   || Integer        :   return newRational(x.rat / notZero(y.i))
+        of Rational   || BigInteger     :   (when GMP: return newRational(x.rat / toRational(notZero(y.bi))))
         of Rational   || Floating       :   return newRational(x.rat / toRational(notZero(y.f)))
         of Rational   || Rational       :   return newRational(x.rat / notZero(y.rat))
         
-        of Quantity   || Integer        :   return newQuantity(x.nm // y, x.unit)
-        of Quantity   || Floating       :   return newQuantity(x.nm // y, x.unit)
-        of Quantity   || Rational       :   return newQuantity(x.nm // y, x.unit)
-        of Quantity   || Quantity       :
-            let finalSpec = getFinalUnitAfterOperation("fdiv", x.unit, y.unit)
-            if unlikely(finalSpec == ErrorQuantity):
-                when not defined(WEB):
-                    RuntimeError_IncompatibleQuantityOperation("fdiv", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
-            elif finalSpec == NumericQuantity:
-                return x.nm // y.nm
-            else:
-                return newQuantity(x.nm // convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
+        of Quantity   || Integer        :   return newQuantity(x.q // y.i)
+        of Quantity   || BigInteger     :   (when GMP: return newQuantity(x.q // y.bi))
+        of Quantity   || Floating       :   return newQuantity(x.q // y.f)
+        of Quantity   || Rational       :   return newQuantity(x.q // y.rat)
+        of Quantity   || Quantity       :   return newQuantity(x.q // y.q)
         else:
             return invalidOperation("fdiv")
 
@@ -972,6 +977,7 @@ proc `//=`*(x: var Value, y: Value) =
         of Integer    || Floating       :   x = newFloating(float(x.i) / notZero(y.f))
         of BigInteger || Floating       :   (when GMP: x = newFloating(x.bi / notZero(y.f)))
         of Integer    || Rational       :   x = newRational(x.i / notZero(y.rat))
+        of BigInteger || Rational       :   (when GMP: x = newRational(x.bi / notZero(y.rat)))
 
         of Floating   || Integer        :   x.f /= float(notZero(y.i))
         of Floating   || BigInteger     :   (when GMP: x = newFloating(x.f / notZero(y.bi)))
@@ -979,21 +985,15 @@ proc `//=`*(x: var Value, y: Value) =
         of Floating   || Rational       :   x = newRational(toRational(x.f) / notZero(y.rat))
 
         of Rational   || Integer        :   x.rat /= notZero(y.i)
+        of Rational   || BigInteger     :   (when GMP: x = newRational(x.rat / toRational(notZero(y.bi))))
         of Rational   || Floating       :   x.rat /= toRational(notZero(y.f))
         of Rational   || Rational       :   x.rat /= notZero(y.rat)
         
-        of Quantity   || Integer        :   x.nm //= y
-        of Quantity   || Floating       :   x.nm //= y
-        of Quantity   || Rational       :   x.nm //= y
-        of Quantity   || Quantity       :
-            let finalSpec = getFinalUnitAfterOperation("fdiv", x.unit, y.unit)
-            if unlikely(finalSpec == ErrorQuantity):
-                when not defined(WEB):
-                    RuntimeError_IncompatibleQuantityOperation("fdiv", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
-            elif finalSpec == NumericQuantity:
-                x.nm //= y.nm
-            else:
-                x = newQuantity(x.nm // convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
+        of Quantity   || Integer        :   x.q //= y.i
+        of Quantity   || BigInteger     :   (when GMP: x.q //= y.bi)
+        of Quantity   || Floating       :   x.q //= y.f
+        of Quantity   || Rational       :   x.q //= y.rat
+        of Quantity   || Quantity       :   x.q //= y.q
         else:
             discard invalidOperation("fdiv")
 
@@ -1008,27 +1008,22 @@ proc `%`*(x: Value, y: Value): Value =
         of BigInteger || BigInteger     :   (when GMP: return newInteger(x.bi mod notZero(y.bi)))
         of Integer    || Floating       :   return newFloating(float(x.i) mod notZero(y.f))
         of Integer    || Rational       :   return newRational(toRational(x.i) mod notZero(y.rat))
+        of BigInteger || Rational       :   (when GMP: return newRational(toRational(x.bi) mod notZero(y.rat)))
 
         of Floating   || Integer        :   return newFloating(x.f mod float(notZero(y.i)))
         of Floating   || Floating       :   return newFloating(x.f mod notZero(y.f))
         of Floating   || Rational       :   return newRational(toRational(x.f) mod notZero(y.rat))
 
         of Rational   || Integer        :   return newRational(x.rat mod toRational(notZero(y.i)))
+        of Rational   || BigInteger     :   (when GMP: return newRational(x.rat mod toRational(notZero(y.bi))))
         of Rational   || Floating       :   return newRational(x.rat mod toRational(notZero(y.f)))
         of Rational   || Rational       :   return newRational(x.rat mod notZero(y.rat))
         
-        of Quantity   || Integer        :   return newQuantity(x.nm % y, x.unit)
-        of Quantity   || Floating       :   return newQuantity(x.nm % y, x.unit)
-        of Quantity   || Rational       :   return newQuantity(x.nm % y, x.unit)
-        of Quantity   || Quantity       :
-            let finalSpec = getFinalUnitAfterOperation("mod", x.unit, y.unit)
-            if unlikely(finalSpec == ErrorQuantity):
-                when not defined(WEB):
-                    RuntimeError_IncompatibleQuantityOperation("mod", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
-            elif finalSpec == NumericQuantity:
-                return x.nm % y.nm
-            else:
-                return newQuantity(x.nm % convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
+        # of Quantity   || Integer        :   return newQuantity(x.q % y.i)
+        # of Quantity   || BigInteger     :   (when GMP: return newQuantity(x.q % y.bi))
+        # of Quantity   || Floating       :   return newQuantity(x.q % y.f)
+        # of Quantity   || Rational       :   return newQuantity(x.q % y.rat)
+        # of Quantity   || Quantity       :   return newQuantity(x.q % y.q)
         else:
             return invalidOperation("mod")
 
@@ -1046,27 +1041,21 @@ proc `%=`*(x: var Value, y: Value) =
         of BigInteger || BigInteger     :   (when GMP: modI(x.bi, notZero(y.bi)))
         of Integer    || Floating       :   x = newFloating(float(x.i) mod notZero(y.f))
         of Integer    || Rational       :   x = newRational(toRational(x.i) mod notZero(y.rat))
+        of BigInteger || Rational       :   (when GMP: x = newRational(toRational(x.bi) mod notZero(y.rat)))
 
         of Floating   || Integer        :   x.f = x.f mod float(notZero(y.i))
         of Floating   || Floating       :   x.f = x.f mod notZero(y.f)
         of Floating   || Rational       :   x = newRational(toRational(x.f) mod notZero(y.rat))
 
         of Rational   || Integer        :   x.rat = x.rat mod toRational(notZero(y.i))
+        of Rational   || BigInteger     :   (when GMP: x.rat = x.rat mod toRational(notZero(y.bi)))
         of Rational   || Floating       :   x.rat = x.rat mod toRational(notZero(y.f))
         of Rational   || Rational       :   x.rat = x.rat mod notZero(y.rat)
         
-        of Quantity   || Integer        :   x.nm %= y
-        of Quantity   || Floating       :   x.nm %= y
-        of Quantity   || Rational       :   x.nm %= y
-        of Quantity   || Quantity       :
-            let finalSpec = getFinalUnitAfterOperation("mod", x.unit, y.unit)
-            if unlikely(finalSpec == ErrorQuantity):
-                when not defined(WEB):
-                    RuntimeError_IncompatibleQuantityOperation("mod", $(x), $(y), stringify(x.unit.kind), stringify(y.unit.kind))
-            elif finalSpec == NumericQuantity:
-                x.nm %= y.nm
-            else:
-                x = newQuantity(x.nm % convertQuantityValue(y.nm, y.unit.name, getCleanCorrelatedUnit(y.unit, x.unit).name), finalSpec)
+        # of Quantity   || Integer        :   x.q %= y.i
+        # of Quantity   || Floating       :   x.q %= y.f
+        # of Quantity   || Rational       :   x.q %= y.rat
+        # of Quantity   || Quantity       :   x.q %= y.q
         else:
             discard invalidOperation("mod")
 
@@ -1091,19 +1080,22 @@ proc `/%`*(x: Value, y: Value): Value =
         of Integer    || Floating       :   return newBlock(@[x/y, x%y])
         of BigInteger || Floating       :   return newBlock(@[x/y, x%y])
         of Integer    || Rational       :   return newBlock(@[x/y, x%y])
+        of BigInteger || Rational       :   return newBlock(@[x/y, x%y])
 
         of Floating   || Integer        :   return newBlock(@[x/y, x%y])
         of Floating   || Floating       :   return newBlock(@[x/y, x%y])
         of Floating   || Rational       :   return newBlock(@[x/y, x%y])
 
         of Rational   || Integer        :   return newBlock(@[x/y, x%y])
+        of Rational   || BigInteger     :   return newBlock(@[x/y, x%y])
         of Rational   || Floating       :   return newBlock(@[x/y, x%y])
         of Rational   || Rational       :   return newBlock(@[x/y, x%y])
         
-        of Quantity   || Integer        :   return newBlock(@[x/y, x%y])
-        of Quantity   || Floating       :   return newBlock(@[x/y, x%y])
-        of Quantity   || Rational       :   return newBlock(@[x/y, x%y])
-        of Quantity   || Quantity       :   return newBlock(@[x/y, x%y])
+        # of Quantity   || Integer        :   return newBlock(@[x/y, x%y])
+        # of Quantity   || BigInteger     :   return newBlock(@[x/y, x%y])
+        # of Quantity   || Floating       :   return newBlock(@[x/y, x%y])
+        # of Quantity   || Rational       :   return newBlock(@[x/y, x%y])
+        # of Quantity   || Quantity       :   return newBlock(@[x/y, x%y])
         else:
             return invalidOperation("divmod")
 
@@ -1124,41 +1116,25 @@ proc `^`*(x: Value, y: Value): Value =
         of BigInteger || Integer        :   (when GMP: return newInteger(pow(x.bi, culong(y.i))))
         of Integer    || Floating       :   return newFloating(pow(float(x.i), y.f))
         of BigInteger || Floating       :   (when GMP: return newFloating(pow(x.bi, y.f)))
+        of Integer    || Rational       :   return newRational(pow(float(x.i), toFloat(y.rat)))
+        of BigInteger || Rational       :   (when GMP: return newRational(pow(x.bi, toFloat(y.rat))))
 
         of Floating   || Integer        :   return newFloating(pow(x.f, float(y.i)))
         of Floating   || BigInteger     :   (when GMP: return newFloating(pow(x.f, y.bi)))
         of Floating   || Floating       :   return newFloating(pow(x.f, y.f))
 
-        of Rational   || Integer        :   return newRational(normalIntegerPow(x.rat.num, y.i), normalIntegerPow(x.rat.den, y.i))
-        of Rational   || Floating       :   discard notZero(x.rat.den); return newRational(pow(float(x.rat.num), y.f) / pow(float(x.rat.den), y.f))
+        of Rational   || Integer        :   return newRational(x.rat ^ y.i)
+        of Rational   || Floating       :   discard notZero(x.rat); return newRational(x.rat ^ y.f)
 
         of Complex    || Integer        :   return newComplex(pow(x.z, float(y.i)))
         of Complex    || Floating       :   return newComplex(pow(x.z, y.f))
         of Complex    || Complex        :   return newComplex(pow(x.z, y.z))
         
-        of Quantity   || Integer        :   
-            try:
-                case y.i:
-                    of 0: return newInteger(1)
-                    of 1: return x
-                    of 2: return x * x
-                    of 3: return x * x * x
-                    else:
-                        RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
-            except CatchableError:
-                RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
-
-        of Quantity   || Floating       :
-            try:
-                case y.f:
-                    of 0.0: return newInteger(1)
-                    of 1.0: return x
-                    of 2.0: return x * x
-                    of 3.0: return x * x * x
-                    else:
-                        RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
-            except CatchableError:
-                RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
+        of Quantity   || Integer        :   return newQuantity(x.q ^ y.i)
+        # of Quantity   || BigInteger     :   return newQuantity(x.q ^ y.bi)
+        # of Quantity   || Floating       :   return newQuantity(x.q ^ y.f)
+        # of Quantity   || Rational       :   return newQuantity(x.q ^ y.rat)
+        # of Quantity   || Quantity       :   return newQuantity(x.q ^ y.q)
         else:
             return invalidOperation("pow")
 
@@ -1174,40 +1150,25 @@ proc `^=`*(x: var Value, y: Value) =
         of BigInteger || Integer        :   (when GMP: powI(x.bi, culong(y.i)))
         of Integer    || Floating       :   x = newFloating(pow(float(x.i), y.f))
         of BigInteger || Floating       :   (when GMP: x = newFloating(pow(x.bi, y.f)))
+        of Integer    || Rational       :   x = newRational(pow(float(x.i), toFloat(y.rat)))
+        of BigInteger || Rational       :   (when GMP: x = newRational(pow(x.bi, toFloat(y.rat))))
 
         of Floating   || Integer        :   x.f = pow(x.f, float(y.i))
         of Floating   || BigInteger     :   (when GMP: x = newFloating(pow(x.f, y.bi)))
         of Floating   || Floating       :   x.f = pow(x.f, y.f)
 
-        of Rational   || Integer        :   x = newRational(normalIntegerPow(x.rat.num, y.i), normalIntegerPow(x.rat.den, y.i))
-        of Rational   || Floating       :   x = newRational(pow(float(x.rat.num), y.f) / pow(float(x.rat.den), y.f))
+        of Rational   || Integer        :   x = newRational(x.rat ^ y.i)
+        of Rational   || Floating       :   x = newRational(x.rat ^ y.f)
 
         of Complex    || Integer        :   x.z = pow(x.z, float(y.i))
         of Complex    || Floating       :   x.z = pow(x.z, y.f)
         of Complex    || Complex        :   x.z = pow(x.z, y.z)
         
-        of Quantity   || Integer        :   
-            try:
-                case y.i:
-                    of 0: x = newInteger(1)
-                    of 1: discard
-                    of 2: x *= x
-                    of 3: x *= x * x
-                    else:
-                        RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
-            except CatchableError:
-                RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
-        of Quantity   || Floating       :
-            try:
-                case y.f:
-                    of 0.0: x = newInteger(1)
-                    of 1.0: discard
-                    of 2.0: x *= x
-                    of 3.0: x *= x * x
-                    else:
-                        RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
-            except CatchableError:
-                RuntimeError_IncompatibleQuantityOperation("pow", $(x), $(y), stringify(x.unit.kind), ":" & toLowerAscii($(y.kind)))
+        of Quantity   || Integer        :   x.q ^= y.i
+        # of Quantity   || BigInteger     :   x.q ^= y.bi
+        # of Quantity   || Floating       :   x.q ^= y.f
+        # of Quantity   || Rational       :   x.q ^= y.rat
+        # of Quantity   || Quantity       :   x.q ^= y.q
         else:
             discard invalidOperation("pow")
 

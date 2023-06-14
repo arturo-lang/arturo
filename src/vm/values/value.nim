@@ -13,8 +13,8 @@
 #=======================================
 
 import hashes, macros
-import math, sequtils, strutils
-import sugar, tables, times, unicode
+import sequtils, strutils, sugar
+import tables, times, unicode
 
 when not defined(WEB):
     import net except Socket
@@ -250,21 +250,58 @@ func newRational*(rat: VRational): Value {.inline, enforceNoRaises.} =
     ## create Rational value from VRational
     Value(kind: Rational, rat: rat)
 
-func newRational*(num: int, den: int): Value {.inline.} =
-    ## create Rational value from numerator + denominator (int)
-    Value(kind: Rational, rat: initRational(num, den))
+when not defined(NOGMP):
+    func newRational*(n: int | float | Int): Value {.inline.} =
+        ## create Rational value from int, float or Int
+        Value(kind: Rational, rat: toRational(n))
 
-func newRational*(n: int): Value {.inline.} =
-    ## create Rational value from int
-    Value(kind: Rational, rat: toRational(n))
+    func newRational*(num: int | float | Int, den: int | float | Int): Value {.inline.} = 
+        ## create Rational value from numerator + denominator (int, float or Int)
+        Value(kind: Rational, rat: toRational(num, den))
 
-func newRational*(n: float): Value {.inline.} =
-    ## create Rational value from float
-    Value(kind: Rational, rat: toRational(n))
+    func newRational*(rat: Rat): Value {.inline.} =
+        ## create Rational value from Rat
+        Value(kind: Rational, rat: toRational(rat))
+else:
+    func newRational*(n: int | float): Value {.inline.} =
+        ## create Rational value from int or float
+        Value(kind: Rational, rat: toRational(n))
+
+    func newRational*(num: int | float, den: int | float): Value {.inline.} = 
+        ## create Rational value from numerator + denominator (int or float)
+        Value(kind: Rational, rat: toRational(num, den))
 
 func newRational*(num: Value, den: Value): Value {.inline, enforceNoRaises.} =
     ## create Rational value from numerator + denominator (Value)
-    newRational(num.i, den.i)
+    if num.kind == Integer and den.kind == Integer:
+        if num.iKind == NormalInteger:
+            if den.iKind == NormalInteger:
+                return newRational(num.i, den.i)
+            else:
+                when not defined(NOGMP):
+                    return newRational(num.i, den.bi)
+        else:
+            when not defined(NOGMP):
+                if den.iKind == NormalInteger:
+                    return newRational(num.bi, den.i)
+                else:
+                    return newRational(num.bi, den.bi)
+    else:
+        if num.kind == Integer:
+            if num.iKind == NormalInteger:
+                return newRational(num.i, den.f)
+            else:
+                when not defined(NOGMP):
+                    return newRational(num.bi, den.f)
+        else:
+            if den.kind == Integer:
+                if den.iKind == NormalInteger:
+                    return newRational(num.f, den.i)
+                else:
+                    when not defined(NOGMP):
+                        return newRational(num.f, den.bi)
+            else:
+                return newRational(num.f, den.f)
 
 func newVersion*(v: string): Value {.inline.} =
     ## create Version value from string
@@ -381,13 +418,40 @@ func newSymbolLiteral*(m: string): Value {.inline.} =
     ## create SymbolLiteral value from string
     newSymbolLiteral(parseEnum[VSymbol](m))
 
-func newQuantity*(nm: Value, unit: VQuantity): Value {.inline, enforceNoRaises.} =
-    ## create Quantity value from a numerical value ``nm`` (Value) + ``unit`` (VQuantity)
-    Value(kind: Quantity, nm: nm, unit: unit)
+proc newUnit*(u: VUnit): Value {.inline, enforceNoRaises.} =
+    ## create Unit value from VUnit
+    Value(kind: Unit, u: u)
 
-proc newQuantity*(nm: Value, name: UnitName): Value {.inline.} =
-    ## create Quantity value from numerica value ``nm`` (Value) + unit ``name`` (UnitName)
-    newQuantity(nm, newQuantitySpec(name))
+proc newUnit*(u: string): Value {.inline.} =
+    ## create Unit value from string
+    newUnit(parseAtoms(u))
+
+proc newQuantity*(v: Value, atoms: VUnit): Value {.inline, enforceNoRaises.} =
+    ## create Quantity value from a numerical value ``v`` (Value) + ``atoms`` (VUnit)
+    #echo "in newQuantity (Value, VUnit)"
+    result = Value(kind: Quantity)
+    if v.kind == Integer:
+        if v.iKind == NormalInteger:
+            result.q = toQuantity(v.i, atoms)
+        else:
+            when not defined(NOGMP):
+                result.q = toQuantity(v.bi, atoms)
+    elif v.kind == Floating:
+        result.q = toQuantity(v.f, atoms)
+    else:
+        result.q = toQuantity(v.rat, atoms)
+
+proc newQuantity*(v: Value, atoms: string): Value {.inline.} =
+    ## create Quantity value from a numerical value ``v`` (Value) + ``atoms`` (string)
+    #echo "in newQuantity (Value, string)"
+    newQuantity(v, parseAtoms(atoms))
+
+proc newQuantity*(q: VQuantity, copy: static bool = false): Value {.inline, enforceNoRaises.} =
+    ## create Quantity value from QuantityValue ``q`` (VQuantity)
+    when copy:
+        Value(kind: Quantity, q: toQuantity(q.original, q.atoms))
+    else:
+        Value(kind: Quantity, q: q)
 
 func newRegex*(rx: sink VRegex): Value {.inline, enforceNoRaises.} =
     ## create Regex value from VRegex
@@ -638,7 +702,8 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Symbol:          result = newSymbol(v.m)
         of SymbolLiteral:   result = newSymbolLiteral(v.m)
         of Regex:           result = newRegex(v.rx)
-        of Quantity:        result = newQuantity(copyValue(v.nm), v.unit)
+        of Unit:            result = newUnit(v.u)
+        of Quantity:        result = newQuantity(v.q, copy=true)
         of Color:           result = newColor(v.l)
         of Date:            result = newDate(v.eobj[])
         of Binary:          result = newBinary(v.n)
@@ -687,11 +752,17 @@ func asFloat*(v: Value): float {.enforceNoRaises.} =
     ## get numeric value forcefully as a float
     ## 
     ## **Hint:** We have to make sure the value is 
-    ## either an Integer or a Floating value
-    if v.kind == Floating:
+    ## either an Integer, a Floating or a Rational value
+    case v.kind
+    of Floating:
         result = v.f
-    else:
+    of Integer:
         result = float(v.i)
+    of Rational:
+        result = toFloat(v.rat)
+    else:
+        discard
+
 
 func asInt*(v: Value): int {.enforceNoRaises.} = 
     ## get numeric value forcefully as an int
@@ -784,7 +855,8 @@ func consideredEqual*(x: Value, y: Value): bool {.inline,enforceNoRaises.} =
         of Char: return x.c == y.c
         of Symbol,
            SymbolLiteral: return x.m == y.m
-        of Quantity: return x.nm == y.nm and x.unit == y.unit
+        of Unit: return x.u == y.u
+        of Quantity: return x.q.original == y.q.original and x.q.atoms == y.q.atoms
         of Regex: return x.rx == y.rx
         of Color: return x.l == y.l
         of Inline:
@@ -868,11 +940,11 @@ func hash*(v: Value): Hash {.inline.}=
         of Symbol,
            SymbolLiteral: result = result !& cast[Hash](ord(v.m))
 
-        of Quantity:
-            result = result !& hash(v.nm)
-            result = result !& hash(v.unit)
+        of Unit         : result = result !& hash(v.u)
 
-        of Regex: result = result !& hash(v.rx)
+        of Quantity     : result = result !& hash(v.q)
+
+        of Regex        : result = result !& hash(v.rx)
 
         of Color        : result = result !& cast[Hash](v.l)
 

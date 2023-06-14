@@ -2,8 +2,8 @@ name: "floating?"
 type: :function
 description: "checks if given value is of type :floating"
 module: "Reflection"
-line: 558
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L558"
+line: 561
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L561"
 returns: [
                 :logical
         ]

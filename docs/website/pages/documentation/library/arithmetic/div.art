@@ -2,8 +2,8 @@ name: "div"
 type: :function
 description: "perform integer division between given values and return result"
 module: "Arithmetic"
-line: 72
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Arithmetic.nim#L72"
+line: 73
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Arithmetic.nim#L73"
 returns: [
                 :integer
                  :floating

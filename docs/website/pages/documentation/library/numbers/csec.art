@@ -2,8 +2,8 @@ name: "csec"
 type: :function
 description: "calculate the cosecant of given angle"
 module: "Numbers"
-line: 474
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L474"
+line: 489
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L489"
 returns: [
                 :floating
                  :complex

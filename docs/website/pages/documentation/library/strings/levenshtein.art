@@ -2,8 +2,8 @@ name: "levenshtein"
 type: :function
 description: "calculate Levenshtein distance/similarity between given strings"
 module: "Strings"
-line: 343
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L343"
+line: 345
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L345"
 returns: [
                 :integer
                  :block

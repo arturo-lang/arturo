@@ -2,8 +2,8 @@ name: "copy"
 type: :function
 description: "copy file at path to given destination"
 module: "Files"
-line: 55
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Files.nim#L55"
+line: 59
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Files.nim#L59"
 returns: [
                 :nothing
         ]

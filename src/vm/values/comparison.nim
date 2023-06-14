@@ -44,6 +44,20 @@ proc `==`*(x: ValueArray, y: ValueArray): bool {.inline, enforceNoRaises.} =
 # Methods
 #=======================================
 
+# TODO(VM/values/comparison) Should we throw errors in case of incompatible pairs?
+#  For example, if we try to compare a string with a number, should we throw an error?
+#  Or should we simply return false?
+#  Also, this should affect `<` and `>`, more than `==` since - at least IMHO - something
+#  like `2 = "hello"` still *does* make sense (it may be obviously false, but it does). 
+#  `2 < "hello"`, for example, does *not*.
+#  see also: https://github.com/arturo-lang/arturo/pull/1139
+#  labels: enhancement,values,error handling,open discussion
+
+# TODO(VM/value/comparison) rewrite all `==`, `<`, `>` methods to use `getValuePair`?
+#  This would follow closely the implementations found in VM/values/operators
+#  This could be a good idea for cleaner code, but we should thoroughly benchmark it before!
+#  labels: enhancement, cleanup, benchmark,performance, values
+
 # TODO(VM/values/comparison) Verify all value types are properly handled by all overloads
 #  labels: vm, values, enhancement, unit-test
 
@@ -102,14 +116,31 @@ proc `==`*(x: Value, y: Value): bool =
                 return toRational(x.f)==y.rat
             else: return x.f==y.f
     elif x.kind == Quantity or y.kind == Quantity:
-        if x.kind == Quantity:
-            if y.kind == Quantity:
-                if x.unit.kind != y.unit.kind: return false
-                return x.nm == convertQuantityValue(y.nm, y.unit.name, x.unit.name)
+        if y.kind == Integer:
+            if y.iKind == NormalInteger:
+                return x.q == y.i
             else:
-                return x.nm == y
+                when not defined(NOGMP):
+                    return x.q == y.bi
+        elif y.kind == Floating:
+            return x.q == y.f
+        elif y.kind == Rational:
+            return x.q == y.rat
+        elif y.kind == Quantity:
+            if x.kind == Integer:
+                if x.iKind == NormalInteger:
+                    return x.i == y.q
+                else:
+                    when not defined(NOGMP):
+                        return x.bi == y.q
+            elif x.kind == Floating:
+                return x.f == y.q
+            elif x.kind == Rational:
+                return x.rat == y.q
+            else:
+                return x.q == y.q
         else:
-            return x == y.nm
+            return false
     else:
         if x.kind != y.kind: return false
 
@@ -154,7 +185,8 @@ proc `==`*(x: Value, y: Value): bool =
                     if not (v==y.d[k]): return false
 
                 return true
-
+            of Unit:
+                return x.u == y.u
             of Object:
                 if (let compareMethod = x.proto.methods.getOrDefault("compare", nil); not compareMethod.isNil):
                     return x.proto.doCompare(x,y) == 0
@@ -185,9 +217,79 @@ proc `==`*(x: Value, y: Value): bool =
             else:
                 return false
 
-# TODO(VM/values/comparison) add `<` support for Date values
-#  currently, `=` is support but not `<` and `>`!
-#  labels: critical,bug,values
+# TODO(VM/values/comparison) how should we handle Dictionary values?
+#  right now, both `<` and `>` simply return false
+#  but is it even a normal idea to compare a Dictionary with something else, or
+#  another dictionary for that matter?
+#  How do other languages (e.g. Ruby, Python) handle this?
+#  If the final decision is to not support this, then we should throw an appropriate
+#  error message (e.g. "cannot compare Dictionary values"), along with an appropriate
+#  (new) error template at VM/errors
+#  see also: https://github.com/arturo-lang/arturo/pull/1139
+#  labels: enhancement,values,error handling,open discussion
+
+# TODO(VM/values/comparison) how should we handle Object values?
+#  right now, Object make feature a custom `compare` method which is called an used
+#  for the comparison. However, if there is no such method, we end up having the exact
+#  same issues we have with Dictionaries. So, how is that to be dealt with?
+#  see also: https://github.com/arturo-lang/arturo/pull/1139
+#  labels: enhancement,values,error handling,open discussion
+
+# TODO(VM/values/comparison) add `<`/`>` support for Path values?
+#  currently, `=` is supported but not `<` and `>`!
+#  the logic should be the same as with blocks, as it's - internally -
+#  technically the exact same thing.
+#  But then again, it seems a bit weird as a notion. Any ideas?
+#  see also: https://github.com/arturo-lang/arturo/pull/1139
+#  labels: bug,values,open discussion
+
+# TODO(VM/values/comparison) add `<`/`>` support for PathLabel values?
+#  currently, `=` is supported but not `<` and `>`!
+#  the logic should be the same as with blocks, as it's - internally -
+#  technically the exact same thing.
+#  But then again, it seems a bit weird as a notion. Any ideas?
+#  see also: https://github.com/arturo-lang/arturo/pull/1139
+#  labels: bug,values,open discussion
+
+# TODO(VM/values/comparison) add `<`/`>` support for Regex values?
+#  currently, `=` is supported but not `<` and `>`!
+#  Another tricky one: the logic should be either the same as with strings,
+#  or disallow comparison altogether and throw an error.
+#  In the first case, since Regex values encapsulate a VRegex object (from values/custom/vregex)
+#  the ideal implementation would be done there (adding a `>` and `<` operator to VRegex)
+#  and then link the method here :-)
+#  labels: bug,values,open discussion
+
+# TODO(VM/values/comparison) add `<`/`>` support for Binary values
+#  currently, `=` is supported but not `<` and `>`!
+#  Preferrably, the implementation should go to values/custom/vbinary
+#  and then integrate it here.
+#  see also: https://github.com/arturo-lang/arturo/pull/1139
+#  labels: bug,values,easy
+
+# TODO(VM/values/comparison) add `<`/`>` support for Range values
+#  currently, `=` is supported but not `<` and `>`!
+#  Preferrably, the implementation should go to values/custom/vrange
+#  and then integrate it here.
+#  The question is: when is range A smaller than range B? How do other
+#  languages handle this?
+#  see also: https://github.com/arturo-lang/arturo/pull/1139
+#  labels: bug,values,open discussion
+
+# TODO(VM/values/comparison) add `<`/`>` support for Inline values?
+#  currently, `=` is supported but not `<` and `>`!
+#  since Inline values are pretty much identical to Block values - internally -
+#  comparison operators should work for them in an identical fashion.
+#  The question is: when is Inline A smaller than Inline B? How do other
+#  languages handle this?
+#  see also: https://github.com/arturo-lang/arturo/pull/1139
+#  labels: bug,values,open discussion
+
+# TODO(VM/values/comparison) Re-visit/test handling of Block comparisons
+#  How do other languages (e.g. Python, Ruby, etc) handle comparisons between blocks/arrays?
+#  Do they even support it? If so, how?
+#  labels: enhancement,values,open discussion,unit-test
+
 proc `<`*(x: Value, y: Value): bool {.inline.}=
     if x.kind in {Integer, Floating, Rational} and y.kind in {Integer, Floating, Rational}:
         if x.kind==Integer:
@@ -240,31 +342,57 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
                 return cmp(toRational(x.f), y.rat) < 0  
             else: return x.f<y.f
     elif x.kind == Quantity or y.kind == Quantity:
-        if x.kind == Quantity:
-            if y.kind == Quantity:
-                if x.unit.kind != y.unit.kind: return false
-                return x.nm < convertQuantityValue(y.nm, y.unit.name, x.unit.name)
+        if y.kind == Integer:
+            if y.iKind == NormalInteger:
+                return x.q < y.i
             else:
-                return x.nm < y
+                when not defined(NOGMP):
+                    return x.q < y.bi
+        elif y.kind == Floating:
+            return x.q < y.f
+        elif y.kind == Rational:
+            return x.q < y.rat
+        elif y.kind == Quantity:
+            if x.kind == Integer:
+                if x.iKind == NormalInteger:
+                    return x.i < y.q
+                else:
+                    when not defined(NOGMP):
+                        return x.bi < y.q
+            elif x.kind == Floating:
+                return x.f < y.q
+            elif x.kind == Rational:
+                return x.rat < y.q
+            else:
+                return x.q < y.q
         else:
-            return x < y.nm
+            return false
     else:
         if x.kind != y.kind: return false
         case x.kind:
             of Null: return false
             of Logical: return false
+            of Complex:
+                if x.z.re == y.z.re:
+                    return x.z.im < y.z.im
+                else:
+                    return x.z.re < y.z.re
             of Version: return x.version < y.version
             of Type: return false
             of Char: return $(x.c) < $(y.c)
             of String,
                Word,
                Label,
-               Literal: return x.s < y.s
+               Literal,
+               Attribute,
+               AttributeLabel: return x.s < y.s
             of Symbol: return false
             of Inline,
                Block:
                 return x.a.len < y.a.len
             of Dictionary:
+                return false
+            of Unit:
                 return false
             of Object:
                 if (let compareMethod = x.proto.methods.getOrDefault("compare", nil); not compareMethod.isNil):
@@ -328,31 +456,55 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
                 return cmp(toRational(x.f), y.rat) > 0     
             else: return x.f>y.f
     elif x.kind == Quantity or y.kind == Quantity:
-        if x.kind == Quantity:
-            if y.kind == Quantity:
-                if x.unit.kind != y.unit.kind: return false
-                return x.nm > convertQuantityValue(y.nm, y.unit.name, x.unit.name)
+        if y.kind == Integer:
+            if y.iKind == NormalInteger:
+                return x.q > y.i
             else:
-                return x.nm > y
-        else:
-            return x > y.nm
+                when not defined(NOGMP):
+                    return x.q > y.bi
+        elif y.kind == Floating:
+            return x.q > y.f
+        elif y.kind == Rational:
+            return x.q > y.rat
+        elif y.kind == Quantity:
+            if x.kind == Integer:
+                if x.iKind == NormalInteger:
+                    return x.i > y.q
+                else:
+                    when not defined(NOGMP):
+                        return x.bi > y.q
+            elif x.kind == Floating:
+                return x.f > y.q
+            elif x.kind == Rational:
+                return x.rat > y.q
+            else:
+                return x.q > y.q
     else:
         if x.kind != y.kind: return false
         case x.kind:
             of Null: return false
             of Logical: return false
+            of Complex:
+                if x.z.re == y.z.re:
+                    return x.z.im > y.z.im
+                else:
+                    return x.z.re > y.z.re
             of Version: return x.version > y.version
             of Type: return false
             of Char: return $(x.c) > $(y.c)
             of String,
                Word,
                Label,
-               Literal: return x.s > y.s
+               Literal,
+               Attribute,
+               AttributeLabel: return x.s > y.s
             of Symbol: return false
             of Inline,
                Block:
                 return x.a.len > y.a.len
             of Dictionary:
+                return false
+            of Unit:
                 return false
             of Object:
                 if (let compareMethod = x.proto.methods.getOrDefault("compare", nil); not compareMethod.isNil):
@@ -369,6 +521,10 @@ proc `<=`*(x: Value, y: Value): bool {.inline.}=
 
 proc `>=`*(x: Value, y: Value): bool {.inline.}=
     x > y or x == y
+
+# TODO(VM/values/comparison) Should we convert `!=` into a template?
+#  Does it make sense performance/binarysize-wise?
+#  labels: enhancement, performance, benchmark, open-discussion
 
 proc `!=`*(x: Value, y: Value): bool {.inline.}=
     not (x == y)
@@ -391,7 +547,7 @@ proc find*(a: openArray[Value], item: Value): int {.inline.}=
     for i in items(a):
         if i == item: return
         inc(result)
-    result = -1
+    result = -1  
 
 proc identical*(x: Value, y: Value): bool {.inline.} =
     if x == y and x.kind == y.kind:
@@ -404,7 +560,7 @@ proc identical*(x: Value, y: Value): bool {.inline.} =
 
             return true
         elif x.kind==Quantity:
-            return identical(x.nm, y.nm) and x.unit == y.unit
+            return (x.q.original == y.q.original) and (x.q.atoms == y.q.atoms)
         else:
             return true
     else:

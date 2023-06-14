@@ -2,8 +2,8 @@ name: "unless?"
 type: :function
 description: "perform action, if given condition is false or null and return condition result"
 module: "Core"
-line: 749
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L749"
+line: 773
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L773"
 returns: [
                 :logical
         ]
@@ -42,6 +42,6 @@ arguments: #[
 related: [
                 "Core/unless"
                  "Core/if?"
+                 "Core/throws?"
                  "Core/when?"
-                 "Core/else"
         ]

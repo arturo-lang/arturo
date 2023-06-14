@@ -2,8 +2,8 @@ name: "asinh"
 type: :function
 description: "calculate the inverse hyperbolic sine of given angle"
 module: "Numbers"
-line: 290
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L290"
+line: 297
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L297"
 returns: [
                 :floating
                  :complex

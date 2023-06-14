@@ -2,8 +2,8 @@ name: "not"
 type: :function
 description: "calculate the binary complement the given value"
 module: "Bitwise"
-line: 100
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Bitwise.nim#L100"
+line: 106
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Bitwise.nim#L106"
 returns: [
                 :integer
                  :binary

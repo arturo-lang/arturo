@@ -2,8 +2,8 @@ name: "zero?"
 type: :function
 description: "check if given number or collection size is zero"
 module: "Collections"
-line: 2255
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L2255"
+line: 2404
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L2404"
 returns: [
                 :logical
         ]

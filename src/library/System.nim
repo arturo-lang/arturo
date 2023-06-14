@@ -48,6 +48,12 @@ when not defined(WEB):
 
 proc defineSymbols*() =
 
+    # TODO(System) Convert constants to methods
+    #  None of the supposed constants here is actually a constant.
+    #  All of them return something that doesn't change on one hand,
+    #  but that doesn't mean they should be considered as such.
+    #  labels: library, enhancement
+
     constant "arg",
         alias       = unaliased,
         description = "access command-line arguments as a list":
@@ -256,7 +262,7 @@ proc defineSymbols*() =
                 if xKind == Integer:
                     sleep(x.i)
                 else:
-                    sleep(asInt(convertQuantityValue(x.nm, x.unit.name, MS)))
+                    sleep(toInt((x.q.convertTo(parseAtoms("ms"))).original))
 
         builtin "process",
             alias       = unaliased, 
@@ -286,9 +292,9 @@ proc defineSymbols*() =
 
                 ret["id"] = newInteger(getCurrentProcessId())
                 ret["memory"] = newDictionary({
-                    "occupied": newQuantity(newInteger(getOccupiedMem()), B),
-                    "free": newQuantity(newInteger(getFreeMem()), B),
-                    "total": newQuantity(newInteger(getTotalMem()), B),
+                    "occupied": newQuantity(toQuantity(getOccupiedMem(), parseAtoms("B"))),
+                    "free": newQuantity(toQuantity(getFreeMem(), parseAtoms("B"))),
+                    "total": newQuantity(toQuantity(getTotalMem(), parseAtoms("B")))
                     #"max": newQuantity(newInteger(getMaxMem()), B)
                 }.toOrderedTable)
 

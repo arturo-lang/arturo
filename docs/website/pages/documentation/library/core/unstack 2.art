@@ -1,0 +1,41 @@
+name: "unstack"
+type: :function
+description: "pop top <number> values from stack"
+module: "Core"
+line: 810
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Core.nim#L810"
+returns: [
+                :any
+        ]
+examples: [
+                {
+                        1 2 3
+                        a: unstack 1        ; a: 3
+                        
+                        1 2 3
+                        b: unstack 2        ; b: [3 2]
+                }
+                 {
+                        1 2 3
+                        unstack.discard 1   ; popped 3 from the stack
+                }
+        ]
+attributes: #[
+        discard: #[
+                types: [
+                                :logical
+                        ]
+                description: "do not return anything"
+                ]
+        ]
+arguments: #[
+        number: [
+                        :integer
+                ]
+        ]
+related: [
+                "Core/break"
+                 "Core/unless"
+                 "Core/switch"
+                 "Core/until"
+        ]

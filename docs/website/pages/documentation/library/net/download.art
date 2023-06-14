@@ -2,8 +2,8 @@ name: "download"
 type: :function
 description: "download file from url to disk"
 module: "Net"
-line: 66
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Net.nim#L66"
+line: 82
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Net.nim#L82"
 returns: [
                 :nothing
         ]

@@ -1,0 +1,30 @@
+name: "conforms?"
+type: :function
+description: "check if given quantities/units are compatible"
+module: "Quantities"
+line: 47
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Quantities.nim#L47"
+returns: [
+                :logical
+        ]
+examples: [
+                ""
+        ]
+attributes: #[
+        ]
+arguments: #[
+        a: [
+                        :unit
+                         :quantity
+                ]
+        b: [
+                        :unit
+                         :quantity
+                ]
+        ]
+related: [
+                "Strings/lower?"
+                 "Strings/numeric?"
+                 "Dates/future?"
+                 "Numbers/prime?"
+        ]

@@ -2,8 +2,8 @@ name: "product"
 type: :function
 description: "calculate the product of all values in given list"
 module: "Numbers"
-line: 1100
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L1100"
+line: 1132
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L1132"
 returns: [
                 :integer
                  :floating

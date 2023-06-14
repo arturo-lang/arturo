@@ -2,8 +2,8 @@ name: "zip"
 type: :function
 description: "zip given files to file at destination"
 module: "Files"
-line: 554
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Files.nim#L554"
+line: 578
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Files.nim#L578"
 returns: [
                 :nothing
         ]

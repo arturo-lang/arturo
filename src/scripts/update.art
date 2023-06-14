@@ -6,35 +6,132 @@
 ; @file: system/update.art
 ;========================================================
 
-; TODO(Script\update) needs complete rewrite
-;  currently the updater barely works, we should re-think and re-design the whole process and functionality
-;  labels: installer,open discussion,enhancement,bug,critical
+; » Helper functions
 
-print color #green "- Checking Arturo repository..."
-data: read.json "https://api.github.com/repos/arturo-lang/nightly/releases/latest"
+inform: $[content :string] ->
+	print [ color #green content]
 
-print [color #green "- Latest version found:" data\body]
 
-confirm: input "  ** Are you sure you want to install it? [y/n]: "
-if? "y"=strip lower confirm [
-	print color #green "- Downloading new version..."
 
-	asset: ø
-	case [sys\os]
-		when? [="macosx"]-> asset: 2
-		when? [="linux"]-> asset: 0
-		else [
-			panic ~{your operating system (|sys\os|) doesn't support self-updates}
-		]
+; » Interaction functions
 
-	download.as:"art.tar.gz"  (data\assets \ asset) \ "browser_download_url"
-	
-	print color #green "- Extracting..."
-	execute "tar xvfz art.tar.gz -C ~/.arturo/bin"
+; tested
+acceptance: $[][
 
-	print color #green 	"- Cleaning up..."
-	execute 			"rm -rf art.tar.gz"
+	;; description: « ask to user if he want to proceed with update
 
-	print color #green 	"- Done. :)"
+	message: "  ** Are you sure you want to install it? [y/n]: "
+	confirm: input message | lower
+						   | strip
+
+	return in? confirm ["y" "yes"]
 ]
 
+
+
+; » Main functions
+
+; tested
+chooseAsset: $[][
+
+	;; description: « Choice which Release's asset it should download
+	;; returns: :integer
+
+	unsupportedOS: $[os :string][
+		return
+			~"your operating system (|os|) " ++
+			"doesn't support self-updates"
+	]
+	
+	base: 0
+	if? 'mini = release -> base: 1
+
+	case [sys\os]
+		when? [ = "macosx" ] -> return base + 0
+		when? [ = "linux"  ] -> return base + 2
+		else -> panic unsupportedOS sys\os
+]
+
+; tested
+lookForReleases: $[][
+
+	;; description: « gets the Releases' data
+	;; returns: :dictionary
+
+	url: "https://api.github.com/repos/arturo-lang/nightly/releases/latest"
+
+	inform "- Checking Arturo repository..."
+	data: read.json url
+	inform ~"- Latest version found: |data\body|"
+
+	return data
+]
+
+; tested
+getDownloadUrl: $[ data :dictionary asset :integer][
+
+	;; description: « gets the download's link for given asset
+	;; returns: :string
+
+	data: data | get "assets"
+               | get asset
+               | get "browser_download_url"
+	return data
+]
+
+; tested
+downloadArturo: $[url :string tempFile :string][
+
+	;; description: « download the asset from given link
+
+	ensure.that: "Is Arturo's download URL" ->
+		prefix? url « https://github.com/arturo-lang/nightly/releases/download
+
+	ensure.that: "Is the correct OS" ->
+		in? sys\os lower url
+
+	ensure.that: "Is the same version kind" ->
+		contains? url sys\release
+
+	inform "- Downloading new version..."
+	download.as: tempFile url
+]
+
+; tested
+extract: $[tempFile :string binaryPath :string][
+
+	;; description: « replace binaryPath by extracted .tag.gz file
+
+    output: remove.suffix binaryPath "arturo.exe"
+    args: « --extract --overwrite-dir --ungzip --verbose
+
+	inform ~"- Extracting into |output|..."
+	execute ~"tar --file |tempFile| --directory |output| |args|"
+]
+
+; tested
+cleanup: $[tempFile :string][
+
+	;; description: « remove a temp-file
+
+	inform 	"- Cleaning up..."
+	execute ~"rm |tempFile|"
+	inform 	"- Done. :)"
+]
+
+
+main: $[][
+
+	asset: chooseAsset
+	data: lookForReleases
+    tempFile: "art.tar.gz"
+
+	if? not? acceptance -> exit
+
+	downloadArturo (getDownloadUrl data asset) tempFile
+	extract tempFile sys\binary
+	cleanup tempFile
+
+]
+
+main

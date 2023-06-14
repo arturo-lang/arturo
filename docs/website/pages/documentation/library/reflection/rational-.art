@@ -2,8 +2,8 @@ name: "rational?"
 type: :function
 description: "checks if given value is of type :rational"
 module: "Reflection"
-line: 775
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L775"
+line: 778
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Reflection.nim#L778"
 returns: [
                 :logical
         ]
@@ -16,6 +16,12 @@ examples: [
                 }
         ]
 attributes: #[
+        big: #[
+                types: [
+                                :logical
+                        ]
+                description: "check if, internally, it\'s a bignum"
+                ]
         ]
 arguments: #[
         value: [

@@ -14,12 +14,6 @@ examples: [
                 }
         ]
 attributes: #[
-        rgb: #[
-                types: [
-                                :integer
-                        ]
-                description: "use specific RGB color"
-                ]
         bold: #[
                 types: [
                                 :logical

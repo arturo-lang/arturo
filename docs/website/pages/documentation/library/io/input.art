@@ -2,8 +2,8 @@ name: "input"
 type: :function
 description: "print prompt and get user input"
 module: "Io"
-line: 181
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Io.nim#L181"
+line: 180
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Io.nim#L180"
 returns: [
                 :string
         ]

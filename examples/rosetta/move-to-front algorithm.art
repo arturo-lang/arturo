@@ -1,5 +1,5 @@
 
-symbolTable: @`a`..`z`
+symbolTable: @'a'..'z'
 
 encodeWord: function [s][
     symt: new symbolTable

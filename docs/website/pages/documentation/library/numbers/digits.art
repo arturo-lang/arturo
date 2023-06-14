@@ -2,8 +2,8 @@ name: "digits"
 type: :function
 description: "get array of digits of given number"
 module: "Numbers"
-line: 588
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L588"
+line: 606
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L606"
 returns: [
                 :block
         ]

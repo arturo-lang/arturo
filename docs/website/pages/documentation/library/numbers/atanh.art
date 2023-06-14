@@ -2,8 +2,8 @@ name: "atanh"
 type: :function
 description: "calculate the inverse hyperbolic tangent of given angle"
 module: "Numbers"
-line: 350
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L350"
+line: 357
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L357"
 returns: [
                 :floating
                  :complex

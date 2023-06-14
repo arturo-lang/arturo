@@ -2,8 +2,8 @@ name: "gcd"
 type: :function
 description: "calculate greatest common divisor for given collection of integers"
 module: "Numbers"
-line: 768
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L768"
+line: 789
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L789"
 returns: [
                 :integer
         ]

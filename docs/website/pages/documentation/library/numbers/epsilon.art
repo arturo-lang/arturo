@@ -2,8 +2,8 @@ name: "epsilon"
 type: :floating
 description: "the constant e, Euler\'s number"
 module: "Numbers"
-line: 624
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L624"
+line: 642
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Numbers.nim#L642"
 returns: [
                 :floating
         ]

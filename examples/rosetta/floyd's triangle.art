@@ -1,16 +1,25 @@
-floyd: function [rowcount][
-    result: [[1]]
-    while [rowcount > size result][
-        n: inc last last result
-        row: []
-        loop n..n+size last result 'k -> 'row ++ @[k]
-        'result ++ @[row]
-    ]
-    return result
+; by @Krenium
+
+width: function [rows col] .memoize [
+    floor 2 + log col + 1 + (rows * rows - 1) / 2 10
 ]
 
-loop [5 14] 'j [
-    f: floyd j
-    loop f 'row -> print map row 'r [pad to :string r 3]
-    print ""
+floyd: function [rows][
+    n: 1
+    row: 1
+    col: 0
+    while -> row =< rows [
+        prints pad ~"|n|" width rows col
+        inc 'col
+        inc 'n
+        if col = row [
+            print ""
+            col: 0
+            inc 'row
+        ]
+    ]
 ]
+
+floyd 5
+print ""
+floyd 14

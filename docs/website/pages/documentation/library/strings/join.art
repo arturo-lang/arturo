@@ -2,8 +2,8 @@ name: "join"
 type: :function
 description: "join collection of values into string"
 module: "Strings"
-line: 295
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L295"
+line: 297
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Strings.nim#L297"
 returns: [
                 :string
                  :nothing

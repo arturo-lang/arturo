@@ -2,8 +2,8 @@ name: "take"
 type: :function
 description: "keep first <number> of elements from given collection and return the remaining ones"
 module: "Collections"
-line: 2086
-source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L2086"
+line: 2235
+source: "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/Collections.nim#L2235"
 returns: [
                 :string
                  :block

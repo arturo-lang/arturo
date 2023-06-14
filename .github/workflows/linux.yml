@@ -33,9 +33,9 @@ jobs:
           - full
           - safe
         arch:
-          - x86
+          #- x86
           - amd64
-          - arm
+          #- arm
           - arm64
         exclude:
           - version: full
